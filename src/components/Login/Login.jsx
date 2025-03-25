@@ -11,7 +11,7 @@ export class Login extends Form {
     data: { email: '', password: '' },
     errors: {},
   };
-
+  _isMounted = false; 
   schema = {
     email: Joi.string()
       .email()
@@ -23,12 +23,18 @@ export class Login extends Form {
   };
 
   componentDidMount() {
+    this._isMounted = true;
     if (this.props.auth.isAuthenticated) {
       this.props.history.push('/');
     }
   }
-
+  componentWillUnmount() {
+    this._isMounted = false; // clearly set false on unmount
+    this.props.clearErrors();
+  }
+  
   componentDidUpdate(prevProps) {
+    if (!this._isMounted) return;
     if (prevProps.auth !== this.props.auth) {
       if (this.props.auth.user.new) {
         const url = `/forcePasswordUpdate/${this.props.auth.user.userId}`;
@@ -55,7 +61,7 @@ export class Login extends Form {
     const { email, password } = this.state.data;
     const formattedEmail = email.replace(/[A-Z]/g, char => char.toLowerCase());
     await this.props.loginUser({ email: formattedEmail, password });
-    if (this.props.errors) {
+    if (this._isMounted && this.props.errors) {
       this.setState({ errors: this.props.errors });
     }
   };
