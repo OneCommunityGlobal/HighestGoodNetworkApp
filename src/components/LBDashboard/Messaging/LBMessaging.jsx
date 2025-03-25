@@ -39,16 +39,12 @@ export default function LBMessaging() {
         dispatch({ type: "SEND_MESSAGE_END", payload: data.payload });
       }
     };
-
     socket.onclose = (event) => {
       dispatch(fetchMessages(auth.userid)); // fallback
       scrollToBottom()
     };
-
     return () => {
       socket.close();
-      // dispatch(fetchMessages(auth.userid));
-      // scrollToBottom()
     };
   }, []);
 
