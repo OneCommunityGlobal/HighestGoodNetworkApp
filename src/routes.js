@@ -149,6 +149,7 @@ const PermissionsManagement = lazy(() =>
 );
 const UserRoleTab = lazy(() => import('./components/PermissionsManagement/UserRoleTab'));
 const Teams = lazy(() => import('./components/Teams/Teams'));
+import HelpPage from './components/LandingPage/HelpPage';
 
 
 export default (
@@ -171,6 +172,7 @@ export default (
       <AutoUpdate />
       <ToastContainer />
       <Switch>
+        <Route path="/hgnhelp" component={HelpPage} />
         <ProtectedRoute path="/dashboard" exact component={Dashboard} />
         <ProtectedRoute path="/dashboard/:userId" exact component={Dashboard} />
         <ProtectedRoute path="/project/members/:projectId" fallback component={Members} />
