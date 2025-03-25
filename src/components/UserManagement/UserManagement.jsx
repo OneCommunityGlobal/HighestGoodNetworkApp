@@ -55,6 +55,7 @@ class UserManagement extends React.PureComponent {
       firstNameSearchText: '',
       lastNameSearchText: '',
       roleSearchText: '',
+      titleSearchText: '',
       weeklyHrsSearchText: '',
       emailSearchText: '',
       wildCardSearchText: '',
@@ -101,7 +102,6 @@ class UserManagement extends React.PureComponent {
   }
 
   async componentDidUpdate(prevProps, prevState) {
-
     
     if (prevProps.state.theme.darkMode !== this.props.state.theme.darkMode) {
       const darkMode = this.props.state.theme.darkMode;
@@ -111,11 +111,11 @@ class UserManagement extends React.PureComponent {
       
       this.getFilteredData(userProfiles, rolesPermissions, timeOffRequests, darkMode, this.state.editable);
     }
-  
     
     const searchStateChanged = (prevState.firstNameSearchText !== this.state.firstNameSearchText) || 
                                (prevState.lastNameSearchText !== this.state.lastNameSearchText) || 
                                (prevState.roleSearchText !== this.state.roleSearchText) || 
+                               prevState.titleSearchText !== this.state.titleSearchText ||
                                (prevState.weeklyHrsSearchText !== this.state.weeklyHrsSearchText) || 
                                (prevState.emailSearchText !== this.state.emailSearchText);
   
@@ -130,13 +130,9 @@ class UserManagement extends React.PureComponent {
       let { userProfiles, fetching } = this.props.state.allUserProfiles;
       let { roles: rolesPermissions } = this.props.state.role;
       let { requests: timeOffRequests } = this.props.state.timeOffRequests;
-      
-      
       this.getFilteredData(userProfiles, rolesPermissions, timeOffRequests, darkMode, this.state.editable);
-
     }
   }
-  
 
   /**
    * Returns the differenet popup components to render
@@ -175,8 +171,8 @@ class UserManagement extends React.PureComponent {
               : ''
           }
           open={this.state.activeInactivePopupOpen}
-          setActiveInactive={this.setActiveInactive}
           onClose={this.activeInactivePopupClose}
+          setActiveInactive={this.setActiveInactive}
         />
         <SetUpFinalDayPopUp
           open={this.state.finalDayDateOpen}
@@ -247,6 +243,7 @@ class UserManagement extends React.PureComponent {
               onResetClick={that.onResetClick}
               authEmail={this.props.state.userProfile.email}
               user={user}
+              jobTitle={this.props.state.userProfile.jobTitle}
               role={this.props.state.auth.user.role}
               roles={rolesPermissions}
               timeOffRequests={timeOffRequests[user._id] || []}
@@ -315,6 +312,7 @@ class UserManagement extends React.PureComponent {
       return (
         nameMatches &&
         user.role.toLowerCase().includes(this.state.roleSearchText.toLowerCase()) &&
+        user.jobTitle.toLowerCase().includes(this.state.titleSearchText.toLowerCase()) &&
         user.email.toLowerCase().includes(this.state.emailSearchText.toLowerCase()) &&
         (this.state.weeklyHrsSearchText === '' ||
           user.weeklycommittedHours === Number(this.state.weeklyHrsSearchText)) &&
@@ -480,16 +478,20 @@ class UserManagement extends React.PureComponent {
   /**
    * Callback to trigger the status change on confirmation ok click.
    */
-  setActiveInactive = isActive => {
-    this.props.updateUserStatus(
-      this.state.selectedUser,
-      isActive ? UserStatus.Active : UserStatus.InActive,
-      undefined,
-    );
-    this.setState({
-      activeInactivePopupOpen: false,
-      selectedUser: undefined,
-    });
+  setActiveInactive = isActive => {    
+    this.setState(
+      {      
+        activeInactivePopupOpen: false,      
+        selectedUser: undefined,      
+        isUpdating: true    
+      });    
+    
+      this.props.updateUserStatus(      
+        this.state.selectedUser, isActive ? UserStatus.Active : UserStatus.InActive,      
+        undefined,    
+      ).finally(() => {      
+        this.setState({ isUpdating: false });    
+      });
   };
 
   /**
@@ -579,6 +581,16 @@ class UserManagement extends React.PureComponent {
   };
 
   /**
+   * Call back for search filter - Job Title
+   */
+  onTitleSearch = searchText => {
+    this.setState({
+      titleSearchText: searchText.trim(),
+      selectedPage: 1,
+    });
+  };
+
+  /**
    * Call back for search filter - email
    */
   onEmailSearch = searchText => {
@@ -620,7 +632,6 @@ class UserManagement extends React.PureComponent {
   /**
    * callback for search
    */
-
   onWildCardSearch = searchText => {
     this.setState(
       {
@@ -637,9 +648,6 @@ class UserManagement extends React.PureComponent {
       }
     );
   };
-  
-
- 
 
   /**
    * call back for active/inactive search filter
@@ -774,6 +782,7 @@ class UserManagement extends React.PureComponent {
                   onFirstNameSearch={this.onFirstNameSearch}
                   onLastNameSearch={this.onLastNameSearch}
                   onRoleSearch={this.onRoleSearch}
+                  onTitleSearch={this.onTitleSearch}
                   onEmailSearch={this.onEmailSearch}
                   onWeeklyHrsSearch={this.onWeeklyHrsSearch}
                   roles={roles}

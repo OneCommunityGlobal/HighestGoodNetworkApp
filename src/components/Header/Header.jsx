@@ -49,6 +49,7 @@ import {
   PERMISSIONS_MANAGEMENT,
   SEND_EMAILS,
   TOTAL_ORG_SUMMARY,
+  TOTAL_CONSTRUCTION_SUMMARY,
 } from '../../languages/en/ui';
 import Logout from '../Logout/Logout';
 import './Header.css';
@@ -421,6 +422,13 @@ export function Header(props) {
                       )}
                       <DropdownItem tag={Link} to="/teamlocations" className={fontColor}>
                         {TEAM_LOCATIONS}
+                      </DropdownItem>
+                      <DropdownItem
+                        tag={Link}
+                        to="/bmdashboard/totalconstructionsummary"
+                        className={fontColor}
+                      >
+                        {TOTAL_CONSTRUCTION_SUMMARY}
                       </DropdownItem>
                     </DropdownMenu>
                   </UncontrolledDropdown>

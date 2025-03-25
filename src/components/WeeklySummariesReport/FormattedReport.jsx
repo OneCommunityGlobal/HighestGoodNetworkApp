@@ -7,13 +7,12 @@ import moment from 'moment';
 import 'moment-timezone';
 import ReactHtmlParser from 'react-html-parser';
 import { Link } from 'react-router-dom';
-import './WeeklySummariesReport.css';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
 
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
-import { updateOneSummaryReport } from 'actions/weeklySummariesReport';
+import { toggleUserBio } from 'actions/weeklySummariesReport';
 import RoleInfoModal from 'components/UserProfile/EditableModal/RoleInfoModal';
 import {
   Input,
@@ -33,6 +32,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMailBulk } from '@fortawesome/free-solid-svg-icons';
 import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
+import styles from './WeeklySummariesReport.module.scss';
 import hasPermission from '../../utils/permissions';
 import { ENDPOINTS } from '../../utils/URL';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
@@ -68,6 +68,7 @@ function FormattedReport({
   canSeeBioHighlight,
   darkMode,
   handleTeamCodeChange,
+  handleSpecialColorDotClick,
 }) {
   const loggedInUserEmail = auth?.user?.email ? auth.user.email : '';
 
@@ -93,6 +94,7 @@ function FormattedReport({
             darkMode={darkMode}
             handleTeamCodeChange={handleTeamCodeChange}
             auth={auth}
+            handleSpecialColorDotClick={handleSpecialColorDotClick}
           />
         ))}
       </ListGroup>
@@ -207,6 +209,7 @@ function ReportDetails({
   darkMode,
   handleTeamCodeChange,
   auth,
+  handleSpecialColorDotClick,
 }) {
   const [filteredBadges, setFilteredBadges] = useState([]);
   const ref = useRef(null);
@@ -227,7 +230,13 @@ function ReportDetails({
     <li className={`list-group-item px-0 ${darkMode ? 'bg-yinmn-blue' : ''}`} ref={ref}>
       <ListGroup className="px-0" flush>
         <ListGroupItem darkMode={darkMode}>
-          <Index summary={summary} weekIndex={weekIndex} allRoleInfo={allRoleInfo} auth={auth} />
+          <Index
+            summary={summary}
+            weekIndex={weekIndex}
+            allRoleInfo={allRoleInfo}
+            auth={auth}
+            handleSpecialColorDotClick={handleSpecialColorDotClick}
+          />
         </ListGroupItem>
         <Row className="flex-nowrap">
           <Col xs="6" className="flex-grow-0">
@@ -310,11 +319,11 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
       summaryDateText = `Summary Submitted On (${summaryDate}):`;
 
       return (
-        <div style={style} className="weekly-summary-report-container">
-          <div className="weekly-summary-text">{ReactHtmlParser(summaryText)}</div>
+        <div style={style} className={styles.weeklySummaryReportContainer}>
+          <div className={styles.weeklySummaryText}>{ReactHtmlParser(summaryText)}</div>
           <FontAwesomeIcon
             icon={faCopy}
-            className="copy-icon "
+            className={styles.copyIcon}
             onClick={() => {
               const parsedSummary = summaryText.replace(/<\/?[^>]+>|&nbsp;/g, '');
               navigator.clipboard.writeText(parsedSummary);
@@ -384,7 +393,7 @@ function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange }) {
 
   return (
     <>
-      <div className="teamcode-wrapper">
+      <div className={styles.teamcodeWrapper}>
         {canEditTeamCode ? (
           <div style={{ width: '107px', paddingRight: '5px' }}>
             <Input
@@ -407,7 +416,7 @@ function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange }) {
         <MediaUrlLink summary={summary} />
       </div>
       {hasError ? (
-        <Alert className="code-alert" color="danger">
+        <Alert className={styles.codeAlert} color="danger">
           NOT SAVED! The code must be between 5 and 7 characters long.
         </Alert>
       ) : null}
@@ -475,7 +484,7 @@ function TotalValidWeeklySummaries({ summary, canEditSummaryCount }) {
   };
 
   return (
-    <div className="total-valid-wrapper">
+    <div className={styles.totalValidWrapper}>
       {weeklySummariesCount === 8 ? (
         <div className="total-valid-text" style={style}>
           <b>Total Valid Weekly Summaries:</b>{' '}
@@ -515,7 +524,7 @@ function BioSwitch({ userId, bioPosted, summary }) {
 
   // eslint-disable-next-line no-shadow
   const handleChangeBioPosted = async (userId, bioStatus) => {
-    const res = await dispatch(updateOneSummaryReport(userId, { bioPosted: bioStatus }));
+    const res = await dispatch(toggleUserBio(userId, bioStatus));
     if (res.status === 200) {
       toast.success('You have changed the bio announcement status of this user.');
     }
@@ -523,10 +532,10 @@ function BioSwitch({ userId, bioPosted, summary }) {
 
   return (
     <div>
-      <div className="bio-toggle">
+      <div className={styles.bioToggle}>
         <b style={style}>Bio announcement:</b>
       </div>
-      <div className="bio-toggle">
+      <div className={styles.bioToggle}>
         <ToggleSwitch
           switchType="bio"
           state={bioStatus}
@@ -600,7 +609,7 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
       <ListGroupItem className="row">
         {badgeThisWeek.map((value, index) => (
           // eslint-disable-next-line react/no-array-index-key
-          <div className="badge-td" key={`${weekIndex}_${summary._id}_${index}`}>
+          <div className={styles.badgeTd} key={`${weekIndex}_${summary._id}_${index}`}>
             {' '}
             {value && value.imageUrl && value._id && (
               <>
@@ -632,9 +641,10 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
   );
 }
 
-function Index({ summary, weekIndex, allRoleInfo, auth }) {
+function Index({ summary, weekIndex, allRoleInfo, auth, handleSpecialColorDotClick }) {
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
   const currentDate = moment.tz('America/Los_Angeles').startOf('day');
+  const colors = ['purple', 'green', 'navy'];
 
   const googleDocLink = summary.adminLinks?.reduce((targetLink, currentElement) => {
     if (currentElement.Name === 'Google Doc') {
@@ -675,6 +685,25 @@ function Index({ summary, weekIndex, allRoleInfo, auth }) {
             />
           )}
         </div>
+      </div>
+
+      <div style={{ display: 'inline-block', marginLeft: '10px' }}>
+        {colors.map(color => (
+          <span
+            key={color}
+            onClick={() => handleSpecialColorDotClick(summary._id, color)}
+            style={{
+              display: 'inline-block',
+              width: '15px',
+              height: '15px',
+              margin: '0 5px',
+              borderRadius: '50%',
+              backgroundColor: summary.filterColor === color ? color : 'transparent',
+              border: `3px solid ${color}`,
+              cursor: 'pointer',
+            }}
+          />
+        ))}
       </div>
 
       {showStar(hoursLogged, summary.promisedHoursByWeek[weekIndex]) && (

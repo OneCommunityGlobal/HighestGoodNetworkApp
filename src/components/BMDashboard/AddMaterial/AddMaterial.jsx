@@ -1,66 +1,60 @@
-import {
-  Col,
-  Container,
-  Form,
-  FormGroup,
-  Input,
-  Label,
-  Button,
-  CardBody,
-  Card,
-  Table,
-} from 'reactstrap';
-import './AddMaterial.css';
-import { useDispatch, useSelector } from 'react-redux';
-import { useEffect } from 'react';
-import { useState } from 'react';
-import Joi from 'joi';
+import { useState, useEffect } from 'react';
+import { Form, FormGroup, Label, Input, Button } from 'reactstrap';
+import PhoneInput from 'react-phone-input-2';
 import { toast } from 'react-toastify';
+import { useDispatch, useSelector } from 'react-redux';
+import Joi from 'joi';
 import {
   fetchMaterialTypes,
   postBuildingInventoryType,
   resetPostBuildingInventoryTypeResult,
-} from 'actions/bmdashboard/invTypeActions';
-import { fetchInvUnits } from 'actions/bmdashboard/invUnitActions';
-import Select from 'react-select';
-import { similarity } from './SimilarityCheck';
+} from '../../../actions/bmdashboard/invTypeActions';
+import { fetchInvUnits } from '../../../actions/bmdashboard/invUnitActions';
+import { boxStyle } from '../../../styles';
+import './AddMaterial.css';
+import DragAndDrop from '../../common/DragAndDrop/DragAndDrop';
 
-function AddMaterial() {
+const initialFormState = {
+  // project: 'Project1',
+  name: '',
+  invoice: '',
+  unitPrice: '',
+  currency: 'USD',
+  quantity: '',
+  unit: '',
+  purchaseDate: '',
+  shippingFee: '',
+  taxes: '',
+  areaCode: '+1',
+  phoneNumber: '',
+  images: [],
+  link: '',
+  description: '',
+};
+
+export default function AddMaterialForm() {
+  const [formData, setFormData] = useState(initialFormState);
+  const [areaCode, setAreaCode] = useState('1');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [uploadedFiles, setUploadedFiles] = useState([]); // log here for correct state snapshot (will show each render)
+  const [errors, setErrors] = useState({});
   const dispatch = useDispatch();
   const postBuildingInventoryResult = useSelector(state => state.bmInvTypes.postedResult);
-  const buildingInventoryUnits = useSelector(state => state.bmInvUnits.list);
-  const [formattedUnits, setFormattedUnits] = useState([]);
-  const [similarityData, setSimilarityData] = useState([]);
-
-  const [material, setMaterial] = useState({
-    name: '',
-    unit: '',
-    customUnit: '',
-    customUnitCheck: false,
-    description: '',
-    allowNewMeasurement: false,
-  });
-  const [validations, setValidations] = useState({
-    name: '',
-    unit: '',
-    customUnit: '',
-    description: '',
-    commonUnit: '',
-    customUnitCheck: '',
-    total: true,
-  });
+  const materialTypes = useSelector(state => state.bmInvTypes.list);
+  const [selectedMaterial, setSelectedMaterial] = useState('');
+  const [newMaterial, setNewMaterial] = useState('');
+  const [showTextbox, setShowTextbox] = useState(false);
+  const [selectedUnit, setSelectedUnit] = useState('');
+  const [newUnit, setNewUnit] = useState('');
+  const units = useSelector(state => state.bmInvUnits.list);
+  // console.log(materialTypes);
+  // console.log(units)
+  const createdBy = useSelector(state => state.auth.user.email);
 
   useEffect(() => {
     dispatch(fetchMaterialTypes());
     dispatch(fetchInvUnits());
-  }, []);
-
-  useEffect(() => {
-    const _formattedUnits = buildingInventoryUnits.map(proj => {
-      return { label: proj.unit, value: proj.unit };
-    });
-    setFormattedUnits(_formattedUnits);
-  }, [buildingInventoryUnits]);
+  }, [dispatch]);
 
   useEffect(() => {
     if (postBuildingInventoryResult?.error === true) {
@@ -76,358 +70,439 @@ function AddMaterial() {
     }
   }, [postBuildingInventoryResult]);
 
-  const obj = {
+  useEffect(() => {
+    dispatch(fetchMaterialTypes());
+  }, [dispatch]);
+
+  const validationObj = {
     name: Joi.string()
       .min(3)
-      .max(50)
+      .max(15)
+      .required(),
+    unit: Joi.string()
+      .min(1)
+      .max(15)
       .required(),
     description: Joi.string()
-      .min(10)
-      .max(150)
+      .min(5)
+      .max(500)
       .required(),
-    unit: Joi.optional(),
-    customUnit: Joi.string()
-      .allow('')
-      .optional(),
-  };
-  const schema = Joi.object(obj).options({ abortEarly: false, allowUnknown: true });
-
-  const validationHandler = (field, value, complete) => {
-    let validate;
-    let propertySchema;
-    let validationErrorFlag = false;
-    if (complete) {
-      validate = schema.validate(material);
-    } else if (field !== 'customUnitCheck' && field !== 'allowNewMeasurement') {
-      propertySchema = Joi.object({ [field]: obj[field] });
-      validate = propertySchema.validate({ [field]: value });
-    }
-
-    if (!material.unit && !material.customUnit) {
-      if (complete || field === 'unit' || field === 'customUnit') {
-        validations.commonUnit = 'At least one of "unit" or "customUnit" must have a valid value';
-        validationErrorFlag = true;
-      }
-    } else if (material.unit && material.customUnit) {
-      if (complete || field === 'unit' || field === 'customUnit') {
-        validations.commonUnit = 'Only one of the unit should have a value';
-        validationErrorFlag = true;
-      }
-    } else {
-      validations.commonUnit = '';
-    }
-
-    if (validate?.error) {
-      for (let i = 0; i < validate.error.details.length; i += 1) {
-        const errorObj = validate.error.details[i];
-        if (errorObj.context.peersWithLabels) {
-          for (let j = 0; j < errorObj.context.peersWithLabels.length; j += 1) {
-            validations[errorObj.context.peersWithLabels[j]] = errorObj.message;
-            validationErrorFlag = true;
-          }
-        } else validations[errorObj.context.label] = errorObj.message;
-        validationErrorFlag = true;
-      }
-    } else if (!complete) {
-      validations[field] = '';
-    }
-
-    if (material.customUnit !== '') {
-      const _similarityData = [];
-      for (let i = 0; i < buildingInventoryUnits.length; i += 1) {
-        const similarityPercent = similarity(buildingInventoryUnits[i].unit, material.customUnit);
-        // console.log(buildingInventoryUnits[i].unit, similarityPercent)
-        if (similarityPercent > 0.5) {
-          const simObj = {
-            unitFromStore: buildingInventoryUnits[i].unit,
-            similarityPercent: similarityPercent * 100,
-          };
-          _similarityData.push(simObj);
-        }
-      }
-      setSimilarityData([..._similarityData]);
-    } else {
-      const _similarityData = [];
-      setSimilarityData([..._similarityData]);
-    }
-    if (complete && similarityData.length !== 0 && !material.customUnitCheck) {
-      validationErrorFlag = validationErrorFlag || true;
-      validations.customUnitCheck = 'Please confirm or select a unit from available ones';
-    } else {
-      validationErrorFlag = validationErrorFlag || false;
-      validations.customUnitCheck = '';
-    }
-
-    validations.total = validationErrorFlag;
-
-    setValidations({ ...validations });
-    return validationErrorFlag;
+    invoice: Joi.string().required(),
+    quantity: Joi.number()
+      .min(1)
+      .max(999)
+      .integer()
+      .required(),
+    unitPrice: Joi.number()
+      .min(1)
+      .required(),
+    purchaseDate: Joi.date().required(),
+    createdBy,
   };
 
-  const unitSelectHandler = value => {
-    material.customUnit = '';
-    material.customUnitCheck = false;
-    material.allowNewMeasurement = false;
-    material.unit = value;
-    setMaterial({ ...material });
+  const schema = Joi.object(validationObj).unknown();
+
+  const validate = data => {
+    const result = schema.validate(data, { abortEarly: false });
+    if (!result.error) return null;
+
+    const errorMessages = {};
+    result.error.details.forEach(detail => {
+      errorMessages[detail.path[0]] = detail.message;
+    });
+    return errorMessages;
   };
 
-  const changeHandler = e => {
-    const field = e.target.name;
-    const { value } = e.target;
-    material[field] = value;
-    if (field === 'customUnit') {
-      if (value) {
-        material.unit = '';
-      }
+  const handleInputChange = (name, value) => {
+    setFormData(prevData => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const { unitPrice, quantity, taxes, shippingFee } = formData;
+
+  const calculateTotalPrice = (price, totalQuantity) => price * totalQuantity;
+  const calculateTotalTax = (taxPercentage, totalPrice) => (taxPercentage * totalPrice) / 100;
+
+  const totalPrice = calculateTotalPrice(unitPrice, quantity);
+  const totalTax = calculateTotalTax(Number(taxes), totalPrice);
+  const totalPriceWithShipping = (totalPrice + totalTax + Number(shippingFee)).toFixed(2);
+
+  const phoneChange = (name, phone) => {
+    setFormData(prevData => ({
+      ...prevData,
+      [name]: phone,
+    }));
+  };
+
+  const handleSubmit = async event => {
+    event.preventDefault();
+    const validationErrors = validate(formData);
+    setErrors(validationErrors || {});
+
+    if (validationErrors) {
+      return;
     }
-    // if (field === 'unit') {
-    //   if (value !== '') {
-    //     material.customUnit = '';
-    //     material.customUnitCheck = false;
-    //     material.allowNewMeasurement = false;
-    //   }
+    const imageURL = uploadedFiles.map(file => URL.createObjectURL(file));
+    const updatedFormData = {
+      ...formData,
+      category: 'Material',
+      images: imageURL[0],
+      areaCode,
+      phoneNumber,
+      totalPriceWithShipping,
+    };
+    dispatch(postBuildingInventoryType(updatedFormData));
+    setSelectedMaterial('');
+    setSelectedUnit('');
+    setNewMaterial(''); // Reset newMaterial
+    setShowTextbox(false);
+    setFormData(initialFormState);
+    setUploadedFiles([]);
+    setAreaCode(1);
+    setPhoneNumber('');
     // }
-    if (field === 'customUnitCheck' || field === 'allowNewMeasurement') {
-      material[field] = e.target.checked;
-    }
-    setMaterial({ ...material });
-    if (field !== null) validationHandler(field, value);
+    // TODO: validate form data
+    // TODO: submit data to API
   };
 
-  const submitHandler = () => {
-    const error = validationHandler(null, null, true);
-    if (!error) {
-      // formatted for react-select
-      const _material = { ...material };
-      _material.unit = material.unit?.value;
-      dispatch(postBuildingInventoryType(_material));
+  const handleCancelClick = () => {
+    setSelectedMaterial('');
+    setSelectedUnit('');
+    setFormData(initialFormState);
+    setUploadedFiles([]);
+    setAreaCode(1);
+    setPhoneNumber('');
+  };
+
+  const handleRemoveFile = index => {
+    setUploadedFiles(prevUploadedFiles => prevUploadedFiles.filter((file, i) => i !== index));
+  };
+
+  const handleMaterialChange = e => {
+    const { value } = e.target;
+
+    if (value === 'other') {
+      setShowTextbox(true);
+      setSelectedMaterial('');
+      setSelectedUnit('');
+      handleInputChange('unit', '');
+      handleInputChange('name', '');
+    } else {
+      setShowTextbox(false);
+      const selectedMaterialData = materialTypes.find(material => material._id === value);
+      setSelectedMaterial(value);
+      const materialName = selectedMaterialData?.name || '';
+      const materialUnit = selectedMaterialData?.unit || '';
+      handleInputChange('name', materialName);
+      setSelectedUnit(materialUnit);
+      handleInputChange('unit', materialUnit);
+    }
+  };
+
+  const handleUnitChange = e => {
+    const { value } = e.target;
+    if (value === 'other') {
+      setSelectedUnit(value);
+      setNewUnit('');
+    } else {
+      setSelectedUnit(value);
+      handleInputChange('unit', value);
     }
   };
 
   return (
-    <div>
-      <Container fluid className="materialContainer">
-        <div className="materialPage">
-          <div className="material">
-            <div className="materialTitle">ADD MATERIAL FORM</div>
-            <Card>
-              <CardBody>
-                <Form id="AddMaterialForm">
-                  <FormGroup row className="align-items-center justify-content-start">
-                    <Label for="" lg={2} sm={4} className="materialFormLabel">
-                      Item Type
-                    </Label>
-                    <Col lg={4} sm={8} className="materialFormValue">
-                      <Input
-                        id=""
-                        name=""
-                        type="text"
-                        placeholder="Material Name"
-                        value="Material"
-                        disabled
-                      />
-                    </Col>
-                  </FormGroup>
-                  <FormGroup row className="align-items-center justify-content-start">
-                    <Label for="name" lg={2} sm={4} className="materialFormLabel">
-                      Material Name
-                    </Label>
-                    <Col lg={4} sm={8} className="materialFormValue">
-                      <Input
-                        id="name"
-                        name="name"
-                        type="text"
-                        value={material.name}
-                        onChange={e => changeHandler(e)}
-                        placeholder="Material Name"
-                      />
-                    </Col>
+    <main className="add-material-container">
+      <header className="add-material-header">
+        <h2>ADD TYPE: Material</h2>
+      </header>
 
-                    {validations.name !== '' && (
-                      <Label for="materialNameErr" sm={12} className="materialFormError">
-                        {`Material ${validations.name}`}
-                      </Label>
-                    )}
-                  </FormGroup>
+      <Form className="add-material-form container" onSubmit={handleSubmit}>
+        <FormGroup>
+          <Label for="material-select">
+            Select Material <span className="field-required">*</span>
+          </Label>
+          <Input
+            id="material-select"
+            type="select"
+            value={selectedMaterial || (showTextbox ? 'other' : '')}
+            onChange={handleMaterialChange}
+          >
+            <option value="">Select a Material</option>
+            {materialTypes.map(material => (
+              <option key={material._id} value={material._id}>
+                {material.name}
+              </option>
+            ))}
+            <option value="other">Other</option>
+          </Input>
+        </FormGroup>
+        {showTextbox && (
+          <FormGroup>
+            <Label for="new-material">Enter New Material</Label>
+            <Input
+              id="new-material"
+              type="text"
+              value={newMaterial}
+              onChange={e => {
+                const { value } = e.target;
+                setNewMaterial(value); // Set the textbox value
+                handleInputChange('name', value); // Update formData.name
+              }}
+              placeholder="Enter new material name"
+            />
+            {errors.name && (
+              <Label for="materialNameErr" sm={12} className="materialFormError">
+                {/* Tool &quot;name&quot; length must be at least 4 characters that are not space. */}
+                {errors.name}
+              </Label>
+            )}
+          </FormGroup>
+        )}
+        <FormGroup>
+          <Label for="unit-select">
+            Select Unit <span className="field-required">*</span>
+          </Label>
+          <Input
+            id="unit-select"
+            type="select"
+            value={selectedUnit}
+            onChange={handleUnitChange}
+            disabled={!showTextbox && !!selectedMaterial}
+          >
+            <option value="">Select a Unit</option>
+            {units.map((unit, index) => (
+              // eslint-disable-next-line react/no-array-index-key
+              <option key={index} value={unit.unit}>
+                {unit.unit}
+              </option>
+            ))}
+            <option value="other">Other</option>
+          </Input>
+        </FormGroup>
+        {selectedUnit === 'other' && (
+          <FormGroup>
+            <Label for="new-unit">Enter New Unit</Label>
+            <Input
+              id="new-unit"
+              type="text"
+              value={newUnit}
+              onChange={e => {
+                const { value } = e.target;
+                setNewUnit(value); // Set the textbox value
+                handleInputChange('unit', value); // Update formData.name
+              }}
+              placeholder="Enter new unit name"
+            />
+            {errors.unit && (
+              <Label for="materialUnitErr" sm={12} className="materialFormError">
+                {/* Tool &quot;name&quot; length must be at least 4 characters that are not space. */}
+                {errors.unit}
+              </Label>
+            )}
+          </FormGroup>
+        )}
+        <FormGroup>
+          <Label for="invoice-number">
+            Invoice Number or ID <span className="field-required">*</span>
+          </Label>
+          <Input
+            id="invoice-number"
+            type="text"
+            name="invoice"
+            placeholder="Input Invoice No or ID for the material"
+            value={formData.invoice}
+            onChange={event => handleInputChange('invoice', event.target.value)}
+          />
+          {errors.invoice && (
+            <Label for="materialInvoiceErr" sm={12} className="materialFormError">
+              {errors.invoice}
+            </Label>
+          )}
+        </FormGroup>
+        <div className="add-material-flex-group">
+          <FormGroup>
+            <Label for="unit-price">
+              Unit Price (excl.taxes & shipping) <span className="field-required">*</span>
+            </Label>
+            <Input
+              id="unit-price"
+              type="number"
+              name="unit-price"
+              value={formData.unitPrice}
+              onChange={event => handleInputChange('unitPrice', event.target.value)}
+            />
+            {errors.unitPrice && (
+              <Label for="materialUnitPriceErr" sm={12} className="materialFormError">
+                {errors.unitPrice}
+              </Label>
+            )}
+          </FormGroup>
+          <FormGroup>
+            <Label for="currency">Currency</Label>
+            <Input
+              id="currency"
+              type="select"
+              name="currency"
+              value={formData.currency}
+              onChange={event => handleInputChange('currency', event.target.value)}
+            >
+              <option value="USD">USD</option>
+              <option value="EUR">EUR</option>
+              <option value="CAD">CAD</option>
+            </Input>
+          </FormGroup>
+          <FormGroup>
+            <Label for="quantity">
+              Total quantity <span className="field-required">*</span>
+            </Label>
+            <Input
+              id="quantity"
+              type="number"
+              name="quantity"
+              value={formData.quantity}
+              onChange={event => handleInputChange('quantity', event.target.value)}
+            />
+            {errors.quantity && (
+              <Label for="materialQuantityErr" sm={12} className="materialFormError">
+                {errors.quantity}
+              </Label>
+            )}
+          </FormGroup>
+        </div>
+        <div className="add-material-flex-group">
+          <FormGroup>
+            <Label for="purchase-date">
+              Purchase Date <span className="field-required">*</span>
+            </Label>
+            <Input
+              id="purchase-date"
+              type="date"
+              name="purchase-date"
+              value={formData.purchaseDate}
+              onChange={event => handleInputChange('purchaseDate', event.target.value)}
+            />
+            {errors.purchaseDate && (
+              <Label for="purchaseDateErr" sm={12} className="materialFormError">
+                Enter Date
+              </Label>
+            )}
+          </FormGroup>
+        </div>
+        <div className="add-material-flex-group">
+          <FormGroup>
+            <Label for="shipping-fee">Shipping Fee excluding taxes (enter 0 if free)</Label>
+            <Input
+              id="shipping-fee"
+              type="number"
+              name="shipping-fee"
+              placeholder="0.00"
+              value={formData.shippingFee}
+              onChange={event => handleInputChange('shippingFee', event.target.value)}
+            />
+          </FormGroup>
+          <FormGroup>
+            <Label for="taxes">Taxes</Label>
+            <Input
+              id="taxes"
+              type="number"
+              name="taxes"
+              placeholder="%"
+              value={formData.taxes}
+              onChange={event => handleInputChange('taxes', event.target.value)}
+            />
+          </FormGroup>
+        </div>
 
-                  <FormGroup row className="align-items-center justify-content-start">
-                    <Label for="unit" lg={2} sm={4} className="materialFormLabel">
-                      Measurement
-                    </Label>
-                    <Col lg={4} sm={8}>
-                      {/* <Input
-                        id="unit"
-                        name="unit"
-                        type="select"
-                        value={material.unit}
-                        onChange={e => changeHandler(e)}
-                      >
-                        <option value="" key="customUnit">
-                          --Please select unit--
-                        </option>
-                        {buildingInventoryUnits?.map(matType => (
-                          <option key={matType._id} value={matType.unit}>
-                            {matType.unit}
-                          </option>
-                        ))}
-                      </Input> */}
+        <PhoneInput
+          country="US"
+          regions={['america', 'europe', 'asia', 'oceania', 'africa']}
+          limitMaxLength="true"
+          value={formData.phoneNumber}
+          onChange={phone => phoneChange('phoneNumber', phone)}
+          inputStyle={{ height: 'auto', width: '40%', fontSize: 'inherit' }}
+        />
+        <FormGroup>
+          <Label for="imageUpload">Upload Material Picture</Label>
+          <DragAndDrop
+            id="imageUpload"
+            name="image"
+            value={formData.images}
+            // onFilesSelected={handleFilesSelected}
+            updateUploadedFiles={setUploadedFiles}
+          />
+          {uploadedFiles.length > 0 && (
+            <div className="file-preview-container">
+              {uploadedFiles.map((file, index) => (
+                <div key={`${file.name} - ${file.lastModified}`} className="file-preview">
+                  <img src={URL.createObjectURL(file)} alt={`preview-${index}`} />
+                  <Button color="danger" onClick={() => handleRemoveFile(index)}>
+                    X
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+        </FormGroup>
 
-                      <Select
-                        id="unit"
-                        name="unit"
-                        onChange={unitSelectHandler}
-                        options={formattedUnits}
-                        value={material.unit}
-                        defaultValue={formattedUnits[0]}
-                      />
-                    </Col>
-                  </FormGroup>
-
-                  <FormGroup check>
-                    <Input
-                      id="allowNewMeasurement"
-                      name="allowNewMeasurement"
-                      type="checkbox"
-                      value={material.allowNewMeasurement}
-                      checked={material.allowNewMeasurement}
-                      onChange={e => changeHandler(e)}
-                    />
-                    <Label check for="allowNewMeasurement">
-                      Please check here if you want to enter a New Measurement. (You can always
-                      choose from provided list for better calculations)
-                    </Label>
-                  </FormGroup>
-
-                  {material.allowNewMeasurement && (
-                    <>
-                      <FormGroup row className="align-items-center justify-content-start">
-                        <Label for="customUnit" lg={2} sm={4} className="materialFormLabel">
-                          <div className="d-flex flex-column justify-content-start">
-                            New Measurement
-                            <br />
-                            <i className="materialFormSmallText">
-                              Please note that , you can either select a unit from the list or enter
-                              a cutom unit of your choice
-                            </i>
-                          </div>
-                        </Label>
-                        <Col lg={4} sm={8} className="materialFormValue">
-                          <Input
-                            id="customUnit"
-                            name="customUnit"
-                            type="text"
-                            placeholder="Material Unit"
-                            value={material.customUnit}
-                            onChange={e => changeHandler(e)}
-                          />
-                        </Col>
-                        {validations.customUnit !== '' && (
-                          <Label for="materialNameErr" sm={12} className="materialFormError">
-                            {validations.customUnit}
-                          </Label>
-                        )}
-                      </FormGroup>
-
-                      {similarityData.length !== 0 && (
-                        <FormGroup row className="align-items-center justify-content-start">
-                          <Label
-                            for="similarityCheck"
-                            lg={12}
-                            sm={12}
-                            className="materialFormLabel"
-                          >
-                            <div className="materialFormText">
-                              <div>
-                                <i>Found some similar units from store.</i>
-                                <br />
-
-                                <FormGroup check>
-                                  <Input
-                                    id="customUnitCheck"
-                                    name="customUnitCheck"
-                                    type="checkbox"
-                                    value={material.customUnitCheck}
-                                    onChange={e => changeHandler(e)}
-                                  />
-                                  <Label check for="customUnitCheck">
-                                    Please confirm if the newly entered unit is different from the
-                                    available ones.
-                                  </Label>
-                                  {validations.customUnitCheck !== '' && (
-                                    <Label
-                                      for="materialNameErr"
-                                      sm={12}
-                                      className="materialFormError"
-                                    >
-                                      {validations.customUnitCheck}
-                                    </Label>
-                                  )}
-                                </FormGroup>
-                              </div>
-                              <Table bordered striped className="materialMargin">
-                                <tbody>
-                                  <tr>
-                                    <th>Unit</th>
-                                    <th>Similarity Percentage to {material.customUnit}</th>
-                                  </tr>
-                                  {similarityData.map(sim => (
-                                    <tr key={sim.unitFromStore}>
-                                      <td> {sim.unitFromStore} </td>
-                                      <td> {sim.similarityPercent} </td>
-                                    </tr>
-                                  ))}
-                                </tbody>
-                              </Table>
-                            </div>
-                          </Label>
-                        </FormGroup>
-                      )}
-                    </>
-                  )}
-
-                  <FormGroup row>
-                    {validations.commonUnit !== '' && (
-                      <Label for="materialNameErr" sm={12} className="materialFormError">
-                        {validations.commonUnit}
-                      </Label>
-                    )}
-                  </FormGroup>
-
-                  <FormGroup row className="align-items-center justify-content-start">
-                    <Label for="description" lg={2} sm={4} className="materialFormLabel">
-                      Material Description
-                    </Label>
-                    <Col lg={4} sm={8} className="materialFormValue">
-                      <Input
-                        id="description"
-                        name="description"
-                        type="text"
-                        placeholder="Material description"
-                        value={material.description}
-                        onChange={e => changeHandler(e)}
-                      />
-                    </Col>
-                    {validations.description !== '' && (
-                      <Label for="materialNameErr" sm={12} className="materialFormError">
-                        {`Material ${validations.description}`}
-                      </Label>
-                    )}
-                  </FormGroup>
-
-                  <FormGroup row className="d-flex justify-content-right">
-                    <Button onClick={() => submitHandler()} className="materialButtonBg">
-                      Add Material
-                    </Button>
-                  </FormGroup>
-                </Form>
-              </CardBody>
-            </Card>
+        <FormGroup>
+          <Label for="link">Link to Buy</Label>
+          <Input
+            id="link"
+            type="text"
+            name="link"
+            placeholder="https://"
+            value={formData.link}
+            onChange={event => handleInputChange('link', event.target.value)}
+          />
+        </FormGroup>
+        <FormGroup>
+          <Label for="description">
+            Material Description <span className="field-required">*</span>
+          </Label>
+          <Input
+            type="textarea"
+            rows="4"
+            name="description"
+            id="description"
+            value={formData.description}
+            onChange={event => handleInputChange('description', event.target.value)}
+          />
+          {errors.description && (
+            <Label for="materialDescriptionErr" sm={12} className="materialFormError">
+              {/* Tool &quot;description&quot; length must be at least 4 characters that are not space. */}
+              {errors.description}
+            </Label>
+          )}
+        </FormGroup>
+        <div className="add-material-total-price">
+          <div>Total Price</div>
+          <div className="total-price-calculated">
+            {totalPriceWithShipping} {formData.currency}
           </div>
         </div>
-      </Container>
-    </div>
+        <div className="add-material-createdby">
+          <div>Created By</div>
+          <div className="createdby">{createdBy}</div>
+        </div>
+        {errors &&
+          (errors.name ||
+            errors.description ||
+            errors.invoice ||
+            errors.quantity ||
+            errors.unitPrice ||
+            errors.toDate ||
+            errors.fromDate) && <div className="materialFormError"> Missing Required Field </div>}
+        <div className="add-material-buttons">
+          <Button outline style={boxStyle} onClick={handleCancelClick}>
+            Cancel
+          </Button>
+          <Button id="submit-button" style={boxStyle}>
+            Submit
+          </Button>
+        </div>
+      </Form>
+    </main>
   );
 }
-
-export default AddMaterial;

@@ -1,8 +1,10 @@
 import { useMemo } from 'react';
 import { normalizeVolunteerActivities } from 'utils/totalOrgSummary';
+import Loading from 'components/common/Loading';
 import StatisticsTab from '../StatisticsTab/StatisticsTab';
 
 function VolunteerActivities({
+  isLoading,
   totalSummariesSubmitted,
   completedAssignedHours,
   totalBadgesAwarded,
@@ -26,6 +28,16 @@ function VolunteerActivities({
       totalActiveTeams,
     ],
   );
+
+  if (isLoading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center">
+        <div className="w-100vh">
+          <Loading />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
