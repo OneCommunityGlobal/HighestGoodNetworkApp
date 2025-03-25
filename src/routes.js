@@ -18,18 +18,14 @@ import JobFormBuilder from 'components/Collaboration/JobFormbuilder';
 import JobCCDashboard from 'components/JobCCDashboard/JobCCDashboard';
 import WeeklyProjectSummary from 'components/BMDashboard/WeeklyProjectSummary/WeeklyProjectSummary';
 
-// LB Dashboard
-import LBRegister from './components/LBDashboard/Auth/Register';
-import LBLogin from './components/LBDashboard/Auth/Login';
-import ListOverview from './components/LBDashboard/ListOverview/ListOverview';
-import LBMessaging from './components/LBDashboard/Messaging/LBMessaging';
-
+// hgnform routes
 import Page1 from './components/HGNForm/pages/Page1';
 import Page2 from './components/HGNForm/pages/Page2';
 import Page3 from './components/HGNForm/pages/Page3';
 import Page4 from './components/HGNForm/pages/Page4';
 import Page5 from './components/HGNForm/pages/Page5';
 import Page6 from './components/HGNForm/pages/Page6';
+
 import Timelog from './components/Timelog';
 import LessonForm from './components/BMDashboard/Lesson/LessonForm';
 import UserProfileEdit from './components/UserProfile/UserProfileEdit';
@@ -53,8 +49,9 @@ import Collaboration from './components/Collaboration';
 
 // LB Dashboard
 import LBProtectedRoute from './components/common/LBDashboard/LBProtectedRoute';
-import LBLogin from './components/LBDashboard/Login';
 import LBDashboard from './components/LBDashboard';
+import LBLogin from './components/LBDashboard/Login';
+import LBMessaging from './components/LBDashboard/Messaging/LBMessaging';
 
 // BM Dashboard
 import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
@@ -138,39 +135,6 @@ const Teams = lazy(() => import('./components/Teams/Teams'));
 
 export default (
   <Switch>
-    {/* ----- LB Dashboard Routing ----- */}
-    {/* If it's possible incorporate this route with others without the header, please do */}
-    <Route
-      path="/lbdashboard/register"
-      render={() => (
-        <>
-          <AutoUpdate />
-          <ToastContainer />
-          <LBRegister />
-        </>
-      )}
-    />
-    <Route
-      path="/lbdashboard/login"
-      render={() => (
-        <>
-          <AutoUpdate />
-          <ToastContainer />
-          <LBLogin />
-        </>
-      )}
-    />
-    <Route
-      path="/lbdashboard/listoverview"
-      render={() => (
-        <>
-          <AutoUpdate />
-          <ToastContainer />
-          <ListOverview />
-        </>
-      )}
-    />
-    <Route path="/lbdashboard/messaging" component={LBMessaging} />
     <Route path="/form" component={FormEditor} />
     <Route path="/formviewer" component={FormViewer} />
     <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
@@ -444,6 +408,7 @@ export default (
         {/* Listing and Bidding Routes */}
         <LBProtectedRoute path="/lbdashboard" exact component={LBDashboard} />
         <Route path="/lbdashboard/login" component={LBLogin} />
+        <LBProtectedRoute path="/lbdashboard/messaging" component={LBMessaging} />
   
 
         {/* Good Education  Portal Routes */}

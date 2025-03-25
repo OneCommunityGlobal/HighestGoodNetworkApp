@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { Redirect } from 'react-router-dom';
+import { Redirect, useHistory, useLocation } from 'react-router-dom';
 import { Form, FormGroup, Input, Label, Button, FormFeedback } from 'reactstrap';
 import Joi from 'joi';
 import { loginBMUser } from 'actions/authActions';
@@ -8,7 +8,9 @@ import './Login.css';
 import logo from '../../../assets/images/logo2.png';
 
 function LBLogin(props) {
-  const { dispatch, auth, history, location } = props;
+  const { dispatch, auth } = props;
+  const history = useHistory();
+  const location = useLocation();
   const [enteredEmail, setEnteredEmail] = useState('');
   const [enterPassword, setEnteredPassword] = useState('');
   const [validationError, setValidationError] = useState(null);
