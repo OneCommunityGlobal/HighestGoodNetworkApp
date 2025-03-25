@@ -11,6 +11,7 @@ const initialState = {
   pendingLikes: {}, // Track optimistic updates
 };
 
+// eslint-disable-next-line default-param-last
 export const lessonsReducer = (state = initialState, action) => {
   // console.log('Reducer received action:', action.type, action.payload);
   switch (action.type) {
@@ -20,7 +21,7 @@ export const lessonsReducer = (state = initialState, action) => {
         lessons: action.payload || [],
       };
 
-    case UPDATE_LESSON:
+    case UPDATE_LESSON: {
       const index = state.lessons.findIndex(lesson => lesson._id === action.lessonId);
 
       if (index !== -1) {
@@ -39,8 +40,8 @@ export const lessonsReducer = (state = initialState, action) => {
         };
       }
 
-      // Return the current state if the lesson with the given ID is not found
       return state;
+    }
 
     case DELETE_LESSON:
       return {
@@ -117,3 +118,5 @@ export const lessonsReducer = (state = initialState, action) => {
       return state;
   }
 };
+
+export default lessonsReducer;
