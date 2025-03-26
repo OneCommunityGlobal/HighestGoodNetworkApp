@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 // import Select from 'react-select';
-
-import { Row, Container } from 'reactstrap';
+import moment from 'moment';
+import { Row, Container, Col, Input } from 'reactstrap';
 import { fetchBMProjects } from '../../../actions/bmdashboard/projectActions';
-import BMTimeLogSelectProject from './BMTimeLogSelectProject';
 import BMTimeLogCard from './BMTimeLogCard';
 import BMError from '../shared/BMError';
 import './BMTimeLogger.css';
@@ -15,7 +14,7 @@ function BMTimeLogger() {
 
   const dispatch = useDispatch();
   const errors = useSelector(state => state.errors);
-
+  const projects = useSelector(state => state.bmProjects);
   // fetch projects data on pageload
   useEffect(() => {
     dispatch(fetchBMProjects());
@@ -35,10 +34,33 @@ function BMTimeLogger() {
           <h1>Member Group Check In</h1>
         </Row>
       </header>
-      <BMTimeLogSelectProject
-        selectedProject={selectedProject}
-        setSelectedProject={setselectedProject}
-      />
+
+      {/* select project dropdown */}
+      <Row>
+        <Col xs="3">Date: {moment().format('MM/DD/YY')}</Col>
+        <Col xs="1">
+          <p>Project:</p>
+        </Col>
+        <Col xs="3">
+          <Input
+            id="projectSelect"
+            name="select"
+            type="select"
+            value={selectedProject || ''}
+            onChange={e => {
+              const { value } = e.target;
+              setselectedProject(value);
+            }}
+          >
+            <option value="">Select a project</option>
+            {projects.map(project => (
+              <option key={project._id} value={project._id}>
+                {project.name}
+              </option>
+            ))}
+          </Input>
+        </Col>
+      </Row>
 
       {selectedProject && <BMTimeLogCard selectedProject={selectedProject} />}
       {isError && <BMError errors={errors} />}

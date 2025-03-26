@@ -37,18 +37,25 @@
   color: white;
 }
 
+.stopwatch-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+}
+
 .member-stopwatch {
   background-color: #4b5055 !important;
   border-radius: 15px !important;
-  min-width: 120px;
-  height: 4rem;
-  font-size: 2vw !important;
+  height: 3rem;
+  font-size: 1.5rem !important;
   text-align: center;
-  white-space: nowrap; 
-  overflow: hidden; 
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  color: white;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
 }
 
 .font-color-gray {  

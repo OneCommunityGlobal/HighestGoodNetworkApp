@@ -91,9 +91,6 @@ const BMTimeLogCard = lazy(() => import('./components/BMDashboard/BMTimeLogger/B
 const ProjectDetails = lazy(() =>
   import('./components/BMDashboard/Projects/ProjectDetails/ProjectDetails'),
 );
-const BMTimeLogProjectDetails = lazy(() =>
-  import('./components/BMDashboard/BMTimeLogger/BMTimeLogProjectDetails'),
-);
 const UpdateMaterialsBulk = lazy(() =>
   import('./components/BMDashboard/UpdateMaterials/UpdateMaterialsBulk/UpdateMaterialsBulk'),
 );
@@ -426,11 +423,6 @@ export default (
           path="/bmdashboard/timelog/:projectId"
           fallback
           component={BMTimeLogCard}
-        />
-        <BMProtectedRoute
-          path="/bmdashboard/timelogger/:projectId"
-          fallback
-          component={BMTimeLogProjectDetails}
         />
 
         {/* Community Portal Routes */}

@@ -67,11 +67,11 @@ function BMTimeLogStopWatch() {
   };
 
   return (
-    <CardBody style={{ width: '90%' }}>
-      <Container>
+    <CardBody style={{ width: '100%' }}>
+      <Container className="stopwatch-container">
         <Row className="justify-content-center">
-          <Col xs="auto" className="text-center d-flex justify-content-center">
-            <Button className="member-stopwatch mb-2 px-4">
+          <Col xs="auto">
+            <Button className="member-stopwatch mb-2 px-3">
               {`${String(time.hr).padStart(2, '0')} : ${String(time.min).padStart(
                 2,
                 '0',
@@ -80,8 +80,8 @@ function BMTimeLogStopWatch() {
           </Col>
         </Row>
 
-        <Row className="justify-content-between mb-1">
-          <Button className={isStarted ? 'member-pause' : 'member-start'} onClick={startStop}>
+        <Row className="justify-content-between mb-2">
+          <Button className={isStarted ? 'member-pause' : 'member-start mb-1'} onClick={startStop}>
             <b>{startButtonText}</b>
           </Button>
 
@@ -89,7 +89,7 @@ function BMTimeLogStopWatch() {
             <b>STOP</b>
           </Button>
         </Row>
-        <Row className="mb-1">
+        <Row className="justify-content-center mb-1">
           Start at:
           <Col>
             <b className="font-color-gray">{currentTime}</b>

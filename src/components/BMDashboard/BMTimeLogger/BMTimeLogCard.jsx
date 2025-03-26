@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Container } from 'reactstrap';
+import { Container, Row, Col } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import BMError from '../shared/BMError';
 import { fetchBMProjectMembers } from '../../../actions/bmdashboard/projectMemberAction';
-import BMTimeLogMembers from './BMTimeLogMembers';
-import BMTimeLogMemberInfo from './BMTimeLogMemberInfo';
+import BMTimeLogDisplayMember from './BMTimeLogDisplayMember';
 
 // function BMTimeLogCard({ selectedProject }) {
 function BMTimeLogCard(props) {
@@ -38,9 +37,20 @@ function BMTimeLogCard(props) {
 
   return (
     <Container fluid>
-      <BMTimeLogMemberInfo members={memberList} />
-
-      {isMemberFetched && <BMTimeLogMembers membersList={memberList} />}
+      {isMemberFetched && (
+        <Row>
+          {memberList.map((value, index) => (
+            <Col md={4} key={value.user._id}>
+              <BMTimeLogDisplayMember
+                firstName={value.user.firstName}
+                lastName={value.user.lastName}
+                role={value.user.role}
+                index={index}
+              />
+            </Col>
+          ))}
+        </Row>
+      )}
       {isError && <BMError errors={errors} />}
     </Container>
   );
