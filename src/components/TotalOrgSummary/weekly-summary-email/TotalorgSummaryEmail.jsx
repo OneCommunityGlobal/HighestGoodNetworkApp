@@ -76,7 +76,7 @@ function TotalorgSummaryEmail() {
 
   return (
     <div>
-      <h1 className={`h1 ${darkMode ? 'text-light' : ''}`}>Weekly Company Summary Email</h1>
+      <h1 className={`h1 ${darkMode ? 'text-light' : ''}`}>Total Org Summary Email</h1>
       {/* Recipient Management */}
       <div className={`container ${darkMode ? 'bg-dark text-light' : ''}`}>
         <h2>Recipients</h2>
