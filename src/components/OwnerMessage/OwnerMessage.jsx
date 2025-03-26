@@ -139,12 +139,17 @@ function OwnerMessage({
 
       {(user.role === 'Owner' || canEditHeaderMessage) && (
         <div className="icon-wrapper">
-          <button type="submit" onClick={toggle}>
+          <button type="submit" className="owner-message-button" onClick={toggle}>
             <img src={editIcon} alt="edit icon" title="Edit this header" />
           </button>
 
           {ownerMessage && (
-            <button type="submit" onClick={toggleDeleteWarning} style={{ marginLeft: '0.25rem' }}>
+            <button
+              type="submit"
+              className="owner-message-button"
+              onClick={toggleDeleteWarning}
+              style={{ marginLeft: '0.25rem' }}
+            >
               <img
                 src={deleteIcon}
                 alt="edit icon"

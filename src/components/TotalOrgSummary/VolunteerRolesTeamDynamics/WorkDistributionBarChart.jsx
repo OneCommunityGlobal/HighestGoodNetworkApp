@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import Loading from 'components/common/Loading';
 import { ResponsiveContainer, BarChart, XAxis, YAxis, Tooltip, Legend, Bar, Cell } from 'recharts';
 
 const COLORS = [
@@ -31,56 +31,31 @@ function CustomizedLabel(props) {
   );
 }
 
-export default function WorkDistributionBarChart({ workDistributionStats }) {
-  const [workDistributionData, setWorkDistributionData] = useState([]);
-
-  useEffect(() => {
-    if (workDistributionStats) {
-      setWorkDistributionData(
-        workDistributionStats.map(item => {
-          return {
-            ...item,
-            totalHours: parseFloat(item.totalHours.toFixed(2)),
-          };
-        }),
-      );
-      // Temp -- remove when data is fixed
-      // Truncate records with null or undefined i_d
-      // let numberOfNullOrUndefined = 0;
-      workDistributionStats.forEach(item => {
-        if (item._id === null || item._id === undefined) {
-          // numberOfNullOrUndefined += 1;
-          // console.log('Item with null or undefined _id:', item);
-        }
-      });
-      // console.log('Number of null or undefined _id:', numberOfNullOrUndefined);
-
-      const filteredData = workDistributionStats.filter(
-        item => item._id !== null && item._id !== undefined,
-      );
-      setWorkDistributionData(
-        filteredData.map(item => {
-          return {
-            ...item,
-            totalHours: parseFloat(item.totalHours.toFixed(2)),
-          };
-        }),
-      );
-    }
-  }, [workDistributionStats]);
-
-  if (!workDistributionData || workDistributionData.length === 0) {
-    return <p>Loading...</p>;
+export default function WorkDistributionBarChart({ isLoading, workDistributionStats }) {
+  if (isLoading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center">
+        <div className="w-100vh">
+          <Loading />
+        </div>
+      </div>
+    );
   }
 
-  workDistributionData.sort((a, b) => a._id.localeCompare(b._id));
-  const value = workDistributionData.map(item => item.totalHours);
+  // TODO: workDistributionStats should not require a filter. Backend api needs a fix to not return a null _id field.
+  const data = workDistributionStats
+    .filter(item => item._id)
+    .sort((a, b) => a._id.localeCompare(b._id))
+    .map(item => {
+      return { ...item, totalHours: Number(item.totalHours.toFixed(2)) };
+    });
+  const value = data.map(item => Number(item.totalHours.toFixed(2)));
   const sum = value.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
 
   return (
     <ResponsiveContainer width="100%" height="100%" minWidth={400} minHeight={430}>
       <BarChart
-        data={workDistributionData}
+        data={data}
         barCategoryGap="20%"
         margin={{ top: 40, right: 20, left: 10, bottom: 20 }}
       >
@@ -94,7 +69,7 @@ export default function WorkDistributionBarChart({ workDistributionStats }) {
           legendType="none"
           label={<CustomizedLabel sum={sum} />}
         >
-          {workDistributionData.map((entry, index) => (
+          {data.map((entry, index) => (
             <Cell key={`cell-${entry._id}`} fill={COLORS[index % 20]} />
           ))}
         </Bar>
