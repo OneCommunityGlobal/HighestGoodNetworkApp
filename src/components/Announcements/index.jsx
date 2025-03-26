@@ -367,7 +367,7 @@ function Announcements({ title, email }) {
 
     content += `
       <p>
-        Click here for the video on this topic:
+        <span style="color: #222 !important;">Click here for the video on this topic:</span>
         <a href="${videoLink}" target="_blank" rel="noopener">
           ${videoLink}
         </a>
