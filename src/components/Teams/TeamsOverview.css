@@ -80,7 +80,8 @@
   background: linear-gradient(to bottom, #87CEEB, #1E90FF, #4169E1);
 }
 
-.card#card_active {
+.card#card_active,
+.card#card_non_active {
   background: linear-gradient(to bottom, #FFD700, #FFA500, #FF8C00);
 }
 
@@ -281,7 +282,8 @@
 }
 
 @media (max-width: 768px) {
-  .card#card_team, .card#card_active {
+  .card#card_team, .card#card_active,
+  .card#card_non_active {
     width: auto;
     height: 30px;
     font-size: 8px;

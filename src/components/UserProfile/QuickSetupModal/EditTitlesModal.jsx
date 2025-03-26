@@ -91,7 +91,7 @@ const EditTitlesModal = ({ isOpen, toggle, titles, refreshModalTitles, darkMode 
                         cursor: 'grab'
                       }}
                     >
-                      {title?.titleCode ? title.titleCode : title?.titleName?.substring(0, 5)}
+                      {title?.titleCode ? title.titleCode : title?.titleName?.substring(0, 7)}
                     </div>
                   )}
                   </Draggable>

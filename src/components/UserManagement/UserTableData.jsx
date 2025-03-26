@@ -78,7 +78,7 @@ const UserTableData = React.memo(props => {
       lastName: props.user.lastName,
       id: props.user._id,
       role: props.user.role,
-      jobTitle:props.user.jobTitle,
+      jobTitle: props.user.jobTitle,
       email: props.user.email,
       weeklycommittedHours: props.user.weeklycommittedHours,
       startDate: formatDateYYYYMMDD(props.user.startDate),
@@ -115,7 +115,7 @@ const UserTableData = React.memo(props => {
 
   return (
     <tr
-      className={`usermanagement__tr ${darkMode ? 'bg-yinmn-blue' : ''}`}
+      className={`usermanagement__tr ${darkMode ? 'dark-usermanagement-data' : 'light-usermanagement-data'}`}
       id={`tr_user_${props.index}`}
     >
       <td className="usermanagement__active--input">
@@ -130,7 +130,7 @@ const UserTableData = React.memo(props => {
       <td className="email_cell">
         {editUser?.first ? (
           <div>
-            <a href={`/userprofile/${props.user._id}`} className={darkMode ? 'text-azure' : ''}>
+            <a href={`/userprofile/${props.user._id}`} className={darkMode ? 'text-white' : 'text-dark'}>
               {formData.firstName}{' '}
             </a>
             <FontAwesomeIcon
@@ -157,7 +157,7 @@ const UserTableData = React.memo(props => {
       <td className="email_cell">
         {editUser?.last ? (
           <div>
-            <a href={`/userprofile/${props.user._id}`} className={darkMode ? 'text-azure' : ''}>
+            <a href={`/userprofile/${props.user._id}`} className={darkMode ? 'text-white' : 'text-dark'}>
               {formData.lastName}
             </a>
             <FontAwesomeIcon
@@ -204,10 +204,13 @@ const UserTableData = React.memo(props => {
       </td>
 
 
-      <td className="email_cell">
+      <td className="title_cell"
+        title={formData.jobTitle}>
         {editUser?.jobTitle ? (
-          <div>
-            {formData.jobTitle}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", maxWidth: "100%" }}>
+            <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              {formData.jobTitle}
+            </span>
             <FontAwesomeIcon
               className="copy_icon"
               icon={faCopy}
@@ -221,6 +224,7 @@ const UserTableData = React.memo(props => {
           <input
             type="text"
             className="edituser_input"
+            style={{ maxWidth: "100%" }}
             value={formData.jobTitle}
             onChange={e => {
               updateFormData({ ...formData, jobTitle: e.target.value });
@@ -228,7 +232,9 @@ const UserTableData = React.memo(props => {
             }}
           />
         )}
+
       </td>
+
 
       <td className="email_cell">
         {editUser?.email ? (
@@ -310,9 +316,8 @@ const UserTableData = React.memo(props => {
       <td className="centered-td">
         <button
           type="button"
-          className={`btn btn-outline-primary btn-sm${
-            props.timeOffRequests?.length > 0 ? ` time-off-request-btn-moved` : ''
-          }`}
+          className={`btn btn-outline-primary btn-sm${props.timeOffRequests?.length > 0 ? ` time-off-request-btn-moved` : ''
+            }`}
           onClick={() => props.onLogTimeOffClick(props.user)}
           id="requested-time-off-btn"
           style={darkMode ? { boxShadow: '0 0 0 0', fontWeight: 'bold' } : boxStyle}
