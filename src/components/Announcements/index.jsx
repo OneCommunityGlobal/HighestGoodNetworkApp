@@ -38,12 +38,10 @@ function Announcements({ title, email }) {
 
   // Predefined email addresses for sending test emails
   const testEmailAddresses = [
-    'lambomichael7@gmail.com',
+    'jae@onecommunityglobal.org',
+    'onecommunityglobal@gmail.com',
+    'onecommunityhospitality@gmail.com',
   ];
-
-  // 'jae@onecommunityglobal.org',
-  // 'onecommunityglobal@gmail.com',
-  // 'onecommunityhospitality@gmail.com'
 
   useEffect(() => {
     // Toggle the showEditor state to force re-render when dark mode changes
