@@ -7,13 +7,12 @@ import moment from 'moment';
 import 'moment-timezone';
 import ReactHtmlParser from 'react-html-parser';
 import { Link } from 'react-router-dom';
-import './WeeklySummariesReport.css';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
 
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
-import { updateOneSummaryReport } from 'actions/weeklySummariesReport';
+import { toggleUserBio } from 'actions/weeklySummariesReport';
 import RoleInfoModal from 'components/UserProfile/EditableModal/RoleInfoModal';
 import {
   Input,
@@ -33,6 +32,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMailBulk } from '@fortawesome/free-solid-svg-icons';
 import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
+import styles from './WeeklySummariesReport.module.scss';
 import hasPermission from '../../utils/permissions';
 import { ENDPOINTS } from '../../utils/URL';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
@@ -319,11 +319,11 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
       summaryDateText = `Summary Submitted On (${summaryDate}):`;
 
       return (
-        <div style={style} className="weekly-summary-report-container">
-          <div className="weekly-summary-text">{ReactHtmlParser(summaryText)}</div>
+        <div style={style} className={styles.weeklySummaryReportContainer}>
+          <div className={styles.weeklySummaryText}>{ReactHtmlParser(summaryText)}</div>
           <FontAwesomeIcon
             icon={faCopy}
-            className="copy-icon "
+            className={styles.copyIcon}
             onClick={() => {
               const parsedSummary = summaryText.replace(/<\/?[^>]+>|&nbsp;/g, '');
               navigator.clipboard.writeText(parsedSummary);
@@ -393,7 +393,7 @@ function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange }) {
 
   return (
     <>
-      <div className="teamcode-wrapper">
+      <div className={styles.teamcodeWrapper}>
         {canEditTeamCode ? (
           <div style={{ width: '107px', paddingRight: '5px' }}>
             <Input
@@ -416,7 +416,7 @@ function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange }) {
         <MediaUrlLink summary={summary} />
       </div>
       {hasError ? (
-        <Alert className="code-alert" color="danger">
+        <Alert className={styles.codeAlert} color="danger">
           NOT SAVED! The code must be between 5 and 7 characters long.
         </Alert>
       ) : null}
@@ -484,7 +484,7 @@ function TotalValidWeeklySummaries({ summary, canEditSummaryCount }) {
   };
 
   return (
-    <div className="total-valid-wrapper">
+    <div className={styles.totalValidWrapper}>
       {weeklySummariesCount === 8 ? (
         <div className="total-valid-text" style={style}>
           <b>Total Valid Weekly Summaries:</b>{' '}
@@ -524,7 +524,7 @@ function BioSwitch({ userId, bioPosted, summary }) {
 
   // eslint-disable-next-line no-shadow
   const handleChangeBioPosted = async (userId, bioStatus) => {
-    const res = await dispatch(updateOneSummaryReport(userId, { bioPosted: bioStatus }));
+    const res = await dispatch(toggleUserBio(userId, bioStatus));
     if (res.status === 200) {
       toast.success('You have changed the bio announcement status of this user.');
     }
@@ -532,10 +532,10 @@ function BioSwitch({ userId, bioPosted, summary }) {
 
   return (
     <div>
-      <div className="bio-toggle">
+      <div className={styles.bioToggle}>
         <b style={style}>Bio announcement:</b>
       </div>
-      <div className="bio-toggle">
+      <div className={styles.bioToggle}>
         <ToggleSwitch
           switchType="bio"
           state={bioStatus}
@@ -609,7 +609,7 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
       <ListGroupItem className="row">
         {badgeThisWeek.map((value, index) => (
           // eslint-disable-next-line react/no-array-index-key
-          <div className="badge-td" key={`${weekIndex}_${summary._id}_${index}`}>
+          <div className={styles.badgeTd} key={`${weekIndex}_${summary._id}_${index}`}>
             {' '}
             {value && value.imageUrl && value._id && (
               <>

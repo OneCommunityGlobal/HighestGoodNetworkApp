@@ -115,7 +115,7 @@ const UserTableData = React.memo(props => {
 
   return (
     <tr
-      className={`usermanagement__tr ${darkMode ? 'bg-yinmn-blue' : ''}`}
+      className={`usermanagement__tr ${darkMode ? 'dark-usermanagement-data' : 'light-usermanagement-data'}`}
       id={`tr_user_${props.index}`}
     >
       <td className="usermanagement__active--input">
@@ -130,7 +130,7 @@ const UserTableData = React.memo(props => {
       <td className="email_cell">
         {editUser?.first ? (
           <div>
-            <a href={`/userprofile/${props.user._id}`} className={darkMode ? 'text-azure' : ''}>
+            <a href={`/userprofile/${props.user._id}`} className={darkMode ? 'text-white' : 'text-dark'}>
               {formData.firstName}{' '}
             </a>
             <FontAwesomeIcon
@@ -157,7 +157,7 @@ const UserTableData = React.memo(props => {
       <td className="email_cell">
         {editUser?.last ? (
           <div>
-            <a href={`/userprofile/${props.user._id}`} className={darkMode ? 'text-azure' : ''}>
+            <a href={`/userprofile/${props.user._id}`} className={darkMode ? 'text-white' : 'text-dark'}>
               {formData.lastName}
             </a>
             <FontAwesomeIcon
@@ -224,6 +224,7 @@ const UserTableData = React.memo(props => {
           <input
             type="text"
             className="edituser_input"
+            style={{ maxWidth: "100%" }}
             value={formData.jobTitle}
             onChange={e => {
               updateFormData({ ...formData, jobTitle: e.target.value });

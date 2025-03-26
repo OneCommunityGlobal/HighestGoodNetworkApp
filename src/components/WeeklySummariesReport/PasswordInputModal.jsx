@@ -22,7 +22,7 @@ import {
   authorizeWeeklySummaries,
   authorizeWeeklySummariesReportError,
 } from '../../actions/weeklySummariesReportRecepients';
-import { weeklySummaryRecipientsReducer } from '../../reducers/weeklySummaryRecipientsReducer';
+import weeklySummaryRecipientsReducer from '../../reducers/weeklySummaryRecipientsReducer';
 
 export default function PasswordInputModal({
   onClose,
