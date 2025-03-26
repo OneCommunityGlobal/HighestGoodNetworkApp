@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Modal, Form, Button } from 'react-bootstrap';
 import Select from 'react-select';
-import { useNavigate } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 const skillOptions = [
   { value: 'leadership_experience', label: 'Leadership Experience' },
@@ -37,17 +37,17 @@ const skillOptions = [
 
 function HelpModal({ show, onHide }) {
   const [selectedSkills, setSelectedSkills] = useState([]);
-  const navigate = useNavigate();
+  const history = useHistory();
 
   const handleSubmit = e => {
     e.preventDefault();
     localStorage.setItem('selectedSkills', JSON.stringify(selectedSkills));
-    navigate('/skills-overview');
+    history.push('/skills-overview');
     onHide();
   };
 
   const handleSuggestionClick = () => {
-    navigate('/dashboard/feedback');
+    history.push('/dashboard/feedback');
   };
 
   const customStyles = {
