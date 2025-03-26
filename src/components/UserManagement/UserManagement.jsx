@@ -108,7 +108,7 @@ class UserManagement extends React.PureComponent {
       let { userProfiles, fetching } = this.props.state.allUserProfiles;
       let { roles: rolesPermissions } = this.props.state.role;
       let { requests: timeOffRequests } = this.props.state.timeOffRequests;
-      
+
       this.getFilteredData(userProfiles, rolesPermissions, timeOffRequests, darkMode, this.state.editable);
     }
     
@@ -121,11 +121,11 @@ class UserManagement extends React.PureComponent {
   
     const pageSizeChanged = prevState.pageSize !== this.state.pageSize;
     const userProfilesChanged = prevProps.state.allUserProfiles.userProfiles !== this.props.state.allUserProfiles.userProfiles;
-    
-    if ((prevState.selectedPage !== this.state.selectedPage) || 
-        (prevState.wildCardSearchText !== this.state.wildCardSearchText) || 
-        searchStateChanged || pageSizeChanged || userProfilesChanged ) {
-  
+
+    if ((prevState.selectedPage !== this.state.selectedPage) ||
+      (prevState.wildCardSearchText !== this.state.wildCardSearchText) ||
+      searchStateChanged || pageSizeChanged || userProfilesChanged) {
+
       let darkMode = this.props.state.theme.darkMode;
       let { userProfiles, fetching } = this.props.state.allUserProfiles;
       let { roles: rolesPermissions } = this.props.state.role;
@@ -248,7 +248,7 @@ class UserManagement extends React.PureComponent {
               roles={rolesPermissions}
               timeOffRequests={timeOffRequests[user._id] || []}
               darkMode={darkMode}
-              // editUser={editUser}
+            // editUser={editUser}
             />
           );
         });
@@ -262,53 +262,53 @@ class UserManagement extends React.PureComponent {
       userTableItems: this.userTableElements(userProfiles, rolesPermissions, timeOffRequests, darkMode, editUser)
     })
   }
-  
+
   filteredUserList = userProfiles => {
     const wildCardSearch = this.state.wildCardSearchText.trim().toLowerCase();
-    
+
     return userProfiles.filter(user => {
       const firstNameSearch = this.state.firstNameSearchText || '';
       const lastNameSearch = this.state.lastNameSearchText || '';
-  
+
       const firstName = user.firstName.toLowerCase();
       const lastName = user.lastName.toLowerCase();
       const email = user.email ? user.email.toLowerCase() : '';
-  
+
       const trimmedFirstNameSearch = firstNameSearch.trim();
       const trimmedLastNameSearch = lastNameSearch.trim();
-  
+
       const isFirstNameExactMatch = firstNameSearch.endsWith(' ') && trimmedFirstNameSearch.length > 0;
       const isLastNameExactMatch = lastNameSearch.endsWith(' ') && trimmedLastNameSearch.length > 0;
-  
-     
+
+
       const firstNameMatches = trimmedFirstNameSearch
         ? (isFirstNameExactMatch
-            ? firstName === trimmedFirstNameSearch.toLowerCase() 
-            : firstName.includes(trimmedFirstNameSearch.toLowerCase())) 
+          ? firstName === trimmedFirstNameSearch.toLowerCase()
+          : firstName.includes(trimmedFirstNameSearch.toLowerCase()))
         : true;
-  
-    
+
+
       const lastNameMatches = trimmedLastNameSearch
         ? (isLastNameExactMatch
-            ? lastName === trimmedLastNameSearch.toLowerCase() 
-            : lastName.includes(trimmedLastNameSearch.toLowerCase()))
+          ? lastName === trimmedLastNameSearch.toLowerCase()
+          : lastName.includes(trimmedLastNameSearch.toLowerCase()))
         : true;
 
 
       const wildcardMatches = wildCardSearch
-      ? wildCardSearch.includes(" ") 
-        ? (firstName + " " + lastName).startsWith(wildCardSearch.trim()) ||
+        ? wildCardSearch.includes(" ")
+          ? (firstName + " " + lastName).startsWith(wildCardSearch.trim()) ||
           (firstName + " " + lastName) === wildCardSearch.trim() ||
           email === wildCardSearch.trim()
-        : firstName.startsWith(wildCardSearch) || 
-          lastName.startsWith(wildCardSearch) || 
-          firstName.includes(wildCardSearch) ||   
-          lastName.includes(wildCardSearch)||
+          : firstName.startsWith(wildCardSearch) ||
+          lastName.startsWith(wildCardSearch) ||
+          firstName.includes(wildCardSearch) ||
+          lastName.includes(wildCardSearch) ||
           email.includes(wildCardSearch)
-      : true;
+        : true;
 
-      const nameMatches = firstNameMatches && lastNameMatches&& wildcardMatches;
-  
+      const nameMatches = firstNameMatches && lastNameMatches && wildcardMatches;
+
       return (
         nameMatches &&
         user.role.toLowerCase().includes(this.state.roleSearchText.toLowerCase()) &&
@@ -525,18 +525,18 @@ class UserManagement extends React.PureComponent {
 
     if (deleteType === UserDeleteType.Inactive) {
       this.props.updateUserStatus(
-        this.state.selectedUser, 
-        UserStatus.InActive, 
+        this.state.selectedUser,
+        UserStatus.InActive,
         undefined
-      ).finally(() => {      
-        this.setState({ isUpdating: false });    
+      ).finally(() => {
+        this.setState({ isUpdating: false });
       });
     } else {
       this.props.deleteUser(
-        this.state.selectedUser, 
+        this.state.selectedUser,
         deleteType
-      ).finally(() => {      
-        this.setState({ isUpdating: false });    
+      ).finally(() => {
+        this.setState({ isUpdating: false });
       });
     }
   };
@@ -643,7 +643,7 @@ class UserManagement extends React.PureComponent {
         const { roles: rolesPermissions } = this.props.state.role;
         const { requests: timeOffRequests } = this.props.state.timeOffRequests;
         const darkMode = this.props.state.theme.darkMode;
-  
+
         this.getFilteredData(userProfiles, rolesPermissions, timeOffRequests, darkMode);
       }
     );
@@ -765,9 +765,8 @@ class UserManagement extends React.PureComponent {
           />
           <div className="table-responsive" id="user-management-table">
             <Table
-              className={`table table-bordered noWrap ${
-                darkMode ? 'text-light bg-yinmn-blue' : ''
-              }`}
+              className={`table table-bordered noWrap ${darkMode ? 'text-light bg-yinmn-blue' : ''
+                }`}
             >
               <thead>
                 <UserTableHeader

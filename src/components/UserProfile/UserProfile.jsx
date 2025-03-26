@@ -128,6 +128,7 @@ function UserProfile(props) {
   const [pendingRehireableStatus, setPendingRehireableStatus] = useState(null);
   const [isRehireable, setIsRehireable] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [didLinkUpdate, setDidLinkUpdate] = useState(false);
   // Function to toggle the modal
   const toggleModal = () => setIsModalOpen(!isModalOpen);
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
@@ -1016,6 +1017,7 @@ function UserProfile(props) {
           </div>
           
           <div className='right-column'>
+            {/*}
             {!isProfileEqual ||
               !isTasksEqual ||
               !isProjectsEqual ? (
@@ -1023,6 +1025,7 @@ function UserProfile(props) {
                 Please click on &quot;Save changes&quot; to save the changes you have made.{' '}
               </Alert>
             ) : null}
+             */}
             {!codeValid ? (
               <Alert color="danger">
                 NOT SAVED! The code must be between 5 and 7 characters long
