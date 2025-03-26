@@ -73,7 +73,22 @@ export class Login extends Form {
             darkMode,
           })}
           <div>
-            {this.renderButton({ label: 'Submit', darkMode })}
+            {this.renderButton({
+              name: 'submit',
+              id: 'submit',
+              label: 'Submit',
+              type: 'submit',
+              darkMode,
+            })}
+            {/* <button
+              id="submit"
+              name="submit"
+              type="submit"
+              className={`btn btn-primary mt-2 ${darkMode ? 'btn-dark' : ''}`}
+              style={{ width: '100%' }}
+            >
+              Submit
+            </button> */}
             <Link to="forgotpassword">
               <span
                 style={{

@@ -48,6 +48,8 @@ import Toolslist from './components/BMDashboard/Tools/ToolsList';
 import AddTool from './components/BMDashboard/Tools/AddTool';
 import AddTeamMember from './components/BMDashboard/AddTeamMember/AddTeamMember';
 
+import TotalorgSummaryEmail from './components/TotalOrgSummary/weekly-summary-email/TotalorgSummaryEmail';
+
 // Community Portal
 import CPProtectedRoute from './components/common/CPDashboard/CPProtectedRoute';
 import CPLogin from './components/CommunityPortal/Login';
@@ -132,6 +134,7 @@ export default (
         </>
       )}
     />
+    
     <Route
       path="/lbdashboard/login"
       render={() => (
@@ -143,6 +146,7 @@ export default (
       )}
     />
     <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
+
     <>
       {/* Comment out the Header component and its import during phase 2 development. */}
       <Header />
@@ -207,6 +211,7 @@ export default (
           allowedRoles={[UserRole.Administrator, UserRole.Owner, UserRole.Manager]}
           routePermissions={RoutePermissions.projects}
         />
+
         <ProtectedRoute
           path="/projects"
           exact
@@ -313,6 +318,21 @@ export default (
           // setting permission as Weeklysummariesreport for now. Later it will be changed to weeklyVolunteerSummary. - H
           routePermissions={RoutePermissions.weeklySummariesReport}
         />
+         <ProtectedRoute
+        path="/TotalorgSummaryEmail"
+        exact
+        component={TotalorgSummaryEmail}
+        fallback
+        allowedRoles={[
+          UserRole.Administrator,
+          UserRole.Manager,
+          UserRole.CoreTeam,
+          UserRole.Owner,
+          UserRole.Mentor,
+        ]}
+        // setting permission as Weeklysummariesreport for now. Later it will be changed to weeklyVolunteerSummary. - H
+        routePermissions={RoutePermissions.weeklySummariesReport}
+      />
 
         {/* ----- BEGIN BM Dashboard Routing ----- */}
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />

@@ -44,6 +44,28 @@ export default function WorkDistributionBarChart({ workDistributionStats }) {
           };
         }),
       );
+      // Temp -- remove when data is fixed
+      // Truncate records with null or undefined i_d
+      // let numberOfNullOrUndefined = 0;
+      workDistributionStats.forEach(item => {
+        if (item._id === null || item._id === undefined) {
+          // numberOfNullOrUndefined += 1;
+          // console.log('Item with null or undefined _id:', item);
+        }
+      });
+      // console.log('Number of null or undefined _id:', numberOfNullOrUndefined);
+
+      const filteredData = workDistributionStats.filter(
+        item => item._id !== null && item._id !== undefined,
+      );
+      setWorkDistributionData(
+        filteredData.map(item => {
+          return {
+            ...item,
+            totalHours: parseFloat(item.totalHours.toFixed(2)),
+          };
+        }),
+      );
     }
   }, [workDistributionStats]);
 
