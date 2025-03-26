@@ -44,6 +44,14 @@ function Announcements({ title, email }) {
   ];
 
   useEffect(() => {
+    if (activeTab === 'weeklyProgress') {
+      setEmailList(testEmailAddresses);
+    } else {
+      setEmailList([]);
+    }
+  }, [activeTab]);
+
+  useEffect(() => {
     // Toggle the showEditor state to force re-render when dark mode changes
     setShowEditor(false);
     setTimeout(() => setShowEditor(true), 0);
@@ -165,6 +173,15 @@ function Announcements({ title, email }) {
     const value = e.target.value;
     setEmailTo(value); // Update emailTo for the input field
     setEmailList(value.split(',')); // Update emailList for the email list
+  };
+
+  const handleTestEmailListChange = e => {
+    const value = e.target.value.trim();
+    setEmailTo(value); // Update emailTo for the input field
+
+    if (value) {
+      setEmailList(prevList => [...prevList, ...value.split(',').map(email => email.trim())]); // Append new emails to test emails list
+    }
   };
 
   const handleHeaderContentChange = e => {
@@ -495,7 +512,7 @@ function Announcements({ title, email }) {
       return;
     }
 
-    dispatch(sendEmail(testEmailAddresses.join(','), 'Test Email: Weekly Progress Update', htmlContent));
+    dispatch(sendEmail(emailList.join(','), 'Test Email: Weekly Progress Update', htmlContent));
   };
 
   const renderWeeklyProgressView = () => (
@@ -540,7 +557,7 @@ function Announcements({ title, email }) {
         <ImageUploader onFileUpload={handleHeaderImageUpload} />
 
         {/* Heading text */}
-        <label>Enter Heading Text:</label>
+        <label style={{ color: darkMode ? 'white' : '' }}>Enter Heading Text:</label>
         <input
           type="text"
           value={headingText}
@@ -552,7 +569,7 @@ function Announcements({ title, email }) {
         </div>}
 
         {/* Introduction text */}
-        <label>Enter Introduction Paragraph:</label>
+        <label style={{ color: darkMode ? 'white' : '' }}>Enter Introduction Paragraph:</label>
         <textarea
           rows={3}
           value={introText}
@@ -564,7 +581,7 @@ function Announcements({ title, email }) {
         </div>}
 
         {/* Blog URL Field */}
-        <label>Enter Blog URL:</label>
+        <label style={{ color: darkMode ? 'white' : '' }}>Enter Blog URL:</label>
         <input
           type="url"
           value={blogUrl}
@@ -590,7 +607,7 @@ function Announcements({ title, email }) {
         </div>}
 
         {/* Body text */}
-        <label>Enter Blog Summary Paragraph:</label>
+        <label style={{ color: darkMode ? 'white' : '' }}>Enter Blog Summary Paragraph:</label>
         <textarea
           rows={5}
           value={bodyText}
@@ -602,7 +619,7 @@ function Announcements({ title, email }) {
         </div>}
 
         {/* Video Link Field */}
-        <label>Enter Video Link:</label>
+        <label style={{ color: darkMode ? 'white' : '' }}>Enter Video Link:</label>
         <input
           type="url"
           value={videoLink}
@@ -613,19 +630,32 @@ function Announcements({ title, email }) {
           {errors.videoLink}
         </div>}
 
+        <div className={`emails ${darkMode ? 'bg-yinmn-blue' : ''}`} style={{ ...(darkMode ? boxStyleDark : boxStyle), marginTop: '30px' }}>
+          {
+            title ? (
+              <p>Email</p>
+            ) : (
+
+              <label htmlFor="email-list-input" className={darkMode ? 'text-light' : 'text-dark'}>
+                Email List (comma-separated):
+              </label>
+            )
+          }
+          <input type="text" value={emailTo} id="email-list-input" onChange={handleTestEmailListChange} className='input-text-for-announcement' />
+          <button type="button" className="send-button-green" onClick={handleSendTestEmail} style={darkMode ? boxStyleDark : boxStyle}>
+            Send Test Email
+          </button>
+        </div>
+
         {
           title ? (
             ""
           ) : (
-            <button type="button" className="send-button" onClick={handleBroadcastEmails} style={{ ... (darkMode ? boxStyleDark : boxStyle), marginRight: '20px' }}>
+            <button type="button" className="send-button" onClick={handleBroadcastEmails} style={{ ... (darkMode ? boxStyleDark : boxStyle), marginTop: '30px' }}>
               Broadcast Weekly Update
             </button>
           )
         }
-
-        <button type="button" className="send-button-green" onClick={handleSendTestEmail} style={darkMode ? boxStyleDark : boxStyle}>
-          Send Test Email
-        </button>
       </div>
     </div>
   );
