@@ -8,7 +8,6 @@ import NotFoundDarkImage from '../../assets/images/404ImageDarkMode1.png';
 function NotFoundPage() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const validateUserLogin = localStorage.getItem('token');
-  //const
 
   return (
     <div
@@ -27,23 +26,23 @@ function NotFoundPage() {
           src={darkMode ? NotFoundDarkImage : NotFoundImage}
           alt="Page Not Found"
         />
-        <h3 style={darkMode?{color: "white"} : {color: "black"}}>Page not found</h3>
+        <h3 style={darkMode ? { color: 'white' } : { color: 'black' }}>Page not found</h3>
 
         {validateUserLogin ? (
-            <p className={styles.notFoundText}>
-              The rabbits have been nibbling the cables again... ... Maybe this will help
-              <Link style={{ marginLeft: '6px' }} to="/dashboard">
-                home
-              </Link>{' '}
-              or you can report this page by clicking
-              <Link style={{ marginLeft: '6px' }} to="/dashboard?openModalReport">
-                here
-              </Link>
-            </p>
+          <p className={styles.notFoundText}>
+            The rabbits have been nibbling the cables again... ... Maybe this will help
+            <Link style={{ marginLeft: '6px' }} to="/dashboard">
+              home
+            </Link>{' '}
+            or you can report this page by clicking
+            <Link style={{ marginLeft: '6px' }} to="/dashboard?openModalReport">
+              here
+            </Link>
+          </p>
         ) : (
           <p
             style={{ margin: '10px 20px' }}
-            className={`${styles.notFoundText}  ${darkMode? "text-light": "text-dark"}`}
+            className={`${styles.notFoundText}  ${darkMode ? 'text-light' : 'text-dark'}`}
           >
             It seems like you&apos;ve reached a page that doesn&apos;t exist. In addition
             You&apos;re not currently logged in. Please go back to the
