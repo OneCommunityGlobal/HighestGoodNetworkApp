@@ -122,7 +122,7 @@ const UserTableData = React.memo(props => {
       className={`usermanagement__tr ${darkMode ? 'dark-usermanagement-data' : 'light-usermanagement-data'}`}
       id={`tr_user_${props.index}`}
     >
-      <td className="usermanagement__active--input">
+      <td className="usermanagement__active--input" style={{ position: 'relative' }}>
         <ActiveCell
           isActive={props.isActive}
           canChange={canChangeUserStatus}
@@ -142,14 +142,12 @@ const UserTableData = React.memo(props => {
         ) : (
           ''
         )}
-        <span className="mr-2">
+        <span style={{ position: 'absolute', top: 0, right: 0 }}>
           <button
             type="button"
             className="team-member-tasks-user-report-link"
             style={{
               fontSize: 24,
-              marginTop: '6px',
-              marginLeft: '15px',
               opacity: canSeeReports ? 1 : 0.7,
               background: 'none',
               border: 'none',
