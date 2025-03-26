@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import './LBMessaging.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
+import { faTimes, faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserProfileBasicInfo } from 'actions/userManagement';
 import { useEffect } from 'react';
@@ -19,6 +19,18 @@ export default function LBMessaging() {
   const [searchQuery, setSearchQuery] = useState('');
   const users = useSelector(state => state.allUserProfilesBasicInfo);
   const auth = useSelector(state => state.auth.user);
+  const darkMode = useSelector(state => state.theme.darkMode);
+  // const contactIcon = darkMode
+  //   ? selectContact
+  //     ? 'lb-messaging-contact-icon-select-dark'
+  //     : 'lb-messaging-contact-icon-dark'
+  //   : selectContact
+  //   ? 'lb-messaging-contact-icon-select'
+  //   : 'lb-messaging-contact-icon';
+  const contactIcon = `lb-messaging-contact-icon${selectContact ? '-select' : ''}${
+    darkMode ? '-dark' : ''
+  }`;
+
   const { messages } = useSelector(state => state.lbmessaging);
   const messageEndRef = useRef(null);
 
@@ -62,14 +74,16 @@ export default function LBMessaging() {
     updateSelectedUser(user);
   };
 
-  function toggleContacts() {
-    const contacts = document.querySelector('.lb-messaging-contacts');
+  const toggleContacts = () => {
+    const contacts = darkMode
+      ? document.querySelector('.lb-messaging-contacts-dark')
+      : document.querySelector('.lb-messaging-contacts');
     if (contacts.style.display === 'block') {
       contacts.style.display = 'none';
     } else {
       contacts.style.display = 'block';
     }
-  }
+  };
 
   const getUniqueUsersFromMessages = (message, loggedInUserId) => {
     const uniqueUsersMap = new Map();
@@ -181,20 +195,27 @@ export default function LBMessaging() {
   };
 
   return users.userProfilesBasicInfo.length !== 0 && messages.length !== 0 ? (
-    <div className="lb-messaging-container">
+    <div className={darkMode ? 'lb-messaging-container-dark' : 'lb-messaging-container'}>
       <div className="lb-messaging-header">
-        {/* <div className="hamburger-icon" onClick={toggleContacts}>☰</div> */}
         <img src="/big-sign.png" alt="onecommunity-logo" />
       </div>
-      <div className="lb-messaging-body">
-        <div className="lb-messaging-navbar">
-          <div className="hamburger-icon" onClick={toggleContacts}>
+      <div className={darkMode ? 'lb-messaging-body-dark' : 'lb-messaging-body'}>
+        <div className={darkMode ? 'lb-messaging-navbar-dark' : 'lb-messaging-navbar'}>
+          <div
+            className={darkMode ? 'hamburger-icon-dark' : 'hamburger-icon'}
+            onClick={toggleContacts}
+            title="Chats"
+          >
             ☰
           </div>
         </div>
-        <div className="lb-messaging-content">
-          <div className="lb-messaging-contacts">
-            <div className="lb-messaging-contacts-header">
+        <div className={darkMode ? 'lb-messaging-content-dark' : 'lb-messaging-content'}>
+          <div className={darkMode ? 'lb-messaging-contacts-dark' : 'lb-messaging-contacts'}>
+            <div
+              className={
+                darkMode ? 'lb-messaging-contacts-header-dark' : 'lb-messaging-contacts-header'
+              }
+            >
               <input
                 type="text"
                 placeholder="Search contacts..."
@@ -204,21 +225,27 @@ export default function LBMessaging() {
               />
               {users.userProfilesBasicInfo?.length !== 0 ? (
                 <FontAwesomeIcon
-                  className={
-                    selectContact ? 'lb-messaging-contact-icon-select' : 'lb-messaging-contact-icon'
-                  }
+                  className={contactIcon}
                   icon={faUserCircle}
                   size="2x"
                   onClick={() => updateSelectContact(prev => !prev)}
+                  title="Contacts"
                 />
               ) : (
                 <span />
               )}
-              <span className="contacts-close-button" onClick={toggleContacts}>
-                ✖
-              </span>
+              <FontAwesomeIcon
+                icon={faTimes}
+                className={darkMode ? 'contacts-close-button-dark' : 'contacts-close-button'}
+                onClick={toggleContacts}
+                title="Close"
+              />
             </div>
-            <div className="lb-messaging-contacts-body">
+            <div
+              className={
+                darkMode ? 'lb-messaging-contacts-body-dark' : 'lb-messaging-contacts-body'
+              }
+            >
               {!selectContact
                 ? getUniqueUsersFromMessages(messages, auth.userid)
                     .filter(user =>
@@ -229,15 +256,28 @@ export default function LBMessaging() {
                     .map(message => (
                       <div
                         key={`${message.lastName}-${message._id}`}
-                        className="lb-messaging-contact"
+                        className={darkMode ? 'lb-messaging-contact-dark' : 'lb-messaging-contact'}
                         onClick={() => updateSelection(message)}
+                        title="Click to view Conversation"
                       >
                         <img
                           src={message.profilePic ? message.profilePic : '/pfp-default-header.png'}
                           alt="onecommunity-logo"
                         />
-                        <div className="lb-messaging-contact-info">
-                          <div className="lb-messaging-contact-name">{`${message.firstName} ${message.lastName}`}</div>
+                        <div
+                          className={
+                            darkMode
+                              ? 'lb-messaging-contact-info-dark'
+                              : 'lb-messaging-contact-info'
+                          }
+                        >
+                          <div
+                            className={
+                              darkMode
+                                ? 'lb-messaging-contact-name-dark'
+                                : 'lb-messaging-contact-name'
+                            }
+                          >{`${message.firstName} ${message.lastName}`}</div>
                           {/* <div className='lb-messaging-contact-preview'>{message.preview}</div> */}
                         </div>
                       </div>
@@ -251,26 +291,48 @@ export default function LBMessaging() {
                     .map(message => (
                       <div
                         key={`${message.firstName}-${message._id}`}
-                        className="lb-messaging-contact"
+                        className={darkMode ? 'lb-messaging-contact-dark' : 'lb-messaging-contact'}
                         onClick={() => updateSelection(message)}
+                        title={`Click to Chat with ${message.firstName}`}
                       >
                         <img
                           src={message.profilePic ? message.profilePic : '/pfp-default-header.png'}
                           alt="onecommunity-logo"
                         />
-                        <div className="lb-messaging-contact-info">
-                          <div className="lb-messaging-contact-name">
+                        <div
+                          className={
+                            darkMode
+                              ? 'lb-messaging-contact-info-dark'
+                              : 'lb-messaging-contact-info'
+                          }
+                        >
+                          <div
+                            className={
+                              darkMode
+                                ? 'lb-messaging-contact-name-dark'
+                                : 'lb-messaging-contact-name'
+                            }
+                          >
                             {message.firstName + message.lastName}
                           </div>
-                          {/* <div className='lb-messaging-contact-preview'>{message.preview}</div> */}
                         </div>
                       </div>
                     ))}
             </div>
           </div>
           {/* we need to check all messages that has */}
-          <div className="lb-messaging-message-window">
-            <div className="lb-messaging-message-window-header">
+          <div
+            className={
+              darkMode ? 'lb-messaging-message-window-dark' : 'lb-messaging-message-window'
+            }
+          >
+            <div
+              className={
+                darkMode
+                  ? 'lb-messaging-message-window-header-dark'
+                  : 'lb-messaging-message-header-window'
+              }
+            >
               <img
                 src={Object.keys(selectedUser).length === 0 ? '' : '/pfp-default-header.png'}
                 alt=""
@@ -281,7 +343,11 @@ export default function LBMessaging() {
             </div>
             <div className="lb-messaging-message-window-body">
               {Object.keys(selectedUser).length === 0 ? (
-                <span id="lb-messaging-window-nochat">Select a chat to get started</span>
+                <span
+                  id={darkMode ? 'lb-messaging-window-nochat-dark' : 'lb-messaging-window-nochat'}
+                >
+                  Select a chat to get started
+                </span>
               ) : (
                 renderChatMessages(
                   getMessagesBetweenUsers(messages, auth.userid, selectedUser.id),
@@ -300,6 +366,7 @@ export default function LBMessaging() {
                 className="send-button"
                 size="2x"
                 onClick={sendMessageData}
+                title="Send"
               />
             </div>
           </div>

@@ -2,26 +2,30 @@ html,body{
     height: 100%;
     margin: 0;
     padding: 0;
-    overflow: hidden;
+    overflow: hidden;  
+
 }
 
 .lb-messaging-container{
-    height: 100vh;         /* Full screen height */
+    height: 100vh;         
     display: flex;
     flex-direction: column;
     background-color: #eeeeee;
     width: 100%;
     margin: 0;
+    padding: 0;
 }
+
 .lb-messaging-header{
   display: flex;
   justify-content: center;
   height:15%;
   width:100%;
+  padding: 0;
 }
 .lb-messaging-header img{
-    width:70%;
-    height: 95%;
+    width:50%;
+    height: 80%;
     max-width: none;
 }
 .lb-messaging-contact-icon{
@@ -69,7 +73,6 @@ html,body{
 
 .lb-messaging-content input{
     width: 100%;
-    background-color: #99cc33;
     border:none;
 }
 
@@ -121,6 +124,7 @@ html,body{
 }
 .lb-messaging-contacts-header input{
   background-color: #8b8888;
+  margin-right: 5px;
 }
 
 .lb-messaging-contacts-body{
@@ -156,7 +160,7 @@ html,body{
 }
 #lb-messaging-window-nochat{
   font-weight: bold;
-  font-size: 30px;
+  font-size: 25px;
 }
 .lb-messaing-message-window-footer{
     display: flex;
@@ -249,11 +253,14 @@ html,body{
     color: white; 
     cursor: pointer;
     margin: 1% 2%;
-    height:80%;
-    width:1.5em !important;
-    padding: 8px;
+    height:90%;
+    width:1.25em !important;
+    padding: 7px;
   }
-
+  .send-button:hover{
+    background-color: #3ca79b;
+    border-color: #3ca79b;
+  }
   /* Hamburger icon hidden by default */
 .hamburger-icon {
   display: none;
@@ -268,20 +275,187 @@ html,body{
   border: none;
   border-radius: 8px;
 }
+.hamburger-icon-dark {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  background-color: #2e7d32;
+  color: white;
+  font-size: 30px;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  border: none;
+  border-radius: 8px;
+}
 .contacts-close-button {
   cursor: pointer;
   font-size: 18px;
   font-weight: bold;
-  color: white;
   background-color: transparent;
   border: none;
-  margin-left: auto;
-  padding: 4px;
+  margin: 0px 10px;
   display: none;
 }
 
-.contacts-close-button:hover {
-  color: red;
+.contacts-close-button-dark{
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+  background-color: transparent;
+  color:white;
+  border: none;
+  margin: 0px 10px;
+  display: none;
+}
+
+.contacts-close-button:hover, .contacts-close-button-dark:hover {
+  color: #99cc33;
+}
+
+/* dark Mode css */
+.lb-messaging-container-dark{
+  background-color: #1c2541;
+  height: 100vh;         
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+.lb-messaging-body-dark{
+  display:flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  overflow: hidden;
+  height:auto;
+  background-color: #1c2541;
+}
+
+.lb-messaging-contacts-header-dark{
+  background-color: #1c2541;
+  display: flex;
+  justify-content:space-between;
+  align-items: center;
+  padding:5px;
+}
+
+.lb-messaging-contacts-header-dark input{
+  background-color: white;
+  margin-right:5px;
+}
+
+.lb-messaging-content-dark{
+  display: flex;
+  width: 100%;
+  margin-top:0;
+  flex: 1;
+  padding:10px;
+  background-color: #1c2541;
+}
+
+.lb-messaging-content-dark input{
+  width: 100%;
+  border:none;
+}
+
+.lb-messaging-content-dark input:focus {
+  outline: none;
+}
+
+.lb-messaging-contact-icon-dark{
+  border-radius: 20px;
+  border-color: black;
+  outline:none;
+  padding:0;
+  margin:0;
+  background-color: white;
+}
+
+.lb-messaging-contact-icon-dark:hover{
+  color:#99cc33;
+  border-color: #99cc33;
+  background-color: black;
+}
+
+.lb-messaging-contact-icon-select-dark{
+  color:#99cc33;
+  border-color: #99cc33;
+  background-color: black;
+  border-radius: 20px;
+  outline:none;
+  padding:0;
+  margin:0;
+}
+
+.lb-messaging-contacts-body-dark{
+  height: 400px;
+  overflow-y: auto;
+  background-color: #1b2a41;
+}
+
+.lb-messaging-contact-dark{
+  display: flex;
+  padding:2px;
+  border: 1px solid black;
+  margin:2px;
+  background-color: #3a506b;
+  color:white;
+}
+.lb-messaging-contact-dark:hover{
+  background-color: #e9e3e3;
+  color:black;
+}
+.lb-messaging-contact-dark img{
+  border-radius: 20%;
+}
+
+.lb-messaging-contact-info-dark{
+  display: flex;
+  flex-direction: column;
+  font-size: 10px;
+  margin-top:auto;
+  margin-bottom: auto;
+}
+.lb-messaging-contact-name-dark{
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.lb-messaging-message-window-dark{
+  width: 80%;
+  background-color: #3a506b;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.lb-messaging-message-window-header-dark{
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  background-color: #2f3f56;
+  height:12%;
+  font-size:15px;
+  font-weight: bold;
+  color:white;
+}
+
+.lb-messaging-navbar-dark{
+  background-color: #2e7d32;
+  width: 100%;
+  height: 50px;
+  margin-bottom: 10px;
+}
+#lb-messaging-window-nochat-dark{
+  font-weight: bold;
+  font-size: 25px;
+  color:white;
+}
+
+.lb-messaging-contacts-dark{
+  width:20%;
+  background-color: #1b2a41;
 }
 
 /* Medium screens (tablets) */
@@ -290,7 +464,7 @@ html,body{
     font-size: 90%;
   }
 
-  .lb-messaging-contacts {
+  .lb-messaging-contacts,.lb-messaging-contacts-dark {
     width: 30%;
   }
 
@@ -300,12 +474,77 @@ html,body{
 }
 
 /* Small screens (mobile phones) */
-@media (max-width: 768px) {
+@media (max-width: 769px) {
   html {
     font-size: 80%;
   }
 
-  .lb-messaging-container {
+  .lb-messaging-container,.lb-messaging-container-dark {
+    flex-direction: column;
+  }
+  
+  .lb-messaging-contacts {
+    display: none; 
+    position: absolute;
+    z-index: 999;
+    top: 30%;
+    left: 0;
+    width: 100%;
+    height: 300px;
+    background-color: #d9d9d9;
+    overflow-y: auto;
+    padding: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  }
+  .lb-messaging-contacts-dark{
+    display: none; /* hide by default */
+    position: absolute;
+    z-index: 999;
+    top: 30%;
+    left: 0;
+    width: 100%;
+    height: 300px;
+    background-color: #1b2a41;
+    overflow-y: auto;
+    padding: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  }
+  .lb-messaging-message-window, .lb-messaging-message-window-dark  {
+    width: 100%;
+  }
+
+  .hamburger-icon, .hamburger-icon-dark {
+    display: flex;
+  }
+  .lb-messaging-body, .lb-messaging-body-dark{
+    height: 77%;
+  }
+  .contacts-close-button, .contacts-close-button-dark{
+    display: flex;
+  }
+  #lb-messaging-window-nochat{
+    font-size: 18px;
+  }
+  .lb-messaging-header img{
+    width:70%;
+    height: 60%;
+  }
+  .lb-messaging-header{
+    height: 11%;
+    margin:0;
+  }
+  .send-button{
+    height:70%;
+    width:1.5em !important;
+  }
+}
+
+@media (max-width: 362px) {
+  html {
+    font-size: 80%;
+  }
+
+  .lb-messaging-container, .lb-messaging-container-dark {
     flex-direction: column;
   }
 
@@ -313,7 +552,7 @@ html,body{
     display: none; /* hide by default */
     position: absolute;
     z-index: 999;
-    top: 60px;
+    top: 30%;
     left: 0;
     width: 100%;
     height: 300px;
@@ -323,17 +562,46 @@ html,body{
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
   }
 
-  .lb-messaging-message-window {
+  .lb-messaging-contacts-dark {
+    display: none; /* hide by default */
+    position: absolute;
+    z-index: 999;
+    top: 30%;
+    left: 0;
+    width: 100%;
+    height: 300px;
+    background-color: #1b2a41;
+    overflow-y: auto;
+    padding: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  }
+
+  .lb-messaging-message-window, .lb-messaging-message-window-dark {
     width: 100%;
   }
 
-  .hamburger-icon {
+  .hamburger-icon, .hamburger-icon-dark {
     display: flex;
   }
-  .lb-messaging-body{
+  .lb-messaging-body, .lb-messaging-body-dark{
+    height: 75%;
+  }
+  .contacts-close-button, .contacts-close-button-dark{
+    display: flex;
+  }
+  #lb-messaging-window-nochat,#lb-messaging-window-nochat-dark{
+    font-size: 18px;
+  }
+  .lb-messaging-header img{
+    width:100%;
     height: 80%;
   }
-  .contacts-close-button{
-    display: flex;
+  .lb-messaging-header{
+    height: 11%;
+    margin:0;
+  }
+  .send-button{
+    height:70%;
+    width:1.5em !important;
   }
 }
