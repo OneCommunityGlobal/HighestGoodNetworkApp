@@ -529,9 +529,9 @@ function AddTaskModal(props) {
                   Hours
                 </span>
                 <span className="add_new_task_form-input_area">
-                  <div className="py-2 d-flex align-items-center justify-content-sm-around">
+                  <div className="py-1 d-flex align-items-center justify-content-sm-around">
                     <label htmlFor="bestCaseInput" className={`hours-label text-nowrap align-self-center ${fontColor}`}>
-                      Best-case
+                      <strong>Best-case</strong>
                     </label>
                     <input
                       type="number"
@@ -550,9 +550,9 @@ function AddTaskModal(props) {
                         ? 'The number of hours must be less than other cases'
                         : ''}
                   </div>
-                  <div className="py-2 d-flex align-items-center justify-content-sm-around">
+                  <div className="py-1 d-flex align-items-center justify-content-sm-around">
                     <label htmlFor="worstCaseInput" className={`hours-label text-nowrap align-self-center ${fontColor}`}>
-                      Worst-case
+                      <strong>Worst-case</strong>
                     </label>
                     <input
                       type="number"
@@ -572,9 +572,9 @@ function AddTaskModal(props) {
                         ? 'The number of hours must be higher than other cases'
                         : ''}
                     </div>
-                  <div className="py-2 d-flex align-items-center justify-content-sm-around">
+                  <div className="py-1 d-flex align-items-center justify-content-sm-around">
                     <label htmlFor="mostCaseInput" className={`hours-label text-nowrap align-self-center ${fontColor}`}>
-                      Most-case
+                      <strong>Most-case</strong>
                     </label>
                     <input
                       type="number"
@@ -593,9 +593,9 @@ function AddTaskModal(props) {
                         ? 'The number of hours must range between best and worst cases'
                         : ''}
                     </div>
-                  <div className="py-2 d-flex align-items-center justify-content-sm-around">
+                  <div className="py-1 d-flex align-items-center justify-content-sm-around">
                     <label htmlFor="estimatedInput" className={`hours-label text-nowrap align-self-center ${fontColor}`}>
-                      Estimated
+                      <strong>Estimated</strong>
                     </label>
                     <input
                       type="number"
@@ -659,7 +659,7 @@ function AddTaskModal(props) {
               </div>
               <div >
                 <div scope="col" colSpan="2" className={`border p-1 ${fontColor}`} >
-                  Why this Task is Important
+                  Why this Task is Important:
                   <Editor
                     tinymceScriptSrc="/tinymce/tinymce.min.js"
                     licenseKey="gpl"
@@ -673,7 +673,7 @@ function AddTaskModal(props) {
               </div>
               <div>
                 <div scope="col" colSpan="2" className={`border p-1 ${fontColor}`}>
-                  Design Intent
+                  Design Intent:
                   <Editor
                     tinymceScriptSrc="/tinymce/tinymce.min.js"
                     licenseKey="gpl"
@@ -687,7 +687,7 @@ function AddTaskModal(props) {
               </div>
               <div>
                 <div scope="col" colSpan="2" className={`border p-1 ${fontColor}`}> 
-                  Endstate
+                  Endstate:
                   <Editor
                     tinymceScriptSrc="/tinymce/tinymce.min.js"
                     licenseKey="gpl"
