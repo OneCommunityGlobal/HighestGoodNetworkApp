@@ -35,7 +35,7 @@ function LBDashboardHeader(props) {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <div className="item__navbar-right">
-            <h2>WELCOME {authUser?.email}</h2>
+            <h2>WELCOME {authUser?.name || 'USER_NAME'}</h2>
             <div className="item__icons">
               <Nav className="ml-auto">
                 <Nav.Link as={Link} to="/bidding" className="item__nav-link">
