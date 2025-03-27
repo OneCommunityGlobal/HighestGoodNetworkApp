@@ -172,10 +172,22 @@ function Announcements({ title, email }) {
     dispatch(broadcastEmailsToAll('Weekly Update', htmlContent));
   };
 
-  const handlePostToPinterest = async() => {
-    await axios.post('https://api.pinterest.com/v1/pins', {
+  const handlePostToPinterest = async () => {
+    if (!emailContent || emailContent.trim() === '') {
+      toast.error('Error: No content to post. Please add some content in Weekly progress editor');
+      return;
+    }
+    try {
+      await axios.post(ENDPOINTS.POST_PINTEREST, {
+        emailContent: emailContent,
+      });
+      toast.success('Post to Pinterest successful!');
+    } catch (err) {
+      toast.error('Failed to post to Pinterest!');
     }
   }
+
+
   return (
     <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: '100%' }}>
       <div className="email-update-container">
