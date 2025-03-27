@@ -26,7 +26,7 @@ describe('EffortBar Component', () => {
   it('renders with default props', () => {
     render(
       <Provider store={store}>
-        <EffortBar activeTab={4} projectsSelected={['all']} />
+        <EffortBar activeTab={4} projectsOrTasksSelected={['all']} />
       </Provider>,
     );
 
@@ -38,7 +38,7 @@ describe('EffortBar Component', () => {
   it('calculates and displays tangible and intangible effort times correctly', () => {
     render(
       <Provider store={store}>
-        <EffortBar activeTab={4} projectsSelected={['all']} />
+        <EffortBar activeTab={4} projectsOrTasksSelected={['all']} />
       </Provider>,
     );
 
@@ -49,7 +49,7 @@ describe('EffortBar Component', () => {
   it('calculates and displays the total effort time correctly', () => {
     render(
       <Provider store={store}>
-        <EffortBar activeTab={4} projectsSelected={['all']} />
+        <EffortBar activeTab={4} projectsOrTasksSelected={['all']} />
       </Provider>,
     );
 
