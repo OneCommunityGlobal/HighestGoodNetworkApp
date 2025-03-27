@@ -164,6 +164,22 @@ button.send-button:hover {
   
 }
 
+.imgur-post-details-gap {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+}
+
+.imgur-post-title {
+  margin-top: 0;
+  display: flex;
+  flex-direction: column;
+}
+
 .imgur-post-details-container {
   display: flex;
   flex: 1;

@@ -19,6 +19,8 @@ import { set } from 'lodash';
 import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
 import { BiTrash } from 'react-icons/bi';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
 
 function Announcements({ title, email }) {
@@ -292,9 +294,16 @@ function Announcements({ title, email }) {
 
                   {/* Imgur album title input */}
                   <div className="imgur-post-title">
-                    <label htmlFor="imgur-content-input" className={darkMode ? 'text-light' : 'text-dark'}>
-                      Post Title*
+                    <label htmlFor="imgur-content-input" className={`imgur-post-details-gap ${darkMode ? 'text-light' : 'text-dark'}`}>
+                      <p>Post Title*</p>
+                      <FontAwesomeIcon
+                          className="team-member-task-info"
+                          icon={faInfoCircle}
+                          title="The title can consist of a maximum of 60 characters, and can contain any characters except for emojis"
+                          color={darkMode ? 'lightgray' : ''}
+                      />
                     </label>
+                    
                     <input
                       type='text'
                       value={imgurTitle}
@@ -306,8 +315,14 @@ function Announcements({ title, email }) {
 
                   {/* Imgur gallery topic input */}
                   <div className="imgur-post-topic">
-                    <label htmlFor="imgur-content-input" className={darkMode ? 'text-light' : 'text-dark'}>
-                      Post Topic*
+                    <label htmlFor="imgur-content-input" className={`imgur-post-details-gap ${darkMode ? 'text-light' : 'text-dark'}`}>
+                      <p>Post Topic*</p>
+                      <FontAwesomeIcon
+                          className="team-member-task-info"
+                          icon={faInfoCircle}
+                          title="The topic can consist of a maximum of 60 characters, and can contain any characters except for emojis"
+                          color={darkMode ? 'lightgray' : ''}
+                      />
                     </label>
                     <input
                       type='text'
@@ -320,8 +335,14 @@ function Announcements({ title, email }) {
 
                   {/* Imgur album tags input */}
                   <div className="imgur-post-tags">
-                    <label htmlFor="imgur-content-input" className={darkMode ? 'text-light' : 'text-dark'}>
-                      Post Tags
+                    <label htmlFor="imgur-content-input" className={`imgur-post-details-gap ${darkMode ? 'text-light' : 'text-dark'}`}>
+                      <p>Post Tags</p>
+                      <FontAwesomeIcon
+                          className="team-member-task-info"
+                          icon={faInfoCircle}
+                          title="The tags can consist of a maximum of 60 characters, can contain any characters except for emojis, and must be separated by commas (e.g. 'tag1, tag2, tag3')"
+                          color={darkMode ? 'lightgray' : ''}
+                      />
                     </label>
                     <input
                       type='text'
