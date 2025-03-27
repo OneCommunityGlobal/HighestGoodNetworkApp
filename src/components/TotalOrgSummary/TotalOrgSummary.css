@@ -1,3 +1,4 @@
+/* Container adjustments for the Total Org Summary */
 .container-total-org-wrapper {
   min-height: 100%;
   background-color: #faf7fc;
@@ -11,8 +12,10 @@
 }
 
 .component-container {
-  margin: 15px 0;
+  margin: 10px 0; /* Reduced margin to eliminate extra space */
   padding: 10px;
+  width: 80%; /* Narrowing the container width */
+  margin: 0 auto; /* Center the container */
 }
 
 .component-border {
@@ -21,6 +24,7 @@
   box-shadow: 1px 1px 1px #e0e0e0;
 }
 
+/* Adjust the grid layout for volunteer stats */
 .volunteer-status-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -28,24 +32,24 @@
   width: 100%;
 }
 
-.volunteer-status-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
-  width: 100%;
-}
-
-.component-pie-chart-label {
-  font-size: 12px;
-  font-weight: 600;
-  color: #000;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
+/* Styling for the title */
 .chart-title p {
-  font-size: 1.5em !important;
+  font-size: 1.2em !important; /* Adjusted font size */
   font-weight: bold;
   text-align: center;
-  margin: 10px;
+  margin: 5px 0;  /* Reduced margin to eliminate extra space */
+  word-wrap: break-word; /* Allow title text to wrap */
+  max-width: 95%; /* Limit width to prevent overflow */
+}
+
+/* Customization for the map title container */
+.global-map-title-container {
+  margin-bottom: 0; /* Remove bottom margin */
+  padding: 10px 0; /* Add padding for better spacing */
+}
+
+/* Make the container width more compact */
+.global-map-container {
+  width: 80%; /* Narrow map container */
+  margin: 0 auto; /* Center the map container */
 }
