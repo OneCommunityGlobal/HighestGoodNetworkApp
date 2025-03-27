@@ -52,9 +52,9 @@ describe('user table footer', () => {
   });
   describe('behavior', () => {
     it('should fire onSelectPageSize() once the user select the combobox', () => {
-      userEvent.selectOptions(screen.getByRole('combobox'), '25');
+      userEvent.selectOptions(screen.getByRole('combobox'), '50');
       expect(onSelectPageSize).toHaveBeenCalled();
-      expect(onSelectPageSize).toHaveBeenCalledWith(25);
+      expect(onSelectPageSize).toHaveBeenCalledWith(50);
     });
     it('should fire onPageSelect() with next page once the user clicks `next`', () => {
       userEvent.click(screen.getByRole('button', { name: /next/i }));

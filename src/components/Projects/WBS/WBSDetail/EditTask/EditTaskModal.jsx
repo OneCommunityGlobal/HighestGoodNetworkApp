@@ -298,14 +298,14 @@ function EditTaskModal(props) {
           >
             <tbody>
               <tr>
-                <td scope="col" data-tip="task ID">
+                <td id="edit-modal-td" scope="col" data-tip="task ID">
                   Task #
                 </td>
-                <td scope="col">{thisTask?.num}</td>
+                <td id="edit-modal-td" scope="col">{thisTask?.num}</td>
               </tr>
               <tr>
-                <td scope="col">Task Name</td>
-                <td>
+                <td id="edit-modal-td" scope="col">Task Name</td>
+                <td id="edit-modal-td">
                   {ReadOnlySectionWrapper(
                     <textarea
                       rows="2"
@@ -321,8 +321,8 @@ function EditTaskModal(props) {
                 </td>
               </tr>
               <tr>
-                <td scope="col">Priority</td>
-                <td>
+                <td id="edit-modal-td" scope="col">Priority</td>
+                <td id="edit-modal-td">
                   {ReadOnlySectionWrapper(
                     <select
                       id="priority"
@@ -339,8 +339,8 @@ function EditTaskModal(props) {
                 </td>
               </tr>
               <tr>
-                <td scope="col">Resources</td>
-                <td scope="col">
+                <td id="edit-modal-td" scope="col">Resources</td>
+                <td id="edit-modal-td" scope="col">
                   <div>
                     <TagsSearch
                       placeholder="Add resources"
@@ -354,8 +354,8 @@ function EditTaskModal(props) {
                 </td>
               </tr>
               <tr>
-                <td scope="col">Assigned</td>
-                  <td>
+                <td id="edit-modal-td" scope="col">Assigned</td>
+                  <td id="edit-modal-td">
                     {ReadOnlySectionWrapper(
                       <div className="flex-row d-inline align-items-center">
                         <div className="form-check form-check-inline">
@@ -393,11 +393,12 @@ function EditTaskModal(props) {
                   </td>
               </tr>
               <tr>
-                <td scope="col">Status</td>
-                  <td>
+                <td id="edit-modal-td" scope="col">Status</td>
+                  <td id="edit-modal-td">
                     {ReadOnlySectionWrapper(
-                      <div className="flex-row  d-inline align-items-center">
-                        <div className="form-check form-check-inline">
+                      <div className="fd-flex  flex-column">
+                      <div className="d-flex"> {/* Added: New div to group Active and Not Started */}
+                        <div className="form-check form-check-inline mr-5">
                             <input
                               className="form-check-input"
                               type="radio"
@@ -425,7 +426,10 @@ function EditTaskModal(props) {
                               Not Started
                             </label>
                           </div>
-                          <div className="form-check form-check-inline">
+                        </div>
+                        {/* Second row: Paused and Complete */}
+                      <div className="d-flex mt-2"> {/* Added: New div for Paused and Complete with margin-top */}
+                          <div className="form-check form-check-inline mr-5">
                             <input
                               className="form-check-input"
                               type="radio"
@@ -453,6 +457,7 @@ function EditTaskModal(props) {
                               Complete
                             </label>
                           </div>
+                          </div> {/* Added: Closing div for the second row */}
                       </div>,
                       editable,
                       status
@@ -460,10 +465,10 @@ function EditTaskModal(props) {
                   </td>
               </tr>
               <tr>
-                <td scope="col">
+                <td id="edit-modal-td" scope="col">
                   Hours
                 </td>
-                <td scope="col" className="w-100">
+                <td id="edit-modal-td" scope="col" className="w-100">
                   <div className="py-1 flex-responsive">
                     <label htmlFor="bestCase" style={{ width: '100px', marginRight: '2px' }} className={`text-nowrap ${darkMode ? 'text-light' : ''}`}>
                       Best-case
@@ -474,7 +479,7 @@ function EditTaskModal(props) {
                         min="0"
                         max="500"
                         value={hoursBest}
-                        onChange={e => setHoursBest(e.target.value)}
+                        onChange={e => setHoursBest(Math.abs(e.target.value))}
                         onBlur={() => calHoursEstimate()}
                         id="bestCase"
                         className="m-auto"
@@ -500,7 +505,7 @@ function EditTaskModal(props) {
                         min={hoursBest}
                         max="500"
                         value={hoursWorst}
-                        onChange={e => setHoursWorst(e.target.value)}
+                        onChange={e => setHoursWorst(Math.abs(e.target.value))}
                         onBlur={() => calHoursEstimate('hoursWorst')}
                         className="m-auto"
                       />,
@@ -525,7 +530,7 @@ function EditTaskModal(props) {
                         min="0"
                         max="500"
                         value={hoursMost}
-                        onChange={e => setHoursMost(e.target.value)}
+                        onChange={e => setHoursMost(Math.abs(e.target.value))}
                         onBlur={() => calHoursEstimate('hoursMost')}
                         className="m-auto"
                       />,
@@ -550,7 +555,7 @@ function EditTaskModal(props) {
                         min="0"
                         max="500"
                         value={hoursEstimate}
-                        onChange={e => setHoursEstimate(e.target.value)}
+                        onChange={e => setHoursEstimate(Math.abs(e.target.value))}
                         className="m-auto"
                       />,
                       editable,
@@ -561,8 +566,8 @@ function EditTaskModal(props) {
                 </td>
               </tr>
               <tr>
-                <td scope="col">Links</td>
-                <td scope="col">
+                <td id="edit-modal-td" scope="col">Links</td>
+                <td id="edit-modal-td" scope="col">
                   {ReadOnlySectionWrapper(
                     <div >
                       <input
@@ -603,8 +608,8 @@ function EditTaskModal(props) {
                 </td>
               </tr>
               <tr>
-                <td scope="col">Category</td>
-                  <td>
+                <td id="edit-modal-td" scope="col">Category</td>
+                  <td id="edit-modal-td">
                   {ReadOnlySectionWrapper(
                     <select value={category} onChange={e => setCategory(e.target.value)}>
                       {categoryOptions.map(cla => (
@@ -620,7 +625,7 @@ function EditTaskModal(props) {
               </tr>
 
               <tr>
-                <td scope="col" colSpan="2">
+                <td id="edit-modal-td" scope="col" colSpan="2">
                   <div>Why this Task is Important:</div>
                   {ReadOnlySectionWrapper (
                     <Editor
@@ -640,7 +645,7 @@ function EditTaskModal(props) {
                 </td>
               </tr>
               <tr>
-                <td scope="col" colSpan="2">
+                <td id="edit-modal-td" scope="col" colSpan="2">
                   <div>Design Intent:</div>
                   {ReadOnlySectionWrapper (
                     <Editor
@@ -660,7 +665,7 @@ function EditTaskModal(props) {
                 </td>
               </tr>
               <tr>
-                <td scope="col" colSpan="2">
+                <td id="edit-modal-td" scope="col" colSpan="2">
                   <div>Endstate:</div>
                   {ReadOnlySectionWrapper (
                     <Editor
@@ -680,8 +685,8 @@ function EditTaskModal(props) {
                 </td>
               </tr>
               <tr>
-                <td scope="col">Start Date</td>
-                <td>
+                <td id="edit-modal-td" scope="col">Start Date</td>
+                <td id="edit-modal-td">
                 {ReadOnlySectionWrapper(
                   <div className='text-dark'>
                     <DayPickerInput
@@ -689,7 +694,7 @@ function EditTaskModal(props) {
                       formatDate={formatDate}
                       placeholder={`${dateFnsFormat(new Date(), FORMAT)}`}
                       onDayChange={(day, mod, input) => changeDateStart(input.state.value)}
-                      value={startedDate}
+                      value={startedDate ? dateFnsFormat(new Date(startedDate), FORMAT) : ''}
                     />
                     <div className='warning text-danger'>
                       {dateWarning ? DUE_DATE_MUST_GREATER_THAN_START_DATE : ''}
@@ -701,8 +706,8 @@ function EditTaskModal(props) {
                 </td>
               </tr>
               <tr>
-                <td scope="col">End Date</td>
-                  <td>
+                <td id="edit-modal-td" scope="col">End Date</td>
+                  <td id="edit-modal-td">
                     {ReadOnlySectionWrapper(
                       <div className='text-dark'>
                         <DayPickerInput
@@ -710,7 +715,7 @@ function EditTaskModal(props) {
                           formatDate={formatDate}
                           placeholder={`${dateFnsFormat(new Date(), FORMAT)}`}
                           onDayChange={(day, mod, input) => changeDateEnd(input.state.value)}
-                          value={dueDate} 
+                          value={dueDate ? dateFnsFormat(new Date(dueDate), FORMAT) : ''} 
                         />
                         <div className='warning text-danger'>
                           {dateWarning ? DUE_DATE_MUST_GREATER_THAN_START_DATE : ''}

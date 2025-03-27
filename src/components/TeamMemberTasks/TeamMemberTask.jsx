@@ -82,7 +82,6 @@ const TeamMemberTask = React.memo(
         resource => resource.userID === user.personId && resource.completedTask,
       ),
   );
-  console.log(completedTasks,"completedtasks");
     const thisWeekHours = user.totaltangibletime_hrs;
 
     // these need to be changed to actual permissions...
