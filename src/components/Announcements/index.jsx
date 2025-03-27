@@ -5,6 +5,8 @@ import { Editor } from '@tinymce/tinymce-react'; // Import Editor from TinyMCE
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
+import axios from 'axios';
+import { ENDPOINTS } from '../../utils/URL';
 
 function Announcements({ title, email }) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -170,6 +172,10 @@ function Announcements({ title, email }) {
     dispatch(broadcastEmailsToAll('Weekly Update', htmlContent));
   };
 
+  const handlePostToPinterest = async() => {
+    await axios.post('https://api.pinterest.com/v1/pins', {
+    }
+  }
   return (
     <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: '100%' }}>
       <div className="email-update-container">
@@ -260,6 +266,14 @@ function Announcements({ title, email }) {
           />
         </div>
       </div>
+      <button
+        type="button"
+        className="send-button"
+        onClick={handlePostToPinterest}
+        style={darkMode ? boxStyleDark : boxStyle}
+      >
+        Pinterest Post
+      </button>
     </div>
   );
 }
