@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import './LBMessaging.css';
+import { useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes, faUserCircle } from '@fortawesome/free-solid-svg-icons';
+import { faBell, faTimes, faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserProfileBasicInfo } from 'actions/userManagement';
 import { useEffect } from 'react';
@@ -11,6 +12,8 @@ import React from 'react';
 import { useRef } from 'react';
 import { initSocket, getSocket } from '../../../utils/socket';
 import config from '../../../config.json';
+import { toast } from 'react-toastify';
+import { image } from 'd3';
 
 export default function LBMessaging() {
   const dispatch = useDispatch();
@@ -20,6 +23,8 @@ export default function LBMessaging() {
   const users = useSelector(state => state.allUserProfilesBasicInfo);
   const auth = useSelector(state => state.auth.user);
   const darkMode = useSelector(state => state.theme.darkMode);
+  const location = useLocation(); 
+  
   // const contactIcon = darkMode
   //   ? selectContact
   //     ? 'lb-messaging-contact-icon-select-dark'
@@ -38,6 +43,46 @@ export default function LBMessaging() {
     messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const browserNotificationPermission = () =>{
+    Notification.requestPermission().then(permission => {
+      if (permission === "granted") {
+      } else {
+      }
+    });
+  }
+  
+  const BrowserNotification = (title, options) => {
+    try {
+      if(document.visibilityState === 'hidden' && Notification.permission === 'granted'){
+        const notification=new Notification(title, options);
+        notification.onclick = () => {
+          const targetUrl = notification.data?.url || "/";
+          window.open(targetUrl, "_blank");
+        };
+        notification.onerror = (e) => {
+          console.error("Notification error:", e);
+        };
+
+      }
+    } catch (error) {
+      console.log(error); 
+    }
+  }
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const chatId = params.get("chat");
+  
+    if (chatId && users.userProfilesBasicInfo.length > 0) {
+      const matchedUser = users.userProfilesBasicInfo.find(
+        (u) => u._id?.toString() === chatId
+      );
+      if (matchedUser) {
+        matchedUser.id = matchedUser._id;
+        updateSelectedUser(matchedUser);
+      }
+    }
+  }, [location.search, users.userProfilesBasicInfo]);
+
   useEffect(() => {
     const { tokenKey } = config;
     const token = localStorage.getItem(tokenKey); // your login JWT
@@ -46,7 +91,35 @@ export default function LBMessaging() {
     socket.onmessage = event => {
       const data = JSON.parse(event.data);
       if (data.action === 'RECEIVE_MESSAGE') {
+        const senderId = data.payload.sender?.toString();
+        const senderUser=users.userProfilesBasicInfo.filter(e=>e._id.toString()===senderId)
+        if(senderUser && senderUser.length===1 && auth.userid.toString() === data.payload.receiver.toString()){
+          const senderName=`${senderUser[0].firstName} ${senderUser[0].lastName}`
+          if(document.visibilityState === 'hidden'){
+            BrowserNotification(`New message from ${senderName}`, {
+              body: data.payload.content,
+              icon: `${window.location.origin}/pfp-default-header.png`,
+              image: `/pfp-default-header.png`,
+              tag:"/new-message",
+              requireInteraction: true,
+              data:{url:`/lbdashboard/messaging?chat=${data.payload.sender}`}
+            });
+          }else{
+            toast(
+              `📩 New message from ${senderName}:  ${data.payload.content}`, {
+                position: "top-right",
+                autoClose: 5000,
+                className: "lb-messaging-toast",
+                closeOnClick: true, // needed for click-to-open to work
+                onClick: () => {
+                  window.location.href = `/lbdashboard/messaging?chat=${data.payload.sender}`;
+                },
+              }
+            );
+          }
+        }
         dispatch({ type: 'SEND_MESSAGE_END', payload: data.payload });
+        
       }
     };
     socket.onclose = () => {
@@ -84,7 +157,7 @@ export default function LBMessaging() {
       contacts.style.display = 'block';
     }
   };
-
+  
   const getUniqueUsersFromMessages = (message, loggedInUserId) => {
     const uniqueUsersMap = new Map();
     message.forEach(msg => {
@@ -186,10 +259,11 @@ export default function LBMessaging() {
                   {isSender && <span className="status">{msg.status === 'read' ? '✔✔' : '✔'}</span>}
                 </div>
               </div>
+              
             </React.Fragment>
           );
         })}
-        {/* <div ref={messageEndRef} /> */}
+        <div ref={messageEndRef} />
       </div>
     );
   };
@@ -330,7 +404,7 @@ export default function LBMessaging() {
               className={
                 darkMode
                   ? 'lb-messaging-message-window-header-dark'
-                  : 'lb-messaging-message-header-window'
+                  : 'lb-messaging-message-window-header'
               }
             >
               <img
@@ -340,6 +414,7 @@ export default function LBMessaging() {
               {Object.keys(selectedUser).length === 0
                 ? ''
                 : `${selectedUser.firstName} ${selectedUser.lastName}`}
+                <FontAwesomeIcon icon={faBell} onClick={browserNotificationPermission}/>
             </div>
             <div className="lb-messaging-message-window-body">
               {Object.keys(selectedUser).length === 0 ? (
@@ -353,6 +428,7 @@ export default function LBMessaging() {
                   getMessagesBetweenUsers(messages, auth.userid, selectedUser.id),
                   auth.userid,
                 )
+
               )}
             </div>
             <div className="lb-messaing-message-window-footer">

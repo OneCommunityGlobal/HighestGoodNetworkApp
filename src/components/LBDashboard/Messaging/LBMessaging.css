@@ -2,8 +2,14 @@ html,body{
     height: 100%;
     margin: 0;
     padding: 0;
-    overflow: hidden;  
+    /* overflow: hidden;   */
+}
 
+.lb-messaging-toast{
+  background-color: #99cc33;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
 }
 
 .lb-messaging-container{
@@ -253,9 +259,10 @@ html,body{
     color: white; 
     cursor: pointer;
     margin: 1% 2%;
-    height:90%;
-    width:1.25em !important;
-    padding: 7px;
+    height:100%;
+    width:2em !important;
+    padding: 6px;
+    
   }
   .send-button:hover{
     background-color: #3ca79b;
