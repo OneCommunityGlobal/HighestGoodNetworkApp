@@ -3,7 +3,7 @@ import BMTimeLogStopWatch from './BMTimeLogStopWatch';
 import './BMTimeLogCard.css';
 
 // function BMTimeLogCard({ selectedProject }) {
-function BMTimeLogDisplayMember({ firstName, lastName, role }) {
+function BMTimeLogDisplayMember({ firstName, lastName, role, memberId, projectId }) {
   const roleColors = {
     volunteer: '#78bdda', // light blue
     core: '#ecb16c', // light orange
@@ -25,7 +25,7 @@ function BMTimeLogDisplayMember({ firstName, lastName, role }) {
           </h5>
         </CardHeader>
 
-        <BMTimeLogStopWatch />
+        <BMTimeLogStopWatch memberId={memberId} projectId={projectId} />
       </Card>
     </div>
   );

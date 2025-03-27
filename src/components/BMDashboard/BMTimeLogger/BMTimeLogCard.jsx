@@ -46,6 +46,8 @@ function BMTimeLogCard(props) {
                 lastName={value.user.lastName}
                 role={value.user.role}
                 index={index}
+                memberId={value.user._id}
+                projectId={props.selectedProject}
               />
             </Col>
           ))}
