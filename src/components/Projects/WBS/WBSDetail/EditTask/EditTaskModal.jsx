@@ -396,8 +396,9 @@ function EditTaskModal(props) {
                 <td id="edit-modal-td" scope="col">Status</td>
                   <td id="edit-modal-td">
                     {ReadOnlySectionWrapper(
-                      <div className="flex-row  d-inline align-items-center">
-                        <div className="form-check form-check-inline">
+                      <div className="fd-flex  flex-column">
+                      <div className="d-flex"> {/* Added: New div to group Active and Not Started */}
+                        <div className="form-check form-check-inline mr-5">
                             <input
                               className="form-check-input"
                               type="radio"
@@ -425,7 +426,10 @@ function EditTaskModal(props) {
                               Not Started
                             </label>
                           </div>
-                          <div className="form-check form-check-inline">
+                        </div>
+                        {/* Second row: Paused and Complete */}
+                      <div className="d-flex mt-2"> {/* Added: New div for Paused and Complete with margin-top */}
+                          <div className="form-check form-check-inline mr-5">
                             <input
                               className="form-check-input"
                               type="radio"
@@ -453,6 +457,7 @@ function EditTaskModal(props) {
                               Complete
                             </label>
                           </div>
+                          </div> {/* Added: Closing div for the second row */}
                       </div>,
                       editable,
                       status
@@ -689,7 +694,7 @@ function EditTaskModal(props) {
                       formatDate={formatDate}
                       placeholder={`${dateFnsFormat(new Date(), FORMAT)}`}
                       onDayChange={(day, mod, input) => changeDateStart(input.state.value)}
-                      value={startedDate}
+                      value={startedDate ? dateFnsFormat(new Date(startedDate), FORMAT) : ''}
                     />
                     <div className='warning text-danger'>
                       {dateWarning ? DUE_DATE_MUST_GREATER_THAN_START_DATE : ''}
@@ -710,7 +715,7 @@ function EditTaskModal(props) {
                           formatDate={formatDate}
                           placeholder={`${dateFnsFormat(new Date(), FORMAT)}`}
                           onDayChange={(day, mod, input) => changeDateEnd(input.state.value)}
-                          value={dueDate} 
+                          value={dueDate ? dateFnsFormat(new Date(dueDate), FORMAT) : ''} 
                         />
                         <div className='warning text-danger'>
                           {dateWarning ? DUE_DATE_MUST_GREATER_THAN_START_DATE : ''}
