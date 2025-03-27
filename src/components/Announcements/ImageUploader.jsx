@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 
 function ImageUploader({ onFileUpload }) {
@@ -11,12 +11,18 @@ function ImageUploader({ onFileUpload }) {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: 'image/*'
+    accept: 'image/*',
   });
+
+  const rootProps = getRootProps();
 
   return (
     <div
-      {...getRootProps()}
+      role={rootProps.role}
+      onClick={rootProps.onClick}
+      onKeyDown={rootProps.onKeyDown}
+      tabIndex={rootProps.tabIndex}
+      className={rootProps.className}
       style={{
         border: '2px dashed #ccc',
         borderRadius: '4px',
