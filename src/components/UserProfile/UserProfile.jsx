@@ -41,12 +41,17 @@ import SaveButton from './UserProfileEdit/SaveButton';
 import UserLinkLayout from './UserLinkLayout';
 import TabToolTips from './ToolTips/TabToolTips';
 import BasicToolTips from './ToolTips/BasicTabTips';
+import TeamsTabTips from './ToolTips/TeamsTabTips';
 import ResetPasswordButton from '../UserManagement/ResetPasswordButton';
 import Badges from './Badges';
 import { getAllTeamCode } from '../../actions/allTeamsAction';
 import TimeEntryEditHistory from './TimeEntryEditHistory';
 import ActiveInactiveConfirmationPopup from '../UserManagement/ActiveInactiveConfirmationPopup';
-import { updateUserStatus, updateRehireableStatus } from '../../actions/userManagement';
+import {
+  updateUserStatus,
+  updateRehireableStatus,
+  toggleVisibility,
+} from '../../actions/userManagement';
 import { UserStatus } from '../../utils/enums';
 import BlueSquareLayout from './BlueSquareLayout';
 import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
@@ -66,12 +71,17 @@ import {
   PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
 } from 'utils/constants';
 
-import { getTimeEndDateEntriesByPeriod } from '../../actions/timeEntries.js';
+import {
+  getTimeEndDateEntriesByPeriod,
+  getTimeStartDateEntriesByPeriod,
+} from '../../actions/timeEntries.js';
+import ProfileImageModal from './UserProfileModal/suggestedProfileModal';
+import ConfirmRemoveModal from './UserProfileModal/confirmRemoveModal';
 import { formatDateYYYYMMDD, CREATED_DATE_CRITERIA } from 'utils/formatDate.js';
+import { use } from 'react';
 
 function UserProfile(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
-
   /* Constant values */
   const initialFormValid = {
     firstName: true,
@@ -112,8 +122,32 @@ function UserProfile(props) {
   const [saved, setSaved] = useState(false);
   const [summaryIntro, setSummaryIntro] = useState('');
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [showToggleVisibilityModal, setShowToggleVisibilityModal] = useState(false);
   const [pendingRehireableStatus, setPendingRehireableStatus] = useState(null);
   const [isRehireable, setIsRehireable] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [didLinkUpdate, setDidLinkUpdate] = useState(false);
+  // Function to toggle the modal
+  const toggleModal = () => setIsModalOpen(!isModalOpen);
+  const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
+  const toggleRemoveModal = () => setIsRemoveModalOpen(!isRemoveModalOpen);
+
+  const updateRemovedImage = async () => {
+    try {
+      const response = await axios.put(ENDPOINTS.USERS_REMOVE_PROFILE_IMAGE, {
+        user_id: userProfile._id,
+      });
+      await loadUserProfile();
+      toast.success('Profile Image Removed');
+    } catch (error) {
+      console.log(error);
+      toast.error('Failed to remove profile Image.');
+    }
+  };
+  const confirmRemoveImage = async () => {
+    updateRemovedImage();
+    toggleRemoveModal(); // Close the remove confirmation modal
+  };
 
   const userProfileRef = useRef();
 
@@ -131,6 +165,7 @@ function UserProfile(props) {
   const { userid: requestorId, role: requestorRole } = props.auth.user;
 
   const canEditTeamCode = props.hasPermission('editTeamCode');
+  const [titleOnSet, setTitleOnSet] = useState(false); 
 
   /* useEffect functions */
   useEffect(() => {
@@ -161,6 +196,7 @@ function UserProfile(props) {
       setInputAutoComplete(stringNoRepeat);
       setInputAutoStatus(response.status);
       setIsLoading(false);
+      return stringNoRepeat;
     } catch (error) {
       console.log(error);
       setIsLoading(false);
@@ -175,18 +211,15 @@ function UserProfile(props) {
 
   useEffect(() => {
     checkIsProjectsEqual();
-    setUserProfile({ ...userProfile,  projects });
+    setUserProfile({ ...userProfile, projects });
     setOriginalUserProfile({ ...originalUserProfile, projects });
-  }, [ projects]);
+  }, [projects]);
 
   useEffect(() => {
     setShowLoading(true);
     loadUserProfile();
     loadUserTasks();
   }, [props?.match?.params?.userId]);
-
-
-
 
   const checkIsProjectsEqual = () => {
     const originalProjectProperties = [];
@@ -223,6 +256,16 @@ function UserProfile(props) {
 
   const loadSummaryIntroDetails = async (teamId, user) => {
     const currentManager = user;
+
+    if (!teamId) {
+      setSummaryIntro(
+        `This week’s summary was managed by ${currentManager.firstName} ${currentManager.lastName} and includes . 
+         These people did NOT provide a summary . 
+         <Insert the proofread and single-paragraph summary created by ChatGPT>`,
+      );
+      return;
+    }
+
     try {
       const res = await axios.get(ENDPOINTS.TEAM_USERS(teamId));
       const { data } = res;
@@ -256,7 +299,6 @@ function UserProfile(props) {
       console.error('Error fetching team users:', error);
     }
   };
-
   const loadUserTasks = async () => {
     const userId = props?.match?.params?.userId;
     axios
@@ -289,23 +331,27 @@ function UserProfile(props) {
       const newUserProfile = response.data;
       // Assuming newUserProfile contains isRehireable attribute
       setIsRehireable(newUserProfile.isRehireable); // Update isRehireable based on fetched data
-
       newUserProfile.totalIntangibleHrs = Number(newUserProfile.totalIntangibleHrs.toFixed(2));
 
       const teamId = newUserProfile?.teams[0]?._id;
-      if (teamId) {
-        await loadSummaryIntroDetails(teamId, response.data);
+      await loadSummaryIntroDetails(teamId, response.data);
+
+      const startDate = await dispatch(
+        getTimeStartDateEntriesByPeriod(userId, newUserProfile.createdDate, newUserProfile.toDate),
+      );
+
+      if (startDate !== 'N/A') {
+        newUserProfile.startDate = startDate.split('T')[0];
       }
-
-      const startDate = newUserProfile?.startDate.split('T')[0];
       // Validate team and project data. Remove incorrect data which may lead to page crash. E.g teams: [null]
-      const createdDate = newUserProfile?.createdDate ? newUserProfile.createdDate.split('T')[0] : null;
-
+      const createdDate = newUserProfile?.createdDate
+        ? newUserProfile.createdDate.split('T')[0]
+        : null;
 
       if (startDate && createdDate && new Date(startDate) < new Date(createdDate)) {
         newUserProfile.startDate = createdDate;
       }
-      //if start date is earlier than createdDate, update it to createdDate
+      // if start date is earlier than createdDate, update it to createdDate
       newUserProfile.teams = newUserProfile.teams.filter(team => team !== null);
       newUserProfile.projects = newUserProfile.projects.filter(project => project !== null);
       setTeams(newUserProfile.teams);
@@ -317,18 +363,20 @@ function UserProfile(props) {
         jobTitle: newUserProfile.jobTitle[0],
         phoneNumber: newUserProfile.phoneNumber[0],
         // startDate: newUserProfile?.startDate.split('T')[0],
-        startDate: newUserProfile?.startDate ? formatDateYYYYMMDD(newUserProfile?.startDate) : "",
+        startDate: newUserProfile?.startDate ? formatDateYYYYMMDD(newUserProfile?.startDate) : '',
         createdDate: formatDateYYYYMMDD(newUserProfile?.createdDate),
-        ...(newUserProfile?.endDate && newUserProfile.endDate !== "" && { endDate: formatDateYYYYMMDD(newUserProfile.endDate) })
+        ...(newUserProfile?.endDate &&
+          newUserProfile.endDate !== '' && { endDate: formatDateYYYYMMDD(newUserProfile.endDate) }),
       });
       setOriginalUserProfile({
         ...newUserProfile,
         jobTitle: newUserProfile.jobTitle[0],
         phoneNumber: newUserProfile.phoneNumber[0],
         // startDate: newUserProfile?.startDate.split('T')[0],
-        startDate: newUserProfile?.startDate ? formatDateYYYYMMDD(newUserProfile?.startDate) : "",
+        startDate: newUserProfile?.startDate ? formatDateYYYYMMDD(newUserProfile?.startDate) : '',
         createdDate: formatDateYYYYMMDD(newUserProfile?.createdDate),
-        ...(newUserProfile?.endDate && newUserProfile.endDate !== "" && { endDate: formatDateYYYYMMDD(newUserProfile.endDate) })
+        ...(newUserProfile?.endDate &&
+          newUserProfile.endDate !== '' && { endDate: formatDateYYYYMMDD(newUserProfile.endDate) }),
       });
       setUserStartDate(startDate);
       checkIsProjectsEqual();
@@ -500,15 +548,15 @@ function UserProfile(props) {
           console.log('WARNING: Empty Date');
           alert('WARNING: Cannot Assign Blue Square with an Empty Date');
         }
-      }
-      else {
+      } else {
         const newBlueSquare = {
           date: dateStamp,
           description: summary,
-          createdDate: moment
-            .tz('America/Los_Angeles')
-            .toISOString()
-            .split('T')[0],
+          // createdDate: moment
+          //   .tz('America/Los_Angeles')
+          //   .toISOString()
+          //   .split('T')[0],
+          createdDate: moment().format('YYYY-MM-DD'),
         };
         setModalTitle('Blue Square');
         await axios
@@ -536,12 +584,14 @@ function UserProfile(props) {
       if (summary != null && currentBlueSquares.length !== 0) {
         currentBlueSquares.find(blueSquare => blueSquare._id === id).description = summary;
       }
-      await axios.put(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id), {
-        dateStamp,
-        summary,
-      }).catch(error => {
-        toast.error('Failed to update Blue Square!');
-      });
+      await axios
+        .put(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id), {
+          dateStamp,
+          summary,
+        })
+        .catch(error => {
+          toast.error('Failed to update Blue Square!');
+        });
       toast.success('Blue Square Updated!');
       setUserProfile({ ...userProfile, infringements: currentBlueSquares });
       setOriginalUserProfile({ ...userProfile, infringements: currentBlueSquares });
@@ -549,8 +599,7 @@ function UserProfile(props) {
       let newInfringements = [...userProfile?.infringements] || [];
       if (newInfringements.length !== 0) {
         newInfringements = newInfringements.filter(infringement => infringement._id !== id);
-        await axios.delete(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id))
-        .catch(error => {
+        await axios.delete(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id)).catch(error => {
           toast.error('Failed to delete Blue Square!');
         });
         toast.success('Blue Square Deleted!');
@@ -573,7 +622,6 @@ function UserProfile(props) {
       }
       await loadUserProfile();
       await loadUserTasks();
-      await fetchTeamCodeAllUsers();
       setSaved(false);
     } catch (err) {
       if (err.response && err.response.data && err.response.data.error) {
@@ -625,31 +673,33 @@ function UserProfile(props) {
     });
   };
 
-  const setActiveInactive = isActive => {
+  const setActiveInactive = async isActive => {
     let endDate;
 
     if (!isActive) {
-      endDate = dispatch(
+      endDate = await dispatch(
         getTimeEndDateEntriesByPeriod(userProfile._id, userProfile.createdDate, userProfile.toDate),
       );
       if (endDate == 'N/A') {
         endDate = userProfile.createdDate;
       }
+      endDate = moment(endDate).format('YYYY-MM-DDTHH:mm:ss');
     }
     const newUserProfile = {
       ...userProfile,
-      isActive: isActive,
+      isActive,
       endDate: endDate || undefined,
     };
 
     try {
-      props.updateUserStatus(
+      await props.updateUserStatus(
         newUserProfile,
         isActive ? UserStatus.Active : UserStatus.InActive,
         undefined,
       );
       setUserProfile(newUserProfile);
       setOriginalUserProfile(newUserProfile);
+      window.location.reload();
     } catch (error) {
       console.error('Failed to update user status:', error);
     }
@@ -672,12 +722,12 @@ function UserProfile(props) {
       ...userProfile,
       isRehireable: pendingRehireableStatus,
     };
-    try{
+    try {
       await dispatch(updateRehireableStatus(updatedUserProfile, pendingRehireableStatus));
       setIsRehireable(pendingRehireableStatus);
       setUserProfile(updatedUserProfile);
       setOriginalUserProfile(updatedUserProfile);
-    }catch(error){
+    } catch (error) {
       toast.error('Unable change rehireable status');
     }
   };
@@ -744,10 +794,23 @@ function UserProfile(props) {
   };
 
   const onUserVisibilitySwitch = () => {
-    setUserProfile({
+    setShowToggleVisibilityModal(true);
+  };
+
+  const handleVisibilityChange = () => {
+    setShowToggleVisibilityModal(false);
+    const visibility = !userProfile.isVisible;
+    const newUserProfile = {
       ...userProfile,
-      isVisible: !userProfile.isVisible ?? true,
-    });
+      isVisible: visibility,
+    };
+    toggleVisibility(newUserProfile, visibility);
+    setUserProfile(newUserProfile);
+    setOriginalUserProfile(newUserProfile);
+  };
+
+  const handleCloseConfirmVisibilityModal = () => {
+    setShowToggleVisibilityModal(false);
   };
 
   if ((showLoading && !props.isAddNewUser) || userProfile === undefined) {
@@ -761,7 +824,6 @@ function UserProfile(props) {
   }
 
   const { firstName, lastName, profilePic, jobTitle = '' } = userProfile;
-
   const { userId: targetUserId } = props.match ? props.match.params : { userId: undefined };
 
   /**  Login User's email */
@@ -777,6 +839,8 @@ function UserProfile(props) {
   const canUpdateSummaryRequirements = props.hasPermission('updateSummaryRequirements');
   const canManageAdminLinks = props.hasPermission('manageAdminLinks');
   const canSeeQSC = props.hasPermission('seeQSC');
+  const canEditVisibility = props.hasPermission('toggleInvisibility');
+  const canSeeReports = props.hasPermission('getReports');
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
 
   const canEditUserProfile = targetIsDevAdminUneditable
@@ -816,13 +880,15 @@ function UserProfile(props) {
 
   const startDateValidation = (createdDate, startDate) => {
     // console.log("userProfile:createdDate, startDate", createdDate, startDate === '' ? "EMPTY" : startDate);
-    return startDate === '' ? false : (createdDate < CREATED_DATE_CRITERIA || createdDate <= startDate);
+    return startDate === ''
+      ? false
+      : createdDate < CREATED_DATE_CRITERIA || createdDate <= startDate;
   };
-  
+
   const endDateValidation = (startDate, endDate) => {
     // console.log("userProfile:startDate, endDate", startDate === '' ? "EMPTY" : startDate, endDate === '' ? "EMPTY" : endDate );
-    return endDate ? (startDate <= endDate) : true;
-  }
+    return endDate ? startDate <= endDate : true;
+  };
 
   const isStartDateValid = startDateValidation(userProfile.createdDate, userProfile.startDate);
   const isEndDateValid = endDateValidation(userProfile.startDate, userProfile.endDate);
@@ -851,22 +917,39 @@ function UserProfile(props) {
           role={requestorRole}
         />
       )}
+      <Modal isOpen={showToggleVisibilityModal} toggle={handleCloseConfirmVisibilityModal}>
+        <ModalHeader toggle={handleCloseConfirmVisibilityModal}>
+          Confirm Visibility Change
+        </ModalHeader>
+        <ModalBody>
+          {`Are you sure you want to change the user visibility to ${
+            userProfile.isVisible ? 'Invisible' : 'Visible'
+          }?`}
+        </ModalBody>
+        <ModalFooter>
+          <Button color="primary" onClick={handleVisibilityChange}>
+            Confirm
+          </Button>{' '}
+          <Button color="secondary" onClick={handleCloseConfirmVisibilityModal}>
+            Cancel
+          </Button>
+        </ModalFooter>
+      </Modal>
       <TabToolTips />
       <BasicToolTips />
+
       <Container
         className={`py-5 ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          flexDirection: 'column',
-        }}
+        id='containerProfile'
       >
-        <Row>
-          <Col md="4" id="profileContainer">
+          {/* <div className='containerProfile' > */}
+
+
+          <div className='left-top' >
+            
             <div className="profile-img">
               <Image
-                src={profilePic || '/pfp-default.png'}
+                src={profilePic && profilePic.trim().length > 0 ? profilePic : '/pfp-default.png'}
                 alt="Profile Picture"
                 roundedCircle
                 className="profilePicture bg-white"
@@ -890,25 +973,59 @@ function UserProfile(props) {
                 </div>
               ) : null}
             </div>
-              <QuickSetupModal
-                setSaved={setSaved}
-                handleSubmit={handleSubmit}
-                setUserProfile={setUserProfile}
-                userProfile={userProfile}
-                userTeams={teams || []}
-                teamsData={props?.allTeams?.allTeamsData || []}
-                projectsData={props?.allProjects?.projects || []}
-              />
+            <div
+              style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '20px' }}
+            >
+              {userProfile?.profilePic !== undefined ? (
+                <Button color="danger" onClick={toggleRemoveModal} className="remove-button">
+                  Remove Image
+                </Button>
+              ) : (
+                <></>
+              )}
+              {/*                   
+              {((userProfile?.profilePic==undefined || 
+                userProfile?.profilePic==null || 
+                userProfile?.profilePic=="")&& 
+                (userProfile?.suggestedProfilePics!==undefined &&
+                  userProfile?.suggestedProfilePics!==null && 
+                  userProfile?.suggestedProfilePics.length!==0
+                ))?
+                <Button color="primary" onClick={toggleModal}>Suggested Profile Image</Button>
+                :null} */}
+            </div>
 
-          </Col>
-          <Col md="8">
+            {/* {userProfile!==undefined && userProfile.suggestedProfilePics!==undefined?<ProfileImageModal isOpen={isModalOpen} toggleModal={toggleModal} userProfile={userProfile}/>:<></>} */}
+            <ConfirmRemoveModal
+              isOpen={isRemoveModalOpen}
+              toggleModal={toggleRemoveModal}
+              confirmRemove={confirmRemoveImage}
+            />
+
+            <QuickSetupModal
+              setSaved={setSaved}
+              handleSubmit={handleSubmit}
+              setUserProfile={setUserProfile}
+              userProfile={userProfile}
+              userTeams={teams || []}
+              teamsData={props?.allTeams?.allTeamsData || []}
+              projectsData={props?.allProjects?.projects || []}
+              titleOnSet={titleOnSet}
+              setTitleOnSet={setTitleOnSet}
+            />
+
+          </div>
+          
+          <div className='right-column'>
+            {/*}
             {!isProfileEqual ||
-            !isTasksEqual ||
-            !isProjectsEqual ? (
+              !isTasksEqual ||
+              !isProjectsEqual ? (
               <Alert color="warning">
                 Please click on &quot;Save changes&quot; to save the changes you have made.{' '}
               </Alert>
             ) : null}
+             */}
             {!codeValid ? (
               <Alert color="danger">
                 NOT SAVED! The code must be between 5 and 7 characters long
@@ -963,6 +1080,21 @@ function UserProfile(props) {
                   />
                 </span>
               )}
+              {canSeeReports && (
+                <span className="mr-2">
+                  <Link
+                    className="team-member-tasks-user-report-link"
+                    style={{ fontSize: 24, cursor: 'pointer', marginTop: '6px' }}
+                    to={`/peoplereport/${userProfile._id}`}
+                  >
+                    <img
+                      src="/report_icon.png"
+                      alt="reportsicon"
+                      className="team-member-tasks-user-report-link-image"
+                    />
+                  </Link>
+                </span>
+              )}
               {canChangeRehireableStatus && (
                 <span className="mr-2">
                   <i
@@ -986,7 +1118,8 @@ function UserProfile(props) {
               >
                 {showSelect ? 'Hide Team Weekly Summaries' : 'Show Team Weekly Summaries'}
               </Button>
-              {canGetProjectMembers && teams.length !== 0 ? (
+              {(canGetProjectMembers && teams.length !== 0) ||
+              ['Owner', 'Administrator', 'Manager'].includes(requestorRole) ? (
                 <Button
                   onClick={() => {
                     navigator.clipboard.writeText(summaryIntro);
@@ -1057,34 +1190,10 @@ function UserProfile(props) {
               isRecordBelongsToJaeAndUneditable={targetIsDevAdminUneditable}
               darkMode={darkMode}
             />
-          </Col>
-        </Row>
-        <Row>
-          <Col md="4">
-            <div className="profile-work">
-              <UserLinkLayout
-                isUserSelf={isUserSelf}
-                userProfile={userProfile}
-                updateLink={updateLink}
-                handleLinkModel={props.handleLinkModel}
-                handleSubmit={handleSubmit}
-                role={requestorRole}
-                canEdit={canEdit || canManageAdminLinks}
-                darkMode={darkMode}
-              />
-               <BlueSquareLayout
-                userProfile={userProfile}
-                handleUserProfile={handleUserProfile}
-                handleSaveError={props.handleSaveError}
-                handleBlueSquare={handleBlueSquare}
-                user={props.auth.user}
-                isUserSelf={isUserSelf}
-                canEdit={canEdit}
-                darkMode={darkMode}
-              />
-            </div>
-          </Col>
-          <Col md="8" className="profile-functions-desktop">
+          
+
+  
+          <div  className="profile-functions-desktop">
             <div className="profile-tabs">
               <Nav tabs>
                 <NavItem>
@@ -1199,6 +1308,7 @@ function UserProfile(props) {
                 />
               </TabPane>
               <TabPane tabId="3">
+                <TeamsTabTips />
                 <TeamsTab
                   userTeams={teams || []}
                   teamsData={props?.allTeams?.allTeamsData || []}
@@ -1208,14 +1318,13 @@ function UserProfile(props) {
                   role={requestorRole}
                   onUserVisibilitySwitch={onUserVisibilitySwitch}
                   isVisible={userProfile.isVisible}
-                  canEditVisibility={canEdit && !['Volunteer', 'Mentor'].includes(requestorRole)}
+                  canEditVisibility={canEditVisibility}
                   handleSubmit={handleSubmit}
                   disabled={
                     !formValid.firstName ||
                     !formValid.lastName ||
                     !formValid.email ||
                     !(isProfileEqual && isTasksEqual && isProjectsEqual)
-                      
                   }
                   canEditTeamCode={canEditTeamCode}
                   setUserProfile={setUserProfile}
@@ -1267,7 +1376,7 @@ function UserProfile(props) {
                   className="mr-1 btn-bottom"
                   user={userProfile}
                   authEmail={authEmail}
-                  canResetPassword={true}
+                  canResetPassword
                 />
               )}
               {isUserSelf && (activeTab === '1' || canPutUserProfile) && (
@@ -1304,7 +1413,7 @@ function UserProfile(props) {
                       !formValid.lastName ||
                       !formValid.email ||
                       !codeValid ||
-                      (userStartDate > userEndDate && userEndDate !== '') ||
+                      titleOnSet ||
                       (isProfileEqual && isTasksEqual && isProjectsEqual)
                     }
                     userProfile={userProfile}
@@ -1329,8 +1438,8 @@ function UserProfile(props) {
                 </>
               )}
             </div>
-          </Col>
-          <Col md="8" className="profile-functions-tablet">
+         </div>
+          <div  className="profile-functions-tablet">
             <List className="profile-functions-list">
               <Button
                 className="list-button"
@@ -1397,7 +1506,7 @@ function UserProfile(props) {
                           className="mr-1 btn-bottom"
                           user={userProfile}
                           authEmail={authEmail}
-                          canResetPassword={true}
+                          canResetPassword
                         />
                       )}
                       {isUserSelf && (activeTab == '1' || canPutUserProfile) && (
@@ -1436,7 +1545,8 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
-                              (isProfileEqual && isTasksEqual  && isProjectsEqual)
+                              titleOnSet ||
+                              (isProfileEqual && isTasksEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
                             setSaved={() => setSaved(true)}
@@ -1513,7 +1623,8 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
-                              (isProfileEqual && isTasksEqual  && isProjectsEqual)
+                              titleOnSet ||
+                              (isProfileEqual && isTasksEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
                             setSaved={() => setSaved(true)}
@@ -1565,6 +1676,7 @@ function UserProfile(props) {
                   Teams
                 </ModalHeader>
                 <ModalBody className={darkMode ? 'bg-yinmn-blue text-light' : ''}>
+                  <TeamsTabTips />
                   <TeamsTab
                     userTeams={userProfile?.teams || []}
                     teamsData={props?.allTeams?.allTeamsData || []}
@@ -1574,13 +1686,13 @@ function UserProfile(props) {
                     role={requestorRole}
                     onUserVisibilitySwitch={onUserVisibilitySwitch}
                     isVisible={userProfile.isVisible}
-                    canEditVisibility={canEdit && !['Volunteer', 'Mentor'].includes(requestorRole)}
+                    canEditVisibility={canEditVisibility}
                     handleSubmit={handleSubmit}
                     disabled={
                       !formValid.firstName ||
                       !formValid.lastName ||
                       !formValid.email ||
-                      !(isProfileEqual && isTasksEqual  && isProjectsEqual)
+                      !(isProfileEqual && isTasksEqual && isProjectsEqual)
                     }
                     canEditTeamCode={canEditTeamCode}
                     setUserProfile={setUserProfile}
@@ -1607,6 +1719,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
+                              titleOnSet ||
                               (isProfileEqual && isTasksEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
@@ -1692,6 +1805,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
+                              titleOnSet ||
                               (isProfileEqual && isTasksEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
@@ -1764,7 +1878,8 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
-                              (isProfileEqual && isTasksEqual  && isProjectsEqual)
+                              titleOnSet ||
+                              (isProfileEqual && isTasksEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
                             setSaved={() => setSaved(true)}
@@ -1800,13 +1915,40 @@ function UserProfile(props) {
                 </ModalFooter>
               </Modal>
             </List>
-          </Col>
-        </Row>
-        <Row>
-          <Col md="4" />
-          {/* <Col md="8" className="desktop-panel">
-          </Col> */}
-        </Row>
+          </div>
+
+          </div>
+
+            <div className='left-bottom'>
+              <div className="profile-work">
+              <UserLinkLayout
+                isUserSelf={isUserSelf}
+                userProfile={userProfile}
+                updateLink={updateLink}
+                handleLinkModel={props.handleLinkModel}
+                handleSubmit={handleSubmit}
+                role={requestorRole}
+                canEdit={canEdit || canManageAdminLinks}
+                darkMode={darkMode}
+              />
+              <BlueSquareLayout
+                userProfile={userProfile}
+                handleUserProfile={handleUserProfile}
+                handleSaveError={props.handleSaveError}
+                handleBlueSquare={handleBlueSquare}
+                user={props.auth.user}
+                isUserSelf={isUserSelf}
+                canEdit={canEdit}
+                darkMode={darkMode}
+              />
+            </div>
+
+            
+            </div>
+         <div className='left-dummy'></div>
+         
+         
+          {/* </div> */}
       </Container>
     </div>
   );

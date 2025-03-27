@@ -77,6 +77,12 @@ const TeamMemberTask = React.memo(
       showWhoHasTimeOff && (onTimeOff || goingOnTimeOff),
     );
 
+   const completedTasks = user.tasks.filter(
+    task =>
+      task.resources?.some(
+        resource => resource.userID === user.personId && resource.completedTask,
+      ),
+  );
     const thisWeekHours = user.totaltangibletime_hrs;
 
     // these need to be changed to actual permissions...
@@ -88,14 +94,15 @@ const TeamMemberTask = React.memo(
     // ^^^
 
     const canGetWeeklySummaries = dispatch(hasPermission('getWeeklySummaries'));
+    const canSeeReports = rolesAllowedToResolveTasks.includes(userRole)||dispatch(hasPermission('getReports'));
     const canUpdateTask = dispatch(hasPermission('updateTask'));
     const canRemoveUserFromTask = dispatch(hasPermission('removeUserFromTask'));
     const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
 
     const colors_objs = {
-      'Assistant Manager' :'#0000FF', // blue
-      'Manager' : '#00FF00', // green
-      'Mentor' : '#FFFF00' // yellow
+      'Assistant Manager' :'#849ced', // blue
+      'Manager' : '#90e766', // green
+      'Mentor' : '#e9dd57' // yellow
     }
 
     function getInitials(name) {
@@ -178,10 +185,11 @@ const TeamMemberTask = React.memo(
               </div>
             )}
             <Table className="no-bottom-margin">
+              <tbody>
               <tr className="remove-child-borders">
                 {/* green if member has met committed hours for the week, red if not */}
                 <td colSpan={1} className={`${darkMode ? "bg-yinmn-blue" : ""}`}>
-                  <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', flexDirection: 'column' }}>
                     <div className='member-links-wrapper'>
                       <div className="committed-hours-circle">
                         <FontAwesomeIcon
@@ -205,7 +213,6 @@ const TeamMemberTask = React.memo(
                           title="Click to see user's timelog"
                         />
                       </Link>
-                      {canUpdateTask && <div className="google-icon-wrapper"><GoogleDocIcon link={userGoogleDocLink} /></div>}
                     </div>
                     {canUpdateTask && teamRoles && <div className="name-wrapper">
                       {['Manager', 'Assistant Manager', 'Mentor'].map((role, roleIndex) => {
@@ -267,6 +274,29 @@ const TeamMemberTask = React.memo(
                             </div>
                           )}
 
+                          {canGetWeeklySummaries && <GoogleDocIcon link={userGoogleDocLink} />}
+                           
+                           {
+                            canSeeReports &&
+                            <Link
+                              className='team-member-tasks-user-report-link'
+                              to= {`/peoplereport/${user?.personId}`}
+                            >
+                               <img 
+                                  src ="/report_icon.png"
+                                  alt='reportsicon'
+                                  className='team-member-tasks-user-report-link-image'
+                               />
+                            </Link>
+                            }
+                            {
+                              canSeeReports &&
+                              <Link
+                                to= {`/peoplereport/${user?.personId}`}
+                               >
+                                <span className="team-member-tasks-number">{completedTasks.length}</span>
+                              </Link>
+                            }
                           <Warning
                             username={user.name}
                             userName={user}
@@ -480,6 +510,7 @@ const TeamMemberTask = React.memo(
                   </div>
                 </td>
               </tr>
+              </tbody>
             </Table>
           </div>
         </td>

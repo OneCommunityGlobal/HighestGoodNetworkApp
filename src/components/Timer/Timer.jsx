@@ -445,6 +445,7 @@ function Timer({ authUser, darkMode }) {
             }}
             title="Add 15min"
             aria-label="Add 15min"
+            style={{ background: 'none', border: 'none' }}
           >
             <FaPlusCircle
               className={cs(
@@ -460,6 +461,7 @@ function Timer({ authUser, darkMode }) {
             onClick={() => handleSubtractButton(15)}
             title="Subtract 15min"
             aria-label="Subtract 15min"
+            style={{ background: 'none', border: 'none' }}
           >
             <FaMinusCircle
               className={cs(
@@ -475,6 +477,7 @@ function Timer({ authUser, darkMode }) {
               disabled={isButtonDisabled}
               onClick={handleStartButton}
               aria-label="Start timer"
+              style={{ background: 'none', border: 'none' }}
             >
               <FaPlayCircle
                 className={cs(
@@ -491,6 +494,7 @@ function Timer({ authUser, darkMode }) {
               disabled={isButtonDisabled}
               onClick={sendPause}
               aria-label="Pause timer"
+              style={{ background: 'none', border: 'none' }}
             >
               <FaPauseCircle
                 className={cs(css.btn, isButtonDisabled ? css.btnDisabled : css.transitionColor)}
@@ -505,6 +509,7 @@ function Timer({ authUser, darkMode }) {
             onClick={handleStopButton}
             title="Stop timer and log time"
             aria-label="Stop timer and log time"
+            style={{ background: 'none', border: 'none' }}
           >
             <FaStopCircle
               className={cs(
@@ -521,6 +526,7 @@ function Timer({ authUser, darkMode }) {
             onClick={() => setConfirmationResetModal(true)}
             title="Reset timer"
             aria-label="Reset timer"
+            style={{ background: 'none', border: 'none' }}
           >
             <FaUndoAlt
               className={cs(css.transitionColor, isButtonDisabled && css.btnDisabled, css.btn)}
@@ -587,7 +593,7 @@ function Timer({ authUser, darkMode }) {
         toggle={() => setConfirmationResetModal(!confirmationResetModal)}
         centered
         size="md"
-        className={`${fontColor} dark-mode`}
+        className={cs(fontColor, darkMode ? 'dark-mode' : '')}
       >
         <ModalHeader
           className={darkMode ? 'bg-space-cadet' : ''}
@@ -639,7 +645,7 @@ function Timer({ authUser, darkMode }) {
         </ModalFooter>
       </Modal>
       <Modal
-        className={`${fontColor} dark-mode`}
+        className={cs(fontColor, darkMode ? 'dark-mode' : '')}
         isOpen={timeIsOverModalOpen}
         toggle={toggleTimeIsOver}
         centered

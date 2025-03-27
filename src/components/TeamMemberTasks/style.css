@@ -75,6 +75,15 @@
   border-bottom: none;
 }
 
+.dark-teammember-row th{
+  background-color: #3a506b;
+  color: white;
+}
+.light-teammember-row th{
+  background-color: #f0f8ff;
+  color: black;
+}
+
 .task-align {
   text-align: left;
   display: flex;
@@ -86,6 +95,11 @@
   width: 50%;
 }
 
+.team-member-tasks-user-report-link  .team-member-tasks-user-report-link-image{
+   width: 20px;
+   height: 20px;
+   margin: 0 0 5px 5px;
+}
 .deadlineCount {
   position: absolute;
   text-align: center;
@@ -105,6 +119,18 @@
   justify-content: space-around;
 }
 
+.team-member-tasks-number{
+  display: inline-block;
+  text-align: center;
+  vertical-align: middle;
+  background: #ff4d4f;
+  border-radius: 50%;
+  color: #fff;
+  height: 22px;
+  font-size: 14px;
+  width: 22px;
+  margin: 0 0 5px 5px;
+}
 .dashboard-team-clocks{
   color: #339CFF !important;
 }
