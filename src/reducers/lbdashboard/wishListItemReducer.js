@@ -80,6 +80,7 @@ const initialState = {
   wishlists,
 };
 
+/* eslint-disable default-param-last */
 const wishListReducer = (state = initialState, action) => {
   switch (action.type) {
     case SET_CURRENT_WISHLIST_ITEM:
@@ -88,5 +89,6 @@ const wishListReducer = (state = initialState, action) => {
       return state;
   }
 };
+/* eslint-disable default-param-last */
 
 export default wishListReducer;
