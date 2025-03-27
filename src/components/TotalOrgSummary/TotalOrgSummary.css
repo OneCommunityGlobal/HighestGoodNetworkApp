@@ -2,37 +2,119 @@
   min-height: 100%;
   background-color: #faf7fc;
   margin: 0;
-  grid-auto-rows: minmax(100px, auto);
+  padding: 20px;
+  width: 100%;
 }
 
 .container-total-org-wrapper .row {
-  width: 99% !important;
-  margin: 1px 10px 15px 10px;
+  width: 100% !important;
+  margin: 0 0 15px 0;
 }
 
+/* Header section styles */
+.container-total-org-wrapper .header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  width: 100%;
+  padding: 0 15px;
+}
+
+.container-total-org-wrapper .header-row .left-section {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.container-total-org-wrapper .header-row h3 {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 600;
+  color: #000;
+}
+
+.container-total-org-wrapper .header-row .controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.container-total-org-wrapper .header-row select {
+  padding: 8px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  background-color: white;
+  font-size: 14px;
+}
+
+.container-total-org-wrapper .header-row button {
+  background-color: #000;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.container-total-org-wrapper .header-row button:hover {
+  background-color: #333;
+}
+
+.container-total-org-wrapper .header-row button:disabled {
+  background-color: #666;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Add styles for the PDF button */
+.share-pdf-btn {
+  margin-left: auto;
+  padding: 8px 16px !important;
+  height: 36px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background-color: #000 !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 4px !important;
+}
+
+.share-pdf-btn:hover {
+  background-color: #333 !important;
+}
+
+/* Component containers */
 .component-container {
   margin: 15px 0;
-  padding: 10px;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .component-border {
   border: 1px solid #e0e0e0;
   border-radius: 10px;
-  box-shadow: 1px 1px 1px #e0e0e0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  background-color: #fff;
+  overflow: hidden;
 }
 
+/* Grid layouts */
 .volunteer-status-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 1.5rem;
   width: 100%;
-}
-
-.volunteer-status-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
-  width: 100%;
+  margin-top: 15px;
 }
 
 .component-pie-chart-label {
@@ -48,4 +130,174 @@
   font-weight: bold;
   text-align: center;
   margin: 10px;
+  color: #333;
+}
+@media print {
+  body,
+  html {
+    background-color: #FFF !important;
+    color: #000 !important;
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    margin: 0 !important;
+    padding: 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .container-total-org-wrapper {
+    padding: 20px !important;
+    margin: 0 !important;
+    width: 100% !important;
+    background-color: #FFF !important;
+  }
+
+  /* Title styles */
+  .header-row {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 20px !important;
+    width: 100% !important;
+    padding: 0 !important;
+  }
+
+  .header-row h3 {
+    margin: 0 !important;
+    font-size: 32px !important;
+    font-weight: 600 !important;
+    color: #000 !important;
+  }
+
+  hr {
+    margin: 20px 0 !important;
+    border: none !important;
+    border-top: 1px solid #eee !important;
+    width: 100% !important;
+  }
+
+  /* Keep other styles unchanged */
+  .container-total-org-wrapper,
+  .component-container {
+    box-shadow: none !important;
+    overflow: visible !important;
+    border: 1px solid #ccc !important;
+  }
+
+  /* Optimize image and chart display */
+  img, canvas, svg {
+    max-width: 100% !important;
+    height: auto !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    display: block !important;
+    margin: 0 auto !important;
+  }
+
+  .recharts-wrapper,
+  .recharts-surface {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 300px !important;
+    max-height: 500px !important;
+    overflow: visible !important;
+  }
+
+  /* Fix title alignment issues */
+  .Collapsible__trigger {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    padding: 15px 20px !important;
+    margin-bottom: 5mm !important;
+    border-bottom: 1px solid #333 !important;
+    background-color: #f8f8f8 !important;
+    position: relative !important;
+  }
+
+  .Collapsible__trigger:before {
+    content: '' !important;
+    display: block !important;
+    width: 10px !important;
+    height: 10px !important;
+    border-right: 2px solid #333 !important;
+    border-bottom: 2px solid #333 !important;
+    transform: rotate(45deg) !important;
+    position: absolute !important;
+    right: 20px !important;
+    top: 50% !important;
+    margin-top: -5px !important;
+    transition: transform 0.3s ease !important;
+  }
+
+  .Collapsible__trigger.is-open:before {
+    transform: rotate(-135deg) !important;
+  }
+
+  /* Ensure content area has enough space */
+  .Collapsible__contentInner {
+    padding: 20px !important;
+    margin-top: 5mm !important;
+    display: block !important;
+    visibility: visible !important;
+    height: auto !important;
+    opacity: 1 !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  /* Optimize chart title styles */
+  .chart-title {
+    margin-bottom: 15px !important;
+    padding: 10px 0 !important;
+    border-bottom: 1px solid #eee !important;
+  }
+
+  .chart-title p {
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 16px !important;
+    color: #333 !important;
+    text-align: center !important;
+  }
+
+  /* Optimize grid layout */
+  .volunteer-status-grid {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 15px !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    margin: 15px 0 !important;
+  }
+
+  /* Hide PDF button */
+  .share-pdf-btn {
+    display: none !important;
+  }
+
+  /* Ensure each section starts on a new page */
+  .Collapsible {
+    page-break-before: always !important;
+    break-before: always !important;
+    margin-bottom: 20mm !important;
+    border: 1px solid #eee !important;
+    border-radius: 4px !important;
+  }
+
+  /* Optimize component containers */
+  .component-container {
+    margin: 10mm 0 !important;
+    padding: 10mm !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    border: 1px solid #eee !important;
+    border-radius: 4px !important;
+  }
+
+  /* Ensure all content displays correctly */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
 }

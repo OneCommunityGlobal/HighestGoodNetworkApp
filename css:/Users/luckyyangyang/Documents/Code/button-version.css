@@ -1,0 +1,60 @@
+@media print {
+  /* 优化图片大小和显示 */
+  img, canvas, svg {
+    max-width: 100% !important;
+    height: auto !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+  
+  /* 优化图表容器 */
+  .recharts-wrapper,
+  .recharts-surface {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 300px !important;
+  }
+  
+  /* 修复标题对齐问题 */
+  .Collapsible__trigger {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    padding: 10px 15px !important;
+    margin-bottom: 5mm !important;
+    border-bottom: 1px solid #333 !important;
+  }
+  
+  .Collapsible__trigger:after {
+    content: '' !important;
+    display: block !important;
+    width: 10px !important;
+    height: 10px !important;
+    border-right: 2px solid #333 !important;
+    border-bottom: 2px solid #333 !important;
+    transform: rotate(45deg) !important;
+    margin-left: 10px !important;
+  }
+  
+  .Collapsible__trigger.is-open:after {
+    transform: rotate(-135deg) !important;
+  }
+  
+  /* 确保内容区域有足够的空间 */
+  .Collapsible__contentInner {
+    padding: 10px 15px !important;
+    margin-top: 5mm !important;
+  }
+  
+  /* 优化图表标题样式 */
+  .chart-title {
+    margin-bottom: 15px !important;
+  }
+  
+  .chart-title p {
+    margin: 0 !important;
+    padding: 10px 0 !important;
+    font-size: 16px !important;
+  }
+} 

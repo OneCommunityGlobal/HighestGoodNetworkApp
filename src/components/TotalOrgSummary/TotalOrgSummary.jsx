@@ -1,8 +1,10 @@
 import { connect } from 'react-redux';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
-import { Alert, Col, Container, Row } from 'reactstrap';
+import { Alert, Col, Container, Row, Button } from 'reactstrap';
 import 'moment-timezone';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 import hasPermission from 'utils/permissions';
 
@@ -120,9 +122,159 @@ function TotalOrgSummary(props) {
 
   const allUsersTimeEntries = useSelector(state => state.allUsersTimeEntries);
 
+
+  const handleSaveAsPDF = async () => {
+    // Save the current state of all panels
+    const triggers = document.querySelectorAll('.Collapsible__trigger');
+    const originalStates = Array.from(triggers).map(trigger => trigger.classList.contains('is-open'));
+    
+    try {
+      // Check if all data is loaded
+      if (!volunteerStats || isLoading) {
+        alert('Please wait for data to load before generating PDF');
+        return;
+      }
+      
+      // Expand all panels
+      triggers.forEach(trigger => {
+        if (!trigger.classList.contains('is-open')) {
+          trigger.click();
+        }
+      });
+
+      // Wait for content to fully expand and render
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      // Check if all charts are rendered
+      const checkChartsLoaded = () => {
+        const charts = document.querySelectorAll('.recharts-wrapper');
+        return Array.from(charts).every(chart => {
+          const svg = chart.querySelector('svg');
+          return svg && svg.getBoundingClientRect().width > 0;
+        });
+      };
+
+      // Wait for charts to load
+      let attempts = 0;
+      while (!checkChartsLoaded() && attempts < 10) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        attempts++;
+      }
+
+      if (!checkChartsLoaded()) {
+        alert('Charts loading timeout, please try again');
+        return;
+      }
+
+      const element = document.querySelector('.container-total-org-wrapper');
+      
+      // Create a temporary container to wrap content
+      const wrapper = document.createElement('div');
+      wrapper.style.backgroundColor = '#fff';
+      wrapper.style.padding = '20px';
+      wrapper.style.width = '100%';
+      
+      // Create title row
+      const titleRow = document.createElement('div');
+      titleRow.style.display = 'flex';
+      titleRow.style.justifyContent = 'space-between';
+      titleRow.style.alignItems = 'center';
+      titleRow.style.marginBottom = '10px';
+      
+      // Add title
+      const title = document.createElement('h3');
+      title.textContent = 'Total Org Summary';
+      title.style.margin = '0';
+      title.style.fontSize = '32px';
+      title.style.fontWeight = '600';
+      titleRow.appendChild(title);
+      
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        windowWidth: element.scrollWidth,
+        windowHeight: element.scrollHeight,
+        onclone: (clonedDoc) => {
+          const style = clonedDoc.createElement('style');
+          style.textContent = `
+            @media print {
+              body { margin: 0; padding: 0; }
+              .container-total-org-wrapper { 
+                padding: 20px;
+                background-color: #fff;
+              }
+              .header-row {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+                width: 100%;
+              }
+              .header-row h3 {
+                margin: 0;
+                font-size: 32px;
+                font-weight: 600;
+                color: #000;
+              }
+              img, canvas, svg { max-width: 100%; height: auto; }
+              .recharts-wrapper, .recharts-surface { width: 100%; height: auto; min-height: 300px; }
+              hr { 
+                margin: 20px 0;
+                border: none;
+                border-top: 1px solid #eee;
+              }
+            }
+          `;
+          clonedDoc.head.appendChild(style);
+
+          // Add title row to cloned document
+          const container = clonedDoc.querySelector('.container-total-org-wrapper');
+          const firstChild = container.firstChild;
+          
+          const titleRow = clonedDoc.createElement('div');
+          titleRow.className = 'header-row';
+          
+          const title = clonedDoc.createElement('h3');
+          title.textContent = 'Total Org Summary';
+          titleRow.appendChild(title);
+          
+          container.insertBefore(titleRow, firstChild);
+          
+          // Add divider line
+          const hr = clonedDoc.createElement('hr');
+          container.insertBefore(hr, firstChild.nextSibling);
+        }
+      });
+      
+      const imgData = canvas.toDataURL('image/png', 1.0);
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'px',
+        format: [canvas.width, canvas.height]
+      });
+
+      pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+      pdf.save('total-org-summary.pdf');
+    } catch (error) {
+      console.error('PDF generation failed:', error);
+      alert('Error generating PDF, please try again');
+    } finally {
+      // Restore panels to original state
+      const triggers = document.querySelectorAll('.Collapsible__trigger');
+      triggers.forEach((trigger, index) => {
+        const isCurrentlyOpen = trigger.classList.contains('is-open');
+        const wasOpen = originalStates[index];
+        if (isCurrentlyOpen !== wasOpen) {
+          trigger.click();
+        }
+      });
+    }
+  };
+
   useEffect(() => {
     dispatch(getAllUserProfile());
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     if (Array.isArray(allUserProfiles.userProfiles) && allUserProfiles.userProfiles.length > 0) {
@@ -170,11 +322,6 @@ function TotalOrgSummary(props) {
   }, [allUsersTimeEntries, usersId, fromOverDate, toOverDate]);
   useEffect(() => {
     async function fetchData() {
-      // const { taskHours, projectHours } = await props.getTaskAndProjectStats(fromDate, toDate);
-      // const {
-      //   taskHours: lastTaskHours,
-      //   projectHours: lastProjectHours,
-      // } = await props.getTaskAndProjectStats(fromOverDate, toOverDate);
       const {
         taskHours: { count: taskHours },
         projectHours: { count: projectHours },
@@ -194,7 +341,7 @@ function TotalOrgSummary(props) {
       }
     }
     fetchData();
-  }, [fromDate, toDate, fromOverDate, toOverDate]);
+  }, [fromDate, toDate, fromOverDate, toOverDate, props]);
 
   useEffect(() => {
     const fetchVolunteerStats = async () => {
@@ -214,7 +361,8 @@ function TotalOrgSummary(props) {
     };
 
     fetchVolunteerStats();
-  }, [fromDate, toDate]);
+  }, [fromDate, toDate, props]);
+
 
   if (error || isVolunteerFetchingError) {
     return (
@@ -233,15 +381,15 @@ function TotalOrgSummary(props) {
   }
 
   return (
-    <Container
-      fluid
-      className={`container-total-org-wrapper py-3 mb-5 ${
-        darkMode ? 'bg-oxford-blue text-light' : 'cbg--white-smoke'
-      }`}
-    >
-      <Row>
-        <Col lg={{ size: 12 }}>
-          <h3 className="mt-3 mb-5">Total Org Summary</h3>
+    <Container fluid className={`container-total-org-wrapper py-3 mb-5 ${darkMode ? 'bg-oxford-blue text-light' : 'cbg--white-smoke'}`}>
+      <Row className="d-flex justify-content-between align-items-center mb-4">
+        <Col lg={{ size: 6 }} className="d-flex align-items-center">
+          <h3 className="my-0">Total Org Summary</h3>
+        </Col>
+        <Col lg={{ size: 6 }} className="d-flex justify-content-end">
+          <Button className="share-pdf-btn" onClick={handleSaveAsPDF}>
+            Save as PDF
+          </Button>
         </Col>
       </Row>
       <hr />
