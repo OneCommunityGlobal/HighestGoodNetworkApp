@@ -38,13 +38,13 @@ function LBDashboardHeader(props) {
             <h2>WELCOME {authUser?.email}</h2>
             <div className="item__icons">
               <Nav className="ml-auto">
-                <Nav.Link as={Link} to="/bidding" className="item__nav-link">
+                <Nav.Link as={Link} className="item__nav-link">
                   <BsChat className="item__nav-icon" />
                 </Nav.Link>
-                <Nav.Link as={Link} to="/bidding" className="item__nav-link">
+                <Nav.Link as={Link} className="item__nav-link">
                   <IoNotificationsOutline className="item__nav-icon" />
                 </Nav.Link>
-                <Nav.Link as={Link} to="/bidding" className="item__nav-link">
+                <Nav.Link as={Link} className="item__nav-link">
                   <FiUser className="item__nav-icon" />
                 </Nav.Link>
               </Nav>

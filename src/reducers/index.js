@@ -57,6 +57,9 @@ import { totalOrgSummaryReducer } from './totalOrgSummaryReducer';
 import { allUsersTimeEntriesReducer } from './allUsersTimeEntriesReducer';
 import HGNFormReducer from './hgnFormReducers';
 
+// lbdashboard
+import wishListReducer from './lbdashboard/wishListItemReducer';
+
 const localReducers = {
   auth: authReducer,
   allUserProfiles: allUserProfilesReducer,
@@ -105,6 +108,9 @@ const localReducers = {
   bmConsumables: consumablesReducer,
   bmReusables: reusablesReducer,
   dashboard: dashboardReducer,
+
+  // lbdashboard
+  wishlistItem: wishListReducer,
 };
 
 const sessionReducers = {

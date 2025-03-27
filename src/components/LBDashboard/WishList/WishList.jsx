@@ -1,82 +1,16 @@
 import './WishList.css';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import { FaMapMarkerAlt } from 'react-icons/fa';
 import { NavItem } from 'reactstrap';
 import { Link } from 'react-router-dom';
+import { setCurrentWishListItem } from 'reducers/lbdashboard/wishListItemReducer';
 import Header from '../Header';
 
-function WishList() {
+function WishList(props) {
   // const [wishlistId, setWishlistId] = useState('');
+  const dispatch = useDispatch();
+  const { wishlists } = props;
 
-  const wishlists = [
-    {
-      id: '1',
-      title: 'Earthbag Village',
-      unit: 'Unit 405',
-      images: [
-        'https://picsum.photos/700/400?random=1',
-        'https://picsum.photos/700/400?random=2',
-        'https://picsum.photos/700/400?random=3',
-      ],
-      unitAmenities: [
-        'Artistic Interiors',
-        'Private Rainwater Collection',
-        'Solar-Powered Lighting and Charging',
-      ],
-      villageAmenities: [
-        'Central Tropical Atrium',
-        'Eco-Showers and Toilets',
-        'Solar Power infrastructure',
-        'Passive Heating and Cooling',
-        'Rainwater Harvesting Systems',
-        'Workshops and Demonstration Spaces',
-      ],
-      location: 'Location',
-      price: '$28/Day',
-    },
-    {
-      id: '2',
-      title: 'Cob Village',
-      unit: 'Unit 105',
-      images: [
-        'https://picsum.photos/700/400?random=5',
-        'https://picsum.photos/700/400?random=6',
-        'https://picsum.photos/700/400?random=7',
-      ],
-      unitAmenities: ['Solar powered infrastructure', 'Sustainably developed decorations'],
-      villageAmenities: [
-        'Passive Heating and Cooling',
-        'Rainwater Harvesting Systems',
-        'Workshops and Demonstration Spaces',
-      ],
-      location: 'Location',
-      price: '$25/Day',
-    },
-    {
-      id: '3',
-      title: 'Rob Village',
-      unit: 'Unit 205',
-      images: [
-        'https://picsum.photos/700/400?random=8',
-        'https://picsum.photos/700/400?random=9',
-        'https://picsum.photos/700/400?random=10',
-      ],
-      unitAmenities: [
-        'Artistic Interiors',
-        'Private Rainwater Collection',
-        'Sustainably developed decorations',
-      ],
-      villageAmenities: [
-        'Central Tropical Atrium',
-        'Eco-Showers and Toilets',
-        'Passive Heating and Cooling',
-        'Rainwater Harvesting Systems',
-        'Workshops and Demonstration Spaces',
-      ],
-      location: 'Location',
-      price: '$50/Day',
-    },
-  ];
   return (
     <div className="item">
       <div className="item__container">
@@ -121,6 +55,9 @@ function WishList() {
                   <NavItem
                     tag={Link}
                     to={`/lbdashboard/wishlist/${item.id}`}
+                    onClick={() => {
+                      dispatch(setCurrentWishListItem(item));
+                    }}
                     className="list__details"
                   >
                     Click here to view availabilities
@@ -153,6 +90,7 @@ function WishList() {
 
 const mapStateToProps = state => ({
   authUser: state.auth.user,
+  wishlists: state.wishlistItem.wishlist,
 });
 
 export default connect(mapStateToProps)(WishList);

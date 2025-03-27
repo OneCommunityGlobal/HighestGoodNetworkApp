@@ -1,5 +1,6 @@
 import './ItemOverview.css';
 import { useEffect, useState } from 'react';
+import { connect } from 'react-redux';
 
 import { FaMapMarkerAlt } from 'react-icons/fa';
 import { IoMdHeart, IoMdHeartEmpty } from 'react-icons/io';
@@ -7,8 +8,29 @@ import { BsChat } from 'react-icons/bs';
 import ImageCarousel from '../Components/ImageCarousel';
 import Header from '../Header';
 
-function WishListItem() {
+const item = {
+  title: 'Cob Village',
+  unit: 'Unit 405',
+  images: [
+    'https://picsum.photos/700/400?random=1',
+    'https://picsum.photos/700/400?random=2',
+    'https://picsum.photos/700/400?random=3',
+  ],
+  unitAmenities: ['Solar powered infrastructure', 'Sustainably developed decorations'],
+  villageAmenities: [
+    'Passive Heating and Cooling',
+    'Rainwater Harvesting Systems',
+    'Workshops and Demonstration Spaces',
+  ],
+  location: 'Location',
+  price: '$25/Day',
+};
+
+function WishListItem(props) {
   const [isWishlist, setIsWishlist] = useState(true);
+  const [currWishlistItem, setCurrWishlistItem] = useState(item);
+
+  const { wishlistItem } = props;
 
   // We don't need the back to top button on this page
   useEffect(() => {
@@ -19,23 +41,11 @@ function WishListItem() {
     };
   }, []);
 
-  const item = {
-    title: 'Cob Village',
-    unit: 'Unit 405',
-    images: [
-      'https://picsum.photos/700/400?random=1',
-      'https://picsum.photos/700/400?random=2',
-      'https://picsum.photos/700/400?random=3',
-    ],
-    unitAmenities: ['Solar powered infrastructure', 'Sustainably developed decorations'],
-    villageAmenities: [
-      'Passive Heating and Cooling',
-      'Rainwater Harvesting Systems',
-      'Workshops and Demonstration Spaces',
-    ],
-    location: 'Location',
-    price: '$25/Day',
-  };
+  useEffect(() => {
+    if (wishlistItem) {
+      setCurrWishlistItem(wishlistItem);
+    }
+  }, [wishlistItem]);
 
   return (
     <div className="item">
@@ -44,25 +54,25 @@ function WishListItem() {
         <div className="item__overview">
           <div className="item__details-left">
             <div className="item__listing-details item__listing-details--mobile">
-              <h1>{item.unit}</h1>
-              <h1>{item.title}</h1>
+              <h1>{currWishlistItem.unit}</h1>
+              <h1>{currWishlistItem.title}</h1>
             </div>
             <div className="item__images">
-              <ImageCarousel images={item.images} />
+              <ImageCarousel images={currWishlistItem.images} />
             </div>
             <div className="item__amenities">
               <div>
                 <h2>Available amenities in this unit:</h2>
-                <ol>
-                  {item.unitAmenities?.map(amenity => (
+                <ol className="margin__left">
+                  {currWishlistItem.unitAmenities?.map(amenity => (
                     <li key={amenity}>{amenity}</li>
                   ))}
                 </ol>
               </div>
               <div>
                 <h2>Village level amenities:</h2>
-                <ol>
-                  {item.villageAmenities?.map(amenity => (
+                <ol className="margin__left">
+                  {currWishlistItem.villageAmenities?.map(amenity => (
                     <li key={amenity}>{amenity}</li>
                   ))}
                 </ol>
@@ -75,12 +85,13 @@ function WishListItem() {
           </div>
           <div className="item__details-right">
             <div className="item__listing-details">
-              <h1 className="item__listing-details--desktop">{item.unit}</h1>
-              <h1 className="item__listing-details--desktop">{item.title}</h1>
+              <h1 className="item__listing-details--desktop">{currWishlistItem.unit}</h1>
+              <h1 className="item__listing-details--desktop">{currWishlistItem.title}</h1>
               <span>
-                This unit sells for a basic price of <b>{item.price}</b>. If you wish to book it in
-                advance bid your price and leave your details below and we will get back to you if
-                you are our highest bidder. Make sure your starting date is atleast <b>2 weeks </b>
+                This unit sells for a basic price of <b>{currWishlistItem.price}</b>. If you wish to
+                book it in advance bid your price and leave your details below and we will get back
+                to you if you are our highest bidder. Make sure your starting date is atleast{' '}
+                <b>2 weeks </b>
                 from now.
               </span>
             </div>
@@ -105,7 +116,7 @@ function WishListItem() {
               </div>
               <button type="button">Proceed to submit with details</button>
             </div>
-            <div className="error-message">
+            <div className="err-message">
               <h6>The Dates you picked are not available</h6>
               <a href="/">Click here to see available dates</a>
             </div>
@@ -134,4 +145,8 @@ function WishListItem() {
   );
 }
 
-export default WishListItem;
+const mapStateToProps = state => ({
+  wishlistItem: state.wishlistItem.wishListItem,
+});
+
+export default connect(mapStateToProps)(WishListItem);
