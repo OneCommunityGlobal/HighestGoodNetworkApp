@@ -165,6 +165,7 @@ function UserProfile(props) {
   const { userid: requestorId, role: requestorRole } = props.auth.user;
 
   const canEditTeamCode = props.hasPermission('editTeamCode');
+  const [titleOnSet, setTitleOnSet] = useState(false); 
 
   /* useEffect functions */
   useEffect(() => {
@@ -1009,6 +1010,8 @@ function UserProfile(props) {
               userTeams={teams || []}
               teamsData={props?.allTeams?.allTeamsData || []}
               projectsData={props?.allProjects?.projects || []}
+              titleOnSet={titleOnSet}
+              setTitleOnSet={setTitleOnSet}
             />
 
           </div>
@@ -1410,7 +1413,7 @@ function UserProfile(props) {
                       !formValid.lastName ||
                       !formValid.email ||
                       !codeValid ||
-                      (userStartDate > userEndDate && userEndDate !== '') ||
+                      titleOnSet ||
                       (isProfileEqual && isTasksEqual && isProjectsEqual)
                     }
                     userProfile={userProfile}
@@ -1542,6 +1545,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
+                              titleOnSet ||
                               (isProfileEqual && isTasksEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
@@ -1619,6 +1623,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
+                              titleOnSet ||
                               (isProfileEqual && isTasksEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
@@ -1714,6 +1719,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
+                              titleOnSet ||
                               (isProfileEqual && isTasksEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
@@ -1799,6 +1805,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
+                              titleOnSet ||
                               (isProfileEqual && isTasksEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
@@ -1871,6 +1878,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
+                              titleOnSet ||
                               (isProfileEqual && isTasksEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}

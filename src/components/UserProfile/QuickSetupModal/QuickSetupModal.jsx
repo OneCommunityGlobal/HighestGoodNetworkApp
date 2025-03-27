@@ -21,7 +21,7 @@ function QuickSetupModal(props) {
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [titles, setTitles] = useState([]);
   const [curtitle, setTitleOnClick] = useState({});
-  const [titleOnSet, setTitleOnSet] = useState(true);
+  // const [titleOnSet, setTitleOnSet] = useState(true);
   const [editMode, setEditMode] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
   const [warningMessage, setWarningMessage] = useState({});
@@ -145,7 +145,6 @@ function QuickSetupModal(props) {
           setShowMessage={setShowMessage}
           editMode={editMode}
           title={curtitle}
-          QSTTeamCodes={QSTTeamCodes}
         />
       ) : (
         ''
@@ -161,7 +160,7 @@ function QuickSetupModal(props) {
           setIsOpen={setShowAssignModal}
           toggle={setShowAssignModal}
           title={curtitle}
-          setTitleOnSet={setTitleOnSet}
+          setTitleOnSet={props.setTitleOnSet}
           refreshModalTitles={refreshModalTitles}
         />
       ) : (
