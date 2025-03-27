@@ -66,9 +66,16 @@ function WishList(props) {
               </div>
             </div>
             <div className="item__footer">
-              <a href="/" className="list__link">
+              <NavItem
+                tag={Link}
+                to={`/lbdashboard/wishlist/${item.id}`}
+                onClick={() => {
+                  dispatch(setCurrentWishListItem(item));
+                }}
+                className="list__link"
+              >
                 Click for list overview
-              </a>
+              </NavItem>
               <div className="wishlist__start__chat">
                 <button type="button">
                   <img
