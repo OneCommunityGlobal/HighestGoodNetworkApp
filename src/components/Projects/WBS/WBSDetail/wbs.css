@@ -188,13 +188,6 @@
   padding-right: 5px;
 }
 
-.flex-responsive {
-  display: flex;
-  flex-direction: row;
-  margin-right: 10px;
-  min-width: 100px;
-}
-
 @media (max-width: 250px) {
   .flex-responsive{
     flex-direction: column;
@@ -226,6 +219,18 @@
     display: flex;
     flex-direction: row;
 
+  }
+}
+
+@media (max-width: 400px) {
+  .add_new_task_form-input_area .row {
+    flex-direction: column;
+  }
+
+  .add_new_task_form-input_area .col-6 {
+    width: 100%;
+    padding-left: 0;
+    margin-bottom: 10px;
   }
 }
 
