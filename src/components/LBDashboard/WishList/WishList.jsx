@@ -90,7 +90,7 @@ function WishList(props) {
 
 const mapStateToProps = state => ({
   authUser: state.auth.user,
-  wishlists: state.wishlistItem.wishlist,
+  wishlists: state.wishlistItem.wishlists,
 });
 
 export default connect(mapStateToProps)(WishList);
