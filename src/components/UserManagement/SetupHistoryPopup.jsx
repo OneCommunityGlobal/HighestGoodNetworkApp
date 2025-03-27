@@ -353,14 +353,11 @@ function SetupHistoryPopup(props) {
                   />
                   {filteredSetupInvitationData.map((record, index) => {
                     return (
-                      <tr key={record}>
+                      <tr key={record.token || `invitation-${index}`}>
                         <td>{record.email}</td>
                         <td>{record.weeklyCommittedHours}</td>
                         <td>{formatDate(record.createdDate)}</td>
                         <td>{formatDate(record.expiration)}</td>
-                        {/* <td>{new Date(record.expiration) > Date.now() && !record.isCancelled ? INV_STATUS.ACITVE :
-                              record.isCancelled ? INV_STATUS.CANCELLED :
-                              new Date(record.expiration) < Date.now() ? INV_STATUS.EXPIRED : null}</td> */}
                         <td>
                           {(() => {
                             if (new Date(record.expiration) > Date.now() && !record.isCancelled) {
@@ -377,7 +374,6 @@ function SetupHistoryPopup(props) {
                         </td>
                         <td>
                           <Button
-                            key={record}
                             color="primary"
                             disabled={isButtonDisabled}
                             onClick={e => onClickRefresh(e, index)}
@@ -387,7 +383,6 @@ function SetupHistoryPopup(props) {
                         </td>
                         <td>
                           <Button
-                            key={record}
                             color="danger"
                             onClick={e => onClickCancel(e, index)}
                           >

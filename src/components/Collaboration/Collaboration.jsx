@@ -142,7 +142,14 @@ class Collaboration extends Component {
           <div className="job-list">
             {jobAds.map(ad => (
               <div key={ad._id} className="job-ad">
-                <img src={ad.imageUrl} alt={`${ad.title}`} />
+                <img
+                  src={`/api/placeholder/640/480?text=${encodeURIComponent(
+                    ad.category || 'Job Opening',
+                  )}`}
+                  alt={ad.title || 'Job Position'}
+                  loading="lazy"
+                />
+
                 <a
                   href={`https://www.onecommunityglobal.org/collaboration/seeking-${ad.category.toLowerCase()}`}
                 >
