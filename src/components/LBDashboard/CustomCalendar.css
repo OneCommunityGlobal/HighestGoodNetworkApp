@@ -1,0 +1,65 @@
+.calendar-container {
+  text-align: center;
+  font-family: Arial, sans-serif;
+}
+
+.react-calendar {
+  width: 100%;               
+  max-width: 350px;          
+  border: none;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.booked {
+  background-color:rgb(215, 110, 110) !important;
+  color: white;
+  border-radius: 5px;
+}
+
+.available-for-bid {
+  background-color: rgb(84, 151, 84) !important;
+  color: white;
+  border-radius: 5px;
+}
+
+.BlockedOutDates {
+  background-color: #a8bcd4 !important;
+  color: black;
+  border-radius: 5px;
+}
+img {
+  width: 350px;
+  height: auto;
+  border-radius: 0.375rem; 
+}
+.legend {
+  display: flex;
+  flex-direction: column; 
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  margin-right: 10px;
+}
+
+.legend-item span {
+  width: 15px;
+  height: 15px;
+  display: inline-block;
+  margin-right: 5px;
+}
+
+.booked.legend-item span {
+  background-color: #1a2b36;
+}
+
+.available-for-bid.legend-item span {
+  background-color: #768da3;
+}
+
+.BlockedOutDates.legend-item span {
+  background-color: #a8bcd4;
+}
