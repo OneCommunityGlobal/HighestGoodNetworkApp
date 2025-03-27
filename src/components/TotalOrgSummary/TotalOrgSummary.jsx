@@ -282,7 +282,7 @@ function TotalOrgSummary(props) {
           <Col lg={{ size: 6 }}>
             <div className="component-container component-border">
               <div className="chart-title">
-                <p>Global Volunteer Network: Uniting Communities Worldwide</p>
+                <p> Active Global Volunteer Locations: Uniting Communities Worldwide</p>
               </div>
               <GlobalVolunteerMap locations={volunteerStats?.userLocations || []} />
             </div>
