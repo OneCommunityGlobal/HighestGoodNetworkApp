@@ -231,6 +231,11 @@ export const ENDPOINTS = {
   BLUE_SQUARE_EMAIL_BCC: () => `${APIEndpoint}/AssignBlueSquareEmail`,
   DELETE_BLUE_SQUARE_EMAIL_BCC: id => `${APIEndpoint}/AssignBlueSquareEmail/${id}`,
 
+  // social media poster api
+  POST_TWEETS: `${APIEndpoint}/createTweet`,
+  SCHEDULE_TWEETS: `${APIEndpoint}/scheduleTweet`,
+  SOCIAL_MEDIA_POSTS: `${APIEndpoint}/posts`,
+
   CREATE_JOB_FORM: `${APIEndpoint}/jobforms`,
   UPDATE_JOB_FORM: `${APIEndpoint}/jobforms`,
   GET_JOB_FORM: formId => `${APIEndpoint}/jobforms/${formId}`,

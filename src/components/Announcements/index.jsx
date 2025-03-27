@@ -3,8 +3,16 @@ import { useState, useEffect, useRef } from 'react';
 import './Announcements.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react'; // Import Editor from TinyMCE
+import { sendTweet, scheduleTweet, fetchPosts, deletePost } from '../../actions/sendSocialMediaPosts';
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
+import { Link } from 'react-router-dom';
+
+import {
+  Label,
+  Input,
+  Button
+} from 'reactstrap';
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
 import { ENDPOINTS } from '../../utils/URL';
 
@@ -17,8 +25,15 @@ function Announcements({ title, email }) {
   const [emailList, setEmailList] = useState([]);
   const [accessToken, setAccessToken] = useState('');
   const [emailContent, setEmailContent] = useState('');
+
+  const [dateContent, setDateContent] = useState('');
+  const [timeContent, setTimeContent] = useState('');
+  const [errors, setErrors] = useState({});
+
   const [headerContent, setHeaderContent] = useState('');
   const [showEditor, setShowEditor] = useState(true); // State to control rendering of the editor
+
+  const [posts, setPosts] = useState([]);
   const tinymce = useRef(null);
 
   useEffect(() => {
@@ -31,21 +46,17 @@ function Announcements({ title, email }) {
     license_key: 'gpl',
     selector: 'Editor#email-editor',
     height: 500,
-    plugins: [
-      'advlist autolink lists link image paste',
-      'charmap print preview anchor help',
-      'searchreplace visualblocks code',
-      'insertdatetime media table paste wordcount',
-    ],
     menubar: false,
     branding: false,
+    plugins: 'advlist autolink lists link image charmap preview anchor help \
+      searchreplace visualblocks code insertdatetime media table wordcount\
+      fullscreen emoticons nonbreaking',
     image_title: true,
     automatic_uploads: true,
-    file_picker_callback(cb) {
+    file_picker_callback(cb, value, meta) {
       const input = document.createElement('input');
       input.setAttribute('type', 'file');
       input.setAttribute('accept', 'image/*');
-
       /*
         Note: In modern browsers input[type="file"] is functional without
         even adding it to the DOM, but that might not be the case in some older
@@ -53,40 +64,35 @@ function Announcements({ title, email }) {
         just in case, and visually hide it. And do not forget do remove it
         once you do not need it anymore.
       */
-
-      input.onchange = () => {
-        const file = input.files[0];
-
+      input.onchange = function() {
+        const file = this.files[0];
         const reader = new FileReader();
-        reader.onload = () => {
+        reader.onload = function() {
           /*
             Note: Now we need to register the blob in TinyMCEs image blob
             registry. In the next release this part hopefully won't be
             necessary, as we are looking to handle it internally.
           */
           const id = `blobid${new Date().getTime()}`;
-          const { blobCache } = tinymce.current.activeEditor.editorUpload;
+          const { blobCache } = tinymce.activeEditor.editorUpload;
           const base64 = reader.result.split(',')[1];
           const blobInfo = blobCache.create(id, file, base64);
           blobCache.add(blobInfo);
-
           /* call the callback and populate the Title field with the file name */
           cb(blobInfo.blobUri(), { title: file.name });
         };
         reader.readAsDataURL(file);
       };
-
       input.click();
     },
     a11y_advanced_options: true,
     toolbar:
-      // eslint-disable-next-line no-multi-str
-      'undo redo | bold italic | blocks fontfamily fontsize | image \
+      'undo redo | bold italic | blocks fontfamily fontsize | image table |\
       alignleft aligncenter alignright | \
       bullist numlist outdent indent | removeformat | help',
     skin: darkMode ? 'oxide-dark' : 'oxide',
     content_css: darkMode ? 'dark' : 'default',
-  };
+  }
 
   useEffect(() => {
     if (email) {
@@ -95,6 +101,15 @@ function Announcements({ title, email }) {
       setEmailList(trimmedEmail.split(','));
     }
   }, [email]);
+
+  useEffect(() => {
+    getAllPosts();
+  }, []);
+
+  const getAllPosts = async () => {
+    const data = await fetchPosts(); // Call API
+    setPosts(data); // Set state with fetched posts
+  };
 
   const handleEmailListChange = e => {
     const { value } = e.target;
@@ -173,6 +188,42 @@ function Announcements({ title, email }) {
     </div>
   `;
     dispatch(broadcastEmailsToAll('Weekly Update', htmlContent));
+  };
+
+  const handlePostTweets = () => {
+    const htmlContent = `${emailContent}`;
+    dispatch(sendTweet(htmlContent));
+  };
+
+  const handleScheduleTweets = async () => {
+    const htmlContent = `${emailContent}`;
+    const scheduleDate = `${dateContent}`;
+    const scheduleTime = `${timeContent}`;
+
+    dispatch(scheduleTweet(scheduleDate, scheduleTime, htmlContent));
+    await getAllPosts();
+  };
+
+  const handleDateContentChange = e => {
+    setDateContent(e.target.value);    
+  }  
+
+  const handleDeletePost = async (postId) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this post?");
+    if (!confirmDelete) return;
+
+    try {
+      const result = await deletePost(postId);
+      if (result) {
+        toast.success("Post deleted successfully!");
+        setPosts((prevPosts) => prevPosts.filter(post => post._id !== postId));
+      } else {
+        toast.error("Failed to delete post.");
+      }
+    } catch (error) {
+      console.error("Error deleting post:", error);
+      toast.error("Error deleting post.");
+    }
   };
 
   const loadFacebookSDK = () => {
@@ -256,6 +307,41 @@ function Announcements({ title, email }) {
           {title ? <h3> {title} </h3> : <h3>Weekly Progress Editor</h3>}
 
           <br />
+          <div inline="true" className="mb-2">              
+            <Label for="dateOfWork">
+                Date
+              </Label>
+              <Input
+                className="responsive-font-size"
+                type="date"
+                name="dateOfWork"
+                id="dateOfWork"
+                value={dateContent}
+                onChange={handleDateContentChange}
+              />
+              {'dateOfWork' in errors && (
+                <div className="text-danger">
+                  <small>{errors.dateOfWork}</small>
+                </div>
+              )}</div>
+          <div inline="true" className="mb-2">
+            <Label for="timeOfWork">
+              Time
+            </Label>
+            <Input
+              className="responsive-font-size"
+              type="time"
+              name="timeOfWork"
+              id="timeOfWork"
+              value={timeContent}
+              onChange={e => setTimeContent(e.target.value)}
+            />
+            {'timeOfWork' in errors && (
+              <div className="text-danger">
+                <small>{errors.timeOfWork}</small>
+              </div>
+            )}
+          </div>
           {showEditor && (
             <Editor
               tinymceScriptSrc="/tinymce/tinymce.min.js"
@@ -270,15 +356,21 @@ function Announcements({ title, email }) {
           {title ? (
             ''
           ) : (
-            <button
-              type="button"
-              className="send-button"
-              onClick={handleBroadcastEmails}
-              style={darkMode ? boxStyleDark : boxStyle}
-            >
-              Broadcast Weekly Update
-            </button>
-          )}
+          <div>
+          <button type="button" className="send-button mr-1 ml-1" onClick={handlePostTweets} style={darkMode ? boxStyleDark : boxStyle}>
+            Post Tweet
+          </button>
+          <button type="button" className="send-button mr-1 ml-1" onClick={handleScheduleTweets} style={darkMode ? boxStyleDark : boxStyle}>
+            Schedule Tweet
+          </button>
+          <button type="button" className="send-button mr-1 ml-1" onClick={handleBroadcastEmails} style={darkMode ? boxStyleDark : boxStyle}>
+            Broadcast Weekly Update
+          </button>
+          </div>
+          )
+        }
+        <br />
+        <br />
         </div>
         <div
           className={`emails ${darkMode ? 'bg-yinmn-blue' : ''}`}
@@ -370,6 +462,37 @@ function Announcements({ title, email }) {
           )}
         </div>
       </div>
+      <div>
+          <h2>Scheduled Posts</h2>
+          <ul>
+            {posts.map((post) => (
+              <li key={post._id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div>
+                  <Link 
+                    to={`/socialMediaPosts/${post._id}`} 
+                    title="View Post"
+                    style={{
+                      color: '#007BFF',
+                      textDecoration: 'none',
+                      fontWeight: 'bold',
+                      marginRight: '10px',
+                    }}
+                  >
+                    {post.textContent.length > 50
+                      ? post.textContent.slice(0, 50) + '...'
+                      : post.textContent}
+                  </Link> 
+                  <br />
+                  <em>Scheduled Time:</em> {post.scheduledTime} <br />
+                  <em>Platform:</em> {post.platform} <br />
+                </div>
+                <Button color="danger" size="sm" onClick={() => handleDeletePost(post._id)}>
+                  Delete
+                </Button>
+              </li>
+            ))}
+          </ul>
+        </div>
     </div>
   );
 }
