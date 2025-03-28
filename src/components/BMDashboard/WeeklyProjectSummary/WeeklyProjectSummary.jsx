@@ -28,7 +28,7 @@ export default function WeeklyProjectSummary() {
             const uniqueId = uuidv4();
             return (
               <div key={uniqueId} className="weekly-project-summary-card small-card">
-                📊 Card
+                Card
               </div>
             );
           })}
@@ -43,7 +43,7 @@ export default function WeeklyProjectSummary() {
         const uniqueId = uuidv4();
         return (
           <div key={uniqueId} className="weekly-project-summary-card normal-card">
-            📊 Card
+            Card
           </div>
         );
       }),
@@ -63,9 +63,7 @@ export default function WeeklyProjectSummary() {
           <div className="tools-donut-wrap">
             <ToolStatusDonutChart />
           </div>
-          <div className="tools-card-wrap">
-            📊 Card
-          </div>
+          <div className="tools-card-wrap">Card</div>
         </div>
       ),
     },
@@ -77,7 +75,7 @@ export default function WeeklyProjectSummary() {
         const uniqueId = uuidv4();
         return (
           <div key={uniqueId} className="weekly-project-summary-card normal-card">
-            📊 Card
+            Card
           </div>
         );
       }),
@@ -92,7 +90,7 @@ export default function WeeklyProjectSummary() {
             const uniqueId = uuidv4();
             return (
               <div key={uniqueId} className="weekly-project-summary-card financial-small">
-                📊 Card
+                Card
               </div>
             );
           })}
@@ -126,7 +124,7 @@ export default function WeeklyProjectSummary() {
         const uniqueId = uuidv4();
         return (
           <div key={uniqueId} className="weekly-project-summary-card normal-card">
-            📊 Card
+            Card
           </div>
         );
       }),

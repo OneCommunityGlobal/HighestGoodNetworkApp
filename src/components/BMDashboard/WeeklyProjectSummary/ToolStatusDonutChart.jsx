@@ -1,11 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import {
-  PieChart,
-  Pie,
-  Cell,
-  Tooltip,
-  ResponsiveContainer,
-} from 'recharts';
+import { useState, useEffect } from 'react';
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import './WeeklyProjectSummary.css';
 
 const COLORS = {
@@ -23,10 +17,8 @@ const rawData = [
 const total = rawData.reduce((sum, d) => sum + d.value, 0);
 const RADIAN = Math.PI / 180;
 
-const renderCustomizedLabel = ({
-  cx, cy, midAngle, outerRadius, percent, width,
-}) => {
-  const isSmall = width <= 768; // Hide label on sm and below
+const renderCustomizedLabel = ({ cx, cy, midAngle, outerRadius, percent, width }) => {
+  const isSmall = width <= 768;
   if (isSmall) return null;
 
   const radius = outerRadius + 20;
@@ -34,14 +26,7 @@ const renderCustomizedLabel = ({
   const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
   return (
-    <text
-      x={x}
-      y={y}
-      fill="#000"
-      textAnchor="middle"
-      dominantBaseline="central"
-      fontSize={12}
-    >
+    <text x={x} y={y} fill="#000" textAnchor="middle" dominantBaseline="central" fontSize={12}>
       {(percent * 100).toFixed(1)}%
     </text>
   );
@@ -57,11 +42,24 @@ export default function ToolStatusDonutChart() {
   }, []);
 
   const isXS = windowWidth <= 480;
-  const isSM = windowWidth <= 768;
 
-  const innerRadius = isXS ? 35 : isSM ? 45 : 70;
-  const outerRadius = isXS ? 60 : isSM ? 75 : 100;
-  const chartHeight = isXS ? 240 : isSM ? 260 : 320;
+  let innerRadius;
+  let outerRadius;
+  let chartHeight;
+
+  if (windowWidth <= 480) {
+    innerRadius = 35;
+    outerRadius = 60;
+    chartHeight = 240;
+  } else if (windowWidth <= 768) {
+    innerRadius = 45;
+    outerRadius = 75;
+    chartHeight = 260;
+  } else {
+    innerRadius = 70;
+    outerRadius = 100;
+    chartHeight = 320;
+  }
 
   return (
     <div className="tool-donut-wrapper">
@@ -107,11 +105,11 @@ export default function ToolStatusDonutChart() {
             innerRadius={innerRadius}
             outerRadius={outerRadius}
             labelLine={false}
-            label={(props) => renderCustomizedLabel({ ...props, width: windowWidth })}
+            label={props => renderCustomizedLabel({ ...props, width: windowWidth })}
             dataKey="value"
             isAnimationActive={false}
           >
-            {rawData.map((entry) => (
+            {rawData.map(entry => (
               <Cell key={entry.name} fill={COLORS[entry.name]} />
             ))}
           </Pie>
@@ -128,15 +126,14 @@ export default function ToolStatusDonutChart() {
           </text>
 
           <Tooltip
-            formatter={(value, name) =>
-              `${name}: ${((value / total) * 100).toFixed(1)}%`}
+            formatter={(value, name) => `${name}: ${((value / total) * 100).toFixed(1)}%`}
             contentStyle={{ fontSize: '14px' }}
           />
         </PieChart>
       </ResponsiveContainer>
 
       <div className="tool-donut-legend">
-        {rawData.map((entry) => (
+        {rawData.map(entry => (
           <div
             key={entry.name}
             className="tool-donut-legend-item"
