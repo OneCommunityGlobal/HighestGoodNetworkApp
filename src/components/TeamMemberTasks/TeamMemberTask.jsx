@@ -189,7 +189,7 @@ const TeamMemberTask = React.memo(
               <tr className="remove-child-borders">
                 {/* green if member has met committed hours for the week, red if not */}
                 <td colSpan={1} className={`${darkMode ? "bg-yinmn-blue" : ""}`}>
-                  <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', flexDirection: 'column' }}>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', flexDirection: 'column' }}>
                     <div className='member-links-wrapper'>
                       <div className="committed-hours-circle">
                         <FontAwesomeIcon
@@ -201,7 +201,7 @@ const TeamMemberTask = React.memo(
                           data-testid="icon"
                         />
                       </div>
-                      <Link to={`/timelog/${user.personId}`}>
+                      <Link to={`/timelog/${user.personId}`} className='timelog-info'>
                         <i
                           className="fa fa-clock-o"
                           aria-hidden="true"

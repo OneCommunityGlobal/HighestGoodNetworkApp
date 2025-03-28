@@ -414,6 +414,9 @@
 .name {
   margin-bottom: 4px;
   margin-right: 4px;
+  width: 2.5rem;
+  display: flex;
+  justify-content: center;
 }
 
 .name-initial {
@@ -438,6 +441,12 @@
 .member-links-wrapper {
   display: flex;
   align-items: center;
+}
+
+.timelog-info {
+  width: 2.5rem;
+  display: flex;
+  justify-content: center;
 }
 
 .dark-mode.multi-select-filter .dropdown-container {
