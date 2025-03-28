@@ -306,7 +306,8 @@
   align-items: center;
   justify-content: center;
   border-radius: 25px;
-  width: 284px;
+  width: 100%;             
+  max-width: 284px;       
   height: 190px;
   text-align: center;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
