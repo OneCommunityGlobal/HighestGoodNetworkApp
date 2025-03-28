@@ -3,12 +3,6 @@
   width: calc(100% - 40px);
 }
 
-/*
-.container {
-  overflow: auto;
-}
-*/
-
 .level-space-1 {
   margin-left: 0px;
 }
@@ -40,26 +34,30 @@
 .load {
   position: relative;
 }
-
 .dot {
   height: 24px;
   width: 24px;
   background-color: #bbb;
   border-radius: 50%;
-  display: inline-block;
+  display: inline-flex;
+  justify-content: center; /* Center horizontally */
+  align-items: center;
   font-size: 10px;
   font-weight: 700;
-  text-align: center;
   text-transform: uppercase;
-  padding: 4px 0;
-  margin-top: 3px;
+  line-height: 1;
+  margin: 2px;
+  flex-shrink: 0;
+  
 }
 
 .img-circle {
   border-radius: 50%;
-  border-radius: 50%;
   height: 24px;
   width: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .task-hour {
@@ -85,13 +83,24 @@
 }
 
 .wbsTask {
-  line-height: 14px;
+  line-height: 22px;
 }
+/* Ensured task-action-buttons has a flex display to properly align the buttons */
+.task-action-buttons {
+  display: flex;
+  justify-content: flex-start;
+}
+/* Added controlBtn class to ensure uniform margin between buttons */
+.controlBtn {
+  margin-right: 8px; /* Adds margin between buttons */
+}
+
 
 .controlBtn {
   float: left;
   margin-left: 10px;
 }
+
 
 .controlTd {
   background-color: #effff2;
@@ -106,15 +115,34 @@
 }
 
 .table td {
-  padding: 0.45rem;
+  padding: 4px 8px;
+  line-height: 1.2;
+  height: 40px;
+  text-align: center;
+  vertical-align: middle;
 }
+.table th {
+  text-align: center; /* Centers the text horizontally */
+  vertical-align: middle; /* Centers the text vertically */
+  padding: 4px 8px; /* Adds padding for spacing */
+  line-height: 1.2; /* Adjusts the line height */
+  height: 40px; /* Matches the height of the table rows */
+}
+
+#edit-modal-td {
+  text-align: left;
+  vertical-align: top;
+  width: 30%;
+}
+
+
 
 .taskNum {
   width: 80px;
 }
 
 .taskName {
-  width: 300px;
+  height: auto;
 }
 
 .taskDrop {
@@ -128,13 +156,24 @@
 }
 
 .resourceMoreToggle {
-  cursor: pointer;
-  color: white;
-  font-size: 14px;
+  display: flex;
+  
+  justify-content: center; /* Centers horizontally */
+  align-items: center; /* Centers vertically */
+  gap: 6px;
+  overflow: hidden;
+  transition: max-height 0.3s ; /* Smooth transition */ 
+  max-width: 100%;
 }
 
+.resourceMoreToggle.expanded {
+  max-height: 1000px; /* Large enough to accommodate content dynamically */
+  padding: 10px; /* Optional: add spacing during expansion */
+}
 .resourceMore {
   display: none;
+  justify-content: center; /* Centers the element horizontally */
+  align-items: center;
 }
 
 .warning {
@@ -160,6 +199,7 @@
   flex-direction: row;
   margin-right: 10px;
   min-width: 100px;
+  padding-left: 8mm
 }
 
 @media (max-width: 250px) {
@@ -178,7 +218,9 @@
   }
 
   .table td {
-    padding: 5px !important;
+    padding: 5px;
+    line-height: 1.2;
+    height: 40px
   }
 }
 
@@ -213,4 +255,35 @@
   margin: .25em;
   border-left: 1px solid #bbb;
   padding-left: .25em;
+}
+
+.bg-yinmn-blue:hover{
+  background-color: #3A506B !important;
+}
+
+.bg-yinmn-blue-light:hover{
+  background-color:#2f4157;
+}
+
+.tasks-detail-task-name { /* task column height and width changes*/
+  width: 35%; 
+  height: auto; 
+}
+.tasks-detail-actions {  /* action column width reduced */
+  width: 6%; 
+}
+.wbs-button-group {
+  justify-content: flex-start;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+@media (max-width: 968px) {
+  .wbs-button-group {
+    align-items: flex-start;
+    margin-bottom: 10px;
+  }
+  .wbs-button-group button {
+    margin-bottom: 10px;
+  }
 }

@@ -99,6 +99,9 @@ class UserProfileAdd extends Component {
       formSubmitted: false,
       teamCode: '',
       codeValid: false,
+      inputAutoComplete: [],
+      inputAutoStatus: null,
+      isLoading: false,
     };
 
     const { user } = this.props.auth;
@@ -120,7 +123,32 @@ class UserProfileAdd extends Component {
   componentDidMount() {
     this.state.showphone = true;
     this.onCreateNewUser();
+    this.fetchTeamCodeAllUsers(); 
   }
+
+  // Replace fetchTeamCodeAllUsers with a method that dispatches getAllTeamCode
+  fetchTeamCodeAllUsers = async() => {
+    const url = ENDPOINTS.WEEKLY_SUMMARIES_REPORT();
+    try {
+      this.setState({isLoading:true})
+     
+      const response = await axios.get(url);
+      const stringWithValue = response.data.map(item => item.teamCode).filter(Boolean);
+      const stringNoRepeat = stringWithValue
+        .map(item => item)
+        .filter((item, index, array) => array.indexOf(item) === index);
+      this.setState({inputAutoComplete:stringNoRepeat})
+      
+      this.setState({inputAutoStatus:response.status})
+      this.setState({isLoading:false})
+      
+    } catch (error) {
+      console.log(error);
+      this.setState({isLoading:false})
+      toast.error(`It was not possible to retrieve the team codes. 
+      Please try again by clicking the icon inside the input auto complete.`);
+    }
+  };
 
   render() {
     const {
@@ -157,7 +185,7 @@ class UserProfileAdd extends Component {
               <Form>
                 <Row className="user-add-row">
                   <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
-                    <Label className={fontColor}>Name</Label>
+                    <Label className={fontColor} >Name <span style={{ color: 'red' }}>*</span> </Label>
                   </Col>
                   <Col md="3">
                     <FormGroup>
@@ -168,9 +196,14 @@ class UserProfileAdd extends Component {
                         value={firstName}
                         onChange={(e) => this.handleUserProfile(e)}
                         placeholder="First Name"
-                        invalid={!!this.state.formErrors.firstName}
+                        invalid={!!(this.state.formSubmitted && this.state.formErrors.firstName)}
+                        className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                       />
-                      <FormFeedback className={fontWeight}>{this.state.formErrors.firstName}</FormFeedback>
+                       {this.state.formSubmitted && this.state.formErrors.firstName && (
+    <FormFeedback className={fontWeight}>
+      {this.state.formErrors.firstName}
+    </FormFeedback>
+  )}
                     </FormGroup>
                   </Col>
                   <Col md="3">
@@ -182,15 +215,20 @@ class UserProfileAdd extends Component {
                         value={lastName}
                         onChange={(e) => this.handleUserProfile(e)}
                         placeholder="Last Name"
-                        invalid={!!this.state.formErrors.lastName}
+                        invalid={!!(this.state.formSubmitted && this.state.formErrors.lastName)}
+                        className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                       />
-                      <FormFeedback className={fontWeight}>{this.state.formErrors.lastName}</FormFeedback>
+                      {this.state.formSubmitted && this.state.formErrors.lastName && (
+    <FormFeedback className={fontWeight}>
+      {this.state.formErrors.lastName}
+    </FormFeedback>
+  )}
                     </FormGroup>
                   </Col>
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 3, offset: 1 }} className="text-md-right my-2">
-                    <Label className={fontColor}>Job Title</Label>
+                    <Label className={fontColor}>Job Title <span style={{ color: 'red' }}>*</span> </Label>
                   </Col>
                   <Col md={{ size: 6 }}>
                     <FormGroup>
@@ -201,15 +239,19 @@ class UserProfileAdd extends Component {
                         value={jobTitle}
                         onChange={(e) => this.handleUserProfile(e)}
                         placeholder="Job Title"
-                        invalid={!!this.state.formErrors.jobTitle}
+                        invalid={!!(this.state.formSubmitted && this.state.formErrors.jobTitle)}
+                        className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                       />
-                      <FormFeedback className={fontWeight}>{this.state.formErrors.jobTitle}</FormFeedback>
+                      {this.state.formSubmitted && this.state.formErrors.jobTitle && (
+    <FormFeedback className={fontWeight}>
+      {this.state.formErrors.jobTitle}
+    </FormFeedback>)}
                     </FormGroup>
                   </Col>
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
-                    <Label className={fontColor}>Email</Label>
+                    <Label className={fontColor}>Email <span style={{ color: 'red' }}>*</span> </Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
@@ -220,9 +262,13 @@ class UserProfileAdd extends Component {
                         value={email}
                         onChange={(e) => this.handleUserProfile(e)}
                         placeholder="Email"
-                        invalid={!!this.state.formErrors.email}
+                        invalid={!!(this.state.formSubmitted && this.state.formErrors.email)}
+                        className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                       />
-                      <FormFeedback className={fontWeight}>{this.state.formErrors.email}</FormFeedback>
+                      {this.state.formSubmitted && this.state.formErrors.email && (
+    <FormFeedback className={fontWeight}>
+      {this.state.formErrors.email}
+    </FormFeedback>)}
                       <ToggleSwitch
                         switchType="email"
                         state={this.state.userProfile.privacySettings?.email}
@@ -233,7 +279,7 @@ class UserProfileAdd extends Component {
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
-                    <Label className={fontColor}>Phone</Label>
+                    <Label className={fontColor}>Phone <span style={{ color: 'red' }}>*</span> </Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
@@ -244,7 +290,7 @@ class UserProfileAdd extends Component {
                         value={phoneNumber}
                         onChange={phone => this.phoneChange(phone)}
                       />
-                      {phoneNumberEntered && (
+                      {phoneNumberEntered && this.state.formSubmitted && (
                         <div className={`required-user-field ${fontWeight}`}>
                           {this.state.formErrors.phoneNumber}
                         </div>
@@ -259,7 +305,7 @@ class UserProfileAdd extends Component {
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 4 }} className="text-md-right my-2">
-                    <Label className={fontColor}>Weekly Committed Hours</Label>
+                    <Label className={fontColor}>Weekly Committed Hours <span style={{ color: 'red' }}>*</span></Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
@@ -295,6 +341,7 @@ class UserProfileAdd extends Component {
                             ? false
                             : !this.state.formValid.weeklyCommittedHours
                         }
+                        className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                       />
                       <FormFeedback className={fontWeight}>{this.state.formErrors.weeklyCommittedHours}</FormFeedback>
                     </FormGroup>
@@ -312,6 +359,7 @@ class UserProfileAdd extends Component {
                         id="role"
                         defaultValue="Volunteer"
                         onChange={(e) => this.handleUserProfile(e)}
+                        className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                       >
                         {this.props.role.roles.map(({ roleName }, index) => {
                           if (roleName === 'Owner') return;
@@ -342,6 +390,7 @@ class UserProfileAdd extends Component {
                             onChange={(e) => this.handleUserProfile(e)}
                             placeholder="Actual Email"
                             invalid={!!this.state.formErrors.actualEmail}
+                            className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                           />
                           <FormFeedback className={fontWeight}>{this.state.formErrors.actualEmail}</FormFeedback>
                         </FormGroup>
@@ -408,6 +457,7 @@ class UserProfileAdd extends Component {
                         value={this.state.userProfile.collaborationPreference}
                         onChange={(e) => this.handleUserProfile(e)}
                         placeholder="Skype, Zoom, etc."
+                        className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                       />
                     </FormGroup>
                   </Col>
@@ -425,6 +475,7 @@ class UserProfileAdd extends Component {
                         value={this.state.userProfile.googleDoc}
                         onChange={(e) => this.handleUserProfile(e)}
                         placeholder="Google Doc"
+                        className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                       />
                     </FormGroup>
                   </Col>
@@ -442,6 +493,7 @@ class UserProfileAdd extends Component {
                         value={this.state.userProfile.dropboxDoc}
                         onChange={(e) => this.handleUserProfile(e)}
                         placeholder="DropBox Folder"
+                        className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                       />
                     </FormGroup>
                   </Col>
@@ -453,7 +505,7 @@ class UserProfileAdd extends Component {
                   <Col md="6">
                     <Row>
                       <Col md="6">
-                        <Input id="location" onChange={this.handleLocation} />
+                        <Input id="location" onChange={this.handleLocation} className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}/>
                       </Col>
                       <Col md="6">
                         <div className="w-100 pt-1 mb-2 mx-auto">
@@ -504,7 +556,7 @@ class UserProfileAdd extends Component {
                               },
                             })
                           }
-                          className="form-control"
+                          className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
                         />
                       </div>
                     </FormGroup>
@@ -542,8 +594,11 @@ class UserProfileAdd extends Component {
                     codeValid={this.state.codeValid}
                     setCodeValid={this.setCodeValid}
                     edit
-                    userProfile={this.state.userProfile}
                     darkMode={darkMode}
+                    inputAutoComplete={this.state.inputAutoComplete}
+                    inputAutoStatus={this.state.inputAutoStatus}
+                    isLoading={this.state.isLoading}
+                    fetchTeamCodeAllUsers={this.fetchTeamCodeAllUsers}
                   />
                 </TabPane>
               </TabContent>
@@ -652,9 +707,12 @@ class UserProfileAdd extends Component {
     const firstLength = this.state.userProfile.firstName !== '';
     const lastLength = this.state.userProfile.lastName !== '';
     const phone = this.state.userProfile.phoneNumber;
-
+    
     if (phone === null) {
       toast.error('Phone Number is required');
+      return false;
+    } else if (this.state.teamCode && !this.state.codeValid) {
+      toast.error('Team Code is invalid');
       return false;
     } else if (firstLength && lastLength && phone.length >= 9) {
       return true;

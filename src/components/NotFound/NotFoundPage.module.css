@@ -1,0 +1,64 @@
+.notFoundContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  text-align: center;
+  color: #333;
+  background-color: #fff;
+}
+
+.notFoundImage {
+  max-width: 100%;
+  height: auto;
+  /* margin-bottom:-20px; */
+}
+
+.notFoundText {
+  padding: 0 20px;
+}
+
+.notFoundText h1 {
+  font-size: 2em;
+  margin-bottom: 10px;
+}
+
+.notFoundText p {
+  font-size: 1.1em;
+  margin-bottom: 10px;
+}
+
+.backHomeLink {
+  color: #3293f9;
+  cursor: pointer;
+  text-decoration: underline;
+  transition: background-color 0.3s;
+}
+
+.backHomeLink:hover {
+  background-color: transparent;
+}
+
+.darkMode {
+  color: #f1f1f1;
+
+  .notFoundImage {
+    height: 38%;
+    width: auto;
+  }
+}
+
+.bgBlack {
+  background-color: #121212;
+}
+
+@media (max-width: 768px) {
+  .notFoundText h1 {
+    font-size: 1.5em;
+  }
+
+  .notFoundText p {
+    font-size: 1em;
+  }
+}

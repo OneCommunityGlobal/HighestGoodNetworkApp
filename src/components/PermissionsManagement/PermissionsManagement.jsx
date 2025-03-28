@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 
 import { Button, Modal, ModalBody, ModalHeader } from 'reactstrap';
 import './PermissionsManagement.css';
 import { connect } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { updateUserProfile, getUserProfile } from 'actions/userProfile';
 import { getAllUserProfile } from 'actions/userManagement';
 import { useHistory } from 'react-router-dom';
@@ -13,22 +14,24 @@ import ReactTooltip from 'react-tooltip'; // Importing react-tooltip for tooltip
 import '../Header/DarkMode.css';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import { ENDPOINTS } from 'utils/URL';
+import { ModalContext } from 'context/ModalContext';
 import UserPermissionsPopUp from './UserPermissionsPopUp';
 import { getAllRoles } from '../../actions/role';
+import { addNewRole } from '../../actions/role';
 import { getInfoCollections } from '../../actions/information';
 import hasPermission from '../../utils/permissions';
 import CreateNewRolePopup from './NewRolePopUp';
 import PermissionChangeLogTable from './PermissionChangeLogTable';
 
-function PermissionsManagement(props) {
-  const { auth, getUserRole, userProfile, darkMode } = props;
-  let { roles } = props;
+function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode }) {
   const [isNewRolePopUpOpen, setIsNewRolePopUpOpen] = useState(false);
   const [isUserPermissionsOpen, setIsUserPermissionsOpen] = useState(false);
+  const [reminderModal, setReminderModal] = useState(false);
+  const { modalStatus, reminderUser } = useContext(ModalContext);
 
-  const canPostRole = props.hasPermission('postRole');
-  const canPutRole = props.hasPermission('putRole');
-  const canManageUserPermissions = props.hasPermission('putUserProfilePermissions');
+  const canPostRole = hasPermission('postRole');
+  const canPutRole = hasPermission('putRole');
+  const canManageUserPermissions = hasPermission('putUserProfilePermissions');
 
   // Added permissionChangeLogs state management
   const [changeLogs, setChangeLogs] = useState([]);
@@ -44,11 +47,19 @@ function PermissionsManagement(props) {
     if (role != null) return role;
   });
 
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (reminderUser !== null) {
+      // console.log(reminderUser);
+    }
+  }, [reminderUser]);
+
   useEffect(() => {
     getAllRoles();
+
     getInfoCollections();
     getUserRole(auth?.user.userid);
-
     const getChangeLogs = async () => {
       try {
         const response = await axios.get(ENDPOINTS.PERMISSION_CHANGE_LOGS(auth?.user.userid));
@@ -63,11 +74,25 @@ function PermissionsManagement(props) {
   }, []);
 
   const togglePopUpUserPermissions = () => {
-    setIsUserPermissionsOpen(previousState => !previousState);
+    if (modalStatus === false) {
+      setIsUserPermissionsOpen(previousState => !previousState);
+    } else {
+      setReminderModal(!reminderModal);
+    }
   };
   const role = userProfile?.role;
   // eslint-disable-next-line no-shadow
   const roleNames = roles?.map(role => role.roleName);
+
+  useEffect(() => {
+    dispatch(getAllRoles());
+  }, [dispatch]);
+
+  const addRole = async newRole => {
+    // Add the new role
+    const response = await addNewRole(newRole);
+    return response;
+  };
 
   return (
     <div
@@ -88,6 +113,7 @@ function PermissionsManagement(props) {
                       <ul>
                         <li>Reports: 📊 Viewing and editing analytics and summaries.</li>
                         <li>User Management: 👤 Managing user accounts, statuses, and blue squares.</li>
+                        <li>Tracking Management: 🕵️‍♂️  Managing user activity, warnings, and tracking settings.</li>
                         <li>Badge Management: 🏅 Creating, editing, and assigning badges.</li>
                         <li>Project Management: 🛠️ Adding, editing, and assigning projects.</li>
                         <li>Work Breakdown Structures: 🗂️ Adding and deleting WBS.</li>
@@ -175,7 +201,7 @@ function PermissionsManagement(props) {
             <ModalHeader
               toggle={togglePopUpNewRole}
               cssModule={{ 'modal-title': 'w-100 text-center my-auto' }}
-              className={darkMode ? 'bg-space-cadet text-light' : ''}
+              className={darkMode ? 'bg-space-cadet' : ''}
             >
               Create New Role
             </ModalHeader>
@@ -183,7 +209,11 @@ function PermissionsManagement(props) {
               id="modal-body_new-role--padding"
               className={darkMode ? 'bg-yinmn-blue' : ''}
             >
-              <CreateNewRolePopup toggle={togglePopUpNewRole} roleNames={roleNames} />
+              <CreateNewRolePopup
+                toggle={togglePopUpNewRole}
+                roleNames={roleNames}
+                addRole={addRole}
+              />
             </ModalBody>
           </Modal>
           <Modal
@@ -195,22 +225,28 @@ function PermissionsManagement(props) {
             <ModalHeader
               toggle={togglePopUpUserPermissions}
               cssModule={{ 'modal-title': 'w-100 text-center my-auto' }}
-              className={darkMode ? 'bg-space-cadet' : ''}
+              className={darkMode ? 'bg-oxford-blue text-light' : ''}
             >
               Manage User Permissions
             </ModalHeader>
             <ModalBody
               id="modal-body_new-role--padding"
-              className={darkMode ? 'bg-yinmn-blue' : ''}
+              className={darkMode ? 'bg-yinmn-blue-light' : ''}
             >
-              <UserPermissionsPopUp toggle={togglePopUpUserPermissions} />
+              <UserPermissionsPopUp
+                toggle={togglePopUpUserPermissions}
+                setReminderModal={setReminderModal}
+                reminderModal={reminderModal}
+                modalStatus={modalStatus}
+                darkMode={darkMode}
+              />
             </ModalBody>
           </Modal>
         </div>
       </div>
       {loading && <p className="loading-message">Loading...</p>}
       {changeLogs?.length > 0 && (
-        <PermissionChangeLogTable changeLogs={changeLogs.slice().reverse()} darkMode={darkMode} />
+        <PermissionChangeLogTable changeLogs={changeLogs} darkMode={darkMode} />
       )}
       <br />
       <br />
@@ -231,6 +267,7 @@ const mapDispatchToProps = dispatch => ({
   getAllRoles: () => dispatch(getAllRoles()),
   updateUserProfile: data => dispatch(updateUserProfile(data)),
   getAllUsers: () => dispatch(getAllUserProfile()),
+  addNewRole: newRole => dispatch(addNewRole(newRole)),
   getUserRole: id => dispatch(getUserProfile(id)),
   hasPermission: action => dispatch(hasPermission(action)),
 });

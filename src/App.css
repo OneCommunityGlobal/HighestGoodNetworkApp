@@ -9,9 +9,10 @@ body {
 
 #root {
   height: 100%;
-  overflow-x: auto; 
+  overflow-x: auto;
   overflow: hidden;
-  background-color: var(--background-color);
+  /* background-color: var(--background-color); */
+  background-color: #ffffff;
 }
 
 .App {
@@ -97,47 +98,75 @@ body {
   /*  90%to100%-red */
 }
 
-.bg-oxford-blue{
+.bg-oxford-blue {
   background-color: #1B2A41 !important;
 }
 
-.bg-space-cadet{
+/* .bg-oxford-blue:hover{
+  background-color: #1B2A41 !important;
+  color:black;
+} */
+
+.bg-space-cadet {
   background-color: #1C2541 !important;
 }
 
-.bg-yinmn-blue{
+/* .bg-space-cadet:hover{
+  background-color: #1C2541 !important;
+  color:black; 
+} */
+
+.bg-yinmn-blue {
   background-color: #3A506B !important;
 }
 
-.bg-yinmn-blue-light{
-  background-color:#2f4157;
+/* .bg-yinmn-blue:hover{
+  background-color: #3A506B !important;
+  color: black;
+} */
+
+.bg-yinmn-blue-light {
+  background-color: #2f4157;
 }
 
-.bg-azure{
+/* .bg-yinmn-blue-light:hover{
+  background-color:#2f4157;
+  color: black;
+} */
+
+.bg-darkmode-liblack {
+  background-color: #1C1C1C !important;
+}
+
+.bg-darkmode-black {
+  background-color: #000000 !important;
+}
+
+.bg-azure {
   background-color: #007BFF !important;
 }
 
-.text-oxford-blue{
+.text-oxford-blue {
   color: #1B2A41 !important;
 }
 
-.text-space-cadet{
+.text-space-cadet {
   color: #1C2541 !important;
 }
 
-.text-yinmn-blue{
+.text-yinmn-blue {
   color: #3A506B !important;
 }
 
-.text-azure{
+.text-azure {
   color: #007BFF !important;
 }
 
-.text-dark-green{
+.text-dark-green {
   color: #193D31 !important;
 }
 
-.text-custom-grey{
+.text-custom-grey {
   color: rgb(192, 192, 192) !important;
 }
 
@@ -145,12 +174,16 @@ body {
   box-shadow: 2px 2px 4px 1px black;
 }
 
-.box-shadow-light{
+.box-shadow-light {
   box-shadow: 2px 2px 4px 1px lightgray;
 }
 
-nav ul.navbar-nav li:last-child > div {
+nav ul.navbar-nav li:last-child>div {
   transform: translate3d(-26px, 40px, 0px) !important;
+}
+
+.calendar-icon-dark {
+  color-scheme: dark;
 }
 
 .top {
@@ -184,4 +217,44 @@ input[type="radio"]:hover {
 
 input[type="checkbox"]:not([disabled]):hover {
   cursor: pointer;
+}
+
+.tox .tox-toolbar__group {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  gap: 4px !important;
+}
+
+.tox .tox-tbtn {
+  min-width: auto !important;
+  padding: 4px 6px !important;
+  font-size: 14px !important;
+}
+
+.tox-tbtn {
+  padding: 2px 4px !important;
+}
+
+.tox .tox-toolbar {
+  flex-wrap: wrap !important;
+  justify-content: flex-start !important;
+}
+
+.tox .tox-split-button {
+  display: flex !important;
+  align-items: center !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.tox .tox-split-button__chevron {
+  display: inline-block !important;
+  min-width: auto !important;
+  width: auto !important;
+  margin-left: -1px !important;
+  padding: 4px !important;
+}
+
+.pdrl-1 {
+  padding: 0 1em !important;
 }

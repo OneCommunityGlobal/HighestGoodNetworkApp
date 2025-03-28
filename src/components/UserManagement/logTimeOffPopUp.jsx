@@ -19,9 +19,9 @@ import {
   Form,
   Alert,
 } from 'reactstrap';
-import { boxStyle, boxStyleDark } from 'styles';
-import '../Header/DarkMode.css'
 import DatePicker from 'react-datepicker';
+import { boxStyle, boxStyleDark } from '../../styles';
+import '../Header/DarkMode.css';
 import 'react-datepicker/dist/react-datepicker.css';
 import {
   addTimeOffRequestThunk,
@@ -274,8 +274,8 @@ const LogTimeOffPopUp = React.memo(props => {
       .startOf('day');
 
     const isAnyOverlapingRequests = allRequests[props.user._id].some(request => {
-      if(request._id === data.id){
-        return false
+      if (request._id === data.id) {
+        return false;
       }
       const requestStartingDate = moment(request.startingDate.split('T')[0]).startOf('day');
       const requestEndingDate = moment(request.endingDate.split('T')[0]).startOf('day');
@@ -351,15 +351,23 @@ const LogTimeOffPopUp = React.memo(props => {
   };
 
   return (
-    <Modal isOpen={props.open} toggle={closePopup} className={darkMode ? 'text-light dark-mode' : ''}>
-      <ModalHeader toggle={closePopup} className={darkMode ? 'bg-space-cadet' : ''}>Add New Time Off Request</ModalHeader>
+    <Modal
+      isOpen={props.open}
+      toggle={closePopup}
+      className={darkMode ? 'text-light dark-mode' : ''}
+    >
+      <ModalHeader toggle={closePopup} className={darkMode ? 'bg-space-cadet' : ''}>
+        Add New Time Off Request
+      </ModalHeader>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <Container>
           <Form>
             <Row>
               <Col>
                 <FormGroup>
-                  <Label className={darkMode ? 'text-light' : ''} for="dateOfLeave">Date of leave</Label>
+                  <Label className={darkMode ? 'text-light' : ''} for="dateOfLeave">
+                    Date of leave
+                  </Label>
                   <DatePicker
                     selected={requestData.dateOfLeave}
                     onChange={date => {
@@ -372,7 +380,7 @@ const LogTimeOffPopUp = React.memo(props => {
                     dateFormat="MM/dd/yyyy"
                     placeholderText="Select a Sunday"
                     id="dateOfLeave"
-                    className="date-of-leave-datepicker"
+                    className={`date-of-leave-datepicker ${darkMode ? 'bg-darkmode-liblack text-light border-0 calendar-icon-dark' : ''}`}
                   />
 
                   <FormText color="danger">{requestDataErrors.dateOfLeaveError}</FormText>
@@ -380,13 +388,16 @@ const LogTimeOffPopUp = React.memo(props => {
               </Col>
               <Col>
                 <FormGroup>
-                  <Label className={darkMode ? 'text-light' : ''} for="numberOfWeeks">Duration in weeks</Label>
+                  <Label className={darkMode ? 'text-light' : ''} for="numberOfWeeks">
+                    Duration in weeks
+                  </Label>
                   <Input
                     type="number"
                     name="numberOfWeeks"
                     id="numberOfWeeks"
                     value={requestData.numberOfWeeks}
                     onChange={e => handleAddRequestDataChange(e)}
+                    className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                   />
                   <FormText color="danger">{requestDataErrors.numberOfWeeksError}</FormText>
                 </FormGroup>
@@ -395,7 +406,9 @@ const LogTimeOffPopUp = React.memo(props => {
             <Row>
               <Col>
                 <FormGroup>
-                  <Label className={darkMode ? 'text-light' : ''} for="reasonForLeave">Reason for leave</Label>
+                  <Label className={darkMode ? 'text-light' : ''} for="reasonForLeave">
+                    Reason for leave
+                  </Label>
                   <Input
                     type="textarea"
                     rows="2"
@@ -403,6 +416,7 @@ const LogTimeOffPopUp = React.memo(props => {
                     id="reasonForLeave"
                     value={requestData.reasonForLeave}
                     onChange={e => handleAddRequestDataChange(e)}
+                    className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                   />
                   <FormText color="danger">{requestDataErrors.reasonForLeaveError}</FormText>
                 </FormGroup>
@@ -427,13 +441,18 @@ const LogTimeOffPopUp = React.memo(props => {
       {allRequests[props.user._id]?.length > 0 && (
         <>
           <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>Time Off Requests</ModalHeader>
-          <ModalBody className={`Logged-time-off-cards-container ${darkMode ? 'bg-yinmn-blue' : ''}`}>
+          <ModalBody
+            className={`Logged-time-off-cards-container ${darkMode ? 'bg-yinmn-blue' : ''}`}
+          >
             <Container>
               {allRequests[props.user._id]
                 .slice()
                 .sort(sortRequests)
                 .map(request => (
-                  <Card className={`mb-2 ${darkMode ? 'bg-yinmn-blue border-white' : ''}`} key={request._id}>
+                  <Card
+                    className={`mb-2 ${darkMode ? 'bg-yinmn-blue border-white' : ''}`}
+                    key={request._id}
+                  >
                     <CardBody>
                       <Row>
                         <Col>
@@ -468,20 +487,29 @@ const LogTimeOffPopUp = React.memo(props => {
                   </Card>
                 ))}
             </Container>
-            <Modal isOpen={nestedModal} toggle={closeNested} className={darkMode ? 'text-light dark-mode' : ''}>
-              <ModalHeader toggle={closeNested} className={darkMode ? 'bg-space-cadet' : ''}>Edit Time Off Request</ModalHeader>
+            <Modal
+              isOpen={nestedModal}
+              toggle={closeNested}
+              className={darkMode ? 'text-light dark-mode' : ''}
+            >
+              <ModalHeader toggle={closeNested} className={darkMode ? 'bg-space-cadet' : ''}>
+                Edit Time Off Request
+              </ModalHeader>
               <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                 <Container>
                   <Form>
                     <Row>
                       <Col>
                         <FormGroup>
-                          <Label for="numberOfWeeks" className={darkMode ? 'text-light' : ''}>Duration in weeks</Label>
+                          <Label for="numberOfWeeks" className={darkMode ? 'text-light' : ''}>
+                            Duration in weeks
+                          </Label>
                           <Input
                             type="number"
                             value={updateRequestData.numberOfWeeks}
                             id="numberOfWeeks"
                             onChange={e => handleUpdateRequestDataChange(e)}
+                            className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                           />
 
                           <FormText color="danger">
@@ -493,13 +521,16 @@ const LogTimeOffPopUp = React.memo(props => {
                     <Row>
                       <Col>
                         <FormGroup>
-                          <Label for="reasonForLeave" className={darkMode ? 'text-light' : ''}>Reason for leave</Label>
+                          <Label for="reasonForLeave" className={darkMode ? 'text-light' : ''}>
+                            Reason for leave
+                          </Label>
                           <Input
                             type="textarea"
                             rows="2"
                             value={updateRequestData.reasonForLeave}
                             id="reasonForLeave"
                             onChange={e => handleUpdateRequestDataChange(e)}
+                            className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                           />
                           <FormText color="danger">
                             {updaterequestDataErrors.reasonForLeaveError}
@@ -527,7 +558,11 @@ const LogTimeOffPopUp = React.memo(props => {
                 </Container>
               </ModalBody>
               <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-                <Button color="secondary" onClick={closeNested} style={darkMode ? boxStyleDark : boxStyle}>
+                <Button
+                  color="secondary"
+                  onClick={closeNested}
+                  style={darkMode ? boxStyleDark : boxStyle}
+                >
                   Close
                 </Button>
               </ModalFooter>

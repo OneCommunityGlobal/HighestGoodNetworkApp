@@ -1,5 +1,7 @@
-import React from 'react';
+// import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
+import configureStore from 'redux-mock-store';
+import { Provider } from 'react-redux';
 import DropDownSearchBox from '../DropDownSearchBox';
 
 describe('DropDownSearchBox', () => {
@@ -14,9 +16,14 @@ describe('DropDownSearchBox', () => {
     width: '100px',
     className: 'test-class',
   };
+  const mockStore = configureStore([]);
+    const initialState = {
+      theme: { darkMode: false },
+    };
+    const store = mockStore(initialState);
 
   it('renders with correct options', () => {
-    const { getByRole, getByText } = render(<DropDownSearchBox {...mockProps} />);
+    const { getByRole, getByText } = render(<Provider store={store}><DropDownSearchBox {...mockProps} /></Provider>);
 
     // Check for placeholder
     expect(getByText(mockProps.placeholder)).toBeInTheDocument();
@@ -31,7 +38,7 @@ describe('DropDownSearchBox', () => {
   });
 
   it('calls searchCallback with correct value on selection change', () => {
-    const { getByRole } = render(<DropDownSearchBox {...mockProps} />);
+    const { getByRole } = render(<Provider store={store}><DropDownSearchBox {...mockProps} /></Provider>);
     const select = getByRole('combobox');
 
     fireEvent.change(select, { target: { value: mockItems[1] } });
