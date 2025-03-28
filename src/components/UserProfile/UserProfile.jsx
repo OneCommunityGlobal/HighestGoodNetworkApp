@@ -213,9 +213,9 @@ function UserProfile(props) {
 
   useEffect(() => {
     checkIsProjectsEqual();
-    setUserProfile({ ...userProfile, projects });
+    setUserProfile({ ...userProfile,  projects });
     setOriginalUserProfile({ ...originalUserProfile, projects });
-  }, [projects]);
+  }, [ projects]);
 
   useEffect(() => {
     setShowLoading(true);
@@ -339,9 +339,7 @@ function UserProfile(props) {
         newUserProfile.startDate = startDate.split('T')[0];
       }
       // Validate team and project data. Remove incorrect data which may lead to page crash. E.g teams: [null]
-      const createdDate = newUserProfile?.createdDate
-        ? newUserProfile.createdDate.split('T')[0]
-        : null;
+      const createdDate = newUserProfile?.createdDate ? newUserProfile.createdDate.split('T')[0] : null;
 
       if (startDate && createdDate && new Date(startDate) < new Date(createdDate)) {
         newUserProfile.startDate = createdDate;
@@ -358,7 +356,7 @@ function UserProfile(props) {
         jobTitle: newUserProfile.jobTitle[0],
         phoneNumber: newUserProfile.phoneNumber[0],
         // startDate: newUserProfile?.startDate.split('T')[0],
-        startDate: newUserProfile?.startDate ? formatDateYYYYMMDD(newUserProfile?.startDate) : '',
+        startDate: newUserProfile?.startDate ? formatDateYYYYMMDD(newUserProfile?.startDate) : "",
         createdDate: formatDateYYYYMMDD(newUserProfile?.createdDate),
         ...(newUserProfile?.endDate &&
           newUserProfile.endDate !== '' && { endDate: formatDateYYYYMMDD(newUserProfile.endDate) }),
@@ -368,7 +366,7 @@ function UserProfile(props) {
         jobTitle: newUserProfile.jobTitle[0],
         phoneNumber: newUserProfile.phoneNumber[0],
         // startDate: newUserProfile?.startDate.split('T')[0],
-        startDate: newUserProfile?.startDate ? formatDateYYYYMMDD(newUserProfile?.startDate) : '',
+        startDate: newUserProfile?.startDate ? formatDateYYYYMMDD(newUserProfile?.startDate) : "",
         createdDate: formatDateYYYYMMDD(newUserProfile?.createdDate),
         ...(newUserProfile?.endDate &&
           newUserProfile.endDate !== '' && { endDate: formatDateYYYYMMDD(newUserProfile.endDate) }),
