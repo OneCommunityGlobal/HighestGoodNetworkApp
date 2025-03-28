@@ -1003,69 +1003,69 @@ export class WeeklySummariesReport extends Component {
               activeTab={activeTab}
               className={`p-4 ${darkMode ? 'bg-yinmn-blue border-0' : ''}`}
             >
-        {navItems.map((item, index) => (
-          // Conditionally render content based on loadedTabs
-          <WeeklySummariesReportTab tabId={item} key={item} hidden={item !== activeTab}>
-            {/* Only render the tab content if it has been loaded */}
-            {loadedTabs.includes(item) && (
-              <>
-                <Row>
-                  <Col sm="12" md="6" className="mb-2">
-                    From <b>{this.weekDates[index].fromDate}</b> to{' '}
-                    <b>{this.weekDates[index].toDate}</b>
-                  </Col>
-                  <Col sm="12" md="6" style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                    <GeneratePdfReport
-                      summaries={filteredSummaries}
-                      weekIndex={index}
-                      weekDates={this.weekDates[index]}
-                      darkMode={darkMode}
-                    />
-                    {hasSeeBadgePermission && (
-                      <Button
-                        className="btn--dark-sea-green"
-                        style={darkMode ? boxStyleDark : boxStyle}
-                        onClick={() => this.setState({ loadBadges: !loadBadges })}
-                      >
-                        {loadBadges ? 'Hide Badges' : 'Load Badges'}
-                      </Button>
-                    )}
-                    <Button
-                      className="btn--dark-sea-green"
-                      style={darkMode ? boxStyleDark : boxStyle}
-                    >
-                      Load Trophies
-                    </Button>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col>
-                    <b>Total Team Members:</b> {filteredSummaries.length}
-                  </Col>
-                </Row>
-                <Row>
-                  <Col>
-                    <FormattedReport
-                      summaries={filteredSummaries}
-                      weekIndex={index}
-                      bioCanEdit={this.canRequestBio}
-                      canEditSummaryCount={this.canEditSummaryCount}
-                      allRoleInfo={allRoleInfo}
-                      badges={badges}
-                      loadBadges={loadBadges}
-                      canEditTeamCode={this.codeEditPermission}
-                      auth={auth}
-                      canSeeBioHighlight={this.canSeeBioHighlight}
-                      darkMode={darkMode}
-                      handleTeamCodeChange={this.handleTeamCodeChange}
-                      handleSpecialColorDotClick={this.handleSpecialColorDotClick}
-                    />
-                  </Col>
-                </Row>
-              </>
-            )}
-          </WeeklySummariesReportTab>
-        ))}
+              {navItems.map((item, index) => (
+                // Conditionally render content based on loadedTabs
+                <WeeklySummariesReportTab tabId={item} key={item} hidden={item !== activeTab}>
+                  {/* Only render the tab content if it has been loaded */}
+                  {loadedTabs.includes(item) && (
+                    <>
+                      <Row>
+                        <Col sm="12" md="6" className="mb-2">
+                          From <b>{this.weekDates[index].fromDate}</b> to{' '}
+                          <b>{this.weekDates[index].toDate}</b>
+                        </Col>
+                        <Col sm="12" md="6" style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                          <GeneratePdfReport
+                            summaries={filteredSummaries}
+                            weekIndex={index}
+                            weekDates={this.weekDates[index]}
+                            darkMode={darkMode}
+                          />
+                          {hasSeeBadgePermission && (
+                            <Button
+                              className="btn--dark-sea-green"
+                              style={darkMode ? boxStyleDark : boxStyle}
+                              onClick={() => this.setState({ loadBadges: !loadBadges })}
+                            >
+                              {loadBadges ? 'Hide Badges' : 'Load Badges'}
+                            </Button>
+                          )}
+                          <Button
+                            className="btn--dark-sea-green"
+                            style={darkMode ? boxStyleDark : boxStyle}
+                          >
+                            Load Trophies
+                          </Button>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col>
+                          <b>Total Team Members:</b> {filteredSummaries.length}
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col>
+                          <FormattedReport
+                            summaries={filteredSummaries}
+                            weekIndex={index}
+                            bioCanEdit={this.canRequestBio}
+                            canEditSummaryCount={this.canEditSummaryCount}
+                            allRoleInfo={allRoleInfo}
+                            badges={badges}
+                            loadBadges={loadBadges}
+                            canEditTeamCode={this.codeEditPermission}
+                            auth={auth}
+                            canSeeBioHighlight={this.canSeeBioHighlight}
+                            darkMode={darkMode}
+                            handleTeamCodeChange={this.handleTeamCodeChange}
+                            handleSpecialColorDotClick={this.handleSpecialColorDotClick}
+                          />
+                        </Col>
+                      </Row>
+                    </>
+                  )}
+                </WeeklySummariesReportTab>
+              ))}
             </TabContent>
           </Col>
         </Row>
