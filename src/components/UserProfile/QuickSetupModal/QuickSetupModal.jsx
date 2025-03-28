@@ -60,7 +60,7 @@ function QuickSetupModal(props) {
   }, [stateTeamCodes, props.teamsData]);
 
   return (
-    <div>
+    <div className={`container pt-3 ${darkMode ? 'bg-yinmn-blue text-light border-0' : ''}`}>
       {canAssignTitle || canEditTitle || canAddTitle ? (
         <QuickSetupCodes
           setSaved={props.setSaved}

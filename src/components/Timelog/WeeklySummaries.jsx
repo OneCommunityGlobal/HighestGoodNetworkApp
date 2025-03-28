@@ -115,6 +115,8 @@ function WeeklySummaries({ userProfile }) {
     max_height: 500,
     autoresize_bottom_margin: 1,
     images_upload_handler: customImageUploadHandler,
+    skin: darkMode ? 'oxide-dark' : 'oxide',
+    content_css: darkMode ? 'dark' : 'default',
   };
 
   const renderSummary = (title, summary, index) => {

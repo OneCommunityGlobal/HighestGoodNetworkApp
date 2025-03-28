@@ -815,7 +815,7 @@ function UserProfile(props) {
 
   if ((showLoading && !props.isAddNewUser) || userProfile === undefined) {
     return (
-      <Container fluid>
+      <Container fluid className={darkMode ? 'bg-oxford-blue' : ''}>
         <Row className="text-center" data-test="loading">
           <SkeletonLoading template="UserProfile" />
         </Row>
@@ -939,7 +939,7 @@ function UserProfile(props) {
       <BasicToolTips />
 
       <Container
-        className={`py-5 ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
+        className={`py-5 ${darkMode ? 'bg-yinmn-blue text-light border-0' : ''}`}
         id='containerProfile'
       >
           {/* <div className='containerProfile' > */}
@@ -1153,7 +1153,7 @@ function UserProfile(props) {
             {showSelect && summaries !== undefined ? (
               <div>
                 <Select
-                  className={darkMode ? 'text-azure' : ''}
+                  className={darkMode ? 'bg-darkmode-liblack text-azure' : ''}
                   options={summaries}
                   styles={customStyles}
                   onChange={e => {

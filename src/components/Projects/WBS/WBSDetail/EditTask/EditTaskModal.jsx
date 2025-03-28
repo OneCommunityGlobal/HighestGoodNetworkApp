@@ -84,6 +84,8 @@ function EditTaskModal(props) {
       min_height: 180,
       max_height: 300,
       autoresize_bottom_margin: 1,
+      skin: darkMode ? 'oxide-dark' : 'oxide',
+      content_css: darkMode ? 'dark' : 'default',
   };
   /*
   * -------------------------------- functions --------------------------------
@@ -310,7 +312,7 @@ function EditTaskModal(props) {
                     <textarea
                       rows="2"
                       type="text"
-                      className="task-name border border-dark rounded"
+                      className={`task-name border border-dark rounded ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
                       onChange={e => setTaskName(e.target.value)}
                       onKeyPress={e => setTaskName(e.target.value)}
                       value={taskName}
@@ -328,6 +330,7 @@ function EditTaskModal(props) {
                       id="priority"
                       onChange={e => setPriority(e.target.value)}
                       value={priority}
+                      className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                     >
                       <option value="Primary">Primary</option>
                       <option value="Secondary">Secondary</option>
@@ -349,6 +352,7 @@ function EditTaskModal(props) {
                       removeResource={editable? removeResource : () => {}}
                       resourceItems={resourceItems}
                       disableInput={!editable}
+                      darkMode={darkMode}
                     />
                   </div>
                 </td>
@@ -360,7 +364,7 @@ function EditTaskModal(props) {
                       <div className="flex-row d-inline align-items-center">
                         <div className="form-check form-check-inline">
                           <input
-                            className="form-check-input"
+                            className={`form-check-input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
                             type="radio"
                             id="true"
                             name="Assigned"
@@ -374,7 +378,7 @@ function EditTaskModal(props) {
                         </div>
                         <div className="form-check form-check-inline">
                           <input
-                            className="form-check-input"
+                            className={`form-check-input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
                             type="radio"
                             id="false"
                             name="Assigned"
@@ -400,7 +404,7 @@ function EditTaskModal(props) {
                       <div className="d-flex"> {/* Added: New div to group Active and Not Started */}
                         <div className="form-check form-check-inline mr-5">
                             <input
-                              className="form-check-input"
+                              className={`form-check-input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
                               type="radio"
                               id="active"
                               name="status"
@@ -414,7 +418,7 @@ function EditTaskModal(props) {
                           </div>
                           <div className="form-check form-check-inline">
                             <input
-                              className="form-check-input"
+                              className={`form-check-input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
                               type="radio"
                               id="notStarted"
                               name="status"
@@ -431,7 +435,7 @@ function EditTaskModal(props) {
                       <div className="d-flex mt-2"> {/* Added: New div for Paused and Complete with margin-top */}
                           <div className="form-check form-check-inline mr-5">
                             <input
-                              className="form-check-input"
+                              className={`form-check-input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
                               type="radio"
                               id="paused"
                               name="status"
@@ -445,7 +449,7 @@ function EditTaskModal(props) {
                           </div>
                           <div className="form-check form-check-inline">
                             <input
-                              className="form-check-input"
+                              className={`form-check-input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
                               type="radio"
                               id="complete"
                               name="status"
@@ -482,7 +486,7 @@ function EditTaskModal(props) {
                         onChange={e => setHoursBest(Math.abs(e.target.value))}
                         onBlur={() => calHoursEstimate()}
                         id="bestCase"
-                        className="m-auto"
+                        className={`m-auto ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
                       />,
                       editable,
                       hoursBest,
@@ -507,7 +511,7 @@ function EditTaskModal(props) {
                         value={hoursWorst}
                         onChange={e => setHoursWorst(Math.abs(e.target.value))}
                         onBlur={() => calHoursEstimate('hoursWorst')}
-                        className="m-auto"
+                        className={`m-auto ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
                       />,
                       editable,
                       hoursWorst,
@@ -532,7 +536,7 @@ function EditTaskModal(props) {
                         value={hoursMost}
                         onChange={e => setHoursMost(Math.abs(e.target.value))}
                         onBlur={() => calHoursEstimate('hoursMost')}
-                        className="m-auto"
+                        className={`m-auto ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
                       />,
                       editable,
                       hoursMost,
@@ -556,7 +560,7 @@ function EditTaskModal(props) {
                         max="500"
                         value={hoursEstimate}
                         onChange={e => setHoursEstimate(Math.abs(e.target.value))}
-                        className="m-auto"
+                        className={`m-auto ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
                       />,
                       editable,
                       hoursEstimate,
@@ -574,7 +578,7 @@ function EditTaskModal(props) {
                         type="text"
                         aria-label="Search user"
                         placeholder="Link"
-                        className="task-resouces-input"
+                        className={`task-resouces-input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
                         data-tip="Add a link"
                         onChange={e => setLink(e.target.value)}
                         value={link}
@@ -611,7 +615,7 @@ function EditTaskModal(props) {
                 <td id="edit-modal-td" scope="col">Category</td>
                   <td id="edit-modal-td">
                   {ReadOnlySectionWrapper(
-                    <select value={category} onChange={e => setCategory(e.target.value)}>
+                    <select value={category} onChange={e => setCategory(e.target.value)} className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}>
                       {categoryOptions.map(cla => (
                         <option value={cla.value} key={cla.value}>
                           {cla.label}

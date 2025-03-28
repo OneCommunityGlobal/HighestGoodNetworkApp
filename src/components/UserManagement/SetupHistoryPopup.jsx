@@ -41,6 +41,7 @@ function TableFilter({
   setSortByExpiredDateDesc,
   // darkMode,
 }) {
+  const darkMode = useSelector(state => state.theme.darkMode);
   return (
     <tr>
       <td style={{ width: '20%' }}>
@@ -50,6 +51,7 @@ function TableFilter({
           type="text"
           value={emailFilter}
           onChange={e => setEmailFilter(e.target.value)}
+          className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
         />
       </td>
       <td id="weekly-committed" style={{ width: '10%' }} />
@@ -64,6 +66,7 @@ function TableFilter({
               setSortByExpiredDateDesc('default');
             }
           }}
+          className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
         >
           <option value="default">Select a Option</option>
           <option value>Latest First</option>
@@ -81,6 +84,7 @@ function TableFilter({
               setSortByCreationDateDesc('default');
             }
           }}
+          className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
         >
           <option value="default">Select a Option</option>
           <option value>Latest First</option>
@@ -94,6 +98,7 @@ function TableFilter({
             id="status-filter"
             value={statusFilter}
             onChange={e => setStatusFilter(e.target.value)}
+            className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
           >
             <option value="">All</option>
             <option value={INV_STATUS.ACITVE}>Active</option>
