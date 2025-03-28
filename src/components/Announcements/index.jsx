@@ -183,7 +183,9 @@ function Announcements({ title, email }) {
       });
       toast.success('Post to Pinterest successful!');
     } catch (err) {
-      toast.error('Failed to post to Pinterest!');
+      toast.error(err.response?.data?.error || 'Failed to post to Pinterest!', {
+        autoClose: false
+      });
     }
   }
 
