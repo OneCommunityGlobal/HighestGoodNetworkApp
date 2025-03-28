@@ -410,3 +410,36 @@ td {
 .light-usermanagement-data:hover{
   background-color: #f0f8ff;
 }
+
+.tooltip-container {
+  position: relative;
+  display: inline-block;
+  max-width: 150px; /* Set max width for text overflow */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tooltip-container:hover::after {
+  content: attr(data-title); /* Show full text when hovered */
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 5px;
+  border-radius: 4px;
+  white-space: nowrap;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 120%;
+  z-index: 10;
+  max-width: 300px; /* Prevent excessive width */
+  text-align: center;
+  visibility: visible;
+  opacity: 1;
+}
+
+.tooltip-container::after {
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+}

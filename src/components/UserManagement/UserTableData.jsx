@@ -249,14 +249,10 @@ const UserTableData = React.memo(props => {
         )}
       </td>
 
-
-      <td
-        title={formData.jobTitle}>
+      <td title={formData.jobTitle}>
         {editUser?.jobTitle ? (
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", maxWidth: "100%" }}>
-            <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-              {formData.jobTitle}
-            </span>
+            <span className="tooltip-container">{formData.jobTitle}</span>
             <FontAwesomeIcon
               className="copy_icon"
               icon={faCopy}
