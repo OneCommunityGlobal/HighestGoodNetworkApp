@@ -46,6 +46,7 @@ const SetUpFinalDayPopUp = React.memo(props => {
             onDateChange(event.target.value);
           }}
           data-testid="date-input"
+          className={darkMode ? 'bg-darkmode-liblack text-light border-0 calendar-icon-dark' : ''}
         />
         {dateError && <Alert color="danger">Please choose a future date.</Alert>}
       </ModalBody>

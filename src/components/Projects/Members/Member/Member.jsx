@@ -19,7 +19,7 @@ const Member = props => {
 
   return (
     <React.Fragment>
-      <tr className={`members__tr`}>
+      <tr className={`members__tr ${darkMode ? 'dark-mode' : ''}`}>
         <th scope="row">
           <div>{typeof props.index === 'number' ? props.index + 1 : null}</div>
         </th>
