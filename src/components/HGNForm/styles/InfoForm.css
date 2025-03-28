@@ -1,0 +1,185 @@
+.info-form-container {
+  width: 50%;
+  margin: 0 auto;
+  border: 1px solid #c0c0c0;
+  border-radius: 15px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  padding: 10px 10px;
+}
+
+.info-form-container label {
+  text-align: left;
+  color:black;
+  
+  margin-right:88%;
+  margin-left: 10px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.form-inputs {
+  margin-bottom: 20px;
+}
+
+.info-input {
+  border: none;
+  border-bottom: 2px solid #ccc;
+  outline: none;
+  width: 50%;
+  height: 24px;
+  font-size: 16px;
+  display: block;
+  margin: 10px 20px;
+}
+
+.info-input:focus {
+  border-bottom: 2px solid #2e5163;
+}
+
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  margin:10px;
+}
+
+.button-container button {
+  padding: 10px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  margin: 15px;
+  width: 20%;
+  border: 2px solid #2e5163;
+  font-size: medium;
+}
+
+.hgn-return-button {
+  color: white;
+  background-color:#2e5163 ;
+  border-radius: 10px;
+  width: 20%;
+  margin-left:0;
+}
+
+.hgn-return-button:hover {
+  background-color:#4e748d;
+  border-color: #4e748d ;
+}
+
+.next-button {
+  background-color: #2e5163;
+  border-radius: 10px;
+  width: 20%;
+}
+
+.next-button:hover {
+  background-color: #4e748d;
+  border-color: #4e748d;
+}
+
+.edit-button {
+  background-color: #2e5163;
+  margin-left: 10px;
+}
+
+.submit-button {
+  background-color: #081437;
+  transition: all 0.3s ease;
+  border-radius: 10px;
+}
+
+.submit-button:hover {
+  background-color: #21618a;
+  /* color: white; */
+}
+
+@media (max-width: 768px) {
+  .info-form-container {
+    width: 80%;
+  }
+
+  .info-input {
+    width: 80%;
+  }
+
+  .button-container button {
+    padding: 8px 16px;
+    font-size: small;
+    width: 40%;
+    margin: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .info-form-container {
+    width: 90%;
+  }
+
+  .info-input {
+    width: 90%;
+  }
+
+  .button-container button {
+    padding: 6px 12px;
+    font-size: x-small;
+    width: 45%;
+    margin: 5px;
+  }
+}
+
+.info-input.error {
+  border-color: #ff0000;
+}
+
+.required {
+  color: #ff0000;
+}
+
+.error-message {
+  color: #ff0000;
+  font-size: 0.875rem;
+  margin-top: 4px;
+  padding:10px;
+  /* margin-left: 10px; */
+  display: block;
+  width: 50%;
+}
+
+.slack-checkbox {
+  align-items: flex-start;
+  margin-left: 20px;
+}
+
+.form-inputs-slack {
+  display: flex;
+  align-items: center;
+  padding: 0;
+}
+
+.form-inputs-slack input{
+  margin-bottom: 0;
+}
+
+.error-message {
+  color: #ff0000;
+  font-size: 0.875rem;
+  margin: 20px;
+  display: block;
+  width: 50%;
+}
+
+@media (max-width: 768px) {
+  .error-message {
+    font-size: 0.75rem;
+    width: 80%;
+    margin: 10px auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .error-message {
+    font-size: 0.7rem;
+    width: 90%;
+    margin: 8px auto;
+  }
+}

@@ -42,25 +42,6 @@ const customImageUploadHandler = () =>
     reject({ message: 'Pictures are not allowed here!', remove: true });
   });
 
-const TINY_MCE_INIT_OPTIONS = {
-  license_key: 'gpl',
-  menubar: false,
-  placeholder: 'Description (10-word minimum) and reference link',
-  plugins: 'advlist autolink autoresize lists link charmap table paste help wordcount',
-  toolbar:
-    // eslint-disable-next-line no-multi-str
-    'bold italic underline link removeformat bullist numlist outdent indent |\
-                    styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
-                    subscript superscript charmap  | help',
-  branding: false,
-  toolbar_mode: 'sliding',
-  min_height: 180,
-  max_height: 300,
-  autoresize_bottom_margin: 1,
-  content_style: 'body { cursor: text !important; }',
-  images_upload_handler: customImageUploadHandler,
-};
-
 /**
  * Modal used to submit and edit tangible and intangible time entries.
  * There are several use cases:
@@ -105,6 +86,27 @@ function TimeEntryForm(props) {
     isTangible: from === 'Timer',
     entryType: 'default',
     ...data,
+  };
+
+  const TINY_MCE_INIT_OPTIONS = {
+    license_key: 'gpl',
+    menubar: false,
+    placeholder: 'Description (10-word minimum) and reference link',
+    plugins: 'advlist autolink autoresize lists link charmap table paste help wordcount',
+    toolbar:
+      // eslint-disable-next-line no-multi-str
+      'bold italic underline link removeformat | bullist numlist outdent indent |\
+                      styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
+                      subscript superscript charmap  | help',
+    branding: false,
+    toolbar_mode: 'sliding',
+    min_height: 180,
+    max_height: 300,
+    autoresize_bottom_margin: 1,
+    content_style: 'body { cursor: text !important; }',
+    images_upload_handler: customImageUploadHandler,
+    skin: darkMode ? 'oxide-dark' : 'oxide',
+    content_css: darkMode ? 'dark' : 'default',
   };
 
   const timeEntryUserId = from === 'Timer' ? viewingUser.userId ?? authUser.userid : data.personId;
@@ -627,6 +629,9 @@ function TimeEntryForm(props) {
                 onChange={handleInputChange}
                 // min={userProfile?.isFirstTimelog === true ? moment().toISOString().split('T')[0] : userProfile?.startDate.split('T')[0]}
                 disabled={!canEditTimeEntryDate}
+                className={
+                  darkMode ? 'bg-darkmode-liblack text-light border-0 calendar-icon-dark' : ''
+                }
               />
               {'dateOfWork' in errors && (
                 <div className="text-danger">
@@ -650,6 +655,7 @@ function TimeEntryForm(props) {
                     value={formValues.hours}
                     onChange={handleInputChange}
                     disabled={!canChangeTime}
+                    className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                   />
                 </Col>
                 <Col>
@@ -663,6 +669,7 @@ function TimeEntryForm(props) {
                     value={formValues.minutes}
                     onChange={handleInputChange}
                     disabled={!canChangeTime}
+                    className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                   />
                 </Col>
               </Row>
@@ -682,6 +689,7 @@ function TimeEntryForm(props) {
                 id="projectOrTask"
                 value={projectOrTaskId || 'title'}
                 onChange={handleProjectOrTaskChange}
+                className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
               >
                 {projectsAndTasksOptions}
               </Input>

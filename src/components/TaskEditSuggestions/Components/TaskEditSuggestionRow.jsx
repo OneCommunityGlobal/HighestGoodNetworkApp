@@ -13,27 +13,26 @@ export const TaskEditSuggestionRow = ({
   };
 
   return (
-    <table className={darkMode ? 'text-light' : ''}>
-      <tbody>
-        <tr onClick={() => handleToggleTaskEditSuggestionModal(taskEditSuggestion)}>
-          <td>{datetimeToDate(taskEditSuggestion.dateSuggested)}</td>
-          <td>{taskEditSuggestion.user}</td>
-          <td>{taskEditSuggestion.oldTask.taskName}</td>
-          <td>
-            <button
-              onClick={handleButtonClick}
-              style={{
-                backgroundColor: '#007bff',
-                borderRadius: '5px',
-                padding: '5px 10px',
-                color: 'white',
-              }}
-            >
-              View Suggestion
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <tr 
+      onClick={() => handleToggleTaskEditSuggestionModal(taskEditSuggestion)}
+      className={darkMode ? 'text-light' : ''}
+    >
+      <td>{datetimeToDate(taskEditSuggestion.dateSuggested)}</td>
+      <td>{taskEditSuggestion.user}</td>
+      <td>{taskEditSuggestion.oldTask.taskName}</td>
+      <td>
+        <button
+          onClick={handleButtonClick}
+          style={{
+            backgroundColor: '#007bff',
+            borderRadius: '5px',
+            padding: '5px 10px',
+            color: 'white',
+          }}
+        >
+          View Suggestion
+        </button>
+      </td>
+    </tr>
   );
 };
