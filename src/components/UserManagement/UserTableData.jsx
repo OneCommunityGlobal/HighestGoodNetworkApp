@@ -250,7 +250,7 @@ const UserTableData = React.memo(props => {
       </td>
 
 
-      <td className="title_cell"
+      <td
         title={formData.jobTitle}>
         {editUser?.jobTitle ? (
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", maxWidth: "100%" }}>
@@ -279,7 +279,6 @@ const UserTableData = React.memo(props => {
         )}
 
       </td>
-
 
       <td className="email_cell">
         {editUser?.email ? (
