@@ -5,6 +5,7 @@ import {
   modifyProject,
   clearError,
 } from '../../actions/projects';
+import { fetchProjectsWithActiveUsers } from '../../actions/projectMembers';
 import { getProjectsByUsersName } from '../../actions/userProfile';
 import { getPopupById } from '../../actions/popupEditorAction';
 import Overview from './Overview';
@@ -123,7 +124,8 @@ const Projects = function(props) {
 
   const generateProjectList = (categorySelectedForSort, showStatus, sortedByName) => {
     const { projects } = props.state.allProjects;
-    const projectList = projects.filter(project => {
+    const activeMemberCounts = props.state.projectMembers?.activeMemberCounts || {};
+    const filteredProjects = projects.filter(project => !project.isArchived).filter(project => {
       if (categorySelectedForSort && showStatus){
         return project.category === categorySelectedForSort && project.isActive === showStatus;
       } else if (categorySelectedForSort) {
@@ -142,6 +144,10 @@ const Projects = function(props) {
         return a.projectName[0].toLowerCase() < b.projectName[0].toLowerCase() ? 1 : -1;
       } else if (sortedByName === "SortingByRecentEditedMembers") {
         return a.membersModifiedDatetime < b.membersModifiedDatetime ? 1 : -1;
+      } else if (sortedByName === "SortingByMostActiveMembers") {
+        const lenA = activeMemberCounts[a._id] || 0;
+        const lenB = activeMemberCounts[b._id] || 0;
+        return lenB - lenA; // Most active first
       } else {
         return 0;
       }
@@ -165,6 +171,10 @@ const Projects = function(props) {
 
   useEffect(() => {
     props.fetchAllProjects();
+  }, []);
+
+  useEffect(() => {
+    props.fetchProjectsWithActiveUsers();
   }, []);
 
   useEffect(() => {
@@ -267,5 +277,6 @@ export default connect(mapStateToProps, {
   clearError,
   getPopupById,
   hasPermission,
-  getProjectsByUsersName
+  getProjectsByUsersName,
+  fetchProjectsWithActiveUsers
 })(Projects);
