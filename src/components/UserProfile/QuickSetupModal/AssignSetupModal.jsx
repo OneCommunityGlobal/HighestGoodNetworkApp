@@ -77,6 +77,7 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
       if (userProfile.teams.includes(title?.teamAssiged)) data.teams.pop();
       if (userProfile.projects.includes(title.projectAssigned)) data.projects.pop();
 
+      const result = await updateUserProfile({...userProfile,...data});
       if (hasPermission("manageAdminLinks")) {
         setUserProfile(prev => ({ ...prev, ...data }));
       }

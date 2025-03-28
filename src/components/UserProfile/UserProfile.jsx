@@ -1012,6 +1012,7 @@ function UserProfile(props) {
               projectsData={props?.allProjects?.projects || []}
               titleOnSet={titleOnSet}
               setTitleOnSet={setTitleOnSet}
+              updateUserProfile={props.updateUserProfile}
             />
 
           </div>
@@ -1413,6 +1414,7 @@ function UserProfile(props) {
                       !formValid.lastName ||
                       !formValid.email ||
                       !codeValid ||
+                      (userStartDate > userEndDate && userEndDate !== '') ||
                       titleOnSet ||
                       (isProfileEqual && isTasksEqual && isProjectsEqual)
                     }
