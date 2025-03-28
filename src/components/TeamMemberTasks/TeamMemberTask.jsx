@@ -47,8 +47,6 @@ const TeamMemberTask = React.memo(
   }) => {
     const darkMode = useSelector(state => state.theme.darkMode);
     const taskCounts = useSelector(state => state.dashboard?.taskCounts ?? {});
-    // console.log('Task counts:', taskCounts);
-    // console.log('Task IDs:', Object.keys(taskCounts));
     const ref = useRef(null);
     const currentDate = moment.tz('America/Los_Angeles').startOf('day');
     const dispatch = useDispatch();
