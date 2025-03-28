@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
+import Loading from 'components/common/Loading';
 import VolunteerStatusPieChart from './VolunteerStatusPieChart';
 
-function VolunteerStatusChart({ volunteerNumberStats }) {
+function VolunteerStatusChart({ isLoading, volunteerNumberStats }) {
   const chartData = useMemo(() => {
     if (!volunteerNumberStats) {
       return null;
@@ -25,14 +26,17 @@ function VolunteerStatusChart({ volunteerNumberStats }) {
     };
   }, [volunteerNumberStats]);
 
-  if (!chartData) {
-    return <div>No volunteer data available</div>;
-  }
-
   return (
-    <section>
-      <h3 style={{ textAlign: 'center', color: 'black' }}>Volunteer Status</h3>
-      <VolunteerStatusPieChart data={chartData} />
+    <section className="mt-4">
+      {isLoading ? (
+        <div className="d-flex justify-content-center align-items-center">
+          <div className="w-100vh">
+            <Loading />
+          </div>
+        </div>
+      ) : (
+        <VolunteerStatusPieChart data={chartData} />
+      )}
     </section>
   );
 }

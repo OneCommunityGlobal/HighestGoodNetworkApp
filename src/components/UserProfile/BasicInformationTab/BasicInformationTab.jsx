@@ -43,8 +43,12 @@ const Name = props => {
               value={firstName}
               // className={styleProfile.profileText}
               onChange={e => {
-                setUserProfile({ ...userProfile, firstName: e.target.value.trim() });
-                setFormValid({ ...formValid, firstName: !!e.target.value });
+                setUserProfile({ ...userProfile, firstName: e.target.value });
+                setFormValid({ ...formValid, firstName: !!e.target.value.trim() });
+              }}
+              onBlur={e => {
+                const cleanedValue = e.target.value.replace(/\s+/g, ' ').trim();
+                setUserProfile(prev => ({ ...prev, firstName: cleanedValue }));
               }}
               placeholder="First Name"
               invalid={!formValid.firstName}
@@ -61,11 +65,15 @@ const Name = props => {
               value={lastName}
               // className={styleProfile.profileText}
               onChange={e => {
-                setUserProfile({ ...userProfile, lastName: e.target.value.trim() });
+                setUserProfile({ ...userProfile, lastName: e.target.value });
                 setFormValid({
                   ...formValid,
                   lastName: !!e.target.value && e.target.value.trim().length >= 2,
                 });
+              }}
+              onBlur={e => {
+                const cleanedValue = e.target.value.replace(/\s+/g, ' ').trim();
+                setUserProfile(prev => ({ ...prev, lastName: cleanedValue }));
               }}
               placeholder="Last Name"
               invalid={!formValid.lastName}
