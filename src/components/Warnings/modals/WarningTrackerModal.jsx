@@ -143,9 +143,8 @@ function WarningTrackerModal({
         setError(res.error);
         return;
       }
-      setWarningDescriptions(prev => prev.filter(warning => warning._id !== warningId));
-      getUsersWarnings();
     });
+    setWarningDescriptions(prev => prev.filter(warning => warning._id !== warningId));
   };
 
   const handleEditWarningDescription = (e, warningId) => {
