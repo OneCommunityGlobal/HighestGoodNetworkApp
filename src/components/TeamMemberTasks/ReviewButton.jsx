@@ -350,7 +350,10 @@ const ReviewButton = ({ user, task, updateTask }) => {
   };
 
   const handleEditLinkChange = e => {
-    setEditLinkState(prev => ({ ...prev, link: e.target.value }));
+    // Safely extract the value first
+    const newValue = e && e.target && e.target.value !== undefined ? e.target.value : '';
+    // Then use the extracted value in the state update
+    setEditLinkState(prev => ({ ...prev, link: newValue }));
   };
 
   const buttonFormat = () => {
