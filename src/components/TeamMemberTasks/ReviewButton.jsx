@@ -10,6 +10,7 @@ import {
   DropdownItem,
   UncontrolledDropdown,
   Input,
+  Spinner,
 } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import './style.css';
@@ -17,7 +18,7 @@ import './reviewButton.css';
 import { boxStyle, boxStyleDark } from 'styles';
 import '../Header/DarkMode.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faPencilAlt, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 import httpService from '../../services/httpService';
 import { ApiEndpoint } from 'utils/URL';
 import hasPermission from 'utils/permissions';
@@ -25,7 +26,6 @@ import hasPermission from 'utils/permissions';
 const ReviewButton = ({ user, task, updateTask }) => {
   const dispatch = useDispatch();
   const darkMode = useSelector(state => state.theme.darkMode);
-  const [linkError, setLinkError] = useState(null);
   const myUserId = useSelector(state => state.auth.user.userid);
   const myRole = useSelector(state => state.auth.user.role);
   const [modal, setModal] = useState(false);
@@ -35,6 +35,13 @@ const ReviewButton = ({ user, task, updateTask }) => {
   const canReview = dispatch(hasPermission('putReviewStatus'));
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmSubmitModal, setConfirmSubmitModal] = useState(false);
+  const [editLinkState, setEditLinkState] = useState({
+    isOpen: false,
+    link: '',
+    isEditing: false,
+    isSuccess: false,
+    error: null,
+  });
   const [invalidDomainModal, setInvalidDomainModal] = useState({
     isOpen: false,
     errorType: null,
@@ -44,7 +51,7 @@ const ReviewButton = ({ user, task, updateTask }) => {
   const toggleModal = () => {
     setModal(!modal);
     if (!modal) {
-      setLinkError(null);
+      setEditLinkState(prev => ({ ...prev, error: null }));
     }
   };
 
@@ -59,6 +66,19 @@ const ReviewButton = ({ user, task, updateTask }) => {
 
   const toggleConfirmSubmitModal = () => {
     setConfirmSubmitModal(!confirmSubmitModal); // Toggle for second confirmation modal
+  };
+
+  const toggleEditLinkModal = () => {
+    setEditLinkState(prev => ({
+      ...prev,
+      isOpen: !prev.isOpen,
+      isEditing: false,
+    }));
+    if (!editLinkState.isOpen) {
+      // When opening the modal, find the link associated with this user
+      const userLink = task.relatedWorkLinks?.[task.relatedWorkLinks.length - 1] || '';
+      setEditLinkState(prev => ({ ...prev, link: userLink, error: null }));
+    }
   };
 
   const toggleInvalidDomainModal = (errorType = null) => {
@@ -89,11 +109,14 @@ const ReviewButton = ({ user, task, updateTask }) => {
     const url = e.target.value;
     setLink(url);
     if (!url) {
-      setLinkError('A valid URL is required for review');
+      setEditLinkState(prev => ({ ...prev, error: 'A valid URL is required for review' }));
     } else if (!validURL(url)) {
-      setLinkError("Please enter a valid URL starting with 'https://'.");
+      setEditLinkState(prev => ({
+        ...prev,
+        error: "Please enter a valid URL starting with 'https://'.",
+      }));
     } else {
-      setLinkError(null);
+      setEditLinkState(prev => ({ ...prev, error: null }));
     }
   };
 
@@ -208,7 +231,10 @@ const ReviewButton = ({ user, task, updateTask }) => {
     event.preventDefault();
 
     if (!validURL(link)) {
-      setLinkError('Please enter a valid URL of at least 20 characters');
+      setEditLinkState(prev => ({
+        ...prev,
+        error: 'Please enter a valid URL of at least 20 characters',
+      }));
       return;
     }
 
@@ -234,6 +260,97 @@ const ReviewButton = ({ user, task, updateTask }) => {
     data['name'] = user.name;
     data['taskName'] = task.taskName;
     httpService.post(`${ApiEndpoint}/tasks/reviewreq/${myUserId}`, data);
+  };
+
+  const handleEditLink = () => {
+    if (!validURL(editLinkState.link)) {
+      setEditLinkState(prev => ({
+        ...prev,
+        error: 'Please enter a valid URL of at least 20 characters',
+      }));
+      return;
+    }
+
+    const validationResult = validateAllowedDomainTypes(editLinkState.link);
+    if (!validationResult.isValid) {
+      toggleInvalidDomainModal(validationResult.errorType);
+      return;
+    }
+
+    // Set loading state
+    setEditLinkState(prev => ({ ...prev, isEditing: true }));
+
+    // Update the task with the new link
+    const updatedTask = { ...task };
+
+    // If there are related work links, replace the last one (assuming it's the one for this user)
+    if (Array.isArray(updatedTask.relatedWorkLinks) && updatedTask.relatedWorkLinks.length > 0) {
+      updatedTask.relatedWorkLinks[updatedTask.relatedWorkLinks.length - 1] = editLinkState.link;
+    } else {
+      // If no related work links exist yet, add this one
+      updatedTask.relatedWorkLinks = [editLinkState.link];
+    }
+
+    // Call the update function from props
+    const result = updateTask(task._id, updatedTask);
+
+    // Handle both Promise and non-Promise return types
+    if (result && typeof result.then === 'function') {
+      // It's a Promise
+      result
+        .then(() => {
+          // Notify that the link has been updated
+          sendEditLinkNotification();
+
+          // Show success indicator
+          setEditLinkState(prev => ({ ...prev, isSuccess: true }));
+          setTimeout(() => {
+            setEditLinkState(prev => ({
+              ...prev,
+              isSuccess: false,
+              isOpen: false,
+            }));
+          }, 1500);
+        })
+        .catch(error => {
+          console.error('Error updating link:', error);
+          setEditLinkState(prev => ({
+            ...prev,
+            error: 'Failed to update link. Please try again.',
+          }));
+        })
+        .finally(() => {
+          setEditLinkState(prev => ({ ...prev, isEditing: false }));
+        });
+    } else {
+      // It's not a Promise
+      // Notify that the link has been updated
+      sendEditLinkNotification();
+
+      // Show success indicator
+      setEditLinkState(prev => ({ ...prev, isSuccess: true }));
+      setTimeout(() => {
+        setEditLinkState(prev => ({
+          ...prev,
+          isEditing: false,
+          isSuccess: false,
+          isOpen: false,
+        }));
+      }, 1500);
+    }
+  };
+
+  const sendEditLinkNotification = () => {
+    var data = {};
+    data['myUserId'] = myUserId;
+    data['name'] = user.name;
+    data['taskName'] = task.taskName;
+    data['isLinkUpdate'] = true;
+    httpService.post(`${ApiEndpoint}/tasks/reviewreq/${myUserId}`, data);
+  };
+
+  const handleEditLinkChange = e => {
+    setEditLinkState(prev => ({ ...prev, link: e.target.value }));
   };
 
   const buttonFormat = () => {
@@ -275,9 +392,15 @@ const ReviewButton = ({ user, task, updateTask }) => {
                     target="_blank"
                     className={darkMode ? 'text-light dark-mode-btn' : ''}
                   >
-                    View Link
+                    <FontAwesomeIcon icon={faExternalLinkAlt} /> View Link
                   </DropdownItem>
                 ))}
+              <DropdownItem
+                onClick={toggleEditLinkModal}
+                className={darkMode ? 'text-light dark-mode-btn' : ''}
+              >
+                <FontAwesomeIcon icon={faPencilAlt} /> Edit Link
+              </DropdownItem>
               <DropdownItem
                 onClick={() => {
                   setSelectedAction('Complete and Remove');
@@ -302,9 +425,34 @@ const ReviewButton = ({ user, task, updateTask }) => {
         );
       } else if (user.personId === myUserId) {
         return (
-          <Button className="reviewBtn" color="info" disabled>
-            Work Submitted and Awaiting Review
-          </Button>
+          <UncontrolledDropdown>
+            <DropdownToggle
+              className="btn--dark-sea-green reviewBtn"
+              caret
+              style={darkMode ? boxStyleDark : boxStyle}
+            >
+              Work Submitted and Awaiting Review
+            </DropdownToggle>
+            <DropdownMenu className={darkMode ? 'bg-space-cadet' : ''}>
+              {task.relatedWorkLinks &&
+                task.relatedWorkLinks.map((link, index) => (
+                  <DropdownItem
+                    key={index}
+                    href={link}
+                    target="_blank"
+                    className={darkMode ? 'text-light dark-mode-btn' : ''}
+                  >
+                    <FontAwesomeIcon icon={faExternalLinkAlt} /> View Link
+                  </DropdownItem>
+                ))}
+              <DropdownItem
+                onClick={toggleEditLinkModal}
+                className={darkMode ? 'text-light dark-mode-btn' : ''}
+              >
+                <FontAwesomeIcon icon={faPencilAlt} /> Edit Link
+              </DropdownItem>
+            </DropdownMenu>
+          </UncontrolledDropdown>
         );
       } else {
         return (
@@ -400,14 +548,17 @@ const ReviewButton = ({ user, task, updateTask }) => {
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           Please add link to related work:
           <Input type="text" required value={link} onChange={handleLink} />
-          {linkError && <div className="text-danger">{linkError}</div>}
+          {editLinkState.error && <div className="text-danger">{editLinkState.error}</div>}
         </ModalBody>
         <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
           <Button
             onClick={e => {
               e.preventDefault();
               if (!link || !validURL(link)) {
-                setLinkError("Please enter a valid URL starting with 'https://'.");
+                setEditLinkState(prev => ({
+                  ...prev,
+                  error: "Please enter a valid URL starting with 'https://'.",
+                }));
                 return;
               }
 
@@ -430,6 +581,50 @@ const ReviewButton = ({ user, task, updateTask }) => {
             {reviewStatus === 'Unsubmitted' ? `Submit` : `Complete`}
           </Button>
           <Button onClick={modalCancelButtonHandler} style={darkMode ? boxStyleDark : boxStyle}>
+            Cancel
+          </Button>
+        </ModalFooter>
+      </Modal>
+
+      {/* Edit Link Modal */}
+      <Modal
+        isOpen={editLinkState.isOpen}
+        toggle={toggleEditLinkModal}
+        className={darkMode ? 'text-light dark-mode' : ''}
+      >
+        <ModalHeader toggle={toggleEditLinkModal} className={darkMode ? 'bg-space-cadet' : ''}>
+          Edit Submitted Link
+        </ModalHeader>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+          <p>Update the link to your submitted work:</p>
+          <Input type="text" required value={editLinkState.link} onChange={handleEditLinkChange} />
+          {editLinkState.error && <div className="text-danger">{editLinkState.error}</div>}
+        </ModalBody>
+        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+          <Button
+            onClick={handleEditLink}
+            color="primary"
+            className="float-left"
+            style={darkMode ? boxStyleDark : boxStyle}
+            disabled={editLinkState.isEditing}
+          >
+            {editLinkState.isEditing ? (
+              <>
+                <Spinner size="sm" className="mr-2" /> Updating...
+              </>
+            ) : editLinkState.isSuccess ? (
+              <>
+                <FontAwesomeIcon icon={faCheck} className="mr-2" /> Updated!
+              </>
+            ) : (
+              'Update Link'
+            )}
+          </Button>
+          <Button
+            onClick={toggleEditLinkModal}
+            style={darkMode ? boxStyleDark : boxStyle}
+            disabled={editLinkState.isEditing}
+          >
             Cancel
           </Button>
         </ModalFooter>
