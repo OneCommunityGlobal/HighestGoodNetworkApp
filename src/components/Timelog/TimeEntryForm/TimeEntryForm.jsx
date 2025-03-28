@@ -559,6 +559,7 @@ function TimeEntryForm(props) {
 
   useEffect(() => {
     if (isOpen) {
+      setActualDate(null);
       getActualDate();
     }
   }, [isOpen]);
