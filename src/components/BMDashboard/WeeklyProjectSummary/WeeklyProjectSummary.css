@@ -341,10 +341,17 @@
 }
 
 .tool-donut-wrapper {
+  --donut-text-color: #000;
+  --legend-text-color: #000;
   width: 100%;
   max-width: 400px;
   margin: 0 auto;
   text-align: center;
+}
+
+.dark-mode .tool-donut-wrapper {
+  --donut-text-color: #fff;
+  --legend-text-color: #fff;
 }
 
 .tool-donut-title {
@@ -353,6 +360,10 @@
   margin-bottom: 1.2rem;
   font-size: 1.1rem;
   color: #000000;
+}
+
+.dark-mode .tool-donut-title {
+  color: #fff;
 }
 
 .tool-donut-filters {
@@ -378,6 +389,10 @@
   align-items: center;
   gap: 4px;
   color: #000; 
+}
+
+.dark-mode .filter-label {
+  color: #fff;
 }
 
 .filter-value {
