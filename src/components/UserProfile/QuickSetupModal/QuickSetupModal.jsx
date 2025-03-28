@@ -145,6 +145,7 @@ function QuickSetupModal(props) {
           setShowMessage={setShowMessage}
           editMode={editMode}
           title={curtitle}
+          QSTTeamCodes={QSTTeamCodes}
         />
       ) : (
         ''
@@ -162,6 +163,7 @@ function QuickSetupModal(props) {
           title={curtitle}
           setTitleOnSet={props.setTitleOnSet}
           refreshModalTitles={refreshModalTitles}
+          updateUserProfile={props.updateUserProfile}
         />
       ) : (
         ''
