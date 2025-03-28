@@ -40,7 +40,7 @@ const projectStatusButtons = [
   },
   {
     title: 'Avg Project Duration',
-    value: '1754 hrs',
+    value: '17 hrs',
     change: '+13% week over week',
     bgColor: '#FFF6EE', 
     buttonColor: '#FFD8A5', 

@@ -339,6 +339,19 @@
   margin: 12px 0; 
 }
 
+.weekly-card-title {
+  color: #000;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.weekly-status-value {
+  color: #000;
+  font-size: 40px;
+  font-weight: 600;
+}
+
+
 /* ---------------- RESPONSIVE BREAKPOINTS ---------------- */
 @media (min-width: 1600px) {
   .project-status-grid {
