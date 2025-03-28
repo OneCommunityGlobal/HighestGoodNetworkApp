@@ -31,6 +31,7 @@
     "joi": "^14.0.6",
     "jwt-decode": "^2.2.0",
     "lodash": "^4.17.21",
+    "lucide-react": "^0.484.0",
     "lz-string": "^1.5.0",
     "moment": "^2.29.2",
     "moment-timezone": "^0.5.33",

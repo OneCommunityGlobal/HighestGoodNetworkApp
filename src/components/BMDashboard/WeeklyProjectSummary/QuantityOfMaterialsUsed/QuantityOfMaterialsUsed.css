@@ -10,10 +10,42 @@
 /* Chart Container */
 .quantity-of-materials-used-chart-container {
   width: 100%;
-  min-height: 250px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+  transition: scrollbar-color 0.3s ease;
+}
+
+/* On hover, show scrollbar in Firefox */
+.quantity-of-materials-used-chart-container:hover {
+  scrollbar-color: #aaa transparent;
+}
+
+/* WebKit Browsers (Chrome, Safari) */
+.quantity-of-materials-used-chart-container::-webkit-scrollbar {
+  height: 4px;
+  background: transparent;
+}
+
+.quantity-of-materials-used-chart-container::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 3px;
+  transition: background 0.3s ease;
+}
+
+/* Show WebKit scrollbar thumb on hover */
+.quantity-of-materials-used-chart-container:hover::-webkit-scrollbar-thumb {
+  background: #aaa;
+}
+
+/* Inner chart content sizing */
+.quantity-of-materials-used-chart-inner-scrollable {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column;
+  min-height: 200px;
+  min-width: 100%;
 }
 
 /* Dropdown Container - Stay in a row but stack when needed */
@@ -66,13 +98,44 @@ div.weekly-project-summary-card.normal-card .dropdown-item {
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  overflow-x: auto !important; /* Enable horizontal scroll if text overflows */
+  overflow-x: auto;
+  white-space: nowrap;
   flex-wrap: nowrap;
-  scrollbar-width: thin;
+  max-width: 100%;
+  scrollbar-width: none;
   -ms-overflow-style: none;
   position: relative;
 }
 
+/* Firefox: show scrollbar on hover */
+.quantity-of-materials-used-card .custom-select__value-container:hover {
+  scrollbar-width: thin;
+}
+
+/* WebKit: hide by default */
+.quantity-of-materials-used-card .custom-select__value-container::-webkit-scrollbar {
+  height: 2px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* WebKit: show scrollbar on hover */
+.quantity-of-materials-used-card .custom-select__value-container:hover::-webkit-scrollbar {
+  height: 2px;
+  background: #f1f1f1;
+  opacity: 1;
+}
+
+/* WebKit: thumb styling */
+.quantity-of-materials-used-card .custom-select__value-container::-webkit-scrollbar-thumb {
+  background: #aaa;
+  border-radius: 2px;
+}
+
+/* WebKit: thumb on hover */
+.quantity-of-materials-used-card .custom-select__value-container:hover::-webkit-scrollbar-thumb {
+  background: #666;
+}
 .quantity-of-materials-used-card .multi-select .custom-select__value-container {
   max-width: 75%;
 }
@@ -184,76 +247,187 @@ div.weekly-project-summary-card.normal-card .dropdown-item {
   color: var(--text-color) !important;
 }
 
-.custom-legend-container {
+.quantity-of-materials-used-custom-legend-container {
   display: flex;
-  justify-content: center; /* Center horizontally */
+  justify-content: center;
   align-items: center;
   flex-wrap: wrap;
-  margin-top: 3px; /* Space from the x-axis */
+  margin-top: 3px;
   font-size: 8px;
   color: #555;
   width: 100%;
   text-align: center;
+  column-gap: 2px;
 }
 
-.legend-item {
+.quantity-of-materials-used-legend-item {
   display: flex;
   align-items: center;
   gap: 2px;
-  margin: 0 3px; /* Avoids spacing issues */
+  margin: 0 3px;
 }
 
-.legend-dot {
+.quantity-of-materials-used-legend-dot {
   width: 10px;
   height: 10px;
   border-radius: 50%;
   display: inline-block;
 }
 
+.quantity-of-materials-used-chart-info-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px;
+  color: var(--text-color);
+  z-index: 5;
+}
+
+.quantity-of-materials-used-chart-info-button:hover {
+  color: #007bff;
+  transform: scale(1.1);
+  transition: transform 0.2s ease;
+}
+
+.quantity-of-materials-used-chart-tooltip {
+  font-size: 10px !important;
+  max-width: 220px;
+  text-align: left;
+}
+
+.quantity-of-materials-used-swap-dates-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--card-bg);
+  border: 1px var(--text-color);
+  color: var(--text-color);
+  border-radius: 4px;
+  padding: 2px 6px;
+  height: 25px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.quantity-of-materials-used-swap-dates-button:hover {
+  background: var(--button-hover);
+  transform: scale(1.05);
+}
+
 /* Adjust Drop downs on medium size screens */
-@media (max-width: 900px) {
-  div.weekly-project-summary-card.normal-card .dropdown-container {
-    flex-direction: column !important;
-    align-items: center !important;
-    gap: 5px !important;
-  }
-
-  div.weekly-project-summary-card.normal-card .dropdown-item {
-    width: 90% !important;
-    max-width: none !important;
-    font-size: 11px !important;
-  }
-}
-
-@media (max-width: 768px) {
-  div.weekly-project-summary-card.normal-card .dropdown-container {
-    gap: 1px !important;
-    flex-wrap: nowrap !important;
-  }
-
-  div.weekly-project-summary-card.normal-card .dropdown-item {
-    min-width: 50px !important;
-    max-width: 100px !important;
-    font-size: 11px !important;
-  }
-}
-
-/* Mobile screens - Stack dropdowns */
-@media (max-width: 480px) {
+@media (max-width: 1200px) {
   div.weekly-project-summary-card.normal-card .dropdown-container {
     flex-direction: column !important;
     align-items: center !important;
     width: 100% !important;
+    gap: 6px !important;
   }
 
   div.weekly-project-summary-card.normal-card .dropdown-item {
-    width: 90% !important;
+    width: 95% !important;
     max-width: none !important;
-    font-size: 10px !important;
+    font-size: 11px !important;
   }
 
   .quantity-of-materials-used-card .custom-select__menu {
+    width: 95% !important;
     max-width: 100% !important;
-    width: 90% !important;
+  }
+}
+
+.quantity-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.quantity-modal-content {
+  background: var(--card-bg);
+  color: var(--text-color);
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+  animation: modalFadeIn 0.25s ease;
+}
+
+.quantity-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.quantity-modal-heading {
+  font-size: 16px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.quantity-modal-close-button {
+  background: #333;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 11px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.quantity-modal-close-button:hover {
+  background: #555;
+}
+
+.quantity-modal-subheading {
+  margin-top: 15px;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.quantity-modal-timeline {
+  font-size: 13px;
+  border-top: 1px solid #ddd;
+  margin-top: 8px;
+  padding-top: 8px;
+}
+
+.timeline-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 2px 0;
+  border-bottom: 1px dashed #ddd;
+}
+
+.timeline-date {
+  color: var(--text-color);
+}
+
+.timeline-qty {
+  font-weight: bold;
+  color: #007bff;
+}
+
+@keyframes modalFadeIn {
+  from {
+    transform: scale(0.96);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
   }
 }
