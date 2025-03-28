@@ -26,8 +26,14 @@ function TotalPeopleReport(props) {
   const userList = useMemo(() => userProfiles.map(user => user._id), [userProfiles]);
 
   const loadTimeEntriesForPeriod = useCallback(async (controller) => {
+    const url = ENDPOINTS.TIME_ENTRIES_REPORTS;
+    
+    if (!url) {
+      setTotalPeopleReportDataLoading(false);
+      return;
+    }
+    
     try {
-      const url = ENDPOINTS.TIME_ENTRIES_REPORTS_TOTAL_PEOPLE_REPORT;
       const res = await axios.post(url, { users: userList, fromDate, toDate }, { signal: controller.signal });
       const timeEntries = res.data.map(entry => ({
         userId: entry.personId,
@@ -37,12 +43,8 @@ function TotalPeopleReport(props) {
         date: entry.dateOfWork,
       }));
       setAllTimeEntries(timeEntries);
-    } catch (err) {
-      if (axios.isCancel(err)) {
-        console.log('Request canceled', err.message);
-      } else {
-        console.error("API error:", err.message);
-      }
+    } catch (error) {
+      setTotalPeopleReportDataLoading(false);
     }
   }, [fromDate, toDate, userList]);
 
@@ -74,9 +76,7 @@ function TotalPeopleReport(props) {
       range = 7;
     } else if (timeRange === 'year') {
       range = 4;
-    } else {
-      console.log('The time range should be month or year.');
-    }
+    }    
     return objectArray.reduce((acc, obj) => {
       const key = obj.date.substring(0, range);
       const month = acc[key] || [];

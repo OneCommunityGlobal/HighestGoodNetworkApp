@@ -4,8 +4,9 @@ import hasPermission from '../../../utils/permissions';
 import { deleteTitleById } from 'actions/title';
 import { useSelector } from 'react-redux';
 import '../../Header/DarkMode.css';
+import { toast } from "react-toastify";
 
-function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfile, setTitleOnSet, refreshModalTitles}) {
+function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfile, setTitleOnSet, refreshModalTitles, updateUserProfile}) {
   const darkMode = useSelector(state => state.theme.darkMode)
   const [validation, setValid] = useState({
     volunteerAgree: false,
@@ -25,7 +26,7 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
       : setValid(prev => ({ ...prev, volunteerAgree: true }));
   };
 
-  const setAssignedOnClick = () => {
+  const setAssignedOnClick = async () => {
     const googleDocRegex = /^https:\/\/docs\.google\.com\/document\/d\/.+$/;
 
     if (!googleDocRegex.test(googleDoc)) {
@@ -76,13 +77,19 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
       if (userProfile.teams.includes(title?.teamAssiged)) data.teams.pop();
       if (userProfile.projects.includes(title.projectAssigned)) data.projects.pop();
 
+      const result = await updateUserProfile({...userProfile,...data});
       if (hasPermission("manageAdminLinks")) {
         setUserProfile(prev => ({ ...prev, ...data }));
       }
 
-      setTitleOnSet(false);
+      setTitleOnSet(true); 
       setValid(() => ({ volunteerAgree: false }));
       setIsOpen(false);
+
+      const SUCCESS_MESSAGE =
+        "Success! Google Doc, Team Code, Project Assignment, " +
+        "and Media Folder details are now updated for this individual.";
+      toast.success(SUCCESS_MESSAGE, { autoClose: 10000 }); 
     }
   };
 
@@ -185,7 +192,7 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
           ) : (
             ''
           )}
-          <div className="container ml-1">
+          <div className="container ml-1 pdrl-1">
             <Input
               type="checkbox"
               required

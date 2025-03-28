@@ -41,6 +41,7 @@ function TableFilter({
   setSortByExpiredDateDesc,
   // darkMode,
 }) {
+  const darkMode = useSelector(state => state.theme.darkMode);
   return (
     <tr>
       <td style={{ width: '20%' }}>
@@ -50,6 +51,7 @@ function TableFilter({
           type="text"
           value={emailFilter}
           onChange={e => setEmailFilter(e.target.value)}
+          className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
         />
       </td>
       <td id="weekly-committed" style={{ width: '10%' }} />
@@ -64,6 +66,7 @@ function TableFilter({
               setSortByExpiredDateDesc('default');
             }
           }}
+          className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
         >
           <option value="default">Select a Option</option>
           <option value>Latest First</option>
@@ -81,6 +84,7 @@ function TableFilter({
               setSortByCreationDateDesc('default');
             }
           }}
+          className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
         >
           <option value="default">Select a Option</option>
           <option value>Latest First</option>
@@ -94,6 +98,7 @@ function TableFilter({
             id="status-filter"
             value={statusFilter}
             onChange={e => setStatusFilter(e.target.value)}
+            className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
           >
             <option value="">All</option>
             <option value={INV_STATUS.ACITVE}>Active</option>
@@ -353,14 +358,11 @@ function SetupHistoryPopup(props) {
                   />
                   {filteredSetupInvitationData.map((record, index) => {
                     return (
-                      <tr key={record}>
+                      <tr key={record.token || `invitation-${index}`}>
                         <td>{record.email}</td>
                         <td>{record.weeklyCommittedHours}</td>
                         <td>{formatDate(record.createdDate)}</td>
                         <td>{formatDate(record.expiration)}</td>
-                        {/* <td>{new Date(record.expiration) > Date.now() && !record.isCancelled ? INV_STATUS.ACITVE :
-                              record.isCancelled ? INV_STATUS.CANCELLED :
-                              new Date(record.expiration) < Date.now() ? INV_STATUS.EXPIRED : null}</td> */}
                         <td>
                           {(() => {
                             if (new Date(record.expiration) > Date.now() && !record.isCancelled) {
@@ -377,7 +379,6 @@ function SetupHistoryPopup(props) {
                         </td>
                         <td>
                           <Button
-                            key={record}
                             color="primary"
                             disabled={isButtonDisabled}
                             onClick={e => onClickRefresh(e, index)}
@@ -387,7 +388,6 @@ function SetupHistoryPopup(props) {
                         </td>
                         <td>
                           <Button
-                            key={record}
                             color="danger"
                             onClick={e => onClickCancel(e, index)}
                           >

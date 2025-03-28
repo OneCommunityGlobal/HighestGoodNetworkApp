@@ -663,67 +663,64 @@ function Timelog(props) {
                       {isAuthUser ? (
                         <div className="tasks-and-timelog-header-add-time-div mt-2">
                           <div>
-                            <Button
-                              className="responsive-font-size"
-                              color="success"
-                              onClick={toggle}
-                              style={darkMode ? boxStyleDark : boxStyle}
-                            >
-                              {'Add Intangible Time Entry '}
-                              <i
-                                className="fa fa-info-circle"
-                                data-tip
-                                data-for="timeEntryTip"
-                                data-delay-hide="1000"
-                                aria-hidden="true"
-                                title=""
-                              />
-                            </Button>
-                            <ReactTooltip
-                              id="timeEntryTip"
-                              place="bottom"
-                              effect="solid"
-                              delayShow={500}
-                            >
-                              Clicking this button only allows for “Intangible Time” to be added to
-                              your time log.{' '}
-                              <u>
-                                You can manually log Intangible Time but it doesn’t <br />
-                                count towards your weekly time commitment.
-                              </u>
-                              <br />
-                              <br />
-                              “Tangible Time” is the default for logging time using the timer at the
-                              top of the app. It represents all work done on assigned action items{' '}
-                              <br />
-                              and is what counts towards a person’s weekly volunteer time
-                              commitment. The only way for a volunteer to log Tangible Time is by
-                              using the clock
-                              <br />
-                              in/out timer. <br />
-                              <br />
-                              Intangible Time is almost always used only by the management team. It
-                              is used for weekly Monday night management team calls, monthly
-                              management
-                              <br />
-                              team reviews and Welcome Team Calls, and non-action-item related
-                              research, classes, and other learning, meetings, etc. that benefit or
-                              relate to <br />
-                              the project but aren’t related to a specific action item on the{' '}
-                              <a href="https://www.tinyurl.com/oc-os-wbs">
-                                One Community Work Breakdown Structure.
-                              </a>
-                              <br />
-                              <br />
-                              Intangible Time may also be logged by a volunteer when in the field or
-                              for other reasons when the timer wasn’t able to be used. In these
-                              cases, the <br />
-                              volunteer will use this button to log time as “intangible time” and
-                              then request that an Admin manually change the log from Intangible to
-                              Tangible.
-                              <br />
-                              <br />
-                            </ReactTooltip>
+                            <div className="followup-tooltip-container">
+                              <Button
+                                className="btn btn-success"
+                                onClick={toggle}
+                                style={darkMode ? boxStyleDark : boxStyle}
+                              >
+                                Add Intangible Time Entry
+                                <div className="followup-tooltip-button">
+                                  <i
+                                    className="fa fa-info-circle"
+                                    data-tip
+                                    data-for="timeEntryTip"
+                                    aria-hidden="true"
+                                    title=""
+                                  />
+                                  <div className="followup-tooltip">
+                                    Clicking this button only allows for “Intangible Time” to be
+                                    <u>
+                                      added to your time log. You can manually log Intangible Time,
+                                      but it does not count towards your weekly time commitment.
+                                    </u>
+                                    <br />
+                                    <br />
+                                    “Tangible Time” is the default for logging time using the timer
+                                    at the top of the app. It represents all work done on assigned
+                                    action items and is what counts towards a person’s weekly
+                                    volunteer time commitment.
+                                    <br />
+                                    <br />
+                                    The only way for a volunteer to log Tangible Time is by using
+                                    the clock in/out timer.
+                                    <br />
+                                    <br />
+                                    Intangible Time is almost always used only by the management
+                                    team. It is used for weekly Monday night management team calls,
+                                    monthly management team reviews and Welcome Team Calls, and
+                                    non-action-item-related research, classes, and other learning,
+                                    meetings, etc., that benefit or relate to the project but are
+                                    not related to a specific action item in the{' '}
+                                    <a
+                                      href="https://www.tinyurl.com/oc-os-wbs"
+                                      onClick={e => e.stopPropagation()}
+                                    >
+                                      One Community Work Breakdown Structure.
+                                    </a>
+                                    <br />
+                                    <br />
+                                    Intangible Time may also be logged by a volunteer when in the
+                                    field or for other reasons when the timer was not able to be
+                                    used. In these cases, the volunteer will use this button to log
+                                    time as “Intangible Time” and then request that an Admin
+                                    manually change the log from Intangible to Tangible.
+                                    <br />
+                                    <br />
+                                  </div>
+                                </div>
+                              </Button>
+                            </div>
                           </div>
                         </div>
                       ) : (
@@ -788,7 +785,9 @@ function Timelog(props) {
                   <Nav tabs className="task-and-timelog-card-nav mb-1 responsive-font-size">
                     <NavItem>
                       <NavLink
-                        className={classnames({ active: timeLogState.activeTab === 0 })}
+                        className={`${classnames({ active: timeLogState.activeTab === 0 })} ${
+                          darkMode ? 'dark-mode' : ''
+                        }`}
                         onClick={() => {
                           changeTab(0);
                         }}
@@ -799,7 +798,9 @@ function Timelog(props) {
                       </NavLink>
                     </NavItem>
                     <NavLink
-                      className={classnames({ active: timeLogState.activeTab === 1 })}
+                      className={`${classnames({ active: timeLogState.activeTab === 1 })} ${
+                        darkMode ? 'dark-mode' : ''
+                      }`}
                       onClick={() => {
                         changeTab(1);
                       }}
@@ -811,7 +812,9 @@ function Timelog(props) {
 
                     <NavItem>
                       <NavLink
-                        className={classnames({ active: timeLogState.activeTab === 2 })}
+                        className={`${classnames({ active: timeLogState.activeTab === 2 })} ${
+                          darkMode ? 'dark-mode' : ''
+                        }`}
                         onClick={() => {
                           changeTab(2);
                         }}
@@ -823,7 +826,9 @@ function Timelog(props) {
                     </NavItem>
                     <NavItem>
                       <NavLink
-                        className={classnames({ active: timeLogState.activeTab === 3 })}
+                        className={`${classnames({ active: timeLogState.activeTab === 3 })} ${
+                          darkMode ? 'dark-mode' : ''
+                        }`}
                         onClick={() => {
                           changeTab(3);
                         }}
@@ -835,7 +840,9 @@ function Timelog(props) {
                     </NavItem>
                     <NavItem>
                       <NavLink
-                        className={classnames({ active: timeLogState.activeTab === 4 })}
+                        className={`${classnames({ active: timeLogState.activeTab === 4 })} ${
+                          darkMode ? 'dark-mode' : ''
+                        }`}
                         onClick={() => {
                           changeTab(4);
                         }}
@@ -847,7 +854,9 @@ function Timelog(props) {
                     </NavItem>
                     <NavItem>
                       <NavLink
-                        className={classnames({ active: timeLogState.activeTab === 5 })}
+                        className={`${classnames({ active: timeLogState.activeTab === 5 })} ${
+                          darkMode ? 'dark-mode' : ''
+                        }`}
                         onClick={() => {
                           changeTab(5);
                         }}
@@ -859,7 +868,9 @@ function Timelog(props) {
                     </NavItem>
                     <NavItem>
                       <NavLink
-                        className={classnames({ active: timeLogState.activeTab === 6 })}
+                        className={`${classnames({ active: timeLogState.activeTab === 6 })} ${
+                          darkMode ? 'dark-mode' : ''
+                        }`}
                         onClick={() => {
                           changeTab(6);
                         }}
@@ -891,7 +902,7 @@ function Timelog(props) {
                             From
                           </Label>
                           <Input
-                            className="responsive-font-size"
+                            className={`responsive-font-size ${darkMode ? "bg-darkmode-liblack text-light border-0 calendar-icon-dark" : ''}`}
                             type="date"
                             name="fromDate"
                             id="fromDate"
@@ -907,7 +918,7 @@ function Timelog(props) {
                             To
                           </Label>
                           <Input
-                            className="responsive-font-size"
+                            className={`responsive-font-size ${darkMode ? "bg-darkmode-liblack text-light border-0 calendar-icon-dark" : ''}`}
                             type="date"
                             name="toDate"
                             id="toDate"
