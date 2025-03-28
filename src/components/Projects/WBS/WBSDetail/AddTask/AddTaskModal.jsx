@@ -360,7 +360,7 @@ function AddTaskModal(props) {
             className="btn btn-primary btn-sm ml-2"
             onClick={() => paste()}
             disabled={hoursWarning}
-            style={darkMode ? boxStyleDark : boxStyle}
+            style={{ ...boxStyle, marginRight: '8px' }}
           >
             Paste
           </button>
@@ -369,7 +369,7 @@ function AddTaskModal(props) {
             size="small"
             className="btn btn-danger btn-sm ml-2"
             onClick={() => clear()}
-            style={darkMode ? boxStyleDark : boxStyle}
+            style={boxStyle}
           >
             Reset
           </button>
@@ -426,70 +426,102 @@ function AddTaskModal(props) {
                 <span className={`add_new_task_form-label ${fontColor}`} >Assigned</span>
                 <span className="add_new_task_form-input_area">
                   <div className="flex-row d-inline align-items-center" >
-                    <div className="form-check form-check-inline">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        id="true"
-                        name="Assigned"
-                        value={true}
-                        checked={assigned}
-                        onChange={() => setAssigned(true)}
-                      />
-                      <label className={`form-check-label ${fontColor}`} htmlFor="true">
-                        Yes
-                      </label>
-                    </div>
-                    <div className="form-check form-check-inline">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        id="false"
-                        name="Assigned"
-                        value={false}
-                        checked={!assigned}
-                        onChange={() => setAssigned(false)}
-                      />
-                      <label className={`form-check-label ${fontColor}`} htmlFor="false">
-                        No
-                      </label>
-                    </div>
+                  <div className="radio-container">
+  <div className="form-check form-check-inline">
+    <input
+      className="form-check-input"
+      type="radio"
+      id="true"
+      name="Assigned"
+      value={true}
+      checked={assigned}
+      onChange={() => setAssigned(true)}
+    />
+    <label className={`form-check-label ${fontColor}`} htmlFor="true">
+      Yes
+    </label>
+  </div>
+  <div className="form-check form-check-inline">
+    <input
+      className="form-check-input"
+      type="radio"
+      id="false"
+      name="Assigned"
+      value={false}
+      checked={!assigned}
+      onChange={() => setAssigned(false)}
+    />
+    <label className={`form-check-label ${fontColor}`} htmlFor="false">
+      No
+    </label>
+  </div>
+</div>
+
                   </div>
                 </span>
               </div>
               <div className="add_new_task_form-group">
                 <span className= {`add_new_task_form-label ${fontColor}`}>Status</span>
                 <span className="add_new_task_form-input_area">
-                 <div className="d-flex align-items-center flex-wrap"> 
-                  <span className="form-check form-check-inline mr-5">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        id="active"
-                        name="status"
-                        value="Active"
-                        checked={status === 'Active' || status === 'Started'}
-                        onChange={(e) => setStatus(e.target.value)}
-                      />
-                      <label className={`form-check-label ${fontColor}`} htmlFor="active">
-                        Active
-                      </label>
-                    </span>
-                  <span className="form-check">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        id="notStarted"
-                        name="status"
-                        value="Not Started"
-                        checked={status === 'Not Started'}
-                        onChange={(e) => setStatus(e.target.value)}
-                      />
-                      <label className={`form-check-label ${fontColor}`} htmlFor="notStarted">
-                        Not Started
-                      </label>
-                  </span>
-                 </div>
+                 <div className="radio-container">
+  <div className="form-check form-check-inline">
+    <input
+      className="form-check-input"
+      type="radio"
+      id="active"
+      name="status"
+      value="Active"
+      checked={status === 'Active' || status === 'Started'}
+      onChange={(e) => setStatus(e.target.value)}
+    />
+    <label className={`form-check-label ${fontColor}`} htmlFor="active">
+      Active
+    </label>
+  </div>
+  <div className="form-check form-check-inline">
+    <input
+      className="form-check-input"
+      type="radio"
+      id="notStarted"
+      name="status"
+      value="Not Started"
+      checked={status === 'Not Started'}
+      onChange={(e) => setStatus(e.target.value)}
+    />
+    <label className={`form-check-label ${fontColor}`} htmlFor="notStarted">
+      Not Started
+    </label>
+  </div>
+  <div className="form-check form-check-inline">
+    <input
+      className="form-check-input"
+      type="radio"
+      id="paused"
+      name="status"
+      value="Paused"
+      checked={status === 'Paused'}
+      onChange={(e) => setStatus(e.target.value)}
+    />
+    <label className={`form-check-label ${fontColor}`} htmlFor="paused">
+      Paused
+    </label>
+  </div>
+  <div className="form-check form-check-inline">
+    <input
+      className="form-check-input"
+      type="radio"
+      id="complete"
+      name="status"
+      value="Complete"
+      checked={status === 'Complete'}
+      onChange={(e) => setStatus(e.target.value)}
+    />
+    <label className={`form-check-label ${fontColor}`} htmlFor="complete">
+      Complete
+    </label>
+  </div>
+</div>
+
                  <div className="d-flex align-items-center flex-wrap">
                   <span className="form-check form-check-inline mr-5">
                         <input
@@ -530,19 +562,21 @@ function AddTaskModal(props) {
                 </span>
                 <span className="add_new_task_form-input_area">
                   <div className="py-2 d-flex align-items-center justify-content-sm-around">
-                    <label htmlFor="bestCaseInput" className={`hours-label text-nowrap align-self-center ${fontColor}`}>
-                      Best-case
-                    </label>
-                    <input
-                      type="number"
-                      min="0"
-                      max="500"
-                      value={hoursBest}
-                      onChange={handleBestHoursChange}
-                      onBlur={handleBestHoursBlur}
-                      id="bestCaseInput"
-                      className='hours-input'
-                    />
+                   <label htmlFor="bestCaseInput" className={`hours-label text-nowrap align-self-center ${fontColor}`}>
+  Best-case
+</label>
+<input
+  type="number"
+  min="0"
+  max="500"
+  value={hoursBest}
+  onChange={handleBestHoursChange}
+  onBlur={handleBestHoursBlur}
+  id="bestCaseInput"
+  className="hours-input"
+  style={{ width: '100%', maxWidth: '120px', padding: '5px' }}
+/>
+
                     
                   </div>
                   <div className="warning">
@@ -627,6 +661,7 @@ function AddTaskModal(props) {
                       type="button"
                       data-tip="Add Link"
                       onClick={addLink}
+                      style={{ marginLeft: '5px' }}
                     >
                       <i className={`fa fa-plus ${fontColor}`} aria-hidden="true" />
                     </button> 
@@ -700,7 +735,7 @@ function AddTaskModal(props) {
                 </div>
               </div>
               <div className="d-flex border">
-                <span scope="col" className={`form-date p-1 ${fontColor}`}>Start Date</span>
+                 <span scope="col" className={`form-date p-1 ${fontColor}`} style={{ width: 'auto', minWidth: '150px' }}>Start Date</span>
                 <span scope="col" className="border-left p-1">
                   <div>
                     <DayPickerInput
@@ -717,7 +752,7 @@ function AddTaskModal(props) {
                 </span>
               </div>
               <div className="d-flex border align-items-center">
-                <span scope="col" className={`form-date p-1 ${fontColor}`}>End Date</span>
+                <span scope="col" className={`form-date p-1 ${fontColor}`} style={{ width: 'auto', minWidth: '150px' }}>End Date</span>
                 <span scope="col" className='border-left p-1'>
                   <DayPickerInput
                     format={FORMAT}

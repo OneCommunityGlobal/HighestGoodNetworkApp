@@ -1,10 +1,28 @@
-.hours-label {
-  font-weight: normal;
-  width: 75px;
+.form-check-inline {
+  margin-right: 15px;
+  /* Add spacing between inline radio buttons */
 }
-.hours-input {
-  width: 20%;
+
+.form-check {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
 }
-.form-date {
-  width: 30%;
+
+.form-check-label {
+  margin-left: 5px;
+  cursor: pointer;
+}
+
+.radio-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  /* Add space between radio button groups */
+}
+
+.flex-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
 }
