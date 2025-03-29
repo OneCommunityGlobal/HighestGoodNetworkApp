@@ -17,22 +17,24 @@ import { getPopupById } from './../../../../../actions/popupEditorAction';
 import { boxStyle, boxStyleDark } from 'styles';
 import { formatDate } from 'utils/formatDate';
 
-const TINY_MCE_INIT_OPTIONS = {
-  license_key: 'gpl',
-  menubar: false,
-  toolbar: false,
-  branding: false,
-  min_height: 80,
-  max_height: 300,
-  autoresize_bottom_margin: 1,
-};
-
 function Task(props) {
   /*
    * -------------------------------- variable declarations --------------------------------
    */
   // props from store
   const { tasks, darkMode } = props;
+
+  const TINY_MCE_INIT_OPTIONS = {
+    license_key: 'gpl',
+    menubar: false,
+    toolbar: false,
+    branding: false,
+    min_height: 80,
+    max_height: 300,
+    autoresize_bottom_margin: 1,
+    skin: darkMode ? 'oxide-dark' : 'oxide',
+    content_css: darkMode ? 'dark' : 'default',
+  };
 
   const names = props.resources.map(element => element.name);
   const colors_objs = assignColorsToInitials(names);

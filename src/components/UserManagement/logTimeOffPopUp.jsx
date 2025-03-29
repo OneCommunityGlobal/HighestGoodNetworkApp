@@ -380,7 +380,7 @@ const LogTimeOffPopUp = React.memo(props => {
                     dateFormat="MM/dd/yyyy"
                     placeholderText="Select a Sunday"
                     id="dateOfLeave"
-                    className="date-of-leave-datepicker"
+                    className={`date-of-leave-datepicker ${darkMode ? 'bg-darkmode-liblack text-light border-0 calendar-icon-dark' : ''}`}
                   />
 
                   <FormText color="danger">{requestDataErrors.dateOfLeaveError}</FormText>
@@ -397,6 +397,7 @@ const LogTimeOffPopUp = React.memo(props => {
                     id="numberOfWeeks"
                     value={requestData.numberOfWeeks}
                     onChange={e => handleAddRequestDataChange(e)}
+                    className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                   />
                   <FormText color="danger">{requestDataErrors.numberOfWeeksError}</FormText>
                 </FormGroup>
@@ -415,6 +416,7 @@ const LogTimeOffPopUp = React.memo(props => {
                     id="reasonForLeave"
                     value={requestData.reasonForLeave}
                     onChange={e => handleAddRequestDataChange(e)}
+                    className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                   />
                   <FormText color="danger">{requestDataErrors.reasonForLeaveError}</FormText>
                 </FormGroup>
@@ -507,6 +509,7 @@ const LogTimeOffPopUp = React.memo(props => {
                             value={updateRequestData.numberOfWeeks}
                             id="numberOfWeeks"
                             onChange={e => handleUpdateRequestDataChange(e)}
+                            className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                           />
 
                           <FormText color="danger">
@@ -527,6 +530,7 @@ const LogTimeOffPopUp = React.memo(props => {
                             value={updateRequestData.reasonForLeave}
                             id="reasonForLeave"
                             onChange={e => handleUpdateRequestDataChange(e)}
+                            className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                           />
                           <FormText color="danger">
                             {updaterequestDataErrors.reasonForLeaveError}

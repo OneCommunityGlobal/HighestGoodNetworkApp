@@ -50,6 +50,10 @@
   background: #ddebff;
 }
 
+.bg-darkmode-liblack .project-auto-complete:hover {
+  background: #000000;
+}
+
 .team-auto-complete {
   cursor: pointer;
   padding: 5px;
