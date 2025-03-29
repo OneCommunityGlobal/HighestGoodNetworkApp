@@ -92,29 +92,56 @@ export const deletePost = async (postId) => {
   }
 };
 
-export const scheduleTweet = (scheduleDate, scheduleTime, html) => {
+// export const scheduleTweet = (scheduleDate, scheduleTime, html) => {
+//   const url = ENDPOINTS.SCHEDULE_TWEETS;
+
+//   return async () => {
+//     try {
+//       console.log('ScheduleDate', scheduleDate);
+//       console.log('ScheduleTime', scheduleTime);
+//       const response = await axios.post(url, { "ScheduleDate": scheduleDate, "ScheduleTime": scheduleTime, "EmailContent": html });
+//       console.log('Tweet scheduled successfully:', response);
+
+//       // Display a success toast
+//       toast.success('Tweet successfully scheduled', {
+//         position: 'top-right', // You can adjust the position as needed
+//         autoClose: 3000, // Close the toast after 3 seconds (adjust as needed)
+//       });
+//     } catch (error) {
+//       console.error('Error scheduling Tweet:', error);
+
+//       // Display an error toast
+//       toast.error('Error scheduling Tweet', {
+//         position: 'top-right', // You can adjust the position as needed
+//         autoClose: 3000, // Close the toast after 3 seconds (adjust as needed)
+//       });
+//     }
+//   };
+// };
+
+export const scheduleTweet = async (scheduleDate, scheduleTime, html) => {
   const url = ENDPOINTS.SCHEDULE_TWEETS;
 
-  return async () => {
-    try {
-      console.log('ScheduleDate', scheduleDate);
-      console.log('ScheduleTime', scheduleTime);
-      const response = await axios.post(url, { "ScheduleDate": scheduleDate, "ScheduleTime": scheduleTime, "EmailContent": html });
-      console.log('Tweet scheduled successfully:', response);
+  try {
+    console.log('ScheduleDate', scheduleDate);
+    console.log('ScheduleTime', scheduleTime);
+    const response = await axios.post(url, {
+      ScheduleDate: scheduleDate,
+      ScheduleTime: scheduleTime,
+      EmailContent: html,
+    });
+    console.log('Tweet scheduled successfully:', response);
 
-      // Display a success toast
-      toast.success('Tweet successfully scheduled', {
-        position: 'top-right', // You can adjust the position as needed
-        autoClose: 3000, // Close the toast after 3 seconds (adjust as needed)
-      });
-    } catch (error) {
-      console.error('Error scheduling Tweet:', error);
+    toast.success('Tweet successfully scheduled', {
+      position: 'top-right',
+      autoClose: 3000,
+    });
+  } catch (error) {
+    console.error('Error scheduling Tweet:', error);
 
-      // Display an error toast
-      toast.error('Error scheduling Tweet', {
-        position: 'top-right', // You can adjust the position as needed
-        autoClose: 3000, // Close the toast after 3 seconds (adjust as needed)
-      });
-    }
-  };
+    toast.error('Error scheduling Tweet', {
+      position: 'top-right',
+      autoClose: 3000,
+    });
+  }
 };

@@ -8,10 +8,13 @@ const SocialMediaPostDetails = () => {
   const { postId } = useParams(); // Get post ID from URL
   
   const [post, setPost] = useState(null);
+  
   const [editableContent, setEditableContent] = useState('');
   const [editableDate, setEditableDate] = useState('');
   const [editableTime, setEditableTime] = useState('');
   const [imageBase64, setImageBase64] = useState(''); // State for Base64 image
+  const [refreshTrigger, setRefreshTrigger] = useState(false); // 🔄 Auto-refresh trigger
+
 
   useEffect(() => {
     console.log("Post ID from URL:", postId);
@@ -36,6 +39,8 @@ const SocialMediaPostDetails = () => {
           setEditableDate(formattedDate);
           setEditableTime(formattedTime);
           setImageBase64(foundPost.base64Srcs?.[0] || '');
+
+          
         } else {
           console.error("Post not found with ID:", postId);
         }
@@ -45,7 +50,7 @@ const SocialMediaPostDetails = () => {
     };
 
     getPost();
-  }, [postId]);
+  }, [postId, refreshTrigger, imageBase64]); // 🔄 Re-fetch on image change
 
   // Function to handle new image upload and convert to Base64
   const handleImageUpload = (e) => {
@@ -59,8 +64,23 @@ const SocialMediaPostDetails = () => {
     }
   };
 
-  // ✅ Handle Update API Call
+
   const handleUpdatePost = async () => {
+
+    if (editableContent.length > 280) {
+      toast.error("Post cannot exceed 280 characters. Please shorten your content.");
+      return;
+    }
+
+
+  const scheduledDateTime = new Date(`${editableDate}T${editableTime}`);
+  const currentDateTime = new Date();
+
+
+  if (scheduledDateTime <= currentDateTime) {
+    toast.error("The selected date and time must be greater than the current date and time.");
+    return; 
+  }
     const updatedPostData = {
       _id: postId,
       textContent: editableContent,
@@ -73,6 +93,7 @@ const SocialMediaPostDetails = () => {
       const result = await updatePost(postId, updatedPostData);
       if (result) {
         toast.success("Post updated successfully!");
+        setRefreshTrigger((prev) => !prev); // 🔄 Toggle trigger to refresh the component
       } else {
         toast.error("Failed to update post.");
       }
@@ -95,6 +116,14 @@ const SocialMediaPostDetails = () => {
         value={editableContent}
         onChange={(e) => setEditableContent(e.target.value)}
       />
+
+     {/* <Label for="platform">Platform</Label>
+      <Input
+        type="textarea"
+        id="platform"
+        value={editableContent}
+        onChange={(e) => setEditableContent(e.target.value)}
+      /> */}
 
       <Label for="postDate">Scheduled Date</Label>
       <Input

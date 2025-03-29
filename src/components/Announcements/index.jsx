@@ -194,10 +194,53 @@ function Announcements({title, email}) {
     dispatch(sendTweet(htmlContent));
   };
 
+ // For instantly posting scheduled Tweets and deleting the post after posting
+ const handlePostScheduledTweets = (postId, textContent) => {
+  console.log("Post ID:", postId, "Content:", textContent);
+
+  if (!postId) {
+    console.error("Error: Missing post ID in handlePostScheduledTweets");
+    toast.error("Error: Missing post ID");
+    return;
+  }
+
+  if (!textContent) {
+    console.error("Error: Missing text content in handlePostScheduledTweets");
+    toast.error("Error: Missing tweet content");
+    return;
+  }
+
+  console.log("Posting Tweet:", textContent);
+
+  dispatch(sendTweet(textContent))
+    .then(() => {
+      console.log("Tweet posted successfully! Now calling handleDeletePost for post ID:", postId);
+
+      // ✅ Call handleDeletePost after successful tweet
+      handleDeletePost(postId, true);
+    })
+    .catch((error) => {
+      console.error("Error posting tweet:", error.message || error);
+      toast.error("Failed to post tweet.");
+    });
+};
+
+
+  
   const handleScheduleTweets = async () => {
     const htmlContent = `${emailContent}`;
     const scheduleDate = `${dateContent}`;
     const scheduleTime = `${timeContent}`;
+
+     // Combine date and time into a single Date object
+  const scheduledDateTime = new Date(`${scheduleDate}T${scheduleTime}`);
+  const currentDateTime = new Date();
+  
+  // Validate that the scheduled date and time are in the future
+  if (scheduledDateTime <= currentDateTime) {
+    alert("The selected date and time must be greater than the current date and time.");
+    return; // Stop execution if validation fails
+  }
 
     dispatch(scheduleTweet(scheduleDate, scheduleTime, htmlContent));
     await getAllPosts();
@@ -207,9 +250,11 @@ function Announcements({title, email}) {
     setDateContent(e.target.value);    
   }  
 
-  const handleDeletePost = async (postId) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this post?");
-    if (!confirmDelete) return;
+  const handleDeletePost = async (postId, skipConfirm = false) => {
+    if (!skipConfirm) {
+      const confirmDelete = window.confirm("Are you sure you want to delete this post?");
+      if (!confirmDelete) return;
+    }
 
     try {
       const result = await deletePost(postId);
@@ -270,17 +315,24 @@ function Announcements({title, email}) {
                 <small>{errors.timeOfWork}</small>
               </div>
             )}
+          
+
           </div>
-          {showEditor && <Editor
-            tinymceScriptSrc="/tinymce/tinymce.min.js"
-            id="email-editor"
-            initialValue="<p>This is the initial content of the editor</p>"
-            init={editorInit}
-            onEditorChange={(content, editor) => {
-              setEmailContent(content);
-            }}
-          />}
-        {
+          {showEditor && (
+            <Editor
+              tinymceScriptSrc="/tinymce/tinymce.min.js"
+              id="email-editor"
+              initialValue={`<div style="background-color: #f0f0f0; color: #555; padding: 6px; border-radius: 4px; font-size: 14px;">
+                Post limited to 280 characters
+              </div>`}
+              init={editorInit}
+              onEditorChange={(content, editor) => {
+                setEmailContent(content);
+              }}
+            />
+          )}
+
+                  {
           title ? (
             ""
           ) : (
@@ -316,17 +368,108 @@ function Announcements({title, email}) {
                       marginRight: '10px',
                     }}
                   >
-                    {post.textContent.length > 50
+                    {/* {post.textContent.length > 50
                       ? post.textContent.slice(0, 50) + '...'
-                      : post.textContent}
+                      : post.textContent} */}
+                    {post.textContent}
                   </Link> 
                   <br />
-                  <em>Scheduled Time:</em> {post.scheduledTime} <br />
-                  <em>Platform:</em> {post.platform} <br />
+                  <em>Date:</em> {post.scheduledDate} 
+                  <em>   Time:</em> {post.scheduledTime} <br />
+                  {/* <em>X:</em> {post.platform} <br /> */}
                 </div>
-                <Button color="danger" size="sm" onClick={() => handleDeletePost(post._id)}>
+                {/* <Button color="danger" size="sm" onClick={() => handleDeletePost(post._id)}>
                   Delete
-                </Button>
+                </Button> */}
+
+                {/* ✅ Checkmark Button (Mark as Done) */}
+                 <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}> 
+                  <button onClick={() => handlePostScheduledTweets(post._id, post.textContent)} className="checkmark-button" aria-label="Mark as Done">
+                    <svg aria-labelledby="svg-inline--fa-title-eXMNzFHMmi8K"
+                    data-prefix="fas"
+                    data-icon="check"
+                    className="svg-inline--fa fa-check fa-w-16 team-member-tasks-done"
+                    role="img"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 512 512"
+                    style={{ width: '20px', height: '20px', fill: 'green'}}>
+                  <path
+                    fill="currentColor"
+                    d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z"
+                  >
+
+                  </path>
+
+                    </svg>
+                  </button>
+
+                  <button onClick={() => handleDeletePost(post._id)} className="delete-button" aria-label="Remove User from Task">
+                    <svg
+                  aria-labelledby="svg-inline--fa-title-tc2KtQNsHP5F"
+                  data-prefix="fas"
+                  data-icon="times"
+                  className="svg-inline--fa fa-times fa-w-11 team-member-task-remove"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 352 512"
+                  data-testid="Xmark-add test 1 testb"
+                >
+                  <title id="svg-inline--fa-title-tc2KtQNsHP5F">Remove User from Task</title>
+                  <path
+                    fill="currentColor"
+                    d="M242.72 256l100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0L176 189.28 75.93 89.21c-12.28-12.28-32.19-12.28-44.48 0L9.21 111.45c-12.28 12.28-12.28 32.19 0 44.48L109.28 256 9.21 356.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0L176 322.72l100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48L242.72 256z"
+                  ></path>
+                </svg>
+                  </button>
+                </div>
+
+                {/* <button
+                  onClick={() => handlePostTweets(post._id)}
+                  className="checkmark-button"
+                  aria-label="Mark as Done"
+                  // style={{ marginRight: '5px' }} // ✅ Reduced margin
+                >
+                  <svg
+                    aria-labelledby="svg-inline--fa-title-eXMNzFHMmi8K"
+                    data-prefix="fas"
+                    data-icon="check"
+                    className="svg-inline--fa fa-check fa-w-16 team-member-tasks-done"
+                    role="img"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 512 512"
+                    style={{ width: '20px', height: '20px', fill: 'green'}}
+                  >
+                    <title id="svg-inline--fa-title-eXMNzFHMmi8K">Mark as Done</title>
+                    <path
+                      fill="currentColor"
+                      d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z"
+                    ></path>
+                  </svg>
+                </button>
+
+
+                <button
+                onClick={() => handleDeletePost(post._id)}
+                className="delete-button"
+                aria-label="Remove User from Task"
+              >
+                <svg
+                  aria-labelledby="svg-inline--fa-title-tc2KtQNsHP5F"
+                  data-prefix="fas"
+                  data-icon="times"
+                  className="svg-inline--fa fa-times fa-w-11 team-member-task-remove"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 352 512"
+                  data-testid="Xmark-add test 1 testb"
+                >
+                  <title id="svg-inline--fa-title-tc2KtQNsHP5F">Remove User from Task</title>
+                  <path
+                    fill="currentColor"
+                    d="M242.72 256l100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0L176 189.28 75.93 89.21c-12.28-12.28-32.19-12.28-44.48 0L9.21 111.45c-12.28 12.28-12.28 32.19 0 44.48L109.28 256 9.21 356.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0L176 322.72l100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48L242.72 256z"
+                  ></path>
+                </svg>
+              </button> */}
               </li>
             ))}
           </ul>
