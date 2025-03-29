@@ -105,6 +105,11 @@ button.send-button:hover {
   font-size: 18px;
 }
 
+.social-media {
+  margin-left: 80px;
+  /* Add some spacing between editor and email inputs */
+}
+
 /* Responsive design: Adjusts the preview section on smaller screens. */
 @media (max-width: 768px) {
   .email-content-preview {

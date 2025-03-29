@@ -280,14 +280,17 @@ function Announcements({ title, email }) {
           />
         </div>
       </div>
-      <button
-        type="button"
-        className="send-button"
-        onClick={handlePostToPinterest}
-        style={darkMode ? boxStyleDark : boxStyle}
-      >
-        Pinterest Post
-      </button>
+      <div className='social-media'>
+        <h3 className={darkMode ? 'text-light' : 'text-dark'}>Post to Social Media</h3>
+        <button
+          type="button"
+          className="send-button"
+          onClick={handlePostToPinterest}
+          style={darkMode ? boxStyleDark : boxStyle}
+        >
+          Pinterest Post
+        </button>
+      </div>
     </div>
   );
 }
