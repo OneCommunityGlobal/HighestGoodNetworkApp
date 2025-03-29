@@ -1,0 +1,399 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Overall Page Container */
+.bidding-page {
+  font-family: Arial, sans-serif;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: #e5e5e5;
+
+}
+
+.box-container{
+  max-width: 1200px; 
+  background-color: #ffffff;
+  align-self: center;
+  margin-bottom: 60px;
+
+}
+
+/* Top Logo Area */
+.top-logo-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem 0;
+  background-color: #e5e5e5;
+}
+
+.top-logo {
+  height: 60px;
+  margin-bottom: 0.25rem;
+}
+
+/* Header Styles */
+.bidding-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #9bcc3f;
+  padding: 0.75rem 2rem;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.village-select {
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  width: 250px;
+}
+
+.go-button {
+  background-color: #e5e5e5;
+  border: 1px solid #ccc;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Right side of header */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.welcome-text {
+  font-weight: bold;
+}
+
+.icon-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.icon-badge {
+  position: relative;
+}
+
+.message-icon,
+.notification-icon,
+.user-icon {
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+}
+
+/* Main Container */
+.bidding-container {
+  display: flex;
+  flex: 1;
+  padding: 1rem 2rem;
+  justify-content: center;
+
+}
+
+.bidding-card {
+  display: flex;
+  max-width: 1200px;
+  width: 100%;
+  background-color: #f5f5f5;
+  border: 3px solid rgb(58, 197, 244);
+  border-radius: 8px;
+  overflow: hidden;  
+
+}
+
+/* Left Side */
+.bidding-left {
+  flex: 0.9;
+  padding: 5rem;
+  position: relative;
+}
+
+.current-bid {
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+ .bidding-image {
+   position: relative;
+   display: block; 
+   margin-bottom: 4rem;
+   align-self: center;
+   width: 100%; 
+ }
+
+ .bidding-image img {
+   display: block;
+   width: 100%; 
+   height: 300px;
+   object-fit: cover;
+ }
+
+ /* Ensure navigation buttons stay attached to the image */
+ .image-nav-button {
+   position: absolute;
+   top: 50%;
+   transform: translateY(-50%);
+   background-color: rgba(255, 255, 255, 0.7);
+   border: none;
+   width: 30px;
+   height: 30px;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   cursor: pointer;
+   z-index: 10;
+   border-radius: 50%;
+   padding: 0; 
+   margin: 0;  
+ }
+
+ .left-nav {
+   left: 5px;
+ }
+
+ .right-nav {
+   right: 5px;
+ }
+
+.image-dots {
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.image-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+}
+
+.image-dot.active {
+  background-color: white;
+}
+
+.amenities-container {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.amenities-section {
+  flex: 1;
+}
+
+.amenities-section h4 {
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.amenities-section ol {
+  margin-left: 1.5rem;
+  font-size: 0.85rem;
+}
+
+/* Add media query to handle smaller screens */
+@media (max-width: 600px) {
+  .amenities-container {
+    flex-direction: column; 
+  }
+}
+
+/* Map Link */
+.map-link-container {
+  align-items: end;
+  padding-top: 50px;
+
+}
+
+.map-link {
+  display: flex;
+  align-items: center;
+  color: #0066cc;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.location-icon {
+  color: red;
+  margin-right: 0.5rem;
+  font-size: 1.2rem;
+}
+
+/* Right Side */
+.bidding-right {
+  flex: 1.2;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.unit-header {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.unit-title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 0;
+  color: #333;
+}
+
+.unit-subtitle {
+  font-size: 1.5rem;
+  font-weight: normal;
+  color: #333;
+}
+
+.unit-description {
+  text-align: center;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  margin-bottom: 1.5rem;
+}
+
+/* Form Styles */
+.bidding-form {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 11.5rem;
+}
+
+.form-row-container {
+  display: flex;
+  gap: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.full-width {
+  width: 37%;
+}
+
+.form-group label {
+  margin-bottom: 0.25rem;
+  font-size: 0.9rem;
+}
+
+.input-with-icon {
+  position: relative;
+}
+
+.input-with-icon input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+}
+
+/* Style for date inputs */
+input[type="date"] {
+  width: 77%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  appearance: none;
+  background-color: white;
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+}
+
+.form-group input {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+}
+.submit-button1 {  
+  background-color: #4CAF50;
+  color: white;
+  font-weight: bold;
+  white-space: nowrap;
+  min-width: 300px;
+  padding: 0.75rem; 
+}
+
+/* Bidding Actions (Buttons) */
+.bidding-actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 120px;
+}
+
+.action-button {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ccc;
+  background-color: white;
+  cursor: pointer;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #333;
+}
+
+
+.save-button i {
+  font-weight: bold;
+  color: #eb1818;
+}
+
+.chat-button {
+  background-color: white;
+  color: #333;
+  font-weight: bold;
+}
+
+
+/* Responsive Adjustments */
+@media (max-width: 900px) {
+  .bidding-card {
+    flex-direction: column;
+  }
+
+  .form-row-container {
+    flex-direction: column;
+  }
+}

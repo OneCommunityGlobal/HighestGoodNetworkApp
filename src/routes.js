@@ -49,6 +49,7 @@ import LBProtectedRoute from './components/common/LBDashboard/LBProtectedRoute';
 import LBLogin from './components/LBDashboard/Login';
 import LBDashboard from './components/LBDashboard';
 import ListOveriew from './components/LBDashboard/ListingOverview/ListOverview';
+import LBBidOverview from './components/LBDashboard/BiddingOverview/BiddingOverview';
 
 // BM Dashboard
 import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
@@ -403,7 +404,7 @@ export default (
         <LBProtectedRoute path="/lbdashboard" exact component={LBDashboard} />
         <LBProtectedRoute path="/lbdashboard/listOverview" exact component={ListOveriew} />
         <Route path="/lbdashboard/login" component={LBLogin} />
-  
+        <Route path="/lbdashboard/bidoverview" exact component={LBBidOverview} />
 
         {/* Good Education  Portal Routes */}
         <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />
