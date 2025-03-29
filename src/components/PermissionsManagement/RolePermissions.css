@@ -1,0 +1,25 @@
+.dark-mode {
+  background-color: #1a1a2e;
+  color: #ffffff;
+}
+
+.bg-space-cadet {
+  background-color: #16213e;
+}
+
+.bg-yinmn-blue {
+  background-color: #0f3460;
+}
+
+.text-light {
+  color: #ffffff !important;
+}
+
+.dark-mode .modal-content {
+  background-color: #1a1a2e;
+  border-color: #16213e;
+}
+
+.dark-mode .close {
+  color: #ffffff;
+}
