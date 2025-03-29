@@ -1,14 +1,26 @@
 import React from 'react';
 import BadgeTableHeader from 'components/Badge/BadgeTableHeader';
-import {renderWithProvider } from '__tests__/utils';
+import configureStore from 'redux-mock-store';
+import { Provider } from 'react-redux';
+import { renderWithProvider } from '__tests__/utils';
 
 describe('BadgeTableHeader', () => {
+  const mockStore = configureStore([]);
+  const initialState = {
+    theme: { darkMode: false },
+  };
+  const store = mockStore(initialState);
+
   it('should render correctly', () => {
-    renderWithProvider(<BadgeTableHeader />);
+    renderWithProvider(
+      <Provider store={store}>
+        <BadgeTableHeader />
+      </Provider>,
+    );
   });
 
   it('displays column name correctly', () => {
-    const {getByText} = renderWithProvider(<BadgeTableHeader />);
+    const { getByText } = renderWithProvider(<BadgeTableHeader />);
     expect(getByText('Badge')).toBeInTheDocument();
     expect(getByText('Name')).toBeInTheDocument();
     expect(getByText('Description')).toBeInTheDocument();
@@ -20,13 +32,11 @@ describe('BadgeTableHeader', () => {
   });
 
   it('should render tooltip properly', () => {
-    const {getByText} = renderWithProvider(<BadgeTableHeader />);
+    const { getByText } = renderWithProvider(<BadgeTableHeader />);
     const ranking = getByText('Ranking');
-    if(ranking){
+    if (ranking) {
       const rankingInfo = ranking.querySelector('#SortRankingInfo');
       expect(rankingInfo).toBeInTheDocument();
     }
   });
-  
-  
 });

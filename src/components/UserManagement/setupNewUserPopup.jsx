@@ -104,7 +104,7 @@ const SetupNewUserPopup = React.memo(props => {
             onChange={e => {
               setEmail(e.target.value.toLocaleLowerCase());
             }}
-            className="form-control setup-new-user-popup-input"
+            className={`form-control setup-new-user-popup-input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
             placeholder="Please enter the email address for the new user"
           />
           <input
@@ -119,7 +119,7 @@ const SetupNewUserPopup = React.memo(props => {
               }
             }}
             onChange={handleCommitedHoursChange}
-            className="form-control setup-new-user-popup-input"
+            className={`form-control setup-new-user-popup-input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
             placeholder="weekly committed hours"
           />
           <button

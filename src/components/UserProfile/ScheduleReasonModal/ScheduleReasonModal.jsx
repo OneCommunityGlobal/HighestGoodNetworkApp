@@ -30,6 +30,11 @@ const ScheduleReasonModal = ({
     .isoWeekday(7)
     .startOf('day');
   const nextSunday = new Date(nextSundayStr.year(), nextSundayStr.month(), nextSundayStr.date());
+  
+  const currSundayStr = moment()
+    .startOf('week');
+  const currSunday = new Date(currSundayStr.year(), currSundayStr.month(), currSundayStr.date());
+  
   const initialRequestData = {
     dateOfLeave: nextSunday,
     numberOfWeeks: 1,
@@ -57,6 +62,7 @@ const ScheduleReasonModal = ({
   const [allowedDurationModal, setAllowedDurationModal] = useState(false);
   const [allowedDurationData, setAllowedDurationData] = useState({});
   const [requestTodelete, setRequestTodelete] = useState('');
+  const [showStartWeekModal, setShowStartWeekModal] = useState(false);
 
   const ContainerMaxHeight = checkIfUserCanScheduleTimeOff() ? '160px' : '600px';
 
@@ -221,6 +227,14 @@ const ScheduleReasonModal = ({
     setAllowedDurationModal(prev => !prev);
   };
 
+  const toggleStartWeekConfirmationModal = () => {
+    setShowStartWeekModal(prev => !prev);
+  };
+
+  const handleStartWeekConfirmationModal = () => {
+    setShowStartWeekModal(false);
+  };
+
   const getWeekIntervals = data => {
     const dateOfLeaveStr = getDateWithoutTimeZone(data.dateOfLeave);
     const intervals = [];
@@ -239,6 +253,28 @@ const ScheduleReasonModal = ({
     return day === 0;
   };
 
+  const handleSave = ( data = requestData ) => {
+    const { intervals, startDate } = getWeekIntervals(data);
+    setConfirmationModalData({
+      offTimeWeeks: intervals,
+      returnDate: startDate.format('MM-DD-YYYY'),
+      reasonForLeave: data.reasonForLeave,
+    });
+    toggleConfirmationModal();
+  }
+
+  const handleWeekStart = (selectedSunday) => {
+    setRequestData(prev => {
+      const newData = {
+      ...prev,
+      dateOfLeave: selectedSunday,
+      }
+      handleSave(newData);
+      return newData;
+    })
+    
+  }
+
   const handleSaveReason = e => {
     e.preventDefault();
     setRequestDataErrors(initialRequestDataErrors);
@@ -249,13 +285,12 @@ const ScheduleReasonModal = ({
     if (!validateNumberOfWeeks(requestData)) return;
     if (!validateReasonForLeave(requestData)) return;
 
-    const { intervals, startDate } = getWeekIntervals(requestData);
-    setConfirmationModalData({
-      offTimeWeeks: intervals,
-      returnDate: startDate.format('MM-DD-YYYY'),
-      reasonForLeave: requestData.reasonForLeave,
-    });
-    toggleConfirmationModal();
+    if(nextSunday.getTime() === requestData.dateOfLeave.getTime()){
+      toggleStartWeekConfirmationModal();
+    }
+    else{
+      handleSave();
+    }
   };
 
   const handelConfirmReason = () => {
@@ -468,7 +503,10 @@ const ScheduleReasonModal = ({
                   </Container>
                 </ModalBody>
                 <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-                  <Button variant="primary" onClick={handelConfirmReason}>
+                  <Button variant="primary" onClick={()=>{
+                    handelConfirmReason()
+                    handleStartWeekConfirmationModal()
+                  }}>
                     Confirm
                   </Button>
                   <Button variant="secondary" onClick={toggleConfirmationModal}>
@@ -489,6 +527,34 @@ const ScheduleReasonModal = ({
                 <ModalFooter className={darkMode ? 'text-light' : ''}>
                   <Button variant="secondary" onClick={toggleDurationInfoModal}>
                     Close
+                  </Button>
+                </ModalFooter>
+              </NestedModal>
+              <NestedModal isOpen={showStartWeekModal} toggle={toggleStartWeekConfirmationModal} className={darkMode ? 'text-light dark-mode' : ''}>
+                <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+                  <Container>
+                    <Row>You are about to schedule time off starting next week. Please confirm this is what you want to do.</Row>
+                  </Container>
+                </ModalBody>
+                <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+                  <Button
+                      variant="primary"
+                      onClick={()=>handleWeekStart(nextSunday)}
+                      className="w-100"
+                      size="md"
+                      style={darkMode ? boxStyleDark : boxStyle}
+                    >
+                      Yes, NEXT WEEK is when I want my time off to start! 
+                  </Button>
+                  <Button
+                      variant="primary"
+                      onClick={()=>handleWeekStart(currSunday)}
+                      className="w-100"
+                      size="md"
+                      style={darkMode ? boxStyleDark : boxStyle}
+                    >
+                      No, I meant to start my time off THIS WEEK.
+                      Please adjust this request to start this week instead. 
                   </Button>
                 </ModalFooter>
               </NestedModal>

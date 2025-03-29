@@ -21,7 +21,7 @@ function QuickSetupModal(props) {
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [titles, setTitles] = useState([]);
   const [curtitle, setTitleOnClick] = useState({});
-  const [titleOnSet, setTitleOnSet] = useState(true);
+  // const [titleOnSet, setTitleOnSet] = useState(true);
   const [editMode, setEditMode] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
   const [warningMessage, setWarningMessage] = useState({});
@@ -52,20 +52,15 @@ function QuickSetupModal(props) {
     }
   };
 
-  useEffect(()=>{
-    let teamCodes = [];
-    if(stateTeamCodes.length) {
-      teamCodes = [...stateTeamCodes];
-    }else if (props.teamsData?.allTeams) {
-      if( props.teamsData?.allTeamCode?.distinctTeamCodes ) {
-        teamCodes = props.teamsData.allTeamCode.distinctTeamCodes.map(value => ({ value }));
-      }
+  useEffect(() => {
+    if (props.teamsData && props.teamsData.allTeamCode) {
+      const teamCodes = props.teamsData.allTeamCode.distinctTeamCodes.map(value => ({ value }));
+      setQSTTeamCodes(teamCodes);
     }
-    setQSTTeamCodes(teamCodes);
-  },[stateTeamCodes.length])
+  }, [stateTeamCodes, props.teamsData]);
 
   return (
-    <div>
+    <div className={`container pt-3 ${darkMode ? 'bg-yinmn-blue text-light border-0' : ''}`}>
       {canAssignTitle || canEditTitle || canAddTitle ? (
         <QuickSetupCodes
           setSaved={props.setSaved}
@@ -139,19 +134,6 @@ function QuickSetupModal(props) {
           darkMode={darkMode}
         />
       </div>
-      <div className="col text-center mt-3">
-        {canAssignTitle ? (
-          <SaveButton
-            handleSubmit={props.handleSubmit}
-            userProfile={props.userProfile}
-            disabled={titleOnSet}
-            setSaved={() => props.setSaved(true)}
-            darkMode={darkMode}
-          />
-        ) : (
-          ''
-        )}
-      </div>
       {showAddTitle || editMode ? (
         <AddNewTitleModal
           teamsData={props.teamsData}
@@ -179,8 +161,9 @@ function QuickSetupModal(props) {
           setIsOpen={setShowAssignModal}
           toggle={setShowAssignModal}
           title={curtitle}
-          setTitleOnSet={setTitleOnSet}
+          setTitleOnSet={props.setTitleOnSet}
           refreshModalTitles={refreshModalTitles}
+          updateUserProfile={props.updateUserProfile}
         />
       ) : (
         ''

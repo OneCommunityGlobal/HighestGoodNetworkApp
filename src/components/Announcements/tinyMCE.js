@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Editor } from '@tinymce/tinymce-react';
 
 export default function TinyMCEEditor() {
@@ -8,12 +8,13 @@ export default function TinyMCEEditor() {
 
   const logEditorContent = () => {
     if (editorRef.current) {
+      // eslint-disable-next-line no-console
       console.log(editorRef.current.getContent());
     }
   };
 
-  const onEditorChange = (content, editor) => {
-    setContent(content);
+  const onEditorChange = (newContent, editor) => {
+    setContent(newContent);
     setText(editor.getContent({ format: 'text' }));
   };
 
@@ -23,10 +24,11 @@ export default function TinyMCEEditor() {
       <Editor
         tinymceScriptSrc="/tinymce/tinymce.min.js"
         licenseKey="gpl"
-        // apiKey="rpfrv9z58kbaoauzv9dncv73jeqv7c5lo73gqlk9rx5p726p"
         onEditorChange={onEditorChange}
         value={content}
-        onInit={(evt, editor) => (editorRef.current = editor)}
+        onInit={(evt, editor) => {
+          editorRef.current = editor;
+        }}
         init={{
           license_key: 'gpl',
           height: 500,
@@ -50,7 +52,9 @@ export default function TinyMCEEditor() {
           },
         }}
       />
-      <button onClick={logEditorContent}>Log editor content</button>
+      <button onClick={logEditorContent} type="button">
+        Log editor content
+      </button>
     </>
   );
 }
