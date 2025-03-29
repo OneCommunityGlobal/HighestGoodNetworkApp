@@ -125,7 +125,7 @@ function Issue() {
       ((currentFormData.checkboxes.has('Other') && currentFormData.other.trim().length <= 0) ||
         (!currentFormData.checkboxes.has('Other') && currentFormData.other.trim().length > 0))
     ) {
-      toast.error('Tick "Other" checkbox or remove text from "Other" input box.');
+      toast.error('Please specify the other consequence.');
       return false;
     }
 
@@ -238,6 +238,7 @@ function Issue() {
                 name="issueDate"
                 id="issueDate"
                 required
+                min={new Date('2020-01-01').toISOString().split('T')[0]}
                 max={new Date().toISOString().split('T')[0]}
                 onChange={e => setFormData({ ...formData, issueDate: e.target.value })}
               />
