@@ -53,7 +53,7 @@ const UserTableSearchHeader = React.memo(props => {
         />
       </td>
       <td id="user_role">
-        <DropDownSearchBox className={darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''} id="role_search" items={props.roles} searchCallback={onRoleSearch} />
+        <DropDownSearchBox width= "100px" className={darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''} id="role_search" items={props.roles} searchCallback={onRoleSearch} />
       </td>
       <td id="user_title">
         <div>
