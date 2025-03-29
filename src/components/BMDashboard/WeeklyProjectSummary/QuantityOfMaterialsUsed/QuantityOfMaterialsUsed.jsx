@@ -472,17 +472,19 @@ function QuantityOfMaterialsUsed({ data }) {
       className={`weekly-project-summary-card normal-card ${darkMode ? 'dark-mode' : ''}`}
       style={{ position: 'relative' }}
     >
-      <h2 className="quantity-of-materials-used-chart-title">Quantity of Materials Used</h2>
+      <div class="chart-title-container">
+        <h2 className="quantity-of-materials-used-chart-title">Quantity of Materials Used</h2>
 
-      <button
-        type="button"
-        className="quantity-of-materials-used-chart-info-button"
-        data-tip
-        data-for="materials-info"
-        aria-label="Chart Info"
-      >
-        <Info size={14} strokeWidth={2} />
-      </button>
+        <button
+          type="button"
+          className="quantity-of-materials-used-chart-info-button"
+          data-tip
+          data-for="materials-info"
+          aria-label="Chart Info"
+        >
+          <Info size={14} strokeWidth={2} />
+        </button>
+      </div>
 
       <ReactTooltip
         id="materials-info"

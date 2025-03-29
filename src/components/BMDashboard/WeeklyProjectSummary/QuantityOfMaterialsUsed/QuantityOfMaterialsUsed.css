@@ -2,9 +2,15 @@
 .quantity-of-materials-used-chart-title {
   font-size: medium;
   font-weight: bold;
-  text-align: center;
   color: var(--text-color);
+  margin: 0;    
+}
+
+.chart-title-container {
+  position: relative;
+  text-align: center;
   margin-bottom: 5px;
+  padding-right: 30px;   
 }
 
 /* Chart Container */
@@ -276,7 +282,7 @@ div.weekly-project-summary-card.normal-card .dropdown-item {
 
 .quantity-of-materials-used-chart-info-button {
   position: absolute;
-  top: 10px;
+  top: 0;
   right: 10px;
   background: none;
   border: none;
@@ -285,7 +291,6 @@ div.weekly-project-summary-card.normal-card .dropdown-item {
   cursor: pointer;
   padding: 2px;
   color: var(--text-color);
-  z-index: 5;
 }
 
 .quantity-of-materials-used-chart-info-button:hover {
