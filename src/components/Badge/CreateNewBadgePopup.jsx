@@ -178,6 +178,7 @@ function CreateNewBadgePopup(props) {
           onChange={handleChange}
           placeholder="Badge Name"
           invalid={badgeName.length === 0}
+          className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
         />
         <FormFeedback>Badge name is required and must be unique.</FormFeedback>
       </FormGroup>
@@ -193,6 +194,7 @@ function CreateNewBadgePopup(props) {
           onChange={handleChange}
           placeholder="Image URL"
           invalid={imageUrl.length === 0}
+          className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
         />
         <FormText color={darkMode ? 'white' : 'muted'}>
           For Dropbox URL that ends with &quot;dl=0&quot;, please replace with &quot;raw=1&quot;.
@@ -209,6 +211,7 @@ function CreateNewBadgePopup(props) {
           value={description}
           onChange={handleChange}
           invalid={description.length === 0}
+          className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
         />
       </FormGroup>
 
@@ -224,7 +227,14 @@ function CreateNewBadgePopup(props) {
             all as no autoassignment will happen.
           </p>
         </UncontrolledTooltip>
-        <Input type="select" name="selectType" id="badgeType" value={type} onChange={handleChange}>
+        <Input
+          type="select"
+          name="selectType"
+          id="badgeType"
+          value={type}
+          onChange={handleChange}
+          className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+        >
           <option value="Custom">Custom</option>
           {badgeTypes.map((element, i) => (
             <option key={i}>{element}</option>
@@ -251,6 +261,7 @@ function CreateNewBadgePopup(props) {
             id="category"
             value={category}
             onChange={handleChange}
+            className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
           >
             {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
             <option value="" />
@@ -285,6 +296,7 @@ function CreateNewBadgePopup(props) {
             value={totalHrs}
             onChange={handleChange}
             placeholder="Please Enter a Number"
+            className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
           />
         </FormGroup>
       ) : (
@@ -308,6 +320,7 @@ function CreateNewBadgePopup(props) {
             value={weeks}
             onChange={handleChange}
             placeholder="Please Enter a Number"
+            className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
           />
         </FormGroup>
       ) : (
@@ -331,6 +344,7 @@ function CreateNewBadgePopup(props) {
             value={months}
             onChange={handleChange}
             placeholder="Please Enter a Number"
+            className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
           />
         </FormGroup>
       ) : (
@@ -356,6 +370,7 @@ function CreateNewBadgePopup(props) {
             value={multiple}
             onChange={handleChange}
             placeholder="Please Enter a Number"
+            className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
           />
         </FormGroup>
       ) : (
@@ -379,6 +394,7 @@ function CreateNewBadgePopup(props) {
             value={people}
             onChange={handleChange}
             placeholder="Please Enter a Number"
+            className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
           />
         </FormGroup>
       ) : (
@@ -415,6 +431,7 @@ function CreateNewBadgePopup(props) {
           value={ranking}
           onChange={handleChange}
           placeholder="Please Enter a Number"
+          className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
         />
       </FormGroup>
       <Button
