@@ -48,7 +48,6 @@ function UpdateDocumentTitle() {
     authUser?.firstName && authUser?.lastName
       ? `${authUser.firstName} ${authUser.lastName}`
       : 'User';
-
   // Define the routes array with pattern and title
   const Routes = [
     { pattern: /^\/ProfileInitialSetup\/[^/]+$/, title: 'Profile Initial Setup' },
@@ -102,6 +101,7 @@ function UpdateDocumentTitle() {
     { pattern: /^\/bmdashboard\/tools\/[^/]+\/update$/, title: 'Update Tool' },
     { pattern: /^\/bmdashboard\/tools$/, title: 'Tools List' },
     { pattern: /^\/bmdashboard\/tools\/add$/, title: 'Add Tool' },
+    { pattern: /^\/bmdashboard\/tools\/equipmentupdate$/, title: 'Update Equipment or Tool' },
     { pattern: /^\/bmdashboard\/tools\/log$/, title: 'Log Tools' },
     { pattern: /^\/bmdashboard\/tools\/[^/]+$/, title: 'Tool Detail' },
     { pattern: /^\/bmdashboard\/lessonform\/[^/]*$/, title: 'Lesson Form' },
