@@ -229,7 +229,10 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode
             >
               Manage User Permissions
             </ModalHeader>
-            <ModalBody id="modal-body_new-role--padding">
+            <ModalBody
+              id="modal-body_new-role--padding"
+              className={darkMode ? 'bg-yinmn-blue-light' : ''}
+            >
               <UserPermissionsPopUp
                 toggle={togglePopUpUserPermissions}
                 setReminderModal={setReminderModal}

@@ -8,7 +8,7 @@ import '../Header/DarkMode.css';
 import { matches } from 'lodash';
 
 function BadgeDevelopment(props) {
-  const { darkMode, allBadgeData = [] } = props; 
+  const { darkMode, allBadgeData = [] } = props;
   const [isCreateNewBadgePopupOpen, setCreateNewBadgePopupOpen] = useState(false);
   const [isAddFiltersOpen, setAddFiltersOpen] = useState(false);
   const [searchType, setSearchType] = useState('');
@@ -24,10 +24,21 @@ function BadgeDevelopment(props) {
 
   // filter badge data based on type, report, and rank
   const filteredBadgeData = allBadgeData.filter(badge => {
-    const matchesType = searchType === '' || badge.type.replace(/\s+/g, '').toLowerCase().includes(searchType.replace(/\s+/g, '').toLowerCase());
+    const matchesType =
+      searchType === '' ||
+      badge.type
+        .replace(/\s+/g, '')
+        .toLowerCase()
+        .includes(searchType.replace(/\s+/g, '').toLowerCase());
     const matchesRank = badge.ranking <= rankFilter;
-    const matchesChoosenRank = chooseRankFilterNumber === null || badge.ranking === chooseRankFilterNumber;
-    const matchesName = searchName === '' || badge.badgeName.replace(/\s+/g, '').toLowerCase().includes(searchName.replace(/\s+/g, '').toLowerCase());
+    const matchesChoosenRank =
+      chooseRankFilterNumber === null || badge.ranking === chooseRankFilterNumber;
+    const matchesName =
+      searchName === '' ||
+      badge.badgeName
+        .replace(/\s+/g, '')
+        .toLowerCase()
+        .includes(searchName.replace(/\s+/g, '').toLowerCase());
 
     return matchesType && matchesRank && matchesName && matchesChoosenRank;
   });
@@ -56,30 +67,36 @@ function BadgeDevelopment(props) {
               type="text"
               placeholder="Enter name here"
               value={searchName}
-              onChange={(e) => setSearchName(e.target.value)}
+              onChange={e => setSearchName(e.target.value)}
+              className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
             />
           </div>
           <div style={{ marginBottom: '10px' }}>
             <p style={{ display: 'inline', marginRight: '8px' }}>Filter by type:</p>
             <select
               value={searchType}
-              onChange={(e) => setSearchType(e.target.value)}
+              onChange={e => setSearchType(e.target.value)}
+              className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
             >
               <option value="">Select a type</option>
               {BadgeTypes.map((type, index) => (
-                <option key={index} value={type}>{type}</option>
+                <option key={index} value={type}>
+                  {type}
+                </option>
               ))}
             </select>
           </div>
           <div>
-            <p style={{ display: 'inline', marginRight: '8px' }}>Filter by Rank (0 - {rankFilter}):</p>
+            <p style={{ display: 'inline', marginRight: '8px' }}>
+              Filter by Rank (0 - {rankFilter}):
+            </p>
             <input
               type="range"
               id="rank-filter"
               min="0"
               max="300"
               value={rankFilter}
-              onChange={(e) => setRankFilter(e.target.value)}
+              onChange={e => setRankFilter(e.target.value)}
             />
             <div style={{ display: 'inline-block', marginLeft: '8px', verticalAlign: 'middle' }}>
               <p style={{ display: 'inline', marginRight: '8px' }}>Or choose a rank:</p>
@@ -87,8 +104,9 @@ function BadgeDevelopment(props) {
                 type="text"
                 placeholder="Rank Number"
                 value={chooseRankFilter}
-                onChange={(e) => setChooseRankFilter(e.target.value)}
+                onChange={e => setChooseRankFilter(e.target.value)}
                 style={{ width: '80px', textAlign: 'center' }}
+                className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
               />
             </div>
           </div>
@@ -106,7 +124,7 @@ function BadgeDevelopment(props) {
           <CreateNewBadgePopup toggle={toggle} />
         </ModalBody>
       </Modal>
-      <br/>
+      <br />
       {filteredBadgeData.length === 0 ? (
         <p> No badges match the current filters.</p>
       ) : (
