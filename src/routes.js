@@ -38,7 +38,7 @@ import Collaboration from './components/Collaboration';
 // LB Dashboard
 import LBRegister from './components/LBDashboard/Auth/Register';
 import LBLogin from './components/LBDashboard/Auth/Login';
-
+import LBBidOverview from './components/LBDashboard/BiddingOverview/BiddingOverview';
 // BM Dashboard
 import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
 import BMDashboard from './components/BMDashboard';
@@ -122,7 +122,6 @@ const PermissionsManagement = lazy(() =>
 const UserRoleTab = lazy(() => import('./components/PermissionsManagement/UserRoleTab'));
 const Teams = lazy(() => import('./components/Teams/Teams'));
 
-
 export default (
   <Switch>
     {/* ----- LB Dashboard Routing ----- */}
@@ -149,6 +148,16 @@ export default (
     />
     <Route path="/form" component={FormEditor} />
     <Route path="/formviewer" component={FormViewer} />
+    <Route
+      path="/lbdashboard/bidoverview"
+      render={() => (
+        <>
+          <AutoUpdate />
+          <ToastContainer />
+          <LBBidOverview />
+        </>
+      )}
+    />
     <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
     <>
       {/* Comment out the Header component and its import during phase 2 development. */}
