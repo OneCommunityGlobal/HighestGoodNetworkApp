@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import './EventStats.css';
+import { useSelector } from 'react-redux';
 
 const dummyData = [
   {
@@ -53,6 +54,7 @@ const dummyData = [
   },
 ];
 
+
 export default function PopularEvents() {
   const [timeFilter, setTimeFilter] = useState('All day');
   const [typeFilter, setTypeFilter] = useState('All');
@@ -74,7 +76,7 @@ export default function PopularEvents() {
   const mostPopularEvent = filteredData.reduce(
     (max, event) =>
       calculatePercentage(event.attended, event.enrolled) >
-      calculatePercentage(max.attended, max.enrolled)
+        calculatePercentage(max.attended, max.enrolled)
         ? event
         : max,
     filteredData[0] || {},
@@ -83,17 +85,17 @@ export default function PopularEvents() {
   const leastPopularEvent = filteredData.reduce(
     (min, event) =>
       calculatePercentage(event.attended, event.enrolled) <
-      calculatePercentage(min.attended, min.enrolled)
+        calculatePercentage(min.attended, min.enrolled)
         ? event
         : min,
     filteredData[0] || {},
   );
-
+  const darkMode = useSelector(state => state.theme.darkMode);
   return (
-    <div className="popular-events-container">
-      <div className="header-container">
-        <h2 className="popular-events-header">Most Popular Event</h2>
-        <div className="filters">
+    <div className={`popular-events-container ${darkMode ? "popular-events-container-dark" : ""}`}>
+      <div className={`header-container ${darkMode ? "header-container-dark" : ""}`}>
+        <h2 className={`popular-events-header ${darkMode ? "popular-events-header-dark" : ""}`} >Most Popular Event</h2>
+        <div className={`filters ${darkMode ? "filters-dark" : ""}`}>
           <select value={timeFilter} onChange={e => setTimeFilter(e.target.value)}>
             <option value="All day">All day</option>
             <option value="Morning">Morning</option>
@@ -108,10 +110,10 @@ export default function PopularEvents() {
         </div>
       </div>
 
-      <div className="stats">
+      <div className={`stats ${darkMode ? "stats-dark" : ""}`}>
         {filteredData.map(event => (
           <div key={event.id} className="stat-item">
-            <div className="stat-label">{event.type}</div>
+            <div className={`stat-label ${darkMode ? "stat-label-dark" : ""}`}>{event.type}</div>
             <div className="stat-bar">
               <div
                 className={`bar ${getBarColor(
@@ -120,38 +122,37 @@ export default function PopularEvents() {
                 style={{ width: `${calculatePercentage(event.attended, event.enrolled)}%` }}
               />
             </div>
-            <div className="stat-value">
-              {`${calculatePercentage(event.attended, event.enrolled)}% (${event.attended}/${
-                event.enrolled
-              })`}
+            <div className={`stat-value ${darkMode ? "stat-value-dark" : ""}`}>
+              {`${calculatePercentage(event.attended, event.enrolled)}% (${event.attended}/${event.enrolled
+                })`}
             </div>
           </div>
         ))}
       </div>
       <div className="summary">
-        <div className="summary-item">
-          <div className="summary-title">Total Number of Events</div>
-          <div className="summary-value">{filteredData.length}</div>
+        <div className={`summary-item ${darkMode ? "summary-item-dark" : ""}`}>
+          <div className={`summary-title ${darkMode ? "summary-title-dark" : ""}`}>Total Number of Events</div>
+          <div className={`summary-value ${darkMode ? "summary-value-dark" : ""}`}>{filteredData.length}</div>
         </div>
-        <div className="summary-item">
-          <div className="summary-title">Total Number of Event Enrollments</div>
-          <div className="summary-value">
+        <div className={`summary-item ${darkMode ? "summary-item-dark" : ""}`}>
+          <div className={`summary-title ${darkMode ? "summary-title-dark" : ""}`}>Total Number of Event Enrollments</div>
+          <div className={`summary-value ${darkMode ? "summary-value-dark" : ""}`}>
             {filteredData.reduce((acc, event) => acc + event.enrolled, 0)}
           </div>
         </div>
         {filteredData.length > 0 && (
           <>
-            <div className="summary-item">
-              <div className="summary-title">Most Popular Event</div>
-              <div className="summary-value">{mostPopularEvent.type || 'N/A'}</div>
+            <div className={`summary-item ${darkMode ? "summary-item-dark" : ""}`}>
+              <div className={`summary-title ${darkMode ? "summary-title-dark" : ""}`}>Most Popular Event</div>
+              <div className={`summary-value ${darkMode ? "summary-value-dark" : ""}`}>{mostPopularEvent.type || 'N/A'}</div>
             </div>
-            <div className="summary-item">
-              <div className="summary-title">Least Popular Event</div>
-              <div className="summary-value">{leastPopularEvent.type || 'N/A'}</div>
+            <div className={`summary-item ${darkMode ? "summary-item-dark" : ""}`}>
+              <div className={`summary-title ${darkMode ? "summary-title-dark" : ""}`}>Least Popular Event</div>
+              <div className={`summary-value ${darkMode ? "summary-value-dark" : ""}`}>{leastPopularEvent.type || 'N/A'}</div>
             </div>
           </>
         )}
       </div>
-    </div>
+    </div >
   );
 }
