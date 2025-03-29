@@ -25,28 +25,36 @@ function TotalProjectReport(props) {
   const userList = useMemo(() => userProfiles.map(user => user._id), [userProfiles]);
   const projectList = useMemo(() => projects.map(proj => proj._id), [projects]);
 
-  const loadTimeEntriesForPeriod = useCallback(async () => {
-    const url = ENDPOINTS.TIME_ENTRIES_REPORTS_TOTAL_PROJECT_REPORT;
-    const timeEntries = await axios.post(url, { users: userList, fromDate, toDate }).then(res => res.data.map(entry => ({
-      projectId: entry.projectId,
-      projectName: entry.projectName,
-      hours: entry.hours,
-      minutes: entry.minutes,
-      isTangible: entry.isTangible,
-      date: entry.dateOfWork,
-    })));
-
-    const projUrl = ENDPOINTS.TIME_ENTRIES_LOST_PROJ_LIST;
-    const projTimeEntries = await axios.post(projUrl, { projects: projectList, fromDate, toDate }).then(res => res.data.map(entry => ({
-      projectId: entry.projectId,
-      projectName: entry.projectName,
-      hours: entry.hours,
-      minutes: entry.minutes,
-      isTangible: entry.isTangible,
-      date: entry.dateOfWork,
-    })));
-
-    setAllTimeEntries([...timeEntries, ...projTimeEntries]);
+  const loadTimeEntriesForPeriod = useCallback(async (controller) => {
+    try {
+      const url = ENDPOINTS.TIME_ENTRIES_REPORTS;
+      const timeEntries = await axios.post(url, { users: userList, fromDate, toDate }, { signal: controller.signal })
+        .then(res => res.data.map(entry => ({
+          projectId: entry.projectId,
+          projectName: entry.projectName,
+          hours: entry.hours,
+          minutes: entry.minutes,
+          isTangible: entry.isTangible,
+          date: entry.dateOfWork,
+        })));
+  
+      const projUrl = ENDPOINTS.TIME_ENTRIES_LOST_PROJ_LIST;
+      const projTimeEntries = await axios.post(projUrl, { projects: projectList, fromDate, toDate }, { signal: controller.signal })
+        .then(res => res.data.map(entry => ({
+          projectId: entry.projectId,
+          projectName: entry.projectName,
+          hours: entry.hours,
+          minutes: entry.minutes,
+          isTangible: entry.isTangible,
+          date: entry.dateOfWork,
+        })));
+  
+      if (!controller.signal.aborted) {
+        setAllTimeEntries([...timeEntries, ...projTimeEntries]);
+      }
+    } catch (err) {
+      // console.log(err);
+    }
   }, [fromDate, toDate, userList, projectList]);
 
   const sumByProject = useCallback((objectArray, property) => {
@@ -138,11 +146,18 @@ function TotalProjectReport(props) {
   useEffect(() => {
     setTotalProjectReportDataReady(false);
     const controller = new AbortController();
-    loadTimeEntriesForPeriod(controller).then(() => {
-      setTotalProjectReportDataLoading(false);
-      setTotalProjectReportDataReady(true);
-    });
-    return () => controller.abort();
+    
+    loadTimeEntriesForPeriod(controller)
+      .then(() => {
+        if (!controller.signal.aborted) {
+          setTotalProjectReportDataLoading(false);
+          setTotalProjectReportDataReady(true);
+        }
+      })
+    
+    return () => {
+      controller.abort();
+    };
   }, [loadTimeEntriesForPeriod, startDate, endDate]);
 
   useEffect(() => {

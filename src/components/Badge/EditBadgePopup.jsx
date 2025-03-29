@@ -205,6 +205,7 @@ function EditBadgePopup(props) {
               onChange={handleChange}
               placeholder="Badge Name"
               invalid={badgeName.length === 0}
+              className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
             />
             <FormFeedback>Badge name is required and must be unique.</FormFeedback>
           </FormGroup>
@@ -220,6 +221,7 @@ function EditBadgePopup(props) {
               onChange={handleChange}
               placeholder="Image URL"
               invalid={imageUrl.length === 0}
+              className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
             />
             <FormText color={darkMode ? 'white' : 'muted'}>
               For Dropbox URL that ends with &quot;dl=0&quot;, please replace with
@@ -237,6 +239,7 @@ function EditBadgePopup(props) {
               value={description}
               onChange={handleChange}
               invalid={description.length === 0}
+              className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
             />
           </FormGroup>
 
@@ -258,6 +261,7 @@ function EditBadgePopup(props) {
               id="badgeType"
               value={type}
               onChange={handleChange}
+              className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
             >
               <option value="Custom">Custom</option>
               {badgeTypes.map((element, i) => (
@@ -285,6 +289,7 @@ function EditBadgePopup(props) {
                 id="category"
                 value={category}
                 onChange={handleChange}
+                className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
               >
                 {/* eslint-disable-next-line */}
                 <option value="" />
@@ -321,6 +326,7 @@ function EditBadgePopup(props) {
                 value={totalHrs}
                 onChange={handleChange}
                 placeholder="Please Enter a Number"
+                className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
               />
             </FormGroup>
           ) : (
@@ -346,6 +352,7 @@ function EditBadgePopup(props) {
                 value={weeks}
                 onChange={handleChange}
                 placeholder="Please Enter a Number"
+                className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
               />
             </FormGroup>
           ) : (
@@ -371,6 +378,7 @@ function EditBadgePopup(props) {
                 value={months}
                 onChange={handleChange}
                 placeholder="Please Enter a Number"
+                className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
               />
             </FormGroup>
           ) : (
@@ -396,6 +404,7 @@ function EditBadgePopup(props) {
                 value={multiple}
                 onChange={handleChange}
                 placeholder="Please Enter a Number"
+                className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
               />
             </FormGroup>
           ) : (
@@ -421,6 +430,7 @@ function EditBadgePopup(props) {
                 value={people}
                 onChange={handleChange}
                 placeholder="Please Enter a Number"
+                className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
               />
             </FormGroup>
           ) : (
@@ -458,6 +468,7 @@ function EditBadgePopup(props) {
               value={ranking}
               onChange={handleChange}
               placeholder="Please Enter a Number"
+              className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
             />
           </FormGroup>
         </Form>

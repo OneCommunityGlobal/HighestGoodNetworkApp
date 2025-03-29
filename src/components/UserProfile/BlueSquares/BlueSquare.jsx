@@ -8,7 +8,8 @@ const BlueSquare = (props) => {
   const {
     blueSquares,
     handleBlueSquare,
-    hasPermission
+    hasPermission,
+    darkMode
   } = props;
 
   const canAddInfringements = hasPermission('addInfringements');
@@ -16,22 +17,21 @@ const BlueSquare = (props) => {
   const canDeleteInfringements = hasPermission('deleteInfringements');
   const isInfringementAuthorizer = canAddInfringements || canEditInfringements || canDeleteInfringements;
 
-  const handleOnClick = (blueSquare) => {
+  const handleOnClick = (blueSquare) => {    
     if (!blueSquare._id) {
-      handleBlueSquare(isInfringementAuthorizer, 'message', 'none');
+      handleBlueSquare, darkMode(isInfringementAuthorizer, 'message', 'none');
     } else if (canEditInfringements || canDeleteInfringements) {
       handleBlueSquare(true, 'modBlueSquare', blueSquare._id);
     } else {
       handleBlueSquare(true, 'viewBlueSquare', blueSquare._id);
     }
-  };
-
+  };    
   return (
-    <div className="blueSquareContainer">
+    <div className={`blueSquareContainer ${darkMode ? 'bg-darkmode-liblack' : ''}`}>
       <div className={`blueSquares ${blueSquares?.length ? '' : 'NoBlueSquares'}`}>
         {blueSquares?.length ? (
           blueSquares
-            .sort((a, b) => (a.date > b.date ? 1 : -1))
+            .sort((a, b) => (a.date > b.date ? 1 : -1))  // sorting by most recent date(awareded) last
             .map((blueSquare, index) => (
               <div
                 key={index}
