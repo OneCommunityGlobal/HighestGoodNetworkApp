@@ -22,7 +22,7 @@
  .tablet td:nth-child(2), /* Name cell */
  .tablet td:nth-child(3) /* Modified cell */ {
    width: 80px; 
-   padding: 0 8px; 
+   padding: 8px; 
  }
 
  /* Apply dark background */
@@ -89,4 +89,11 @@ th[data-testid="desktop-earned-dates"] {
   right: 26px;
   bottom: 2px;
   z-index: 10;
+}
+
+@media screen and (max-width: 991px) {
+  .dropdown-menu{
+    max-height: 250px;
+    width: 100%
+  }
 }
