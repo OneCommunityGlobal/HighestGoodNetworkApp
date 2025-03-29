@@ -156,7 +156,12 @@ export const updateBuildingInventoryType = (payload) => {
     axios.put(`${ENDPOINTS.BM_INVTYPE_ROOT}/${category}/${id}`, {name, description})
       .then(res => {
         dispatch(setUpdateInvTypeResult(res.data))
-        // update inventory types with updated list received from the request
+        
+        // After update, fetch full list
+        return axios.get(ENDPOINTS.BM_INVTYPE_TYPE(category))
+      })
+      .then(res => {
+        // Update inventory types with complete list
         dispatch(setInvTypesByType({ type: category, data: res.data }))
       })
       .catch(err => {
