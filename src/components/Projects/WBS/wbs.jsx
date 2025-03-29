@@ -44,14 +44,14 @@ const WBS = props => {
   return (
     <React.Fragment>
       <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{minHeight: "100%"}}>
-        <div className="container pt-2">
+        <div className={`container pt-2 ${darkMode ? 'bg-yinmn-blue-light text-light' : ''}`}>
           <nav aria-label="breadcrumb">
             <ol className={`breadcrumb ${darkMode ? 'bg-space-cadet' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>
               <NavItem tag={Link} to={`/projects/`}>
                 <button type="button" className="btn btn-secondary mr-2" style={darkMode ? boxStyleDark : boxStyle}>
                   <i className="fa fa-chevron-circle-left" aria-hidden="true"></i>
                 </button>
-                <span style={{ marginLeft: '8px' }}>Return to Project List</span>
+                <span style={{ marginLeft: '8px', marginRight:'8px' }}>Return to Project List</span>
               </NavItem>
               <div id="member_project__name" style={{ flex: '1', textAlign: 'center', fontWeight: 'bold', display: 'flex',
                 alignItems: 'center', justifyContent: 'center', }}>Project Name: {projectName}</div>

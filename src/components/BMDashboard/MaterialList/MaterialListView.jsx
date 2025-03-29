@@ -10,6 +10,15 @@ function MaterialListView() {
   const errors = useSelector(state => state.errors);
   const postMaterialUpdateResult = useSelector(state => state.materials.updateMaterials);
 
+  const materialsWithId = materials
+    ? materials.map(item => ({
+        ...item,
+        id:
+          parseInt(item._id?.substring(item._id.length - 6), 16) ||
+          Math.floor(Math.random() * 1000000),
+      }))
+    : [];
+
   useEffect(() => {
     dispatch(fetchAllMaterials());
   }, []);
@@ -32,7 +41,7 @@ function MaterialListView() {
   return (
     <ItemListView
       itemType={itemType}
-      items={materials}
+      items={materialsWithId}
       errors={errors}
       UpdateItemModal={UpdateMaterialModal}
       dynamicColumns={dynamicColumns}

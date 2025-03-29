@@ -31,13 +31,15 @@ export function TeamTablesearchPanel(props) {
         </button>
       )}
       <div className="input-group-prepend" style={{ marginLeft: '10px' }}>
-        <span className="input-group-text">{SEARCH}</span>
+        <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
+          {SEARCH}
+        </span>
       </div>
 
       <input
         ref={inputRef}
         type="text"
-        className="form-control"
+        className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
         aria-label="Search"
         placeholder="Search Text"
         id="team-profiles-wild-card-search"
