@@ -34,5 +34,6 @@ const RoutePermissions = {
     'suggestTask',
   ],
   announcements: ['sendEmails', 'postToImgur'],
+  // imgurCallback: [''],
 };
 export default RoutePermissions;

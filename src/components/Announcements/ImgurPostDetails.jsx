@@ -14,10 +14,17 @@ export const handlePostToImgur = async ({
   console.log('Posting to Imgur...');
   console.log('Title:', imgurTitle);
   console.log('Schedule Time:', imgurScheduleTime);
-  
+  console.log('Tags:', imgurTags);
+  console.log('Files:', imgurFiles);
+  console.log('Descriptions:', imgurFileDescriptions);
   // input validation
   if (imgurFiles.length == 0) {
     setImgurError('Please upload an image file first');
+    return;
+  }
+
+  if (imgurFiles.length !== imgurFileDescriptions.length) {
+    setImgurError('Mismatch between files and descriptions');
     return;
   }
 
@@ -40,7 +47,8 @@ export const handlePostToImgur = async ({
     formData.append('description', imgurFileDescriptions[index]);
   });
 
-
+  console.log('Form data:', formData);
+  console.log('Form data entries:', Array.from(formData.entries()));
   try {
     const response = await axios.post(
       ENDPOINTS.POST_IMGUR,

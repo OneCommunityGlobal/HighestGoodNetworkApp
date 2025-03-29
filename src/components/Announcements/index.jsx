@@ -47,6 +47,7 @@ function Announcements({ title, email }) {
   const [imgurError, setImgurError] = useState('');
   const [fillingPost, setFillingPost] = useState(false);
   const [scheduleCalendar, setScheduleCalendar] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
   
 
   const maxScheduleDate = new Date();
@@ -74,6 +75,61 @@ function Announcements({ title, email }) {
       setFillingPost(false);
     }
   }, [imgurTitle, imgurTopic, imgurTags, imgurFiles]);
+
+  // useEffect(() => {
+  //   const handleMessage = (event) => {
+  //     if (event.data.type === 'IMGUR_AUTH_CODE') {
+  //       const authorizationCode = event.data.code;
+  //       console.log('Authorization Code received:', authorizationCode);
+  
+  //       // Send the authorization code to the backend to exchange for tokens
+  //       axios
+  //         .post(ENDPOINTS.IMGUR_AUTH, { code: authorizationCode })
+  //         .then((response) => {
+  //           console.log('Tokens received:', response.data);
+  //           localStorage.setItem('access_token', response.data.access_token);
+  //           localStorage.setItem('refresh_token', response.data.refresh_token);
+  //           toast.success('Logged in to Imgur successfully!');
+  //         })
+  //         .catch((error) => {
+  //           console.error('Error exchanging authorization code:', error);
+  //           toast.error('Failed to log in to Imgur.');
+  //         });
+  //     }
+  //   };
+  
+  //   window.addEventListener('message', handleMessage);
+  
+  //   return () => {
+  //     window.removeEventListener('message', handleMessage);
+  //   };
+  // }, []);
+
+  // const handleImgurLogin = () => {
+  //   console.log('in handleImgurLogin');
+  //   if (isLoggingIn) return; // Prevent multiple clicks
+  //   setIsLoggingIn(true);
+  //   const clientId = process.env.REACT_APP_IMGUR_CLIENT_ID; 
+  //   const redirectUri = 'http://localhost:3000/auth/imgur/callback';
+  //   const authorizationUrl = `https://api.imgur.com/oauth2/authorize?client_id=${clientId}&response_type=code`;
+
+  //   console.log('Imgur Authorization URL:', authorizationUrl);
+  //   const loginWindow = window.open(
+  //     authorizationUrl,
+  //     'ImgurLogin',
+  //     'width=600,height=400,scrollbars=yes,resizable=yes'
+  //   );
+  //   const checkWindowClosed = setInterval(() => {
+  //     if (loginWindow.closed) {
+  //       clearInterval(checkWindowClosed);
+  //       setIsLoggingIn(false);
+  //       toast.error('Imgur is temporarily over capacity. Please try again later.');
+  //     }
+  //   }, 500);
+
+    
+  // };
+
 
   const editorInit = {
     license_key: 'gpl',
@@ -219,8 +275,6 @@ function Announcements({ title, email }) {
     return `linear-gradient(45deg, ${randomColor1}, ${randomColor2})`;
   };
 
-  
-
 
   const handleBroadcastEmails = () => {
     const htmlContent = `
@@ -291,6 +345,19 @@ function Announcements({ title, email }) {
                 
                 <div className="imgur-post-details-container">
                   <h3>Post Details</h3>
+
+
+                  {/* login to imgur button
+                  <button 
+                    className='imgur-login-button'
+                    onClick={() => {
+                      handleImgurLogin();
+                      console.log('Login to Imgur clicked');
+                    }}
+                  >
+                    Login to Imgur
+                  </button> */}
+
 
                   {/* Imgur album title input */}
                   <div className="imgur-post-title">
