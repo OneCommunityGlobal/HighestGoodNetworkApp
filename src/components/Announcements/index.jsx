@@ -5,7 +5,6 @@ import { Editor } from '@tinymce/tinymce-react'; // Import Editor from TinyMCE
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
-import { SiImgur } from 'react-icons/si';
 import { ReactComponent as ImgurIcon } from '../../assets/images/SocialMediaIcons/ImgurIcon.svg';
 import { 
   handlePostToImgur, 
@@ -15,9 +14,6 @@ import {
   handleRemoveScheduledPost, 
   // deleteScheduledPost 
 } from './ImgurPostDetails';
-import { set } from 'lodash';
-import axios from 'axios';
-import { ENDPOINTS } from '../../utils/URL';
 import { BiTrash } from 'react-icons/bi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
@@ -75,60 +71,6 @@ function Announcements({ title, email }) {
       setFillingPost(false);
     }
   }, [imgurTitle, imgurTopic, imgurTags, imgurFiles]);
-
-  // useEffect(() => {
-  //   const handleMessage = (event) => {
-  //     if (event.data.type === 'IMGUR_AUTH_CODE') {
-  //       const authorizationCode = event.data.code;
-  //       console.log('Authorization Code received:', authorizationCode);
-  
-  //       // Send the authorization code to the backend to exchange for tokens
-  //       axios
-  //         .post(ENDPOINTS.IMGUR_AUTH, { code: authorizationCode })
-  //         .then((response) => {
-  //           console.log('Tokens received:', response.data);
-  //           localStorage.setItem('access_token', response.data.access_token);
-  //           localStorage.setItem('refresh_token', response.data.refresh_token);
-  //           toast.success('Logged in to Imgur successfully!');
-  //         })
-  //         .catch((error) => {
-  //           console.error('Error exchanging authorization code:', error);
-  //           toast.error('Failed to log in to Imgur.');
-  //         });
-  //     }
-  //   };
-  
-  //   window.addEventListener('message', handleMessage);
-  
-  //   return () => {
-  //     window.removeEventListener('message', handleMessage);
-  //   };
-  // }, []);
-
-  // const handleImgurLogin = () => {
-  //   console.log('in handleImgurLogin');
-  //   if (isLoggingIn) return; // Prevent multiple clicks
-  //   setIsLoggingIn(true);
-  //   const clientId = process.env.REACT_APP_IMGUR_CLIENT_ID; 
-  //   const redirectUri = 'http://localhost:3000/auth/imgur/callback';
-  //   const authorizationUrl = `https://api.imgur.com/oauth2/authorize?client_id=${clientId}&response_type=code`;
-
-  //   console.log('Imgur Authorization URL:', authorizationUrl);
-  //   const loginWindow = window.open(
-  //     authorizationUrl,
-  //     'ImgurLogin',
-  //     'width=600,height=400,scrollbars=yes,resizable=yes'
-  //   );
-  //   const checkWindowClosed = setInterval(() => {
-  //     if (loginWindow.closed) {
-  //       clearInterval(checkWindowClosed);
-  //       setIsLoggingIn(false);
-  //       toast.error('Imgur is temporarily over capacity. Please try again later.');
-  //     }
-  //   }, 500);
-
-    
-  // };
 
 
   const editorInit = {
@@ -347,18 +289,6 @@ function Announcements({ title, email }) {
                   <h3>Post Details</h3>
 
 
-                  {/* login to imgur button
-                  <button 
-                    className='imgur-login-button'
-                    onClick={() => {
-                      handleImgurLogin();
-                      console.log('Login to Imgur clicked');
-                    }}
-                  >
-                    Login to Imgur
-                  </button> */}
-
-
                   {/* Imgur album title input */}
                   <div className="imgur-post-title">
                     <label htmlFor="imgur-content-input" className={`imgur-post-details-gap ${darkMode ? 'text-light' : 'text-dark'}`}>
@@ -477,7 +407,6 @@ function Announcements({ title, email }) {
                         type="datetime-local"
                         value={imgurScheduleTime}
                         onChange={(e) => {
-                          console.log(e.target.value);
                           setImgurScheduleTime(e.target.value)
                         }}
                         min={startOfToday.toISOString().slice(0, 16)}

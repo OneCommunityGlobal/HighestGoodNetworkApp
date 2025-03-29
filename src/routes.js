@@ -14,7 +14,7 @@ import RoleInfoCollections from 'components/UserProfile/EditableModal/RoleInfoMo
 import LessonList from 'components/BMDashboard/LessonList/LessonListForm';
 import AddEquipmentType from 'components/BMDashboard/Equipment/Add/AddEquipmentType';
 import Announcements from 'components/Announcements';
-import ImgurCallback from 'components/ImgurCallback';
+// import ImgurCallback from 'components/ImgurCallback';
 import Timelog from './components/Timelog';
 import LessonForm from './components/BMDashboard/Lesson/LessonForm';
 import UserProfileEdit from './components/UserProfile/UserProfileEdit';
@@ -298,14 +298,6 @@ export default (
           component={Announcements}
           routePermissions={RoutePermissions.announcements}
         />
-
-        {/* <ProtectedRoute
-          path="/auth/imgur/callback"
-          exact
-          component={ImgurCallback}
-          routePermissions={[]}
-          // routePermissions={RoutePermissions.imgurCallback}
-        /> */}
         
         <ProtectedRoute
           path="/sendemail"

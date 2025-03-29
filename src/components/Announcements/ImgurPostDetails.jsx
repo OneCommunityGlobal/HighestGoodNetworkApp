@@ -11,18 +11,22 @@ export const handlePostToImgur = async ({
   imgurTopic,
   setImgurError,
 }) => {
-  console.log('Posting to Imgur...');
-  console.log('Title:', imgurTitle);
-  console.log('Schedule Time:', imgurScheduleTime);
-  console.log('Tags:', imgurTags);
-  console.log('Files:', imgurFiles);
-  console.log('Descriptions:', imgurFileDescriptions);
   // input validation
+  if (imgurTitle.trim() === '') {
+    setImgurError('Please enter a title for the post');
+    return;
+  }
+
   if (imgurFiles.length == 0) {
     setImgurError('Please upload an image file first');
     return;
   }
 
+  if (imgurFileDescriptions.length > 0 && imgurFileDescriptions.some(desc => desc.trim() === '')) {
+    setImgurError('Please enter a description for each file');
+    return;
+  }
+  
   if (imgurFiles.length !== imgurFileDescriptions.length) {
     setImgurError('Mismatch between files and descriptions');
     return;
@@ -47,8 +51,6 @@ export const handlePostToImgur = async ({
     formData.append('description', imgurFileDescriptions[index]);
   });
 
-  console.log('Form data:', formData);
-  console.log('Form data entries:', Array.from(formData.entries()));
   try {
     const response = await axios.post(
       ENDPOINTS.POST_IMGUR,
@@ -96,7 +98,6 @@ export const handleRemoveImgurFile = (index, setImgurFiles, setImgurFileDescript
 };
 
 export const handleRemoveScheduledPost = async (postId, setScheduledPosts, setImgurError) => {
-  console.log('Removing scheduled post:', postId);
   try {
     const response = await axios.delete(`${ENDPOINTS.SCHEDULED_POSTS}/${postId}`);
     if (response.status === 200) {
@@ -124,7 +125,6 @@ export const fetchImgurScheduledPosts = async (setScheduledPosts, setImgurError)
   try {
     console.log('Fetching scheduled Imgur posts...');
     const response = await axios.get(ENDPOINTS.SCHEDULED_POSTS);
-    console.log('Scheduled Imgur posts response:', response.data);
     const posts = response.data.scheduledPosts;
     if (response.status === 200) {
       setScheduledPosts(posts);
