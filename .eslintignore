@@ -22,4 +22,5 @@ src/components/UserManagement/**
 src/components/UserProfile/**
 src/components/EmailSubscribeForm/**
 src/components/Dashboard/**
+src/components/Announcements/**
 src/components/Teams/TeamMembersPopup.jsx

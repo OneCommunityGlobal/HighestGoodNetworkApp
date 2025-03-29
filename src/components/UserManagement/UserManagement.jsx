@@ -102,7 +102,7 @@ class UserManagement extends React.PureComponent {
   }
 
   async componentDidUpdate(prevProps, prevState) {
-    
+
     if (prevProps.state.theme.darkMode !== this.props.state.theme.darkMode) {
       const darkMode = this.props.state.theme.darkMode;
       let { userProfiles, fetching } = this.props.state.allUserProfiles;
@@ -648,6 +648,7 @@ class UserManagement extends React.PureComponent {
       }
     );
   };
+
 
   /**
    * call back for active/inactive search filter
