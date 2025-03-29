@@ -1,60 +1,50 @@
-// GeneratePdfReport.jsx
-import React from 'react';
-import pdfMake from 'pdfmake/build/pdfmake';
-import pdfFonts from 'pdfmake/build/vfs_fonts';
-import htmlToPdfmake from 'html-to-pdfmake';
-import { Button } from 'reactstrap';
+// generatePDF.js
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+import './TotalOrgSummary.css';
 
-// 初始化 pdfMake 的字体资源
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
+export function generatePDF() {
+  const input = document.getElementById('pdfContent');
+  
+  // 添加 pdf-mode 类使打印样式生效
+  input.classList.add('pdf-mode');
 
-const GeneratePdfReport = ({ title, reportContainerId }) => {
-  const generatePdf = () => {
-    const printableArea = document.getElementById(reportContainerId);
-    if (!printableArea) {
-      console.error(`找不到 id 为 "${reportContainerId}" 的区域`);
-      return;
-    }
+  // 延时确保样式生效后再截图
+  setTimeout(() => {
+    // 等待所有字体加载完成
+    document.fonts.ready.then(() => {
+      html2canvas(input, {
+        scale: window.devicePixelRatio || 2,
+        useCORS: true,
+        allowTaint: false,
+        scrollY: -window.scrollY
+      }).then((canvas) => {
+        // 截图完成后移除 pdf-mode 类
+        input.classList.remove('pdf-mode');
 
-    let htmlContent = printableArea.innerHTML;
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
 
-    // 移除所有形如 id="collapsible-trigger-xxx" 的属性
-    htmlContent = htmlContent.replace(/id="collapsible-trigger-[^"]*"/g, '');
+        // 计算图片在PDF中的显示尺寸
+        const imgWidth = pageWidth;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        let position = 0;
 
-    // 可选：移除 header 部分（假设 header 使用 .header 类）
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = htmlContent;
-    const headerEls = tempDiv.querySelectorAll('.header');
-    headerEls.forEach(el => el.remove());
-    htmlContent = tempDiv.innerHTML;
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
 
-    // 在报告顶部添加标题（可根据需要调整）
-    const reportHeader = `<h1>${title || 'Report'}</h1>`;
-    htmlContent = reportHeader + htmlContent;
-
-    // 将 HTML 转换为 pdfMake 可识别的格式
-    const pdfContent = htmlToPdfmake(htmlContent);
-
-    // 定义 PDF 文档结构与样式
-    const docDefinition = {
-      content: pdfContent,
-      pageSize: 'A4',
-      pageMargins: [40, 60, 40, 60],
-      styles: {
-        header: { fontSize: 18, bold: true, marginBottom: 10 },
-        paragraph: { fontSize: 12, margin: [0, 5, 0, 5] },
-      },
-    };
-
-    // 生成 PDF 并自动下载
-    pdfMake.createPdf(docDefinition).download(`${title || 'Report'}.pdf`);
-  };
-
-  return (
-    <Button color="primary" onClick={generatePdf}>
-      导出 PDF
-    </Button>
-  );
-};
-
-export default GeneratePdfReport;
+        // 如果内容超过一页，处理分页
+        let heightLeft = imgHeight;
+        while (heightLeft > pageHeight) {
+          position = heightLeft - imgHeight;
+          pdf.addPage();
+          pdf.addImage(imgData, 'PNG', 0, -position, imgWidth, imgHeight);
+          heightLeft -= pageHeight;
+        }
+        
+        pdf.save('document.pdf');
+      });
+    });
+  }, 100); // 延时100ms，视情况可调整
+}

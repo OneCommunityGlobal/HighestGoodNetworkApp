@@ -73,7 +73,7 @@
   opacity: 0.7;
 }
 
-/* Add styles for the PDF button */
+/* PDF button styles */
 .share-pdf-btn {
   margin-left: auto;
   padding: 8px 16px !important;
@@ -132,6 +132,7 @@
   margin: 10px;
   color: #333;
 }
+
 @media print {
   body,
   html {
@@ -144,6 +145,27 @@
     print-color-adjust: exact !important;
   }
 
+  body * {
+    visibility: hidden;
+  }
+
+  table {
+    width: 100% !important;
+    break-inside: avoid !important;
+  }
+  
+  #pdf-export-container,
+  #pdf-export-container * {
+    visibility: visible;
+  }
+  
+  #pdf-export-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+
   .container-total-org-wrapper {
     padding: 20px !important;
     margin: 0 !important;
@@ -152,7 +174,7 @@
   }
 
   /* Title styles */
-  .header-row {
+  .row.d-flex.justify-content-between.align-items-center {
     display: flex !important;
     justify-content: space-between !important;
     align-items: center !important;
@@ -161,7 +183,7 @@
     padding: 0 !important;
   }
 
-  .header-row h3 {
+  .row.d-flex.justify-content-between.align-items-center h3 {
     margin: 0 !important;
     font-size: 32px !important;
     font-weight: 600 !important;
@@ -173,6 +195,13 @@
     border: none !important;
     border-top: 1px solid #eee !important;
     width: 100% !important;
+  }
+
+  /* Remove background colors */
+  .component-container,
+  .component-border,
+  .Collapsible__trigger {
+    background-color: #FFF !important;
   }
 
   /* Keep other styles unchanged */
@@ -211,7 +240,6 @@
     padding: 15px 20px !important;
     margin-bottom: 5mm !important;
     border-bottom: 1px solid #333 !important;
-    background-color: #f8f8f8 !important;
     position: relative !important;
   }
 
@@ -269,10 +297,13 @@
     page-break-inside: avoid !important;
     break-inside: avoid !important;
     margin: 15px 0 !important;
+    grid-template-columns: repeat(4, 1fr) !important;
   }
 
-  /* Hide PDF button */
-  .share-pdf-btn {
+  /* Hide all buttons */
+  .header-row button,
+  .share-pdf-btn,
+  .controls {
     display: none !important;
   }
 

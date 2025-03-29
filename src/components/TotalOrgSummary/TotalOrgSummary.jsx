@@ -121,157 +121,252 @@ function TotalOrgSummary(props) {
   const dispatch = useDispatch();
 
   const allUsersTimeEntries = useSelector(state => state.allUsersTimeEntries);
+  
+  
+const handleSaveAsPDF = async () => {
+  if (typeof jsPDF === 'undefined' || typeof html2canvas === 'undefined') {
+    alert('Required PDF libraries not loaded. Please refresh the page.');
+    return;
+  }
 
+  const triggers = document.querySelectorAll('.Collapsible__trigger');
+  const originalStates = Array.from(triggers).map(trigger => 
+    trigger.classList.contains('is-open')
+  );
 
-  const handleSaveAsPDF = async () => {
-    // Save the current state of all panels
-    const triggers = document.querySelectorAll('.Collapsible__trigger');
-    const originalStates = Array.from(triggers).map(trigger => trigger.classList.contains('is-open'));
-    
-    try {
-      // Check if all data is loaded
-      if (!volunteerStats || isLoading) {
-        alert('Please wait for data to load before generating PDF');
-        return;
-      }
-      
-      // Expand all panels
-      triggers.forEach(trigger => {
-        if (!trigger.classList.contains('is-open')) {
-          trigger.click();
-        }
-      });
-
-      // Wait for content to fully expand and render
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      // Check if all charts are rendered
-      const checkChartsLoaded = () => {
-        const charts = document.querySelectorAll('.recharts-wrapper');
-        return Array.from(charts).every(chart => {
-          const svg = chart.querySelector('svg');
-          return svg && svg.getBoundingClientRect().width > 0;
-        });
-      };
-
-      // Wait for charts to load
-      let attempts = 0;
-      while (!checkChartsLoaded() && attempts < 10) {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        attempts++;
-      }
-
-      if (!checkChartsLoaded()) {
-        alert('Charts loading timeout, please try again');
-        return;
-      }
-
-      const element = document.querySelector('.container-total-org-wrapper');
-      
-      // Create a temporary container to wrap content
-      const wrapper = document.createElement('div');
-      wrapper.style.backgroundColor = '#fff';
-      wrapper.style.padding = '20px';
-      wrapper.style.width = '100%';
-      
-      // Create title row
-      const titleRow = document.createElement('div');
-      titleRow.style.display = 'flex';
-      titleRow.style.justifyContent = 'space-between';
-      titleRow.style.alignItems = 'center';
-      titleRow.style.marginBottom = '10px';
-      
-      // Add title
-      const title = document.createElement('h3');
-      title.textContent = 'Total Org Summary';
-      title.style.margin = '0';
-      title.style.fontSize = '32px';
-      title.style.fontWeight = '600';
-      titleRow.appendChild(title);
-      
-      const canvas = await html2canvas(element, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        windowWidth: element.scrollWidth,
-        windowHeight: element.scrollHeight,
-        onclone: (clonedDoc) => {
-          const style = clonedDoc.createElement('style');
-          style.textContent = `
-            @media print {
-              body { margin: 0; padding: 0; }
-              .container-total-org-wrapper { 
-                padding: 20px;
-                background-color: #fff;
-              }
-              .header-row {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 20px;
-                width: 100%;
-              }
-              .header-row h3 {
-                margin: 0;
-                font-size: 32px;
-                font-weight: 600;
-                color: #000;
-              }
-              img, canvas, svg { max-width: 100%; height: auto; }
-              .recharts-wrapper, .recharts-surface { width: 100%; height: auto; min-height: 300px; }
-              hr { 
-                margin: 20px 0;
-                border: none;
-                border-top: 1px solid #eee;
-              }
-            }
-          `;
-          clonedDoc.head.appendChild(style);
-
-          // Add title row to cloned document
-          const container = clonedDoc.querySelector('.container-total-org-wrapper');
-          const firstChild = container.firstChild;
-          
-          const titleRow = clonedDoc.createElement('div');
-          titleRow.className = 'header-row';
-          
-          const title = clonedDoc.createElement('h3');
-          title.textContent = 'Total Org Summary';
-          titleRow.appendChild(title);
-          
-          container.insertBefore(titleRow, firstChild);
-          
-          // Add divider line
-          const hr = clonedDoc.createElement('hr');
-          container.insertBefore(hr, firstChild.nextSibling);
-        }
-      });
-      
-      const imgData = canvas.toDataURL('image/png', 1.0);
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'px',
-        format: [canvas.width, canvas.height]
-      });
-
-      pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
-      pdf.save('total-org-summary.pdf');
-    } catch (error) {
-      console.error('PDF generation failed:', error);
-      alert('Error generating PDF, please try again');
-    } finally {
-      // Restore panels to original state
-      const triggers = document.querySelectorAll('.Collapsible__trigger');
-      triggers.forEach((trigger, index) => {
-        const isCurrentlyOpen = trigger.classList.contains('is-open');
-        const wasOpen = originalStates[index];
-        if (isCurrentlyOpen !== wasOpen) {
-          trigger.click();
-        }
-      });
+  try {
+    if (!volunteerStats || isLoading) {
+      alert('Please wait for data to load before generating PDF');
+      return;
     }
-  };
 
+    triggers.forEach(trigger => {
+      if (!trigger.classList.contains('is-open')) {
+        trigger.click();
+      }
+    });
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
+    await waitForAssets();
+
+    const pdfContainer = document.createElement('div');
+    pdfContainer.id = 'pdf-export-container';
+    pdfContainer.style.width = '420mm';
+    pdfContainer.style.padding = '24mm';
+    pdfContainer.style.backgroundColor = '#fff';
+    pdfContainer.style.position = 'absolute';
+    pdfContainer.style.left = '-9999px';
+    pdfContainer.style.boxSizing = 'border-box';
+
+    const originalElement = document.querySelector('.container-total-org-wrapper');
+    const clonedElement = originalElement.cloneNode(true);
+    
+    clonedElement.querySelectorAll('button, .share-pdf-btn, .controls, .no-print').forEach(el => el.remove());
+    
+    // Fix header structure
+    const titleRow = clonedElement.querySelector('.row.d-flex.justify-content-between.align-items-center');
+    if (titleRow) {
+      const titleCol = titleRow.querySelector('.col');
+      if (titleCol) {
+        titleCol.style.width = '100%';
+      }
+      
+      const mainTitle = titleRow.querySelector('h3');
+      if (mainTitle) {
+        mainTitle.style.fontSize = '24pt';
+        mainTitle.style.fontWeight = 'bold';
+        mainTitle.style.textAlign = 'left';
+        mainTitle.style.color = '#000';
+        mainTitle.style.margin = '0';
+      }
+    }
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .container-total-org-wrapper {
+        padding: 0 !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+        border: none !important;
+        width: 100% !important;
+        background-color: #fff !important;
+      }
+      .row.d-flex.justify-content-between.align-items-center {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        margin-bottom: 20px !important;
+        width: 100% !important;
+        padding: 0 !important;
+      }
+      .component-container {
+        page-break-inside: avoid;
+        break-inside: avoid;
+        margin: 8mm 0 !important;
+        padding: 5mm !important;
+        border: 1px solid #eee !important;
+        border-radius: 0 !important;
+        background-color: #fff !important;
+      }
+      .component-border {
+        background-color: #fff !important;
+      }
+      img, svg, canvas {
+        max-width: 100% !important;
+        height: auto !important;
+        page-break-inside: avoid !important;
+      }
+      .recharts-wrapper {
+        width: 100% !important;
+        height: auto !important;
+      }
+      table {
+        page-break-inside: avoid !important;
+      }
+      .Collapsible__trigger {
+        background-color: #fff !important;
+      }
+    `;
+    clonedElement.prepend(style);
+    
+    pdfContainer.appendChild(clonedElement);
+    document.body.appendChild(pdfContainer);
+
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      format: 'a4',
+    });
+
+    const canvas = await html2canvas(pdfContainer, {
+      scale: 2,
+      useCORS: true,
+      logging: false,
+      windowWidth: pdfContainer.scrollWidth,
+      windowHeight: pdfContainer.scrollHeight,
+      backgroundColor: '#fff',
+      allowTaint: true,
+      onclone: (clonedDoc) => {
+        clonedDoc.querySelectorAll('.header-row, .controls').forEach(el => el.remove());
+      }
+    }).catch(err => {
+      throw new Error('Failed to render page: ' + err.message);
+    });
+
+    if (!canvas) {
+      throw new Error('html2canvas returned empty canvas');
+    }
+
+    const imgData = canvas.toDataURL('image/png');
+    if (!imgData || imgData.length < 100) {
+      throw new Error('Invalid image data generated');
+    }
+
+    const imgWidth = 210; // A4 width minus margins
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    
+    // Calculate pagination
+    const pageHeight = 277; // A4 height (297mm) minus margins
+    let position = 0;
+    
+    // First page
+    pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+    position += pageHeight;
+
+    // Additional pages if needed
+    while (position < imgHeight) {
+      pdf.addPage();
+      pdf.addImage(imgData, 'PNG', 0, -(position), imgWidth, imgHeight);
+      position += pageHeight;
+    }
+    
+    pdf.save('volunteer-report-' + new Date().toISOString().slice(0, 10) + '.pdf');
+    
+    document.body.removeChild(pdfContainer);
+
+  } catch (error) {
+    const fallbackSuccess = generateSimplePDF();
+    
+    if (!fallbackSuccess) {
+      alert(`PDF generation failed: ${error.message}\n\nPlease try another browser or contact support.`);
+    }
+  } finally {
+    // Restore original panel states
+    triggers.forEach((trigger, index) => {
+      if (trigger.classList.contains('is-open') !== originalStates[index]) {
+        trigger.click();
+      }
+    });
+  }
+};
+
+  // Helper function to wait for all assets to load  
+  const waitForAssets = async () => {
+  try {
+    const elements = document.querySelectorAll('img, .recharts-wrapper, canvas, svg, iframe');
+    
+    if (elements.length === 0) {
+      return;
+    }
+
+    const promises = Array.from(elements).map((element) => {
+      return new Promise((resolve) => {
+        if (element.complete || element.readyState === 'complete') {
+          resolve();
+          return;
+        }
+
+        const timer = setTimeout(() => {
+          resolve();
+        }, 10000);
+
+        element.onload = () => {
+          clearTimeout(timer);
+          resolve();
+        };
+        element.onerror = () => {
+          clearTimeout(timer);
+          resolve();
+        };
+      });
+    });
+
+    // Wait for fonts if using custom fonts
+    if (document.fonts && document.fonts.ready) {
+      await document.fonts.ready;
+    }
+
+    await Promise.all(promises);
+    
+    // Additional delay for charts to render
+    await new Promise(resolve => setTimeout(resolve, 1000));
+  } catch (err) {
+    throw err;
+  }
+};
+
+// Fallback PDF generator
+const generateSimplePDF = () => {
+  try {
+    const pdf = new jsPDF();
+    pdf.setFontSize(16);
+    pdf.text('Volunteer Report Summary', 105, 15, { align: 'center' });
+    pdf.setFontSize(12);
+    
+    // Add basic volunteer stats
+    pdf.text(`Total Volunteers: ${volunteerStats?.total || 'N/A'}`, 20, 30);
+    pdf.text(`Active Volunteers: ${volunteerStats?.active || 'N/A'}`, 20, 40);
+    pdf.text(`New Volunteers: ${volunteerStats?.new || 'N/A'}`, 20, 50);
+    
+    pdf.text('Note: Full report generation failed. Please try', 20, 70);
+    pdf.text('again or contact support if issue persists.', 20, 80);
+    
+    pdf.save('volunteer-report-fallback.pdf');
+    return true;
+  } catch (err) {
+    return false;
+  }
+};
+  
   useEffect(() => {
     dispatch(getAllUserProfile());
   }, [dispatch]);
@@ -309,17 +404,14 @@ function TotalOrgSummary(props) {
         .then(response => {
           if (response && Array.isArray(response)) {
             setUsersOverTimeEntries(response);
-          } else {
-            // eslint-disable-next-line no-console
-            console.log('error on fetching data');
           }
         })
         .catch(() => {
-          // eslint-disable-next-line no-console
-          console.log('error on fetching data');
+          // Error handling
         });
     }
   }, [allUsersTimeEntries, usersId, fromOverDate, toOverDate]);
+  
   useEffect(() => {
     async function fetchData() {
       const {
