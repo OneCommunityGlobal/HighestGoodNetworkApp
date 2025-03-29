@@ -14,15 +14,9 @@ function ImageUploader({ onFileUpload }) {
     accept: 'image/*',
   });
 
-  const rootProps = getRootProps();
-
   return (
     <div
-      role={rootProps.role}
-      onClick={rootProps.onClick}
-      onKeyDown={rootProps.onKeyDown}
-      tabIndex={rootProps.tabIndex}
-      className={rootProps.className}
+    {...getRootProps()}
       style={{
         border: '2px dashed #ccc',
         borderRadius: '4px',
