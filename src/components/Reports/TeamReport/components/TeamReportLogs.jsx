@@ -16,7 +16,7 @@ function TeamReportLogs({
 }) {
   return (
     <section>
-      <h2 style={{ textAlign: 'center' }} className="teams-report-time-title">
+      <h2 style={{ textAlign: 'center', color: darkMode ? 'white' : 'black' }} className="teams-report-time-title">
           {teamDataLoading ?  <Spinner className="mt-3 mr-1" color="primary" />: title}
        </h2>
       <div className="teams-report-time-logs-wrapper">
