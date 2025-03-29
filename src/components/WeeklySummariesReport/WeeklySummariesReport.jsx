@@ -69,7 +69,7 @@ export class WeeklySummariesReport extends Component {
       COLORS: [],
       loading: true,
       summaries: [],
-      activeTab: navItems[1],
+      activeTab: sessionStorage.getItem("tabSelection") || navItems[1],
       passwordModalOpen: false,
       summaryRecepientsPopupOpen: false,
       isValidPwd: true,
@@ -139,7 +139,7 @@ export class WeeklySummariesReport extends Component {
       const promisedHoursByWeek = this.weekDates.map(weekDate =>
         this.getPromisedHours(weekDate.toDate, summary.weeklycommittedHoursHistory),
       );
-      return { ...summary, promisedHoursByWeek, isDeactivated: !summary.isActive };
+      return { ...summary, promisedHoursByWeek };
     });
 
     /*
@@ -226,7 +226,7 @@ export class WeeklySummariesReport extends Component {
       colorOptions,
       teamCodes,
       auth,
-    });
+    }, () => this.filterWeeklySummaries());
 
     await getInfoCollections();
     const role = authUser?.role;
@@ -388,7 +388,7 @@ export class WeeklySummariesReport extends Component {
   toggleTab = tab => {
     const { activeTab } = this.state;
     if (activeTab !== tab) {
-      this.setState({ activeTab: tab }, () => this.filterWeeklySummaries());
+      this.setState({ activeTab: tab }, () => this.filterWeeklySummaries()); // ✅ Runs filtering when tab changes
       sessionStorage.setItem('tabSelection', tab);
     }
   };
@@ -403,7 +403,9 @@ export class WeeklySummariesReport extends Component {
       tableData,
       COLORS,
       selectedSpecialColors,
+      activeTab
     } = this.state;
+
     const chartData = [];
     let temptotal = 0;
     const structuredTeamTableData = [];
@@ -415,12 +417,22 @@ export class WeeklySummariesReport extends Component {
       .filter(([, isSelected]) => isSelected)
       .map(([color]) => color);
 
+    // ✅ Get the correct start and end date for the selected week
+    const weekIndex = navItems.indexOf(activeTab);
+    const weekStartDate = moment().tz("America/Los_Angeles").startOf("week").subtract(weekIndex, "weeks");
+    const weekEndDate = moment().tz("America/Los_Angeles").endOf("week").subtract(weekIndex, "weeks");
+
+    // console.log(`Filtering data for: ${activeTab}`);
+    // console.log("Week Start Date:", weekStartDate.format());
+    // console.log("Week End Date:", weekEndDate.format());
+
     const temp = summaries.filter(summary => {
-      const { activeTab } = this.state;
-      const hoursLogged = (summary.totalSeconds[navItems.indexOf(activeTab)] || 0) / 3600;
+      const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
 
       const isMeetCriteria =
-        summary.totalTangibleHrs > 80 && summary.daysInTeam > 60 && summary.bioPosted !== 'posted';
+        summary.totalTangibleHrs > 80 &&
+        summary.daysInTeam > 60 &&
+        summary.bioPosted !== "posted";
 
       const isBio = !selectedBioStatus || isMeetCriteria;
 
@@ -428,26 +440,36 @@ export class WeeklySummariesReport extends Component {
         !selectedOverTime ||
         (summary.weeklycommittedHours > 0 &&
           hoursLogged > 0 &&
-          hoursLogged >= summary.promisedHoursByWeek[navItems.indexOf(activeTab)] * 1.25);
+          hoursLogged >= summary.promisedHoursByWeek[weekIndex] * 1.25);
 
-      // const matchesSelectedUsers = selectedUserIds.size === 0 || selectedUserIds.has(summary._id);
       const matchesSpecialColor =
         activeFilterColors.length === 0 || activeFilterColors.includes(summary.filterColor);
 
-      const isLastWeekTab = activeTab === 'last week';
-      const isDeactivated = !summary.isActive;
-      const includeDeactivated = isLastWeekTab && isDeactivated;
+      // ✅ Ensure filtering is based on the selected week's date range
+      const isInSelectedWeek = summary.weeklySummariesWithCreatedAt.some(ws => {
+        if (!ws || !ws.dueDate || !ws.createdAt) return false; // ✅ Ensure both `dueDate` and `createdAt` exist
+
+        // const dueDate = ws.dueDate ? moment(ws.dueDate).tz("America/Los_Angeles") : null;
+        const createdAt = moment(ws.createdAt).tz("America/Los_Angeles");
+
+        return (
+          createdAt.isBetween(weekStartDate, weekEndDate, null, "[]")
+        );
+      });
+
       return (
-        (includeDeactivated || !isDeactivated) &&
         (selectedCodesArray.length === 0 || selectedCodesArray.includes(summary.teamCode)) &&
-        (selectedColorsArray.length === 0 ||
-          selectedColorsArray.includes(summary.weeklySummaryOption)) &&
+        (selectedColorsArray.length === 0 || selectedColorsArray.includes(summary.weeklySummaryOption)) &&
         matchesSpecialColor &&
         isOverHours &&
-        isBio
+        isBio &&
+        isInSelectedWeek // ✅ Ensure the summary belongs to the selected week
       );
     });
 
+    // console.log(`Filtered Summaries for ${activeTab}:`, temp);
+
+    // ✅ Update chart data and team table
     if (selectedCodes[0]?.value === '' || selectedCodes.length >= 52) {
       if (selectedCodes.length >= 52) {
         selectedCodes.forEach(code => {
@@ -517,11 +539,15 @@ export class WeeklySummariesReport extends Component {
     chartData.sort();
     temptotal = chartData.reduce((acc, entry) => acc + entry.value, 0);
     structuredTeamTableData.sort();
-    this.setState({ total: temptotal });
-    this.setState({ filteredSummaries: temp });
-    this.setState({ chartData });
-    this.setState({ structuredTableData: structuredTeamTableData });
+
+    this.setState({
+      total: temptotal,
+      filteredSummaries: temp,
+      chartData,
+      structuredTableData: structuredTeamTableData
+    });
   };
+  
 
   handleSelectCodeChange = event => {
     this.setState({ selectedCodes: event }, () => this.filterWeeklySummaries());

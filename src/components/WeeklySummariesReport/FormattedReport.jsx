@@ -676,7 +676,7 @@ function Index({ summary, weekIndex, allRoleInfo, auth, handleSpecialColorDotCli
         <div style={{ display: 'flex' }}>
           <GoogleDocIcon link={googleDocLink} />
           <span>
-            <b>&nbsp;&nbsp;{((summary.role && summary.isDeactivated) || (summary.role !== 'Volunteer' && !summary.isDeactivated)) && `(${summary.role})`}</b>
+            <b>&nbsp;&nbsp;{((summary.role && !summary.isActive) || (summary.role !== 'Volunteer' && summary.isActive)) && `(${summary.role})`}</b>
           </span>
           {summary.role !== 'Volunteer' && (
             <RoleInfoModal
@@ -706,8 +706,8 @@ function Index({ summary, weekIndex, allRoleInfo, auth, handleSpecialColorDotCli
         ))}
       </div>
       <div>
-        {summary.isDeactivated && weekIndex === 1 && (
-          <span style={{ color: 'red', fontWeight: 'bold'}}>
+        {!summary.isActive && (
+          <span style={{ color: 'red', fontWeight: 'bold' }}>
             FINAL WEEK REPORTING: This team member is no longer active
           </span>
         )}
