@@ -21,7 +21,6 @@ export function TypeRow(props) {
     const { name, description } = updatedType;
     await dispatch(updateBuildingInventoryType({ category, id, name, description }));
     setEditMode(false);
-    dispatch(fetchInvTypeByType(`${category}`));
   };
 
   const handleDelete = async () => {
