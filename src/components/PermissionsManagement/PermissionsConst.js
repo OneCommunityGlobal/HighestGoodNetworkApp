@@ -552,6 +552,8 @@ export const permissionLabels = [
   },
 ];
 
+export const permissionLabelKeyMappingObj = generatePermissionLabelKeyMapping(permissionLabels, 0);
+
 export const roleOperationLabels = [
   {
     label: 'Save',

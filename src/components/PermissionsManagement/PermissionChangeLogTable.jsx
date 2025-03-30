@@ -3,9 +3,7 @@ import { useState } from 'react';
 import './PermissionChangeLogTable.css';
 import { FiChevronLeft, FiChevronRight, FiChevronDown, FiChevronUp } from 'react-icons/fi';
 import { formatDate, formattedAmPmTime } from 'utils/formatDate';
-import permissionLabels, { generatePermissionLabelKeyMapping } from './PermissionsConst';
-
-const permissionLabelKeyMappingObj = generatePermissionLabelKeyMapping(permissionLabels, 0);
+import { permissionLabelKeyMappingObj } from './PermissionsConst';
 
 function PermissionChangeLogTable({ changeLogs, darkMode }) {
   const [currentPage, setCurrentPage] = useState(1);
