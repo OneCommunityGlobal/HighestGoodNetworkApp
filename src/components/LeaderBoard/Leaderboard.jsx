@@ -103,6 +103,7 @@ function LeaderBoard({
   const [userRole, setUserRole] = useState();
   const [teamsUsers, setTeamsUsers] = useState([]);
   const [innerWidth, setInnerWidth] = useState();
+  const [isAbbreviatedView, setIsAbbreviatedView] = useState(false);
 
   const [isDisplayAlert, setIsDisplayAlert] = useState(false);
   const [stateOrganizationData, setStateOrganizationData] = useState(organizationData);
@@ -146,6 +147,18 @@ function LeaderBoard({
   useEffect(() => {
     setInnerWidth(window.innerWidth);
   }, [window.innerWidth]);
+
+  useEffect(() => {
+    const checkAbbreviatedView = () => {
+      const isAbbrev = window.innerWidth < 1024;
+      setIsAbbreviatedView(isAbbrev);
+    };
+
+    checkAbbreviatedView(); // run on mount
+    window.addEventListener('resize', checkAbbreviatedView);
+
+    return () => window.removeEventListener('resize', checkAbbreviatedView);
+  }, []);
 
   const updateOrganizationData = (usersTaks, contUsers) => {
     // prettier-ignore
@@ -540,16 +553,16 @@ function LeaderBoard({
             <Table
               className={`leaderboard table-fixed ${
                 darkMode ? 'text-light dark-mode bg-yinmn-blue' : ''
-              }`}
+              } ${isAbbreviatedView ? 'abbreviated-mode' : ''}`}
             >
               <thead className="responsive-font-size">
                 <tr className={darkMode ? 'bg-space-cadet' : ''} style={darkModeStyle}>
-                  <th data-abbr="Stat." style={darkModeStyle}>
-                    <span>Status</span>
+                  <th style={darkModeStyle}>
+                    <span>{isAbbreviatedView ? 'Stat.' : 'Status'}</span>
                   </th>
-                  <th data-abbr="Name" style={darkModeStyle}>
+                  <th style={darkModeStyle}>
                     <div className="d-flex align-items-center">
-                      <span>Name</span>
+                      <span>{isAbbreviatedView ? 'Name' : 'Name'}</span>
                       <EditableInfoModal
                         areaName="Leaderboard"
                         areaTitle="Team Members Navigation"
@@ -561,20 +574,19 @@ function LeaderBoard({
                       />
                     </div>
                   </th>
-                  <th data-abbr="Days Lft." style={darkModeStyle}>
-                    <span>Days Left</span>
+                  <th style={darkModeStyle}>
+                    <span>{isAbbreviatedView ? 'Days Lft.' : 'Days Left'}</span>
                   </th>
-                  <th data-abbr="Time Off" style={darkModeStyle}>
-                    <span>Time Off</span>
+                  <th style={darkModeStyle}>
+                    <span>{isAbbreviatedView ? 'Time Off' : 'Time Off'}</span>
                   </th>
-                  <th data-abbr="Tan. Time" style={darkModeStyle}>
-                    <span>Tangible Time</span>
+                  <th style={darkModeStyle}>
+                    <span>{isAbbreviatedView ? 'Tan. Time' : 'Tangible Time'}</span>
                   </th>
-                  <th data-abbr="Prog." style={darkModeStyle}>
-                    <span>Progress</span>
+                  <th style={darkModeStyle}>
+                    <span>{isAbbreviatedView ? 'Prog.' : 'Progress'}</span>
                   </th>
                   <th
-                    data-abbr="Tot. Time"
                     style={
                       darkMode
                         ? { backgroundColor: '#3a506b', color: 'white', textAlign: 'right' }
@@ -583,7 +595,7 @@ function LeaderBoard({
                   >
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                       <div style={{ textAlign: 'left' }}>
-                        <span>Total Time</span>
+                        <span>{isAbbreviatedView ? 'Tot. Time' : 'Total Time'}</span>
                       </div>
                       {isOwner && (
                         <MouseoverTextTotalTimeEditButton onUpdate={handleMouseoverTextUpdate} />
