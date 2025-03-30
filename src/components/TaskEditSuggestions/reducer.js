@@ -9,7 +9,7 @@ const initialState = {
 export const taskEditSuggestionsReducer = (state = initialState, action) => {
   switch (action.type) {
     case 'FETCH_TASK_EDIT_SUGGESTIONS_BEGIN':
-      return { ...state, isLoading: true };
+      return { ...initialState, isLoading: true };
     case 'FETCH_TASK_EDIT_SUGGESTIONS_SUCESS':
       const fetchedTaskEditSuggestions = [...action.payload];
       return {
@@ -74,6 +74,6 @@ export const taskEditSuggestionsReducer = (state = initialState, action) => {
         };
       }
     default:
-      return { ...state };
+      return state ;
   }
 };

@@ -1,10 +1,3 @@
-html,body{
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    /* overflow: hidden;   */
-}
-
 .lb-messaging-toast{
   background-color: #99cc33;
   color: white;
@@ -19,7 +12,7 @@ html,body{
     background-color: #eeeeee;
     width: 100%;
     margin: 0;
-    padding: 0;
+    padding: 0; 
 }
 
 .lb-messaging-header{
@@ -150,7 +143,7 @@ html,body{
 .lb-messaging-message-window-header{
     display: flex;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: space-between;
     background-color: #cac6c6;
     height:12%;
     font-size:15px;
@@ -194,6 +187,73 @@ html,body{
     max-height: 320px;
     overflow-y: auto;
   }
+  
+
+  /* Notification Settings Diaglog Box */
+  .lg-messaging-notification-wrapper {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .lg-messaging-notification-bell {
+    font-size: 30px;
+    cursor: pointer;
+    margin:0px 15px;
+  }
+  
+  /* Keep className same as you mentioned */
+  .lg-messaging-bell-select-dropdown {
+    position: absolute;
+    top: 110%; 
+    right: 0;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    padding:5px;
+  }
+  
+  .lg-messaging-bell-select-dropdown.active {
+    display: flex;
+  }
+  
+  .lg-messaging-bell-select-dropdown label {
+    display: flex;
+    justify-content: flex-start;
+    gap: 8px;
+    font-size: 14px;
+    width: 100%;
+    cursor: pointer;
+  }
+  .lg-messaging-bell-select-dropdown input{
+    width:fit-content;
+  }
+  .lg-messaging-notification-checkbox {
+    cursor: pointer;
+  }
+  
+  .lg-messaging-submit-button {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    align-self: flex-end;
+    transition: background-color 0.2s ease;
+  }
+  
+  .lg-messaging-submit-button:hover {
+    background-color: #0056b3;
+  }
+  
   
   /* Chat bubbles */
   .chat-bubble {
@@ -440,7 +500,7 @@ html,body{
 .lb-messaging-message-window-header-dark{
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: space-between;
   background-color: #2f3f56;
   height:12%;
   font-size:15px;

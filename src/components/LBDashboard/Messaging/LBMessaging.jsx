@@ -7,13 +7,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getUserProfileBasicInfo } from 'actions/userManagement';
 import { useEffect } from 'react';
 import { fetchMessages } from 'actions/lbdashboard/messagingActions';
+import {getUserPreferences,updateUserPreferences} from 'actions/lbdashboard/userPreferenceActions';
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
 import { useRef } from 'react';
 import { initSocket, getSocket } from '../../../utils/socket';
 import config from '../../../config.json';
 import { toast } from 'react-toastify';
-import { image } from 'd3';
+
 
 export default function LBMessaging() {
   const dispatch = useDispatch();
@@ -23,20 +24,19 @@ export default function LBMessaging() {
   const users = useSelector(state => state.allUserProfilesBasicInfo);
   const auth = useSelector(state => state.auth.user);
   const darkMode = useSelector(state => state.theme.darkMode);
+  const userPreferences=useSelector(state => state.lbuserpreferences);
   const location = useLocation(); 
+  const [bellDropdownActive, setBellDropdownActive] = useState(false);
+  const [selectedOption, setSelectedOption] = useState(userPreferences);
+  // const dropdownRef = useRef(null);
   
-  // const contactIcon = darkMode
-  //   ? selectContact
-  //     ? 'lb-messaging-contact-icon-select-dark'
-  //     : 'lb-messaging-contact-icon-dark'
-  //   : selectContact
-  //   ? 'lb-messaging-contact-icon-select'
-  //   : 'lb-messaging-contact-icon';
+
   const contactIcon = `lb-messaging-contact-icon${selectContact ? '-select' : ''}${
     darkMode ? '-dark' : ''
   }`;
 
-  const { messages } = useSelector(state => state.lbmessaging);
+  const  messagesState = useSelector(state => state.lbmessaging);
+  const messages = messagesState.messages;
   const messageEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -51,6 +51,11 @@ export default function LBMessaging() {
     });
   }
   
+  const saveUserPreferences = () => {
+    let userId= auth.userid;
+    dispatch(updateUserPreferences(userId,selectedOption));
+  }
+
   const BrowserNotification = (title, options) => {
     try {
       if(document.visibilityState === 'hidden' && Notification.permission === 'granted'){
@@ -99,7 +104,7 @@ export default function LBMessaging() {
             BrowserNotification(`New message from ${senderName}`, {
               body: data.payload.content,
               icon: `${window.location.origin}/pfp-default-header.png`,
-              image: `/pfp-default-header.png`,
+              // image: `/pfp-default-header.png`,
               tag:"/new-message",
               requireInteraction: true,
               data:{url:`/lbdashboard/messaging?chat=${data.payload.sender}`}
@@ -141,6 +146,7 @@ export default function LBMessaging() {
     if (auth && auth.userid && messages.length === 0) {
       dispatch(fetchMessages(auth.userid));
     }
+    dispatch(getUserPreferences(auth.userid));
   }, [dispatch, auth.userid]);
 
   const updateSelection = user => {
@@ -407,14 +413,96 @@ export default function LBMessaging() {
                   : 'lb-messaging-message-window-header'
               }
             >
-              <img
-                src={Object.keys(selectedUser).length === 0 ? '' : '/pfp-default-header.png'}
-                alt=""
-              />
-              {Object.keys(selectedUser).length === 0
-                ? ''
-                : `${selectedUser.firstName} ${selectedUser.lastName}`}
-                <FontAwesomeIcon icon={faBell} onClick={browserNotificationPermission}/>
+              <div>  
+                  <img
+                    src={Object.keys(selectedUser).length === 0 ? '' : '/pfp-default-header.png'}
+                    alt=""
+                  />
+                  {Object.keys(selectedUser).length === 0
+                    ? ''
+                    : `${selectedUser.firstName} ${selectedUser.lastName}`}
+                  </div>
+                <div>
+                  <div className="lg-messaging-notification-wrapper">
+                  <FontAwesomeIcon
+                    icon={faBell}
+                    onClick={() => setBellDropdownActive((prev) => !prev)}
+                    className="lg-messaging-notification-bell"
+                  />
+                {bellDropdownActive &&(
+                  <div
+                    className={`lg-messaging-bell-select-dropdown ${
+                      bellDropdownActive ? "active" : ""
+                    }`}
+                    // tabIndex={0}
+                    // onBlur={() => setBellDropdownActive(false)}
+                  >
+                    <label>
+                      <input
+                        type="checkbox"
+                        className="lg-messaging-notification-checkbox"
+                        value="notifications"
+                        checked={selectedOption.notifyInApp}
+                        onChange={(e) => {
+                          const checked = e.target.checked;
+                          if (checked) browserNotificationPermission();
+                          setSelectedOption(prevState => ({
+                            ...prevState,
+                            "notifyInApp": checked
+                          }));
+                        }}
+                      />
+                      <span>In App</span>
+                    </label>
+                
+                    <label>
+                      <input
+                        type="checkbox"
+                        className="lg-messaging-notification-checkbox"
+                        value="messages"
+                        checked={selectedOption.notifySMS}
+                        onChange={(e)=>
+                            {
+                              const checked = e.target.checked;
+                              if (checked) browserNotificationPermission();
+                              setSelectedOption(prevState => ({
+                                ...prevState,
+                                "notifySMS": checked
+                              }));
+                            }
+                      }
+                      />
+                      SMS
+                    </label>
+                
+                    <label>
+                      <input
+                        type="checkbox"
+                        className="lg-messaging-notification-checkbox"
+                        value="activity"
+                        checked={selectedOption.notifyEmail}
+                        onChange={(e)=>
+                        {  
+                        const checked = e.target.checked;
+                          setSelectedOption(prevState => ({
+                          ...prevState,
+                          "notifyEmail": checked
+                        }))
+                      }
+                      }
+                      />
+                      Email
+                    </label>
+                
+                    <button type="button" className="lg-messaging-submit-button" onClick={saveUserPreferences}>
+                      Save Preferences
+                    </button>
+                  </div>)}
+                </div>
+                
+                
+              </div>
+
             </div>
             <div className="lb-messaging-message-window-body">
               {Object.keys(selectedUser).length === 0 ? (
