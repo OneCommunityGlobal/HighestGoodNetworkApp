@@ -1,0 +1,48 @@
+.skills {
+  width: 30%; /* Takes up part of the skills-and-chart container */
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.skills h3 {
+  color: #3ea0cb;
+  font-size: 20px;
+  margin-bottom: 5px;
+}
+
+.skills button {
+  background-color: #d0d0d0;
+  border: none;
+  border-radius: 10px;
+  margin-bottom: 5px;
+  padding: 10px 15px;
+  font-size: 16px;
+  cursor: pointer;
+  color: #333;
+  text-align: left;
+  max-width: 100%; /* Prevent overflow */
+  box-sizing: border-box; /* Include padding in width */
+}
+
+.skills button:hover {
+  background-color: #a9b7be;
+}
+
+.skills button.selected {
+  color: #168dc0;
+}
+
+@media (max-width: 768px) {
+  .skills {
+    width: 100%;
+    flex-direction: column;
+    align-items: center; /* Center buttons on smaller screens */
+  }
+
+  .skills button {
+    width: 100%; /* Full width on smaller screens */
+    max-width: 80%; /* Limit max width to prevent overflow */
+    font-size: 14x; /* Smaller font size */
+  }
+}

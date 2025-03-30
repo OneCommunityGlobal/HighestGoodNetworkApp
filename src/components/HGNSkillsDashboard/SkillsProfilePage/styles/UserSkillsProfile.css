@@ -1,0 +1,30 @@
+.user-profile-home {
+  font-family: Arial, sans-serif;
+  background-color: #fff;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.dashboard-container {
+  display: flex;
+  max-width: 1400px;
+  margin: 0 auto;
+  background-color: #f7f7f7;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.vertical-separator {
+  width: 1px;
+  background-color: #e0e0e0;
+}
+
+@media (max-width: 768px) {
+  .dashboard-container {
+    flex-direction: column;
+  }
+  .vertical-separator {
+    display: none;
+  }
+}

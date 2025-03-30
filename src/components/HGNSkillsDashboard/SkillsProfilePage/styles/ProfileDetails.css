@@ -1,0 +1,58 @@
+.profile-details {
+  width: 100%; /* Full width of right section */
+  margin-bottom: 20px;
+}
+
+.profile-details h3 {
+  color: #3ea0cb;
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.profile-details h4 {
+  font-size: 16px;
+  color: #333;
+  margin: 15px 0 10px;
+}
+
+.horizontal-separator {
+  border: 0;
+  border-top: 1px solid #e0e0e0;
+  margin: 10px 0;
+}
+
+.team-info,
+.contacts-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.team-info span,
+.contacts-info span {
+  white-space: nowrap;
+}
+
+.team-info strong,
+.contacts-info strong {
+  color: #869aa3;
+}
+
+.team-info .value,
+.contacts-info .value {
+  font-weight: bold;
+}
+
+@media (max-width: 768px) {
+  .profile-details {
+    width: 100%;
+  }
+  .team-info,
+  .contacts-info {
+    flex-direction: column;
+    gap: 5px;
+  }
+}

@@ -43,6 +43,7 @@ import UnsubscribeForm from './components/EmailSubscribeForm/Unsubscribe';
 import NotFoundPage from './components/NotFound/NotFoundPage';
 import { EmailSender } from './components/common/EmailSender/EmailSender';
 import Collaboration from './components/Collaboration';
+import UserSkillsProfile from './components/HGNSkillsDashboard/SkillsProfilePage/components/UserSkillsProfile';
 
 // LB Dashboard
 import LBProtectedRoute from './components/common/LBDashboard/LBProtectedRoute';
@@ -74,9 +75,6 @@ import ActivityList from './components/CommunityPortal/Activities/ActivityList';
 import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
 import EPDashboard from './components/EductionPortal';
-
-
-
 
 // eslint-disable-next-line import/order, import/no-unresolved
 import LogTools from './components/BMDashboard/LogTools/LogTools';
@@ -133,7 +131,6 @@ const PermissionsManagement = lazy(() =>
 const UserRoleTab = lazy(() => import('./components/PermissionsManagement/UserRoleTab'));
 const Teams = lazy(() => import('./components/Teams/Teams'));
 
-
 export default (
   <Switch>
     {/* ----- LB Dashboard Routing ----- */}
@@ -146,7 +143,6 @@ export default (
       <Header />
       {/* Uncomment BMHeader and its import during phase 2 development. */}
 
-
       {/* <BMHeader /> */}
       <AutoUpdate />
       <ToastContainer />
@@ -155,10 +151,14 @@ export default (
         <ProtectedRoute path="/dashboard/:userId" exact component={Dashboard} />
         <ProtectedRoute path="/project/members/:projectId" fallback component={Members} />
         <ProtectedRoute path="/timelog/" exact render={() => <Timelog userId={null} />} />
-        <ProtectedRoute path="/timelog/:userId" exact render={(props) => {
-          const { userId } = props.match.params;
-          return <Timelog userId={userId} />
-        }} />
+        <ProtectedRoute
+          path="/timelog/:userId"
+          exact
+          render={props => {
+            const { userId } = props.match.params;
+            return <Timelog userId={userId} />;
+          }}
+        />
         <ProtectedRoute path="/peoplereport/:userId" component={PeopleReport} fallback />
         <ProtectedRoute path="/projectreport/:projectId" component={ProjectReport} fallback />
         <ProtectedRoute path="/teamreport/:teamId" component={TeamReport} fallback />
@@ -311,7 +311,13 @@ export default (
           // setting permission as Weeklysummariesreport for now. Later it will be changed to weeklyVolunteerSummary. - H
           routePermissions={RoutePermissions.weeklySummariesReport}
         />
-        <ProtectedRoute path="/job-notification-dashboard" exact component={JobCCDashboard} fallback allowedRoles={[UserRole.Owner]}/>
+        <ProtectedRoute
+          path="/job-notification-dashboard"
+          exact
+          component={JobCCDashboard}
+          fallback
+          allowedRoles={[UserRole.Owner]}
+        />
 
         {/* ----- BEGIN BM Dashboard Routing ----- */}
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
@@ -398,21 +404,16 @@ export default (
         <Route path="/communityportal/login" component={CPLogin} />
         <CPProtectedRoute path="/communityportal/Activities" exact component={ActivityList} />
 
-
         {/* Listing and Bidding Routes */}
         <LBProtectedRoute path="/lbdashboard" exact component={LBDashboard} />
         <LBProtectedRoute path="/lbdashboard/listOverview" exact component={ListOveriew} />
         <Route path="/lbdashboard/login" component={LBLogin} />
-  
 
         {/* Good Education  Portal Routes */}
         <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />
         <Route path="/educationportal/login" component={EPLogin} />
 
-
         {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
-
-
 
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
         {/* <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} /> */}
@@ -430,12 +431,13 @@ export default (
         <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
         <Route path="/Logout" component={Logout} />
         <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
-        <ProtectedRoute path="/hgnform" exact component={Page1}/>
-        <ProtectedRoute path="/hgnform/page2" exact component={Page2}/>
-        <ProtectedRoute path="/hgnform/page3" exact component={Page3}/>
-        <ProtectedRoute path="/hgnform/page4" exact component={Page4}/>
-        <ProtectedRoute path="/hgnform/page5" exact component={Page5}/>
-        <ProtectedRoute path="/hgnform/page6" exact component={Page6}/>  
+        <ProtectedRoute path="/hgnform" exact component={Page1} />
+        <ProtectedRoute path="/hgnform/page2" exact component={Page2} />
+        <ProtectedRoute path="/hgnform/page3" exact component={Page3} />
+        <ProtectedRoute path="/hgnform/page4" exact component={Page4} />
+        <ProtectedRoute path="/hgnform/page5" exact component={Page5} />
+        <ProtectedRoute path="/hgnform/page6" exact component={Page6} />
+        <ProtectedRoute path="/hgnhelp/profile/" exact component={UserSkillsProfile} />
         <ProtectedRoute path="/" exact component={Dashboard} />
         <Route path="*" component={NotFoundPage} />
       </Switch>
