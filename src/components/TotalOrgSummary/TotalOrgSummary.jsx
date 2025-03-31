@@ -3,10 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { Alert, Col, Container, Row } from 'reactstrap';
 import 'moment-timezone';
-
-
 import hasPermission from 'utils/permissions';
-import GlobalVolunteerMap from '../GlobalVolunteerMap';
 
 // actions
 import { getTotalOrgSummary } from 'actions/totalOrgSummary';
@@ -19,7 +16,6 @@ import '../Header/DarkMode.css';
 import './TotalOrgSummary.css';
 
 // components
-
 import VolunteerHoursDistribution from './VolunteerHoursDistribution/VolunteerHoursDistribution';
 import AccordianWrapper from './AccordianWrapper/AccordianWrapper';
 import VolunteerStatus from './VolunteerStatus/VolunteerStatus';
@@ -33,6 +29,7 @@ import NumbersVolunteerWorked from './NumbersVolunteerWorked/NumbersVolunteerWor
 import AnniversaryCelebrated from './AnniversaryCelebrated/AnniversaryCelebrated';
 import RoleDistributionPieChart from './VolunteerRolesTeamDynamics/RoleDistributionPieChart';
 import WorkDistributionBarChart from './VolunteerRolesTeamDynamics/WorkDistributionBarChart';
+import GlobalVolunteerMap from './GlobalVolunteerMap/GlobalVolunteerMap';
 
 function calculateFromDate() {
   const currentDate = new Date();
@@ -284,7 +281,7 @@ function TotalOrgSummary(props) {
               <div className="chart-title">
                 <p> Active Global Volunteer Locations: Uniting Communities Worldwide</p>
               </div>
-              <GlobalVolunteerMap locations={volunteerStats?.userLocations || []} />
+              <GlobalVolunteerMap isLoading={isLoading} locations={volunteerStats?.userLocations} />
             </div>
           </Col>
           <Col lg={{ size: 6 }}>

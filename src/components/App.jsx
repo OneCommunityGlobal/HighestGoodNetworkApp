@@ -143,15 +143,14 @@ class App extends Component {
   render() {
     return (
       <Provider store={store}>
-       {/* Temporarily commented PersistGate */}
-  {/* <PersistGate loading={<Loading />} persistor={persistor}> */}
+        <PersistGate loading={<Loading />} persistor={persistor}>
           <ModalProvider>
             <Router>
               <UpdateDocumentTitle />
               {routes}
             </Router>
           </ModalProvider>
-        {/* </PersistGate> */}
+        </PersistGate>
       </Provider>
     );
   }

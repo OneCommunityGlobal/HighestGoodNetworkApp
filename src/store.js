@@ -19,14 +19,7 @@ export const rootReducers = combineReducers({
 const persistConfig = {
   key: 'root',
   storage,
-  blacklist: [
-    'auth', 
-    'errors', 
-    'notifications',      
-    'userActivities',     
-    'allUsersTimeEntries',
-    ...Object.keys(sessionReducers)
-  ],
+  blacklist: ['auth', 'errors', ...Object.keys(sessionReducers)],
 };
 
 const localPersistReducer = persistReducer(persistConfig, rootReducers);
