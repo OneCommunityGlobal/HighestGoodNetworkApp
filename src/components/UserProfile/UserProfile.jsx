@@ -221,10 +221,12 @@ function UserProfile(props) {
   }, [props?.match?.params?.userId]);
 
   useEffect(() => {
-    if (userProfile?.firstName && userProfile?.lastName) {
-      document.title = `${userProfile.firstName} ${userProfile.lastName}`;
+    if (userProfile?.firstName || userProfile?.lastName) {
+      document.title = `${userProfile.firstName ?? ''} ${userProfile.lastName ?? ''}`.trim();
+    } else {
+      document.title = 'User';
     }
-  }, [userProfile]);  
+  }, [userProfile]);    
 
   const checkIsProjectsEqual = () => {
     const originalProjectProperties = [];
