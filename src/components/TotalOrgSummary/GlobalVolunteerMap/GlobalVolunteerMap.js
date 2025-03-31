@@ -9,6 +9,7 @@ import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Loading from 'components/common/Loading';
 
 // Volunteer color mapping based on status
 const volunteerColors = {
@@ -83,7 +84,7 @@ function HeatMap({ points }) {
   return null;
 }
 
-function MapComponent({ startDate, endDate }) {
+function MapComponent({ isLoading, startDate, endDate }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const { userLocations, loading, error } = state;
   const [isMapVisible, setIsMapVisible] = useState(false);
@@ -110,6 +111,15 @@ function MapComponent({ startDate, endDate }) {
   // Separate volunteers by status
 const activeVolunteers = userLocations.filter(v => v.status === 'active');
 
+  if (isLoading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center">
+        <div className="w-100vh">
+          <Loading />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
