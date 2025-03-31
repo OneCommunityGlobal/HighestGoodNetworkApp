@@ -79,7 +79,7 @@ function JobCCDashboard({ darkMode }) {
   };
 
   return (
-    <div className={`job-cc-dashboard ${darkMode ? 'dark-mode' : ''}`}>
+    <div className={`job-cc-dashboard ${darkMode ? 'dark-mode-job-cc-dashboard' : ''}`}>
       <h1 className="dashboard-title">Job CC Dashboard</h1>
       <div className="filters-container">
         <FormGroup>
@@ -113,7 +113,7 @@ function JobCCDashboard({ darkMode }) {
         </div>
       </div>
 
-      <Table striped bordered hover>
+      <Table striped bordered hover className="job-cc-dashboard-table">
         <thead>
           <tr>
             <th>Job Title</th>

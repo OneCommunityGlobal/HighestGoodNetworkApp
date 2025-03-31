@@ -30,8 +30,8 @@ describe('BioFunction component', () => {
 
     expect(getByText('Bio announcement:')).toBeInTheDocument();
 
-    const divElements = container.querySelectorAll('.bio-toggle');
-    expect(divElements.length).toBe(2);
+    const divElements = container.querySelector('#bio-announcement');
+    expect(divElements.children.length).toBe(2);
   });
 
   it('Test case 3 : Renders as expected when  bioCanEdit is false', () => {
