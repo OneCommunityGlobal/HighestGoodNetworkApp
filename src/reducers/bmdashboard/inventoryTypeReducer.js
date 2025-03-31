@@ -53,7 +53,7 @@ const defaultState = {
   },
 };
 
-// eslint-disable-next-line default-param-last
+// eslint-disable-next-line import/prefer-default-export
 export const bmInvTypeReducer = (state = defaultState, action) => {
   switch (action.type) {
     case GET_MATERIAL_TYPES:
@@ -249,4 +249,3 @@ export const bmInvTypeReducer = (state = defaultState, action) => {
     }
   }
 };
-
