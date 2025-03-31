@@ -25,6 +25,7 @@ import GET_MATERIAL_TYPES, {
 import { POST_TOOLS_LOG, POST_ERROR_TOOLS_LOG, RESET_POST_TOOLS_LOG } from 'constants/bmdashboard/toolsConstants';
 import { GET_ERRORS } from "constants/errors";
 
+// eslint-disable-next-line import/prefer-default-export
 export const fetchMaterialTypes = () => {
   return async dispatch => {
     axios.get(ENDPOINTS.BM_MATERIAL_TYPES)
@@ -88,7 +89,6 @@ export const fetchInvTypeByType = (type) => {
       })
   }
 }
-
 export const postBuildingConsumableType = payload => {
   return async dispatch => {
     axios
