@@ -24,7 +24,7 @@ const defaultState = {
 };
 
 // eslint-disable-next-line default-param-last
-export const bmInvUnitReducer = (state = defaultState, action) => {
+const bmInvUnitReducer = (state = defaultState, action) => {
   switch (action.type) {
     case FETCH_BUILDING_MATERIAL_INVENTORY_UNITS:
       return { ...state, list: action.payload };
@@ -89,3 +89,4 @@ export const bmInvUnitReducer = (state = defaultState, action) => {
   }
 };
 
+export default bmInvUnitReducer;

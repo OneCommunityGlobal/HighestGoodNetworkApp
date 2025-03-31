@@ -54,7 +54,7 @@ const defaultState = {
 };
 
 // eslint-disable-next-line default-param-last
-export const bmInvTypeReducer = (state = defaultState, action) => {
+const bmInvTypeReducer = (state = defaultState, action) => {
   switch (action.type) {
     case GET_MATERIAL_TYPES:
       return { ...state, list: action.payload };
@@ -249,3 +249,5 @@ export const bmInvTypeReducer = (state = defaultState, action) => {
     }
   }
 };
+
+export default bmInvTypeReducer;
