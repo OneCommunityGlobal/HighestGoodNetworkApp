@@ -22,6 +22,7 @@ const renderAddWBS = (addWBSProps) => {
         },
       },
     },
+    theme: { darkMode: false },
     ...addWBSProps,
   };
 

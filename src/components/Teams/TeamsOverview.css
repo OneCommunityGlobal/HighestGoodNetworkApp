@@ -45,12 +45,16 @@
 }
 
 
-.table th:nth-child(2), .table td:nth-child(2) {
-  width: 40%; /* Adjust team name column to take up more space */
+.table th:nth-child(2):not(.def-width),
+.table td:nth-child(2):not(.def-width) {
+  width: 40%;
+  /* Adjust team name column to take up more space */
 }
 
-.table th:nth-child(3), .table td:nth-child(3) {
-  width: 15%; /* Adjust Active column width */
+.table th:nth-child(3):not(.def-width),
+.table td:nth-child(3):not(.def-width) {
+  width: 15%;
+  /* Adjust Active column width */
 }
 
 .table th:nth-child(4), .table td:nth-child(4) {
@@ -72,23 +76,12 @@
 }
 
 /* Cards styling */
-.card#card_team, .card#card_active {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  border-radius: 8px;
-  height: 40px;
-  width: 300px;
-  margin: 10px;
-  padding: 10px;
-}
-
 .card#card_team {
   background: linear-gradient(to bottom, #87CEEB, #1E90FF, #4169E1);
 }
 
-.card#card_active {
+.card#card_active,
+.card#card_non_active {
   background: linear-gradient(to bottom, #FFD700, #FFA500, #FF8C00);
 }
 
@@ -289,7 +282,8 @@
 }
 
 @media (max-width: 768px) {
-  .card#card_team, .card#card_active {
+  .card#card_team, .card#card_active,
+  .card#card_non_active {
     width: auto;
     height: 30px;
     font-size: 8px;

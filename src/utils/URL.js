@@ -10,9 +10,16 @@ export const ENDPOINTS = {
   TOGGLE_VISIBILITY: userId => `${APIEndpoint}/userprofile/${userId}/toggleInvisibility`,
   USER_PROFILE_UPDATE: `${APIEndpoint}/userprofile/update`,
   ADD_BLUE_SQUARE: userId => `${APIEndpoint}/userprofile/${userId}/addInfringement`,
+
   MODIFY_BLUE_SQUARE: (userId, blueSquareId) =>
     `${APIEndpoint}/userprofile/${userId}/infringements/${blueSquareId}`,
   USERS_ALLTEAMCODE_CHANGE: `${APIEndpoint}/AllTeamCodeChanges`,
+
+  USERS_REMOVE_PROFILE_IMAGE: `${APIEndpoint}/userProfile/profileImage/remove`,
+  USERS_UPDATE_PROFILE_FROM_WEBSITE: `${APIEndpoint}/userProfile/profileImage/imagefromwebsite`,
+  USER_PROFILE_BASIC_INFO: `${APIEndpoint}/userProfile/basicInfo`,
+  USER_AUTOCOMPLETE: searchText => `${APIEndpoint}/userProfile/autocomplete/${searchText}`,
+  TOGGLE_BIO_STATUS: userId => `${APIEndpoint}/userProfile/${userId}/toggleBio`,
 
   INFO_COLLECTIONS: `${APIEndpoint}/informations`,
   INFO_COLLECTION: infoId => `${APIEndpoint}/informations/${infoId}`,
@@ -41,6 +48,8 @@ export const ENDPOINTS = {
     `${APIEndpoint}/TimeEntry/user/${userId}/${fromDate}/${toDate}`,
   TIME_ENTRIES_USER_LIST: `${APIEndpoint}/TimeEntry/users`,
   TIME_ENTRIES_REPORTS: `${APIEndpoint}/TimeEntry/reports`,
+  TIME_ENTRIES_REPORTS_TOTAL_PROJECT_REPORT: `${APIEndpoint}/TimeEntry/reports/projects`,
+  TIME_ENTRIES_REPORTS_TOTAL_PEOPLE_REPORT: `${APIEndpoint}/TimeEntry/reports/people`,
   TIME_ENTRIES_LOST_USER_LIST: `${APIEndpoint}/TimeEntry/lostUsers`,
   TIME_ENTRIES_LOST_PROJ_LIST: `${APIEndpoint}/TimeEntry/lostProjects`,
   TIME_ENTRIES_LOST_TEAM_LIST: `${APIEndpoint}/TimeEntry/lostTeams`,
@@ -79,10 +88,12 @@ export const ENDPOINTS = {
   DELETE_WARNINGS_BY_USER_ID: userId => `${APIEndpoint}/warnings/${userId}`,
   AUTHORIZE_WEEKLY_SUMMARY_REPORTS: () =>
     `${APIEndpoint}/userProfile/authorizeUser/weeeklySummaries`,
-  TOTAL_ORG_SUMMARY: (startDate, endDate) =>
-    `${APIEndpoint}/reports/volunteerstats?startDate=${startDate}&endDate=${endDate}`,
+  TOTAL_ORG_SUMMARY: (startDate, endDate, comparisonStartDate, comparisonEndDate) =>
+    `${APIEndpoint}/reports/volunteerstats?startDate=${startDate}&endDate=${endDate}&comparisonStartDate=${comparisonStartDate}&comparisonEndDate=${comparisonEndDate}`,
   HOURS_TOTAL_ORG_SUMMARY: (startDate, endDate) =>
     `${APIEndpoint}/reports/overviewsummaries/taskandprojectstats?startDate=${startDate}&endDate=${endDate}`,
+  VOLUNTEER_ROLES_TEAM_STATS: (endDate, activeMembersMinimum) =>
+    `${APIEndpoint}/reports/teams?endDate=${endDate}&activeMembersMinimum=${activeMembersMinimum}`,
 
   POPUP_EDITORS: `${APIEndpoint}/popupeditors/`,
   POPUP_EDITOR_BY_ID: id => `${APIEndpoint}/popupeditor/${id}`,
@@ -108,6 +119,7 @@ export const ENDPOINTS = {
   CREATE_NEW_TITLE: () => `${APIEndpoint}/title`,
   EDIT_OLD_TITLE: () => `${APIEndpoint}/title/update`,
   DELETE_TITLE_BY_ID: titleId => `${APIEndpoint}/title/${titleId}`,
+  REORDER_TITLES: () => `${APIEndpoint}/title/order`,
 
   DELETE_TASK_NOTIFICATION_BY_USER_ID: (taskId, userId) =>
     `${APIEndpoint}/tasknotification/${userId}/${taskId}`,
@@ -190,6 +202,7 @@ export const ENDPOINTS = {
   BM_PROJECT_BY_ID: projectId => `${APIEndpoint}/project/${projectId}`,
   BM_UPDATE_MATERIAL: `${APIEndpoint}/bm/updateMaterialRecord`,
   BM_UPDATE_MATERIAL_BULK: `${APIEndpoint}/bm/updateMaterialRecordBulk`,
+  BM_UPDATE_MATERIAL_STATUS: `${APIEndpoint}/bm/updateMaterialStatus`,
   BM_UPDATE_REUSABLE: `${APIEndpoint}/bm/updateReusableRecord`,
   BM_UPDATE_REUSABLE_BULK: `${APIEndpoint}/bm/updateReusableRecordBulk`,
   BM_TOOL_TYPES: `${APIEndpoint}/bm/invtypes/tools`,
@@ -198,6 +211,7 @@ export const ENDPOINTS = {
   BM_LESSONS: `${APIEndpoint}/bm/lessons`,
   BM_LESSON: `${APIEndpoint}/bm/lesson/`,
   BM_LESSON_LIKES: lessonId => `${APIEndpoint}/bm/lesson/${lessonId}/like`,
+  BM_EXTERNAL_TEAM: `${APIEndpoint}/bm/externalTeam`,
   BM_INVENTORY_UNITS: `${APIEndpoint}/bm/inventoryUnits`,
   BM_INVTYPE_ROOT: `${APIEndpoint}/bm/invtypes`,
   BM_TOOLS: `${APIEndpoint}/bm/tools/`,
@@ -217,6 +231,21 @@ export const ENDPOINTS = {
   DELETE_TIME_OFF_REQUEST: id => `${APIEndpoint}/deleteTimeOffRequest/${id}`,
   BLUE_SQUARE_EMAIL_BCC: () => `${APIEndpoint}/AssignBlueSquareEmail`,
   DELETE_BLUE_SQUARE_EMAIL_BCC: id => `${APIEndpoint}/AssignBlueSquareEmail/${id}`,
+
+  HGN_FORM_GET_QUESTION: `${APIEndpoint}/questions`,
+  HGN_FORM_UPDATE_QUESTION: id => `${APIEndpoint}/questions/${id}`,
+  HGN_FORM_SUBMIT: `${APIEndpoint}/hgnform`,
+
+  CREATE_JOB_FORM: `${APIEndpoint}/jobforms`,
+  UPDATE_JOB_FORM: `${APIEndpoint}/jobforms`,
+  GET_JOB_FORM: formId => `${APIEndpoint}/jobforms/${formId}`,
+  GET_ALL_JOB_FORMS: `${APIEndpoint}/jobforms/all`,
+  GET_FORM_RESPONSES: formID => `${APIEndpoint}/jobforms/${formID}/responses`,
+
+  JOB_NOTIFICATION_LIST: `${APIEndpoint}/job-notification-list/`,
+  // lb dashboard endpoints
+  LB_REGISTER: `${APIEndpoint}/lbdashboard/register`,
+  LB_LOGIN: `${APIEndpoint}/lbdashboard/login`,
 
   // social media poster api
   POST_TWEETS: `${APIEndpoint}/createTweet`,
