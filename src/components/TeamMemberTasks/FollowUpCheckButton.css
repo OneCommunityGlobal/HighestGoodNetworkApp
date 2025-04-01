@@ -1,30 +1,31 @@
+.team-task-progress-follow-up-container {
+  position: relative;
+  display: inline-flex;
+  top: -0.15rem;
+}
+
 .team-task-progress-follow-up {
-  box-sizing: border-box;
-  grid-column: 2 / span 1;
-  grid-row: 1 / span 1;
-  align-self: center;
-  justify-self: center;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  border: 2px solid green;
-  border-radius: 3px;
   width: 18px;
   height: 18px;
-  outline: none;
+  border: 2px solid green;
+  border-radius: 3px;
+  appearance: none;
   background-color: #e1f3e2;
+  position: relative;
+  cursor: pointer;
 }
 .team-task-progress-follow-up-red {
   border: 2px solid red;
   background-color: #f3e1e2;
 }
 .team-task-progress-follow-up-check {
-  grid-column: 2 / span 1;
-  grid-row: 1 / span 1;
-  align-self: center;
-  justify-self: center;
-  font-size: 10px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 12px;
   color: green;
+  pointer-events: none; /* Prevents interaction issues */
 }
 @media screen and (max-width: 1240px) {
   .team-task-progress-follow-up {
@@ -36,3 +37,4 @@
     height: 15px;
   }
 }
+

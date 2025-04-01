@@ -720,3 +720,8 @@
     font-size: 0.75rem !important;
   }
 }
+
+.follow-up-container {
+  display: flex;
+  gap: 0.5em;
+}
