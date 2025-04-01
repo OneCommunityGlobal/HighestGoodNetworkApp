@@ -340,7 +340,7 @@ input[type="date"] {
   background-position: right 8px center;
 }
 
-.form-group input {
+.bidding-form-group input {
   padding: 0.5rem;
   border: 1px solid #ccc;
   border-radius: 2px;

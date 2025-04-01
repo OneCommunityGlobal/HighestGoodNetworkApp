@@ -198,7 +198,7 @@ function BiddingOverview() {
 
               <form className="bidding-form" onSubmit={handleSubmit}>
                 <div className="form-row-container">
-                  <div className="form-group">
+                  <div className="form-group bidding-form-group">
                     <label htmlFor="rentingFrom">Renting from:</label>
                     <div className="input-with-icon">
                       <input
@@ -211,7 +211,7 @@ function BiddingOverview() {
                     </div>
                   </div>
 
-                  <div className="form-group">
+                  <div className="form-group bidding-form-group">
                     <label htmlFor="rentingTo">Renting to:</label>
                     <div className="input-with-icon">
                       <input
@@ -225,7 +225,7 @@ function BiddingOverview() {
                   </div>
                 </div>
 
-                <div className="form-group full-width">
+                <div className="form-group full-width bidding-form-group">
                   <label htmlFor="name">Name</label>
                   <input
                     type="text"
@@ -237,7 +237,7 @@ function BiddingOverview() {
                   />
                 </div>
 
-                <div className="form-group full-width">
+                <div className="form-group full-width bidding-form-group">
                   <label htmlFor="biddingPrice">Bidding Price ($/night)</label>
                   <input
                     type="text" // Keep as text to allow custom validation logic
