@@ -49,6 +49,12 @@ function HelpModal({ show, onHide }) {
     }
   };
 
+  const handleSuggestionsClick = () => {
+    // Store a flag in localStorage to indicate we want to open the suggestions modal
+    localStorage.setItem('openSuggestionsModal', 'true');
+    onHide(); // Close the help modal and trigger navigation
+  };
+
   return (
     <Modal show={show} onHide={onHide} className="help-modal" centered>
       <Modal.Header closeButton>
@@ -99,7 +105,7 @@ function HelpModal({ show, onHide }) {
           <button
             type="button"
             className="btn btn-link p-0 border-0 align-baseline"
-            onClick={() => {}}
+            onClick={handleSuggestionsClick}
             style={{ color: '#0066CC', textDecoration: 'none', marginLeft: '4px' }}
           >
             here
@@ -107,11 +113,7 @@ function HelpModal({ show, onHide }) {
         </p>
       </Modal.Body>
       <Modal.Footer>
-        <Button 
-          variant="primary"
-          onClick={handleSubmit}
-          disabled={!selectedOption}
-        >
+        <Button variant="primary" onClick={handleSubmit} disabled={!selectedOption}>
           Submit
         </Button>
       </Modal.Footer>
