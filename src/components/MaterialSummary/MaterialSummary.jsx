@@ -13,13 +13,22 @@ const mockProjects = [
   { id: 2, name: "Residential Complex" },
   { id: 3, name: "Shopping Mall" },
   { id: 4, name: "Highway Bridge" },
+  { id: 5, name: "Industrial Warehouse" },
+  { id: 6, name: "School Building" },
+  { id: 7, name: "Hospital Complex" },
+  { id: 8, name: "Sports Stadium" },
 ]
 
+// Mock data for material types
 const materialTypes = [
   { id: 1, name: "All Materials" },
   { id: 2, name: "Wood" },
   { id: 3, name: "Concrete" },
   { id: 4, name: "Steel" },
+  { id: 5, name: "Aluminum" },
+  { id: 6, name: "Glass" },
+  { id: 7, name: "Brick" },
+  { id: 8, name: "Plastic" },
 ]
 
 // Mock data for material usage
@@ -50,6 +59,30 @@ const mockMaterialData = {
       wasted: 10,
       lastWeekUsed: 5,
     },
+    aluminum: {
+      available: 10,
+      used: 7,
+      wasted: 3,
+      lastWeekUsed: 5,
+    },
+    glass: {
+      available: 25,
+      used: 20,
+      wasted: 5,
+      lastWeekUsed: 15,
+    },
+    brick: {
+      available: 5,
+      used: 3,
+      wasted: 2,
+      lastWeekUsed: 2,
+    },
+    plastic: {
+      available: 12,
+      used: 8,
+      wasted: 4,
+      lastWeekUsed: 6,
+    },
   },
   2: {
     // Residential Complex
@@ -74,6 +107,30 @@ const mockMaterialData = {
     steel: {
       available: 15,
       used: 5,
+      wasted: 3,
+      lastWeekUsed: 5,
+    },
+    aluminum: {
+      available: 8,
+      used: 5,
+      wasted: 2,
+      lastWeekUsed: 4,
+    },
+    glass: {
+      available: 18,
+      used: 15,
+      wasted: 3,
+      lastWeekUsed: 12,
+    },
+    brick: {
+      available: 30,
+      used: 25,
+      wasted: 5,
+      lastWeekUsed: 20,
+    },
+    plastic: {
+      available: 10,
+      used: 7,
       wasted: 3,
       lastWeekUsed: 5,
     },
@@ -104,6 +161,30 @@ const mockMaterialData = {
       wasted: 5,
       lastWeekUsed: 7,
     },
+    aluminum: {
+      available: 20,
+      used: 15,
+      wasted: 5,
+      lastWeekUsed: 10,
+    },
+    glass: {
+      available: 35,
+      used: 30,
+      wasted: 5,
+      lastWeekUsed: 25,
+    },
+    brick: {
+      available: 10,
+      used: 8,
+      wasted: 2,
+      lastWeekUsed: 6,
+    },
+    plastic: {
+      available: 15,
+      used: 12,
+      wasted: 3,
+      lastWeekUsed: 10,
+    },
   },
   4: {
     // Highway Bridge
@@ -130,6 +211,234 @@ const mockMaterialData = {
       used: 20,
       wasted: 3,
       lastWeekUsed: 16,
+    },
+    aluminum: {
+      available: 15,
+      used: 10,
+      wasted: 2,
+      lastWeekUsed: 8,
+    },
+    glass: {
+      available: 5,
+      used: 3,
+      wasted: 1,
+      lastWeekUsed: 2,
+    },
+    brick: {
+      available: 8,
+      used: 5,
+      wasted: 2,
+      lastWeekUsed: 4,
+    },
+    plastic: {
+      available: 12,
+      used: 8,
+      wasted: 2,
+      lastWeekUsed: 6,
+    },
+  },
+  5: {
+    // Industrial Warehouse
+    all: {
+      available: 90,
+      used: 70,
+      wasted: 15,
+      lastWeekUsed: 60,
+    },
+    wood: {
+      available: 15,
+      used: 10,
+      wasted: 3,
+      lastWeekUsed: 8,
+    },
+    concrete: {
+      available: 45,
+      used: 40,
+      wasted: 5,
+      lastWeekUsed: 35,
+    },
+    steel: {
+      available: 40,
+      used: 35,
+      wasted: 5,
+      lastWeekUsed: 30,
+    },
+    aluminum: {
+      available: 25,
+      used: 20,
+      wasted: 3,
+      lastWeekUsed: 15,
+    },
+    glass: {
+      available: 10,
+      used: 8,
+      wasted: 2,
+      lastWeekUsed: 6,
+    },
+    brick: {
+      available: 20,
+      used: 15,
+      wasted: 3,
+      lastWeekUsed: 12,
+    },
+    plastic: {
+      available: 15,
+      used: 12,
+      wasted: 2,
+      lastWeekUsed: 10,
+    },
+  },
+  6: {
+    // School Building
+    all: {
+      available: 65,
+      used: 50,
+      wasted: 10,
+      lastWeekUsed: 45,
+    },
+    wood: {
+      available: 20,
+      used: 15,
+      wasted: 3,
+      lastWeekUsed: 12,
+    },
+    concrete: {
+      available: 30,
+      used: 25,
+      wasted: 4,
+      lastWeekUsed: 20,
+    },
+    steel: {
+      available: 15,
+      used: 12,
+      wasted: 2,
+      lastWeekUsed: 10,
+    },
+    aluminum: {
+      available: 10,
+      used: 8,
+      wasted: 1,
+      lastWeekUsed: 7,
+    },
+    glass: {
+      available: 25,
+      used: 20,
+      wasted: 3,
+      lastWeekUsed: 18,
+    },
+    brick: {
+      available: 30,
+      used: 25,
+      wasted: 4,
+      lastWeekUsed: 22,
+    },
+    plastic: {
+      available: 15,
+      used: 12,
+      wasted: 2,
+      lastWeekUsed: 10,
+    },
+  },
+  7: {
+    // Hospital Complex
+    all: {
+      available: 85,
+      used: 70,
+      wasted: 12,
+      lastWeekUsed: 65,
+    },
+    wood: {
+      available: 15,
+      used: 12,
+      wasted: 2,
+      lastWeekUsed: 10,
+    },
+    concrete: {
+      available: 40,
+      used: 35,
+      wasted: 4,
+      lastWeekUsed: 32,
+    },
+    steel: {
+      available: 30,
+      used: 25,
+      wasted: 3,
+      lastWeekUsed: 22,
+    },
+    aluminum: {
+      available: 20,
+      used: 18,
+      wasted: 2,
+      lastWeekUsed: 15,
+    },
+    glass: {
+      available: 30,
+      used: 25,
+      wasted: 3,
+      lastWeekUsed: 22,
+    },
+    brick: {
+      available: 25,
+      used: 20,
+      wasted: 3,
+      lastWeekUsed: 18,
+    },
+    plastic: {
+      available: 25,
+      used: 22,
+      wasted: 2,
+      lastWeekUsed: 20,
+    },
+  },
+  8: {
+    // Sports Stadium
+    all: {
+      available: 100,
+      used: 85,
+      wasted: 15,
+      lastWeekUsed: 80,
+    },
+    wood: {
+      available: 10,
+      used: 8,
+      wasted: 1,
+      lastWeekUsed: 7,
+    },
+    concrete: {
+      available: 50,
+      used: 45,
+      wasted: 5,
+      lastWeekUsed: 42,
+    },
+    steel: {
+      available: 45,
+      used: 40,
+      wasted: 4,
+      lastWeekUsed: 38,
+    },
+    aluminum: {
+      available: 30,
+      used: 25,
+      wasted: 3,
+      lastWeekUsed: 22,
+    },
+    glass: {
+      available: 20,
+      used: 18,
+      wasted: 2,
+      lastWeekUsed: 15,
+    },
+    brick: {
+      available: 15,
+      used: 12,
+      wasted: 2,
+      lastWeekUsed: 10,
+    },
+    plastic: {
+      available: 20,
+      used: 18,
+      wasted: 2,
+      lastWeekUsed: 15,
     },
   },
 }
@@ -160,6 +469,7 @@ export default function MaterialUsageDashboard() {
     }, 800)
   }, [selectedProject, selectedMaterial, showIncreaseOnly])
 
+  // Update the updateChartData function to handle the new material types with appropriate colors
   const updateChartData = () => {
     const projectData = mockMaterialData[selectedProject]
     const materialData = projectData[selectedMaterial]
@@ -196,6 +506,14 @@ export default function MaterialUsageDashboard() {
       colorPalette = ["#4BC0C0", "#FF6384", "#FFCE56"] // Teal, Pink, Yellow
     } else if (selectedMaterial === "steel") {
       colorPalette = ["#7ED2FA", "#FF8A80", "#A5D6A7"] // Light Blue, Light Red, Light Green
+    } else if (selectedMaterial === "aluminum") {
+      colorPalette = ["#B39DDB", "#E57373", "#81C784"] // Light Purple, Light Red, Light Green
+    } else if (selectedMaterial === "glass") {
+      colorPalette = ["#90CAF9", "#F48FB1", "#80DEEA"] // Light Blue, Light Pink, Light Cyan
+    } else if (selectedMaterial === "brick") {
+      colorPalette = ["#FFAB91", "#CE93D8", "#FFF59D"] // Light Orange, Light Purple, Light Yellow
+    } else if (selectedMaterial === "plastic") {
+      colorPalette = ["#80CBC4", "#F06292", "#FFD54F"] // Light Teal, Pink, Amber
     }
 
     // Prepare chart data
@@ -215,6 +533,30 @@ export default function MaterialUsageDashboard() {
       ],
     })
   }
+
+  // Function to add a title in the center of the donut chart
+  const plugins = [
+    {
+      id: "donutTitle",
+      beforeDraw: (chart) => {
+        const width = chart.width
+        const height = chart.height
+        const ctx = chart.ctx
+
+        ctx.restore()
+        const fontSize = (height / 180).toFixed(2) // Smaller font size
+        ctx.font = `${fontSize}em sans-serif`
+        ctx.textBaseline = "middle"
+
+        const text = "Materials"
+        const textX = Math.round((width - ctx.measureText(text).width) / 2)
+        const textY = height / 2
+
+        ctx.fillText(text, textX, textY)
+        ctx.save()
+      },
+    },
+  ]
 
   return (
     <div className="container mx-auto p-4">
@@ -263,6 +605,10 @@ export default function MaterialUsageDashboard() {
                   <option value="wood">Wood</option>
                   <option value="concrete">Concrete</option>
                   <option value="steel">Steel</option>
+                  <option value="aluminum">Aluminum</option>
+                  <option value="glass">Glass</option>
+                  <option value="brick">Brick</option>
+                  <option value="plastic">Plastic</option>
                 </select>
               </div>
 
@@ -316,26 +662,29 @@ export default function MaterialUsageDashboard() {
               </h2>
               <p className="text-gray-600 text-sm">{mockProjects.find((p) => p.id === selectedProject)?.name}</p>
             </div>
-            <div className="flex justify-center items-center min-h-[400px]">
+            <div className="flex justify-center items-center min-h-[220px]">
               {loading ? (
                 <div className="flex flex-col items-center justify-center">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mb-2"></div>
                   <p>Loading data...</p>
                 </div>
               ) : chartData ? (
-                <div className="w-full max-w-md">
+                <div className="w-full max-w-[200px]">
                   <Pie
                     data={chartData}
                     options={{
                       responsive: true,
+                      maintainAspectRatio: true,
+                      cutout: "50%",
                       plugins: {
                         legend: {
                           position: "bottom",
                           labels: {
-                            padding: 20,
+                            padding: 10,
                             font: {
                               size: 14,
                             },
+                            boxWidth: 12,
                           },
                         },
                         tooltip: {
@@ -349,12 +698,36 @@ export default function MaterialUsageDashboard() {
                         },
                       },
                     }}
+                    plugins={plugins}
                   />
                 </div>
               ) : (
                 <p>No data available</p>
               )}
             </div>
+            {/* Material Breakdown List */}
+            {chartData && !loading && (
+              <div className="mt-6 border-t pt-4">
+                <h3 className="text-lg font-medium mb-3">Material Breakdown</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {chartData.datasets[0].data.map((value, index) => {
+                    const label = chartData.labels[index].split(":")[0]
+                    const color = chartData.datasets[0].backgroundColor[index]
+                    return (
+                      <div key={index} className="flex items-center space-x-3 p-3 rounded-md bg-gray-50">
+                        <div className="w-4 h-4 rounded-full" style={{ backgroundColor: color }}></div>
+                        <div>
+                          <p className="font-medium">{label}</p>
+                          <p className="text-2xl font-bold">
+                            {value} <span className="text-sm text-gray-500 font-normal">units</span>
+                          </p>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
