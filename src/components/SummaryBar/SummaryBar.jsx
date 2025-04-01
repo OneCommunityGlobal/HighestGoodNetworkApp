@@ -365,6 +365,12 @@ function SummaryBar(props) {
     setShowSuggestionModal(prev => !prev);
   };
 
+  window.addEventListener('load', () => {
+    if (location.search === '?openModalReport') {
+      window.location.replace('/dashboard');
+    }
+  });
+
   useEffect(() => {
     // eslint-disable-next-line no-unused-expressions
     location.search === '?openModalReport' && openSuggestionModal();
