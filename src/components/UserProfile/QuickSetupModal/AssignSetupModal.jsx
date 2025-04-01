@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import '../../Header/DarkMode.css';
 import { toast } from "react-toastify";
 
-function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfile, setTitleOnSet, refreshModalTitles, updateUserProfile}) {
+function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfile, setTitleOnSet, refreshModalTitles, updateUserProfile, handleSubmit}) {
   const darkMode = useSelector(state => state.theme.darkMode)
   const [validation, setValid] = useState({
     volunteerAgree: false,
@@ -77,10 +77,10 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
       if (userProfile.teams.includes(title?.teamAssiged)) data.teams.pop();
       if (userProfile.projects.includes(title.projectAssigned)) data.projects.pop();
 
-      const result = await updateUserProfile({...userProfile,...data});
       if (hasPermission("manageAdminLinks")) {
         setUserProfile(prev => ({ ...prev, ...data }));
       }
+      const result = await handleSubmit();
 
       setTitleOnSet(true); 
       setValid(() => ({ volunteerAgree: false }));

@@ -211,8 +211,20 @@ function UserProfile(props) {
 
   useEffect(() => {
     checkIsProjectsEqual();
-    setUserProfile({ ...userProfile, projects });
-    setOriginalUserProfile({ ...originalUserProfile, projects });
+    setUserProfile(prevState => {
+      const updatedProfile = prevState;
+      if(updatedProfile){
+        updatedProfile.projects = projects || updatedProfile.projects;
+      }
+      return updatedProfile
+    });
+    setOriginalUserProfile(prevState => {
+      const updatedOriginalProfile = prevState;
+      if(updatedOriginalProfile){
+        updatedOriginalProfile.projects = projects || updatedOriginalProfile.projects;
+      }
+      return updatedOriginalProfile
+    });
   }, [projects]);
 
   useEffect(() => {
@@ -674,11 +686,12 @@ function UserProfile(props) {
 
   const updateLink = (personalLinksUpdate, adminLinksUpdate, mediaUrlUpdate) => {
     setShowModal(false);
-    setUserProfile({
-      ...userProfile,
-      mediaUrl: mediaUrlUpdate !== undefined ? mediaUrlUpdate : userProfile.mediaUrl,
-      personalLinks: personalLinksUpdate,
-      adminLinks: adminLinksUpdate,
+    setUserProfile(prevState => {
+      const updatedProfile = prevState;
+      updatedProfile.adminLinks = adminLinksUpdate || updatedProfile.adminLinks;
+      updatedProfile.mediaUrl = mediaUrlUpdate !== undefined ? mediaUrlUpdate : updatedProfile.mediaUrl;
+      updatedProfile.personalLinks = personalLinksUpdate || updatedProfile.personalLinks;
+      return updatedProfile
     });
   };
 
