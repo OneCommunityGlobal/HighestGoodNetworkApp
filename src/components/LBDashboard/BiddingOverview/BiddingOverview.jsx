@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import './BiddingOverview.css';
+import './BiddingOverview.module.css';
 import { Link } from 'react-router-dom';
 
 import logo from '../../../assets/images/logo2.png';
