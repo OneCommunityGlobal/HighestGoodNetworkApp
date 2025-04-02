@@ -213,7 +213,6 @@ const bmInvTypeReducer = (state = defaultState, action) => {
           error: null,
         },
       };
-    //
     case POST_TOOLS_LOG:
       return {
         // eslint-disable-next-line no-undef

@@ -141,7 +141,6 @@ export const deleteBuildingInventoryType = (payload) => {
     axios.delete(`${ENDPOINTS.BM_INVTYPE_ROOT}/${category}/${id}`)
       .then(res => {
         dispatch(setDeleteInvTypeResult(res.data))
-        // update inventory types with updated list received from the request
         dispatch(setInvTypesByType({ type: category, data: res.data }))
       })
       .catch(err => {
@@ -156,7 +155,6 @@ export const updateBuildingInventoryType = (payload) => {
     axios.put(`${ENDPOINTS.BM_INVTYPE_ROOT}/${category}/${id}`, {name, description})
       .then(res => {
         dispatch(setUpdateInvTypeResult(res.data))
-        
         // After update, fetch full list
         return axios.get(ENDPOINTS.BM_INVTYPE_TYPE(category))
       })
@@ -345,7 +343,6 @@ export const postToolsLog = payload => {
       })
       .catch(err => {
         dispatch(
-          // setPostErrorToolsLog(JSON.stringify(err.response.data) || 'Sorry! Some error occurred!'),
           // eslint-disable-next-line no-use-before-define
           setPostErrorToolsLog(err.response.data || 'Sorry! Some error occurred!'),
         );
