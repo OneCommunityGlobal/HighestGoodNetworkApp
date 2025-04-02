@@ -33,7 +33,7 @@ function FinancialCard({ title, value = '-', monthOverMonth = '-', additionalInf
           : `${monthOverMonth > 0 ? '+' : ''}${monthOverMonth}% month over month`}
       </div>
 
-      {/* Tooltip for Additional Information */}
+      {/* Tooltip for Additional Info */}
       {showTooltip && Object.keys(additionalInfo).length > 0 && (
         <div className="financial-card-tooltip">
           {Object.entries(additionalInfo).map(([key]) => (
