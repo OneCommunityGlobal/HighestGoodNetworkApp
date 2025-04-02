@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import './Announcements.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react'; // Import Editor from TinyMCE
@@ -44,6 +44,7 @@ function Announcements({ title, email }) {
   const [fillingPost, setFillingPost] = useState(false);
   const [scheduleCalendar, setScheduleCalendar] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const ImgurFileInputRef = useRef(null);
   
 
   const maxScheduleDate = new Date();
@@ -227,6 +228,10 @@ function Announcements({ title, email }) {
     dispatch(broadcastEmailsToAll('Weekly Update', htmlContent));
   };
 
+  const handleImgurFileChangeButton = () => {
+    ImgurFileInputRef.current.click();
+  };
+
   const startOfToday = new Date();
   startOfToday.setHours(0, 0, 0, 0);
 
@@ -350,22 +355,35 @@ function Announcements({ title, email }) {
                   </div>
 
                   {/* Imgur album image upload */}
-                  <div className="imgur-post-upload">
-                    <label htmlFor="imgur-content-input" className={darkMode ? 'text-light' : 'text-dark'}>
+                  <div className="imgur-post-upload-container">
+                    {/* <label htmlFor="imgur-content-input" className={darkMode ? 'text-light' : 'text-dark'}>
                       Upload Images
-                    </label>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => handleImgurFileChange(e, setImgurFiles, setImgurFileDescriptions)}
-                      className='input-file-upload'
-                    />
+                    </label> */}
+                    <div>
+                      <button 
+                        onClick={handleImgurFileChangeButton}
+                        type="button"
+                        className="imgur-album-input-file-upload"
+                      >
+                        Upload Image
+                      </button>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        key={imgurFiles.length}
+                        onChange={(e) => {
+                          handleImgurFileChange(e, setImgurFiles, setImgurFileDescriptions)
+                          e.target.value = null; 
+                        }}
+                        ref={ImgurFileInputRef}
+                        style={{ display: 'none' }}
+                      />
+                    </div>
+                    
                   </div>
 
                   {/* Imgur error message */}
                   {imgurError && <div className="alert alert-danger m-2">{imgurError}</div>}
-
-                  
 
                   {/* post to imgur buttons */}
                   <div className="imgur-post-button-container">
@@ -551,6 +569,7 @@ function Announcements({ title, email }) {
                                   </div>
                                 ))}
                               </div>
+                              <p>tags: {post.tags}</p>
                             </div>
                           ))}
                         </div>
@@ -593,6 +612,7 @@ function Announcements({ title, email }) {
                                 </div>
                               ))}
                             </div>
+                            <p>tags: {post.tags}</p>
                           </div>
                         ))}
                       </div>
