@@ -23,6 +23,7 @@ import Page3 from './components/HGNForm/pages/Page3';
 import Page4 from './components/HGNForm/pages/Page4';
 import Page5 from './components/HGNForm/pages/Page5';
 import Page6 from './components/HGNForm/pages/Page6';
+import TSAFormPage1 from './components/TSAForm/pages/TSAFormPage1';
 import Timelog from './components/Timelog';
 import LessonForm from './components/BMDashboard/Lesson/LessonForm';
 import UserProfileEdit from './components/UserProfile/UserProfileEdit';
@@ -436,7 +437,8 @@ export default (
         <ProtectedRoute path="/hgnform/page3" exact component={Page3}/>
         <ProtectedRoute path="/hgnform/page4" exact component={Page4}/>
         <ProtectedRoute path="/hgnform/page5" exact component={Page5}/>
-        <ProtectedRoute path="/hgnform/page6" exact component={Page6}/>  
+        <ProtectedRoute path="/hgnform/page6" exact component={Page6}/> 
+        <ProtectedRoute path="/tsaform" exact component={TSAFormPage1} /> 
         <ProtectedRoute path="/" exact component={Dashboard} />
         <Route path="*" component={NotFoundPage} />
       </Switch>
