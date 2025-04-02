@@ -37,7 +37,6 @@ export function TypeRow(props) {
   const toggleEditMode = () => setEditMode(!editMode);
 
   useEffect(() => {
-    // reset updated type if there is an error
     if (updateInvTypeResult?.error || deleteInvTypeResult?.error) {
       setUpdatedType({ name: itemType.name, description: itemType.description });
     }

@@ -6,7 +6,6 @@ export function TypesTable(props) {
   const { itemTypes, category } = props;
 
   const getReferenceLink = () => {
-    // NOTE: ideally href should just be /bmdashboard/${category}/add
     switch (category) {
       case 'Material':
         return '/bmdashboard/materials/add';
@@ -15,7 +14,6 @@ export function TypesTable(props) {
       case 'Tool':
         return '/bmdashboard/tools/add';
       default:
-        // other categories not implemented yet
         return '#';
     }
   };
