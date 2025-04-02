@@ -30,10 +30,10 @@ export default function ImageCarousel({ images }) {
           ))}
         </div>
       </div>
-      <button type="button" className="carousel-arrow left" onClick={handlePrev}>
+      <button type="button" className="arrow left" onClick={handlePrev}>
         ❮
       </button>
-      <button type="button" className="carousel-arrow right" onClick={handleNext}>
+      <button type="button" className="arrow right" onClick={handleNext}>
         ❯
       </button>
       <div className="carousel-indicators">
