@@ -1,8 +1,9 @@
 // eslint-disable-next-line no-unused-vars
 import React, { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 import HelpModal from './HelpModal';
 import SummaryBar from '../SummaryBar/SummaryBar';
-import { useHistory } from 'react-router-dom';
+
 
 function HelpPage() {
   const [showModal, setShowModal] = useState(true);
@@ -22,10 +23,7 @@ function HelpPage() {
   return (
     <>
       <SummaryBar />
-      <HelpModal 
-        show={showModal} 
-        onHide={handleClose}
-      />
+      <HelpModal show={showModal} onHide={handleClose} />
     </>
   );
 }
