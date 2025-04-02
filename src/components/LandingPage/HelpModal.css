@@ -143,7 +143,7 @@
   background: #FFFFFF;
   border: 2px solid rgba(0, 0, 0, 0.8);
   border-radius: 0 0 10px 10px;
-  max-height: 300px;
+  max-height: 200px;
   overflow-y: auto;
   z-index: 1050;
 }
