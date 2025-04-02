@@ -1,5 +1,5 @@
 import { Button, CardBody, Row, Col, Container } from 'reactstrap';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 import './BMTimeLogCard.css';
@@ -16,11 +16,12 @@ function BMTimeLogStopWatch({ projectId, memberId }) {
     state => state.bmTimeLogger?.bmTimeLogs?.[`${memberId}_${projectId}`] || null,
   );
 
-  // const initialElapsedTimeRef = useRef(0);
+  const initialElapsedTimeRef = useRef(0);
   const [time, setTime] = useState(0);
   const [currentTime, setCurrentTime] = useState('');
   const [startButtonText, setStartButtonText] = useState('START');
   const [isStarted, setIsStarted] = useState(false);
+  const intervalRef = useRef(null);
 
   const formatTime = useCallback(totalSeconds => {
     const hrs = Math.floor(totalSeconds / 3600);
@@ -29,7 +30,6 @@ function BMTimeLogStopWatch({ projectId, memberId }) {
     return { hr: hrs, min: mins, sec: secs };
   }, []);
 
-  // Fetch current time log on component mount
   useEffect(() => {
     dispatch(getCurrentTimeLog(projectId, memberId));
   }, [dispatch, projectId, memberId]);
@@ -37,12 +37,23 @@ function BMTimeLogStopWatch({ projectId, memberId }) {
   // Sync time with backend time log
   useEffect(() => {
     if (currentTimeLog) {
-      if (currentTimeLog.status === 'ongoing' || currentTimeLog.status === 'paused') {
-        const elapsedTime = Math.floor((currentTimeLog.totalElapsedTime || 0) / 1000);
-        // initialElapsedTimeRef.current = elapsedTime;
+      const elapsedTime = Math.floor((currentTimeLog.totalElapsedTime || 0) / 1000);
+      initialElapsedTimeRef.current = elapsedTime;
+
+      // If we're restarting a timer that was running, adjust for time that passed
+      if (currentTimeLog.status === 'ongoing' && currentTimeLog.currentIntervalStarted) {
+        const additionalTime = Math.floor(
+          (Date.now() - new Date(currentTimeLog.currentIntervalStarted).getTime()) / 1000,
+        );
+        setTime(elapsedTime + additionalTime);
+      } else {
         setTime(elapsedTime);
-        setIsStarted(currentTimeLog.status === 'ongoing');
-        setStartButtonText(currentTimeLog.status === 'ongoing' ? 'PAUSE' : 'START');
+      }
+
+      setIsStarted(currentTimeLog.status === 'ongoing');
+      setStartButtonText(currentTimeLog.status === 'ongoing' ? 'PAUSE' : 'START');
+
+      if (currentTimeLog.createdAt) {
         setCurrentTime(moment(currentTimeLog.createdAt).format('hh:mm:ss A'));
       }
     }
@@ -50,14 +61,24 @@ function BMTimeLogStopWatch({ projectId, memberId }) {
 
   // eslint-disable-next-line consistent-return
   useEffect(() => {
-    let intervalId;
     if (isStarted) {
-      intervalId = setInterval(() => {
+      // Clear any existing intervals first
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+
+      intervalRef.current = setInterval(() => {
         setTime(prevTime => prevTime + 1);
       }, 1000);
+    } else if (intervalRef.current) {
+      clearInterval(intervalRef.current);
     }
+
     return () => {
-      if (intervalId) clearInterval(intervalId);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
     };
   }, [isStarted]);
 
@@ -68,12 +89,21 @@ function BMTimeLogStopWatch({ projectId, memberId }) {
     }
 
     if (isStarted) {
-      // Pause the time log
-      dispatch(pauseTimeLog(projectId, currentTimeLog._id, memberId));
-      setStartButtonText('START');
+      // Pause the time log - store the current time value before pausing
+      const currentElapsedTime = time;
+      dispatch(pauseTimeLog(projectId, currentTimeLog._id, memberId))
+        .then(() => {
+          // If pauseTimeLog fails, at least keep the UI consistent
+          setStartButtonText('START');
+          setIsStarted(false);
+        })
+        .catch(() => {
+          // On error, ensure UI still shows the correct time
+          setTime(currentElapsedTime);
+        });
     } else {
       // Start or resume time log
-      if (currentTimeLog) {
+      if (currentTimeLog && currentTimeLog.status === 'paused') {
         // Resume existing time log
         dispatch(startTimeLog(projectId, memberId, currentTimeLog.task));
       } else {
@@ -81,8 +111,8 @@ function BMTimeLogStopWatch({ projectId, memberId }) {
         dispatch(startTimeLog(projectId, memberId, 'Default Task'));
       }
       setStartButtonText('PAUSE');
+      setIsStarted(true);
     }
-    setIsStarted(!isStarted);
   };
 
   // Stop Handler
@@ -94,7 +124,7 @@ function BMTimeLogStopWatch({ projectId, memberId }) {
     setCurrentTime('');
     setStartButtonText('START');
     setIsStarted(false);
-    // initialElapsedTimeRef.current = 0;
+    initialElapsedTimeRef.current = 0;
   };
 
   // Clear Handler
