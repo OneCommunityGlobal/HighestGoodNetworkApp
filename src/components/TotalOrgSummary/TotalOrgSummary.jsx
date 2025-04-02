@@ -1,7 +1,9 @@
 import { connect } from 'react-redux';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
-import { Alert, Col, Container, Row } from 'reactstrap';
+import { Alert, Col, Container, Row, Dropdown, DropdownToggle, DropdownMenu, DropdownItem, Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import 'moment-timezone';
 
 import hasPermission from 'utils/permissions';
@@ -115,6 +117,13 @@ function TotalOrgSummary(props) {
   const comparisonStartDate = '2025-01-16';
   const comparisonEndDate = '2025-01-26';
   const [isLoading, setIsLoading] = useState(true);
+  const [dateRangeDropdownOpen, setDateRangeDropdownOpen] = useState(false);
+  const [comparisonDropdownOpen, setComparisonDropdownOpen] = useState(false);
+  const [selectedDateRange, setSelectedDateRange] = useState('Current Week');
+  const [selectedComparison, setSelectedComparison] = useState('No Comparison');
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
 
   const dispatch = useDispatch();
 
@@ -216,6 +225,23 @@ function TotalOrgSummary(props) {
     fetchVolunteerStats();
   }, [fromDate, toDate]);
 
+  const handleDateRangeSelect = option => {
+    if (option === 'Select Date Range') {
+      setShowDatePicker(true);
+    } else {
+      setSelectedDateRange(option);
+      setShowDatePicker(false);
+    }
+  };
+
+  const handleDatePickerSubmit = () => {
+    if (startDate && endDate) {
+      setSelectedDateRange(`${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`);
+      setShowDatePicker(false);
+      // Here you can add logic to update the data based on selected date range
+    }
+  };
+
   if (error || isVolunteerFetchingError) {
     return (
       <Container className={`container-wsr-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
@@ -239,11 +265,99 @@ function TotalOrgSummary(props) {
         darkMode ? 'bg-oxford-blue text-light' : 'cbg--white-smoke'
       }`}
     >
-      <Row>
-        <Col lg={{ size: 12 }}>
+      <Row className="d-flex justify-content-between align-items-center">
+        <Col lg={{ size: 6 }}>
           <h3 className="mt-3 mb-5">Total Org Summary</h3>
         </Col>
+        <Col lg={{ size: 6 }} className="d-flex justify-content-end">
+          <Dropdown
+            isOpen={dateRangeDropdownOpen}
+            toggle={() => setDateRangeDropdownOpen(!dateRangeDropdownOpen)}
+          >
+            <DropdownToggle caret>{selectedDateRange}</DropdownToggle>
+            <DropdownMenu>
+              <DropdownItem onClick={() => handleDateRangeSelect('Current Week')}>
+                Current Week
+              </DropdownItem>
+              <DropdownItem onClick={() => handleDateRangeSelect('Previous Week')}>
+                Previous Week
+              </DropdownItem>
+              <DropdownItem onClick={() => handleDateRangeSelect('Select Date Range')}>
+                Select Date Range
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+          <div style={{ width: '25px' }} />
+          <Dropdown
+            isOpen={comparisonDropdownOpen}
+            toggle={() => setComparisonDropdownOpen(!comparisonDropdownOpen)}
+          >
+            <DropdownToggle caret>{selectedComparison}</DropdownToggle>
+            <DropdownMenu>
+              <DropdownItem onClick={() => setSelectedComparison('No Comparison')}>
+                No Comparison
+              </DropdownItem>
+              <DropdownItem onClick={() => setSelectedComparison('Week Over Week')}>
+                Week Over Week
+              </DropdownItem>
+              <DropdownItem onClick={() => setSelectedComparison('Month Over Month')}>
+                Month Over Month
+              </DropdownItem>
+              <DropdownItem onClick={() => setSelectedComparison('Year Over Year')}>
+                Year Over Year
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+        </Col>
       </Row>
+
+      <Modal isOpen={showDatePicker} toggle={() => setShowDatePicker(!showDatePicker)}>
+        <ModalHeader toggle={() => setShowDatePicker(!showDatePicker)}>
+          Select Date Range
+        </ModalHeader>
+        <ModalBody>
+          <div className="d-flex flex-column gap-4">
+            <div>
+              <label style={{ display: 'block', marginBottom: '1rem' }}>Start Date</label>
+              <div style={{ padding: '0.5rem 0' }}>
+                <DatePicker
+                  selected={startDate}
+                  onChange={date => setStartDate(date)}
+                  className="form-control"
+                  dateFormat="MM/dd/yyyy"
+                  placeholderText="Select start date"
+                />
+              </div>
+            </div>
+            <div>
+              <label style={{ display: 'block', marginBottom: '1rem' }}>End Date</label>
+              <div style={{ padding: '0.5rem 0' }}>
+                <DatePicker
+                  selected={endDate}
+                  onChange={date => setEndDate(date)}
+                  className="form-control"
+                  dateFormat="MM/dd/yyyy"
+                  placeholderText="Select end date"
+                  minDate={startDate}
+                />
+              </div>
+            </div>
+          </div>
+        </ModalBody>
+        <ModalFooter>
+          <Button color="secondary" onClick={() => setShowDatePicker(false)}>
+            Cancel
+          </Button>
+          <Button
+            color="primary"
+            onClick={handleDatePickerSubmit}
+            disabled={!startDate || !endDate}
+          >
+            Apply
+          </Button>
+        </ModalFooter>
+      </Modal>
+
       <hr />
       <AccordianWrapper title="Volunteer Status">
         <Row>
