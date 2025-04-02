@@ -39,6 +39,8 @@ export const TeamMembersPopup = React.memo(props => {
     setDeletedPopup(!deletedPopup);
   };
 
+  console.log(memberList);
+
   const handleDelete = id => {
     props.onDeleteClick(`${id}`);
     setDeletedPopup(true);
@@ -60,6 +62,7 @@ export const TeamMembersPopup = React.memo(props => {
   const canAssignTeamToUsers = props.hasPermission('assignTeamToUsers');
 
   const validation = props.members.teamMembers || props.members;
+  console.log("Validation data:", validation);
 
   const closePopup = () => {
     setMemberList([]);
@@ -152,6 +155,7 @@ export const TeamMembersPopup = React.memo(props => {
         sortedList.push(...item.toSorted(sortByAlpha));
       });
     }
+    console.log("Sorted List:", sortedList);
     setMemberList(sortedList);
   };
 
@@ -187,6 +191,16 @@ export const TeamMembersPopup = React.memo(props => {
     }
     return newMemberVisibility;
   };
+
+  // useEffect(() => {
+  //   // Log team members whenever `props.members.teamMembers` changes
+  //   console.log('Team members:', props.members);
+
+  //   sortList(sortOrder);
+  //   const newMemberVisibility = getMemberVisibility();
+  //   setMemberVisibility(newMemberVisibility);
+  // }, [validation, sortOrder, props.members.teamMembers]); // Dependencies to trigger when teamMembers or sortOrder changes
+
 
   useEffect(() => {
     sortList(sortOrder);
