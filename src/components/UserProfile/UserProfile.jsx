@@ -211,8 +211,20 @@ function UserProfile(props) {
 
   useEffect(() => {
     checkIsProjectsEqual();
-    setUserProfile({ ...userProfile, projects });
-    setOriginalUserProfile({ ...originalUserProfile, projects });
+    setUserProfile(prevState => {
+      const updatedProfile = prevState;
+      if(updatedProfile){
+        updatedProfile.projects = projects || updatedProfile.projects;
+      }
+      return updatedProfile
+    });
+    setOriginalUserProfile(prevState => {
+      const updatedOriginalProfile = prevState;
+      if(updatedOriginalProfile){
+        updatedOriginalProfile.projects = projects || updatedOriginalProfile.projects;
+      }
+      return updatedOriginalProfile
+    });
   }, [projects]);
 
   useEffect(() => {
@@ -220,6 +232,14 @@ function UserProfile(props) {
     loadUserProfile();
     loadUserTasks();
   }, [props?.match?.params?.userId]);
+
+  useEffect(() => {
+    if (userProfile?.firstName || userProfile?.lastName) {
+      document.title = `${userProfile.firstName ?? ''} ${userProfile.lastName ?? ''}`.trim();
+    } else {
+      document.title = 'User';
+    }
+  }, [userProfile]);    
 
   const checkIsProjectsEqual = () => {
     const originalProjectProperties = [];
@@ -618,14 +638,15 @@ function UserProfile(props) {
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (updatedUserProfile) => {
     for (let i = 0; i < updatedTasks.length; i += 1) {
       const updatedTask = updatedTasks[i];
       const url = ENDPOINTS.TASK_UPDATE(updatedTask.taskId);
       axios.put(url, updatedTask.updatedTask).catch(err => console.log(err));
     }
     try {
-      const result = await props.updateUserProfile(userProfileRef.current);
+      const userProfileToUpdate = updatedUserProfile || userProfileRef.current;
+      const result = await props.updateUserProfile(userProfileToUpdate);
       if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
         await props.refreshToken(userProfile._id);
       }
@@ -674,11 +695,12 @@ function UserProfile(props) {
 
   const updateLink = (personalLinksUpdate, adminLinksUpdate, mediaUrlUpdate) => {
     setShowModal(false);
-    setUserProfile({
-      ...userProfile,
-      mediaUrl: mediaUrlUpdate !== undefined ? mediaUrlUpdate : userProfile.mediaUrl,
-      personalLinks: personalLinksUpdate,
-      adminLinks: adminLinksUpdate,
+    setUserProfile(prevState => {
+      const updatedProfile = prevState;
+      updatedProfile.adminLinks = adminLinksUpdate || updatedProfile.adminLinks;
+      updatedProfile.mediaUrl = mediaUrlUpdate !== undefined ? mediaUrlUpdate : updatedProfile.mediaUrl;
+      updatedProfile.personalLinks = personalLinksUpdate || updatedProfile.personalLinks;
+      return updatedProfile
     });
   };
 
