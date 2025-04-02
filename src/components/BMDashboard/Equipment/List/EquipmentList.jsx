@@ -1,8 +1,33 @@
-export default function EquipmentList() {
+import { useState } from 'react';
+import EquipmentsTable from './EquipmentsTable';
+import EquipmentsInputs from './EquipmentsInputs';
+import './Equipments.css';
+
+function EquipmentList() {
+  const [equipment, setEquipment] = useState({ label: 'All Equipments', value: '0' });
+  const [project, setProject] = useState({ label: 'All Projects', value: '0' });
+
   return (
-    <main style={{ margin: '1rem', padding: '0 1rem ' }}>
-      <h3>Equipment</h3>
-      <p>Displays a list of all Equipment-type inventory items used in your projects.</p>
-    </main>
+    <div className="PageViewContainer">
+      <div className="Page">
+        <div className="Box">
+          <div className="BuildingTitle">EQUIPMENTS</div>
+          <EquipmentsInputs
+            equipment={equipment}
+            setEquipment={setEquipment}
+            project={project}
+            setProject={setProject}
+          />
+          <EquipmentsTable
+            equipment={equipment}
+            setEquipment={setEquipment}
+            project={project}
+            setProject={setProject}
+          />
+        </div>
+      </div>
+    </div>
   );
 }
+
+export default EquipmentList;

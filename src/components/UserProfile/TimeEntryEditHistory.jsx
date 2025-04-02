@@ -40,7 +40,7 @@ const TimeEntryEditHistory = props => {
 
   return (
     <>
-      <p className='text-azure'>Time Entry Edit History</p>
+      <p className={darkMode ? 'text-light' : ''}>Time Entry Edit History</p>
       <table className={`table table-bordered ${darkMode ? 'text-light' : ''}`} width="100%">
         <thead>
           <tr style={tabletView ? {fontSize: "10px"} : {}}>

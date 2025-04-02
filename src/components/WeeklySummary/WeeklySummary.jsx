@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Component } from 'react';
 import PropTypes from 'prop-types';
 import {
@@ -37,6 +38,11 @@ import { toast } from 'react-toastify';
 import classnames from 'classnames';
 import { getUserProfile } from 'actions/userProfile';
 import { boxStyle, boxStyleDark } from 'styles';
+import {
+  DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
+  DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
+  PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
+} from 'utils/constants';
 import { WeeklySummaryContentTooltip, MediaURLTooltip } from './WeeklySummaryTooltips';
 import SkeletonLoading from '../common/SkeletonLoading';
 import DueDateTime from './DueDateTime';
@@ -45,19 +51,14 @@ import {
   updateWeeklySummaries,
 } from '../../actions/weeklySummaries';
 import CurrentPromptModal from './CurrentPromptModal';
+// import WriteItForMeModal from './WriteForMeModal';
 
-const TINY_MCE_INIT_OPTIONS = {
-  license_key: 'gpl',
-  menubar: false,
-  placeholder: `Did you: Write it in 3rd person with a minimum of 50-words? Remember to run it through ChatGPT or other AI editor using the “Current AI Editing Prompt” from above? Remember to read and do a final edit before hitting Save?`,
-  plugins: 'advlist autolink autoresize lists link charmap table paste help wordcount',
-  toolbar:
-    'bold italic underline link removeformat | bullist numlist outdent indent | styleselect fontsizeselect | table| strikethrough forecolor backcolor | subscript superscript charmap | help',
-  branding: false,
-  min_height: 180,
-  max_height: 500,
-  autoresize_bottom_margin: 1,
-};
+// Images are not allowed in weekly summary
+const customImageUploadHandler = () =>
+  new Promise((_, reject) => {
+    // eslint-disable-next-line prefer-promise-reject-errors
+    reject({ message: 'Pictures are not allowed here!', remove: true });
+  });
 
 // Need this export here in order for automated testing to work.
 export class WeeklySummary extends Component {
@@ -176,7 +177,6 @@ export class WeeklySummary extends Component {
       fetchError,
       loading,
     } = this.props;
-
     await getWeeklySummaries(displayUserId || currentUser.userid);
 
     const { mediaUrl, weeklySummaries, weeklySummariesCount } = summaries;
@@ -319,7 +319,7 @@ export class WeeklySummary extends Component {
     const { isNotAllowedToEdit } = this.props;
     if (isNotAllowedToEdit) {
       // eslint-disable-next-line no-alert
-      alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+      alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
       return;
     }
     const { moveSelect, formElements, activeTab, movePopup } = this.state;
@@ -592,10 +592,15 @@ export class WeeklySummary extends Component {
   };
 
   handleMoveSave = async event => {
-    const { isNotAllowedToEdit } = this.props;
+    const { isNotAllowedToEdit, displayUserEmail } = this.props;
     if (isNotAllowedToEdit) {
-      // eslint-disable-next-line no-alert
-      alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+      if (displayUserEmail === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
+        // eslint-disable-next-line no-alert, prettier/prettier
+        alert(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
+      } else {
+        // eslint-disable-next-line no-alert, prettier/prettier
+        alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
+      }
       return;
     }
     if (event) {
@@ -610,10 +615,15 @@ export class WeeklySummary extends Component {
   };
 
   handleSave = async event => {
-    const { isNotAllowedToEdit } = this.props;
+    const { isNotAllowedToEdit, displayUserEmail } = this.props;
     if (isNotAllowedToEdit) {
-      // eslint-disable-next-line no-alert
-      alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+      if (displayUserEmail === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
+        // eslint-disable-next-line no-alert, prettier/prettier
+        alert(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
+      } else {
+        // eslint-disable-next-line no-alert, prettier/prettier
+        alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
+      }
       return;
     }
     if (event) {
@@ -667,6 +677,24 @@ export class WeeklySummary extends Component {
     const headerBg = darkMode ? 'bg-space-cadet' : '';
     const bodyBg = darkMode ? 'bg-yinmn-blue' : '';
     const boxStyling = darkMode ? boxStyleDark : boxStyle;
+
+    const TINY_MCE_INIT_OPTIONS = {
+      license_key: 'gpl',
+      menubar: false,
+      placeholder: `Did you: Write it in 3rd person with a minimum of 50-words? Remember to run it through ChatGPT or other AI editor using the “Current AI Editing Prompt” from above? Remember to read and do a final edit before hitting Save?`,
+      plugins: 'advlist autolink autoresize lists link charmap table paste help wordcount',
+      toolbar:
+        'bold italic underline link removeformat | bullist numlist outdent indent | styleselect fontsizeselect | table| strikethrough forecolor backcolor | subscript superscript charmap | help',
+      branding: false,
+      min_height: 180,
+      max_height: 500,
+      autoresize_bottom_margin: 1,
+      content_style: 'body { font-size: 14px; }',
+      images_upload_handler: customImageUploadHandler,
+      skin: darkMode ? 'oxide-dark' : 'oxide',
+      content_css: darkMode ? 'dark' : 'default',
+    };
+
     if (fetchError) {
       return (
         <Container>
@@ -701,24 +729,29 @@ export class WeeklySummary extends Component {
     return (
       <Container
         fluid={!!isModal}
+        style={{ minWidth: '100%' }}
         className={`py-3 mb-5 ${
           darkMode ? 'bg-space-cadet text-azure box-shadow-dark' : 'bg--white-smoke'
         }`}
       >
         <h3>Weekly Summaries</h3>
         {/* Before clicking Save button, summariesCountShowing is 0 */}
-        <Row>
-          <Col md="9">
+        <Row className="w-100 ml-1">
+          <Col className="pl-0">
             Total submitted: {summariesCountShowing || formElements.weeklySummariesCount}
           </Col>
-          <Col md="3">
-            <Button className="btn--dark-sea-green" onClick={this.handleClose} style={boxStyling}>
+          <Col className="text-right pr-0">
+            <Button
+              className="btn--dark-sea-green responsive-font-size"
+              onClick={this.handleClose}
+              style={boxStyling}
+            >
               Close this window
             </Button>
           </Col>
         </Row>
         <Form className="mt-4">
-          <Nav tabs className="border-0">
+          <Nav tabs className="border-0 responsive-font-size">
             {Object.values(summariesLabels).map((weekName, i) => {
               const tId = String(i + 1);
               return (
@@ -744,64 +777,74 @@ export class WeeklySummary extends Component {
               const tId = String(i + 1);
               return (
                 <TabPane tabId={tId} key={tId}>
-                  <Row>
+                  <Row className="w-100 ml-1">
                     <Col>
                       <FormGroup>
                         <Label for={summaryName} className="summary-instructions-row">
-                          <div className={fontColor}>
+                          <div className={`${fontColor} responsive-font-size`}>
                             Enter your weekly summary below. (required)
                             <WeeklySummaryContentTooltip tabId={tId} />
                           </div>
-                          {isNotAllowedToEdit && isNotAllowedToEdit === true ? null : (
-                            <UncontrolledDropdown>
-                              <DropdownToggle
-                                className="px-5 mr-2 btn--dark-sea-green"
-                                caret
-                                style={boxStyling}
-                              >
-                                Move This Summary
-                              </DropdownToggle>
-                              <DropdownMenu className={darkMode ? 'bg-oxford-blue' : ''}>
-                                <DropdownItem
-                                  disabled={activeTab === '1'}
-                                  onClick={() => this.handleMoveSelect('1')}
-                                  style={{ backgroundColor: darkMode ? '#1C2541' : '' }}
-                                  className={fontColor}
+                          <div className="d-flex flex-column text-right">
+                            <CurrentPromptModal
+                              userRole={userRole}
+                              userId={displayUserId}
+                              darkMode={darkMode}
+                            />
+                            {isNotAllowedToEdit && isNotAllowedToEdit === true ? null : (
+                              <UncontrolledDropdown className="summary-dropdown">
+                                <DropdownToggle
+                                  className="btn--dark-sea-green w-100 responsive-font-size"
+                                  caret
+                                  style={boxStyling}
                                 >
-                                  This Week
-                                </DropdownItem>
-                                <DropdownItem
-                                  disabled={activeTab === '2'}
-                                  onClick={() => this.handleMoveSelect('2')}
-                                  style={{ backgroundColor: darkMode ? '#1C2541' : '' }}
-                                  className={fontColor}
-                                >
-                                  Last Week
-                                </DropdownItem>
-                                <DropdownItem
-                                  disabled={activeTab === '3'}
-                                  onClick={() => this.handleMoveSelect('3')}
-                                  className={fontColor}
-                                  style={{ backgroundColor: darkMode ? '#1C2541' : '' }}
-                                >
-                                  Week Before Last
-                                </DropdownItem>
-                                <DropdownItem
-                                  disabled={activeTab === '4'}
-                                  onClick={() => this.handleMoveSelect('4')}
-                                  className={fontColor}
-                                  style={{ backgroundColor: darkMode ? '#1C2541' : '' }}
-                                >
-                                  Three Weeks Ago
-                                </DropdownItem>
-                              </DropdownMenu>
-                            </UncontrolledDropdown>
-                          )}
-                          <CurrentPromptModal
-                            userRole={userRole}
-                            userId={displayUserId}
-                            darkMode={darkMode}
-                          />
+                                  Move This Summary
+                                </DropdownToggle>
+                                <DropdownMenu className={darkMode ? 'bg-oxford-blue' : ''}>
+                                  <DropdownItem
+                                    disabled={activeTab === '1'}
+                                    onClick={() => this.handleMoveSelect('1')}
+                                    style={{ backgroundColor: darkMode ? '#1C2541' : '' }}
+                                    className={fontColor}
+                                  >
+                                    This Week
+                                  </DropdownItem>
+                                  <DropdownItem
+                                    disabled={activeTab === '2'}
+                                    onClick={() => this.handleMoveSelect('2')}
+                                    style={{ backgroundColor: darkMode ? '#1C2541' : '' }}
+                                    className={fontColor}
+                                  >
+                                    Last Week
+                                  </DropdownItem>
+                                  <DropdownItem
+                                    disabled={activeTab === '3'}
+                                    onClick={() => this.handleMoveSelect('3')}
+                                    className={fontColor}
+                                    style={{ backgroundColor: darkMode ? '#1C2541' : '' }}
+                                  >
+                                    Week Before Last
+                                  </DropdownItem>
+                                  <DropdownItem
+                                    disabled={activeTab === '4'}
+                                    onClick={() => this.handleMoveSelect('4')}
+                                    className={fontColor}
+                                    style={{ backgroundColor: darkMode ? '#1C2541' : '' }}
+                                  >
+                                    Three Weeks Ago
+                                  </DropdownItem>
+                                </DropdownMenu>
+                              </UncontrolledDropdown>
+                            )}
+                            {/* <div style={{ width: '10rem' }}>
+                            <CurrentPromptModal
+                              userRole={userRole}
+                              userId={displayUserId}
+                              darkMode={darkMode}
+                            />
+                            <WriteItForMeModal pasteResponse={this.pasteResponse} />
+                          </div> */}
+                          </div>
                         </Label>
                         <Editor
                           tinymceScriptSrc="/tinymce/tinymce.min.js"
@@ -826,12 +869,12 @@ export class WeeklySummary extends Component {
                 </TabPane>
               );
             })}
-            <Row>
+            <Row className="w-100 ml-1">
               <Col>
                 {formElements.mediaUrl && !mediaFirstChange ? (
                   <FormGroup className="media-url">
                     <FontAwesomeIcon icon={faExternalLinkAlt} className=" text--silver" />
-                    <Label for="mediaUrl" className="mt-1 ml-2">
+                    <Label for="mediaUrl" className="mt-1 ml-2 responsive-font-size">
                       <a href={formElements.mediaUrl} target="_blank" rel="noopener noreferrer">
                         Your DropBox Media Files Link (Share your files here)
                       </a>
@@ -841,7 +884,7 @@ export class WeeklySummary extends Component {
                 ) : (
                   <Col>
                     <Row>
-                      <Label for="mediaUrl" className={`mt-1 ${fontColor}`}>
+                      <Label for="mediaUrl" className={`mt-1 ${fontColor} responsive-font-size`}>
                         Dropbox link to your weekly media files. (required)
                         <MediaURLTooltip />
                       </Label>
@@ -849,6 +892,9 @@ export class WeeklySummary extends Component {
                     <Row>
                       <FormGroup>
                         <Input
+                          className={`responsive-font-size ${
+                            darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''
+                          }`}
                           type="url"
                           name="mediaUrl"
                           id="mediaUrl"
@@ -863,7 +909,7 @@ export class WeeklySummary extends Component {
                           <FormGroup className="media-url">
                             <FontAwesomeIcon
                               icon={faExternalLinkAlt}
-                              className="mx-1 text--silver"
+                              className="mx-1 text--silver responsive-font-size"
                             />
                             <a
                               href={formElements.mediaUrl}
@@ -921,7 +967,7 @@ export class WeeklySummary extends Component {
                 </Row>
                 <Row>
                   <Col>
-                    <FormGroup className="d-flex">
+                    <FormGroup className="d-flex responsive-font-size">
                       <CustomInput
                         id="mediaConfirm"
                         data-testid="mediaConfirm"
@@ -946,7 +992,7 @@ export class WeeklySummary extends Component {
                 </Row>
                 <Row>
                   <Col>
-                    <FormGroup className="d-flex">
+                    <FormGroup className="d-flex responsive-font-size">
                       <CustomInput
                         id="editorConfirm"
                         data-testid="editorConfirm"
@@ -970,7 +1016,7 @@ export class WeeklySummary extends Component {
                 </Row>
                 <Row>
                   <Col>
-                    <FormGroup className="d-flex">
+                    <FormGroup className="d-flex responsive-font-size">
                       <CustomInput
                         id="proofreadConfirm"
                         name="proofreadConfirm"

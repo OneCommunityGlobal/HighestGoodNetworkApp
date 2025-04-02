@@ -1,14 +1,14 @@
 import React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import { boxStyle } from 'styles';
+import { boxStyle } from '../../styles';
 
 /**
  * Modal popup to delete the user profile
  */
 const DuplicateNamePopup = React.memo(props => {
-  const closePopup = e => {
-    props.onClose();
-  };
+  // const closePopup = e => {
+  //   props.onClose();
+  // };
 
   return (
     <Modal isOpen={props.open} toggle={() => props.popupClose()}>

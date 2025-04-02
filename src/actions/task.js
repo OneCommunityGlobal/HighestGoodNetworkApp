@@ -17,6 +17,7 @@ import { createTaskEditSuggestionHTTP } from 'components/TaskEditSuggestions/ser
 import * as types from '../constants/task';
 import { ENDPOINTS } from '../utils/URL';
 import { createOrUpdateTaskNotificationHTTP } from './taskNotification';
+import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
 
 const selectFetchTeamMembersTaskData = state => state.auth.user.userid;
 const selectUserId = state => state.auth.user.userid;
@@ -111,6 +112,13 @@ export const addNewTask = (newTask, wbsId, pageLoadTime) => async (dispatch, get
     const wbs = await axios.get(ENDPOINTS.TASK_WBS(wbsId));
     if (Date.parse(wbs.data.modifiedDatetime) > pageLoadTime) {
       dispatch(setAddTaskError('outdated'));
+      const res = await axios.post(ENDPOINTS.TASK(wbsId), newTask);
+      dispatch(postNewTask(res.data, status));
+      _id = res.data._id;
+      status = res.status;
+      task = res.data;
+      const userIds = task.resources.map(resource => resource.userID);
+      await createOrUpdateTaskNotificationHTTP(task._id, {}, userIds);
     } else {
       const res = await axios.post(ENDPOINTS.TASK(wbsId), newTask);
       dispatch(postNewTask(res.data, status));
@@ -137,13 +145,14 @@ export const updateTask = (taskId, updatedTask, hasPermission, prevTask) => asyn
     }else{
       oldTask = selectUpdateTaskData(state, taskId);
     }
-    
     if (hasPermission) {
       await axios.put(ENDPOINTS.TASK_UPDATE(taskId), updatedTask);
       const userIds = updatedTask.resources.map(resource => resource.userID);
       await createOrUpdateTaskNotificationHTTP(taskId, oldTask, userIds);   
     } else {
-      await createTaskEditSuggestionHTTP(taskId, selectUserId(state), oldTask, updatedTask);
+      await createTaskEditSuggestionHTTP(taskId, selectUserId(state), oldTask, updatedTask).then(() => {
+        dispatch(fetchTaskEditSuggestions())   
+      });
     }
   } catch (error) {
     // dispatch(fetchTeamMembersTaskError());

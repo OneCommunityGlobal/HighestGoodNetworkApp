@@ -113,6 +113,7 @@ class UpdatePassword extends Form {
             {this.renderInput({
               name: 'currentpassword',
               type: this.state.showPassword.currentpassword ? 'text' : 'password',
+              label: 'Current Password', // passing label as it is labelled as required.
             })}
           </div>
 
@@ -128,6 +129,7 @@ class UpdatePassword extends Form {
             {this.renderInput({
               name: 'newpassword',
               type: this.state.showPassword.newpassword ? 'text' : 'password',
+              label: 'New Password', // passing label as it is labelled as required.
             })}
           </div>
 
@@ -143,6 +145,7 @@ class UpdatePassword extends Form {
             {this.renderInput({
               name: 'confirmnewpassword',
               type: this.state.showPassword.confirmnewpassword ? 'text' : 'password',
+              label: 'Confirm Password', // passing label as it is labelled as required.
             })}
           </div>
 

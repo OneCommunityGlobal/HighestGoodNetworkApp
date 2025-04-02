@@ -1,5 +1,8 @@
 import httpService from '../services/httpService';
+import axios from 'axios';
 import { ApiEndpoint } from '../utils/URL';
+import { ENDPOINTS } from '../utils/URL';
+
 
 const APIEndpoint = ApiEndpoint;
 
@@ -240,3 +243,32 @@ export function postTimeEntry(timeEntryObj) {
     );
   };
 };
+
+export function getTimeEntryByProjectSpecifiedPeriod(projectId, fromDate, toDate) {
+  const request = httpService.get(`${APIEndpoint}/TimeEntry/projects/${projectId}/${fromDate}/${toDate}`);
+
+  return dispatch => {
+    return new Promise((resolve, reject) => {
+      request.then(({ data }) => {
+        dispatch({
+          type: 'GET_TIME_ENTRY_By_Project_FOR_SPECIFIED_PERIOD',
+          payload: data,
+        });
+        resolve(data);
+      }).catch(error => {
+        reject(error);
+      });
+    });
+  };
+};
+
+export function getTimeEntryForOverDate(users, fromDate, toDate) {
+
+  const url = ENDPOINTS.TIME_ENTRIES_USER_LIST;
+
+  return axios.post(url, { users, fromDate, toDate })
+  .then(response => response.data)
+  .catch(error => {
+    throw error;
+  });
+}

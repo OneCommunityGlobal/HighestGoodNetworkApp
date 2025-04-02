@@ -9,6 +9,17 @@ import {
   ModalHeader,
   ModalBody,
   UncontrolledTooltip,
+  Table,
+  ModalFooter,
+  Button as ReactStrapButton,
+  UncontrolledPopover,
+  UncontrolledDropdown,
+  CardTitle,
+  CardImg,
+  CardText,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
 } from 'reactstrap';
 import { connect } from 'react-redux';
 import './Badge.css';
@@ -20,17 +31,23 @@ import hasPermission from '../../utils/permissions';
 import { boxStyle, boxStyleDark } from 'styles';
 import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
 
-export const Badges = props => {
-  const {darkMode} = props;
+export const Badges = (props) => {
+  const {auth, darkMode, displayUserId, authUser} = props;
 
   const [isOpen, setOpen] = useState(false);
+  const [isModalOpen, setModalOpen] = useState(false);
   const [isAssignOpen, setAssignOpen] = useState(false);
 
   const canAssignBadges = props.hasPermission('assignBadges') || props.hasPermission('assignBadgeOthers');
+  
+  const [sortedBadges, setSortedBadges] = useState([]);
+  const [isBadgeOpen, setIsBadgeOpen] = useState(false);
 
   // Added restriction: Jae's badges only editable by Jae or Owner
   const isRecordBelongsToJaeAndUneditable = props.isRecordBelongsToJaeAndUneditable && props.role !== 'Owner';
   const toggle = () => setOpen(!isOpen);
+  
+  const toggleBadge = () => {setIsBadgeOpen(!isBadgeOpen)};
 
   // xiaohan: connect to see all badges
   const assignToggle = () => {
@@ -43,25 +60,53 @@ export const Badges = props => {
     }
   }, [isOpen, isAssignOpen]);
 
+  useEffect(() => {
+    try {
+      if (props.userProfile.badgeCollection && props.userProfile.badgeCollection.length) {
+        const sortBadges = [...props.userProfile.badgeCollection]
+          .filter(badge => badge && badge.badge) // Filter out any null or undefined badges
+          .sort((a, b) => {
+            const rankingA = a.badge?.ranking ?? Infinity;
+            const rankingB = b.badge?.ranking ?? Infinity;
+            const nameA = a.badge?.badgeName ?? '';
+            const nameB = b.badge?.badgeName ?? '';
+  
+            if (rankingA === 0) return 1;
+            if (rankingB === 0) return -1;
+            if (rankingA > rankingB) return 1;
+            if (rankingA < rankingB) return -1;
+            return nameA.localeCompare(nameB);
+          });
+        setSortedBadges(sortBadges);
+      } else {
+        setSortedBadges([]);
+      }
+    } catch (error) {
+      console.error("Error sorting badges:", error);
+      setSortedBadges([]);
+    }
+  }, [props.userProfile.badgeCollection]);
+
   // Determines what congratulatory text should displayed.
   const badgesEarned = props.userProfile.badgeCollection.reduce((acc, badge) => {
-    if (badge?.badge?.badgeName === 'Personal Max' || badge?.badge?.type === 'Personal Max') {
+    if (!badge || !badge.badge) return acc;
+    if (badge.badge.badgeName === 'Personal Max' || badge.badge.type === 'Personal Max') {
       return acc + 1;
     }
-    return acc + Math.round(Number(badge.count));
+    return acc + (Math.round(Number(badge.count)) || 0);
   }, 0);
 
   const subject = props.isUserSelf ? 'You have' : 'This person has';
-  const verb = badgesEarned ? `earned ${badgesEarned}` : 'no';
+  const verb = badgesEarned ? `earned ${badgesEarned}`  : 'no';
   const object = badgesEarned == 1 ? 'badge' : 'badges';
   let congratulatoryText = `${subject} ${verb} ${object}`;
   congratulatoryText = badgesEarned
-    ? 'Bravo! ' + congratulatoryText + '! '
-    : congratulatoryText + '. ';
+  ? `Bravo! ${subject} <a href="#" onclick="handleClick()">${verb} ${object}</a>!`
+  : `${subject} ${verb} ${object}.`;
 
   return (
     <>
-      <Card id="badgeCard" className={darkMode ? 'bg-space-cadet' : ''}>
+      <Card id="badgeCard" className={`badgeCard ${darkMode ? 'bg-space-cadet' : ''}`}>
         <CardHeader>
           <div className="badge-header">
 
@@ -75,18 +120,19 @@ export const Badges = props => {
                 fontSize={20}
                 isPermissionPage={true}
                 role={props.role}
+                darkMode={darkMode}
               />
             </span>
 
-            <div >
+            <div className='d-flex'>
               {(props.canEdit || props.role == 'Owner' || props.role == 'Administrator') && (
                 <>
                   <Button className="btn--dark-sea-green" onClick={toggle} style={darkMode ? boxStyleDark : boxStyle}>
                     Select Featured
                   </Button>
-                  <Modal size="lg" isOpen={isOpen} toggle={toggle}>
-                    <ModalHeader toggle={toggle}>Full View of Badge History</ModalHeader>
-                    <ModalBody>
+                  <Modal size="lg" isOpen={isOpen} toggle={toggle} className={darkMode ? 'text-light dark-mode' : ''}>
+                    <ModalHeader toggle={toggle} className={darkMode ? 'bg-space-cadet' : ''}>Full View of Badge History</ModalHeader>
+                    <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                       <BadgeReport
                         badges={props.userProfile.badgeCollection}
                         userId={props.userProfile._id}
@@ -99,6 +145,8 @@ export const Badges = props => {
                         handleSubmit={props.handleSubmit}
                         isUserSelf={props.isUserSelf}
                         isRecordBelongsToJaeAndUneditable={isRecordBelongsToJaeAndUneditable}
+                        darkMode={darkMode}
+                        personalBestMaxHrs={props.userProfile.personalBestMaxHrs}
                       />
                     </ModalBody>
                   </Modal>
@@ -113,9 +161,9 @@ export const Badges = props => {
                   >
                     Assign Badges
                   </Button>
-                  <Modal size="lg" isOpen={isAssignOpen} toggle={assignToggle}>
-                    <ModalHeader toggle={assignToggle}>Assign Badges</ModalHeader>
-                    <ModalBody>
+                  <Modal size="lg" isOpen={isAssignOpen} toggle={assignToggle} className={darkMode ? 'text-light dark-mode' : ''}>
+                    <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={assignToggle}>Assign Badges</ModalHeader>
+                    <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                       <AssignBadgePopup
                         allBadgeData={props.allBadgeData}
                         userProfile={props.userProfile}
@@ -142,7 +190,17 @@ export const Badges = props => {
               color: darkMode ? '#fff' : '#285739',
             }}
           >
-            {congratulatoryText}
+          <div>
+            {badgesEarned ? (
+              <div>
+                Bravo! {subject} earned <a href="#" onClick={toggleBadge} >{badgesEarned}</a> {object}!
+              </div>
+            ) : (
+              <div>
+                {subject} {verb} {object}.
+              </div>
+            )}
+          </div>
           </span>
           <span className="ml-2">
             <EditableInfoModal
@@ -151,10 +209,192 @@ export const Badges = props => {
               role={props.role}
               fontSize={20}
               isPermissionPage={true}
+              darkMode={darkMode}
             />
           </span>
         </CardFooter>
       </Card>
+      <Modal size="lg" isOpen={isBadgeOpen} toggle={toggleBadge} className={darkMode ? 'text-light' : ''}>
+        <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>Badge Summary</ModalHeader>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+          <div>
+            {/* --- DESKTOP VERSION OF MODAL --- */}
+            <div className="desktop">
+              <div style={{ overflowY: 'scroll', height: '75vh' }}>
+                <Table className={darkMode ? 'text-light dark-mode' : ''}>
+                  <thead style={{ zIndex: '10' }}>
+                    <tr style={{ zIndex: '10' }} className={darkMode ? 'bg-space-cadet' : ''}>
+                      <th style={{ width: '93px' }}>Badge</th>
+                      <th>Name</th>
+                      <th style={{ width: '110px' }}>Modified</th>
+                      <th style={{ width: '110px' }}>Earned Dates</th>
+                      <th style={{ width: '90px' }}>Count</th>
+                    </tr>
+                  </thead>
+                    <tbody>
+                    {props.userProfile.badgeCollection && props.userProfile.badgeCollection.length>0 ? (
+                      sortedBadges &&
+                      sortedBadges.map(value => value && value.badge &&(
+                        <tr key={value.badge._id}>
+                          <td className="badge_image_sm">
+                            {' '}
+                            <img
+                              src={value.badge.imageUrl}
+                              id={`popover_${value.badge._id}`}
+                              alt="badge"
+                            />
+                          </td>
+                          <UncontrolledPopover
+                            trigger="hover"
+                            target={`popover_${value.badge._id}`}
+                          >
+                            <Card className="text-center">
+                              <CardImg className="badge_image_lg" src={value?.badge?.imageUrl} />
+                              <CardBody>
+                                <CardTitle
+                                  style={{
+                                    fontWeight: 'bold',
+                                    fontSize: 18,
+                                    color: '#285739',
+                                    marginBottom: 15,
+                                  }}
+                                >
+                                  {value.badge?.badgeName}
+                                </CardTitle>
+                                <CardText>{value.badge?.description}</CardText>
+                              </CardBody>
+                            </Card>
+                          </UncontrolledPopover>
+                          <td>{value.badge.badgeName}</td>
+                          <td>
+                            {typeof value.lastModified === 'string'
+                              ? value.lastModified.substring(0, 10)
+                              : value.lastModified.toLocaleString().substring(0, 10)}
+                          </td>
+                          <td style={{ display: 'flex', alignItems: 'center' }}>
+                            <>
+                              {' '}
+                              <UncontrolledDropdown className="me-2" direction="down">
+                                <DropdownToggle caret color="primary" style={darkMode ? boxStyleDark : boxStyle}>
+                                  Dates
+                                </DropdownToggle>
+                                <DropdownMenu>
+                                  {value.earnedDate.map((date, index) => (
+                                    // eslint-disable-next-line react/no-array-index-key
+                                    <DropdownItem key={`date-${value._id}-${index}`}>
+                                      {date}
+                                    </DropdownItem>
+                                  ))}
+                                </DropdownMenu>
+                              </UncontrolledDropdown>
+                              {value?.hasBadgeDeletionImpact && value?.hasBadgeDeletionImpact === true ?
+                              (<>
+                                <span id="mismatchExplainationTooltip" style={{paddingLeft: '3px'}}>
+                                  {'  '} *
+                                </span>
+                                <UncontrolledTooltip
+                                  placement="bottom"
+                                  target="mismatchExplainationTooltip"
+                                  style={{ maxWidth: '300px' }}
+                                >
+                                  This record contains a mismatch in the badge count and associated dates. It indicates that a badge has been deleted. 
+                                  Despite the deletion, we retain the earned date to ensure a record of the badge earned for historical purposes.
+                                </UncontrolledTooltip>
+                              </>)
+                              : null
+                              } 
+                            </>
+                          </td>
+                          <td>{value.count}</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={5} style={{ textAlign: 'center' }}>{`${
+                          authUser.userid === displayUserId ? 'You have' : 'This person has'
+                        } no badges .`}</td>
+                      </tr>
+                    )} 
+                  </tbody> 
+                </Table>
+              </div>
+            </div>
+            {/* --- TABLET VERSION OF MODAL --- */}
+            <div className="tablet">
+              <div style={{ overflow: 'auto', height: '68vh' }}>
+                <Table  className={darkMode ? 'text-light dark-mode' : ''}>
+                  <thead style={{ zIndex: '10' }}>
+                    <tr style={{ zIndex: '10' }}  className={darkMode ? 'bg-space-cadet' : ''}>
+                      <th style={{ width: '25%' }}>Badge</th>
+                      <th style={{ width: '25%' }}>Name</th>
+                      <th style={{ width: '25%' }}>Modified</th>
+                      <th style={{ width: '25%', zIndex: '10' }}>Count</th>
+                    </tr>
+                  </thead>
+                   <tbody>
+                    {props.userProfile.badgeCollection && props.userProfile.badgeCollection.length ? (
+                      sortedBadges &&
+                      sortedBadges.map(value => value &&(
+                        <tr key={value._id}>
+                          <td className="badge_image_sm">
+                            {' '}
+                            <img
+                              src={value?.badge.imageUrl}
+                              id={`popover_${value._id}`}
+                              alt="badge"
+                            />
+                          </td>
+                          <UncontrolledPopover trigger="hover" target={`popover_${value._id}`}>
+                            <Card className="text-center">
+                              <CardImg className="badge_image_lg" src={value?.badge?.imageUrl} />
+                              <CardBody>
+                                <CardTitle
+                                  style={{
+                                    fontWeight: 'bold',
+                                    fontSize: 18,
+                                    color: '#285739',
+                                    marginBottom: 15,
+                                  }}
+                                >
+                                  {value?.badge?.badgeName}
+                                </CardTitle>
+                                <CardText>{value?.badge?.description}</CardText>
+                              </CardBody>
+                            </Card>
+                          </UncontrolledPopover>
+                          <td>{value?.badge?.badgeName}</td>
+                          <td>
+                            {typeof value.lastModified === 'string'
+                              ? value.lastModified.substring(0, 10)
+                              : value.lastModified.toLocaleString().substring(0, 10)}
+                          </td>
+                          <td>{value?.count}</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={4} style={{ textAlign: 'center' }}>{`${
+                          authUser.userid === displayUserId ? 'You have' : 'This person has'
+                        } no badges.`}</td>
+                      </tr>
+                    )}
+                  </tbody> 
+                </Table>
+              </div>
+            </div> 
+          </div>
+        </ModalBody>
+        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+          <div className="badge_summary_viz_footer">
+            <ReactStrapButton
+              className="btn--dark-sea-green badge_summary_viz_button"
+              onClick={toggleBadge}
+            >
+              Close
+            </ReactStrapButton>
+          </div>
+        </ModalFooter>
+      </Modal>
       {/* <UncontrolledTooltip
         placement="right"
         target="FeaturedBadgeInfo"
@@ -205,6 +445,9 @@ const mapDispatchToProps = dispatch => ({
 
 const mapStateToProps = state => ({
   allBadgeData: state?.badge?.allBadgeData,
+  auth: state.auth, 
+  //darkMode: state.theme.darkMode,
+  authUser: state.auth.user,
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Badges);

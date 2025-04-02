@@ -10,31 +10,58 @@ import {
 } from 'components/TeamMemberTasks/components/TaskDifferenceModal';
 import DiffedText from 'components/TeamMemberTasks/components/DiffedText';
 import { useDispatch } from 'react-redux';
-import { rejectTaskEditSuggestion } from '../thunks';
 import { updateTask } from 'actions/task';
 import hasPermission from 'utils/permissions';
 import { useSelector, useStore } from 'react-redux';
 import { useState } from 'react';
+import { toast } from 'react-toastify';
+import { rejectTaskEditSuggestionHTTP } from '../service';
+import { rejectTaskEditSuggestionSuccess } from '../actions';
+import { fetchTaskEditSuggestions } from '../thunks';
+import { incrementDashboardTaskCount } from 'actions/dashboardActions';
 
 export const TaskEditSuggestionsModal = ({
   isTaskEditSuggestionModalOpen,
   taskEditSuggestion,
   handleToggleTaskEditSuggestionModal,
+  userRole
 }) => {
   const dispatch = useDispatch();
 
   const { getState } = useStore();
 
-  const approveTask = () => {
-    // console.log('mainproblem', taskEditSuggestion);
-    updateTask(
-      taskEditSuggestion.taskId,
-      taskEditSuggestion.newTask,
-      dispatch(hasPermission('updateTask')),
-    )(dispatch, getState);
-    dispatch(rejectTaskEditSuggestion(taskEditSuggestion._id));
+  const approveTask = async () => {
+    try {
+      await rejectTaskEditSuggestionHTTP(taskEditSuggestion._id).then(() => {
+        updateTask(
+          taskEditSuggestion.taskId,
+          taskEditSuggestion.newTask,
+          dispatch(hasPermission('updateTask')),
+        )(dispatch, getState);
+      });
+      dispatch(rejectTaskEditSuggestionSuccess(taskEditSuggestion._id));
+      
+      if (userRole !== 'Volunteer') {
+        console.log(`Incrementing count for task ${taskEditSuggestion.taskId}`);
+        dispatch(incrementDashboardTaskCount(taskEditSuggestion.taskId));
+      }
+    } catch (e) {
+      dispatch(fetchTaskEditSuggestions()); 
+      toast.error('The suggestion might have already been resolved. Reloading the suggestion list...');
+    }
     handleToggleTaskEditSuggestionModal();
   };
+  
+  const rejectTask = async () => {
+    try {
+      await rejectTaskEditSuggestionHTTP(taskEditSuggestion._id);
+      dispatch(rejectTaskEditSuggestionSuccess(taskEditSuggestion._id));
+    } catch (e) {
+      dispatch(fetchTaskEditSuggestions());
+      toast.error('The suggestion might have already been resolved. Reloading the suggestion list...');
+    }
+    handleToggleTaskEditSuggestionModal();
+  }
 
   return (
     <Modal
@@ -234,10 +261,7 @@ export const TaskEditSuggestionsModal = ({
             <Button
               color="danger"
               style={{ marginLeft: 'auto' }}
-              onClick={() => {
-                dispatch(rejectTaskEditSuggestion(taskEditSuggestion._id));
-                handleToggleTaskEditSuggestionModal();
-              }}
+              onClick={rejectTask}
             >
               Reject
             </Button>

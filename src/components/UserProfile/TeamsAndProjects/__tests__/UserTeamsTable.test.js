@@ -67,7 +67,7 @@ const renderComponent = mockProps => {
 describe('User Teams Table Component', () => {
   it('render without crashing', () => {
     renderComponent(mockUserProfile);
-
+    console.log(mockUserProfile);
   });
 
   it('renders correct number of teams the user is assigned to', () => {

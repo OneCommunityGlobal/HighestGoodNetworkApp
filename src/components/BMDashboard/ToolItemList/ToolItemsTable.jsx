@@ -126,14 +126,14 @@ export default function ToolItemsTable({
                     <td>{el.itemType?.name}</td>
                     <td>{el.purchaseStatus === 'Purchased' ? 'Yes' : 'No'}</td>
                     <td>
-                      {el.itemType.using.includes(el._id) ? (
+                      {el.itemType?.using?.includes(el._id) ? (
                         <FontAwesomeIcon icon={faCheck} size="lg" color="green" />
                       ) : (
                         <FontAwesomeIcon icon={faTimes} size="lg" color="red" />
                       )}
                     </td>
                     <td>
-                      {el.itemType.available.includes(el._id) &&
+                      {el.itemType?.available?.includes(el._id) &&
                       el.condition !== 'Lost' &&
                       el.condition !== 'Needs Replacing' ? (
                         <FontAwesomeIcon icon={faCheck} size="lg" color="green" />
@@ -156,7 +156,11 @@ export default function ToolItemsTable({
                     </td>
                     <td>{el.code}</td>
                     <td className="items_cell">
-                      <button type="button" onClick={() => handleEditRecordsClick(el, 'Update')}>
+                      <button
+                        type="button"
+                        onClick={() => handleEditRecordsClick(el, 'Update')}
+                        aria-label="Edit Record"
+                      >
                         <BiPencil />
                       </button>
                       <Button

@@ -1,4 +1,9 @@
-import { GET_TOOL_BY_ID, GET_TOOLS, SET_TOOLS, GET_TOOL_TYPES } from "constants/bmdashboard/toolsConstants";
+import {
+  GET_TOOL_BY_ID,
+  GET_TOOLS,
+  SET_TOOLS,
+  GET_TOOL_TYPES,
+} from '../../constants/bmdashboard/toolsConstants';
 
 const defaultState = {
   toolslist: [],
@@ -31,6 +36,6 @@ export const toolReducer = (tools = defaultState, action) => {
     case SET_TOOLS:
       return action.payload;
     default:
-      return tools; // Return the current state for unknown actions
+      return tools;
   }
 };

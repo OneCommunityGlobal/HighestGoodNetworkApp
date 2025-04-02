@@ -1,7 +1,16 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
+import configureMockStore from 'redux-mock-store';
+import { Provider } from 'react-redux';
 import AddNewTeamModal from '../AddNewTeamModal';
+import { themeMock } from '__tests__/mockStates';
+
+const mockStore = configureMockStore();
+const initialState = {
+  theme: themeMock,
+};
+const store = mockStore(initialState);
 
 const remainedTeams = [
   {
@@ -32,46 +41,54 @@ const submitHandler = jest.fn();
 describe('AddNewTeamModal component', () => {
   it('renders modal when isOpen is true', () => {
     render(
-      <AddNewTeamModal
-        isOpen={true}
-        toggle={toggle}
-        teams={remainedTeams}
-        submitHandler={submitHandler}
-      />,
+      <Provider store={store}>
+        <AddNewTeamModal
+          isOpen={true}
+          toggle={toggle}
+          teams={remainedTeams}
+          submitHandler={submitHandler}
+        />
+      </Provider>,
     );
     expect(screen.queryByText('Modal title')).toBeInTheDocument();
   });
   it('renders modal when isOpen is false', () => {
     render(
-      <AddNewTeamModal
-        isOpen={false}
-        toggle={toggle}
-        teams={remainedTeams}
-        submitHandler={submitHandler}
-      />,
+      <Provider store={store}>
+        <AddNewTeamModal
+          isOpen={false}
+          toggle={toggle}
+          teams={remainedTeams}
+          submitHandler={submitHandler}
+        />
+      </Provider>,
     );
     expect(screen.queryByText('Modal title')).not.toBeInTheDocument();
   });
   it('check modal title and its label', () => {
     render(
-      <AddNewTeamModal
-        isOpen={true}
-        toggle={toggle}
-        teams={remainedTeams}
-        submitHandler={submitHandler}
-      />,
+      <Provider store={store}>
+        <AddNewTeamModal
+          isOpen={true}
+          toggle={toggle}
+          teams={remainedTeams}
+          submitHandler={submitHandler}
+        />
+      </Provider>,
     );
     expect(screen.queryByText('Modal title')).toBeInTheDocument();
     expect(screen.getByText('Choose a Team:')).toBeInTheDocument();
   });
   it('check team name option', () => {
     render(
-      <AddNewTeamModal
-        isOpen={true}
-        toggle={toggle}
-        teams={remainedTeams}
-        submitHandler={submitHandler}
-      />,
+      <Provider store={store}>
+        <AddNewTeamModal
+          isOpen={true}
+          toggle={toggle}
+          teams={remainedTeams}
+          submitHandler={submitHandler}
+        />
+      </Provider>,
     );
 
     expect(screen.queryByText('team11')).toBeInTheDocument();
@@ -81,12 +98,14 @@ describe('AddNewTeamModal component', () => {
   });
   it('check click on one of the options', () => {
     render(
-      <AddNewTeamModal
-        isOpen={true}
-        toggle={toggle}
-        teams={remainedTeams}
-        submitHandler={submitHandler}
-      />,
+      <Provider store={store}>
+        <AddNewTeamModal
+          isOpen={true}
+          toggle={toggle}
+          teams={remainedTeams}
+          submitHandler={submitHandler}
+        />
+      </Provider>,
     );
     const team11Element = screen.getByText('team11');
     fireEvent.click(team11Element);
@@ -102,12 +121,14 @@ describe('AddNewTeamModal component', () => {
       },
     ];
     render(
-      <AddNewTeamModal
-        isOpen={true}
-        toggle={toggle}
-        teams={remainedTeams}
-        submitHandler={submitHandler}
-      />,
+      <Provider store={store}>
+        <AddNewTeamModal
+          isOpen={true}
+          toggle={toggle}
+          teams={remainedTeams}
+          submitHandler={submitHandler}
+        />
+      </Provider>,
     );
     const selectElement = screen.getByRole('combobox');
     fireEvent.change(selectElement, { target: { value: 'aaa478' } });
@@ -118,12 +139,14 @@ describe('AddNewTeamModal component', () => {
   });
   it('check cancel button', () => {
     render(
-      <AddNewTeamModal
-        isOpen={true}
-        toggle={toggle}
-        teams={remainedTeams}
-        submitHandler={submitHandler}
-      />,
+      <Provider store={store}>
+        <AddNewTeamModal
+          isOpen={true}
+          toggle={toggle}
+          teams={remainedTeams}
+          submitHandler={submitHandler}
+        />
+      </Provider>,
     );
     const cancelButton = screen.getByText('Cancel');
     fireEvent.click(cancelButton);

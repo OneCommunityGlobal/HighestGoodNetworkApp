@@ -208,7 +208,7 @@ export default function Countdown({
             </div>
             <div className={css.operators}>
               {running ? (
-                <button type="button" onClick={sendPause}>
+                <button type="button" onClick={sendPause} aria-label="Pause timer">
                   <BsPauseFill
                     className={cs(css.transitionColor, css.operator)}
                     fontSize="2.5rem"
@@ -216,7 +216,7 @@ export default function Countdown({
                   />
                 </button>
               ) : (
-                <button type="button" onClick={handleStartButton}>
+                <button type="button" onClick={handleStartButton} aria-label="Start timer">
                   <BsPlay
                     className={cs(
                       css.transitionColor,
@@ -229,7 +229,11 @@ export default function Countdown({
                 </button>
               )}
               {started && (
-                <button type="button" onClick={handleStopButton}>
+                <button
+                  type="button"
+                  onClick={handleStopButton}
+                  aria-label="Stop timer and log timer"
+                >
                   <BsStopFill
                     className={cs(css.transitionColor, css.operator)}
                     fontSize="2.5rem"

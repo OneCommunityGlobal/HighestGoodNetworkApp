@@ -1,7 +1,16 @@
 import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import configureMockStore from 'redux-mock-store';
+import { Provider } from 'react-redux';
 import HistoryModal from '../HistoryModal';
+import { themeMock } from '__tests__/mockStates';
+
+const mockStore = configureMockStore();
+const initialState = {
+  theme: themeMock,
+};
+const store = mockStore(initialState);
 
 describe('HistoryModal Component', () => {
   const mockToggle = jest.fn();
@@ -13,7 +22,9 @@ describe('HistoryModal Component', () => {
 
   test('renders modal when isOpen is true', () => {
     render(
-      <HistoryModal isOpen toggle={mockToggle} userName={userName} userHistory={userHistory} />,
+      <Provider store={store}>
+        <HistoryModal isOpen toggle={mockToggle} userName={userName} userHistory={userHistory} />
+      </Provider>,
     );
 
     expect(screen.getByText('Past Promised Hours')).toBeInTheDocument();
@@ -23,19 +34,21 @@ describe('HistoryModal Component', () => {
 
   test('does not render modal when isOpen is false', () => {
     render(
-      <HistoryModal
-        isOpen={false}
-        toggle={mockToggle}
-        userName={userName}
-        userHistory={userHistory}
-      />,
+      <Provider store={store}>
+        <HistoryModal
+          isOpen={false}
+          toggle={mockToggle}
+          userName={userName}
+          userHistory={userHistory}
+        />
+      </Provider>,
     );
 
     expect(screen.queryByText('Past Promised Hours')).not.toBeInTheDocument();
   });
 
   test('shows message when there is no user history', () => {
-    render(<HistoryModal isOpen toggle={mockToggle} userName={userName} userHistory={[]} />);
+    render(<Provider store={store}><HistoryModal isOpen toggle={mockToggle} userName={userName} userHistory={[]} /></Provider>);
 
     expect(
       screen.getByText(`${userName} has never made any changes to the promised hours.`),
@@ -44,7 +57,7 @@ describe('HistoryModal Component', () => {
 
   test('toggle button closes the modal', () => {
     render(
-      <HistoryModal isOpen toggle={mockToggle} userName={userName} userHistory={userHistory} />,
+      <Provider store={store}><HistoryModal isOpen toggle={mockToggle} userName={userName} userHistory={userHistory} /></Provider>,
     );
 
     // Use a regular expression to match the button text more flexibly
