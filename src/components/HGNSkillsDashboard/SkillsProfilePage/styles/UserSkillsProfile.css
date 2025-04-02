@@ -28,3 +28,27 @@
     display: none;
   }
 }
+
+.skills-loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+  flex-direction: column;
+  text-align: center;
+}
+
+.skills-loader p {
+  font-size: 1.2rem;
+  color: #333;
+  font-weight: 500;
+  margin-top: 20px;
+}
+
+.skills-error p {
+  font-size: 1.2rem;
+  color: rgb(208, 75, 75);
+  font-weight: 500;
+  margin-top: 20px;
+}

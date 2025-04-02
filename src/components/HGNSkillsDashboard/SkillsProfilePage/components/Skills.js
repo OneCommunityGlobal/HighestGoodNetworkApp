@@ -18,6 +18,7 @@ function Skills() {
       {skills.map(skill => (
         <button
           key={skill}
+          type="button"
           className={selectedSkill === skill ? 'selected' : ''}
           onClick={() => handleSkillClick(skill)}
         >

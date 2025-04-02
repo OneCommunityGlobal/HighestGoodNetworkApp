@@ -3,10 +3,10 @@ import Skills from './Skills';
 import RadarChart from './RadarChart';
 import '../styles/RightSection.css';
 
-function RightSection() {
+function RightSection({ profileData }) {
   return (
     <div className="right-section">
-      <ProfileDetails />
+      <ProfileDetails profileData={profileData} />
       <div className="skills-and-chart">
         <Skills />
         <RadarChart />

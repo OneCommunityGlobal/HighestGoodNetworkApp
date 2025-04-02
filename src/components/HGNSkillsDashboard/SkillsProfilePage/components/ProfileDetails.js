@@ -1,29 +1,42 @@
 import '../styles/ProfileDetails.css';
 
-function ProfileDetails() {
+function ProfileDetails({ profileData }) {
   return (
     <div className="profile-details">
       <h3>User Profile</h3>
       <hr className="horizontal-separator" />
       <div className="team-info">
         <span>
-          <strong>Team Name:</strong> <span className="value">Expressers</span>
+          <strong>Team Name:</strong>{' '}
+          <span className="value">
+            {profileData.teams?.length > 0 ? profileData.teams[0].name : 'Not Assigned'}
+          </span>
         </span>
         <span>
-          <strong>Years of Experience:</strong> <span className="value">0-3 years</span>
+          <strong>Years of Experience:</strong>{' '}
+          <span className="value">
+            {profileData.skillInfo?.general?.yearsOfExperience || 'N/A'}
+          </span>
         </span>
       </div>
       <h3>Contact Information</h3>
       <hr className="horizontal-separator" />
       <div className="contacts-info">
         <span>
-          <strong>Email:</strong> <span className="value">rahultrivedi@gmail.com</span>
+          <strong>Email:</strong>{' '}
+          <span className="value">{profileData.contactInfo.email || 'N/A'}</span>
         </span>
         <span>
-          <strong>Slack ID:</strong> <span className="value">rahultrivedi1999</span>
+          <strong>Phone Number:</strong>{' '}
+          <span className="value">{profileData.contactInfo.phone || 'N/A'}</span>
         </span>
         <span>
-          <strong>Phone Number:</strong> <span className="value">+1 935-984-333</span>
+          <strong>Slack:</strong>{' '}
+          <span className="value">{profileData.socialHandles.slack || 'N/A'}</span>
+        </span>
+        <span>
+          <strong>GitHub:</strong>{' '}
+          <span className="value">{profileData.socialHandles.github || 'N/A'}</span>
         </span>
       </div>
       <hr className="horizontal-separator" />
