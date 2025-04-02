@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import Loading from 'components/common/Loading';
 import VolunteerStatusPieChart from './VolunteerStatusPieChart';
 
-function VolunteerStatusChart({ isLoading, volunteerNumberStats }) {
+function VolunteerStatusChart({ isLoading, volunteerNumberStats, comparisonType }) {
   const chartData = useMemo(() => {
     if (!volunteerNumberStats) {
       return null;
@@ -35,7 +35,7 @@ function VolunteerStatusChart({ isLoading, volunteerNumberStats }) {
           </div>
         </div>
       ) : (
-        <VolunteerStatusPieChart data={chartData} />
+        <VolunteerStatusPieChart data={chartData} comparisonType={comparisonType} />
       )}
     </section>
   );
