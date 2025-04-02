@@ -9,6 +9,7 @@ export default function VolunteerHoursDistribution({
   darkMode,
   usersTimeEntries = [],
   usersOverTimeEntries = [],
+  comparisonType,
 }) {
   const [userData, setUserData] = useState([]);
 
@@ -93,7 +94,7 @@ export default function VolunteerHoursDistribution({
           </div>
         </div>
       ) : (
-        <HoursWorkedPieChart darkmode={darkMode} windowSize={windowSize} userData={userData} />
+        <HoursWorkedPieChart darkmode={darkMode} windowSize={windowSize} userData={userData} comparisonType={comparisonType} />
       )}
     </div>
   );

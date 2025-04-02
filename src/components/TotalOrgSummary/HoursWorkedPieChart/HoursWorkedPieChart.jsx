@@ -15,6 +15,7 @@ const renderCustomizedLabel = ({
   totalHours,
   title,
   totalOverTimeHours,
+  comparisonType,
 }) => {
   const radius = innerRadius + (outerRadius - innerRadius) * 0.4;
   const x = cx + radius * Math.cos(-midAngle * RADIAN);
@@ -23,7 +24,7 @@ const renderCustomizedLabel = ({
   const percentage = Math.round((totalHours / totalOverTimeHours - 1) * 100);
   const fillColor = totalHours / totalOverTimeHours > 1 ? 'green' : 'red';
 
-  const textContent = `${percentage}% week over week`;
+  const textContent = comparisonType !== 'No Comparison' ? `${percentage}% ${comparisonType.toLowerCase()}` : '';
   const fontSize = 10;
   const maxTextLength = Math.floor((innerRadius / fontSize) * 4);
 
@@ -59,14 +60,16 @@ const renderCustomizedLabel = ({
       <text x={cx} y={cy} dy={14} textAnchor="middle" fill="#696969" fontSize="25">
         {totalHours.toFixed(0)}
       </text>
-      <text x={cx} y={cy} dy={24} textAnchor="middle" fill={fillColor} fontSize="10">
-        {adjustedText}
-      </text>
+      {comparisonType !== 'No Comparison' && (
+        <text x={cx} y={cy} dy={24} textAnchor="middle" fill={fillColor} fontSize="10">
+          {adjustedText}
+        </text>
+      )}
     </>
   );
 };
 
-export default function HoursWorkedPieChart({ userData, darkMode, windowSize }) {
+export default function HoursWorkedPieChart({ userData, darkMode, windowSize, comparisonType }) {
   let innerRadius = 80;
   let outerRadius = 160;
   if (windowSize.width <= 650) {
@@ -82,7 +85,7 @@ export default function HoursWorkedPieChart({ userData, darkMode, windowSize }) 
             cx="50%"
             cy="50%"
             labelLine={false}
-            label={renderCustomizedLabel}
+            label={props => renderCustomizedLabel({ ...props, comparisonType })}
             innerRadius={innerRadius}
             outerRadius={outerRadius}
             fill="#8884d8"
