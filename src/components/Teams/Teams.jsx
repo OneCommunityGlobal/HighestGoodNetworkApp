@@ -234,7 +234,6 @@ class Teams extends React.PureComponent {
 
   teampopupElements = allTeams => {
     const { teamMembers: members, fetching } = this.props.state.teamsTeamMembers;
-    console.log("state in teampopupElements:", this.props.state);
     const selectedTeamData = allTeams
       ? allTeams.filter(team => team.teamName === this.state.selectedTeam)
       : [];
