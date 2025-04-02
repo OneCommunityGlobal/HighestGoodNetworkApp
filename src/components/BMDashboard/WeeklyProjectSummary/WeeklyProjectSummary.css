@@ -1,4 +1,18 @@
-/* ---------------- PAGE CONTAINER ---------------- */
+/* ---------------- Variables ---------------- */
+:root {
+  /* Light Mode Variables */
+  --bg-color: #ffffff;
+  --text-color: #000000;
+  --card-bg: #fafafa;
+  --card-shadow: rgba(0, 0, 0, 0.1);
+  --section-bg: white;
+  --section-title-bg: white;
+  --section-title-hover: #e0e0e0;
+  --button-bg: black;
+  --button-hover: #333;
+}
+
+/* ---------------- General Containers ---------------- */
 .weekly-project-summary-container {
   min-height: 100vh;
   background-color: var(--bg-color);
@@ -13,22 +27,24 @@
 }
 
 .weekly-project-summary-dashboard-container {
-  width: 100%;
+  width: 95%;
+  margin: auto;
+  padding: 20px;
   background: var(--bg-color);
+  color: var(--text-color);
 }
 
 .weekly-project-summary-header-wrapper {
   background-color: var(--bg-color) !important;
 }
 
-/* ---------------- HEADER ---------------- */
+/* ---------------- Header Styles ---------------- */
 .weekly-summary-header-wrapper {
   display: flex;
   justify-content: center;
   width: 100%;
 }
 
-/* Header Container */
 .weekly-summary-header-container {
   display: flex;
   flex-wrap: wrap;
@@ -41,7 +57,6 @@
   border-radius: 8px;
 }
 
-/* Title */
 .weekly-summary-header-title {
   padding-top: 5px;
   color: var(--text-color);
@@ -50,14 +65,13 @@
   flex-wrap: wrap;
 }
 
-/* Header Controls */
 .weekly-summary-header-controls {
   display: flex;
   gap: 10px;
   align-items: center;
 }
 
-/* Dropdown Styling */
+/* Header Dropdown Styles */
 .weekly-summary-header-controls select {
   padding: 8px 12px;
   border: 1px solid #ccc;
@@ -68,12 +82,11 @@
   color: var(--text-color);
 }
 
-/* Dropdown Hover */
 .weekly-summary-header-controls select:hover {
   background-color: var(--section-title-hover) !important;
 }
 
-/* Share Button */
+/* Share Button Styles */
 .weekly-summary-share-btn {
   background-color: var(--button-bg) !important;
   color: white;
@@ -87,21 +100,14 @@
   background-color: var(--button-hover) !important;
 }
 
-/* ---------------- DASHBOARD ---------------- */
-.weekly-project-summary-dashboard-container {
-  width: 95%;
-  margin: auto;
-  padding: 20px;
-  background: var(--bg-color);
-  color: var(--text-color);
-}
-
+/* ---------------- Dashboard Layout ---------------- */
 .weekly-project-summary-dashboard-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 15px;
 }
 
+/* Dashboard Section Sizes */
 .weekly-project-summary-dashboard-section.full {
   grid-column: span 4;
 }
@@ -118,53 +124,7 @@
   grid-column: span 1;
 }
 
-/* ---------------- CARDS ---------------- */
-.project-status-grid {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  grid-template-rows: repeat(2, auto);
-  gap: 10px;
-}
-
-.weekly-project-summary-card {
-  background: var(--card-bg);
-  padding: 10px;
-  border-radius: 6px;
-  text-align: center;
-  box-shadow: 0 2px 5px var(--card-shadow);
-}
-
-.dark-mode .weekly-project-summary-card {
-  background: var(--card-bg);
-  box-shadow: 0 2px 5px rgba(255, 255, 255, 0.1);
-}
-
-.financial-small {
-  min-height: 100px;
-  max-height: 120px;
-}
-
-.financial-big {
-  grid-column: span 2;
-  min-height: 250px;
-}
-
-.wide-card {
-  width: 100%;
-  min-height: 250px;
-  grid-column: span 2;
-}
-
-.small-card {
-  width: 100%;
-  min-height: 100px;
-}
-
-.normal-card {
-  width: 100%;
-  min-height: 250px;
-}
-
+/* Dashboard Section Styles */
 .weekly-project-summary-dashboard-section {
   background: var(--section-bg);
   border-radius: 8px;
@@ -194,24 +154,233 @@
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 10px;
   border-top: 1px solid var(--card-shadow);
-  animation: fadeIn 0.3s ease-in-out;
   background: var(--section-bg);
 }
 
-/* ---------------- DARK MODE VARIABLES ---------------- */
-:root {
-  --bg-color: #ffffff;
-  --text-color: #000000;
-  --card-bg: #fafafa;
-  --card-shadow: rgba(0, 0, 0, 0.1);
-  --section-bg: white;
-  --section-title-bg: white;
-  --section-title-hover: #e0e0e0;
-  --button-bg: black;
-  --button-hover: #333;
+/* ---------------- Project Status Grid ---------------- */
+.project-status-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(2, auto);
+  gap: 10px;
 }
 
-/* ---------------- DARK MODE STYLES ---------------- */
+/* ---------------- Card Styles ---------------- */
+.weekly-project-summary-card {
+  background: var(--card-bg);
+  padding: 10px;
+  border-radius: 6px;
+  text-align: center;
+  box-shadow: 0 2px 5px var(--card-shadow);
+}
+
+/* Card Size Variations */
+.financial-small {
+  min-height: 100px;
+  max-height: 120px;
+}
+
+.financial-big {
+  grid-column: span 2;
+  min-height: 250px;
+}
+
+.wide-card {
+  width: 100%;
+  min-height: 250px;
+  grid-column: span 2;
+}
+
+.small-card {
+  width: 100%;
+  min-height: 100px;
+}
+
+.normal-card {
+  width: 100%;
+  min-height: 250px;
+}
+
+/* ---------------- Financial Cards ---------------- */
+.financial-cards-container {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 20px; 
+  justify-content: flex-start; 
+  overflow: visible;
+}
+
+.financial-card {
+  box-sizing: border-box;
+  width: 285.33px;
+  height: 231px;
+  border: 1px solid #E0E0E0;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.04);
+  border-radius: 25px;
+  position: relative;
+  flex: none;
+  margin: 5px;
+  transition: all 0.3s ease;
+  cursor: help;
+
+}
+
+.custom-box-shadow {
+  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.08);
+  position: relative;
+  z-index: 1;
+  border-radius: 25px;
+  cursor: default;
+}
+
+.financial-card:hover {
+  transform: scale(1.05);
+  z-index: 10;
+}
+
+/* Financial Card Components */
+.financial-card-title {
+  position: absolute;
+  width: 221.33px;
+  height: 36px;
+  left: 24px;
+  top: 24px;
+  font-family: 'Inter', sans-serif;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 21px;
+  line-height: 150%;
+  text-align: center;
+  color: #000000;
+}
+
+.financial-card-ellipse {
+  position: absolute;
+  width: 162px;
+  height: 82px;
+  left: 56px;
+  top: 57px;
+  border-radius: 50% / 50%;
+}
+
+.financial-card-value {
+  position: absolute;
+  width: 221.33px;
+  height: 44px;
+  left: 24px;
+  top: 76px;
+  font-family: 'Inter', sans-serif;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 40px;
+  line-height: 110%;
+  text-align: center;
+  letter-spacing: -0.02em;
+  color: #000000;
+}
+
+.financial-card-month-over-month {
+  position: absolute;
+  width: 234px;
+  height: 30px;
+  left: 20px;
+  top: 146px;
+  font-family: 'Inter', sans-serif;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 150%;
+  text-align: center;
+}
+
+/* Financial Card Color States */
+.financial-card-month-over-month.positive { color: #2E7D32; }
+.financial-card-month-over-month.negative { color: #ce352a; }
+.financial-card-month-over-month.neutral { color: #757575; }
+
+/* Financial Card Background Colors */
+.financial-card-background-total-project-cost {
+  background-color: #ECF3FF;
+}
+.financial-card-ellipse-total-project-cost {
+  background-color: #CBCBFE;
+}
+
+.financial-card-background-total-material-cost {
+  background-color: #E0F7FA;
+}
+.financial-card-ellipse-total-material-cost {
+  background-color: #C1EFFB;
+}
+
+.financial-card-background-total-labor-cost {
+  background-color: #FEE5F0;
+}
+.financial-card-ellipse-total-labor-cost {
+  background-color: #FECFF3;
+}
+
+.financial-card-background-total-equipment-cost {
+  background-color: #E6F5E9;
+}
+.financial-card-ellipse-total-equipment-cost {
+  background-color: #BAF0B6;
+}
+
+/* ---------------- Tooltip Styles ---------------- */
+.financial-card-tooltip {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.85);
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  min-width: 200px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.2s ease-in-out;
+  margin-top: 10px;
+  white-space: nowrap;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.financial-card-tooltip-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+  font-size: 14px;
+}
+
+.financial-card-tooltip-item:last-child {
+  margin-bottom: 0;
+}
+
+.tooltip-key {
+  font-weight: 600;
+  margin-right: 10px;
+  opacity: 0.8;
+}
+
+.tooltip-value {
+  text-align: right;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 10px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+/* ---------------- Dark Mode Styles ---------------- */
 .dark-mode {
   --bg-color: #1b2a41;
   --text-color: #ffffff;
@@ -222,6 +391,24 @@
   --section-title-hover: #3a506b;
   --button-bg: #e8a71c;
   --button-hover: #f5b13a;
+}
+
+.dark-mode .weekly-project-summary-card {
+  background: var(--card-bg);
+  box-shadow: 0 2px 5px rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .financial-card {
+  background: #2B3E59;
+  border-color: #3A506B;
+}
+
+.dark-mode .financial-card-title {
+  color: #000000;
+}
+
+.dark-mode .financial-card-value {
+  color: #000000;
 }
 
 .dark-mode .weekly-project-summary-dashboard-category-title {
@@ -243,18 +430,37 @@
   color: var(--text-color);
 }
 
-.weekly-summary-share-btn {
-  background-color: var(--button-bg) !important;
+.dark-mode .financial-card-tooltip {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+  backdrop-filter: blur(10px);
 }
 
-.weekly-summary-share-btn:hover {
-  background-color: var(--button-hover) !important;
+/* ---------------- Responsive Design ---------------- */
+/* Large screens - Tooltip adjustments */
+@media (max-width: 1920px) {
+  .financial-card-tooltip {
+    position: fixed;
+    top: auto;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 80%;
+    white-space: normal;
+    z-index: 9999;
+  }
+  
+  .financial-card:hover {
+    z-index: 999;
+  }
 }
 
-/* ---------------- RESPONSIVE DESIGN ---------------- */
-
-/* Medium Screens - Wrap Items */
+/* Medium Screens */
 @media (max-width: 1024px) {
+  .financial-cards-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
   .weekly-summary-header-container {
     flex-direction: column;
     align-items: center;
@@ -269,10 +475,19 @@
   .weekly-project-summary-dashboard-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+  
+  .financial-card-tooltip {
+    bottom: 30px;
+    max-width: 85%;
+  }
 }
 
-/* Small Screens - Make Dropdowns Vertical */
+/* Small Screens */
 @media (max-width: 768px) {
+  .financial-cards-container {
+    grid-template-columns: 1fr;
+  }
+  
   .weekly-summary-header-container {
     flex-direction: column;
     align-items: center;
@@ -284,17 +499,22 @@
     width: 100%;
   }
 
-  /* Make Dropdowns Full Width */
   .weekly-summary-header-controls select {
     width: 100%;
   }
 
-  /* Make Button Full Width */
   .weekly-summary-share-btn {
     width: 100%;
   }
 
   .weekly-project-summary-dashboard-grid {
     grid-template-columns: 1fr;
+  }
+  
+  .financial-card-tooltip {
+    bottom: 20px;
+    max-width: 90%;
+    font-size: 13px;
+    padding: 8px 12px;
   }
 }

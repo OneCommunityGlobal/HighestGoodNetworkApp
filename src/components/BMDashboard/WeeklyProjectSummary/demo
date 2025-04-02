@@ -1,14 +1,15 @@
+/* eslint-disable no-shadow */
 import './WeeklyProjectSummary.css';
 import { useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import { useState } from 'react';
 import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
 
-function FinancialCard({ title, value = '-', monthOverMonth = '-', additionalInfo = {} }) {
+function FinancialCard({ title, value, monthOverMonth, additionalInfo = {} }) {
   const [showTooltip, setShowTooltip] = useState(false);
 
+  // Determine color and background based on percentage change
   const getColorScheme = percentage => {
-    if (percentage === '-') return 'neutral';
     if (percentage > 0) return 'positive';
     if (percentage < 0) return 'negative';
     return 'neutral';
@@ -18,25 +19,57 @@ function FinancialCard({ title, value = '-', monthOverMonth = '-', additionalInf
 
   const titleClass = title.replace(/\s+/g, '-').toLowerCase();
 
+
+  // Updated background and border colors to match the image
+  const backgroundColors = {
+    'Total Project Cost': {
+      card: '#ECF3FF',
+      ellipse: '#CBCBFE',
+    },
+    'Total Material Cost': {
+      card: '#E0F7FA',
+      ellipse: '#C1EFFB', // Darker teal variant
+    },
+    'Total Labor Cost': {
+      card: '#FEE5F0',
+      ellipse: '#FECFF3', // Darker pink variant
+    },
+    'Total Equipment Cost': {
+      card: '#E6F5E9',
+      ellipse: '#BAF0B6', // Darker green variant
+    },
+  };
+
   return (
     <div
-      className={`financial-card ${colorScheme} custom-box-shadow financial-card-background-${titleClass}`}
+      className={`financial-card ${colorScheme}   financial-card-background-${titleClass}`}
+      style={{
+        boxShadow: '0px 6px 15px rgba(0, 0, 0, 0.08)',
+        position: 'relative',
+        zIndex: 1,
+        borderRadius: '25px',
+        cursor: 'default',
+      }}
       onMouseEnter={() => setShowTooltip(true)}
       onMouseLeave={() => setShowTooltip(false)}
     >
       <div className="financial-card-title">{title}</div>
-      <div className={`financial-card-ellipse financial-card-ellipse-${titleClass}`} />
-      <div className="financial-card-value">{value === '-' ? '-' : value.toLocaleString()}</div>
+      <div
+        className="financial-card-ellipse"
+        style={{
+          background: backgroundColors[title].ellipse,
+        }}
+      />
+      <div className="financial-card-value">{value.toLocaleString()}</div>
       <div className={`financial-card-month-over-month ${colorScheme}`}>
-        {monthOverMonth === '-'
-          ? '-'
-          : `${monthOverMonth > 0 ? '+' : ''}${monthOverMonth}% month over month`}
+        {monthOverMonth > 0 ? '+' : ''}
+        {monthOverMonth}% month over month
       </div>
 
       {/* Tooltip for Additional Information */}
       {showTooltip && Object.keys(additionalInfo).length > 0 && (
         <div className="financial-card-tooltip">
-          {Object.entries(additionalInfo).map(([key]) => (
+          {Object.entries(additionalInfo).map(([key, value]) => (
             <div key={key} className="financial-card-tooltip-item">
               <span className="tooltip-key">{key}:</span>
               <span className="tooltip-value">{value}</span>
@@ -59,56 +92,50 @@ function WeeklyProjectSummary() {
     }));
   };
 
-  const createCards = (count, cardClassName = 'normal-card') => {
-    return Array.from({ length: count }).map(() => {
-      const uniqueId = uuidv4();
-      return (
-        <div key={uniqueId} className={`weekly-project-summary-card ${cardClassName}`}>
-          📊 Card
-        </div>
-      );
-    });
-  };
-
+  // Simulated backend data - would typically come from an API or Redux store
   const financialData = [
     {
       id: uuidv4(),
       title: 'Total Project Cost',
-      value: '-',
-      monthOverMonth: '-',
+      value: 572000,
+      monthOverMonth: 3,
+      totalUsers: 2854,
       additionalInfo: {
-        'Budget Utilization': '-',
-        Forecast: '-',
+        'Budget Utilization': '72%',
+        Forecast: 'On Track',
       },
     },
     {
       id: uuidv4(),
       title: 'Total Material Cost',
-      value: '-',
-      monthOverMonth: '-',
+      value: 230000,
+      monthOverMonth: 14,
+      totalUsers: 1205,
       additionalInfo: {
-        'Inventory Cost': '-',
-        Suppliers: '-',
+        'Inventory Cost': '$45,000',
+        Suppliers: '12',
       },
     },
     {
       id: uuidv4(),
       title: 'Total Labor Cost',
-      value: '-',
-      monthOverMonth: '-',
+      value: 187000,
+      monthOverMonth: -18,
+      totalUsers: 876,
       additionalInfo: {
-        'Overtime Hours': '-',
-        'Team Efficiency': '-',
+        'Overtime Hours': '124',
+        'Team Efficiency': 'Needs Review',
       },
     },
     {
       id: uuidv4(),
       title: 'Total Equipment Cost',
-      value: '-',
-      monthOverMonth: '-',
+      value: 155000,
+      monthOverMonth: 16,
+      totalUsers: 543,
       additionalInfo: {
-        'Equipment Utilization': '-',
-        'Maintenance Cost': '-',
+        'Equipment Utilization': '85%',
+        'Maintenance Cost': '$12,500',
       },
     },
   ];
@@ -118,13 +145,31 @@ function WeeklyProjectSummary() {
       title: 'Project Status',
       key: 'Project Status',
       className: 'full',
-      content: <div className="project-status-grid">{createCards(12, 'small-card')}</div>,
+      content: (
+        <div className="project-status-grid">
+          {Array.from({ length: 12 }).map(() => {
+            const uniqueId = uuidv4();
+            return (
+              <div key={uniqueId} className="weekly-project-summary-card small-card">
+                📊 Card
+              </div>
+            );
+          })}
+        </div>
+      ),
     },
     {
       title: 'Material Consumption',
       key: 'Material Consumption',
       className: 'large',
-      content: createCards(3),
+      content: [1, 2, 3].map(() => {
+        const uniqueId = uuidv4();
+        return (
+          <div key={uniqueId} className="weekly-project-summary-card normal-card">
+            📊 Card
+          </div>
+        );
+      }),
     },
     {
       title: 'Issue Tracking',
@@ -136,13 +181,27 @@ function WeeklyProjectSummary() {
       title: 'Tools and Equipment Tracking',
       key: 'Tools and Equipment Tracking',
       className: 'half',
-      content: createCards(2),
+      content: [1, 2].map(() => {
+        const uniqueId = uuidv4();
+        return (
+          <div key={uniqueId} className="weekly-project-summary-card normal-card">
+            📊 Card
+          </div>
+        );
+      }),
     },
     {
       title: 'Lessons Learned',
       key: 'Lessons Learned',
       className: 'half',
-      content: createCards(2),
+      content: [1, 2].map(() => {
+        const uniqueId = uuidv4();
+        return (
+          <div key={uniqueId} className="weekly-project-summary-card normal-card">
+            📊 Card
+          </div>
+        );
+      }),
     },
     {
       title: 'Financials',
@@ -151,13 +210,8 @@ function WeeklyProjectSummary() {
       content: (
         <div className="financial-cards-container">
           {financialData.map(card => (
-            <FinancialCard
-              key={card.id}
-              title={card.title}
-              value={card.value}
-              monthOverMonth={card.monthOverMonth}
-              additionalInfo={card.additionalInfo}
-            />
+            // eslint-disable-next-line react/jsx-props-no-spreading
+            <FinancialCard key={card.id} {...card} />
           ))}
           <div className="weekly-project-summary-card financial-big">
             📊 Comprehensive Financial Overview
@@ -186,7 +240,14 @@ function WeeklyProjectSummary() {
       title: 'Labor and Time Tracking',
       key: 'Labor and Time Tracking',
       className: 'half',
-      content: createCards(2),
+      content: [1, 2].map(() => {
+        const uniqueId = uuidv4();
+        return (
+          <div key={uniqueId} className="weekly-project-summary-card normal-card">
+            📊 Card
+          </div>
+        );
+      }),
     },
   ];
 
@@ -218,3 +279,5 @@ function WeeklyProjectSummary() {
 }
 
 export default WeeklyProjectSummary;
+
+
