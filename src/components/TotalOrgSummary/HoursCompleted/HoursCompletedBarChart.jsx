@@ -31,13 +31,9 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
   }, []);
 
   const { taskHours, projectHours, lastTaskHours, lastProjectHours } = data;
-  // const taskPercentage = parseFloat(taskHours) / (parseFloat(taskHours) + parseFloat(projectHours));
-  // const taskChangePercentage = parseFloat(taskHours - lastTaskHours) / parseFloat(lastTaskHours);
-  // const projectChangePercentage =
-  //   parseFloat(projectHours - lastProjectHours) / parseFloat(lastProjectHours);
   const taskPercentage = taskHours / (taskHours + projectHours);
-  const taskChangePercentage = (taskHours - lastTaskHours) / lastTaskHours;
-  const projectChangePercentage = (projectHours - lastProjectHours) / lastProjectHours;
+  const taskChangePercentage = lastTaskHours === 0 ? 0 : (taskHours - lastTaskHours) / lastTaskHours;
+  const projectChangePercentage = lastProjectHours === 0 ? 0 : (projectHours - lastProjectHours) / lastProjectHours;
   const stats = [
     { name: 'Task', amount: taskHours, percentage: taskPercentage, change: taskChangePercentage },
     {
@@ -66,6 +62,9 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
   }));
   const renderCustomizedLabel = props => {
     const { x, y, width, value, index } = props;
+    if (typeof y !== 'number' || isNaN(y)) {
+      return null;
+    }
     const { percentage } = chartData[index];
     const { change } = chartData[index];
     const perFontSize = cardSize.height === '548px' ? '0.6em' : '0.8em';

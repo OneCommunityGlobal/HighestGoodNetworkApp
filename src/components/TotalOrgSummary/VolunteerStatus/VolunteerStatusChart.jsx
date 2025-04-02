@@ -17,7 +17,7 @@ function VolunteerStatusChart({ isLoading, volunteerNumberStats, comparisonType 
 
     return {
       totalVolunteers: totalVolunteers.count,
-      percentageChange: totalVolunteers.comparisonPercentage || 0,
+      percentageChange: Number(totalVolunteers.comparisonPercentage) || 0,
       data: [
         { label: 'Active', value: activeVolunteers.count },
         { label: 'New', value: newVolunteers.count },
