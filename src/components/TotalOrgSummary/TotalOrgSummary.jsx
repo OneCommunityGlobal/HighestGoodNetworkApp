@@ -69,6 +69,36 @@ function calculateToOverDate() {
   return currentDate.toISOString().split('T')[0];
 }
 
+function calculateComparisonDates(comparisonType, fromDate, toDate) {
+  const start = new Date(fromDate);
+  const end = new Date(toDate);
+  const diffTime = Math.abs(end - start);
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+  switch (comparisonType) {
+    case 'Week Over Week':
+      return {
+        comparisonStartDate: new Date(start.setDate(start.getDate() - diffDays)).toISOString().split('T')[0],
+        comparisonEndDate: new Date(end.setDate(end.getDate() - diffDays)).toISOString().split('T')[0]
+      };
+    case 'Month Over Month':
+      return {
+        comparisonStartDate: new Date(start.setMonth(start.getMonth() - 1)).toISOString().split('T')[0],
+        comparisonEndDate: new Date(end.setMonth(end.getMonth() - 1)).toISOString().split('T')[0]
+      };
+    case 'Year Over Year':
+      return {
+        comparisonStartDate: new Date(start.setFullYear(start.getFullYear() - 1)).toISOString().split('T')[0],
+        comparisonEndDate: new Date(end.setFullYear(end.getFullYear() - 1)).toISOString().split('T')[0]
+      };
+    default:
+      return {
+        comparisonStartDate: null,
+        comparisonEndDate: null
+      };
+  }
+}
+
 const fromDate = calculateFromDate();
 const toDate = calculateToDate();
 const fromOverDate = calculateFromOverDate();
@@ -114,8 +144,6 @@ function TotalOrgSummary(props) {
   const [taskProjectHours, setTaskProjectHours] = useState([]);
   const [isVolunteerFetchingError, setIsVolunteerFetchingError] = useState(false);
   const [volunteerStats, setVolunteerStats] = useState(null);
-  const comparisonStartDate = '2025-01-16';
-  const comparisonEndDate = '2025-01-26';
   const [isLoading, setIsLoading] = useState(true);
   const [dateRangeDropdownOpen, setDateRangeDropdownOpen] = useState(false);
   const [comparisonDropdownOpen, setComparisonDropdownOpen] = useState(false);
@@ -124,6 +152,8 @@ function TotalOrgSummary(props) {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const [currentFromDate, setCurrentFromDate] = useState(fromDate);
+  const [currentToDate, setCurrentToDate] = useState(toDate);
 
   const dispatch = useDispatch();
 
@@ -144,10 +174,10 @@ function TotalOrgSummary(props) {
   }, [allUserProfiles]);
 
   useEffect(() => {
-    if (Array.isArray(usersId) && usersId.length > 0 && fromDate && toDate) {
-      dispatch(getAllUsersTimeEntries(usersId, fromDate, toDate));
+    if (Array.isArray(usersId) && usersId.length > 0 && currentFromDate && currentToDate) {
+      dispatch(getAllUsersTimeEntries(usersId, currentFromDate, currentToDate));
     }
-  }, [usersId, fromDate, toDate, dispatch]);
+  }, [usersId, currentFromDate, currentToDate, dispatch]);
 
   useEffect(() => {
     if (
@@ -177,17 +207,13 @@ function TotalOrgSummary(props) {
         });
     }
   }, [allUsersTimeEntries, usersId, fromOverDate, toOverDate]);
+
   useEffect(() => {
     async function fetchData() {
-      // const { taskHours, projectHours } = await props.getTaskAndProjectStats(fromDate, toDate);
-      // const {
-      //   taskHours: lastTaskHours,
-      //   projectHours: lastProjectHours,
-      // } = await props.getTaskAndProjectStats(fromOverDate, toOverDate);
       const {
         taskHours: { count: taskHours },
         projectHours: { count: projectHours },
-      } = await props.getTaskAndProjectStats(fromDate, toDate);
+      } = await props.getTaskAndProjectStats(currentFromDate, currentToDate);
       const {
         taskHours: { count: lastTaskHours },
         projectHours: { count: lastProjectHours },
@@ -203,16 +229,22 @@ function TotalOrgSummary(props) {
       }
     }
     fetchData();
-  }, [fromDate, toDate, fromOverDate, toOverDate]);
+  }, [currentFromDate, currentToDate, fromOverDate, toOverDate]);
 
   useEffect(() => {
     const fetchVolunteerStats = async () => {
       try {
+        const { comparisonStartDate, comparisonEndDate } = calculateComparisonDates(
+          selectedComparison,
+          currentFromDate,
+          currentToDate
+        );
+        
         const volunteerStatsResponse = await props.getTotalOrgSummary(
-          fromDate,
-          toDate,
+          currentFromDate,
+          currentToDate,
           comparisonStartDate,
-          comparisonEndDate,
+          comparisonEndDate
         );
         setVolunteerStats(volunteerStatsResponse.data);
         await props.hasPermission('');
@@ -223,7 +255,7 @@ function TotalOrgSummary(props) {
     };
 
     fetchVolunteerStats();
-  }, [fromDate, toDate]);
+  }, [currentFromDate, currentToDate, selectedComparison]);
 
   const handleDateRangeSelect = option => {
     if (option === 'Select Date Range') {
@@ -231,6 +263,19 @@ function TotalOrgSummary(props) {
     } else {
       setSelectedDateRange(option);
       setShowDatePicker(false);
+      setSelectedComparison('No Comparison');
+      
+      if (option === 'Current Week') {
+        setCurrentFromDate(fromDate);
+        setCurrentToDate(toDate);
+      } else if (option === 'Previous Week') {
+        const prevWeekStart = new Date(fromDate);
+        const prevWeekEnd = new Date(toDate);
+        prevWeekStart.setDate(prevWeekStart.getDate() - 7);
+        prevWeekEnd.setDate(prevWeekEnd.getDate() - 7);
+        setCurrentFromDate(prevWeekStart.toISOString().split('T')[0]);
+        setCurrentToDate(prevWeekEnd.toISOString().split('T')[0]);
+      }
     }
   };
 
@@ -238,7 +283,10 @@ function TotalOrgSummary(props) {
     if (startDate && endDate) {
       setSelectedDateRange(`${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`);
       setShowDatePicker(false);
-      // Here you can add logic to update the data based on selected date range
+      setSelectedComparison('No Comparison');
+      
+      setCurrentFromDate(startDate.toISOString().split('T')[0]);
+      setCurrentToDate(endDate.toISOString().split('T')[0]);
     }
   };
 
@@ -522,7 +570,7 @@ function TotalOrgSummary(props) {
               <TeamStats
                 isLoading={isLoading}
                 usersInTeamStats={volunteerStats?.usersInTeamStats}
-                endDate={toDate}
+                endDate={currentToDate}
               />
             </div>
           </Col>
