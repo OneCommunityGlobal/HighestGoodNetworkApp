@@ -415,6 +415,7 @@ function TotalOrgSummary(props) {
                 isLoading={isLoading}
                 volunteerNumberStats={volunteerStats?.volunteerNumberStats}
                 totalHoursWorked={volunteerStats?.totalHoursWorked}
+                comparisonType={selectedComparison}
               />
             </div>
           </Col>
@@ -431,6 +432,7 @@ function TotalOrgSummary(props) {
                 totalBadgesAwarded={volunteerStats?.totalBadgesAwarded}
                 tasksStats={volunteerStats?.tasksStats}
                 totalActiveTeams={volunteerStats?.totalActiveTeams}
+                comparisonType={selectedComparison}
               />
             </div>
           </Col>
@@ -454,6 +456,7 @@ function TotalOrgSummary(props) {
               <VolunteerStatusChart
                 isLoading={isLoading}
                 volunteerNumberStats={volunteerStats?.volunteerNumberStats}
+                comparisonType={selectedComparison}
               />
             </div>
           </Col>
@@ -475,6 +478,7 @@ function TotalOrgSummary(props) {
                   usersTimeEntries={usersTimeEntries}
                   usersOverTimeEntries={usersOverTimeEntries}
                   hoursData={volunteerStats?.volunteerHoursStats}
+                  comparisonType={selectedComparison}
                 />
                 <div className="d-flex flex-column align-items-center justify-content-center">
                   <HoursWorkList darkMode={darkMode} usersTimeEntries={usersTimeEntries} />
@@ -504,6 +508,7 @@ function TotalOrgSummary(props) {
                   isLoading={isLoading}
                   data={taskProjectHours}
                   darkMode={darkMode}
+                  comparisonType={selectedComparison}
                 />
               </div>
             </div>
@@ -529,6 +534,7 @@ function TotalOrgSummary(props) {
                 isLoading={isLoading}
                 data={volunteerStats?.anniversaryStats}
                 darkMode={darkMode}
+                comparisonType={selectedComparison}
               />
             </div>
           </Col>
@@ -544,6 +550,7 @@ function TotalOrgSummary(props) {
               <WorkDistributionBarChart
                 isLoading={isLoading}
                 workDistributionStats={volunteerOverview?.workDistributionStats}
+                comparisonType={selectedComparison}
               />
             </div>
           </Col>
@@ -555,6 +562,7 @@ function TotalOrgSummary(props) {
               <RoleDistributionPieChart
                 isLoading={isLoading}
                 roleDistributionStats={volunteerOverview?.roleDistributionStats}
+                comparisonType={selectedComparison}
               />
             </div>
           </Col>
@@ -571,6 +579,7 @@ function TotalOrgSummary(props) {
                 isLoading={isLoading}
                 usersInTeamStats={volunteerStats?.usersInTeamStats}
                 endDate={currentToDate}
+                comparisonType={selectedComparison}
               />
             </div>
           </Col>
@@ -582,6 +591,7 @@ function TotalOrgSummary(props) {
               <BlueSquareStats
                 isLoading={isLoading}
                 blueSquareStats={volunteerStats?.blueSquareStats}
+                comparisonType={selectedComparison}
               />
             </div>
           </Col>
