@@ -133,7 +133,7 @@ export default function ToolStatusDonutChart() {
           </text>
 
           <Tooltip
-            formatter={(value, name) => `${name}: ${((value / total) * 100).toFixed(1)}%`}
+            formatter={(value, name) => `${((value / total) * 100).toFixed(1)}%`}
             contentStyle={{ fontSize: '14px' }}
           />
         </PieChart>
