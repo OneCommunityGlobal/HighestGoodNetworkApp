@@ -73,6 +73,8 @@ import ActivityList from './components/CommunityPortal/Activities/ActivityList';
 import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
 import EPDashboard from './components/EductionPortal';
+import HelpPage from './components/LandingPage/HelpPage';
+
 
 
 
@@ -131,8 +133,6 @@ const PermissionsManagement = lazy(() =>
 );
 const UserRoleTab = lazy(() => import('./components/PermissionsManagement/UserRoleTab'));
 const Teams = lazy(() => import('./components/Teams/Teams'));
-import HelpPage from './components/LandingPage/HelpPage.jsx';
-
 
 export default (
   <Switch>

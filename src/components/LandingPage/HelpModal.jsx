@@ -35,7 +35,7 @@ function HelpModal({ show, onHide }) {
     'MongoDB',
     'Mock MongoDB',
     'Documentation',
-    'Markdown & Graphs'
+    'Markdown & Graphs',
   ];
 
   const handleSelect = option => {
@@ -63,7 +63,7 @@ function HelpModal({ show, onHide }) {
       <Modal.Body>
         <div className="select-container">
           <div 
-            className="select-button" 
+            className="select-button"
             onClick={() => setIsOpen(!isOpen)}
             role="button"
             tabIndex={0}
