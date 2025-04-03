@@ -26,7 +26,14 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, outerRadius, percent, width }
   const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
   return (
-    <text x={x} y={y} fill="var(--donut-text-color)" textAnchor="middle" dominantBaseline="central" fontSize={12}>
+    <text
+      x={x}
+      y={y}
+      fill="var(--donut-text-color)"
+      textAnchor="middle"
+      dominantBaseline="central"
+      fontSize="12"
+    >
       {(percent * 100).toFixed(1)}%
     </text>
   );
@@ -138,8 +145,8 @@ export default function ToolStatusDonutChart() {
             key={entry.name}
             className="tool-donut-legend-item"
             style={{
-              backgroundColor: COLORS[entry.name]
-            }} 
+              backgroundColor: COLORS[entry.name],
+            }}
           >
             {entry.name}
           </div>
