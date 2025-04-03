@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Container,
   Row,
@@ -30,7 +30,7 @@ import httpService from '../../services/httpService';
 
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 
-function SummaryBar(props) {
+const SummaryBar = React.forwardRef((props, ref) => {
   // from parent
   const { displayUserId, summaryBarData } = props;
   // from store
@@ -406,6 +406,15 @@ function SummaryBar(props) {
     }
   }, [displayUserProfile, summaryBarData]);
 
+  useEffect(() => {
+    // Check if we should open the suggestions modal
+    const shouldOpenSuggestions = localStorage.getItem('openSuggestionsModal');
+    if (shouldOpenSuggestions === 'true') {
+      localStorage.removeItem('openSuggestionsModal'); // Clear the flag
+      openSuggestionModal(); // Open the suggestions modal
+    }
+  }, []);
+
   const getContainerClass = () => {
     if (isAuthUser || canEditData()) {
       return darkMode
@@ -526,6 +535,10 @@ function SummaryBar(props) {
   const fontColor = darkMode ? 'text-light' : '';
   const headerBg = darkMode ? 'bg-space-cadet' : '';
   const bodyBg = darkMode ? 'bg-yinmn-blue' : '';
+
+  React.useImperativeHandle(ref, () => ({
+    openSuggestionModal,
+  }));
 
   return displayUserProfile !== undefined && summaryBarData !== undefined ? (
     <Container fluid className={`px-lg-0 rounded ${getContainerClass()}`} style={{ width: '97%' }}>
@@ -1033,7 +1046,7 @@ function SummaryBar(props) {
   ) : (
     <div>Loading</div>
   );
-}
+});
 
 const mapStateToProps = state => ({
   authUser: state.auth.user,
@@ -1042,4 +1055,4 @@ const mapStateToProps = state => ({
   darkMode: state.theme.darkMode,
 });
 
-export default connect(mapStateToProps, { hasPermission })(SummaryBar);
+export default connect(mapStateToProps, { hasPermission })(React.memo(SummaryBar));

@@ -76,7 +76,7 @@ import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
 import EPDashboard from './components/EductionPortal';
 
-
+import HelpPage from './components/LandingPage/HelpPage';
 
 
 // eslint-disable-next-line import/order, import/no-unresolved
@@ -153,6 +153,7 @@ export default (
       <ToastContainer />
       <Switch>
         <ProtectedRoute path="/dashboard" exact component={Dashboard} />
+        <ProtectedRoute path="/hgnhelp" component={HelpPage} />
         <ProtectedRoute path="/dashboard/:userId" exact component={Dashboard} />
         <ProtectedRoute path="/project/members/:projectId" fallback component={Members} />
         <ProtectedRoute path="/timelog/" exact render={() => <Timelog userId={null} />} />
