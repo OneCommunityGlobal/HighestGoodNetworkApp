@@ -3,12 +3,40 @@ import { useState } from 'react';
 
 function TSAFormPage5() {
   const history = useHistory();
+
+  const [errors, setErrors] = useState({
+    agreementone: false,
+    agreementtwo: false,
+    agreementthree: false,
+    agreementfour: false,
+  });
+
+  const clearError = field => {
+    setErrors(prev => ({ ...prev, [field]: false }));
+  };
   const handleNextClick = () => {
     const requiredGroups = ['agreementone', 'agreementtwo', 'agreementthree', 'agreementfour'];
 
-    const isValid = requiredGroups.every(group =>
-      document.querySelector(`input[name="${group}"]:checked`),
-    );
+    const newErrors = {};
+    let firstInvalid = null;
+
+    requiredGroups.forEach(group => {
+      const isChecked = document.querySelector(`input[name="${group}"]:checked`);
+      newErrors[group] = !isChecked;
+      if (!isChecked && !firstInvalid) {
+        firstInvalid = group;
+      }
+    });
+
+    setErrors(newErrors);
+
+    if (firstInvalid) {
+      const el = document.querySelector(`[name="${firstInvalid}"]`);
+      if (el?.scrollIntoView) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      return;
+    }
 
     history.push('/tsaformpage6');
   };
@@ -145,6 +173,7 @@ function TSAFormPage5() {
           boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
           padding: '30px',
           fontSize: '16px',
+          border: errors.agreementone ? '2px solid red' : 'none',
         }}
       >
         <label
@@ -169,6 +198,7 @@ function TSAFormPage5() {
             id="agreementone"
             name="agreementone"
             value="agree"
+            onChange={() => clearError('agreementone')}
             required
             style={{
               marginRight: '10px',
@@ -179,6 +209,19 @@ function TSAFormPage5() {
           />
           I agree
         </label>
+        {errors.agreementone && (
+          <div
+            style={{
+              color: 'red',
+              fontSize: '14px',
+              marginTop: '10px',
+              textAlign: 'left',
+              width: '100%',
+            }}
+          >
+            Please agree to move forward
+          </div>
+        )}
       </div>
 
       {/* Task */}
@@ -218,6 +261,7 @@ function TSAFormPage5() {
           boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
           padding: '30px',
           fontSize: '16px',
+          border: errors.agreementtwo ? '2px solid red' : 'none',
         }}
       >
         <label
@@ -241,6 +285,7 @@ function TSAFormPage5() {
             type="radio"
             id="agreementtwo"
             name="agreementtwo"
+            onChange={() => clearError('agreementtwo')}
             value="agree"
             required
             style={{
@@ -252,6 +297,19 @@ function TSAFormPage5() {
           />
           I agree
         </label>
+        {errors.agreementtwo && (
+          <div
+            style={{
+              color: 'red',
+              fontSize: '14px',
+              marginTop: '10px',
+              textAlign: 'left',
+              width: '100%',
+            }}
+          >
+            Please agree to move forward
+          </div>
+        )}
       </div>
 
       {/* Period of Engagement */}
@@ -291,6 +349,7 @@ function TSAFormPage5() {
           boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
           padding: '30px',
           fontSize: '16px',
+          border: errors.agreementthree ? '2px solid red' : 'none',
         }}
       >
         <label
@@ -314,6 +373,7 @@ function TSAFormPage5() {
             type="radio"
             id="agreementthree"
             name="agreementthree"
+            onChange={() => clearError('agreementthree')}
             value="agree"
             required
             style={{
@@ -325,6 +385,19 @@ function TSAFormPage5() {
           />
           I agree
         </label>
+        {errors.agreementthree && (
+          <div
+            style={{
+              color: 'red',
+              fontSize: '14px',
+              marginTop: '10px',
+              textAlign: 'left',
+              width: '100%',
+            }}
+          >
+            Please agree to move forward
+          </div>
+        )}
       </div>
 
       {/* Termination */}
@@ -374,6 +447,7 @@ function TSAFormPage5() {
           boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
           padding: '30px',
           fontSize: '16px',
+          border: errors.agreementfour ? '2px solid red' : 'none',
         }}
       >
         <label
@@ -397,6 +471,7 @@ function TSAFormPage5() {
             type="radio"
             id="agreementfour"
             name="agreementfour"
+            onChange={() => clearError('agreementfour')}
             value="agree"
             required
             style={{
@@ -408,6 +483,19 @@ function TSAFormPage5() {
           />
           I agree
         </label>
+        {errors.agreementfour && (
+          <div
+            style={{
+              color: 'red',
+              fontSize: '14px',
+              marginTop: '10px',
+              textAlign: 'left',
+              width: '100%',
+            }}
+          >
+            Please agree to move forward
+          </div>
+        )}
       </div>
 
       {/* Navigation Buttons */}

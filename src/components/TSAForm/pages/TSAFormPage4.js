@@ -1,7 +1,20 @@
 import { useHistory } from 'react-router-dom';
+import { useState } from 'react';
 
 function TSAFormPage4() {
   const history = useHistory();
+  const [errors, setErrors] = useState({
+    interested: false,
+    availability: false,
+    BuildingInfrastructure: false,
+    FoodInfrastructure: false,
+    EnergyInfrastructure: false,
+    StewardshipInfrastructure: false,
+  });
+
+  const clearError = field => {
+    setErrors(prev => ({ ...prev, [field]: false }));
+  };
   const handleNextClick = () => {
     const requiredGroups = [
       'EstablishingRequirements',
@@ -11,6 +24,26 @@ function TSAFormPage4() {
       'FinalDesignReview',
       'Detaileddrawings',
     ];
+    const newErrors = {};
+    let firstInvalid = null;
+
+    requiredGroups.forEach(group => {
+      const isChecked = document.querySelector(`input[name="${group}"]:checked`);
+      newErrors[group] = !isChecked;
+      if (!isChecked && !firstInvalid) {
+        firstInvalid = group;
+      }
+    });
+
+    setErrors(newErrors);
+
+    if (firstInvalid) {
+      const el = document.querySelector(`[name="${firstInvalid}"]`);
+      if (el?.scrollIntoView) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      return;
+    }
 
     history.push('/tsaformpage5');
   };
@@ -108,6 +141,7 @@ function TSAFormPage4() {
           boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
           padding: '30px',
           fontSize: '16px',
+          border: errors.EstablishingRequirements ? '2px solid red' : 'none',
         }}
       >
         <label
@@ -160,6 +194,7 @@ function TSAFormPage4() {
                 type="radio"
                 name="EstablishingRequirements"
                 value={i + 1}
+                onChange={() => clearError('EstablishingRequirements')}
                 required
                 style={{
                   margin: '0 5px',
@@ -172,7 +207,11 @@ function TSAFormPage4() {
             </label>
           ))}
         </div>
+        {errors.EstablishingRequirements && (
+          <div style={{ color: 'red', fontSize: '14px' }}>This field is required</div>
+        )}
       </div>
+
       {/* Conceptual Designs */}
       <div
         style={{
@@ -183,6 +222,7 @@ function TSAFormPage4() {
           boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
           padding: '30px',
           fontSize: '16px',
+          border: errors.ConceptualDesigns ? '2px solid red' : 'none',
         }}
       >
         <label
@@ -235,6 +275,7 @@ function TSAFormPage4() {
                 type="radio"
                 name="ConceptualDesigns"
                 value={i + 1}
+                onChange={() => clearError('ConceptualDesigns')}
                 required
                 style={{
                   margin: '0 5px',
@@ -247,6 +288,9 @@ function TSAFormPage4() {
             </label>
           ))}
         </div>
+        {errors.ConceptualDesigns && (
+          <div style={{ color: 'red', fontSize: '14px' }}>This field is required</div>
+        )}
       </div>
 
       {/* Preliminary Design Review */}
@@ -259,6 +303,7 @@ function TSAFormPage4() {
           boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
           padding: '30px',
           fontSize: '16px',
+          border: errors.PreliminaryDesignReview ? '2px solid red' : 'none',
         }}
       >
         <label
@@ -312,6 +357,7 @@ function TSAFormPage4() {
                 type="radio"
                 name="PreliminaryDesignReview"
                 value={i + 1}
+                onChange={() => clearError('PreliminaryDesignReview')}
                 required
                 style={{
                   margin: '0 5px',
@@ -324,6 +370,9 @@ function TSAFormPage4() {
             </label>
           ))}
         </div>
+        {errors.PreliminaryDesignReview && (
+          <div style={{ color: 'red', fontSize: '14px' }}>This field is required</div>
+        )}
       </div>
 
       {/* Design Verification/Analysis */}
@@ -336,6 +385,7 @@ function TSAFormPage4() {
           boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
           padding: '30px',
           fontSize: '16px',
+          border: errors.DesignVerification ? '2px solid red' : 'none',
         }}
       >
         <label
@@ -391,6 +441,7 @@ function TSAFormPage4() {
                 type="radio"
                 name="DesignVerification"
                 value={i + 1}
+                onChange={() => clearError('DesignVerification')}
                 required
                 style={{
                   margin: '0 5px',
@@ -403,6 +454,9 @@ function TSAFormPage4() {
             </label>
           ))}
         </div>
+        {errors.DesignVerification && (
+          <div style={{ color: 'red', fontSize: '14px' }}>This field is required</div>
+        )}
       </div>
 
       {/* Final Design Review */}
@@ -415,6 +469,7 @@ function TSAFormPage4() {
           boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
           padding: '30px',
           fontSize: '16px',
+          border: errors.FinalDesignReview ? '2px solid red' : 'none',
         }}
       >
         <label
@@ -469,6 +524,7 @@ function TSAFormPage4() {
                 type="radio"
                 name="FinalDesignReview"
                 value={i + 1}
+                onChange={() => clearError('FinalDesignReview')}
                 required
                 style={{
                   margin: '0 5px',
@@ -481,6 +537,9 @@ function TSAFormPage4() {
             </label>
           ))}
         </div>
+        {errors.FinalDesignReview && (
+          <div style={{ color: 'red', fontSize: '14px' }}>This field is required</div>
+        )}
       </div>
 
       {/* Detailed drawings and/or statement of work (SOW) */}
@@ -493,6 +552,7 @@ function TSAFormPage4() {
           boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
           padding: '30px',
           fontSize: '16px',
+          border: errors.Detaileddrawings ? '2px solid red' : 'none',
         }}
       >
         <label
@@ -548,6 +608,7 @@ function TSAFormPage4() {
                 type="radio"
                 name="Detaileddrawings"
                 value={i + 1}
+                onChange={() => clearError('Detaileddrawings')}
                 required
                 style={{
                   margin: '0 5px',
@@ -560,6 +621,9 @@ function TSAFormPage4() {
             </label>
           ))}
         </div>
+        {errors.Detaileddrawings && (
+          <div style={{ color: 'red', fontSize: '14px' }}>This field is required</div>
+        )}
       </div>
 
       {/* Anything else */}

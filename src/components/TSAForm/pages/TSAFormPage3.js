@@ -1,7 +1,26 @@
 import { useHistory } from 'react-router-dom';
+import { useState } from 'react';
 
 function TSAFormPage3() {
   const history = useHistory();
+
+  const [errors, setErrors] = useState({
+    meetingAvailability: false,
+    creativeProcessParticipation: false,
+    collabCallsParticipation: false,
+    designReviewInterest: false,
+    techConsultationInterest: false,
+    VirtualReviewInterest: false,
+    DetailedVirtualReviewInterest: false,
+    DesignAndCalc: false,
+    ConceptualDesign: false,
+    VerifyingAnalyses: false,
+    timeCommitment: false,
+  });
+
+  const clearError = field => {
+    setErrors(prev => ({ ...prev, [field]: false }));
+  };
   const handleNextClick = () => {
     const requiredGroups = [
       'meetingAvailability',
@@ -17,18 +36,25 @@ function TSAFormPage3() {
       'timeCommitment',
     ];
 
-    let isValid = true;
+    const newErrors = {};
+    let firstInvalidField = null;
 
-    for (const group of requiredGroups) {
-      const checked = document.querySelector(`input[name="${group}"]:checked`);
-      if (!checked) {
-        isValid = false;
-        break;
+    requiredGroups.forEach(group => {
+      const checkedInputs = document.querySelectorAll(`input[name="${group}"]:checked`);
+      const isValid = checkedInputs.length > 0;
+
+      newErrors[group] = !isValid;
+
+      if (!isValid && !firstInvalidField) {
+        firstInvalidField = document.querySelector(`input[name="${group}"]`);
       }
-    }
+    });
 
-    if (!isValid) {
-      alert('Please complete all required (*) fields before proceeding.');
+    setErrors(newErrors);
+
+    if (firstInvalidField) {
+      firstInvalidField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      firstInvalidField.focus();
       return;
     }
 
@@ -102,8 +128,8 @@ function TSAFormPage3() {
         <div style={{ padding: '35px', fontSize: '16px', lineHeight: '1.6', textAlign: 'justify' }}>
           <p>
             This section covers how interested you are in helping with the specific processes
-            related to your areas of interest from the previous page. If you aren't sure about an
-            area, just rate it a 1.
+            related to your areas of interest from the previous page. If you aren&apos;t sure about
+            an area, just rate it a 1.
           </p>
           <p
             style={{
@@ -128,9 +154,9 @@ function TSAFormPage3() {
           name: 'collabCallsParticipation',
           question: 'Participation in virtual collaborative calls and meetings?',
         },
-      ].map((item, index) => (
+      ].map(item => (
         <div
-          key={index}
+          key={item.name}
           style={{
             backgroundColor: '#fff',
             borderRadius: '8px',
@@ -139,6 +165,7 @@ function TSAFormPage3() {
             boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
             padding: '30px',
             fontSize: '16px',
+            border: errors[item.name] ? '2px solid red' : 'none',
           }}
         >
           <label style={{ display: 'block', marginBottom: '20px', fontWeight: 'bold' }}>
@@ -170,6 +197,7 @@ function TSAFormPage3() {
                   type="radio"
                   name={item.name}
                   value={i + 1}
+                  onChange={() => clearError(item.name)}
                   required
                   style={{
                     margin: '0 5px',
@@ -182,6 +210,19 @@ function TSAFormPage3() {
               </label>
             ))}
           </div>
+          {errors[item.name] && (
+            <div
+              style={{
+                color: 'red',
+                fontSize: '14px',
+                marginTop: '10px',
+                textAlign: 'left',
+                width: '100%',
+              }}
+            >
+              Please select a rating
+            </div>
+          )}
         </div>
       ))}
 
@@ -195,6 +236,8 @@ function TSAFormPage3() {
           boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
           padding: '30px',
           fontSize: '16px',
+
+          border: errors.meetingAvailability ? '2px solid red' : 'none',
         }}
       >
         <label
@@ -206,7 +249,7 @@ function TSAFormPage3() {
             fontWeight: 'bold',
           }}
         >
-          If you answered a 7 or above in the previous question, what's your availability?{' '}
+          If you answered a 7 or above in the previous question, what&apos;s your availability?{' '}
           <span style={{ color: 'red' }}>*</span>
         </label>
 
@@ -217,7 +260,7 @@ function TSAFormPage3() {
           'I think meetings are important and enjoy them, contact me with your questions and we can set up a schedule. (Several meetings a month, scheduled as needed)',
           "I think meetings are essential, fun and I love to collaborate. Let's coordinate a regular weekly call! (Weekly scheduled meetings with set times and required attendance of all team members)",
         ].map((option, index) => (
-          <div key={index} style={{ marginBottom: '12px' }}>
+          <div key={option} style={{ marginBottom: '12px' }}>
             <label
               style={{
                 display: 'flex',
@@ -231,6 +274,7 @@ function TSAFormPage3() {
                 type="checkbox"
                 name="meetingAvailability"
                 value={option}
+                onChange={() => clearError('meetingAvailability')}
                 required={index === 0}
                 style={{
                   marginRight: '10px',
@@ -259,6 +303,7 @@ function TSAFormPage3() {
             <input
               type="checkbox"
               name="meetingAvailability"
+              onChange={() => clearError('meetingAvailability')}
               value="Other"
               style={{
                 marginRight: '10px',
@@ -287,6 +332,19 @@ function TSAFormPage3() {
             }}
           />
         </div>
+        {errors.meetingAvailability && (
+          <div
+            style={{
+              color: 'red',
+              fontSize: '14px',
+              marginTop: '10px',
+              textAlign: 'left',
+              width: '100%',
+            }}
+          >
+            Please select an option
+          </div>
+        )}
       </div>
 
       <div
@@ -298,6 +356,7 @@ function TSAFormPage3() {
           boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
           padding: '30px',
           fontSize: '16px',
+          border: errors.designReviewInterest ? '2px solid red' : 'none',
         }}
       >
         <label
@@ -343,6 +402,7 @@ function TSAFormPage3() {
               <input
                 type="radio"
                 name="designReviewInterest"
+                onChange={() => clearError('designReviewInterest')}
                 value={i + 1}
                 required
                 style={{
@@ -356,6 +416,19 @@ function TSAFormPage3() {
             </label>
           ))}
         </div>
+        {errors.designReviewInterest && (
+          <div
+            style={{
+              color: 'red',
+              fontSize: '14px',
+              marginTop: '10px',
+              textAlign: 'left',
+              width: '100%',
+            }}
+          >
+            Please select a rating
+          </div>
+        )}
       </div>
 
       <div
@@ -367,6 +440,7 @@ function TSAFormPage3() {
           boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
           padding: '30px',
           fontSize: '16px',
+          border: errors.techConsultationInterest ? '2px solid red' : 'none',
         }}
       >
         <label
@@ -412,6 +486,7 @@ function TSAFormPage3() {
               <input
                 type="radio"
                 name="techConsultationInterest"
+                onChange={() => clearError('techConsultationInterest')}
                 value={i + 1}
                 required
                 style={{
@@ -425,6 +500,19 @@ function TSAFormPage3() {
             </label>
           ))}
         </div>
+        {errors.techConsultationInterest && (
+          <div
+            style={{
+              color: 'red',
+              fontSize: '14px',
+              marginTop: '10px',
+              textAlign: 'left',
+              width: '100%',
+            }}
+          >
+            Please select a rating
+          </div>
+        )}
       </div>
 
       <div
@@ -436,6 +524,7 @@ function TSAFormPage3() {
           boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
           padding: '30px',
           fontSize: '16px',
+          border: errors.VirtualReviewInterest ? '2px solid red' : 'none',
         }}
       >
         <label
@@ -478,6 +567,7 @@ function TSAFormPage3() {
               <input
                 type="radio"
                 name="VirtualReviewInterest"
+                onChange={() => clearError('VirtualReviewInterest')}
                 value={i + 1}
                 required
                 style={{
@@ -491,6 +581,19 @@ function TSAFormPage3() {
             </label>
           ))}
         </div>
+        {errors.VirtualReviewInterest && (
+          <div
+            style={{
+              color: 'red',
+              fontSize: '14px',
+              marginTop: '10px',
+              textAlign: 'left',
+              width: '100%',
+            }}
+          >
+            Please select a rating
+          </div>
+        )}
       </div>
 
       <div
@@ -502,6 +605,7 @@ function TSAFormPage3() {
           boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
           padding: '30px',
           fontSize: '16px',
+          border: errors.DetailedVirtualReviewInterest ? '2px solid red' : 'none',
         }}
       >
         <label
@@ -544,6 +648,7 @@ function TSAFormPage3() {
               <input
                 type="radio"
                 name="DetailedVirtualReviewInterest"
+                onChange={() => clearError('DetailedVirtualReviewInterest')}
                 value={i + 1}
                 required
                 style={{
@@ -557,6 +662,19 @@ function TSAFormPage3() {
             </label>
           ))}
         </div>
+        {errors.DetailedVirtualReviewInterest && (
+          <div
+            style={{
+              color: 'red',
+              fontSize: '14px',
+              marginTop: '10px',
+              textAlign: 'left',
+              width: '100%',
+            }}
+          >
+            Please select a rating
+          </div>
+        )}
       </div>
 
       <div
@@ -568,6 +686,7 @@ function TSAFormPage3() {
           boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
           padding: '30px',
           fontSize: '16px',
+          border: errors.DesignAndCalc ? '2px solid red' : 'none',
         }}
       >
         <label
@@ -607,6 +726,7 @@ function TSAFormPage3() {
               <input
                 type="radio"
                 name="DesignAndCalc"
+                onChange={() => clearError('DesignAndCalc')}
                 value={i + 1}
                 required
                 style={{
@@ -620,6 +740,19 @@ function TSAFormPage3() {
             </label>
           ))}
         </div>
+        {errors.DesignAndCalc && (
+          <div
+            style={{
+              color: 'red',
+              fontSize: '14px',
+              marginTop: '10px',
+              textAlign: 'left',
+              width: '100%',
+            }}
+          >
+            Please select a rating
+          </div>
+        )}
       </div>
 
       <div
@@ -631,6 +764,7 @@ function TSAFormPage3() {
           boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
           padding: '30px',
           fontSize: '16px',
+          border: errors.ConceptualDesign ? '2px solid red' : 'none',
         }}
       >
         <label
@@ -675,6 +809,7 @@ function TSAFormPage3() {
               <input
                 type="radio"
                 name="ConceptualDesign"
+                onChange={() => clearError('ConceptualDesign')}
                 value={i + 1}
                 required
                 style={{
@@ -688,6 +823,19 @@ function TSAFormPage3() {
             </label>
           ))}
         </div>
+        {errors.ConceptualDesign && (
+          <div
+            style={{
+              color: 'red',
+              fontSize: '14px',
+              marginTop: '10px',
+              textAlign: 'left',
+              width: '100%',
+            }}
+          >
+            Please select a rating
+          </div>
+        )}
       </div>
 
       <div
@@ -699,6 +847,7 @@ function TSAFormPage3() {
           boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
           padding: '30px',
           fontSize: '16px',
+          border: errors.VerifyingAnalyses ? '2px solid red' : 'none',
         }}
       >
         <label
@@ -741,6 +890,7 @@ function TSAFormPage3() {
               <input
                 type="radio"
                 name="VerifyingAnalyses"
+                onChange={() => clearError('VerifyingAnalyses')}
                 value={i + 1}
                 required
                 style={{
@@ -754,6 +904,19 @@ function TSAFormPage3() {
             </label>
           ))}
         </div>
+        {errors.VerifyingAnalyses && (
+          <div
+            style={{
+              color: 'red',
+              fontSize: '14px',
+              marginTop: '10px',
+              textAlign: 'left',
+              width: '100%',
+            }}
+          >
+            Please select a rating
+          </div>
+        )}
       </div>
 
       {/* Anything Else Box */}
@@ -797,6 +960,7 @@ function TSAFormPage3() {
           boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
           padding: '30px',
           fontSize: '16px',
+          border: errors.timeCommitment ? '2px solid red' : 'none',
         }}
       >
         <label
@@ -819,8 +983,8 @@ function TSAFormPage3() {
           '3-5 hours a week',
           '5+ hours a week',
           '10+ hours a week',
-        ].map((option, index) => (
-          <div key={index} style={{ marginBottom: '12px' }}>
+        ].map(option => (
+          <div key={option} style={{ marginBottom: '12px' }}>
             <label
               style={{
                 display: 'flex',
@@ -833,6 +997,7 @@ function TSAFormPage3() {
               <input
                 type="checkbox"
                 name="timeCommitment"
+                onChange={() => clearError('timeCommitment')}
                 value={option}
                 style={{
                   marginRight: '10px',
@@ -861,6 +1026,7 @@ function TSAFormPage3() {
             <input
               type="checkbox"
               name="timeCommitment"
+              onChange={() => clearError('timeCommitment')}
               value="Other"
               style={{
                 marginRight: '10px',
@@ -889,6 +1055,19 @@ function TSAFormPage3() {
             }}
           />
         </div>
+        {errors.timeCommitment && (
+          <div
+            style={{
+              color: 'red',
+              fontSize: '14px',
+              marginTop: '10px',
+              textAlign: 'left',
+              width: '100%',
+            }}
+          >
+            Please select an option
+          </div>
+        )}
       </div>
 
       {/* Navigation Buttons */}
@@ -923,7 +1102,12 @@ function TSAFormPage3() {
           onFocus={e => {
             e.target.style.backgroundColor = '#3b6f87';
           }}
-          onMouseOut={e => (e.target.style.backgroundColor = '#4d87a1')}
+          onMouseOut={e => {
+            e.target.style.backgroundColor = '#4d87a1';
+          }}
+          onBlur={e => {
+            e.target.style.backgroundColor = '#4d87a1';
+          }}
         >
           Back
         </button>
@@ -944,8 +1128,18 @@ function TSAFormPage3() {
             boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
             transition: 'background-color 0.2s ease-in-out',
           }}
-          onMouseOver={e => (e.target.style.backgroundColor = '#3b6f87')}
-          onMouseOut={e => (e.target.style.backgroundColor = '#4d87a1')}
+          onMouseOver={e => {
+            e.target.style.backgroundColor = '#3b6f87';
+          }}
+          onFocus={e => {
+            e.target.style.backgroundColor = '#3b6f87';
+          }}
+          onMouseOut={e => {
+            e.target.style.backgroundColor = '#4d87a1';
+          }}
+          onBlur={e => {
+            e.target.style.backgroundColor = '#4d87a1';
+          }}
         >
           Next
         </button>

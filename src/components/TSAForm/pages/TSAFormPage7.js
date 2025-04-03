@@ -4,29 +4,51 @@ import { useState } from 'react';
 function TSAFormPage7() {
   const history = useHistory();
 
+  const [errors, setErrors] = useState({
+    agreementseven: false,
+    agreementeight: false,
+    sign: false,
+  });
+
+  const clearError = field => {
+    setErrors(prev => ({ ...prev, [field]: false }));
+  };
+
   const handleNextClick = () => {
-    const requiredRadios = ['agreementseven', 'agreementeight'];
-    let isValid = true;
+    const newErrors = {};
+    let firstInvalid = null;
 
-    // Validate radios
-    const isAllRadiosChecked = requiredRadios.every(group =>
-      document.querySelector(`input[name="${group}"]:checked`),
-    );
-    if (!isAllRadiosChecked) {
-      isValid = false;
+    // Validate radio agreements
+    ['agreementseven', 'agreementeight'].forEach(group => {
+      const isChecked = document.querySelector(`input[name="${group}"]:checked`);
+      newErrors[group] = !isChecked;
+      if (!isChecked && !firstInvalid) {
+        firstInvalid = document.querySelector(`input[name="${group}"]`);
+      }
+    });
+
+    // Validate signature input
+    const signatureInput = document.querySelector('input[name="sign"]');
+    const signatureValue = signatureInput?.value.trim();
+    const isSignValid = signatureValue.length > 0;
+
+    newErrors.sign = !isSignValid;
+
+    if (!isSignValid && !firstInvalid) {
+      firstInvalid = signatureInput;
     }
 
-    // Validate text input
-    const signature = document.querySelector('input[name="sign"]');
-    if (!signature || !signature.value.trim()) {
-      isValid = false;
-    }
+    setErrors(newErrors);
 
-    if (!isValid) {
+    if (firstInvalid) {
+      firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      firstInvalid.focus();
+      return;
     }
 
     history.push('/tsaformpage8');
   };
+
   return (
     <div
       style={{
@@ -134,6 +156,7 @@ function TSAFormPage7() {
           boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
           padding: '30px',
           fontSize: '16px',
+          border: errors.agreementseven ? '2px solid red' : 'none',
         }}
       >
         <label
@@ -158,6 +181,7 @@ function TSAFormPage7() {
             id="agreementseven"
             name="agreementseven"
             value="agree"
+            onChange={() => clearError('agreementseven')}
             required
             style={{
               marginRight: '10px',
@@ -168,6 +192,19 @@ function TSAFormPage7() {
           />
           I agree
         </label>
+        {errors.agreementseven && (
+          <div
+            style={{
+              color: 'red',
+              fontSize: '14px',
+              marginTop: '10px',
+              textAlign: 'left',
+              width: '100%',
+            }}
+          >
+            Please agree to move forward
+          </div>
+        )}
       </div>
 
       {/* Agreement of Terms */}
@@ -217,6 +254,7 @@ function TSAFormPage7() {
           boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
           padding: '30px',
           fontSize: '16px',
+          border: errors.agreementeight ? '2px solid red' : 'none',
         }}
       >
         <label
@@ -241,6 +279,7 @@ function TSAFormPage7() {
             id="agreementeight"
             name="agreementeight"
             value="agree"
+            onChange={() => clearError('agreementeight')}
             required
             style={{
               marginRight: '10px',
@@ -251,6 +290,19 @@ function TSAFormPage7() {
           />
           I agree
         </label>
+        {errors.agreementeight && (
+          <div
+            style={{
+              color: 'red',
+              fontSize: '14px',
+              marginTop: '10px',
+              textAlign: 'left',
+              width: '100%',
+            }}
+          >
+            Please agree to move forward
+          </div>
+        )}
       </div>
 
       {/* Digital Signature */}
@@ -290,6 +342,7 @@ function TSAFormPage7() {
           boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
           padding: '30px',
           fontSize: '16px',
+          border: errors.sign ? '2px solid red' : 'none',
         }}
       >
         <div
@@ -312,6 +365,7 @@ function TSAFormPage7() {
           id="sign"
           name="sign"
           placeholder="Your answer"
+          onChange={() => clearError('sign')}
           required
           style={{
             width: '100%',
@@ -329,6 +383,19 @@ function TSAFormPage7() {
             e.target.style.borderBottom = '1px solid #ccc';
           }}
         />
+        {errors.sign && (
+          <div
+            style={{
+              color: 'red',
+              fontSize: '14px',
+              marginTop: '10px',
+              textAlign: 'left',
+              width: '100%',
+            }}
+          >
+            Please sign to move forward.
+          </div>
+        )}
       </div>
 
       {/* Navigation Buttons */}
