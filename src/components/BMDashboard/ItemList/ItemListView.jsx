@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import BMError from '../shared/BMError';
 import SelectForm from './SelectForm';
 import SelectItem from './SelectItem';
@@ -12,7 +14,7 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
   const [selectedProject, setSelectedProject] = useState('all');
   const [selectedItem, setSelectedItem] = useState('all');
   const [isError, setIsError] = useState(false);
-  const [selectedTime, setSelectedTime] = useState(moment().format('YYYY-MM-DD HH:mm:ss'));
+  const [selectedTime, setSelectedTime] = useState(new Date());
 
   useEffect(() => {
     if (items) setFilteredItems([...items]);
@@ -58,11 +60,14 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
           {items && (
             <div className="select_input">
               <label>Time:</label>
-              <input
-                type="text"
-                value={selectedTime}
-                onChange={e => setSelectedTime(e.target.value)}
-                placeholder="MM-DD-YYYY HH:MM:SS"
+              <DatePicker
+                selected={selectedTime}
+                onChange={date => setSelectedTime(date)}
+                showTimeSelect
+                timeFormat="HH:mm"
+                timeIntervals={15}
+                dateFormat="yyyy-MM-dd HH:mm:ss"
+                placeholderText="Select date and time"
               />
               <SelectForm
                 items={items}
