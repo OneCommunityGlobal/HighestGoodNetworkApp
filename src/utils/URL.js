@@ -156,6 +156,9 @@ export const ENDPOINTS = {
   CONFIRM_EMAIL_SUBSCRIPTION: `${APIEndpoint}/confirm-non-hgn-email-subscription`,
   REMOVE_EMAIL_SUBSCRIPTION: `${APIEndpoint}/remove-non-hgn-email-subscription`,
 
+  PINTEREST_AUTH: `https://www.pinterest.com/oauth`,
+  PINTEREST_OAUTH_INIT: `${APIEndpoint}/social/pinterest/initOAuth`,
+  PINTEREST_AUTH_CALLBACK: `${APIEndpoint}/social/pinterest/auth`,
   POST_PINTEREST: `${APIEndpoint}/social/pinterest/createPin`,
 
   // reasons endpoints
