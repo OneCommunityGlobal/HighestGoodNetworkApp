@@ -207,8 +207,8 @@
   flex-wrap: wrap;
   flex-direction: row;
   align-items: flex-start;
-  gap: 20px; 
-  justify-content: flex-start; 
+  gap: 20px;
+  justify-content: flex-start;
   overflow: visible;
 }
 
@@ -216,7 +216,7 @@
   box-sizing: border-box;
   width: 285.33px;
   height: 231px;
-  border: 1px solid #E0E0E0;
+  border: 1px solid #e0e0e0;
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.04);
   border-radius: 25px;
   position: relative;
@@ -224,7 +224,6 @@
   margin: 5px;
   transition: all 0.3s ease;
   cursor: help;
-
 }
 
 .custom-box-shadow {
@@ -296,37 +295,43 @@
 }
 
 /* Financial Card Color States */
-.financial-card-month-over-month.positive { color: #2E7D32; }
-.financial-card-month-over-month.negative { color: #ce352a; }
-.financial-card-month-over-month.neutral { color: #757575; }
+.financial-card-month-over-month.positive {
+  color: #2e7d32;
+}
+.financial-card-month-over-month.negative {
+  color: #ce352a;
+}
+.financial-card-month-over-month.neutral {
+  color: #757575;
+}
 
 /* Financial Card Background Colors */
 .financial-card-background-total-project-cost {
-  background-color: #ECF3FF;
+  background-color: #ecf3ff;
 }
 .financial-card-ellipse-total-project-cost {
-  background-color: #CBCBFE;
+  background-color: #cbcbfe;
 }
 
 .financial-card-background-total-material-cost {
-  background-color: #E0F7FA;
+  background-color: #e0f7fa;
 }
 .financial-card-ellipse-total-material-cost {
-  background-color: #C1EFFB;
+  background-color: #c1effb;
 }
 
 .financial-card-background-total-labor-cost {
-  background-color: #FEE5F0;
+  background-color: #fee5f0;
 }
 .financial-card-ellipse-total-labor-cost {
-  background-color: #FECFF3;
+  background-color: #fecff3;
 }
 
 .financial-card-background-total-equipment-cost {
-  background-color: #E6F5E9;
+  background-color: #e6f5e9;
 }
 .financial-card-ellipse-total-equipment-cost {
-  background-color: #BAF0B6;
+  background-color: #baf0b6;
 }
 
 /* ---------------- Tooltip Styles ---------------- */
@@ -399,8 +404,36 @@
 }
 
 .dark-mode .financial-card {
-  background: #2B3E59;
-  border-color: #3A506B;
+  background: #2b3e59;
+  border-color: #3a506b;
+}
+
+.dark-mode .financial-card.financial-card-background-total-project-cost {
+  background-color: #ecf3ff; /* Keep original background */
+}
+.dark-mode .financial-card-ellipse-total-project-cost {
+  background-color: #cbcbfe; /* Keep original ellipse color */
+}
+
+.dark-mode .financial-card.financial-card-background-total-material-cost {
+  background-color: #e0f7fa;
+}
+.dark-mode .financial-card-ellipse-total-material-cost {
+  background-color: #c1effb;
+}
+
+.dark-mode .financial-card.financial-card-background-total-labor-cost {
+  background-color: #fee5f0;
+}
+.dark-mode .financial-card-ellipse-total-labor-cost {
+  background-color: #fecff3;
+}
+
+.dark-mode .financial-card.financial-card-background-total-equipment-cost {
+  background-color: #e6f5e9;
+}
+.dark-mode .financial-card-ellipse-total-equipment-cost {
+  background-color: #baf0b6;
 }
 
 .dark-mode .financial-card-title {
@@ -409,6 +442,11 @@
 
 .dark-mode .financial-card-value {
   color: #000000;
+}
+
+.dark-mode .financial-card-tooltip {
+  background-color: rgba(0, 0, 0, 0.85);
+  color: white;
 }
 
 .dark-mode .weekly-project-summary-dashboard-category-title {
@@ -430,12 +468,6 @@
   color: var(--text-color);
 }
 
-.dark-mode .financial-card-tooltip {
-  background-color: rgba(255, 255, 255, 0.2);
-  color: white;
-  backdrop-filter: blur(10px);
-}
-
 /* ---------------- Responsive Design ---------------- */
 /* Large screens - Tooltip adjustments */
 @media (max-width: 1920px) {
@@ -449,7 +481,7 @@
     white-space: normal;
     z-index: 9999;
   }
-  
+
   .financial-card:hover {
     z-index: 999;
   }
@@ -460,7 +492,7 @@
   .financial-cards-container {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .weekly-summary-header-container {
     flex-direction: column;
     align-items: center;
@@ -475,7 +507,7 @@
   .weekly-project-summary-dashboard-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .financial-card-tooltip {
     bottom: 30px;
     max-width: 85%;
@@ -487,7 +519,7 @@
   .financial-cards-container {
     grid-template-columns: 1fr;
   }
-  
+
   .weekly-summary-header-container {
     flex-direction: column;
     align-items: center;
@@ -510,7 +542,7 @@
   .weekly-project-summary-dashboard-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .financial-card-tooltip {
     bottom: 20px;
     max-width: 90%;
