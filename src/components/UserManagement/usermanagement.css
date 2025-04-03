@@ -16,7 +16,6 @@ thead {
 #user-management-table {
   width: calc(100vw - 45px);
 }
-
 #usermanagement_order {
   width: 5px;
 }
@@ -35,6 +34,22 @@ thead {
 
 .usermanagement__tr {
   text-align: center;
+}
+
+.usermanagement__tr td {
+  overflow: hidden;
+  vertical-align: middle;
+  padding: 2px;
+}
+
+.usermanagement__tr .edituser_input,
+.usermanagement__tr .btn,
+.usermanagement__tr .copy_icon,
+.usermanagement__tr svg {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 #usermanagement_title>div {
@@ -104,9 +119,11 @@ thead {
 
 .email_cell {
   position: relative;
-
 }
 
+.email_cell a:hover{
+  text-decoration: none;
+}
 .title_cell {
   width: 180px;
   min-width: 180px;
@@ -128,12 +145,18 @@ td#usermanagement_role {
   white-space: nowrap;
 }
 
+#user_role{
+  max-width: initial;
+}
+
 .copy_icon {
   cursor: pointer;
   position: absolute;
   top: 0;
   right: 0;
   margin: 2px 2px;
+  height: 100%;
+  max-height: 31px;
 }
 
 .usermanagement__order--input div {
@@ -377,6 +400,8 @@ tr:hover {
 
 td {
   text-align: center;
+  padding: 4px;
+  vertical-align: middle;
 }
 
 /* custom-toast.css */
@@ -387,4 +412,54 @@ td {
 
 .custom-toast-progress {
   background-color: white;
+}
+
+
+.dark-usermanagement-data{
+  background-color: #3a506b;
+}
+
+.dark-usermanagement-data:hover{
+  background-color: #111831;
+}
+
+.light-usermanagement-data{
+  background-color: white;
+}
+
+.light-usermanagement-data:hover{
+  background-color: #f0f8ff;
+}
+
+.tooltip-container {
+  position: relative;
+  display: inline-block;
+  max-width: 150px; /* Set max width for text overflow */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tooltip-container:hover::after {
+  content: attr(data-title); /* Show full text when hovered */
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 5px;
+  border-radius: 4px;
+  white-space: nowrap;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 120%;
+  z-index: 10;
+  max-width: 300px; /* Prevent excessive width */
+  text-align: center;
+  visibility: visible;
+  opacity: 1;
+}
+
+.tooltip-container::after {
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
 }
