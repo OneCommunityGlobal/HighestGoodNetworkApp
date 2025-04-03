@@ -232,9 +232,12 @@ class Teams extends React.PureComponent {
    * 3. Popup to display delete confirmation of the team upon clicking delete button.
    */
 
-  teampopupElements = (allTeams) => {
+  teampopupElements = allTeams => {
     const { teamMembers: members, fetching } = this.props.state.teamsTeamMembers;
-    const selectedTeamData = allTeams ? allTeams.filter(team => team.teamName === this.state.selectedTeam) : [];
+    const selectedTeamData = allTeams
+      ? allTeams.filter(team => team.teamName === this.state.selectedTeam)
+      : [];
+
     return (
       <>
         <TeamMembersPopup
