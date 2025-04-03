@@ -41,7 +41,7 @@
 .table th:nth-child(1), .table td:nth-child(1) {
   width: 5%; /* Adjust first column width */
   white-space: nowrap; /* Prevent stacking/wrapping of numbers */
-  text-align: center; 
+  text-align: center;
 }
 
 
@@ -271,7 +271,7 @@
 
 @media (max-width: 575px) {
   .teams__overview--top {
-    font-size: 9px; 
+    font-size: 9px;
   }
 }
 

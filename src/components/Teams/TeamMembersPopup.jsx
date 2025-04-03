@@ -24,6 +24,7 @@ import styles from './ToggleSwitch/ToggleSwitch.module.scss';
 
 export const TeamMembersPopup = React.memo(props => {
   const darkMode = useSelector(state => state.theme.darkMode);
+  const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon');
   const [isChecked, setIsChecked] = useState(1); // 0 = false, 1 = true, 2 = all
   const [checkedStatus, setCheckedStatus] = useState('Active'); // 0 = false, 1 = true, 2 = all
   const [selectedUser, setSelectedUser] = useState(undefined);
@@ -333,69 +334,64 @@ export const TeamMembersPopup = React.memo(props => {
               </tr>
             </thead>
             <tbody>
-              {props.fetching && (
-                <tr>
-                  <td align="center" colSpan={6}>
-                    <Spinner
-                      color={`${darkMode ? 'light' : 'dark'}`}
-                      animation="border"
-                      size="sm"
-                    />
-                  </td>
-                </tr>
-              )}
-
-              {!props.fetching && memberList.length === 0 && emptyState}
-
-              {!props.fetching &&
-                memberList.length > 0 &&
-                Array.isArray(props.members.teamMembers) &&
-                props.members.teamMembers.length > 0 &&
-                memberList.toSorted().map(user => (
-                  <tr key={`${props.selectedTeamName}-${user.id}`}>
-                    <td>
-                      <div className={user.isActive ? 'isActive' : 'isNotActive'}>
-                        <i className="fa fa-circle" aria-hidden="true" />
-                      </div>
-                    </td>
-                    <td>{memberList.indexOf(user) + 1}</td>
-                    <td>
-                      {returnUserRole(user) ? (
-                        <b>
-                          {user.firstName} {user.lastName} ({user.role})
-                        </b>
-                      ) : (
-                        <span>
-                          {user.firstName} {user.lastName} ({user.role})
-                        </span>
-                      )}
-                      {hasVisibilityIconPermission && !user.isVisible && (
-                        <i className="fa fa-eye-slash" title="User is invisible" />
-                      )}
-                    </td>
-                    <td>{moment(user.addDateTime).format('MMM-DD-YY')}</td>
-                    <td>
-                      <ToggleSwitch
-                        key={`${props.selectedTeamName}-${user._id}`}
-                        switchType="limit-visibility"
-                        userId={user._id}
-                        choice={memberVisibility[user._id]}
-                        UpdateTeamMembersVisibility={UpdateTeamMembersVisibility}
-                      />
-                    </td>
-                    {canAssignTeamToUsers && (
-                      <td>
-                        <Button
-                          color="danger"
-                          onClick={() => handleDelete(user._id)}
-                          style={darkMode ? boxStyleDark : boxStyle}
-                        >
-                          Delete
-                        </Button>
-                      </td>
-                    )}
-                  </tr>
-                ))}
+            {props.fetching ?
+                 <tr><td align='center' colSpan={6}><Spinner  color={`${darkMode ? 'light' : 'dark'}`} animation="border" size="sm" /></td></tr> :
+                 !memberList.length ?
+                   emptyState :
+                   ((Array.isArray(props.members.teamMembers) &&
+                     props.members.teamMembers.length > 0) ||
+                     (typeof props.members.fetching === 'boolean' &&
+                       !props.members.fetching &&
+                       props.members.teamMembers) ||
+                     (Array.isArray(props.members) && props.members.length > 0)) &&
+                   memberList.toSorted().map((user, index) => {
+                     return (
+                       <tr key={`${props.selectedTeamName}-${user.id}-${index}`}>
+                         <td>
+                           <div className={user.isActive ? 'isActive' : 'isNotActive'}>
+                             <i className="fa fa-circle" aria-hidden="true" />
+                           </div>
+                         </td>
+                         <td className="def-width">{index + 1}</td>
+                         <td className="def-width">
+                           {returnUserRole(user) ? (
+                             <b>
+                               {user.firstName} {user.lastName} ({user.role})
+                             </b>
+                           ) : (
+                             <span>
+                               {user.firstName} {user.lastName} ({user.role})
+                             </span>
+                           )}{' '}
+                           {hasVisibilityIconPermission && !user.isVisible && (  // Invisibility icon from 'Cillian'
+                             <i className="fa fa-eye-slash" title="User is invisible" />
+                           )}
+                         </td>
+                         {/* <td>{user}</td> */}
+                         <td>{moment(user.addDateTime).format('MMM-DD-YY')}</td>
+                         <td>
+                           <ToggleSwitch
+                             key={`${props.selectedTeamName}-${user._id}`}
+                             switchType="limit-visibility"
+                             userId={user._id}
+                             choice={memberVisibility[user._id]}
+                             UpdateTeamMembersVisibility={UpdateTeamMembersVisibility}
+                           />
+                         </td>
+                         {canAssignTeamToUsers && (
+                           <td>
+                             <Button
+                               color="danger"
+                               onClick={() => handleDelete(user._id)}
+                               style={darkMode ? boxStyleDark : boxStyle}
+                             >
+                               Delete
+                             </Button>
+                           </td>
+                         )}
+                       </tr>
+                     );
+                   })}
             </tbody>
           </table>
         </ModalBody>
