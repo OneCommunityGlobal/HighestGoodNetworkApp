@@ -291,10 +291,11 @@ function AddTaskModal(props) {
 
   const addNewTask = async () => {
     setIsLoading(true);
+    // const newTaskNum = getNewNum();
+    // setNewTaskNum(newTaskNum);
     const newTask = {
       taskName,
       wbsId: props.wbsId,
-      num: newTaskNum,
       level: props.taskId ? props.level + 1 : 1,
       priority,
       resources: resourceItems,
@@ -318,30 +319,28 @@ function AddTaskModal(props) {
       intentInfo,
       endstateInfo,
     };
-    await props.addNewTask(newTask, props.wbsId, props.pageLoadTime);
-    toggle();
-    setIsLoading(false);
-    props.load();
+    try {
+      await props.addNewTask(newTask, props.wbsId, props.pageLoadTime);
+      toggle();
+      props.load();
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   /*
   * -------------------------------- useEffects -------------------------------- 
   */
-  useEffect(() => {
-    setNewTaskNum(getNewNum());
-  }, [modal]);
+   useEffect(() => {
+    setNewTaskNum("");
+ }, [modal]);
 
   useEffect(() => {
     ReactTooltip.rebuild();
   }, [links]);
 
   useEffect(() => {
-    if (error === 'outdated') {
-      alert('Database changed since your page loaded , click OK to get the newest data!');
-      props.load();
-    } else {
-      clear();
-    }
+    clear();
   }, [error, tasks])
 
   useEffect(() => {
