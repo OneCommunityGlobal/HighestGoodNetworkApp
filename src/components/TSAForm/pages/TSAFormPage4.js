@@ -12,21 +12,6 @@ function TSAFormPage4() {
       'Detaileddrawings',
     ];
 
-    let isValid = true;
-
-    for (const group of requiredGroups) {
-      const checked = document.querySelector(`input[name="${group}"]:checked`);
-      if (!checked) {
-        isValid = false;
-        break;
-      }
-    }
-
-    if (!isValid) {
-      alert('Please complete all required (*) fields before proceeding.');
-      return;
-    }
-
     history.push('/tsaformpage5');
   };
 
@@ -601,7 +586,7 @@ function TSAFormPage4() {
           name="certifications"
           placeholder="Your answer"
           style={{
-            width: 'calc(100% - 20px',
+            width: 'calc(100% - 20px)',
             marginLeft: '0px',
             padding: '10px 0',
             fontSize: '16px',
@@ -610,8 +595,12 @@ function TSAFormPage4() {
             outline: 'none',
             backgroundColor: 'transparent',
           }}
-          onFocus={e => (e.target.style.borderBottom = '2px solid #4d87a1')}
-          onBlur={e => (e.target.style.borderBottom = '1px solid #ccc')}
+          onFocus={e => {
+            e.target.style.backgroundColor = '#3b6f87';
+          }}
+          onBlur={e => {
+            e.target.style.borderBottom = '1px solid #ccc';
+          }}
         />
       </div>
 
@@ -641,8 +630,18 @@ function TSAFormPage4() {
             boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
             transition: 'background-color 0.2s ease-in-out',
           }}
-          onMouseOver={e => (e.target.style.backgroundColor = '#3b6f87')}
-          onMouseOut={e => (e.target.style.backgroundColor = '#4d87a1')}
+          onMouseOver={e => {
+            e.target.style.backgroundColor = '#3b6f87';
+          }}
+          onFocus={e => {
+            e.target.style.backgroundColor = '#3b6f87';
+          }}
+          onMouseOut={e => {
+            e.target.style.backgroundColor = '#4d87a1';
+          }}
+          onBlur={e => {
+            e.target.style.backgroundColor = '#4d87a1';
+          }}
         >
           Back
         </button>
@@ -663,8 +662,18 @@ function TSAFormPage4() {
             boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
             transition: 'background-color 0.2s ease-in-out',
           }}
-          onMouseOver={e => (e.target.style.backgroundColor = '#3b6f87')}
-          onMouseOut={e => (e.target.style.backgroundColor = '#4d87a1')}
+          onMouseOver={e => {
+            e.target.style.backgroundColor = '#3b6f87';
+          }}
+          onFocus={e => {
+            e.target.style.backgroundColor = '#3b6f87';
+          }}
+          onMouseOut={e => {
+            e.target.style.backgroundColor = '#4d87a1';
+          }}
+          onBlur={e => {
+            e.target.style.backgroundColor = '#4d87a1';
+          }}
         >
           Next
         </button>

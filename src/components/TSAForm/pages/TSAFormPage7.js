@@ -1,4 +1,5 @@
 import { useHistory } from 'react-router-dom';
+import { useState } from 'react';
 
 function TSAFormPage7() {
   const history = useHistory();
@@ -8,12 +9,11 @@ function TSAFormPage7() {
     let isValid = true;
 
     // Validate radios
-    for (const group of requiredRadios) {
-      const checked = document.querySelector(`input[name="${group}"]:checked`);
-      if (!checked) {
-        isValid = false;
-        break;
-      }
+    const isAllRadiosChecked = requiredRadios.every(group =>
+      document.querySelector(`input[name="${group}"]:checked`),
+    );
+    if (!isAllRadiosChecked) {
+      isValid = false;
     }
 
     // Validate text input
@@ -23,8 +23,6 @@ function TSAFormPage7() {
     }
 
     if (!isValid) {
-      alert('Please complete all required (*) fields before proceeding.');
-      return;
     }
 
     history.push('/tsaformpage8');
@@ -204,8 +202,8 @@ function TSAFormPage7() {
           for acceptance.
           <br />
           <br />
-          8.3 If you find the arrangement acceptable, please indicate you do by marking "I agree"
-          below and adding your digital signature below.
+          8.3 If you find the arrangement acceptable, please indicate you do by marking &quot;I
+          agree&quot; below and adding your digital signature below.
         </label>
       </div>
 
@@ -324,8 +322,12 @@ function TSAFormPage7() {
             outline: 'none',
             backgroundColor: 'transparent',
           }}
-          onFocus={e => (e.target.style.borderBottom = '2px solid #4d87a1')}
-          onBlur={e => (e.target.style.borderBottom = '1px solid #ccc')}
+          onFocus={e => {
+            e.target.style.borderBottom = '2px solid #4d87a1';
+          }}
+          onBlur={e => {
+            e.target.style.borderBottom = '1px solid #ccc';
+          }}
         />
       </div>
 
@@ -355,8 +357,18 @@ function TSAFormPage7() {
             boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
             transition: 'background-color 0.2s ease-in-out',
           }}
-          onMouseOver={e => (e.target.style.backgroundColor = '#3b6f87')}
-          onMouseOut={e => (e.target.style.backgroundColor = '#4d87a1')}
+          onMouseOver={e => {
+            e.target.style.backgroundColor = '#3b6f87';
+          }}
+          onFocus={e => {
+            e.target.style.backgroundColor = '#3b6f87';
+          }}
+          onMouseOut={e => {
+            e.target.style.backgroundColor = '#4d87a1';
+          }}
+          onBlur={e => {
+            e.target.style.backgroundColor = '#4d87a1';
+          }}
         >
           Back
         </button>
@@ -377,8 +389,18 @@ function TSAFormPage7() {
             boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
             transition: 'background-color 0.2s ease-in-out',
           }}
-          onMouseOver={e => (e.target.style.backgroundColor = '#3b6f87')}
-          onMouseOut={e => (e.target.style.backgroundColor = '#4d87a1')}
+          onMouseOver={e => {
+            e.target.style.backgroundColor = '#3b6f87';
+          }}
+          onFocus={e => {
+            e.target.style.backgroundColor = '#3b6f87';
+          }}
+          onMouseOut={e => {
+            e.target.style.backgroundColor = '#4d87a1';
+          }}
+          onBlur={e => {
+            e.target.style.backgroundColor = '#4d87a1';
+          }}
         >
           Submit
         </button>

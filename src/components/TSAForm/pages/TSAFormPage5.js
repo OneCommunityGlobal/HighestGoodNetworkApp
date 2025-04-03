@@ -1,24 +1,14 @@
 import { useHistory } from 'react-router-dom';
+import { useState } from 'react';
 
 function TSAFormPage5() {
   const history = useHistory();
   const handleNextClick = () => {
     const requiredGroups = ['agreementone', 'agreementtwo', 'agreementthree', 'agreementfour'];
 
-    let isValid = true;
-
-    for (const group of requiredGroups) {
-      const checked = document.querySelector(`input[name="${group}"]:checked`);
-      if (!checked) {
-        isValid = false;
-        break;
-      }
-    }
-
-    if (!isValid) {
-      alert('Please complete all required (*) fields before proceeding.');
-      return;
-    }
+    const isValid = requiredGroups.every(group =>
+      document.querySelector(`input[name="${group}"]:checked`),
+    );
 
     history.push('/tsaformpage6');
   };
@@ -446,8 +436,18 @@ function TSAFormPage5() {
             boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
             transition: 'background-color 0.2s ease-in-out',
           }}
-          onMouseOver={e => (e.target.style.backgroundColor = '#3b6f87')}
-          onMouseOut={e => (e.target.style.backgroundColor = '#4d87a1')}
+          onMouseOver={e => {
+            e.target.style.backgroundColor = '#3b6f87';
+          }}
+          onFocus={e => {
+            e.target.style.backgroundColor = '#3b6f87';
+          }}
+          onMouseOut={e => {
+            e.target.style.backgroundColor = '#4d87a1';
+          }}
+          onBlur={e => {
+            e.target.style.backgroundColor = '#4d87a1';
+          }}
         >
           Back
         </button>
@@ -468,8 +468,18 @@ function TSAFormPage5() {
             boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
             transition: 'background-color 0.2s ease-in-out',
           }}
-          onMouseOver={e => (e.target.style.backgroundColor = '#3b6f87')}
-          onMouseOut={e => (e.target.style.backgroundColor = '#4d87a1')}
+          onMouseOver={e => {
+            e.target.style.backgroundColor = '#3b6f87';
+          }}
+          onFocus={e => {
+            e.target.style.backgroundColor = '#3b6f87';
+          }}
+          onMouseOut={e => {
+            e.target.style.backgroundColor = '#4d87a1';
+          }}
+          onBlur={e => {
+            e.target.style.backgroundColor = '#4d87a1';
+          }}
         >
           Next
         </button>

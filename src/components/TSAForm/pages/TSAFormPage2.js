@@ -1,7 +1,21 @@
 import { useHistory } from 'react-router-dom';
+import { useState } from 'react';
 
 function TSAFormPage2() {
   const history = useHistory();
+
+  const [errors, setErrors] = useState({
+    interested: false,
+    availability: false,
+    BuildingInfrastructure: false,
+    FoodInfrastructure: false,
+    EnergyInfrastructure: false,
+    StewardshipInfrastructure: false,
+  });
+
+  const clearError = field => {
+    setErrors(prev => ({ ...prev, [field]: false }));
+  };
 
   const handleNextClick = () => {
     const requiredGroups = [
@@ -9,22 +23,28 @@ function TSAFormPage2() {
       'availability',
       'BuildingInfrastructure',
       'FoodInfrastructure',
-      'Energyinfrastructure',
-      'Stewardshipinfrastructure',
+      'EnergyInfrastructure',
+      'StewardshipInfrastructure',
     ];
 
-    let isValid = true;
+    const newErrors = {};
+    let firstInvalid = null;
 
-    for (const group of requiredGroups) {
-      const checked = document.querySelector(`input[name="${group}"]:checked`);
-      if (!checked) {
-        isValid = false;
-        break;
+    requiredGroups.forEach(group => {
+      const isChecked = document.querySelector(`input[name="${group}"]:checked`);
+      newErrors[group] = !isChecked;
+      if (!isChecked && !firstInvalid) {
+        firstInvalid = group;
       }
-    }
+    });
 
-    if (!isValid) {
-      alert('Please complete all required (*) fields before proceeding.');
+    setErrors(newErrors);
+
+    if (firstInvalid) {
+      const el = document.querySelector(`[name="${firstInvalid}"]`);
+      if (el?.scrollIntoView) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
       return;
     }
 
@@ -124,6 +144,7 @@ function TSAFormPage2() {
           boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
           padding: '30px',
           fontSize: '16px',
+          border: errors.interested ? '2px solid red' : 'none',
         }}
       >
         <label
@@ -139,33 +160,38 @@ function TSAFormPage2() {
           <span style={{ color: 'red' }}>*</span>
         </label>
 
-        {['Somewhat Interested', 'Moderately Interested', 'Very Interested'].map(
-          (option, index) => (
-            <label
-              key={index}
+        {['Somewhat Interested', 'Moderately Interested', 'Very Interested'].map(option => (
+          <label
+            key={`availability-${option}`}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              marginBottom: '10px',
+              cursor: 'pointer',
+              fontWeight: 'normal',
+            }}
+          >
+            <input
+              type="radio"
+              name="interested"
+              onChange={() => clearError('interested')}
+              value={option}
+              required
               style={{
-                display: 'flex',
-                alignItems: 'center',
-                marginBottom: '10px',
-                cursor: 'pointer',
-                fontWeight: 'normal',
+                marginRight: '10px',
+                width: '15px',
+                height: '15px',
+                accentColor: '#4d87a1',
               }}
-            >
-              <input
-                type="radio"
-                name="interested"
-                value={option}
-                required
-                style={{
-                  marginRight: '10px',
-                  width: '15px',
-                  height: '15px',
-                  accentColor: '#4d87a1',
-                }}
-              />
-              {option}
-            </label>
-          ),
+            />
+            {option}
+          </label>
+        ))}
+
+        {errors.interested && (
+          <div style={{ color: 'red', fontSize: '14px', marginTop: '10px' }}>
+            This field is required
+          </div>
         )}
       </div>
 
@@ -179,6 +205,7 @@ function TSAFormPage2() {
           boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
           padding: '30px',
           fontSize: '16px',
+          border: errors.availability ? '2px solid red' : 'none',
         }}
       >
         <label
@@ -199,15 +226,22 @@ function TSAFormPage2() {
           'Moderately Available (I am busy but can provide a couple of hours a week for areas I am interested)',
           'Very Available (My schedule is consistent, I have more than a few hours a week to help, and this is not expected to change)',
           'Other:',
-        ].map((option, index) => (
-          <div
-            key={index}
-            style={{ marginBottom: '10px', display: 'flex', alignItems: 'flex-start' }}
+        ].map(option => (
+          <label
+            key={`availability-${option}`}
+            style={{
+              display: 'flex',
+              alignItems: 'flex-start',
+              marginBottom: '10px',
+              cursor: 'pointer',
+              fontWeight: 'normal',
+            }}
           >
             <input
               type="radio"
               name="availability"
               value={option}
+              onChange={() => clearError('availability')}
               required
               style={{
                 marginTop: '4px',
@@ -237,8 +271,11 @@ function TSAFormPage2() {
                 />
               )}
             </div>
-          </div>
+          </label>
         ))}
+        {errors.availability && (
+          <div style={{ color: 'red', fontSize: '14px' }}>This field is required</div>
+        )}
       </div>
 
       {/* Area of Interest Section */}
@@ -281,6 +318,7 @@ function TSAFormPage2() {
           </p>
         </div>
       </div>
+
       {/* Building Infrastructure Interest Rating */}
       <div
         style={{
@@ -291,6 +329,7 @@ function TSAFormPage2() {
           boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
           padding: '30px',
           fontSize: '16px',
+          border: errors.BuildingInfrastructure ? '2px solid red' : 'none',
         }}
       >
         <label
@@ -328,14 +367,17 @@ function TSAFormPage2() {
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '12px',
           }}
         >
           {Array.from({ length: 10 }, (_, i) => (
-            <label key={i + 1}>
+            <label key={i + 1} style={{ textAlign: 'center' }}>
               <input
                 type="radio"
                 name="BuildingInfrastructure"
                 value={i + 1}
+                onChange={() => clearError('BuildingInfrastructure')}
                 required
                 style={{
                   margin: '0 5px',
@@ -344,11 +386,26 @@ function TSAFormPage2() {
                   accentColor: '#4d87a1',
                 }}
               />
-              <div style={{ textAlign: 'center', fontSize: '12px' }}>{i + 1}</div>
+              <div style={{ fontSize: '12px' }}>{i + 1}</div>
             </label>
           ))}
         </div>
+
+        {errors.BuildingInfrastructure && (
+          <div
+            style={{
+              color: 'red',
+              fontSize: '14px',
+              marginTop: '10px',
+              textAlign: 'left',
+              width: '100%',
+            }}
+          >
+            Please select a rating
+          </div>
+        )}
       </div>
+
       {/* Food Infrastructure Interest Rating */}
       <div
         style={{
@@ -359,6 +416,7 @@ function TSAFormPage2() {
           boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
           padding: '30px',
           fontSize: '16px',
+          border: errors.FoodInfrastructure ? '2px solid red' : 'none',
         }}
       >
         <label
@@ -404,6 +462,7 @@ function TSAFormPage2() {
               <input
                 type="radio"
                 name="FoodInfrastructure"
+                onChange={() => clearError('FoodInfrastructure')}
                 value={i + 1}
                 required
                 style={{
@@ -417,6 +476,19 @@ function TSAFormPage2() {
             </label>
           ))}
         </div>
+        {errors.FoodInfrastructure && (
+          <div
+            style={{
+              color: 'red',
+              fontSize: '14px',
+              marginTop: '10px',
+              textAlign: 'left',
+              width: '100%',
+            }}
+          >
+            Please select a rating
+          </div>
+        )}
       </div>
 
       {/* Energy infrastructure Interest Rating */}
@@ -429,6 +501,7 @@ function TSAFormPage2() {
           boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
           padding: '30px',
           fontSize: '16px',
+          border: errors.EnergyInfrastructure ? '2px solid red' : 'none',
         }}
       >
         <label
@@ -470,7 +543,8 @@ function TSAFormPage2() {
             <label key={i + 1}>
               <input
                 type="radio"
-                name="Energyinfrastructure"
+                name="EnergyInfrastructure"
+                onChange={() => clearError('EnergyInfrastructure')}
                 value={i + 1}
                 required
                 style={{
@@ -484,7 +558,21 @@ function TSAFormPage2() {
             </label>
           ))}
         </div>
+        {errors.EnergyInfrastructure && (
+          <div
+            style={{
+              color: 'red',
+              fontSize: '14px',
+              marginTop: '10px',
+              textAlign: 'left',
+              width: '100%',
+            }}
+          >
+            Please select a rating
+          </div>
+        )}
       </div>
+
       {/* Stewardship infrastructure Interest Rating */}
       <div
         style={{
@@ -495,6 +583,7 @@ function TSAFormPage2() {
           boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
           padding: '30px',
           fontSize: '16px',
+          border: errors.StewardshipInfrastructure ? '2px solid red' : 'none',
         }}
       >
         <label
@@ -540,7 +629,8 @@ function TSAFormPage2() {
             <label key={i + 1}>
               <input
                 type="radio"
-                name="Stewardshipinfrastructure"
+                name="StewardshipInfrastructure"
+                onChange={() => clearError('StewardshipInfrastructure')}
                 value={i + 1}
                 required
                 style={{
@@ -554,6 +644,19 @@ function TSAFormPage2() {
             </label>
           ))}
         </div>
+        {errors.StewardshipInfrastructure && (
+          <div
+            style={{
+              color: 'red',
+              fontSize: '14px',
+              marginTop: '10px',
+              textAlign: 'left',
+              width: '100%',
+            }}
+          >
+            Please select a rating
+          </div>
+        )}
       </div>
 
       {/* Navigation Buttons */}
@@ -582,8 +685,18 @@ function TSAFormPage2() {
             boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
             transition: 'background-color 0.2s ease-in-out',
           }}
-          onMouseOver={e => (e.target.style.backgroundColor = '#3b6f87')}
-          onMouseOut={e => (e.target.style.backgroundColor = '#4d87a1')}
+          onMouseOver={e => {
+            e.target.style.backgroundColor = '#3b6f87';
+          }}
+          onFocus={e => {
+            e.target.style.backgroundColor = '#3b6f87';
+          }}
+          onMouseOut={e => {
+            e.target.style.backgroundColor = '#4d87a1';
+          }}
+          onBlur={e => {
+            e.target.style.backgroundColor = '#4d87a1';
+          }}
         >
           Back
         </button>
@@ -604,8 +717,18 @@ function TSAFormPage2() {
             boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
             transition: 'background-color 0.2s ease-in-out',
           }}
-          onMouseOver={e => (e.target.style.backgroundColor = '#3b6f87')}
-          onMouseOut={e => (e.target.style.backgroundColor = '#4d87a1')}
+          onMouseOver={e => {
+            e.target.style.backgroundColor = '#3b6f87';
+          }}
+          onFocus={e => {
+            e.target.style.backgroundColor = '#3b6f87';
+          }}
+          onMouseOut={e => {
+            e.target.style.backgroundColor = '#4d87a1';
+          }}
+          onBlur={e => {
+            e.target.style.backgroundColor = '#4d87a1';
+          }}
         >
           Next
         </button>

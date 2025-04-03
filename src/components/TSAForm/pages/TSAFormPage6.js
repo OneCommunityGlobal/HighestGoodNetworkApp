@@ -1,23 +1,16 @@
 import { useHistory } from 'react-router-dom';
+import { useState } from 'react';
 
 function TSAFormPage6() {
   const history = useHistory();
   const handleNextClick = () => {
     const requiredGroups = ['agreementfive', 'agreementsix'];
 
-    let isValid = true;
-
-    for (const group of requiredGroups) {
-      const checked = document.querySelector(`input[name="${group}"]:checked`);
-      if (!checked) {
-        isValid = false;
-        break;
-      }
-    }
+    const isValid = requiredGroups.every(group =>
+      document.querySelector(`input[name="${group}"]:checked`),
+    );
 
     if (!isValid) {
-      alert('Please complete all required (*) fields before proceeding.');
-      return;
     }
 
     history.push('/tsaformpage7');
@@ -103,17 +96,17 @@ function TSAFormPage6() {
             Open Source Creations of One Community.
             <br />
             <br />
-            5.2 You acknowledge that any work done as part of your contribution to One Community's
-            Open Source Creations is being created by you for use in a compilation and that each
-            form of your contribution is being created by you as a “work made for hire” under the
-            United States Copyright Act and, at all stages of development, your contribution shall
-            be and remain the sole and exclusive property of One Community. At One Community’s sole,
-            absolute and unfettered discretion, it may make any changes in, deletions from, or
-            additions to your contribution. If for any reason the results and proceeds of your
-            services hereunder are determined at any time not to be a work made for hire, you agree
-            to transfer ownership of your contribution to One Community or, should that not be
-            possible, you grant a non-exclusive license to One Community to use your contribution on
-            a non-royalty basis.
+            5.2 You acknowledge that any work done as part of your contribution to One
+            Community&apos;s Open Source Creations is being created by you for use in a compilation
+            and that each form of your contribution is being created by you as a “work made for
+            hire” under the United States Copyright Act and, at all stages of development, your
+            contribution shall be and remain the sole and exclusive property of One Community. At
+            One Community’s sole, absolute and unfettered discretion, it may make any changes in,
+            deletions from, or additions to your contribution. If for any reason the results and
+            proceeds of your services hereunder are determined at any time not to be a work made for
+            hire, you agree to transfer ownership of your contribution to One Community or, should
+            that not be possible, you grant a non-exclusive license to One Community to use your
+            contribution on a non-royalty basis.
             <br />
             <br />
             5.3 You warrant that any sounds, music, designs, pictures, or any other media used in
@@ -121,16 +114,16 @@ function TSAFormPage6() {
             obtained or will obtain permission.
             <br />
             <br />
-            5.4 As part of One Community's goals, it shall grant you a non-exclusive license in all
-            parts of its Open Source Creations notwithstanding any other agreement between One
+            5.4 As part of One Community&apos;s goals, it shall grant you a non-exclusive license in
+            all parts of its Open Source Creations notwithstanding any other agreement between One
             Community and you. This license will be free and permit the use and replication of all
-            of One Community's Open Source Creations.
+            of One Community&apos;s Open Source Creations.
             <br />
             <br />
             5.5 You agree to indemnify and hold harmless One Community, its licensees, agents,
             consultants, board of directors, distributors, volunteers, and its successors from any
             and all claims, demands, losses, causes of action, damage, lawsuits, judgments,
-            including attorneys' fees and costs, whether or not a breach of these warranties is
+            including attorneys&apos; fees and costs, whether or not a breach of these warranties is
             finally sustained, but only to the extent caused by, arising out of, or relating to your
             contribution. These warranties and indemnities shall survive the termination of this
             agreement.
@@ -294,8 +287,18 @@ function TSAFormPage6() {
             boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
             transition: 'background-color 0.2s ease-in-out',
           }}
-          onMouseOver={e => (e.target.style.backgroundColor = '#3b6f87')}
-          onMouseOut={e => (e.target.style.backgroundColor = '#4d87a1')}
+          onMouseOver={e => {
+            e.target.style.backgroundColor = '#3b6f87';
+          }}
+          onFocus={e => {
+            e.target.style.backgroundColor = '#3b6f87';
+          }}
+          onMouseOut={e => {
+            e.target.style.backgroundColor = '#4d87a1';
+          }}
+          onBlur={e => {
+            e.target.style.backgroundColor = '#4d87a1';
+          }}
         >
           Back
         </button>
@@ -316,8 +319,18 @@ function TSAFormPage6() {
             boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
             transition: 'background-color 0.2s ease-in-out',
           }}
-          onMouseOver={e => (e.target.style.backgroundColor = '#3b6f87')}
-          onMouseOut={e => (e.target.style.backgroundColor = '#4d87a1')}
+          onMouseOver={e => {
+            e.target.style.backgroundColor = '#3b6f87';
+          }}
+          onFocus={e => {
+            e.target.style.backgroundColor = '#3b6f87';
+          }}
+          onMouseOut={e => {
+            e.target.style.backgroundColor = '#4d87a1';
+          }}
+          onBlur={e => {
+            e.target.style.backgroundColor = '#4d87a1';
+          }}
         >
           Next
         </button>

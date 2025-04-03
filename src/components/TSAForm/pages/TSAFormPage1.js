@@ -1,27 +1,48 @@
 import { useHistory } from 'react-router-dom';
+import { useState } from 'react';
 
 function TSAFormPage1() {
   const history = useHistory();
+  const [errors, setErrors] = useState({
+    email: false,
+    fullname: false,
+    professionaltitle: false,
+    professionalExperience: false,
+    areaofExpertise: false,
+  });
+
+  const clearError = field => {
+    setErrors(prev => ({ ...prev, [field]: false }));
+  };
+
   const handleNextClick = () => {
-    const requiredFields = ['email', 'fullname', 'professionaltitle'];
-    const radios = document.querySelector('input[name="professionalExperience"]:checked');
-    const checkboxes = document.querySelectorAll('input[name="areaofExpertise"]:checked');
+    const newErrors = {
+      email: false,
+      fullname: false,
+      professionaltitle: false,
+      professionalExperience: false,
+      areaofExpertise: false,
+    };
 
-    let isValid = true;
+    const email = document.querySelector('input[name="email"]');
+    const fullname = document.querySelector('input[name="fullname"]');
+    const title = document.querySelector('input[name="professionaltitle"]');
+    const experience = document.querySelector('input[name="professionalExperience"]:checked');
+    const expertise = document.querySelectorAll('input[name="areaofExpertise"]:checked');
 
-    requiredFields.forEach(field => {
-      const input = document.querySelector(`input[name="${field}"]`);
-      if (!input || !input.value.trim()) {
-        isValid = false;
-      }
-    });
+    if (!email || !email.value.trim()) newErrors.email = true;
+    if (!fullname || !fullname.value.trim()) newErrors.fullname = true;
+    if (!title || !title.value.trim()) newErrors.professionaltitle = true;
+    if (!experience) newErrors.professionalExperience = true;
+    if (expertise.length === 0) newErrors.areaofExpertise = true;
 
-    if (!radios || checkboxes.length === 0) {
-      isValid = false;
-    }
+    setErrors(newErrors);
 
-    if (!isValid) {
-      alert('Please complete all required (*) fields before proceeding.');
+    const hasErrors = Object.values(newErrors).some(Boolean);
+    if (hasErrors) {
+      const firstErrorField = Object.entries(newErrors).find(([, val]) => val)?.[0];
+      const el = document.querySelector(`[name="${firstErrorField}"]`);
+      if (el && el.scrollIntoView) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
     }
 
@@ -117,7 +138,7 @@ function TSAFormPage1() {
             required and it could take as much as an hour.
           </p>
           <p>
-            Your answers here will help our interns and volunteers identify if you'd be a good
+            Your answers here will help our interns and volunteers identify if you&apos;d be a good
             person to ask for input on their specific projects and/or designs.
           </p>
           <p
@@ -172,6 +193,7 @@ function TSAFormPage1() {
           boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
           padding: '30px',
           fontSize: '16px',
+          border: errors.email ? '2px solid #d93025' : '1px solid #ccc',
         }}
       >
         <label
@@ -190,6 +212,7 @@ function TSAFormPage1() {
           type="text"
           name="email"
           placeholder="Your answer"
+          onChange={() => clearError('email')}
           style={{
             width: '100%',
             padding: '10px 0',
@@ -200,6 +223,11 @@ function TSAFormPage1() {
             backgroundColor: 'transparent',
           }}
         />
+        {errors.email && (
+          <div style={{ color: 'red', fontSize: '14px', marginTop: '5px' }}>
+            This field is required
+          </div>
+        )}
       </div>
 
       {/* Full Name */}
@@ -212,6 +240,7 @@ function TSAFormPage1() {
           boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
           padding: '30px',
           fontSize: '16px',
+          border: errors.fullname ? '2px solid #d93025' : '1px solid #ccc',
         }}
       >
         <label
@@ -230,6 +259,7 @@ function TSAFormPage1() {
           type="text"
           name="fullname"
           placeholder="Your answer"
+          onChange={() => clearError('fullname')}
           style={{
             width: '100%',
             padding: '10px 0',
@@ -240,6 +270,11 @@ function TSAFormPage1() {
             backgroundColor: 'transparent',
           }}
         />
+        {errors.fullname && (
+          <div style={{ color: 'red', fontSize: '14px', marginTop: '5px' }}>
+            This field is required
+          </div>
+        )}
       </div>
 
       {/* Professional Tile */}
@@ -252,6 +287,7 @@ function TSAFormPage1() {
           boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
           padding: '30px',
           fontSize: '16px',
+          border: errors.professionaltitle ? '2px solid #d93025' : '1px solid #ccc',
         }}
       >
         <label
@@ -270,6 +306,7 @@ function TSAFormPage1() {
           type="text"
           name="professionaltitle"
           placeholder="Your answer"
+          onChange={() => clearError('professionaltitle')}
           style={{
             width: '100%',
             padding: '10px 0',
@@ -280,6 +317,11 @@ function TSAFormPage1() {
             backgroundColor: 'transparent',
           }}
         />
+        {errors.professionaltitle && (
+          <div style={{ color: 'red', fontSize: '14px', marginTop: '5px' }}>
+            This field is required
+          </div>
+        )}
       </div>
 
       {/* Years of Professional Experience */}
@@ -292,6 +334,7 @@ function TSAFormPage1() {
           boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
           padding: '30px',
           fontSize: '16px',
+          border: errors.professionalExperience ? '2px solid #d93025' : '1px solid #ccc',
         }}
       >
         <label
@@ -307,9 +350,9 @@ function TSAFormPage1() {
           <span style={{ color: 'red' }}>*</span>
         </label>
 
-        {['1-5', '5-7', '7-9', '10-14', '15-24', '25+'].map((option, index) => (
+        {['1-5', '5-7', '7-9', '10-14', '15-24', '25+'].map(option => (
           <label
-            key={index}
+            key={`exp-${option}`}
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -321,6 +364,7 @@ function TSAFormPage1() {
             <input
               type="radio"
               name="professionalExperience"
+              onChange={() => clearError('professionalExperience')}
               value={option}
               required
               style={{
@@ -333,6 +377,9 @@ function TSAFormPage1() {
             {option}
           </label>
         ))}
+        {errors.professionalExperience && (
+          <div style={{ color: 'red', fontSize: '14px' }}>Please select one</div>
+        )}
       </div>
 
       {/* Areas of Expertise */}
@@ -345,6 +392,7 @@ function TSAFormPage1() {
           boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
           padding: '30px',
           fontSize: '16px',
+          border: errors.areaofExpertise ? '2px solid #d93025' : '1px solid #ccc',
         }}
       >
         <div
@@ -386,8 +434,8 @@ function TSAFormPage1() {
           'Structural Analysis',
           'Structural Design',
           'Other:',
-        ].map((option, index) => (
-          <div key={index} style={{ marginBottom: '10px' }}>
+        ].map(option => (
+          <div key={`expertise-${option}`} style={{ marginBottom: '10px' }}>
             <label
               style={{
                 display: 'flex',
@@ -399,6 +447,7 @@ function TSAFormPage1() {
               <input
                 type="checkbox"
                 name="areaofExpertise"
+                onChange={() => clearError('areaofExpertise')}
                 value={option}
                 required
                 style={{
@@ -430,6 +479,9 @@ function TSAFormPage1() {
             )}
           </div>
         ))}
+        {errors.areaofExpertise && (
+          <div style={{ color: 'red', fontSize: '14px' }}>Please select at least one</div>
+        )}
       </div>
 
       {/* Next Button */}
@@ -456,8 +508,18 @@ function TSAFormPage1() {
             boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
             transition: 'background-color 0.2s ease-in-out',
           }}
-          onMouseOver={e => (e.target.style.backgroundColor = '#3b6f87')}
-          onMouseOut={e => (e.target.style.backgroundColor = '#4d87a1')}
+          onMouseOver={e => {
+            e.target.style.backgroundColor = '#3b6f87';
+          }}
+          onFocus={e => {
+            e.target.style.backgroundColor = '#3b6f87';
+          }}
+          onMouseOut={e => {
+            e.target.style.backgroundColor = '#4d87a1';
+          }}
+          onBlur={e => {
+            e.target.style.backgroundColor = '#4d87a1';
+          }}
         >
           Next
         </button>
