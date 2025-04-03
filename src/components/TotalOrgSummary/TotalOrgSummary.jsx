@@ -282,6 +282,7 @@ function TotalOrgSummary(props) {
                 <p> Active Global Volunteer Locations: Uniting Communities Worldwide</p>
               </div>
               <GlobalVolunteerMap isLoading={isLoading} locations={volunteerStats?.userLocations} />
+
             </div>
           </Col>
           <Col lg={{ size: 6 }}>

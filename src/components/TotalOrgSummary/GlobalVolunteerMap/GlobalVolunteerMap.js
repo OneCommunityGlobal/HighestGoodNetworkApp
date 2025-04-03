@@ -2,9 +2,7 @@ import React, { useReducer, useEffect, useState } from 'react';
 import { MapContainer, TileLayer, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { CircleMarker } from 'react-leaflet';
-import 'leaflet.heat'
-import L from 'leaflet';
-import 'leaflet.heat'; // Make sure you have this installed: `npm install leaflet.heat`
+import 'leaflet.heat';
 import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
 import { ToastContainer, toast } from 'react-toastify';
@@ -13,47 +11,7 @@ import Loading from 'components/common/Loading';
 
 // Volunteer color mapping based on status
 const volunteerColors = {
-  active: '#4CAF50',       // Green
-};
-
-
-const initialState = {
-  userLocations: [],
-  loading: false,
-  error: null,
-};
-
-const reducer = (state, action) => {
-  switch (action.type) {
-    case 'FETCH_INIT':
-      return { ...state, loading: true, error: null };
-    case 'FETCH_SUCCESS':
-      return { ...state, loading: false, userLocations: action.payload };
-    case 'FETCH_FAILURE':
-      return { ...state, loading: false, error: action.payload };
-    default:
-      return state;
-  }
-};
-
-const fetchUserLocations = async (dispatch, startDate, endDate) => {
-  dispatch({ type: 'FETCH_INIT' });
-
-  // Build the URL manually to avoid sending undefined comparison dates
-  const baseUrl = ENDPOINTS.TOTAL_ORG_SUMMARY(startDate, endDate);
-  const url = new URL(baseUrl, window.location.origin); // Use base if ENDPOINT returns path only
-
-  // Ensure startDate and endDate are valid
-  if (startDate) url.searchParams.set("startDate", startDate);
-  if (endDate) url.searchParams.set("endDate", endDate);
-
-  try {
-    const response = await axios.get(url.toString());
-    dispatch({ type: 'FETCH_SUCCESS', payload: response.data.userLocations });
-  } catch (error) {
-    console.error("Error fetching volunteer locations:", error.response?.data || error.message);
-    dispatch({ type: 'FETCH_FAILURE', payload: error.message });
-  }
+  active: '#4CAF50', // Green
 };
 
 
@@ -84,33 +42,27 @@ function HeatMap({ points }) {
   return null;
 }
 
+<<<<<<< HEAD:src/components/TotalOrgSummary/GlobalVolunteerMap/GlobalVolunteerMap.js
 function MapComponent({ isLoading, startDate, endDate }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const { userLocations, loading, error } = state;
+=======
+function MapComponent({ locations, isLoading, error }) {
+>>>>>>> a427fcd25 (changed globalvolunteermap code):src/components/GlobalVolunteerMap.js
   const [isMapVisible, setIsMapVisible] = useState(false);
-
-  // Provide default values if not passed
-  const defaultStart = startDate || '2023-01-01';
-  const defaultEnd = endDate || new Date().toISOString().split('T')[0];
-
-  useEffect(() => {
-    fetchUserLocations(dispatch, defaultStart, defaultEnd);
-  }, [defaultStart, defaultEnd]);
 
   useEffect(() => {
     setIsMapVisible(true);
     toast.info('This map displays only active volunteers.');
   }, []);
 
-  const heatMapPoints = userLocations.map(location => [
+  const heatMapPoints = locations.map(location => [
     location._id.lat,
     location._id.lng,
     location.count,
   ]);
-  
-  // Separate volunteers by status
-const activeVolunteers = userLocations.filter(v => v.status === 'active');
 
+<<<<<<< HEAD:src/components/TotalOrgSummary/GlobalVolunteerMap/GlobalVolunteerMap.js
   if (isLoading) {
     return (
       <div className="d-flex justify-content-center align-items-center">
@@ -120,13 +72,21 @@ const activeVolunteers = userLocations.filter(v => v.status === 'active');
       </div>
     );
   }
+=======
+  const activeVolunteers = locations.filter(v => v.status === 'active');
+>>>>>>> a427fcd25 (changed globalvolunteermap code):src/components/GlobalVolunteerMap.js
 
   return (
-    <div>
+    <div className="map-container">
       {isMapVisible && (
         <>
-          {loading && <p>Loading...</p>}
-          {error && <p>Error: {error}</p>}
+          {isLoading && <p>Loading...</p>}
+          {error && (
+            <div className="error-container">
+              <p>Error: {error}</p>
+              <button onClick={() => fetchUserLocations(dispatch, defaultStart, defaultEnd)}>Retry</button>
+            </div>
+          )}
           <MapContainer
             center={[20, 0]}
             zoom={2}
@@ -137,17 +97,15 @@ const activeVolunteers = userLocations.filter(v => v.status === 'active');
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             />
             <HeatMap points={heatMapPoints} />
-            {/* Active Volunteers - Green */}
-{activeVolunteers.map((volunteer, index) => (
-  <CircleMarker
-    key={`active-${index}`}
-    center={[volunteer._id.lat, volunteer._id.lng]}
-    radius={8}
-    pathOptions={{ color: '#4CAF50', fillColor: '#4CAF50', fillOpacity: 0.8 }}
-  >
-  </CircleMarker>
-))}
-
+            {activeVolunteers.length > 0 &&
+              activeVolunteers.map((volunteer, index) => (
+                <CircleMarker
+                  key={`active-${index}`}
+                  center={[volunteer._id.lat, volunteer._id.lng]}
+                  radius={8}
+                  pathOptions={{ color: '#4CAF50', fillColor: '#4CAF50', fillOpacity: 0.8 }}
+                />
+              ))}
           </MapContainer>
         </>
       )}
