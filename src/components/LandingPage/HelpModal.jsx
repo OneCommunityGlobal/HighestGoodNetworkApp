@@ -62,7 +62,7 @@ function HelpModal({ show, onHide }) {
       </Modal.Header>
       <Modal.Body>
         <div className="select-container">
-          <div 
+          <div
             className="select-button"
             onClick={() => setIsOpen(!isOpen)}
             role="button"

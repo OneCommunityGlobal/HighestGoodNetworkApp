@@ -4,7 +4,6 @@ import { useHistory } from 'react-router-dom';
 import HelpModal from './HelpModal';
 import SummaryBar from '../SummaryBar/SummaryBar';
 
-
 function HelpPage() {
   const [showModal, setShowModal] = useState(true);
   const history = useHistory();
