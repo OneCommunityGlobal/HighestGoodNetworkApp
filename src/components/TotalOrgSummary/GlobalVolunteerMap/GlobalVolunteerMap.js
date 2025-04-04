@@ -1,19 +1,12 @@
-import React, { useReducer, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { CircleMarker } from 'react-leaflet';
 import 'leaflet.heat';
-import axios from 'axios';
-import { ENDPOINTS } from 'utils/URL';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Loading from 'components/common/Loading';
-
-// Volunteer color mapping based on status
-const volunteerColors = {
-  active: '#4CAF50', // Green
-};
-
+import L from 'leaflet';
 
 function HeatMap({ points }) {
   const map = useMap();
@@ -42,8 +35,7 @@ function HeatMap({ points }) {
   return null;
 }
 
-
-function MapComponent({ locations, isLoading, error }) {
+function MapComponent({ locations, isLoading, error, fetchUserLocations, dispatch, defaultStart, defaultEnd }) {
   const [isMapVisible, setIsMapVisible] = useState(false);
 
   useEffect(() => {
@@ -57,7 +49,6 @@ function MapComponent({ locations, isLoading, error }) {
     location.count,
   ]);
 
-
   if (isLoading) {
     return (
       <div className="d-flex justify-content-center align-items-center">
@@ -67,17 +58,17 @@ function MapComponent({ locations, isLoading, error }) {
       </div>
     );
   }
+
   const activeVolunteers = locations.filter(v => v.status === 'active');
 
   return (
     <div className="map-container">
       {isMapVisible && (
         <>
-          {isLoading && <p>Loading...</p>}
           {error && (
             <div className="error-container">
               <p>Error: {error}</p>
-              <button onClick={() => fetchUserLocations(dispatch, defaultStart, defaultEnd)}>Retry</button>
+              <button type="button" onClick={() => fetchUserLocations(dispatch, defaultStart, defaultEnd)}>Retry</button>
             </div>
           )}
           <MapContainer
@@ -91,9 +82,9 @@ function MapComponent({ locations, isLoading, error }) {
             />
             <HeatMap points={heatMapPoints} />
             {activeVolunteers.length > 0 &&
-              activeVolunteers.map((volunteer, index) => (
+              activeVolunteers.map((volunteer) => (
                 <CircleMarker
-                  key={`active-${index}`}
+                  key={volunteer._id}
                   center={[volunteer._id.lat, volunteer._id.lng]}
                   radius={8}
                   pathOptions={{ color: '#4CAF50', fillColor: '#4CAF50', fillOpacity: 0.8 }}
