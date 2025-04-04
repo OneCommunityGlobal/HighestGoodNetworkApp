@@ -16,7 +16,6 @@ src/components/common/**
 src/components/Projects/**
 src/components/SummaryManagement/**
 src/components/TaskEditSuggestions/**
-src/components/TeamMemberTasks/**
 src/components/Timelog/**
 src/components/UserManagement/**
 src/components/UserProfile/**
