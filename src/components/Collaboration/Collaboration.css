@@ -179,11 +179,11 @@ select {
 }
 
 .navbar-right select {
-  padding: 12px 18px;  /* Increase padding for larger size */
-  font-size: 16px;  /* Increase text size */
+  padding: 12px 18px;  
+  font-size: 16px;  
   border: 1px solid #ccc;
   border-radius: 5px;
-  margin-top: -10px;
+  margin-top: -14px;
 }
 
 
@@ -230,3 +230,4 @@ select {
     width: auto; 
   }
 }
+
