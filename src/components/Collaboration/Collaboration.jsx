@@ -3,7 +3,7 @@ import './Collaboration.css';
 import { toast } from 'react-toastify';
 import { ApiEndpoint } from 'utils/URL';
 import OneCommunityImage from './One-Community-Horizontal-Homepage-Header-980x140px-2.png';
-import { boxStyle, boxStyleDark } from 'styles';
+
 
 import 'leaflet/dist/leaflet.css';
 
@@ -135,7 +135,6 @@ class Collaboration extends Component {
   };
 
   render() {
-    const { role, darkMode } = this.props;
     const {
       searchTerm,
       selectedCategory,
