@@ -2,3 +2,33 @@
   color: red;
   font-size: 10px;
 }
+
+.edit-form-container {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.edit-form-assigned{
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 5px;
+}
+
+
+.edit-form-radios {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.edit-form-radios input[type="radio"] {
+  margin: 0; 
+  padding: 0;
+}
+
+.edit-form-radios label {
+  margin: 0; 
+  padding: 0; 
+}

@@ -358,10 +358,10 @@ function EditTaskModal(props) {
                 <td scope="col">Assigned</td>
                   <td>
                     {ReadOnlySectionWrapper(
-                      <div className="flex-row d-inline align-items-center">
-                        <div className="form-check form-check-inline">
+                      <div className="edit-form-container">
+                        <div className="edit-form-radios">
                           <input
-                            className="form-check-input"
+                            className=""
                             type="radio"
                             id="true"
                             name="Assigned"
@@ -369,13 +369,13 @@ function EditTaskModal(props) {
                             onChange={e => setAssigned(true)}
                             checked={assigned}
                           />
-                          <label className={`form-check-label ${darkMode ? 'text-light' : ''}`} htmlFor="true">
+                          <label className={`${darkMode ? 'text-light' : ''}`} htmlFor="true">
                             Yes
                           </label>
                         </div>
-                        <div className="form-check form-check-inline">
+                        <div className="edit-form-radios">
                           <input
-                            className="form-check-input"
+                            className=""
                             type="radio"
                             id="false"
                             name="Assigned"
@@ -383,7 +383,7 @@ function EditTaskModal(props) {
                             onChange={e => setAssigned(false)}
                             checked={!assigned}
                           />
-                          <label className={`form-check-label ${darkMode ? 'text-light' : ''}`} htmlFor="false">
+                          <label className={`${darkMode ? 'text-light' : ''}`} htmlFor="false">
                             No
                           </label>
                         </div>
@@ -397,12 +397,12 @@ function EditTaskModal(props) {
                 <td scope="col">Status</td>
                   <td>
                     {ReadOnlySectionWrapper(
-                      <div className="container">
-                        <div className="row">
+                      <div className="edit-form-status-container">
+                        <div className="edit-form-container">
                           <div className="col-6 pl-0">
-                            <div className="form-check">
+                            <div className="edit-form-radios">
                               <input
-                                className="form-check-input"
+                                className=""
                                 type="radio"
                                 id="active"
                                 name="status"
@@ -410,15 +410,15 @@ function EditTaskModal(props) {
                                 checked={status === 'Active' || status === 'Started'}
                                 onChange={(e) => setStatus(e.target.value)}
                               />
-                              <label className={`form-check-label ${darkMode ? 'text-light' : ''}`} htmlFor="active">
+                              <label className={`${darkMode ? 'text-light' : ''}`} htmlFor="active">
                                 Active
                               </label>
                             </div>
                           </div>
                           <div className="col-6 pl-0">
-                            <div className="form-check">
+                            <div className="edit-form-radios">
                               <input
-                                className="form-check-input"
+                                className=""
                                 type="radio"
                                 id="notStarted"
                                 name="status"
@@ -426,17 +426,17 @@ function EditTaskModal(props) {
                                 checked={status === 'Not Started'}
                                 onChange={(e) => setStatus(e.target.value)}
                               />
-                              <label className={`form-check-label ${darkMode ? 'text-light' : ''}`} htmlFor="notStarted">
+                              <label className={`${darkMode ? 'text-light' : ''}`} htmlFor="notStarted">
                                 Not Started
                               </label>
                             </div>
                           </div>
                         </div>
-                        <div className="row">
+                        <div className="edit-form-container">
                           <div className="col-6 pl-0">
-                            <div className="form-check">
+                            <div className="edit-form-radios">
                               <input
-                                className="form-check-input"
+                                className=""
                                 type="radio"
                                 id="paused"
                                 name="status"
@@ -444,15 +444,15 @@ function EditTaskModal(props) {
                                 checked={status === 'Paused'}
                                 onChange={(e) => setStatus(e.target.value)}
                               />
-                              <label className={`form-check-label ${darkMode ? 'text-light' : ''}`} htmlFor="paused">
+                              <label className={`${darkMode ? 'text-light' : ''}`} htmlFor="paused">
                                 Paused
                               </label>
                             </div>
                           </div>
                           <div className="col-6 pl-0">
-                            <div className="form-check">
+                            <div className="edit-form-radios">
                               <input
-                                className="form-check-input"
+                                className=""
                                 type="radio"
                                 id="complete"
                                 name="status"
@@ -460,7 +460,7 @@ function EditTaskModal(props) {
                                 checked={status === 'Complete'}
                                 onChange={(e) => setStatus(e.target.value)}
                               />
-                              <label className={`form-check-label ${darkMode ? 'text-light' : ''}`} htmlFor="complete">
+                              <label className={`${darkMode ? 'text-light' : ''}`} htmlFor="complete">
                                 Complete
                               </label>
                             </div>

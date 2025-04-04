@@ -8,3 +8,33 @@
 .form-date {
   width: 30%;
 }
+
+.add-form-container {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.add-form-assigned{
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 5px;
+}
+
+
+.add-form-radios {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.add-form-radios input[type="radio"] {
+  margin: 0; 
+  padding: 0;
+}
+
+.add-form-radios label {
+  margin: 0; 
+  padding: 0; 
+}
