@@ -33,7 +33,7 @@ function CheckTypes({ type }) {
   const normalizeString = str =>
     str
       .trim()
-      .replace(/\s+/g, ' ')
+      .replace(/\s+/g, '')
       .toLowerCase();
 
   const filteredBuildingInvTypes = buildingInvTypes.filter(item =>
