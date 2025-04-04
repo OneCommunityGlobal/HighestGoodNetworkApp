@@ -165,6 +165,7 @@ function UserProfile(props) {
   const { userid: requestorId, role: requestorRole } = props.auth.user;
 
   const canEditTeamCode = props.hasPermission('editTeamCode');
+  const [titleOnSet, setTitleOnSet] = useState(false); 
 
   /* useEffect functions */
   useEffect(() => {
@@ -210,8 +211,20 @@ function UserProfile(props) {
 
   useEffect(() => {
     checkIsProjectsEqual();
-    setUserProfile({ ...userProfile, projects });
-    setOriginalUserProfile({ ...originalUserProfile, projects });
+    setUserProfile(prevState => {
+      const updatedProfile = prevState;
+      if(updatedProfile){
+        updatedProfile.projects = projects || updatedProfile.projects;
+      }
+      return updatedProfile
+    });
+    setOriginalUserProfile(prevState => {
+      const updatedOriginalProfile = prevState;
+      if(updatedOriginalProfile){
+        updatedOriginalProfile.projects = projects || updatedOriginalProfile.projects;
+      }
+      return updatedOriginalProfile
+    });
   }, [projects]);
 
   useEffect(() => {
@@ -219,6 +232,14 @@ function UserProfile(props) {
     loadUserProfile();
     loadUserTasks();
   }, [props?.match?.params?.userId]);
+
+  useEffect(() => {
+    if (userProfile?.firstName || userProfile?.lastName) {
+      document.title = `${userProfile.firstName ?? ''} ${userProfile.lastName ?? ''}`.trim();
+    } else {
+      document.title = 'User';
+    }
+  }, [userProfile]);    
 
   const checkIsProjectsEqual = () => {
     const originalProjectProperties = [];
@@ -338,6 +359,7 @@ function UserProfile(props) {
       const startDate = await dispatch(
         getTimeStartDateEntriesByPeriod(userId, newUserProfile.createdDate, newUserProfile.toDate),
       );
+
 
       if (startDate !== 'N/A') {
         newUserProfile.startDate = startDate.split('T')[0];
@@ -558,22 +580,30 @@ function UserProfile(props) {
           createdDate: moment().format('YYYY-MM-DD'),
         };
         setModalTitle('Blue Square');
-        await axios
+        axios
           .post(ENDPOINTS.ADD_BLUE_SQUARE(userProfile._id), {
             blueSquare: newBlueSquare,
-          })
-          .catch(error => {
+          }).then((res) => {
+            let newBlueSqrs = [
+              ...userProfile.infringements,
+              {
+                _id: res.data._id,
+                ...newBlueSquare
+              }
+            ]
+            toast.success('Blue Square Added!');
+            setOriginalUserProfile({
+              ...originalUserProfile,
+              infringements: newBlueSqrs,
+            });
+            setUserProfile({
+              ...userProfile,
+              infringements: newBlueSqrs,
+            })
+          }).catch(error => {
+            console.log("error in modifying bluequare", error);
             toast.error('Failed to add Blue Square!');
           });
-        toast.success('Blue Square Added!');
-        setOriginalUserProfile({
-          ...originalUserProfile,
-          infringements: userProfile.infringements?.concat(newBlueSquare),
-        });
-        setUserProfile({
-          ...userProfile,
-          infringements: userProfile.infringements?.concat(newBlueSquare),
-        });
       }
     } else if (operation === 'update') {
       const currentBlueSquares = [...userProfile?.infringements] || [];
@@ -608,14 +638,15 @@ function UserProfile(props) {
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (updatedUserProfile) => {
     for (let i = 0; i < updatedTasks.length; i += 1) {
       const updatedTask = updatedTasks[i];
       const url = ENDPOINTS.TASK_UPDATE(updatedTask.taskId);
       axios.put(url, updatedTask.updatedTask).catch(err => console.log(err));
     }
     try {
-      const result = await props.updateUserProfile(userProfileRef.current);
+      const userProfileToUpdate = updatedUserProfile || userProfileRef.current;
+      const result = await props.updateUserProfile(userProfileToUpdate);
       if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
         await props.refreshToken(userProfile._id);
       }
@@ -664,11 +695,12 @@ function UserProfile(props) {
 
   const updateLink = (personalLinksUpdate, adminLinksUpdate, mediaUrlUpdate) => {
     setShowModal(false);
-    setUserProfile({
-      ...userProfile,
-      mediaUrl: mediaUrlUpdate !== undefined ? mediaUrlUpdate : userProfile.mediaUrl,
-      personalLinks: personalLinksUpdate,
-      adminLinks: adminLinksUpdate,
+    setUserProfile(prevState => {
+      const updatedProfile = prevState;
+      updatedProfile.adminLinks = adminLinksUpdate || updatedProfile.adminLinks;
+      updatedProfile.mediaUrl = mediaUrlUpdate !== undefined ? mediaUrlUpdate : updatedProfile.mediaUrl;
+      updatedProfile.personalLinks = personalLinksUpdate || updatedProfile.personalLinks;
+      return updatedProfile
     });
   };
 
@@ -814,7 +846,7 @@ function UserProfile(props) {
 
   if ((showLoading && !props.isAddNewUser) || userProfile === undefined) {
     return (
-      <Container fluid>
+      <Container fluid className={darkMode ? 'bg-oxford-blue' : ''}>
         <Row className="text-center" data-test="loading">
           <SkeletonLoading template="UserProfile" />
         </Row>
@@ -938,10 +970,10 @@ function UserProfile(props) {
       <BasicToolTips />
 
       <Container
-        className={`py-5 ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
+        className={`py-5 ${darkMode ? 'bg-yinmn-blue text-light border-0' : ''}`}
         id='containerProfile'
       >
-          {/* <div className='containerProfile' > */}
+        {/* <div className='containerProfile' > */}
 
 
           <div className='left-top' >
@@ -992,14 +1024,14 @@ function UserProfile(props) {
                 ))?
                 <Button color="primary" onClick={toggleModal}>Suggested Profile Image</Button>
                 :null} */}
-            </div>
+          </div>
 
-            {/* {userProfile!==undefined && userProfile.suggestedProfilePics!==undefined?<ProfileImageModal isOpen={isModalOpen} toggleModal={toggleModal} userProfile={userProfile}/>:<></>} */}
-            <ConfirmRemoveModal
-              isOpen={isRemoveModalOpen}
-              toggleModal={toggleRemoveModal}
-              confirmRemove={confirmRemoveImage}
-            />
+          {/* {userProfile!==undefined && userProfile.suggestedProfilePics!==undefined?<ProfileImageModal isOpen={isModalOpen} toggleModal={toggleModal} userProfile={userProfile}/>:<></>} */}
+          <ConfirmRemoveModal
+            isOpen={isRemoveModalOpen}
+            toggleModal={toggleRemoveModal}
+            confirmRemove={confirmRemoveImage}
+          />
 
             <QuickSetupModal
               setSaved={setSaved}
@@ -1009,6 +1041,9 @@ function UserProfile(props) {
               userTeams={teams || []}
               teamsData={props?.allTeams?.allTeamsData || []}
               projectsData={props?.allProjects?.projects || []}
+              titleOnSet={titleOnSet}
+              setTitleOnSet={setTitleOnSet}
+              updateUserProfile={props.updateUserProfile}
             />
 
           </div>
@@ -1150,7 +1185,7 @@ function UserProfile(props) {
             {showSelect && summaries !== undefined ? (
               <div>
                 <Select
-                  className={darkMode ? 'text-azure' : ''}
+                  className={darkMode ? 'bg-darkmode-liblack text-azure' : ''}
                   options={summaries}
                   styles={customStyles}
                   onChange={e => {
@@ -1189,8 +1224,8 @@ function UserProfile(props) {
             />
           
 
-  
-          <div  className="profile-functions-desktop">
+
+          <div className="profile-functions-desktop">
             <div className="profile-tabs">
               <Nav tabs>
                 <NavItem>
@@ -1411,6 +1446,7 @@ function UserProfile(props) {
                       !formValid.email ||
                       !codeValid ||
                       (userStartDate > userEndDate && userEndDate !== '') ||
+                      titleOnSet ||
                       (isProfileEqual && isTasksEqual && isProjectsEqual)
                     }
                     userProfile={userProfile}
@@ -1435,8 +1471,8 @@ function UserProfile(props) {
                 </>
               )}
             </div>
-         </div>
-          <div  className="profile-functions-tablet">
+          </div>
+          <div className="profile-functions-tablet">
             <List className="profile-functions-list">
               <Button
                 className="list-button"
@@ -1542,6 +1578,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
+                              titleOnSet ||
                               (isProfileEqual && isTasksEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
@@ -1619,6 +1656,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
+                              titleOnSet ||
                               (isProfileEqual && isTasksEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
@@ -1714,6 +1752,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
+                              titleOnSet ||
                               (isProfileEqual && isTasksEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
@@ -1799,6 +1838,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
+                              titleOnSet ||
                               (isProfileEqual && isTasksEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
@@ -1871,6 +1911,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
+                              titleOnSet ||
                               (isProfileEqual && isTasksEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
@@ -1909,38 +1950,38 @@ function UserProfile(props) {
             </List>
           </div>
 
+        </div>
+
+        <div className='left-bottom'>
+          <div className="profile-work">
+            <UserLinkLayout
+              isUserSelf={isUserSelf}
+              userProfile={userProfile}
+              updateLink={updateLink}
+              handleLinkModel={props.handleLinkModel}
+              handleSubmit={handleSubmit}
+              role={requestorRole}
+              canEdit={canEdit || canManageAdminLinks}
+              darkMode={darkMode}
+            />
+            <BlueSquareLayout
+              userProfile={userProfile}
+              handleUserProfile={handleUserProfile}
+              handleSaveError={props.handleSaveError}
+              handleBlueSquare={handleBlueSquare}
+              user={props.auth.user}
+              isUserSelf={isUserSelf}
+              canEdit={canEdit}
+              darkMode={darkMode}
+            />
           </div>
 
-            <div className='left-bottom'>
-              <div className="profile-work">
-              <UserLinkLayout
-                isUserSelf={isUserSelf}
-                userProfile={userProfile}
-                updateLink={updateLink}
-                handleLinkModel={props.handleLinkModel}
-                handleSubmit={handleSubmit}
-                role={requestorRole}
-                canEdit={canEdit || canManageAdminLinks}
-                darkMode={darkMode}
-              />
-              <BlueSquareLayout
-                userProfile={userProfile}
-                handleUserProfile={handleUserProfile}
-                handleSaveError={props.handleSaveError}
-                handleBlueSquare={handleBlueSquare}
-                user={props.auth.user}
-                isUserSelf={isUserSelf}
-                canEdit={canEdit}
-                darkMode={darkMode}
-              />
-            </div>
 
-            
-            </div>
-         <div className='left-dummy'></div>
-         
-         
-          {/* </div> */}
+        </div>
+        <div className='left-dummy'></div>
+
+
+        {/* </div> */}
       </Container>
     </div>
   );
