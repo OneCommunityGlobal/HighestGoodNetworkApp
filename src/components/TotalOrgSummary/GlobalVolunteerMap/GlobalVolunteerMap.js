@@ -1,15 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, useMap } from 'react-leaflet';
+import { useEffect, useState } from 'react';
+import L from 'leaflet';
+import { MapContainer, TileLayer, useMap, CircleMarker } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import { CircleMarker } from 'react-leaflet';
 import 'leaflet.heat';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Loading from 'components/common/Loading';
 
-// Volunteer color mapping based on status
 const volunteerColors = {
-  active: '#4CAF50', // Green
+  active: '#4CAF50',
 };
 
 function HeatMap({ points }) {
@@ -34,12 +33,13 @@ function HeatMap({ points }) {
         map.removeLayer(heat);
       };
     }
+    return undefined;
   }, [points, map]);
 
   return null;
 }
 
-function MapComponent({ locations = [], isLoading, error }) { // Default empty array if locations is undefined
+function MapComponent({ locations = [], isLoading, error }) {
   const [isMapVisible, setIsMapVisible] = useState(false);
 
   useEffect(() => {
@@ -47,12 +47,13 @@ function MapComponent({ locations = [], isLoading, error }) { // Default empty a
     toast.info('This map displays only active volunteers.');
   }, []);
 
-  // Ensure locations is an array before calling map
   const heatMapPoints = (locations || []).map(location => [
     location._id.lat,
     location._id.lng,
     location.count,
   ]);
+
+  const activeVolunteers = (locations || []).filter(v => v.status === 'active');
 
   if (isLoading) {
     return (
@@ -64,9 +65,6 @@ function MapComponent({ locations = [], isLoading, error }) { // Default empty a
     );
   }
 
-  // Filter out active volunteers
-  const activeVolunteers = (locations || []).filter(v => v.status === 'active');
-
   return (
     <div className="map-container">
       {isMapVisible && (
@@ -74,25 +72,26 @@ function MapComponent({ locations = [], isLoading, error }) { // Default empty a
           {error && (
             <div className="error-container">
               <p>Error: {error}</p>
-              <button onClick={() => { /* Add retry logic here */ }}>
+              <button
+                type="button"
+                onClick={() => {
+                  /* Add retry logic here */
+                }}
+              >
                 Retry
               </button>
             </div>
           )}
-          <MapContainer
-            center={[20, 0]}
-            zoom={2}
-            style={{ height: '500px', width: '100%' }}
-          >
+          <MapContainer center={[20, 0]} zoom={2} style={{ height: '500px', width: '100%' }}>
             <TileLayer
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             />
             <HeatMap points={heatMapPoints} />
             {activeVolunteers.length > 0 &&
-              activeVolunteers.map((volunteer, index) => (
+              activeVolunteers.map(volunteer => (
                 <CircleMarker
-                  key={`active-${index}`}
+                  key={`active-${volunteer._id.lat}-${volunteer._id.lng}`}
                   center={[volunteer._id.lat, volunteer._id.lng]}
                   radius={8}
                   pathOptions={{
@@ -111,4 +110,3 @@ function MapComponent({ locations = [], isLoading, error }) { // Default empty a
 }
 
 export default MapComponent;
-
