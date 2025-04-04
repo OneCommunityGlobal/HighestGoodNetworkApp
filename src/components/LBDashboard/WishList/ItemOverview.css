@@ -397,6 +397,9 @@ p {
     display: flex;
     justify-content: center;
   }
+  .item__rent {
+    justify-content: space-between;
+  }
 }
 
 @media screen and (max-width: 500px) {
@@ -488,10 +491,10 @@ p {
     padding: 2.5%;
     border-radius: 998px;
     border: none;
-    width: 60%;
+    width: 80%;
     display: flex;
     justify-content: center;
-    min-width: 90px;
+    min-width: 150px;
     font-size: 12px;
   }
 }

@@ -24,6 +24,10 @@ function WishList(props) {
           <div className="item__body" key={item.id}>
             <div className="item__details-wrapper">
               <div className="list__details-left">
+                <div className="item-title_wrapper--mobile">
+                  <h1 className="list__item-title--mobile">{item.title}</h1>
+                  <h2 className="list__item-title--mobile">{item.unit}</h2>
+                </div>
                 <img
                   key={item.images[0]}
                   className="carousel-image"
@@ -32,11 +36,11 @@ function WishList(props) {
                 />
               </div>
               <div className="list__details-right">
-                <div className="item-title_wrapper">
+                <div className="item-title_wrapper item-title_wrapper--desktop">
                   <span className="list__item-title item-title-right">{item.title}</span>
                 </div>
                 <div className="item__details">
-                  <span className="list__item-title">{item.unit}</span>
+                  <span className="list__item-title item-title_wrapper--desktop">{item.unit}</span>
                   <div className="list_item__amenities">
                     <div>
                       <span className="font600">Available amenities in this unit:</span>
