@@ -232,13 +232,17 @@ function TimeEntryForm(props) {
 
   const handleEditorChange = (content, editor) => {
     const { wordcount } = editor.plugins;
-    const hasLink = content.indexOf('http://') > -1 || content.indexOf('https://') > -1;
+    const regexFilter = /https:\/\/(?!(www\.)?localhost|(www\.)?dropbox\.com(?!\/scl\/)|(www\.)?[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}.*$/gim;
+    const hasLink = regexFilter.test(content);
+    const dropboxRegex = /https:\/\/(www\.)?dropbox\.com/gim;
+    const hasDropboxLink = dropboxRegex.test(content);
     const enoughWords = wordcount.body.getWordCount() > 10;
     setFormValues(fv => ({ ...fv, [editor.id]: content }));
     setReminder(r => ({
       ...r,
       enoughWords,
       hasLink,
+      hasDropboxLink,
     }));
   };
 
@@ -260,10 +264,14 @@ function TimeEntryForm(props) {
       remindObj.remind =
         'Please write a more detailed description of your work completed, write at least 1-2 sentences.';
       errorObj.notes = 'Description and reference link are required';
-    } else if (!reminder.hasLink) {
+    } else if (!reminder.hasLink && !reminder.hasDropboxLink) {
       remindObj.remind =
         'Do you have a link to your Google Doc or other place to review this work? You should add it if you do. (Note: Please include http[s]:// in your URL)';
       errorObj.notes = 'Description and reference link are required';
+    } else if (!reminder.hasLink && reminder.hasDropboxLink) {
+      remindObj.remind =
+        'Halt, Link Wrangler! You’ve tried to share a DropBox link by just copying the DropBox URL from your browser, creating a link like a locked door with no key. Use the DropBox “Share” option to create a link that is guest-friendly!';
+      errorObj.notes = 'A valid Dropbox link from the “Share” option is required';
     }
 
     setErrors(errorObj);
