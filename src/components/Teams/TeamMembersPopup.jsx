@@ -305,8 +305,8 @@ export const TeamMembersPopup = React.memo(props => {
                     </div>
                   </div>
                 </th>
-                <th>#</th>
-                <th>User Name</th>
+                <th class="def-width">#</th>
+                <th class="def-width">User Name</th>
                 <th style={{ cursor: 'pointer' }} onClick={toggleOrder}>
                   Date Added{' '}
                   <FontAwesomeIcon
@@ -379,7 +379,7 @@ export const TeamMembersPopup = React.memo(props => {
                            />
                          </td>
                          {canAssignTeamToUsers && (
-                           <td>
+                           <td style={{ whiteSpace: 'nowrap', minWidth: '100px', textAlign: 'center' }}>
                              <Button
                                color="danger"
                                onClick={() => handleDelete(user._id)}

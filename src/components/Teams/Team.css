@@ -36,6 +36,23 @@ thead {
   text-align: start;
 }
 
+/* Targets 2nd column in team rows for better alignment and readability */
+.teams__tr td:nth-child(2) {
+  text-align: center;
+  vertical-align: middle;
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.teams__order--input div {
+  margin-top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+
 
 .teams__overview--top {
   background: transparent;
