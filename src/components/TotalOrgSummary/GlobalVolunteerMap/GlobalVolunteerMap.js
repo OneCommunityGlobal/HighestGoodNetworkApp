@@ -42,13 +42,8 @@ function HeatMap({ points }) {
   return null;
 }
 
-<<<<<<< HEAD:src/components/TotalOrgSummary/GlobalVolunteerMap/GlobalVolunteerMap.js
-function MapComponent({ isLoading, startDate, endDate }) {
-  const [state, dispatch] = useReducer(reducer, initialState);
-  const { userLocations, loading, error } = state;
-=======
+
 function MapComponent({ locations, isLoading, error }) {
->>>>>>> a427fcd25 (changed globalvolunteermap code):src/components/GlobalVolunteerMap.js
   const [isMapVisible, setIsMapVisible] = useState(false);
 
   useEffect(() => {
@@ -62,7 +57,7 @@ function MapComponent({ locations, isLoading, error }) {
     location.count,
   ]);
 
-<<<<<<< HEAD:src/components/TotalOrgSummary/GlobalVolunteerMap/GlobalVolunteerMap.js
+
   if (isLoading) {
     return (
       <div className="d-flex justify-content-center align-items-center">
@@ -72,9 +67,7 @@ function MapComponent({ locations, isLoading, error }) {
       </div>
     );
   }
-=======
   const activeVolunteers = locations.filter(v => v.status === 'active');
->>>>>>> a427fcd25 (changed globalvolunteermap code):src/components/GlobalVolunteerMap.js
 
   return (
     <div className="map-container">
