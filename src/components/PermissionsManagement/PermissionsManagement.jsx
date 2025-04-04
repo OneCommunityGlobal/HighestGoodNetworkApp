@@ -55,23 +55,25 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode
     }
   }, [reminderUser]);
 
+  const getChangeLogs = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(ENDPOINTS.PERMISSION_CHANGE_LOGS(auth?.user.userid));
+      setChangeLogs(response.data);
+      setLoading(false);
+    } catch (error) {
+      // Removed console.error statement
+    }
+  };
+
   useEffect(() => {
     getAllRoles();
 
     getInfoCollections();
     getUserRole(auth?.user.userid);
-    const getChangeLogs = async () => {
-      try {
-        const response = await axios.get(ENDPOINTS.PERMISSION_CHANGE_LOGS(auth?.user.userid));
-        setChangeLogs(response.data);
-        setLoading(false);
-      } catch (error) {
-        // Removed console.error statement
-      }
-    };
 
     getChangeLogs();
-  }, []);
+  }, [setChangeLogs, setLoading]);
 
   const togglePopUpUserPermissions = () => {
     if (modalStatus === false) {
@@ -229,13 +231,17 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode
             >
               Manage User Permissions
             </ModalHeader>
-            <ModalBody id="modal-body_new-role--padding">
+            <ModalBody
+              id="modal-body_new-role--padding"
+              className={darkMode ? 'bg-yinmn-blue-light' : ''}
+            >
               <UserPermissionsPopUp
                 toggle={togglePopUpUserPermissions}
                 setReminderModal={setReminderModal}
                 reminderModal={reminderModal}
                 modalStatus={modalStatus}
                 darkMode={darkMode}
+                getChangeLogs={getChangeLogs}
               />
             </ModalBody>
           </Modal>

@@ -134,6 +134,7 @@ class Teams extends React.PureComponent {
                 fontSize={30}
                 isPermissionPage
                 role={this.props.state?.auth?.user?.role}
+                darkMode={darkMode}
               />
 
               <TeamOverview

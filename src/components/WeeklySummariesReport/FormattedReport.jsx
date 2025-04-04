@@ -245,6 +245,7 @@ function ReportDetails({
                 canEditTeamCode={canEditTeamCode && !cantEditJaeRelatedRecord}
                 summary={summary}
                 handleTeamCodeChange={handleTeamCodeChange}
+                darkMode={darkMode}
               />
             </ListGroupItem>
             <ListGroupItem darkMode={darkMode}>
@@ -261,6 +262,7 @@ function ReportDetails({
               <TotalValidWeeklySummaries
                 summary={summary}
                 canEditSummaryCount={canEditSummaryCount && !cantEditJaeRelatedRecord}
+                darkMode={darkMode}
               />
             </ListGroupItem>
             <ListGroupItem darkMode={darkMode}>
@@ -352,7 +354,7 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
   );
 }
 
-function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange }) {
+function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange, darkMode }) {
   const [teamCode, setTeamCode] = useState(summary.teamCode);
   const [hasError, setHasError] = useState(false);
   const fullCodeRegex = /^.{5,7}$/;
@@ -405,6 +407,7 @@ function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange }) {
                 }
               }}
               placeholder="X-XXX"
+              className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
             />
           </div>
         ) : (
@@ -456,7 +459,7 @@ function MediaUrlLink({ summary }) {
   return <div style={{ paddingLeft: '5px' }}>Not provided!</div>;
 }
 
-function TotalValidWeeklySummaries({ summary, canEditSummaryCount }) {
+function TotalValidWeeklySummaries({ summary, canEditSummaryCount, darkMode }) {
   const style = {
     color: textColors[summary?.weeklySummaryOption] || textColors.Default,
   };
@@ -502,6 +505,7 @@ function TotalValidWeeklySummaries({ summary, canEditSummaryCount }) {
             step="1"
             value={weeklySummariesCount}
             onChange={e => handleWeeklySummaryCountChange(e)}
+            className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
             min="0"
           />
         </div>
