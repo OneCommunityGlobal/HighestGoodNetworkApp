@@ -6,7 +6,11 @@ import 'leaflet.heat';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Loading from 'components/common/Loading';
-import L from 'leaflet';
+
+// Volunteer color mapping based on status
+const volunteerColors = {
+  active: '#4CAF50', // Green
+};
 
 function HeatMap({ points }) {
   const map = useMap();
@@ -35,7 +39,7 @@ function HeatMap({ points }) {
   return null;
 }
 
-function MapComponent({ locations, isLoading, error, fetchUserLocations, dispatch, defaultStart, defaultEnd }) {
+function MapComponent({ locations = [], isLoading, error }) { // Default empty array if locations is undefined
   const [isMapVisible, setIsMapVisible] = useState(false);
 
   useEffect(() => {
@@ -43,7 +47,8 @@ function MapComponent({ locations, isLoading, error, fetchUserLocations, dispatc
     toast.info('This map displays only active volunteers.');
   }, []);
 
-  const heatMapPoints = locations.map(location => [
+  // Ensure locations is an array before calling map
+  const heatMapPoints = (locations || []).map(location => [
     location._id.lat,
     location._id.lng,
     location.count,
@@ -59,7 +64,8 @@ function MapComponent({ locations, isLoading, error, fetchUserLocations, dispatc
     );
   }
 
-  const activeVolunteers = locations.filter(v => v.status === 'active');
+  // Filter out active volunteers
+  const activeVolunteers = (locations || []).filter(v => v.status === 'active');
 
   return (
     <div className="map-container">
@@ -68,7 +74,9 @@ function MapComponent({ locations, isLoading, error, fetchUserLocations, dispatc
           {error && (
             <div className="error-container">
               <p>Error: {error}</p>
-              <button type="button" onClick={() => fetchUserLocations(dispatch, defaultStart, defaultEnd)}>Retry</button>
+              <button onClick={() => { /* Add retry logic here */ }}>
+                Retry
+              </button>
             </div>
           )}
           <MapContainer
@@ -82,12 +90,16 @@ function MapComponent({ locations, isLoading, error, fetchUserLocations, dispatc
             />
             <HeatMap points={heatMapPoints} />
             {activeVolunteers.length > 0 &&
-              activeVolunteers.map((volunteer) => (
+              activeVolunteers.map((volunteer, index) => (
                 <CircleMarker
-                  key={volunteer._id}
+                  key={`active-${index}`}
                   center={[volunteer._id.lat, volunteer._id.lng]}
                   radius={8}
-                  pathOptions={{ color: '#4CAF50', fillColor: '#4CAF50', fillOpacity: 0.8 }}
+                  pathOptions={{
+                    color: volunteerColors.active,
+                    fillColor: volunteerColors.active,
+                    fillOpacity: 0.8,
+                  }}
                 />
               ))}
           </MapContainer>
@@ -99,3 +111,4 @@ function MapComponent({ locations, isLoading, error, fetchUserLocations, dispatc
 }
 
 export default MapComponent;
+
