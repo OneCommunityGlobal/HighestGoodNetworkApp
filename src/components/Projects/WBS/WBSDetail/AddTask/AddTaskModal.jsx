@@ -468,7 +468,7 @@ function AddTaskModal(props) {
                 <span className= {`add_new_task_form-label ${fontColor}`}>Status</span>
                 <span className="add_new_task_form-input_area">
                  <div className="d-flex align-items-center flex-wrap"> 
-                  <span className="form-check form-check-inline mr-5">
+                  <span className="form-check form-check-inline mr-5 mw-4">
                       <input
                         className="form-check-input"
                         type="radio"
@@ -498,7 +498,7 @@ function AddTaskModal(props) {
                   </span>
                  </div>
                  <div className="d-flex align-items-center flex-wrap">
-                  <span className="form-check form-check-inline mr-5">
+                  <span className="form-check form-check-inline mr-5 mw-4">
                         <input
                           className="form-check-input"
                           type="radio"
