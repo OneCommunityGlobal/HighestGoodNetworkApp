@@ -68,6 +68,7 @@ function MeetingScheduling(props) {
     duration: 0,
     participantList: [],
     location: '',
+    locationDetails: '',
     notes: '',
     organizer: authUser.userid,
   };
@@ -97,7 +98,8 @@ function MeetingScheduling(props) {
   };
 
   const handleEditorChange = content => {
-    setFormValues(prevValues => ({ ...prevValues, notes: content }));
+    const cleanContent = content.replace(/<\/?p>/g, ''); // Remove <p> and </p>
+    setFormValues(prevValues => ({ ...prevValues, notes: cleanContent }));
   };
 
   const clearForm = () => {
@@ -121,13 +123,14 @@ function MeetingScheduling(props) {
 
     try {
       await dispatch(postMeeting(meeting));
-
+      const formattedDate = new Date(meeting.dateOfMeeting).toLocaleDateString('en-US');
       setModalTitle('Success!');
       setModalMessage({
         participants: participantMessage,
-        time: `${meeting.startHour}:${meeting.startMinute} ${meeting.startTimePeriod} on ${meeting.dateOfMeeting}`,
+        time: `${meeting.startHour}:${meeting.startMinute} ${meeting.startTimePeriod} on ${formattedDate}`,
         duration: `${meeting.duration} minutes`,
         location: meeting.location,
+        locationDetails: meeting.locationDetails,
         notes: meeting.notes,
       });
       setFormValues(initialFormValues);
@@ -306,23 +309,53 @@ function MeetingScheduling(props) {
                   Zoom
                 </Label>
               </div>
+              {formValues.location === 'Zoom' && (
+                <div style={{ paddingLeft: '20px', marginTop: '10px' }}>
+                  <Label for="locationDetails" className={darkMode ? 'text-light' : ''}>
+                    Location Details
+                  </Label>
+                  <Input
+                    type="text"
+                    name="locationDetails"
+                    id="locationDetails"
+                    value={formValues.locationDetails || ''}
+                    onChange={handleInputChange}
+                    placeholder="Enter location details"
+                  />
+                </div>
+              )}
               <div style={{ paddingLeft: '20px' }}>
                 <Input
                   type="radio"
                   name="location"
-                  id="locationPhone"
+                  id="locationDetails"
                   value="Phone call"
                   checked={formValues.location === 'Phone call'}
                   onChange={handleInputChange}
                 />
                 <Label
-                  for="locationPhone"
+                  for="locationDetails"
                   style={{ marginLeft: '5px' }}
                   className={darkMode ? 'text-light' : ''}
                 >
                   Phone call
                 </Label>
               </div>
+              {formValues.location === 'Phone call' && (
+                <div style={{ paddingLeft: '20px', marginTop: '10px' }}>
+                  <Label for="locationDetails" className={darkMode ? 'text-light' : ''}>
+                    Location Details
+                  </Label>
+                  <Input
+                    type="text"
+                    name="locationDetails"
+                    id="locationDetails"
+                    value={formValues.locationDetails || ''}
+                    onChange={handleInputChange}
+                    placeholder="Enter location details"
+                  />
+                </div>
+              )}
               <div style={{ paddingLeft: '20px' }}>
                 <Input
                   type="radio"
@@ -340,12 +373,28 @@ function MeetingScheduling(props) {
                   On-site
                 </Label>
               </div>
+              {formValues.location === 'On-site' && (
+                <div style={{ paddingLeft: '20px', marginTop: '10px' }}>
+                  <Label for="locationDetails" className={darkMode ? 'text-light' : ''}>
+                    Location Details
+                  </Label>
+                  <Input
+                    type="text"
+                    name="locationDetails"
+                    id="locationDetails"
+                    value={formValues.locationDetails || ''}
+                    onChange={handleInputChange}
+                    placeholder="Enter location details"
+                  />
+                </div>
+              )}
               {'location' in errors && (
                 <div className="text-danger">
                   <small>{errors.location}</small>
                 </div>
               )}
             </FormGroup>
+
 
             <FormGroup>
               <Label for="notes" className={darkMode ? 'text-light' : ''}>
@@ -392,6 +441,9 @@ function MeetingScheduling(props) {
                 <p>Time: {modalMessage.time}</p>
                 <p>Duration: {modalMessage.duration}</p>
                 {modalMessage.location && <p>Location: {modalMessage.location}</p>}
+                {modalMessage.locationDetails && (
+                  <p>Location Details: {modalMessage.locationDetails}</p>
+                )}
                 {modalMessage.notes && <p>Notes: {modalMessage.notes}</p>}
               </div>
             </ModalBody>

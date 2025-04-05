@@ -1,3 +1,4 @@
+/* eslint-disable no-alert */
 import { useState, useEffect, useMemo, useRef } from 'react';
 // import { getUserProfile } from '../../actions/userProfile'
 import { ENDPOINTS } from 'utils/URL';
@@ -152,6 +153,7 @@ export function Header(props) {
   const userId = user.userid;
   const [isModalVisible, setModalVisible] = useState(false);
   const [modalContent, setModalContent] = useState('');
+  const [modalContents, setModalContents] = useState('');
   const [userDashboardProfile, setUserDashboardProfile] = useState(undefined);
   const [hasProfileLoaded, setHasProfileLoaded] = useState(false);
   const dismissalKey = `lastDismissed_${userId}`;
@@ -227,31 +229,74 @@ export function Header(props) {
 
   // display the notification and enable the bell ring when there are unread meeting notifications
   useEffect(() => {
-    if (userUnreadMeetings.length > 0) {
-      const currMeeting = userUnreadMeetings[0];
-      const organizerProfile = allUserProfiles.filter(
-        userprofile => userprofile._id === currMeeting.sender,
-      )[0];
-      if (!meetingModalOpen) {
-        setMeetingModalOpen(true);
-        setMeetingModalMessage(`Reminder: You have an upcoming meeting! Please check the details and be prepared.<br>
-          Time: ${new Date(currMeeting.dateTime).toLocaleString()},<br>
-          Organizer: ${organizerProfile.firstName} ${organizerProfile.lastName}<br>
-          ${currMeeting.notes ? `Notes: ${currMeeting.notes}<br>` : ''}
-        `);
+    const fetchMeetingDetails = async () => {
+      //alert(`${unreadMeetingNotifications.length}`);
+      if (unreadMeetingNotifications.length > 0) {
+        const currMeeting = unreadMeetingNotifications[0];
+
+        const currentDate = new Date();
+        const meetingDate = new Date(currMeeting.dateTime);
+        const threeDaysLater = new Date();
+        threeDaysLater.setDate(currentDate.getDate() + 3);
+
+        if (meetingDate <= threeDaysLater) {
+          try {
+            const { data } = await axios.get(
+              `http://localhost:4500/api/meeting/${currMeeting.meetingId}/calendar`,
+            );
+
+            if (!meetingModalOpen) {
+              setMeetingModalOpen(true);
+
+              // Create downloadable ICS file
+              const icsBlob = new Blob([data.icsContent], { type: 'text/calendar' });
+              const icsUrl = URL.createObjectURL(icsBlob);
+
+              setMeetingModalMessage(`
+                <p>Reminder: You have an upcoming meeting! Please check the details and be prepared.</p>
+                <p><strong>Time:</strong> ${meetingDate.toLocaleString()}</p>
+                <p><strong>Organizer:</strong> ${data.organizerFullName}</p>
+                ${currMeeting.notes ? `<p><strong>Notes:</strong> ${currMeeting.notes}</p>` : ''}
+                <p><a href="${
+                  data.googleCalendarLink
+                }" target="_blank">Add to Google Calendar</a></p>
+                <p><button id="downloadButton"><strong>Download Calendar Event (.ics)</strong></button></p>
+              `);
+  
+              // Dynamically create the download button
+              const downloadButton = document.getElementById('downloadButton');
+              if (downloadButton) {
+                downloadButton.onclick = () => {
+                  const link = document.createElement('a');
+                  link.href = icsUrl;
+                  link.download = 'meeting.ics';
+                  link.click();
+                };
+              }
+            }
+
+            if (MeetingNotificationAudioRef.current) {
+              MeetingNotificationAudioRef.current.play();
+            }
+          } catch (error) {
+            setMeetingModalOpen(false);
+            setMeetingModalMessage('');
+          }
+        }
+      } else {
+        if (meetingModalOpen) {
+          setMeetingModalOpen(false);
+          setMeetingModalMessage('');
+        }
+        if (MeetingNotificationAudioRef.current) {
+          MeetingNotificationAudioRef.current.pause();
+          MeetingNotificationAudioRef.current.currentTime = 0;
+        }
       }
-      MeetingNotificationAudioRef.current?.play();
-    } else {
-      if (meetingModalOpen) {
-        setMeetingModalOpen(false);
-        setMeetingModalMessage('');
-      }
-      if (MeetingNotificationAudioRef.current) {
-        MeetingNotificationAudioRef.current.pause();
-        MeetingNotificationAudioRef.current.currentTime = 0;
-      }
-    }
-  }, [userUnreadMeetings]);
+    };
+
+    fetchMeetingDetails();
+  }, [unreadMeetingNotifications]);
 
   const handleMeetingRead = () => {
     setMeetingModalOpen(!meetingModalOpen);
@@ -346,6 +391,29 @@ export function Header(props) {
       setModalVisible(false);
     }
   }, [lastDismissed, userId, userDashboardProfile]);
+  useEffect(() => {
+    loadUserDashboardProfile();
+  
+    const fetchUpcomingMeeting = async () => {
+      const response = await axios.get(`http://localhost:4500/api/meetings/participant/${userId}`);
+      if (response.status === 200) {
+        const { lastMeeting, organizerName } = response.data;
+        const { dateTime, notes, locationDetails } = lastMeeting;
+        const formattedDate = new Date(dateTime).toLocaleString();
+  
+        setModalVisible(true);
+        setModalContents(
+          `This is your upcoming meeting with ${organizerName} on ${formattedDate} regarding: ${notes}.
+          At Location: ${locationDetails}`
+        );
+      } else {
+        setModalVisible(false);
+      }
+    };
+  
+    fetchUpcomingMeeting();
+  }, [lastDismissed, userId, userDashboardProfile]);
+  
 
   const fontColor = darkMode ? 'text-white dropdown-item-hover' : '';
 
@@ -586,6 +654,16 @@ export function Header(props) {
           <div className="card-content">{modalContent}</div>
         </Card>
       )}
+      <div>
+        {props.auth.isAuthenticated && isModalVisible && (
+          <Card color="warning">
+            <div className="close-button">
+              <Button close onClick={closeModal} />
+            </div>
+            <div className="card-contents">{modalContents}</div>
+          </Card>
+        )}
+      </div>
       {/* Only render one unread message at a time */}
       {props.auth.isAuthenticated && unreadNotifications?.length > 0 ? (
         <NotificationCard
