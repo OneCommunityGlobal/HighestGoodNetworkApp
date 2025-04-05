@@ -12,6 +12,28 @@ const getAllSubpermissionKeys = permissions => {
   return keys;
 };
 
+export const generatePermissionLabelKeyMapping = (permissionLabels, start) => {
+  if (start >= permissionLabels.length) {
+    return {};
+  }
+  if (!permissionLabels?.length) {
+    return {};
+  }
+  const firstEle = permissionLabels[start];
+  const { label, key, subperms } = firstEle;
+  // console.log('label', label);
+  let currentVal;
+  if (subperms) {
+    currentVal = generatePermissionLabelKeyMapping(subperms, 0);
+  } else {
+    currentVal = { [key]: label };
+  }
+  return {
+    ...currentVal,
+    ...generatePermissionLabelKeyMapping(permissionLabels, start + 1),
+  };
+};
+
 export const permissionLabels = [
   {
     label: 'General',
@@ -158,7 +180,7 @@ export const permissionLabels = [
         description: 'Allows user to view an overview of tracking activities for all users.',
       },
       {
-        label: 'Issue a Tracking Warnings',
+        label: 'Issue Tracking Warnings',
         key: 'issueTrackingWarnings',
         description: 'Allows the user to issue warnings for violations of tracking activities.',
       },
@@ -535,6 +557,8 @@ export const permissionLabels = [
     ],
   },
 ];
+
+export const permissionLabelKeyMappingObj = generatePermissionLabelKeyMapping(permissionLabels, 0);
 
 export const roleOperationLabels = [
   {

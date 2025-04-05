@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import TinyBarChart from '../TinyBarChart';
 import Loading from '../../common/Loading';
 
-export default function HoursCompletedBarChart({ data, darkMode }) {
+export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
   const initialCardSize = () => {
     if (window.innerWidth <= 680) {
       return { height: '300px' };
@@ -29,15 +29,6 @@ export default function HoursCompletedBarChart({ data, darkMode }) {
       window.removeEventListener('resize', updateCardSize);
     };
   }, []);
-  if (!data || Object.keys(data).length === 0) {
-    return (
-      <div className="d-flex justify-content-center align-items-center">
-        <div className="w-100vh">
-          <Loading />
-        </div>
-      </div>
-    );
-  }
 
   const { taskHours, projectHours, lastTaskHours, lastProjectHours } = data;
   // const taskPercentage = parseFloat(taskHours) / (parseFloat(taskHours) + parseFloat(projectHours));
@@ -117,17 +108,21 @@ export default function HoursCompletedBarChart({ data, darkMode }) {
 
   return (
     <div style={{ height: cardSize.height }}>
-      <h6 className={`${darkMode ? 'text-light' : 'text-dark'} fw-bold text-center`}>
-        {' '}
-        Hours Completed{' '}
-      </h6>
-      <TinyBarChart
-        chartData={chartData}
-        maxY={maxY}
-        tickInterval={tickInterval}
-        renderCustomizedLabel={renderCustomizedLabel}
-        darkMode={darkMode}
-      />
+      {isLoading ? (
+        <div className="d-flex justify-content-center align-items-center">
+          <div className="w-100vh">
+            <Loading />
+          </div>
+        </div>
+      ) : (
+        <TinyBarChart
+          chartData={chartData}
+          maxY={maxY}
+          tickInterval={tickInterval}
+          renderCustomizedLabel={renderCustomizedLabel}
+          darkMode={darkMode}
+        />
+      )}
     </div>
   );
 }
