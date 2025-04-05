@@ -423,7 +423,7 @@ function Announcements({ title, email }) {
             <option value="facebook">Facebook</option>
             <option value="twitter">Twitter</option>
           </select>
-          <button className="send-button mr-1 ml-1" onClick={handleSubmit} style={darkMode ? boxStyleDark : boxStyle}>Confirm Schedule</button>
+         
         </div>
       )}
           </div>
@@ -444,12 +444,8 @@ function Announcements({ title, email }) {
           ) : (
           <div>
           
-          <button type="button" className="send-button mr-1 ml-1" onClick={handlePostTweets} style={darkMode ? boxStyleDark : boxStyle}>
-            Post Tweet
-          </button>
-          <button type="button" className="send-button mr-1 ml-1" onClick={handleScheduleTweets} style={darkMode ? boxStyleDark : boxStyle}>
-            Schedule Tweet
-          </button>
+          
+          <button className="send-button mr-1 ml-1" onClick={handleSubmit} style={darkMode ? boxStyleDark : boxStyle}>Confirm Schedule</button>
           <button type="button" className="send-button mr-1 ml-1" onClick={handleBroadcastEmails} style={darkMode ? boxStyleDark : boxStyle}>
             Broadcast Weekly Update
           </button>
@@ -520,7 +516,7 @@ function Announcements({ title, email }) {
       </div>
       <div className="social-media-container">
         <div className="social-media">
-          {title ? <h3>{title}</h3> : <h3>Social Media Post</h3>}
+          {title ? <h3>{title}</h3> : <h3>Post on Social Media</h3>}
           {title ? null : (
             <label htmlFor="social-media-list" className={darkMode ? 'text-light' : 'text-dark'}>
               Click on below social media to post
@@ -545,7 +541,11 @@ function Announcements({ title, email }) {
               >
                 Post on Facebook
               </button>
-            </div>
+              
+              <button type="button" className="send-button" onClick={handlePostTweets} style={darkMode ? boxStyleDark : boxStyle}>
+                Post on Twitter
+              </button>
+              </div>
           )}
         </div>
       </div>
@@ -567,11 +567,14 @@ function Announcements({ title, email }) {
         </select>
       </div>
       </div>
-      <div>
+      <div className="space-y-4">
           <ul>
             {posts.map((post) => (
-              <li key={post._id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <li key={post._id} className="flex justify-between items-center p-4 bg-gray-50 border border-gray-200 rounded-lg shadow-md">
                 <div>
+                <strong>Platform:</strong> {post.platform} <br />
+                <strong>Scheduled Time:</strong> {post.scheduledTime} <br />
+                <strong>Content: </strong>
                   <Link 
                     to={`/socialMediaPosts/${post._id}`} 
                     title="View Post"
@@ -587,8 +590,8 @@ function Announcements({ title, email }) {
                       : post.textContent}
                   </Link> 
                   <br />
-                  <em>Scheduled Time:</em> {post.scheduledTime} <br />
-                  <em>Platform:</em> {post.platform} <br />
+                  
+                  
                 </div>
                 <Button color="danger" size="sm" onClick={() => handleDeletePost(post._id)}>
                   Delete
