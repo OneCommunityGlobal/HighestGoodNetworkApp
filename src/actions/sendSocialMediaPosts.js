@@ -30,11 +30,11 @@ export const sendTweet = (html) => {
 };
 
 export const fetchPosts = async () => {
-  const url = ENDPOINTS.SOCIAL_MEDIA_POSTS; 
+  const url = ENDPOINTS.SOCIAL_MEDIA_POSTS;
 
   try {
     const response = await axios.get(url);
-    
+
     if (response.data.success) {
       const posts = response.data.posts;
       console.log('Fetched posts:', posts);
@@ -112,6 +112,33 @@ export const scheduleTweet = (scheduleDate, scheduleTime, html) => {
 
       // Display an error toast
       toast.error('Error scheduling Tweet', {
+        position: 'top-right', // You can adjust the position as needed
+        autoClose: 3000, // Close the toast after 3 seconds (adjust as needed)
+      });
+    }
+  };
+};
+
+export const scheduleFbPost = (scheduleDate, scheduleTime, html) => {
+  const url = ENDPOINTS.SCHEDULE_FBPOSTS;
+
+  return async () => {
+    try {
+      console.log('ScheduleDate', scheduleDate);
+      console.log('ScheduleTime', scheduleTime);
+      const response = await axios.post(url, { "ScheduleDate": scheduleDate, "ScheduleTime": scheduleTime, "EmailContent": html });
+      console.log('Facebook Post scheduled successfully:', response);
+
+      // Display a success toast
+      toast.success('Facebook Post successfully scheduled', {
+        position: 'top-right', // You can adjust the position as needed
+        autoClose: 3000, // Close the toast after 3 seconds (adjust as needed)
+      });
+    } catch (error) {
+      console.error('Error scheduling Facebook Post:', error);
+
+      // Display an error toast
+      toast.error('Error scheduling Facebook Post', {
         position: 'top-right', // You can adjust the position as needed
         autoClose: 3000, // Close the toast after 3 seconds (adjust as needed)
       });

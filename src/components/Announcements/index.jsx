@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import './Announcements.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react'; // Import Editor from TinyMCE
-import { sendTweet, scheduleTweet, fetchPosts, deletePost } from '../../actions/sendSocialMediaPosts';
+import { sendTweet, scheduleTweet, scheduleFbPost, fetchPosts, deletePost } from '../../actions/sendSocialMediaPosts';
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
@@ -34,6 +34,9 @@ function Announcements({ title, email }) {
   const [showEditor, setShowEditor] = useState(true); // State to control rendering of the editor
 
   const [posts, setPosts] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [platform, setPlatform] = useState("");
+  const [scheduleTime, setScheduleTime] = useState("");
   const tinymce = useRef(null);
 
   useEffect(() => {
@@ -204,6 +207,16 @@ function Announcements({ title, email }) {
     await getAllPosts();
   };
 
+  const handleScheduleFbPost = async () => {
+    const htmlContent = `${emailContent}`;
+    const scheduleDate = `${dateContent}`;
+    const scheduleTime = `${timeContent}`;
+
+    dispatch(scheduleFbPost(scheduleDate, scheduleTime, htmlContent));
+    await getAllPosts();
+  };
+
+
   const handleDateContentChange = e => {
     setDateContent(e.target.value);    
   }  
@@ -299,6 +312,41 @@ function Announcements({ title, email }) {
       toast.error('Failed to create post on Facebook');
     }
   };
+  const handleScheduleClick = () => {
+    setShowDropdown(true);
+  };
+
+  const handleSubmit = async () => {
+    if (!platform) {
+      alert("Please select a platform.");
+      return;
+    }
+  
+    console.log(platform);
+    const htmlContent = `${emailContent}`;
+    const scheduleDate = `${dateContent}`;
+    const scheduleTime = `${timeContent}`;
+  
+    switch (platform) {
+      case "twitter":
+        // Dispatch the scheduleTweet action for Twitter
+        dispatch(scheduleTweet(scheduleDate, scheduleTime, htmlContent));
+        break;
+  
+      case "facebook":
+        // Dispatch the scheduleFbPost action for Facebook
+        dispatch(scheduleFbPost(scheduleDate, scheduleTime, htmlContent));
+        break;
+  
+      default:
+        console.error("Invalid platform selected");
+        break;
+    }
+    // Wait for the posts to refresh after dispatch
+    await getAllPosts();
+    // Optionally, close the dropdown menu
+    setShowDropdown(false);
+  };
 
   return (
     <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: '100%' }}>
@@ -341,7 +389,25 @@ function Announcements({ title, email }) {
                 <small>{errors.timeOfWork}</small>
               </div>
             )}
+            {!showDropdown ? (
+        <button className="send-button mr-1 ml-1" onClick={handleScheduleClick} style={darkMode ? boxStyleDark : boxStyle}>Schedule Post</button>
+      ) : (
+        <div style={{ marginTop: "15px" }}>
+            <label>Select Platform: </label>
+            <select
+              value={platform}
+              onChange={(e) => setPlatform(e.target.value)}
+              style={{ marginLeft: "10px", padding: "5px" }}
+            >
+            <option value="">-- Choose --</option>
+            <option value="facebook">Facebook</option>
+            <option value="twitter">Twitter</option>
+          </select>
+          <button className="send-button mr-1 ml-1" onClick={handleSubmit} style={darkMode ? boxStyleDark : boxStyle}>Confirm Schedule</button>
+        </div>
+      )}
           </div>
+
           {showEditor && (
             <Editor
               tinymceScriptSrc="/tinymce/tinymce.min.js"
@@ -357,6 +423,7 @@ function Announcements({ title, email }) {
             ''
           ) : (
           <div>
+          
           <button type="button" className="send-button mr-1 ml-1" onClick={handlePostTweets} style={darkMode ? boxStyleDark : boxStyle}>
             Post Tweet
           </button>
@@ -478,7 +545,7 @@ function Announcements({ title, email }) {
                       marginRight: '10px',
                     }}
                   >
-                    {post.textContent.length > 50
+                    {post.textContent && post.textContent.length > 50
                       ? post.textContent.slice(0, 50) + '...'
                       : post.textContent}
                   </Link> 
