@@ -847,28 +847,30 @@ function SummaryBar(props) {
               </Form>
             )}
             <Form onSubmit={sendUserSuggestion} id="suggestionForm">
-              <FormGroup>
-                <Label for="suggestioncate" className={fontColor}>
-                  Please select a category of your suggestion:
-                </Label>
+            <FormGroup>
+  <Label for="suggestioncate" className={fontColor}>
+    Please select a category of your suggestion:
+  </Label>
 
-                <Input
-                  onChange={() => setTakeInput(true)}
-                  type="select"
-                  name="suggestioncate"
-                  id="suggestioncate"
-                  defaultValue=""
-                  required
-                >
-                  <option disabled value="" hidden>
-                    {' '}
-                    -- select an option --{' '}
-                  </option>
-                  {suggestionCategory.map(item => {
-                    return <option key={item.id} value={item}>{`${item.id + 1}. ${item}`}</option>;
-                  })}
-                </Input>
-              </FormGroup>
+  <Input
+    onChange={() => setTakeInput(true)}
+    type="select"
+    name="suggestioncate"
+    id="suggestioncate"
+    defaultValue=""
+    required
+  >
+    <option disabled value="" hidden>
+      -- select an option --
+    </option>
+    {suggestionCategory.map((item, index) => (
+      <option key={index} value={item}>
+        {`${index + 1}. ${item}`}
+      </option>
+    ))}
+  </Input>
+</FormGroup>
+
               {takeInput && (
                 <FormGroup>
                   <Label for="suggestion" className={fontColor}>
