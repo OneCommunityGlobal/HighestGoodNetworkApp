@@ -40,14 +40,13 @@ export const TeamMembersPopup = React.memo(props => {
     setDeletedPopup(!deletedPopup);
   };
 
-  console.log(memberList);
 
   const handleDelete = id => {
     props.onDeleteClick(`${id}`);
     setDeletedPopup(true);
   };
 
-  const handleToggle = () => {
+  const handleToggle = (event) => {
     setIsChecked(parseInt(event.target.value));
     setCheckedStatus(
       parseInt(event.target.value) == 0
@@ -63,13 +62,12 @@ export const TeamMembersPopup = React.memo(props => {
   const canAssignTeamToUsers = props.hasPermission('assignTeamToUsers');
 
   const validation = props.members.teamMembers || props.members;
-  console.log("Validation data:", validation);
 
   const closePopup = () => {
     setMemberList([]);
     props.onClose();
     setSortOrder(0);
-    setIsChecked(true);
+    setIsChecked(1);
     setCheckedStatus('Active');
   };
   const onAddUser = () => {
@@ -156,7 +154,6 @@ export const TeamMembersPopup = React.memo(props => {
         sortedList.push(...item.toSorted(sortByAlpha));
       });
     }
-    console.log("Sorted List:", sortedList);
     setMemberList(sortedList);
   };
 
@@ -192,16 +189,6 @@ export const TeamMembersPopup = React.memo(props => {
     }
     return newMemberVisibility;
   };
-
-  // useEffect(() => {
-  //   // Log team members whenever `props.members.teamMembers` changes
-  //   console.log('Team members:', props.members);
-
-  //   sortList(sortOrder);
-  //   const newMemberVisibility = getMemberVisibility();
-  //   setMemberVisibility(newMemberVisibility);
-  // }, [validation, sortOrder, props.members.teamMembers]); // Dependencies to trigger when teamMembers or sortOrder changes
-
 
   useEffect(() => {
     sortList(sortOrder);
@@ -347,13 +334,13 @@ export const TeamMembersPopup = React.memo(props => {
                    memberList.toSorted().map((user, index) => {
                      return (
                        <tr key={`${props.selectedTeamName}-${user.id}-${index}`}>
-                         <td>
+                         <td style={{ verticalAlign: 'middle', textAlign: 'center' }}>
                            <div className={user.isActive ? 'isActive' : 'isNotActive'}>
                              <i className="fa fa-circle" aria-hidden="true" />
                            </div>
                          </td>
-                         <td className="def-width">{index + 1}</td>
-                         <td className="def-width">
+                         <td className="def-width" style={{ verticalAlign: 'middle', textAlign: 'center' }}>{index + 1}</td>
+                         <td className="def-width" style={{ verticalAlign: 'middle', textAlign: 'center' }}>
                            {returnUserRole(user) ? (
                              <b>
                                {user.firstName} {user.lastName} ({user.role})
@@ -368,8 +355,10 @@ export const TeamMembersPopup = React.memo(props => {
                            )}
                          </td>
                          {/* <td>{user}</td> */}
-                         <td>{moment(user.addDateTime).format('MMM-DD-YY')}</td>
-                         <td>
+                         <td style={{ verticalAlign: 'middle', textAlign: 'center' }}>
+                          {moment(user.addDateTime).format('MMM-DD-YY')}
+                          </td>
+                         <td style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
                            <ToggleSwitch
                              key={`${props.selectedTeamName}-${user._id}`}
                              switchType="limit-visibility"
