@@ -1,8 +1,9 @@
 import './Team.css';
 import hasPermission from 'utils/permissions';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import { connect, useSelector } from 'react-redux';
 import { DELETE } from '../../languages/en/ui';
+import { Button } from 'reactstrap';
 
 export function Team(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -49,28 +50,28 @@ export function Team(props) {
       {(canDeleteTeam || canPutTeam) && (
         <td>
           <span className="usermanagement-actions-cell">
-            <button
-              type="button"
-              className="btn btn-outline-success"
+            <Button
+              color="success"
+              // className="btn btn-outline-success"
               onClick={() => {
                 props.onEditTeam(props.name, props.teamId, props.active, props.teamCode);
               }}
               style={darkMode ? {} : boxStyle}
             >
               Edit
-            </button>
+            </Button>
           </span>
           <span className="usermanagement-actions-cell">
-            <button
-              type="button"
-              className="btn btn-outline-danger"
+            <Button
+              color='danger'
+              // className="btn btn-outline-danger"
               onClick={() => {
                 props.onDeleteClick(props.name, props.teamId, props.active, props.teamCode);
               }}
-              style={darkMode ? {} : boxStyle}
+              style={darkMode ? boxStyleDark : boxStyle}
             >
               {DELETE}
-            </button>
+            </Button>
           </span>
         </td>
       )}
