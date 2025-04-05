@@ -154,7 +154,7 @@ export default function ItemsTable({
                         color="primary"
                         outline
                         size="sm"
-                        onClick={() => handleViewRecordsClick(el.purchaseRecord, 'Purchase')}
+                        onClick={() => handleViewRecordsClick(el, 'Purchase')}
                       >
                         View
                       </Button>
