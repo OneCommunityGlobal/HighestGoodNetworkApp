@@ -512,7 +512,7 @@ const UserTableData = React.memo(props => {
               user={props.user}
               darkMode={darkMode}
               isSmallButton
-              canResetPassword={resetPasswordStatus || updatePasswordStatus}
+              canUpdatePassword={resetPasswordStatus || updatePasswordStatus}
             />
           </span>
         </td>

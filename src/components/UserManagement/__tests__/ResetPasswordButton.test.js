@@ -17,7 +17,7 @@ describe('reset password button ', () => {
   beforeEach(() => {
     render(
       <Provider store={store}>
-        <ResetPasswordButton isSmallButton user={userProfileMock} canResetPassword />
+        <ResetPasswordButton isSmallButton user={userProfileMock} canUpdatePassword />
       </Provider>,
     );
   });
