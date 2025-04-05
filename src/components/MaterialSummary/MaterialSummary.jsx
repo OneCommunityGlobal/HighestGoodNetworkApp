@@ -1,35 +1,35 @@
-"use client"
+'use client';
 
-import { useState, useEffect } from "react"
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js"
-import { Pie } from "react-chartjs-2"
+import { useState, useEffect } from 'react';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import { Pie } from 'react-chartjs-2';
 
 // Register ChartJS components
-ChartJS.register(ArcElement, Tooltip, Legend)
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 // Mock data for projects and materials
 const mockProjects = [
-  { id: 1, name: "Office Building" },
-  { id: 2, name: "Residential Complex" },
-  { id: 3, name: "Shopping Mall" },
-  { id: 4, name: "Highway Bridge" },
-  { id: 5, name: "Industrial Warehouse" },
-  { id: 6, name: "School Building" },
-  { id: 7, name: "Hospital Complex" },
-  { id: 8, name: "Sports Stadium" },
-]
+  { id: 1, name: 'Office Building' },
+  { id: 2, name: 'Residential Complex' },
+  { id: 3, name: 'Shopping Mall' },
+  { id: 4, name: 'Highway Bridge' },
+  { id: 5, name: 'Industrial Warehouse' },
+  { id: 6, name: 'School Building' },
+  { id: 7, name: 'Hospital Complex' },
+  { id: 8, name: 'Sports Stadium' },
+];
 
 // Mock data for material types
 const materialTypes = [
-  { id: 1, name: "All Materials" },
-  { id: 2, name: "Wood" },
-  { id: 3, name: "Concrete" },
-  { id: 4, name: "Steel" },
-  { id: 5, name: "Aluminum" },
-  { id: 6, name: "Glass" },
-  { id: 7, name: "Brick" },
-  { id: 8, name: "Plastic" },
-]
+  { id: 1, name: 'All Materials' },
+  { id: 2, name: 'Wood' },
+  { id: 3, name: 'Concrete' },
+  { id: 4, name: 'Steel' },
+  { id: 5, name: 'Aluminum' },
+  { id: 6, name: 'Glass' },
+  { id: 7, name: 'Brick' },
+  { id: 8, name: 'Plastic' },
+];
 
 // Mock data for material usage
 const mockMaterialData = {
@@ -441,79 +441,80 @@ const mockMaterialData = {
       lastWeekUsed: 15,
     },
   },
-}
+};
 
 // Chart colors - more distinct and vibrant
 const chartColors = {
-  available: "#4BC0C0", // Teal
-  used: "#FF6384", // Pink
-  wasted: "#FFCE56", // Yellow
-}
+  available: '#4BC0C0', // Teal
+  used: '#FF6384', // Pink
+  wasted: '#FFCE56', // Yellow
+};
 
 export default function MaterialUsageDashboard() {
-  const [selectedProject, setSelectedProject] = useState(1)
-  const [selectedMaterial, setSelectedMaterial] = useState("all")
-  const [showIncreaseOnly, setShowIncreaseOnly] = useState(false)
-  const [chartData, setChartData] = useState(null)
-  const [loading, setLoading] = useState(false)
-  const [increasePercentage, setIncreasePercentage] = useState(0)
+  const [selectedProject, setSelectedProject] = useState(1);
+  const [selectedMaterial, setSelectedMaterial] = useState('all');
+  const [showIncreaseOnly, setShowIncreaseOnly] = useState(false);
+  const [chartData, setChartData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [increasePercentage, setIncreasePercentage] = useState(0);
 
   // Update chart data when filters change
   useEffect(() => {
-    setLoading(true)
+    setLoading(true);
 
     // Simulate API call delay
     setTimeout(() => {
-      updateChartData()
-      setLoading(false)
-    }, 800)
-  }, [selectedProject, selectedMaterial, showIncreaseOnly])
+      updateChartData();
+      setLoading(false);
+    }, 800);
+  }, [selectedProject, selectedMaterial, showIncreaseOnly]);
 
   // Update the updateChartData function to handle the new material types with appropriate colors
   const updateChartData = () => {
-    const projectData = mockMaterialData[selectedProject]
-    const materialData = projectData[selectedMaterial]
+    const projectData = mockMaterialData[selectedProject];
+    const materialData = projectData[selectedMaterial];
 
     // Calculate increase percentage
-    const increase = ((materialData.used - materialData.lastWeekUsed) / materialData.lastWeekUsed) * 100
-    setIncreasePercentage(increase)
+    const increase =
+      ((materialData.used - materialData.lastWeekUsed) / materialData.lastWeekUsed) * 100;
+    setIncreasePercentage(increase);
 
     // If "Increase Over Last Week" is selected and there's no increase, return empty data
     if (showIncreaseOnly && increase <= 0) {
       setChartData({
-        labels: ["No increased usage"],
+        labels: ['No increased usage'],
         datasets: [
           {
             data: [1],
-            backgroundColor: ["#e2e8f0"],
+            backgroundColor: ['#e2e8f0'],
             borderWidth: 0,
           },
         ],
-      })
-      return
+      });
+      return;
     }
 
     // Calculate total for percentages
-    const total = materialData.available + materialData.used + materialData.wasted
+    const total = materialData.available + materialData.used + materialData.wasted;
 
     // Generate more detailed colors based on material type
-    let colorPalette = [chartColors.available, chartColors.used, chartColors.wasted]
+    let colorPalette = [chartColors.available, chartColors.used, chartColors.wasted];
 
     // Add material-specific color variations
-    if (selectedMaterial === "wood") {
-      colorPalette = ["#36A2EB", "#9966FF", "#FF9F40"] // Blue, Purple, Orange
-    } else if (selectedMaterial === "concrete") {
-      colorPalette = ["#4BC0C0", "#FF6384", "#FFCE56"] // Teal, Pink, Yellow
-    } else if (selectedMaterial === "steel") {
-      colorPalette = ["#7ED2FA", "#FF8A80", "#A5D6A7"] // Light Blue, Light Red, Light Green
-    } else if (selectedMaterial === "aluminum") {
-      colorPalette = ["#B39DDB", "#E57373", "#81C784"] // Light Purple, Light Red, Light Green
-    } else if (selectedMaterial === "glass") {
-      colorPalette = ["#90CAF9", "#F48FB1", "#80DEEA"] // Light Blue, Light Pink, Light Cyan
-    } else if (selectedMaterial === "brick") {
-      colorPalette = ["#FFAB91", "#CE93D8", "#FFF59D"] // Light Orange, Light Purple, Light Yellow
-    } else if (selectedMaterial === "plastic") {
-      colorPalette = ["#80CBC4", "#F06292", "#FFD54F"] // Light Teal, Pink, Amber
+    if (selectedMaterial === 'wood') {
+      colorPalette = ['#36A2EB', '#9966FF', '#FF9F40']; // Blue, Purple, Orange
+    } else if (selectedMaterial === 'concrete') {
+      colorPalette = ['#4BC0C0', '#FF6384', '#FFCE56']; // Teal, Pink, Yellow
+    } else if (selectedMaterial === 'steel') {
+      colorPalette = ['#7ED2FA', '#FF8A80', '#A5D6A7']; // Light Blue, Light Red, Light Green
+    } else if (selectedMaterial === 'aluminum') {
+      colorPalette = ['#B39DDB', '#E57373', '#81C784']; // Light Purple, Light Red, Light Green
+    } else if (selectedMaterial === 'glass') {
+      colorPalette = ['#90CAF9', '#F48FB1', '#80DEEA']; // Light Blue, Light Pink, Light Cyan
+    } else if (selectedMaterial === 'brick') {
+      colorPalette = ['#FFAB91', '#CE93D8', '#FFF59D']; // Light Orange, Light Purple, Light Yellow
+    } else if (selectedMaterial === 'plastic') {
+      colorPalette = ['#80CBC4', '#F06292', '#FFD54F']; // Light Teal, Pink, Amber
     }
 
     // Prepare chart data
@@ -528,35 +529,35 @@ export default function MaterialUsageDashboard() {
           data: [materialData.available, materialData.used, materialData.wasted],
           backgroundColor: colorPalette,
           borderWidth: 1,
-          borderColor: "#ffffff",
+          borderColor: '#ffffff',
         },
       ],
-    })
-  }
+    });
+  };
 
   // Function to add a title in the center of the donut chart
   const plugins = [
     {
-      id: "donutTitle",
-      beforeDraw: (chart) => {
-        const width = chart.width
-        const height = chart.height
-        const ctx = chart.ctx
+      id: 'donutTitle',
+      beforeDraw: chart => {
+        const width = chart.width;
+        const height = chart.height;
+        const ctx = chart.ctx;
 
-        ctx.restore()
-        const fontSize = (height / 180).toFixed(2) // Smaller font size
-        ctx.font = `${fontSize}em sans-serif`
-        ctx.textBaseline = "middle"
+        ctx.restore();
+        const fontSize = (height / 180).toFixed(2); // Smaller font size
+        ctx.font = `${fontSize}em sans-serif`;
+        ctx.textBaseline = 'middle';
 
-        const text = "Materials"
-        const textX = Math.round((width - ctx.measureText(text).width) / 2)
-        const textY = height / 2
+        const text = 'Materials';
+        const textX = Math.round((width - ctx.measureText(text).width) / 2);
+        const textY = height / 2;
 
-        ctx.fillText(text, textX, textY)
-        ctx.save()
+        ctx.fillText(text, textX, textY);
+        ctx.save();
       },
     },
-  ]
+  ];
 
   return (
     <div className="container mx-auto p-4">
@@ -580,9 +581,9 @@ export default function MaterialUsageDashboard() {
                   id="project"
                   className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={selectedProject}
-                  onChange={(e) => setSelectedProject(Number.parseInt(e.target.value))}
+                  onChange={e => setSelectedProject(Number.parseInt(e.target.value))}
                 >
-                  {mockProjects.map((project) => (
+                  {mockProjects.map(project => (
                     <option key={project.id} value={project.id}>
                       {project.name}
                     </option>
@@ -599,7 +600,7 @@ export default function MaterialUsageDashboard() {
                   id="material"
                   className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={selectedMaterial}
-                  onChange={(e) => setSelectedMaterial(e.target.value)}
+                  onChange={e => setSelectedMaterial(e.target.value)}
                 >
                   <option value="all">All Materials</option>
                   <option value="wood">Wood</option>
@@ -618,7 +619,7 @@ export default function MaterialUsageDashboard() {
                   type="checkbox"
                   id="increase"
                   checked={showIncreaseOnly}
-                  onChange={(e) => setShowIncreaseOnly(e.target.checked)}
+                  onChange={e => setShowIncreaseOnly(e.target.checked)}
                   className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                 />
                 <label htmlFor="increase" className="text-sm cursor-pointer">
@@ -637,14 +638,18 @@ export default function MaterialUsageDashboard() {
               <div className="flex items-center">
                 <span
                   className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                    increasePercentage > 0 ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+                    increasePercentage > 0
+                      ? 'bg-green-100 text-green-800'
+                      : 'bg-red-100 text-red-800'
                   }`}
                 >
-                  {increasePercentage > 0 ? "↑" : "↓"} {Math.abs(increasePercentage).toFixed(1)}%
+                  {increasePercentage > 0 ? '↑' : '↓'} {Math.abs(increasePercentage).toFixed(1)}%
                 </span>
                 <span className="ml-2 text-sm">
-                  {increasePercentage > 0 ? "Increase in material usage" : "Decrease in material usage"} compared to
-                  last week
+                  {increasePercentage > 0
+                    ? 'Increase in material usage'
+                    : 'Decrease in material usage'}{' '}
+                  compared to last week
                 </span>
               </div>
             </div>
@@ -657,10 +662,12 @@ export default function MaterialUsageDashboard() {
             <div className="mb-4">
               <h2 className="text-xl font-semibold">
                 Material Usage Breakdown
-                {selectedMaterial !== "all" &&
+                {selectedMaterial !== 'all' &&
                   ` - ${selectedMaterial.charAt(0).toUpperCase() + selectedMaterial.slice(1)}`}
               </h2>
-              <p className="text-gray-600 text-sm">{mockProjects.find((p) => p.id === selectedProject)?.name}</p>
+              <p className="text-gray-600 text-sm">
+                {mockProjects.find(p => p.id === selectedProject)?.name}
+              </p>
             </div>
             <div className="flex justify-center items-center min-h-[220px]">
               {loading ? (
@@ -675,10 +682,10 @@ export default function MaterialUsageDashboard() {
                     options={{
                       responsive: true,
                       maintainAspectRatio: true,
-                      cutout: "50%",
+                      cutout: '50%',
                       plugins: {
                         legend: {
-                          position: "bottom",
+                          position: 'bottom',
                           labels: {
                             padding: 10,
                             font: {
@@ -689,10 +696,10 @@ export default function MaterialUsageDashboard() {
                         },
                         tooltip: {
                           callbacks: {
-                            label: (context) => {
-                              const label = context.label || ""
-                              const value = context.raw || 0
-                              return `${label} (${value} units)`
+                            label: context => {
+                              const label = context.label || '';
+                              const value = context.raw || 0;
+                              return `${label} (${value} units)`;
                             },
                           },
                         },
@@ -711,11 +718,17 @@ export default function MaterialUsageDashboard() {
                 <h3 className="text-lg font-medium mb-3">Material Breakdown</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {chartData.datasets[0].data.map((value, index) => {
-                    const label = chartData.labels[index].split(":")[0]
-                    const color = chartData.datasets[0].backgroundColor[index]
+                    const label = chartData.labels[index].split(':')[0];
+                    const color = chartData.datasets[0].backgroundColor[index];
                     return (
-                      <div key={index} className="flex items-center space-x-3 p-3 rounded-md bg-gray-50">
-                        <div className="w-4 h-4 rounded-full" style={{ backgroundColor: color }}></div>
+                      <div
+                        key={index}
+                        className="flex items-center space-x-3 p-3 rounded-md bg-gray-50"
+                      >
+                        <div
+                          className="w-4 h-4 rounded-full"
+                          style={{ backgroundColor: color }}
+                        ></div>
                         <div>
                           <p className="font-medium">{label}</p>
                           <p className="text-2xl font-bold">
@@ -723,7 +736,7 @@ export default function MaterialUsageDashboard() {
                           </p>
                         </div>
                       </div>
-                    )
+                    );
                   })}
                 </div>
               </div>
@@ -732,6 +745,5 @@ export default function MaterialUsageDashboard() {
         </div>
       </div>
     </div>
-  )
+  );
 }
-
