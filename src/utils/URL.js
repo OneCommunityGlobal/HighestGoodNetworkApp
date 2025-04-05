@@ -174,6 +174,11 @@ export const ENDPOINTS = {
   SET_USER_FOLLOWUP: (userId, taskId) => `${APIEndpoint}/followup/${userId}/${taskId}`,
   GET_PROJECT_BY_PERSON: searchName => `${APIEndpoint}/userProfile/projects/${searchName}`,
 
+  // Reddit endpoints
+  REDDIT_POST: `${APIEndpoint}/reddit/post`,
+  REDDIT_SCHEDULED: `${APIEndpoint}/reddit/scheduled`,
+  REDDIT_CANCEL_SCHEDULED: (jobId) => `${APIEndpoint}/reddit/scheduled/${jobId}`,
+
   // bm dashboard endpoints
   BM_LOGIN: `${APIEndpoint}/bm/login`,
   BM_MATERIAL_TYPES: `${APIEndpoint}/bm/invtypes/materials`,
