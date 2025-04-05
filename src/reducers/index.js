@@ -33,8 +33,14 @@ import warningsByUserIdReducer from './warningsReducer';
 import { infoCollectionsReducer } from './informationReducer';
 import mouseoverTextReducer from './mouseoverTextReducer';
 import notificationReducer from './notificationReducer';
+
+import meetingNotificationReducer from './meetingNotificationReducer';
+import { weeklySummaryRecipientsReducer } from "./weeklySummaryRecipientsReducer";
+import { followUpReducer } from "./followUpReducer";
+
 import weeklySummaryRecipientsReducer from './weeklySummaryRecipientsReducer';
 import { followUpReducer } from './followUpReducer';
+
 import { BlueSquareEmailAssignment } from './blueSquareEmailBcc';
 import { userProjectsByUserNameReducer } from './userProjectsByUserNameReducer';
 import teamCodesReducer from './teamCodesReducer';
@@ -82,10 +88,13 @@ const localReducers = {
   mouseoverText: mouseoverTextReducer,
   weeklySummaryRecipients: weeklySummaryRecipientsReducer,
   notification: notificationReducer,
-  userFollowUp: followUpReducer,
+
+  meetingNotification: meetingNotificationReducer,
+  userFollowUp : followUpReducer,
   userProjectsByUserNameReducer,
-  teamCodes: teamCodesReducer,
-  blueSquareEmailAssignment: BlueSquareEmailAssignment,
+  blueSquareEmailAssignment : BlueSquareEmailAssignment,
+
+
   totalOrgSummary: totalOrgSummaryReducer,
   allUsersTimeEntries: allUsersTimeEntriesReducer,
   allUserProfilesBasicInfo: allUserProfilesBasicInfoReducer,
