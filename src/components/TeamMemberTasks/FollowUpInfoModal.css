@@ -32,9 +32,10 @@
   max-height: 100vh;
   overflow-y: auto;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  pointer-events: none;
 }
 
-.followup-tooltip-button:hover .followup-tooltip {
+.followup-tooltip-container:hover .followup-tooltip {
   visibility: visible;
   opacity: 1;
 }
