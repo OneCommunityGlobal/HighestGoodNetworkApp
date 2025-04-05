@@ -2,8 +2,8 @@ import './Team.css';
 import hasPermission from 'utils/permissions';
 import { boxStyle, boxStyleDark } from 'styles';
 import { connect, useSelector } from 'react-redux';
-import { DELETE } from '../../languages/en/ui';
 import { Button } from 'reactstrap';
+import { DELETE } from '../../languages/en/ui';
 
 export function Team(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -63,7 +63,7 @@ export function Team(props) {
           </span>
           <span className="usermanagement-actions-cell">
             <Button
-              color='danger'
+              color="danger"
               // className="btn btn-outline-danger"
               onClick={() => {
                 props.onDeleteClick(props.name, props.teamId, props.active, props.teamCode);
