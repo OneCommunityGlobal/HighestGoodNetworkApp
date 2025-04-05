@@ -105,7 +105,6 @@ const notificationReducer = (state = initialState, action) => {
         loading: false,
         error: null,
       };
-
     }
 
     // Default case
