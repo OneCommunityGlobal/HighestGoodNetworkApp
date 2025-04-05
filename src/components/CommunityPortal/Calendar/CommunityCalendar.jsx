@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import CalendarActivitySection from './CalendarActivitySection';
@@ -106,11 +107,13 @@ function CommunityCalendar() {
     return null;
   };
 
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   return (
-    <div className="community-calendar">
-      <header className="calendar-header">
+    <div className={`community-calendar ${darkMode ? 'community-calendar-dark-mode' : ''}`}>
+      <header className={`calendar-header ${darkMode ? 'calendar-header-dark-mode' : ''}`}>
         <h1>Community Calendar</h1>
-        <div className="filters">
+        <div className={`calendar-filters ${darkMode ? 'calendar-filters-dark-mode' : ''}`}>
           <select
             value={filter.type}
             onChange={e => setFilter({ ...filter, type: e.target.value })}
@@ -144,13 +147,17 @@ function CommunityCalendar() {
         </div>
       </header>
       <main className="calendar-main">
-        <div className="calendar-container">
-          <div className="calendar-activity-section">
+        <div className={`calendar-container ${darkMode ? 'calendar-container-dark-mode' : ''}`}>
+          <div
+            className={`calendar-activity-section ${
+              darkMode ? 'calendar-activity-section-dark-mode' : ''
+            }`}
+          >
             <CalendarActivitySection />
           </div>
-          <div className="calendar-section">
+          <div className={`calendar-section ${darkMode ? 'calendar-section-dark-mode' : ''}`}>
             <Calendar
-              className="react-calendar"
+              className={`react-calendar ${darkMode ? 'react-calendar-dark-mode' : ''}`}
               tileContent={tileContent}
               tileClassName={tileClassName}
             />

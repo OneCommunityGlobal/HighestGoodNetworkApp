@@ -1,0 +1,218 @@
+body {
+  background-color: #d9d9d9;
+}
+#onecommunity-image {
+  height: auto;
+  max-width: 1000px;
+}
+
+.form-builder-container {
+  max-width: 80%;
+  margin: 1% 10% 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 10px;
+  padding: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.custom-form {
+  background-color: #d9d9d9;
+  padding: 10px;
+  margin-top: 3%;
+  border-radius: 5px;
+  border: 1px solid #d9d9d9;
+}
+.jobform-navbar {
+  display: flex;
+  padding: 0 10px;
+  justify-content: space-between;
+  background-color: #97ca02;
+  border-radius: 5px;
+  border: 1px solid #97ca02;
+  margin-bottom: 3%;
+}
+
+.jobform-navbar input {
+  margin: 8px 0;
+}
+
+.jobform-navbar select {
+  margin: 8px 0;
+  width: 100%;
+}
+
+.jobform-navbar div {
+  display: flex;
+  padding: 2px;
+}
+
+.jobform-navbar button {
+  padding: 11px 13px;
+  margin: 8px 10px;
+  border: none;
+  background-color: #cccccc;
+  color: white;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.jobform-navbar button:hover {
+  background-color: grey;
+}
+p {
+  line-height: 2;
+}
+
+h1,
+h2 {
+  text-align: center;
+  color: black;
+  font-weight: bold;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+  margin-top: 15px;
+}
+
+input,
+textarea,
+select {
+  /* width: 95%; */
+  padding: 10px;
+  margin-top: 5px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: white;
+}
+
+textarea {
+  height: 80px;
+  resize: vertical;
+}
+
+.new-field-section {
+  background-color: #d9d9d9;
+  padding: 20px;
+}
+
+/* General Container for Each Question */
+.form-field {
+  padding: 5px;
+  margin-bottom: 2px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.form-div {
+  display: flex;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+}
+
+#form-div-checkbox {
+  width: 40px;
+  padding: 0;
+  bottom: 0;
+  vertical-align: middle;
+}
+
+/* Label for the Question */
+.field-label {
+  font-size: 16px;
+  font-weight: bold;
+  line-height: 1.2;
+  margin: auto 0;
+  /* margin-bottom: 10px; */
+}
+
+/* Container for Options (Checkbox/Radio/Dropdown) */
+.field-options {
+  display: flex;
+  flex-direction: column; /* Stack options vertically by default */
+  margin: 1px;
+  /* gap: 10px;  */
+}
+
+.field-options input,
+textarea {
+  width: 95%;
+}
+
+/* Individual Option Item */
+.option-item {
+  display: flex; /* Align checkbox and label on the same line */
+  align-items: flex-start;
+  margin: 0;
+  gap: 10px;
+  word-wrap: break-word;
+  white-space: normal;
+  padding: 2px;
+}
+
+.options-section input {
+  margin: 0 12px 0;
+}
+
+.option-item input[type='checkbox'],
+.option-item input[type='radio'] {
+  margin: 0; /* Ensure no extra margins around inputs */
+  background-color: black;
+  width: 1em;
+  height: 1em;
+}
+
+.option-item label {
+  font-size: 1rem;
+  font-weight: normal;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.add-field-button,
+.add-option-button {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.add-field-button,
+.add-option-button :hover {
+  background-color: #45a049;
+}
+
+/* Submit Button */
+.job-submit-button {
+  display: block;
+  width: 100%;
+  /* max-width: 300px; */
+  padding: 10px;
+  text-align: center;
+  margin-top: 20px;
+  margin-left:auto;
+  margin-right:auto;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.job-submit-button:hover {
+  background-color: #45a049;
+}

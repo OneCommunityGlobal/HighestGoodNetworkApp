@@ -5,18 +5,12 @@ import {
   Button,
   ButtonGroup,
   Input,
-  Card,
-  CardTitle,
-  CardBody,
-  CardImg,
-  CardText,
   DropdownToggle,
   Modal,
   ModalBody,
   ModalFooter,
   FormGroup,
   UncontrolledDropdown,
-  UncontrolledPopover,
   DropdownMenu,
   DropdownItem,
   UncontrolledTooltip,
@@ -36,6 +30,7 @@ import { changeBadgesByUserID } from '../../actions/badgeManagement';
 import './BadgeReport.css';
 import { getUserProfile } from '../../actions/userProfile';
 import { PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE } from 'utils/constants';
+import BadgeImage from './BadgeImage';
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 function BadgeReport(props) {
@@ -44,6 +39,8 @@ function BadgeReport(props) {
   const [showModal, setShowModal] = useState(false);
   const [badgeToDelete, setBadgeToDelete] = useState([]);
   const [savingChanges, setSavingChanges] = useState(false);
+
+
 
   const canDeleteBadges = props.hasPermission('deleteBadges');
   const canUpdateBadges = props.hasPermission('updateBadges');
@@ -379,8 +376,8 @@ function BadgeReport(props) {
               <tr style={{ zIndex: '10' }}>
                 <th style={{ width: '90px' }}>Badge</th>
                 <th>Name</th>
-                <th style={{ width: '110px' }}>Modified</th>
-                <th style={{ width: '110px' }}>Earned Dates</th>
+                <th style={{ width: '110px' }}>Modified</th>                             
+                <th style={{ width: '110px' }} data-testid="desktop-earned-dates">Earned Dates</th> {/* Earned dates for desktop view */}
                 <th style={{ width: '90px' }}>Count</th>
                 {canDeleteBadges ? <th>Delete</th> : []}
                 <th style={{ width: '70px', zIndex: '1' }}>Featured</th>
@@ -392,26 +389,15 @@ function BadgeReport(props) {
                   <tr key={index}>
                     <td className="badge_image_sm">
                       {' '}
-                      <img src={value.badge.imageUrl} id={'popover_' + index.toString()} />
+                      <BadgeImage
+                        personalBestMaxHrs={props.personalBestMaxHrs}
+                        count={value.count}
+                        badgeData={value.badge}
+                        index={index}
+                        key={index}
+                        cssSuffix={'_report'}
+                      />
                     </td>
-                    <UncontrolledPopover trigger="hover" target={'popover_' + index.toString()}>
-                      <Card className="text-center">
-                        <CardImg className="badge_image_lg" src={value?.badge?.imageUrl} />
-                        <CardBody>
-                          <CardTitle
-                            style={{
-                              fontWeight: 'bold',
-                              fontSize: 18,
-                              color: '#285739',
-                              marginBottom: 15,
-                            }}
-                          >
-                            {value.badge?.badgeName}
-                          </CardTitle>
-                          <CardText>{value.badge?.description}</CardText>
-                        </CardBody>
-                      </Card>
-                    </UncontrolledPopover>
                     <td>{value.badge.badgeName}</td>
                     <td>
                       {typeof value.lastModified == 'string'
@@ -564,7 +550,8 @@ function BadgeReport(props) {
                 <th style={{ width: '93px' }}>Badge</th>
                 <th>Name</th>
                 <th style={{ width: '110px' }}>Modified</th>
-                <th style={{ width: '100%', zIndex: '10' }}>Earned</th>
+                <th style={{ width: '110px' }} data-testid="tablet-earned-dates">Earned Dates</th> {/*Earned dates for tablet view*/}
+                <th style={{ width: '80px' }}></th> {/* Ensure Options column is included here */}
               </tr>
             </thead>
             <tbody>
@@ -573,26 +560,15 @@ function BadgeReport(props) {
                   <tr key={index}>
                     <td className="badge_image_sm">
                       {' '}
-                      <img src={value.badge.imageUrl} id={'popover_' + index.toString()} />
+                      <BadgeImage
+                        personalBestMaxHrs={props.personalBestMaxHrs}
+                        count={value.count}
+                        badgeData={value.badge}
+                        index={index}
+                        key={index}
+                        cssSuffix={'_report'}
+                      />
                     </td>
-                    <UncontrolledPopover trigger="hover" target={'popover_' + index.toString()}>
-                      <Card className="text-center">
-                        <CardImg className="badge_image_lg" src={value?.badge?.imageUrl} />
-                        <CardBody>
-                          <CardTitle
-                            style={{
-                              fontWeight: 'bold',
-                              fontSize: 18,
-                              color: '#285739',
-                              marginBottom: 15,
-                            }}
-                          >
-                            {value.badge?.badgeName}
-                          </CardTitle>
-                          <CardText>{value.badge?.description}</CardText>
-                        </CardBody>
-                      </Card>
-                    </UncontrolledPopover>
                     <td>{value.badge.badgeName}</td>
                     <td>
                       {typeof value.lastModified == 'string'
@@ -601,6 +577,28 @@ function BadgeReport(props) {
                             timeZone: 'America/Los_Angeles',
                           })}
                     </td>
+
+                    <td> {/* Add Dates */}
+                      <UncontrolledDropdown className="me-2" direction="down">
+                        <DropdownToggle
+                          caret
+                          color="primary"
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: '80px',
+                          }}
+                        >
+                          Dates
+                        </DropdownToggle>
+                        <DropdownMenu className="badge_dropdown">
+                          {value.earnedDate.map((date, i) => (
+                            <DropdownItem key={i}>{date}</DropdownItem>
+                          ))}
+                        </DropdownMenu>
+                      </UncontrolledDropdown>
+                    </td> {/* Add dates */}
 
                     <td>
                       <ButtonGroup style={{ marginLeft: '8px' }}>

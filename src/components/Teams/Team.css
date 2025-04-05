@@ -53,7 +53,8 @@ thead {
   color: white;
 }
 
-#card_active {
+#card_active,
+.card#card_non_active {
   background: #fbad4c;
   color: white;
 }
@@ -111,6 +112,10 @@ tr:hover {
   background: #e9f6ff;
 }
 
+tr.dark-mode:hover {
+  background: #2f4157;
+}
+
 .user-auto-cpmplete {
   cursor: pointer;
   padding: 5px;
@@ -125,3 +130,14 @@ tr:hover {
   padding-left: 10px;
 }
 
+@media (max-width: 768px) {
+  .overflow-container {
+    overflow-x: auto;
+    overflow-y: auto;
+    height: 60vh;
+  }
+}
+
+.overflow-container table {
+  min-width: 600px; 
+}

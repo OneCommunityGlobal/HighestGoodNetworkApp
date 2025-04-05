@@ -37,7 +37,7 @@ const Members = props => {
   useEffect(() => {
     const fetchMembers = async () => {
       setIsLoading(true);
-      setMembersList([]); 
+      setMembersList([]);
       await props.fetchAllMembers(projectId);
       setIsLoading(false);
     };
@@ -79,21 +79,26 @@ const Members = props => {
   // Waits for user to finsh typing before calling API
   const handleInputChange = event => {
     const currentValue = event.target.value;
-
+  
     if (lastTimeoutId !== null) clearTimeout(lastTimeoutId);
-
+  
     const timeoutId = setTimeout(() => {
-      props.findUserProfiles(currentValue);
-      setShowFindUserList(true);
+      // Only call findUserProfiles if there's actual search text
+      if (currentValue && currentValue.trim() !== '') {
+        props.findUserProfiles(currentValue);
+        setShowFindUserList(true);
+      } else {
+        setShowFindUserList(false);
+      }
     }, 300);
-
+  
     setLastTimeoutId(timeoutId);
   };
 
   return (
     <React.Fragment>
       <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{minHeight: "100%"}}>
-        <div className="container pt-2">
+        <div className={`container pt-2 ${darkMode ? 'bg-yinmn-blue-light text-light' : ''}`}>
           <nav aria-label="breadcrumb">
             <ol className={`breadcrumb ${darkMode ? 'bg-space-cadet' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>
               <NavItem tag={Link} to={`/projects/`}>
@@ -108,13 +113,13 @@ const Members = props => {
           {canAssignProjectToUsers ? (
             <div className="input-group" id="new_project">
               <div className="input-group-prepend">
-                <span className="input-group-text">Find user</span>
+                <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>Find user</span>
               </div>
 
               <input
                 autoFocus
                 type="text"
-                className="form-control"
+                className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
                 aria-label="Search user"
                 placeholder="Name"
                 onChange={e => handleInputChange(e)}
@@ -191,14 +196,17 @@ const Members = props => {
             handleUserProfile={handleToggle}
           />
 
-          {isLoading ? ( <Loading align="center" /> ) : (
+          {isLoading ? (<Loading align="center" />) : (
             <table className={`table table-bordered table-responsive-sm ${darkMode ? 'text-light' : ''}`}>
               <thead>
                 <tr className={darkMode ? 'bg-space-cadet' : ''}>
                   <th scope="col" id="members__order">
                     #
                   </th>
-                  <th scope="col" id="members__name"></th>
+                  <th scope="col" id="members__name">
+                    Name
+                  </th>
+                  <th scope="col" id="members__delete"></th>
                   {canUnassignUserInProject ? <th scope="col" id="members__name"></th> : null}
                 </tr>
               </thead>
@@ -213,8 +221,9 @@ const Members = props => {
                     darkMode={darkMode}
                   />
                 ))}
+
               </tbody>
-            </table> 
+            </table>
           )}
         </div>
       </div>
