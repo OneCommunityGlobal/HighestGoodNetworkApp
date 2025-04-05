@@ -549,23 +549,25 @@ function Announcements({ title, email }) {
           )}
         </div>
       </div>
-      <div>
-      <h1 className="text-2xl font-bold mb-4">Scheduled Social Media Posts</h1>
-      <div className="flex justify-center w-full">
-      <select
-        className="mb-4 p-2 border rounded w-96 ml-8"
-        onChange={handleChange}
-        value={selectedPlatform}
-      >
-        <option value="">Select platform</option>
-        <option value="facebook">Fetch all Facebook Scheduled Posts</option>
-        <option value="twitter">Fetch all Twitter Scheduled Posts</option>
-        <option value="All">Fetch all Scheduled Posts</option>
-      </select>
+      <div className="container mx-auto p-4">
+      {/* Title */}
+      <h1 className="text-2xl font-bold text-center mb-6">Scheduled Social Media Posts</h1>
+
+      {/* Platform Select Dropdown */}
+      <div className="flex text-center mb-6 ml-8">
+        <select
+          className="p-3 border rounded-lg w-96"
+          onChange={handleChange}
+          value={selectedPlatform}
+        >
+          <option value="">Select platform</option>
+          <option value="facebook">Fetch all Facebook Scheduled Posts</option>
+          <option value="twitter">Fetch all Twitter Scheduled Posts</option>
+          <option value="All">Fetch all Scheduled Posts</option>
+        </select>
       </div>
       </div>
       <div>
-         
           <ul>
             {posts.map((post) => (
               <li key={post._id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
