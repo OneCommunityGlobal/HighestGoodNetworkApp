@@ -14,6 +14,17 @@ function TSAFormPage1() {
   const clearError = field => {
     setErrors(prev => ({ ...prev, [field]: false }));
   };
+  const isValidEmail = email => {
+    // Simple email regex (enough for most use cases)
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
+  const isValidFullName = name => {
+    const words = name.trim().split(/\s+/);
+    if (words.length < 2) return false;
+
+    return words.every(word => /^[A-Z][a-zA-Z'-]*$/.test(word));
+  };
 
   const handleNextClick = () => {
     const newErrors = {
@@ -30,8 +41,14 @@ function TSAFormPage1() {
     const experience = document.querySelector('input[name="professionalExperience"]:checked');
     const expertise = document.querySelectorAll('input[name="areaofExpertise"]:checked');
 
-    if (!email || !email.value.trim()) newErrors.email = true;
-    if (!fullname || !fullname.value.trim()) newErrors.fullname = true;
+    if (!email || !email.value.trim() || !isValidEmail(email.value.trim())) {
+      newErrors.email = true;
+    }
+
+    if (!fullname || !fullname.value.trim() || !isValidFullName(fullname.value.trim())) {
+      newErrors.fullname = true;
+    }
+
     if (!title || !title.value.trim()) newErrors.professionaltitle = true;
     if (!experience) newErrors.professionalExperience = true;
     if (expertise.length === 0) newErrors.areaofExpertise = true;
@@ -225,7 +242,7 @@ function TSAFormPage1() {
         />
         {errors.email && (
           <div style={{ color: 'red', fontSize: '14px', marginTop: '5px' }}>
-            This field is required
+            Please enter a valid email address
           </div>
         )}
       </div>
@@ -272,7 +289,8 @@ function TSAFormPage1() {
         />
         {errors.fullname && (
           <div style={{ color: 'red', fontSize: '14px', marginTop: '5px' }}>
-            This field is required
+            This field is required <br />
+            Please enter your Full Name (first and last name required)
           </div>
         )}
       </div>

@@ -14,6 +14,12 @@ function TSAFormPage7() {
     setErrors(prev => ({ ...prev, [field]: false }));
   };
 
+  const isValidFullName = name => {
+    const words = name.trim().split(/\s+/);
+    if (words.length < 2) return false;
+    return words.every(word => /^[A-Z][a-zA-Z'-]*$/.test(word));
+  };
+
   const handleNextClick = () => {
     const newErrors = {};
     let firstInvalid = null;
@@ -30,7 +36,7 @@ function TSAFormPage7() {
     // Validate signature input
     const signatureInput = document.querySelector('input[name="sign"]');
     const signatureValue = signatureInput?.value.trim();
-    const isSignValid = signatureValue.length > 0;
+    const isSignValid = isValidFullName(signatureValue);
 
     newErrors.sign = !isSignValid;
 
@@ -393,7 +399,7 @@ function TSAFormPage7() {
               width: '100%',
             }}
           >
-            Please sign to move forward.
+            Please sign your full name to move forward.
           </div>
         )}
       </div>
