@@ -297,4 +297,15 @@
   .weekly-project-summary-dashboard-grid {
     grid-template-columns: 1fr;
   }
+
+  .weekly-project-summary-dashboard-section.full,
+  .weekly-project-summary-dashboard-section.large,
+  .weekly-project-summary-dashboard-section.half,
+  .weekly-project-summary-dashboard-section.small {
+    grid-column: span 1;
+  }
+
+  .project-status-grid {
+    grid-template-columns: 1fr;
+  }
 }
