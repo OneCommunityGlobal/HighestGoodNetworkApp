@@ -1,14 +1,13 @@
-import { fetchTeamMembersTask } from 'actions/task';
-import { fetchTeamMembersTaskSuccess } from 'components/TeamMemberTasks/actions';
 import axios from 'axios';
-import { ApiEndpoint } from 'utils/URL';
+import { ApiEndpoint } from '../../utils/URL';
 
 const initialState = {
   isLoading: false,
   usersWithTasks: [],
-  usersWithTimeEntries: []
+  usersWithTimeEntries: [],
 };
 
+// eslint-disable-next-line default-param-last
 export const teamMemberTasksReducer = (state = initialState, action) => {
   switch (action.type) {
     case 'FETCH_TEAM_MEMBERS_DATA_BEGIN':
@@ -18,14 +17,15 @@ export const teamMemberTasksReducer = (state = initialState, action) => {
     case 'FETCH_TEAM_MEMBERS_TASK_SUCCESS': // fall through
     case 'FETCH_TEAM_MEMBERS_TIMEENTRIES_SUCCESS':
       return { ...state, isLoading: false, ...action.payload };
-    case 'UPDATE_TEAM_MEMBERS_TIMEENTRY_SUCCESS':
+    case 'UPDATE_TEAM_MEMBERS_TIMEENTRY_SUCCESS': {
       const { usersWithTimeEntries } = state;
       const newTimeEntry = action.payload;
-      const updatedTimeEntries = usersWithTimeEntries.map((timeentry) => {
+      const updatedTimeEntries = usersWithTimeEntries.map(timeentry => {
         if (timeentry._id === newTimeEntry._id) return { ...timeentry, ...newTimeEntry };
-        return timeentry
-      })
-      return { ...state, usersWithTimeEntries: updatedTimeEntries }
+        return timeentry;
+      });
+      return { ...state, usersWithTimeEntries: updatedTimeEntries };
+    }
     case 'DELETE_TASK_NOTIFICATION_SUCCESS':
       return {
         ...state,
