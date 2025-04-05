@@ -1,9 +1,11 @@
+/* eslint-disable default-param-last */
+/* eslint-disable no-case-declarations */
 import * as meetingActions from '../constants/meetings';
 
 const initialState = {
   loading: false,
   error: null,
-  unreadMeetingNotifications: [],  
+  unreadMeetingNotifications: [],
 };
 
 const meetingNotificationReducer = (state = initialState, action) => {
@@ -23,7 +25,7 @@ const meetingNotificationReducer = (state = initialState, action) => {
         ...state,
         loading: false,
         error: action.payload,
-    };
+      };
 
     case meetingActions.FETCH_UNREAD_UPCOMING_MEETING_SUCCESS:
       return {
@@ -31,18 +33,24 @@ const meetingNotificationReducer = (state = initialState, action) => {
         unreadMeetingNotifications: action.payload,
         loading: false,
         error: null,
-      }
-    
+      };
+
     case meetingActions.MARK_MEETING_AS_READ_SUCCESS:
       const { unreadMeetingNotifications } = state;
-      const newUnreadMeetingNotifications = unreadMeetingNotifications.filter((notification) => !(notification.meetingId === action.payload.meetingId && notification.recipient === action.payload.recipient));
+      const newUnreadMeetingNotifications = unreadMeetingNotifications.filter(
+        notification =>
+          !(
+            notification.meetingId === action.payload.meetingId &&
+            notification.recipient === action.payload.recipient
+          ),
+      );
       return {
         ...state,
         unreadMeetingNotifications: newUnreadMeetingNotifications,
         loading: false,
         error: null,
       };
-    
+
     default:
       return state;
   }

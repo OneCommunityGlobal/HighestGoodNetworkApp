@@ -31,7 +31,7 @@ const notificationReducer = (state = initialState, action) => {
     case actionTypes.FETCH_SENT_NOTIFICATIONS_FAILURE:
     case actionTypes.CREATE_NOTIFICATION_FAILURE:
     case actionTypes.DELETE_NOTIFICATION_FAILURE:
-    case actionTypes.MARK_NOTIFICATION_AS_READ_FAILURE:
+    case actionTypes.MARK_NOTIFICATION_AS_READ_FAILURE: {
       return {
         ...state,
         loading: false,
@@ -105,7 +105,8 @@ const notificationReducer = (state = initialState, action) => {
         loading: false,
         error: null,
       };
-    
+    }
+
     default:
       return state;
   }

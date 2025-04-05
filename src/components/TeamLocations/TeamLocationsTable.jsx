@@ -160,7 +160,7 @@ function TeamLocationsTable({ visible, filteredMapMarkers, setCurrentUser, darkM
                 index % 2 === 0 ? 'team-locations-table-row-even' : ''
               } ${darkMode ? 'bg-space-cadet' : ''}`}
             >
-              <td className="team-locations-table-data">
+              <td className="team-locations-table-data" aria-hidden="true">
                 <i
                   className="fa fa-circle"
                   aria-hidden="true"
@@ -183,7 +183,7 @@ function TeamLocationsTable({ visible, filteredMapMarkers, setCurrentUser, darkM
                   </span>
                 )}
               </td>
-              <td className="team-locations-table-data" />
+              <td className="team-locations-table-data" aria-hidden="true" />
             </tr>
           ))}
         </tbody>

@@ -395,7 +395,6 @@ function MeetingScheduling(props) {
               )}
             </FormGroup>
 
-
             <FormGroup>
               <Label for="notes" className={darkMode ? 'text-light' : ''}>
                 Notes
