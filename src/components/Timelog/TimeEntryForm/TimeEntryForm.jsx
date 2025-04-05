@@ -35,7 +35,6 @@ import TimeLogConfirmationModal from './TimeLogConfirmationModal';
 import { ENDPOINTS } from '../../../utils/URL';
 import '../../Header/DarkMode.css';
 import { useDispatch } from 'react-redux';
-import { fetchTeamMembersData } from '../../TeamMemberTasks/actions.js';
 import '../../Timelog/Timelog.css';
 
 // Images are not allowed in timelog
