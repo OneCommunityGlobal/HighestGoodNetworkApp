@@ -1,0 +1,402 @@
+/* CSS for ActivitiesPage.jsx, LatestRegistration.jsx, MyEvent.jsx, RegisterationForm.jsx, ResourceMonitoring.jsx */
+
+.activities-page {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    background-color: #d3d3d3; 
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+
+.header h2,
+.resourceMonitoring h2,
+.latest-registration h2,
+.my-event h2 {
+    color: black; 
+}
+
+.resourceMonitoring h2 {
+    color: rgb(12, 11, 11); 
+}
+
+.resourceMonitoring,
+.latest-registration,
+.my-event {
+    margin: 20px 0;
+    background-color: white; 
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.resourceGrid {
+    display: flex;
+    gap: 20px;
+}
+
+.resourceCard {
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    text-align: center;
+    flex: 1;
+}
+
+.circle-container {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    margin: 10px auto;
+}
+
+.progress-circle {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.circle-bg {
+    fill: none;
+    stroke-width: 3.8;
+}
+
+.circle-progress {
+    fill: none;
+    stroke-width: 3.8;
+    stroke-linecap: round;
+    transition: stroke-dasharray 0.3s ease;
+}
+
+.circle-label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* Resource Monitoring stat css */
+.resource-stats {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+
+.arrow.up {
+    color: green;
+}
+
+.arrow.down {
+    color: red;
+}
+
+/* Resource Monitoring Title */
+.resource-title {
+    font-weight: bold;
+    color: grey; 
+}
+
+.registrationForm, .filters {
+    margin: 20px 0;
+}
+
+/* Latest Registration css */
+.latest-registration,
+.my-event {
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+}
+
+.latest-registration ul {
+    list-style: none;
+    padding: 0;
+}
+
+.latest-registration li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.approve-btn {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.my-event .event-controls {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.create-new-btn {
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.myEventsTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.myEventsTable th,
+.emyEventsTable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.status.active {
+    color: green;
+}
+
+.status.closed {
+    color: red;
+}
+
+/* My Events css */
+.myEventsTable th,
+.myEventsTable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+.eventTime {
+    color: grey;
+    font-size: 0.9em;
+    margin-top: 4px;
+}
+
+.date-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 1em;
+}
+
+.date-box .day {
+    color: orange;
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+.date-box .date {
+    font-size: 1.5em;
+}
+
+.status {
+    padding: 5px;
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;
+}
+
+.status.active {
+    background-color: rgb(200, 240, 200);
+    color: green;
+}
+
+.status.closed {
+    background-color: rgb(191, 191, 238);
+    color: purple;
+}
+
+.status.cancelled {
+    background-color: rgb(239, 170, 170);
+    color: red;
+}
+
+
+.resource.pending {
+    background-color: #ebe4a2; 
+    color: #d3ac11;         
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.resource.completed {
+    background-color: #d4edda; 
+    color: #28a745;           
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.resource.cancelled {
+    background-color: #f8d7da; 
+    color: #dc3545;           
+    padding: 5px;
+    border-radius: 5px;
+}
+
+
+/* Registration Form  */
+
+.registrationForm {
+    background-color: white;  
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+}
+
+.registrationForm h3 {
+    color: black;
+}
+
+.RegistrationformField {
+    margin-bottom: 15px;
+}
+
+.RegistrationformField label {
+    font-weight: bold;
+}
+
+.RegistrationformField input,
+.RegistrationformField select {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.submitbtn {
+    background-color: #007bff;  
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    cursor: pointer;
+}
+
+.submitbtn:hover {
+    background-color: #0056b3;
+}
+
+
+
+/* Resource Monitoring */
+
+.resource-title {
+    text-align: left;
+    font-size: 1.2rem;
+    margin-bottom: 5px;
+}
+
+.resource-value {
+    font-weight: bold;
+    color: black;
+    font-size: 1rem;
+}
+
+.resource-stats {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.resource-stats .arrow {
+    font-size: 1rem;
+    margin-right: 5px;
+}
+
+.resource-stats p {
+    margin: 0;
+}
+
+.resource-stats p:last-child {
+    color: grey;
+    font-size: 0.7rem;
+    margin-left: 5px;
+}
+
+
+/* My Events toggle button */
+.view-toggle button {
+    padding: 10px 20px;
+    margin-right: 10px;
+    font-size: 1rem;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+}
+
+.active-view {
+    background-color: white;
+    color: black;
+    border: 1px solid #ccc;
+}
+
+.inactive-view {
+    background-color: #f0f0f0;
+    color: gray;
+    border: 1px solid #ddd;
+}
+
+/* Filter section of my events */
+.filter-controls select {
+    padding: 8px;
+    margin-right: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.apply-filters-btn {
+    padding: 8px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.apply-filters-btn:hover {
+    background-color: #0056b3;
+}
+
+
+.create-new-btn {
+    padding: 8px 20px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.create-new-btn:hover {
+    background-color: #218838;
+}
+
+.registerinfo {
+    display: flex;
+    flex-direction: column; 
+    align-items: flex-start; 
+}
+
+.registerinfo p {
+    margin-bottom: 0;
+}
+
+.time {
+    margin-top: 3px; 
+    font-size: 0.9em; 
+}
