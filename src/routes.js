@@ -15,7 +15,7 @@ import LessonList from 'components/BMDashboard/LessonList/LessonListForm';
 import AddEquipmentType from 'components/BMDashboard/Equipment/Add/AddEquipmentType';
 import Announcements from 'components/Announcements';
 import JobFormBuilder from 'components/Collaboration/JobFormbuilder';
-import JobCCDashboard from 'components/JobCCDashboard/JobCCDashboard';
+// import JobCCDashboard from 'components/JobCCDashboard/JobCCDashboard';
 import WeeklyProjectSummary from 'components/BMDashboard/WeeklyProjectSummary/WeeklyProjectSummary';
 import Page1 from './components/HGNForm/pages/Page1';
 import Page2 from './components/HGNForm/pages/Page2';
@@ -63,6 +63,8 @@ import CheckTypes from './components/BMDashboard/shared/CheckTypes';
 import Toolslist from './components/BMDashboard/Tools/ToolsList';
 import AddTool from './components/BMDashboard/Tools/AddTool';
 import AddTeamMember from './components/BMDashboard/AddTeamMember/AddTeamMember';
+
+import TotalorgSummaryEmail from './components/TotalOrgSummary/weekly-summary-email/TotalorgSummaryEmail';
 
 // Community Portal
 import CPProtectedRoute from './components/common/CPDashboard/CPProtectedRoute';
@@ -140,8 +142,10 @@ export default (
     {/* ----- LB Dashboard Routing ----- */}
     {/* If it's possible incorporate this route with others without the header, please do */}
     <Route path="/form" component={FormEditor} />
+    
     <Route path="/formviewer" component={FormViewer} />
     <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
+
     <>
       {/* Comment out the Header component and its import during phase 2 development. */}
       <Header />
@@ -206,6 +210,7 @@ export default (
           allowedRoles={[UserRole.Administrator, UserRole.Owner, UserRole.Manager]}
           routePermissions={RoutePermissions.projects}
         />
+
         <ProtectedRoute
           path="/projects"
           exact
@@ -312,7 +317,21 @@ export default (
           // setting permission as Weeklysummariesreport for now. Later it will be changed to weeklyVolunteerSummary. - H
           routePermissions={RoutePermissions.weeklySummariesReport}
         />
-        <ProtectedRoute path="/job-notification-dashboard" exact component={JobCCDashboard} fallback allowedRoles={[UserRole.Owner]}/>
+         <ProtectedRoute
+        path="/TotalorgSummaryEmail"
+        exact
+        component={TotalorgSummaryEmail}
+        fallback
+        allowedRoles={[
+          UserRole.Administrator,
+          UserRole.Manager,
+          UserRole.CoreTeam,
+          UserRole.Owner,
+          UserRole.Mentor,
+        ]}
+        // setting permission as Weeklysummariesreport for now. Later it will be changed to weeklyVolunteerSummary. - H
+        routePermissions={RoutePermissions.weeklySummariesReport}
+      />
 
         {/* ----- BEGIN BM Dashboard Routing ----- */}
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
