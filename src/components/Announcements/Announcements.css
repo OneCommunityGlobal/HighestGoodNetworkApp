@@ -48,6 +48,20 @@ button.send-button:hover {
   background-color: #357ae8;
 }
 
+button.send-button-green {
+  background-color: #20b12a;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+button.send-button-green:hover {
+  background-color: #1ca426;
+}
+
 .ck-editor__editable {
   min-height: 500px;
 }
@@ -103,6 +117,36 @@ button.send-button:hover {
   color: #000;
   padding: 0 10px;
   font-size: 18px;
+}
+
+.image-preview {
+  display: block;
+  max-width: 300px;
+  height: 100px;
+  margin: 10px 0;
+  padding: 10px;
+  object-fit: contain;
+  border: 0.5px solid #ccc;
+}
+
+.tabs-container {
+  margin: 30px 0;
+}
+
+.tab-button {
+  background-color: #f1f1f1;
+  border: 1px solid #ccc;
+  padding: 10px 20px;
+  cursor: pointer;
+  margin-right: 10px;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.tab-button.active {
+  background-color: #4285f4;
+  color: white;
+  border-color: #4285f4;
 }
 
 /* Responsive design: Adjusts the preview section on smaller screens. */
