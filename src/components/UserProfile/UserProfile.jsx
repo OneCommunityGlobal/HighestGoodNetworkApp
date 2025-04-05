@@ -125,7 +125,7 @@ function UserProfile(props) {
   const [showToggleVisibilityModal, setShowToggleVisibilityModal] = useState(false);
   const [pendingRehireableStatus, setPendingRehireableStatus] = useState(null);
   const [isRehireable, setIsRehireable] = useState(null);
-  const [canResetPassword, setCanResetPassword] = useState(false);
+  const [canUpdatePassword, setCanUpdatePassword] = useState(props.hasPermission('updatePassword'));
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [didLinkUpdate, setDidLinkUpdate] = useState(false);
   // Function to toggle the modal
@@ -337,7 +337,7 @@ function UserProfile(props) {
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
       const currentUserEmail = response.data.email;
       dispatch(setCurrentUser({ ...props.auth.user, email: currentUserEmail }));
-      setCanResetPassword(response.data.permissions.frontPermissions.includes('resetPassword'));
+      setCanUpdatePassword(response.data.permissions.frontPermissions.includes('updatePassword'));
     } catch (err) {
       toast.error('Error while getting current logged in user email');
     }
@@ -866,7 +866,6 @@ function UserProfile(props) {
   const canChangeUserStatus = props.hasPermission('changeUserStatus');
   const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
   const canPutUserProfile = props.hasPermission('putUserProfile');
-  const canUpdatePassword = props.hasPermission('updatePassword');
   const canGetProjectMembers = props.hasPermission('getProjectMembers');
   const canChangeRehireableStatus = props.hasPermission('changeUserRehireableStatus');
   const canUpdateSummaryRequirements = props.hasPermission('updateSummaryRequirements');
@@ -1405,12 +1404,12 @@ function UserProfile(props) {
               </TabPane>
             </TabContent>
             <div className="profileEditButtonContainer">
-              {(canUpdatePassword && canEdit && !isUserSelf || canResetPassword) && (
+              {(canUpdatePassword && canEdit && !isUserSelf) && (
                 <ResetPasswordButton
                   className="mr-1 btn-bottom"
                   user={userProfile}
                   authEmail={authEmail}
-                  canResetPassword
+                  canUpdatePassword
                 />
               )}
               {isUserSelf && (activeTab === '1' || canPutUserProfile) && (
@@ -1541,7 +1540,7 @@ function UserProfile(props) {
                           className="mr-1 btn-bottom"
                           user={userProfile}
                           authEmail={authEmail}
-                          canResetPassword
+                          canUpdatePassword
                         />
                       )}
                       {isUserSelf && (activeTab == '1' || canPutUserProfile) && (

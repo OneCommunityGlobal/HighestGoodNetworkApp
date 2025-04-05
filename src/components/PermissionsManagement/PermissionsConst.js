@@ -159,10 +159,10 @@ export const permissionLabels = [
           'Gives the user permission to change the requirement to the user to submit a summary.',
       },
       {
-        label: 'Reset / Change Password (Others)',
-        key: 'resetPassword',
+        label: 'Update Password (Others)',
+        key: 'updatePassword',
         description:
-          'Gives the user permission to Reset and/or Change the password of any user but Owner/Admin classes. ',
+          'Gives the user permission to update the password of any user but Owner/Admin classes. ',
       },
       {
         label: 'Manage Time Off Requests',
