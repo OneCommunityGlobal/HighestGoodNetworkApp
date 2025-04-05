@@ -49,6 +49,38 @@ export const fetchPosts = async () => {
   }
 };
 
+export const fetchPosts_separately = async () => {
+  const url = ENDPOINTS.SOCIAL_MEDIA_POSTS;
+
+  try {
+    const response = await axios.get(url);
+
+    if (response.data.success) {
+      const posts = response.data.posts;
+      console.log('Fetched posts:', posts);
+      const twitterPosts = posts.filter(post => post.platform === 'twitter');
+      const facebookPosts = posts.filter(post => post.platform === 'facebook');
+      return {
+        twitterPosts,
+        facebookPosts,
+      };
+    } else {
+      console.error('Failed to fetch posts:', response.data);
+      return {
+        twitterPosts: [],
+        facebookPosts: [],
+      };
+    }
+  } catch (error) {
+    console.error('Error fetching posts:', error);
+    return {
+      twitterPosts: [],
+      facebookPosts: [],
+    };
+  }
+};
+
+
 export const updatePost = async (postId, updatedData) => {
   const url = ENDPOINTS.SOCIAL_MEDIA_POSTS;
 
@@ -138,7 +170,7 @@ export const scheduleFbPost = (scheduleDate, scheduleTime, html) => {
       console.error('Error scheduling Facebook Post:', error);
 
       // Display an error toast
-      toast.error('Error scheduling Facebook Post', {
+      toast.error('Error scheduling Tweet', {
         position: 'top-right', // You can adjust the position as needed
         autoClose: 3000, // Close the toast after 3 seconds (adjust as needed)
       });

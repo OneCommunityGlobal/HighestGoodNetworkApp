@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import './Announcements.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react'; // Import Editor from TinyMCE
-import { sendTweet, scheduleTweet, scheduleFbPost, fetchPosts, deletePost } from '../../actions/sendSocialMediaPosts';
+import { sendTweet, scheduleTweet, scheduleFbPost, fetchPosts, fetchPosts_separately, deletePost } from '../../actions/sendSocialMediaPosts';
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
@@ -37,6 +37,7 @@ function Announcements({ title, email }) {
   const [showDropdown, setShowDropdown] = useState(false);
   const [platform, setPlatform] = useState("");
   const [scheduleTime, setScheduleTime] = useState("");
+  const [selectedPlatform, setSelectedPlatform] = useState('');
   const tinymce = useRef(null);
 
   useEffect(() => {
@@ -105,9 +106,9 @@ function Announcements({ title, email }) {
     }
   }, [email]);
 
-  useEffect(() => {
+  /*useEffect(() => {
     getAllPosts();
-  }, []);
+  }, []);*/
 
   const getAllPosts = async () => {
     const data = await fetchPosts(); // Call API
@@ -204,7 +205,7 @@ function Announcements({ title, email }) {
     const scheduleTime = `${timeContent}`;
 
     dispatch(scheduleTweet(scheduleDate, scheduleTime, htmlContent));
-    await getAllPosts();
+    //await getAllPosts();
   };
 
   const handleScheduleFbPost = async () => {
@@ -213,7 +214,7 @@ function Announcements({ title, email }) {
     const scheduleTime = `${timeContent}`;
 
     dispatch(scheduleFbPost(scheduleDate, scheduleTime, htmlContent));
-    await getAllPosts();
+    //await getAllPosts();
   };
 
 
@@ -343,10 +344,29 @@ function Announcements({ title, email }) {
         break;
     }
     // Wait for the posts to refresh after dispatch
-    await getAllPosts();
+    //await getAllPosts();
     // Optionally, close the dropdown menu
     setShowDropdown(false);
   };
+
+  
+  const handleChange = async (e) => {
+    const value = e.target.value;
+    setSelectedPlatform(value);
+    const { twitterPosts, facebookPosts } = await fetchPosts_separately();
+  
+    if (value === 'facebook') {
+        setPosts(facebookPosts);
+      console.log('Facebook Scheduled Posts:', facebookPosts);
+    } else if (value === 'twitter') {
+       setPosts(twitterPosts);
+      console.log('Twitter Scheduled Posts:', twitterPosts);
+    }
+    else if (value === "All"){
+      await getAllPosts();
+    }
+  };
+
 
   return (
     <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: '100%' }}>
@@ -530,7 +550,22 @@ function Announcements({ title, email }) {
         </div>
       </div>
       <div>
-          <h2>Scheduled Posts</h2>
+      <h1 className="text-2xl font-bold mb-4">Scheduled Social Media Posts</h1>
+      <div className="flex justify-center w-full">
+      <select
+        className="mb-4 p-2 border rounded w-96 ml-8"
+        onChange={handleChange}
+        value={selectedPlatform}
+      >
+        <option value="">Select platform</option>
+        <option value="facebook">Fetch all Facebook Scheduled Posts</option>
+        <option value="twitter">Fetch all Twitter Scheduled Posts</option>
+        <option value="All">Fetch all Scheduled Posts</option>
+      </select>
+      </div>
+      </div>
+      <div>
+         
           <ul>
             {posts.map((post) => (
               <li key={post._id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
