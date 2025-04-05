@@ -1,19 +1,31 @@
 import axios from 'axios';
 import { ENDPOINTS } from "utils/URL";
-import GET_MATERIAL_TYPES, { POST_BUILDING_MATERIAL_INVENTORY_TYPE, 
-                             POST_ERROR_BUILDING_MATERIAL_INVENTORY_TYPE, 
-                             RESET_POST_BUILDING_MATERIAL_INVENTORY_TYPE, 
-                             POST_BUILDING_CONSUMABLE_INVENTORY_TYPE, 
-                             POST_ERROR_BUILDING_CONSUMABLE_INVENTORY_TYPE, 
-                             RESET_POST_BUILDING_CONSUMABLE_INVENTORY_TYPE,
-                             POST_BUILDING_TOOL_INVENTORY_TYPE, 
-                             POST_ERROR_BUILDING_TOOL_INVENTORY_TYPE, 
-                             RESET_POST_BUILDING_TOOL_INVENTORY_TYPE,
-                             GET_INV_BY_TYPE, GET_TOOL_TYPES ,
-                             GET_CONSUMABLE_TYPES, GET_REUSABLE_TYPES } from "constants/bmdashboard/inventoryTypeConstants";
+import GET_MATERIAL_TYPES, {
+  POST_BUILDING_MATERIAL_INVENTORY_TYPE,
+  POST_ERROR_BUILDING_MATERIAL_INVENTORY_TYPE,
+  RESET_POST_BUILDING_MATERIAL_INVENTORY_TYPE,
+  GET_INV_BY_TYPE,
+  DELETE_BUILDING_INVENTORY_TYPE,
+  RESET_DELETE_BUILDING_INVENTORY_TYPE,
+  DELETE_ERROR_BUILDING_INVENTORY_TYPE,
+  UPDATE_BUILDING_INVENTORY_TYPE,
+  RESET_UPDATE_BUILDING_INVENTORY_TYPE,
+  UPDATE_ERROR_BUILDING_INVENTORY_TYPE,
+  GET_TOOL_TYPES,
+  GET_CONSUMABLE_TYPES,
+  GET_EQUIPMENT_TYPES,
+  GET_REUSABLE_TYPES,
+  RESET_POST_BUILDING_TOOL_INVENTORY_TYPE,
+  POST_BUILDING_CONSUMABLE_INVENTORY_TYPE,
+  POST_ERROR_BUILDING_CONSUMABLE_INVENTORY_TYPE,
+  RESET_POST_BUILDING_CONSUMABLE_INVENTORY_TYPE,
+  POST_BUILDING_TOOL_INVENTORY_TYPE,
+  POST_ERROR_BUILDING_TOOL_INVENTORY_TYPE, 
+} from "constants/bmdashboard/inventoryTypeConstants";
 import { POST_TOOLS_LOG, POST_ERROR_TOOLS_LOG, RESET_POST_TOOLS_LOG } from 'constants/bmdashboard/toolsConstants';
 import { GET_ERRORS } from "constants/errors";
 
+// eslint-disable-next-line import/prefer-default-export
 export const fetchMaterialTypes = () => {
   return async dispatch => {
     axios.get(ENDPOINTS.BM_MATERIAL_TYPES)
@@ -77,7 +89,6 @@ export const fetchInvTypeByType = (type) => {
       })
   }
 }
-
 export const postBuildingConsumableType = payload => {
   return async dispatch => {
     axios
@@ -120,6 +131,39 @@ export const postBuildingInventoryType = (payload) => {
       })
       .catch(err => {
         dispatch(setPostErrorBuildingInventoryTypeResult(JSON.stringify(err.response.data) || 'Sorry! Some error occurred!'))
+      })
+  }
+}
+
+export const deleteBuildingInventoryType = (payload) => {
+  const {category, id} = payload
+  return async dispatch => {
+    axios.delete(`${ENDPOINTS.BM_INVTYPE_ROOT}/${category}/${id}`)
+      .then(res => {
+        dispatch(setDeleteInvTypeResult(res.data))
+        dispatch(setInvTypesByType({ type: category, data: res.data }))
+      })
+      .catch(err => {
+        dispatch(setDeleteInvTypeError(err.response.data))
+      })
+  }
+}
+
+export const updateBuildingInventoryType = (payload) => {
+  const {category, id, name, description} = payload
+  return async dispatch => {
+    axios.put(`${ENDPOINTS.BM_INVTYPE_ROOT}/${category}/${id}`, {name, description})
+      .then(res => {
+        dispatch(setUpdateInvTypeResult(res.data))
+        // After update, fetch full list
+        return axios.get(ENDPOINTS.BM_INVTYPE_TYPE(category))
+      })
+      .then(res => {
+        // Update inventory types with complete list
+        dispatch(setInvTypesByType({ type: category, data: res.data }))
+      })
+      .catch(err => {
+        dispatch(setUpdateInvTypeError(err.response.data))
       })
   }
 }
@@ -194,6 +238,46 @@ export const resetPostBuildingInventoryTypeResult = () => {
   }
 }
 
+export const setDeleteInvTypeResult = (payload) => {
+  return {
+    type: DELETE_BUILDING_INVENTORY_TYPE,
+    payload
+  }
+}
+
+export const setDeleteInvTypeError = (payload) => {
+  return {
+    type: DELETE_ERROR_BUILDING_INVENTORY_TYPE,
+    payload
+  }
+}
+
+export const resetDeleteInvTypeResult = () => {
+  return {
+    type: RESET_DELETE_BUILDING_INVENTORY_TYPE
+  }
+}
+
+export const setUpdateInvTypeResult = (payload) => {
+  return {
+    type: UPDATE_BUILDING_INVENTORY_TYPE,
+    payload
+  }
+}
+
+export const setUpdateInvTypeError = (payload) => {
+  return {
+    type: UPDATE_ERROR_BUILDING_INVENTORY_TYPE,
+    payload
+  }
+}
+
+export const resetUpdateInvTypeResult = () => {
+  return {
+    type: RESET_UPDATE_BUILDING_INVENTORY_TYPE
+  }
+}
+
 export const resetPostBuildingConsumableTypeResult = () => {
   return {
     type: RESET_POST_BUILDING_CONSUMABLE_INVENTORY_TYPE,
@@ -235,7 +319,6 @@ export const setToolTypes = payload => {
   };
 };
 export const setInvTypesByType = payload => {
-
   return {
     type: GET_INV_BY_TYPE,
     payload
@@ -248,7 +331,7 @@ export const setErrors = payload => {
     payload
   }
 };
-// 
+
 export const postToolsLog = payload => {
   return async dispatch => {
     axios
@@ -260,7 +343,6 @@ export const postToolsLog = payload => {
       })
       .catch(err => {
         dispatch(
-          // setPostErrorToolsLog(JSON.stringify(err.response.data) || 'Sorry! Some error occurred!'),
           // eslint-disable-next-line no-use-before-define
           setPostErrorToolsLog(err.response.data || 'Sorry! Some error occurred!'),
         );

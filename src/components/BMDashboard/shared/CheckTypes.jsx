@@ -72,11 +72,11 @@ function CheckTypes({ type }) {
                 onChange={e => setInvType(e.target.value)}
               >
                 <option value="All">All</option>
-                <option value="Materials">Materials</option>
-                <option value="Consumables">Consumables</option>
-                <option value="Equipments">Equipment</option>
-                <option value="Tools">Tools</option>
-                <option value="Reusables">Reusables</option>
+                <option value="Material">Materials</option>
+                <option value="Consumable">Consumables</option>
+                <option value="Equipment">Equipment</option>
+                <option value="Tool">Tools</option>
+                <option value="Reusable">Reusables</option>
               </Input>
             </Col>
           </FormGroup>
