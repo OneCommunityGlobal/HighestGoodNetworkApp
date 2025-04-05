@@ -25,10 +25,7 @@ export function Team(props) {
             }
           }}
           style={{
-            all: 'unset', // Reset default button styles
-            cursor: 'pointer',
-            width: '100%',
-            height: '100%',
+            boxStyle,
           }}
           aria-label={`Change status for team ${props.name}`}
         >

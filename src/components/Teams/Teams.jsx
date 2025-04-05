@@ -237,6 +237,7 @@ class Teams extends React.PureComponent {
     const selectedTeamData = allTeams
       ? allTeams.filter(team => team.teamName === this.state.selectedTeam)
       : [];
+
     return (
       <>
         <TeamMembersPopup
