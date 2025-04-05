@@ -436,42 +436,42 @@ const TeamMemberTask = React.memo(
                                           : task.deadlineCount}
                                       </span>
                                     )}
-                                    <div className="team-task-progress-container">
+                                      <div className="team-task-progress-container">
                                       <span
-                                        data-testid={`times-${task.taskName}`}
-                                        className={`${darkMode ? 'text-light ' : ''} ${
+                                          data-testid={`times-${task.taskName}`}
+                                          className={`${darkMode ? 'text-light ' : ''} ${
                                           canSeeFollowUpCheckButton
                                             ? 'team-task-progress-time'
                                             : 'team-task-progress-time-volunteers'
-                                        }`}
-                                      >
-                                        {`${parseFloat(
-                                          task.hoursLogged.toFixed(2),
-                                        )} of ${parseFloat(task.estimatedHours.toFixed(2))}`}
-                                      </span>
-                                      {canSeeFollowUpCheckButton && (
-                                        <>
-                                          <FollowupCheckButton
-                                            moseoverText={followUpMouseoverText(task)}
-                                            user={user}
-                                            task={task}
-                                          />
-                                          <FollowUpInfoModal />
-                                        </>
-                                      )}
-                                      <Progress
-                                        color={getProgressColor(
-                                          task.hoursLogged,
-                                          task.estimatedHours,
-                                          true,
+                                          }`}
+                                        >
+                                          {`${parseFloat(
+                                            task.hoursLogged.toFixed(2),
+                                          )} of ${parseFloat(task.estimatedHours.toFixed(2))}`}
+                                        </span>
+                                        {canSeeFollowUpCheckButton && (
+                                          <div className="follow-up-container">
+                                            <FollowupCheckButton
+                                              moseoverText={followUpMouseoverText(task)}
+                                              user={user}
+                                              task={task}
+                                            />
+                                            <FollowUpInfoModal />
+                                          </div>
                                         )}
-                                        value={getProgressValue(
-                                          task.hoursLogged,
-                                          task.estimatedHours,
-                                        )}
-                                        className="team-task-progress-bar"
-                                      />
-                                    </div>
+                                        <Progress
+                                          color={getProgressColor(
+                                            task.hoursLogged,
+                                            task.estimatedHours,
+                                            true,
+                                          )}
+                                          value={getProgressValue(
+                                            task.hoursLogged,
+                                            task.estimatedHours,
+                                          )}
+                                          className="team-task-progress-bar"
+                                        />
+                                      </div>
                                   </td>
                                 )}
                               </tr>
