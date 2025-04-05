@@ -142,7 +142,7 @@ const UserTeamsTable = props => {
   };
 
   return (
-    <div className={`teamtable-container   ${darkMode ? 'bg-yinmn-blue' : ''}`}>
+    <div className={`teamtable-container   ${darkMode ? 'bg-yinmn-blue' : ''}`} data-testid='userTeamTest'>
       <TeamMember
         isOpenModalTeamMember={isOpenModalTeamMember}
         setIsOpenModalTeamMember={setIsOpenModalTeamMember}
