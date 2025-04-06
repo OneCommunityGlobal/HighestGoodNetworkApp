@@ -74,21 +74,21 @@ const toDate = calculateToDate();
 const fromOverDate = calculateFromOverDate();
 const toOverDate = calculateToOverDate();
 
-const aggregateTimeEntries = (userTimeEntries) => {
+const aggregateTimeEntries = userTimeEntries => {
   const aggregatedEntries = {};
-  userTimeEntries.forEach((entry) => {
+  userTimeEntries.forEach(entry => {
     const { personId, hours, minutes } = entry;
     if (!aggregatedEntries[personId]) {
       aggregatedEntries[personId] = {
         hours: parseInt(hours, 10),
-        minutes: parseInt(minutes, 10)
+        minutes: parseInt(minutes, 10),
       };
     } else {
       aggregatedEntries[personId].hours += parseInt(hours, 10);
       aggregatedEntries[personId].minutes += parseInt(minutes, 10);
     }
   });
-  Object.keys(aggregatedEntries).forEach((personId) => {
+  Object.keys(aggregatedEntries).forEach(personId => {
     const totalMinutes = aggregatedEntries[personId].minutes;
     const additionalHours = Math.floor(totalMinutes / 60);
     aggregatedEntries[personId].hours += additionalHours;
@@ -97,7 +97,7 @@ const aggregateTimeEntries = (userTimeEntries) => {
   return Object.entries(aggregatedEntries).map(([personId, { hours, minutes }]) => ({
     personId,
     hours,
-    minutes
+    minutes,
   }));
 };
 
@@ -114,18 +114,16 @@ function TotalOrgSummary(props) {
   const [isLoading, setIsLoading] = useState(true);
 
   const dispatch = useDispatch();
-  const allUsersTimeEntries = useSelector((state) => state.allUsersTimeEntries);
+  const allUsersTimeEntries = useSelector(state => state.allUsersTimeEntries);
 
   // Disable no-param-reassign for this function
   const waitForAssets = async () => {
-    const elements = document.querySelectorAll(
-      'img, .recharts-wrapper, canvas, svg, iframe'
-    );
+    const elements = document.querySelectorAll('img, .recharts-wrapper, canvas, svg, iframe');
     if (elements.length === 0) {
       return;
     }
-    const promises = Array.from(elements).map((element) => {
-      return new Promise((resolve) => {
+    const promises = Array.from(elements).map(element => {
+      return new Promise(resolve => {
         if (element.complete || element.readyState === 'complete') {
           resolve();
           return;
@@ -149,7 +147,7 @@ function TotalOrgSummary(props) {
       await document.fonts.ready;
     }
     await Promise.all(promises);
-    await new Promise((resolve) => {
+    await new Promise(resolve => {
       setTimeout(resolve, 1000);
     });
   };
@@ -178,19 +176,19 @@ function TotalOrgSummary(props) {
       return;
     }
     const triggers = document.querySelectorAll('.Collapsible__trigger');
-    const originalStates = Array.from(triggers).map((trigger) =>
-      trigger.classList.contains('is-open')
+    const originalStates = Array.from(triggers).map(trigger =>
+      trigger.classList.contains('is-open'),
     );
     try {
       if (!volunteerStats || isLoading) {
         return;
       }
-      triggers.forEach((trigger) => {
+      triggers.forEach(trigger => {
         if (!trigger.classList.contains('is-open')) {
           trigger.click();
         }
       });
-      await new Promise((resolve) => {
+      await new Promise(resolve => {
         setTimeout(resolve, 2000);
       });
       await waitForAssets();
@@ -202,15 +200,13 @@ function TotalOrgSummary(props) {
       pdfContainer.style.position = 'absolute';
       pdfContainer.style.left = '-9999px';
       pdfContainer.style.boxSizing = 'border-box';
-      const originalElement = document.querySelector(
-        '.container-total-org-wrapper'
-      );
+      const originalElement = document.querySelector('.container-total-org-wrapper');
       const clonedElement = originalElement.cloneNode(true);
       clonedElement
         .querySelectorAll('button, .share-pdf-btn, .controls, .no-print')
-        .forEach((el) => el.remove());
+        .forEach(el => el.remove());
       const titleRow = clonedElement.querySelector(
-        '.row.d-flex.justify-content-between.align-items-center'
+        '.row.d-flex.justify-content-between.align-items-center',
       );
       if (titleRow) {
         const titleCol = titleRow.querySelector('.col');
@@ -283,12 +279,10 @@ function TotalOrgSummary(props) {
         windowHeight: pdfContainer.scrollHeight,
         backgroundColor: '#fff',
         allowTaint: true,
-        onclone: (clonedDoc) => {
-          clonedDoc.querySelectorAll('.header-row, .controls').forEach((el) =>
-            el.remove()
-          );
-        }
-      }).catch((err) => {
+        onclone: clonedDoc => {
+          clonedDoc.querySelectorAll('.header-row, .controls').forEach(el => el.remove());
+        },
+      }).catch(err => {
         throw new Error(`Failed to render page: ${err.message}`);
       });
       if (!canvasElem) {
@@ -304,7 +298,7 @@ function TotalOrgSummary(props) {
       const PDF = new jsPDF({
         orientation: 'portrait',
         unit: 'mm',
-        format: [pdfWidth, imgHeight]
+        format: [pdfWidth, imgHeight],
       });
       PDF.addImage(imgData, 'PNG', 0, 0, pdfWidth, imgHeight);
       PDF.save(`volunteer-report-${new Date().toISOString().slice(0, 10)}.pdf`);
@@ -329,10 +323,7 @@ function TotalOrgSummary(props) {
   }, [dispatch]);
 
   useEffect(() => {
-    if (
-      Array.isArray(allUserProfiles.userProfiles) &&
-      allUserProfiles.userProfiles.length > 0
-    ) {
+    if (Array.isArray(allUserProfiles.userProfiles) && allUserProfiles.userProfiles.length > 0) {
       const idsList = allUserProfiles.userProfiles.reduce((acc, user) => {
         if (user.isActive) acc.push(user._id);
         return acc;
@@ -354,16 +345,14 @@ function TotalOrgSummary(props) {
     ) {
       return;
     }
-    const aggregatedEntries = aggregateTimeEntries(
-      allUsersTimeEntries.usersTimeEntries
-    );
+    const aggregatedEntries = aggregateTimeEntries(allUsersTimeEntries.usersTimeEntries);
     setUsersTimeEntries(aggregatedEntries);
   }, [allUsersTimeEntries]);
 
   useEffect(() => {
     if (Array.isArray(usersId) && usersId.length > 0) {
       getTimeEntryForOverDate(usersId, fromOverDate, toOverDate)
-        .then((response) => {
+        .then(response => {
           if (response && Array.isArray(response)) {
             setUsersOverTimeEntries(response);
           }
@@ -378,18 +367,18 @@ function TotalOrgSummary(props) {
     async function fetchData() {
       const {
         taskHours: { count: taskHours },
-        projectHours: { count: projectHours }
+        projectHours: { count: projectHours },
       } = await props.getTaskAndProjectStats(fromDate, toDate);
       const {
         taskHours: { count: lastTaskHours },
-        projectHours: { count: lastProjectHours }
+        projectHours: { count: lastProjectHours },
       } = await props.getTaskAndProjectStats(fromOverDate, toOverDate);
       if (taskHours && projectHours) {
         setTaskProjectHours({
           taskHours,
           projectHours,
           lastTaskHours,
-          lastProjectHours
+          lastProjectHours,
         });
       }
     }
@@ -403,7 +392,7 @@ function TotalOrgSummary(props) {
           fromDate,
           toDate,
           comparisonStartDate,
-          comparisonEndDate
+          comparisonEndDate,
         );
         setVolunteerStats(volunteerStatsResponse.data);
         await props.hasPermission('');
@@ -417,9 +406,7 @@ function TotalOrgSummary(props) {
 
   if (error || isVolunteerFetchingError) {
     return (
-      <Container
-        className={`container-wsr-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}
-      >
+      <Container className={`container-wsr-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
         <Row
           className="align-self-center pt-2"
           data-testid="error"
@@ -485,9 +472,7 @@ function TotalOrgSummary(props) {
           <Col lg={{ size: 6 }}>
             <div className="component-container component-border">
               <div className="chart-title">
-                <p>
-                  Global Volunteer Network: Uniting Communities Worldwide
-                </p>
+                <p>Global Volunteer Network: Uniting Communities Worldwide</p>
               </div>
               In progress...
             </div>
@@ -507,9 +492,7 @@ function TotalOrgSummary(props) {
       </AccordianWrapper>
       <AccordianWrapper title="Volunteer Workload and Task Completion Analysis">
         <Row
-          className={`${
-            darkMode ? 'bg-oxford-blue text-light' : 'cbg--white-smoke'
-          } rounded-lg`}
+          className={`${darkMode ? 'bg-oxford-blue text-light' : 'cbg--white-smoke'} rounded-lg`}
         >
           <Col lg={{ size: 6 }}>
             <div className="component-container component-border">
@@ -525,10 +508,7 @@ function TotalOrgSummary(props) {
                   hoursData={volunteerStats?.volunteerHoursStats}
                 />
                 <div className="d-flex flex-column align-items-center justify-content-center">
-                  <HoursWorkList
-                    darkMode={darkMode}
-                    usersTimeEntries={usersTimeEntries}
-                  />
+                  <HoursWorkList darkMode={darkMode} usersTimeEntries={usersTimeEntries} />
                   <NumbersVolunteerWorked
                     isLoading={isLoading}
                     usersTimeEntries={usersTimeEntries}
@@ -594,9 +574,7 @@ function TotalOrgSummary(props) {
               </div>
               <WorkDistributionBarChart
                 isLoading={isLoading}
-                workDistributionStats={
-                  volunteerOverview?.workDistributionStats
-                }
+                workDistributionStats={volunteerOverview?.workDistributionStats}
               />
             </div>
           </Col>
@@ -607,9 +585,7 @@ function TotalOrgSummary(props) {
               </div>
               <RoleDistributionPieChart
                 isLoading={isLoading}
-                roleDistributionStats={
-                  volunteerOverview?.roleDistributionStats
-                }
+                roleDistributionStats={volunteerOverview?.roleDistributionStats}
               />
             </div>
           </Col>
@@ -646,7 +622,7 @@ function TotalOrgSummary(props) {
   );
 }
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   error: state.error,
   loading: state.loading,
   volunteerOverview: state.totalOrgSummary.volunteerOverview,
@@ -656,11 +632,11 @@ const mapStateToProps = (state) => ({
   allUserProfiles: state.allUserProfiles,
 });
 
-const mapDispatchToProps = (dispatch) => ({
+const mapDispatchToProps = dispatch => ({
   getTotalOrgSummary: (startDate, endDate, comparisonStartDate, comparisonEndDate) =>
     dispatch(getTotalOrgSummary(startDate, endDate, comparisonStartDate, comparisonEndDate)),
   getTaskAndProjectStats: () => dispatch(getTaskAndProjectStats(fromDate, toDate)),
-  hasPermission: (permission) => dispatch(hasPermission(permission)),
+  hasPermission: permission => dispatch(hasPermission(permission)),
   getAllUserProfile: () => dispatch(getAllUserProfile()),
 });
 
