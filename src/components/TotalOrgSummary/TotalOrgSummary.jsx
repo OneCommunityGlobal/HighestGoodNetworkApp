@@ -124,18 +124,18 @@ function TotalOrgSummary(props) {
   
   const handleSaveAsPDF = async () => {
     if (typeof jsPDF === 'undefined' || typeof html2canvas === 'undefined') {
-      alert('Required PDF libraries not loaded. Please refresh the page.');
+      console.error('Required PDF libraries not loaded. Please refresh the page.');
       return;
     }
 
     const triggers = document.querySelectorAll('.Collapsible__trigger');
     const originalStates = Array.from(triggers).map(trigger =>
-      trigger.classList.contains('is-open')
+      trigger.classList.contains('is-open'),
     );
 
     try {
       if (!volunteerStats || isLoading) {
-        alert('Please wait for data to load before generating PDF');
+        console.error('Please wait for data to load before generating PDF');
         return;
       }
 
@@ -145,11 +145,13 @@ function TotalOrgSummary(props) {
           trigger.click();
         }
       });
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise(resolve => {
+        setTimeout(resolve, 2000);
+      });
 
       await waitForAssets();
 
-      // Create container for PDF export (width 420mm, won't affect final PDF as we'll scale to A4 width)
+      // Create container for PDF export
       const pdfContainer = document.createElement('div');
       pdfContainer.id = 'pdf-export-container';
       pdfContainer.style.width = '420mm';
@@ -163,10 +165,14 @@ function TotalOrgSummary(props) {
       const clonedElement = originalElement.cloneNode(true);
 
       // Remove elements that shouldn't be printed
-      clonedElement.querySelectorAll('button, .share-pdf-btn, .controls, .no-print').forEach(el => el.remove());
+      clonedElement
+        .querySelectorAll('button, .share-pdf-btn, .controls, .no-print')
+        .forEach(el => el.remove());
 
       // Adjust header structure
-      const titleRow = clonedElement.querySelector('.row.d-flex.justify-content-between.align-items-center');
+      const titleRow = clonedElement.querySelector(
+        '.row.d-flex.justify-content-between.align-items-center',
+      );
       if (titleRow) {
         const titleCol = titleRow.querySelector('.col');
         if (titleCol) {
@@ -182,7 +188,7 @@ function TotalOrgSummary(props) {
         }
       }
 
-      // Add custom styles to prevent content splitting (though single-page PDF won't split, styles remain consistent)
+      // Add custom styles
       const style = document.createElement('style');
       style.textContent = `
         .container-total-org-wrapper {
@@ -243,11 +249,11 @@ function TotalOrgSummary(props) {
         windowHeight: pdfContainer.scrollHeight,
         backgroundColor: '#fff',
         allowTaint: true,
-        onclone: (clonedDoc) => {
+        onclone: clonedDoc => {
           clonedDoc.querySelectorAll('.header-row, .controls').forEach(el => el.remove());
-        }
+        },
       }).catch(err => {
-        throw new Error('Failed to render page: ' + err.message);
+        throw new Error(`Failed to render page: ${err.message}`);
       });
 
       if (!canvas) {
@@ -259,29 +265,30 @@ function TotalOrgSummary(props) {
         throw new Error('Invalid image data generated');
       }
 
-      // Calculate scaling ratio: scale long image to A4 width (210mm) while maintaining aspect ratio
+      // Calculate scaling ratio
       const pdfWidth = 210; // A4 width in mm
-      const imgHeight = (canvas.height * pdfWidth) / canvas.width; // Calculate image height proportionally
+      const imgHeight = (canvas.height * pdfWidth) / canvas.width;
 
-      // Create a custom-sized PDF (single page, width 210mm, height matches content)
-      const pdf = new jsPDF({
+      // Create PDF
+      const PDF = new jsPDF({
         orientation: 'portrait',
         unit: 'mm',
-        format: [pdfWidth, imgHeight]
+        format: [pdfWidth, imgHeight],
       });
 
-      // Add the entire image to PDF without pagination
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, imgHeight);
+      // Add image to PDF
+      PDF.addImage(imgData, 'PNG', 0, 0, pdfWidth, imgHeight);
 
-      pdf.save('volunteer-report-' + new Date().toISOString().slice(0, 10) + '.pdf');
+      PDF.save(`volunteer-report-${new Date().toISOString().slice(0, 10)}.pdf`);
 
       document.body.removeChild(pdfContainer);
-
-    } catch (error) {
+    } catch (err) {
       const fallbackSuccess = generateSimplePDF();
 
       if (!fallbackSuccess) {
-        alert(`PDF generation failed: ${error.message}\n\nPlease try another browser or contact support.`);
+        console.error(
+          `PDF generation failed: ${err.message}\n\nPlease try another browser or contact support.`,
+        );
       }
     } finally {
       // Restore original collapsible section states
@@ -294,66 +301,64 @@ function TotalOrgSummary(props) {
   };
 
   const waitForAssets = async () => {
-    try {
-      const elements = document.querySelectorAll('img, .recharts-wrapper, canvas, svg, iframe');
-      
-      if (elements.length === 0) {
-        return;
-      }
-
-      const promises = Array.from(elements).map((element) => {
-        return new Promise((resolve) => {
-          if (element.complete || element.readyState === 'complete') {
-            resolve();
-            return;
-          }
-
-          const timer = setTimeout(() => {
-            resolve();
-          }, 10000);
-
-          element.onload = () => {
-            clearTimeout(timer);
-            resolve();
-          };
-          element.onerror = () => {
-            clearTimeout(timer);
-            resolve();
-          };
-        });
-      });
-
-      // Wait for fonts if using custom fonts
-      if (document.fonts && document.fonts.ready) {
-        await document.fonts.ready;
-      }
-
-      await Promise.all(promises);
-      
-      // Additional delay for charts to render
-      await new Promise(resolve => setTimeout(resolve, 1000));
-    } catch (err) {
-      throw err;
+    const elements = document.querySelectorAll('img, .recharts-wrapper, canvas, svg, iframe');
+    
+    if (elements.length === 0) {
+      return;
     }
+
+    const promises = Array.from(elements).map(element => {
+      return new Promise(resolve => {
+        if (element.complete || element.readyState === 'complete') {
+          resolve();
+          return;
+        }
+
+        const timer = setTimeout(() => {
+          resolve();
+        }, 10000);
+
+        const elementCopy = element;
+        elementCopy.onload = () => {
+          clearTimeout(timer);
+          resolve();
+        };
+        elementCopy.onerror = () => {
+          clearTimeout(timer);
+          resolve();
+        };
+      });
+    });
+
+    // Wait for fonts if using custom fonts
+    if (document.fonts && document.fonts.ready) {
+      await document.fonts.ready;
+    }
+
+    await Promise.all(promises);
+    
+    // Additional delay for charts to render
+    await new Promise(resolve => {
+      setTimeout(resolve, 1000);
+    });
   };
 
-  // Fallback PDF generator
   const generateSimplePDF = () => {
     try {
-      const pdf = new jsPDF();
-      pdf.setFontSize(16);
-      pdf.text('Volunteer Report Summary', 105, 15, { align: 'center' });
-      pdf.setFontSize(12);
+      const PDF = new jsPDF();
+      PDF.setFontSize(16);
+      PDF.text('Volunteer Report Summary', 105, 15, { align: 'center' });
+      PDF.setFontSize(12);
       
       // Add basic volunteer stats
-      pdf.text(`Total Volunteers: ${volunteerStats?.total || 'N/A'}`, 20, 30);
-      pdf.text(`Active Volunteers: ${volunteerStats?.active || 'N/A'}`, 20, 40);
-      pdf.text(`New Volunteers: ${volunteerStats?.new || 'N/A'}`, 20, 50);
+      PDF.text(`Total Volunteers: ${volunteerStats?.total || 'N/A'}`, 20, 30);
+      PDF.text(`Active Volunteers: ${volunteerStats?.active || 'N/A'}`, 20, 40);
+      PDF.text(`New Volunteers: ${volunteerStats?.new || 'N/A'}`, 20, 50);
       
-      pdf.text('Note: Full report generation failed. Please try', 20, 70);
-      pdf.text('again or contact support if issue persists.', 20, 80);
+      PDF.text('Note: Full report generation failed. Please try', 20, 70);
+      PDF.text('again or contact support if issue persists.', 20, 80);
       
-      pdf.save('volunteer-report-fallback.pdf');
+      PDF.save('volunteer-report-fallback.pdf');
       return true;
     } catch (err) {
       return false;
