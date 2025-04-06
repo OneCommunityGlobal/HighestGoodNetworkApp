@@ -124,7 +124,6 @@ function TotalOrgSummary(props) {
   
   const waitForAssets = async () => {
     const elements = document.querySelectorAll('img, .recharts-wrapper, canvas, svg, iframe');
-    
     if (elements.length === 0) {
       return;
     }
@@ -157,7 +156,6 @@ function TotalOrgSummary(props) {
     }
 
     await Promise.all(promises);
-    
     await new Promise(resolve => {
       setTimeout(resolve, 1000);
     });
@@ -169,14 +167,11 @@ function TotalOrgSummary(props) {
       PDF.setFontSize(16);
       PDF.text('Volunteer Report Summary', 105, 15, { align: 'center' });
       PDF.setFontSize(12);
-      
       PDF.text(`Total Volunteers: ${volunteerStats?.total || 'N/A'}`, 20, 30);
       PDF.text(`Active Volunteers: ${volunteerStats?.active || 'N/A'}`, 20, 40);
       PDF.text(`New Volunteers: ${volunteerStats?.new || 'N/A'}`, 20, 50);
-      
       PDF.text('Note: Full report generation failed. Please try', 20, 70);
       PDF.text('again or contact support if issue persists.', 20, 80);
-      
       PDF.save('volunteer-report-fallback.pdf');
       return true;
     } catch (err) {
@@ -461,7 +456,12 @@ function TotalOrgSummary(props) {
   }
 
   return (
-    <Container fluid className={`container-total-org-wrapper py-3 mb-5 ${darkMode ? 'bg-oxford-blue text-light' : 'cbg--white-smoke'}`}>
+    <Container
+      fluid
+      className={`container-total-org-wrapper py-3 mb-5 ${
+        darkMode ? 'bg-oxford-blue text-light' : 'cbg--white-smoke'
+      }`}
+    >
       <Row className="d-flex justify-content-between align-items-center mb-4">
         <Col lg={{ size: 6 }} className="d-flex align-items-center">
           <h3 className="my-0">Total Org Summary</h3>
@@ -526,9 +526,7 @@ function TotalOrgSummary(props) {
         </Row>
       </AccordianWrapper>
       <AccordianWrapper title="Volunteer Workload and Task Completion Analysis">
-        <Row
-          className={`${darkMode ? 'bg-oxford-blue text-light' : 'cbg--white-smoke'} rounded-lg`}
-        >
+        <Row className={`${darkMode ? 'bg-oxford-blue text-light' : 'cbg--white-smoke'} rounded-lg`}>
           <Col lg={{ size: 6 }}>
             <div className="component-container component-border">
               <div className="chart-title">
@@ -583,7 +581,7 @@ function TotalOrgSummary(props) {
               <div className="chart-title">
                 <p>Volunteer Trends by Time</p>
               </div>
-              <span className="text-center"> Work in progres...</span>
+              <span className="text-center">Work in progress...</span>
             </div>
           </Col>
           <Col lg={{ size: 5 }}>
