@@ -5,7 +5,7 @@ import './TotalOrgSummary.css';
 
 export function generatePDF() {
   const input = document.getElementById('pdfContent');
-  
+
   // 添加 pdf-mode 类使打印样式生效
   input.classList.add('pdf-mode');
 
@@ -17,8 +17,8 @@ export function generatePDF() {
         scale: window.devicePixelRatio || 2,
         useCORS: true,
         allowTaint: false,
-        scrollY: -window.scrollY
-      }).then((canvas) => {
+        scrollY: -window.scrollY,
+      }).then(canvas => {
         // 截图完成后移除 pdf-mode 类
         input.classList.remove('pdf-mode');
 
@@ -42,7 +42,7 @@ export function generatePDF() {
           pdf.addImage(imgData, 'PNG', 0, -position, imgWidth, imgHeight);
           heightLeft -= pageHeight;
         }
-        
+
         pdf.save('document.pdf');
       });
     });

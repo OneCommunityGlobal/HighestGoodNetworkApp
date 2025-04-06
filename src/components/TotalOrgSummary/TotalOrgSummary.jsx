@@ -76,7 +76,6 @@ const toOverDate = calculateToOverDate();
 
 const aggregateTimeEntries = userTimeEntries => {
   const aggregatedEntries = {};
-
   userTimeEntries.forEach(entry => {
     const { personId, hours, minutes } = entry;
     if (!aggregatedEntries[personId]) {
@@ -89,20 +88,17 @@ const aggregateTimeEntries = userTimeEntries => {
       aggregatedEntries[personId].minutes += parseInt(minutes, 10);
     }
   });
-
   Object.keys(aggregatedEntries).forEach(personId => {
     const totalMinutes = aggregatedEntries[personId].minutes;
     const additionalHours = Math.floor(totalMinutes / 60);
     aggregatedEntries[personId].hours += additionalHours;
     aggregatedEntries[personId].minutes = totalMinutes % 60;
   });
-
   const result = Object.entries(aggregatedEntries).map(([personId, { hours, minutes }]) => ({
     personId,
     hours,
     minutes,
   }));
-
   return result;
 };
 
@@ -119,42 +115,35 @@ function TotalOrgSummary(props) {
   const [isLoading, setIsLoading] = useState(true);
 
   const dispatch = useDispatch();
-
   const allUsersTimeEntries = useSelector(state => state.allUsersTimeEntries);
-  
+
   const waitForAssets = async () => {
     const elements = document.querySelectorAll('img, .recharts-wrapper, canvas, svg, iframe');
     if (elements.length === 0) {
       return;
     }
-
     const promises = Array.from(elements).map(element => {
       return new Promise(resolve => {
         if (element.complete || element.readyState === 'complete') {
           resolve();
           return;
         }
-
         const timer = setTimeout(() => {
           resolve();
         }, 10000);
-
-        const elementCopy = element;
-        elementCopy.onload = () => {
+        element.onload = () => {
           clearTimeout(timer);
           resolve();
         };
-        elementCopy.onerror = () => {
+        element.onerror = () => {
           clearTimeout(timer);
           resolve();
         };
       });
     });
-
     if (document.fonts && document.fonts.ready) {
       await document.fonts.ready;
     }
-
     await Promise.all(promises);
     await new Promise(resolve => {
       setTimeout(resolve, 1000);
@@ -181,23 +170,18 @@ function TotalOrgSummary(props) {
 
   const handleSaveAsPDF = async () => {
     if (typeof jsPDF === 'undefined' || typeof html2canvas === 'undefined') {
-      // eslint-disable-next-line no-console
       console.error('Required PDF libraries not loaded. Please refresh the page.');
       return;
     }
-
     const triggers = document.querySelectorAll('.Collapsible__trigger');
     const originalStates = Array.from(triggers).map(trigger =>
       trigger.classList.contains('is-open'),
     );
-
     try {
       if (!volunteerStats || isLoading) {
-        // eslint-disable-next-line no-console
         console.error('Please wait for data to load before generating PDF');
         return;
       }
-
       triggers.forEach(trigger => {
         if (!trigger.classList.contains('is-open')) {
           trigger.click();
@@ -206,9 +190,7 @@ function TotalOrgSummary(props) {
       await new Promise(resolve => {
         setTimeout(resolve, 2000);
       });
-
       await waitForAssets();
-
       const pdfContainer = document.createElement('div');
       pdfContainer.id = 'pdf-export-container';
       pdfContainer.style.width = '420mm';
@@ -217,14 +199,11 @@ function TotalOrgSummary(props) {
       pdfContainer.style.position = 'absolute';
       pdfContainer.style.left = '-9999px';
       pdfContainer.style.boxSizing = 'border-box';
-
       const originalElement = document.querySelector('.container-total-org-wrapper');
       const clonedElement = originalElement.cloneNode(true);
-
       clonedElement
         .querySelectorAll('button, .share-pdf-btn, .controls, .no-print')
         .forEach(el => el.remove());
-
       const titleRow = clonedElement.querySelector(
         '.row.d-flex.justify-content-between.align-items-center',
       );
@@ -242,7 +221,6 @@ function TotalOrgSummary(props) {
           mainTitle.style.margin = '0';
         }
       }
-
       const style = document.createElement('style');
       style.textContent = `
         .container-total-org-wrapper {
@@ -290,10 +268,8 @@ function TotalOrgSummary(props) {
         }
       `;
       clonedElement.prepend(style);
-
       pdfContainer.appendChild(clonedElement);
       document.body.appendChild(pdfContainer);
-
       const canvas = await html2canvas(pdfContainer, {
         scale: 2,
         useCORS: true,
@@ -308,35 +284,26 @@ function TotalOrgSummary(props) {
       }).catch(err => {
         throw new Error(`Failed to render page: ${err.message}`);
       });
-
       if (!canvas) {
         throw new Error('html2canvas returned empty canvas');
       }
-
       const imgData = canvas.toDataURL('image/png');
       if (!imgData || imgData.length < 100) {
         throw new Error('Invalid image data generated');
       }
-
       const pdfWidth = 210;
       const imgHeight = (canvas.height * pdfWidth) / canvas.width;
-
       const PDF = new jsPDF({
         orientation: 'portrait',
         unit: 'mm',
         format: [pdfWidth, imgHeight],
       });
-
       PDF.addImage(imgData, 'PNG', 0, 0, pdfWidth, imgHeight);
-
       PDF.save(`volunteer-report-${new Date().toISOString().slice(0, 10)}.pdf`);
-
       document.body.removeChild(pdfContainer);
     } catch (err) {
       const fallbackSuccess = generateSimplePDF();
-
       if (!fallbackSuccess) {
-        // eslint-disable-next-line no-console
         console.error(
           `PDF generation failed: ${err.message}\n\nPlease try another browser or contact support.`,
         );
@@ -349,7 +316,7 @@ function TotalOrgSummary(props) {
       });
     }
   };
-  
+
   useEffect(() => {
     dispatch(getAllUserProfile());
   }, [dispatch]);
@@ -394,7 +361,7 @@ function TotalOrgSummary(props) {
         });
     }
   }, [allUsersTimeEntries, usersId, fromOverDate, toOverDate]);
-  
+
   useEffect(() => {
     async function fetchData() {
       const {
@@ -405,7 +372,6 @@ function TotalOrgSummary(props) {
         taskHours: { count: lastTaskHours },
         projectHours: { count: lastProjectHours },
       } = await props.getTaskAndProjectStats(fromOverDate, toOverDate);
-
       if (taskHours && projectHours) {
         setTaskProjectHours({
           taskHours,
@@ -434,10 +400,8 @@ function TotalOrgSummary(props) {
         setIsVolunteerFetchingError(true);
       }
     };
-
     fetchVolunteerStats();
   }, [fromDate, toDate, props]);
-
 
   if (error || isVolunteerFetchingError) {
     return (
@@ -526,7 +490,9 @@ function TotalOrgSummary(props) {
         </Row>
       </AccordianWrapper>
       <AccordianWrapper title="Volunteer Workload and Task Completion Analysis">
-        <Row className={`${darkMode ? 'bg-oxford-blue text-light' : 'cbg--white-smoke'} rounded-lg`}>
+        <Row
+          className={`${darkMode ? 'bg-oxford-blue text-light' : 'cbg--white-smoke'} rounded-lg`}
+        >
           <Col lg={{ size: 6 }}>
             <div className="component-container component-border">
               <div className="chart-title">
