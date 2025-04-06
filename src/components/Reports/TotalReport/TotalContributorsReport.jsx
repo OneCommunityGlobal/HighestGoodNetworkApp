@@ -42,8 +42,7 @@ function TotalContributorsReport({ startDate, endDate, userProfiles, darkMode, u
 
   // Group time entries by user and calculate total hours
   const sumByUser = useCallback((entries) => {
-    return entries.reduce((acc, entry) => {
-      const userId = entry.userId;
+    return entries.reduce((acc, { userId, hours = 0, minutes = 0, tangibleTime = 0 }) => {
       if (!acc[userId]) {
         acc[userId] = {
           userId,
@@ -52,9 +51,9 @@ function TotalContributorsReport({ startDate, endDate, userProfiles, darkMode, u
           tangibleTime: 0,
         };
       }
-      acc[userId].hours += entry.hours || 0;
-      acc[userId].minutes += entry.minutes || 0;
-      acc[userId].tangibleTime += entry.tangibleTime || 0;
+      acc[userId].hours += hours;
+      acc[userId].minutes += minutes;
+      acc[userId].tangibleTime += tangibleTime;
       return acc;
     }, {});
   }, []);
