@@ -790,7 +790,7 @@ export class WeeklySummariesReport extends Component {
       replaceCodeLoading,
     } = this.state;
     const { error, savedWeeklySummaryFilters } = this.props;
-    const hasPermissionToFilter = role === 'Owner' || role === 'Administrator';
+    const hasPermissionToFilter = hasPermission('editTeamCode');
     const { authEmailWeeklySummaryRecipient } = this.props;
     const authorizedUser1 = 'jae@onecommunityglobal.org';
     const authorizedUser2 = 'sucheta_mu@test.com'; // To test please include your email here

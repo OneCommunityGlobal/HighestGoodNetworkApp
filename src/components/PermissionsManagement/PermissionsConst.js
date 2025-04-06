@@ -69,7 +69,7 @@ export const permissionLabels = [
           'Makes ONLY the "Reports" -> "Volunteer Summary Reports" option appear/accessible.',
       },
       {
-        label: 'Edit Team 4-Digit Codes',
+        label: 'Edit Team 4-Digit Codes & Save Filters',
         key: 'editTeamCode',
         description:
           'Gives the user permission to edit 4-digit team codes on profile page and weekly summaries report page.',
