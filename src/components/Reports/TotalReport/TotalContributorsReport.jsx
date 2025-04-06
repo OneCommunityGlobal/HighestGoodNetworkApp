@@ -2,8 +2,6 @@ import { useEffect, useState, useMemo, useCallback } from 'react';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import './TotalReport.css';
-import { Button } from 'reactstrap';
-import ReactTooltip from 'react-tooltip';
 import TotalReportBarGraph from './TotalReportBarGraph';
 import Loading from '../../common/Loading';
 import EditableInfoModal from '../../UserProfile/EditableModal/EditableInfoModal';
@@ -19,7 +17,7 @@ function TotalContributorsReport({ startDate, endDate, userProfiles, darkMode, u
 
   const fromDate = useMemo(() => startDate.toLocaleDateString('en-CA'), [startDate]);
   const toDate = useMemo(() => endDate.toLocaleDateString('en-CA'), [endDate]);
-  const userList = useMemo(() => userProfiles.map(user => user._id), [userProfiles]);
+  const userList = useMemo(() => userProfiles.map(({ _id }) => _id), [userProfiles]);
 
   // Fetch time entries for the selected period
   const loadTimeEntriesForPeriod = useCallback(async (controller) => {
@@ -36,7 +34,8 @@ function TotalContributorsReport({ startDate, endDate, userProfiles, darkMode, u
       setTimeEntries(response.data);
     } catch (error) {
       if (!axios.isCancel(error)) {
-        console.error('Error fetching time entries:', error);
+        // Handle error silently or show user-friendly message
+        setTimeEntries([]);
       }
     }
   }, [fromDate, toDate, userList]);
