@@ -13,7 +13,7 @@ export function Team(props) {
   return (
     <tr className="teams__tr" id={`tr_${props.teamId}`}>
       <th className="teams__order--input" scope="row">
-        <div>{props.index + 1}</div>
+      <div>{(props.index ?? 0) + 1}</div>
       </th>
       <td>{props.name}</td>
       <td className="teams__active--input">
