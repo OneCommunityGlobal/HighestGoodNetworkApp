@@ -21,13 +21,14 @@ import {
 } from 'reactstrap';
 import ReactTooltip from 'react-tooltip';
 import { MultiSelect } from 'react-multi-select-component';
-import './WeeklySummariesReport.css';
 import moment from 'moment';
-import 'moment-timezone';
 import { boxStyle, boxStyleDark } from 'styles';
-import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
-import { ENDPOINTS } from 'utils/URL';
+import 'moment-timezone';
 import axios from 'axios';
+import cn from 'classnames';
+
+import { ENDPOINTS } from 'utils/URL';
+import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import { getAllUserTeams, getAllTeamCode } from '../../actions/allTeamsAction';
 import TeamChart from './TeamChart';
 import SkeletonLoading from '../common/SkeletonLoading';
@@ -50,6 +51,9 @@ import {
   WeeklySummaryFilterModal,
   WeeklySummaryFilterLinksList,
 } from './WeeklySummaryFiltersComp';
+
+import styles from './WeeklySummariesReport.module.scss';
+import { SlideToggle } from './components';
 
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
 const fullCodeRegex = /^.{5,7}$/;
@@ -564,15 +568,12 @@ export class WeeklySummariesReport extends Component {
     );
   };
 
-  handleSpecialColorToggleChange = event => {
-    const { id, checked } = event.target;
-    const color = id.split('-')[0];
-
+  handleColorToggleChange = (color, state) => {
     this.setState(
       prevState => ({
         selectedSpecialColors: {
           ...prevState.selectedSpecialColors,
-          [color]: checked,
+          [color]: state,
         },
       }),
       this.filterWeeklySummaries,
@@ -797,7 +798,7 @@ export class WeeklySummariesReport extends Component {
 
     if (error) {
       return (
-        <Container className={`container-wsr-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
+        <Container className={cn(styles.containerWsrWrapper, darkMode ? 'bg-oxford-blue' : '')}>
           <Row
             className="align-self-center pt-2"
             data-testid="error"
@@ -826,9 +827,10 @@ export class WeeklySummariesReport extends Component {
     return (
       <Container
         fluid
-        className={`container-wsr-wrapper py-3 mb-5 ${
-          darkMode ? 'bg-oxford-blue text-light' : 'bg--white-smoke'
-        }`}
+        className={cn(
+          styles.containerWsrWrapper,
+          `py-3 mb-5 ${darkMode ? 'bg-oxford-blue text-light' : styles.bgWhiteSmoke}`,
+        )}
       >
         {this.passwordInputModalToggle()}
         {this.popUpElements()}
@@ -876,23 +878,14 @@ export class WeeklySummariesReport extends Component {
         </Row>
         <Row>
           <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }} xs={{ size: 6 }}>
-            <div className="filter-container-teamcode">
+            <div className={styles.filterContainerTeamcode}>
               <div>Select Team Code</div>
-
-              <div className="filter-style">
+              <div className={styles.filterStyle}>
                 <span>Show Chart</span>
-                <div className="switch-toggle-control">
-                  <input
-                    type="checkbox"
-                    className="switch-toggle"
-                    id="chart-status-toggle"
-                    onChange={this.handleChartStatusToggleChange}
-                  />
-                  <label className="switch-toggle-label" htmlFor="chart-status-toggle">
-                    <span className="switch-toggle-inner" />
-                    <span className="switch-toggle-switch" />
-                  </label>
-                </div>
+                <SlideToggle
+                  className={styles.slideToggle}
+                  onChange={this.handleChartStatusToggleChange}
+                />
               </div>
             </div>
           </Col>
@@ -903,7 +896,7 @@ export class WeeklySummariesReport extends Component {
         <Row>
           <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }} xs={{ size: 6 }}>
             <MultiSelect
-              className="multi-select-filter text-dark"
+              className={cn(styles.multiSelectFilter, `text-dark ${darkMode ? 'dark-mode' : ''}`)}
               options={teamCodes}
               value={selectedCodes}
               onChange={e => {
@@ -914,7 +907,7 @@ export class WeeklySummariesReport extends Component {
           </Col>
           <Col lg={{ size: 5 }} md={{ size: 6, offset: -1 }} xs={{ size: 6, offset: -1 }}>
             <MultiSelect
-              className="multi-select-filter text-dark"
+              className={cn(styles.multiSelectFilter, `text-dark ${darkMode ? 'dark-mode' : ''}`)}
               options={colorOptions}
               value={selectedColors}
               onChange={e => {
@@ -940,7 +933,7 @@ export class WeeklySummariesReport extends Component {
         )}
         <Row style={{ marginBottom: '10px' }}>
           <Col lg={{ size: 10, offset: 1 }} xs={{ size: 8, offset: 4 }}>
-            <div className="filter-container">
+            <div className={styles.filterContainer}>
               {hasPermissionToFilter && (
                 <WeeklySummaryFilterActionButtons
                   selectedFilterId={this.state.selectedFilterId}
@@ -978,76 +971,32 @@ export class WeeklySummariesReport extends Component {
               {hasPermissionToFilter && (
                 <div className="filter-style margin-right">
                   <span>Filter by Special</span>
-                  <div className="switch-toggle-control">
-                    <input
-                      type="checkbox"
-                      className="switch-toggle"
-                      id="purple-toggle"
-                      onChange={this.handleSpecialColorToggleChange}
+                  {['purple', 'green', 'navy'].map(color => (
+                    <SlideToggle
+                      key={`${color}-toggle`}
+                      className={styles.slideToggle}
+                      color={color}
+                      onChange={this.handleColorToggleChange}
                     />
-                    <label className="switch-toggle-label" htmlFor="purple-toggle">
-                      <span className="switch-toggle-inner" />
-                      <span className="switch-toggle-switch" />
-                    </label>
-                  </div>
-                  <div className="switch-toggle-control">
-                    <input
-                      type="checkbox"
-                      className="switch-toggle"
-                      id="green-toggle"
-                      onChange={this.handleSpecialColorToggleChange}
-                    />
-                    <label className="switch-toggle-label" htmlFor="green-toggle">
-                      <span className="switch-toggle-inner" />
-                      <span className="switch-toggle-switch" />
-                    </label>
-                  </div>
-                  <div className="switch-toggle-control">
-                    <input
-                      type="checkbox"
-                      className="switch-toggle"
-                      id="navy-toggle"
-                      onChange={this.handleSpecialColorToggleChange}
-                    />
-                    <label className="switch-toggle-label" htmlFor="navy-toggle">
-                      <span className="switch-toggle-inner" />
-                      <span className="switch-toggle-switch" />
-                    </label>
-                  </div>
+                  ))}
                 </div>
               )}
               {(hasPermissionToFilter || this.canSeeBioHighlight) && (
-                <div className="filter-style margin-right">
+                <div className={cn(styles.filterStyle, styles.filterMarginRight)}>
                   <span>Filter by Bio Status</span>
-                  <div className="switch-toggle-control">
-                    <input
-                      type="checkbox"
-                      className="switch-toggle"
-                      id="bio-status-toggle"
-                      onChange={this.handleBioStatusToggleChange}
-                    />
-                    <label className="switch-toggle-label" htmlFor="bio-status-toggle">
-                      <span className="switch-toggle-inner" />
-                      <span className="switch-toggle-switch" />
-                    </label>
-                  </div>
+                  <SlideToggle
+                    className={styles.slideToggle}
+                    onChange={this.handleBioStatusToggleChange}
+                  />
                 </div>
               )}
               {hasPermissionToFilter && (
-                <div className="filter-style">
-                  <span>Filter by Over Hours {}</span>
-                  <div className="switch-toggle-control">
-                    <input
-                      type="checkbox"
-                      className="switch-toggle"
-                      id="over-hours-toggle"
-                      onChange={this.handleOverHoursToggleChange}
-                    />
-                    <label className="switch-toggle-label" htmlFor="over-hours-toggle">
-                      <span className="switch-toggle-inner" />
-                      <span className="switch-toggle-switch" />
-                    </label>
-                  </div>
+                <div className={styles.filterStyle}>
+                  <span>Filter by Over Hours</span>
+                  <SlideToggle
+                    className={styles.slideToggle}
+                    onChange={this.handleOverHoursToggleChange}
+                  />
                   <ReactTooltip
                     id="filterTooltip"
                     place="top"
@@ -1089,7 +1038,7 @@ export class WeeklySummariesReport extends Component {
                 </Button>
               )}
               {replaceCodeError && (
-                <Alert className="code-alert" color="danger">
+                <Alert className={styles.codeAlert} color="danger">
                   {replaceCodeError}
                 </Alert>
               )}
@@ -1106,6 +1055,7 @@ export class WeeklySummariesReport extends Component {
                     data-testid={item}
                     active={item === activeTab}
                     onClick={() => this.toggleTab(item)}
+                    className={darkMode ? 'dark-mode' : ''}
                   >
                     {item}
                   </NavLink>

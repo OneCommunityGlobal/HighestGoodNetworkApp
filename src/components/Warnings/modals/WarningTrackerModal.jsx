@@ -141,11 +141,9 @@ function WarningTrackerModal({
     dispatch(deleteWarningDescription(warningId)).then(res => {
       if (res.error) {
         setError(res.error);
-        return;
       }
-      setWarningDescriptions(prev => prev.filter(warning => warning._id !== warningId));
-      getUsersWarnings();
     });
+    setWarningDescriptions(prev => prev.filter(warning => warning._id !== warningId));
   };
 
   const handleEditWarningDescription = (e, warningId) => {
