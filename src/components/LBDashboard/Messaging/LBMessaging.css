@@ -194,7 +194,9 @@
     position: relative;
     display: inline-block;
   }
-  
+  .lg-messaging-notification-wrapper input{
+    width:fit-content;
+  }
   .lg-messaging-notification-bell {
     font-size: 30px;
     cursor: pointer;
@@ -225,16 +227,18 @@
   .lg-messaging-bell-select-dropdown label {
     display: flex;
     justify-content: flex-start;
+    align-items: center;
     gap: 8px;
     font-size: 14px;
     width: 100%;
     cursor: pointer;
   }
   .lg-messaging-bell-select-dropdown input{
-    width:fit-content;
+    width:fit-content !important;
   }
   .lg-messaging-notification-checkbox {
     cursor: pointer;
+    width:fit-content;
   }
   
   .lg-messaging-submit-button {
@@ -254,7 +258,16 @@
     background-color: #0056b3;
   }
   
+  .messaging-message-status {
+    letter-spacing: -2px;
+    margin-left: 4px;
+    font-size: 12px;
+    color: #8e8e8e;
+  }
   
+  .messaging-message-status.read {
+    color: #34b7f1;
+  }
   /* Chat bubbles */
   .chat-bubble {
     max-width: 70%;
@@ -295,6 +308,7 @@
   .chat-meta {
     display: flex;
     justify-content: flex-end;
+    align-items: center;
     font-size: 10px;
     margin-top: 4px;
     gap: 5px;
@@ -523,6 +537,74 @@
 .lb-messaging-contacts-dark{
   width:20%;
   background-color: #1b2a41;
+}
+
+.lb-messaging-contact-preview {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.preview-wrapper {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-right: 8px;
+}
+
+.sent-message-preview {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #8e8e8e;
+}
+
+.preview-status {
+  letter-spacing: -2px;
+  margin-left: 4px;
+  font-size: 11px;
+  color: #8e8e8e;
+}
+
+.preview-status.read {
+  color: #34b7f1;
+}
+
+.preview-indicators {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 28px; /* Ensure consistent width even without counter */
+  justify-content: flex-end;
+}
+
+.message-counter {
+  background-color: #25D366;
+  color: white;
+  border-radius: 12px;
+  padding: 2px 6px;
+  min-width: 20px;
+  height: 20px;
+  font-size: 11px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Dark mode adjustments */
+.lb-messaging-contact-dark .sent-message-preview {
+  color: #e0e0e0;
+}
+
+.lb-messaging-contact-dark .preview-status {
+  color: #e0e0e0;
+}
+
+.lb-messaging-contact-dark .preview-status.read {
+  color: #34b7f1;
 }
 
 /* Medium screens (tablets) */

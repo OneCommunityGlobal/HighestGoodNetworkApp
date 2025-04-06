@@ -43,7 +43,6 @@ export const updateUserPreferences = (userId, preferences) => {
         dispatch(updateUserPreferencesStart());
         try {
             const res = await axios.put(ENDPOINTS.LB_UPDATE_USER_PREFERENCES(userId), preferences);
-            console.log(res)
             dispatch(updateUserPreferencesEnd(res.data));
         } catch (err) {
             console.error("Failed to update user preferences:", err);

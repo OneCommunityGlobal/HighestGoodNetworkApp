@@ -250,6 +250,8 @@ export const ENDPOINTS = {
   LB_READ_MESSAGE: (userId) => `${APIEndpoint}/lb/${userId}`,
   LB_GET_USER_PREFERENCES: (userId) => `${APIEndpoint}/lb/notification/${userId}`,
   LB_UPDATE_USER_PREFERENCES: (userId) => `${APIEndpoint}/lb/notification/${userId}`,
+  LB_SEND_EMAIL: `${APIEndpoint}/lb/notification/email`,
+  LB_SEND_SMS: `${APIEndpoint}/lb/notification/sms`,
 };
 
 export const ApiEndpoint = APIEndpoint;

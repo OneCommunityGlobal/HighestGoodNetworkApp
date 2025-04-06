@@ -17,6 +17,8 @@ import { useRef } from 'react';
 import { toast } from 'react-toastify';
 import { initSocket, getSocket } from '../../../utils/socket';
 import config from '../../../config.json';
+import { sendINAppNotification,sendEmailNotification } from './NotificationFunctions.js';
+
 
 export default function LBMessaging() {
   const dispatch = useDispatch();
@@ -30,12 +32,10 @@ export default function LBMessaging() {
   const location = useLocation();
   const [bellDropdownActive, setBellDropdownActive] = useState(false);
   const [selectedOption, setSelectedOption] = useState(userPreferences);
-  // const dropdownRef = useRef(null);
-
   const contactIcon = `lb-messaging-contact-icon${selectContact ? '-select' : ''}${
     darkMode ? '-dark' : ''
   }`;
-
+  const [isFetching, setIsFetching] = useState(false);
   const messagesState = useSelector(state => state.lbmessaging);
   const { messages } = messagesState;
   const messageEndRef = useRef(null);
@@ -49,23 +49,9 @@ export default function LBMessaging() {
   };
 
   const saveUserPreferences = () => {
-    const userId = auth.userid;
-    dispatch(updateUserPreferences(userId, selectedOption));
+    dispatch(updateUserPreferences(selectedOption.user, selectedOption));
   };
 
-  const BrowserNotification = (title, options) => {
-    try {
-      if (document.visibilityState === 'hidden' && Notification.permission === 'granted') {
-        const notification = new Notification(title, options);
-        notification.onclick = () => {
-          const targetUrl = notification.data?.url || '/';
-          window.open(targetUrl, '_blank');
-        };
-      }
-    } catch (error) {
-      throw new Error('Browser Notification Error: ', error);
-    }
-  };
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const chatId = params.get('chat');
@@ -78,6 +64,72 @@ export default function LBMessaging() {
       }
     }
   }, [location.search, users.userProfilesBasicInfo]);
+
+  useEffect(() => {
+    if (!auth?.userid) return;
+  
+    let timeoutId = null;
+    let isSubscribed = true; // For cleanup
+  
+    const fetchMessagesAndSchedule = async () => {
+      if (!isSubscribed || isFetching) return;
+  
+      try {
+        setIsFetching(true);
+         dispatch(fetchMessages(auth.userid));
+        
+        // Schedule next fetch only if component is still mounted
+        if (isSubscribed) {
+          timeoutId = setTimeout(fetchMessagesAndSchedule, 30000);
+        }
+      } catch (error) {
+        console.error('Error fetching messages:', error);
+      } finally {
+        if (isSubscribed) {
+          setIsFetching(false);
+        }
+      }
+    };
+  
+    // Initial fetch
+    fetchMessagesAndSchedule();
+  
+    // Cleanup
+    return () => {
+      isSubscribed = false;
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [auth?.userid, dispatch, isFetching]);
+  const markMessagesAsRead = (messages, selectedUserId) => {
+    const socket = getSocket();
+    if (!socket || socket.readyState !== 1) return;
+    
+    const unreadMessages = messages.filter(msg => {
+      const senderId = typeof msg.sender === 'object' ? 
+        msg.sender._id?.toString() : 
+        msg.sender?.toString();
+      return senderId === selectedUserId && !msg.isRead;
+    });
+  
+    if (unreadMessages.length > 0) {
+      socket.send(JSON.stringify({
+        action: 'MESSAGES_READ',
+        messageIds: unreadMessages.map(msg => msg._id),
+        sender: selectedUserId,
+        receiver: auth.userid
+      }));
+    }
+  };
+
+  // Add this after your other useEffects
+useEffect(() => {
+  if (selectedUser.id && messages.length > 0) {
+    const conversationMessages = getMessagesBetweenUsers(messages, auth.userid, selectedUser.id);
+    markMessagesAsRead(conversationMessages, selectedUser.id);
+  }
+}, [selectedUser.id, messages]);
 
   useEffect(() => {
     const { tokenKey } = config;
@@ -94,29 +146,31 @@ export default function LBMessaging() {
           senderUser.length === 1 &&
           auth.userid.toString() === data.payload.receiver.toString()
         ) {
-          const senderName = `${senderUser[0].firstName} ${senderUser[0].lastName}`;
-          if (document.visibilityState === 'hidden') {
-            BrowserNotification(`New message from ${senderName}`, {
-              body: data.payload.content,
-              icon: `${window.location.origin}/pfp-default-header.png`,
-              // image: `/pfp-default-header.png`,
-              tag: '/new-message',
-              requireInteraction: true,
-              data: { url: `/lbdashboard/messaging?chat=${data.payload.sender}` },
-            });
-          } else {
-            toast(`📩 New message from ${senderName}:  ${data.payload.content}`, {
-              position: 'top-right',
-              autoClose: 5000,
-              className: 'lb-messaging-toast',
-              closeOnClick: true, // needed for click-to-open to work
-              onClick: () => {
-                window.location.href = `/lbdashboard/messaging?chat=${data.payload.sender}`;
-              },
-            });
-          }
+          if(userPreferences.notifyInApp === true){
+            sendINAppNotification(data,userPreferences,senderUser)
+          }else if(userPreferences.notifyEmail === true){
+            sendEmailNotification(data,users, userPreferences,senderUser)
+          } 
         }
         dispatch({ type: 'SEND_MESSAGE_END', payload: data.payload });
+      }else if (data.action === 'MESSAGE_READ') {
+        dispatch({ 
+          type: 'UPDATE_MESSAGES_READ_STATUS', 
+          payload: {
+            messageIds: data.messageIds,
+          }
+        });
+      }else if(data.action === 'SEND_MESSAGE_FAILED'){
+        dispatch({ 
+          type: 'SEND_MESSAGE_FAILED',
+          payload: {
+            content: message,
+            sender: auth.userid,
+            receiver: selectedUser.id,
+            timestamp: new Date(),
+            status: 'failed'
+          }
+        });
       }
     };
     socket.onclose = () => {
@@ -158,6 +212,27 @@ export default function LBMessaging() {
 
   const getUniqueUsersFromMessages = (message, loggedInUserId) => {
     const uniqueUsersMap = new Map();
+    const userMessages = new Map();
+    // console.log('Message:', message);
+    // First pass: collect all messages for each user
+    message.forEach(msg => {
+      [msg.sender, msg.receiver].forEach(user => {
+        if (user && user._id && user._id.toString() !== loggedInUserId) {
+          const userId = user._id.toString();
+          if (!userMessages.has(userId)) {
+            userMessages.set(userId, []);
+          }
+          userMessages.get(userId).push({
+            content: msg.content,
+            timestamp: msg.timestamp,
+            isFromOther: msg.sender._id.toString() !== loggedInUserId,
+            isUnread: msg.sender._id.toString() !== loggedInUserId && !msg.isRead // Check if message is unread
+          });
+        }
+      });
+    });
+  
+    // Second pass: create user objects with last message
     message.forEach(msg => {
       [msg.sender, msg.receiver].forEach(user => {
         if (
@@ -166,17 +241,33 @@ export default function LBMessaging() {
           user._id.toString() !== loggedInUserId &&
           !uniqueUsersMap.has(user._id.toString())
         ) {
-          uniqueUsersMap.set(user._id.toString(), {
+          const userId = user._id.toString();
+          const messages = userMessages.get(userId);
+          const lastMessage = messages.sort((a, b) => 
+            new Date(b.timestamp) - new Date(a.timestamp)
+          )[0];
+  
+          // Count unread messages from this user
+          const unreadCount = messages.filter(msg => msg.isUnread).length;
+          uniqueUsersMap.set(userId, {
             id: user._id,
             firstName: user.firstName,
             lastName: user.lastName,
             role: user.role,
+            email: user.email,
+            lastMessage: lastMessage?.content || '',
+            lastMessageTime: lastMessage?.timestamp || null,
+            isFromOther: lastMessage?.isFromOther || false,
+            hasUnreadMessages: unreadCount > 0,
+            unreadCount // Add count of unread messages
           });
         }
       });
     });
+    
     return Array.from(uniqueUsersMap.values());
   };
+
   const getMessagesBetweenUsers = (message, loggedInUserId, selectedUserId) => {
     return message.filter(msg => {
       const senderId = msg.sender?._id?.toString?.() || msg.sender?.toString?.();
@@ -214,7 +305,7 @@ export default function LBMessaging() {
       year: 'numeric',
     });
   };
-
+  
   const sendMessageData = () => {
     const footer = document.getElementsByClassName('lb-messaing-message-window-footer')[0];
     // Now get the input inside that footer
@@ -222,21 +313,71 @@ export default function LBMessaging() {
     const message = input.value.trim();
     if (selectedUser.id && auth.userid && message) {
       const socket = getSocket();
-      if (!socket || socket.readyState !== 1) return;
+      if (!socket || socket.readyState !== 1) {
+        dispatch({ 
+          type: 'SEND_MESSAGE_FAILED', 
+          payload: {
+            content: message,
+            sender: auth.userid,
+            receiver: selectedUser.id,
+            timestamp: new Date(),
+            status: 'failed'
+          }
+        });
+        return;
+      }
+      try {
+        const tempMessageId = Date.now().toString(); // Define tempMessageId here
+        const messageData = {
+          action: 'SEND_MESSAGE',
+          receiver: selectedUser.id,
+          content: message,
+          messageId: tempMessageId, // Temporary ID to track this message
+        };
+        socket.send(JSON.stringify(messageData));
+        input.value = '';
+       // Add to Redux with pending status
+      dispatch({
+        type: 'SEND_MESSAGE_PENDING',
+        payload: {
+          _id: tempMessageId,
+          content: message,
+          sender: auth.userid,
+          receiver: selectedUser.id,
+          timestamp: new Date(),
+          status: 'pending'
+        }
+      });
+  
+      } catch (error) {
+        dispatch({ 
+          type: 'SEND_MESSAGE_FAILED',
+          payload: {
+            content: message,
+            sender: auth.userid,
+            receiver: selectedUser.id,
+            timestamp: new Date(),
+            status: 'failed'
+          }
+        });
+      }}
+  };
 
-      const messageData = {
-        action: 'SEND_MESSAGE',
-        receiver: selectedUser.id,
-        content: message,
-      };
-      socket.send(JSON.stringify(messageData));
-      input.value = '';
-    }
+  const getReceiptStatus = (msg, isSender) => {
+    if (!isSender) return null;
+  const readTicks = "✓\u200B✓";
+  const deliveredTicks = "✓\u200B✓";
+  const singleTick = "✓";
+  const failedIcon = "!"; // Exclamation mark for failed messages
+  
+  if (msg.status === 'failed') return failedIcon;
+  if (msg.isRead) return readTicks;
+  if (msg.status === 'delivered') return deliveredTicks;
+  return singleTick;
   };
 
   const renderChatMessages = (conversation, loggedInUserId) => {
     let lastDate = null;
-
     return (
       <div className="message-list">
         {conversation.map(msg => {
@@ -254,7 +395,12 @@ export default function LBMessaging() {
                 <div className="chat-content">{msg.content}</div>
                 <div className="chat-meta">
                   <span className="timestamp">{formatTime(msg.timestamp)}</span>
-                  {isSender && <span className="status">{msg.status === 'read' ? '✔✔' : '✔'}</span>}
+                  {isSender &&
+                  //  <span className="status">{msg.status === 'read' ? '✔✔' : '✔'}</span>
+                  <span className={`messaging-message-status ${msg.isRead ? 'read' : ''}`}>
+                    {getReceiptStatus(msg, isSender)}
+                  </span>
+                  }
                 </div>
               </div>
             </React.Fragment>
@@ -265,7 +411,7 @@ export default function LBMessaging() {
     );
   };
 
-  return users.userProfilesBasicInfo.length !== 0 && messages.length !== 0 ? (
+  return users.userProfilesBasicInfo.length !== 0 && messages.length !== 0  ?  (
     <div className={darkMode ? 'lb-messaging-container-dark' : 'lb-messaging-container'}>
       <div className="lb-messaging-header">
         <img src="/big-sign.png" alt="onecommunity-logo" />
@@ -349,7 +495,26 @@ export default function LBMessaging() {
                                 : 'lb-messaging-contact-name'
                             }
                           >{`${message.firstName} ${message.lastName}`}</div>
-                          {/* <div className='lb-messaging-contact-preview'>{message.preview}</div> */}
+                         <div className='lb-messaging-contact-preview'>
+                            <div className="preview-wrapper">
+                              {message.isFromOther ? (
+                                message.lastMessage
+                              ) : (
+                                // Logged in user's last message
+                                <div className="sent-message-preview">
+                                  <span>You: {message.lastMessage}</span>
+                                  <span className={`preview-status ${message.isRead ? 'read' : ''}`}>
+                                    {getReceiptStatus(message, true)}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                            <div className="preview-indicators">
+                              {message.isFromOther && message.hasUnreadMessages && (
+                                <span className="message-counter">{message.unreadCount}</span>
+                              )}
+                            </div>
+                        </div>
                         </div>
                       </div>
                     ))
