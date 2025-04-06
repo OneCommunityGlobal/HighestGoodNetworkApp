@@ -122,8 +122,71 @@ function TotalOrgSummary(props) {
 
   const allUsersTimeEntries = useSelector(state => state.allUsersTimeEntries);
   
+  const waitForAssets = async () => {
+    const elements = document.querySelectorAll('img, .recharts-wrapper, canvas, svg, iframe');
+    
+    if (elements.length === 0) {
+      return;
+    }
+
+    const promises = Array.from(elements).map(element => {
+      return new Promise(resolve => {
+        if (element.complete || element.readyState === 'complete') {
+          resolve();
+          return;
+        }
+
+        const timer = setTimeout(() => {
+          resolve();
+        }, 10000);
+
+        const elementCopy = element;
+        elementCopy.onload = () => {
+          clearTimeout(timer);
+          resolve();
+        };
+        elementCopy.onerror = () => {
+          clearTimeout(timer);
+          resolve();
+        };
+      });
+    });
+
+    if (document.fonts && document.fonts.ready) {
+      await document.fonts.ready;
+    }
+
+    await Promise.all(promises);
+    
+    await new Promise(resolve => {
+      setTimeout(resolve, 1000);
+    });
+  };
+
+  const generateSimplePDF = () => {
+    try {
+      const PDF = new jsPDF();
+      PDF.setFontSize(16);
+      PDF.text('Volunteer Report Summary', 105, 15, { align: 'center' });
+      PDF.setFontSize(12);
+      
+      PDF.text(`Total Volunteers: ${volunteerStats?.total || 'N/A'}`, 20, 30);
+      PDF.text(`Active Volunteers: ${volunteerStats?.active || 'N/A'}`, 20, 40);
+      PDF.text(`New Volunteers: ${volunteerStats?.new || 'N/A'}`, 20, 50);
+      
+      PDF.text('Note: Full report generation failed. Please try', 20, 70);
+      PDF.text('again or contact support if issue persists.', 20, 80);
+      
+      PDF.save('volunteer-report-fallback.pdf');
+      return true;
+    } catch (err) {
+      return false;
+    }
+  };
+
   const handleSaveAsPDF = async () => {
     if (typeof jsPDF === 'undefined' || typeof html2canvas === 'undefined') {
+      // eslint-disable-next-line no-console
       console.error('Required PDF libraries not loaded. Please refresh the page.');
       return;
     }
@@ -135,11 +198,11 @@ function TotalOrgSummary(props) {
 
     try {
       if (!volunteerStats || isLoading) {
+        // eslint-disable-next-line no-console
         console.error('Please wait for data to load before generating PDF');
         return;
       }
 
-      // Expand all collapsible sections
       triggers.forEach(trigger => {
         if (!trigger.classList.contains('is-open')) {
           trigger.click();
@@ -151,7 +214,6 @@ function TotalOrgSummary(props) {
 
       await waitForAssets();
 
-      // Create container for PDF export
       const pdfContainer = document.createElement('div');
       pdfContainer.id = 'pdf-export-container';
       pdfContainer.style.width = '420mm';
@@ -164,12 +226,10 @@ function TotalOrgSummary(props) {
       const originalElement = document.querySelector('.container-total-org-wrapper');
       const clonedElement = originalElement.cloneNode(true);
 
-      // Remove elements that shouldn't be printed
       clonedElement
         .querySelectorAll('button, .share-pdf-btn, .controls, .no-print')
         .forEach(el => el.remove());
 
-      // Adjust header structure
       const titleRow = clonedElement.querySelector(
         '.row.d-flex.justify-content-between.align-items-center',
       );
@@ -188,7 +248,6 @@ function TotalOrgSummary(props) {
         }
       }
 
-      // Add custom styles
       const style = document.createElement('style');
       style.textContent = `
         .container-total-org-wrapper {
@@ -240,7 +299,6 @@ function TotalOrgSummary(props) {
       pdfContainer.appendChild(clonedElement);
       document.body.appendChild(pdfContainer);
 
-      // Generate canvas from container using html2canvas
       const canvas = await html2canvas(pdfContainer, {
         scale: 2,
         useCORS: true,
@@ -265,18 +323,15 @@ function TotalOrgSummary(props) {
         throw new Error('Invalid image data generated');
       }
 
-      // Calculate scaling ratio
-      const pdfWidth = 210; // A4 width in mm
+      const pdfWidth = 210;
       const imgHeight = (canvas.height * pdfWidth) / canvas.width;
 
-      // Create PDF
       const PDF = new jsPDF({
         orientation: 'portrait',
         unit: 'mm',
         format: [pdfWidth, imgHeight],
       });
 
-      // Add image to PDF
       PDF.addImage(imgData, 'PNG', 0, 0, pdfWidth, imgHeight);
 
       PDF.save(`volunteer-report-${new Date().toISOString().slice(0, 10)}.pdf`);
@@ -286,82 +341,17 @@ function TotalOrgSummary(props) {
       const fallbackSuccess = generateSimplePDF();
 
       if (!fallbackSuccess) {
+        // eslint-disable-next-line no-console
         console.error(
           `PDF generation failed: ${err.message}\n\nPlease try another browser or contact support.`,
         );
       }
     } finally {
-      // Restore original collapsible section states
       triggers.forEach((trigger, index) => {
         if (trigger.classList.contains('is-open') !== originalStates[index]) {
           trigger.click();
         }
       });
-    }
-  };
-
-  const waitForAssets = async () => {
-    const elements = document.querySelectorAll('img, .recharts-wrapper, canvas, svg, iframe');
-    
-    if (elements.length === 0) {
-      return;
-    }
-
-    const promises = Array.from(elements).map(element => {
-      return new Promise(resolve => {
-        if (element.complete || element.readyState === 'complete') {
-          resolve();
-          return;
-        }
-
-        const timer = setTimeout(() => {
-          resolve();
-        }, 10000);
-
-        const elementCopy = element;
-        elementCopy.onload = () => {
-          clearTimeout(timer);
-          resolve();
-        };
-        elementCopy.onerror = () => {
-          clearTimeout(timer);
-          resolve();
-        };
-      });
-    });
-
-    // Wait for fonts if using custom fonts
-    if (document.fonts && document.fonts.ready) {
-      await document.fonts.ready;
-    }
-
-    await Promise.all(promises);
-    
-    // Additional delay for charts to render
-    await new Promise(resolve => {
-      setTimeout(resolve, 1000);
-    });
-  };
-
-  const generateSimplePDF = () => {
-    try {
-      const PDF = new jsPDF();
-      PDF.setFontSize(16);
-      PDF.text('Volunteer Report Summary', 105, 15, { align: 'center' });
-      PDF.setFontSize(12);
-      
-      // Add basic volunteer stats
-      PDF.text(`Total Volunteers: ${volunteerStats?.total || 'N/A'}`, 20, 30);
-      PDF.text(`Active Volunteers: ${volunteerStats?.active || 'N/A'}`, 20, 40);
-      PDF.text(`New Volunteers: ${volunteerStats?.new || 'N/A'}`, 20, 50);
-      
-      PDF.text('Note: Full report generation failed. Please try', 20, 70);
-      PDF.text('again or contact support if issue persists.', 20, 80);
-      
-      PDF.save('volunteer-report-fallback.pdf');
-      return true;
-    } catch (err) {
-      return false;
     }
   };
   
