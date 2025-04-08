@@ -859,7 +859,7 @@ export class WeeklySummariesReport extends Component {
                 const [code, count] = item.label.split(' (');
                 return {
                   ...item,
-                  label: `${code.padEnd(10," ")} (${count}`, // count already has closing parenthesis
+                  label: `${code.padEnd(10, ' ')} (${count}`, // count already has closing parenthesis
                 };
               })}
               value={selectedCodes}
