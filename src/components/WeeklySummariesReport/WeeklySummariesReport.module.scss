@@ -118,7 +118,7 @@
 }
 
 .multiSelectFilter :global(.options) {
-  max-height: 570px;
+  max-height: 600px;
   overflow-y: auto;
   font-family: 'Courier New', Courier, monospace;
 
@@ -132,4 +132,11 @@
     background: rgb(206, 212, 218);
     border-radius: 8px;
   }
+}
+
+.multiSelectFilter :global(.select-item) {
+  font-family: 'Courier New', Courier, monospace;
+  padding: 2px 8px;
+  line-height: 1.2;
+  font-size: 14px;
 }
