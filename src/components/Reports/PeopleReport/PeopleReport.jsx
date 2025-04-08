@@ -394,6 +394,7 @@ class PeopleReport extends Component {
             name: '',
             profilePic: '',
           };
+          console.log(userTask[i]);
           if (userTask[i].resources[j].profilePic) {
             tempResource.name = userTask[i].resources[j].name;
             tempResource.profilePic = userTask[i].resources[j].profilePic;
