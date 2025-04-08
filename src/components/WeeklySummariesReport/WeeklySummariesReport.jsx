@@ -862,7 +862,6 @@ export class WeeklySummariesReport extends Component {
                   label: `${code.padEnd(10," ")} (${count}`, // count already has closing parenthesis
                 };
               })}
-            
               value={selectedCodes}
               onChange={e => {
                 this.handleSelectCodeChange(e);
