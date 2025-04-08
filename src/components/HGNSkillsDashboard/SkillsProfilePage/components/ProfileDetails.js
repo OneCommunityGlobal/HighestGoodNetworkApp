@@ -9,7 +9,9 @@ function ProfileDetails({ profileData }) {
         <span>
           <strong>Team Name:</strong>{' '}
           <span className="value">
-            {profileData.teams?.length > 0 ? profileData.teams[0].name : 'Not Assigned'}
+            {profileData.teams?.length > 0
+              ? profileData.teams[profileData.teams.length - 1].name
+              : 'Not Assigned'}
           </span>
         </span>
         <span>

@@ -20,7 +20,7 @@ function UserSkillsProfile() {
         }
 
         const response = await axios.get(
-          'http://localhost:4500/api/skills/profile/665524c257ca141fe8921b41', // backend call to fetch user profile
+          'http://localhost:4500/api/skills/profile/665524c257ca141fe8921b41', // TODO - Update UserID Dynamically
           {
             headers: {
               Authorization: `${token}`,

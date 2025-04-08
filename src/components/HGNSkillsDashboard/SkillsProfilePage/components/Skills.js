@@ -1,16 +1,7 @@
-import { useState } from 'react';
 import '../styles/Skills.css';
 
-function Skills() {
+function Skills({ selectedSkill, onSkillClick }) {
   const skills = ['Dashboard', 'Frontend', 'Backend', 'Deployment & DevOps', 'Software Practices'];
-
-  // State to track the selected skill, defaulting to "Dashboard"
-  const [selectedSkill, setSelectedSkill] = useState('Dashboard');
-
-  const handleSkillClick = skill => {
-    setSelectedSkill(skill); // Update selected skill on click
-    alert(`Navigating to ${skill} section`); // Replace with actual navigation logic
-  };
 
   return (
     <div className="skills">
@@ -20,7 +11,7 @@ function Skills() {
           key={skill}
           type="button"
           className={selectedSkill === skill ? 'selected' : ''}
-          onClick={() => handleSkillClick(skill)}
+          onClick={() => onSkillClick(skill)}
         >
           {skill}
         </button>
