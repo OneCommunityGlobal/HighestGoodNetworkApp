@@ -134,7 +134,7 @@ export const PieChart = ({
       .attr('fill', d => color(d.data[0]))
       .style('opacity', d => (selectedTasks.includes(d.data[0]) ? 1 : 0.1))
       .on('click', (event, d) => handleTaskClick(d.data[0]))
-      .on('mouseover', function(d, i) {
+      .on('mouseover', function handleMouseOver(d, i) {
         d3.select(this)
           .transition()
           .duration('50')
@@ -177,7 +177,7 @@ export const PieChart = ({
 
         div.style('left', `${tooltipX}px`).style('top', `${d.pageY - 15}px`);
       })
-      .on('mouseout', function() {
+      .on('mouseout', function handleMouseOut() {
         d3.select(this)
           .transition()
           .duration('50')
@@ -186,7 +186,7 @@ export const PieChart = ({
           .transition()
           .duration('50')
           .style('opacity', 0)
-          .on('end', function() {
+          .on('end', function hideTooltip() {
             d3.select(this).style('visibility', 'hidden'); // Hide after transition
           });
       });
@@ -211,6 +211,7 @@ export const PieChart = ({
               {dataLegend[key].map((legendPart, index) => (
                 <div
                   className={`data-legend-info-part ${darkMode ? 'text-light' : ''}`}
+                  // eslint-disable-next-line react/no-array-index-key
                   key={index}
                 >
                   {legendPart}
