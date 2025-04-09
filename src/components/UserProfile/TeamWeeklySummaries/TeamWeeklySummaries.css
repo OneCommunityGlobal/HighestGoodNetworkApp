@@ -41,4 +41,5 @@
 .team-week-summary-text {
   max-width: 100%;
   margin-right: 20px;
+  word-wrap: break-word;
 }

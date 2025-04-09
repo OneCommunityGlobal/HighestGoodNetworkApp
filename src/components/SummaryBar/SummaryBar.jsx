@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   Container,
   Row,
@@ -12,29 +12,29 @@ import {
   Form,
   FormGroup,
   Label,
-  Input
+  Input,
 } from 'reactstrap';
 import { connect } from 'react-redux';
 import { HashLink as Link } from 'react-router-hash-link';
 import './SummaryBar.css';
-import task_icon from './task_icon.png';
-import badges_icon from './badges_icon.png';
-import bluesquare_icon from './bluesquare_icon.png';
-import report_icon from './report_icon.png';
-import suggestions_icon from './suggestions_icon.png';
-import httpService from '../../services/httpService';
 import { ENDPOINTS, ApiEndpoint } from 'utils/URL';
 import axios from 'axios';
-
-import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 import hasPermission from 'utils/permissions';
 import { toast } from 'react-toastify';
+import TaskIcon from './task_icon.png';
+import BadgesIcon from './badges_icon.png';
+import BlueScoreIcon from './bluesquare_icon.png';
+import ReportIcon from './report_icon.png';
+import SuggestionsIcon from './suggestions_icon.png';
+import httpService from '../../services/httpService';
 
-const SummaryBar = props => {
+import { getProgressColor, getProgressValue } from '../../utils/effortColors';
+
+function SummaryBar(props) {
   // from parent
   const { displayUserId, summaryBarData } = props;
   // from store
-  const { authUser, displayUserProfile, displayUserTask, isNotAllowedToEdit, darkMode } = props;
+  const { authUser, displayUserProfile, displayUserTask, darkMode } = props;
 
   const authId = authUser.userid;
   const isAuthUser = displayUserId === authId;
@@ -42,8 +42,10 @@ const SummaryBar = props => {
     in: false,
     information: '',
   };
-  const weeklyCommittedHours =
-    displayUserProfile?.weeklycommittedHours + (displayUserProfile?.missedHours ?? 0);
+
+  const committedHours = displayUserProfile?.weeklycommittedHours ?? 0;
+  const missedHours = displayUserProfile?.missedHours ?? 0;
+  const weeklyCommittedHours = committedHours + missedHours;
 
   const [userProfile, setUserProfile] = useState(undefined);
   const [infringements, setInfringements] = useState(0);
@@ -51,6 +53,14 @@ const SummaryBar = props => {
   const [totalEffort, setTotalEffort] = useState(0);
   const [weeklySummary, setWeeklySummary] = useState(null);
   const [tasks, setTasks] = useState(undefined);
+
+  const [suggestionCategory, setSuggestionCategory] = useState([]);
+  const [inputFiled, setInputField] = useState([]);
+  const [takeInput, setTakeInput] = useState(false);
+  const [extraFieldForSuggestionForm, setExtraFieldForSuggestionForm] = useState('');
+  const [editType, setEditType] = useState('');
+  const [showSuggestionModal, setShowSuggestionModal] = useState(false);
+  const [report, setBugReport] = useState(initialInfo);
 
   const [categoryDescription, setCategoryDescription] = useState();
   const sortableContainerRef = useRef(null);
@@ -82,6 +92,32 @@ const SummaryBar = props => {
     event.currentTarget.classList.toggle('sortable-draggable-dragging');
   };
 
+  const getDraggedNextElement = (container, yMouse) => {
+    // grab all draggable elements that are not being dragged.
+    const draggableElements = [
+      ...container.querySelectorAll('.sortable-draggable:not(.sortable-dragging)'),
+    ];
+
+    // below uses the array of draggable elements and uses the offset to find the closest draggable element after
+    // the element is dragged
+    if (draggableElements.length > 0) {
+      return draggableElements.reduce(
+        (closest, child) => {
+          const box = child.getBoundingClientRect();
+          const offset = yMouse - box.top - box.height / 2;
+
+          if (offset < 0 && offset > closest.offset) {
+            return { offset, element: child };
+          }
+          return closest;
+        },
+        { offset: Number.NEGATIVE_INFINITY },
+      ).element;
+    }
+    // Default return if no draggable elements found
+    return null;
+  };
+
   const onSortableDragOver = event => {
     event.preventDefault();
     const draggedElement = event.currentTarget.querySelector('.sortable-draggable-dragging');
@@ -94,33 +130,8 @@ const SummaryBar = props => {
     }
   };
 
-  const getDraggedNextElement = (container, yMouse) => {
-    // grab all draggable elements that are not being dragged.
-    const draggableElements = [
-      ...container.querySelectorAll('.sortable-draggable:not(.sortable-dragging)'),
-    ];
-
-    // below uses the array of draggable elements and uses the offset to find the closest draggable element after
-    // the element is dragged
-    if (draggableElements) {
-      return draggableElements.reduce(
-        (closest, child) => {
-          const box = child.getBoundingClientRect();
-          const offset = yMouse - box.top - box.height / 2;
-
-          if (offset < 0 && offset > closest.offset) {
-            return { offset: offset, element: child };
-          } else {
-            return closest;
-          }
-        },
-        { offset: Number.NEGATIVE_INFINITY },
-      ).element;
-    }
-  };
-
   const handleEditClick = event => {
-    let currentTarget = event.currentTarget;
+    const { currentTarget } = event;
 
     if (currentTarget) {
       const textNode = currentTarget.parentNode.querySelector('p');
@@ -153,16 +164,10 @@ const SummaryBar = props => {
     }
   };
 
-  const [suggestionCategory, setSuggestionCategory] = useState([]);
-  const [inputFiled, setInputField] = useState([]);
-  const [takeInput, setTakeInput] = useState(false);
-  const [extraFieldForSuggestionForm, setExtraFieldForSuggestionForm] = useState('');
-  const [editType, setEditType] = useState('');
-  const [showSuggestionModal, setShowSuggestionModal] = useState(false);
-  const [report, setBugReport] = useState(initialInfo);
-
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
-  const [weeklySummaryNotReq, setweeklySummaryNotReq] = useState(displayUserProfile?.weeklySummaryOption === "Not Required");
+  const [weeklySummaryNotReq, setweeklySummaryNotReq] = useState(
+    displayUserProfile?.weeklySummaryOption === 'Not Required',
+  );
 
   // Similar to UserProfile component function
   // Loads component depending on displayUserId passed as prop
@@ -174,6 +179,7 @@ const SummaryBar = props => {
       const newUserProfile = response.data;
       setUserProfile(newUserProfile);
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.log('User Profile not loaded.');
     }
   };
@@ -186,18 +192,19 @@ const SummaryBar = props => {
       const newUserTasks = response.data;
       setTasks(newUserTasks.length);
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.log('User Tasks not loaded.');
     }
   };
 
-  //Get infringement count from userProfile
+  // Get infringement count from userProfile
   const getInfringements = () => {
     return displayUserProfile && displayUserProfile.infringements
       ? displayUserProfile.infringements.length
       : 0;
   };
 
-  //Get badges count from userProfile
+  // Get badges count from userProfile
   const getBadges = () => {
     if (!displayUserProfile || !displayUserProfile.badgeCollection) {
       return 0;
@@ -215,13 +222,13 @@ const SummaryBar = props => {
     return totalBadges;
   };
 
-  //refactored for rading form values
+  // refactored for rading form values
   const readFormData = formid => {
-    let form = document.getElementById(formid);
-    let formData = new FormData(form);
-    let data = {};
+    const form = document.getElementById(formid);
+    const formData = new FormData(form);
+    const data = {};
     let isvalid = true;
-    formData.forEach(function(value, key) {
+    formData.forEach((value, key) => {
       if (value.trim() !== '') {
         data[key] = value;
       } else {
@@ -229,14 +236,14 @@ const SummaryBar = props => {
       }
     });
 
-    if (data && data.action && data.action == 'edit') {
+    if (data && data.action && data.action === 'edit') {
       const updatedSuggestionCategory = Array.from(sortableContainerRef.current.children).map(
         child => {
           return child.textContent;
         },
       );
 
-      updatedSuggestionCategory.forEach(function(value, key) {
+      updatedSuggestionCategory.forEach(value => {
         if (value.trim() === '') {
           isvalid = false;
         }
@@ -260,17 +267,17 @@ const SummaryBar = props => {
   const sendBugReport = event => {
     event.preventDefault();
     const data = readFormData('bugReportForm');
-    data['firstName'] = displayUserProfile.firstName;
-    data['lastName'] = displayUserProfile.lastName;
-    data['email'] = displayUserProfile.email;
+    data.firstName = displayUserProfile.firstName;
+    data.lastName = displayUserProfile.lastName;
+    data.email = displayUserProfile.email;
     httpService
       .post(`${ApiEndpoint}/dashboard/bugreport/${displayUserProfile._id}`, data)
-      .catch(e => {});
+      .catch(() => {});
     openReport();
   };
 
   const setnewfields = (fielddata, setfield) => {
-    if (fielddata?.action == 'edit' && fielddata?.updatedSuggestionCategory) {
+    if (fielddata?.action === 'edit' && fielddata?.updatedSuggestionCategory) {
       setfield(fielddata.updatedSuggestionCategory);
     } else {
       setfield(prev => {
@@ -287,7 +294,7 @@ const SummaryBar = props => {
       });
     }
   };
-  //add new text field or suggestion category by owner class and update the backend
+  // add new text field or suggestion category by owner class and update the backend
   const editField = async event => {
     event.preventDefault();
     const data = readFormData('newFieldForm');
@@ -305,7 +312,7 @@ const SummaryBar = props => {
       setEditType('');
       httpService
         .post(`${ApiEndpoint}/dashboard/suggestionoption/${displayUserProfile._id}`, data)
-        .catch(e => {});
+        .catch(() => {});
     } else {
       toast.error('Please fill all fields with valid values.');
     }
@@ -314,14 +321,14 @@ const SummaryBar = props => {
   const sendUserSuggestion = async event => {
     event.preventDefault();
     const data = readFormData('suggestionForm');
-    data['firstName'] = displayUserProfile.firstName;
-    data['lastName'] = displayUserProfile.lastName;
-    data['email'] = displayUserProfile.email;
+    data.firstName = displayUserProfile.firstName;
+    data.lastName = displayUserProfile.lastName;
+    data.email = displayUserProfile.email;
     if (data) {
       setShowSuggestionModal(prev => !prev);
       const res = await httpService
         .post(`${ApiEndpoint}/dashboard/makesuggestion/${displayUserProfile._id}`, data)
-        .catch(e => {});
+        .catch(() => {});
       if (res.status === 200) {
         toast.success('Email sent successfully!');
       } else {
@@ -335,17 +342,19 @@ const SummaryBar = props => {
   const openSuggestionModal = async () => {
     if (!showSuggestionModal) {
       try {
-        let res = await httpService.get(
+        const res = await httpService.get(
           `${ApiEndpoint}/dashboard/suggestionoption/${displayUserProfile._id}`,
         );
         if (res && res.status === 200) {
           setSuggestionCategory(res.data.suggestion);
           setInputField(res.data.field);
         } else {
+          // eslint-disable-next-line no-console
           console.error(res.status);
           // Handle the error as needed
         }
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.error('Error:', error);
         // Handle the error
       }
@@ -361,7 +370,6 @@ const SummaryBar = props => {
     window.location.hash = '#badgesearned';
   };
 
-
   const getWeeklySummary = user => {
     const latestSummary = user?.weeklySummaries?.[0];
     return latestSummary && new Date() < new Date(latestSummary.dueDate)
@@ -374,7 +382,7 @@ const SummaryBar = props => {
     canPutUserProfileImportantInfo;
 
   useEffect(() => {
-   setUserProfile(userProfile);
+    setUserProfile(userProfile);
   }, [userProfile]);
 
   useEffect(() => {
@@ -394,169 +402,242 @@ const SummaryBar = props => {
       setBadges(getBadges());
       setTotalEffort(summaryBarData.tangibletime);
       setWeeklySummary(getWeeklySummary(displayUserProfile));
-      setweeklySummaryNotReq(displayUserProfile?.weeklySummaryOption === "Not Required");
+      setweeklySummaryNotReq(displayUserProfile?.weeklySummaryOption === 'Not Required');
     }
   }, [displayUserProfile, summaryBarData]);
+
+  const getContainerClass = () => {
+    if (isAuthUser || canEditData()) {
+      return darkMode
+        ? 'bg-space-cadet text-light box-shadow-dark'
+        : 'bg--bar text--black box-shadow-light';
+    }
+    return darkMode
+      ? 'bg-space-cadet disabled-bar text-light box-shadow-dark'
+      : 'bg--bar disabled-bar text--black box-shadow-light';
+  };
+
+  const renderSummary = () => {
+    if (!weeklySummary) {
+      if (weeklySummaryNotReq) {
+        return (
+          <div
+            className="border-black col-4 bg-super-awesome no-gutters d-flex justify-content-center align-items-center"
+            align="center"
+          >
+            <font className="text-center text-light" size="3">
+              SUMMARY
+            </font>
+          </div>
+        );
+      }
+      return (
+        <div
+          className={`border border-danger col-4 no-gutters ${
+            darkMode ? 'bg-yinmn-blue' : 'bg-white'
+          }`}
+        >
+          <div className="py-1"> </div>
+          {isAuthUser || canEditData() ? (
+            <div className="d-flex justify-content-center">
+              <button
+                onClick={props.toggleSubmitForm}
+                className="summary-toggle large_text_summary text-danger"
+                style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+                aria-label="Toggle submit form"
+                type="button"
+              >
+                !
+              </button>
+            </div>
+          ) : (
+            <p className="text-center summary-toggle large_text_summary text-danger">!</p>
+          )}
+          <font className="text-center" size="3">
+            SUMMARY
+          </font>
+          <div className="py-2"> </div>
+        </div>
+      );
+    }
+    return (
+      <div className="border-green col-4 bg--dark-green">
+        <div className="py-1"> </div>
+        <div className="d-flex justify-content-center">
+          <button
+            onClick={props.toggleSubmitForm}
+            className="text-center large_text_summary summary-toggle"
+            style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+            aria-label="Toggle submit form"
+            type="button"
+          >
+            ✓
+          </button>
+        </div>
+        <font className="text-center" size="3">
+          SUMMARY
+        </font>
+        <div className="py-2"> </div>
+      </div>
+    );
+  };
+
+  const renderSummaryMessage = () => {
+    if (weeklySummary || props.submittedSummary) {
+      return 'You have submitted your weekly summary.';
+    }
+
+    const message = weeklySummaryNotReq
+      ? 'You don’t need to complete a weekly summary, but you still can. Click here to submit it.'
+      : 'You still need to complete the weekly summary. Click here to submit it.';
+
+    if (isAuthUser) {
+      return (
+        <button
+          className="summary-toggle"
+          type="button"
+          onClick={props.toggleSubmitForm}
+          style={{
+            background: 'none',
+            border: 'none',
+            padding: 0,
+            color: 'inherit',
+            cursor: 'pointer',
+          }}
+          aria-label="Toggle submit form"
+        >
+          {message}
+        </button>
+      );
+    }
+
+    return <span className="summary-toggle">{message}</span>;
+  };
+
+  const getPlaceholderText = () => {
+    if (extraFieldForSuggestionForm === 'suggestion') {
+      return editType === 'delete'
+        ? 'write the category number, like 1 or 2 etc'
+        : 'write the category name';
+    }
+    return 'write the field name';
+  };
 
   const fontColor = darkMode ? 'text-light' : '';
   const headerBg = darkMode ? 'bg-space-cadet' : '';
   const bodyBg = darkMode ? 'bg-yinmn-blue' : '';
 
-  return (
-    displayUserProfile !== undefined && summaryBarData !== undefined
-    ? <Container
-          fluid
-          className={"px-lg-0 rounded " + (
-            isAuthUser || canEditData()
-              ? (darkMode ? 'bg-space-cadet text-light box-shadow-dark' : 'bg--bar text--black box-shadow-light')
-              : (darkMode ? 'bg-space-cadet disabled-bar text-light box-shadow-dark' : 'bg--bar disabled-bar text--black box-shadow-light'))
-          }
+  return displayUserProfile !== undefined && summaryBarData !== undefined ? (
+    <Container fluid className={`px-lg-0 rounded ${getContainerClass()}`} style={{ width: '97%' }}>
+      <Row className="no-gutters row-eq-height">
+        <Col
+          className="d-flex justify-content-center align-items-center col-lg-2 col-12 text-list"
+          align="center"
         >
-          <Row className="no-gutters row-eq-height">
-            <Col
-              className="d-flex justify-content-center align-items-center col-lg-2 col-12 text-list"
-              align="center"
-            >
-              <div>
-                <font className="align-middle" size="3">
-                  {' '}
-                  Activity for{' '}
-                </font>
-                <CardTitle className={`align-middle ${darkMode ? 'text-light' : 'text-dark'}`} tag="h3">
-                  <div className='font-weight-bold'>
-                    {userProfile?.firstName || displayUserProfile.firstName}
-                    {' '}
-                    {userProfile?.lastName || displayUserProfile.lastName}
-                  </div>
-                </CardTitle>
+          <div>
+            <font className="align-middle" size="3">
+              {' '}
+              Activity for{' '}
+            </font>
+            <CardTitle className={`align-middle ${darkMode ? 'text-light' : 'text-dark'}`} tag="h3">
+              <div className="font-weight-bold">
+                {userProfile?.firstName || displayUserProfile.firstName}{' '}
+                {userProfile?.lastName || displayUserProfile.lastName}
               </div>
-            </Col>
-            <Col className="d-flex col-lg-3 col-12 no-gutters">
-              <Row className="no-gutters w-100">
-                {totalEffort < weeklyCommittedHours && (
-                  <div className={`border border-danger col-4 ${darkMode ? "bg-yinmn-blue" : "bg-white"}`}>
-                    <div className="py-1"> </div>
-                    <p className="text-center large_text_summary text-danger">!</p>
-                    <font className="text-center" size="3">
-                      HOURS
-                    </font>
-                    <div className="py-2"> </div>
-                  </div>
-                )}
-                {totalEffort >= weeklyCommittedHours && (
-                  <div className={`border-green col-4 bg--dark-green`}>
-                    <div className="py-1"> </div>
-                    <p className="text-center large_text_summary">✓</p>
-                    <font className="text-center" size="3">
-                      HOURS
-                    </font>
-                    <div className="py-2"> </div>
-                  </div>
-                )}
+            </CardTitle>
+          </div>
+        </Col>
+        <Col className="d-flex col-lg-3 col-12 no-gutters">
+          <Row className="no-gutters w-100">
+            {totalEffort < weeklyCommittedHours && (
+              <div
+                className={`border border-danger col-4 ${darkMode ? 'bg-yinmn-blue' : 'bg-white'}`}
+              >
+                <div className="py-1"> </div>
+                <p className="text-center large_text_summary text-danger">!</p>
+                <font className="text-center" size="3">
+                  HOURS
+                </font>
+                <div className="py-2"> </div>
+              </div>
+            )}
+            {totalEffort >= weeklyCommittedHours && (
+              <div className="border-green col-4 bg--dark-green">
+                <div className="py-1"> </div>
+                <p className="text-center large_text_summary">✓</p>
+                <font className="text-center" size="3">
+                  HOURS
+                </font>
+                <div className="py-2"> </div>
+              </div>
+            )}
 
-                <div className={`col-8 d-flex justify-content-center align-items-center ${darkMode ? 'bg-yinmn-blue' : 'bg-white'}`}
-                     style={{border: "1px solid black"}}>
-                  <div className="align-items-center" id="timelogweeklychart">
-                    <div className="align-items-center med_text_summary">
-                      Current Week : {totalEffort.toFixed(2)} / {weeklyCommittedHours}
-                      <Progress
-                        value={getProgressValue(totalEffort, weeklyCommittedHours)}
-                        color={getProgressColor(totalEffort, weeklyCommittedHours)}
-                        striped={totalEffort < weeklyCommittedHours}
-                      />
-                    </div>
-                  </div>
+            <div
+              className={`col-8 d-flex justify-content-center align-items-center ${
+                darkMode ? 'bg-yinmn-blue' : 'bg-white'
+              }`}
+              style={{ border: '1px solid black' }}
+            >
+              <div
+                className="align-items-center"
+                id="timelogweeklychart"
+                style={{ whiteSpace: 'nowrap', padding: '0px 10px' }}
+              >
+                <div className="align-items-center med_text_summary">
+                  Current Week : {totalEffort.toFixed(2)} / {weeklyCommittedHours.toFixed(2)}
+                  <Progress
+                    value={getProgressValue(totalEffort, weeklyCommittedHours)}
+                    color={getProgressColor(totalEffort, weeklyCommittedHours)}
+                    striped={totalEffort < weeklyCommittedHours}
+                  />
                 </div>
-              </Row>
-            </Col>
+              </div>
+            </div>
+          </Row>
+        </Col>
 
-            <Col className="d-flex col-lg-3 col-12 no-gutters">
-              <Row className="no-gutters w-100">
-                {!weeklySummary ? weeklySummaryNotReq ? (
-                <div className="border-black col-4 bg-super-awesome no-gutters d-flex justify-content-center align-items-center"
-                  align="center">
-                  <font className="text-center text-light" size="3">
-                    SUMMARY
-                  </font>
-                </div>
-              ) : (
-                  <div className={`border border-danger col-4 no-gutters ${darkMode ? 'bg-yinmn-blue' : 'bg-white'}`}>
-                    <div className="py-1"> </div>
-                    { isAuthUser || canEditData()  ? (
-                      <p
-                        className={
-                          'text-center summary-toggle large_text_summary text-danger'
-                        }
-                        onClick={props.toggleSubmitForm}
-                      >
-                        !
-                      </p>
-                    ) : (
-                      <p
-                        className={
-                          'text-center summary-toggle large_text_summary text-danger'
-                        }
-                      >
-                        !
-                      </p>
-                    )}
-
-                    <font className="text-center" size="3">
-                      SUMMARY
-                    </font>
-                    <div className="py-2"> </div>
-                  </div>
-                ) : (
-                  <div className={`border-green col-4 bg--dark-green`}>
-                    <div className="py-1"> </div>
-                    <p onClick={props.toggleSubmitForm} className="text-center large_text_summary summary-toggle" >
-                      ✓
-                    </p>
-                    <font className="text-center" size="3">
-                      SUMMARY
-                    </font>
-                    <div className="py-2"> </div>
-                  </div>
-                )}
-
-                <div
-                  className={`col-8 d-flex align-items-center ${darkMode ? 'bg-yinmn-blue' : 'bg-white'}`}
-                  style={{border: "1px solid black"}}
+        <Col className="d-flex col-lg-3 col-12 no-gutters">
+          <Row className="no-gutters w-100">
+            {renderSummary()}
+            <div
+              className={`col-8 d-flex align-items-center ${
+                darkMode ? 'bg-yinmn-blue' : 'bg-white'
+              }`}
+              style={{ border: '1px solid black' }}
+            >
+              <div className="m-auto p-2 text-center">
+                <font
+                  onClick={props.toggleSubmitForm}
+                  className="med_text_summary align-middle summary-toggle"
+                  size="3"
                 >
-                  <div className="m-auto p-2 text-center">
-                    <font onClick={props.toggleSubmitForm} className="med_text_summary align-middle summary-toggle" size="3">
-                      {weeklySummary || props.submittedSummary ? (
-                        'You have submitted your weekly summary.'
-                        ) : isAuthUser ? (
-                          <span className="summary-toggle" onClick={props.toggleSubmitForm}>
-                          {weeklySummaryNotReq
-                        ? "You don’t need to complete a weekly summary, but you still can. Click here to submit it."
-                        : "You still need to complete the weekly summary. Click here to submit it."}
-                        </span>
-                      ) : (
-                        <span className="summary-toggle">
-                        {weeklySummaryNotReq
-                        ? "You don’t need to complete a weekly summary, but you still can. Click here to submit it."
-                        : "You still need to complete the weekly summary. Click here to submit it."}
-                        </span>
-                      )}
-                    </font>
-                  </div>
-                </div>
-              </Row>
-            </Col>
+                  {renderSummaryMessage()}
+                </font>
+              </div>
+            </div>
+          </Row>
+        </Col>
 
-        <Col className={`m-auto mt-2 col-lg-4 col-12 badge-list ${darkMode ? "bg-space-cadet" : ""}`}>
-          <div className={"d-flex justify-content-around no-gutters"}>
+        <Col
+          className={`m-auto mt-2 col-lg-4 col-12 badge-list ${darkMode ? 'bg-space-cadet' : ''}`}
+        >
+          <div className="d-flex justify-content-around no-gutters">
             &nbsp;&nbsp;
             <div className="image_frame">
               <div className="redBackgroup">
                 <span>{tasks}</span>
               </div>
               {isAuthUser || canEditData() ? (
-                <img className="sum_img" src={task_icon} alt="" onClick={onTaskClick}></img>
+                <button
+                  onClick={onTaskClick}
+                  style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+                  aria-label="Task"
+                  type="button"
+                >
+                  <img className="sum_img" src={TaskIcon} alt="" />
+                </button>
               ) : (
-                <img className="sum_img" src={task_icon} alt=""></img>
+                <img className="sum_img" src={TaskIcon} alt="" />
               )}
             </div>
             &nbsp;&nbsp;
@@ -565,23 +646,30 @@ const SummaryBar = props => {
                 <span>{badges}</span>
               </div>
               {isAuthUser || canEditData() ? (
-                <img className="sum_img" src={badges_icon} alt="" onClick={onBadgeClick}/>
-                ) : (
-                <img className="sum_img" src={badges_icon} alt="" />
+                <button
+                  onClick={onBadgeClick}
+                  style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+                  aria-label="Badge"
+                  type="button"
+                >
+                  <img className="sum_img" src={BadgesIcon} alt="" />
+                </button>
+              ) : (
+                <img className="sum_img" src={BadgesIcon} alt="" />
               )}
             </div>
             &nbsp;&nbsp;
             <div className="image_frame">
               {isAuthUser || canEditData() ? (
                 <Link to={`/userprofile/${displayUserProfile._id}#bluesquare`}>
-                  <img className="sum_img" src={bluesquare_icon} alt="" />
+                  <img className="sum_img" src={BlueScoreIcon} alt="" />
                   <div className="redBackgroup">
                     <span>{infringements}</span>
                   </div>
                 </Link>
               ) : (
                 <div>
-                  <img className="sum_img" src={bluesquare_icon} alt="" />
+                  <img className="sum_img" src={BlueScoreIcon} alt="" />
                   <div className="redBackgroup">
                     <span>{infringements}</span>
                   </div>
@@ -591,22 +679,31 @@ const SummaryBar = props => {
             &nbsp;&nbsp;
             <div className="image_frame">
               {isAuthUser || canEditData() ? (
-                <img className="sum_img" src={report_icon} alt="" onClick={openReport} />
+                <button
+                  onClick={openReport}
+                  style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+                  aria-label="Open Report"
+                  type="button"
+                >
+                  <img className="sum_img" src={ReportIcon} alt="" />
+                </button>
               ) : (
-                <img className="sum_img" src={report_icon} alt="" />
+                <img className="sum_img" src={ReportIcon} alt="" />
               )}
             </div>
             &nbsp;&nbsp;
             <div className="image_frame">
               {isAuthUser || canEditData() ? (
-                <img
-                  className="sum_img"
-                  src={suggestions_icon}
-                  alt=""
+                <button
                   onClick={openSuggestionModal}
-                />
+                  style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+                  aria-label="Open Suggestions"
+                  type="button"
+                >
+                  <img className="sum_img" src={SuggestionsIcon} alt="" />
+                </button>
               ) : (
-                <img className="sum_img" src={suggestions_icon} alt="" />
+                <img className="sum_img" src={SuggestionsIcon} alt="" />
               )}
             </div>
           </div>
@@ -614,7 +711,8 @@ const SummaryBar = props => {
         <Modal
           isOpen={showSuggestionModal}
           onClosed={() => closeSuggestionModal()}
-          toggle={openSuggestionModal} className={darkMode ? 'text-light' : ''}
+          toggle={openSuggestionModal}
+          className={darkMode ? 'text-light' : ''}
         >
           <ModalHeader className={headerBg}>User Suggestion</ModalHeader>
           <ModalBody className={bodyBg}>
@@ -654,7 +752,7 @@ const SummaryBar = props => {
                         onChange={e => editRadioButtonSelected(e.target.value)}
                         type="radio"
                         name="action"
-                        value={'add'}
+                        value="add"
                         required
                       />{' '}
                       Add
@@ -667,7 +765,7 @@ const SummaryBar = props => {
                           onChange={e => editRadioButtonSelected(e.target.value)}
                           type="radio"
                           name="action"
-                          value={'edit'}
+                          value="edit"
                           required
                         />{' '}
                         Edit
@@ -680,7 +778,7 @@ const SummaryBar = props => {
                         onChange={e => editRadioButtonSelected(e.target.value)}
                         type="radio"
                         name="action"
-                        value={'delete'}
+                        value="delete"
                         required
                         disabled={
                           extraFieldForSuggestionForm === 'field' && inputFiled.length === 0
@@ -700,13 +798,7 @@ const SummaryBar = props => {
                         type="textarea"
                         name="newField"
                         id="newField"
-                        placeholder={
-                          extraFieldForSuggestionForm === 'suggestion'
-                            ? editType === 'delete'
-                              ? 'write the category number, like 1 or 2 etc'
-                              : 'write the category name'
-                            : 'write the field name'
-                        }
+                        placeholder={getPlaceholderText()}
                         required
                       />
                     )}
@@ -716,19 +808,20 @@ const SummaryBar = props => {
                         ref={sortableContainerRef}
                         onDragOver={e => onSortableDragOver(e)}
                       >
-                        {suggestionCategory.map((value, index) => (
+                        {suggestionCategory.map(item => (
                           <div
                             className={`sortable-content ${bodyBg} sortable-draggable`}
-                            key={index}
+                            key={item.id}
                             draggable="true"
                             onDragStart={event => onDragToggleDraggingClass(event)}
                             onDragEnd={event => onDragToggleDraggingClass(event)}
                           >
-                            <p>{value}</p>
+                            <p>{item.value}</p>
                             <button
                               type="button"
                               className="edit-icon fa fa-edit"
                               onClick={event => handleEditClick(event)}
+                              aria-label="Edit item"
                             />
                           </div>
                         ))}
@@ -755,180 +848,198 @@ const SummaryBar = props => {
             )}
             <Form onSubmit={sendUserSuggestion} id="suggestionForm">
               <FormGroup>
-                <Label for="suggestioncate" className={fontColor}>Please select a category of your suggestion:</Label>
+                <Label for="suggestioncate" className={fontColor}>
+                  Please select a category of your suggestion:
+                </Label>
 
-                    <Input
-                      onChange={() => setTakeInput(true)}
-                      type="select"
-                      name="suggestioncate"
-                      id="suggestioncate"
-                      defaultValue={''}
-                      required
-                    >
-                      <option disabled value="" hidden>
-                        {' '}
-                        -- select an option --{' '}
-                      </option>
-                      {suggestionCategory.map((item, index) => {
-                        return <option key={index} value={item}>{`${index + 1}. ${item}`}</option>;
-                      })}
-                    </Input>
+                <Input
+                  onChange={() => setTakeInput(true)}
+                  type="select"
+                  name="suggestioncate"
+                  id="suggestioncate"
+                  defaultValue=""
+                  required
+                >
+                  <option disabled value="" hidden>
+                    {' '}
+                    -- select an option --{' '}
+                  </option>
+                  {suggestionCategory.map(item => {
+                    return <option key={item.id} value={item}>{`${item.id + 1}. ${item}`}</option>;
+                  })}
+                </Input>
+              </FormGroup>
+              {takeInput && (
+                <FormGroup>
+                  <Label for="suggestion" className={fontColor}>
+                    {' '}
+                    Write your suggestion:{' '}
+                  </Label>
+                  <Input
+                    type="textarea"
+                    name="suggestion"
+                    id="suggestion"
+                    placeholder="I suggest ..."
+                    required
+                  />
+                </FormGroup>
+              )}
+              {inputFiled.length > 0 &&
+                inputFiled.map(item => (
+                  <FormGroup key={item.id}>
+                    <Label for="title" className={fontColor}>
+                      {item}{' '}
+                    </Label>
+                    <Input type="textbox" name={item} id={item.id} placeholder="" required />
                   </FormGroup>
-                  {takeInput && (
-                    <FormGroup>
-                      <Label for="suggestion" className={fontColor}> Write your suggestion: </Label>
-                      <Input
-                        type="textarea"
-                        name="suggestion"
-                        id="suggestion"
-                        placeholder="I suggest ..."
-                        required
-                      />
-                    </FormGroup>
-                  )}
-                  {inputFiled.length > 0 &&
-                    inputFiled.map((item, index) => (
-                      <FormGroup key={index}>
-                        <Label for="title" className={fontColor}>{item} </Label>
-                        <Input type="textbox" name={item} id={item} placeholder="" required />
-                      </FormGroup>
-                    ))}
-                  <FormGroup tag="fieldset" id="fieldset">
-                    <legend style={{ fontSize: '16px' }}>
-                      Would you like a followup/reply regarding this feedback?
-                    </legend>
-                    <FormGroup check>
-                      <Label check className={fontColor}>
-                        <Input type="radio" name="confirm" value={'yes'} required /> Yes
-                      </Label>
-                    </FormGroup>
-                    <FormGroup check>
-                      <Label check className={fontColor}>
-                        <Input type="radio" name="confirm" value={'no'} required /> No
-                      </Label>
-                    </FormGroup>
-                  </FormGroup>
-                  <FormGroup>
-                    <Button type="submit" color="primary" size="lg">
-                      Submit
-                    </Button>{' '}
-                    &nbsp;&nbsp;&nbsp;
-                    <Button
-                      onClick={() => setShowSuggestionModal(prev => !prev)}
-                      color="danger"
-                      size="lg"
-                    >
-                      Close
-                    </Button>
-                  </FormGroup>
-                </Form>
-              </ModalBody>
-            </Modal>
+                ))}
+              <FormGroup tag="fieldset" id="fieldset">
+                <legend style={{ fontSize: '16px' }}>
+                  Would you like a followup/reply regarding this feedback?
+                </legend>
+                <FormGroup check>
+                  <Label check className={fontColor}>
+                    <Input type="radio" name="confirm" value="yes" required /> Yes
+                  </Label>
+                </FormGroup>
+                <FormGroup check>
+                  <Label check className={fontColor}>
+                    <Input type="radio" name="confirm" value="no" required /> No
+                  </Label>
+                </FormGroup>
+              </FormGroup>
+              <FormGroup>
+                <Button type="submit" color="primary" size="lg">
+                  Submit
+                </Button>{' '}
+                &nbsp;&nbsp;&nbsp;
+                <Button
+                  onClick={() => setShowSuggestionModal(prev => !prev)}
+                  color="danger"
+                  size="lg"
+                >
+                  Close
+                </Button>
+              </FormGroup>
+            </Form>
+          </ModalBody>
+        </Modal>
 
-            <Modal isOpen={report.in} toggle={openReport} className={fontColor}>
-              <ModalHeader className={headerBg}>Bug Report</ModalHeader>
-              <ModalBody className={bodyBg}>
-                <Form onSubmit={sendBugReport} id="bugReportForm">
-                  <FormGroup>
-                    <Label for="title" className={fontColor}>[Feature Name] Bug Title </Label>
-                    <Input
-                      type="textbox"
-                      name="title"
-                      id="title"
-                      required
-                      placeholder="Provide Concise Sumary Title..."
-                    />
-                  </FormGroup>
-                  <FormGroup>
-                    <Label for="environment" className={fontColor}>
-                      {' '}
-                      Environment (OS/Device/App Version/Connection/Time etc){' '}
-                    </Label>
-                    <Input
-                      type="textarea"
-                      name="environment"
-                      id="environment"
-                      required
-                      placeholder="Environment Info..."
-                    />
-                  </FormGroup>
-                  <FormGroup>
-                    <Label for="reproduction" className={fontColor}>
-                      Steps to reproduce (Please Number, Short Sweet to the point){' '}
-                    </Label>
-                    <Input
-                      type="textarea"
-                      name="reproduction"
-                      id="reproduction"
-                      required
-                      placeholder="1. Click on the UserProfile Button in the Header..."
-                    />
-                  </FormGroup>
-                  <FormGroup>
-                    <Label for="expected" className={fontColor}>Expected Result (Short Sweet to the point) </Label>
-                    <Input
-                      type="textarea"
-                      name="expected"
-                      id="expected"
-                      required
-                      placeholder="What did you expect to happen?..."
-                    />
-                  </FormGroup>
-                  <FormGroup>
-                    <Label for="actual" className={fontColor}>Actual Result (Short Sweet to the point) </Label>
-                    <Input
-                      type="textarea"
-                      name="actual"
-                      id="actual"
-                      required
-                      placeholder="What actually happened?.."
-                    />
-                  </FormGroup>
-                  <FormGroup>
-                    <Label for="visual" className={fontColor}>Visual Proof (screenshots, videos, text) </Label>
-                    <Input
-                      type="textarea"
-                      name="visual"
-                      id="visual"
-                      required
-                      placeholder="Links to screenshots etc..."
-                    />
-                  </FormGroup>
-                  <FormGroup>
-                    <Label for="severity" className={fontColor}>Severity/Priority (How Bad is the Bug?) </Label>
-                    <Input type="select" name="severity" id="severity" defaultValue={''} required>
-                      <option hidden value="" disabled>
-                        {' '}
-                        -- select an option --{' '}
-                      </option>
-                      <option>1. High/Critical </option>
-                      <option>2. Medium </option>
-                      <option>3. Minor</option>
-                    </Input>
-                  </FormGroup>
-                  <FormGroup>
-                    <Button type="submit" color="primary" size="lg">
-                      Submit
-                    </Button>{' '}
-                    &nbsp;&nbsp;&nbsp;
-                    <Button onClick={openReport} color="danger" size="lg">
-                      Close
-                    </Button>
-                  </FormGroup>
-                </Form>
-              </ModalBody>
-            </Modal>
-          </Row>
-        </Container>
-      : <div>Loading</div>
+        <Modal isOpen={report.in} toggle={openReport} className={fontColor}>
+          <ModalHeader className={headerBg}>Bug Report</ModalHeader>
+          <ModalBody className={bodyBg}>
+            <Form onSubmit={sendBugReport} id="bugReportForm">
+              <FormGroup>
+                <Label for="title" className={fontColor}>
+                  [Feature Name] Bug Title{' '}
+                </Label>
+                <Input
+                  type="textbox"
+                  name="title"
+                  id="title"
+                  required
+                  placeholder="Provide Concise Sumary Title..."
+                />
+              </FormGroup>
+              <FormGroup>
+                <Label for="environment" className={fontColor}>
+                  {' '}
+                  Environment (OS/Device/App Version/Connection/Time etc){' '}
+                </Label>
+                <Input
+                  type="textarea"
+                  name="environment"
+                  id="environment"
+                  required
+                  placeholder="Environment Info..."
+                />
+              </FormGroup>
+              <FormGroup>
+                <Label for="reproduction" className={fontColor}>
+                  Steps to reproduce (Please Number, Short Sweet to the point){' '}
+                </Label>
+                <Input
+                  type="textarea"
+                  name="reproduction"
+                  id="reproduction"
+                  required
+                  placeholder="1. Click on the UserProfile Button in the Header..."
+                />
+              </FormGroup>
+              <FormGroup>
+                <Label for="expected" className={fontColor}>
+                  Expected Result (Short Sweet to the point){' '}
+                </Label>
+                <Input
+                  type="textarea"
+                  name="expected"
+                  id="expected"
+                  required
+                  placeholder="What did you expect to happen?..."
+                />
+              </FormGroup>
+              <FormGroup>
+                <Label for="actual" className={fontColor}>
+                  Actual Result (Short Sweet to the point){' '}
+                </Label>
+                <Input
+                  type="textarea"
+                  name="actual"
+                  id="actual"
+                  required
+                  placeholder="What actually happened?.."
+                />
+              </FormGroup>
+              <FormGroup>
+                <Label for="visual" className={fontColor}>
+                  Visual Proof (screenshots, videos, text){' '}
+                </Label>
+                <Input
+                  type="textarea"
+                  name="visual"
+                  id="visual"
+                  required
+                  placeholder="Links to screenshots etc..."
+                />
+              </FormGroup>
+              <FormGroup>
+                <Label for="severity" className={fontColor}>
+                  Severity/Priority (How Bad is the Bug?){' '}
+                </Label>
+                <Input type="select" name="severity" id="severity" defaultValue="" required>
+                  <option hidden value="" disabled>
+                    {' '}
+                    -- select an option --{' '}
+                  </option>
+                  <option>1. High/Critical </option>
+                  <option>2. Medium </option>
+                  <option>3. Minor</option>
+                </Input>
+              </FormGroup>
+              <FormGroup>
+                <Button type="submit" color="primary" size="lg">
+                  Submit
+                </Button>{' '}
+                &nbsp;&nbsp;&nbsp;
+                <Button onClick={openReport} color="danger" size="lg">
+                  Close
+                </Button>
+              </FormGroup>
+            </Form>
+          </ModalBody>
+        </Modal>
+      </Row>
+    </Container>
+  ) : (
+    <div>Loading</div>
   );
-};
+}
 
 const mapStateToProps = state => ({
   authUser: state.auth.user,
   displayUserProfile: state.userProfile,
   displayUserTask: state.userTask,
   darkMode: state.theme.darkMode,
-})
+});
 
 export default connect(mapStateToProps, { hasPermission })(SummaryBar);

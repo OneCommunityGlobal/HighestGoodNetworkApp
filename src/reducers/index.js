@@ -1,21 +1,25 @@
-import { combineReducers } from 'redux';
 import { teamMemberTasksReducer } from 'components/TeamMemberTasks/reducer';
 import { taskEditSuggestionsReducer } from 'components/TaskEditSuggestions/reducer';
 import { userProfileByIdReducer, userTaskByIdReducer } from './userProfileByIdReducer';
 import { authReducer } from './authReducer';
-import { allUserProfilesReducer } from './allUserProfilesReducer';
+import { allUserProfilesBasicInfoReducer } from './allUserProfilesBasicInfoReducer';
+import {
+  allUserProfilesReducer,
+  changeUserPageStatusReducer,
+  enableUserInfoEditReducer,
+} from './allUserProfilesReducer';
 import { leaderboardDataReducer, orgDataReducer } from './leaderboardDataReducer';
-import { weeklySummariesReducer } from './weeklySummariesReducer';
-import { weeklySummariesReportReducer } from './weeklySummariesReportReducer';
+import weeklySummariesReducer from './weeklySummariesReducer';
+import weeklySummariesReportReducer from './weeklySummariesReportReducer';
 import { allProjectsReducer } from './allProjectsReducer';
 import { projectReportReducer } from './projectReportReducer';
-import { userProjectsReducer } from './userProjectsReducer';
+import userProjectsReducer from './userProjectsReducer';
 import { projectMembershipReducer } from './projectMembershipReducer';
 import { allUserTeamsReducer } from './allTeamsReducer';
 import { teamByIdReducer } from './teamByIdReducer';
 import { errorsReducer } from './errorsReducer';
 import { timeEntriesReducer } from './timeEntriesReducer';
-import { wbsReducer } from './wbsReducer';
+import wbsReducer from './wbsReducer';
 import { taskReducer } from './allTasksReducer';
 import { managingTeamsReducer } from './managingTeamsReducer';
 import { teamUsersReducer } from './teamsTeamMembersReducer';
@@ -25,15 +29,16 @@ import { popupEditorReducer } from './popupEditorReducer';
 import { roleReducer } from './roleReducer';
 import { rolePresetReducer } from './rolePresetReducer';
 import { ownerMessageReducer } from './ownerMessageReducer';
-import { warningsByUserIdReducer } from './warningsReducer';
+import warningsByUserIdReducer from './warningsReducer';
 import { infoCollectionsReducer } from './informationReducer';
-import { weeklySummariesAIPromptReducer } from './weeklySummariesAIPromptReducer';
-import { mouseoverTextReducer } from './mouseoverTextReducer';
+import mouseoverTextReducer from './mouseoverTextReducer';
 import notificationReducer from './notificationReducer';
-import { weeklySummaryRecipientsReducer } from "./weeklySummaryRecipientsReducer";
-import { followUpReducer } from "./followUpReducer";
+import weeklySummaryRecipientsReducer from './weeklySummaryRecipientsReducer';
+import { followUpReducer } from './followUpReducer';
 import { BlueSquareEmailAssignment } from './blueSquareEmailBcc';
-import {userProjectsByUserNameReducer} from './userProjectsByUserNameReducer';
+import { userProjectsByUserNameReducer } from './userProjectsByUserNameReducer';
+import teamCodesReducer from './teamCodesReducer';
+import { projectByIdReducer } from './projectByIdReducer';
 
 // bm dashboard
 import { materialsReducer } from './bmdashboard/materialsReducer';
@@ -46,9 +51,11 @@ import { bmInvUnitReducer } from './bmdashboard/inventoryUnitReducer';
 import { consumablesReducer } from './bmdashboard/consumablesReducer';
 import { toolReducer } from './bmdashboard/toolReducer';
 import { equipmentReducer } from './bmdashboard/equipmentReducer';
-import { timeOffRequestsReducer } from "./timeOffRequestReducer";
+import dashboardReducer from './dashboardReducer';
+import { timeOffRequestsReducer } from './timeOffRequestReducer';
 import { totalOrgSummaryReducer } from './totalOrgSummaryReducer';
 import { allUsersTimeEntriesReducer } from './allUsersTimeEntriesReducer';
+import HGNFormReducer from './hgnFormReducers';
 
 const localReducers = {
   auth: authReducer,
@@ -73,13 +80,16 @@ const localReducers = {
   ownerMessage: ownerMessageReducer,
   infoCollections: infoCollectionsReducer,
   mouseoverText: mouseoverTextReducer,
-  weeklySummaryRecipients:weeklySummaryRecipientsReducer,
+  weeklySummaryRecipients: weeklySummaryRecipientsReducer,
   notification: notificationReducer,
-  userFollowUp : followUpReducer,
-  userProjectsByUserNameReducer: userProjectsByUserNameReducer,
-  blueSquareEmailAssignment : BlueSquareEmailAssignment,
+  userFollowUp: followUpReducer,
+  userProjectsByUserNameReducer,
+  teamCodes: teamCodesReducer,
+  blueSquareEmailAssignment: BlueSquareEmailAssignment,
   totalOrgSummary: totalOrgSummaryReducer,
   allUsersTimeEntries: allUsersTimeEntriesReducer,
+  allUserProfilesBasicInfo: allUserProfilesBasicInfoReducer,
+  projectById: projectByIdReducer,
 
   // bmdashboard
   materials: materialsReducer,
@@ -93,10 +103,14 @@ const localReducers = {
   bmEquipments: equipmentReducer,
   bmInvUnits: bmInvUnitReducer,
   bmConsumables: consumablesReducer,
-  bmReusables: reusablesReducer
+  bmReusables: reusablesReducer,
+  dashboard: dashboardReducer,
 };
 
 const sessionReducers = {
+  hgnForm: HGNFormReducer,
+  userPagination: changeUserPageStatusReducer,
+  userProfileEdit: enableUserInfoEditReducer,
   userProfile: userProfileByIdReducer,
   userTask: userTaskByIdReducer,
   leaderBoardData: leaderboardDataReducer,

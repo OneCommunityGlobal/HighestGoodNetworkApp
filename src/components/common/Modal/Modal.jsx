@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import {
   Button,
   Modal,
@@ -16,6 +17,7 @@ import '../../Header/DarkMode.css';
 
 // eslint-disable-next-line react/function-component-definition
 const ModalExample = props => {
+  // const darkMode = useSelector(state => state.theme.darkMode);
   const {
     isOpen,
     closeModal,

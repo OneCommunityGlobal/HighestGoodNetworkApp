@@ -1,22 +1,23 @@
-const normalizeString = (str) => {
-  return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-}
-
+const normalizeString = str => {
+  return str
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
+};
 
 // search whether the input contains searchText (ignoring accents, ignoring case)
 export const searchWithAccent = (input, searchText) => {
-  // check if searchText has accent
-  if(!searchText) return true;
-  if(!input) return false;
-  
-  searchText = searchText.trim();
-  
-  const searchNormalized = normalizeString(searchText);
-  const hasAccents = searchNormalized !== searchText.toLowerCase();
+  if (!searchText) return true;
+  if (!input) return false;
 
-  if(hasAccents) {
-    // if searchText has accent, we compare it directly
-    return input.toLowerCase().indexOf(searchText.toLowerCase()) !== -1
+  const trimmedSearchText = searchText.trim();
+  const searchNormalized = normalizeString(trimmedSearchText);
+  const hasAccents = searchNormalized !== trimmedSearchText.toLowerCase();
+
+  if (hasAccents) {
+    return input.toLowerCase().includes(trimmedSearchText.toLowerCase());
   }
-  return normalizeString(input).indexOf(searchNormalized) !== -1;
-}
+  return normalizeString(input).includes(searchNormalized);
+};
+
+export default searchWithAccent;

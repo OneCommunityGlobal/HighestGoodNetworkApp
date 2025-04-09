@@ -1,0 +1,137 @@
+.bgWhiteSmoke {
+  background-color: #f6f6f3;
+}
+
+.bioToggle {
+  display: inline-block;
+}
+
+.nameInfo {
+  display: flex;
+}
+
+.totalValidWrapper {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  white-space: nowrap;
+}
+
+.badgeTr {
+  margin-left: 20px;
+  display: block;
+}
+
+.badgeTd {
+  img {
+    float: left;
+    height: 45px;
+    width: 45px;
+    margin: 5px;
+  }
+}
+
+.weeklySummaryReportContainer {
+  display: flex;
+  flex-direction: row;
+}
+
+.weeklySummaryText {
+  max-width: 100%;
+  margin-right: 5px;
+}
+
+.copyIcon {
+  cursor: pointer;
+  margin: 2px 2px;
+}
+
+.filterContainer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.filterContainerTeamcode {
+  display: flex;
+  justify-content: space-between;
+}
+
+.filterStyle {
+  font-size: 0.7em;
+  display: flex;
+  align-items: center;
+}
+
+.filterMarginRight {
+  margin-right: 20px;
+}
+
+.containerWsrWrapper {
+  min-height: 100%;
+  min-width: 100vw;
+}
+
+.slideToggle {
+  bottom: auto;
+  margin-left: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+@media screen and (max-width: 544px) {
+  .responsiveFontSize {
+    font-size: 0.75rem !important;
+  }
+  .slideToggle {
+    margin-left: -6px;
+  }
+}
+
+@media screen and (max-width: 490px) {
+  .responsiveFontSize {
+    font-size: 0.5rem !important;
+  }
+  .slideToggle {
+    width: 33px;
+  }
+}
+
+@media screen and (max-width: 400px) {
+  .responsiveFontSize {
+    font-size: 0.3rem !important;
+  }
+  .slideToggle {
+    width: 40px;
+  }
+}
+
+@media (min-width: 482px) {
+  .teamcodeWrapper {
+    display: flex;
+    white-space: nowrap;
+    align-items: center;
+  }
+}
+
+.codeAlert {
+  margin: 10px 0 0 0;
+  padding: 8px;
+}
+
+.multiSelectFilter {
+  .options {
+    max-height: 570px;
+    overflow-y: auto;
+    font-family: 'Courier New', Courier, monospace;
+
+    &::-webkit-scrollbar {
+      width: 5px;
+    }
+    &::-webkit-scrollbar-track {
+      background: rgb(0, 0, 0);
+    }
+    &::-webkit-scrollbar-thumb {
+      background: rgb(206, 212, 218);
+      border-radius: 8px;
+    }
+  }
+}

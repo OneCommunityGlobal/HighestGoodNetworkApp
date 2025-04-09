@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Button,
   Form,
@@ -33,8 +34,7 @@ function AssignBadge(props) {
   const [isOpen, setOpen] = useState(false);
   const [fullName, setFullName] = useState('');
   const [filteredUsers, setFilteredUsers] = useState([]);
-  const [selectedUserIds, setSelectedUserIds] = useState([]);
-  const selectedBadges = useSelector(state => state.badge.selectedBadges || []);
+  const [selectedUserId, setSelectedUserId] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -46,15 +46,32 @@ function AssignBadge(props) {
   }, []);
 
   useEffect(() => {
-    if (fullName) {
-      setFilteredUsers(
-        props.allUserProfiles.filter(user => {
+    try {
+      if (typeof fullName !== 'string') {
+        throw new Error('Full name must be a string');
+      }
+
+      const trimmedName = fullName.trim();
+      if (trimmedName) {
+        const filtered = props.allUserProfiles.filter(user => {
           const userFullName = `${user.firstName} ${user.lastName}`.toLowerCase();
-          return userFullName.includes(fullName.toLowerCase());
-        }),
-      );
-    } else {
+          return userFullName.includes(trimmedName.toLowerCase());
+        });
+        setFilteredUsers(filtered);
+      } else {
+        setFilteredUsers([]);
+        // Clear selectedUserId when input is empty
+        setSelectedUserId(null);
+        props.clearNameAndSelected();
+      }
+      setError(null);
+    } catch (err) {
+      console.error('Error filtering users:', err);
+      setError(err.message);
       setFilteredUsers([]);
+      // Also clear selection on error
+      setSelectedUserId(null);
+      props.clearNameAndSelected();
     }
   }, [fullName, props.allUserProfiles]);
 
@@ -74,8 +91,14 @@ function AssignBadge(props) {
 
    const toggle = (didSubmit = false) => {
     if (isOpen && didSubmit === true) {
-      submit();
-    } else if (selectedUserIds.length > 0) {
+      if (userId) {
+        props.assignBadgesByUserID(userId, selectedBadges);
+      } else {
+        props.assignBadges(firstName, lastName, selectedBadges);
+      }
+      setOpen(prevIsOpen => !prevIsOpen);
+      props.clearNameAndSelected();
+    } else if (firstName && lastName) {
       setOpen(prevIsOpen => !prevIsOpen);
     } else {
       props.validateBadges(props.firstName, props.lastName);
@@ -95,6 +118,7 @@ function AssignBadge(props) {
     <Form
       className={`container-fluid ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
       style={{ padding: 20 }}
+      onSubmit={e => e.preventDefault()}
     >
       <div className="row align-items-center mb-3">
         <Label
@@ -132,10 +156,17 @@ function AssignBadge(props) {
             placeholder="Full Name"
             value={fullName}
             onChange={handleFullNameChange}
-            className="form-control col-sm-12"
+            className="form-control"
           />
         </div>
       </div>
+
+      {error && (
+        <Alert color="danger" className="mt-3">
+          {error}
+        </Alert>
+      )}
+
       {filteredUsers.length > 0 && (
         <div className="table-responsive mb-3">
           <Table
@@ -183,8 +214,8 @@ function AssignBadge(props) {
         <Button
           className="btn--dark-sea-green"
           onClick={toggle}
-          style={darkMode ? { ...boxStyleDark } : { ...boxStyle }}
-          disabled={selectedUserIds.length === 0}
+          style={darkMode ? { ...boxStyleDark, margin: 20 } : { ...boxStyle, margin: 20 }}
+          disabled={!fullName}
         >
           Assign Badge
         </Button>
