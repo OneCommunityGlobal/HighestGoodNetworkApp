@@ -72,7 +72,7 @@ function AssignBadge(props) {
     });
   };
 
-  const toggle = (didSubmit = false) => {
+   const toggle = (didSubmit = false) => {
     if (isOpen && didSubmit === true) {
       submit();
     } else if (selectedUserIds.length > 0) {
