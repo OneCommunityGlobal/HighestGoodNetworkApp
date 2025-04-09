@@ -273,25 +273,33 @@ export const TeamMembersPopup = React.memo(props => {
           >
             <thead>
               <tr className={darkMode ? 'bg-space-cadet' : ''}>
-                <th>
-                  <div className={styles.divContainer}>
-                    <div className={styles.sliderContainer}>
-                      <input
-                        type="range"
-                        min="0"
-                        max="2"
-                        step="1"
-                        value={isChecked}
-                        onChange={handleToggle}
-                        className={styles.slider}
-                        title="Move Slider for Status change. Left: Inactive, Middle: Active, Right: See All"
-                        // Dynamic inline style for background color based on status
-                        style={{ '--track-color': trackColor, '--thumb-color': trackColor }}
-                      />
-                      <span>{checkedStatus}</span>
-                    </div>
-                  </div>
-                </th>
+              <th style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                <button
+                  onClick={() => {
+                    const newStatus = (isChecked + 1) % 3;
+                    setIsChecked(newStatus);
+                    setCheckedStatus(
+                      newStatus === 0 ? 'Inactive' : newStatus === 1 ? 'Active' : 'See All'
+                    );
+                  }}
+                  style={{
+                    backgroundColor:
+                      isChecked === 0 ? '#ccc' : isChecked === 1 ? 'limegreen' : 'dodgerblue',
+                    color: isChecked === 0 ? 'black' : 'white', // 🔁 Dynamic text color
+                    border: 'none',
+                    padding: '6px 12px',
+                    borderRadius: '5px',
+                    fontWeight: 'bold',
+                    cursor: 'pointer',
+                    width: '100px',
+                    minWidth: '100px',
+                    textAlign: 'center',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {checkedStatus}
+                </button>
+              </th>
                 <th class="def-width">#</th>
                 <th class="def-width">User Name</th>
                 <th style={{ cursor: 'pointer' }} onClick={toggleOrder}>
