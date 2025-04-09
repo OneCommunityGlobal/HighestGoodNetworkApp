@@ -10,7 +10,6 @@ import {
 } from 'chart.js';
 import '../styles/RadarChart.css';
 
-// Register Chart.js components
 ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
 
 // Define skill mappings: label -> data source
@@ -46,7 +45,6 @@ const SKILL_MAPPINGS = [
 ];
 
 function RadarChart({ profileData }) {
-  // Safe access to nested data
   const safeProfileData = profileData || {};
   const skillInfo = safeProfileData.skillInfo || {};
   const general = skillInfo.general || {};
@@ -61,7 +59,7 @@ function RadarChart({ profileData }) {
         label: 'Skills',
         data: SKILL_MAPPINGS.map(skill => {
           const source = skill.value(general) ?? skill.value(frontend) ?? skill.value(backend) ?? 0;
-          return source * 10; // Scale to 0-100
+          return source;
         }),
         backgroundColor: 'rgba(255, 99, 132, 0.2)',
         borderColor: 'rgba(255, 99, 132, 1)',
@@ -75,8 +73,8 @@ function RadarChart({ profileData }) {
       r: {
         angleLines: { display: true },
         suggestedMin: 0,
-        suggestedMax: 100,
-        ticks: { stepSize: 20 },
+        suggestedMax: 10,
+        ticks: { stepSize: 2 },
       },
     },
     plugins: {

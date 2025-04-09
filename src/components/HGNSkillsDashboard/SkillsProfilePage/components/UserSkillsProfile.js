@@ -41,7 +41,7 @@ function UserSkillsProfile() {
     };
 
     fetchData();
-  }, []); // Empty dependency array ensures this runs only once on mount
+  }, []); // Empty dependency array - runs only once on mount
 
   if (loading) {
     return (

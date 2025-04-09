@@ -1,5 +1,5 @@
 .profile-details {
-  width: 100%; /* Full width of right section */
+  width: 100%;
   margin-bottom: 20px;
 }
 
@@ -44,6 +44,41 @@
 .team-info .value,
 .contacts-info .value {
   font-weight: bold;
+}
+
+.value {
+  color: #666;
+  display: inline-block;
+  font-family: 'Arial', sans-serif;
+}
+
+strong {
+  color: #333;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.github-link {
+  color: #1a73e8;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 1rem;
+  padding: 2px 2px;
+  border-radius: 10px;
+  transition: background-color 0.2s ease, color 0.2s ease; /* Smooth hover effect */
+}
+
+.github-link:hover {
+  background-color: #f0f4f8;
+  color: #1557b0;
+  text-decoration: underline;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .github-link {
+    padding: 1px 4px;
+  }
 }
 
 @media (max-width: 768px) {

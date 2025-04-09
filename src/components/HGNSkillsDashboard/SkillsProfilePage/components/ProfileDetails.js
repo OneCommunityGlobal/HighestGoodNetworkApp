@@ -26,11 +26,11 @@ function ProfileDetails({ profileData }) {
       <div className="contacts-info">
         <span>
           <strong>Email:</strong>{' '}
-          <span className="value">{profileData.contactInfo.email || 'N/A'}</span>
+          <span className="value">{profileData.contactInfo.email || '🔒'}</span>
         </span>
         <span>
           <strong>Phone Number:</strong>{' '}
-          <span className="value">{profileData.contactInfo.phone || 'N/A'}</span>
+          <span className="value">{profileData.contactInfo.phone || '🔒'}</span>
         </span>
         <span>
           <strong>Slack:</strong>{' '}
@@ -38,7 +38,26 @@ function ProfileDetails({ profileData }) {
         </span>
         <span>
           <strong>GitHub:</strong>{' '}
-          <span className="value">{profileData.socialHandles.github || 'N/A'}</span>
+          <span className="value">
+            {profileData.socialHandles.github ? (
+              <a
+                href={
+                  profileData.socialHandles.github.includes('http')
+                    ? profileData.socialHandles.github
+                    : `https://github.com/${profileData.socialHandles.github}`
+                }
+                target="_blank"
+                rel="noopener noreferrer"
+                className="github-link"
+              >
+                {profileData.socialHandles.github.includes('http')
+                  ? profileData.socialHandles.github.split('/').pop()
+                  : profileData.socialHandles.github}
+              </a>
+            ) : (
+              'N/A'
+            )}
+          </span>
         </span>
       </div>
       <hr className="horizontal-separator" />

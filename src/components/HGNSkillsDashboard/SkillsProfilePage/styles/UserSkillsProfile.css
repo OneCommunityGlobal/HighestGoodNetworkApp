@@ -13,20 +13,12 @@
   border-radius: 10px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   overflow: hidden;
+  height: 80vh;
 }
 
 .vertical-separator {
   width: 1px;
   background-color: #e0e0e0;
-}
-
-@media (max-width: 768px) {
-  .dashboard-container {
-    flex-direction: column;
-  }
-  .vertical-separator {
-    display: none;
-  }
 }
 
 .skills-loader {
@@ -51,4 +43,14 @@
   color: rgb(208, 75, 75);
   font-weight: 500;
   margin-top: 20px;
+}
+
+@media (max-width: 768px) {
+  .dashboard-container {
+    flex-direction: column;
+    height: max-content;
+  }
+  .vertical-separator {
+    display: none;
+  }
 }

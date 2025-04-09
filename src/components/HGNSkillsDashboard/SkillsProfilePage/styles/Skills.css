@@ -1,5 +1,5 @@
 .skills {
-  width: 30%; /* Takes up part of the skills-and-chart container */
+  width: 30%;
   display: flex;
   flex-direction: column;
   gap: 5px;
@@ -37,12 +37,12 @@
   .skills {
     width: 100%;
     flex-direction: column;
-    align-items: center; /* Center buttons on smaller screens */
+    align-items: center;
   }
 
   .skills button {
-    width: 100%; /* Full width on smaller screens */
-    max-width: 80%; /* Limit max width to prevent overflow */
-    font-size: 14x; /* Smaller font size */
+    width: 100%;
+    max-width: 80%;
+    font-size: 14x;
   }
 }
