@@ -323,6 +323,7 @@ export const permissionLabels = [
                       'Gives the user permission to edit a task on any WBS. "Other Links" -> "Projects" -> "WBS Button" -> "Choose any WBS" -> "Edit" -> "Edit" ',
                   },
                   {
+                    // task extension count viewing permission
                     label: 'See # of Times Time Added to Task',
                     key: 'viewTaskDeadlineCount',
                     description:

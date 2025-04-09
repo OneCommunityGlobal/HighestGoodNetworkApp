@@ -89,6 +89,8 @@ const TeamMemberTask = React.memo(
     const rolesAllowedToSeeDeadlineCount = ['Manager', 'Mentor', 'Administrator', 'Owner'];
     const isAllowedToResolveTasks =
       rolesAllowedToResolveTasks.includes(userRole) || dispatch(hasPermission('resolveTask'));
+
+    // this variable is used to check the permission to view task extension count for a role or user
     const isAllowedToSeeDeadlineCount = 
       rolesAllowedToSeeDeadlineCount.includes(userRole) || dispatch(hasPermission('viewTaskDeadlineCount'));
 
