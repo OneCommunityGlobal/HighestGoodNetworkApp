@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react';
 import { Alert, Col, Container, Row, Button } from 'reactstrap';
 import 'moment-timezone';
 import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
+import { jsPDF } from 'jspdf';
+import window from 'window';
 
 import hasPermission from 'utils/permissions';
 
@@ -290,13 +291,13 @@ function TotalOrgSummary(props) {
       // 6. Create a single-page PDF.
       const pdfWidth = 210; // A4 width in mm
       const imgHeight = (screenshotCanvas.height * pdfWidth) / screenshotCanvas.width;
-      const PDF = new jsPDF({
+      const doc = new jsPDF({
         orientation: 'portrait',
         unit: 'mm',
         format: [pdfWidth, imgHeight],
       });
-      PDF.addImage(imgData, 'PNG', 0, 0, pdfWidth, imgHeight);
-      PDF.save(`volunteer-report-${new Date().toISOString().slice(0, 10)}.pdf`);
+      doc.addImage(imgData, 'PNG', 0, 0, pdfWidth, imgHeight);
+      doc.save(`volunteer-report-${new Date().toISOString().slice(0, 10)}.pdf`);
 
       // Cleanup: remove temporary container.
       document.body.removeChild(pdfContainer);
