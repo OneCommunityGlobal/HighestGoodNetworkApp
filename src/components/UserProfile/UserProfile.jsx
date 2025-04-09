@@ -125,7 +125,6 @@ function UserProfile(props) {
   const [showToggleVisibilityModal, setShowToggleVisibilityModal] = useState(false);
   const [pendingRehireableStatus, setPendingRehireableStatus] = useState(null);
   const [isRehireable, setIsRehireable] = useState(null);
-  const [canUpdatePassword, setCanUpdatePassword] = useState(props.hasPermission('updatePassword'));
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [didLinkUpdate, setDidLinkUpdate] = useState(false);
   // Function to toggle the modal
@@ -336,8 +335,15 @@ function UserProfile(props) {
     try {
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
       const currentUserEmail = response.data.email;
-      dispatch(setCurrentUser({ ...props.auth.user, email: currentUserEmail }));
-      setCanUpdatePassword(response.data.permissions.frontPermissions.includes('updatePassword'));
+      dispatch(setCurrentUser({ ...props.auth.user, email: currentUserEmail, 
+        permissions: {
+          ...props.auth.user.permissions,
+          frontPermissions: [
+            ...(props.auth.user.permissions?.frontPermissions || []),
+            ...(response.data.permissions?.frontPermissions || [])
+          ]
+        }
+      }));
     } catch (err) {
       toast.error('Error while getting current logged in user email');
     }
@@ -866,6 +872,7 @@ function UserProfile(props) {
   const canChangeUserStatus = props.hasPermission('changeUserStatus');
   const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
   const canPutUserProfile = props.hasPermission('putUserProfile');
+  const canUpdatePassword = props.hasPermission('updatePassword');
   const canGetProjectMembers = props.hasPermission('getProjectMembers');
   const canChangeRehireableStatus = props.hasPermission('changeUserRehireableStatus');
   const canUpdateSummaryRequirements = props.hasPermission('updateSummaryRequirements');
@@ -877,7 +884,7 @@ function UserProfile(props) {
 
   const canEditUserProfile = targetIsDevAdminUneditable
     ? false
-    : userProfile.role === 'Owner'
+    : userProfile.role === 'Owner' || userProfile.role === 'Administrator'
     ? canAddDeleteEditOwners
     : canPutUserProfile;
 
