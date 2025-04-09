@@ -125,18 +125,10 @@ function TotalOrgSummary(props) {
   const handleSaveAsPDF = async () => {
     // Ensure required libraries are present.
     if (typeof jsPDF === 'undefined' || typeof html2canvas === 'undefined') {
+      // eslint-disable-next-line no-alert
       alert('Required PDF libraries not loaded. Please refresh the page.');
       return;
     }
-
-    // NOTE: For best results, ensure your Chart.js chart options disable animations
-    // during PDF export. For example:
-    // const options = {
-    //   animation: { duration: 0 },
-    //   maintainAspectRatio: false,
-    //   cutout: '55%',
-    //   plugins: { ... }
-    // };
 
     // Save the current state of collapsible sections.
     const triggers = document.querySelectorAll('.Collapsible__trigger');
@@ -147,6 +139,7 @@ function TotalOrgSummary(props) {
     try {
       // Ensure data is ready.
       if (!volunteerStats || isLoading) {
+        // eslint-disable-next-line no-alert
         alert('Please wait for data to load before generating PDF.');
         return;
       }
@@ -160,25 +153,22 @@ function TotalOrgSummary(props) {
 
       // 2. Wait a longer time to ensure charts and content are fully rendered.
       // Increase this delay if needed (e.g., 3000ms or higher).
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      await new Promise(resolve => {
+        setTimeout(resolve, 3000);
+      });
 
       // 3. Replace Chart.js canvas elements with images in the live DOM.
-      // Adjust selector to target your specific chart(s). Here we assume that your
-      // Chart.js charts appear inside elements with class "volunteer-status-chart".
       const chartCanvases = document.querySelectorAll('.volunteer-status-chart canvas');
       chartCanvases.forEach(canvasElem => {
         try {
           const img = document.createElement('img');
-          // Convert canvas to a PNG image data URL.
           img.src = canvasElem.toDataURL('image/png');
-          // Copy intrinsic dimensions.
           img.width = canvasElem.width;
           img.height = canvasElem.height;
-          // Copy any inline CSS (if present) so the image appears in the same size.
           img.style.cssText = canvasElem.style.cssText;
-          // Replace the canvas with the image in the live DOM.
           canvasElem.parentNode.replaceChild(img, canvasElem);
         } catch (err) {
+          // eslint-disable-next-line no-console
           console.error('Error converting canvas to image:', err);
         }
       });
@@ -300,19 +290,21 @@ function TotalOrgSummary(props) {
       // 6. Create a single-page PDF.
       const pdfWidth = 210; // A4 width in mm
       const imgHeight = (screenshotCanvas.height * pdfWidth) / screenshotCanvas.width;
-      const pdf = new jsPDF({
+      const PDF = new jsPDF({
         orientation: 'portrait',
         unit: 'mm',
         format: [pdfWidth, imgHeight],
       });
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, imgHeight);
-      pdf.save(`volunteer-report-${new Date().toISOString().slice(0, 10)}.pdf`);
+      PDF.addImage(imgData, 'PNG', 0, 0, pdfWidth, imgHeight);
+      PDF.save(`volunteer-report-${new Date().toISOString().slice(0, 10)}.pdf`);
 
       // Cleanup: remove temporary container.
       document.body.removeChild(pdfContainer);
-    } catch (error) {
-      console.error('PDF generation failed:', error);
-      alert(`Error generating PDF: ${error.message}`);
+    } catch (pdfError) {
+      // eslint-disable-next-line no-console
+      console.error('PDF generation failed:', pdfError);
+      // eslint-disable-next-line no-alert
+      alert(`Error generating PDF: ${pdfError.message}`);
     } finally {
       // Restore collapsible sections to their original states.
       triggers.forEach((trigger, idx) => {
