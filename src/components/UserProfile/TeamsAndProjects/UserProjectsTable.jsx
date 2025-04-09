@@ -145,7 +145,7 @@ const UserProjectsTable = React.memo(props => {
               </Col>
             </div>
           </div>
-          <div className='table-container'>
+          <div className={`table-container ${darkMode ? 'bg-yinmn-blue' : ''}`}>
             <table className={`table table-bordered table-responsive-sm ${darkMode ? 'text-light' : ''}`}>
               <thead className={darkMode ? 'bg-space-cadet' : ''}>
                 {props.role && (
@@ -253,11 +253,11 @@ const UserProjectsTable = React.memo(props => {
                 </div>
               </Col>
             </div>
-            <div className='table-container' data-testid='userProjectTaskTest'>
+            <div className={`table-container ${darkMode ? 'bg-yinmn-blue' : ''}`} data-testid='userProjectTaskTest'>
               <table className={`table table-bordered table-responsive-sm ${darkMode ?'text-light' : ''}`}>
-                <thead>
+                <thead className={darkMode  ? 'bg-space-cadet' : ''}>
                   {props.role && (
-                    <tr>
+                    <tr className={darkMode  ? 'bg-space-cadet' : ''}>
                       <th className='table-header'>#</th>
                       <th>Task Name</th>
                       {canAssignProjectToUsers ? <th className='table-cell'>{}</th> : null}
@@ -277,7 +277,9 @@ const UserProjectsTable = React.memo(props => {
                             <td>
                               <span className='opacity-70'>{project.projectName} </span>
                               <br />
-                              <span className="fs-18">{task.taskName && `\u2003 ↳ ${task.taskName}`}</span>
+                              <a className="fs-18" href={`/wbs/tasks/${task._id}`}>
+                                {task.taskName && `\u2003 ↳ ${task.taskName}`}
+                              </a>
                             </td>
                             {!isCompletedTask && props.edit && props.role && canDeleteTasks && (
                               <td>
@@ -351,9 +353,9 @@ const UserProjectsTable = React.memo(props => {
             )}
             </Col>
           </div>
-          <div className='table-container'>
+          <div className={`table-container ${darkMode ? 'bg-yinmn-blue' : ''}`}>
             <table className={`table table-bordered ${darkMode ? 'text-light' : ''}`}>
-              <thead>
+              <thead className={darkMode ? 'bg-space-cadet' : ''}>
                 {props.role && (
                   <tr>
                     <th className={`table-header ${darkMode ? 'bg-space-cadet' : ''}`}>#</th>
@@ -430,7 +432,7 @@ const UserProjectsTable = React.memo(props => {
                 </Col>
               </div>
             </div>
-            <div className='table-container'>
+            <div className={`table-container ${darkMode ? 'bg-yinmn-blue' : ''}`}>
               <table className="table table-bordered">
                 <thead className={darkMode ? 'text-light' : ''}>
                   {props.role && (
