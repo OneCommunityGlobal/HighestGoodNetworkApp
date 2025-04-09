@@ -1,3 +1,4 @@
+/* eslint-disable new-cap */
 import { connect } from 'react-redux';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
