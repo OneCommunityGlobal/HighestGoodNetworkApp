@@ -5,7 +5,6 @@ import { Alert, Col, Container, Row, Button } from 'reactstrap';
 import 'moment-timezone';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
-import window from 'window';
 
 import hasPermission from 'utils/permissions';
 
