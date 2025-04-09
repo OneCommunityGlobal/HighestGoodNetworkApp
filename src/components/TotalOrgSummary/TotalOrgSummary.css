@@ -134,6 +134,7 @@
 }
 
 @media print {
+
   body,
   html {
     background-color: #FFF !important;
@@ -153,12 +154,12 @@
     width: 100% !important;
     break-inside: avoid !important;
   }
-  
+
   #pdf-export-container,
   #pdf-export-container * {
     visibility: visible;
   }
-  
+
   #pdf-export-container {
     position: absolute;
     left: 0;
@@ -213,7 +214,9 @@
   }
 
   /* Optimize image and chart display */
-  img, canvas, svg {
+  img,
+  canvas,
+  svg {
     max-width: 100% !important;
     height: auto !important;
     page-break-inside: avoid !important;
@@ -289,6 +292,18 @@
     text-align: center !important;
   }
 
+    .volunteer-status-chart {
+      width: 100% !important;
+      height: auto !important;
+      min-height: 300px !important;
+    }
+    
+    .volunteer-status-chart canvas {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      width: 100% !important;
+      height: auto !important;
+    }
   /* Optimize grid layout */
   .volunteer-status-grid {
     display: flex !important;

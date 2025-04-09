@@ -76,6 +76,7 @@ const toOverDate = calculateToOverDate();
 
 const aggregateTimeEntries = userTimeEntries => {
   const aggregatedEntries = {};
+
   userTimeEntries.forEach(entry => {
     const { personId, hours, minutes } = entry;
     if (!aggregatedEntries[personId]) {
@@ -88,17 +89,21 @@ const aggregateTimeEntries = userTimeEntries => {
       aggregatedEntries[personId].minutes += parseInt(minutes, 10);
     }
   });
+
   Object.keys(aggregatedEntries).forEach(personId => {
     const totalMinutes = aggregatedEntries[personId].minutes;
     const additionalHours = Math.floor(totalMinutes / 60);
     aggregatedEntries[personId].hours += additionalHours;
     aggregatedEntries[personId].minutes = totalMinutes % 60;
   });
-  return Object.entries(aggregatedEntries).map(([personId, { hours, minutes }]) => ({
+
+  const result = Object.entries(aggregatedEntries).map(([personId, { hours, minutes }]) => ({
     personId,
     hours,
     minutes,
   }));
+
+  return result;
 };
 
 function TotalOrgSummary(props) {
@@ -114,62 +119,8 @@ function TotalOrgSummary(props) {
   const [isLoading, setIsLoading] = useState(true);
 
   const dispatch = useDispatch();
+
   const allUsersTimeEntries = useSelector(state => state.allUsersTimeEntries);
-
-  // Disable no-param-reassign for this function
-  const waitForAssets = async () => {
-    const elements = document.querySelectorAll('img, .recharts-wrapper, canvas, svg, iframe');
-    if (elements.length === 0) {
-      return;
-    }
-    const promises = Array.from(elements).map(element => {
-      return new Promise(resolve => {
-        if (element.complete || element.readyState === 'complete') {
-          resolve();
-          return;
-        }
-        const timer = setTimeout(() => {
-          resolve();
-        }, 10000);
-        /* eslint-disable no-param-reassign */
-        element.onload = () => {
-          clearTimeout(timer);
-          resolve();
-        };
-        element.onerror = () => {
-          clearTimeout(timer);
-          resolve();
-        };
-        /* eslint-enable no-param-reassign */
-      });
-    });
-    if (document.fonts && document.fonts.ready) {
-      await document.fonts.ready;
-    }
-    await Promise.all(promises);
-    await new Promise(resolve => {
-      setTimeout(resolve, 1000);
-    });
-  };
-
-  const generateSimplePDF = () => {
-    try {
-      // eslint-disable-next-line new-cap
-      const PDF = new jsPDF();
-      PDF.setFontSize(16);
-      PDF.text('Volunteer Report Summary', 105, 15, { align: 'center' });
-      PDF.setFontSize(12);
-      PDF.text(`Total Volunteers: ${volunteerStats?.total || 'N/A'}`, 20, 30);
-      PDF.text(`Active Volunteers: ${volunteerStats?.active || 'N/A'}`, 20, 40);
-      PDF.text(`New Volunteers: ${volunteerStats?.new || 'N/A'}`, 20, 50);
-      PDF.text('Note: Full report generation failed. Please try', 20, 70);
-      PDF.text('again or contact support if issue persists.', 20, 80);
-      PDF.save('volunteer-report-fallback.pdf');
-      return true;
-    } catch (err) {
-      return false;
-    }
-  };
 
   const handleSaveAsPDF = async () => {
     // Ensure required libraries are present.
@@ -409,14 +360,17 @@ function TotalOrgSummary(props) {
         .then(response => {
           if (response && Array.isArray(response)) {
             setUsersOverTimeEntries(response);
+          } else {
+            // eslint-disable-next-line no-console
+            console.log('error on fetching data');
           }
         })
         .catch(() => {
-          // Error handling
+          // eslint-disable-next-line no-console
+          console.log('error on fetching data');
         });
     }
   }, [allUsersTimeEntries, usersId, fromOverDate, toOverDate]);
-
   useEffect(() => {
     async function fetchData() {
       const {
@@ -427,6 +381,7 @@ function TotalOrgSummary(props) {
         taskHours: { count: lastTaskHours },
         projectHours: { count: lastProjectHours },
       } = await props.getTaskAndProjectStats(fromOverDate, toOverDate);
+
       if (taskHours && projectHours) {
         setTaskProjectHours({
           taskHours,
@@ -455,6 +410,7 @@ function TotalOrgSummary(props) {
         setIsVolunteerFetchingError(true);
       }
     };
+
     fetchVolunteerStats();
   }, [fromDate, toDate, props]);
 
@@ -602,7 +558,7 @@ function TotalOrgSummary(props) {
               <div className="chart-title">
                 <p>Volunteer Trends by Time</p>
               </div>
-              <span className="text-center">Work in progress...</span>
+              <span className="text-center"> Work in progres...</span>
             </div>
           </Col>
           <Col lg={{ size: 5 }}>
