@@ -26,6 +26,8 @@ const UserTableData = React.memo(props => {
   const [tooltipDeleteOpen, setTooltipDelete] = useState(false);
   const [tooltipPauseOpen, setTooltipPause] = useState(false);
   const [tooltipFinalDayOpen, setTooltipFinalDay] = useState(false);
+  const isMobile = props.isMobile;
+  const mobileFontSize = props.mobileFontSize;
   const [tooltipReportsOpen, setTooltipReports] = useState(false);
 
   const [isChanging, onReset] = useState(false);
@@ -121,6 +123,7 @@ const UserTableData = React.memo(props => {
     <tr
       className={`usermanagement__tr ${darkMode ? 'dark-usermanagement-data' : 'light-usermanagement-data'}`}
       id={`tr_user_${props.index}`}
+      style={{fontSize: isMobile ? mobileFontSize : 'initial'}}
     >
       <td className="usermanagement__active--input" style={{ position: 'relative' }}>
         <ActiveCell
