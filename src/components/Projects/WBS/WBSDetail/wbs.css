@@ -202,6 +202,10 @@
   padding-left: 8mm
 }
 
+.mw-4 {
+  max-width: 4rem;
+}
+
 @media (max-width: 250px) {
   .flex-responsive{
     flex-direction: column;
