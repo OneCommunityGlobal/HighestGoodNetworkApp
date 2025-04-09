@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { useSelector } from 'react-redux';
 import { PeopleTasksPieChart } from './PeopleTasksPieChart';
@@ -35,7 +34,7 @@ describe('PeopleTasksPieChart', () => {
     useSelector.mockReturnValue(defaultSelectorData);
 
     render(<PeopleTasksPieChart darkMode={false} />);
-    
+
     expect(screen.getByText(/Tasks With Completed Hours/i)).toBeInTheDocument();
   });
 
@@ -57,14 +56,14 @@ describe('PeopleTasksPieChart', () => {
     });
 
     render(<PeopleTasksPieChart darkMode={false} />);
-    
+
     expect(screen.getByText('Projects With Completed Hours')).toBeInTheDocument();
   });
 
   it('renders in dark mode when darkMode prop is true', () => {
     useSelector.mockReturnValue(defaultSelectorData);
 
-    const { container } = render(<PeopleTasksPieChart darkMode={true} />);
+    const { container } = render(<PeopleTasksPieChart darkMode />);
     expect(container.firstChild).toHaveClass('text-light');
   });
 
@@ -72,12 +71,12 @@ describe('PeopleTasksPieChart', () => {
     useSelector.mockReturnValue(defaultSelectorData);
 
     render(<PeopleTasksPieChart darkMode={false} />);
-    
+
     const viewAllButton = screen.getByText('View all');
     expect(viewAllButton).toBeInTheDocument();
-    
+
     fireEvent.click(viewAllButton);
-    
+
     expect(screen.getByText('Collapse')).toBeInTheDocument();
   });
 
@@ -88,7 +87,7 @@ describe('PeopleTasksPieChart', () => {
     });
 
     render(<PeopleTasksPieChart darkMode={false} />);
-    
+
     expect(screen.queryByText('View all')).not.toBeInTheDocument();
   });
 
@@ -100,7 +99,7 @@ describe('PeopleTasksPieChart', () => {
     });
 
     render(<PeopleTasksPieChart darkMode={false} />);
-    
+
     expect(screen.getByText('Total Hours : 0.00')).toBeInTheDocument();
   });
 
@@ -108,7 +107,7 @@ describe('PeopleTasksPieChart', () => {
     useSelector.mockReturnValue(defaultSelectorData);
 
     render(<PeopleTasksPieChart darkMode={false} />);
-    
+
     expect(screen.getByText('Task 1')).toBeInTheDocument();
     expect(screen.getByText('10 hours')).toBeInTheDocument();
     expect(screen.getByText('Task 2')).toBeInTheDocument();
@@ -123,9 +122,8 @@ describe('PeopleTasksPieChart', () => {
     });
 
     render(<PeopleTasksPieChart darkMode={false} />);
-    
+
     expect(screen.getByText(/Tasks With Completed Hours/i)).toBeInTheDocument();
     expect(screen.getByText('Projects With Completed Hours')).toBeInTheDocument();
   });
-
 });
