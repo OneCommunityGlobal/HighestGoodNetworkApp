@@ -49,9 +49,6 @@ export const updateUserStatus = (user, status, reactivationDate) => {
   userProfile.reactivationDate = reactivationDate;
   const patchData = { status, reactivationDate };
   return async dispatch => {
-    // Optimistic update
-    dispatch(userProfileUpdateAction(userProfile));
-
     try {
       if (status === UserStatus.InActive) {
         // Check for the last week of work
@@ -233,22 +230,22 @@ export const updateUserFinalDayStatusIsSet = (user, status, finalDayDate, isSet)
       // Prepare patch data
       const patchData = {
         status,
-        endDate: finalDayDate ? moment(finalDayDate).add(1, 'days').format('YYYY-MM-DD') : undefined,
+        endDate: finalDayDate ? moment(finalDayDate).format('YYYY-MM-DD') : undefined,
         isSet,
       };
 
       // Make the API request
       const response = await axios.patch(ENDPOINTS.USER_PROFILE(user._id), patchData);
+      console.log('API Response:', response.data);
 
-      // Update the Redux store with the response data
+      // Update the Redux store with the updated user profile
       const updatedUserProfile = {
         ...user,
-        ...response.data, // Use the updated data from the API
+        ...response.data,
       };
-
       dispatch(userProfileUpdateAction(updatedUserProfile));
     } catch (error) {
-      console.error('Error updating user profile:', error);
+      console.error('Error updating user profile:', error.response || error.message);
       throw new Error('Failed to update user profile.');
     }
   };
