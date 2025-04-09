@@ -172,40 +172,90 @@ function TotalOrgSummary(props) {
   };
 
   const handleSaveAsPDF = async () => {
+    // Ensure required libraries are present.
     if (typeof jsPDF === 'undefined' || typeof html2canvas === 'undefined') {
+      alert('Required PDF libraries not loaded. Please refresh the page.');
       return;
     }
+
+    // NOTE: For best results, ensure your Chart.js chart options disable animations
+    // during PDF export. For example:
+    // const options = {
+    //   animation: { duration: 0 },
+    //   maintainAspectRatio: false,
+    //   cutout: '55%',
+    //   plugins: { ... }
+    // };
+
+    // Save the current state of collapsible sections.
     const triggers = document.querySelectorAll('.Collapsible__trigger');
     const originalStates = Array.from(triggers).map(trigger =>
       trigger.classList.contains('is-open'),
     );
+
     try {
+      // Ensure data is ready.
       if (!volunteerStats || isLoading) {
+        alert('Please wait for data to load before generating PDF.');
         return;
       }
+
+      // 1. Expand all collapsible sections so every part is visible.
       triggers.forEach(trigger => {
         if (!trigger.classList.contains('is-open')) {
           trigger.click();
         }
       });
-      await new Promise(resolve => {
-        setTimeout(resolve, 2000);
+
+      // 2. Wait a longer time to ensure charts and content are fully rendered.
+      // Increase this delay if needed (e.g., 3000ms or higher).
+      await new Promise(resolve => setTimeout(resolve, 3000));
+
+      // 3. Replace Chart.js canvas elements with images in the live DOM.
+      // Adjust selector to target your specific chart(s). Here we assume that your
+      // Chart.js charts appear inside elements with class "volunteer-status-chart".
+      const chartCanvases = document.querySelectorAll('.volunteer-status-chart canvas');
+      chartCanvases.forEach(canvasElem => {
+        try {
+          const img = document.createElement('img');
+          // Convert canvas to a PNG image data URL.
+          img.src = canvasElem.toDataURL('image/png');
+          // Copy intrinsic dimensions.
+          img.width = canvasElem.width;
+          img.height = canvasElem.height;
+          // Copy any inline CSS (if present) so the image appears in the same size.
+          img.style.cssText = canvasElem.style.cssText;
+          // Replace the canvas with the image in the live DOM.
+          canvasElem.parentNode.replaceChild(img, canvasElem);
+        } catch (err) {
+          console.error('Error converting canvas to image:', err);
+        }
       });
-      await waitForAssets();
+
+      // 4. Clone the container that you want to capture in the PDF.
+      // This container should include your title, charts, and other sections.
       const pdfContainer = document.createElement('div');
       pdfContainer.id = 'pdf-export-container';
+      // Set a high resolution container width for good quality.
       pdfContainer.style.width = '420mm';
       pdfContainer.style.padding = '24mm';
       pdfContainer.style.backgroundColor = '#fff';
+      // Position it off-screen.
       pdfContainer.style.position = 'absolute';
       pdfContainer.style.left = '-9999px';
       pdfContainer.style.boxSizing = 'border-box';
-      const originalElement = document.querySelector('.container-total-org-wrapper');
-      const clonedElement = originalElement.cloneNode(true);
-      clonedElement
+
+      // Clone the main content area.
+      const originalContent = document.querySelector('.container-total-org-wrapper');
+      const clonedContent = originalContent.cloneNode(true);
+
+      // Remove interactive or unwanted elements from the clone.
+      clonedContent
         .querySelectorAll('button, .share-pdf-btn, .controls, .no-print')
         .forEach(el => el.remove());
-      const titleRow = clonedElement.querySelector(
+
+      // Adjust title row styling for a clean layout.
+      const titleRow = clonedContent.querySelector(
         '.row.d-flex.justify-content-between.align-items-center',
       );
       if (titleRow) {
@@ -222,96 +272,100 @@ function TotalOrgSummary(props) {
           mainTitle.style.margin = '0';
         }
       }
-      const style = document.createElement('style');
-      style.textContent = `
-        .container-total-org-wrapper {
-          padding: 0 !important;
-          margin: 0 !important;
-          box-shadow: none !important;
-          border: none !important;
-          width: 100% !important;
-          background-color: #fff !important;
-        }
-        .row.d-flex.justify-content-between.align-items-center {
-          display: flex !important;
-          justify-content: space-between !important;
-          align-items: center !important;
-          margin-bottom: 20px !important;
-          width: 100% !important;
-          padding: 0 !important;
-        }
-        .component-container {
-          page-break-inside: avoid;
-          break-inside: avoid;
-          margin: 8mm 0 !important;
-          padding: 5mm !important;
-          border: 1px solid #eee !important;
-          border-radius: 0 !important;
-          background-color: #fff !important;
-        }
-        .component-border {
-          background-color: #fff !important;
-        }
-        img, svg, canvas {
-          max-width: 100% !important;
-          height: auto !important;
-          page-break-inside: avoid !important;
-        }
-        .recharts-wrapper {
-          width: 100% !important;
-          height: auto !important;
-        }
-        table {
-          page-break-inside: avoid !important;
-        }
-        .Collapsible__trigger {
-          background-color: #fff !important;
-        }
-      `;
-      clonedElement.prepend(style);
-      pdfContainer.appendChild(clonedElement);
+
+      // Inject global styles to keep the layout organized
+      const styleElem = document.createElement('style');
+      styleElem.textContent = `
+      .container-total-org-wrapper {
+        padding: 0 !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+        border: none !important;
+        width: 100% !important;
+        background-color: #fff !important;
+      }
+      .row.d-flex.justify-content-between.align-items-center {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        margin-bottom: 20px !important;
+        width: 100% !important;
+        padding: 0 !important;
+      }
+      .component-container {
+        page-break-inside: avoid;
+        break-inside: avoid;
+        margin: 8mm 0 !important;
+        padding: 5mm !important;
+        border: 1px solid #eee !important;
+        border-radius: 0 !important;
+        background-color: #fff !important;
+      }
+      .component-border {
+        background-color: #fff !important;
+      }
+      img, svg {
+        max-width: 100% !important;
+        height: auto !important;
+        page-break-inside: avoid !important;
+      }
+      .recharts-wrapper {
+        width: 100% !important;
+        height: auto !important;
+      }
+      table {
+        page-break-inside: avoid !important;
+      }
+      .Collapsible__trigger {
+        background-color: #fff !important;
+      }
+    `;
+      clonedContent.prepend(styleElem);
+
+      // Append the cloned content to the temporary container.
+      pdfContainer.appendChild(clonedContent);
       document.body.appendChild(pdfContainer);
-      const canvasElem = await html2canvas(pdfContainer, {
+
+      // 5. Use html2canvas to capture the rendered container.
+      // (Since we've replaced canvases with images, the charts should now appear properly.)
+      const screenshotCanvas = await html2canvas(pdfContainer, {
         scale: 2,
         useCORS: true,
-        logging: false,
+        backgroundColor: '#fff',
         windowWidth: pdfContainer.scrollWidth,
         windowHeight: pdfContainer.scrollHeight,
-        backgroundColor: '#fff',
-        allowTaint: true,
-        onclone: clonedDoc => {
-          clonedDoc.querySelectorAll('.header-row, .controls').forEach(el => el.remove());
-        },
-      }).catch(err => {
-        throw new Error(`Failed to render page: ${err.message}`);
+        logging: false,
       });
-      if (!canvasElem) {
-        throw new Error('html2canvas returned empty canvas');
+
+      if (!screenshotCanvas) {
+        throw new Error('html2canvas failed to capture the content.');
       }
-      const imgData = canvasElem.toDataURL('image/png');
+
+      const imgData = screenshotCanvas.toDataURL('image/png');
       if (!imgData || imgData.length < 100) {
-        throw new Error('Invalid image data generated');
+        throw new Error('Invalid image data generated.');
       }
-      const pdfWidth = 210;
-      const imgHeight = (canvasElem.height * pdfWidth) / canvasElem.width;
-      // eslint-disable-next-line new-cap
-      const PDF = new jsPDF({
+
+      // 6. Create a single-page PDF.
+      const pdfWidth = 210; // A4 width in mm
+      const imgHeight = (screenshotCanvas.height * pdfWidth) / screenshotCanvas.width;
+      const pdf = new jsPDF({
         orientation: 'portrait',
         unit: 'mm',
         format: [pdfWidth, imgHeight],
       });
-      PDF.addImage(imgData, 'PNG', 0, 0, pdfWidth, imgHeight);
-      PDF.save(`volunteer-report-${new Date().toISOString().slice(0, 10)}.pdf`);
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, imgHeight);
+      pdf.save(`volunteer-report-${new Date().toISOString().slice(0, 10)}.pdf`);
+
+      // Cleanup: remove temporary container.
       document.body.removeChild(pdfContainer);
-    } catch (err) {
-      // Removed console.error to satisfy no-console rule.
-      const fallbackSuccess = generateSimplePDF();
-      if (!fallbackSuccess) {
-        // In production, you may want to handle the error silently.
-      }
+    } catch (error) {
+      console.error('PDF generation failed:', error);
+      alert(`Error generating PDF: ${error.message}`);
     } finally {
-      triggers.forEach((trigger, index) => {
-        if (trigger.classList.contains('is-open') !== originalStates[index]) {
+      // Restore collapsible sections to their original states.
+      triggers.forEach((trigger, idx) => {
+        if (trigger.classList.contains('is-open') !== originalStates[idx]) {
           trigger.click();
         }
       });
