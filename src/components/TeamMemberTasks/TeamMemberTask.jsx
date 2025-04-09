@@ -11,7 +11,7 @@ import {
 import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
 import { Table, Progress } from 'reactstrap';
 
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import hasPermission from 'utils/permissions';
 import './style.css';
 
@@ -52,6 +52,7 @@ const TeamMemberTask = React.memo(
     const currentDate = moment.tz('America/Los_Angeles').startOf('day');
     const dispatch = useDispatch();
     const canSeeFollowUpCheckButton = userRole !== 'Volunteer';
+    const history = useHistory();
 
     const totalHoursRemaining = user.tasks.reduce((total, task) => {
       task.hoursLogged = task.hoursLogged || 0;
@@ -122,6 +123,15 @@ const TeamMemberTask = React.memo(
         setIsTruncated(!isTruncated);
       }
     };
+
+    const handleReportClick = (event,to) => {
+      if (event.metaKey || event.ctrlKey || event.button === 1) {
+        return;
+      }
+  
+      event.preventDefault(); // prevent full reload
+      history.push(`/peoplereport/${to}`);
+    }
 
     const openDetailModal = request => {
       dispatch(showTimeOffRequestModal(request));
@@ -279,6 +289,7 @@ const TeamMemberTask = React.memo(
                             <Link
                               className='team-member-tasks-user-report-link'
                               to= {`/peoplereport/${user?.personId}`}
+                              onClick={(event)=>handleReportClick(event,user?.personId)}
                             >
                                <img 
                                   src ="/report_icon.png"
