@@ -1,5 +1,6 @@
+/* eslint-disable import/prefer-default-export */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { PieChart, Pie, Sector, ResponsiveContainer, LabelList} from 'recharts';
 import TwoWayToggleSwitch from '../../../common/TwoWayToggleSwitch/TwoWayToggleSwitch';
 import './ProjectPieChart.css';
@@ -8,7 +9,7 @@ import './ProjectPieChart.css';
 const generateRandomHexColor = () => {
 
   const randomColor = Math.floor(Math.random() * 16777215).toString(16);
-  const hexColor = "#" + "0".repeat(6 - randomColor.length) + randomColor;
+  const hexColor = `#${  "0".repeat(6 - randomColor.length)  }${randomColor}`;
   return hexColor;
 }
 
@@ -18,8 +19,6 @@ const renderActiveShape = (props, darkMode, showAllValues, accumulatedValues) =>
   const { cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle, fill, payload, percent, value } = props;
   const sin = Math.sin(-RADIAN * midAngle);
   const cos = Math.cos(-RADIAN * midAngle);
-  const sx = cx + (outerRadius + 10) * cos;
-  const sy = cy + (outerRadius + 10) * sin;
   const mx = cx + (outerRadius + 30) * cos;
   const my = cy + (outerRadius + 30) * sin;
   const ex = mx + (cos >= 0 ? 1 : -1) * 22;
@@ -98,11 +97,11 @@ export function ProjectPieChart  ({ userData, windowSize, darkMode }) {
           const newAccumulatedValues = newIndices.reduce((acc, i) => acc + userData[i].value, 0);
           setAccumulatedValues(newAccumulatedValues);
           return newIndices;
-        } else {
+        } 
           const newAccumulatedValues = accumulatedValues + userData[index].value;
           setAccumulatedValues(newAccumulatedValues);
           return [...prevIndices, index];
-        }
+        
       });
     } else {
       setActiveIndices([index]);
@@ -144,6 +143,7 @@ export function ProjectPieChart  ({ userData, windowSize, darkMode }) {
                 position="outside"
                 fill={darkMode ? 'white' : '#333'}
                 color={darkMode ? "white" : "black"}
+                // eslint-disable-next-line react/no-unstable-nested-components
                 content={(props) => {
                   const { cx, cy, value, index, viewBox} = props;
                   const entry = userData[index];

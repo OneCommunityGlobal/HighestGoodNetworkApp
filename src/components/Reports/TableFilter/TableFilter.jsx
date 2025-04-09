@@ -6,7 +6,6 @@ import './TableFilter.css';
 import { Checkbox } from 'components/common/Checkbox';
 import TextSuggestion from '../../UserManagement/TextSuggestion';
 import DropDownSearchBox from '../../UserManagement/DropDownSearchBox';
-import { divide } from 'lodash';
 
 const InputWithCalendarIcon = forwardRef(({ value, onClick }, ref) => {
   return (
@@ -47,7 +46,7 @@ function TableFilter({
   const [endDate, setEndDate] = useState(new Date());
   const taskName = taskNameList.map((item) => item.taskName)
   const taskHour = taskNameList.map((item) => item.estimatedHours)
-  const taskResource = taskNameList.map(function (item) { return [item.resources.map((e) => e[0].name)].join() })
+  const taskResource = taskNameList.map(function taskResource(item) { return [item.resources.map((e) => e[0].name)].join() })
   const uniquetaskHour = [...new Set(taskHour)];
   const uniquetaskResource = [...new Set(taskResource)];
 

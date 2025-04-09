@@ -97,6 +97,9 @@ const Project = props => {
       } else {
         await props.modifyProject(projectData);
       }
+      if (props.projectData.category) {
+        setCategory(props.projectData.category);
+      }
     };
 
     onUpdateProject();
@@ -137,7 +140,7 @@ const Project = props => {
             onChange={e => {
               onUpdateProjectCategory(e);
             }}
-
+            className={darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}
           >
             <option value="Unspecified">Unspecified</option>
             <option value="Food">Food</option>
@@ -215,7 +218,9 @@ const Project = props => {
           setInactiveModal={modalData.hasInactiveBtn ? setProjectInactive : null}
           modalMessage={modalData.modalMessage}
           modalTitle={modalData.modalTitle}
+          darkMode={darkMode}
         />
+
     </>
   );
 };

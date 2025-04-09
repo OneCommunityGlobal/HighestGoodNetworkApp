@@ -73,11 +73,13 @@ const AddProjectPopup = React.memo(props => {
 
   const finishFetch = status => {
     setIsOpenDropdown(false);
+    
     toast.success(
       status === 200
         ? 'Project created successfully'
         : 'Project created successfully, but it is not possible to retrieve the new project.',
     );
+  
     setDropdownText(dropdownText);
   };
 
@@ -100,7 +102,7 @@ const AddProjectPopup = React.memo(props => {
 
     const newProject = {
       projectName: searchText,
-      category: dropdownText,
+      projectCategory: dropdownText,
       isActive: true,
     };
 
