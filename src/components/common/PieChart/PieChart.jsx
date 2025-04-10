@@ -6,31 +6,31 @@ import { generateArrayOfUniqColors } from './colorsGenerator';
 import './UserProjectPieChart.css';
 
 export const PieChart = ({
-  tasksData, // New array format: [{ projectId: "123", projectName: "Project A", totalTime: 10.5 }, ...]
+  tasksData = [], // New array format: [{ projectId: "123", projectName: "Project A", totalTime: 10.5 }, ...]
   pieChartId,
   darkMode,
-  projectsData
+  projectsData = []
 }) => {
 
-if(tasksData.length===0) return <div>Loading</div>
+  if (!tasksData || tasksData.length === 0) return <div>Loading</div>;
   const [totalHours, setTotalHours] = useState(0);
-  const colors = useMemo(() => generateArrayOfUniqColors(tasksData.length), [tasksData]);
+  const colors = useMemo(() => generateArrayOfUniqColors(tasksData?.length), [tasksData]);
   const color = useMemo(() => d3.scaleOrdinal().range(colors), [colors]);
 
   const [togglePercentage, setTogglePercentage] = useState(false);
-  const [selectedProjects, setSelectedProjects] = useState(tasksData.map(project => project.projectId));
+  const [selectedProjects, setSelectedProjects] = useState(tasksData?.map(project => project.projectId));
 
   const handleTogglePercentage = () => {
     setTogglePercentage(prev => {
       const newToggleState = !prev;
       setTogglePercentage(newToggleState);
       if (!newToggleState) {
-        setSelectedProjects(tasksData.map(project => project.projectId));
+        setSelectedProjects(tasksData?.map(project => project.projectId));
       }
     });
   };
   const calculateTotalHours = (projectsData, tasksData) => {
-    const totalTaskTime = tasksData.reduce((sum, project) => sum + project.totalTime, 0);
+    const totalTaskTime = tasksData?.reduce((sum, project) => sum + project.totalTime, 0);
     const projectsDataTime= projectsData.reduce((sum, project) => sum + project.totalTime, 0);
     return totalTaskTime+projectsDataTime;
   }
@@ -47,6 +47,8 @@ if(tasksData.length===0) return <div>Loading</div>
 
   const getCreateSvgPie = totalValue => {
     if(totalValue === 0) return;
+    // Clear existing SVG before creating new one
+    d3.select(`#pie-chart-${pieChartId}`).remove();
     const svg = d3
       .select(`#pie-chart-container-${pieChartId}`)
       .append('svg')
@@ -97,7 +99,10 @@ if(tasksData.length===0) return <div>Loading</div>
   const pie = d3.pie().value(d => d.totalTime);
 
   useEffect(() => {
-    const totalValue = tasksData.reduce((sum, project) => sum + project.totalTime, 0);
+    if (!tasksData || tasksData.length === 0) {
+      return;
+  }
+    const totalValue = tasksData?.reduce((sum, project) => sum + project.totalTime, 0);
     if(totalValue === 0) return;
     setTotalHours(totalValue);
 
@@ -115,6 +120,8 @@ if(tasksData.length===0) return <div>Loading</div>
     }
 
    const svg= getCreateSvgPie(totalValue)
+   if (!svg) return; // Early return if no svg created
+    // Create the pie chart
       svg.selectAll('path')
       .data(dataReady)
       .join('path')
@@ -159,7 +166,7 @@ if(tasksData.length===0) return <div>Loading</div>
  
 
   return (
-   tasksData.length===0? <div>Loading</div> :<div className={`pie-chart-wrapper ${darkMode ? 'text-light' : ''}`}>
+   !tasksData || tasksData?.length===0? <div>Loading</div> :<div className={`pie-chart-wrapper ${darkMode ? 'text-light' : ''}`}>
       <div id={`pie-chart-container-${pieChartId}`} className="pie-chart" />
     <div className="pie-chart-legend-container">
       <div className="pie-chart-legend-table-wrapper">
@@ -172,7 +179,7 @@ if(tasksData.length===0) return <div>Loading</div>
             </tr>
           </thead>
           <tbody>
-            {tasksData.map(project => (
+            {tasksData?.map(project => (
               <tr key={project.projectId}>
                 <td>
                   <div id="project-chart-legend" style={{ backgroundColor: `${color(project.projectId)}`}}></div>

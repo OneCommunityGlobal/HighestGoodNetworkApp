@@ -603,13 +603,24 @@ class ReportsPage extends Component {
                 
                 <div>
           <div className="total-report-item">
-  <Button color="info" onClick={this.showTotalProject}>
-    {this.state.showTotalProject ? 'Hide Total Project Report' : 'Show Total Project Report'}
-  </Button>
-</div>
-</div>
-</div>
-
+          <Button color="info" onClick={this.showTotalTeam}>
+                      {this.state.showTotalTeam
+                        ? 'Hide Total Team Report'
+                        : 'Show Total Team Report'}
+                    </Button>
+                    <div style={{ display: 'inline-block', marginLeft: 10 }}>
+                      <EditableInfoModal
+                        areaName="totalTeamReportInfoPoint"
+                        areaTitle="Total Team Report"
+                        role={userRole}
+                        fontSize={15}
+                        isPermissionPage
+                        darkMode={darkMode}
+                      />
+                    </div>
+                </div>
+                </div>
+                </div>
                 {myRole != 'Owner' && (
                   <div className="lost-time-container">
                     <div className="lost-time-item">

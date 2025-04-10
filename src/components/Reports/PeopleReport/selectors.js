@@ -53,7 +53,7 @@ export const peopleTasksPieChartViewData = ({ userTask, allProjects, userProject
   
   // console.log(tasksWithLoggedHoursOnly)
   const resultArray = Object.keys(hoursLoggedToProjectsOnly).map(projectId => {
-    const project = userProjects.projects.find(proj => proj.projectId === projectId);
+    const project = userProjects?.projects.find(proj => proj.projectId === projectId);
     return {
       projectId,
       projectName: project ? project.projectName : "Unknown", // Use "Unknown" if no matching project is found
@@ -62,7 +62,7 @@ export const peopleTasksPieChartViewData = ({ userTask, allProjects, userProject
   });
 
   const resultArray2 = Object.keys(tasksWithLoggedHoursOnly).map(projectId => {
-    const project = userProjects.projects.find(proj => proj.projectId === projectId);
+    const project = userProjects?.projects.find(proj => proj.projectId === projectId);
     return {
       projectId,
       projectName: project ? project.projectName : "Unknown", // Use "Unknown" if no matching project is found
