@@ -140,5 +140,15 @@
   .header h2 {
     margin-left: 250px;
   }
-  
+
+  .no-data-message {
+    position: absolute;
+    top: 75%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    font-size: 18px;
+    color: #666;
+    font-weight: 500;
+  }  
   

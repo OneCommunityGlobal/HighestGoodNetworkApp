@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useState, useEffect } from 'react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
@@ -27,18 +26,6 @@ function DonutChart() {
     year: 'numeric',
   });
 
-  const dummyData = {
-    totalProjects: 426,
-    activeProjects: 265,
-    completedProjects: 127,
-    delayedProjects: 34,
-    percentages: {
-      active: 62.2,
-      completed: 29.8,
-      delayed: 8.0,
-    },
-  };
-
   // Fetch data from backend
   const fetchDataFromBackend = async () => {
     setIsSubmitting(true);
@@ -48,11 +35,17 @@ function DonutChart() {
     // eslint-disable-next-line no-console
     console.log('Data sent to backend:', requestData);
     try {
-      const response = await axios.post('/your-backend-endpoint', requestData);
+      const response = await axios.get(`${process.env.REACT_APP_APIENDPOINT}/projects/status`, {
+        params: {
+          startDate,
+          endDate,
+        },
+        headers: {
+          Authorization: localStorage.getItem('token'),
+        },
+      });
       if (response.data) {
         setChartData(response.data);
-      } else {
-        setChartData(dummyData);
       }
     } catch (err) {
       setError('Failed to fetch data from backend');
@@ -62,14 +55,13 @@ function DonutChart() {
   };
 
   useEffect(() => {
-    setChartData(dummyData);
+    fetchDataFromBackend();
   }, []);
 
   const validateDates = () => {
     if (startDate && endDate && endDate <= startDate) {
       setDateError(true);
       setTimeout(() => {
-        // eslint-disable-next-line no-alert
         alert('End date must be later than start date');
       }, 0);
       return false;
@@ -113,7 +105,7 @@ function DonutChart() {
         position: 'bottom',
         align: 'center',
         labels: {
-          boxWidth: 20,
+          boxWidth: 30,
           padding: 15,
         },
       },
@@ -127,7 +119,7 @@ function DonutChart() {
         },
         anchor: 'end',
         align: 'end',
-        offset: 10,
+        offset: 1,
       },
     },
     layout: {
@@ -180,11 +172,19 @@ function DonutChart() {
 
       <div className="content">
         <div className="donut-chart-section">
-          <Doughnut data={data} options={options} />
-          <div className="total-projects">
-            <p>Total Projects</p>
-            <p>{chartData?.totalProjects}</p>
-          </div>
+          {chartData?.totalProjects === 0 ? (
+            <div className="no-data-message">
+              <p>No project data available for the selected date range.</p>
+            </div>
+          ) : (
+            <>
+              <Doughnut data={data} options={options} />
+              <div className="total-projects">
+                <p>Total Projects</p>
+                <p>{chartData?.totalProjects}</p>
+              </div>
+            </>
+          )}
         </div>
 
         <div className="project-counts">
