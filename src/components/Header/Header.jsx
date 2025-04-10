@@ -234,7 +234,7 @@ export function Header(props) {
         props.getUserProfile(userId);
       }
     } catch (e) {
-      console.log('update ack', e);
+      // console.log('update ack', e);
     }
   }
 
