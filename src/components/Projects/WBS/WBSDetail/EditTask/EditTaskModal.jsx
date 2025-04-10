@@ -19,6 +19,7 @@ import { toast } from 'react-toastify';
 import TagsSearch from '../components/TagsSearch';
 import ReadOnlySectionWrapper from './ReadOnlySectionWrapper';
 import '../../../../Header/DarkMode.css'
+import '../wbs.css'
 
 function EditTaskModal(props) {
   /*
