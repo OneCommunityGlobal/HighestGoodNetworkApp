@@ -160,6 +160,7 @@ export const ENDPOINTS = {
   PINTEREST_OAUTH_INIT: `${APIEndpoint}/social/pinterest/initOAuth`,
   PINTEREST_AUTH_CALLBACK: `${APIEndpoint}/social/pinterest/auth`,
   POST_PINTEREST: `${APIEndpoint}/social/pinterest/createPin`,
+  CHECK_PINTEREST_CONNECTION: `${APIEndpoint}/social/pinterest/checkConnection`,
 
   // reasons endpoints
   CREATEREASON: () => {

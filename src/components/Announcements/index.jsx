@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import './Announcements.css';
+import { Tooltip } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react'; // Import Editor from TinyMCE
 import { boxStyle, boxStyleDark } from 'styles';
@@ -7,6 +8,7 @@ import { toast } from 'react-toastify';
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
 import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
+import pinteretLogo from '../../assets/images/pinterest-logo.png';
 
 function Announcements({ title, email }) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -16,6 +18,9 @@ function Announcements({ title, email }) {
   const [emailContent, setEmailContent] = useState('');
   const [headerContent, setHeaderContent] = useState('');
   const [showEditor, setShowEditor] = useState(true); // State to control rendering of the editor
+  const [pinterestConnected, setPinterestConnected] = useState(false);
+  const [tooltipOpen, setTooltipOpen] = useState(false);
+
   const tinymce = useRef(null);
 
   useEffect(() => {
@@ -23,6 +28,22 @@ function Announcements({ title, email }) {
     setShowEditor(false);
     setTimeout(() => setShowEditor(true), 0);
   }, [darkMode]);
+
+  useEffect(() => {
+    // Check if the user is connected to Pinterest
+    const checkPinterestConnection = async () => {
+      try {
+        const response = await axios.get(ENDPOINTS.CHECK_PINTEREST_CONNECTION);
+        setPinterestConnected(response.data.error? false : true);
+      } catch (err) {
+        toast.error(err.response?.data?.error || 'Failed to check Pinterest connection!', {
+          autoClose: false
+        });
+      }
+    };
+    checkPinterestConnection();
+  }, []);
+
 
   const editorInit = {
     license_key: 'gpl',
@@ -93,6 +114,9 @@ function Announcements({ title, email }) {
     }
   }, [email]);
 
+  const toggleTooltip = () => {
+    setTooltipOpen(!tooltipOpen);
+  };
   const handleEmailListChange = e => {
     const { value } = e.target;
     setEmailTo(value); // Update emailTo for the input field
@@ -296,23 +320,38 @@ function Announcements({ title, email }) {
       <div className='social-media'>
         <h3 className={darkMode ? 'text-light' : 'text-dark'}>Post to Social Media</h3>
         <div className='pinterest-connect-post'>
+          <div><img src={pinteretLogo} alt="pinterest" /></div>
           <button
             type="button"
             className="send-button"
+            id="pinterest-connect-button"
             onClick={handleConnectToPinterest}
             style={darkMode ? boxStyleDark : boxStyle}
           >
             {/* <a href={`${ENDPOINTS.PINTEREST_AUTH}?`}>Pinterest Connect</a> */}
             {/* <a href={"https://www.pinterest.com/oauth?client_id=1513006&redirect_uri=http://localhost:4500/api/social/pinterest/auth&response_type=code&scope=boards:read,pins:read,pins:write,boards:write"}>Pinterest Connect</a> */}
-            Pinterest Connect
+             {pinterestConnected ? 'ReConnect' : 'Connect'}
           </button>
+          {!pinterestConnected && (
+            <Tooltip
+            placement="right"
+            isOpen={tooltipOpen}
+            target="pinterest-post-button"
+            toggle={toggleTooltip}
+          >
+            Please connect first
+          </Tooltip>
+        )}
+
           <button
+        id="pinterest-post-button"
             type="button"
-            className="send-button"
+            className={pinterestConnected?'send-button':'send-button pinterest-disabled'}
             onClick={handlePostToPinterest}
             style={darkMode ? boxStyleDark : boxStyle}
+            disabled={!pinterestConnected}
           >
-            Pinterest Post
+             Post
           </button>
         </div>
       </div>

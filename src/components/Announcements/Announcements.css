@@ -122,8 +122,20 @@ button a,button a:hover {
 
 
 .pinterest-connect-post {
+  margin-top: 1rem;
   display: flex;
   gap: 1rem;
+  align-items: center;
+}
+
+.pinterest-connect-post button{
+  margin:0;
+}
+
+button.send-button.pinterest-disabled {
+  background-color: #ccc;
+  /* Grey out the button */
+  cursor: not-allowed;
 }
 
 /* Responsive design: Adjusts the preview section on smaller screens. */
