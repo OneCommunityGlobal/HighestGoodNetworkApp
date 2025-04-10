@@ -3,7 +3,7 @@ import FormEditor from 'components/Forms/FormEditor';
 import FormViewer from 'components/Forms/FormViewer';
 
 import { lazy } from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Switch, useLocation } from 'react-router-dom';
 import SetupProfile from 'components/SetupProfile/SetupProfile';
 import { ToastContainer } from 'react-toastify';
 import AutoUpdate from 'components/AutoUpdate';
@@ -75,7 +75,7 @@ import AddTeamMember from './components/BMDashboard/AddTeamMember/AddTeamMember'
 // Community Portal
 import CPProtectedRoute from './components/common/CPDashboard/CPProtectedRoute';
 import CPLogin from './components/CommunityPortal/Login';
-import CPDashboard from './components/CommunityPortal';
+import CPDashboard, { CPHeader } from './components/CommunityPortal';
 import ActivityList from './components/CommunityPortal/Activities/ActivityList';
 // import AddActivities from './components/CommunityPortal/Activities/AddActivities';
 // import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
@@ -143,7 +143,10 @@ const UserRoleTab = lazy(() => import('./components/PermissionsManagement/UserRo
 const Teams = lazy(() => import('./components/Teams/Teams'));
 
 
-export default (
+export default function AppRoutes(){
+  const location = useLocation();
+  const isCommunityPortal = location.pathname.startsWith('/communityportal');
+  return (
   <Switch>
     {/* ----- LB Dashboard Routing ----- */}
     {/* If it's possible incorporate this route with others without the header, please do */}
@@ -151,12 +154,15 @@ export default (
     <Route path="/formviewer" component={FormViewer} />
     <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
     <>
-      {/* Comment out the Header component and its import during phase 2 development. */}
-      <Header />
+     {/* Comment out the Header component and its import during phase 2 development. */}
       {/* Uncomment BMHeader and its import during phase 2 development. */}
 
 
       {/* <BMHeader /> */}
+      
+      {/* This will render CPHeader to the page whose path starts with /communityportal i.e Phase III */}
+      {isCommunityPortal ? <CPHeader /> : <Header />}
+
       <AutoUpdate />
       <ToastContainer />
       <Switch>
@@ -458,4 +464,5 @@ export default (
       </Switch>
     </>
   </Switch>
-);
+)
+}
