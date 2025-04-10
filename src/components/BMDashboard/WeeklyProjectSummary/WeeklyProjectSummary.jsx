@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
 import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
+import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
 
 export default function WeeklyProjectSummary() {
   const dispatch = useDispatch();
@@ -59,11 +60,15 @@ export default function WeeklyProjectSummary() {
           const uniqueId = uuidv4();
           return (
             <div key={uniqueId} className="weekly-project-summary-card normal-card">
-              {index === 1 ? (
-                <QuantityOfMaterialsUsed data={quantityOfMaterialsUsedData} />
-              ) : (
-                '📊 Card'
-              )}
+              {(() => {
+                if (index === 1) {
+                  return <QuantityOfMaterialsUsed data={quantityOfMaterialsUsedData} />;
+                }
+                if (index === 2) {
+                  return <TotalMaterialCostPerProject />;
+                }
+                return '📊 Card';
+              })()}
             </div>
           );
         }),

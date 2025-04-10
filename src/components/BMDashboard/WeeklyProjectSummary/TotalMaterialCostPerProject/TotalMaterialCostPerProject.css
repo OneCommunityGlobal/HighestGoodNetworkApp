@@ -1,0 +1,81 @@
+.chart-container {
+  width: 100%;
+  max-width: 800px;
+  margin: auto;
+  padding: 2px;
+  border-radius: 8px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 100%;
+}
+
+.chart-title {
+  text-align: center;
+  font-size: 18px; /* Smaller title */
+  font-weight: 600;
+  margin-bottom: 0;
+  line-height: 1.2;
+}
+
+.filter-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  margin-bottom: 0; /* reduce spacing */
+  padding: 4px 8px;
+}
+
+.filter-label {
+  font-size: 13px;
+  font-weight: 500;
+  margin-right: 0;
+}
+
+.dropdown {
+  width: 140px; /* Much smaller dropdown */
+  font-size: 13px;
+}
+
+.chart-wrapper {
+  height: 180px; /* Compact chart */
+  width: 100%;
+  margin-top: auto;
+}
+
+.loading-text,
+.error-text,
+.no-data-text {
+  text-align: center;
+  font-size: 14px;
+  color: #999;
+  font-weight: 500;
+}
+
+.dropdown {
+  width: 180px;
+  font-size: 13px;
+  min-height: 32px;
+}
+
+.date-compact {
+  margin-top: 6px;
+  font-size: 14px;
+  color: #444;
+  text-align: right;
+  line-height: 1.2;
+  padding-right: 10px;
+}
+
+.date-label {
+  font-weight: 500;
+}
+
+.date-value {
+  font-size: 12px;
+  color: #666;
+  padding-right: 16px;
+}
