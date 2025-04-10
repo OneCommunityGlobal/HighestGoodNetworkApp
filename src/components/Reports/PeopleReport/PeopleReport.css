@@ -216,7 +216,7 @@ body {
 
 .people-report-time-log-block {
   max-height: 100px;
-  width: 270px;
+  width: 240px;
   white-space: nowrap;
   margin-bottom: 16px;
 }
@@ -298,4 +298,8 @@ body {
     justify-content: flex-start;
     align-items: flex-start;
   }
+}
+
+.report-page-container {
+  margin-top: 25px;
 }
