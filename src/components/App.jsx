@@ -4,6 +4,7 @@ import { Provider, useSelector } from 'react-redux';
 import { BrowserRouter as Router, useLocation } from 'react-router-dom';
 import { PersistGate } from 'redux-persist/integration/react';
 import { ModalProvider } from 'context/ModalContext';
+import routes from '../routes';
 import logger from '../services/logService';
 
 import httpService from '../services/httpService';
@@ -14,7 +15,6 @@ import Loading from './common/Loading';
 
 import config from '../config.json';
 import '../App.css';
-import AppRoutes from '../routes';
 
 const { persistor, store } = configureStore();
 const { tokenKey } = config;
@@ -147,7 +147,7 @@ class App extends Component {
           <ModalProvider>
             <Router>
               <UpdateDocumentTitle />
-              <AppRoutes />
+              {routes}
             </Router>
           </ModalProvider>
         </PersistGate>
