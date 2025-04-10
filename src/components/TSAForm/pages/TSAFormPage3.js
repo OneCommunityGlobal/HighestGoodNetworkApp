@@ -1,9 +1,10 @@
 import { useHistory } from 'react-router-dom';
 import { useState } from 'react';
+import { useTSAForm } from 'context/TSAFormContext';
 
 function TSAFormPage3() {
   const history = useHistory();
-
+  const { setSubmittedPages } = useTSAForm();
   const [errors, setErrors] = useState({
     meetingAvailability: false,
     creativeProcessParticipation: false,
@@ -57,8 +58,8 @@ function TSAFormPage3() {
       firstInvalidField.focus();
       return;
     }
-
-    history.push('/tsaformpage4');
+    setSubmittedPages(prev => ({ ...prev, 3: true }));
+    history.push('/tsaformpage/page4');
   };
 
   return (

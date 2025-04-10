@@ -1,8 +1,10 @@
 import { useHistory } from 'react-router-dom';
 import { useState } from 'react';
+import { useTSAForm } from 'context/TSAFormContext';
 
 function TSAFormPage4() {
   const history = useHistory();
+  const { setSubmittedPages } = useTSAForm();
   const [errors, setErrors] = useState({
     interested: false,
     availability: false,
@@ -44,8 +46,8 @@ function TSAFormPage4() {
       }
       return;
     }
-
-    history.push('/tsaformpage5');
+    setSubmittedPages(prev => ({ ...prev, 4: true }));
+    history.push('/tsaformpage/page5');
   };
 
   return (

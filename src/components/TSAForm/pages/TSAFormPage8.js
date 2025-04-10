@@ -1,4 +1,11 @@
+import { useTSAForm } from 'context/TSAFormContext';
+import { useEffect } from 'react';
+
 function TSAFormPage8() {
+  const { setSubmittedPages } = useTSAForm();
+  useEffect(() => {
+    setSubmittedPages(prev => ({ ...prev, 8: true }));
+  }, [setSubmittedPages]); // Only runs once on mount
   return (
     <div
       style={{

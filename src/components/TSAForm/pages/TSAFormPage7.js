@@ -1,9 +1,10 @@
 import { useHistory } from 'react-router-dom';
 import { useState } from 'react';
+import { useTSAForm } from 'context/TSAFormContext';
 
 function TSAFormPage7() {
   const history = useHistory();
-
+  const { setSubmittedPages } = useTSAForm();
   const [errors, setErrors] = useState({
     agreementseven: false,
     agreementeight: false,
@@ -51,8 +52,8 @@ function TSAFormPage7() {
       firstInvalid.focus();
       return;
     }
-
-    history.push('/tsaformpage8');
+    setSubmittedPages(prev => ({ ...prev, 7: true }));
+    history.push('/tsaformpage/page8');
   };
 
   return (

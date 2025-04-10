@@ -3,7 +3,7 @@ import FormEditor from 'components/Forms/FormEditor';
 import FormViewer from 'components/Forms/FormViewer';
 
 import { lazy } from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Switch, Redirect } from 'react-router-dom';
 import SetupProfile from 'components/SetupProfile/SetupProfile';
 import { ToastContainer } from 'react-toastify';
 import AutoUpdate from 'components/AutoUpdate';
@@ -17,6 +17,8 @@ import Announcements from 'components/Announcements';
 import JobFormBuilder from 'components/Collaboration/JobFormbuilder';
 import JobCCDashboard from 'components/JobCCDashboard/JobCCDashboard';
 import WeeklyProjectSummary from 'components/BMDashboard/WeeklyProjectSummary/WeeklyProjectSummary';
+import RequirePageCompletion from 'components/RouteGuards/RequirePageCompletion';
+import { TSAFormProvider } from 'context/TSAFormContext';
 import Page1 from './components/HGNForm/pages/Page1';
 import Page2 from './components/HGNForm/pages/Page2';
 import Page3 from './components/HGNForm/pages/Page3';
@@ -31,6 +33,7 @@ import TSAFormPage5 from './components/TSAForm/pages/TSAFormPage5';
 import TSAFormPage6 from './components/TSAForm/pages/TSAFormPage6';
 import TSAFormPage7 from './components/TSAForm/pages/TSAFormPage7';
 import TSAFormPage8 from './components/TSAForm/pages/TSAFormPage8';
+
 import Timelog from './components/Timelog';
 import LessonForm from './components/BMDashboard/Lesson/LessonForm';
 import UserProfileEdit from './components/UserProfile/UserProfileEdit';
@@ -445,14 +448,51 @@ export default (
         <ProtectedRoute path="/hgnform/page4" exact component={Page4}/>
         <ProtectedRoute path="/hgnform/page5" exact component={Page5}/>
         <ProtectedRoute path="/hgnform/page6" exact component={Page6}/> 
-        <ProtectedRoute path="/tsaformpage1" exact component={TSAFormPage1} /> 
-        <ProtectedRoute path="/tsaformpage2" exact component={TSAFormPage2} /> 
-        <ProtectedRoute path="/tsaformpage3" exact component={TSAFormPage3} /> 
-        <ProtectedRoute path="/tsaformpage4" exact component={TSAFormPage4} /> 
-        <ProtectedRoute path="/tsaformpage5" exact component={TSAFormPage5} /> 
-        <ProtectedRoute path="/tsaformpage6" exact component={TSAFormPage6} /> 
-        <ProtectedRoute path="/tsaformpage7" exact component={TSAFormPage7} /> 
-        <ProtectedRoute path="/tsaformpage8" exact component={TSAFormPage8} /> 
+        {/* TSA Form Routes */}
+        <Route exact path="/tsaformpage1" render={() => <Redirect to="/tsaformpage/page1" />} />
+
+        <Route path="/tsaformpage">
+          <TSAFormProvider>
+            <Switch>
+              <Route exact path="/tsaformpage/page1" component={TSAFormPage1} />
+              <Route exact path="/tsaformpage/page2">
+                <RequirePageCompletion page={2}>
+                  <TSAFormPage2 />
+                </RequirePageCompletion>
+              </Route>
+              <Route exact path="/tsaformpage/page3">
+                <RequirePageCompletion page={3}>
+                  <TSAFormPage3 />
+                </RequirePageCompletion>
+              </Route>
+              <Route exact path="/tsaformpage/page4">
+                <RequirePageCompletion page={4}>
+                  <TSAFormPage4 />
+                </RequirePageCompletion>
+              </Route>
+              <Route exact path="/tsaformpage/page5">
+                <RequirePageCompletion page={5}>
+                  <TSAFormPage5 />
+                </RequirePageCompletion>
+              </Route>
+              <Route exact path="/tsaformpage/page6">
+                <RequirePageCompletion page={6}>
+                  <TSAFormPage6 />
+                </RequirePageCompletion>
+              </Route>
+              <Route exact path="/tsaformpage/page7">
+                <RequirePageCompletion page={7}>
+                  <TSAFormPage7 />
+                </RequirePageCompletion>
+              </Route>
+              <Route exact path="/tsaformpage/page8">
+                <RequirePageCompletion page={8}>
+                  <TSAFormPage8 />
+                </RequirePageCompletion>
+              </Route>
+            </Switch>
+          </TSAFormProvider>
+        </Route>
         <ProtectedRoute path="/" exact component={Dashboard} />
         <Route path="*" component={NotFoundPage} />
       </Switch>

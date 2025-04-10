@@ -1,8 +1,11 @@
 import { useHistory } from 'react-router-dom';
 import { useState } from 'react';
+import { useTSAForm } from 'context/TSAFormContext';
 
 function TSAFormPage1() {
   const history = useHistory();
+  const { setSubmittedPages } = useTSAForm();
+
   const [errors, setErrors] = useState({
     email: false,
     fullname: false,
@@ -62,8 +65,8 @@ function TSAFormPage1() {
       if (el && el.scrollIntoView) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
     }
-
-    history.push('/tsaformpage2');
+    setSubmittedPages(prev => ({ ...prev, 1: true }));
+    history.push('/tsaformpage/page2');
   };
   return (
     <div
