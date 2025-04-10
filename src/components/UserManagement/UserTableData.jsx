@@ -5,6 +5,7 @@ import { useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-toastify';
+import { Link, useHistory } from 'react-router-dom';
 import { updateUserInfomation } from '../../actions/userManagement';
 import { getAllRoles } from '../../actions/role';
 import ResetPasswordButton from './ResetPasswordButton';
@@ -25,6 +26,9 @@ const UserTableData = React.memo(props => {
   const [tooltipDeleteOpen, setTooltipDelete] = useState(false);
   const [tooltipPauseOpen, setTooltipPause] = useState(false);
   const [tooltipFinalDayOpen, setTooltipFinalDay] = useState(false);
+  const isMobile = props.isMobile;
+  const mobileFontSize = props.mobileFontSize;
+  const [tooltipReportsOpen, setTooltipReports] = useState(false);
 
   const [isChanging, onReset] = useState(false);
   const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
@@ -40,6 +44,7 @@ const UserTableData = React.memo(props => {
     endDate: formatDate(props.user.endDate),
   });
   const dispatch = useDispatch();
+  const history = useHistory();
   const { roles } = useSelector(state => state.role);
   const joinTimeStamp = date => {
     const now = new Date();
@@ -60,9 +65,11 @@ const UserTableData = React.memo(props => {
   const resetPasswordStatus = props.hasPermission('resetPassword');
   const updatePasswordStatus = props.hasPermission('updatePassword');
   const canChangeUserStatus = props.hasPermission('changeUserStatus');
+  const canSeeReports = props.hasPermission('getReports');
   const toggleDeleteTooltip = () => setTooltipDelete(!tooltipDeleteOpen);
   const togglePauseTooltip = () => setTooltipPause(!tooltipPauseOpen);
   const toggleFinalDayTooltip = () => setTooltipFinalDay(!tooltipFinalDayOpen);
+  const toggleReportsTooltip = () => setTooltipReports(!tooltipReportsOpen);
 
   /**
    * reset the changing state upon rerender with new isActive status
@@ -117,8 +124,9 @@ const UserTableData = React.memo(props => {
     <tr
       className={`usermanagement__tr ${darkMode ? 'dark-usermanagement-data' : 'light-usermanagement-data'}`}
       id={`tr_user_${props.index}`}
+      style={{fontSize: isMobile ? mobileFontSize : 'initial'}}
     >
-      <td className="usermanagement__active--input">
+      <td className="usermanagement__active--input" style={{ position: 'relative' }}>
         <ActiveCell
           isActive={props.isActive}
           canChange={canChangeUserStatus}
@@ -126,6 +134,55 @@ const UserTableData = React.memo(props => {
           index={props.index}
           onClick={() => props.onActiveInactiveClick(props.user)}
         />
+        {!canSeeReports ? (
+          <Tooltip
+            placement="bottom"
+            isOpen={tooltipReportsOpen}
+            target={`report-icon-${props.user._id}`}
+            toggle={toggleReportsTooltip}
+          >
+            You don&apos;t have permission to view user reports
+          </Tooltip>
+        ) : (
+          ''
+        )}
+        <span style={{ position: 'absolute', top: 0, right: 0 }}>
+          <button
+            type="button"
+            className="team-member-tasks-user-report-link"
+            style={{
+              fontSize: 24,
+              opacity: canSeeReports ? 1 : 0.7,
+              background: 'none',
+              border: 'none',
+              padding: 0,
+            }}
+            onClick={(event) => {
+              if (!canSeeReports) {
+                event.preventDefault();
+                return;
+              }
+            
+              if (event.metaKey || event.ctrlKey || event.button === 1) {
+                window.open(`/peoplereport/${props.user._id}`, '_blank');
+                return;
+              }
+            
+              event.preventDefault(); // prevent full reload
+              history.push(`/peoplereport/${props.user._id}`);
+            }}
+          >
+            <img
+              src="/report_icon.png"
+              alt="reportsicon"
+              className="team-member-tasks-user-report-link-image"
+              id={`report-icon-${props.user._id}`}
+              style={{
+                cursor: canSeeReports ? 'pointer' : 'not-allowed', // Change cursor style to indicate the disabled state
+              }}
+            />
+          </button>
+        </span>
       </td>
       <td className="email_cell">
         {editUser?.first ? (
@@ -145,7 +202,7 @@ const UserTableData = React.memo(props => {
         ) : (
           <input
             type="text"
-            className="edituser_input_firstname"
+            className={`edituser_input_firstname ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
             value={formData.firstName}
             onChange={e => {
               updateFormData({ ...formData, firstName: e.target.value });
@@ -172,7 +229,7 @@ const UserTableData = React.memo(props => {
         ) : (
           <input
             type="text"
-            className="edituser_input text-center"
+            className={`edituser_input text-center ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
             value={formData.lastName}
             onChange={e => {
               updateFormData({ ...formData, lastName: e.target.value });
@@ -192,6 +249,7 @@ const UserTableData = React.memo(props => {
               updateFormData({ ...formData, role: e.target.value });
               addUserInformation('role', e.target.value, props.user._id);
             }}
+            className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
           >
             {roles?.map((e, index) => (
               // eslint-disable-next-line react/no-array-index-key
@@ -203,14 +261,10 @@ const UserTableData = React.memo(props => {
         )}
       </td>
 
-
-      <td className="title_cell"
-        title={formData.jobTitle}>
+      <td title={formData.jobTitle}>
         {editUser?.jobTitle ? (
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", maxWidth: "100%" }}>
-            <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-              {formData.jobTitle}
-            </span>
+            <span className="tooltip-container">{formData.jobTitle}</span>
             <FontAwesomeIcon
               className="copy_icon"
               icon={faCopy}
@@ -235,7 +289,6 @@ const UserTableData = React.memo(props => {
 
       </td>
 
-
       <td className="email_cell">
         {editUser?.email ? (
           <div>
@@ -252,7 +305,7 @@ const UserTableData = React.memo(props => {
         ) : (
           <input
             type="text"
-            className="edituser_input"
+            className={`edituser_input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
             value={formData.email}
             onChange={e => {
               updateFormData({ ...formData, email: e.target.value });
@@ -267,7 +320,7 @@ const UserTableData = React.memo(props => {
         ) : (
           <input
             type="number"
-            className="edituser_input"
+            className={`edituser_input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
             value={formData.weeklycommittedHours}
             onChange={e => {
               updateFormData({ ...formData, weeklycommittedHours: e.target.value });
@@ -400,7 +453,7 @@ const UserTableData = React.memo(props => {
         ) : (
           <input
             type="date"
-            className="edituser_input"
+            className={`edituser_input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
             value={formData.startDate}
             onChange={e => {
               updateFormData({ ...formData, startDate: e.target.value });
@@ -427,7 +480,7 @@ const UserTableData = React.memo(props => {
         ) : (
           <input
             type="date"
-            className="edituser_input"
+            className={`edituser_input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
             value={formData.endDate}
             onChange={e => {
               updateFormData({ ...formData, endDate: e.target.value });
