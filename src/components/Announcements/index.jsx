@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react'; // Import Editor from TinyMCE
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
+import { FaInstagramSquare } from 'react-icons/fa';
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
 
 function Announcements({ title, email }) {
@@ -174,7 +175,36 @@ function Announcements({ title, email }) {
     <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: '100%' }}>
       <div className="email-update-container">
         <div className="editor">
-          {title ? <h3> {title} </h3> : <h3>Weekly Progress Editor</h3>}
+          {/* {title ? <h3> {title} </h3> : <h3>Weekly Progress Editor</h3>} */}
+          {title ? (
+            <div className="title-container">
+              <h3>{title}</h3>
+              <button
+                type="button"
+                className="instagram-button"
+                onClick={() => {
+                  // console.log('instagram button clicked'); // REPLACE ME
+                }}
+                aria-label="instagram button"
+              >
+                <FaInstagramSquare size={50} className="instagram-icon" />
+              </button>
+            </div>
+          ) : (
+            <div className="title-container">
+              <h3>Weekly Progress Editor</h3>
+              <button
+                type="button"
+                className="instagram-button"
+                onClick={() => {
+                  // console.log('instagram button clicked'); // REPLACE ME
+                }}
+                aria-label="instagram button"
+              >
+                <FaInstagramSquare size={50} className="instagram-icon" />
+              </button>
+            </div>
+          )}
 
           <br />
           {showEditor && (
