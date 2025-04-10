@@ -265,30 +265,41 @@ export const updateTeamMemeberVisibility = (teamId, userId, visibility) => {
  * Set allTeamCode in store
  */
 
-export const fetchAllTeamCodeSucess = (payload) => ({
+export const fetchAllTeamCodeSucess = payload => ({
   type: FETCH_ALL_TEAM_CODE_SUCCESS,
   payload,
 });
 
 /**
- * 
- * @param {*} name 
- * @param {*} status 
- * @returns 
+ *
+ * @param {*} name
+ * @param {*} status
+ * @returns
  */
 
 export const getAllTeamCode = () => {
-
-  const userTeamsPromise = axios.get(ENDPOINTS.USER_ALL_TEAM_CODE);
-  return async (dispatch) => {
-        return userTeamsPromise
-          .then((res) => {
-              dispatch(fetchAllTeamCodeSucess(res.data));
-          })
-          .catch((err) => {
-            dispatch({
-                type: FETCH_ALL_TEAM_CODE_FAILURE, 
-            });
-          });
-        }
+  return async dispatch => {
+    try {
+      const res = await axios.get(ENDPOINTS.USER_ALL_TEAM_CODE);
+      if (!res || !res.data) {
+        throw new Error('Invalid response from server');
+      }
+      dispatch(fetchAllTeamCodeSucess(res.data));
+    } catch (error) {
+      dispatch({
+        type: FETCH_ALL_TEAM_CODE_FAILURE,
+      });
+    }
+    // const userTeamsPromise = axios.get(ENDPOINTS.GET_ALL_USER_PROFILES);
+    // return async (dispatch) => {
+    //   return userTeamsPromise
+    //     .then((res) => {
+    //       dispatch(fetchAllTeamCodeSucess(res.data));
+    //     })
+    //     .catch((err) => {
+    //       dispatch({
+    //         type: FETCH_ALL_TEAM_CODE_FAILURE,
+    //       });
+    //     });
+  };
 };

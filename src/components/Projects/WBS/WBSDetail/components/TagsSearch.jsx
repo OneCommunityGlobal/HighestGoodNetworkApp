@@ -3,7 +3,7 @@ import TagSent from './TagSent';
 import './TagsSearch.css';
 import ReadOnlySectionWrapper from '../EditTask/ReadOnlySectionWrapper';
 
-function TagsSearch({ placeholder, members, addResources, removeResource, resourceItems, disableInput }) {
+function TagsSearch({ placeholder, members, addResources, removeResource, resourceItems, disableInput,darkMode }) {
   const [isHidden, setIsHidden] = useState(false);
   const [filteredData, setFilteredData] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -83,7 +83,7 @@ function TagsSearch({ placeholder, members, addResources, removeResource, resour
             <input
               type="text"
               placeholder={placeholder}
-              className="border border-dark rounded form-control px-2"
+              className={`border border-dark rounded form-control px-2 ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
               onChange={handleFilter}
               onFocus={handleFocus}
               onBlur={handleBlur}

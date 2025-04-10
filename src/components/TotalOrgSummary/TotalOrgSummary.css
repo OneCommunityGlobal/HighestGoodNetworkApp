@@ -43,7 +43,7 @@
   text-overflow: ellipsis;
 }
 
-.role-distribution-title p {
+.chart-title p {
   font-size: 1.5em !important;
   font-weight: bold;
   text-align: center;

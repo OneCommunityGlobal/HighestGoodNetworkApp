@@ -1,3 +1,4 @@
+/* eslint-disable import/prefer-default-export */
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { PieChart } from '../../../common/PieChart';
@@ -7,7 +8,7 @@ import { ReportPage } from '../../sharedComponents/ReportPage';
 import './PeopleTasksPieChart.css';
 // import { ProjectPieChart } from 'components/Reports/ProjectReport/ProjectPieChart/ProjectPieChart';
 
-export const PeopleTasksPieChart = ({ darkMode }) => {
+export function PeopleTasksPieChart({ darkMode }) {
   const {
     tasksWithLoggedHoursById,
     showTasksPieChart,
@@ -63,4 +64,4 @@ export const PeopleTasksPieChart = ({ darkMode }) => {
       )}
     </div>
   );
-};
+}
