@@ -1,20 +1,5 @@
 import _, { result } from 'lodash';
 
-export const calculateTotalTangibleHours = (timeEntries) => {
-  if (!Array.isArray(timeEntries.period)) {
-    return 0;
-  }
-
-  return timeEntries.period.reduce((total, entry) => {
-    if (!entry.isTangible) {
-      return total;
-    }
-    const hours = Number(entry.hours) || 0;
-    const minutes = Number(entry.minutes) || 0;
-    return total + hours + (minutes / 60);
-  }, 0);
-};
-
 export const getPeopleReportData = state => ({
   auth: state.auth,
   userProfile: state.userProfile,
@@ -22,7 +7,6 @@ export const getPeopleReportData = state => ({
   infringements: state.userProfile.infringements,
   user: _.get(state, 'user', {}),
   timeEntries: state.timeEntries,
-  totalTangibleHours: calculateTotalTangibleHours(state.timeEntries),
   userProjects: state.userProjects,
   allProjects: _.get(state, 'allProjects'),
   allTeams: state,
@@ -57,9 +41,10 @@ export const peopleTasksPieChartViewData = ({ userTask, allProjects, userProject
   timeEntries.period.map(entry=>{
     if(entry.wbsId===null){
       hoursLoggedToProjectsOnly[entry.projectId] = hoursLoggedToProjectsOnly[entry.projectId] ? hoursLoggedToProjectsOnly[entry.projectId] + entry.hours+(entry.minutes/60) : entry.hours+(entry.minutes/60);
-
     }
   })
+  
+  
   timeEntries.period.map(entry=>{
     if(entry.wbsId!==null){
       tasksWithLoggedHoursOnly[entry.projectId] = tasksWithLoggedHoursOnly[entry.projectId] ? tasksWithLoggedHoursOnly[entry.projectId] + entry.hours+(entry.minutes/60) : entry.hours+(entry.minutes/60);
@@ -96,7 +81,6 @@ export const peopleTasksPieChartViewData = ({ userTask, allProjects, userProject
   // const tasksWithLoggedHours = userTask?.filter(({ hoursLogged }) => hoursLogged);
   tasksLegend=resultArray2;
   tasksWithLoggedHoursById=resultArray2;
-
   return {
     hoursLoggedToProjectsOnly,
     tasksWithLoggedHoursById,
@@ -104,7 +88,7 @@ export const peopleTasksPieChartViewData = ({ userTask, allProjects, userProject
     tasksLegend,
     // projectsWithLoggedHoursLegend,
     showTasksPieChart: Object.keys(tasksWithLoggedHoursById).length > 0,
-    showProjectsPieChart: Object.keys(newProjectsWithLoggedHoursById).length > 0,
+    showProjectsPieChart: Object.keys(projectsWithLoggedHoursById).length > 0,
     displayedTasksWithLoggedHoursById,
     displayedTasksLegend,
     showViewAllTasksButton:
