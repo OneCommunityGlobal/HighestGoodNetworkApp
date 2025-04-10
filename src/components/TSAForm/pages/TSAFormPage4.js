@@ -4,7 +4,8 @@ import { useTSAForm } from 'context/TSAFormContext';
 
 function TSAFormPage4() {
   const history = useHistory();
-  const { setSubmittedPages } = useTSAForm();
+  const { formData, setFormData, setSubmittedPages } = useTSAForm();
+
   const [errors, setErrors] = useState({
     interested: false,
     availability: false,
@@ -13,10 +14,14 @@ function TSAFormPage4() {
     EnergyInfrastructure: false,
     StewardshipInfrastructure: false,
   });
-
   const clearError = field => {
     setErrors(prev => ({ ...prev, [field]: false }));
   };
+  const handleInputChange = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    clearError(field);
+  };
+
   const handleNextClick = () => {
     const requiredGroups = [
       'EstablishingRequirements',
@@ -196,7 +201,11 @@ function TSAFormPage4() {
                 type="radio"
                 name="EstablishingRequirements"
                 value={i + 1}
-                onChange={() => clearError('EstablishingRequirements')}
+                checked={formData.EstablishingRequirements === String(i + 1)}
+                onChange={() => {
+                  handleInputChange('EstablishingRequirements', String(i + 1));
+                  clearError('EstablishingRequirements');
+                }}
                 required
                 style={{
                   margin: '0 5px',
@@ -277,7 +286,11 @@ function TSAFormPage4() {
                 type="radio"
                 name="ConceptualDesigns"
                 value={i + 1}
-                onChange={() => clearError('ConceptualDesigns')}
+                checked={formData.ConceptualDesigns === String(i + 1)}
+                onChange={() => {
+                  handleInputChange('ConceptualDesigns', String(i + 1));
+                  clearError('ConceptualDesigns');
+                }}
                 required
                 style={{
                   margin: '0 5px',
@@ -359,7 +372,11 @@ function TSAFormPage4() {
                 type="radio"
                 name="PreliminaryDesignReview"
                 value={i + 1}
-                onChange={() => clearError('PreliminaryDesignReview')}
+                checked={formData.PreliminaryDesignReview === String(i + 1)}
+                onChange={() => {
+                  handleInputChange('PreliminaryDesignReview', String(i + 1));
+                  clearError('PreliminaryDesignReview');
+                }}
                 required
                 style={{
                   margin: '0 5px',
@@ -443,7 +460,11 @@ function TSAFormPage4() {
                 type="radio"
                 name="DesignVerification"
                 value={i + 1}
-                onChange={() => clearError('DesignVerification')}
+                checked={formData.DesignVerification === String(i + 1)}
+                onChange={() => {
+                  handleInputChange('DesignVerification', String(i + 1));
+                  clearError('DesignVerification');
+                }}
                 required
                 style={{
                   margin: '0 5px',
@@ -526,7 +547,11 @@ function TSAFormPage4() {
                 type="radio"
                 name="FinalDesignReview"
                 value={i + 1}
-                onChange={() => clearError('FinalDesignReview')}
+                checked={formData.FinalDesignReview === String(i + 1)}
+                onChange={() => {
+                  handleInputChange('FinalDesignReview', String(i + 1));
+                  clearError('FinalDesignReview');
+                }}
                 required
                 style={{
                   margin: '0 5px',
@@ -610,7 +635,11 @@ function TSAFormPage4() {
                 type="radio"
                 name="Detaileddrawings"
                 value={i + 1}
-                onChange={() => clearError('Detaileddrawings')}
+                checked={formData.Detaileddrawings === String(i + 1)}
+                onChange={() => {
+                  handleInputChange('Detaileddrawings', String(i + 1));
+                  clearError('Detaileddrawings');
+                }}
                 required
                 style={{
                   margin: '0 5px',
@@ -651,6 +680,8 @@ function TSAFormPage4() {
           id="certifications"
           name="certifications"
           placeholder="Your answer"
+          value={formData.certifications || ''}
+          onChange={e => handleInputChange('certifications', e.target.value)}
           style={{
             width: 'calc(100% - 20px)',
             marginLeft: '0px',
@@ -683,7 +714,7 @@ function TSAFormPage4() {
         {/* Back Button */}
         <button
           type="button"
-          onClick={() => history.push('/tsaformpage3')}
+          onClick={() => history.push('/tsaformpage/page3')}
           style={{
             backgroundColor: '#4d87a1',
             color: '#fff',

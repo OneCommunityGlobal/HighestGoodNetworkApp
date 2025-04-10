@@ -2,10 +2,11 @@ import { useTSAForm } from 'context/TSAFormContext';
 import { useEffect } from 'react';
 
 function TSAFormPage8() {
-  const { setSubmittedPages } = useTSAForm();
+  const { setSubmittedPages, setFormLocked } = useTSAForm();
   useEffect(() => {
     setSubmittedPages(prev => ({ ...prev, 8: true }));
-  }, [setSubmittedPages]); // Only runs once on mount
+    setFormLocked(true); // Lock the form after submission
+  }, [setSubmittedPages, setFormLocked]); // Only runs once on mount
   return (
     <div
       style={{

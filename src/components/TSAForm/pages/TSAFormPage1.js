@@ -1,10 +1,36 @@
 import { useHistory } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTSAForm } from 'context/TSAFormContext';
 
 function TSAFormPage1() {
   const history = useHistory();
-  const { setSubmittedPages } = useTSAForm();
+  const { setSubmittedPages, setFormLocked } = useTSAForm();
+  const [formData, setFormData] = useState(() => {
+    const saved = localStorage.getItem('formData');
+    return saved ? JSON.parse(saved) : {};
+  });
+  const clearError = field => {
+    setErrors(prev => ({ ...prev, [field]: false }));
+  };
+
+  const handleInputChange = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    clearError(field); // ✅ Now clearError is defined before usage
+  };
+  useEffect(() => {
+    localStorage.setItem('formData', JSON.stringify(formData));
+  }, [formData]);
+  useEffect(() => {
+    const navigationType = performance.getEntriesByType('navigation')[0]?.type;
+
+    if (navigationType === 'reload' || navigationType === 'navigate') {
+      // Only reset if user lands here fresh (not via "Next" or "Back")
+      setSubmittedPages({});
+      setFormLocked(false);
+      localStorage.removeItem('submittedPages');
+      localStorage.removeItem('formLocked');
+    }
+  }, []);
 
   const [errors, setErrors] = useState({
     email: false,
@@ -14,9 +40,6 @@ function TSAFormPage1() {
     areaofExpertise: false,
   });
 
-  const clearError = field => {
-    setErrors(prev => ({ ...prev, [field]: false }));
-  };
   const isValidEmail = email => {
     // Simple email regex (enough for most use cases)
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -232,7 +255,8 @@ function TSAFormPage1() {
           type="text"
           name="email"
           placeholder="Your answer"
-          onChange={() => clearError('email')}
+          value={formData.email || ''}
+          onChange={e => handleInputChange('email', e.target.value)}
           style={{
             width: '100%',
             padding: '10px 0',
@@ -279,7 +303,8 @@ function TSAFormPage1() {
           type="text"
           name="fullname"
           placeholder="Your answer"
-          onChange={() => clearError('fullname')}
+          value={formData.fullname || ''}
+          onChange={e => handleInputChange('fullname', e.target.value)}
           style={{
             width: '100%',
             padding: '10px 0',
@@ -327,7 +352,8 @@ function TSAFormPage1() {
           type="text"
           name="professionaltitle"
           placeholder="Your answer"
-          onChange={() => clearError('professionaltitle')}
+          value={formData.professionaltitle || ''}
+          onChange={e => handleInputChange('professionaltitle', e.target.value)}
           style={{
             width: '100%',
             padding: '10px 0',
@@ -385,8 +411,9 @@ function TSAFormPage1() {
             <input
               type="radio"
               name="professionalExperience"
-              onChange={() => clearError('professionalExperience')}
               value={option}
+              checked={formData.professionalExperience === option}
+              onChange={e => handleInputChange('professionalExperience', e.target.value)}
               required
               style={{
                 marginRight: '10px',
@@ -468,9 +495,15 @@ function TSAFormPage1() {
               <input
                 type="checkbox"
                 name="areaofExpertise"
-                onChange={() => clearError('areaofExpertise')}
                 value={option}
-                required
+                checked={formData.areaofExpertise?.includes(option) || false}
+                onChange={e => {
+                  const selected = formData.areaofExpertise || [];
+                  const newSelected = e.target.checked
+                    ? [...selected, option]
+                    : selected.filter(item => item !== option);
+                  handleInputChange('areaofExpertise', newSelected);
+                }}
                 style={{
                   marginRight: '10px',
                   width: '15px',
@@ -485,6 +518,8 @@ function TSAFormPage1() {
                 type="text"
                 name="otherExpertise"
                 placeholder="Please specify"
+                value={formData.otherExpertise || ''}
+                onChange={e => handleInputChange('otherExpertise', e.target.value)}
                 style={{
                   marginLeft: '28px',
                   marginTop: '8px',

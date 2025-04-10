@@ -1,10 +1,26 @@
 import { useHistory } from 'react-router-dom';
 import { useState } from 'react';
 import { useTSAForm } from 'context/TSAFormContext';
+import { useEffect } from 'react';
 
 function TSAFormPage3() {
   const history = useHistory();
   const { setSubmittedPages } = useTSAForm();
+  const [formData, setFormData] = useState(() => {
+    const saved = localStorage.getItem('formData');
+    return saved ? JSON.parse(saved) : {};
+  });
+  useEffect(() => {
+    localStorage.setItem('formData', JSON.stringify(formData));
+  }, [formData]);
+  const clearError = field => {
+    setErrors(prev => ({ ...prev, [field]: false }));
+  };
+  const handleInputChange = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    clearError(field);
+  };
+
   const [errors, setErrors] = useState({
     meetingAvailability: false,
     creativeProcessParticipation: false,
@@ -19,9 +35,6 @@ function TSAFormPage3() {
     timeCommitment: false,
   });
 
-  const clearError = field => {
-    setErrors(prev => ({ ...prev, [field]: false }));
-  };
   const handleNextClick = () => {
     const requiredGroups = [
       'meetingAvailability',
@@ -198,7 +211,8 @@ function TSAFormPage3() {
                   type="radio"
                   name={item.name}
                   value={i + 1}
-                  onChange={() => clearError(item.name)}
+                  checked={formData[item.name] === String(i + 1)}
+                  onChange={e => handleInputChange(item.name, e.target.value)}
                   required
                   style={{
                     margin: '0 5px',
@@ -275,8 +289,16 @@ function TSAFormPage3() {
                 type="checkbox"
                 name="meetingAvailability"
                 value={option}
-                onChange={() => clearError('meetingAvailability')}
+                checked={formData.meetingAvailability?.includes(option)}
                 required={index === 0}
+                onChange={e => {
+                  const selected = formData.meetingAvailability || [];
+                  const updated = e.target.checked
+                    ? [...selected, option]
+                    : selected.filter(item => item !== option);
+                  handleInputChange('meetingAvailability', updated);
+                  clearError('meetingAvailability');
+                }}
                 style={{
                   marginRight: '10px',
                   marginTop: '4px',
@@ -304,8 +326,16 @@ function TSAFormPage3() {
             <input
               type="checkbox"
               name="meetingAvailability"
-              onChange={() => clearError('meetingAvailability')}
               value="Other"
+              checked={formData.meetingAvailability?.includes('Other') || false}
+              onChange={e => {
+                const selected = formData.meetingAvailability || [];
+                const updated = e.target.checked
+                  ? [...selected, 'Other']
+                  : selected.filter(item => item !== 'Other');
+                handleInputChange('meetingAvailability', updated);
+                clearError('meetingAvailability');
+              }}
               style={{
                 marginRight: '10px',
                 marginTop: '4px',
@@ -321,6 +351,8 @@ function TSAFormPage3() {
             type="text"
             name="meetingAvailabilityOther"
             placeholder="Please specify"
+            value={formData.meetingAvailabilityOther || ''}
+            onChange={e => handleInputChange('meetingAvailabilityOther', e.target.value)}
             style={{
               width: 'calc(100% - 20px)',
               marginTop: '8px',
@@ -403,8 +435,12 @@ function TSAFormPage3() {
               <input
                 type="radio"
                 name="designReviewInterest"
-                onChange={() => clearError('designReviewInterest')}
+                onChange={() => {
+                  handleInputChange('designReviewInterest', (i + 1).toString());
+                  clearError('designReviewInterest');
+                }}
                 value={i + 1}
+                checked={formData.designReviewInterest === (i + 1).toString()}
                 required
                 style={{
                   margin: '0 5px',
@@ -487,8 +523,12 @@ function TSAFormPage3() {
               <input
                 type="radio"
                 name="techConsultationInterest"
-                onChange={() => clearError('techConsultationInterest')}
                 value={i + 1}
+                checked={formData.techConsultationInterest === String(i + 1)}
+                onChange={e => {
+                  handleInputChange('techConsultationInterest', e.target.value);
+                  clearError('techConsultationInterest');
+                }}
                 required
                 style={{
                   margin: '0 5px',
@@ -568,8 +608,12 @@ function TSAFormPage3() {
               <input
                 type="radio"
                 name="VirtualReviewInterest"
-                onChange={() => clearError('VirtualReviewInterest')}
                 value={i + 1}
+                checked={formData.VirtualReviewInterest === String(i + 1)}
+                onChange={e => {
+                  handleInputChange('VirtualReviewInterest', e.target.value);
+                  clearError('VirtualReviewInterest');
+                }}
                 required
                 style={{
                   margin: '0 5px',
@@ -649,8 +693,12 @@ function TSAFormPage3() {
               <input
                 type="radio"
                 name="DetailedVirtualReviewInterest"
-                onChange={() => clearError('DetailedVirtualReviewInterest')}
                 value={i + 1}
+                checked={formData.DetailedVirtualReviewInterest === String(i + 1)}
+                onChange={e => {
+                  handleInputChange('DetailedVirtualReviewInterest', e.target.value);
+                  clearError('DetailedVirtualReviewInterest');
+                }}
                 required
                 style={{
                   margin: '0 5px',
@@ -727,8 +775,12 @@ function TSAFormPage3() {
               <input
                 type="radio"
                 name="DesignAndCalc"
-                onChange={() => clearError('DesignAndCalc')}
                 value={i + 1}
+                checked={formData.DesignAndCalc === String(i + 1)}
+                onChange={e => {
+                  handleInputChange('DesignAndCalc', e.target.value);
+                  clearError('DesignAndCalc');
+                }}
                 required
                 style={{
                   margin: '0 5px',
@@ -810,8 +862,12 @@ function TSAFormPage3() {
               <input
                 type="radio"
                 name="ConceptualDesign"
-                onChange={() => clearError('ConceptualDesign')}
                 value={i + 1}
+                checked={formData.ConceptualDesign === String(i + 1)}
+                onChange={e => {
+                  handleInputChange('ConceptualDesign', e.target.value);
+                  clearError('ConceptualDesign');
+                }}
                 required
                 style={{
                   margin: '0 5px',
@@ -891,8 +947,12 @@ function TSAFormPage3() {
               <input
                 type="radio"
                 name="VerifyingAnalyses"
-                onChange={() => clearError('VerifyingAnalyses')}
                 value={i + 1}
+                checked={formData.VerifyingAnalyses === String(i + 1)}
+                onChange={e => {
+                  handleInputChange('VerifyingAnalyses', e.target.value);
+                  clearError('VerifyingAnalyses');
+                }}
                 required
                 style={{
                   margin: '0 5px',
@@ -939,6 +999,8 @@ function TSAFormPage3() {
           type="text"
           name="otherInterest"
           placeholder="Your answer"
+          value={formData.otherInterest || ''}
+          onChange={e => handleInputChange('otherInterest', e.target.value)}
           style={{
             width: 'calc(100% - 20px)',
             padding: '10px 0',
@@ -998,8 +1060,16 @@ function TSAFormPage3() {
               <input
                 type="checkbox"
                 name="timeCommitment"
-                onChange={() => clearError('timeCommitment')}
                 value={option}
+                checked={formData.timeCommitment?.includes(option)}
+                onChange={e => {
+                  const selected = formData.timeCommitment || [];
+                  const updated = e.target.checked
+                    ? [...selected, option]
+                    : selected.filter(item => item !== option);
+                  handleInputChange('timeCommitment', updated);
+                  clearError('timeCommitment');
+                }}
                 style={{
                   marginRight: '10px',
                   marginTop: '4px',
@@ -1027,8 +1097,16 @@ function TSAFormPage3() {
             <input
               type="checkbox"
               name="timeCommitment"
-              onChange={() => clearError('timeCommitment')}
               value="Other"
+              checked={formData.timeCommitment?.includes('Other') || false}
+              onChange={e => {
+                const selected = formData.timeCommitment || [];
+                const updated = e.target.checked
+                  ? [...selected, 'Other']
+                  : selected.filter(item => item !== 'Other');
+                handleInputChange('timeCommitment', updated);
+                clearError('timeCommitment');
+              }}
               style={{
                 marginRight: '10px',
                 marginTop: '4px',
@@ -1084,7 +1162,7 @@ function TSAFormPage3() {
         {/* Back Button */}
         <button
           type="button"
-          onClick={() => history.push('/tsaformpage2')}
+          onClick={() => history.push('/tsaformpage/page2')}
           style={{
             backgroundColor: '#4d87a1',
             color: '#fff',

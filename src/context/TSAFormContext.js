@@ -1,25 +1,47 @@
 import { createContext, useContext, useState, useMemo, useEffect } from 'react';
 
-// Create the context
 const TSAFormContext = createContext();
 
-// Custom hook to use context
 export const useTSAForm = () => useContext(TSAFormContext);
 
-// Provider component
 export function TSAFormProvider({ children }) {
   const [submittedPages, setSubmittedPages] = useState(() => {
-    // Load from localStorage if available
     const saved = localStorage.getItem('submittedPages');
     return saved ? JSON.parse(saved) : {};
   });
 
-  // Save to localStorage whenever submittedPages changes
+  const [formLocked, setFormLocked] = useState(() => {
+    return localStorage.getItem('formLocked') === 'true';
+  });
+
+  const [formData, setFormData] = useState(() => {
+    const saved = localStorage.getItem('formData');
+    return saved ? JSON.parse(saved) : {};
+  });
+
   useEffect(() => {
     localStorage.setItem('submittedPages', JSON.stringify(submittedPages));
   }, [submittedPages]);
 
-  const contextValue = useMemo(() => ({ submittedPages, setSubmittedPages }), [submittedPages]);
+  useEffect(() => {
+    localStorage.setItem('formLocked', formLocked);
+  }, [formLocked]);
+
+  useEffect(() => {
+    localStorage.setItem('formData', JSON.stringify(formData));
+  }, [formData]);
+
+  const contextValue = useMemo(
+    () => ({
+      submittedPages,
+      setSubmittedPages,
+      formLocked,
+      setFormLocked,
+      formData,
+      setFormData,
+    }),
+    [submittedPages, formLocked, formData],
+  );
 
   return <TSAFormContext.Provider value={contextValue}>{children}</TSAFormContext.Provider>;
 }

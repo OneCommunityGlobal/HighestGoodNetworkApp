@@ -4,12 +4,15 @@ import { useTSAForm } from 'context/TSAFormContext';
 
 function TSAFormPage6() {
   const history = useHistory();
-  const { setSubmittedPages } = useTSAForm();
+  const { formData, setFormData, setSubmittedPages } = useTSAForm();
   const [errors, setErrors] = useState({
     agreementfive: false,
     agreementsix: false,
   });
-
+  const handleInputChange = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    clearError(field);
+  };
   const clearError = field => {
     setErrors(prev => ({ ...prev, [field]: false }));
   };
@@ -189,8 +192,9 @@ function TSAFormPage6() {
             type="radio"
             id="agreementfive"
             name="agreementfive"
-            onChange={() => clearError('agreementfive')}
             value="agree"
+            checked={formData.agreementone === 'agree'}
+            onChange={() => handleInputChange('agreementfive', 'agree')}
             required
             style={{
               marginRight: '10px',
@@ -288,8 +292,9 @@ function TSAFormPage6() {
             type="radio"
             id="agreementsix"
             name="agreementsix"
-            onChange={() => clearError('agreementsix')}
             value="agree"
+            checked={formData.agreementone === 'agree'}
+            onChange={() => handleInputChange('agreementfive', 'agree')}
             required
             style={{
               marginRight: '10px',
@@ -328,7 +333,7 @@ function TSAFormPage6() {
         {/* Back Button */}
         <button
           type="button"
-          onClick={() => history.push('/tsaformpage5')}
+          onClick={() => history.push('/tsaformpage/page5')}
           style={{
             backgroundColor: '#4d87a1',
             color: '#fff',

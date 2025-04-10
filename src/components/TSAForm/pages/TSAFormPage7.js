@@ -4,13 +4,16 @@ import { useTSAForm } from 'context/TSAFormContext';
 
 function TSAFormPage7() {
   const history = useHistory();
-  const { setSubmittedPages } = useTSAForm();
+  const { formData, setFormData, setSubmittedPages, setFormLocked } = useTSAForm();
   const [errors, setErrors] = useState({
     agreementseven: false,
     agreementeight: false,
     sign: false,
   });
-
+  const handleInputChange = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    clearError(field);
+  };
   const clearError = field => {
     setErrors(prev => ({ ...prev, [field]: false }));
   };
@@ -53,6 +56,7 @@ function TSAFormPage7() {
       return;
     }
     setSubmittedPages(prev => ({ ...prev, 7: true }));
+    setFormLocked(true);
     history.push('/tsaformpage/page8');
   };
 
@@ -188,7 +192,8 @@ function TSAFormPage7() {
             id="agreementseven"
             name="agreementseven"
             value="agree"
-            onChange={() => clearError('agreementseven')}
+            checked={formData.agreementseven === 'agree'}
+            onChange={() => handleInputChange('agreementseven', 'agree')}
             required
             style={{
               marginRight: '10px',
@@ -286,7 +291,8 @@ function TSAFormPage7() {
             id="agreementeight"
             name="agreementeight"
             value="agree"
-            onChange={() => clearError('agreementeight')}
+            checked={formData.agreementeight === 'agree'}
+            onChange={() => handleInputChange('agreementeight', 'agree')}
             required
             style={{
               marginRight: '10px',
@@ -372,7 +378,11 @@ function TSAFormPage7() {
           id="sign"
           name="sign"
           placeholder="Your answer"
-          onChange={() => clearError('sign')}
+          value={formData.sign || ''}
+          onChange={e => {
+            handleInputChange('sign', e.target.value);
+            clearError('sign');
+          }}
           required
           style={{
             width: '100%',
@@ -418,7 +428,7 @@ function TSAFormPage7() {
         {/* Back Button */}
         <button
           type="button"
-          onClick={() => history.push('/tsaformpage6')}
+          onClick={() => history.push('/tsaformpage/page6')}
           style={{
             backgroundColor: '#4d87a1',
             color: '#fff',

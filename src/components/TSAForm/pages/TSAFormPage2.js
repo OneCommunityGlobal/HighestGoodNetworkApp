@@ -1,10 +1,27 @@
 import { useHistory } from 'react-router-dom';
 import { useState } from 'react';
 import { useTSAForm } from 'context/TSAFormContext';
+import { useEffect } from 'react';
 
 function TSAFormPage2() {
   const history = useHistory();
   const { setSubmittedPages } = useTSAForm();
+  const [formData, setFormData] = useState(() => {
+    const saved = localStorage.getItem('formDataPage2');
+    return saved ? JSON.parse(saved) : {};
+  });
+
+  useEffect(() => {
+    localStorage.setItem('formDataPage2', JSON.stringify(formData));
+  }, [formData]);
+  const clearError = field => {
+    setErrors(prev => ({ ...prev, [field]: false }));
+  };
+  const handleInputChange = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    clearError(field);
+  };
+
   const [errors, setErrors] = useState({
     interested: false,
     availability: false,
@@ -13,10 +30,6 @@ function TSAFormPage2() {
     EnergyInfrastructure: false,
     StewardshipInfrastructure: false,
   });
-
-  const clearError = field => {
-    setErrors(prev => ({ ...prev, [field]: false }));
-  };
 
   const handleNextClick = () => {
     const requiredGroups = [
@@ -175,8 +188,9 @@ function TSAFormPage2() {
             <input
               type="radio"
               name="interested"
-              onChange={() => clearError('interested')}
               value={option}
+              checked={formData.interested === option}
+              onChange={e => handleInputChange('interested', e.target.value)}
               required
               style={{
                 marginRight: '10px',
@@ -242,7 +256,8 @@ function TSAFormPage2() {
               type="radio"
               name="availability"
               value={option}
-              onChange={() => clearError('availability')}
+              checked={formData.availability === option}
+              onChange={e => handleInputChange('availability', e.target.value)}
               required
               style={{
                 marginTop: '4px',
@@ -259,6 +274,8 @@ function TSAFormPage2() {
                   type="text"
                   name="otherAvailability"
                   placeholder="Please specify"
+                  value={formData.otherAvailability || ''}
+                  onChange={e => handleInputChange('otherAvailability', e.target.value)}
                   style={{
                     marginTop: '8px',
                     width: 'calc(100% - 20px)',
@@ -378,7 +395,8 @@ function TSAFormPage2() {
                 type="radio"
                 name="BuildingInfrastructure"
                 value={i + 1}
-                onChange={() => clearError('BuildingInfrastructure')}
+                checked={formData.BuildingInfrastructure === String(i + 1)}
+                onChange={e => handleInputChange('BuildingInfrastructure', e.target.value)}
                 required
                 style={{
                   margin: '0 5px',
@@ -463,8 +481,9 @@ function TSAFormPage2() {
               <input
                 type="radio"
                 name="FoodInfrastructure"
-                onChange={() => clearError('FoodInfrastructure')}
                 value={i + 1}
+                checked={formData.FoodInfrastructure === String(i + 1)}
+                onChange={e => handleInputChange('FoodInfrastructure', e.target.value)}
                 required
                 style={{
                   margin: '0 5px',
@@ -545,8 +564,9 @@ function TSAFormPage2() {
               <input
                 type="radio"
                 name="EnergyInfrastructure"
-                onChange={() => clearError('EnergyInfrastructure')}
                 value={i + 1}
+                checked={formData.EnergyInfrastructure === String(i + 1)}
+                onChange={e => handleInputChange('EnergyInfrastructure', e.target.value)}
                 required
                 style={{
                   margin: '0 5px',
@@ -631,8 +651,9 @@ function TSAFormPage2() {
               <input
                 type="radio"
                 name="StewardshipInfrastructure"
-                onChange={() => clearError('StewardshipInfrastructure')}
                 value={i + 1}
+                checked={formData.StewardshipInfrastructure === String(i + 1)}
+                onChange={e => handleInputChange('StewardshipInfrastructure', e.target.value)}
                 required
                 style={{
                   margin: '0 5px',
