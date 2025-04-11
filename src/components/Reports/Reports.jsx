@@ -559,7 +559,7 @@ class ReportsPage extends Component {
                 </div>
                 </div>
                 </div>
-                {myRole != 'Owner' && (
+                {myRole !== 'Owner' && (
                   <div className="lost-time-container">
                     <div className="lost-time-item">
                       <Button color="info" onClick={this.showAddProjHistory}>

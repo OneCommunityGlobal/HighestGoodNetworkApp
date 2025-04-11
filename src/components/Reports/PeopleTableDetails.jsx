@@ -17,23 +17,7 @@ function PeopleTableDetails(props) {
   const [order, setOrder] = useState('');
   const [startDate,updateStartDate] = useState(new Date('01/01/2010'));
   const [endDate, updateEndDate] = useState(new Date());
-  const [isMobile, setisMobile] = useState(false);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  // useEffect(() => {
-  //   function handleResize() {
-  //     const w = window.innerWidth
-  //     if (w <= 1020) {
-  //       setisMobile(true);
-  //     } else {
-  //       setisMobile(false)
-  //     }
-  //   }
-  //   window.addEventListener('resize', handleResize);
-
-  //   return () => {
-  //     window.removeEventListener('resize', handleResize);
-  //   };
-  // }, []);
 
   useEffect(() => {
     const handleResize = () => {
@@ -112,7 +96,7 @@ function PeopleTableDetails(props) {
     let filteredList = tasks.filter(task => {
       // Convert task dates to Date objects for comparison
       const taskStartDate = new Date(task.startDate);
-      const taskEndDate = new Date(task.endDate);
+      // const taskEndDate = new Date(task.endDate);
       
       // Check if dates are within the selected range
       const isWithinDateRange = (!startDate || taskStartDate <= endDate) 
@@ -186,7 +170,7 @@ function PeopleTableDetails(props) {
                   if (index < 2) {
                     return (
                       <img
-                        key={`${value._id}-${resource.name}-${index}`}
+                        key={`${value._id}-${resource.name}`}
                         alt={resource.name}
                         src={resource.profilePic || '/pfp-default.png'}
                         className="img-circle"
@@ -236,7 +220,7 @@ function PeopleTableDetails(props) {
               if (index < 2) {
                 return (
                   <img
-                    key={`${value._id}-${resource.name}-${index}`}
+                    key={`${value._id}-${resource.name}`}
                     alt={resource.name}
                     src={resource.profilePic || '/pfp-default.png'}
                     className="img-circle"

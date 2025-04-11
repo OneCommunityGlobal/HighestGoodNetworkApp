@@ -266,14 +266,15 @@ class PeopleReport extends Component {
       };
     });
   }
+
   // eslint-disable-next-line class-methods-use-this
-  endOfWeek(offset) {
-    return moment()
-      .tz('America/Los_Angeles')
-      .endOf('week')
-      .subtract(offset, 'weeks')
-      .format('YYYY-MM-DD');
-  }
+  // endOfWeek(offset) {
+  //   return moment()
+  //     .tz('America/Los_Angeles')
+  //     .endOf('week')
+  //     .subtract(offset, 'weeks')
+  //     .format('YYYY-MM-DD');
+  // }
 
 
   render() {
@@ -291,15 +292,9 @@ class PeopleReport extends Component {
     const { firstName, lastName, weeklycommittedHours, hoursByCategory } = userProfile;
     const { tangibleHoursReportedThisWeek, auth, match, darkMode } = this.props;
 
-    let totalTangibleHrsRound = 0;
-    timeEntries.period?.map(entry => totalTangibleHrsRound += (entry.hours + (entry.minutes / 60)));
-    totalTangibleHrsRound = totalTangibleHrsRound.toFixed(2);
-    // if (hoursByCategory) {
-    //   const hours = hoursByCategory
-    //     ? Object.values(hoursByCategory).reduce((prev, curr) => prev + curr, 0)
-    //     : 0;
-    //   totalTangibleHrsRound = hours.toFixed(2);
-    // }
+    const totalTangibleHrsRound = (timeEntries.period?.reduce((total, entry) => {
+      return total + (entry.hours + (entry.minutes / 60));
+    }, 0) || 0).toFixed(2);    
 
     // eslint-disable-next-line react/no-unstable-nested-components,no-unused-vars
     function UserProject(props) {
@@ -323,7 +318,7 @@ class PeopleReport extends Component {
         }
       }
 
-      const startdate = Object.keys(dict)[0];
+      const [startdate] = Object.keys(dict);
       if (startdate) {
         startdate.toString();
       }
@@ -393,7 +388,6 @@ class PeopleReport extends Component {
             name: '',
             profilePic: '',
           };
-          console.log(userTask[i]);
           if (userTask[i].resources[j].profilePic) {
             tempResource.name = userTask[i].resources[j].name;
             tempResource.profilePic = userTask[i].resources[j].profilePic;
@@ -406,14 +400,16 @@ class PeopleReport extends Component {
         task._id = userTask[i]._id;
         task.resources.push(resourcesName);
         // startedDatetime
-        if (userTask[i].startedDatetime === null && userTask[i].startedDatetime !== "") {
-          task.startDate = 'null';
-        }
-        if (userTask[i].dueDatetime === null && userTask[i].dueDatetime !== "") {
-          task.endDate = 'null';
-        }
-        task.startDate = userTask[i].startedDatetime.split('T')[0];
-        task.endDate = userTask[i].dueDatetime.split('T')[0];
+        // if (userTask[i].startedDatetime === null && userTask[i].startedDatetime !== "") {
+        //   task.startDate = 'null';
+        // }
+        // if (userTask[i].dueDatetime === null && userTask[i].dueDatetime !== "") {
+        //   task.endDate = 'null';
+        // }
+        // task.startDate = userTask[i].startedDatetime.split('T')[0];
+        // task.endDate = userTask[i].dueDatetime.split('T')[0];
+        task.startDate = userTask[i].startedDatetime ? userTask[i].startedDatetime.split('T')[0] : 'null';
+        task.endDate = userTask[i].dueDatetime ? userTask[i].dueDatetime.split('T')[0] : 'null';
         task.hoursBest = userTask[i].hoursBest;
         task.hoursMost = userTask[i].hoursMost;
         task.hoursWorst = userTask[i].hoursWorst;
@@ -526,7 +522,7 @@ class PeopleReport extends Component {
     return (
       <div className={`container-people-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
         <ReportPage renderProfile={renderProfileInfo} darkMode={darkMode}>
-          <div className={`people-report-time-logs-wrapper ${tangibleHoursReportedThisWeek === 0 && !isNaN(tangibleHoursReportedThisWeek)? "auto-width-report-time-logs-wrapper" : ""}`}>
+          <div className={`people-report-time-logs-wrapper ${tangibleHoursReportedThisWeek === 0 && !Number.isNaN(tangibleHoursReportedThisWeek)? "auto-width-report-time-logs-wrapper" : ""}`}>
             <ReportPage.ReportBlock
               firstColor="#ff5e82"
               secondColor="#e25cb2"
@@ -546,7 +542,7 @@ class PeopleReport extends Component {
                 className="people-report-time-log-block"
                 darkMode={darkMode}
               >
-                <h3 className="text-light">{!isNaN(tangibleHoursReportedThisWeek)?tangibleHoursReportedThisWeek:""}</h3>
+                <h3 className="text-light">{!Number.isNaN(tangibleHoursReportedThisWeek)?tangibleHoursReportedThisWeek:""}</h3>
                 <p>Hours Logged This Week</p>
               </ReportPage.ReportBlock>
             )}
