@@ -16,8 +16,8 @@ const MemberCard = ({
   github,
   location,
 }) => {
-  // Determine score color based on value (red if less than 5, green if 5 or more)
-  const scoreColor = score < 5 ? '#FF4D4D' : '#4CAF50';
+  // Determine score color based on value (red if less than 3, green if 3 or more)
+  const scoreColor = score < 3 ? '#FF4D4D' : '#4CAF50';
 
   const handleEmailClick = e => {
     e.preventDefault();
@@ -78,7 +78,7 @@ const MemberCard = ({
       <div className="member-card__score-container">
         <div className="member-card__score-label">Score:</div>
         <div className="member-card__score" style={{ color: scoreColor }}>
-          {score} / 10
+          {score} / 5
         </div>
       </div>
 
