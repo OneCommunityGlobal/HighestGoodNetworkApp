@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import './Announcements.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react'; // Import Editor from TinyMCE
-import { sendTweet, scheduleTweet, scheduleFbPost, fetchPosts, fetchPosts_separately, deletePost } from '../../actions/sendSocialMediaPosts';
+import { sendTweet, scheduleTweet, scheduleFbPost, fetchPosts, fetchPosts_separately, deletePost, sendFbPost } from '../../actions/sendSocialMediaPosts';
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
@@ -366,7 +366,62 @@ function Announcements({ title, email }) {
       await getAllPosts();
     }
   };
+  
+  const handlePostScheduledTweets = (postId, textContent, platform) => {
+    console.log("Post ID:", postId, "Content:", textContent);
+    if (!postId) {
+      console.error("Error: Missing post ID in handlePostScheduledTweets");
+      toast.error("Error: Missing post ID");
+      return;
+    }
+    if (!textContent) {
+      console.error("Error: Missing text content in handlePostScheduledTweets");
+      toast.error("Error: Missing tweet content");
+      return;
+    }
+    console.log("Posting Tweet:", textContent);
 
+    if (platform === 'facebook') {
+      console.log("reached here in facebook");
+      window.FB.login(
+        response => {
+          if (response.authResponse) {
+            const accessToken = response.authResponse.accessToken;
+            dispatch(sendFbPost(textContent, accessToken))
+              .then(() => {
+                //console.log("Facebook posted successfully! Now calling handleDeletePost for post ID:", postId);
+                //toast.success("✅ Successfully posted to Facebook feed.");
+                setTimeout(() => {
+                  handleDeletePost(postId, true);
+                }, 1500);
+              })
+              .catch((error) => {
+                console.error("Error posting on Facebook:", error.message || error);
+                toast.error("Failed to post on Facebook.");
+              });
+          } else {
+            toast.error('Facebook login failed or was cancelled.');
+          }
+        },
+        {
+          scope: 'public_profile,email,pages_show_list,pages_manage_posts',
+        }
+      );
+    } else if (platform === 'twitter') {
+    dispatch(sendTweet(textContent))
+    .then(() => {
+      console.log("Tweet posted successfully! Now calling handleDeletePost for post ID:", postId);
+      // ✅ Call handleDeletePost after successful tweet
+      handleDeletePost(postId, true);
+    })
+    .catch((error) => {
+      console.error("Error posting tweet:", error.message || error);
+      toast.error("Failed to post tweet.");
+    });
+  }
+
+   
+  };
 
   return (
     <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: '100%' }}>
@@ -590,9 +645,11 @@ function Announcements({ title, email }) {
                       : post.textContent}
                   </Link> 
                   <br />
-                  
-                  
                 </div>
+
+                <Button color="success" size="sm" style={{ marginRight: '8px' }} onClick={() => handlePostScheduledTweets(post._id, post.textContent, post.platform)}>
+                  Post
+                </Button>
                 <Button color="danger" size="sm" onClick={() => handleDeletePost(post._id)}>
                   Delete
                 </Button>

@@ -236,6 +236,7 @@ export const ENDPOINTS = {
   SCHEDULE_TWEETS: `${APIEndpoint}/scheduleTweet`,
   SCHEDULE_FBPOSTS: `${APIEndpoint}/scheduleFbPost`,
   SOCIAL_MEDIA_POSTS: `${APIEndpoint}/posts`,
+  POST_FB: `${APIEndpoint}/createFb`,
 
   CREATE_JOB_FORM: `${APIEndpoint}/jobforms`,
   UPDATE_JOB_FORM: `${APIEndpoint}/jobforms`,
