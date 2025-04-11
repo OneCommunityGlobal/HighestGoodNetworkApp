@@ -30,6 +30,20 @@ export const weeklySummariesReducer = (state = initialState, action) => {
         fetchError: action.payload.error,
       };
 
+    case actions.POST_WEEKLY_SUMMARY_FILTERS:
+      return {
+        ...state,
+        loading: false,
+        weeklySummaryFiltersSaved: action.data,
+      };
+
+    case actions.GET_USER_WEEKLY_SUMMARY_FILTER:
+      return {
+        ...state,
+        loading: false,
+        savedWeeklySummaryFilters: action.data,
+      };
+
     default:
       return state;
   }
