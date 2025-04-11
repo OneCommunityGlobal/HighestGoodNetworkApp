@@ -5,35 +5,29 @@ import { CHART_RADIUS, CHART_SIZE } from './constants';
 import { generateArrayOfUniqColors } from './colorsGenerator';
 import './UserProjectPieChart.css';
 
-export const PieChart = ({
-  tasksData = [], // New array format: [{ projectId: "123", projectName: "Project A", totalTime: 10.5 }, ...]
+export const UserProjectPieChart = ({
+  projectsData, // New array format: [{ projectId: "123", projectName: "Project A", totalTime: 10.5 }, ...]
   pieChartId,
+  tasksData,
   darkMode,
-  projectsData = []
 }) => {
-
-  if (!tasksData || tasksData.length === 0) return <div>Loading</div>;
+if(projectsData.length===0) return <div>Loading</div>
   const [totalHours, setTotalHours] = useState(0);
-  const colors = useMemo(() => generateArrayOfUniqColors(tasksData?.length), [tasksData]);
+  const colors = useMemo(() => generateArrayOfUniqColors(projectsData.length), [projectsData]);
   const color = useMemo(() => d3.scaleOrdinal().range(colors), [colors]);
 
   const [togglePercentage, setTogglePercentage] = useState(false);
-  const [selectedProjects, setSelectedProjects] = useState(tasksData?.map(project => project.projectId));
+  const [selectedProjects, setSelectedProjects] = useState(projectsData.map(project => project.projectId));
 
   const handleTogglePercentage = () => {
     setTogglePercentage(prev => {
       const newToggleState = !prev;
       setTogglePercentage(newToggleState);
       if (!newToggleState) {
-        setSelectedProjects(tasksData?.map(project => project.projectId));
+        setSelectedProjects(projectsData.map(project => project.projectId));
       }
     });
   };
-  const calculateTotalHours = (projectsData, tasksData) => {
-    const totalTaskTime = tasksData?.reduce((sum, project) => sum + project.totalTime, 0);
-    const projectsDataTime= projectsData.reduce((sum, project) => sum + project.totalTime, 0);
-    return totalTaskTime+projectsDataTime;
-  }
 
   const handleProjectClick = projectId => {
     if (togglePercentage) {
@@ -45,10 +39,14 @@ export const PieChart = ({
     }
   };
 
+  const calculateTotalHours = (projectsData, tasksData) => {
+    const totalTaskTime = tasksData.reduce((sum, project) => sum + project.totalTime, 0);
+    const projectsDataTime= projectsData.reduce((sum, project) => sum + project.totalTime, 0);
+    return totalTaskTime+projectsDataTime;
+  }
+
   const getCreateSvgPie = totalValue => {
     if(totalValue === 0) return;
-    // Clear existing SVG before creating new one
-    d3.select(`#pie-chart-${pieChartId}`).remove();
     const svg = d3
       .select(`#pie-chart-container-${pieChartId}`)
       .append('svg')
@@ -58,7 +56,7 @@ export const PieChart = ({
       .append('g')
       .attr('transform', `translate(${CHART_SIZE / 2}, ${CHART_SIZE / 2})`);
   
-    const displayValue = togglePercentage
+      const displayValue = togglePercentage
       // ? (selectedProjects.reduce((sum, projectId) => {
       //     const project = tasksData.find(p => p.projectId === projectId);
       //     return sum + (project ? project.totalTime : 0);
@@ -99,14 +97,11 @@ export const PieChart = ({
   const pie = d3.pie().value(d => d.totalTime);
 
   useEffect(() => {
-    if (!tasksData || tasksData.length === 0) {
-      return;
-  }
-    const totalValue = tasksData?.reduce((sum, project) => sum + project.totalTime, 0);
+    const totalValue = projectsData.reduce((sum, project) => sum + project.totalTime, 0);
     if(totalValue === 0) return;
     setTotalHours(totalValue);
 
-    const dataReady = pie(tasksData);
+    const dataReady = pie(projectsData);
 
     let div = d3.select('.tooltip-donut');
     if (div.empty()) {
@@ -120,8 +115,6 @@ export const PieChart = ({
     }
 
    const svg= getCreateSvgPie(totalValue)
-   if (!svg) return; // Early return if no svg created
-    // Create the pie chart
       svg.selectAll('path')
       .data(dataReady)
       .join('path')
@@ -137,6 +130,7 @@ export const PieChart = ({
       .on('click', (event, d) => handleProjectClick(d.data.projectId))
       .on('mouseover', (event, d) => {
         d3.select(event.currentTarget).transition().duration(50).attr('opacity', 0.5);
+
         const percentage = ((d.data.totalTime / totalValue) * 100).toFixed(2);
         const legendInfo = togglePercentage
           ? `${d.data.projectName}: ${percentage}% of ${totalValue.toFixed(2)}`
@@ -161,41 +155,41 @@ export const PieChart = ({
     return () => {
       d3.select(`#pie-chart-${pieChartId}`).remove();
     };
-  }, [tasksData, togglePercentage, selectedProjects]);
+  }, [projectsData, togglePercentage, selectedProjects]);
 
  
 
   return (
-   !tasksData || tasksData?.length===0? <div>Loading</div> :<div className={`pie-chart-wrapper ${darkMode ? 'text-light' : ''}`}>
+   projectsData.length===0? <div>Loading</div> :<div className={`pie-chart-wrapper ${darkMode ? 'text-light' : ''}`}>
       <div id={`pie-chart-container-${pieChartId}`} className="pie-chart" />
-    <div className="pie-chart-legend-container">
-      <div className="pie-chart-legend-table-wrapper">
-        <table className={darkMode ?"pie-chart-legend-table-dark":"pie-chart-legend-table"}>
-          <thead>
-            <tr>
-              <th>Color</th>
-              <th>Project Name</th>
-              <th>Hours</th>
-            </tr>
-          </thead>
-          <tbody>
-            {tasksData?.map(project => (
-              <tr key={project.projectId}>
-                <td>
-                  <div id="project-chart-legend" style={{ backgroundColor: `${color(project.projectId)}`}}></div>
-                </td>
-                <td>{project.projectName}</td>
-                <td>{project.totalTime.toFixed(2)} </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+        <div className="pie-chart-legend-container">
+          <div className="pie-chart-legend-table-wrapper">
+            <table className={darkMode ?"pie-chart-legend-table-dark":"pie-chart-legend-table"}>
+              <thead>
+                <tr>
+                  <th>Color</th>
+                  <th>Project Name</th>
+                  <th>Hours</th>
+                </tr>
+              </thead>
+              <tbody>
+                {projectsData.map(project => (
+                  <tr key={project.projectId}>
+                    <td>
+                      <div id="project-chart-legend" style={{ backgroundColor: `${color(project.projectId)}`}}></div>
+                    </td>
+                    <td>{project.projectName}</td>
+                    <td>{project.totalTime.toFixed(2)} </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-      <div className="data-total-value">
-        <strong>Total Hours:</strong> {totalHours.toFixed(2)}
-      </div>
-    </div>
+          <div className="data-total-value">
+            <strong>Total Hours:</strong> {totalHours.toFixed(2)}
+          </div>
+        </div>
     </div>
   );
 };

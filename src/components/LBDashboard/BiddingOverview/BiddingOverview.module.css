@@ -330,7 +330,7 @@
 
 /* Style for date inputs */
 input[type="date"] {
-  width: 77%;
+  /* width: 77%; */
   padding: 0.5rem;
   border: 1px solid #ccc;
   border-radius: 2px;

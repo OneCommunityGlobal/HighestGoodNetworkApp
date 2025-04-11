@@ -1,4 +1,4 @@
-import { userTeamMembersReducer } from '../userTeamMembersReducer';
+import userTeamMembersReducer from '../userTeamMembersReducer';
 
 describe('userTeamMembersReducer', () => {
   const initialState = null;
