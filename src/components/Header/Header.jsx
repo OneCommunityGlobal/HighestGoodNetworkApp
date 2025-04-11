@@ -220,8 +220,8 @@ export function Header(props) {
   const handlePermissionChangeAck = async() => {
     // handle setting the ack true
     try {
-      const {firstName: name, lastName, personalLinks, adminLinks} = props.userProfile
-      const res = await axios.put(ENDPOINTS.USER_PROFILE(userId), {
+      const {firstName: name, lastName, personalLinks, adminLinks, _id} = props.userProfile
+      const res = await axios.put(ENDPOINTS.USER_PROFILE(_id), {
         // req fields for updation
         firstName: name, 
         lastName, 
@@ -231,7 +231,7 @@ export function Header(props) {
         isAcknowledged: true,
       });
       if (res.status === 200) {
-        props.getUserProfile(userId);
+        props.getUserProfile(_id);
       }
     } catch (e) {
       // console.log('update ack', e);
