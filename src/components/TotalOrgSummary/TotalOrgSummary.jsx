@@ -444,29 +444,25 @@ function TotalOrgSummary(props) {
       <AccordianWrapper title="Volunteer Status">
         <Row>
           <Col lg={{ size: 12 }}>
-            <div className="component-container">
-              <VolunteerStatus
-                isLoading={isLoading}
-                volunteerNumberStats={volunteerStats?.volunteerNumberStats}
-                totalHoursWorked={volunteerStats?.totalHoursWorked}
-              />
-            </div>
+            <VolunteerStatus
+              isLoading={isLoading}
+              volunteerNumberStats={volunteerStats?.volunteerNumberStats}
+              totalHoursWorked={volunteerStats?.totalHoursWorked}
+            />
           </Col>
         </Row>
       </AccordianWrapper>
       <AccordianWrapper title="Volunteer Activities">
         <Row>
           <Col lg={{ size: 12 }}>
-            <div className="component-container">
-              <VolunteerActivities
-                isLoading={isLoading}
-                totalSummariesSubmitted={volunteerStats?.totalSummariesSubmitted}
-                completedAssignedHours={volunteerStats?.completedAssignedHours}
-                totalBadgesAwarded={volunteerStats?.totalBadgesAwarded}
-                tasksStats={volunteerStats?.tasksStats}
-                totalActiveTeams={volunteerStats?.totalActiveTeams}
-              />
-            </div>
+            <VolunteerActivities
+              isLoading={isLoading}
+              totalSummariesSubmitted={volunteerStats?.totalSummariesSubmitted}
+              completedAssignedHours={volunteerStats?.completedAssignedHours}
+              totalBadgesAwarded={volunteerStats?.totalBadgesAwarded}
+              tasksStats={volunteerStats?.tasksStats}
+              totalActiveTeams={volunteerStats?.totalActiveTeams}
+            />
           </Col>
         </Row>
       </AccordianWrapper>
