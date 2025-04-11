@@ -15,9 +15,23 @@ const MemberCard = ({
   isInUserTeam,
   github,
   location,
+  isNotApplicable,
 }) => {
-  // Determine score color based on value (red if less than 3, green if 3 or more)
-  const scoreColor = score < 3 ? '#FF4D4D' : '#4CAF50';
+  // Determine score color based on value (red if less than 3, yellow if 3, green if more than 3)
+  const getScoreColor = score => {
+    if (score < 3) return '#FF4D4D'; // Red
+    if (score === 3 || (score > 2.9 && score < 3.1)) return '#FFC107'; // Yellow/Amber
+    return '#4CAF50'; // Green
+  };
+
+  const scoreColor = isNotApplicable ? '#666666' : getScoreColor(score);
+
+  // Format score to show decimal if needed or "N/A" if not applicable
+  const formattedScore = isNotApplicable
+    ? 'N/A'
+    : Number.isInteger(score)
+    ? score
+    : score.toFixed(1);
 
   const handleEmailClick = e => {
     e.preventDefault();
@@ -76,15 +90,18 @@ const MemberCard = ({
       </div>
 
       <div className="member-card__score-container">
-        <div className="member-card__score-label">Score:</div>
+        <div className="member-card__score-label">Skill Rating:</div>
         <div className="member-card__score" style={{ color: scoreColor }}>
-          {score} / 5
+          {formattedScore}
+          {!isNotApplicable ? ' / 5' : ''}
         </div>
       </div>
 
       <div className="member-card__skills-container">
         <div className="member-card__skills-label">Top Skills:</div>
-        <div className="member-card__skills">{skills.join(', ')}</div>
+        <div className="member-card__skills">
+          {skills.length > 0 ? skills.join(', ') : 'No skills rated above 3'}
+        </div>
       </div>
     </div>
   );
@@ -100,6 +117,7 @@ MemberCard.propTypes = {
   isInUserTeam: PropTypes.bool,
   github: PropTypes.string,
   location: PropTypes.string,
+  isNotApplicable: PropTypes.bool,
 };
 
 MemberCard.defaultProps = {
@@ -107,6 +125,7 @@ MemberCard.defaultProps = {
   isInUserTeam: false,
   github: null,
   location: null,
+  isNotApplicable: false,
 };
 
 export default MemberCard;

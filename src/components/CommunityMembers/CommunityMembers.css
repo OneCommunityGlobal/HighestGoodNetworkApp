@@ -166,4 +166,166 @@
 .pagination-button:focus {
   outline: 2px solid #4285F4;
   outline-offset: 2px;
+}
+
+/* Add new styles for the skills filter interface */
+
+/* Skills filter section */
+.community-members__skills-filter {
+  margin-top: 15px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.skills-filter__section {
+  margin-bottom: 15px;
+}
+
+.skills-filter__section h3 {
+  font-size: 1rem;
+  color: #333;
+  margin-bottom: 8px;
+  font-weight: 600;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 5px;
+}
+
+.skills-filter__options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.skill-checkbox {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  background-color: #fff;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.skill-checkbox:hover {
+  background-color: #f0f0f0;
+}
+
+.skill-checkbox input {
+  margin-right: 6px;
+}
+
+.skill-checkbox input:checked + span {
+  font-weight: 600;
+}
+
+.skills-filter__actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+.clear-button {
+  padding: 6px 12px;
+  border: none;
+  background-color: #f1f1f1;
+  color: #666;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+.clear-button:hover {
+  background-color: #e0e0e0;
+}
+
+.clear-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Enhance existing styles for the filter button */
+.filter-button {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  background-color: #f1f1f1;
+  color: #333;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+  font-size: 0.9rem;
+  margin-right: 10px;
+}
+
+.filter-button i {
+  margin-right: 6px;
+}
+
+.filter-button.active {
+  background-color: #4285F4;
+  color: white;
+}
+
+.filter-button:hover {
+  background-color: #e0e0e0;
+}
+
+.filter-button.active:hover {
+  background-color: #3367d6;
+}
+
+@media (max-width: 768px) {
+  .skills-filter__options {
+    gap: 5px;
+  }
+  
+  .skill-checkbox {
+    font-size: 0.8rem;
+    padding: 4px 8px;
+  }
+}
+
+/* Fix for when there are many skills and mobile layout */
+@media (max-width: 480px) {
+  .community-members__skills-filter {
+    max-height: 300px;
+    overflow-y: auto;
+  }
+}
+
+/* Add styles for the sort button */
+.sort-button {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  background-color: #f1f1f1;
+  color: #333;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+  font-size: 0.9rem;
+}
+
+.sort-button i {
+  margin-right: 6px;
+}
+
+.sort-button.active {
+  background-color: #4285F4;
+  color: white;
+}
+
+.sort-button:hover {
+  background-color: #e0e0e0;
+}
+
+.sort-button.active:hover {
+  background-color: #3367d6;
 } 

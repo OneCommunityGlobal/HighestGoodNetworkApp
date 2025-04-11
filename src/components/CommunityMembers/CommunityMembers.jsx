@@ -12,64 +12,122 @@ const CommunityMembers = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterTeam, setFilterTeam] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const membersPerPage = 6;
+  const [selectedSkills, setSelectedSkills] = useState([]);
+  const [showSkillsFilter, setShowSkillsFilter] = useState(false);
+  const [sortOrder, setSortOrder] = useState('alpha'); // 'score' or 'alpha'
 
-  // Helper function to calculate overall score
-  const calculateOverallScore = member => {
-    // Convert string scores to numbers and calculate average
-    const frontendScores = Object.entries(member.skillInfo.frontend)
-      .filter(([key]) => key !== 'overall')
-      .map(([_, value]) => parseInt(value, 10));
-
-    const backendScores = Object.entries(member.skillInfo.backend)
-      .filter(([key]) => key !== 'Overall')
-      .map(([_, value]) => parseInt(value, 10));
-
-    const generalScores = [
-      parseInt(member.skillInfo.general.combined_frontend_backend, 10),
-      parseInt(member.skillInfo.general.mern_skills, 10),
-      parseInt(member.skillInfo.general.leadership_skills, 10),
-      parseInt(member.skillInfo.general.leadership_experience, 10),
-    ];
-
-    // Calculate average score (keeping original 1-5 scale)
-    const allScores = [...frontendScores, ...backendScores, ...generalScores];
-    const sum = allScores.reduce((acc, score) => acc + score, 0);
-    return Math.round(sum / allScores.length);
+  // Hardcoded skills for the filter
+  const availableSkills = {
+    frontend: [
+      'HTML',
+      'CSS',
+      'Bootstrap',
+      'React',
+      'Redux',
+      'WebSocketCom',
+      'ResponsiveUI',
+      'UnitTest',
+      'Documentation',
+      'UIUXTools',
+    ],
+    backend: [
+      'Database',
+      'MongoDB',
+      'MongoDB_Advanced',
+      'TestDrivenDev',
+      'Deployment',
+      'VersionControl',
+      'CodeReview',
+      'EnvironmentSetup',
+      'AdvancedCoding',
+      'AgileDevelopment',
+    ],
+    general: [
+      'combined_frontend_backend',
+      'mern_skills',
+      'leadership_skills',
+      'leadership_experience',
+    ],
+    other: [
+      'machine learning',
+      'project management',
+      'team leadership',
+      'devops',
+      'cloud infrastructure',
+      'content management',
+    ],
   };
 
-  // Helper function to find the specific skill score if it exists
-  const findSkillScore = (member, searchTerm) => {
-    if (!searchTerm.trim()) return null;
+  const membersPerPage = 6;
 
-    const searchTermLower = searchTerm.toLowerCase();
+  // Helper function to calculate score based on selected skills or overall score
+  const calculateScore = member => {
+    if (selectedSkills.length === 0) {
+      // If no skills selected, calculate overall score as before
+      const frontendScores = Object.entries(member.skillInfo.frontend)
+        .filter(([key]) => key !== 'overall')
+        .map(([_, value]) => parseInt(value, 10));
 
-    // Check frontend skills
-    for (const [key, value] of Object.entries(member.skillInfo.frontend)) {
-      if (key.toLowerCase() === searchTermLower || key.toLowerCase().includes(searchTermLower)) {
-        return parseInt(value, 10); // Keep original 1-5 scale
+      const backendScores = Object.entries(member.skillInfo.backend)
+        .filter(([key]) => key !== 'Overall')
+        .map(([_, value]) => parseInt(value, 10));
+
+      const generalScores = [
+        parseInt(member.skillInfo.general.combined_frontend_backend, 10),
+        parseInt(member.skillInfo.general.mern_skills, 10),
+        parseInt(member.skillInfo.general.leadership_skills, 10),
+        parseInt(member.skillInfo.general.leadership_experience, 10),
+      ];
+
+      // Calculate average score with decimal precision (keeping original 1-5 scale)
+      const allScores = [...frontendScores, ...backendScores, ...generalScores];
+      const sum = allScores.reduce((acc, score) => acc + score, 0);
+      return parseFloat((sum / allScores.length).toFixed(1)); // Keep one decimal place
+    } else {
+      // Calculate score based only on selected skills
+      const selectedScores = [];
+
+      for (const skill of selectedSkills) {
+        // Check frontend skills
+        if (skill in member.skillInfo.frontend && skill !== 'overall') {
+          selectedScores.push(parseInt(member.skillInfo.frontend[skill], 10));
+        }
+        // Check backend skills
+        else if (skill in member.skillInfo.backend && skill !== 'Overall') {
+          selectedScores.push(parseInt(member.skillInfo.backend[skill], 10));
+        }
+        // Check general skills
+        else if (
+          [
+            'combined_frontend_backend',
+            'mern_skills',
+            'leadership_skills',
+            'leadership_experience',
+          ].includes(skill)
+        ) {
+          selectedScores.push(parseInt(member.skillInfo.general[skill], 10));
+        }
+        // Check other skills (these don't have numeric ratings)
+        else if (member.skillInfo.followup.other_skills) {
+          const otherSkills = member.skillInfo.followup.other_skills
+            .split(',')
+            .map(s => s.trim().toLowerCase());
+
+          if (otherSkills.includes(skill.toLowerCase())) {
+            // For skills without ratings, we'll use a default value of 3
+            selectedScores.push(3);
+          }
+        }
       }
-    }
 
-    // Check backend skills
-    for (const [key, value] of Object.entries(member.skillInfo.backend)) {
-      if (key.toLowerCase() === searchTermLower || key.toLowerCase().includes(searchTermLower)) {
-        return parseInt(value, 10); // Keep original 1-5 scale
+      if (selectedScores.length === 0) {
+        return 0; // No matches found for the selected skills
       }
-    }
 
-    // Check other skills (these don't have direct scores, so we'll return null)
-    if (member.skillInfo.followup.other_skills) {
-      const otherSkills = member.skillInfo.followup.other_skills
-        .split(',')
-        .map(s => s.trim().toLowerCase());
-      if (otherSkills.some(skill => skill === searchTermLower || skill.includes(searchTermLower))) {
-        // For other_skills that don't have ratings, we'll return null as we don't want to aggregate
-        return null;
-      }
+      // Calculate average of selected skills with decimal precision
+      const sum = selectedScores.reduce((acc, score) => acc + score, 0);
+      return parseFloat((sum / selectedScores.length).toFixed(1)); // Keep one decimal place
     }
-
-    return null;
   };
 
   // Extract top skills from a member
@@ -92,82 +150,212 @@ const CommunityMembers = () => {
     return [...frontendSkills, ...backendSkills, ...otherSkills].slice(0, 4);
   };
 
-  // Sort members by score in descending order
+  // Sort members by score in descending order or alphabetically
   useEffect(() => {
     const membersWithScores = mockMembers.map(member => ({
       ...member,
-      calculatedScore: calculateOverallScore(member),
+      calculatedScore: calculateScore(member),
       topSkills: getTopSkills(member),
     }));
 
-    const sortedMembers = membersWithScores.sort((a, b) => b.calculatedScore - a.calculatedScore);
+    let sortedMembers;
+    if (sortOrder === 'alpha' && !searchTerm && selectedSkills.length === 0) {
+      // Sort alphabetically by name when no filters are selected and alpha sort is chosen
+      sortedMembers = membersWithScores.sort((a, b) =>
+        a.name.displayName.localeCompare(b.name.displayName),
+      );
+    } else {
+      // Sort by score when filters are applied or score sort is chosen
+      sortedMembers = membersWithScores.sort((a, b) => b.calculatedScore - a.calculatedScore);
+    }
 
     setMembers(sortedMembers);
-  }, []);
+  }, [selectedSkills, sortOrder, searchTerm]); // Re-run when selected skills, sort order or search changes
 
-  // Filter members based on search term and team filter
+  // Toggle skill selection
+  const toggleSkill = skill => {
+    if (selectedSkills.includes(skill)) {
+      setSelectedSkills(selectedSkills.filter(s => s !== skill));
+    } else {
+      setSelectedSkills([...selectedSkills, skill]);
+    }
+    setCurrentPage(1); // Reset to first page when filter changes
+  };
+
+  // Toggle sort order
+  const toggleSortOrder = () => {
+    setSortOrder(sortOrder === 'score' ? 'alpha' : 'score');
+    setCurrentPage(1); // Reset to first page when sort changes
+  };
+
+  // Helper function to find the exact score for a specific skill - now also handles partial matches
+  const getSkillScore = (member, searchTerm) => {
+    const searchTermLower = searchTerm.toLowerCase();
+
+    // Find potential matching skill from our available skills lists
+    const allSkills = [
+      ...availableSkills.frontend,
+      ...availableSkills.backend,
+      ...availableSkills.general,
+      ...availableSkills.other,
+    ];
+
+    // Find exact or best partial match
+    const matchingSkill =
+      allSkills.find(skill => skill.toLowerCase() === searchTermLower) ||
+      allSkills.find(skill => skill.toLowerCase().startsWith(searchTermLower));
+
+    if (!matchingSkill) return null;
+
+    const matchingSkillLower = matchingSkill.toLowerCase();
+
+    // Check frontend skills
+    const frontendKey = Object.keys(member.skillInfo.frontend).find(
+      key => key.toLowerCase() === matchingSkillLower,
+    );
+    if (frontendKey && frontendKey !== 'overall') {
+      return parseInt(member.skillInfo.frontend[frontendKey], 10);
+    }
+
+    // Check backend skills
+    const backendKey = Object.keys(member.skillInfo.backend).find(
+      key => key.toLowerCase() === matchingSkillLower,
+    );
+    if (backendKey && backendKey !== 'Overall') {
+      return parseInt(member.skillInfo.backend[backendKey], 10);
+    }
+
+    // Check general skills
+    if (
+      [
+        'combined_frontend_backend',
+        'mern_skills',
+        'leadership_skills',
+        'leadership_experience',
+      ].some(key => key.toLowerCase() === matchingSkillLower)
+    ) {
+      // Find the correct casing for the key
+      const generalKey = Object.keys(member.skillInfo.general).find(
+        key => key.toLowerCase() === matchingSkillLower,
+      );
+      if (generalKey) {
+        return parseInt(member.skillInfo.general[generalKey], 10);
+      }
+    }
+
+    // For other skills, if it matches one of their "other skills", return a default value
+    if (member.skillInfo.followup.other_skills) {
+      const otherSkills = member.skillInfo.followup.other_skills
+        .split(',')
+        .map(s => s.trim().toLowerCase());
+
+      if (otherSkills.some(skill => skill === matchingSkillLower)) {
+        return 3; // Default value for other skills
+      }
+    }
+
+    // No match found
+    return null;
+  };
+
+  // Helper function to check if the search term matches (exactly or partially) any available skill
+  const isSkillSearch = term => {
+    if (!term) return false;
+
+    const termLower = term.toLowerCase();
+    const allSkills = [
+      ...availableSkills.frontend,
+      ...availableSkills.backend,
+      ...availableSkills.general,
+      ...availableSkills.other,
+    ];
+
+    return allSkills.some(
+      skill => skill.toLowerCase() === termLower || skill.toLowerCase().startsWith(termLower),
+    );
+  };
+
+  // Filter members based on search term, team filter, and selected skills
   const filteredMembers = members
     .filter(member => {
-      // Only show members if there's a search term
-      if (!searchTerm.trim()) {
-        return false; // Return empty results when no search term is provided
+      // If no search term and no skills selected, don't show any members
+      if (!searchTerm.trim() && selectedSkills.length === 0) {
+        return false;
       }
 
-      const searchTermLower = searchTerm.toLowerCase();
+      // If we're searching by name or skills
+      if (searchTerm.trim()) {
+        const searchTermLower = searchTerm.toLowerCase();
+        const isSkillQuery = isSkillSearch(searchTermLower);
 
-      // Check if name matches
-      const nameMatches = member.name.displayName.toLowerCase().includes(searchTermLower);
+        // If it's a skill query, check if the member has that skill
+        if (isSkillQuery) {
+          // Find all skills this member has
+          const memberSkills = [
+            ...Object.keys(member.skillInfo.frontend).filter(k => k !== 'overall'),
+            ...Object.keys(member.skillInfo.backend).filter(k => k !== 'Overall'),
+            ...(member.skillInfo.followup.other_skills
+              ? member.skillInfo.followup.other_skills.split(',').map(s => s.trim())
+              : []),
+          ];
 
-      // Check if any skill matches (not just top skills)
-      const hasSkill = member.topSkills.some(skill =>
-        skill.toLowerCase().includes(searchTermLower),
-      );
+          // See if any of the member's skills match our query
+          const skillMatches = memberSkills.some(
+            skill =>
+              skill.toLowerCase() === searchTermLower ||
+              skill.toLowerCase().startsWith(searchTermLower),
+          );
 
-      // Check all frontend skills
-      const hasFrontendSkill = Object.keys(member.skillInfo.frontend).some(
-        skill => skill.toLowerCase() !== 'overall' && skill.toLowerCase().includes(searchTermLower),
-      );
-
-      // Check all backend skills
-      const hasBackendSkill = Object.keys(member.skillInfo.backend).some(
-        skill => skill.toLowerCase() !== 'overall' && skill.toLowerCase().includes(searchTermLower),
-      );
-
-      // Check other skills from followup
-      const hasOtherSkill = member.skillInfo.followup.other_skills
-        ? member.skillInfo.followup.other_skills
-            .toLowerCase()
-            .split(',')
-            .some(skill => skill.trim().includes(searchTermLower))
-        : false;
-
-      const matchesSearch =
-        nameMatches || hasSkill || hasFrontendSkill || hasBackendSkill || hasOtherSkill;
-
-      if (filterTeam) {
-        return matchesSearch && member.isInUserTeam;
+          if (!skillMatches) return false;
+        } else {
+          // It's a name search, check if name matches
+          const nameMatches = member.name.displayName.toLowerCase().includes(searchTermLower);
+          if (!nameMatches) return false;
+        }
       }
 
-      return matchesSearch;
+      // Apply team filter if active
+      if (filterTeam && !member.isInUserTeam) {
+        return false;
+      }
+
+      // If we reached here, include the member
+      return true;
     })
     .map(member => {
-      // For each filtered member, try to find a skill-specific score
-      const skillScore = findSkillScore(member, searchTerm);
+      // Calculate the display score
+      let displayScore = calculateScore(member);
 
-      // If we found a skill-specific score and it's not a name search, use it
-      // (We don't want to show skill scores when searching by name)
-      const isNameSearch = member.name.displayName.toLowerCase().includes(searchTerm.toLowerCase());
+      // If we're searching and not using skill filters
+      if (searchTerm.trim() && selectedSkills.length === 0) {
+        // Check if search term matches a skill
+        if (isSkillSearch(searchTerm.trim())) {
+          // Get exact skill score for the matching skill
+          const exactSkillScore = getSkillScore(member, searchTerm.trim());
+          if (exactSkillScore !== null) {
+            displayScore = exactSkillScore;
+          }
+        }
+      }
 
       return {
         ...member,
-        // Use skill-specific score if available and not searching by name,
-        // otherwise use the overall calculated score
-        displayScore: skillScore && !isNameSearch ? skillScore : member.calculatedScore,
+        displayScore,
       };
     })
     .sort((a, b) => {
-      // Resort based on the display score (skill-specific or overall)
-      return b.displayScore - a.displayScore;
+      if (sortOrder === 'alpha' && !searchTerm && selectedSkills.length === 0) {
+        // Sort alphabetically when explicitly chosen and no filters
+        return a.name.displayName.localeCompare(b.name.displayName);
+      }
+
+      // Default sort by score (descending)
+      if (b.displayScore !== a.displayScore) {
+        return b.displayScore - a.displayScore;
+      }
+
+      // For members with same score, sort alphabetically (A-Z)
+      return a.name.displayName.localeCompare(b.name.displayName);
     });
 
   // Pagination logic
@@ -185,38 +373,19 @@ const CommunityMembers = () => {
     setCurrentPage(1); // Reset to first page when filter changes
   };
 
-  // Determine if we're showing skill-specific scores (for help text)
-  const isSkillSearch =
-    searchTerm &&
-    filteredMembers.some(member => {
-      // Check if search term matches any skill, not just top skills
-      const searchTermLower = searchTerm.toLowerCase();
+  const toggleSkillsFilter = () => {
+    setShowSkillsFilter(!showSkillsFilter);
+  };
 
-      // Check top skills (already calculated)
-      const matchesTopSkill = member.topSkills.some(skill =>
-        skill.toLowerCase().includes(searchTermLower),
-      );
-
-      // Check frontend skills
-      const matchesFrontendSkill = Object.keys(member.skillInfo.frontend).some(
-        skill => skill.toLowerCase() !== 'overall' && skill.toLowerCase().includes(searchTermLower),
-      );
-
-      // Check backend skills
-      const matchesBackendSkill = Object.keys(member.skillInfo.backend).some(
-        skill => skill.toLowerCase() !== 'overall' && skill.toLowerCase().includes(searchTermLower),
-      );
-
-      // Check other skills
-      const matchesOtherSkill = member.skillInfo.followup.other_skills
-        ? member.skillInfo.followup.other_skills
-            .toLowerCase()
-            .split(',')
-            .some(skill => skill.trim().includes(searchTermLower))
-        : false;
-
-      return matchesTopSkill || matchesFrontendSkill || matchesBackendSkill || matchesOtherSkill;
-    });
+  // Update help text for skill search
+  const matchingSkill = searchTerm.trim()
+    ? [
+        ...availableSkills.frontend,
+        ...availableSkills.backend,
+        ...availableSkills.general,
+        ...availableSkills.other,
+      ].find(skill => skill.toLowerCase().startsWith(searchTerm.trim().toLowerCase()))
+    : null;
 
   return (
     <div className="community-members">
@@ -242,25 +411,127 @@ const CommunityMembers = () => {
               <i className="fa fa-filter"></i>
               {filterTeam ? 'Show All' : 'My Team Only'}
             </button>
-            <button className="sort-button">
-              <i className="fa fa-sort-alpha-asc"></i> Sort
+            <button
+              className={`filter-button ${showSkillsFilter ? 'active' : ''}`}
+              onClick={toggleSkillsFilter}
+            >
+              <i className="fa fa-sliders"></i>
+              {selectedSkills.length > 0 ? `Skills (${selectedSkills.length})` : 'Skills Filter'}
+            </button>
+            <button
+              className={`sort-button ${sortOrder === 'alpha' ? 'active' : ''}`}
+              onClick={toggleSortOrder}
+            >
+              <i
+                className={`fa fa-sort-${sortOrder === 'alpha' ? 'alpha-asc' : 'numeric-desc'}`}
+              ></i>
+              {sortOrder === 'alpha' ? 'A-Z' : 'By Score'}
             </button>
           </div>
         </div>
 
+        {showSkillsFilter && (
+          <div className="community-members__skills-filter">
+            <div className="skills-filter__section">
+              <h3>Frontend Skills</h3>
+              <div className="skills-filter__options">
+                {availableSkills.frontend.map(skill => (
+                  <label key={`frontend-${skill}`} className="skill-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={selectedSkills.includes(skill)}
+                      onChange={() => toggleSkill(skill)}
+                    />
+                    <span>{skill}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div className="skills-filter__section">
+              <h3>Backend Skills</h3>
+              <div className="skills-filter__options">
+                {availableSkills.backend.map(skill => (
+                  <label key={`backend-${skill}`} className="skill-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={selectedSkills.includes(skill)}
+                      onChange={() => toggleSkill(skill)}
+                    />
+                    <span>{skill}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div className="skills-filter__section">
+              <h3>General Skills</h3>
+              <div className="skills-filter__options">
+                {availableSkills.general.map(skill => (
+                  <label key={`general-${skill}`} className="skill-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={selectedSkills.includes(skill)}
+                      onChange={() => toggleSkill(skill)}
+                    />
+                    <span>{skill}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div className="skills-filter__section">
+              <h3>Other Skills</h3>
+              <div className="skills-filter__options">
+                {availableSkills.other.map(skill => (
+                  <label key={`other-${skill}`} className="skill-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={selectedSkills.includes(skill)}
+                      onChange={() => toggleSkill(skill)}
+                    />
+                    <span>{skill}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div className="skills-filter__actions">
+              <button
+                className="clear-button"
+                onClick={() => setSelectedSkills([])}
+                disabled={selectedSkills.length === 0}
+              >
+                Clear All
+              </button>
+            </div>
+          </div>
+        )}
+
         <div className="community-members__help-text">
-          {!searchTerm.trim() ? (
-            <span>Enter a member name or skill to search for community members.</span>
-          ) : isSkillSearch ? (
+          {selectedSkills.length > 0 ? (
             <span>
-              Scores shown are specific to the skill "{searchTerm}" on a scale of 1-5. Members are
-              ranked from highest to lowest skill level.
+              Scores shown are based on the selected skills ({selectedSkills.length} selected).
+              Members are ranked from highest to lowest average skill level.
+            </span>
+          ) : !searchTerm.trim() ? (
+            <span>
+              Select skills from the Skills Filter or enter a search term to view community members.
+            </span>
+          ) : matchingSkill ? (
+            <span>
+              Showing members with "{matchingSkill}" skill. The score displayed is the exact skill
+              rating on a scale of 1-5.
+            </span>
+          ) : filteredMembers.length > 0 ? (
+            <span>
+              When searching by name or multiple skills, the score represents the average value.
+              Members are ranked based on their scoring.
             </span>
           ) : (
             <span>
-              When multiple options/filters are selected, the score represents the average value,
-              and the options are ranked based on their scoring. Click over each profile to know
-              more details.
+              No members found matching "{searchTerm}". Try a different search term or select skills
+              from the filter.
             </span>
           )}
         </div>
@@ -284,9 +555,9 @@ const CommunityMembers = () => {
           ))
         ) : (
           <div className="community-members__no-results">
-            {searchTerm.trim()
+            {searchTerm.trim() || selectedSkills.length > 0
               ? 'No members found matching your criteria.'
-              : 'Start typing to search for members.'}
+              : 'Select skills from the Skills Filter or enter a search term to see community members.'}
           </div>
         )}
       </div>
