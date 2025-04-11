@@ -10,7 +10,6 @@ import './CommunityMembers.css';
 const CommunityMembers = () => {
   const [members, setMembers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterTeam, setFilterTeam] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedSkills, setSelectedSkills] = useState([]);
   const [showSkillsFilter, setShowSkillsFilter] = useState(false);
@@ -275,7 +274,7 @@ const CommunityMembers = () => {
     );
   };
 
-  // Filter members based on search term, team filter, and selected skills
+  // Filter members based on search term and selected skills
   const filteredMembers = members
     .filter(member => {
       // If no search term and no skills selected, don't show any members
@@ -312,11 +311,6 @@ const CommunityMembers = () => {
           const nameMatches = member.name.displayName.toLowerCase().includes(searchTermLower);
           if (!nameMatches) return false;
         }
-      }
-
-      // Apply team filter if active
-      if (filterTeam && !member.isInUserTeam) {
-        return false;
       }
 
       // If we reached here, include the member
@@ -368,11 +362,6 @@ const CommunityMembers = () => {
     setCurrentPage(pageNumber);
   };
 
-  const toggleTeamFilter = () => {
-    setFilterTeam(!filterTeam);
-    setCurrentPage(1); // Reset to first page when filter changes
-  };
-
   const toggleSkillsFilter = () => {
     setShowSkillsFilter(!showSkillsFilter);
   };
@@ -404,13 +393,6 @@ const CommunityMembers = () => {
           </div>
 
           <div className="community-members__filters">
-            <button
-              className={`filter-button ${filterTeam ? 'active' : ''}`}
-              onClick={toggleTeamFilter}
-            >
-              <i className="fa fa-filter"></i>
-              {filterTeam ? 'Show All' : 'My Team Only'}
-            </button>
             <button
               className={`filter-button ${showSkillsFilter ? 'active' : ''}`}
               onClick={toggleSkillsFilter}
@@ -480,22 +462,6 @@ const CommunityMembers = () => {
               </div>
             </div>
 
-            <div className="skills-filter__section">
-              <h3>Other Skills</h3>
-              <div className="skills-filter__options">
-                {availableSkills.other.map(skill => (
-                  <label key={`other-${skill}`} className="skill-checkbox">
-                    <input
-                      type="checkbox"
-                      checked={selectedSkills.includes(skill)}
-                      onChange={() => toggleSkill(skill)}
-                    />
-                    <span>{skill}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
             <div className="skills-filter__actions">
               <button
                 className="clear-button"
@@ -548,7 +514,6 @@ const CommunityMembers = () => {
               score={member.displayScore}
               skills={member.topSkills}
               profileImage={member.profileImage}
-              isInUserTeam={member.isInUserTeam}
               github={member.socialHandles.github}
               location={member.skillInfo.general.location}
             />
