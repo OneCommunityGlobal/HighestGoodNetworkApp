@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable prettier/prettier */
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import cn from 'classnames';
 import styles from './NotFoundPage.module.css';
@@ -10,6 +10,11 @@ import NotFoundDarkImage from '../../assets/images/404ImageDarkMode1.png';
 
 function NotFoundPage() {
   const darkMode = useSelector(state => state.theme.darkMode);
+  const history = useHistory();
+
+  const handleReportClick = () => {
+    history.push('/dashboard?reportModal=true');
+  };
 
   return (
     <div className={cn(styles.notFoundContainer, darkMode ? cn(
@@ -28,6 +33,17 @@ function NotFoundPage() {
           <Link to="/" className={styles.backHomeLink}>
             Home
           </Link>
+        </p>
+        <p>
+          Report the issue at{' '}
+          <button
+            type="button"
+            onClick={handleReportClick}
+            className={styles.backHomeLink} // reuse Home link style for consistency
+            style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+            >
+            here
+          </button>
         </p>
       </div>
     </div>

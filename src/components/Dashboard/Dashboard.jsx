@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Container } from 'reactstrap';
 import { connect, useSelector } from 'react-redux';
+import { useLocation, useHistory } from 'react-router-dom';
 import Leaderboard from '../LeaderBoard';
 import WeeklySummary from '../WeeklySummary/WeeklySummary';
 import Badge from '../Badge';
@@ -15,6 +16,7 @@ import {
   DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
   PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
 } from 'utils/constants';
+import { useSuggestionModalTrigger } from '../../context/SuggestionModalTriggerContext';
 
 export function Dashboard(props) {
   const [popup, setPopup] = useState(false);
@@ -53,6 +55,28 @@ export function Dashboard(props) {
     setViewingUser(sessionStorageData || false);
     setDisplayUserId(sessionStorageData ? sessionStorageData.userId : authUser.userid);
   };
+
+  const location = useLocation();
+  const history = useHistory();
+  const triggerRef = useSuggestionModalTrigger();
+  
+  const [shouldTriggerModal, setShouldTriggerModal] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get('reportModal') === 'true') {
+      console.log('✅ Found reportModal param, will wait for trigger to be ready');
+      setShouldTriggerModal(true);
+    }
+  }, [location.search]);
+
+  useEffect(() => {
+    if (shouldTriggerModal && triggerRef.current) {
+      triggerRef.current(); // OPEN MODAL
+      setShouldTriggerModal(false);
+      history.replace('/dashboard'); // clean up URL
+    }
+  }, [shouldTriggerModal, triggerRef, history]);
 
   useEffect(() => {
     window.addEventListener('storage', handleStorageEvent);

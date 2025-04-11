@@ -21,6 +21,7 @@ import { ENDPOINTS, ApiEndpoint } from 'utils/URL';
 import axios from 'axios';
 import hasPermission from 'utils/permissions';
 import { toast } from 'react-toastify';
+import { useSuggestionModalTrigger } from '../../context/SuggestionModalTriggerContext';
 import TaskIcon from './task_icon.png';
 import BadgesIcon from './badges_icon.png';
 import BlueScoreIcon from './bluesquare_icon.png';
@@ -35,6 +36,8 @@ function SummaryBar(props) {
   const { displayUserId, summaryBarData } = props;
   // from store
   const { authUser, displayUserProfile, displayUserTask, darkMode } = props;
+
+  const [showSuggestionModal, setShowSuggestionModal] = useState(false);
 
   const authId = authUser.userid;
   const isAuthUser = displayUserId === authId;
@@ -59,7 +62,6 @@ function SummaryBar(props) {
   const [takeInput, setTakeInput] = useState(false);
   const [extraFieldForSuggestionForm, setExtraFieldForSuggestionForm] = useState('');
   const [editType, setEditType] = useState('');
-  const [showSuggestionModal, setShowSuggestionModal] = useState(false);
   const [report, setBugReport] = useState(initialInfo);
 
   const [categoryDescription, setCategoryDescription] = useState();
@@ -406,6 +408,16 @@ function SummaryBar(props) {
     }
   }, [displayUserProfile, summaryBarData]);
 
+  const triggerRef = useSuggestionModalTrigger();
+
+  useEffect(() => {
+    if (triggerRef) {
+      triggerRef.current = () => {
+        setShowSuggestionModal(true);
+      };
+    }
+  }, [triggerRef]);
+
   const getContainerClass = () => {
     if (isAuthUser || canEditData()) {
       return darkMode
@@ -595,7 +607,6 @@ function SummaryBar(props) {
             </div>
           </Row>
         </Col>
-
         <Col className="d-flex col-lg-3 col-12 no-gutters">
           <Row className="no-gutters w-100">
             {renderSummary()}
@@ -617,7 +628,6 @@ function SummaryBar(props) {
             </div>
           </Row>
         </Col>
-
         <Col
           className={`m-auto mt-2 col-lg-4 col-12 badge-list ${darkMode ? 'bg-space-cadet' : ''}`}
         >
@@ -924,7 +934,6 @@ function SummaryBar(props) {
             </Form>
           </ModalBody>
         </Modal>
-
         <Modal isOpen={report.in} toggle={openReport} className={fontColor}>
           <ModalHeader className={headerBg}>Bug Report</ModalHeader>
           <ModalBody className={bodyBg}>

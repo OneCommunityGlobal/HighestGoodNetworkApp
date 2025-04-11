@@ -85,6 +85,7 @@ import EPLogin from './components/EductionPortal/Login';
 import EPDashboard from './components/EductionPortal';
 
 
+import { SuggestionModalProvider } from './context/SuggestionModalTriggerContext'; // Adjust path if needed
 
 
 // eslint-disable-next-line import/order, import/no-unresolved
@@ -150,6 +151,10 @@ export default (
     <Route path="/form" component={FormEditor} />
     <Route path="/formviewer" component={FormViewer} />
     <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
+    <Route
+    path ="/"
+    render={() => (
+    <SuggestionModalProvider>
     <>
       {/* Comment out the Header component and its import during phase 2 development. */}
       <Header />
@@ -457,5 +462,8 @@ export default (
         <Route path="*" component={NotFoundPage} />
       </Switch>
     </>
+    </SuggestionModalProvider>
+    )}
+    />
   </Switch>
 );
