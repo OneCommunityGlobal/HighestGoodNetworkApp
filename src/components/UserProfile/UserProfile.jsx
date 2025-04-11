@@ -205,26 +205,42 @@ function UserProfile(props) {
     }
   };
 
+  const updateProjetTouserProfile = () => {
+    return new Promise((resolve) => {
+      checkIsProjectsEqual();
+      
+      setUserProfile(prevState => {
+        const updatedProfile = prevState;
+        if(updatedProfile){
+          updatedProfile.projects = projects || updatedProfile.projects;
+        }
+        return updatedProfile
+      });
+      setOriginalUserProfile(prevState => {
+        const updatedOriginalProfile = prevState;
+        if(updatedOriginalProfile){
+          updatedOriginalProfile.projects = projects || updatedOriginalProfile.projects;
+        }
+        return updatedOriginalProfile
+      });
+  
+    });
+  };
+  
+
   useEffect(() => {
     userProfileRef.current = userProfile;
   });
 
   useEffect(() => {
-    checkIsProjectsEqual();
-    setUserProfile(prevState => {
-      const updatedProfile = prevState;
-      if(updatedProfile){
-        updatedProfile.projects = projects || updatedProfile.projects;
-      }
-      return updatedProfile
-    });
-    setOriginalUserProfile(prevState => {
-      const updatedOriginalProfile = prevState;
-      if(updatedOriginalProfile){
-        updatedOriginalProfile.projects = projects || updatedOriginalProfile.projects;
-      }
-      return updatedOriginalProfile
-    });
+     const helper = async ()=>{
+        try {
+          await updateProjetTouserProfile();
+        } catch (error) {
+          
+        }
+     }
+    helper();
   }, [projects]);
 
   useEffect(() => {
