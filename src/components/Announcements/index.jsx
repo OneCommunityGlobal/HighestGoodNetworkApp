@@ -6,6 +6,7 @@ import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
 import { FaInstagramSquare } from 'react-icons/fa';
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
+import { loadFacebookSDK, logInToFB, logOutFromFB } from './InstagramPostDetails';
 
 function Announcements({ title, email }) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -17,11 +18,34 @@ function Announcements({ title, email }) {
   const [showEditor, setShowEditor] = useState(true); // State to control rendering of the editor
   const tinymce = useRef(null);
 
+  const [facebookUserAccessToken, setFacebookUserAccessToken] = useState('');
+
   useEffect(() => {
-    // Toggle the showEditor state to force re-render when dark mode changes
     setShowEditor(false);
     setTimeout(() => setShowEditor(true), 0);
   }, [darkMode]);
+
+  useEffect(() => {
+    loadFacebookSDK();
+  }, []);
+
+  // Check if the user is logged in to Facebook and get the access token
+  useEffect(() => {
+    const checkLoginStatus = () => {
+      if (window.FB) {
+        window.FB.getLoginStatus(response => {
+          setFacebookUserAccessToken(response.authResponse?.accessToken);
+        });
+      }
+    };
+    if (window.FB) {
+      checkLoginStatus();
+    } else {
+      window.fbAsyncInit = function() {
+        checkLoginStatus();
+      };
+    }
+  }, []);
 
   const editorInit = {
     license_key: 'gpl',
@@ -293,6 +317,27 @@ function Announcements({ title, email }) {
           />
         </div>
       </div>
+      <h3>Log in with Facebook</h3>
+      {facebookUserAccessToken ? (
+        <div>
+          <button
+            type="button"
+            onClick={logOutFromFB(setFacebookUserAccessToken)}
+            className="btn action-btn"
+          >
+            Log out of Facebook
+          </button>
+          <p>access token: {facebookUserAccessToken}</p>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={logInToFB(setFacebookUserAccessToken)}
+          className="btn action-btn"
+        >
+          Login with Facebook
+        </button>
+      )}
     </div>
   );
 }
