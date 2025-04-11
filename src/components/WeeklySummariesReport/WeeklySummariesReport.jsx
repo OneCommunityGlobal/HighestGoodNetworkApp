@@ -672,7 +672,7 @@ export class WeeklySummariesReport extends Component {
     try {
       const { replaceCode, selectedCodes, summaries, teamCodes } = this.state;
       this.setState({ replaceCodeLoading: true });
-  
+
       const isValidCode = fullCodeRegex.test(replaceCode);
       if (!isValidCode) {
         this.setState({
@@ -680,15 +680,15 @@ export class WeeklySummariesReport extends Component {
         });
         return;
       }
-  
+
       const oldTeamCodes = selectedCodes.map(code => code.value);
-  
+
       // Call the new backend API with a POST request
       const response = await axios.post(ENDPOINTS.REPLACE_TEAM_CODE, {
         oldTeamCodes,
         newTeamCode: replaceCode,
       });
-  
+
       if (response.data?.updatedCount > 0) {
         // Update the summaries in the local state
         const updatedSummaries = summaries.map(summary => {
@@ -697,25 +697,29 @@ export class WeeklySummariesReport extends Component {
           }
           return summary;
         });
-  
+
         // Remove old team codes and add the new team code in teamCodes
         const updatedTeamCodes = teamCodes
           .filter(teamCode => !oldTeamCodes.includes(teamCode.value)) // Remove old team codes
           .concat({
             value: replaceCode,
-            label: `${replaceCode} (${updatedSummaries.filter(s => s.teamCode === replaceCode).length})`,
+            label: `${replaceCode} (${
+              updatedSummaries.filter(s => s.teamCode === replaceCode).length
+            })`,
             _ids: updatedSummaries.filter(s => s.teamCode === replaceCode).map(s => s._id),
           });
-  
+
         // Remove old team codes and add the new team code in selectedCodes
         const updatedSelectedCodes = selectedCodes
           .filter(code => !oldTeamCodes.includes(code.value)) // Remove old team codes
           .concat({
             value: replaceCode,
-            label: `${replaceCode} (${updatedSummaries.filter(s => s.teamCode === replaceCode).length})`,
+            label: `${replaceCode} (${
+              updatedSummaries.filter(s => s.teamCode === replaceCode).length
+            })`,
             _ids: updatedSummaries.filter(s => s.teamCode === replaceCode).map(s => s._id),
           });
-  
+
         this.setState({
           summaries: updatedSummaries,
           teamCodes: updatedTeamCodes,
@@ -723,7 +727,7 @@ export class WeeklySummariesReport extends Component {
           replaceCode: '',
           replaceCodeError: null,
         });
-  
+
         // Re-filter the summaries to update the table
         this.filterWeeklySummaries();
       } else {
@@ -732,7 +736,6 @@ export class WeeklySummariesReport extends Component {
         });
       }
     } catch (error) {
-      console.error('Error in handleAllTeamCodeReplace:', error); // Log the error for debugging
       this.setState({
         replaceCodeError: 'Something went wrong. Please try again!',
       });
