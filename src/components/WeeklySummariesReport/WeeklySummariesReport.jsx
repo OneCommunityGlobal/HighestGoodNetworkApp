@@ -447,6 +447,8 @@ export class WeeklySummariesReport extends Component {
       );
     });
 
+    this.setState({ filteredSummaries: temp });
+
     if (selectedCodes[0]?.value === '' || selectedCodes.length >= 52) {
       if (selectedCodes.length >= 52) {
         selectedCodes.forEach(code => {
@@ -668,66 +670,71 @@ export class WeeklySummariesReport extends Component {
 
   handleAllTeamCodeReplace = async () => {
     try {
-      const { replaceCode } = this.state;
+      const { replaceCode, selectedCodes, summaries, teamCodes } = this.state;
       this.setState({ replaceCodeLoading: true });
-      const boolean = fullCodeRegex.test(replaceCode);
-      if (boolean) {
-        const userIds = this.state.selectedCodes.flatMap(item => item._ids);
-        const url = ENDPOINTS.USERS_ALLTEAMCODE_CHANGE;
-        const payload = {
-          userIds,
-          replaceCode,
-        };
-        try {
-          const data = await axios.patch(url, payload);
-          const userObjs = userIds.reduce((acc, curr) => {
-            acc[curr] = true;
-            return acc;
-          }, {});
-          if (data?.data?.isUpdated) {
-            this.handleTeamCodeChange('', replaceCode, userObjs);
-
-            await this.props.getAllTeamCode();
-
-            const updatedSummaries = [...this.state.summaries];
-            const teamCodeGroup = {};
-
-            updatedSummaries.forEach(summary => {
-              const code = summary.teamCode || 'noCodeLabel';
-              if (teamCodeGroup[code]) {
-                teamCodeGroup[code].push(summary);
-              } else {
-                teamCodeGroup[code] = [summary];
-              }
-            });
-
-            const updatedTeamCodes = Object.keys(teamCodeGroup).map(code => ({
-              value: code,
-              label: `${code} (${teamCodeGroup[code].length})`,
-              _ids: teamCodeGroup[code]?.map(item => item._id),
-            }));
-
-            this.props.setTeamCodes(updatedTeamCodes);
-            this.setState({ replaceCode: '', replaceCodeError: null });
-            this.filterWeeklySummaries();
-          } else {
-            this.setState({
-              replaceCode: '',
-              replaceCodeError: 'Update failed Please try again with another code!',
-            });
-          }
-        } catch (err) {
-          this.setState({ replaceCode: '', replaceCodeError: err.toJSON().message });
-        }
-      } else {
+  
+      const isValidCode = fullCodeRegex.test(replaceCode);
+      if (!isValidCode) {
         this.setState({
           replaceCodeError: 'NOT SAVED! The code must be between 5 and 7 characters long.',
         });
+        return;
+      }
+  
+      const oldTeamCodes = selectedCodes.map(code => code.value);
+  
+      // Call the new backend API with a POST request
+      const response = await axios.post(ENDPOINTS.REPLACE_TEAM_CODE, {
+        oldTeamCodes,
+        newTeamCode: replaceCode,
+      });
+  
+      if (response.data?.updatedCount > 0) {
+        // Update the summaries in the local state
+        const updatedSummaries = summaries.map(summary => {
+          if (oldTeamCodes.includes(summary.teamCode)) {
+            return { ...summary, teamCode: replaceCode };
+          }
+          return summary;
+        });
+  
+        // Remove old team codes and add the new team code in teamCodes
+        const updatedTeamCodes = teamCodes
+          .filter(teamCode => !oldTeamCodes.includes(teamCode.value)) // Remove old team codes
+          .concat({
+            value: replaceCode,
+            label: `${replaceCode} (${updatedSummaries.filter(s => s.teamCode === replaceCode).length})`,
+            _ids: updatedSummaries.filter(s => s.teamCode === replaceCode).map(s => s._id),
+          });
+  
+        // Remove old team codes and add the new team code in selectedCodes
+        const updatedSelectedCodes = selectedCodes
+          .filter(code => !oldTeamCodes.includes(code.value)) // Remove old team codes
+          .concat({
+            value: replaceCode,
+            label: `${replaceCode} (${updatedSummaries.filter(s => s.teamCode === replaceCode).length})`,
+            _ids: updatedSummaries.filter(s => s.teamCode === replaceCode).map(s => s._id),
+          });
+  
+        this.setState({
+          summaries: updatedSummaries,
+          teamCodes: updatedTeamCodes,
+          selectedCodes: updatedSelectedCodes,
+          replaceCode: '',
+          replaceCodeError: null,
+        });
+  
+        // Re-filter the summaries to update the table
+        this.filterWeeklySummaries();
+      } else {
+        this.setState({
+          replaceCodeError: 'No users found with the selected team codes.',
+        });
       }
     } catch (error) {
+      console.error('Error in handleAllTeamCodeReplace:', error); // Log the error for debugging
       this.setState({
-        replaceCode: '',
-        replaceCodeError: 'Something went wrong please try again!',
+        replaceCodeError: 'Something went wrong. Please try again!',
       });
     } finally {
       this.setState({ replaceCodeLoading: false });
