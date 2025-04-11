@@ -5,24 +5,23 @@
  * @param {func} props.onClick
  * @param {bool} props.canChange The permission to change the status via onClick
  */
-const ActiveCell = props => {
+function ActiveCell(props) {
   return (
     <span
       style={{ fontSize: '1.5rem', cursor: props.canChange ? 'pointer' : 'default' }}
       className={props.isActive ? 'activeUser' : 'notActiveUser'}
       id={props.index === undefined ? undefined : `active_cell_${props.index}`}
-      title={
-        props.canChange
-          ? 'Click here to change the user status'
-          : props.isActive
-          ? 'Active'
-          : 'Inactive'
-      }
+      title={(() => {
+        if (props.canChange) {
+          return 'Click here to change the user status';
+        }
+        return props.isActive ? 'Active' : 'Inactive';
+      })()}
       onClick={props.canChange ? props.onClick : () => {}}
     >
       <i className="fa fa-circle" aria-hidden="true" />
     </span>
   );
-};
+}
 
 export default ActiveCell;

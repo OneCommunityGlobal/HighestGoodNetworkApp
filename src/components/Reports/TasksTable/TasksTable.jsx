@@ -3,11 +3,8 @@
 /* eslint-disable camelcase */
 /* eslint-disable import/prefer-default-export */
 import { useState, useEffect, useRef } from 'react';
-import { useSelector } from 'react-redux';
 import '../../Teams/Team.css';
 import 'react-datepicker/dist/react-datepicker.css';
-// eslint-disable-next-line import/order
-import { getTasksTableData } from './selectors';
 import './TasksTable.css';
 import Select from 'react-select';
 import { Checkbox } from 'components/common/Checkbox';
