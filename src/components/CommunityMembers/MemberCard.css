@@ -1,0 +1,148 @@
+.member-card {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.member-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.member-card--team {
+  border: 2px solid #4285F4;
+}
+
+.member-card__image-container {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-bottom: 15px;
+  background-color: #f5f5f5;
+}
+
+.member-card__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.member-card__name {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 10px;
+  text-align: center;
+}
+
+.member-card__location {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.member-card__contact {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 15px;
+  width: 100%;
+}
+
+.member-card__email,
+.member-card__slack,
+.member-card__github {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #666;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 4px;
+  transition: color 0.2s;
+}
+
+.member-card__email:hover,
+.member-card__slack:hover,
+.member-card__github:hover {
+  color: #4285F4;
+  text-decoration: underline;
+}
+
+.member-card__github {
+  color: #24292e;
+}
+
+.member-card__github:hover {
+  color: #0366d6;
+}
+
+.member-card__score-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+.member-card__score-label {
+  font-weight: 600;
+  color: #333;
+}
+
+.member-card__score {
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.member-card__skills-container {
+  width: 100%;
+  margin-top: 5px;
+}
+
+.member-card__skills-label {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.member-card__skills {
+  color: #555;
+  font-size: 0.9rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .member-card {
+    padding: 15px;
+  }
+  
+  .member-card__image-container {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .member-card__name {
+    font-size: 1.3rem;
+  }
+}
+
+/* Accessibility: focus states */
+.member-card__email:focus,
+.member-card__slack:focus,
+.member-card__github:focus {
+  outline: 2px solid #4285F4;
+  outline-offset: 2px;
+} 
