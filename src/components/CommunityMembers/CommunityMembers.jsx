@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import MemberCard from './MemberCard';
 import { mockMembers } from './mockData';
 import './CommunityMembers.css';
@@ -8,6 +9,7 @@ import './CommunityMembers.css';
  * with their scores and skills, along with filtering and sorting options.
  */
 const CommunityMembers = () => {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [members, setMembers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -47,17 +49,51 @@ const CommunityMembers = () => {
       'leadership_skills',
       'leadership_experience',
     ],
-    other: [
-      'machine learning',
-      'project management',
-      'team leadership',
-      'devops',
-      'cloud infrastructure',
-      'content management',
-    ],
   };
 
   const membersPerPage = 6;
+
+  // Apply dark mode to body and parent containers
+  useEffect(() => {
+    // Find parent container and apply dark mode class if needed
+    const applyDarkModeToParent = element => {
+      while (element && element.parentElement) {
+        element = element.parentElement;
+        if (darkMode) {
+          element.classList.add('dark-mode');
+        } else {
+          element.classList.remove('dark-mode');
+        }
+      }
+    };
+
+    // Get the component's element
+    const communityMembersElement = document.querySelector('.community-members');
+    if (communityMembersElement) {
+      applyDarkModeToParent(communityMembersElement);
+    }
+
+    // Apply dark mode to body
+    if (darkMode) {
+      document.body.classList.add('dark-mode');
+    } else {
+      document.body.classList.remove('dark-mode');
+    }
+
+    // Cleanup function
+    return () => {
+      document.body.classList.remove('dark-mode');
+
+      // Clean up parent elements
+      if (communityMembersElement) {
+        let element = communityMembersElement;
+        while (element && element.parentElement) {
+          element = element.parentElement;
+          element.classList.remove('dark-mode');
+        }
+      }
+    };
+  }, [darkMode]);
 
   // Helper function to calculate score based on selected skills or overall score
   const calculateScore = member => {
@@ -105,17 +141,6 @@ const CommunityMembers = () => {
           ].includes(skill)
         ) {
           selectedScores.push(parseInt(member.skillInfo.general[skill], 10));
-        }
-        // Check other skills (these don't have numeric ratings)
-        else if (member.skillInfo.followup.other_skills) {
-          const otherSkills = member.skillInfo.followup.other_skills
-            .split(',')
-            .map(s => s.trim().toLowerCase());
-
-          if (otherSkills.includes(skill.toLowerCase())) {
-            // For skills without ratings, we'll use a default value of 3
-            selectedScores.push(3);
-          }
         }
       }
 
@@ -196,7 +221,6 @@ const CommunityMembers = () => {
       ...availableSkills.frontend,
       ...availableSkills.backend,
       ...availableSkills.general,
-      ...availableSkills.other,
     ];
 
     // Find exact or best partial match
@@ -242,17 +266,6 @@ const CommunityMembers = () => {
       }
     }
 
-    // For other skills, if it matches one of their "other skills", return a default value
-    if (member.skillInfo.followup.other_skills) {
-      const otherSkills = member.skillInfo.followup.other_skills
-        .split(',')
-        .map(s => s.trim().toLowerCase());
-
-      if (otherSkills.some(skill => skill === matchingSkillLower)) {
-        return 3; // Default value for other skills
-      }
-    }
-
     // No match found
     return null;
   };
@@ -266,7 +279,6 @@ const CommunityMembers = () => {
       ...availableSkills.frontend,
       ...availableSkills.backend,
       ...availableSkills.general,
-      ...availableSkills.other,
     ];
 
     return allSkills.some(
@@ -293,9 +305,6 @@ const CommunityMembers = () => {
           const memberSkills = [
             ...Object.keys(member.skillInfo.frontend).filter(k => k !== 'overall'),
             ...Object.keys(member.skillInfo.backend).filter(k => k !== 'Overall'),
-            ...(member.skillInfo.followup.other_skills
-              ? member.skillInfo.followup.other_skills.split(',').map(s => s.trim())
-              : []),
           ];
 
           // See if any of the member's skills match our query
@@ -372,12 +381,11 @@ const CommunityMembers = () => {
         ...availableSkills.frontend,
         ...availableSkills.backend,
         ...availableSkills.general,
-        ...availableSkills.other,
       ].find(skill => skill.toLowerCase().startsWith(searchTerm.trim().toLowerCase()))
     : null;
 
   return (
-    <div className="community-members">
+    <div className={`community-members ${darkMode ? 'dark-mode' : ''}`}>
       <div className="community-members__header">
         <h1>One Community Members</h1>
 
@@ -516,6 +524,7 @@ const CommunityMembers = () => {
               profileImage={member.profileImage}
               github={member.socialHandles.github}
               location={member.skillInfo.general.location}
+              darkMode={darkMode}
             />
           ))
         ) : (

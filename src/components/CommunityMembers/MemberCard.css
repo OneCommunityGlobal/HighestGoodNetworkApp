@@ -145,4 +145,80 @@
 .member-card__github:focus {
   outline: 2px solid #4285F4;
   outline-offset: 2px;
+}
+
+/* Dark Mode Styles */
+.dark-mode .member-card,
+.member-card.dark-mode {
+  background-color: #1c2541 !important; /* bg-space-cadet */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.dark-mode .member-card:hover,
+.member-card.dark-mode:hover {
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+}
+
+/* Add back the missing styles */
+.dark-mode .member-card--team,
+.member-card.dark-mode.member-card--team {
+  border: 2px solid #007bff !important; /* bg-azure */
+}
+
+.dark-mode .member-card__image-container,
+.member-card.dark-mode .member-card__image-container {
+  background-color: #2f4157 !important; /* bg-yinmn-blue-light */
+}
+
+.dark-mode .member-card .member-card__name,
+.member-card.dark-mode .member-card__name {
+  color: #ffffff !important;
+}
+
+.dark-mode .member-card .member-card__location,
+.member-card.dark-mode .member-card__location {
+  color: rgb(192, 192, 192) !important; /* text-custom-grey */
+}
+
+.dark-mode .member-card .member-card__email,
+.dark-mode .member-card .member-card__slack,
+.member-card.dark-mode .member-card__email,
+.member-card.dark-mode .member-card__slack {
+  color: rgb(192, 192, 192) !important; /* text-custom-grey */
+}
+
+/* Add back hover styles */
+.dark-mode .member-card .member-card__email:hover,
+.dark-mode .member-card .member-card__slack:hover,
+.member-card.dark-mode .member-card__email:hover,
+.member-card.dark-mode .member-card__slack:hover {
+  color: #007bff !important; /* bg-azure */
+  text-decoration: underline;
+}
+
+.dark-mode .member-card .member-card__github,
+.member-card.dark-mode .member-card__github {
+  color: rgb(192, 192, 192) !important; /* text-custom-grey */
+}
+
+/* Add back github hover styles */
+.dark-mode .member-card .member-card__github:hover,
+.member-card.dark-mode .member-card__github:hover {
+  color: #007bff !important; /* bg-azure */
+  text-decoration: underline;
+}
+
+.dark-mode .member-card .member-card__score-label,
+.member-card.dark-mode .member-card__score-label {
+  color: #ffffff !important;
+}
+
+.dark-mode .member-card .member-card__skills-label,
+.member-card.dark-mode .member-card__skills-label {
+  color: #ffffff !important;
+}
+
+.dark-mode .member-card .member-card__skills,
+.member-card.dark-mode .member-card__skills {
+  color: rgb(192, 192, 192) !important; /* text-custom-grey */
 } 

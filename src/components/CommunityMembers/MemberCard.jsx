@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
 import './MemberCard.css';
 
 /**
@@ -12,19 +13,23 @@ const MemberCard = ({
   score,
   skills,
   profileImage,
-  isInUserTeam,
   github,
   location,
   isNotApplicable,
+  darkMode: darkModeProp,
 }) => {
+  // Use the passed darkMode prop if provided, otherwise use Redux state
+  const darkModeFromRedux = useSelector(state => state.theme.darkMode);
+  const darkMode = darkModeProp !== undefined ? darkModeProp : darkModeFromRedux;
+
   // Determine score color based on value (red if less than 3, yellow if 3, green if more than 3)
   const getScoreColor = score => {
-    if (score < 3) return '#FF4D4D'; // Red
-    if (score === 3 || (score > 2.9 && score < 3.1)) return '#FFC107'; // Yellow/Amber
-    return '#4CAF50'; // Green
+    if (score < 3) return darkMode ? '#FF6B6B' : '#FF4D4D'; // Lighter red for dark mode
+    if (score === 3 || (score > 2.9 && score < 3.1)) return darkMode ? '#FFC107' : '#FFC107'; // Yellow/amber for both modes
+    return darkMode ? '#4CAF50' : '#4CAF50'; // Same green for both modes (already visible in dark mode)
   };
 
-  const scoreColor = isNotApplicable ? '#666666' : getScoreColor(score);
+  const scoreColor = isNotApplicable ? (darkMode ? '#c0c0c0' : '#666666') : getScoreColor(score);
 
   // Format score to show decimal if needed or "N/A" if not applicable
   const formattedScore = isNotApplicable
@@ -50,7 +55,7 @@ const MemberCard = ({
   };
 
   return (
-    <div className={`member-card ${isInUserTeam ? 'member-card--team' : ''}`}>
+    <div className={`member-card ${darkMode ? 'dark-mode' : ''}`}>
       <div className="member-card__image-container">
         <img
           src={profileImage || '/default-avatar.png'}
@@ -114,18 +119,18 @@ MemberCard.propTypes = {
   score: PropTypes.number.isRequired,
   skills: PropTypes.arrayOf(PropTypes.string).isRequired,
   profileImage: PropTypes.string,
-  isInUserTeam: PropTypes.bool,
   github: PropTypes.string,
   location: PropTypes.string,
   isNotApplicable: PropTypes.bool,
+  darkMode: PropTypes.bool,
 };
 
 MemberCard.defaultProps = {
   profileImage: null,
-  isInUserTeam: false,
   github: null,
   location: null,
   isNotApplicable: false,
+  darkMode: undefined,
 };
 
 export default MemberCard;

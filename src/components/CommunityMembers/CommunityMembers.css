@@ -328,4 +328,118 @@
 
 .sort-button.active:hover {
   background-color: #3367d6;
+}
+
+/* Dark Mode Styles */
+.dark-mode {
+  background-color: #1b2a41 !important; /* bg-oxford-blue */
+  color: #ffffff !important;
+}
+
+body.dark-mode {
+  background-color: #1b2a41 !important; /* bg-oxford-blue */
+  color: #ffffff !important;
+}
+
+.dark-mode .community-members {
+  background-color: #1b2a41; /* bg-oxford-blue */
+  color: #ffffff;
+}
+
+.dark-mode .community-members__header h1 {
+  color: #ffffff;
+}
+
+.dark-mode .community-members__search input {
+  background-color: #1c2541; /* bg-space-cadet */
+  border-color: #3a506b; /* bg-yinmn-blue */
+  color: #ffffff;
+}
+
+.dark-mode .community-members__search input:focus {
+  border-color: #007bff; /* bg-azure */
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.3);
+}
+
+.dark-mode .filter-button,
+.dark-mode .sort-button {
+  background-color: #1c2541; /* bg-space-cadet */
+  border-color: #3a506b; /* bg-yinmn-blue */
+  color: #ffffff;
+}
+
+.dark-mode .filter-button:hover,
+.dark-mode .sort-button:hover {
+  background-color: #3a506b; /* bg-yinmn-blue */
+}
+
+.dark-mode .filter-button.active {
+  background-color: #007bff; /* bg-azure */
+  color: white;
+  border-color: #007bff; /* bg-azure */
+}
+
+.dark-mode .community-members__help-text {
+  color: rgb(192, 192, 192); /* text-custom-grey */
+}
+
+.dark-mode .community-members__no-results {
+  background-color: #1c2541; /* bg-space-cadet */
+  color: rgb(192, 192, 192); /* text-custom-grey */
+}
+
+.dark-mode .pagination-button {
+  background-color: #1c2541; /* bg-space-cadet */
+  border-color: #3a506b; /* bg-yinmn-blue */
+  color: #ffffff;
+}
+
+.dark-mode .pagination-button:hover {
+  background-color: #3a506b; /* bg-yinmn-blue */
+}
+
+.dark-mode .pagination-button.active {
+  background-color: #007bff; /* bg-azure */
+  color: white;
+  border-color: #007bff; /* bg-azure */
+}
+
+/* Skills filter dark mode styles */
+.dark-mode .community-members__skills-filter {
+  background-color: #1c2541; /* bg-space-cadet */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.dark-mode .skills-filter__section h3 {
+  color: #ffffff;
+  border-bottom: 1px solid #3a506b; /* bg-yinmn-blue */
+}
+
+.dark-mode .skill-checkbox {
+  background-color: #2f4157; /* bg-yinmn-blue-light */
+  color: #ffffff;
+}
+
+.dark-mode .skill-checkbox:hover {
+  background-color: #3a506b; /* bg-yinmn-blue */
+}
+
+.dark-mode .clear-button {
+  background-color: #1c2541; /* bg-space-cadet */
+  color: rgb(192, 192, 192); /* text-custom-grey */
+}
+
+.dark-mode .clear-button:hover {
+  background-color: #3a506b; /* bg-yinmn-blue */
+}
+
+.dark-mode .clear-button:disabled {
+  opacity: 0.5;
+  color: #888888;
+}
+
+.dark-mode .sort-button.active {
+  background-color: #007bff; /* bg-azure */
+  color: white;
+  border-color: #007bff; /* bg-azure */
 } 
