@@ -129,6 +129,7 @@
     margin-top: 20px;
     height: 100%;
     width: 100%;
+  
   }
   
   .pie-chart-legend-header {
@@ -140,20 +141,15 @@
   
   .pie-chart-legend-table-wrapper {
     max-height: 350px;
-    max-width: 50%;
+    width: 100%;
     border: 1px solid rgba(0, 0, 0, 0.1);
-    /* width: 100%; */
     overflow-y: auto;
-    /* overflow-x: auto;  */
-    display: block;
   }
   
   .pie-chart-legend-table {
     width: 100%;
     table-layout: auto;
     border-collapse: collapse;
-    height: 300px;
-    /* overflow-y: auto; */
   }
 
   .pie-chart-legend-table th,
@@ -213,3 +209,9 @@
     margin-top: 10px;
   }
   
+
+  @media (max-width: 671px) {
+    .pie-chart-legend-table-wrapper {
+      max-height: 200px; 
+    }
+  }
