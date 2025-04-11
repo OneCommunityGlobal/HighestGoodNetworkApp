@@ -855,7 +855,13 @@ export class WeeklySummariesReport extends Component {
           <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }} xs={{ size: 6 }}>
             <MultiSelect
               className={cn(styles.multiSelectFilter, `text-dark ${darkMode ? 'dark-mode' : ''}`)}
-              options={teamCodes}
+              options={teamCodes.map(item => {
+                const [code, count] = item.label.split(' (');
+                return {
+                  ...item,
+                  label: `${code.padEnd(10, ' ')} (${count}`, // count already has closing parenthesis
+                };
+              })}
               value={selectedCodes}
               onChange={e => {
                 this.handleSelectCodeChange(e);
