@@ -22,6 +22,16 @@
   text-align: center;
   position: relative;
 }
+.popup-dark{
+  background: #3A506B;
+  color: white;
+  padding: 20px;
+  width: 400px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  position: relative;
+}
 
 /* Popup header */
 .popup-header {
