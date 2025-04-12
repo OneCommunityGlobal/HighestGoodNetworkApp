@@ -5,7 +5,6 @@ import './PeopleReport.css';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { FiUser } from 'react-icons/fi';
-import moment from 'moment';
 import { toast } from 'react-toastify';
 import { Spinner, Alert } from 'reactstrap';
 import { formatDate } from '../../../utils/formatDate';
@@ -65,7 +64,7 @@ class PeopleReport extends Component {
       priorityList: [],
       statusList: [],
       fromDate: '2016-01-01',
-      toDate: this.endOfWeek(0),
+      toDate: '3000-12-31',
       timeEntries: {},
       // eslint-disable-next-line react/no-unused-state
       startDate: '',
@@ -234,7 +233,7 @@ class PeopleReport extends Component {
         classification: '',
         users: '',
         fromDate: '2016-01-01',
-        toDate: this.endOfWeek(0),
+        toDate: '3000-12-31',
         startDate: '',
         endDate: '',
       };
@@ -269,13 +268,14 @@ class PeopleReport extends Component {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  endOfWeek(offset) {
-    return moment()
-      .tz('America/Los_Angeles')
-      .endOf('week')
-      .subtract(offset, 'weeks')
-      .format('YYYY-MM-DD');
-  }
+  // endOfWeek(offset) {
+  //   return moment()
+  //     .tz('America/Los_Angeles')
+  //     .endOf('week')
+  //     .subtract(offset, 'weeks')
+  //     .format('YYYY-MM-DD');
+  // }
+
 
   render() {
     const {
@@ -292,13 +292,9 @@ class PeopleReport extends Component {
     const { firstName, lastName, weeklycommittedHours, hoursByCategory } = userProfile;
     const { tangibleHoursReportedThisWeek, auth, match, darkMode } = this.props;
 
-    let totalTangibleHrsRound = 0;
-    if (hoursByCategory) {
-      const hours = hoursByCategory
-        ? Object.values(hoursByCategory).reduce((prev, curr) => prev + curr, 0)
-        : 0;
-      totalTangibleHrsRound = hours.toFixed(2);
-    }
+    const totalTangibleHrsRound = (timeEntries.period?.reduce((total, entry) => {
+      return total + (entry.hours + (entry.minutes / 60));
+    }, 0) || 0).toFixed(2);    
 
     // eslint-disable-next-line react/no-unstable-nested-components,no-unused-vars
     function UserProject(props) {
@@ -322,7 +318,7 @@ class PeopleReport extends Component {
         }
       }
 
-      const startdate = Object.keys(dict)[0];
+      const [startdate] = Object.keys(dict);
       if (startdate) {
         startdate.toString();
       }
@@ -371,7 +367,7 @@ class PeopleReport extends Component {
           intentInfo: '',
         };
         const resourcesName = [];
-
+        
         if (userTask[i].isActive) {
           task.active = 'Yes';
         } else {
@@ -403,12 +399,17 @@ class PeopleReport extends Component {
         }
         task._id = userTask[i]._id;
         task.resources.push(resourcesName);
-        if (userTask[i].startedDatetime == null) {
-          task.startDate = 'null';
-        }
-        if (userTask[i].endedDatime == null) {
-          task.endDate = 'null';
-        }
+        // startedDatetime
+        // if (userTask[i].startedDatetime === null && userTask[i].startedDatetime !== "") {
+        //   task.startDate = 'null';
+        // }
+        // if (userTask[i].dueDatetime === null && userTask[i].dueDatetime !== "") {
+        //   task.endDate = 'null';
+        // }
+        // task.startDate = userTask[i].startedDatetime.split('T')[0];
+        // task.endDate = userTask[i].dueDatetime.split('T')[0];
+        task.startDate = userTask[i].startedDatetime ? userTask[i].startedDatetime.split('T')[0] : 'null';
+        task.endDate = userTask[i].dueDatetime ? userTask[i].dueDatetime.split('T')[0] : 'null';
         task.hoursBest = userTask[i].hoursBest;
         task.hoursMost = userTask[i].hoursMost;
         task.hoursWorst = userTask[i].hoursWorst;
@@ -425,8 +426,7 @@ class PeopleReport extends Component {
           darkMode={darkMode}
         />
       );
-    }
-
+    };
     const renderProfileInfo = () => {
       const { isRehireable, bioStatus, authRole } = this.state;
       const { profilePic, role, jobTitle, endDate, _id, startDate } = userProfile;
@@ -522,7 +522,7 @@ class PeopleReport extends Component {
     return (
       <div className={`container-people-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
         <ReportPage renderProfile={renderProfileInfo} darkMode={darkMode}>
-          <div className={`people-report-time-logs-wrapper ${tangibleHoursReportedThisWeek === 0 ? "auto-width-report-time-logs-wrapper" : ""}`}>
+          <div className={`people-report-time-logs-wrapper ${tangibleHoursReportedThisWeek === 0 && !Number.isNaN(tangibleHoursReportedThisWeek)? "auto-width-report-time-logs-wrapper" : ""}`}>
             <ReportPage.ReportBlock
               firstColor="#ff5e82"
               secondColor="#e25cb2"
@@ -542,7 +542,7 @@ class PeopleReport extends Component {
                 className="people-report-time-log-block"
                 darkMode={darkMode}
               >
-                <h3 className="text-light">{tangibleHoursReportedThisWeek}</h3>
+                <h3 className="text-light">{!Number.isNaN(tangibleHoursReportedThisWeek)?tangibleHoursReportedThisWeek:""}</h3>
                 <p>Hours Logged This Week</p>
               </ReportPage.ReportBlock>
             )}
@@ -571,12 +571,12 @@ class PeopleReport extends Component {
           <div className="mobile-people-table">
             <ReportPage.ReportBlock darkMode={darkMode}>
               {this.state.isLoading ? (
-                <p
+                <div
                   className={`${darkMode ? 'text-light' : ''}
                    d-flex align-items-center flex-row justify-content-center`}
                 >
                   Loading tasks: &nbsp; <Spinner color={`${darkMode ? 'light' : 'dark'}`} />
-                </p>
+                </div>
               ) : activeTasks.length > 0 ? (
                 <>
                   <div className={`intro_date ${darkMode ? 'text-light' : ''}`}>
