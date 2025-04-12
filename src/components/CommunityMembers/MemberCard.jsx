@@ -17,6 +17,7 @@ const MemberCard = ({
   location,
   isNotApplicable,
   darkMode: darkModeProp,
+  userId,
 }) => {
   // Use the passed darkMode prop if provided, otherwise use Redux state
   const darkModeFromRedux = useSelector(state => state.theme.darkMode);
@@ -40,17 +41,20 @@ const MemberCard = ({
 
   const handleEmailClick = e => {
     e.preventDefault();
+    e.stopPropagation();
     window.location.href = `mailto:${email}`;
   };
 
   const handleSlackClick = e => {
     e.preventDefault();
+    e.stopPropagation();
     // This would ideally open Slack with the user's profile - for now just show an alert
     alert(`Redirect to Slack for user: ${slackId}`);
   };
 
   const handleGithubClick = e => {
     e.preventDefault();
+    e.stopPropagation();
     window.open(github, '_blank');
   };
 
@@ -123,6 +127,7 @@ MemberCard.propTypes = {
   location: PropTypes.string,
   isNotApplicable: PropTypes.bool,
   darkMode: PropTypes.bool,
+  userId: PropTypes.string,
 };
 
 MemberCard.defaultProps = {
@@ -131,6 +136,7 @@ MemberCard.defaultProps = {
   location: null,
   isNotApplicable: false,
   darkMode: undefined,
+  userId: null,
 };
 
 export default MemberCard;

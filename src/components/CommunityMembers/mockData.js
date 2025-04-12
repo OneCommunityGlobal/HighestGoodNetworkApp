@@ -14,6 +14,7 @@ export const mockMembers = [
     contactInfo: {
       email: 'jatinagrawal0801@gmail.com',
       phone: '+1-555-123-4567',
+      public: true,
     },
     jobTitle: ['Software Developer', 'ML Engineer'],
     teams: [
@@ -102,8 +103,9 @@ export const mockMembers = [
       displayName: 'Shreya Laheri',
     },
     contactInfo: {
-      email: 'shreya@onecommunity.com',
-      phone: '+1-555-987-6543',
+      email: null,
+      phone: null,
+      public: false,
     },
     jobTitle: ['Frontend Developer', 'UI/UX Designer'],
     teams: [
@@ -190,6 +192,7 @@ export const mockMembers = [
     contactInfo: {
       email: 'john@onecommunity.com',
       phone: '+1-555-456-7890',
+      public: true,
     },
     jobTitle: ['Backend Developer', 'DevOps Engineer'],
     teams: [],
@@ -270,6 +273,7 @@ export const mockMembers = [
     contactInfo: {
       email: 'maria@onecommunity.com',
       phone: '+1-555-222-3333',
+      public: true,
     },
     jobTitle: ['UI Designer', 'Graphic Artist'],
     teams: [],
@@ -350,8 +354,9 @@ export const mockMembers = [
       displayName: 'Alex Smith',
     },
     contactInfo: {
-      email: 'alex@onecommunity.com',
-      phone: '+1-555-888-9999',
+      email: null,
+      phone: null,
+      public: false,
     },
     jobTitle: ['Senior Backend Engineer', 'System Architect'],
     teams: [
@@ -442,6 +447,7 @@ export const mockMembers = [
     contactInfo: {
       email: 'emily@onecommunity.com',
       phone: '+1-555-444-3333',
+      public: true,
     },
     jobTitle: ['Full Stack Developer', 'Scrum Master'],
     teams: [
@@ -532,6 +538,7 @@ export const mockMembers = [
     contactInfo: {
       email: 'michael@onecommunity.com',
       phone: '+1-555-777-8888',
+      public: true,
     },
     jobTitle: ['Data Scientist', 'ML Engineer'],
     teams: [
@@ -616,8 +623,9 @@ export const mockMembers = [
       displayName: 'Sarah Williams',
     },
     contactInfo: {
-      email: 'sarah@onecommunity.com',
-      phone: '+1-555-111-2222',
+      email: null,
+      phone: null,
+      public: false,
     },
     jobTitle: ['Content Manager', 'Technical Writer'],
     teams: [
@@ -704,6 +712,7 @@ export const mockMembers = [
     contactInfo: {
       email: 'david@onecommunity.com',
       phone: '+1-555-333-4444',
+      public: true,
     },
     jobTitle: ['Mobile Developer', 'React Native Specialist'],
     teams: [
@@ -792,6 +801,7 @@ export const mockMembers = [
     contactInfo: {
       email: 'olivia@onecommunity.com',
       phone: '+1-555-666-7777',
+      public: true,
     },
     jobTitle: ['QA Engineer', 'Test Automation Specialist'],
     teams: [

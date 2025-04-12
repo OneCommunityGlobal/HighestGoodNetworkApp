@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 import MemberCard from './MemberCard';
 import { mockMembers } from './mockData';
 import './CommunityMembers.css';
@@ -183,13 +184,13 @@ const CommunityMembers = () => {
     }));
 
     let sortedMembers;
-    if (sortOrder === 'alpha' && !searchTerm && selectedSkills.length === 0) {
-      // Sort alphabetically by name when no filters are selected and alpha sort is chosen
+    if (sortOrder === 'alpha') {
+      // Sort alphabetically by name when alpha sort is chosen, regardless of filters
       sortedMembers = membersWithScores.sort((a, b) =>
         a.name.displayName.localeCompare(b.name.displayName),
       );
     } else {
-      // Sort by score when filters are applied or score sort is chosen
+      // Sort by score when score sort is chosen
       sortedMembers = membersWithScores.sort((a, b) => b.calculatedScore - a.calculatedScore);
     }
 
@@ -347,8 +348,8 @@ const CommunityMembers = () => {
       };
     })
     .sort((a, b) => {
-      if (sortOrder === 'alpha' && !searchTerm && selectedSkills.length === 0) {
-        // Sort alphabetically when explicitly chosen and no filters
+      if (sortOrder === 'alpha') {
+        // Sort alphabetically when explicitly chosen, regardless of filters
         return a.name.displayName.localeCompare(b.name.displayName);
       }
 
@@ -408,10 +409,7 @@ const CommunityMembers = () => {
               <i className="fa fa-sliders"></i>
               {selectedSkills.length > 0 ? `Skills (${selectedSkills.length})` : 'Skills Filter'}
             </button>
-            <button
-              className={`sort-button ${sortOrder === 'alpha' ? 'active' : ''}`}
-              onClick={toggleSortOrder}
-            >
+            <button className="sort-button active" onClick={toggleSortOrder}>
               <i
                 className={`fa fa-sort-${sortOrder === 'alpha' ? 'alpha-asc' : 'numeric-desc'}`}
               ></i>
@@ -514,18 +512,24 @@ const CommunityMembers = () => {
       <div className="community-members__grid">
         {currentMembers.length > 0 ? (
           currentMembers.map(member => (
-            <MemberCard
+            <Link
               key={member.userId}
-              name={member.name.displayName}
-              email={member.contactInfo.email}
-              slackId={member.socialHandles.slack}
-              score={member.displayScore}
-              skills={member.topSkills}
-              profileImage={member.profileImage}
-              github={member.socialHandles.github}
-              location={member.skillInfo.general.location}
-              darkMode={darkMode}
-            />
+              to={`/hgnhelp/profile/${member.userId}`}
+              className="member-card-link"
+            >
+              <MemberCard
+                name={member.name.displayName}
+                email={member.contactInfo.email}
+                slackId={member.socialHandles.slack}
+                score={member.displayScore}
+                skills={member.topSkills}
+                profileImage={member.profileImage}
+                github={member.socialHandles.github}
+                location={member.skillInfo.general.location}
+                darkMode={darkMode}
+                userId={member.userId}
+              />
+            </Link>
           ))
         ) : (
           <div className="community-members__no-results">

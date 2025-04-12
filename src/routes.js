@@ -167,7 +167,7 @@ export default (
 
         {/* New Community Members route */}
         <ProtectedRoute
-          path="/community-members"
+          path="/hgnhelp/community"
           component={CommunityMembers}
           fallback
           allowedRoles={[

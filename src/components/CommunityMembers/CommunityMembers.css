@@ -442,4 +442,21 @@ body.dark-mode {
   background-color: #007bff; /* bg-azure */
   color: white;
   border-color: #007bff; /* bg-azure */
+}
+
+/* Member card link styles */
+.member-card-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.member-card-link:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.dark-mode .member-card-link:hover {
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
 } 
