@@ -18,7 +18,7 @@ import {
 } from 'reactstrap';
 import Select from 'react-select';
 import Image from 'react-bootstrap/Image';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import classnames from 'classnames';
 import moment from 'moment';
 import Alert from 'reactstrap/lib/Alert';
@@ -90,6 +90,7 @@ function UserProfile(props) {
   };
   const roles = props?.role.roles;
   const dispatch = useDispatch();
+  const history = useHistory();
 
   /* Hooks */
   const [showLoading, setShowLoading] = useState(true);
@@ -740,6 +741,14 @@ function UserProfile(props) {
   const activeInactivePopupClose = () => {
     setActiveInactivePopupOpen(false);
   };
+  const handleReportClick = (event,to) => {
+    if (event.metaKey || event.ctrlKey || event.button === 1) {
+      return;
+    }
+
+    event.preventDefault(); // prevent full reload
+    history.push(`/peoplereport/${to}`);
+  }
 
   const handleRehireableChange = () => {
     const newRehireableStatus = !isRehireable;
@@ -1118,6 +1127,7 @@ function UserProfile(props) {
                     className="team-member-tasks-user-report-link"
                     style={{ fontSize: 24, cursor: 'pointer', marginTop: '6px' }}
                     to={`/peoplereport/${userProfile._id}`}
+                    onClick={(event)=>handleReportClick(event,userProfile._id)}
                   >
                     <img
                       src="/report_icon.png"
