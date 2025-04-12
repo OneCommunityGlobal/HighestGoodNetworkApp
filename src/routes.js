@@ -10,6 +10,8 @@ import RoleInfoCollections from 'components/UserProfile/EditableModal/RoleInfoMo
 import LessonList from 'components/BMDashboard/LessonList/LessonListForm';
 import AddEquipmentType from 'components/BMDashboard/Equipment/Add/AddEquipmentType';
 import Announcements from 'components/Announcements';
+import EventManagementTabs from 'components/CommunityPortal/EventManagement/EventManagementTabs';
+
 import Timelog from './components/Timelog';
 import LessonForm from './components/BMDashboard/Lesson/LessonForm';
 import UserProfileEdit from './components/UserProfile/UserProfileEdit';
@@ -53,6 +55,7 @@ import CPProtectedRoute from './components/common/CPDashboard/CPProtectedRoute';
 import CPLogin from './components/CommunityPortal/Login';
 import CPDashboard from './components/CommunityPortal';
 import ActivityList from './components/CommunityPortal/Activities/ActivityList';
+
 // import AddActivities from './components/CommunityPortal/Activities/AddActivities';
 // import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
 
@@ -392,6 +395,41 @@ export default (
         <CPProtectedRoute path="/communityportal" exact component={CPDashboard} />
         <Route path="/communityportal/login" component={CPLogin} />
         <CPProtectedRoute path="/communityportal/Activities" exact component={ActivityList} />
+        <CPProtectedRoute
+          path="/communityportal/activity/:activityid/description"
+          exact
+          component={EventManagementTabs}
+          fallback
+          routePermissions={RoutePermissions.userManagement}
+        />
+        <CPProtectedRoute
+          path="/communityportal/activity/:activityid/analysis"
+          exact
+          component={EventManagementTabs}
+          fallback
+          routePermissions={RoutePermissions.userManagement}
+        />
+        <CPProtectedRoute
+          path="/communityportal/activity/:activityid/resources"
+          exact
+          component={EventManagementTabs}
+          fallback
+          routePermissions={RoutePermissions.userManagement}
+        />
+        <CPProtectedRoute
+          path="/communityportal/activity/:activityid/engagement/comments"
+          exact
+          component={EventManagementTabs}
+          fallback
+          routePermissions={RoutePermissions.userManagement}
+        />
+        <CPProtectedRoute
+          path="/communityportal/activity/:activityid/engagement/feedback"
+          exact
+          component={EventManagementTabs}
+          fallback
+          routePermissions={RoutePermissions.userManagement}
+        />
 
         {/* Good Education  Portal Routes */}
         <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />

@@ -1,0 +1,144 @@
+.comments-section {
+  width: 50%;
+  margin: 20px auto;
+  font-family: Arial, sans-serif;
+}
+.comments-section-dark{
+  width: 50%;
+  margin: 20px auto;
+  font-family: Arial, sans-serif;
+  background-color: #1B2A41;
+  color: white;
+  
+}
+
+/* Header Section */
+.comments-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.comments-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: black;
+  margin: 0;
+}
+.comments-title-dark{
+  font-size: 20px;
+  font-weight: bold;
+  color: white;
+  margin: 0;
+}
+
+.comments-title .comments-count {
+  font-size: 14px;
+  color: gray;
+}
+.comments-title-dark .comments-count{
+  font-size: 14px;
+  color: white;
+}
+
+/* Sorting Options */
+.sort-options {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sort-options-dark{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: white;
+}
+
+.filter-dark{
+  color: white;
+}
+
+.sort-btn-dark{
+  color: white;
+}
+
+.comment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.comment-item {
+  display: flex;
+  align-items: flex-start;
+  background: #fff;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.comment-item-dark{
+  display: flex;
+  align-items: flex-start;
+  background: #3A506B;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+.comment-content-header {
+  padding-bottom: 10px;
+}
+
+.comment-user {
+  padding-left: 15px;
+}
+
+.comment-content {
+  flex: 1;
+}
+
+.comment-text-dark{
+  color: white;
+}
+
+.comment-actions {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  color: gray;
+  gap: 10px;
+}
+
+.comment-votes {
+  display: flex;
+  gap: 5px;
+}
+
+.like-button,
+.dislike-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.reply-button {
+  margin-left: auto;
+  color: #007bff;
+}
+
+.replies {
+  margin-top: 5px;
+  padding-left: 20px;
+  font-size: 14px;
+  color: #555;
+}
+
+.reply-time {
+  font-size: 12px;
+  color: gray;
+}
