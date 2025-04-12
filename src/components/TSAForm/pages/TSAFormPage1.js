@@ -62,8 +62,9 @@ function TSAFormPage1() {
       if (el && el.scrollIntoView) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
     }
-
-    history.push('/tsaformpage2');
+    const submitted = JSON.parse(localStorage.getItem('submittedPages') || '{}');
+    localStorage.setItem('submittedPages', JSON.stringify({ ...submitted, tsaformpage1: true }));
+    history.push('/tsaform/page2');
   };
   return (
     <div

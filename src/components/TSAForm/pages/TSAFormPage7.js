@@ -1,9 +1,15 @@
 import { useHistory } from 'react-router-dom';
 import { useState } from 'react';
+import { useEffect } from 'react';
 
 function TSAFormPage7() {
   const history = useHistory();
-
+  useEffect(() => {
+    const submitted = JSON.parse(localStorage.getItem('submittedPages') || '{}');
+    if (!submitted.tsaformpage6) {
+      history.push('/tsaform/page6');
+    }
+  }, []);
   const [errors, setErrors] = useState({
     agreementseven: false,
     agreementeight: false,
@@ -51,8 +57,10 @@ function TSAFormPage7() {
       firstInvalid.focus();
       return;
     }
+    const submitted = JSON.parse(localStorage.getItem('submittedPages') || '{}');
+    localStorage.setItem('submittedPages', JSON.stringify({ ...submitted, tsaformpage7: true }));
 
-    history.push('/tsaformpage8');
+    history.push('/tsaform/page8');
   };
 
   return (
@@ -417,7 +425,7 @@ function TSAFormPage7() {
         {/* Back Button */}
         <button
           type="button"
-          onClick={() => history.push('/tsaformpage6')}
+          onClick={() => history.push('/tsaform/page6')}
           style={{
             backgroundColor: '#4d87a1',
             color: '#fff',
