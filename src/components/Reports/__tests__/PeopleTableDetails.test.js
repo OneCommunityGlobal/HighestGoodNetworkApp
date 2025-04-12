@@ -43,13 +43,13 @@ const taskData = [
     endDate: '2022-03-15',
   },
 ];
-describe(' Unit Test case for PeopleTableDetails component', () => {
-  it('Test 1 : Basic render without crashing', () => {
+describe('PeopleTableDetails component', () => {
+  it('renders without crashing', () => {
     render(<PeopleTableDetails taskData={taskData} />);
     expect(screen.getByTestId('eh'));
   });
 
-  it('Test 2 : Verify if the table header renders as expected ', () => {
+  it('renders all table headers correctly', () => {
     render(<PeopleTableDetails taskData={taskData} />);
     expect(screen.getByTestId('task'));
     expect(screen.getByTestId('priority'));
@@ -61,7 +61,7 @@ describe(' Unit Test case for PeopleTableDetails component', () => {
     expect(screen.getByTestId('ed'));
   });
 
-  it('Test 3 : Verify if the table row renders the mock data', () => {
+  it('displays all task data in table rows', () => {
     render(<PeopleTableDetails taskData={taskData} />);
     // Expect to see text from the first task
     expect(screen.getByText('Task 1')).toBeInTheDocument();
@@ -79,7 +79,7 @@ describe(' Unit Test case for PeopleTableDetails component', () => {
     expect(screen.getByText('Not Started')).toBeInTheDocument();
   });
 
-  it('Test 4 : Verify if the filterTasks function gracefully handless missing attribute and doesnt throw any error  ', () => {
+  it('handles missing task attributes gracefully', () => {
     const tasks = [
       {
         _id: '1',
@@ -118,7 +118,7 @@ describe(' Unit Test case for PeopleTableDetails component', () => {
     expect(project2Text).not.toBeInTheDocument();
   });
 
-  it('Test 5 : Verify if the  renderFilteredTask doesnt render any button if the no of resources is less than 2  ', () => {
+  it('does not show resource toggle button when there are less than 2 resources', () => {
     const tasks = [
       {
         _id: '1',
@@ -136,11 +136,11 @@ describe(' Unit Test case for PeopleTableDetails component', () => {
     render(<PeopleTableDetails taskData={tasks} />);
 
     expect(screen.getByText('Project 1')).toBeInTheDocument();
-    const button = screen.queryByRole('button');
-    expect(button).toBeInTheDocument();
+    const toggleButton = screen.queryByText('+');
+    expect(toggleButton).not.toBeInTheDocument();
   });
 
-  it('Test 6 : Verify if the renderFilteredTask render button if the no of resources is greater than 2', () => {
+  it('shows resource toggle button when there are more than 2 resources', () => {
     const tasks = [
       {
         _id: '1',
@@ -162,15 +162,13 @@ describe(' Unit Test case for PeopleTableDetails component', () => {
       },
     ];
     render(<PeopleTableDetails taskData={tasks} />);
-  
+
     expect(screen.getByText('Project 2')).toBeInTheDocument();
-    
-    // The toggle button displays "1+" because there are 3 resources (3 - 2 = 1).
     const toggleButton = screen.getByText('1+');
     expect(toggleButton).toBeInTheDocument();
   });
 
-  it('Test 7 : Verify the button in the resource cell renders as expected when clicked', () => {
+  it('toggles resource visibility when button is clicked', () => {
     const tasks = [
       {
         _id: '1',
@@ -191,30 +189,26 @@ describe(' Unit Test case for PeopleTableDetails component', () => {
         endDate: '2022-01-10',
       },
     ];
-  
+
     render(<PeopleTableDetails taskData={tasks} />);
-  
-    // Instead of queryByRole('button') (which returns multiple), use getAllByRole and filter by class
+
     const allButtons = screen.getAllByRole('button');
     const toggleButton = allButtons.find(button =>
       button.classList.contains('resourceMoreToggle')
     );
     expect(toggleButton).toBeInTheDocument();
-  
-    // Find the extra div within the parent element of the toggle button
+
     const extraDiv = toggleButton.parentElement.querySelector('.extra');
     expect(extraDiv).toBeInTheDocument();
-  
-    // Click the toggle button to display extra resources
+
     fireEvent.click(toggleButton);
     expect(extraDiv.style.display).toBe('table-cell');
-  
-    // Click again to hide extra resources
+
     fireEvent.click(toggleButton);
     expect(extraDiv.style.display).toBe('none');
   });
 
-  it('Test 8 : Verify when there are more than 2 resources the remaining number of resources is disaplyed ', () => {
+  it('displays correct number of remaining resources', () => {
     const tasks = [
       {
         _id: '1',
@@ -239,9 +233,5 @@ describe(' Unit Test case for PeopleTableDetails component', () => {
 
     render(<PeopleTableDetails taskData={tasks} />);
     expect(screen.getByText('2+')).toBeInTheDocument();
-
-    // const extraResources = screen.getByText('2+');
-
-    // expect(extraResources).toBeInTheDocument();
   });
 });
