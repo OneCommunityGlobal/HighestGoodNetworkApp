@@ -57,6 +57,9 @@ import { totalOrgSummaryReducer } from './totalOrgSummaryReducer';
 import { allUsersTimeEntriesReducer } from './allUsersTimeEntriesReducer';
 import HGNFormReducer from './hgnFormReducers';
 
+// community portal
+import noShowVizReducer from './communityPortal/noShowVizReducer';
+
 const localReducers = {
   auth: authReducer,
   allUserProfiles: allUserProfilesReducer,
@@ -105,6 +108,9 @@ const localReducers = {
   bmConsumables: consumablesReducer,
   bmReusables: reusablesReducer,
   dashboard: dashboardReducer,
+
+  // community portal
+  noShowViz: noShowVizReducer,
 };
 
 const sessionReducers = {
