@@ -37,7 +37,7 @@ const WBSItem = ({ darkMode, index, name, wbsId, projectId, getPopupById, delete
         <th scope="row">
           <div>{index}</div>
         </th>
-        <td className="members__name">
+        <td className="members__name taskName">
           <NavItem tag={Link} to={`/wbs/tasks/${wbsId}/${projectId}/${name}`} className={darkMode ? 'text-azure' : ''}>
             {name}
           </NavItem>
