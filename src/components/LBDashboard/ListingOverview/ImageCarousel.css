@@ -25,7 +25,7 @@
   object-fit: cover;
 }
 
-.arrow {
+.carousel-image-arrow {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
@@ -38,11 +38,11 @@
   z-index: 10;
 }
 
-.arrow.left {
+.carousel-image-arrow.left {
   left: 10px;
 }
 
-.arrow.right {
+.carousel-image-arrow.right {
   right: 10px;
 }
 

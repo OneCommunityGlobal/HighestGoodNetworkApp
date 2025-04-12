@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux';
 
-function EffortBar({ activeTab, projectsSelected }) {
+function EffortBar({ activeTab, projectsOrTasksSelected }) {
   const data = useSelector(state =>
     activeTab === 4 ? state.timeEntries.period : state.timeEntries.weeks[activeTab - 1],
   );
@@ -9,7 +9,9 @@ function EffortBar({ activeTab, projectsSelected }) {
     const filteredData = d.filter(
       entry =>
         entry.isTangible === isTangible &&
-        (projectsSelected.includes('all') || projectsSelected.includes(entry.projectId)),
+        (projectsOrTasksSelected.includes('all') ||
+          projectsOrTasksSelected.includes(entry.projectId) ||
+          projectsOrTasksSelected.includes(entry.taskId)),
     );
 
     const reducer = (total, entry) => total + Number(entry.hours) + Number(entry.minutes) / 60;
