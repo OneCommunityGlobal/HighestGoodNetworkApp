@@ -40,6 +40,8 @@ import { getInfoCollections } from '../../actions/information';
 import { fetchAllBadges } from '../../actions/badgeManagement';
 import PasswordInputModal from './PasswordInputModal';
 import WeeklySummaryRecipientsPopup from './WeeklySummaryRecepientsPopup';
+
+import { showTrophyIcon } from '../../utils/anniversaryPermissions';
 import SelectTeamPieChart from './SelectTeamPieChart';
 import { setTeamCodes } from '../../actions/teamCodes';
 
@@ -80,6 +82,7 @@ export class WeeklySummariesReport extends Component {
       badges: [],
       loadBadges: false,
       hasSeeBadgePermission: false,
+      loadTrophies: false,
       selectedCodes: [],
       selectedColors: [],
       filteredSummaries: [],
@@ -88,6 +91,7 @@ export class WeeklySummariesReport extends Component {
       auth: [],
       selectedOverTime: false,
       selectedBioStatus: false,
+      selectedTrophies: false,
       chartShow: false,
       replaceCode: '',
       replaceCodeError: null,
@@ -404,6 +408,8 @@ export class WeeklySummariesReport extends Component {
       summaries,
       selectedOverTime,
       selectedBioStatus,
+      selectedTrophies,
+      activeTab,
       tableData,
       COLORS,
       selectedSpecialColors,
@@ -415,6 +421,7 @@ export class WeeklySummariesReport extends Component {
     const selectedCodesArray = selectedCodes.map(e => e.value);
     const selectedColorsArray = selectedColors.map(e => e.value);
 
+    const weekIndex = navItems.indexOf(activeTab);
     const activeFilterColors = Object.entries(selectedSpecialColors)
       .filter(([, isSelected]) => isSelected)
       .map(([color]) => color);
@@ -434,16 +441,28 @@ export class WeeklySummariesReport extends Component {
           hoursLogged > 0 &&
           hoursLogged >= summary.promisedHoursByWeek[navItems.indexOf(activeTab)] * 1.25);
 
+      const summarySubmissionDate = moment()
+        .tz('America/Los_Angeles')
+        .endOf('week')
+        .subtract(weekIndex, 'week')
+        .format('YYYY-MM-DD');
+
+      const hasTrophy =
+        !selectedTrophies ||
+        showTrophyIcon(summarySubmissionDate, summary?.startDate?.split('T')[0]);
+
       // const matchesSelectedUsers = selectedUserIds.size === 0 || selectedUserIds.has(summary._id);
       const matchesSpecialColor =
         activeFilterColors.length === 0 || activeFilterColors.includes(summary.filterColor);
+
       return (
         (selectedCodesArray.length === 0 || selectedCodesArray.includes(summary.teamCode)) &&
         (selectedColorsArray.length === 0 ||
           selectedColorsArray.includes(summary.weeklySummaryOption)) &&
         matchesSpecialColor &&
         isOverHours &&
-        isBio
+        isBio &&
+        hasTrophy
       );
     });
 
@@ -553,6 +572,17 @@ export class WeeklySummariesReport extends Component {
     this.setState(
       prevState => ({
         selectedBioStatus: !prevState.selectedBioStatus,
+      }),
+      () => {
+        this.filterWeeklySummaries();
+      },
+    );
+  };
+
+  handleTrophyToggleChange = () => {
+    this.setState(
+      prevState => ({
+        selectedTrophies: !prevState.selectedTrophies,
       }),
       () => {
         this.filterWeeklySummaries();
@@ -752,6 +782,7 @@ export class WeeklySummariesReport extends Component {
       allRoleInfo,
       badges,
       loadBadges,
+      loadTrophies,
       hasSeeBadgePermission,
       selectedCodes,
       selectedColors,
@@ -932,6 +963,15 @@ export class WeeklySummariesReport extends Component {
               )}
               {hasPermissionToFilter && (
                 <div className={styles.filterStyle}>
+                  <span>Filter by Trophies</span>
+                  <SlideToggle
+                    className={styles.slideToggle}
+                    onChange={this.handleTrophyToggleChange}
+                  />
+                </div>
+              )}
+              {hasPermissionToFilter && (
+                <div className={styles.filterStyle}>
                   <span>Filter by Over Hours</span>
                   <SlideToggle
                     className={styles.slideToggle}
@@ -1032,8 +1072,9 @@ export class WeeklySummariesReport extends Component {
                       <Button
                         className="btn--dark-sea-green"
                         style={darkMode ? boxStyleDark : boxStyle}
+                        onClick={() => this.setState({ loadTrophies: !loadTrophies })}
                       >
-                        Load Trophies
+                        {loadTrophies ? 'Hide Trophies' : 'Load Trophies'}
                       </Button>
                     </Col>
                   </Row>
@@ -1052,6 +1093,7 @@ export class WeeklySummariesReport extends Component {
                         allRoleInfo={allRoleInfo}
                         badges={badges}
                         loadBadges={loadBadges}
+                        loadTrophies={loadTrophies}
                         canEditTeamCode={this.codeEditPermission}
                         auth={auth}
                         canSeeBioHighlight={this.canSeeBioHighlight}
