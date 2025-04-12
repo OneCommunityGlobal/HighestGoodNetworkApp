@@ -49,7 +49,7 @@ import Inventory from './components/Inventory';
 import EmailSubscribeForm from './components/EmailSubscribeForm';
 import UnsubscribeForm from './components/EmailSubscribeForm/Unsubscribe';
 import NotFoundPage from './components/NotFound/NotFoundPage';
-import { EmailSender } from './components/common/EmailSender/EmailSender';
+import EmailSender from './components/common/EmailSender/EmailSender';
 import Collaboration from './components/Collaboration';
 
 // LB Dashboard
