@@ -15,6 +15,7 @@ import {
 } from 'reactstrap';
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
 import { ENDPOINTS } from '../../utils/URL';
+import Modal from "../Modal";
 
 const APIEndpoint = process.env.REACT_APP_APIENDPOINT || 'https://highestgoodnetwork.netlify.app';
 
@@ -39,6 +40,10 @@ function Announcements({ title, email }) {
   const [scheduleTime, setScheduleTime] = useState("");
   const [selectedPlatform, setSelectedPlatform] = useState('');
   const tinymce = useRef(null);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [postToDelete, setPostToDelete] = useState(null);
+
 
   useEffect(() => {
     // Toggle the showEditor state to force re-render when dark mode changes
@@ -221,11 +226,21 @@ function Announcements({ title, email }) {
   const handleDateContentChange = e => {
     setDateContent(e.target.value);    
   }  
+  const handleOpenModal = (postId) => {
+    setPostToDelete(postId);
+    setIsModalOpen(true);
+  };
+
+  // Function to close the modal
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setPostToDelete(null);
+  };
+
 
   const handleDeletePost = async (postId) => {
     const confirmDelete = window.confirm("Are you sure you want to delete this post?");
     if (!confirmDelete) return;
-
     try {
       const result = await deletePost(postId);
       if (result) {
@@ -234,11 +249,14 @@ function Announcements({ title, email }) {
       } else {
         toast.error("Failed to delete post.");
       }
+      
     } catch (error) {
       console.error("Error deleting post:", error);
       toast.error("Error deleting post.");
+      
     }
   };
+
 
   const loadFacebookSDK = () => {
     return new Promise((resolve, reject) => {
@@ -370,23 +388,13 @@ function Announcements({ title, email }) {
       await getAllPosts();
     }
   };
-  
-  const handlePostScheduledTweets = (postId, textContent, platform) => {
-    console.log("Post ID:", postId, "Content:", textContent);
-    if (!postId) {
-      console.error("Error: Missing post ");
-      toast.error("Error: Missing post ID");
-      return;
-    }
-    if (!textContent) {
-      console.error("Error: Missing Text Content");
-      toast.error("Error: Missing Text Content");
-      return;
-    }
-    console.log("Posting Tweet:", textContent);
 
-    if (platform === 'facebook') {
-      console.log("reached here in facebook");
+  
+
+
+  
+  const handlePostScheduledFbPost = (postId, textContent, platform) => {
+    console.log("reached here in facebook");
       window.FB.login(
         response => {
           if (response.authResponse) {
@@ -410,21 +418,36 @@ function Announcements({ title, email }) {
           scope: 'public_profile,email,pages_show_list,pages_manage_posts',
         }
       );
-    } else if (platform === 'twitter') {
-    dispatch(sendTweet(textContent))
+    };
+
+  const handlePostScheduledTweets = (postId, textContent, platform) => {
+
+      dispatch(sendTweet(textContent))
     .then(() => {
       console.log("Tweet posted successfully! Now calling handleDeletePost for post ID:", postId);
       // ✅ Call handleDeletePost after successful tweet
-      handleDeletePost(postId, true);
+      setTimeout(() => {
+                  handleDeletePost(postId, true);
+                }, 1500);
     })
     .catch((error) => {
       console.error("Error posting tweet:", error.message || error);
       toast.error("Failed to post tweet.");
     });
   }
+  const postToPlatform = (postId, textContent, platform) => {
 
-   
+    const confirmDelete = window.confirm(`Are you sure you want to post this on ${platform}`);
+    if (!confirmDelete) return;
+
+    if (platform === 'facebook'){
+      handlePostScheduledFbPost(postId, textContent, platform)
+    } else if (platform === 'twitter'){
+      handlePostScheduledTweets(postId, textContent, platform)
+    }
   };
+
+
 
   return (
     <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: '100%' }}>
@@ -501,8 +524,6 @@ function Announcements({ title, email }) {
             ''
           ) : (
           <div>
-          
-          
           <button className="send-button mr-1 ml-1" onClick={handleSubmit} style={darkMode ? boxStyleDark : boxStyle}>Confirm Schedule</button>
           <button type="button" className="send-button mr-1 ml-1" onClick={handleBroadcastEmails} style={darkMode ? boxStyleDark : boxStyle}>
             Broadcast Weekly Update
@@ -650,14 +671,19 @@ function Announcements({ title, email }) {
                   <br />
                 </div>
 
-                <Button color="success" size="sm" style={{ marginRight: '8px' }} onClick={() => handlePostScheduledTweets(post._id, post.textContent, post.platform)}>
+                <Button color="success" size="sm" style={{ marginRight: '8px' }} onClick={() => postToPlatform(post._id, post.textContent, post.platform)}>
                   Post
                 </Button>
                 <Button color="danger" size="sm" onClick={() => handleDeletePost(post._id)}>
                   Delete
                 </Button>
+
+                
+
               </li>
-            ))}
+            ))
+            }
+  
           </ul>
         </div>
     </div>
