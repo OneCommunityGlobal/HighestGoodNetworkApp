@@ -1,9 +1,11 @@
+import { useSelector } from 'react-redux';
 import './RegistrationPopup.css';
 
 function Popup({ onClose }) {
+  const darkMode = useSelector(state => state.theme.darkMode);
   return (
     <div className="popup-overlay">
-      <div className="popup">
+      <div className={`popup ${darkMode ? 'popup-dark' : ''}`}>
         <div className="popup-header">
           <span>✅ Registration Successful!</span>
           <button type="button" className="close-btn" onClick={onClose}>
