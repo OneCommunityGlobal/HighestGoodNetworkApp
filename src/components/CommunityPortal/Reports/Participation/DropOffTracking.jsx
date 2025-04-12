@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import './Participation.css';
 import mockEvents from './mockData';
 
@@ -57,9 +58,11 @@ function DropOffTracking() {
     return true;
   });
 
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   return (
-    <div className="tracking-container">
-      <div className="tracking-header">
+    <div className={`tracking-container ${darkMode ? 'tracking-container-dark' : ''}`}>
+      <div className={`tracking-header ${darkMode ? 'tracking-header-dark' : ''}`}>
         <h3>Drop-off and no-show rate tracking</h3>
         <div className="tracking-filters">
           <select value={selectedEvent} onChange={e => setSelectedEvent(e.target.value)}>
@@ -78,21 +81,22 @@ function DropOffTracking() {
         </div>
       </div>
       <div className="tracking-summary">
-        <div className="tracking-rate">
+        <div className={`tracking-rate ${darkMode ? 'tracking-rate-dark' : ''}`}>
           <p className="tracking-rate-value">
-            +5% <span>Last week</span>
+            +5%
+            <span className={darkMode ? 'span-dark' : ''}>Last week</span>
           </p>
           <p>Drop-off rate</p>
         </div>
-        <div className="tracking-rate">
+        <div className={`tracking-rate ${darkMode ? 'tracking-rate-dark' : ''}`}>
           <p className="tracking-rate-value">
-            +5% <span>Last week</span>
+            +5% <span className={darkMode ? 'span-dark' : ''}>Last week</span>
           </p>
           <p>No-show rate</p>
         </div>
       </div>
-      <div className="tracking-list-container">
-        <table className="tracking-table">
+      <div className={`tracking-list-container ${darkMode ? 'tracking-list-container-dark' : ''}`}>
+        <table className={`tracking-table ${darkMode ? 'tracking-table-dark' : ''}`}>
           <thead>
             <tr>
               <th>Event name</th>

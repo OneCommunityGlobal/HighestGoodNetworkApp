@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import './MyCases.css';
 import mockEvents from './mockData';
 
@@ -38,20 +39,28 @@ function MyCases() {
     return events;
   };
 
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   const filteredEvents = filterEvents(mockEvents);
 
   const renderCardView = () => (
     <div className="case-cards">
       {filteredEvents.map(event => (
-        <div className="case-card" key={event.id}>
+        <div className={`case-card ${darkMode ? 'case-card-dark' : ''}`} key={event.id}>
           <span className="event-badge">{event.eventType}</span>
-          <span className="event-time">{event.eventTime}</span>
-          <span className="event-name">{event.eventName}</span>
-          <div className="attendees-info">
+          <span className={`event-time ${darkMode ? 'event-time-dark' : ''}`}>
+            {event.eventTime}
+          </span>
+          <span className={`event-name ${darkMode ? 'event-name-dark' : ''}`}>
+            {event.eventName}
+          </span>
+          <div className={`attendees-info ${darkMode ? 'attendees-info-dark' : ''}`}>
             <div className="avatars">
               <img alt="profile img" />
             </div>
-            <span className="attendees-count">{`+${event.attendees}`}</span>
+            <span
+              className={`attendees-count ${darkMode ? 'attendees-count-dark' : ''}`}
+            >{`+${event.attendees}`}</span>
           </div>
         </div>
       ))}
@@ -61,7 +70,7 @@ function MyCases() {
   const renderListView = () => (
     <ul className="case-list">
       {filteredEvents.map(event => (
-        <li className="case-list-item" key={event.id}>
+        <li className={`case-list-item ${darkMode ? 'case-list-item-dark' : ''}`} key={event.id}>
           <span className="event-type">{event.eventType}</span>
           <span className="event-time">{event.eventTime}</span>
           <span className="event-name">{event.eventName}</span>
@@ -72,15 +81,15 @@ function MyCases() {
   );
 
   const renderCalendarView = () => (
-    <div className="calendar-view">
+    <div className={`calendar-view ${darkMode ? 'calendar-view-dark' : ''}`}>
       <p>Calendar View is under construction...</p>
     </div>
   );
 
   return (
-    <div className="my-cases-page">
+    <div className={`my-cases-page ${darkMode ? 'my-cases-page-dark' : ''}`}>
       <header className="header">
-        <h2 className="section-title">My Cases</h2>
+        <h2 className={`section-title ${darkMode ? 'section-title-dark' : ''}`}>My Cases</h2>
         <div className="header-actions">
           <div className="view-switcher">
             <button

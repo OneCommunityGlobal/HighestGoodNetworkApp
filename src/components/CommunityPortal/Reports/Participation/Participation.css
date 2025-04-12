@@ -11,6 +11,13 @@ body {
   margin: 0 auto;
 }
 
+.participation-landing-page-dark{
+  min-width:  100%;
+  margin: 0 auto;
+  background-color: #1B2A41;
+  color: #ffffff;
+}
+
 header h1 {
   font-size: 24px;
   color: #333;
@@ -20,6 +27,10 @@ header h1 {
 
 header {
   margin-bottom: 30px;
+}
+
+.landing-page-header-dark{
+  color: #ffffff;
 }
 
 /* My Cases Section */
@@ -75,6 +86,8 @@ header {
   padding-top: 20px;
 }
 
+
+
 .tracking-container,
 .insights {
   flex: 1;
@@ -84,6 +97,20 @@ header {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding: 20px;
   box-sizing: border-box;
+}
+
+.tracking-container-dark,
+.insights-dark {
+  flex: 1;
+  min-width: 48%;
+  background-color: #1C2541;
+  color: #ffffff;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  box-sizing: border-box;
+
 }
 
 @media (max-width: 768px) {
@@ -105,9 +132,23 @@ header {
   margin-bottom: 20px;
 }
 
+tracking-header-dark {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  color: #ffffff;
+}
+
 .tracking-header h3 {
   font-size: 1.3rem;
   color: #333;
+  margin: 0;
+}
+
+.tracking-header-dark h3 {
+  color: #ffffff;
+  font-size: 1.3rem;
   margin: 0;
 }
 
@@ -125,6 +166,8 @@ header {
   margin-bottom: 20px;
 }
 
+
+
 .tracking-rate {
   background: #f8f9fa;
   border-radius: 10px;
@@ -132,6 +175,18 @@ header {
   padding: 10px;
 }
 
+.tracking-rate-dark {
+  background: #3A506B;
+  border-radius: 10px;
+  width: 48%;
+  padding: 10px;
+  color: #ffffff;
+}
+.tracking-rate-dark .span-dark {
+  color: #ffffff;
+  display: inline-block;
+  padding-left: 5px;
+}
 .tracking-rate-value {
   font-size: 0.9rem;
   color: #f44336;
@@ -144,6 +199,8 @@ header {
   display: inline-block;
 }
 
+
+
 .tracking-list-container {
   max-height: 600px;
   overflow-y: auto;
@@ -152,16 +209,30 @@ header {
   padding: 10px;
   background: #fff;
 }
+.tracking-list-container-dark {
+  max-height: 600px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 10px;
+  background: #3A506B;
+  color: #ffffff;
+}
 
 .tracking-table {
   width: 100%;
   border-collapse: collapse;
 }
 
+
 .tracking-table thead th {
   text-align: left;
   padding: 10px;
   background: #f4f4f4;
+}
+.tracking-table-dark thead th{
+  background: #1C2541;
+  color: #ffffff;
 }
 
 .tracking-table tbody td {
@@ -171,6 +242,7 @@ header {
 
 .tracking-rate-green {
   color: green;
+  font-weight: bold;
 }
 
 .tracking-rate-red {
@@ -185,10 +257,22 @@ header {
   display: flex;
   justify-content: space-between;
 }
+.insights-header-dark {
+  color: #ffffff;
+  font-weight: bold;
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+}
 
 .insights-header h3 {
   font-size: 1.3rem;
   color: #333;
+  margin: 0;
+}
+.insights-header-dark h3 {
+  color: #ffffff;
+  font-size: 1.3rem;
   margin: 0;
 }
 
@@ -254,7 +338,12 @@ header {
   color: #555;
   margin-right: 10px;
 }
-
+.insight-label-dark {
+  color: #ffffff;
+  font-size: 0.9rem;
+  flex: 1;
+  margin-right: 10px;
+}
 .insight-bar {
   flex: 2;
   height: 8px;
@@ -263,6 +352,7 @@ header {
   overflow: hidden;
   position: relative;
   margin-right: 10px;
+  margin-left: 10px;
 }
 
 .insight-fill {

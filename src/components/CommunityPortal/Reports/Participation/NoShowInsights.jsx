@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import mockEvents from './mockData'; // Import mock data
 import './Participation.css';
 
@@ -70,6 +71,7 @@ function NoShowInsights() {
     }));
   };
 
+  const darkMode = useSelector(state => state.theme.darkMode);
   // Function to render stats dynamically for the active tab
   const renderStats = () => {
     const filteredEvents = filterByDate(mockEvents);
@@ -77,18 +79,22 @@ function NoShowInsights() {
 
     return stats.map(item => (
       <div key={item.label} className="insight-item">
-        <div className="insight-label">{item.label}</div>
+        <div className={`insights-label ${darkMode ? 'insights-label-dark' : ''}`}>
+          {item.label}
+        </div>
         <div className="insight-bar">
           <div className="insight-fill" style={{ width: `${item.percentage}%` }} />
         </div>
-        <div className="insight-percentage">{item.percentage}%</div>
+        <div className={`insights-percentage ${darkMode ? 'insights-percentage-dark' : ''}`}>
+          {item.percentage}%
+        </div>
       </div>
     ));
   };
 
   return (
-    <div className="insights">
-      <div className="insights-header">
+    <div className={`insights ${darkMode ? 'insights-dark' : ''}`}>
+      <div className={`insights-header ${darkMode ? 'insights-header-dark' : ''}`}>
         <h3>No-show rate insights</h3>
         <div className="insights-filters">
           <select value={dateFilter} onChange={e => setDateFilter(e.target.value)}>
