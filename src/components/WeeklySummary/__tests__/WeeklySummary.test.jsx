@@ -6,14 +6,14 @@ import userEvent from '@testing-library/user-event';
 import { weeklySummaryMockData1 } from '../__mocks__/weeklySummaryMockData'; // Located in the tested component's __mocks__ folder
 import { WeeklySummary } from '../WeeklySummary';
 import CountdownTimer from '../CountdownTimer';
-import { shallow } from 'enzyme';
+
 import CurrentPromptModal from '../CurrentPromptModal';
 import configureStore from 'redux-mock-store';
 import { themeMock } from '__tests__/mockStates';
 import { Provider } from 'react-redux';
 
 jest.mock('../CurrentPromptModal', () => 'current-Prompt-Modal');
-const wrapper = props => shallow(<CurrentPromptModal {...props} />);
+const wrapper = props => render(<CurrentPromptModal {...props} />);
 
 const mockStore = configureStore([]);
 

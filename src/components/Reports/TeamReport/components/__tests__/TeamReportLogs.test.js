@@ -1,5 +1,5 @@
 import React from 'react';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
 import TeamReportLogs from 'components/Reports/TeamReport/components/TeamReportLogs';
 
 describe('TeamReportLogs', () => {
@@ -12,22 +12,22 @@ describe('TeamReportLogs', () => {
   };
 
   it('renders without crashing', () => {
-    const wrapper = mount(<TeamReportLogs {...props} />);
+    const wrapper = render(<TeamReportLogs {...props} />);
     expect(wrapper).toHaveLength(1);
   });
 
   it('renders the correct title', () => {
-    const wrapper = mount(<TeamReportLogs {...props} />);
+    const wrapper = render(<TeamReportLogs {...props} />);
     expect(wrapper.find('h2').text()).toEqual(props.title);
   });
 
   it('renders the correct number of report blocks', () => {
-    const wrapper = mount(<TeamReportLogs {...props} />);
+    const wrapper = render(<TeamReportLogs {...props} />);
     expect(wrapper.find('.team-report-time-log-block')).toHaveLength(8);
   });
 
   it('renders the correct number of team members', () => {
-    const wrapper = mount(<TeamReportLogs {...props} />);
+    const wrapper = render(<TeamReportLogs {...props} />);
     expect(
       wrapper
         .find('.team-report-time-log-block')
@@ -38,7 +38,7 @@ describe('TeamReportLogs', () => {
   });
 
   it('renders the correct number of total team blue squares', () => {
-    const wrapper = mount(<TeamReportLogs {...props} />);
+    const wrapper = render(<TeamReportLogs {...props} />);
     expect(
       wrapper
         .find('.team-report-time-log-block')
@@ -49,7 +49,7 @@ describe('TeamReportLogs', () => {
   });
 
   it('renders the correct number of weekly committed hours', () => {
-    const wrapper = mount(<TeamReportLogs {...props} />);
+    const wrapper = render(<TeamReportLogs {...props} />);
     expect(
       wrapper
         .find('.team-report-time-log-block')
@@ -60,7 +60,7 @@ describe('TeamReportLogs', () => {
   });
 
   it('renders the correct number of total worked hours this week', () => {
-    const wrapper = mount(<TeamReportLogs {...props} />);
+    const wrapper = render(<TeamReportLogs {...props} />);
     expect(
       wrapper
         .find('.team-report-time-log-block')

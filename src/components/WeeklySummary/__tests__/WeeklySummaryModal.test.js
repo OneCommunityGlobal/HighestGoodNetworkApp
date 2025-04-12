@@ -1,5 +1,4 @@
 import React from 'react';
-import { shallow } from 'enzyme';
 import { render, screen, waitFor, fireEvent} from '@testing-library/react';
 import userEvent from '@testing-library/user-event'
 import WeeklySummaryModal from '../WeeklySummaryModal';
@@ -23,7 +22,7 @@ const store = mockStore({
 describe('WeeklySummaryModal Component', () => {
 
   it('should render the component without errors', () => {
-    const wrapper = shallow(
+    const wrapper = render(
       <Provider store={store}>
         <WeeklySummaryModal />
       </Provider>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { shallow } from 'enzyme';
+import { render } from '@testing-library/react';
 import TeamsReportCharts from 'components/Reports/TeamReport/components/TeamsReportCharts';
 
 describe('TeamsReportCharts Component', () => {
@@ -11,7 +11,7 @@ describe('TeamsReportCharts Component', () => {
   const selectedTeamsWeeklyEffort = [25, 35, 18, 10];
 
   it('renders without crashing', () => {
-    shallow(
+    render(
       <TeamsReportCharts
         title="Weekly Commited Hours"
         pieChartId={1}
@@ -22,7 +22,7 @@ describe('TeamsReportCharts Component', () => {
   });
 
   it('renders the correct number of PieChartInfoDetail components', () => {
-    const wrapper = shallow(
+    const wrapper = render(
       <TeamsReportCharts
         title="Weekly Commited Hours"
         pieChartId={1}
@@ -36,7 +36,7 @@ describe('TeamsReportCharts Component', () => {
   });
 
   it('renders a message when no team is selected', () => {
-    const wrapper = shallow(
+    const wrapper = render(
       <TeamsReportCharts
         title="Weekly Commited Hours"
         pieChartId={1}
@@ -51,7 +51,7 @@ describe('TeamsReportCharts Component', () => {
 
   it('renders the correct title', () => {
     const title = 'Weekly Effort';
-    const wrapper = shallow(
+    const wrapper = render(
       <TeamsReportCharts
         title={title}
         pieChartId={1}
@@ -65,7 +65,7 @@ describe('TeamsReportCharts Component', () => {
   });
 
   it('does not render PieChartInfoDetail when selectedTeamsData is empty', () => {
-    const wrapper = shallow(
+    const wrapper = render(
       <TeamsReportCharts
         title="Weekly Commited Hours"
         pieChartId={1}
@@ -79,7 +79,7 @@ describe('TeamsReportCharts Component', () => {
   });
 
   it('renders PieChartInfoDetail components with correct values and colors', () => {
-    const wrapper = shallow(
+    const wrapper = render(
       <TeamsReportCharts
         title="Weekly Commited Hours"
         pieChartId={1}
@@ -99,7 +99,7 @@ describe('TeamsReportCharts Component', () => {
   it('calls useEffect with the correct dependencies', () => {
     const useEffectSpy = jest.spyOn(React, 'useEffect');
 
-    shallow(
+    render(
       <TeamsReportCharts
         title="Weekly Commited Hours"
         pieChartId={1}

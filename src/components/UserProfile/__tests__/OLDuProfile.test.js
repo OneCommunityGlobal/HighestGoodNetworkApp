@@ -1,5 +1,5 @@
 import React from 'react';
-import { shallow, mount } from 'enzyme';
+import { render } from '@testing-library/react';
 import { toast } from 'react-toastify';
 import UserProfile from '..';
 import { getUserProfile } from '../../../services/userProfileService';
@@ -11,7 +11,7 @@ test.skip('it skips tests because redux', () => {
 // describe("UserPage", () => {
 //   it("should call componentDidMount onload", () => {
 //     const spy = jest.spyOn(UserProfile.prototype, "componentDidMount");
-//     let userProfile = shallow(<UserProfile />);
+//     let userProfile = render(<UserProfile />);
 //     expect(spy).toHaveBeenCalled();
 //   });
 
@@ -20,7 +20,7 @@ test.skip('it skips tests because redux', () => {
 //     let props = { match: { params: { userId } } };
 //     let userProfileService = require("../services/userProfileService");
 //     const spy = jest.spyOn(userProfileService, "getUserProfile");
-//     let userProfile = shallow(<UserProfile {...props} />);
+//     let userProfile = render(<UserProfile {...props} />);
 //     userProfile.instance().componentDidMount();
 //     expect(spy).toHaveBeenCalledWith(userId);
 //   });
@@ -34,7 +34,7 @@ test.skip('it skips tests because redux', () => {
 //       throw { response };
 //     });
 //     toast.error = jest.fn();
-//     let userProfile = shallow(<UserProfile {...props} />);
+//     let userProfile = render(<UserProfile {...props} />);
 //     userProfile.instance().componentDidMount();
 //     let params = [
 //       "This is an invalid profile",
@@ -52,7 +52,7 @@ test.skip('it skips tests because redux', () => {
 //       return { response };
 //     });
 //     const spy = jest.spyOn(UserProfile.prototype, "setState");
-//     let userProfile = shallow(<UserProfile {...props} />);
+//     let userProfile = render(<UserProfile {...props} />);
 //     await userProfile.instance().componentDidMount();
 //     expect(spy).toHaveBeenCalled();
 //   });
@@ -66,7 +66,7 @@ test.skip('it skips tests because redux', () => {
 //       throw { response };
 //     });
 //     toast.error = jest.fn();
-//     let userProfile = shallow(<UserProfile {...props} />);
+//     let userProfile = render(<UserProfile {...props} />);
 //     userProfile.instance().handleSubmit();
 //     expect(toast.error).toHaveBeenCalled();
 //   });
@@ -80,7 +80,7 @@ test.skip('it skips tests because redux', () => {
 //       return { response };
 //     });
 //     toast.success = jest.fn();
-//     let userProfile = shallow(<UserProfile {...props} />);
+//     let userProfile = render(<UserProfile {...props} />);
 //     await userProfile.instance().handleSubmit();
 //     expect(toast.success).toHaveBeenCalledWith("Edits were successfully saved");
 //   });

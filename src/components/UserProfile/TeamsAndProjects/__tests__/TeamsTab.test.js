@@ -1,5 +1,5 @@
 import React from 'react';
-import { shallow, mount } from 'enzyme';
+import { render } from '@testing-library/react';
 import TeamsTab from '../TeamsTab';
 import AddTeamPopup from '../AddTeamPopup';
 import UserTeamsTable from '../UserTeamsTable';
@@ -52,7 +52,7 @@ describe('TeamsTab Component', () => {
 
   beforeEach(() => {
     store = mockStore(initialState);
-    wrapper = shallow(<TeamsTab {...props} />);
+    wrapper = render(<TeamsTab {...props} />);
   });
 
 
@@ -98,14 +98,14 @@ describe('TeamsTab Component', () => {
   //   const team = { _id: teamId };
 
   //   // Mount the component to get access to the "Assign" button
-  //   const wrapper = mount(
+  //   const wrapper = render(
   //     <Provider store={store}>
   //       <TeamsTab {...props} />
   //     </Provider>
   //   );
   
   //   // Mount the component to get access to the "Assign" button
-  //   // const wrapper = mount(<TeamsTab {...props} />);
+  //   // const wrapper = render(<TeamsTab {...props} />);
   
   //   // Find the "Assign" button within the UserTeamsTable
   //   const assignButton = wrapper.find(UserTeamsTable).findWhere(n => n.prop('title') === 'Assign').first();
@@ -138,7 +138,7 @@ describe('TeamsTab Component', () => {
   // });
 
   // it('calls deleteTeamMember when saved and removedTeams is not empty', () => {
-  //   const wrapper = shallow(<TeamsTab {...props} />);
+  //   const wrapper = render(<TeamsTab {...props} />);
   //   const instance = wrapper.instance();
   //   const teamIds = ['team123', 'team456'];
 

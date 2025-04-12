@@ -1,5 +1,5 @@
 import React from 'react';
-import { shallow } from 'enzyme';
+import { render } from '@testing-library/react';
 import TeamTableHeader from 'components/Teams/TeamTableHeader';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
@@ -9,7 +9,7 @@ const store = mockStore({});
 
 describe('TeamTableHeader Component', () => {
   it('should render correctly', () => {
-    const wrapper = shallow(
+    const wrapper = render(
       <Provider store={store}>
         <TeamTableHeader hasPermission={() => true} />
       </Provider>,
@@ -19,7 +19,7 @@ describe('TeamTableHeader Component', () => {
   });
 
   it('should not render delete column when both deleteTeam and putTeam permissions are not available', () => {
-    const wrapper = shallow(
+    const wrapper = render(
       <Provider store={store}>
         <TeamTableHeader hasPermission={() => false} />
       </Provider>,
@@ -29,13 +29,13 @@ describe('TeamTableHeader Component', () => {
   });
 
   it('should be memoized', () => {
-    const wrapper1 = shallow(
+    const wrapper1 = render(
       <Provider store={store}>
         <TeamTableHeader hasPermission={() => true} />
       </Provider>,
     );
 
-    const wrapper2 = shallow(
+    const wrapper2 = render(
       <Provider store={store}>
         <TeamTableHeader hasPermission={() => true} />
       </Provider>,

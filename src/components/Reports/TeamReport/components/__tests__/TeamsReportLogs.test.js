@@ -1,5 +1,5 @@
 import React from 'react';
-import { shallow } from 'enzyme';
+import { render } from '@testing-library/react';
 import TeamsReportLogs from '../TeamsReportLogs';
 
 describe('TeamsReportLogs Component', () => {
@@ -12,7 +12,7 @@ describe('TeamsReportLogs Component', () => {
   const selectedTeamsWeeklyEffort = [30, 40, 20, 35]; // Example values for selectedTeamsWeeklyEffort
   it('displays the correct title', () => {
     const title = 'Teams Report';
-    const wrapper = shallow(
+    const wrapper = render(
       <TeamsReportLogs
         title={title}
         selectedTeamsTotalValues={selectedTeamsTotalValues}
@@ -25,7 +25,7 @@ describe('TeamsReportLogs Component', () => {
   });
 
   it('displays the correct number of members', () => {
-    const wrapper = shallow(
+    const wrapper = render(
       <TeamsReportLogs
         title="Teams Report"
         selectedTeamsTotalValues={selectedTeamsTotalValues}
@@ -43,7 +43,7 @@ describe('TeamsReportLogs Component', () => {
   });
 
   it('displays the correct total team blue squares', () => {
-    const wrapper = shallow(
+    const wrapper = render(
       <TeamsReportLogs
         title="Teams Report"
         selectedTeamsTotalValues={selectedTeamsTotalValues}
@@ -62,7 +62,7 @@ describe('TeamsReportLogs Component', () => {
   });
 
   it('displays the correct total Weekly Committed Hours', () => {
-    const wrapper = shallow(
+    const wrapper = render(
       <TeamsReportLogs
         title="Teams Report"
         selectedTeamsTotalValues={selectedTeamsTotalValues}
@@ -80,7 +80,7 @@ describe('TeamsReportLogs Component', () => {
   });
 
   it('displays the correct total Teams Work Hours', () => {
-    const wrapper = shallow(
+    const wrapper = render(
       <TeamsReportLogs
         title="Teams Report"
         selectedTeamsTotalValues={selectedTeamsTotalValues}
@@ -99,7 +99,7 @@ describe('TeamsReportLogs Component', () => {
   });
 
   it('component still display empty blocks when no team data is provided', () => {
-    const wrapper = shallow(
+    const wrapper = render(
       <TeamsReportLogs
         title="Teams Report"
         selectedTeamsTotalValues={{}}

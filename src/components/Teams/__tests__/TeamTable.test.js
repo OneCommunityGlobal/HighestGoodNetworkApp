@@ -1,4 +1,4 @@
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
 import configureMockStore from 'redux-mock-store';
@@ -32,7 +32,7 @@ describe('<TeamTable />', () => {
       { _id: '2', teamName: 'Team2', isActive: false, teamCode: 'B-456' },
     ];
 
-    component = mount(
+    component = render(
       <Provider store={store}>
         <MemoryRouter> {/* Use MemoryRouter for testing */}
           <TeamTable allTeams={mockTeamsData} />

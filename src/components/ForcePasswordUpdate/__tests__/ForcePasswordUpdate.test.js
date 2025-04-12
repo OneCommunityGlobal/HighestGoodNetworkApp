@@ -13,7 +13,7 @@ import routes from '../../../routes.js';
 import { ForcePasswordUpdate } from '../ForcePasswordUpdate.jsx';
 import { forcePasswordUpdate as fPU } from '../../../actions/updatePassword.js';
 import { clearErrors } from '../../../actions/errorsActions.js';
-import { shallow } from 'enzyme';
+
 
 const mockStore = configureStore([]);
 const initialState = {
@@ -30,7 +30,7 @@ describe('Force Password Update page structure', () => {
       clearErrors: clearErrors,
       forcePasswordUpdate: ForcePasswordUpdate,
     };
-    mountedFPUpdate = shallow(<ForcePasswordUpdate {...props} />);
+    mountedFPUpdate = render(<ForcePasswordUpdate {...props} />);
   });
 
   it('should be rendered with two input fields', () => {
@@ -62,7 +62,7 @@ describe('When user tries to input data', () => {
       clearErrors: clearErrors,
       forcePasswordUpdate: fPU,
     };
-    mountedFPUpdate = shallow(<ForcePasswordUpdate {...props} />);
+    mountedFPUpdate = render(<ForcePasswordUpdate {...props} />);
   });
 
   it('should call handleInput when input is changed', () => {

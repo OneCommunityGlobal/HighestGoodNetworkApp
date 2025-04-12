@@ -1,7 +1,6 @@
 import TagSent from '../WBSDetail/components/TagSent';
 import React from 'react';
 import '@testing-library/jest-dom/extend-expect';
-import { shallow } from 'enzyme';
 import render from '@testing-library/react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -12,7 +11,7 @@ describe('code snippet', () => {
   it('should render a <li> element with the correct className', () => {
     const elm = { userID: 1, name: 'John' };
     const removeResource = jest.fn();
-    const wrapper = shallow(<TagSent elm={elm} removeResource={removeResource} />);
+    const wrapper = render(<TagSent elm={elm} removeResource={removeResource} />);
 
     expect(wrapper.find('li').prop('className')).toBe('rounded-pill badge bg-primary text-wrap');
   });
@@ -20,7 +19,7 @@ describe('code snippet', () => {
   it('should call removeResource function with correct argument when onClick event is triggered', () => {
     const elm = { userID: 1, name: 'John' };
     const removeResource = jest.fn();
-    const wrapper = shallow(<TagSent elm={elm} removeResource={removeResource} />);
+    const wrapper = render(<TagSent elm={elm} removeResource={removeResource} />);
 
     wrapper.find('li').simulate('click');
 
@@ -30,7 +29,7 @@ describe('code snippet', () => {
   it('should render a FontAwesomeIcon', () => {
     const elm = { userID: 1, name: 'John' };
     const removeResource = jest.fn();
-    const wrapper = shallow(<TagSent elm={elm} removeResource={removeResource} />);
+    const wrapper = render(<TagSent elm={elm} removeResource={removeResource} />);
 
     expect(wrapper.find(FontAwesomeIcon).exists()).toBe(true);
   });
@@ -39,7 +38,7 @@ describe('code snippet', () => {
   it('should not pass removeResource function as a prop', () => {
     const elm = { userID: 1, name: 'John' };
     const removeResource = jest.fn();
-    const wrapper = shallow(<TagSent elm={elm} removeResource={removeResource} />);
+    const wrapper = render(<TagSent elm={elm} removeResource={removeResource} />);
 
     expect(wrapper.prop('removeResource')).toBeUndefined();
   });
@@ -47,7 +46,7 @@ describe('code snippet', () => {
   it('should render a <li> element with the correct className when the name  and userID property the wrong type', () => {
     const elm = { userID: 'abc', name: 123 };
     const removeResource = jest.fn();
-    const wrapper = shallow(<TagSent elm={elm} removeResource={removeResource} />);
+    const wrapper = render(<TagSent elm={elm} removeResource={removeResource} />);
 
     expect(wrapper.find('li').prop('className')).toBe('rounded-pill badge bg-primary text-wrap');
   });
@@ -55,7 +54,7 @@ describe('code snippet', () => {
   it('should render a <li> element with the correct text in the <small> element', () => {
     const elm = { userID: 1, name: 'John' };
     const removeResource = jest.fn();
-    const wrapper = shallow(<TagSent elm={elm} removeResource={removeResource} />);
+    const wrapper = render(<TagSent elm={elm} removeResource={removeResource} />);
 
     expect(
       wrapper
@@ -71,7 +70,7 @@ describe('code snippet', () => {
    *
    * it('should render a <li> element with the correct className when elm prop is not passed', () => {
    *  const removeResource = jest.fn();
-   *  const wrapper = shallow(<TagSent removeResource={removeResource} elm={undefined} />);
+   *  const wrapper = render(<TagSent removeResource={removeResource} elm={undefined} />);
    *
    *  expect(wrapper.find('li').prop('className')).toBe('rounded-pill badge bg-primary text-wrap');
    * });

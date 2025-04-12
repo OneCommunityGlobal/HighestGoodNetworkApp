@@ -1,6 +1,5 @@
 import React from 'react';
-import { mount } from 'enzyme';
-import AddUserProfile from '../UserProfileAdd';
+import { render } from '@testing-library/react';
 import configureMockStore from 'redux-mock-store';
 import { MemoryRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
@@ -13,6 +12,7 @@ import {
 } from '../../../../__tests__/mockStates.js';
 
 import axios from 'axios';
+import AddUserProfile from '../UserProfileAdd';
 jest.mock('axios');
 
 describe('AddUserProfile page structure', () => {
@@ -33,7 +33,7 @@ describe('AddUserProfile page structure', () => {
       status: 200,
     });
 
-    mountedUserProfileAdd = mount(
+    mountedUserProfileAdd = render(
       <Provider store={store}>
         <MemoryRouter>
           {' '}

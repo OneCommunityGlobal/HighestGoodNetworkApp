@@ -1,5 +1,5 @@
 import React from 'react';
-import { shallow } from 'enzyme';
+import { render } from '@testing-library/react';
 import mockAdminState from '../../../__tests__/mockAdminState';
 import Leaderboard from '../Leaderboard';
 
@@ -34,7 +34,7 @@ describe('Leaderboard page structure', () => {
     props.getLeaderboardData = jest.fn();
     props.loggedInUser = { role: 'Admin' };
     props.loading = true;
-    mountedLeaderboard = shallow(<Leaderboard {...props} darkMode={true} />);
+    mountedLeaderboard = render(<Leaderboard {...props} darkMode={true} />);
   });
 
   it('should be rendered with a table', () => {
@@ -84,7 +84,7 @@ describe('Leaderboard page structure', () => {
 
   it('should display an alert if the user is invisible', () => {
     props.isVisible = false;
-    mountedLeaderboard = shallow(<Leaderboard {...props} />);
+    mountedLeaderboard = render(<Leaderboard {...props} />);
     expect(mountedLeaderboard.find('Alert').exists()).toBe(true);
   });
 
@@ -94,7 +94,7 @@ describe('Leaderboard page structure', () => {
 
   it('renders the progress component for each user', () => {
     props.leaderBoardData = [{ personId: 1, name: 'John Doe', tangibletime: 10, totaltime: 20 }];
-    mountedLeaderboard = shallow(<Leaderboard {...props} />);
+    mountedLeaderboard = render(<Leaderboard {...props} />);
     expect(mountedLeaderboard.find('Progress').length).toBeGreaterThan(0);
   });
 
@@ -103,7 +103,7 @@ describe('Leaderboard page structure', () => {
       { personId: 1, name: 'John Doe', tangibletime: 10, totaltime: 20 },
       { personId: 2, name: 'Jane Smith', tangibletime: 15, totaltime: 25 },
     ];
-    mountedLeaderboard = shallow(<Leaderboard {...props} />);
+    mountedLeaderboard = render(<Leaderboard {...props} />);
 
     const leaderBoardBody = mountedLeaderboard.find('tbody');
     const leaderBoardItems = leaderBoardBody.find('tr');
@@ -114,7 +114,7 @@ describe('Leaderboard page structure', () => {
 
   it('should not render admin features if loggedInUser role is not Admin', () => {
     props.loggedInUser = { role: 'User' };
-    mountedLeaderboard = shallow(<Leaderboard {...props} />);
+    mountedLeaderboard = render(<Leaderboard {...props} />);
     expect(mountedLeaderboard.find('.admin-features').exists()).toBe(false);
   });
 });

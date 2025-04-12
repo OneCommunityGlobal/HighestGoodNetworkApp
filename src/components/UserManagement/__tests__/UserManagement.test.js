@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { shallow } from 'enzyme';
+import { render } from '@testing-library/react';
 import { UnconnectedUserManagement } from '../UserManagement';
 
 // Mock the actions
@@ -59,7 +59,7 @@ describe('UserManagement Component', () => {
       },
     };
 
-    wrapper = shallow(<UnconnectedUserManagement {...props} />);
+    wrapper = render(<UnconnectedUserManagement {...props} />);
   });
 
   it('should render without errors', () => {

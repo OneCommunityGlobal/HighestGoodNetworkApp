@@ -1,5 +1,5 @@
 import React from 'react';
-import { mount, shallow } from 'enzyme';
+import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
 import configureMockStore from 'redux-mock-store';
@@ -9,7 +9,7 @@ import ForgotPassword from './ForgotPassword';
 const mockStore = configureMockStore([thunk]);
 const store = mockStore({ theme: { darkMode: false } });
 
-const forgotPassword = mount(
+const forgotPassword = render(
   <Provider store={store}>
     <Router>
       <ForgotPassword />
@@ -52,7 +52,7 @@ describe('ForgotPassword', () => {
 
   it('should allow user to submit the form', () => {
     const forgotPasswordMock = jest.fn();
-    const mountedforgotPasswordMock = shallow(<form onSubmit={forgotPasswordMock} />);
+    const mountedforgotPasswordMock = render(<form onSubmit={forgotPasswordMock} />);
     mountedforgotPasswordMock.find('form').simulate('submit');
     expect(forgotPasswordMock).toHaveBeenCalled();
   });

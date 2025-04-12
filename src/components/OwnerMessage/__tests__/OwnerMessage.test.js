@@ -1,5 +1,5 @@
 import React from 'react';
-import { shallow } from 'enzyme';
+import { render } from '@testing-library/react';
 import configureStore from 'redux-mock-store';
 import OwnerMessage from '../OwnerMessage';
 import { themeMock } from '__tests__/mockStates';
@@ -23,7 +23,7 @@ describe('OwnerMessage Component', () => {
 
     // Create a mock store with initial state
     const store = mockStore(initialState);
-    const wrapper = shallow(<OwnerMessage store={store} />);
+    const wrapper = render(<OwnerMessage store={store} />);
 
     // Access the connected component from the wrapper
     const connectedComponent = wrapper.dive();

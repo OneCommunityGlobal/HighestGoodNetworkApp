@@ -1,5 +1,5 @@
 import React from 'react';
-import { shallow } from 'enzyme';
+import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import SummaryBar from '../SummaryBar';
@@ -41,7 +41,7 @@ describe('SummaryBar Component', () => {
   };
 
   beforeEach(() => {
-    wrapper = shallow(
+    wrapper = render(
       <Provider store={store}>
         <SummaryBar {...props} />
       </Provider>
@@ -129,7 +129,7 @@ describe('SummaryBar Component', () => {
 
   it('renders correctly with initial state', () => {
     // Render the component under test
-    shallow(
+    render(
       <Provider store={store}>
         <SummaryBar displayUserId="123" summaryBarData={{ tangibletime: 20 }} />
       </Provider>
@@ -159,7 +159,7 @@ describe('SummaryBar Component - others', () => {
   beforeEach(() => {
       mock.reset();
       store.clearActions();
-      wrapper = shallow(
+      wrapper = render(
           <Provider store={store}>
                <SummaryBar {...initialState} />
           </Provider>

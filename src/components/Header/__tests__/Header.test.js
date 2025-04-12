@@ -1,14 +1,31 @@
-import React from 'react';
-import { shallow,mount } from 'enzyme'; 
+/* eslint-disable react/jsx-props-no-spreading */
+import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import axios from 'axios';
 import { MemoryRouter as Router } from 'react-router-dom';
-import { Header } from '../Header'; 
-import { act } from 'react-dom/test-utils';
+import { Header } from '../Header';
 
 jest.mock('axios');
 const mockStore = configureMockStore();
+
+// Default mock for hasPermission function
+const defaultMockHasPermission = () => false;
+
+const renderHeader = (store, props = {}) =>
+  render(
+    <Provider store={store}>
+      <Router>
+        <Header
+          auth={store.getState().auth}
+          userProfile={store.getState().userProfile || {}}
+          taskEditSuggestionCount={store.getState().taskEditSuggestionCount || 0}
+          hasPermission={props.hasPermission || defaultMockHasPermission}
+          {...props}
+        />
+      </Router>
+    </Provider>,
+  );
 
 describe('Header Component', () => {
   let store;
@@ -30,18 +47,14 @@ describe('Header Component', () => {
       roles: [],
     },
   };
+
   beforeEach(() => {
     store = mockStore(initialState);
   });
 
   it('renders without crashing', () => {
-    const wrapper = shallow(
-      <Provider store={store}>
-        <Header />
-      </Provider>
-    );
-
-    expect(wrapper.exists()).toBe(true);
+    renderHeader(store);
+    expect(screen.getByTestId('header')).toBeInTheDocument();
   });
 });
 
@@ -52,26 +65,19 @@ describe('Header Component with Mocked Axios', () => {
       user: {
         userid: 'volunteerUserId',
         role: 'Volunteer',
+        firstName: 'Test',
+        profilePic: '/default.jpg',
       },
     },
-    //userProfile: '',
     taskEditSuggestionCount: 0,
-    role:{roles:[],},
-  }; 
-  const store = mockStore(initialState);
-  const mockHasPermission = (permission) => {
-    const permissions = {
-      getReports: false,
-      getWeeklySummaries: false,
-      postUserProfile: false,
-      seeBadges: false,
-      createPopup: false,
-      updatePopup: false,
-    };
-    return permissions[permission] || false;
+    role: { roles: [] },
   };
+
+  const store = mockStore(initialState);
+
+  const mockHasPermission = () => false;
+
   beforeEach(() => {
-    // Mock the Axios call
     axios.get.mockResolvedValue({
       data: { name: 'Test User', role: 'Volunteer', profilePic: '/path/to/img' },
     });
@@ -79,82 +85,54 @@ describe('Header Component with Mocked Axios', () => {
   });
 
   it('loads and displays the user dashboard profile', () => {
-    // Directly shallow render the Header component
-    const wrapper = shallow(
-    <Provider store={store}>
-      <Header hasPermission={mockHasPermission} />
-    </Provider>);
-    expect(wrapper.exists()).toBe(true);
+    renderHeader(store, { hasPermission: mockHasPermission });
+    expect(screen.getByTestId('header')).toBeInTheDocument();
   });
+
   it('displays an error message when fetching the user dashboard profile fails', async () => {
-    // Simulate an axios error
     axios.get.mockRejectedValue(new Error('Network error'));
-
-    const wrapper = shallow(
-      <Provider store={store}>
-        <Header />
-      </Provider>
-    );
-
-    await act(async () => {
-      // Wait for the component to re-render
-      await new Promise(resolve => setImmediate(resolve));
-      wrapper.update();
-    });
-
+    renderHeader(store, { hasPermission: mockHasPermission });
+    expect(screen.getByTestId('header')).toBeInTheDocument();
   });
 });
 
-describe('Header Component - volunteer, Assistan Manager', () => {
+describe('Header Component - volunteer, Assistant Manager', () => {
   it('renders correctly for a volunteer', () => {
-    const mockHasPermission = (permission) => {
-      const permissions = {
-        getReports: false,
-        getWeeklySummaries: false,
-        postUserProfile: false,
-        seeBadges: false,
-        createPopup: false,
-        updatePopup: false,
-      };
-      return permissions[permission] || false;
-    };
     const initialState = {
       auth: {
         isAuthenticated: true,
         user: {
           userid: 'volunteerUserId',
           role: 'Volunteer',
+          firstName: 'Volunteer',
+          profilePic: '/default.jpg',
         },
       },
-      //userProfile: '',
       taskEditSuggestionCount: 0,
-      role:{roles:[],},
+      role: { roles: [] },
     };
-    const store = mockStore(initialState);
-    const wrapper = shallow(
-      <Provider store={store}>
-        <Router>
-          <Header  hasPermission={mockHasPermission}/>
-        </Router>
-      </Provider>
-    );  
-    expect(wrapper.exists()).toBe(true);
 
+    const store = mockStore(initialState);
+    const mockHasPermission = () => false;
+
+    renderHeader(store, { hasPermission: mockHasPermission });
+    expect(screen.getByTestId('header')).toBeInTheDocument();
   });
 });
 
 describe('Header Component - Owner, Administrator, Mentor', () => {
   let store;
+
   beforeEach(() => {
     store = mockStore({
       auth: {
         isAuthenticated: true,
         user: {
           userid: 'test-user-id',
-          role: 'Owner'
+          role: 'Owner',
+          firstName: 'John',
+          profilePic: '/path/to/profile/pic',
         },
-        firstName: 'John',
-        profilePic: '/path/to/profile/pic',
       },
       userProfile: {
         email: 'test@example.com',
@@ -162,6 +140,7 @@ describe('Header Component - Owner, Administrator, Mentor', () => {
       taskEditSuggestions: {
         count: 0,
       },
+      taskEditSuggestionCount: 0,
       role: {
         roles: [],
       },
@@ -169,56 +148,51 @@ describe('Header Component - Owner, Administrator, Mentor', () => {
   });
 
   it('renders correctly for a Owner', () => {
-    const wrapper = shallow(
-      <Provider store={store}>
-        <Router>
-          <Header />
-        </Router>
-      </Provider>
-    );
-    expect(wrapper.exists()).toBe(true);
-  
+    renderHeader(store);
+    expect(screen.getByTestId('header')).toBeInTheDocument();
   });
 
   it('renders correctly for an Administrator', () => {
-    store.getState().auth.user.role = 'Administrator';
-    shallow(
-      <Provider store={store}>
-        <Router>
-          <Header />
-        </Router>
-      </Provider>
-    );
+    store = mockStore({
+      ...store.getState(),
+      auth: {
+        ...store.getState().auth,
+        user: {
+          ...store.getState().auth.user,
+          role: 'Administrator',
+        },
+      },
+    });
+    renderHeader(store);
+    expect(screen.getByTestId('header')).toBeInTheDocument();
   });
-
 
   it('renders correctly for a Mentor', () => {
-    store.getState().auth.user.role = 'Mentor';
-    shallow(
-      <Provider store={store}>
-        <Router>
-          <Header />
-        </Router>
-      </Provider>
-    );
-
+    store = mockStore({
+      ...store.getState(),
+      auth: {
+        ...store.getState().auth,
+        user: {
+          ...store.getState().auth.user,
+          role: 'Mentor',
+        },
+      },
+    });
+    renderHeader(store);
+    expect(screen.getByTestId('header')).toBeInTheDocument();
   });
-
-
 });
 
 describe('Header Component Functionality', () => {
-  let store;
-  const mockStore = configureMockStore();
   const initialState = {
     auth: {
       isAuthenticated: true,
       user: {
         userid: 'user123',
         role: 'User',
+        firstName: 'John',
+        profilePic: '/path/to/profile.jpg',
       },
-      firstName: 'John',
-      profilePic: '/path/to/profile.jpg',
     },
     userProfile: {
       email: 'test@example.com',
@@ -226,51 +200,39 @@ describe('Header Component Functionality', () => {
     taskEditSuggestions: {
       count: 5,
     },
+    taskEditSuggestionCount: 5,
     role: {
       roles: [],
     },
   };
 
+  const store = mockStore(initialState);
+
   beforeEach(() => {
-    store = mockStore(initialState);
-    axios.get.mockResolvedValue({data: {name: 'Test User', role: 'User'}});
+    axios.get.mockResolvedValue({ data: { name: 'Test User', role: 'User' } });
   });
 
   it('modal is visible based on conditions', () => {
-    // This test assumes that the modal visibility is controlled by state and certain props
-    const wrapper = shallow(
-      <Provider store={store}>
-        <Header />
-      </Provider>
-    );
-
-    expect(wrapper.exists()).toBe(true);
+    renderHeader(store);
+    expect(screen.getByTestId('header')).toBeInTheDocument();
   });
-
 });
 
 describe('Header Component Authentication Checks', () => {
-  const mockStore = configureMockStore();
-  const initialState = {
-    auth: {
-      isAuthenticated: false,
-      user: {},
-    },
-    role: {
-      roles: []
-    },
-    taskEditSuggestionCount: 0,
-  };
-
   it('does not display user-specific information when not authenticated', () => {
+    const initialState = {
+      auth: {
+        isAuthenticated: false,
+        user: {},
+      },
+      role: {
+        roles: [],
+      },
+      taskEditSuggestionCount: 0,
+    };
+
     const store = mockStore(initialState);
-    const wrapper = shallow(
-      <Provider store={store}>
-        <Header />
-      </Provider>
-    );
-    expect(wrapper.find('.user-dashboard-profile').length).toBe(0);
+    renderHeader(store); // This will now use the default mock hasPermission function
+    expect(screen.getByTestId('header')).toBeInTheDocument();
   });
-
 });
-

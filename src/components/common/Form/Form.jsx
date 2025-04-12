@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unused-class-component-methods */
 /* eslint-disable react/jsx-props-no-spreading */
 import { Component } from 'react';
-import Joi from 'joi';
+import Joi from 'joi-browser';
 import { cloneDeep, isEqual, groupBy } from 'lodash';
 import { Link } from 'react-router-dom';
 import { boxStyle, boxStyleDark } from 'styles';
@@ -89,7 +89,7 @@ import CheckboxCollection from '../CheckboxCollection';
         obj[ref] = data[ref];
       });
     }
-    const { error } = Joi.validate(obj, schema);
+    const { error } = schema.validate(obj);
     if (!error) return null;
     return error.details[0].message;
   };
@@ -97,7 +97,7 @@ import CheckboxCollection from '../CheckboxCollection';
   const validateForm = () => {
     let errors = {};
     const options = { abortEarly: false };
-    const { error } = Joi.validate(data, schema, options);
+    const { error } = schema.validate(data, options);
     if (!error) return null;
     error.details.forEach((element) => {
       errors[element.path[0]] = element.message;
@@ -319,7 +319,7 @@ class Form extends Component {
     this.validateForm = () => {
       const errors = {};
       const options = { abortEarly: false };
-      const { error } = Joi.validate(this.state.data, this.schema, options);
+      const { error } = Joi.object(this.schema).validate(this.state.data, options);
 
       if (!error) return null;
       error.details.forEach(element => {

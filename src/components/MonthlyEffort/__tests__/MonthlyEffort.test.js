@@ -1,5 +1,5 @@
 import React from 'react';
-import { shallow, mount } from 'enzyme';
+import { render } from '@testing-library/react';
 import { MonthlyEffort } from '../MonthlyEffort';
 
 describe('Monthly Effort component structure', () => {
@@ -8,7 +8,7 @@ describe('Monthly Effort component structure', () => {
     props = {
       auth: { isAuthenticated: true, user: { userid: 'abcdef' } },
     };
-    mountedMonthlyEffort = shallow(<MonthlyEffort {...props} />);
+    mountedMonthlyEffort = render(<MonthlyEffort {...props} />);
   });
 
   it('should be rendered with one h5 labeled Please Sign In', () => {

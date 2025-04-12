@@ -1,6 +1,5 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { shallow } from 'enzyme';
 import MockNavLink from '../MockData/MockNavLink'; // mock component
 import BasicTabTips from '../BasicTabTips';
 
@@ -32,7 +31,7 @@ const mockComponentWithNavLink = () => {
 
 // shallow rendering
 const mockComponentWithoutNavLink = () => {
-  return shallow(<BasicTabTips />);
+  return render(<BasicTabTips />);
 };
 
 /** ****************************TESTS CASES************************************ */

@@ -1,22 +1,22 @@
 import React from 'react';
-import { shallow } from 'enzyme'; 
+import { render } from '@testing-library/react';
 import TeamChartsGroup from '../TeamChartsGroup';
 
 describe('Test Suite for TeamChartsGroup Component', () => {
   it('Test case 1 : Renders two ReportCharts components', () => {
-    const wrapper = shallow(<TeamChartsGroup />);
+    const wrapper = render(<TeamChartsGroup />);
     const reportCharts = wrapper.find('ReportCharts');
     expect(reportCharts).toHaveLength(2);
   });
 
   it('Test case 2 : Renders divs with appropriate classNames', () => {
-    const wrapper = shallow(<TeamChartsGroup />);
+    const wrapper = render(<TeamChartsGroup />);
     const divs = wrapper.find('.team-chart-wrapper').find('.team-chart-container');
     expect(divs).toHaveLength(2);
   });
 
   it('Test case 3 : Passes correct props to ReportCharts components', () => {
-    const wrapper = shallow(<TeamChartsGroup />);
+    const wrapper = render(<TeamChartsGroup />);
     const reportCharts = wrapper.find('ReportCharts');
 
     expect(reportCharts.at(0).props()).toEqual({

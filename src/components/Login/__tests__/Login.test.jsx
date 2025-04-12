@@ -1,7 +1,7 @@
 // Version 1.0.0 - Initial tests for Login page structure, input handling, and login behavior
 
 import React from 'react';
-import { shallow, mount } from 'enzyme';
+import { render } from '@testing-library/react';
 import { Login } from '../Login';
 import { loginUser } from '../../../actions/authActions';
 import { clearErrors } from '../../../actions/errorsActions';
@@ -19,7 +19,7 @@ describe('Login page structure', () => {
       clearErrors: clearErrors, // Action for clearing errors
     };
     // Shallow render the component to test its structure
-    mountedLogin = shallow(<Login {...props} />);
+    mountedLogin = render(<Login {...props} />);
   });
 
   // Test for ensuring that there are two input fields (e.g., email and password)
@@ -53,7 +53,7 @@ describe('When user tries to input data', () => {
       errors: {}, // No errors initially
       loginUser: loginU, // Mock login function
     };
-    mountedLoginPage = shallow(<Login {...props} />);
+    mountedLoginPage = render(<Login {...props} />);
   });
 
   // Test for calling the handleInput method when the input field changes
@@ -105,7 +105,7 @@ describe('When user tries to input data', () => {
   // Test to simulate form submission and ensure that the callback is called
   it('form can be submitted', () => {
     const callback = jest.fn(); // Mock submission callback
-    const mountedLoginPagewithCallBack = shallow(<form onSubmit={callback} />); // Simulate form submission
+    const mountedLoginPagewithCallBack = render(<form onSubmit={callback} />); // Simulate form submission
     mountedLoginPagewithCallBack.find('form').simulate('submit'); // Simulate form submission
     expect(callback).toHaveBeenCalled(); // Check if callback is invoked
   });
@@ -128,7 +128,7 @@ describe('Login behavior', () => {
       loginUser: loginUser,
       history: [], // Mock browser history object
     };
-    const wrapper = shallow(<Login {...props} />); // Shallow render the component
+    const wrapper = render(<Login {...props} />); // Shallow render the component
     expect(wrapper.instance().props.history).toEqual(['/']); // Ensure the user is redirected to '/'
   });
 });

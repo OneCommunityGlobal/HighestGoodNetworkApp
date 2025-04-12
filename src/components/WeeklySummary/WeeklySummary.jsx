@@ -33,7 +33,7 @@ import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 import { Editor } from '@tinymce/tinymce-react';
 import moment from 'moment';
 import 'moment-timezone';
-import Joi from 'joi';
+import Joi from 'joi-browser';
 import { toast } from 'react-toastify';
 import classnames from 'classnames';
 import { getUserProfile } from 'actions/userProfile';
@@ -373,7 +373,7 @@ export class WeeklySummary extends Component {
   validate = () => {
     const options = { abortEarly: false };
     const { formElements } = this.state;
-    const result = Joi.validate(formElements, this.schema, options);
+    const result = this.schema.validate(formElements, options);
     return result?.error?.details.reduce((pre, cur) => {
       // eslint-disable-next-line no-param-reassign
       pre[cur.path[0]] = cur.message;
@@ -384,15 +384,13 @@ export class WeeklySummary extends Component {
   validateProperty = ({ name, value, type, checked }) => {
     const attr = type === 'checkbox' ? checked : value;
     const obj = { [name]: attr };
-    const schema = { [name]: this.schema[name] };
-    const { error } = Joi.validate(obj, schema);
+    const { error } = this.schema[name].validate(obj);
     return error ? error.details[0].message : null;
   };
 
   validateEditorProperty = (content, name) => {
     const obj = { [name]: content };
-    const schema = { [name]: this.schema[name] };
-    const { error } = Joi.validate(obj, schema);
+    const { error } = this.schema[name].validate(obj); 
     return error ? error.details[0].message : null;
   };
 
