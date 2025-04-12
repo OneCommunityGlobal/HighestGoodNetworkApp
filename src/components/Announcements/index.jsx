@@ -327,7 +327,11 @@ function Announcements({ title, email }) {
     const htmlContent = `${emailContent}`;
     const scheduleDate = `${dateContent}`;
     const scheduleTime = `${timeContent}`;
-  
+    if (!htmlContent) {
+      console.error("Error: Missing text content");
+      toast.error("Error: Missing Text content");
+      return;
+    }
     switch (platform) {
       case "twitter":
         // Dispatch the scheduleTweet action for Twitter
@@ -370,13 +374,13 @@ function Announcements({ title, email }) {
   const handlePostScheduledTweets = (postId, textContent, platform) => {
     console.log("Post ID:", postId, "Content:", textContent);
     if (!postId) {
-      console.error("Error: Missing post ID in handlePostScheduledTweets");
+      console.error("Error: Missing post ");
       toast.error("Error: Missing post ID");
       return;
     }
     if (!textContent) {
-      console.error("Error: Missing text content in handlePostScheduledTweets");
-      toast.error("Error: Missing tweet content");
+      console.error("Error: Missing Text Content");
+      toast.error("Error: Missing Text Content");
       return;
     }
     console.log("Posting Tweet:", textContent);
@@ -390,7 +394,6 @@ function Announcements({ title, email }) {
             dispatch(sendFbPost(textContent, accessToken))
               .then(() => {
                 //console.log("Facebook posted successfully! Now calling handleDeletePost for post ID:", postId);
-                //toast.success("✅ Successfully posted to Facebook feed.");
                 setTimeout(() => {
                   handleDeletePost(postId, true);
                 }, 1500);
