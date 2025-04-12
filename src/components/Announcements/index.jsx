@@ -216,7 +216,7 @@ function Announcements({ title, email }) {
     convertImageToBase64(imageFile, base64Image => {
       const imageTag = `<img src="${base64Image}" alt="Header Image" style="width: 100%; max-width: 100%; height: auto;">`;
       setHeaderContent(prevContent => `${imageTag}${prevContent}`);
-      const editor = tinymce.current.get('email-editor');
+      const editor = tinymce.current('email-editor');
       if (editor) {
         editor.insertContent(imageTag);
         setEmailContent(editor.getContent());
