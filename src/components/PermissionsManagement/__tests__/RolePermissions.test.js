@@ -47,6 +47,7 @@ beforeEach(() => {
         },
       ],
     },
+    theme: { darkMode: false },
   });
 });
 
@@ -82,7 +83,7 @@ const renderComponent = (newStore, history, newRoleName, newRoleId) => {
           />
         </Provider>
       </Router>
-    </ModalContext.Provider>
+    </ModalContext.Provider>,
   );
 };
 
@@ -134,6 +135,7 @@ describe('RolePermissions component', () => {
           },
         ],
       },
+      theme: { darkMode: false },
     });
 
     const newRoleName = 'Manager';

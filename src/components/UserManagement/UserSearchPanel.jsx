@@ -76,13 +76,12 @@ function UserSearchPanel({
         {CREATE_NEW_USER}
       </button>
 
-      <div className="input-group-prepend">
-        <span className="input-group-text">{SEARCH}</span>
-      </div>
+      <div className="input-group-prepend" style={{marginRight: "5px"}}>
+        <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>{SEARCH}</span>
       <input
         // autoFocus
         type="text"
-        className="form-control"
+        className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
         aria-label="Search"
         placeholder="Search Text"
         id="user-profiles-wild-card-search"
@@ -91,13 +90,15 @@ function UserSearchPanel({
           onSearch(e.target.value);
         }}
       />
-      <div className="input-group-prepend ml-2">
-        <span className="input-group-text">{SHOW}</span>
+      </div>
+      <div className="input-group-prepend">
+        <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>{SHOW}</span>
         <select
           id="active-filter-dropdown"
           onChange={e => {
             onActiveFiter(e.target.value);
           }}
+          className={darkMode ? 'bg-darkmode-liblack text-light' : ''}
         >
           <option value="all">All</option>
           <option value="active">Active</option>
