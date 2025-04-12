@@ -505,6 +505,7 @@ export function Header(props) {
                   </NavItem>
                 )}
                 <NavItem className="responsive-spacing">
+
                   <NavLink tag={Link} to={`/timelog/${displayUserId}`}>
                     <i className="fa fa-bell i-large">
                       <i className="badge badge-pill badge-danger badge-notify">
@@ -513,6 +514,8 @@ export function Header(props) {
                       <span className="sr-only">unread messages</span>
                     </i>
                   </NavLink>
+                  <BellNotification userId={displayUserId}/>
+
                 </NavItem>
                 {(canAccessUserManagement ||
                   canAccessBadgeManagement ||
