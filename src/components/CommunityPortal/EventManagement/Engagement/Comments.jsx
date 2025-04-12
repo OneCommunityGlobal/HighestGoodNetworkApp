@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useSelector } from "react-redux";
+import { useSelector } from 'react-redux';
 import './Comments.css';
 import { MdArrowUpward, MdArrowDownward } from 'react-icons/md';
 import { FaThumbsUp, FaThumbsDown, FaReply } from 'react-icons/fa';
@@ -83,18 +83,19 @@ function Comments() {
     return sortOrder === 'asc' ? a.timestamp - b.timestamp : b.timestamp - a.timestamp;
   });
 
-  const darkMode = useSelector((state) => state.theme.darkMode);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   return (
-    <div className={`comments-section ${darkMode  ? "comments-section-dark" : ""}`}>
+    <div className={`comments-section ${darkMode ? 'comments-section-dark' : ''}`}>
       <div className="comments-header">
-        <h2 className={`comments-title ${darkMode  ? "comments-title-dark" : ""}`}>
-          Comments <span className={`comments-count ${darkMode  ? "comments-count-dark" : ""}`}>
+        <h2 className={`comments-title ${darkMode ? 'comments-title-dark' : ''}`}>
+          Comments{' '}
+          <span className={`comments-count ${darkMode ? 'comments-count-dark' : ''}`}>
             {sortedComments.length}
-            </span>
+          </span>
         </h2>
-        <div className={`sort-options ${darkMode  ? "sort-options-dark" : ""}`}>
-          <label className={`filter ${darkMode  ? "filter-dark" : ""}`}>
+        <div className={`sort-options ${darkMode ? 'sort-options-dark' : ''}`}>
+          <label className={`filter ${darkMode ? 'filter-dark' : ''}`}>
             Filter by:
             <select value={filterBy} onChange={e => setFilterBy(e.target.value)}>
               <option value="likes">Likes</option>
@@ -102,7 +103,11 @@ function Comments() {
               <option value="time">Time Posted</option>
             </select>
           </label>
-          <button type="button" onClick={handleSortChange} className={`sort-btn ${darkMode  ? "sort-btn-dark" : ""}`}>
+          <button
+            type="button"
+            onClick={handleSortChange}
+            className={`sort-btn ${darkMode ? 'sort-btn-dark' : ''}`}
+          >
             Sort {sortOrder === 'asc' ? <MdArrowUpward /> : <MdArrowDownward />}
           </button>
         </div>
@@ -110,13 +115,15 @@ function Comments() {
 
       <div className="comment-list">
         {sortedComments.map(comment => (
-          <div key={comment.id} className={`comment-item ${darkMode  ? "comment-item-dark" : ""}`}>
+          <div key={comment.id} className={`comment-item ${darkMode ? 'comment-item-dark' : ''}`}>
             <div className="comment-content">
               <div className="comment-content-header">
                 <img alt="User" className="comment-avatar" />
                 <strong className="comment-user">{comment.user}</strong>
               </div>
-              <p  className={`comment-text ${darkMode  ? "comment-text-dark" : ""}`}>{comment.text}</p>
+              <p className={`comment-text ${darkMode ? 'comment-text-dark' : ''}`}>
+                {comment.text}
+              </p>
               <div className="comment-actions">
                 <div className="comment-votes">
                   <button

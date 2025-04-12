@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useSelector } from "react-redux";
+import { useSelector } from 'react-redux';
 import { useParams, useHistory } from 'react-router-dom';
 import './EventManagementTabs.css';
 import CommentsComponent from './Engagement/Comments';
@@ -46,7 +46,7 @@ function EventManagementTabs() {
     history.push(`/communityportal/activity/${activityid}/engagement/${newSection}`);
   };
 
-  const darkMode = useSelector((state) => state.theme.darkMode);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const renderContent = () => {
     if (!event) return <div className="content-box">Event not found</div>;
@@ -54,7 +54,7 @@ function EventManagementTabs() {
     if (activeTab === 'engagement') {
       return (
         <div>
-          <div className={`engagement-sections ${darkMode ? "engagement-sections-dark" : ""}`}>
+          <div className={`engagement-sections ${darkMode ? 'engagement-sections-dark' : ''}`}>
             {engagementSections.map(sec => (
               <button
                 type="button"
@@ -69,7 +69,7 @@ function EventManagementTabs() {
               </button>
             ))}
           </div>
-          <div className={`content-box ${darkMode ? "content-box-dark" : ""}`}>
+          <div className={`content-box ${darkMode ? 'content-box-dark' : ''}`}>
             {activeSection === 'Feedback' ? (
               <div>
                 <FeedbackComponent />
@@ -86,13 +86,21 @@ function EventManagementTabs() {
 
     switch (activeTab) {
       case 'analysis':
-        return <div className={`content-box ${darkMode ? "content-box-dark" : ""}`}>Analysis for {event.name}</div>;
+        return (
+          <div className={`content-box ${darkMode ? 'content-box-dark' : ''}`}>
+            Analysis for {event.name}
+          </div>
+        );
       case 'resources':
-        return <div className={`content-box ${darkMode ? "content-box-dark" : ""}`}>Resources for {event.name}</div>;
+        return (
+          <div className={`content-box ${darkMode ? 'content-box-dark' : ''}`}>
+            Resources for {event.name}
+          </div>
+        );
       case 'description':
       default:
         return (
-          <div className={`content-box ${darkMode ? "content-box-dark" : ""}`}>
+          <div className={`content-box ${darkMode ? 'content-box-dark' : ''}`}>
             This is a detailed description of the event.
           </div>
         );
@@ -100,8 +108,8 @@ function EventManagementTabs() {
   };
 
   return (
-    <div className={`event-tabs ${darkMode ? "event-tabs-dark" : ""}`}>
-      <div className={`tab-buttons ${darkMode ? "tab-buttons-dark" : ""}`}>
+    <div className={`event-tabs ${darkMode ? 'event-tabs-dark' : ''}`}>
+      <div className={`tab-buttons ${darkMode ? 'tab-buttons-dark' : ''}`}>
         {tabs.map(({ key, label }) => (
           <button
             type="button"
@@ -113,14 +121,13 @@ function EventManagementTabs() {
               ${activeTab === key ? 'active' : ''} 
               ${darkMode ? 'tab-btn-dark' : ''} 
               ${darkMode && activeTab === key ? 'active-dark' : ''}`}
-            
           >
             {label}
           </button>
         ))}
       </div>
 
-      <div className={`main-content ${darkMode ? "main-content-dark" : ""}`}>{renderContent()}</div>
+      <div className={`main-content ${darkMode ? 'main-content-dark' : ''}`}>{renderContent()}</div>
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useSelector } from "react-redux";
+import { useSelector } from 'react-redux';
 import './Feedback.css';
 import { FaSearch } from 'react-icons/fa';
 import { MdArrowUpward, MdArrowDownward } from 'react-icons/md';
@@ -70,12 +70,15 @@ function Feedback() {
       return 0;
     });
 
-  const darkMode = useSelector((state) => state.theme.darkMode);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   return (
-    <div className={`feedback-container ${darkMode  ? "feedback-container-dark" : ""}`}>
-      <h2 className={`feedback-title ${darkMode  ? "feedback-title-dark" : ""}`}>
-        Feedback <span className={`feedback-count ${darkMode  ? "feedback-count-dark" : ""}`}>{filteredFeedback.length}</span>
+    <div className={`feedback-container ${darkMode ? 'feedback-container-dark' : ''}`}>
+      <h2 className={`feedback-title ${darkMode ? 'feedback-title-dark' : ''}`}>
+        Feedback{' '}
+        <span className={`feedback-count ${darkMode ? 'feedback-count-dark' : ''}`}>
+          {filteredFeedback.length}
+        </span>
       </h2>
 
       <div className="feedback-header">
@@ -91,7 +94,7 @@ function Feedback() {
         </div>
 
         <div className="sort-options">
-          <label className={`filter ${darkMode  ? "filter-dark" : ""}`}>
+          <label className={`filter ${darkMode ? 'filter-dark' : ''}`}>
             Filter by:
             <select value={filterBy} onChange={handleFilterChange} className="filter-dropdown">
               <option value="date">Date</option>
@@ -105,7 +108,7 @@ function Feedback() {
       </div>
 
       {filteredFeedback.map(feedback => (
-        <div key={feedback.id} className={`feedback-card ${darkMode  ? "feedback-card-dark" : ""}`}>
+        <div key={feedback.id} className={`feedback-card ${darkMode ? 'feedback-card-dark' : ''}`}>
           <img alt="User" className="avatar" />
           <div className="feedback-content">
             <div className="feedback-header">
@@ -113,7 +116,9 @@ function Feedback() {
               <span className="feedback-date">{feedback.date}</span>
             </div>
             <div className="feedback-rating">{renderStars(feedback)}</div>
-            <p className={`feedback-text ${darkMode  ? "feedback-text-dark" : ""}`}>{feedback.comment}</p>
+            <p className={`feedback-text ${darkMode ? 'feedback-text-dark' : ''}`}>
+              {feedback.comment}
+            </p>
           </div>
         </div>
       ))}
