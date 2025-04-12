@@ -19,18 +19,6 @@ const mockProjects = [
   { id: 8, name: 'Sports Stadium' },
 ];
 
-// Mock data for material types
-const materialTypes = [
-  { id: 1, name: 'All Materials' },
-  { id: 2, name: 'Wood' },
-  { id: 3, name: 'Concrete' },
-  { id: 4, name: 'Steel' },
-  { id: 5, name: 'Aluminum' },
-  { id: 6, name: 'Glass' },
-  { id: 7, name: 'Brick' },
-  { id: 8, name: 'Plastic' },
-];
-
 // Mock data for material usage
 const mockMaterialData = {
   1: {
@@ -458,17 +446,6 @@ export default function MaterialUsageDashboard() {
   const [loading, setLoading] = useState(false);
   const [increasePercentage, setIncreasePercentage] = useState(0);
 
-  // Update chart data when filters change
-  useEffect(() => {
-    setLoading(true);
-
-    // Simulate API call delay
-    setTimeout(() => {
-      updateChartData();
-      setLoading(false);
-    }, 800);
-  }, [selectedProject, selectedMaterial, showIncreaseOnly]);
-
   // Update the updateChartData function to handle the new material types with appropriate colors
   const updateChartData = () => {
     const projectData = mockMaterialData[selectedProject];
@@ -535,14 +512,25 @@ export default function MaterialUsageDashboard() {
     });
   };
 
+  // Update chart data when filters change
+  useEffect(() => {
+    setLoading(true);
+
+    // Simulate API call delay
+    setTimeout(() => {
+      updateChartData();
+      setLoading(false);
+    }, 800);
+  }, [selectedProject, selectedMaterial, showIncreaseOnly]);
+
   // Function to add a title in the center of the donut chart
   const plugins = [
     {
       id: 'donutTitle',
       beforeDraw: chart => {
-        const width = chart.width;
-        const height = chart.height;
-        const ctx = chart.ctx;
+        const { width } = chart;
+        const { height } = chart;
+        const { ctx } = chart;
 
         ctx.restore();
         const fontSize = (height / 180).toFixed(2); // Smaller font size
@@ -581,7 +569,7 @@ export default function MaterialUsageDashboard() {
                   id="project"
                   className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={selectedProject}
-                  onChange={e => setSelectedProject(Number.parseInt(e.target.value))}
+                  onChange={e => setSelectedProject(Number(e.target.value))}
                 >
                   {mockProjects.map(project => (
                     <option key={project.id} value={project.id}>
@@ -672,7 +660,7 @@ export default function MaterialUsageDashboard() {
             <div className="flex justify-center items-center min-h-[220px]">
               {loading ? (
                 <div className="flex flex-col items-center justify-center">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mb-2"></div>
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mb-2" />
                   <p>Loading data...</p>
                 </div>
               ) : chartData ? (
@@ -725,10 +713,7 @@ export default function MaterialUsageDashboard() {
                         key={index}
                         className="flex items-center space-x-3 p-3 rounded-md bg-gray-50"
                       >
-                        <div
-                          className="w-4 h-4 rounded-full"
-                          style={{ backgroundColor: color }}
-                        ></div>
+                        <div className="w-4 h-4 rounded-full" style={{ backgroundColor: color }} />
                         <div>
                           <p className="font-medium">{label}</p>
                           <p className="text-2xl font-bold">
