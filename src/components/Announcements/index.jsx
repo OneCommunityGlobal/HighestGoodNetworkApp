@@ -6,7 +6,7 @@ import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
 import { FaInstagramSquare } from 'react-icons/fa';
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
-import { loadFacebookSDK, logInToFB, logOutFromFB } from './InstagramPostDetails';
+import { loadFacebookSDK, logInToFB, logOutFromFB, loginToInstagram } from './InstagramPostDetails';
 
 function Announcements({ title, email }) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -19,6 +19,7 @@ function Announcements({ title, email }) {
   const tinymce = useRef(null);
 
   const [facebookUserAccessToken, setFacebookUserAccessToken] = useState('');
+  const [instagramUserAccessToken, setInstagramUserAccessToken] = useState('');
 
   useEffect(() => {
     setShowEditor(false);
@@ -44,6 +45,40 @@ function Announcements({ title, email }) {
       window.fbAsyncInit = function() {
         checkLoginStatus();
       };
+    }
+  }, []);
+
+  const exchangeCodeForToken = async code => {
+    try {
+      const response = await fetch('/api/instagram/exchange-token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ code }),
+      });
+      const data = await response.json();
+
+      if (data.access_token) {
+        setInstagramUserAccessToken(data.access_token);
+        toast.success('Instagram access token received successfully!');
+      } else {
+        toast.error('Failed to receive Instagram access token.');
+      }
+    } catch (error) {
+      // console.error('Error exchanging code for token:', error);
+      toast.error('Error exchanging code for token.');
+    }
+  };
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+
+    if (code) {
+      exchangeCodeForToken(code);
+
+      window.history.replaceState({}, document.title, window.location.pathname);
     }
   }, []);
 
@@ -338,6 +373,15 @@ function Announcements({ title, email }) {
           Login with Facebook
         </button>
       )}
+
+      <button
+        type="button"
+        className="instagram-login-button"
+        onClick={loginToInstagram()}
+        aria-label="Login to Instagram"
+      >
+        {instagramUserAccessToken ? 'Log out of Instagram' : 'Log in to Instagram'}
+      </button>
     </div>
   );
 }
