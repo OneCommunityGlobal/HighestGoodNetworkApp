@@ -441,7 +441,7 @@ export function Header(props) {
                   </NavItem>
                 )}
                 <NavItem className="responsive-spacing">
-                  <BellNotification />
+                  <BellNotification userId={displayUserId}/>
                 </NavItem>
                 {(canAccessUserManagement ||
                   canAccessBadgeManagement ||
