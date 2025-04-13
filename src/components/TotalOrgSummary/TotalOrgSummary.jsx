@@ -7,11 +7,11 @@ import 'moment-timezone';
 import hasPermission from 'utils/permissions';
 
 // actions
-import { getTotalOrgSummary } from 'actions/totalOrgSummary';
+
 import { getAllUserProfile } from 'actions/userManagement';
 import { getAllUsersTimeEntries } from 'actions/allUsersTimeEntries';
 import { getTimeEntryForOverDate } from 'actions/index';
-import { getTaskAndProjectStats } from 'actions/totalOrgSummary';
+import { getTaskAndProjectStats, getTotalOrgSummary } from 'actions/totalOrgSummary';
 
 import '../Header/DarkMode.css';
 import './TotalOrgSummary.css';
@@ -30,6 +30,7 @@ import NumbersVolunteerWorked from './NumbersVolunteerWorked/NumbersVolunteerWor
 import AnniversaryCelebrated from './AnniversaryCelebrated/AnniversaryCelebrated';
 import RoleDistributionPieChart from './VolunteerRolesTeamDynamics/RoleDistributionPieChart';
 import WorkDistributionBarChart from './VolunteerRolesTeamDynamics/WorkDistributionBarChart';
+import TaskCompletedBarChart from './TaskCompleted/TaskCompletedBarChart';
 
 function calculateFromDate() {
   const currentDate = new Date();
@@ -115,6 +116,7 @@ function TotalOrgSummary(props) {
   const comparisonStartDate = '2025-01-16';
   const comparisonEndDate = '2025-01-26';
   const [isLoading, setIsLoading] = useState(true);
+  const [taskCompletedStats, setTaskCompletedStats] = useState({});
 
   const dispatch = useDispatch();
 
@@ -192,6 +194,17 @@ function TotalOrgSummary(props) {
           lastProjectHours,
         });
       }
+      const activeCurrent = volunteerOverview?.tasksStats?.active?.current ?? 0;
+      const completeCurrent = volunteerOverview?.tasksStats?.complete?.current ?? 0;
+      const activeChange = volunteerOverview?.tasksStats?.active?.percentage ?? 0;
+      const completeChange = volunteerOverview?.tasksStats?.complete?.percentage ?? 0;
+
+      setTaskCompletedStats({
+        tasksStats: {
+          active: { current: activeCurrent, percentage: activeChange },
+          complete: { current: completeCurrent, percentage: completeChange },
+        },
+      });
     }
     fetchData();
   }, [fromDate, toDate, fromOverDate, toOverDate]);
@@ -329,6 +342,13 @@ function TotalOrgSummary(props) {
             <div className="component-container component-border">
               <div className="chart-title">
                 <p>Task Completed</p>
+              </div>
+              <div className="mt-4">
+                <TaskCompletedBarChart
+                  isLoading={isLoading}
+                  data={taskCompletedStats}
+                  darkMode={darkMode}
+                />
               </div>
             </div>
           </Col>
