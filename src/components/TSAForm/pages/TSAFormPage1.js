@@ -270,7 +270,7 @@ function TSAFormPage1() {
             fontWeight: 'bold',
           }}
         >
-          <span>Your Full Name:</span>
+          <span>Your Full Name (First and Last Name):</span>
           <span style={{ color: 'red' }}>*</span>
         </label>
         <input
