@@ -49,8 +49,6 @@ export const sendEmailNotification = async (data,users, userPreferences,senderUs
         if(userPreferences.notifyEmail === false) return;
         const senderName = `${senderUser[0].firstName} ${senderUser[0].lastName}`;
         const receiverUser = users.userProfilesBasicInfo.filter(e => e._id.toString() === data.payload.receiver);
-        // const receiverName = `${receiverUser[0].firstName} ${receiverUser[0].lastName}`;
-        console.log('Receiver User:', receiverUser);
         axios.post(ENDPOINTS.LB_SEND_EMAIL,{email: receiverUser[0].email, 
             content: data.payload.content, senderName: senderName})
             .then((response) => {
@@ -60,4 +58,10 @@ export const sendEmailNotification = async (data,users, userPreferences,senderUs
         toast.error('Error sending email notification:');
         console.error('Error sending email notification:', error);      
     }
+}
+
+export const sendSMSNotification = async (data,users, userPreferences,senderUser) => {
+    // receivernumber,receiverName, content, 
+    const receiverUser = users.userProfilesBasicInfo.filter(e => e._id.toString() === data.payload.receiver);
+    console.log("receiverUser",receiverUser);
 }

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
 import { FETCH_USER_PREFERENCE_START, FETCH_USER_PREFERENCE_END, UPDATE_USER_PREFERENCE_START, UPDATE_USER_PREFERENCE_END } from '../../constants/lbdashboard/userPreferenceConstants';
+import { toast } from 'react-toastify';
 
 const fetchUserPreferencesStart = () => {
     return {
@@ -44,6 +45,7 @@ export const updateUserPreferences = (userId, preferences) => {
         try {
             const res = await axios.put(ENDPOINTS.LB_UPDATE_USER_PREFERENCES(userId), preferences);
             dispatch(updateUserPreferencesEnd(res.data));
+            toast.success("User preferences updated successfully");
         } catch (err) {
             console.error("Failed to update user preferences:", err);
         }

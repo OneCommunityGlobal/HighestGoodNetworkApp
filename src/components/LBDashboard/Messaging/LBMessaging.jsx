@@ -17,7 +17,7 @@ import { useRef } from 'react';
 import { toast } from 'react-toastify';
 import { initSocket, getSocket } from '../../../utils/socket';
 import config from '../../../config.json';
-import { sendINAppNotification,sendEmailNotification } from './NotificationFunctions.js';
+import { sendINAppNotification,sendEmailNotification, sendSMSNotification } from './NotificationFunctions.js';
 
 
 export default function LBMessaging() {
@@ -29,6 +29,7 @@ export default function LBMessaging() {
   const auth = useSelector(state => state.auth.user);
   const darkMode = useSelector(state => state.theme.darkMode);
   const userPreferences = useSelector(state => state.lbuserpreferences);
+  // console.log(users)
   const location = useLocation();
   const [bellDropdownActive, setBellDropdownActive] = useState(false);
   const [selectedOption, setSelectedOption] = useState(userPreferences);
@@ -50,6 +51,7 @@ export default function LBMessaging() {
 
   const saveUserPreferences = () => {
     dispatch(updateUserPreferences(selectedOption.user, selectedOption));
+    setBellDropdownActive(false);
   };
 
   useEffect(() => {
@@ -150,6 +152,8 @@ useEffect(() => {
             sendINAppNotification(data,userPreferences,senderUser)
           }else if(userPreferences.notifyEmail === true){
             sendEmailNotification(data,users, userPreferences,senderUser)
+          }else if(userPreferences.notifySMS === true){
+            sendSMSNotification(data,users,userPreferences,senderUser)
           } 
         }
         dispatch({ type: 'SEND_MESSAGE_END', payload: data.payload });
