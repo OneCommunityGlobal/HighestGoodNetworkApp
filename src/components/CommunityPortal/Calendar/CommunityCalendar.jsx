@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
@@ -61,21 +61,31 @@ function CommunityCalendar() {
     },
   ];
 
-  const filteredEvents = mockEvents.filter(
-    event =>
-      (filter.type === 'all' || event.type === filter.type) &&
-      (filter.location === 'all' || event.location === filter.location) &&
-      (filter.status === 'all' || event.status === filter.status),
-  );
-
-  // Helper function: Render events for a specific date
-  const getEventsForDate = date => {
-    return filteredEvents.filter(
+  const filteredEvents = useMemo(() => {
+    return mockEvents.filter(
       event =>
-        event.date.getFullYear() === date.getFullYear() &&
-        event.date.getMonth() === date.getMonth() &&
-        event.date.getDate() === date.getDate(),
+        (filter.type === 'all' || event.type === filter.type) &&
+        (filter.location === 'all' || event.location === filter.location) &&
+        (filter.status === 'all' || event.status === filter.status),
     );
+  }, [filter]);
+
+  // Group filtered events by date for performance optimization
+  const groupedEventsByDate = useMemo(() => {
+    const map = new Map();
+    filteredEvents.forEach(event => {
+      const dateKey = event.date.toDateString();
+      if (!map.has(dateKey)) {
+        map.set(dateKey, []);
+      }
+      map.get(dateKey).push(event);
+    });
+    return map;
+  }, [filteredEvents]);
+
+  // Helper: Get events for a specific date
+  const getEventsForDate = date => {
+    return groupedEventsByDate.get(date.toDateString()) || [];
   };
 
   // Define tileContent outside the component's render logic
@@ -93,15 +103,7 @@ function CommunityCalendar() {
 
   // Define tileClassName outside the component's render logic
   const tileClassName = ({ date, view }) => {
-    if (
-      view === 'month' &&
-      filteredEvents.some(
-        event =>
-          event.date.getFullYear() === date.getFullYear() &&
-          event.date.getMonth() === date.getMonth() &&
-          event.date.getDate() === date.getDate(),
-      )
-    ) {
+    if (view === 'month' && groupedEventsByDate.has(date.toDateString())) {
       return 'has-events';
     }
     return null;
