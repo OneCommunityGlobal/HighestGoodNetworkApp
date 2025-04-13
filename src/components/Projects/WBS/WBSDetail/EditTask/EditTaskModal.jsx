@@ -8,6 +8,7 @@ import { DateUtils } from 'react-day-picker';
 import 'react-day-picker/lib/style.css';
 import dateFnsFormat from 'date-fns/format';
 import dateFnsParse from 'date-fns/parse';
+import parseISO from 'date-fns/parseISO';
 import { updateTask } from 'actions/task';
 import { Editor } from '@tinymce/tinymce-react';
 import hasPermission from 'utils/permissions';
@@ -18,6 +19,7 @@ import { toast } from 'react-toastify';
 import TagsSearch from '../components/TagsSearch';
 import ReadOnlySectionWrapper from './ReadOnlySectionWrapper';
 import '../../../../Header/DarkMode.css'
+import '../wbs.css'
 
 function EditTaskModal(props) {
   /*
@@ -83,6 +85,8 @@ function EditTaskModal(props) {
       min_height: 180,
       max_height: 300,
       autoresize_bottom_margin: 1,
+      skin: darkMode ? 'oxide-dark' : 'oxide',
+      content_css: darkMode ? 'dark' : 'default',
   };
   /*
   * -------------------------------- functions --------------------------------
@@ -140,24 +144,32 @@ function EditTaskModal(props) {
 
   const changeDateStart = startDate => {
     setStartedDate(startDate);
-    if (dueDate) {
-      if (startDate > dueDate) {
-        setDateWarning(true);
-      } else {
-        setDateWarning(false);
-      }
-    }
   };
+  
   const changeDateEnd = dueDate => {
-    setDueDate(dueDate);
-    if (startedDate) {
-      if (dueDate < startedDate) {
-        setDateWarning(true);
-      } else {
-        setDateWarning(false);
-      }
+    if (!startedDate) {
+      const newDate = dateFnsFormat(new Date(), FORMAT);
+      setStartedDate(newDate);
     }
+    setDueDate(dueDate);
   };
+
+  useEffect(()=>{
+    let parsedDueDate;
+    let parsedStartedDate;
+    if (dueDate){
+      parsedDueDate = dueDate.includes("T") ? parseISO(dueDate) : dateFnsParse(dueDate, FORMAT, new Date());
+    }
+    if (startedDate){
+      parsedStartedDate = startedDate.includes("T") ? parseISO(startedDate) : dateFnsParse(startedDate, FORMAT, new Date());
+    }
+    if (dueDate && parsedDueDate < parsedStartedDate) {
+      setDateWarning(true);
+    } else {
+      setDateWarning(false);
+    }
+  }, [startedDate, dueDate]);
+
   const formatDate = (date, format, locale) => dateFnsFormat(date, format, { locale });
   const parseDate = (str, format, locale) => {
     const parsed = dateFnsParse(str, format, new Date(), { locale });
@@ -289,19 +301,19 @@ function EditTaskModal(props) {
           >
             <tbody>
               <tr>
-                <td scope="col" data-tip="task ID">
+                <td id="edit-modal-td" scope="col" data-tip="task ID">
                   Task #
                 </td>
-                <td scope="col">{thisTask?.num}</td>
+                <td id="edit-modal-td" scope="col">{thisTask?.num}</td>
               </tr>
               <tr>
-                <td scope="col">Task Name</td>
-                <td>
+                <td id="edit-modal-td" scope="col">Task Name</td>
+                <td id="edit-modal-td">
                   {ReadOnlySectionWrapper(
                     <textarea
                       rows="2"
                       type="text"
-                      className="task-name border border-dark rounded"
+                      className={`task-name border border-dark rounded ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
                       onChange={e => setTaskName(e.target.value)}
                       onKeyPress={e => setTaskName(e.target.value)}
                       value={taskName}
@@ -312,13 +324,14 @@ function EditTaskModal(props) {
                 </td>
               </tr>
               <tr>
-                <td scope="col">Priority</td>
-                <td>
+                <td id="edit-modal-td" scope="col">Priority</td>
+                <td id="edit-modal-td">
                   {ReadOnlySectionWrapper(
                     <select
                       id="priority"
                       onChange={e => setPriority(e.target.value)}
                       value={priority}
+                      className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                     >
                       <option value="Primary">Primary</option>
                       <option value="Secondary">Secondary</option>
@@ -330,8 +343,8 @@ function EditTaskModal(props) {
                 </td>
               </tr>
               <tr>
-                <td scope="col">Resources</td>
-                <td scope="col">
+                <td id="edit-modal-td" scope="col">Resources</td>
+                <td id="edit-modal-td" scope="col">
                   <div>
                     <TagsSearch
                       placeholder="Add resources"
@@ -340,18 +353,19 @@ function EditTaskModal(props) {
                       removeResource={editable? removeResource : () => {}}
                       resourceItems={resourceItems}
                       disableInput={!editable}
+                      darkMode={darkMode}
                     />
                   </div>
                 </td>
               </tr>
               <tr>
-                <td scope="col">Assigned</td>
-                  <td>
+                <td id="edit-modal-td" scope="col">Assigned</td>
+                  <td id="edit-modal-td">
                     {ReadOnlySectionWrapper(
                       <div className="flex-row d-inline align-items-center">
                         <div className="form-check form-check-inline">
                           <input
-                            className="form-check-input"
+                            className={`form-check-input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
                             type="radio"
                             id="true"
                             name="Assigned"
@@ -365,7 +379,7 @@ function EditTaskModal(props) {
                         </div>
                         <div className="form-check form-check-inline">
                           <input
-                            className="form-check-input"
+                            className={`form-check-input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
                             type="radio"
                             id="false"
                             name="Assigned"
@@ -384,13 +398,14 @@ function EditTaskModal(props) {
                   </td>
               </tr>
               <tr>
-                <td scope="col">Status</td>
-                  <td>
+                <td id="edit-modal-td" scope="col">Status</td>
+                  <td id="edit-modal-td">
                     {ReadOnlySectionWrapper(
-                      <div className="flex-row  d-inline align-items-center">
-                        <div className="form-check form-check-inline">
+                      <div className="fd-flex  flex-column">
+                      <div className="d-flex"> {/* Added: New div to group Active and Not Started */}
+                        <div className="form-check form-check-inline mr-5 mw-4">
                             <input
-                              className="form-check-input"
+                              className={`form-check-input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
                               type="radio"
                               id="active"
                               name="status"
@@ -404,7 +419,7 @@ function EditTaskModal(props) {
                           </div>
                           <div className="form-check form-check-inline">
                             <input
-                              className="form-check-input"
+                              className={`form-check-input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
                               type="radio"
                               id="notStarted"
                               name="status"
@@ -416,9 +431,12 @@ function EditTaskModal(props) {
                               Not Started
                             </label>
                           </div>
-                          <div className="form-check form-check-inline">
+                        </div>
+                        {/* Second row: Paused and Complete */}
+                      <div className="d-flex mt-2"> {/* Added: New div for Paused and Complete with margin-top */}
+                          <div className="form-check form-check-inline mr-5 mw-4">
                             <input
-                              className="form-check-input"
+                              className={`form-check-input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
                               type="radio"
                               id="paused"
                               name="status"
@@ -432,7 +450,7 @@ function EditTaskModal(props) {
                           </div>
                           <div className="form-check form-check-inline">
                             <input
-                              className="form-check-input"
+                              className={`form-check-input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
                               type="radio"
                               id="complete"
                               name="status"
@@ -444,6 +462,7 @@ function EditTaskModal(props) {
                               Complete
                             </label>
                           </div>
+                          </div> {/* Added: Closing div for the second row */}
                       </div>,
                       editable,
                       status
@@ -451,10 +470,10 @@ function EditTaskModal(props) {
                   </td>
               </tr>
               <tr>
-                <td scope="col">
+                <td id="edit-modal-td" scope="col">
                   Hours
                 </td>
-                <td scope="col" className="w-100">
+                <td id="edit-modal-td" scope="col" className="w-100">
                   <div className="py-1 flex-responsive">
                     <label htmlFor="bestCase" style={{ width: '100px', marginRight: '2px' }} className={`text-nowrap ${darkMode ? 'text-light' : ''}`}>
                       Best-case
@@ -465,10 +484,10 @@ function EditTaskModal(props) {
                         min="0"
                         max="500"
                         value={hoursBest}
-                        onChange={e => setHoursBest(e.target.value)}
+                        onChange={e => setHoursBest(Math.abs(e.target.value))}
                         onBlur={() => calHoursEstimate()}
                         id="bestCase"
-                        className="m-auto"
+                        className={`m-auto ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
                       />,
                       editable,
                       hoursBest,
@@ -491,9 +510,9 @@ function EditTaskModal(props) {
                         min={hoursBest}
                         max="500"
                         value={hoursWorst}
-                        onChange={e => setHoursWorst(e.target.value)}
+                        onChange={e => setHoursWorst(Math.abs(e.target.value))}
                         onBlur={() => calHoursEstimate('hoursWorst')}
-                        className="m-auto"
+                        className={`m-auto ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
                       />,
                       editable,
                       hoursWorst,
@@ -516,9 +535,9 @@ function EditTaskModal(props) {
                         min="0"
                         max="500"
                         value={hoursMost}
-                        onChange={e => setHoursMost(e.target.value)}
+                        onChange={e => setHoursMost(Math.abs(e.target.value))}
                         onBlur={() => calHoursEstimate('hoursMost')}
-                        className="m-auto"
+                        className={`m-auto ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
                       />,
                       editable,
                       hoursMost,
@@ -541,8 +560,8 @@ function EditTaskModal(props) {
                         min="0"
                         max="500"
                         value={hoursEstimate}
-                        onChange={e => setHoursEstimate(e.target.value)}
-                        className="m-auto"
+                        onChange={e => setHoursEstimate(Math.abs(e.target.value))}
+                        className={`m-auto ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
                       />,
                       editable,
                       hoursEstimate,
@@ -552,15 +571,15 @@ function EditTaskModal(props) {
                 </td>
               </tr>
               <tr>
-                <td scope="col">Links</td>
-                <td scope="col">
+                <td id="edit-modal-td" scope="col">Links</td>
+                <td id="edit-modal-td" scope="col">
                   {ReadOnlySectionWrapper(
                     <div >
                       <input
                         type="text"
                         aria-label="Search user"
                         placeholder="Link"
-                        className="task-resouces-input"
+                        className={`task-resouces-input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
                         data-tip="Add a link"
                         onChange={e => setLink(e.target.value)}
                         value={link}
@@ -594,10 +613,10 @@ function EditTaskModal(props) {
                 </td>
               </tr>
               <tr>
-                <td scope="col">Category</td>
-                  <td>
+                <td id="edit-modal-td" scope="col">Category</td>
+                  <td id="edit-modal-td">
                   {ReadOnlySectionWrapper(
-                    <select value={category} onChange={e => setCategory(e.target.value)}>
+                    <select value={category} onChange={e => setCategory(e.target.value)} className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}>
                       {categoryOptions.map(cla => (
                         <option value={cla.value} key={cla.value}>
                           {cla.label}
@@ -611,7 +630,7 @@ function EditTaskModal(props) {
               </tr>
 
               <tr>
-                <td scope="col" colSpan="2">
+                <td id="edit-modal-td" scope="col" colSpan="2">
                   <div>Why this Task is Important:</div>
                   {ReadOnlySectionWrapper (
                     <Editor
@@ -631,7 +650,7 @@ function EditTaskModal(props) {
                 </td>
               </tr>
               <tr>
-                <td scope="col" colSpan="2">
+                <td id="edit-modal-td" scope="col" colSpan="2">
                   <div>Design Intent:</div>
                   {ReadOnlySectionWrapper (
                     <Editor
@@ -651,7 +670,7 @@ function EditTaskModal(props) {
                 </td>
               </tr>
               <tr>
-                <td scope="col" colSpan="2">
+                <td id="edit-modal-td" scope="col" colSpan="2">
                   <div>Endstate:</div>
                   {ReadOnlySectionWrapper (
                     <Editor
@@ -671,8 +690,8 @@ function EditTaskModal(props) {
                 </td>
               </tr>
               <tr>
-                <td scope="col">Start Date</td>
-                <td>
+                <td id="edit-modal-td" scope="col">Start Date</td>
+                <td id="edit-modal-td">
                 {ReadOnlySectionWrapper(
                   <div className='text-dark'>
                     <DayPickerInput
@@ -680,7 +699,7 @@ function EditTaskModal(props) {
                       formatDate={formatDate}
                       placeholder={`${dateFnsFormat(new Date(), FORMAT)}`}
                       onDayChange={(day, mod, input) => changeDateStart(input.state.value)}
-                      value={startedDate}
+                      value={startedDate ? dateFnsFormat(new Date(startedDate), FORMAT) : ''}
                     />
                     <div className='warning text-danger'>
                       {dateWarning ? DUE_DATE_MUST_GREATER_THAN_START_DATE : ''}
@@ -692,8 +711,8 @@ function EditTaskModal(props) {
                 </td>
               </tr>
               <tr>
-                <td scope="col">End Date</td>
-                  <td>
+                <td id="edit-modal-td" scope="col">End Date</td>
+                  <td id="edit-modal-td">
                     {ReadOnlySectionWrapper(
                       <div className='text-dark'>
                         <DayPickerInput
@@ -701,7 +720,7 @@ function EditTaskModal(props) {
                           formatDate={formatDate}
                           placeholder={`${dateFnsFormat(new Date(), FORMAT)}`}
                           onDayChange={(day, mod, input) => changeDateEnd(input.state.value)}
-                          
+                          value={dueDate ? dateFnsFormat(new Date(dueDate), FORMAT) : ''} 
                         />
                         <div className='warning text-danger'>
                           {dateWarning ? DUE_DATE_MUST_GREATER_THAN_START_DATE : ''}
@@ -718,7 +737,7 @@ function EditTaskModal(props) {
         {canUpdateTask || canSuggestTask ? (
           <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
             {taskName !== '' && startedDate !== '' && dueDate !== '' ? (
-              <Button color="primary" onClick={updateTask} style={darkMode ? boxStyleDark : boxStyle}>
+              <Button color="primary" onClick={updateTask} style={darkMode ? boxStyleDark : boxStyle} disabled={dateWarning}>
                 Update
               </Button>
             ) : null}

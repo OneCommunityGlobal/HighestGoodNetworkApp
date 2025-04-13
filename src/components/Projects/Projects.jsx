@@ -1,11 +1,11 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import {
   fetchAllProjects,
   modifyProject,
   clearError,
 } from '../../actions/projects';
-import { getProjectsByUsersName, getUserByAutocomplete } from '../../actions/userProfile';
+import { getProjectsByUsersName } from '../../actions/userProfile';
 import { getPopupById } from '../../actions/popupEditorAction';
 import Overview from './Overview';
 import AddProject from './AddProject';
@@ -46,9 +46,7 @@ const Projects = function (props) {
   });
   const [projectList, setProjectList] = useState(null);
   const [searchName, setSearchName] = useState("");
-  const [allProjects, setAllProjects] = useState([]);
-  const [suggestions, setSuggestions] = useState([]); // Suggestion state for autocomplete
-  const [selectedUser, setSelectedUser] = useState(null); // Selected user for filtering projects
+  const [allProjects, setAllProjects] = useState(null);
 
   const useDebounce = (value, delay) => {
     const [debouncedValue, setDebouncedValue] = useState(value);
@@ -120,64 +118,6 @@ const Projects = function (props) {
     await props.postNewProject(name, category);
   };
 
-  // Fetch autocomplete suggestions
-  const fetchSuggestions = useCallback(async () => {
-    try {
-      if (debouncedSearchName) {
-        const userSuggestions = await props.getUserByAutocomplete(debouncedSearchName);
-        if (userSuggestions) {
-          setSuggestions(userSuggestions);
-        } else {
-          setSuggestions([]);
-        }
-      } else {
-        setSuggestions([]); // Clear suggestions when input is cleared
-      }
-    }
-    catch (error) {
-      console.error("Error fetching user suggestions:", error);
-      setSuggestions([]); // Clearing suggestions on error
-    }
-  }, [debouncedSearchName, props.getUserByAutocomplete]);
-
-  useEffect(() => {
-    fetchSuggestions();
-  }, [fetchSuggestions]);
-
-
-  // Handle selection of a user from suggestions
-  const handleSelectSuggestion = async (user) => {
-
-    if (!user) {
-      // If the user is null, reset to show all projects
-      setSearchName(''); // Clear search name
-      setProjectList(allProjects); // Reset project list to all projects
-      setSelectedUser(null); // Clear selected user
-      return;
-    }
-
-    try {
-      setSearchName(`${user.firstName} ${user.lastName}`);
-      setSelectedUser(user); // Store selected user
-
-      // Fetch projects by selected user's name
-      const userProjects = await props.getProjectsByUsersName(`${user.firstName} ${user.lastName}`);
-
-      if (userProjects) {
-        const newProjectList = allProjects.filter(project =>
-          userProjects.some(p => p === project.key)
-        );
-        setProjectList(newProjectList);
-      } else {
-        setProjectList(allProjects);
-      }
-    } catch (error) {
-      console.error("Error fetching projects for selected user:", error);
-      setProjectList(allProjects); // Showing all projects on error
-    }
-  };
-
-
   const generateProjectList = (categorySelectedForSort, showStatus, sortedByName) => {
     const { projects } = props.state.allProjects;
     const projectList = projects.filter(project => {
@@ -188,8 +128,10 @@ const Projects = function (props) {
         return project.category === categorySelectedForSort && project.isActive === (showStatus === 'Active');
       } else if (categorySelectedForSort) {
         return project.category === categorySelectedForSort;
-      } else if (showStatus) {
-        return project.isActive === (showStatus === 'Active');
+      } else if (showStatus === 'Active') {
+        return project.isActive === true;
+      } else if (showStatus === 'Inactive') {
+        return project.isActive === false;
       } else {
         return true;
       }
@@ -236,6 +178,25 @@ const Projects = function (props) {
     }
   }, [categorySelectedForSort, showStatus, sortedByName, props.state.allProjects, props.state.theme.darkMode]);
 
+  useEffect(() => {
+    const fetchProjects = async () => {
+      if (debouncedSearchName) {
+        const projects = await props.getProjectsByUsersName(debouncedSearchName);
+        if (projects) {
+          const newProjectList = allProjects.filter(project => 
+            projects.some(p => p === project.key)
+          );
+          setProjectList(newProjectList);
+        } else {
+          setProjectList(allProjects);
+        }
+      } else {
+        setProjectList(allProjects);
+      }
+    };
+    fetchProjects();
+  }, [debouncedSearchName]);
+
   const handleSearchName = (searchNameInput) => {
     setSearchName(searchNameInput);
   };
@@ -243,7 +204,7 @@ const Projects = function (props) {
   return (
     <>
       <div className={darkMode ? 'bg-oxford-blue text-light' : ''}>
-        <div className="container py-3">
+        <div className={`container py-3 ${darkMode ? 'bg-yinmn-blue-light text-light' : ''}`}>
           {fetching || !fetched ? <Loading align="center" /> : null}
           <div className="d-flex align-items-center">
             <h3 style={{ display: 'inline-block', marginRight: 10 }}>Projects</h3>
@@ -253,17 +214,14 @@ const Projects = function (props) {
               fontSize={30}
               isPermissionPage={true}
               role={role}
+              darkMode={darkMode}
             />
             <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
 
             {canPostProject ? <AddProject hasPermission={hasPermission} /> : null}
           </div>
 
-          <SearchProjectByPerson
-            onSearch={handleSearchName}
-            suggestions={suggestions}
-            onSelectSuggestion={handleSelectSuggestion}
-          />
+          <SearchProjectByPerson onSearch={handleSearchName} />
 
           <table className="table table-bordered table-responsive-sm">
             <thead>
@@ -290,6 +248,7 @@ const Projects = function (props) {
           setInactiveModal={modalData.hasInactiveBtn ? setInactiveProject : null}
           modalMessage={modalData.modalMessage}
           modalTitle={modalData.modalTitle}
+          darkMode={darkMode}
         />
       </div>
     </>
@@ -306,6 +265,5 @@ export default connect(mapStateToProps, {
   clearError,
   getPopupById,
   hasPermission,
-  getProjectsByUsersName,
-  getUserByAutocomplete
+  getProjectsByUsersName
 })(Projects);

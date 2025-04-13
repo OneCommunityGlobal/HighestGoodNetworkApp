@@ -1,3 +1,7 @@
+// Delete these two lines:
+import FormEditor from 'components/Forms/FormEditor';
+import FormViewer from 'components/Forms/FormViewer';
+
 import { lazy } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import SetupProfile from 'components/SetupProfile/SetupProfile';
@@ -10,6 +14,24 @@ import RoleInfoCollections from 'components/UserProfile/EditableModal/RoleInfoMo
 import LessonList from 'components/BMDashboard/LessonList/LessonListForm';
 import AddEquipmentType from 'components/BMDashboard/Equipment/Add/AddEquipmentType';
 import Announcements from 'components/Announcements';
+import JobFormBuilder from 'components/Collaboration/JobFormbuilder';
+import JobCCDashboard from 'components/JobCCDashboard/JobCCDashboard';
+import WeeklyProjectSummary from 'components/BMDashboard/WeeklyProjectSummary/WeeklyProjectSummary';
+import HeaderRenderer from 'components/Header/HeaderRenderer';
+import Page1 from './components/HGNForm/pages/Page1';
+import Page2 from './components/HGNForm/pages/Page2';
+import Page3 from './components/HGNForm/pages/Page3';
+import Page4 from './components/HGNForm/pages/Page4';
+import Page5 from './components/HGNForm/pages/Page5';
+import Page6 from './components/HGNForm/pages/Page6';
+import TSAFormPage1 from './components/TSAForm/pages/TSAFormPage1';
+import TSAFormPage2 from './components/TSAForm/pages/TSAFormPage2';
+import TSAFormPage3 from './components/TSAForm/pages/TSAFormPage3';
+import TSAFormPage4 from './components/TSAForm/pages/TSAFormPage4';
+import TSAFormPage5 from './components/TSAForm/pages/TSAFormPage5';
+import TSAFormPage6 from './components/TSAForm/pages/TSAFormPage6';
+import TSAFormPage7 from './components/TSAForm/pages/TSAFormPage7';
+import TSAFormPage8 from './components/TSAForm/pages/TSAFormPage8';
 import Timelog from './components/Timelog';
 import LessonForm from './components/BMDashboard/Lesson/LessonForm';
 import UserProfileEdit from './components/UserProfile/UserProfileEdit';
@@ -19,7 +41,6 @@ import Login from './components/Login';
 import ForcePasswordUpdate from './components/ForcePasswordUpdate';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import UpdatePassword from './components/UpdatePassword';
-import Header from './components/Header';
 import TeamLocations from './components/TeamLocations';
 import 'react-toastify/dist/ReactToastify.css';
 import { UserRole } from './utils/enums';
@@ -27,7 +48,16 @@ import ForgotPassword from './components/Login/ForgotPassword';
 import Inventory from './components/Inventory';
 import EmailSubscribeForm from './components/EmailSubscribeForm';
 import UnsubscribeForm from './components/EmailSubscribeForm/Unsubscribe';
+import NotFoundPage from './components/NotFound/NotFoundPage';
+import EmailSender from './components/common/EmailSender/EmailSender';
 import Collaboration from './components/Collaboration';
+
+// LB Dashboard
+import LBProtectedRoute from './components/common/LBDashboard/LBProtectedRoute';
+import LBLogin from './components/LBDashboard/Login';
+import LBDashboard from './components/LBDashboard';
+import ListOveriew from './components/LBDashboard/ListingOverview/ListOverview';
+import LBBidOverview from './components/LBDashboard/BiddingOverview/BiddingOverview';
 
 // BM Dashboard
 import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
@@ -40,8 +70,26 @@ import ToolDetailPage from './components/BMDashboard/Tools/ToolDetailPage';
 import CheckTypes from './components/BMDashboard/shared/CheckTypes';
 import Toolslist from './components/BMDashboard/Tools/ToolsList';
 import AddTool from './components/BMDashboard/Tools/AddTool';
+import AddTeamMember from './components/BMDashboard/AddTeamMember/AddTeamMember';
+
+// Community Portal
+import CPProtectedRoute from './components/common/CPDashboard/CPProtectedRoute';
+import CPLogin from './components/CommunityPortal/Login';
+import CPDashboard from './components/CommunityPortal';
+import ActivityList from './components/CommunityPortal/Activities/ActivityList';
+// import AddActivities from './components/CommunityPortal/Activities/AddActivities';
+// import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
+
+import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
+import EPLogin from './components/EductionPortal/Login';
+import EPDashboard from './components/EductionPortal';
+
+
+
+
 // eslint-disable-next-line import/order, import/no-unresolved
 import LogTools from './components/BMDashboard/LogTools/LogTools';
+
 
 const ReusableListView = lazy(() => import('./components/BMDashboard/ReusableList'));
 const ConsumableListView = lazy(() => import('./components/BMDashboard/ConsumableList'));
@@ -95,14 +143,24 @@ const PermissionsManagement = lazy(() =>
 const UserRoleTab = lazy(() => import('./components/PermissionsManagement/UserRoleTab'));
 const Teams = lazy(() => import('./components/Teams/Teams'));
 
-export default (
+
+export default(
   <Switch>
+    {/* ----- LB Dashboard Routing ----- */}
+    {/* If it's possible incorporate this route with others without the header, please do */}
+    <Route path="/form" component={FormEditor} />
+    <Route path="/formviewer" component={FormViewer} />
     <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
     <>
-      {/* Comment out the Header component and its import during phase 2 development. */}
-      <Header />
+     {/* Comment out the Header component and its import during phase 2 development. */}
       {/* Uncomment BMHeader and its import during phase 2 development. */}
+
+
       {/* <BMHeader /> */}
+      
+      {/* This will render CPHeader to the page whose path starts with /communityportal i.e Phase III */}
+      <HeaderRenderer/>
+
       <AutoUpdate />
       <ToastContainer />
       <Switch>
@@ -110,9 +168,9 @@ export default (
         <ProtectedRoute path="/dashboard/:userId" exact component={Dashboard} />
         <ProtectedRoute path="/project/members/:projectId" fallback component={Members} />
         <ProtectedRoute path="/timelog/" exact render={() => <Timelog userId={null} />} />
-        <ProtectedRoute path="/timelog/:userId" exact render ={(props) => {
-           const {userId} = props.match.params;
-            return <Timelog userId ={userId}/>
+        <ProtectedRoute path="/timelog/:userId" exact render={(props) => {
+          const { userId } = props.match.params;
+          return <Timelog userId={userId} />
         }} />
         <ProtectedRoute path="/peoplereport/:userId" component={PeopleReport} fallback />
         <ProtectedRoute path="/projectreport/:projectId" component={ProjectReport} fallback />
@@ -243,6 +301,13 @@ export default (
           component={Announcements}
           routePermissions={RoutePermissions.announcements}
         />
+        <ProtectedRoute
+          path="/sendemail"
+          exact
+          component={EmailSender}
+          allowedRoles={[UserRole.Administrator, UserRole.Owner]}
+          routePermissions={RoutePermissions.projects}
+        />
 
         <ProtectedRoute
           path="/totalorgsummary"
@@ -259,6 +324,7 @@ export default (
           // setting permission as Weeklysummariesreport for now. Later it will be changed to weeklyVolunteerSummary. - H
           routePermissions={RoutePermissions.weeklySummariesReport}
         />
+        <ProtectedRoute path="/job-notification-dashboard" exact component={JobCCDashboard} fallback allowedRoles={[UserRole.Owner]}/>
 
         {/* ----- BEGIN BM Dashboard Routing ----- */}
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
@@ -322,6 +388,7 @@ export default (
           component={UpdateEquipment}
         />
         <BMProtectedRoute path="/bmdashboard/tools" exact component={Toolslist} />
+        <BMProtectedRoute path="/bmdashboard/AddTeamMember" component={AddTeamMember} />
         <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} />
         <BMProtectedRoute path="/bmdashboard/tools/log" exact component={LogTools} />
         <BMProtectedRoute path="/bmdashboard/tools/:toolId" component={ToolDetailPage} />
@@ -332,17 +399,43 @@ export default (
           fallback
           component={InventoryTypesList}
         />
+        <BMProtectedRoute
+          path="/bmdashboard/totalconstructionsummary"
+          fallback
+          exact
+          component={WeeklyProjectSummary}
+        />
+
+        {/* Community Portal Routes */}
+        <CPProtectedRoute path="/communityportal" exact component={CPDashboard} />
+        <Route path="/communityportal/login" component={CPLogin} />
+        <CPProtectedRoute path="/communityportal/Activities" exact component={ActivityList} />
+
+
+        {/* Listing and Bidding Routes */}
+        <LBProtectedRoute path="/lbdashboard" exact component={LBDashboard} />
+        <LBProtectedRoute path="/lbdashboard/listOverview" exact component={ListOveriew} />
+        <Route path="/lbdashboard/login" component={LBLogin} />
+        <Route path="/lbdashboard/bidoverview" exact component={LBBidOverview} />
+
+        {/* Good Education  Portal Routes */}
+        <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />
+        <Route path="/educationportal/login" component={EPLogin} />
+
+
+        {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
+
+
 
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
-        <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} />
-
+        {/* <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} /> */}
         {/* ----- END BM Dashboard Routing ----- */}
-
         <Route path="/login" component={Login} />
         <Route path="/forgotpassword" component={ForgotPassword} />
         <Route path="/email-subscribe" component={EmailSubscribeForm} />
         <Route path="/email-unsubscribe" component={UnsubscribeForm} />
         <Route path="/collaboration" component={Collaboration} />
+        <ProtectedRoute path="/jobformbuilder" fallback component={JobFormBuilder} />
         <ProtectedRoute path="/infoCollections" component={EditableInfoModal} />
         <ProtectedRoute path="/infoCollections" component={RoleInfoCollections} />
         <ProtectedRoute path="/userprofile/:userId" fallback component={UserProfile} />
@@ -350,8 +443,23 @@ export default (
         <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
         <Route path="/Logout" component={Logout} />
         <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
+        <ProtectedRoute path="/hgnform" exact component={Page1}/>
+        <ProtectedRoute path="/hgnform/page2" exact component={Page2}/>
+        <ProtectedRoute path="/hgnform/page3" exact component={Page3}/>
+        <ProtectedRoute path="/hgnform/page4" exact component={Page4}/>
+        <ProtectedRoute path="/hgnform/page5" exact component={Page5}/>
+        <ProtectedRoute path="/hgnform/page6" exact component={Page6}/> 
+        <ProtectedRoute path="/tsaformpage1" exact component={TSAFormPage1} /> 
+        <ProtectedRoute path="/tsaformpage2" exact component={TSAFormPage2} /> 
+        <ProtectedRoute path="/tsaformpage3" exact component={TSAFormPage3} /> 
+        <ProtectedRoute path="/tsaformpage4" exact component={TSAFormPage4} /> 
+        <ProtectedRoute path="/tsaformpage5" exact component={TSAFormPage5} /> 
+        <ProtectedRoute path="/tsaformpage6" exact component={TSAFormPage6} /> 
+        <ProtectedRoute path="/tsaformpage7" exact component={TSAFormPage7} /> 
+        <ProtectedRoute path="/tsaformpage8" exact component={TSAFormPage8} /> 
         <ProtectedRoute path="/" exact component={Dashboard} />
+        <Route path="*" component={NotFoundPage} />
       </Switch>
     </>
   </Switch>
-);
+)

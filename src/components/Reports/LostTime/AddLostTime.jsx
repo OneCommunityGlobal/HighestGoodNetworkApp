@@ -1,39 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, connect, useSelector } from 'react-redux';
 import MemberAutoComplete from 'components/Teams/MembersAutoComplete';
 import AddProjectsAutoComplete from 'components/UserProfile/TeamsAndProjects/AddProjectsAutoComplete';
 import AddTeamsAutoComplete from 'components/UserProfile/TeamsAndProjects/AddTeamsAutoComplete';
-import './../reportsPage.css';
+import "../reportsPage.css";
 import { Editor } from '@tinymce/tinymce-react';
 import moment from 'moment-timezone';
 import { Button, Col, Form, FormGroup, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'reactstrap';
-import { boxStyle, boxStyleDark } from 'styles';
 import { getFontColor, getBoxStyling } from 'styles';
 import '../../Header/DarkMode.css'
 import { isEmpty, isEqual } from 'lodash';
 import { getUserProfile } from 'actions/userProfile';
 import { postTimeEntry } from 'actions/timeEntries';
-import { ENDPOINTS } from 'utils/URL';
-import axios from 'axios';
 
-const TINY_MCE_INIT_OPTIONS = {
-  license_key: 'gpl',
-  menubar: false,
-  placeholder: '',
-  plugins:
-    'advlist autolink autoresize lists link charmap table paste help wordcount',
-  toolbar:
-    'bold italic underline link removeformat | bullist numlist outdent indent |\
-                    styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
-                    subscript superscript charmap  | help',
-  branding: false,
-  min_height: 180,
-  max_height: 300,
-  autoresize_bottom_margin: 1,
-  content_style: 'body { cursor: text !important; }',
-};
-
-const AddLostTime = props => {
+function AddLostTime(props) {
 
   const darkMode = useSelector((state) => state.theme.darkMode);
   const fontColor = getFontColor(darkMode);
@@ -50,6 +30,24 @@ const AddLostTime = props => {
     minutes: 0,
     notes: '',
     isTangible: true,
+  };
+
+  const TINY_MCE_INIT_OPTIONS = {
+    license_key: 'gpl',
+    menubar: false,
+    placeholder: '',
+    plugins:
+      'advlist autolink autoresize lists link charmap table paste help wordcount',
+    toolbar: `bold italic underline link removeformat | bullist numlist outdent indent |
+                      styleselect fontsizeselect | table| strikethrough forecolor backcolor |
+                      subscript superscript charmap  | help`,
+    branding: false,
+    min_height: 180,
+    max_height: 300,
+    autoresize_bottom_margin: 1,
+    content_style: 'body { cursor: text !important; }',
+    skin: darkMode ? 'oxide-dark' : 'oxide',
+    content_css: darkMode ? 'dark' : 'default',
   };
 
   const dispatch = useDispatch();
@@ -72,6 +70,14 @@ const AddLostTime = props => {
   // const headerBg = darkMode ? 'bg-space-cadet' : '';
   // const bodyBg = darkMode ? 'bg-yinmn-blue' : '';
 
+  const resetForm = () => {
+    setInputs(initialForm);
+    setEntryType('');
+    setSearchText('');
+    setSearchTeamText('');
+    setErrors({});
+  }
+
   useEffect(() => {
     if (inputs.personId && props.userProfile._id !== inputs.personId) {
       props.getUserProfile(inputs.personId);
@@ -79,14 +85,14 @@ const AddLostTime = props => {
   });
 
   useEffect(() => {
-    if (!props.isOpen && entryType != '') {
+    if (!props.isOpen && entryType !== '') {
       resetForm();
     }
   });
 
   const selectProject = project => {
-    setInputs(inputs => ({
-      ...inputs,
+    setInputs(prevInputs => ({
+      ...prevInputs,
       projectId: project._id,
       personId: undefined,
       teamId: undefined,
@@ -96,8 +102,8 @@ const AddLostTime = props => {
 
   const selectUser = person => {
     if(person){
-      setInputs(inputs => ({
-        ...inputs,
+      setInputs(prevInputs => ({
+        ...prevInputs,
         projectId: undefined,
         personId: person._id,
         teamId: undefined,
@@ -106,8 +112,8 @@ const AddLostTime = props => {
   };
 
   const selectTeam = team => {
-    setInputs(inputs => ({
-      ...inputs,
+    setInputs(prevInputs => ({
+      ...prevInputs,
       projectId: undefined,
       personId: undefined,
       teamId: team._id,
@@ -116,7 +122,7 @@ const AddLostTime = props => {
   };
 
   const handleFormContent = () => {
-    if (entryType == 'project') {
+    if (entryType === 'project') {
       return (
         <FormGroup>
           <Label className={fontColor}>Project Name</Label>
@@ -132,10 +138,9 @@ const AddLostTime = props => {
           )}
         </FormGroup>
       )
-    } else if (entryType == 'person') {
+    } if (entryType === 'person') {
       return (
-        <>
-          <FormGroup>
+        <FormGroup>
             <Label className={fontColor}>Name</Label>
             <MemberAutoComplete
               userProfileData={{userProfiles: props.users}}
@@ -149,9 +154,8 @@ const AddLostTime = props => {
               </div>
             )}
           </FormGroup>
-        </>
       )
-    } else if (entryType == 'team') {
+    } if (entryType === 'team') {
       return (
         <FormGroup>
           <Label className={fontColor}>Team Name</Label> 
@@ -164,7 +168,7 @@ const AddLostTime = props => {
             selectedTeam={selectedTeam}
             searchText={searchTeamText}
             setSearchText={setSearchTeamText}
-            addLostHour={true}
+            addLostHour
           />
           {'teamId' in errors && (
             <div className="text-danger">
@@ -173,15 +177,14 @@ const AddLostTime = props => {
           )}
         </FormGroup>
       )
-    } else {
-      return (<></>)
-    }
+    } 
+      return null
   };
 
   const handleInputChange = event => {
     event.persist();
-    setInputs(inputs => ({
-      ...inputs,
+    setInputs(prevInputs => ({
+      ...prevInputs,
       [event.target.name]: event.target.value,
     }));
   };
@@ -191,10 +194,10 @@ const AddLostTime = props => {
     if (!isEqual(inputs, initialForm)) {
       setInputs(initialForm);
     }
-    if (searchText != '') {
+    if (searchText !== '') {
       setSearchText('');
     }
-    if (searchTeamText != '') {
+    if (searchTeamText !== '') {
       setSearchTeamText('');
     }
     if (!isEqual(errors, {})) {
@@ -202,14 +205,8 @@ const AddLostTime = props => {
     }
   }
 
-  const resetForm = () => {
-    setInputs(initialForm);
-    setEntryType('');
-    setSearchText('');
-    setSearchTeamText('');
-    setErrors({});
-  }
-  const handleCancel = closed => {
+
+  const handleCancel = () => {
     resetForm();
     props.toggle();
   };
@@ -244,38 +241,18 @@ const AddLostTime = props => {
       }
     }
 
-    if (entryType == 'project' && inputs.projectId == undefined) {
+    if (entryType === 'project' && inputs.projectId === undefined) {
       result.projectId = 'Project is required';
     }
-    if (entryType == 'person' && inputs.personId == undefined) {
+    if (entryType === 'person' && inputs.personId === undefined) {
       result.personId = 'Person is required';
     }
-    if (entryType == 'team' && inputs.teamId == undefined) {
+    if (entryType === 'team' && inputs.teamId === undefined) {
       result.teamId = 'Team is required';
     }
 
     setErrors(result);
     return isEmpty(result);
-  };
-
-  const updateHours = async (userProfile, timeEntry, hours, minutes) => {
-    const { hoursByCategory } = userProfile;
-    const { isTangible, personId } = timeEntry;
-    const volunteerTime = parseFloat(hours) + parseFloat(minutes) / 60;
-
-    if (!isTangible) {
-      userProfile.totalIntangibleHrs += volunteerTime;
-    } else {
-      hoursByCategory['unassigned'] += volunteerTime;
-    }
-
-    try {
-      const url = ENDPOINTS.USER_PROFILE_PROPERTY(personId);
-      await axios.patch(url, { key: 'hoursByCategory', value: hoursByCategory });
-      await axios.patch(url, { key: 'totalIntangibleHrs', value: userProfile.totalIntangibleHrs });
-    } catch (error) {
-      console.log(error);
-    }
   };
 
   const handleSubmit = async event => {
@@ -286,25 +263,21 @@ const AddLostTime = props => {
     const timeEntry = {
       personId: inputs.personId,
       dateOfWork: inputs.dateOfWork,
-      hours: parseInt(inputs.hours),
-      minutes: parseInt(inputs.minutes),
+      hours: parseInt(inputs.hours, 10),
+      minutes: parseInt(inputs.minutes, 10),
       notes: inputs.notes,
       projectId: inputs.projectId,
       teamId: inputs.teamId,
       isTangible: inputs.isTangible,
-      entryType: entryType,
+      entryType,
     };
 
     setSubmitting(true);
-    let timeEntryStatus;
-    timeEntryStatus = await dispatch(postTimeEntry(timeEntry));
+    const timeEntryStatus = await dispatch(postTimeEntry(timeEntry));
     setSubmitting(false);
 
     if (timeEntryStatus !== 200) {
       props.toggle();
-      alert(
-        `An error occurred while attempting to submit your time entry. Error code: ${timeEntryStatus}`,
-      );
       return;
     }
 
@@ -359,7 +332,7 @@ const AddLostTime = props => {
               </div>
             </div>
           </FormGroup>
-          {entryType != '' && (
+          {entryType !== '' && (
             <>
               {handleFormContent()}
               <FormGroup>
@@ -370,6 +343,7 @@ const AddLostTime = props => {
                   id="dateOfWork"
                   value={inputs.dateOfWork}
                   onChange={handleInputChange}
+                  className={darkMode ? "bg-darkmode-liblack text-light border-0 calendar-icon-dark" : ''}
                 />
                 {'dateOfWork' in errors && (
                   <div className="text-danger">
@@ -390,6 +364,7 @@ const AddLostTime = props => {
                     placeholder="Hours"
                     value={inputs.hours}
                     onChange={handleInputChange}
+                    className={darkMode ? "bg-darkmode-liblack text-light border-0" : ''}
                   />
                 </Col>
                 <Col>
@@ -402,6 +377,7 @@ const AddLostTime = props => {
                     placeholder="Minutes"
                     value={inputs.minutes}
                     onChange={handleInputChange}
+                    className={darkMode ? "bg-darkmode-liblack text-light border-0" : ''}
                   />
                 </Col>
               </Row>
@@ -411,7 +387,7 @@ const AddLostTime = props => {
                 </div>
               )}
             </FormGroup>
-            {entryType == 'person' && (
+            {entryType === 'person' && (
               <FormGroup>
                 <Label for="notes" className={fontColor}>Notes</Label>
                 <Editor
@@ -439,8 +415,8 @@ const AddLostTime = props => {
                   checked={inputs.isTangible}
                   onChange={e => {
                     e.persist();
-                    setInputs(inputs => ({
-                      ...inputs,
+                    setInputs(prevInputs => ({
+                      ...prevInputs,
                       [e.target.name]: e.target.checked,
                     }));
                   }}
@@ -462,7 +438,7 @@ const AddLostTime = props => {
       </ModalFooter>
     </Modal>
   );
-};
+}
 
 const mapStateToProps = state => ({
   userProfile: state.userProfile,

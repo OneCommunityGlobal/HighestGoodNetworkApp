@@ -6,14 +6,30 @@ import { NavItem } from 'reactstrap';
 import { connect } from 'react-redux';
 import hasPermission from 'utils/permissions';
 import { boxStyle } from 'styles';
-import { toast } from 'react-toastify';
+import { toast } from 'react-toastify';  
+import { modifyProject, clearError } from '../../../actions/projects';
+import ModalTemplate from './../../common/Modal';
+import { CONFIRM_ARCHIVE } from './../../../languages/en/messages';
 
 const Project = props => {
   const { darkMode, index } = props;
   const [projectData, setProjectData] = useState(props.projectData);
-  const { projectName, isActive, _id: projectId } = projectData;
+  const { projectName, isActive,isArchived, _id: projectId } = projectData;
   const [displayName, setDisplayName] = useState(projectName);
-  const [category, setCategory] = useState(props.category || 'Unspecified'); // Initialize with props or default
+  const initialModalData = {
+    showModal: false,
+    modalMessage: "",
+    modalTitle: "",
+    hasConfirmBtn: false,
+    hasInactiveBtn: false,
+  };
+
+  const [modalData, setModalData] = useState(initialModalData);
+
+  const onCloseModal = () => {
+    setModalData(initialModalData);
+    props.clearError();
+  };  const [category, setCategory] = useState(props.category || 'Unspecified'); // Initialize with props or default
 
   const canPutProject = props.hasPermission('putProject');
   const canDeleteProject = props.hasPermission('deleteProject');
@@ -21,19 +37,14 @@ const Project = props => {
   const canSeeProjectManagementFullFunctionality = props.hasPermission('seeProjectManagement');
   const canEditCategoryAndStatus = props.hasPermission('editProject');
 
-
-  const updateProject = (key, value) => {
-    const updatedData = {
-      ...projectData,
-      [key]: value,
-    };
-    props.onUpdateProject(updatedData)
-      .then(() => {
-        setProjectData(updatedData);
-      })
-      .catch((error) => {
-        console.error('Error updating project data:', error);
-      });
+   const updateProject = ({ updatedProject, status }) => async dispatch => {
+    try {
+      dispatch(updateProject({ updatedProject, status }));
+    } catch (err) {
+      const status = err?.response?.status || 500;
+      const error = err?.response?.data || { message: 'An error occurred' };
+      dispatch(updateProject({ status, error }));
+    }
   };
 
   const onDisplayNameChange = (e) => {
@@ -59,17 +70,42 @@ const Project = props => {
   };
 
   const onArchiveProject = () => {
-    props.onClickArchiveBtn(projectData);
+    setModalData({
+      showModal: true,
+      modalMessage: `<p>Do you want to archive ${projectData.projectName}?</p>`,
+      modalTitle: CONFIRM_ARCHIVE,
+      hasConfirmBtn: true,
+      hasInactiveBtn: isActive,
+    });
   }
+  
+  const setProjectInactive = () => {
+    updateProject('isActive', !isActive);
+    onCloseModal(); 
+  }
+  const confirmArchive = () => {
+    updateProject('isArchived', !isArchived);
+    props.onProjectArchived();
+    onCloseModal(); 
+  };
 
-
-  //Bad Code: Sync the local state with global state (local state should not be when using redux)
   useEffect(() => {
-    setProjectData(props.projectData);
-  }, [props.projectData]);
+    const onUpdateProject = async () => {
+      if (firstLoad) {
+        setFirstLoad(false);
+      } else {
+        await props.modifyProject(projectData);
+      }
+      if (props.projectData.category) {
+        setCategory(props.projectData.category);
+      }
+    };
 
+    onUpdateProject();
+  }, [projectData]);
 
   return (
+    <>
     <tr className="projects__tr" id={'tr_' + props.projectId}>
 
       <th className="projects__order--input" scope="row">
@@ -103,7 +139,7 @@ const Project = props => {
             onChange={e => {
               onUpdateProjectCategory(e);
             }}
-
+            className={darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}
           >
             <option value="Unspecified">Unspecified</option>
             <option value="Food">Food</option>
@@ -167,13 +203,25 @@ const Project = props => {
             className="btn btn-outline-danger"
             onClick={onArchiveProject}
             style={darkMode ? {} : boxStyle}
+            disabled = {isArchived}
           >
             {ARCHIVE}
           </button>
         </td>
       ) : null}
     </tr>
+      <ModalTemplate
+          isOpen={modalData.showModal}
+          closeModal={onCloseModal}
+          confirmModal={modalData.hasConfirmBtn ? confirmArchive : null}
+          setInactiveModal={modalData.hasInactiveBtn ? setProjectInactive : null}
+          modalMessage={modalData.modalMessage}
+          modalTitle={modalData.modalTitle}
+          darkMode={darkMode}
+        />
+
+    </>
   );
 };
 const mapStateToProps = state => state;
-export default connect(mapStateToProps, { hasPermission })(Project);
+export default connect(mapStateToProps, { hasPermission, modifyProject, clearError })(Project);

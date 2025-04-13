@@ -8,6 +8,12 @@ import { renderWithRouterMatch } from '../../__tests__/utils';
 import configureMockStore from 'redux-mock-store';
 import userEvent from '@testing-library/user-event';
 import { ModalProvider } from 'context/ModalContext';
+import axios from 'axios';
+jest.mock('axios');
+// Mock API call to prevent real network requests during tests, avoiding ECONNREFUSED errors 
+// and ensuring consistent, fast, and reliable test execution.
+axios.get.mockResolvedValue({ data: [] }); 
+
 
 jest.mock('actions/role.js');
 
