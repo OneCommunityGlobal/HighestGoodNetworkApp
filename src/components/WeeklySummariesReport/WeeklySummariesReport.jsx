@@ -757,8 +757,8 @@ export class WeeklySummariesReport extends Component {
       {
         selectedCodes: data.codes,
         selectedColors: data.colors,
-        selectedBioStatus: data.FilterByBioStatus,
-        selectedOverTime: data.FilterByOverHours,
+        selectedBioStatus: data.filterByBioStatus,
+        selectedOverTime: data.filterByOverHours,
         selectedFilterId: data._id,
         filterNameForSummary: data.filterName,
       },
@@ -944,8 +944,8 @@ export class WeeklySummariesReport extends Component {
                         codes: this.state.selectedCodes,
                         colors: this.state.selectedColors,
                         filterName: this.state.filterNameForSummary,
-                        FilterByBioStatus: this.state.selectedBioStatus,
-                        FilterByOverHours: this.state.selectedOverTime,
+                        filterByBioStatus: this.state.selectedBioStatus,
+                        filterByOverHours: this.state.selectedOverTime,
                       };
                       const req = {
                         flow: 'Update',
@@ -1135,8 +1135,8 @@ export class WeeklySummariesReport extends Component {
                     codes: this.state.selectedCodes,
                     colors: this.state.selectedColors,
                     filterName: this.state.filterNameForSummary,
-                    FilterByBioStatus: this.state.selectedBioStatus,
-                    FilterByOverHours: this.state.selectedOverTime,
+                    filterByBioStatus: this.state.selectedBioStatus,
+                    filterByOverHours: this.state.selectedOverTime,
                   };
                   const req = { flow: 'Save', recordId: null, filters: obj };
                   this.setState({ showFilterModal: false }, () => {
