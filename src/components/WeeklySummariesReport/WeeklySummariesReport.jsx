@@ -575,7 +575,6 @@ export class WeeklySummariesReport extends Component {
     this.setState(prevState => {
       const updatedSummaries = prevState.summaries.map(summary => {
         if (summary._id === userId) {
-          const isSameColor = summary.filterColor === color;
           return { ...summary, filterColor: color };
         }
         return summary;
