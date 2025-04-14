@@ -13,10 +13,10 @@ function DonutChart() {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [chartData, setChartData] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
   const [error, setError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [dateError, setDateError] = useState(false);
+  const [setDateError] = useState(false);
 
   const today = new Date();
   const formattedDate = today.toLocaleDateString('en-US', {
@@ -62,7 +62,7 @@ function DonutChart() {
     if (startDate && endDate && endDate <= startDate) {
       setDateError(true);
       setTimeout(() => {
-        alert('End date must be later than start date');
+        setError('End date must be later than start date');
       }, 0);
       return false;
     }
