@@ -1,9 +1,12 @@
-import { GET_MAP_ORGS, GET_MAP_ORG_DETAILS } from "../../constants/bmdashboard/orgLocationConstants";
+import {
+  GET_MAP_ORGS,
+  GET_MAP_ORG_DETAILS,
+} from '../../constants/bmdashboard/orgLocationConstants';
 
 const initialState = {
   projects: [],
   projectDetails: null,
-  loading: true
+  loading: true,
 };
 
 export default function orgLocationReducer(state = initialState, action) {
@@ -12,13 +15,13 @@ export default function orgLocationReducer(state = initialState, action) {
       return {
         ...state,
         projects: action.payload,
-        loading: false
+        loading: false,
       };
     case GET_MAP_ORG_DETAILS:
       return {
         ...state,
         projectDetails: action.payload,
-        loading: false
+        loading: false,
       };
     default:
       return state;
