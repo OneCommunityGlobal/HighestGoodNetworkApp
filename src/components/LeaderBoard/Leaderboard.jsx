@@ -150,7 +150,7 @@ function LeaderBoard({
 
   useEffect(() => {
     const checkAbbreviatedView = () => {
-      const isAbbrev = window.innerWidth < 1024;
+      const isAbbrev = window.innerWidth < window.screen.width * 0.75;
       setIsAbbreviatedView(isAbbrev);
     };
 
