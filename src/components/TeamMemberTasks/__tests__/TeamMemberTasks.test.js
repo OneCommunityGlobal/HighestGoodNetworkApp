@@ -290,13 +290,13 @@ describe('TeamMemberTasks component', () => {
       data: '',
     });
 
-    const themeNotDark = { darkMode: true };
+    const darkTheme = { darkMode: true };
 
     const testStore = mockStore({
       auth,
       teamMemberTasks,
       userProfile,
-      themeNotDark,
+      theme: darkTheme,
       timeOffRequests,
       infoCollections: { loading: false },
       role: rolesMock,
