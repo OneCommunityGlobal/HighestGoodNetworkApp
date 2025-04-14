@@ -72,7 +72,7 @@ function LeaderBoard({
   getOrgData,
   getMouseoverText,
   leaderBoardData,
-  loggedInUser,
+  displayUserRole,
   organizationData,
   timeEntries,
   isVisible,
@@ -84,10 +84,9 @@ function LeaderBoard({
   getWeeklySummaries,
   setFilteredUserTeamIds,
 }) {
-  const userId = displayUserId;
   const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
   const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon'); // ??? this permission doesn't exist?
-  const isOwner = ['Owner'].includes(loggedInUser.role);
+  const isOwner = ['Owner'].includes(displayUserRole);
 
   const [mouseoverTextValue, setMouseoverTextValue] = useState(totalTimeMouseoverText);
   const dispatch = useDispatch();
@@ -111,7 +110,7 @@ function LeaderBoard({
   const refTeam = useRef([]);
   const refInput = useRef('');
 
-  const hasTimeOffIndicatorPermission = hasLeaderboardPermissions(loggedInUser.role);
+  const hasTimeOffIndicatorPermission = hasLeaderboardPermissions(displayUserRole);
 
   const [searchInput, setSearchInput] = useState('');
   const [filteredUsers, setFilteredUsers] = useState(teamsUsers);
@@ -132,7 +131,7 @@ function LeaderBoard({
     };
 
     fetchInitial();
-  }, []);
+  }, [displayUserId]);
 
   useEffect(() => {
     if (usersSelectedTeam === 'Show all') setStateOrganizationData(organizationData);
@@ -229,16 +228,16 @@ function LeaderBoard({
     setMouseoverTextValue(text);
   };
   useDeepEffect(() => {
-    getLeaderboardData(userId);
+    getLeaderboardData(displayUserId);
     getOrgData();
-  }, [timeEntries, userId]);
+  }, [timeEntries, displayUserId]);
 
   useDeepEffect(() => {
     try {
       if (window.screen.width < 540) {
         const scrollWindow = document.getElementById('leaderboard');
         if (scrollWindow) {
-          const elem = document.getElementById(`id${userId}`);
+          const elem = document.getElementById(`id${displayUserId}`);
 
           if (elem) {
             const topPos = elem.offsetTop;
@@ -258,6 +257,11 @@ function LeaderBoard({
   const dashboardClose = () => setIsDashboardOpen(false);
 
   const showDashboard = item => {
+    if (displayUserRole !== 'Owner' && displayUserRole !== 'Administrator') {
+      dashboardClose();
+      toast.error("You do not have permission to view other's dashboard.");
+      return;
+    }
     getWeeklySummaries(item.personId);
     dispatch(getUserProfile(item.personId)).then(user => {
       const { _id, role, firstName, lastName, profilePic, email } = user;
@@ -278,10 +282,10 @@ function LeaderBoard({
   const updateLeaderboardHandler = async () => {
     setIsLoading(true);
     if (isEqual(leaderBoardData, teamsUsers)) {
-      await getLeaderboardData(userId);
+      await getLeaderboardData(displayUserId);
       setTeamsUsers(leaderBoardData);
     } else {
-      await getLeaderboardData(userId);
+      await getLeaderboardData(displayUserId);
       renderTeamsList(usersSelectedTeam);
     }
     setIsLoading(false);
@@ -418,7 +422,7 @@ function LeaderBoard({
           <EditableInfoModal
             areaName="LeaderboardOrigin"
             areaTitle="Leaderboard"
-            role={loggedInUser.role}
+            role={displayUserRole}
             fontSize={24}
             darkMode={darkMode}
             isPermissionPage
@@ -532,7 +536,7 @@ function LeaderBoard({
                 <EditableInfoModal
                   areaName="LeaderboardInvisibleInfoPoint"
                   areaTitle="Leaderboard settings"
-                  role={loggedInUser.role}
+                  role={displayUserRole}
                   fontSize={24}
                   darkMode={darkMode}
                   isPermissionPage
@@ -568,7 +572,7 @@ function LeaderBoard({
                       <EditableInfoModal
                         areaName="Leaderboard"
                         areaTitle="Team Members Navigation"
-                        role={loggedInUser.role}
+                        role={displayUserRole}
                         fontSize={18}
                         isPermissionPage
                         darkMode={darkMode}
@@ -612,7 +616,7 @@ function LeaderBoard({
                   <td aria-label="Placeholder" />
                   <td className={`leaderboard-totals-container `}>
                     <span>{stateOrganizationData.name}</span>
-                    {viewZeroHouraMembers(loggedInUser.role) && (
+                    {viewZeroHouraMembers(displayUserRole) && (
                       <span className="leaderboard-totals-title">
                         0 hrs Totals:{' '}
                         {filteredUsers.filter(user => user.weeklycommittedHours === 0).length}{' '}
