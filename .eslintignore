@@ -12,7 +12,7 @@
 
 # Ignore test files inside /src/components
 # src/__tests__/**
-/src/components/**/__test__/**/*
+# /src/components/**/__test__/**/*
 /src/components/**/__tests__/**/*
 /src/reducers/**/__tests__/**/*
 
