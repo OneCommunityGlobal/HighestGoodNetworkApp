@@ -115,6 +115,7 @@ function TotalOrgSummary(props) {
   const [taskProjectHours, setTaskProjectHours] = useState([]);
   const [isVolunteerFetchingError, setIsVolunteerFetchingError] = useState(false);
   const [volunteerStats, setVolunteerStats] = useState(null);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const comparisonStartDate = '2025-01-16';
   const comparisonEndDate = '2025-01-26';
   const [isLoading, setIsLoading] = useState(true);
@@ -124,12 +125,9 @@ function TotalOrgSummary(props) {
   const allUsersTimeEntries = useSelector(state => state.allUsersTimeEntries);
 
   const handleSaveAsPDF = async () => {
-    // Ensure required libraries are present.
-    if (typeof jsPDF === 'undefined' || typeof html2canvas === 'undefined') {
-      // eslint-disable-next-line no-alert
-      alert('Required PDF libraries not loaded. Please refresh the page.');
-      return;
-    }
+    if (isGeneratingPDF) return;
+
+    setIsGeneratingPDF(true);
 
     // Save the current state of collapsible sections.
     const triggers = document.querySelectorAll('.Collapsible__trigger');
@@ -138,6 +136,13 @@ function TotalOrgSummary(props) {
     );
 
     try {
+      // Ensure required libraries are present.
+      if (typeof jsPDF === 'undefined' || typeof html2canvas === 'undefined') {
+        // eslint-disable-next-line no-alert
+        alert('Required PDF libraries not loaded. Please refresh the page.');
+        return;
+      }
+
       // Ensure data is ready.
       if (!volunteerStats || isLoading) {
         // eslint-disable-next-line no-alert
@@ -153,13 +158,13 @@ function TotalOrgSummary(props) {
       });
 
       // 2. Wait a longer time to ensure charts and content are fully rendered.
-      // Increase this delay if needed (e.g., 3000ms or higher).
       await new Promise(resolve => {
         setTimeout(resolve, 3000);
       });
 
       // 3. Replace Chart.js canvas elements with images in the live DOM.
       const chartCanvases = document.querySelectorAll('.volunteer-status-chart canvas');
+      const originalCanvases = [];
       chartCanvases.forEach(canvasElem => {
         try {
           const img = document.createElement('img');
@@ -167,6 +172,10 @@ function TotalOrgSummary(props) {
           img.width = canvasElem.width;
           img.height = canvasElem.height;
           img.style.cssText = canvasElem.style.cssText;
+          originalCanvases.push({
+            canvas: canvasElem,
+            parent: canvasElem.parentNode,
+          });
           canvasElem.parentNode.replaceChild(img, canvasElem);
         } catch (err) {
           // eslint-disable-next-line no-console
@@ -174,29 +183,30 @@ function TotalOrgSummary(props) {
         }
       });
 
-      // 4. Clone the container that you want to capture in the PDF.
-      // This container should include your title, charts, and other sections.
+      // 4. Create a temporary container for PDF generation
       const pdfContainer = document.createElement('div');
       pdfContainer.id = 'pdf-export-container';
-      // Set a high resolution container width for good quality.
-      pdfContainer.style.width = '420mm';
-      pdfContainer.style.padding = '24mm';
+      pdfContainer.style.width = '100%';
+      pdfContainer.style.padding = '20px';
       pdfContainer.style.backgroundColor = '#fff';
-      // Position it off-screen.
       pdfContainer.style.position = 'absolute';
       pdfContainer.style.left = '-9999px';
+      pdfContainer.style.top = '0';
+      pdfContainer.style.zIndex = '9999';
       pdfContainer.style.boxSizing = 'border-box';
+      pdfContainer.style.minHeight = '100%';
+      pdfContainer.style.margin = '0';
 
-      // Clone the main content area.
+      // Clone the main content area
       const originalContent = document.querySelector('.container-total-org-wrapper');
       const clonedContent = originalContent.cloneNode(true);
 
-      // Remove interactive or unwanted elements from the clone.
+      // Remove interactive or unwanted elements from the clone
       clonedContent
         .querySelectorAll('button, .share-pdf-btn, .controls, .no-print')
         .forEach(el => el.remove());
 
-      // Adjust title row styling for a clean layout.
+      // Adjust title row styling for a clean layout
       const titleRow = clonedContent.querySelector(
         '.row.d-flex.justify-content-between.align-items-center',
       );
@@ -215,61 +225,87 @@ function TotalOrgSummary(props) {
         }
       }
 
-      // Inject global styles to keep the layout organized
+      // Create a style element for the PDF container
       const styleElem = document.createElement('style');
       styleElem.textContent = `
-      .container-total-org-wrapper {
-        padding: 0 !important;
-        margin: 0 !important;
-        box-shadow: none !important;
-        border: none !important;
-        width: 100% !important;
-        background-color: #fff !important;
-      }
-      .row.d-flex.justify-content-between.align-items-center {
-        display: flex !important;
-        justify-content: space-between !important;
-        align-items: center !important;
-        margin-bottom: 20px !important;
-        width: 100% !important;
-        padding: 0 !important;
-      }
-      .component-container {
-        page-break-inside: avoid;
-        break-inside: avoid;
-        margin: 8mm 0 !important;
-        padding: 5mm !important;
-        border: 1px solid #eee !important;
-        border-radius: 0 !important;
-        background-color: #fff !important;
-      }
-      .component-border {
-        background-color: #fff !important;
-      }
-      img, svg {
-        max-width: 100% !important;
-        height: auto !important;
-        page-break-inside: avoid !important;
-      }
-      .recharts-wrapper {
-        width: 100% !important;
-        height: auto !important;
-      }
-      table {
-        page-break-inside: avoid !important;
-      }
-      .Collapsible__trigger {
-        background-color: #fff !important;
-      }
-    `;
-      clonedContent.prepend(styleElem);
+        .container-total-org-wrapper {
+          padding: 20px !important;
+          margin: 0 !important;
+          box-shadow: none !important;
+          border: none !important;
+          width: 100% !important;
+          background-color: #fff !important;
+          min-height: 100% !important;
+        }
+        .row.d-flex.justify-content-between.align-items-center {
+          display: flex !important;
+          justify-content: space-between !important;
+          align-items: center !important;
+          margin-bottom: 20px !important;
+          width: 100% !important;
+          padding: 0 !important;
+        }
+        .component-container {
+          page-break-inside: avoid;
+          break-inside: avoid;
+          margin: 15px 0 !important;
+          padding: 20px !important;
+          border: 1px solid #eee !important;
+          border-radius: 8px !important;
+          background-color: #fff !important;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+        }
+        .component-border {
+          background-color: #fff !important;
+          border: 1px solid #e0e0e0 !important;
+          border-radius: 10px !important;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) !important;
+          overflow: hidden !important;
+        }
+        img, svg {
+          max-width: 100% !important;
+          height: auto !important;
+          page-break-inside: avoid !important;
+        }
+        .recharts-wrapper {
+          width: 100% !important;
+          height: auto !important;
+        }
+        table {
+          page-break-inside: avoid !important;
+        }
+        .Collapsible__trigger {
+          background-color: #fff !important;
+        }
+        .volunteer-status-grid {
+          display: grid !important;
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)) !important;
+          gap: 1.5rem !important;
+          width: 100% !important;
+          margin-top: 15px !important;
+        }
+        .component-pie-chart-label {
+          font-size: 12px !important;
+          font-weight: 600 !important;
+          color: #000 !important;
+          overflow: hidden !important;
+          text-overflow: ellipsis !important;
+        }
+        .chart-title p {
+          font-size: 1.5em !important;
+          font-weight: bold !important;
+          text-align: center !important;
+          margin: 10px !important;
+          color: #333 !important;
+        }
+      `;
 
-      // Append the cloned content to the temporary container.
+      // Add content to the PDF container
+      pdfContainer.appendChild(styleElem);
       pdfContainer.appendChild(clonedContent);
       document.body.appendChild(pdfContainer);
 
-      // 5. Use html2canvas to capture the rendered container.
-      // (Since we've replaced canvases with images, the charts should now appear properly.)
+      // 5. Use html2canvas to capture the rendered container
       const screenshotCanvas = await html2canvas(pdfContainer, {
         scale: 2,
         useCORS: true,
@@ -288,7 +324,7 @@ function TotalOrgSummary(props) {
         throw new Error('Invalid image data generated.');
       }
 
-      // 6. Create a single-page PDF.
+      // 6. Create a single-page PDF
       const pdfWidth = 210; // A4 width in mm
       const imgHeight = (screenshotCanvas.height * pdfWidth) / screenshotCanvas.width;
       const doc = new jsPDF({
@@ -297,9 +333,17 @@ function TotalOrgSummary(props) {
         format: [pdfWidth, imgHeight],
       });
       doc.addImage(imgData, 'PNG', 0, 0, pdfWidth, imgHeight);
-      doc.save(`volunteer-report-${new Date().toISOString().slice(0, 10)}.pdf`);
+      const now = new Date();
+      const localDate = now.toLocaleDateString('en-CA'); // Using YYYY-MM-DD format
+      doc.save(`volunteer-report-${localDate}.pdf`);
 
-      // Cleanup: remove temporary container.
+      // Cleanup: restore original canvases and remove temporary container
+      originalCanvases.forEach(({ canvas, parent }) => {
+        const img = parent.querySelector('img');
+        if (img) {
+          parent.replaceChild(canvas, img);
+        }
+      });
       document.body.removeChild(pdfContainer);
     } catch (pdfError) {
       // eslint-disable-next-line no-console
@@ -307,7 +351,8 @@ function TotalOrgSummary(props) {
       // eslint-disable-next-line no-alert
       alert(`Error generating PDF: ${pdfError.message}`);
     } finally {
-      // Restore collapsible sections to their original states.
+      setIsGeneratingPDF(false);
+      // Restore collapsible sections to their original states
       triggers.forEach((trigger, idx) => {
         if (trigger.classList.contains('is-open') !== originalStates[idx]) {
           trigger.click();
@@ -435,8 +480,8 @@ function TotalOrgSummary(props) {
           <h3 className="my-0">Total Org Summary</h3>
         </Col>
         <Col lg={{ size: 6 }} className="d-flex justify-content-end">
-          <Button className="share-pdf-btn" onClick={handleSaveAsPDF}>
-            Save as PDF
+          <Button className="share-pdf-btn" onClick={handleSaveAsPDF} disabled={isGeneratingPDF}>
+            {isGeneratingPDF ? 'Generating PDF...' : 'Save as PDF'}
           </Button>
         </Col>
       </Row>
