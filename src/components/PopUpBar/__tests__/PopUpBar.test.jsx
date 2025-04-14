@@ -1,6 +1,11 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import PopUpBar from '../PopUpBar';
 
+const viewingUser = {
+  firstName: 'TestUser',
+  lastName: 'LastName',
+};
+
 // render Component
 const renderComponent = (props = {}) => {
   render(<PopUpBar message="PopUpBar text message" {...props} />);

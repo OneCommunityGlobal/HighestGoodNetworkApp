@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo } from 'react';
-// import { getUserProfile } from '../../actions/userProfile'
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import { getWeeklySummaries } from 'actions/weeklySummaries';
@@ -221,7 +220,7 @@ export function Header(props) {
     // handle setting the ack true
     try {
       const {firstName: name, lastName, personalLinks, adminLinks, _id} = props.userProfile
-      const res = await axios.put(ENDPOINTS.USER_PROFILE(_id), {
+      axios.put(ENDPOINTS.USER_PROFILE(_id), {
         // req fields for updation
         firstName: name, 
         lastName, 
@@ -229,10 +228,9 @@ export function Header(props) {
         adminLinks,
         
         isAcknowledged: true,
+      }).then(()=>{
+        dispatch(getUserProfile(_id));
       });
-      if (res.status === 200) {
-        props.getUserProfile(_id);
-      }
     } catch (e) {
       // console.log('update ack', e);
     }
@@ -464,7 +462,7 @@ export function Header(props) {
                   </NavItem>
                 )}
                 <NavItem className="responsive-spacing">
-                  <BellNotification />
+                  <BellNotification userId={displayUserId}/>
                 </NavItem>
                 {(canAccessUserManagement ||
                   canAccessBadgeManagement ||
@@ -637,5 +635,5 @@ export default connect(mapStateToProps, {
   getAllRoles,
   hasPermission,
   getWeeklySummaries,
-  getUserProfile
+  getUserProfile,
 })(Header);
