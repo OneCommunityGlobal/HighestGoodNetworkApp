@@ -145,13 +145,6 @@ export class WeeklySummariesReport extends Component {
       );
       return { ...summary, promisedHoursByWeek };
     });
-
-    const storedColors = JSON.parse(localStorage.getItem('userFilterColors') || '{}');
-    summariesCopy = summariesCopy.map(summary => {
-      const color = storedColors[summary._id];
-      return color ? { ...summary, filterColor: color } : summary;
-    });
-
     /*
      * refactor logic of commentted codes above
      */
@@ -580,21 +573,10 @@ export class WeeklySummariesReport extends Component {
 
   handleSpecialColorDotClick = (userId, color) => {
     this.setState(prevState => {
-      const storedColors = JSON.parse(localStorage.getItem('userFilterColors') || '{}');
       const updatedSummaries = prevState.summaries.map(summary => {
         if (summary._id === userId) {
           const isSameColor = summary.filterColor === color;
-          const newColor = isSameColor ? undefined : color;
-
-          // Update localStorage
-          if (isSameColor) {
-            delete storedColors[userId];
-          } else {
-            storedColors[userId] = color;
-          }
-          localStorage.setItem('userFilterColors', JSON.stringify(storedColors));
-
-          return { ...summary, filterColor: newColor };
+          return { ...summary, filterColor: color };
         }
         return summary;
       });
