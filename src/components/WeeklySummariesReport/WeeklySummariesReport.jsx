@@ -26,7 +26,6 @@ import moment from 'moment';
 import { boxStyle, boxStyleDark } from 'styles';
 import 'moment-timezone';
 import axios from 'axios';
-import cn from 'classnames';
 
 import { ENDPOINTS } from 'utils/URL';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
@@ -43,9 +42,6 @@ import { fetchAllBadges } from '../../actions/badgeManagement';
 import PasswordInputModal from './PasswordInputModal';
 import SelectTeamPieChart from './SelectTeamPieChart';
 import { setTeamCodes } from '../../actions/teamCodes';
-
-import styles from './WeeklySummariesReport.module.scss';
-import { SlideToggle } from './components';
 
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
 const fullCodeRegex = /^.{5,7}$/;
@@ -408,12 +404,8 @@ const WeeklySummariesReport = props => {
       const chartData = [];
       let temptotal = 0;
       const structuredTeamTableData = [];
-
-
       const selectedCodesArray = selectedCodes.map(e => e.value);
       const selectedColorsArray = selectedColors.map(e => e.value);
-
-
       const temp = summaries.filter(summary => {
         const { activeTab } = state;
         const hoursLogged = (summary.totalSeconds[navItems.indexOf(activeTab)] || 0) / 3600;
@@ -421,16 +413,12 @@ const WeeklySummariesReport = props => {
           summary.totalTangibleHrs > 80 &&
           summary.daysInTeam > 60 &&
           summary.bioPosted !== 'posted';
-
         const isBio = !selectedBioStatus || isMeetCriteria;
-
         const isOverHours =
           !selectedOverTime ||
           (summary.weeklycommittedHours > 0 &&
             hoursLogged > 0 &&
             hoursLogged >= summary.promisedHoursByWeek[navItems.indexOf(activeTab)] * 1.25);
-
-
         return (
           (selectedCodesArray.length === 0 || selectedCodesArray.includes(summary.teamCode)) &&
           (selectedColorsArray.length === 0 ||
@@ -488,7 +476,6 @@ const WeeklySummariesReport = props => {
               value: val,
             });
           }
-
           const team = tableData[code.value];
           const index = selectedCodesArray.indexOf(code.value);
           const color = COLORS[index % COLORS.length];
