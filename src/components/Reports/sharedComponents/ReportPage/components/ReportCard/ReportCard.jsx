@@ -1,4 +1,4 @@
-import React from 'react'
+/* eslint-disable import/prefer-default-export */
 import { ReportBlock } from '../ReportBlock';
 import './ReportCard.css';
 

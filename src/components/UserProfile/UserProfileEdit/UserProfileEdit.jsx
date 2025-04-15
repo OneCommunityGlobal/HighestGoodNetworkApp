@@ -824,6 +824,56 @@ class UserProfileEdit extends Component {
                         </Col>
                       </Row>
                       <Row>
+  <Col md="6">
+    <Label>Current Password</Label>
+  </Col>
+  <Col md="6">
+    <FormGroup>
+      <Input
+        type="password"
+        name="currentPassword"
+        id="currentPassword"
+        placeholder="Enter Current Password"
+        onChange={this.handleUserProfile}
+      />
+    </FormGroup>
+  </Col>
+</Row>
+<Row>
+  <Col md="6">
+    <Label>New Password</Label>
+  </Col>
+  <Col md="6">
+    <FormGroup>
+      <Input
+        type="password"
+        name="newPassword"
+        id="newPassword"
+        placeholder="Enter New Password"
+        onChange={this.handleUserProfile}
+      />
+    </FormGroup>
+  </Col>
+</Row>
+<Row>
+  <Col md="6">
+    <Label>Confirm New Password</Label>
+  </Col>
+  <Col md="6">
+    <FormGroup>
+      <Input
+        type="password"
+        name="confirmPassword"
+        id="confirmPassword"
+        placeholder="Confirm New Password"
+        onChange={this.handleUserProfile}
+      />
+    </FormGroup>
+  </Col>
+</Row>
+
+                      
+                      <Row>
                         <Col md="6">
                           <Label>Phone</Label>
                         </Col>

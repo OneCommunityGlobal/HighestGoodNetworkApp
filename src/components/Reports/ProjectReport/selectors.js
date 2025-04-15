@@ -1,3 +1,4 @@
+/* eslint-disable import/prefer-default-export */
 export const projectReportViewData = state => ({
   wbs: state.wbs,
   projectMembers: state.projectMembers,
@@ -6,7 +7,3 @@ export const projectReportViewData = state => ({
   isLoading: state.projectReport.isLoading,
   wbsTasksID: state.wbs.WBSItems.map(item => item._id),
 });
-
-export const allUserData = state => ({
-  leaderBoardData:state.leaderBoardData
-})

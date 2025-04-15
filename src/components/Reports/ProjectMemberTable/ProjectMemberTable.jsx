@@ -1,9 +1,11 @@
-import { Stub } from '../../common/Stub';
-import React, { useEffect, useState } from 'react';
+/* eslint-disable import/prefer-default-export */
+import { useEffect, useState } from 'react';
 import './ProjectMemberTable.css';
 import { Link } from 'react-router-dom';
+import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
+import { Stub } from '../../common/Stub';
 
-export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCount, darkMode }) => {
+export function ProjectMemberTable({ projectMembers, skip, take, handleMemberCount, darkMode, counts }) {
   const [allMemberList, setAllMemberList] = useState([]);
   const [activeMemberList, setActiveMemberList] = useState([]);
   const [memberFilter, setMemberFilter] = useState('active');
@@ -11,7 +13,7 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
 
   useEffect(() => {
     handleMemberCount(activeMemberList.length);
-  })
+  }, [activeMemberList])
 
   useEffect(() => {
     if (fetched) {
@@ -37,11 +39,11 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
   }, [fetched]);
 
   const activeMemberTable = activeMemberList.slice(skip, skip + take).map((member, index) => (
-    <div className="project-member-table-row" id={'tr_' + member._id} key={'ac_' + member._id}>
+    <div className="project-member-table-row" id={`tr_${  member._id}`} key={`ac_${  member._id}`}>
       <div>
         <div>{skip + index + 1}</div>
       </div>
-      <Link to={`/userprofile/${member._id}`} title="View Profile"  className={darkMode ? "text-light" : ""}>
+      <Link to={`/userprofile/${member._id}`} title="View Profile"  className={`project-member-table-name-column ${darkMode ? "text-light" : ""}`}>
         <div>
         {window.innerWidth >= 1100 ? `${member.firstName} ${member.lastName}` : `${member.firstName.substring(0, 10)} ${member.lastName.substring(0, 1)}`}          
         </div>
@@ -49,24 +51,27 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
       <div className="projects__active--input">
         {member.active ? (
           <div className="isActive">
-            <i className="fa fa-circle" aria-hidden="true"></i>
+            <i className="fa fa-circle" aria-hidden="true" />
           </div>
         ) : (
           <div className="isNotActive">
-            <i className="fa fa-circle-o" aria-hidden="true"></i>
+            <i className="fa fa-circle-o" aria-hidden="true" />
           </div>
         )}
       </div>
-      <div>{window.innerWidth >= 1100 ? member._id : member._id.substring(0, 10)}</div>      
+      <div className='project-member-table-id-column'>
+        <CopyToClipboard writeText={member._id} message={`Copied "${member._id}".`} />
+        {member._id}
+      </div> 
     </div>
   ));
 
   const allMemberTable = allMemberList.slice(skip, skip + take).map((member, index) => (
-    <div className="project-member-table-row" id={'tr_' + member._id} key={'al_' + member._id}>
+    <div className="project-member-table-row" id={`tr_${  member._id}`} key={`al_${  member._id}`}>
       <div>
         <div>{skip + index + 1}</div>
       </div>
-      <Link to={`/userprofile/${member._id}`} title="View Profile" className={darkMode ? 'text-light' : ''}>
+      <Link to={`/userprofile/${member._id}`} title="View Profile" className={`project-member-table-name-column ${darkMode ? 'text-light' : ''}`}>
         <div>
         {window.innerWidth >= 1100 ? `${member.firstName} ${member.lastName}` : `${member.firstName.substring(0, 10)} ${member.lastName.substring(0, 1)}`} 
         </div>
@@ -74,15 +79,18 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
       <div className="projects__active--input">
         {member.active ? (
           <div className="isActive">
-            <i className="fa fa-circle" aria-hidden="true"></i>
+            <i className="fa fa-circle" aria-hidden="true" />
           </div>
         ) : (
           <div className="isNotActive">
-            <i className="fa fa-circle-o" aria-hidden="true"></i>
+            <i className="fa fa-circle-o" aria-hidden="true" />
           </div>
         )}
       </div>
-      <div>{window.innerWidth >= 1100 ? member._id : member._id.substring(0, 10)}</div>    
+      <div className='project-member-table-id-column'>
+        <CopyToClipboard writeText={member._id} message={`Copied "${member._id}".`} />
+        {member._id}
+      </div>     
     </div>
   ));
 
@@ -102,33 +110,26 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
       >
         <input type="radio" name="memberFilter" value="active" id="active" defaultChecked />
         <label htmlFor="active" id="project-active-member-count" className={`project-member-count ${darkMode ? 'text-light' : ''}`}>
-          ACTIVE: {foundUsers.length}
+          ACTIVE: {counts.activeMemberCount}
         </label>
         <input type="radio" name="memberFilter" value="all-time" id="all-time" />
         <label htmlFor="all-time" id="project-all-member-count" className={`project-member-count ${darkMode ? 'text-light' : ''}`}>
-          ALL-TIME: {members.length}
+          ALL-TIME: {counts.memberCount}
         </label>
       </div>
       </div>
       <div className={`reports-table-head-members ${darkMode ? 'bg-space-cadet' : ''}`}>
         <div className="reports-table-head-cell">#</div>
         <div className="reports-table-head-cell">Name</div>
-        <div className="reports-table-head-cell">Active</div>
+        <div className="reports-table-head-cell project-member-table-active-column">Active</div>
         <div className="reports-table-head-cell">ID</div>
       </div>
       <div>
-        {memberFilter == 'all-time' ? (
-          allMemberTable.length > 0 ? (
-            allMemberTable
-          ) : (
-            <Stub darkMode={darkMode}/>
-          )
-        ) : activeMemberTable.length > 0 ? (
-          activeMemberTable
-        ) : (
-          <Stub darkMode={darkMode}/>
-        )}
+        {memberFilter === 'all-time' && allMemberTable.length > 0 && allMemberTable}
+        {memberFilter === 'all-time' && allMemberTable.length === 0 && <Stub darkMode={darkMode}/>}
+        {memberFilter !== 'all-time' && activeMemberTable.length > 0 && activeMemberTable}
+        {memberFilter !== 'all-time' && activeMemberTable.length === 0 && <Stub darkMode={darkMode}/>}
       </div>
     </div>
   );
-};
+}

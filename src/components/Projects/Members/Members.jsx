@@ -19,6 +19,8 @@ import './members.css';
 import hasPermission from '../../../utils/permissions';
 import { boxStyle, boxStyleDark } from 'styles';
 import ToggleSwitch from 'components/UserProfile/UserProfileEdit/ToggleSwitch';
+import Loading from 'components/common/Loading';
+
 
 const Members = props => {
   const darkMode = props.state.theme.darkMode;
@@ -27,12 +29,19 @@ const Members = props => {
   const [showFindUserList, setShowFindUserList] = useState(false);
   const [membersList, setMembersList] = useState(props.state.projectMembers.members);
   const [lastTimeoutId, setLastTimeoutId] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers');
   const canUnassignUserInProject = props.hasPermission('unassignUserInProject');
 
   useEffect(() => {
-    props.fetchAllMembers(projectId);
+    const fetchMembers = async () => {
+      setIsLoading(true);
+      setMembersList([]);
+      await props.fetchAllMembers(projectId);
+      setIsLoading(false);
+    };
+    fetchMembers();
   }, [projectId]);
 
   const assignAll = async () => {
@@ -49,8 +58,10 @@ const Members = props => {
   };
 
   useEffect(() => {
-    setMembersList(props.state.projectMembers.members);
-  }, [props.state.projectMembers.members]);
+    if (!isLoading) {
+      setMembersList(props.state.projectMembers.members);
+    }
+  }, [props.state.projectMembers.members, isLoading]);
 
   // ADDED: State for toggling display of active members only
   const [showActiveMembersOnly, setShowActiveMembersOnly] = useState(false);
@@ -68,21 +79,26 @@ const Members = props => {
   // Waits for user to finsh typing before calling API
   const handleInputChange = event => {
     const currentValue = event.target.value;
-
+  
     if (lastTimeoutId !== null) clearTimeout(lastTimeoutId);
-
+  
     const timeoutId = setTimeout(() => {
-      props.findUserProfiles(currentValue);
-      setShowFindUserList(true);
+      // Only call findUserProfiles if there's actual search text
+      if (currentValue && currentValue.trim() !== '') {
+        props.findUserProfiles(currentValue);
+        setShowFindUserList(true);
+      } else {
+        setShowFindUserList(false);
+      }
     }, 300);
-
+  
     setLastTimeoutId(timeoutId);
   };
 
   return (
     <React.Fragment>
       <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{minHeight: "100%"}}>
-        <div className="container pt-2">
+        <div className={`container pt-2 ${darkMode ? 'bg-yinmn-blue-light text-light' : ''}`}>
           <nav aria-label="breadcrumb">
             <ol className={`breadcrumb ${darkMode ? 'bg-space-cadet' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>
               <NavItem tag={Link} to={`/projects/`}>
@@ -97,13 +113,13 @@ const Members = props => {
           {canAssignProjectToUsers ? (
             <div className="input-group" id="new_project">
               <div className="input-group-prepend">
-                <span className="input-group-text">Find user</span>
+                <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>Find user</span>
               </div>
 
               <input
                 autoFocus
                 type="text"
-                className="form-control"
+                className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
                 aria-label="Search user"
                 placeholder="Name"
                 onChange={e => handleInputChange(e)}
@@ -180,29 +196,35 @@ const Members = props => {
             handleUserProfile={handleToggle}
           />
 
-          <table className={`table table-bordered table-responsive-sm ${darkMode ? 'text-light' : ''}`}>
-            <thead>
-              <tr className={darkMode ? 'bg-space-cadet' : ''}>
-                <th scope="col" id="members__order">
-                  #
-                </th>
-                <th scope="col" id="members__name"></th>
-                {canUnassignUserInProject ? <th scope="col" id="members__name"></th> : null}
-              </tr>
-            </thead>
-            <tbody>
-              {displayedMembers.map((member, i) => (
-                <Member
-                  index={i}
-                  key={member._id ?? i}
-                  projectId={projectId}
-                  uid={member._id}
-                  fullName={member.firstName + ' ' + member.lastName}
-                  darkMode={darkMode}
-                />
-              ))}
-            </tbody>
-          </table>
+          {isLoading ? (<Loading align="center" />) : (
+            <table className={`table table-bordered table-responsive-sm ${darkMode ? 'text-light' : ''}`}>
+              <thead>
+                <tr className={darkMode ? 'bg-space-cadet' : ''}>
+                  <th scope="col" id="members__order">
+                    #
+                  </th>
+                  <th scope="col" id="members__name">
+                    Name
+                  </th>
+                  <th scope="col" id="members__delete"></th>
+                  {canUnassignUserInProject ? <th scope="col" id="members__name"></th> : null}
+                </tr>
+              </thead>
+              <tbody>
+                {displayedMembers.map((member, i) => (
+                  <Member
+                    index={i}
+                    key={member._id ?? i}
+                    projectId={projectId}
+                    uid={member._id}
+                    fullName={member.firstName + ' ' + member.lastName}
+                    darkMode={darkMode}
+                  />
+                ))}
+
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
     </React.Fragment>

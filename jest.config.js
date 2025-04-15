@@ -14,18 +14,16 @@ module.exports = {
   // An array of file extensions your modules use
   moduleFileExtensions: ['js', 'json', 'jsx'],
 
-  // Bundle mapper for d3 import
+  // Bundle mapper for d3 import and other custom mocks
   moduleNameMapper: {
     d3: '<rootDir>/node_modules/d3/dist/d3.min.js',
     'react-leaflet': '<rootDir>/src/_tests_/__mocks__/react-leaflet.js',
     'marker-cluster-group': '<rootDir>/src/_tests_/__mocks__/react-leaflet-cluster.js',
-    '\\.(css|less|scss)$': '<rootDir>/__mocks__/styleMock.js',
+    '\\.(css|less|scss|sass)$': 'identity-obj-proxy', // <-- Added to mock CSS/SCSS files
   },
 
   // The paths to modules that run some code to configure or set up the testing environment before each test
-  setupFiles: ['jest-localstorage-mock'],
-
-  setupFilesAfterEnv: ['<rootDir>/src/setupTests.js'],
+  setupFiles: ['<rootDir>src/setupTests.js'],
 
   // The test environment that will be used for testing
   testEnvironment: 'jsdom',
@@ -41,6 +39,8 @@ module.exports = {
 
   // An array of regexp pattern strings that are matched against all source file paths, matched files will skip transformation
   transformIgnorePatterns: ['/node_modules/(?!d3|d3-array|internmap|delaunator|robust-predicates)'],
+
+  // Include snapshot serializers
   snapshotSerializers: ['enzyme-to-json/serializer'],
 
   // Indicates whether each individual test should be reported during the run

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import AddTeamPopup from './AddTeamPopup';
 import UserTeamsTable from './UserTeamsTable';
 import { addTeamMember, deleteTeamMember } from 'actions/allTeamsAction';
-
+import { toast } from 'react-toastify';
 const TeamsTab = props => {
   const {
     teamsData,
@@ -23,7 +23,10 @@ const TeamsTab = props => {
     codeValid,
     setCodeValid,
     saved,
-    isTeamSaved,
+    inputAutoComplete,
+    inputAutoStatus,
+    isLoading,
+    fetchTeamCodeAllUsers,
     darkMode,
   } = props;
   const [addTeamPopupOpen, setaddTeamPopupOpen] = useState(false);
@@ -46,19 +49,32 @@ const TeamsTab = props => {
   const onAddTeamPopupClose = () => {
     setaddTeamPopupOpen(false);
   };
-  const onSelectDeleteTeam = teamId => {
-    setRemovedTeams([...removedTeams, teamId]);
-    onDeleteTeam(teamId);
-    if (isTeamSaved) isTeamSaved(false);
-  };
-
-  const onSelectAssignTeam = team => {
-    if (userProfile._id) {
-      addTeamMember(team._id, userProfile._id, userProfile.firstName, userProfile.lastName);
-      if (isTeamSaved) isTeamSaved(false);
+  
+  const onSelectDeleteTeam =  teamId => {
+    try {
+      if (userProfile._id) {
+        deleteTeamMember(teamId, userProfile._id);
+      }
+      toast.success('Team Deleted successfully');
+      onDeleteTeam(teamId);
+    } catch (error) {
+      console.error('Error deleting team:', error);
+      toast.error('Failed to delete team');
     }
-    onAssignTeam(team);
-    setRenderedOn(Date.now());
+  };
+  
+
+  const onSelectAssignTeam =  team => {
+    try {
+      if (userProfile?._id) {
+        addTeamMember(team._id, userProfile._id, userProfile.firstName, userProfile.lastName);
+      }
+      onAssignTeam(team);
+      toast.success('Team assigned successfully');
+    } catch (error) {
+      console.error('Error assigning team:', error);
+      toast.error('Failed to assign team');
+    }
   };
 
   return (
@@ -70,6 +86,7 @@ const TeamsTab = props => {
         userTeamsById={userTeams}
         onSelectAssignTeam={onSelectAssignTeam}
         handleSubmit={handleSubmit}
+        userProfile={userProfile}
         darkMode={darkMode}
       />
       <UserTeamsTable
@@ -89,6 +106,10 @@ const TeamsTab = props => {
         codeValid={codeValid}
         setCodeValid={setCodeValid}
         onAssignTeamCode={onAssignTeamCode}
+        inputAutoComplete={inputAutoComplete}
+        inputAutoStatus={inputAutoStatus}
+        isLoading={isLoading}
+        fetchTeamCodeAllUsers={() => fetchTeamCodeAllUsers()}
         darkMode={darkMode}
       />
     </React.Fragment>

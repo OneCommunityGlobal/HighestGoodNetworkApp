@@ -8,7 +8,7 @@ const BlueSquaresTable = ({ userProfile ,canEdit, isPrivate , handleUserProfile 
     <div className="user-profile-blue-square-section">
       <div className={`user-profile-blue-square-div-header ${darkMode ? 'bg-space-cadet' : ''}`}>
         <div className="user-profile-blue-square-div-header-title">
-          <div>BLUE SQUARES</div>
+          <div className='blue-squares' data-testid='blue-squares'>BLUE SQUARES</div>
           <div>
             <EditableInfoModal
               areaName="blueSquares_info"
@@ -16,6 +16,7 @@ const BlueSquaresTable = ({ userProfile ,canEdit, isPrivate , handleUserProfile 
               fontSize={20}
               isPermissionPage
               role={userProfile.role}
+              darkMode={darkMode}
             />
           </div>
         </div>

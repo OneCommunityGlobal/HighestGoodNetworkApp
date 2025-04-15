@@ -4,10 +4,6 @@
   row-gap: 40px;
 }
 
-.wbs-and-members-blocks {
-  height: 450px;
-}`
-
 @media (min-width: 1180px) {
   .wbs-and-members-blocks-wrapper {
     grid-auto-flow: column;
@@ -20,4 +16,7 @@
   min-height: 100%;
   background-color: #faf7fc;
   margin: 0;
+}
+.pie-chart-checkbox {
+  margin-right: 8px; /* Space between checkbox and label */
 }
