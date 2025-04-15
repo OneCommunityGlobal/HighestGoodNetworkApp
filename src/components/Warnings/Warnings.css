@@ -7,6 +7,7 @@
   flex-direction: column;
   align-items: flex-start;
   padding: 10px;
+  width: 250px;
 }
 
 .warning-item-container {
@@ -20,10 +21,9 @@
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  display: flex;
-  align-items: center;   /* centers children horizontally */
+  align-items: center; /* centers children horizontally */
   flex-shrink: 0;
-  width: 200px;    
+  width: 100%;
 }
 .icons-wrapper {
   display: flex;
@@ -34,7 +34,7 @@
 
 .warning-text {
   text-align: center;
-  font-size: 1em;
+  font-size: 0.93em;
   margin: 0;
   margin-bottom: 0.3em;
 }
