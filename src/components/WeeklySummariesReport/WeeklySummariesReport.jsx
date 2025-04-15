@@ -389,7 +389,6 @@ const WeeklySummariesReport = props => {
     }
   };
 
-
   const filterWeeklySummaries = () => {
     try {
       const {
@@ -623,7 +622,6 @@ const WeeklySummariesReport = props => {
 
   const handleAllTeamCodeReplace = async () => {
     try {
-
       const { replaceCode } = state;
       setState(prevState => ({
         ...prevState,
@@ -1056,7 +1054,6 @@ WeeklySummariesReport.propTypes = {
   loading: PropTypes.bool.isRequired,
   summaries: PropTypes.array.isRequired,
   infoCollections: PropTypes.array,
-  setTeamCodes: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({
