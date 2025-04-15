@@ -28,6 +28,8 @@ const ModalExample = props => {
     type,
     linkType,
     darkMode,
+    confirmButtonText = 'Confirm',
+    isConfirmDisabled = false,
   } = props;
 
   const [linkName, setLinkName] = useState('');
@@ -83,8 +85,8 @@ const ModalExample = props => {
         </Button>
 
         {confirmModal != null ? (
-          <Button color="danger" onClick={confirmModal} style={darkMode ? boxStyleDark : boxStyle}>
-            Confirm
+          <Button color="danger" onClick={confirmModal} disabled={isConfirmDisabled} style={darkMode ? boxStyleDark : boxStyle}>
+            {confirmButtonText || 'Confirm'}
           </Button>
         ) : null}
         {setInactiveModal != null ? (
