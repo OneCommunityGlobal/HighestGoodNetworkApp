@@ -5,35 +5,30 @@ import { CHART_RADIUS, CHART_SIZE } from './constants';
 import { generateArrayOfUniqColors } from './colorsGenerator';
 import './UserProjectPieChart.css';
 
-export function PieChart({
-  tasksData = [], // New array format: [{ projectId: "123", projectName: "Project A", totalTime: 10.5 }, ...]
+function UserProjectPieChart({
+  projectsData, // New array format: [{ projectId: "123", projectName: "Project A", totalTime: 10.5 }, ...]
   pieChartId,
+  tasksData,
   darkMode,
-  projectsData = [],
 }) {
   const [totalHours, setTotalHours] = useState(0);
-  const colors = useMemo(() => generateArrayOfUniqColors(tasksData?.length), [tasksData]);
+  const colors = useMemo(() => generateArrayOfUniqColors(projectsData.length), [projectsData]);
   const color = useMemo(() => d3.scaleOrdinal().range(colors), [colors]);
 
   const [togglePercentage, setTogglePercentage] = useState(false);
   const [selectedProjects, setSelectedProjects] = useState(
-    tasksData?.map(project => project.projectId),
+    projectsData.map(project => project.projectId),
   );
 
   const handleTogglePercentage = () => {
     setTogglePercentage(prev => {
       const newToggleState = !prev;
-      setTogglePercentage(newToggleState);
+      // setTogglePercentage(newToggleState);
       if (!newToggleState) {
-        setSelectedProjects(tasksData?.map(project => project.projectId));
+        setSelectedProjects(projectsData.map(project => project.projectId));
       }
       return newToggleState;
     });
-  };
-  const calculateTotalHours = (projectsdata, tasksdata) => {
-    const totalTaskTime = tasksdata?.reduce((sum, project) => sum + project.totalTime, 0);
-    const projectsDataTime = projectsdata.reduce((sum, project) => sum + project.totalTime, 0);
-    return totalTaskTime + projectsDataTime;
   };
 
   const handleProjectClick = projectId => {
@@ -46,10 +41,14 @@ export function PieChart({
     }
   };
 
+  const calculateTotalHours = (projectData, taskData) => {
+    const totalTaskTime = taskData.reduce((sum, project) => sum + project.totalTime, 0);
+    const projectsDataTime = projectData.reduce((sum, project) => sum + project.totalTime, 0);
+    return totalTaskTime + projectsDataTime;
+  };
+
   const getCreateSvgPie = totalValue => {
-    if (totalValue === 0) return;
-    // Clear existing SVG before creating new one
-    d3.select(`#pie-chart-${pieChartId}`).remove();
+    if (totalValue === 0) return null;
     const svg = d3
       .select(`#pie-chart-container-${pieChartId}`)
       .append('svg')
@@ -60,12 +59,7 @@ export function PieChart({
       .attr('transform', `translate(${CHART_SIZE / 2}, ${CHART_SIZE / 2})`);
 
     const displayValue = togglePercentage
-      ? // ? (selectedProjects.reduce((sum, projectId) => {
-        //     const project = tasksData.find(p => p.projectId === projectId);
-        //     return sum + (project ? project.totalTime : 0);
-        //   }, 0) / totalValue) * 100
-        // : totalValue;
-        (totalValue / calculateTotalHours(projectsData, tasksData)) * 100
+      ? (totalValue / calculateTotalHours(projectsData, tasksData)) * 100
       : totalValue;
 
     svg
@@ -98,28 +92,17 @@ export function PieChart({
       .select('input')
       .on('change', handleTogglePercentage); // Use the existing React handler
 
-    // return svg;
+    return svg;
   };
 
   const pie = d3.pie().value(d => d.totalTime);
 
   useEffect(() => {
-    if (!tasksData || tasksData.length === 0) {
-      return undefined;
-    }
-    const totalValue = tasksData?.reduce((sum, project) => sum + project.totalTime, 0);
-
+    const totalValue = projectsData.reduce((sum, project) => sum + project.totalTime, 0);
+    if (totalValue === 0) return undefined;
     setTotalHours(totalValue);
 
-    if (totalValue === 0) {
-      return undefined;
-    }
-
-    if (!tasksData || tasksData.length === 0) {
-      return <div>Loading</div>;
-    }
-
-    const dataReady = pie(tasksData);
+    const dataReady = pie(projectsData);
 
     let div = d3.select('.tooltip-donut');
     if (div.empty()) {
@@ -133,8 +116,6 @@ export function PieChart({
     }
 
     const svg = getCreateSvgPie(totalValue);
-    if (!svg) return undefined; // Early return if no svg created
-    // Create the pie chart
     svg
       .selectAll('path')
       .data(dataReady)
@@ -154,6 +135,7 @@ export function PieChart({
           .transition()
           .duration(50)
           .attr('opacity', 0.5);
+
         const percentage = ((d.data.totalTime / totalValue) * 100).toFixed(2);
         const legendInfo = togglePercentage
           ? `${d.data.projectName}: ${percentage}% of ${totalValue.toFixed(2)}`
@@ -185,9 +167,9 @@ export function PieChart({
     return () => {
       d3.select(`#pie-chart-${pieChartId}`).remove();
     };
-  }, [tasksData, togglePercentage, selectedProjects]);
+  }, [projectsData, togglePercentage, selectedProjects]);
 
-  return !tasksData || tasksData?.length === 0 ? (
+  return projectsData.length === 0 ? (
     <div>Loading</div>
   ) : (
     <div className={`pie-chart-wrapper ${darkMode ? 'text-light' : ''}`}>
@@ -203,7 +185,7 @@ export function PieChart({
               </tr>
             </thead>
             <tbody>
-              {tasksData?.map(project => (
+              {projectsData.map(project => (
                 <tr key={project.projectId}>
                   <td>
                     <div
@@ -226,5 +208,5 @@ export function PieChart({
     </div>
   );
 }
-
-export default PieChart;
+export default UserProjectPieChart;
+export { UserProjectPieChart };

@@ -230,9 +230,6 @@
 }
 
 @media (min-width: 200px) and (max-width: 1496px) {
-  table.responsive {
-    table-layout: fixed;
-  }
 
   .flex-responsive {
     display: flex;
