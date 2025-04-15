@@ -4,7 +4,11 @@ import thunk from 'redux-thunk';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import CreateNewRolePopup from '../NewRolePopUp'
-import { themeMock } from '__tests__/mockStates';
+import { ModalProvider } from 'context/ModalContext';
+import axios from 'axios';
+
+jest.mock('axios');
+
 
 
 const mockTogglePopUpNewRole = jest.fn()
@@ -21,6 +25,10 @@ const mockAuth = {
  },
  firstName: 'Jerry'
 }
+
+const themeMock = {
+  primaryColor: '#000000',
+};
 const middlewares = [thunk]
 const mockStore = configureStore(middlewares)
 const store = mockStore({
@@ -29,6 +37,14 @@ const store = mockStore({
  theme: themeMock,
 })
 
+const renderComponent = () => {
+  const { container } = render(
+    <Provider store={store}>
+      <ModalProvider>
+      <CreateNewRolePopup toggle={mockTogglePopUpNewRole} addNewRole={mockAddNewRole} roleNames={mockRoleNames} />
+      </ModalProvider>
+    </Provider>
+  )
 
 const renderComponent = () => {
  const { container } = render(
@@ -43,7 +59,8 @@ const renderComponent = () => {
 
 
 beforeEach(() => {
- store.clearActions();
+  store.clearActions();
+  axios.get.mockResolvedValue({ data: {} });
 });
 
 
@@ -89,4 +106,4 @@ describe('Render NewRolePopUp component', () => {
    })
  });
 })
-
+}

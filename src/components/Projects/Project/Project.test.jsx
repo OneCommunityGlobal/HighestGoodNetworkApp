@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react';
+import { render, fireEvent, waitFor,screen } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
@@ -69,15 +69,18 @@ describe('Project Component', () => {
     });
   });
 
-  it('toggles project active status on button click', () => {
+  it('toggles project active status on button click', async () => {
     const { getByTestId } = renderProject(sampleProps);
 
     // Find the active status button and click it
     const activeButton = getByTestId('project-active');
     fireEvent.click(activeButton);
 
-    // Check if the onUpdateProject function has been called
-    expect(sampleProps.onUpdateProject).toHaveBeenCalledTimes(1);
+    await waitFor(() => {
+      // check if the active status is active after clicking
+      const activeStatus = getByTestId('project-active').querySelector('i');
+      expect(activeStatus).toHaveClass('fa-circle');
+    });
   });
 
   it('triggers delete action on button click', () => {
@@ -87,8 +90,18 @@ describe('Project Component', () => {
     const deleteButton = getByTestId('delete-button');
     fireEvent.click(deleteButton);
 
-    // Check if the onClickArchiveBtn function has been called
-    expect(sampleProps.onClickArchiveBtn).toHaveBeenCalledTimes(1);
+    // Check if the modal is triggered
+    const modal = document.querySelector('.modal');
+    expect(modal).toBeInTheDocument();
+
+    const archiveButton=screen.getAllByText('Archive')[0];
+    fireEvent.click(archiveButton);
+    
+    expect(screen.getByText('Confirm Archive')).toBeInTheDocument();
+    expect(screen.getByText(`Do you want to archive ${sampleProjectData.projectName}?`)).toBeInTheDocument();
+
+    const closeButton=screen.getByText('Close')
+    fireEvent.click(closeButton)
+    expect(screen.queryByText('Confirm Archive')).not.toBeInTheDocument();
   });
 });
-

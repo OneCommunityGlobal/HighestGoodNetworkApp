@@ -2,7 +2,7 @@
   // other settings
   // formatting using eslint
   // let editor format using prettier for all other files
-  "editor.formatOnSave": true,
+  "editor.formatOnSave": false,
   // disable editor formatting, so eslint can handle it
   "[javascript]": {
     "editor.formatOnSave": true

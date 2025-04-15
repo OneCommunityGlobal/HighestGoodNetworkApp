@@ -22,14 +22,15 @@ import {
 } from 'reactstrap';
 import ReactTooltip from 'react-tooltip';
 import { MultiSelect } from 'react-multi-select-component';
-import './WeeklySummariesReport.css';
 import moment from 'moment';
-import 'moment-timezone';
 import { boxStyle, boxStyleDark } from 'styles';
-import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
-import { ENDPOINTS } from 'utils/URL';
+import 'moment-timezone';
 import axios from 'axios';
-import { getAllUserTeams } from '../../actions/allTeamsAction';
+import cn from 'classnames';
+
+import { ENDPOINTS } from 'utils/URL';
+import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+import { getAllUserTeams, getAllTeamCode } from '../../actions/allTeamsAction';
 import TeamChart from './TeamChart';
 import SkeletonLoading from '../common/SkeletonLoading';
 import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
@@ -41,6 +42,10 @@ import { getInfoCollections } from '../../actions/information';
 import { fetchAllBadges } from '../../actions/badgeManagement';
 import PasswordInputModal from './PasswordInputModal';
 import SelectTeamPieChart from './SelectTeamPieChart';
+import { setTeamCodes } from '../../actions/teamCodes';
+
+import styles from './WeeklySummariesReport.module.scss';
+import { SlideToggle } from './components';
 
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
 const fullCodeRegex = /^.{5,7}$/;
@@ -97,7 +102,6 @@ const intialPermissionState = {
 /* eslint-disable react/function-component-definition */
 const WeeklySummariesReport = props => {
   const { loading, infoCollections, getInfoCollections } = props;
-
   const weekDates = getWeekDates();
   const [state, setState] = useState(initialState);
   const [permissionState, setPermissionState] = useState(intialPermissionState);
@@ -389,6 +393,7 @@ const WeeklySummariesReport = props => {
     }
   };
 
+
   const filterWeeklySummaries = () => {
     try {
       const {
@@ -404,13 +409,14 @@ const WeeklySummariesReport = props => {
       let temptotal = 0;
       const structuredTeamTableData = [];
 
+
       const selectedCodesArray = selectedCodes.map(e => e.value);
       const selectedColorsArray = selectedColors.map(e => e.value);
+
 
       const temp = summaries.filter(summary => {
         const { activeTab } = state;
         const hoursLogged = (summary.totalSeconds[navItems.indexOf(activeTab)] || 0) / 3600;
-
         const isMeetCriteria =
           summary.totalTangibleHrs > 80 &&
           summary.daysInTeam > 60 &&
@@ -423,6 +429,7 @@ const WeeklySummariesReport = props => {
           (summary.weeklycommittedHours > 0 &&
             hoursLogged > 0 &&
             hoursLogged >= summary.promisedHoursByWeek[navItems.indexOf(activeTab)] * 1.25);
+
 
         return (
           (selectedCodesArray.length === 0 || selectedCodesArray.includes(summary.teamCode)) &&
@@ -573,7 +580,7 @@ const WeeklySummariesReport = props => {
           }
           return acc;
         }, {});
-        // console.log(Object.entries(teamCodeCounts), 'teamCodecounts');
+
         // Update teamCodes by filtering out those with zero count
         teamCodes = Object.entries(teamCodeCounts)
           .filter(([code, count]) => code.length > 0 && count > 0)
@@ -629,6 +636,7 @@ const WeeklySummariesReport = props => {
 
   const handleAllTeamCodeReplace = async () => {
     try {
+
       const { replaceCode } = state;
       setState(prevState => ({
         ...prevState,
@@ -1061,6 +1069,7 @@ WeeklySummariesReport.propTypes = {
   loading: PropTypes.bool.isRequired,
   summaries: PropTypes.array.isRequired,
   infoCollections: PropTypes.array,
+  setTeamCodes: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({
@@ -1081,6 +1090,8 @@ const mapDispatchToProps = dispatch => ({
   hasPermission: permission => dispatch(hasPermission(permission)),
   getInfoCollections: () => getInfoCollections(),
   getAllUserTeams: () => dispatch(getAllUserTeams()),
+  getAllTeamCode: () => dispatch(getAllTeamCode()),
+  setTeamCodes: teamCodes => dispatch(setTeamCodes(teamCodes)),
 });
 
 function WeeklySummariesReportTab({ tabId, hidden, children }) {

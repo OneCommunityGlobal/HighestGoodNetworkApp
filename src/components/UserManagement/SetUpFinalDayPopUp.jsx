@@ -2,17 +2,17 @@ import moment from 'moment';
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
-import { boxStyleDark, boxStyle } from 'styles';
-import '../Header/DarkMode.css'
+import { boxStyleDark, boxStyle } from '../../styles';
+import '../Header/DarkMode.css';
 /**
  * Modal popup to show the user profile in create mode
  */
 const SetUpFinalDayPopUp = React.memo(props => {
-  const darkMode = useSelector(state => state.theme.darkMode)
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [finalDayDate, onDateChange] = useState(Date.now());
   const [dateError, setDateError] = useState(false);
 
-  const closePopup = e => {
+  const closePopup = () => {
     props.onClose();
   };
 
@@ -25,8 +25,15 @@ const SetUpFinalDayPopUp = React.memo(props => {
   };
 
   return (
-    <Modal isOpen={props.open} toggle={closePopup} autoFocus={false} className={darkMode ? 'text-light dark-mode' : ''}>
-      <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closePopup}>Set Your Final Day</ModalHeader>
+    <Modal
+      isOpen={props.open}
+      toggle={closePopup}
+      autoFocus={false}
+      className={darkMode ? 'text-light dark-mode' : ''}
+    >
+      <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closePopup}>
+        Set Your Final Day
+      </ModalHeader>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <Input
           autoFocus
@@ -39,8 +46,9 @@ const SetUpFinalDayPopUp = React.memo(props => {
             onDateChange(event.target.value);
           }}
           data-testid="date-input"
+          className={darkMode ? 'bg-darkmode-liblack text-light border-0 calendar-icon-dark' : ''}
         />
-        {dateError && <Alert color="danger">{'Please choose a future date.'}</Alert>}
+        {dateError && <Alert color="danger">Please choose a future date.</Alert>}
       </ModalBody>
       <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
         <Button color="primary" onClick={deactiveUser} style={darkMode ? boxStyleDark : boxStyle}>

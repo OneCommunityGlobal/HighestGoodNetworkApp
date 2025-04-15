@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+
 import {
   Container,
   Button,
@@ -25,6 +26,9 @@ import './Badge.css';
 function BadgeDevelopmentTable(props) {
   const { darkMode } = props;
 
+  const canUpdateBadges = hasPermission('update:badges');
+  const canDeleteBadges = hasPermission('delete:badges');
+
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [type, setType] = useState('');
@@ -36,8 +40,13 @@ function BadgeDevelopmentTable(props) {
   const [editBadgeValues, setEditBadgeValues] = useState('');
   const [editPopup, setEditPopup] = useState(false);
 
-  const canDeleteBadges = props.hasPermission('deleteBadges');
-  const canUpdateBadges = props.hasPermission('updateBadges');
+  const [sortedBadges, setSortedBadges] = useState([]);
+  const [sortNameState, setSortNameState] = useState('default');
+  const [sortRankState, setSortRankState] = useState('default');
+
+  useEffect(() => {
+    setSortedBadges(props.allBadgeData);
+  }, [props.allBadgeData]);
 
   const detailsText = badegValue => {
     let returnText = '';
@@ -153,9 +162,52 @@ function BadgeDevelopmentTable(props) {
     return filteredList;
   };
 
-  const filteredBadges = filterBadges(props.allBadgeData);
+  
+  const handleSortName = () => {
+    console.log("here sort name");
+    setSortRankState('default');
+    setSortNameState(prevState => {
+      // change the icon
+      let newState = 'ascending';
+      if (prevState === 'ascending') newState = 'descending';
+      if (prevState === 'descending') newState = 'none';
 
-  // Badge Development checkbox
+      // Sort the badges by name
+      const sorted = [...sortedBadges].sort((a, b) => {
+        if (newState === 'ascending') return a.badgeName.toLowerCase() > b.badgeName.toLowerCase() ? 1 : -1;
+        if (newState === 'descending') return a.badgeName.toLowerCase() < b.badgeName.toLowerCase() ? 1 : -1;
+        return 0;
+      });
+
+      setSortedBadges(sorted);
+      return newState;
+    });
+  };
+
+  const handleSortRank = () => {
+    setSortNameState('default');
+    console.log("sort rank");
+    setSortRankState(prevState => {
+      // Change the icon state
+      let newState = 'ascending';
+      if (prevState === 'ascending') newState = 'descending';
+      if (prevState === 'descending') newState = 'none';
+
+      // Sort the badges by ranking
+      const sorted = [...sortedBadges].sort((a, b) => {
+        if (newState === 'ascending') return a.ranking - b.ranking;
+        if (newState === 'descending') return b.ranking - a.ranking;
+        return 0;
+      });
+
+      setSortedBadges(sorted);
+      return newState;
+    });
+    
+  };
+
+  const filteredBadges = sortedBadges;
+
   const reportBadge = badgeValue => {
     // Returns true for all checked badges and false for all unchecked
     const checkValue = !!badgeValue.showReport;
@@ -184,25 +236,50 @@ function BadgeDevelopmentTable(props) {
     );
   };
 
+
+  const onNameSort = () => {
+    setSortNameState((prevState) => {
+      if (prevState === 'ascending') return 'descending';
+      if (prevState === 'descending') return 'default';
+      return 'ascending';
+    });
+  
+    const sortedBadges = [...props.allBadgeData].sort((a, b) => {
+      if (sortNameState === 'ascending') {
+        return a.badgeName.toLowerCase() > b.badgeName.toLowerCase() ? 1 : -1;
+      } else if (sortNameState === 'descending') {
+        return a.badgeName.toLowerCase() < b.badgeName.toLowerCase() ? 1 : -1;
+      }
+      return 0;
+    });
+  
+    return sortedBadges;
+  };
+  
+const onRankSort = () => {
+    setSortRankState((prevState) => {
+      if (prevState === 'ascending') return 'descending';
+      if (prevState === 'descending') return 'default';
+      return 'ascending';
+    });
+  
+  
+  };
+
   return (
     <Container fluid>
       <table
         className={`table table-bordered ${darkMode ? 'bg-yinmn-blue text-light dark-mode' : ''}`}
       >
         <thead>
-          <BadgeTableHeader darkMode={darkMode} />
-          <BadgeTableFilter
-            onBadgeNameSearch={onBadgeNameSearch}
-            onBadgeDescriptionSearch={onBadgeDescriptionSearch}
-            onBadgeTypeSearch={onBadgeTypeSearch}
-            onBadgeRankingSort={onBadgeRankingSort}
-            resetFilters={resetFilters}
-            name={name}
-            description={description}
-            type={type}
-            order={order}
+        <BadgeTableHeader
             darkMode={darkMode}
+            sortNameState={sortNameState}
+            sortRankState={sortRankState}
+            onNameSort={handleSortName}
+            onRankSort={handleSortRank}
           />
+
         </thead>
         <tbody>
           {filteredBadges.map(value => (
