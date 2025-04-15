@@ -1,12 +1,18 @@
 import { useState, useEffect, useRef } from 'react';
+// import { useLocation } from 'react-router-dom';
 import './Announcements.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react'; // Import Editor from TinyMCE
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
 import { FaInstagramSquare } from 'react-icons/fa';
+// import { get } from 'lodash';
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
-import { loadFacebookSDK, logInToFB, logOutFromFB, loginToInstagram } from './InstagramPostDetails';
+import {
+  loadFacebookSDK,
+  logInToFB,
+  logOutFromFB /* loginToInstagram */,
+} from './InstagramPostDetails';
 
 function Announcements({ title, email }) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -20,6 +26,8 @@ function Announcements({ title, email }) {
 
   const [facebookUserAccessToken, setFacebookUserAccessToken] = useState('');
   const [instagramUserAccessToken, setInstagramUserAccessToken] = useState('');
+  // const location = useLocation();
+  // const history = useHistory();
 
   useEffect(() => {
     setShowEditor(false);
@@ -230,6 +238,33 @@ function Announcements({ title, email }) {
     dispatch(broadcastEmailsToAll('Weekly Update', htmlContent));
   };
 
+  // const getUrlParams = () => {
+  //   const params = new URLSearchParams(location.search);
+  //   return params;
+  // };
+
+  const loginToInstagram = () => {
+    const clientId = process.env.REACT_APP_INSTAGRAM_CLIENT_ID;
+    const redirectUri = process.env.REACT_APP_INSTAGRAM_REDIRECT_URI;
+    const scope = process.env.REACT_APP_INSTAGRAM_SCOPE;
+    const authURL = `https://www.instagram.com/oauth/authorize?enable_fb_login=0&force_authentication=1&client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}`;
+
+    const width = 600;
+    const height = 700;
+    const left = window.screen.width / 2 - width / 2;
+    const top = window.screen.height / 2 - height / 2;
+
+    const popup = window.open(
+      authURL,
+      'instagram-auth-popup',
+      `width=${width},height=${height},left=${left},top=${top},toolbar=0,location=0,menubar=0,scrollbars=1`,
+    );
+
+    if (!popup) {
+      toast.error('Failed to open Instagram login popup');
+    }
+  };
+
   return (
     <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: '100%' }}>
       <div className="email-update-container">
@@ -377,7 +412,10 @@ function Announcements({ title, email }) {
       <button
         type="button"
         className="instagram-login-button"
-        onClick={loginToInstagram()}
+        onClick={() => {
+          loginToInstagram();
+          // console.log('url: ', getUrlParams().get('code'));
+        }}
         aria-label="Login to Instagram"
       >
         {instagramUserAccessToken ? 'Log out of Instagram' : 'Log in to Instagram'}
