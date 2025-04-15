@@ -1,39 +1,30 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Row, Col, Container } from 'reactstrap';
 import { connect, useSelector } from 'react-redux';
+import { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import Leaderboard from '../LeaderBoard';
 import WeeklySummary from '../WeeklySummary/WeeklySummary';
-import Badge from '../Badge';
 import Timelog from '../Timelog/Timelog';
 import SummaryBar from '../SummaryBar/SummaryBar';
 import './Dashboard.css';
 import '../../App.css';
 import TimeOffRequestDetailModal from './TimeOffRequestDetailModal';
-import { cantUpdateDevAdminDetails } from 'utils/permissions';
-import {
-  DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
-  DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
-  PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
-} from 'utils/constants';
 
 export function Dashboard(props) {
   const [popup, setPopup] = useState(false);
   const [filteredUserTeamIds, setFilteredUserTeamIds] = useState([]);
   const [summaryBarData, setSummaryBarData] = useState(null);
-  const {match, authUser} = props;
+  const { match, authUser } = props;
   const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
   const [viewingUser, setViewingUser] = useState(checkSessionStorage);
-  const [displayUserId, setDisplayUserId] = useState(match.params.userId || viewingUser?.userId || authUser.userid);
+  const [displayUserId, setDisplayUserId] = useState(
+    match.params.userId || viewingUser?.userId || authUser.userid,
+  );
   const isNotAllowedToEdit = cantUpdateDevAdminDetails(viewingUser?.email, authUser.email);
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const toggle = (forceOpen = null) => {
     if (isNotAllowedToEdit) {
-      const warningMessage =
-        viewingUser?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY
-          ? DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY
-          : PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE;
-      alert(warningMessage);
       return;
     }
 
@@ -72,7 +63,7 @@ export function Dashboard(props) {
       />
 
       <Row className="w-100 ml-1">
-        <Col lg={7}></Col>
+        <Col lg={7} />
         <Col lg={5}>
           <div className="row justify-content-center">
             <div
@@ -81,6 +72,7 @@ export function Dashboard(props) {
               onClick={toggle}
               onKeyDown={toggle}
               tabIndex="0"
+              aria-label="Dashboard Button"
             >
               <WeeklySummary
                 isDashboard
