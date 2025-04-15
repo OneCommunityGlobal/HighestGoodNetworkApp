@@ -62,3 +62,7 @@
     font-size: 1em;
   }
 }
+
+.darkMode .notFoundText p {
+  color: #f1f1f1;
+}
