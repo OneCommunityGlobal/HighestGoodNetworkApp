@@ -49,6 +49,7 @@ const AddWBS = props => {
                 className="btn btn-outline-primary"
                 type="button"
                 onClick={handleAddWBS}
+                data-testid="add-wbs-button"
               >
                 <i className="fa fa-plus" aria-hidden="true"></i>
               </button>
