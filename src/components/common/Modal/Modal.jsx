@@ -85,7 +85,12 @@ const ModalExample = props => {
         </Button>
 
         {confirmModal != null ? (
-          <Button color="danger" onClick={confirmModal} disabled={isConfirmDisabled} style={darkMode ? boxStyleDark : boxStyle}>
+          <Button 
+            color="danger"
+            onClick={confirmModal}
+            disabled={isConfirmDisabled}
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
             {confirmButtonText || 'Confirm'}
           </Button>
         ) : null}
