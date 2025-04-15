@@ -1,108 +1,61 @@
-import React from 'react';
-import { fireEvent, waitFor, screen } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
-import  WeeklySummariesReport  from '../WeeklySummariesReport';
-import thunk from 'redux-thunk';
-import configureStore from 'redux-mock-store';
-import { authMock, rolesMock, themeMock, userProfileMock } from '__tests__/mockStates';
-import hasPermission from 'utils/permissions';
-import { renderWithProvider } from '__tests__/utils';
+import { rest } from 'msw';
+import { setupServer } from 'msw/node';
+import { getWeeklySummariesReport } from '../../../actions/weeklySummariesReport';
+import configureStore from '../../../store';
+import { ENDPOINTS } from '../../../utils/URL';
 
-/*
-const mockStore = configureStore([thunk]);
+const { store } = configureStore();
+const url = ENDPOINTS.WEEKLY_SUMMARIES_REPORT();
 
-describe('WeeklySummariesReport page', () => {
-  let store;
-  beforeEach(() => {
-    store = mockStore({
-      auth: authMock,
-      userProfile: userProfileMock,
-      role: rolesMock.role,
-      theme: themeMock,
-    });
-  });
-  describe('On page load', () => {
-    it('displays an error message if there is an error on data fetch', async () => {
-      const props = {
-        hasPermission: hasPermission,
-        getWeeklySummariesReport: jest.fn(),
-        fetchAllBadges: jest.fn(),
-        error: { message: 'SOME ERROR CONNECTING!!!' },
-        loading: false,
-        summaries: [],
-        authUser: { role: '' },
-        roles: [],
-        badges: [],
-        getInfoCollections: jest.fn(),
-      };
-      renderWithProvider(<WeeklySummariesReport {...props} />, { store });
+const server = setupServer(
+  rest.get(url, (req, res, ctx) => res(ctx.status(200), ctx.json([{ _id: 1 }]))),
+  rest.get('*', (req, res, ctx) => {
+    console.error(
+      `Please add request handler for ${req.url.toString()} in your MSW server requests.`,
+    );
+    return res(ctx.status(500), ctx.json({ error: 'You must add request handler.' }));
+  }),
+);
 
-      expect(screen.getByTestId('error')).toBeInTheDocument();
+beforeAll(() => server.listen());
+afterAll(() => server.close());
+afterEach(() => server.resetHandlers());
+
+const wsReportSlice = () => store.getState().weeklySummariesReport;
+
+describe('WeeklySummariesReport Redux related actions', () => {
+  describe('Fetching the weekly summaries report from the server', () => {
+    it('should be fetched from the server and put in the store', async () => {
+      await store.dispatch(getWeeklySummariesReport());
+
+      expect(wsReportSlice().summaries).toHaveLength(1);
     });
 
-    it('displays loading indicator', () => {
-      const props = {
-        hasPermission: hasPermission,
-        getWeeklySummariesReport: jest.fn(),
-        fetchAllBadges: jest.fn(),
-        loading: true,
-        summaries: [],
-        authUser: { role: '' },
-        roles: [],
-        badges: [],
-        getInfoCollections: jest.fn(),
-      };
-      renderWithProvider(<WeeklySummariesReport {...props} />, { store });
-      expect(screen.getByTestId('loading')).toBeInTheDocument();
-    });
-  });
+    describe('loading indicator', () => {
+      it('should be true while fetching', () => {
+        server.use(
+          rest.get(url, async (req, res, ctx) => {
+            expect(wsReportSlice().loading).toBe(true);
+            return res(ctx.status(200));
+          }),
+        );
 
-  describe('Tabs display', () => {
-    const props = {
-      hasPermission: hasPermission,
-      getWeeklySummariesReport: jest.fn(),
-      fetchAllBadges: jest.fn(),
-      getInfoCollections: jest.fn(),
-      loading: false,
-      summaries: [],
-      authUser: { role: '' },
-      roles: [],
-      badges: [],
-    };
-    beforeEach(() => {
-      renderWithProvider(<WeeklySummariesReport {...props} />, { store });
-    });
+        store.dispatch(getWeeklySummariesReport());
+      });
 
-    afterEach(() => {
-      jest.clearAllMocks();
-    });
+      it('should be false after the reports are fetched', async () => {
+        await store.dispatch(getWeeklySummariesReport());
 
-    it('should have second tab set to "active" by default', () => {
-      expect(screen.getByTestId('Last Week').classList.contains('active')).toBe(true);
-      expect(screen.getBy);
-    });
+        expect(wsReportSlice().loading).toBe(false);
+      });
 
-    it('should make 1st tab active when clicked', () => {
-      // First tab click.
-      fireEvent.click(screen.getByTestId('This Week'));
-      expect(screen.getByTestId('This Week').classList.contains('active')).toBe(true);
-    });
-    it('should make 2nd tab active when clicked', () => {
-      // Second tab click.
-      fireEvent.click(screen.getByTestId('Last Week'));
-      expect(screen.getByTestId('Last Week').classList.contains('active')).toBe(true);
-    });
-    it('should make 3rd tab active when clicked', () => {
-      // Third tab click.
-      fireEvent.click(screen.getByTestId('Week Before Last'));
-      expect(screen.getByTestId('Week Before Last').classList.contains('active')).toBe(true);
-    });
-    it('should make 4th tab active when clicked', () => {
-      // Fourth tab click.
-      fireEvent.click(screen.getByTestId('Three Weeks Ago'));
-      expect(screen.getByTestId('Three Weeks Ago').classList.contains('active')).toBe(true);
+      it('should be false if the server returns an error', async () => {
+        server.use(rest.get(url, (req, res, ctx) => res(ctx.status(500))));
+
+        await store.dispatch(getWeeklySummariesReport());
+
+        expect(wsReportSlice().loading).toBe(false);
+      });
     });
   });
 });
-
-*/
