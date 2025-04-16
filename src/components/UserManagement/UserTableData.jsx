@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-toastify';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { updateUserInfomation } from '../../actions/userManagement';
 import { getAllRoles } from '../../actions/role';
 import ResetPasswordButton from './ResetPasswordButton';
@@ -26,6 +26,8 @@ const UserTableData = React.memo(props => {
   const [tooltipDeleteOpen, setTooltipDelete] = useState(false);
   const [tooltipPauseOpen, setTooltipPause] = useState(false);
   const [tooltipFinalDayOpen, setTooltipFinalDay] = useState(false);
+  const isMobile = props.isMobile;
+  const mobileFontSize = props.mobileFontSize;
   const [tooltipReportsOpen, setTooltipReports] = useState(false);
 
   const [isChanging, onReset] = useState(false);
@@ -42,6 +44,7 @@ const UserTableData = React.memo(props => {
     endDate: formatDate(props.user.endDate),
   });
   const dispatch = useDispatch();
+  const history = useHistory();
   const { roles } = useSelector(state => state.role);
   const joinTimeStamp = date => {
     const now = new Date();
@@ -121,6 +124,7 @@ const UserTableData = React.memo(props => {
     <tr
       className={`usermanagement__tr ${darkMode ? 'dark-usermanagement-data' : 'light-usermanagement-data'}`}
       id={`tr_user_${props.index}`}
+      style={{fontSize: isMobile ? mobileFontSize : 'initial'}}
     >
       <td className="usermanagement__active--input" style={{ position: 'relative' }}>
         <ActiveCell
@@ -153,12 +157,19 @@ const UserTableData = React.memo(props => {
               border: 'none',
               padding: 0,
             }}
-            onClick={(e) => {
+            onClick={(event) => {
               if (!canSeeReports) {
-                e.preventDefault();
-              } else {
-                window.location.href = `/peoplereport/${props.user._id}`;
+                event.preventDefault();
+                return;
               }
+            
+              if (event.metaKey || event.ctrlKey || event.button === 1) {
+                window.open(`/peoplereport/${props.user._id}`, '_blank');
+                return;
+              }
+            
+              event.preventDefault(); // prevent full reload
+              history.push(`/peoplereport/${props.user._id}`);
             }}
           >
             <img
@@ -512,7 +523,7 @@ const UserTableData = React.memo(props => {
               user={props.user}
               darkMode={darkMode}
               isSmallButton
-              canResetPassword={resetPasswordStatus || updatePasswordStatus}
+              canUpdatePassword={resetPasswordStatus || updatePasswordStatus}
             />
           </span>
         </td>

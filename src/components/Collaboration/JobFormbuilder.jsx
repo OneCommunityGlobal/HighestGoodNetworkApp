@@ -192,7 +192,7 @@ function JobFormBuilder() {
                   key={index + 1}
                   className="form-field"
                 >
-                  <label className="field-label">{field.questionText}</label>
+                  <label className="field-label jbform-label">{field.questionText}</label>
                   <div className="field-options">
                     {field.questionType === 'textbox' && (
                       <input type="text" placeholder="Enter Text here" />
@@ -209,7 +209,7 @@ function JobFormBuilder() {
                           className="option-item"
                         >
                           <input type={field.questionType} name={`field-${index}`} />
-                          <label>{option}</label>
+                          <label className="jbform-label">{option}</label>
                         </div>
                       ))}
                     {field.questionType === 'dropdown' && (
@@ -232,7 +232,7 @@ function JobFormBuilder() {
           </form>
           <div className="new-field-section">
             <div>
-              <label>
+              <label className="jbform-label">
                 Field Label:
                 <input
                   type="text"
@@ -246,7 +246,7 @@ function JobFormBuilder() {
               </label>
             </div>
             <div>
-              <label>
+              <label className="jbform-label">
                 Input Type:
                 <select
                   value={newField.questionType}
@@ -272,7 +272,7 @@ function JobFormBuilder() {
             {/* Options Section */}
             {['checkbox', 'radio', 'dropdown'].includes(newField.questionType) && (
               <div className="options-section">
-                <label>
+                <label className="jbform-label">
                   Add Option:
                   <input
                     type="text"
