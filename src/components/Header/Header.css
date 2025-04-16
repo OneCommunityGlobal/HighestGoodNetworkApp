@@ -4,12 +4,13 @@
 }
 
 .close-button {
-  height : 2vh;
-  width : 99%;
+  height: 2vh;
+  width: 99%;
 }
 
 .card-content {
-  padding: 5px; /* Add padding around the card content */
+  padding: 5px;
+  /* Add padding around the card content */
   padding-left: 40px;
   padding-right: 40px;
   white-space: pre-line;
@@ -100,11 +101,75 @@
     margin-right: 5px;
   }
 }
-.header-margin{
-  height : 20px;
-  background-color: #1B2A41 ;
+
+.header-margin {
+  height: 20px;
+  background-color: #1B2A41;
 }
-.header-margin-light{
-  height : 20px;
+
+.header-margin-light {
+  height: 20px;
   background-color: #fff;
+}
+
+@media print {
+  /* Reset all print styles */
+  * {
+    box-sizing: border-box !important;
+  }
+
+  /* Set print scaling */
+  @page {
+    size: auto;
+    margin: 0;
+    scale: 100%;
+  }
+
+  /* Ensure header container is compact */
+  .header-wrapper {
+    height: auto !important;
+    min-height: auto !important;
+    width: 100% !important;
+    position: relative !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* Set header bottom margin */
+  .header-margin,
+  .header-margin-light {
+    height: 20px !important;
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Ensure navbar is compact and font size is correct */
+  .navbar {
+    padding: 0.5rem 1rem !important;
+    min-height: auto !important;
+    height: auto !important;
+    width: 100% !important;
+    position: relative !important;
+    font-size: 16px !important;
+    margin: 0 !important;
+  }
+
+  /* Ensure navigation links display correctly */
+  .nav-links {
+    gap: 0.5rem !important;
+    width: auto !important;
+    font-size: 16px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Ensure all icons have correct size */
+  .navbar img,
+  .navbar svg {
+    width: auto !important;
+    height: 24px !important;
+    transform: scale(1) !important;
+    vertical-align: middle !important;
+  }
 }

@@ -140,7 +140,17 @@ function OwnerMessage({
       {(user.role === 'Owner' || canEditHeaderMessage) && (
         <div className="icon-wrapper">
           <button type="submit" className="owner-message-button" onClick={toggle}>
-            <img src={editIcon} alt="edit icon" title="Edit this header" />
+            <div
+              style={{
+                width: '24px',
+                height: '24px',
+                backgroundImage: `url(${editIcon})`,
+                backgroundSize: 'contain',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat'
+              }}
+              title="Edit this header"
+            />
           </button>
 
           {ownerMessage && (
@@ -150,9 +160,15 @@ function OwnerMessage({
               onClick={toggleDeleteWarning}
               style={{ marginLeft: '0.25rem' }}
             >
-              <img
-                src={deleteIcon}
-                alt="edit icon"
+              <div
+                style={{
+                  width: '24px',
+                  height: '24px',
+                  backgroundImage: `url(${deleteIcon})`,
+                  backgroundSize: 'contain',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
                 title="Click to restore header to standard message"
               />
             </button>
