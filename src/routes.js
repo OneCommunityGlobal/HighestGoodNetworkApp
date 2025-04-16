@@ -17,6 +17,7 @@ import Announcements from 'components/Announcements';
 import JobFormBuilder from 'components/Collaboration/JobFormbuilder';
 import JobCCDashboard from 'components/JobCCDashboard/JobCCDashboard';
 import WeeklyProjectSummary from 'components/BMDashboard/WeeklyProjectSummary/WeeklyProjectSummary';
+import HeaderRenderer from 'components/Header/HeaderRenderer';
 
 // hgnform routes
 import Page1 from './components/HGNForm/pages/Page1';
@@ -25,6 +26,14 @@ import Page3 from './components/HGNForm/pages/Page3';
 import Page4 from './components/HGNForm/pages/Page4';
 import Page5 from './components/HGNForm/pages/Page5';
 import Page6 from './components/HGNForm/pages/Page6';
+import TSAFormPage1 from './components/TSAForm/pages/TSAFormPage1';
+import TSAFormPage2 from './components/TSAForm/pages/TSAFormPage2';
+import TSAFormPage3 from './components/TSAForm/pages/TSAFormPage3';
+import TSAFormPage4 from './components/TSAForm/pages/TSAFormPage4';
+import TSAFormPage5 from './components/TSAForm/pages/TSAFormPage5';
+import TSAFormPage6 from './components/TSAForm/pages/TSAFormPage6';
+import TSAFormPage7 from './components/TSAForm/pages/TSAFormPage7';
+import TSAFormPage8 from './components/TSAForm/pages/TSAFormPage8';
 
 import Timelog from './components/Timelog';
 import LessonForm from './components/BMDashboard/Lesson/LessonForm';
@@ -35,7 +44,6 @@ import Login from './components/Login';
 import ForcePasswordUpdate from './components/ForcePasswordUpdate';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import UpdatePassword from './components/UpdatePassword';
-import Header from './components/Header';
 import TeamLocations from './components/TeamLocations';
 import 'react-toastify/dist/ReactToastify.css';
 import { UserRole } from './utils/enums';
@@ -44,7 +52,7 @@ import Inventory from './components/Inventory';
 import EmailSubscribeForm from './components/EmailSubscribeForm';
 import UnsubscribeForm from './components/EmailSubscribeForm/Unsubscribe';
 import NotFoundPage from './components/NotFound/NotFoundPage';
-import { EmailSender } from './components/common/EmailSender/EmailSender';
+import EmailSender from './components/common/EmailSender/EmailSender';
 import Collaboration from './components/Collaboration';
 
 // LB Dashboard
@@ -52,6 +60,8 @@ import LBProtectedRoute from './components/common/LBDashboard/LBProtectedRoute';
 import LBDashboard from './components/LBDashboard';
 import LBLogin from './components/LBDashboard/Login';
 import LBMessaging from './components/LBDashboard/Messaging/LBMessaging';
+import ListOveriew from './components/LBDashboard/ListingOverview/ListOverview';
+import LBBidOverview from './components/LBDashboard/BiddingOverview/BiddingOverview';
 
 // BM Dashboard
 import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
@@ -80,6 +90,7 @@ import EPDashboard from './components/EductionPortal';
 
 // eslint-disable-next-line import/order, import/no-unresolved
 import LogTools from './components/BMDashboard/LogTools/LogTools';
+
 
 const ReusableListView = lazy(() => import('./components/BMDashboard/ReusableList'));
 const ConsumableListView = lazy(() => import('./components/BMDashboard/ConsumableList'));
@@ -133,17 +144,20 @@ const PermissionsManagement = lazy(() =>
 const UserRoleTab = lazy(() => import('./components/PermissionsManagement/UserRoleTab'));
 const Teams = lazy(() => import('./components/Teams/Teams'));
 
-export default (
+export default(
   <Switch>
     <Route path="/form" component={FormEditor} />
     <Route path="/formviewer" component={FormViewer} />
     <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
     <>
-      {/* Comment out the Header component and its import during phase 2 development. */}
-      <Header />
+     {/* Comment out the Header component and its import during phase 2 development. */}
       {/* Uncomment BMHeader and its import during phase 2 development. */}
 
       {/* <BMHeader /> */}
+      
+      {/* This will render CPHeader to the page whose path starts with /communityportal i.e Phase III */}
+      <HeaderRenderer/>
+
       <AutoUpdate />
       <ToastContainer />
       <Switch>
@@ -407,9 +421,10 @@ export default (
 
         {/* Listing and Bidding Routes */}
         <LBProtectedRoute path="/lbdashboard" exact component={LBDashboard} />
+        <LBProtectedRoute path="/lbdashboard/listOverview" exact component={ListOveriew} />
         <Route path="/lbdashboard/login" component={LBLogin} />
         <LBProtectedRoute path="/lbdashboard/messaging" component={LBMessaging} />
-  
+        <Route path="/lbdashboard/bidoverview" exact component={LBBidOverview} />
 
         {/* Good Education  Portal Routes */}
         <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />
@@ -433,15 +448,23 @@ export default (
         <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
         <Route path="/Logout" component={Logout} />
         <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
-        <ProtectedRoute path="/hgnform" exact component={Page1} />
-        <ProtectedRoute path="/hgnform/page2" exact component={Page2} />
-        <ProtectedRoute path="/hgnform/page3" exact component={Page3} />
-        <ProtectedRoute path="/hgnform/page4" exact component={Page4} />
-        <ProtectedRoute path="/hgnform/page5" exact component={Page5} />
-        <ProtectedRoute path="/hgnform/page6" exact component={Page6} />
+        <ProtectedRoute path="/hgnform" exact component={Page1}/>
+        <ProtectedRoute path="/hgnform/page2" exact component={Page2}/>
+        <ProtectedRoute path="/hgnform/page3" exact component={Page3}/>
+        <ProtectedRoute path="/hgnform/page4" exact component={Page4}/>
+        <ProtectedRoute path="/hgnform/page5" exact component={Page5}/>
+        <ProtectedRoute path="/hgnform/page6" exact component={Page6}/> 
+        <ProtectedRoute path="/tsaformpage1" exact component={TSAFormPage1} /> 
+        <ProtectedRoute path="/tsaformpage2" exact component={TSAFormPage2} /> 
+        <ProtectedRoute path="/tsaformpage3" exact component={TSAFormPage3} /> 
+        <ProtectedRoute path="/tsaformpage4" exact component={TSAFormPage4} /> 
+        <ProtectedRoute path="/tsaformpage5" exact component={TSAFormPage5} /> 
+        <ProtectedRoute path="/tsaformpage6" exact component={TSAFormPage6} /> 
+        <ProtectedRoute path="/tsaformpage7" exact component={TSAFormPage7} /> 
+        <ProtectedRoute path="/tsaformpage8" exact component={TSAFormPage8} /> 
         <ProtectedRoute path="/" exact component={Dashboard} />
         <Route path="*" component={NotFoundPage} />
       </Switch>
     </>
   </Switch>
-);
+)

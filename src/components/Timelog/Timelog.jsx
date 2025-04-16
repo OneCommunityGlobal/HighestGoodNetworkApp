@@ -104,7 +104,7 @@ function Timelog(props) {
     timeEntryFormModal: false,
     summary: false,
     activeTab: 0,
-    projectsSelected: ['all'],
+    projectsOrTasksSelected: ['all'],
     fromDate: startOfWeek(0),
     toDate: endOfWeek(0),
     infoModal: false,
@@ -212,12 +212,12 @@ function Timelog(props) {
   /* ---------------- methods -------------- */
 
   const generateTimeEntries = (data, tab) => {
-    if (!timeLogState.projectsSelected.includes('all')) {
+    if (!timeLogState.projectsOrTasksSelected.includes('all')) {
       // eslint-disable-next-line no-param-reassign
       data = data.filter(
         entry =>
-          timeLogState.projectsSelected.includes(entry.projectId) ||
-          timeLogState.projectsSelected.includes(entry.taskId),
+          timeLogState.projectsOrTasksSelected.includes(entry.projectId) ||
+          timeLogState.projectsOrTasksSelected.includes(entry.taskId),
       );
     }
     return data.map(entry => (
@@ -541,7 +541,7 @@ function Timelog(props) {
   useEffect(() => {
     // Filter the time entries
     updateTimeEntryItems();
-  }, [timeLogState.projectsSelected]);
+  }, [timeLogState.projectsOrTasksSelected]);
 
   useEffect(() => {
     setDisplayUserId(getUserId());
@@ -785,7 +785,9 @@ function Timelog(props) {
                   <Nav tabs className="task-and-timelog-card-nav mb-1 responsive-font-size">
                     <NavItem>
                       <NavLink
-                        className={classnames({ active: timeLogState.activeTab === 0 })}
+                        className={`${classnames({ active: timeLogState.activeTab === 0 })} ${
+                          darkMode ? 'dark-mode' : ''
+                        }`}
                         onClick={() => {
                           changeTab(0);
                         }}
@@ -796,7 +798,9 @@ function Timelog(props) {
                       </NavLink>
                     </NavItem>
                     <NavLink
-                      className={classnames({ active: timeLogState.activeTab === 1 })}
+                      className={`${classnames({ active: timeLogState.activeTab === 1 })} ${
+                        darkMode ? 'dark-mode' : ''
+                      }`}
                       onClick={() => {
                         changeTab(1);
                       }}
@@ -808,7 +812,9 @@ function Timelog(props) {
 
                     <NavItem>
                       <NavLink
-                        className={classnames({ active: timeLogState.activeTab === 2 })}
+                        className={`${classnames({ active: timeLogState.activeTab === 2 })} ${
+                          darkMode ? 'dark-mode' : ''
+                        }`}
                         onClick={() => {
                           changeTab(2);
                         }}
@@ -820,7 +826,9 @@ function Timelog(props) {
                     </NavItem>
                     <NavItem>
                       <NavLink
-                        className={classnames({ active: timeLogState.activeTab === 3 })}
+                        className={`${classnames({ active: timeLogState.activeTab === 3 })} ${
+                          darkMode ? 'dark-mode' : ''
+                        }`}
                         onClick={() => {
                           changeTab(3);
                         }}
@@ -832,7 +840,9 @@ function Timelog(props) {
                     </NavItem>
                     <NavItem>
                       <NavLink
-                        className={classnames({ active: timeLogState.activeTab === 4 })}
+                        className={`${classnames({ active: timeLogState.activeTab === 4 })} ${
+                          darkMode ? 'dark-mode' : ''
+                        }`}
                         onClick={() => {
                           changeTab(4);
                         }}
@@ -844,7 +854,9 @@ function Timelog(props) {
                     </NavItem>
                     <NavItem>
                       <NavLink
-                        className={classnames({ active: timeLogState.activeTab === 5 })}
+                        className={`${classnames({ active: timeLogState.activeTab === 5 })} ${
+                          darkMode ? 'dark-mode' : ''
+                        }`}
                         onClick={() => {
                           changeTab(5);
                         }}
@@ -856,7 +868,9 @@ function Timelog(props) {
                     </NavItem>
                     <NavItem>
                       <NavLink
-                        className={classnames({ active: timeLogState.activeTab === 6 })}
+                        className={`${classnames({ active: timeLogState.activeTab === 6 })} ${
+                          darkMode ? 'dark-mode' : ''
+                        }`}
                         onClick={() => {
                           changeTab(6);
                         }}
@@ -888,7 +902,7 @@ function Timelog(props) {
                             From
                           </Label>
                           <Input
-                            className="responsive-font-size"
+                            className={`responsive-font-size ${darkMode ? "bg-darkmode-liblack text-light border-0 calendar-icon-dark" : ''}`}
                             type="date"
                             name="fromDate"
                             id="fromDate"
@@ -904,7 +918,7 @@ function Timelog(props) {
                             To
                           </Label>
                           <Input
-                            className="responsive-font-size"
+                            className={`responsive-font-size ${darkMode ? "bg-darkmode-liblack text-light border-0 calendar-icon-dark" : ''}`}
                             type="date"
                             name="toDate"
                             id="toDate"
@@ -937,12 +951,12 @@ function Timelog(props) {
                             type="select"
                             name="projectSelected"
                             id="projectSelected"
-                            value={timeLogState.projectsSelected}
+                            value={timeLogState.projectsOrTasksSelected}
                             title="Ctrl + Click to select multiple projects and tasks to filter."
                             onChange={e => {
                               setTimeLogState({
                                 ...timeLogState,
-                                projectsSelected: Array.from(
+                                projectsOrTasksSelected: Array.from(
                                   e.target.selectedOptions,
                                   option => option.value,
                                 ),
@@ -962,7 +976,7 @@ function Timelog(props) {
                     timeLogState.activeTab === 6 ? null : (
                       <EffortBar
                         activeTab={timeLogState.activeTab}
-                        projectsSelected={timeLogState.projectsSelected}
+                        projectsOrTasksSelected={timeLogState.projectsOrTasksSelected}
                         roles={roles}
                       />
                     )}

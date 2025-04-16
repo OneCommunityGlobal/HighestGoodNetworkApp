@@ -134,6 +134,7 @@ class Teams extends React.PureComponent {
                 fontSize={30}
                 isPermissionPage
                 role={this.props.state?.auth?.user?.role}
+                darkMode={darkMode}
               />
 
               <TeamOverview
@@ -198,7 +199,7 @@ class Teams extends React.PureComponent {
             onMembersClick={this.onTeamMembersPopupShow}
             onDeleteClick={this.onDeleteTeamPopupShow}
             onStatusClick={this.onTeamStatusShow}
-            onEditTeam={this.onEidtTeam}
+            onEditTeam={this.onEditTeam}
             onClickActive={this.onClickActive}
             team={team}
           />
@@ -236,6 +237,7 @@ class Teams extends React.PureComponent {
     const selectedTeamData = allTeams
       ? allTeams.filter(team => team.teamName === this.state.selectedTeam)
       : [];
+
     return (
       <>
         <TeamMembersPopup
@@ -372,7 +374,7 @@ class Teams extends React.PureComponent {
     });
   };
 
-  onEidtTeam = (teamName, teamId, status, teamCode) => {
+  onEditTeam = (teamName, teamId, status, teamCode) => {
     this.setState({
       isEdit: true,
       createNewTeamPopupOpen: true,
