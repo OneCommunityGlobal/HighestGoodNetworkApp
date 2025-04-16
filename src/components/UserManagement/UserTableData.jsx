@@ -12,6 +12,7 @@ import ResetPasswordButton from './ResetPasswordButton';
 import { DELETE, PAUSE, RESUME, SET_FINAL_DAY, CANCEL } from '../../languages/en/ui';
 import { UserStatus, FinalDay } from '../../utils/enums';
 import ActiveCell from './ActiveCell';
+import TimeDifference from './TimeDifference';
 import hasPermission from '../../utils/permissions';
 import { boxStyle } from '../../styles';
 import { formatDateLocal } from '../../utils/formatDate';
@@ -124,7 +125,7 @@ const UserTableData = React.memo(props => {
     <tr
       className={`usermanagement__tr ${darkMode ? 'dark-usermanagement-data' : 'light-usermanagement-data'}`}
       id={`tr_user_${props.index}`}
-      style={{fontSize: isMobile ? mobileFontSize : 'initial'}}
+      style={{ fontSize: isMobile ? mobileFontSize : 'initial' }}
     >
       <td className="usermanagement__active--input" style={{ position: 'relative' }}>
         <ActiveCell
@@ -162,12 +163,12 @@ const UserTableData = React.memo(props => {
                 event.preventDefault();
                 return;
               }
-            
+
               if (event.metaKey || event.ctrlKey || event.button === 1) {
                 window.open(`/peoplereport/${props.user._id}`, '_blank');
                 return;
               }
-            
+
               event.preventDefault(); // prevent full reload
               history.push(`/peoplereport/${props.user._id}`);
             }}
@@ -183,6 +184,11 @@ const UserTableData = React.memo(props => {
             />
           </button>
         </span>
+        <TimeDifference
+          userProfile={props.user}
+          isUserSelf={props.user.email === props.authEmail}
+          darkMode={darkMode}
+        />
       </td>
       <td className="email_cell">
         {editUser?.first ? (
