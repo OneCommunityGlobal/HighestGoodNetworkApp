@@ -68,7 +68,7 @@ const WBS = props => {
                 width: '100%',
                 textAlign: 'center',
                 fontWeight: 'bold',
-                fontSize: '1.5rem'  // 相当于 24px
+                fontSize: '1.5rem'  
               }}>{projectName}</div>
             </div>
           </nav>
@@ -89,10 +89,8 @@ const WBS = props => {
             <table className={`table table-bordered table-responsive-sm ${darkMode ? 'bg-yinmn-blue text-light dark-mode' : '' }`}>
               <thead>
                 <tr className={darkMode ? 'bg-space-cadet' : ''}>
-                  <th scope="col" id="members__order">
-                    #
-                  </th>
-                  <th scope="col" id="members__name">
+                  <th scope="col" style={{ width: '150px' }}>#</th>
+                  <th scope="col" style={{ textAlign: 'left' }}>
                     Name
                     <span style={{ marginLeft: '8px', cursor: 'pointer' }}>
                       <i
@@ -101,7 +99,7 @@ const WBS = props => {
                       ></i>
                     </span>
                   </th>
-                  <th scope="col" id="members__name"></th>
+                  <th scope="col" style={{ width: '50px' }}></th>
                 </tr>
               </thead>
               <tbody>
@@ -113,6 +111,7 @@ const WBS = props => {
                       wbsId={item._id}
                       projectId={projectId}
                       name={item.wbsName}
+                      darkMode={darkMode}
                     />
                   ) : null,
                 )}
