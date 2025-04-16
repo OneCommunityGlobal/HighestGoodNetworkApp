@@ -17,8 +17,11 @@ import { useRef } from 'react';
 import { toast } from 'react-toastify';
 import { initSocket, getSocket } from '../../../utils/socket';
 import config from '../../../config.json';
-import { sendINAppNotification,sendEmailNotification, sendSMSNotification } from './NotificationFunctions.js';
-
+import {
+  sendINAppNotification,
+  sendEmailNotification,
+  sendSMSNotification,
+} from './NotificationFunctions.js';
 
 export default function LBMessaging() {
   const dispatch = useDispatch();
@@ -69,17 +72,17 @@ export default function LBMessaging() {
 
   useEffect(() => {
     if (!auth?.userid) return;
-  
+
     let timeoutId = null;
     let isSubscribed = true; // For cleanup
-  
+
     const fetchMessagesAndSchedule = async () => {
       if (!isSubscribed || isFetching) return;
-  
+
       try {
         setIsFetching(true);
-         dispatch(fetchMessages(auth.userid));
-        
+        dispatch(fetchMessages(auth.userid));
+
         // Schedule next fetch only if component is still mounted
         if (isSubscribed) {
           timeoutId = setTimeout(fetchMessagesAndSchedule, 30000);
@@ -92,10 +95,10 @@ export default function LBMessaging() {
         }
       }
     };
-  
+
     // Initial fetch
     fetchMessagesAndSchedule();
-  
+
     // Cleanup
     return () => {
       isSubscribed = false;
@@ -107,31 +110,32 @@ export default function LBMessaging() {
   const markMessagesAsRead = (messages, selectedUserId) => {
     const socket = getSocket();
     if (!socket || socket.readyState !== 1) return;
-    
+
     const unreadMessages = messages.filter(msg => {
-      const senderId = typeof msg.sender === 'object' ? 
-        msg.sender._id?.toString() : 
-        msg.sender?.toString();
+      const senderId =
+        typeof msg.sender === 'object' ? msg.sender._id?.toString() : msg.sender?.toString();
       return senderId === selectedUserId && !msg.isRead;
     });
-  
+
     if (unreadMessages.length > 0) {
-      socket.send(JSON.stringify({
-        action: 'MESSAGES_READ',
-        messageIds: unreadMessages.map(msg => msg._id),
-        sender: selectedUserId,
-        receiver: auth.userid
-      }));
+      socket.send(
+        JSON.stringify({
+          action: 'MESSAGES_READ',
+          messageIds: unreadMessages.map(msg => msg._id),
+          sender: selectedUserId,
+          receiver: auth.userid,
+        }),
+      );
     }
   };
 
   // Add this after your other useEffects
-useEffect(() => {
-  if (selectedUser.id && messages.length > 0) {
-    const conversationMessages = getMessagesBetweenUsers(messages, auth.userid, selectedUser.id);
-    markMessagesAsRead(conversationMessages, selectedUser.id);
-  }
-}, [selectedUser.id, messages]);
+  useEffect(() => {
+    if (selectedUser.id && messages.length > 0) {
+      const conversationMessages = getMessagesBetweenUsers(messages, auth.userid, selectedUser.id);
+      markMessagesAsRead(conversationMessages, selectedUser.id);
+    }
+  }, [selectedUser.id, messages]);
 
   useEffect(() => {
     const { tokenKey } = config;
@@ -148,32 +152,32 @@ useEffect(() => {
           senderUser.length === 1 &&
           auth.userid.toString() === data.payload.receiver.toString()
         ) {
-          if(userPreferences.notifyInApp === true){
-            sendINAppNotification(data,userPreferences,senderUser)
-          }else if(userPreferences.notifyEmail === true){
-            sendEmailNotification(data,users, userPreferences,senderUser)
-          }else if(userPreferences.notifySMS === true){
-            sendSMSNotification(data,users,userPreferences,senderUser)
-          } 
+          if (userPreferences.notifyInApp === true) {
+            sendINAppNotification(data, userPreferences, senderUser);
+          } else if (userPreferences.notifyEmail === true) {
+            sendEmailNotification(data, users, userPreferences, senderUser);
+          } else if (userPreferences.notifySMS === true) {
+            sendSMSNotification(data, users, userPreferences, senderUser);
+          }
         }
         dispatch({ type: 'SEND_MESSAGE_END', payload: data.payload });
-      }else if (data.action === 'MESSAGE_READ') {
-        dispatch({ 
-          type: 'UPDATE_MESSAGES_READ_STATUS', 
+      } else if (data.action === 'MESSAGE_READ') {
+        dispatch({
+          type: 'UPDATE_MESSAGES_READ_STATUS',
           payload: {
             messageIds: data.messageIds,
-          }
+          },
         });
-      }else if(data.action === 'SEND_MESSAGE_FAILED'){
-        dispatch({ 
+      } else if (data.action === 'SEND_MESSAGE_FAILED') {
+        dispatch({
           type: 'SEND_MESSAGE_FAILED',
           payload: {
             content: message,
             sender: auth.userid,
             receiver: selectedUser.id,
             timestamp: new Date(),
-            status: 'failed'
-          }
+            status: 'failed',
+          },
         });
       }
     };
@@ -230,12 +234,12 @@ useEffect(() => {
             content: msg.content,
             timestamp: msg.timestamp,
             isFromOther: msg.sender._id.toString() !== loggedInUserId,
-            isUnread: msg.sender._id.toString() !== loggedInUserId && !msg.isRead // Check if message is unread
+            isUnread: msg.sender._id.toString() !== loggedInUserId && !msg.isRead, // Check if message is unread
           });
         }
       });
     });
-  
+
     // Second pass: create user objects with last message
     message.forEach(msg => {
       [msg.sender, msg.receiver].forEach(user => {
@@ -247,10 +251,10 @@ useEffect(() => {
         ) {
           const userId = user._id.toString();
           const messages = userMessages.get(userId);
-          const lastMessage = messages.sort((a, b) => 
-            new Date(b.timestamp) - new Date(a.timestamp)
+          const lastMessage = messages.sort(
+            (a, b) => new Date(b.timestamp) - new Date(a.timestamp),
           )[0];
-  
+
           // Count unread messages from this user
           const unreadCount = messages.filter(msg => msg.isUnread).length;
           uniqueUsersMap.set(userId, {
@@ -263,12 +267,12 @@ useEffect(() => {
             lastMessageTime: lastMessage?.timestamp || null,
             isFromOther: lastMessage?.isFromOther || false,
             hasUnreadMessages: unreadCount > 0,
-            unreadCount // Add count of unread messages
+            unreadCount, // Add count of unread messages
           });
         }
       });
     });
-    
+
     return Array.from(uniqueUsersMap.values());
   };
 
@@ -309,7 +313,7 @@ useEffect(() => {
       year: 'numeric',
     });
   };
-  
+
   const sendMessageData = () => {
     const footer = document.getElementsByClassName('lb-messaing-message-window-footer')[0];
     // Now get the input inside that footer
@@ -318,15 +322,15 @@ useEffect(() => {
     if (selectedUser.id && auth.userid && message) {
       const socket = getSocket();
       if (!socket || socket.readyState !== 1) {
-        dispatch({ 
-          type: 'SEND_MESSAGE_FAILED', 
+        dispatch({
+          type: 'SEND_MESSAGE_FAILED',
           payload: {
             content: message,
             sender: auth.userid,
             receiver: selectedUser.id,
             timestamp: new Date(),
-            status: 'failed'
-          }
+            status: 'failed',
+          },
         });
         return;
       }
@@ -340,44 +344,44 @@ useEffect(() => {
         };
         socket.send(JSON.stringify(messageData));
         input.value = '';
-       // Add to Redux with pending status
-      dispatch({
-        type: 'SEND_MESSAGE_PENDING',
-        payload: {
-          _id: tempMessageId,
-          content: message,
-          sender: auth.userid,
-          receiver: selectedUser.id,
-          timestamp: new Date(),
-          status: 'pending'
-        }
-      });
-  
+        // Add to Redux with pending status
+        dispatch({
+          type: 'SEND_MESSAGE_PENDING',
+          payload: {
+            _id: tempMessageId,
+            content: message,
+            sender: auth.userid,
+            receiver: selectedUser.id,
+            timestamp: new Date(),
+            status: 'pending',
+          },
+        });
       } catch (error) {
-        dispatch({ 
+        dispatch({
           type: 'SEND_MESSAGE_FAILED',
           payload: {
             content: message,
             sender: auth.userid,
             receiver: selectedUser.id,
             timestamp: new Date(),
-            status: 'failed'
-          }
+            status: 'failed',
+          },
         });
-      }}
+      }
+    }
   };
 
   const getReceiptStatus = (msg, isSender) => {
     if (!isSender) return null;
-  const readTicks = "✓\u200B✓";
-  const deliveredTicks = "✓\u200B✓";
-  const singleTick = "✓";
-  const failedIcon = "!"; // Exclamation mark for failed messages
-  
-  if (msg.status === 'failed') return failedIcon;
-  if (msg.isRead) return readTicks;
-  if (msg.status === 'delivered') return deliveredTicks;
-  return singleTick;
+    const readTicks = '✓\u200B✓';
+    const deliveredTicks = '✓\u200B✓';
+    const singleTick = '✓';
+    const failedIcon = '!'; // Exclamation mark for failed messages
+
+    if (msg.status === 'failed') return failedIcon;
+    if (msg.isRead) return readTicks;
+    if (msg.status === 'delivered') return deliveredTicks;
+    return singleTick;
   };
 
   const renderChatMessages = (conversation, loggedInUserId) => {
@@ -399,12 +403,12 @@ useEffect(() => {
                 <div className="chat-content">{msg.content}</div>
                 <div className="chat-meta">
                   <span className="timestamp">{formatTime(msg.timestamp)}</span>
-                  {isSender &&
-                  //  <span className="status">{msg.status === 'read' ? '✔✔' : '✔'}</span>
-                  <span className={`messaging-message-status ${msg.isRead ? 'read' : ''}`}>
-                    {getReceiptStatus(msg, isSender)}
-                  </span>
-                  }
+                  {isSender && (
+                    //  <span className="status">{msg.status === 'read' ? '✔✔' : '✔'}</span>
+                    <span className={`messaging-message-status ${msg.isRead ? 'read' : ''}`}>
+                      {getReceiptStatus(msg, isSender)}
+                    </span>
+                  )}
                 </div>
               </div>
             </React.Fragment>
@@ -415,7 +419,7 @@ useEffect(() => {
     );
   };
 
-  return users.userProfilesBasicInfo.length !== 0 && messages.length !== 0  ?  (
+  return users.userProfilesBasicInfo.length !== 0 && messages.length !== 0 ? (
     <div className={darkMode ? 'lb-messaging-container-dark' : 'lb-messaging-container'}>
       <div className="lb-messaging-header">
         <img src="/big-sign.png" alt="onecommunity-logo" />
@@ -499,7 +503,7 @@ useEffect(() => {
                                 : 'lb-messaging-contact-name'
                             }
                           >{`${message.firstName} ${message.lastName}`}</div>
-                         <div className='lb-messaging-contact-preview'>
+                          <div className="lb-messaging-contact-preview">
                             <div className="preview-wrapper">
                               {message.isFromOther ? (
                                 message.lastMessage
@@ -507,7 +511,9 @@ useEffect(() => {
                                 // Logged in user's last message
                                 <div className="sent-message-preview">
                                   <span>You: {message.lastMessage}</span>
-                                  <span className={`preview-status ${message.isRead ? 'read' : ''}`}>
+                                  <span
+                                    className={`preview-status ${message.isRead ? 'read' : ''}`}
+                                  >
                                     {getReceiptStatus(message, true)}
                                   </span>
                                 </div>
@@ -518,7 +524,7 @@ useEffect(() => {
                                 <span className="message-counter">{message.unreadCount}</span>
                               )}
                             </div>
-                        </div>
+                          </div>
                         </div>
                       </div>
                     ))

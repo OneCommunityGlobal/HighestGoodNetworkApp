@@ -60,6 +60,7 @@ import LBProtectedRoute from './components/common/LBDashboard/LBProtectedRoute';
 import LBDashboard from './components/LBDashboard';
 import LBLogin from './components/LBDashboard/Login';
 import LBMessaging from './components/LBDashboard/Messaging/LBMessaging';
+import MasterPlan from './components/LBDashboard/Map/MasterPlan/MasterPlan';
 import ListOveriew from './components/LBDashboard/ListingOverview/ListOverview';
 import LBBidOverview from './components/LBDashboard/BiddingOverview/BiddingOverview';
 
@@ -422,6 +423,7 @@ export default(
         {/* Listing and Bidding Routes */}
         <LBProtectedRoute path="/lbdashboard" exact component={LBDashboard} />
         <LBProtectedRoute path="/lbdashboard/listOverview" exact component={ListOveriew} />
+        <LBProtectedRoute path="/lbdashboard/masterplan" exact component={MasterPlan} />
         <Route path="/lbdashboard/login" component={LBLogin} />
         <LBProtectedRoute path="/lbdashboard/messaging" component={LBMessaging} />
         <Route path="/lbdashboard/bidoverview" exact component={LBBidOverview} />
