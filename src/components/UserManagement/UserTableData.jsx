@@ -18,6 +18,7 @@ import { boxStyle } from '../../styles';
 import { formatDateLocal } from '../../utils/formatDate';
 import { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import { formatDate, formatDateYYYYMMDD } from '../../utils/formatDate';
+import SetUpFinalDayButton from './SetUpFinalDayButton';
 /**
  * The body row of the user table
  */
@@ -364,7 +365,10 @@ const UserTableData = React.memo(props => {
               props.isActive ? UserStatus.InActive : UserStatus.Active,
             );
           }}
-          style={darkMode ? { boxShadow: '0 0 0 0', fontWeight: 'bold' } : boxStyle}
+          style={{
+            ...darkMode ? { boxShadow: '0 0 0 0', fontWeight: 'bold' } : boxStyle,
+            padding: '5px', // Added 2px padding
+          }}
           disabled={!canChangeUserStatus}
           id={`btn-pause-profile-${props.user._id}`}
         >
@@ -379,7 +383,10 @@ const UserTableData = React.memo(props => {
             }`}
           onClick={() => props.onLogTimeOffClick(props.user)}
           id="requested-time-off-btn"
-          style={darkMode ? { boxShadow: '0 0 0 0', fontWeight: 'bold' } : boxStyle}
+          style={{
+            ...darkMode ? { boxShadow: '0 0 0 0', fontWeight: 'bold' } : boxStyle,
+            padding: '5px', // Added 2px padding
+          }}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -420,28 +427,14 @@ const UserTableData = React.memo(props => {
             ) : (
               ''
             )}
-            <button
-              type="button"
-              className={`btn btn-outline-${props.user.endDate ? 'warning' : 'success'} btn-sm`}
-              onClick={() => {
-                if (cantUpdateDevAdminDetails(props.user.email, props.authEmail)) {
-                  alert(
-                    'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.',
-                  );
-                  return;
-                }
-
-                props.onFinalDayClick(
-                  props.user,
-                  props.user.endDate ? FinalDay.NotSetFinalDay : FinalDay.FinalDay,
-                );
+            <SetUpFinalDayButton
+              userProfile={props.user}
+              darkMode={darkMode}
+              onFinalDaySave={updatedUser => {
+                // Update the user object in the parent state
+                props.onUserUpdate(updatedUser);
               }}
-              style={darkMode ? { boxShadow: '0 0 0 0', fontWeight: 'bold' } : boxStyle}
-              id={`btn-final-day-${props.user._id}`}
-              disabled={!canChangeUserStatus}
-            >
-              {props.user.endDate ? CANCEL : SET_FINAL_DAY}
-            </button>
+            />
           </>
         )}
       </td>
@@ -517,7 +510,10 @@ const UserTableData = React.memo(props => {
               onClick={() => {
                 props.onDeleteClick(props.user, 'archive');
               }}
-              style={darkMode ? { boxShadow: '0 0 0 0', fontWeight: 'bold' } : boxStyle}
+              style={{
+                ...darkMode ? { boxShadow: '0 0 0 0', fontWeight: 'bold' } : boxStyle,
+                padding: '5px', // Added 2px padding
+              }}
               disabled={props.auth?.user.userid === props.user._id || !canDeleteUsers}
             >
               {DELETE}
