@@ -31,3 +31,8 @@ src/components/TeamMemberTasks/**
 src/components/Teams/TeamMembersPopup.jsx
 src/components/UserManagement/**
 src/components/UserProfile/**
+src/components/EmailSubscribeForm/**
+src/components/Dashboard/**
+src/components/Teams/TeamMembersPopup.jsx
+src/components/Announcements/**
+
