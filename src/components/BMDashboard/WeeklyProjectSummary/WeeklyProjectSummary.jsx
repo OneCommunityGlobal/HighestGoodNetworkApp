@@ -3,6 +3,7 @@ import './WeeklyProjectSummary.css';
 import { useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
+import CostPredictionChart from './CostPredictionChart';
 
 const projectStatusButtons = [
   {
@@ -200,6 +201,9 @@ export default function WeeklyProjectSummary() {
       className: 'large',
       content: (
         <>
+          <div className="weekly-project-summary-card financial-big">
+            <CostPredictionChart />
+          </div>
           {Array.from({ length: 4 }).map(() => {
             const uniqueId = uuidv4();
             return (
@@ -208,8 +212,6 @@ export default function WeeklyProjectSummary() {
               </div>
             );
           })}
-
-          <div className="weekly-project-summary-card financial-big">📊 Big Card</div>
         </>
       ),
     },
