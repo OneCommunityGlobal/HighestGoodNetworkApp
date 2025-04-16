@@ -7,7 +7,10 @@
   user-select: none;
   -moz-user-select: none;
 }
-.btnDiv{ border: none;padding: 0;}
+.btnDiv {
+  border: none;
+  padding: 0;
+}
 
 .previewContainer {
   display: flex;
@@ -31,7 +34,7 @@
   background-color: rgba(82, 92, 102, 1);
   color: white;
   border-radius: 0 0 0.5rem 0.5rem;
-  border-color:  rgba(82, 92, 102, 1);
+  border-color: rgba(82, 92, 102, 1);
   padding: 0.25rem 0.25rem;
 }
 
@@ -40,7 +43,7 @@
   align-items: center;
   gap: 0.5rem;
   color: white;
-  border:none;
+  border: none;
 }
 
 .timer {
@@ -90,15 +93,15 @@
   color: white;
   background-color: #343a40;
   border-color: #343a40;
-  margin:0;
-  border:none;
+  margin: 0;
+  border: none;
 }
 
 .timerContainer .disabled {
   cursor: not-allowed;
   color: gray;
   background: transparent;
-  border:none;
+  border: none;
 }
 
 .btn:hover {
@@ -115,7 +118,7 @@
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 300ms;
-  border:none;
+  border: none;
 }
 
 @media (max-width: 460px) {

@@ -445,7 +445,12 @@ function Timer({ authUser, darkMode }) {
             aria-label="Add 15min"
             style={{ background: 'none', border: 'none' }}
           >
-            <div className={cs(css.iconWrapper, isButtonDisabled ? css.btnDisabled : css.transitionColor)}>
+            <div
+              className={cs(
+                css.iconWrapper,
+                isButtonDisabled ? css.btnDisabled : css.transitionColor,
+              )}
+            >
               <FaPlusCircle
                 className={checkBtnAvail(15) ? css.btn : css.btnDisabled}
                 fontSize="1.5rem"
@@ -460,7 +465,12 @@ function Timer({ authUser, darkMode }) {
             aria-label="Subtract 15min"
             style={{ background: 'none', border: 'none' }}
           >
-            <div className={cs(css.iconWrapper, isButtonDisabled ? css.btnDisabled : css.transitionColor)}>
+            <div
+              className={cs(
+                css.iconWrapper,
+                isButtonDisabled ? css.btnDisabled : css.transitionColor,
+              )}
+            >
               <FaMinusCircle
                 className={checkBtnAvail(-15) ? css.btn : css.btnDisabled}
                 fontSize="1.5rem"
@@ -475,7 +485,12 @@ function Timer({ authUser, darkMode }) {
               aria-label="Start timer"
               style={{ background: 'none', border: 'none' }}
             >
-              <div className={cs(css.iconWrapper, isButtonDisabled ? css.btnDisabled : css.transitionColor)}>
+              <div
+                className={cs(
+                  css.iconWrapper,
+                  isButtonDisabled ? css.btnDisabled : css.transitionColor,
+                )}
+              >
                 <FaPlayCircle
                   className={remaining !== 0 ? css.btn : css.btnDisabled}
                   fontSize="1.5rem"
@@ -491,12 +506,13 @@ function Timer({ authUser, darkMode }) {
               aria-label="Pause timer"
               style={{ background: 'none', border: 'none' }}
             >
-              <div className={cs(css.iconWrapper, isButtonDisabled ? css.btnDisabled : css.transitionColor)}>
-                <FaPauseCircle
-                  className={css.btn}
-                  fontSize="1.5rem"
-                  title="Pause timer"
-                />
+              <div
+                className={cs(
+                  css.iconWrapper,
+                  isButtonDisabled ? css.btnDisabled : css.transitionColor,
+                )}
+              >
+                <FaPauseCircle className={css.btn} fontSize="1.5rem" title="Pause timer" />
               </div>
             </button>
           )}
@@ -508,7 +524,12 @@ function Timer({ authUser, darkMode }) {
             aria-label="Stop timer and log time"
             style={{ background: 'none', border: 'none' }}
           >
-            <div className={cs(css.iconWrapper, isButtonDisabled ? css.btnDisabled : css.transitionColor)}>
+            <div
+              className={cs(
+                css.iconWrapper,
+                isButtonDisabled ? css.btnDisabled : css.transitionColor,
+              )}
+            >
               <FaStopCircle
                 className={started && goal - remaining >= 60000 ? css.btn : css.btnDisabled}
                 fontSize="1.5rem"
@@ -523,7 +544,12 @@ function Timer({ authUser, darkMode }) {
             aria-label="Reset timer"
             style={{ background: 'none', border: 'none' }}
           >
-            <div className={cs(css.iconWrapper, isButtonDisabled ? css.btnDisabled : css.transitionColor)}>
+            <div
+              className={cs(
+                css.iconWrapper,
+                isButtonDisabled ? css.btnDisabled : css.transitionColor,
+              )}
+            >
               <FaUndoAlt className={css.btn} fontSize="1.3rem" />
             </div>
           </button>

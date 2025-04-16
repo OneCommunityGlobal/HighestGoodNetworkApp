@@ -147,7 +147,7 @@ function OwnerMessage({
                 backgroundImage: `url(${editIcon})`,
                 backgroundSize: 'contain',
                 backgroundPosition: 'center',
-                backgroundRepeat: 'no-repeat'
+                backgroundRepeat: 'no-repeat',
               }}
               title="Edit this header"
             />
@@ -167,7 +167,7 @@ function OwnerMessage({
                   backgroundImage: `url(${deleteIcon})`,
                   backgroundSize: 'contain',
                   backgroundPosition: 'center',
-                  backgroundRepeat: 'no-repeat'
+                  backgroundRepeat: 'no-repeat',
                 }}
                 title="Click to restore header to standard message"
               />
