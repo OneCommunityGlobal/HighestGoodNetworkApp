@@ -29,6 +29,7 @@ function UserPermissionsPopUp({
   reminderModal,
   modalStatus,
   darkMode,
+  getChangeLogs,
 }) {
   const [searchText, onInputChange] = useState('');
   const [actualUserProfile, setActualUserProfile] = useState();
@@ -83,7 +84,7 @@ function UserPermissionsPopUp({
     const allUserInfo = await axios.get(url).then(res => res.data);
     const newUserInfo = { ...allUserInfo, permissions: { frontPermissions: userPermissions } };
 
-    await axios
+    axios
       .put(url, newUserInfo)
       .then(() => {
         if (!toastShown) {
@@ -96,6 +97,8 @@ function UserPermissionsPopUp({
           setToastShown(true);
         }
         toggle();
+        getAllUsers();
+        getChangeLogs();
       })
       .catch(err => {
         const ERROR_MESSAGE = `
@@ -105,7 +108,6 @@ function UserPermissionsPopUp({
           autoClose: 10000,
         });
       });
-    getAllUsers();
   };
   useEffect(() => {
     refInput.current.focus();
@@ -115,6 +117,7 @@ function UserPermissionsPopUp({
       setToastShown(false);
     }
   }, [modalStatus]);
+
   return (
     <>
       {modalStatus && (
@@ -171,13 +174,16 @@ function UserPermissionsPopUp({
               setIsOpen(true);
             }}
             placeholder="Shows only ACTIVE users"
+            className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
           />
           {isInputFocus || (searchText !== '' && allUserProfiles && allUserProfiles.length > 0) ? (
             <div
               tabIndex="-1"
               role="menu"
               aria-hidden="false"
-              className={`dropdown-menu${isOpen ? ' show dropdown__user-perms' : ''}`}
+              className={`dropdown-menu${isOpen ? ' show dropdown__user-perms' : ''} ${
+                darkMode ? 'bg-darkmode-liblack text-light' : ''
+              }`}
               style={{ marginTop: '0px', width: '100%' }}
             >
               {allUserProfiles

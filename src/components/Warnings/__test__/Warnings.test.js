@@ -16,7 +16,16 @@ const mockStore = configureStore([thunk]);
 
 describe('Warning Component', () => {
   let store;
-  const initialState = {};
+  const initialState = {
+    role: {
+      roles: ['User'],
+    },
+    auth: {
+      user: {
+        role: 'User',
+      },
+    },
+  };
   const mockPersonId = '123';
   const mockUsername = 'testuser';
 
@@ -29,7 +38,7 @@ describe('Warning Component', () => {
     render(
       <Provider store={store}>
         <Warning personId={mockPersonId} username={mockUsername} userRole="User" />
-      </Provider>
+      </Provider>,
     );
 
     expect(screen.queryByText('Tracking')).not.toBeInTheDocument();
@@ -39,21 +48,21 @@ describe('Warning Component', () => {
     render(
       <Provider store={store}>
         <Warning personId={mockPersonId} username={mockUsername} userRole="Administrator" />
-      </Provider>
+      </Provider>,
     );
 
     expect(screen.getByText('Tracking')).toBeInTheDocument();
   });
 
   test('toggles warnings display on button click', async () => {
-    warningActions.getWarningsByUserId.mockImplementation(() => () => Promise.resolve([
-      { title: 'Warning 1', warnings: [] },
-    ]));
+    warningActions.getWarningsByUserId.mockImplementation(() => () =>
+      Promise.resolve([{ title: 'Warning 1', warnings: [] }]),
+    );
 
     render(
       <Provider store={store}>
         <Warning personId={mockPersonId} username={mockUsername} userRole="Administrator" />
-      </Provider>
+      </Provider>,
     );
 
     const toggleButton = screen.getByText('Tracking');
