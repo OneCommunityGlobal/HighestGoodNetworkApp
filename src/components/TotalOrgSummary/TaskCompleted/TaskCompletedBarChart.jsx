@@ -18,8 +18,8 @@ export default function TaskCompletedBarChart({ isLoading, data, darkMode }) {
     return () => window.removeEventListener('resize', updateCardSize);
   }, []);
 
-  const active = data?.tasksStats?.active || {};
-  const complete = data?.tasksStats?.complete || {};
+  const active = data?.active || {};
+  const complete = data?.complete || {};
 
   const stats = [
     {

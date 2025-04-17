@@ -44,23 +44,6 @@ export const getTaskAndProjectStats = (startDate, endDate) => {
   };
 };
 
-export const fetchVolunteerWorkloadStats = (startDate, endDate, comparisonStartDate, comparisonEndDate) => {
-  const url = ENDPOINTS.TOTAL_ORG_SUMMARY(startDate, endDate, comparisonStartDate, comparisonEndDate);
-
-  return async dispatch => {
-    await dispatch(fetchTotalOrgSummaryReportBegin());
-
-    try {
-      const response = await axios.get(url);
-      dispatch(fetchTotalOrgSummaryReportSuccess(response.data));
-      return response.data;
-    } catch (error) {
-      dispatch(fetchTotalOrgSummaryReportError(error));
-      return error.response?.status || 500;
-    }
-  };
-};
-
 /**
  * This action is used to set the volunteer stats data in store.
  *
