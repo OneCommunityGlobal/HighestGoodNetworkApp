@@ -42,6 +42,7 @@ import PasswordInputModal from './PasswordInputModal';
 import WeeklySummaryRecipientsPopup from './WeeklySummaryRecepientsPopup';
 import SelectTeamPieChart from './SelectTeamPieChart';
 import { setTeamCodes } from '../../actions/teamCodes';
+import { updateOneSummaryReport } from '../../actions/weeklySummariesReport';
 
 import styles from './WeeklySummariesReport.module.scss';
 import { SlideToggle } from './components';
@@ -102,6 +103,7 @@ export class WeeklySummariesReport extends Component {
   }
 
   async componentDidMount() {
+    this._isMounted = true;
     const {
       loading,
       allBadgeData,
@@ -143,7 +145,17 @@ export class WeeklySummariesReport extends Component {
       const promisedHoursByWeek = this.weekDates.map(weekDate =>
         this.getPromisedHours(weekDate.toDate, summary.weeklycommittedHoursHistory),
       );
-      return { ...summary, promisedHoursByWeek };
+      let filterColor = [];
+      if (Array.isArray(summary.filterColor)) {
+        filterColor = summary.filterColor;
+      } else if (typeof summary.filterColor === 'string') {
+        filterColor = [summary.filterColor];
+      }
+      return {
+        ...summary,
+        promisedHoursByWeek,
+        filterColor,
+      };
     });
     /*
      * refactor logic of commentted codes above
@@ -212,24 +224,26 @@ export class WeeklySummariesReport extends Component {
         _ids: teamCodeGroup?.noCodeLabel?.map(item => item._id),
       });
     const chartData = [];
-    this.setState({
-      loading,
-      allRoleInfo: [],
-      summaries: summariesCopy,
-      activeTab:
-        sessionStorage.getItem('tabSelection') === null
-          ? navItems[1]
-          : sessionStorage.getItem('tabSelection'),
-      badges: allBadgeData,
-      hasSeeBadgePermission: badgeStatusCode === 200,
-      filteredSummaries: summariesCopy,
-      tableData: teamCodeGroup,
-      chartData,
-      COLORS,
-      colorOptions,
-      teamCodes,
-      auth,
-    });
+    if (this._isMounted) {
+      this.setState({
+        loading,
+        allRoleInfo: [],
+        summaries: summariesCopy,
+        activeTab:
+          sessionStorage.getItem('tabSelection') === null
+            ? navItems[1]
+            : sessionStorage.getItem('tabSelection'),
+        badges: allBadgeData,
+        hasSeeBadgePermission: badgeStatusCode === 200,
+        filteredSummaries: summariesCopy,
+        tableData: teamCodeGroup,
+        chartData,
+        COLORS,
+        colorOptions,
+        teamCodes,
+        auth,
+      });
+    }
 
     await getInfoCollections();
     const role = authUser?.role;
@@ -248,7 +262,9 @@ export class WeeklySummariesReport extends Component {
         }
       });
     }
-    this.setState({ allRoleInfo });
+    if (this._isMounted) {
+      this.setState({ allRoleInfo });
+    }
   }
 
   componentDidUpdate(preProps, preState) {
@@ -259,6 +275,7 @@ export class WeeklySummariesReport extends Component {
   }
 
   componentWillUnmount() {
+    this._isMounted = false;
     sessionStorage.removeItem('tabSelection');
   }
 
@@ -435,7 +452,8 @@ export class WeeklySummariesReport extends Component {
 
       // const matchesSelectedUsers = selectedUserIds.size === 0 || selectedUserIds.has(summary._id);
       const matchesSpecialColor =
-        activeFilterColors.length === 0 || activeFilterColors.includes(summary.filterColor);
+        activeFilterColors.length === 0 ||
+        activeFilterColors.some(color => summary.filterColor?.includes?.(color));
       return (
         (selectedCodesArray.length === 0 || selectedCodesArray.includes(summary.teamCode)) &&
         (selectedColorsArray.length === 0 ||
@@ -572,15 +590,35 @@ export class WeeklySummariesReport extends Component {
   };
 
   handleSpecialColorDotClick = (userId, color) => {
-    this.setState(prevState => {
-      const updatedSummaries = prevState.summaries.map(summary => {
-        if (summary._id === userId) {
-          return { ...summary, filterColor: color };
-        }
-        return summary;
-      });
-      return { summaries: updatedSummaries };
-    }, this.filterWeeklySummaries);
+    this.setState(
+      prevState => {
+        const updatedSummaries = prevState.summaries.map(summary => {
+          if (summary._id === userId) {
+            const currentColors = summary.filterColor || [];
+            const hasColor = currentColors.includes(color);
+            const newColors = hasColor
+              ? currentColors.filter(c => c !== color)
+              : [...currentColors, color];
+            return { ...summary, filterColor: newColors };
+          }
+          return summary;
+        });
+        return { summaries: updatedSummaries };
+      },
+      async () => {
+        const summary = this.state.summaries.find(u => u._id === userId);
+        await this.props.updateOneSummaryReport(userId, {
+          filterColor: summary.filterColor,
+          requestor: {
+            requestorId: this.props.auth?.user?._id,
+            role: this.props.auth?.user?.role,
+            permissions: this.props.auth?.user?.permissions,
+            email: this.props.auth?.user?.email,
+          },
+        });
+        this.filterWeeklySummaries();
+      },
+    );
   };
 
   handleTeamCodeChange = (oldTeamCode, newTeamCode, userIdObj) => {
@@ -1098,6 +1136,8 @@ const mapDispatchToProps = dispatch => ({
   getAllUserTeams: () => dispatch(getAllUserTeams()),
   getAllTeamCode: () => dispatch(getAllTeamCode()),
   setTeamCodes: teamCodes => dispatch(setTeamCodes(teamCodes)),
+  updateOneSummaryReport: (userId, updatedField) =>
+    dispatch(updateOneSummaryReport(userId, updatedField)),
 });
 
 function WeeklySummariesReportTab({ tabId, hidden, children }) {
