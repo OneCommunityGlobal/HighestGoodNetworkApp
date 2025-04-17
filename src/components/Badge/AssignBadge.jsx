@@ -195,6 +195,8 @@ function AssignBadge(props) {
           className={darkMode ? 'text-light dark-mode' : ''}
         >
           <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={() => toggle(false)}>
+        <Modal isOpen={isOpen} toggle={toggle} className={darkMode ? 'text-light dark-mode' : ''}>
+          <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={toggle}>
             Assign Badge
           </ModalHeader>
           <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
