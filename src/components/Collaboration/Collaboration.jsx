@@ -4,7 +4,6 @@ import { toast } from 'react-toastify';
 import { ApiEndpoint } from 'utils/URL';
 import OneCommunityImage from './One-Community-Horizontal-Homepage-Header-980x140px-2.png';
 
-
 import 'leaflet/dist/leaflet.css';
 
 class Collaboration extends Component {
@@ -119,7 +118,7 @@ class Collaboration extends Component {
         `${ApiEndpoint}/jobs/summaries?search=${searchTerm}&category=${selectedCategory}`,
         {
           method: 'GET',
-        }, 
+        },
       );
 
       if (!response.ok) {
@@ -127,8 +126,7 @@ class Collaboration extends Component {
       }
 
       const data = await response.json();
-      this.setState({ summaries: data }); 
-       
+      this.setState({ summaries: data });
     } catch (error) {
       toast.error('Error fetching summaries');
     }
@@ -142,7 +140,7 @@ class Collaboration extends Component {
       jobAds,
       totalPages,
       categories,
-      summaries, 
+      summaries,
     } = this.state;
 
     if (summaries) {
@@ -154,7 +152,7 @@ class Collaboration extends Component {
               target="_blank"
               rel="noreferrer"
             >
-              <img src={OneCommunityImage} alt="One Community Logo" />
+              <img src={OneCommunityImage} alt="One Community Logo" className="responsive-img" />
             </a>
           </div>
           <div className="container">
