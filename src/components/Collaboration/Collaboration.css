@@ -20,7 +20,6 @@
   height: auto;
   margin: 0 auto;
   flex-direction: column;
-  
 }
 .navbar {
   width: 100%;
@@ -29,9 +28,12 @@
   align-items: center;
   margin-bottom: 20px;
   background-color: #9c0;
-  padding: 10px;
+  padding: 20px;
   flex-flow: row nowrap;
+  box-sizing: border-box;
+  flex-wrap: wrap;
 }
+
 .navbar-left input,
 .navbar-left select {
   display: flex;
@@ -45,15 +47,12 @@
   display: flex;
   align-items: center;
   padding: 4px;
-
-  
 }
 .search-form input {
   margin-right: 10px;
   padding: 5px;
   border: 1px solid #ccc;
   border-radius: 4px;
- 
 }
 .pagination button,
 .search {
@@ -67,7 +66,7 @@ select {
 }
 .job-list {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 20px;
   width: 100%;
 }
@@ -126,7 +125,8 @@ select {
 .pagination button:hover {
   background-color: #4a99ee;
 }
-.search-form button, .navbar-right select {
+.search-form button,
+.navbar-right select {
   padding: 10px 15px;
   border: none;
   border-radius: 2px;
@@ -140,7 +140,6 @@ select {
   margin-right: 15px;
   margin-top: -7px;
   position: relative;
-
 }
 
 .search-form button:hover {
@@ -179,22 +178,20 @@ select {
 }
 
 .navbar-right select {
-  padding: 12px 18px;  
-  font-size: 16px;  
+  padding: 12px 18px;
+  font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 5px;
   margin-top: -14px;
 }
 
-
-
 @media screen and (max-width: 480px) {
   .job-list {
-    grid-template-columns: 1fr;  
+    grid-template-columns: 1fr;
   }
 
   .navbar {
-    flex-direction: column; 
+    flex-direction: column;
     padding: 5px;
     text-align: center;
   }
@@ -202,7 +199,7 @@ select {
   .navbar-left,
   .navbar-right {
     width: 100%;
-    flex-direction: column; 
+    flex-direction: column;
     align-items: center;
     gap: 10px;
   }
@@ -215,19 +212,71 @@ select {
   }
 
   .search-form input {
-    width: 90%; 
+    width: 90%;
     margin-bottom: 10px;
   }
 
   .search-form button {
-    width: 90%; 
+    width: 90%;
     padding: 8px;
-    font-size: 14px; 
+    font-size: 14px;
   }
 
   .pagination button {
     padding: 8px;
-    width: auto; 
+    width: auto;
+  }
+}
+.responsive-img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+@media screen and (max-width: 1024px) {
+  .job-list {
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
+@media screen and (max-width: 768px) {
+  .job-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media screen and (max-width: 800px) {
+  .navbar {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .navbar-left,
+  .navbar-right {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .search-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .search-form input,
+  .search-form button {
+    width: 90%;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+
+  .search-form button {
+    padding: 10px;
+    font-size: 14px;
+  }
+}
