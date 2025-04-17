@@ -1,7 +1,9 @@
 import { connect } from 'react-redux';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
-import { Alert, Col, Container, Row } from 'reactstrap';
+import { Alert, Col, Container, Row, Dropdown, DropdownToggle, DropdownMenu, DropdownItem, Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import 'moment-timezone';
 
 import hasPermission from 'utils/permissions';
@@ -67,6 +69,36 @@ function calculateToOverDate() {
   return currentDate.toISOString().split('T')[0];
 }
 
+function calculateComparisonDates(comparisonType, fromDate, toDate) {
+  const start = new Date(fromDate);
+  const end = new Date(toDate);
+  const diffTime = Math.abs(end - start);
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+  switch (comparisonType) {
+    case 'Week Over Week':
+      return {
+        comparisonStartDate: new Date(start.setDate(start.getDate() - diffDays)).toISOString().split('T')[0],
+        comparisonEndDate: new Date(end.setDate(end.getDate() - diffDays)).toISOString().split('T')[0]
+      };
+    case 'Month Over Month':
+      return {
+        comparisonStartDate: new Date(start.setMonth(start.getMonth() - 1)).toISOString().split('T')[0],
+        comparisonEndDate: new Date(end.setMonth(end.getMonth() - 1)).toISOString().split('T')[0]
+      };
+    case 'Year Over Year':
+      return {
+        comparisonStartDate: new Date(start.setFullYear(start.getFullYear() - 1)).toISOString().split('T')[0],
+        comparisonEndDate: new Date(end.setFullYear(end.getFullYear() - 1)).toISOString().split('T')[0]
+      };
+    default:
+      return {
+        comparisonStartDate: null,
+        comparisonEndDate: null
+      };
+  }
+}
+
 const fromDate = calculateFromDate();
 const toDate = calculateToDate();
 const fromOverDate = calculateFromOverDate();
@@ -112,9 +144,16 @@ function TotalOrgSummary(props) {
   const [taskProjectHours, setTaskProjectHours] = useState([]);
   const [isVolunteerFetchingError, setIsVolunteerFetchingError] = useState(false);
   const [volunteerStats, setVolunteerStats] = useState(null);
-  const comparisonStartDate = '2025-01-16';
-  const comparisonEndDate = '2025-01-26';
   const [isLoading, setIsLoading] = useState(true);
+  const [dateRangeDropdownOpen, setDateRangeDropdownOpen] = useState(false);
+  const [comparisonDropdownOpen, setComparisonDropdownOpen] = useState(false);
+  const [selectedDateRange, setSelectedDateRange] = useState('Current Week');
+  const [selectedComparison, setSelectedComparison] = useState('No Comparison');
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [currentFromDate, setCurrentFromDate] = useState(fromDate);
+  const [currentToDate, setCurrentToDate] = useState(toDate);
 
   const dispatch = useDispatch();
 
@@ -135,10 +174,10 @@ function TotalOrgSummary(props) {
   }, [allUserProfiles]);
 
   useEffect(() => {
-    if (Array.isArray(usersId) && usersId.length > 0 && fromDate && toDate) {
-      dispatch(getAllUsersTimeEntries(usersId, fromDate, toDate));
+    if (Array.isArray(usersId) && usersId.length > 0 && currentFromDate && currentToDate) {
+      dispatch(getAllUsersTimeEntries(usersId, currentFromDate, currentToDate));
     }
-  }, [usersId, fromDate, toDate, dispatch]);
+  }, [usersId, currentFromDate, currentToDate, dispatch]);
 
   useEffect(() => {
     if (
@@ -168,17 +207,13 @@ function TotalOrgSummary(props) {
         });
     }
   }, [allUsersTimeEntries, usersId, fromOverDate, toOverDate]);
+
   useEffect(() => {
     async function fetchData() {
-      // const { taskHours, projectHours } = await props.getTaskAndProjectStats(fromDate, toDate);
-      // const {
-      //   taskHours: lastTaskHours,
-      //   projectHours: lastProjectHours,
-      // } = await props.getTaskAndProjectStats(fromOverDate, toOverDate);
       const {
         taskHours: { count: taskHours },
         projectHours: { count: projectHours },
-      } = await props.getTaskAndProjectStats(fromDate, toDate);
+      } = await props.getTaskAndProjectStats(currentFromDate, currentToDate);
       const {
         taskHours: { count: lastTaskHours },
         projectHours: { count: lastProjectHours },
@@ -194,16 +229,22 @@ function TotalOrgSummary(props) {
       }
     }
     fetchData();
-  }, [fromDate, toDate, fromOverDate, toOverDate]);
+  }, [currentFromDate, currentToDate, fromOverDate, toOverDate]);
 
   useEffect(() => {
     const fetchVolunteerStats = async () => {
       try {
+        const { comparisonStartDate, comparisonEndDate } = calculateComparisonDates(
+          selectedComparison,
+          currentFromDate,
+          currentToDate
+        );
+        
         const volunteerStatsResponse = await props.getTotalOrgSummary(
-          fromDate,
-          toDate,
+          currentFromDate,
+          currentToDate,
           comparisonStartDate,
-          comparisonEndDate,
+          comparisonEndDate
         );
         setVolunteerStats(volunteerStatsResponse.data);
         await props.hasPermission('');
@@ -214,7 +255,40 @@ function TotalOrgSummary(props) {
     };
 
     fetchVolunteerStats();
-  }, [fromDate, toDate]);
+  }, [currentFromDate, currentToDate, selectedComparison]);
+
+  const handleDateRangeSelect = option => {
+    if (option === 'Select Date Range') {
+      setShowDatePicker(true);
+    } else {
+      setSelectedDateRange(option);
+      setShowDatePicker(false);
+      setSelectedComparison('No Comparison');
+      
+      if (option === 'Current Week') {
+        setCurrentFromDate(fromDate);
+        setCurrentToDate(toDate);
+      } else if (option === 'Previous Week') {
+        const prevWeekStart = new Date(fromDate);
+        const prevWeekEnd = new Date(toDate);
+        prevWeekStart.setDate(prevWeekStart.getDate() - 7);
+        prevWeekEnd.setDate(prevWeekEnd.getDate() - 7);
+        setCurrentFromDate(prevWeekStart.toISOString().split('T')[0]);
+        setCurrentToDate(prevWeekEnd.toISOString().split('T')[0]);
+      }
+    }
+  };
+
+  const handleDatePickerSubmit = () => {
+    if (startDate && endDate) {
+      setSelectedDateRange(`${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`);
+      setShowDatePicker(false);
+      setSelectedComparison('No Comparison');
+      
+      setCurrentFromDate(startDate.toISOString().split('T')[0]);
+      setCurrentToDate(endDate.toISOString().split('T')[0]);
+    }
+  };
 
   if (error || isVolunteerFetchingError) {
     return (
@@ -239,11 +313,99 @@ function TotalOrgSummary(props) {
         darkMode ? 'bg-oxford-blue text-light' : 'cbg--white-smoke'
       }`}
     >
-      <Row>
-        <Col lg={{ size: 12 }}>
+      <Row className="d-flex justify-content-between align-items-center">
+        <Col lg={{ size: 6 }}>
           <h3 className="mt-3 mb-5">Total Org Summary</h3>
         </Col>
+        <Col lg={{ size: 6 }} className="d-flex justify-content-end">
+          <Dropdown
+            isOpen={dateRangeDropdownOpen}
+            toggle={() => setDateRangeDropdownOpen(!dateRangeDropdownOpen)}
+          >
+            <DropdownToggle caret>{selectedDateRange}</DropdownToggle>
+            <DropdownMenu>
+              <DropdownItem onClick={() => handleDateRangeSelect('Current Week')}>
+                Current Week
+              </DropdownItem>
+              <DropdownItem onClick={() => handleDateRangeSelect('Previous Week')}>
+                Previous Week
+              </DropdownItem>
+              <DropdownItem onClick={() => handleDateRangeSelect('Select Date Range')}>
+                Select Date Range
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+          <div style={{ width: '25px' }} />
+          <Dropdown
+            isOpen={comparisonDropdownOpen}
+            toggle={() => setComparisonDropdownOpen(!comparisonDropdownOpen)}
+          >
+            <DropdownToggle caret>{selectedComparison}</DropdownToggle>
+            <DropdownMenu>
+              <DropdownItem onClick={() => setSelectedComparison('No Comparison')}>
+                No Comparison
+              </DropdownItem>
+              <DropdownItem onClick={() => setSelectedComparison('Week Over Week')}>
+                Week Over Week
+              </DropdownItem>
+              <DropdownItem onClick={() => setSelectedComparison('Month Over Month')}>
+                Month Over Month
+              </DropdownItem>
+              <DropdownItem onClick={() => setSelectedComparison('Year Over Year')}>
+                Year Over Year
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+        </Col>
       </Row>
+
+      <Modal isOpen={showDatePicker} toggle={() => setShowDatePicker(!showDatePicker)}>
+        <ModalHeader toggle={() => setShowDatePicker(!showDatePicker)}>
+          Select Date Range
+        </ModalHeader>
+        <ModalBody>
+          <div className="d-flex flex-column gap-4">
+            <div>
+              <label style={{ display: 'block', marginBottom: '1rem' }}>Start Date</label>
+              <div style={{ padding: '0.5rem 0' }}>
+                <DatePicker
+                  selected={startDate}
+                  onChange={date => setStartDate(date)}
+                  className="form-control"
+                  dateFormat="MM/dd/yyyy"
+                  placeholderText="Select start date"
+                />
+              </div>
+            </div>
+            <div>
+              <label style={{ display: 'block', marginBottom: '1rem' }}>End Date</label>
+              <div style={{ padding: '0.5rem 0' }}>
+                <DatePicker
+                  selected={endDate}
+                  onChange={date => setEndDate(date)}
+                  className="form-control"
+                  dateFormat="MM/dd/yyyy"
+                  placeholderText="Select end date"
+                  minDate={startDate}
+                />
+              </div>
+            </div>
+          </div>
+        </ModalBody>
+        <ModalFooter>
+          <Button color="secondary" onClick={() => setShowDatePicker(false)}>
+            Cancel
+          </Button>
+          <Button
+            color="primary"
+            onClick={handleDatePickerSubmit}
+            disabled={!startDate || !endDate}
+          >
+            Apply
+          </Button>
+        </ModalFooter>
+      </Modal>
+
       <hr />
       <AccordianWrapper title="Volunteer Status">
         <Row>
@@ -253,6 +415,7 @@ function TotalOrgSummary(props) {
                 isLoading={isLoading}
                 volunteerNumberStats={volunteerStats?.volunteerNumberStats}
                 totalHoursWorked={volunteerStats?.totalHoursWorked}
+                comparisonType={selectedComparison}
               />
             </div>
           </Col>
@@ -269,6 +432,7 @@ function TotalOrgSummary(props) {
                 totalBadgesAwarded={volunteerStats?.totalBadgesAwarded}
                 tasksStats={volunteerStats?.tasksStats}
                 totalActiveTeams={volunteerStats?.totalActiveTeams}
+                comparisonType={selectedComparison}
               />
             </div>
           </Col>
@@ -292,6 +456,7 @@ function TotalOrgSummary(props) {
               <VolunteerStatusChart
                 isLoading={isLoading}
                 volunteerNumberStats={volunteerStats?.volunteerNumberStats}
+                comparisonType={selectedComparison}
               />
             </div>
           </Col>
@@ -313,6 +478,7 @@ function TotalOrgSummary(props) {
                   usersTimeEntries={usersTimeEntries}
                   usersOverTimeEntries={usersOverTimeEntries}
                   hoursData={volunteerStats?.volunteerHoursStats}
+                  comparisonType={selectedComparison}
                 />
                 <div className="d-flex flex-column align-items-center justify-content-center">
                   <HoursWorkList darkMode={darkMode} usersTimeEntries={usersTimeEntries} />
@@ -342,6 +508,7 @@ function TotalOrgSummary(props) {
                   isLoading={isLoading}
                   data={taskProjectHours}
                   darkMode={darkMode}
+                  comparisonType={selectedComparison}
                 />
               </div>
             </div>
@@ -367,6 +534,7 @@ function TotalOrgSummary(props) {
                 isLoading={isLoading}
                 data={volunteerStats?.anniversaryStats}
                 darkMode={darkMode}
+                comparisonType={selectedComparison}
               />
             </div>
           </Col>
@@ -382,6 +550,7 @@ function TotalOrgSummary(props) {
               <WorkDistributionBarChart
                 isLoading={isLoading}
                 workDistributionStats={volunteerOverview?.workDistributionStats}
+                comparisonType={selectedComparison}
               />
             </div>
           </Col>
@@ -393,6 +562,7 @@ function TotalOrgSummary(props) {
               <RoleDistributionPieChart
                 isLoading={isLoading}
                 roleDistributionStats={volunteerOverview?.roleDistributionStats}
+                comparisonType={selectedComparison}
               />
             </div>
           </Col>
@@ -408,7 +578,8 @@ function TotalOrgSummary(props) {
               <TeamStats
                 isLoading={isLoading}
                 usersInTeamStats={volunteerStats?.usersInTeamStats}
-                endDate={toDate}
+                endDate={currentToDate}
+                comparisonType={selectedComparison}
               />
             </div>
           </Col>
@@ -420,6 +591,7 @@ function TotalOrgSummary(props) {
               <BlueSquareStats
                 isLoading={isLoading}
                 blueSquareStats={volunteerStats?.blueSquareStats}
+                comparisonType={selectedComparison}
               />
             </div>
           </Col>
