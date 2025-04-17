@@ -22,13 +22,16 @@
 .card {
   margin-left: 35px;
   margin-right: 50px;
-  margin-bottom: 20px;
+}
+
+.card-wrapper {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
 }
 
 .navbar {
   z-index: 100;
   white-space: nowrap;
-  margin-bottom: 20px;
 }
 
 .timer-message-section {
