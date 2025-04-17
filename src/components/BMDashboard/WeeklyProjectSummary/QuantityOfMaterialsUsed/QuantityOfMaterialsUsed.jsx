@@ -432,39 +432,120 @@ function QuantityOfMaterialsUsed({ data }) {
   };
 
   const getMaterialUsageDetails = materialName => {
-    const material = data.find(d => d?.itemType?.name === materialName);
-    if (!material) return null;
+    // First find all materials with the matching name
+    const matchingMaterials = data.filter(m => m?.itemType?.name === materialName);
 
-    const records = (material.updateRecord || []).map(r => ({
-      date: moment(r.date).format('YYYY-MM-DD'),
-      quantity: r.quantityUsed || 0,
-      project: material.project?.name || 'Unknown',
-    }));
+    if (!matchingMaterials || matchingMaterials.length === 0) return null;
 
-    // Build timeline by date
-    const timelineMap = {};
+    // Track usage by project
     const usageByProject = {};
+    const projectData = {};
 
-    records.forEach(({ date, quantity, project }) => {
-      timelineMap[date] = (timelineMap[date] || 0) + quantity;
-      usageByProject[project] = (usageByProject[project] || 0) + quantity;
+    // Process each material item
+    matchingMaterials.forEach(material => {
+      if (!material.updateRecord || !material.project?.name) return;
+
+      const projectName = material.project.name;
+
+      // Initialize project data if not already done
+      if (!projectData[projectName]) {
+        projectData[projectName] = {
+          totalUsage: 0,
+          timelineByDate: {}, // Track usage by date for this project
+        };
+      }
+
+      // Process update records for this material
+      material.updateRecord.forEach(record => {
+        if (!record || !record.date) return;
+
+        const recordDate = moment(record.date);
+        let shouldInclude = false;
+
+        // Apply date filtering based on selected date range
+        if (selectedDate === 'ALL') {
+          shouldInclude = true;
+        } else if (selectedDate === 'Last Week') {
+          shouldInclude = recordDate.isBetween(
+            moment()
+              .subtract(1, 'week')
+              .startOf('week'),
+            moment()
+              .subtract(1, 'week')
+              .endOf('week'),
+          );
+        } else if (selectedDate === 'Last Month') {
+          shouldInclude = recordDate.isBetween(
+            moment()
+              .subtract(1, 'month')
+              .startOf('month'),
+            moment()
+              .subtract(1, 'month')
+              .endOf('month'),
+          );
+        } else if (selectedDate === 'Last Year') {
+          shouldInclude = recordDate.isBetween(
+            moment()
+              .subtract(1, 'year')
+              .startOf('year'),
+            moment()
+              .subtract(1, 'year')
+              .endOf('year'),
+          );
+        } else if (selectedDate === 'This Week') {
+          shouldInclude = recordDate.isBetween(moment().startOf('week'), moment().endOf('week'));
+        } else if (selectedDate === 'This Month') {
+          shouldInclude = recordDate.isBetween(moment().startOf('month'), moment().endOf('month'));
+        } else if (selectedDate === 'This Year') {
+          shouldInclude = recordDate.isBetween(moment().startOf('year'), moment().endOf('year'));
+        } else if (selectedDate === 'Custom' && dateRangeOne[0] && dateRangeOne[1]) {
+          shouldInclude = recordDate.isBetween(
+            moment(dateRangeOne[0]).startOf('day'),
+            moment(dateRangeOne[1]).endOf('day'),
+          );
+        }
+
+        if (shouldInclude) {
+          const quantity = record.quantityUsed || 0;
+          const dateStr = recordDate.format('YYYY-MM-DD');
+
+          // Add to project's total usage
+          projectData[projectName].totalUsage += quantity;
+
+          // Add to this project's timeline, grouped by date
+          if (!projectData[projectName].timelineByDate[dateStr]) {
+            projectData[projectName].timelineByDate[dateStr] = 0;
+          }
+          projectData[projectName].timelineByDate[dateStr] += quantity;
+        }
+      });
+
+      // Update the usageByProject map with the total for this project
+      usageByProject[projectName] = projectData[projectName].totalUsage;
     });
 
-    const timeline = Object.entries(timelineMap).map(([date, quantity]) => ({
-      date,
-      quantity,
-    }));
+    // Sort projects by usage (highest first)
+    const sortedProjects = Object.entries(usageByProject).sort((a, b) => b[1] - a[1]);
 
-    const total = timeline.reduce((sum, r) => sum + r.quantity, 0);
+    // Get top project or default to Unknown
+    const topProject = sortedProjects.length > 0 ? sortedProjects[0][0] : 'Unknown';
+    const topProjectUsage = sortedProjects.length > 0 ? sortedProjects[0][1] : 0;
 
-    const topProject =
-      Object.entries(usageByProject).sort((a, b) => b[1] - a[1])[0]?.[0] || 'Unknown';
+    // Create the timeline for the top project only
+    let timeline = [];
+    if (topProject !== 'Unknown' && projectData[topProject]) {
+      timeline = Object.entries(projectData[topProject].timelineByDate)
+        .map(([date, quantity]) => ({ date, quantity }))
+        .sort((a, b) => new Date(b.date) - new Date(a.date));
+    }
 
     return {
       name: materialName,
       timeline,
-      total,
+      total: topProjectUsage,
       project: topProject,
+      projectUsage: sortedProjects.map(([name, usage]) => ({ name, usage })),
+      debugProjects: sortedProjects.map(([name, usage]) => `${name}: ${usage}`).join(', '),
     };
   };
   return (
@@ -472,7 +553,7 @@ function QuantityOfMaterialsUsed({ data }) {
       className={`weekly-project-summary-card normal-card ${darkMode ? 'dark-mode' : ''}`}
       style={{ position: 'relative' }}
     >
-      <div class="chart-title-container">
+      <div className="chart-title-container">
         <h2 className="quantity-of-materials-used-chart-title">Quantity of Materials Used</h2>
 
         <button
@@ -491,6 +572,9 @@ function QuantityOfMaterialsUsed({ data }) {
         place="left"
         effect="solid"
         className="quantity-of-materials-used-chart-tooltip"
+        clickable
+        event="click"
+        globalEventOff="click"
       >
         <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>Chart Overview</div>
         <div>This chart compares material quantities across two time periods.</div>
@@ -761,7 +845,7 @@ function QuantityOfMaterialsUsed({ data }) {
           }}
         >
           <strong>
-            Top {Math.min(10, visibleRange[1] - visibleRange[0])} of {selectedDate}:{' '}
+            Visible Top {Math.min(10, visibleRange[1] - visibleRange[0])} of {selectedDate}:{' '}
           </strong>
           {chartData.datasets[0].data
             .slice(visibleRange[0], visibleRange[1])

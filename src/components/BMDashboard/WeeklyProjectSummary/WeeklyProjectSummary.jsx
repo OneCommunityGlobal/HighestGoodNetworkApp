@@ -143,23 +143,23 @@ export default function WeeklyProjectSummary() {
               const uniqueId = uuidv4();
               return (
                 <div
-                key={uniqueId}
-                className="weekly-project-summary-card status-card"
-                style={{ backgroundColor: button.bgColor }} // Dynamic Background
-              >
-                <div className="weekly-card-title">{button.title}</div>
+                  key={uniqueId}
+                  className="weekly-project-summary-card status-card"
+                  style={{ backgroundColor: button.bgColor }} // Dynamic Background
+                >
+                  <div className="weekly-card-title">{button.title}</div>
                   <div
-                  className="weekly-status-button"
-                  style={{ backgroundColor: button.buttonColor }} // Dynamic Oval Color
-                >
-                  <span className="weekly-status-value">{button.value}</span>
-                </div>
-                <div
-                  className="weekly-status-change"
-                  style={{ color: button.textColor }} // Dynamic Change Color
-                >
-                  {button.change}
-                </div>
+                    className="weekly-status-button"
+                    style={{ backgroundColor: button.buttonColor }} // Dynamic Oval Color
+                  >
+                    <span className="weekly-status-value">{button.value}</span>
+                  </div>
+                  <div
+                    className="weekly-status-change"
+                    style={{ color: button.textColor }} // Dynamic Change Color
+                  >
+                    {button.change}
+                  </div>
                 </div>
               );
             })}
