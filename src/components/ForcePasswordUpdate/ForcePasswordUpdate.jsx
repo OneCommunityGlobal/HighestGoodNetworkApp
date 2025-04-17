@@ -63,6 +63,8 @@ export class ForcePasswordUpdate extends Form {
           onClose: () => this.props.history.replace('/login'),
         },
       );
+    } else if (status === 400) {
+      toast.error('Please select a new password. New password cannot be default password.');
     } else {
       toast.error('Something went wrong. Please contact your administrator.');
     }
