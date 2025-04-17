@@ -32,7 +32,7 @@
     "jwt-decode": "^2.2.0",
     "lodash": "^4.17.21",
     "lz-string": "^1.5.0",
-    "moment": "^2.29.2",
+    "moment": "^2.30.1",
     "moment-timezone": "^0.5.33",
     "pdfmake": "^0.1.65",
     "prop-types": "^15.7.2",

@@ -1,0 +1,264 @@
+/* Container for the Paid Labor Cost card */
+.paid-labor-cost-container {
+  font-family: inherit;
+  padding: 10px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* Title */
+.paid-labor-cost-title {
+  font-size: large;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* Filters container */
+.paid-labor-cost-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: space-between;
+  align-items: flex-start;
+  position: relative;
+  overflow: visible;
+}
+
+/* Each filter group (Tasks, Project, Date Range) */
+.paid-labor-cost-filter-group {
+  display: flex;
+  flex-direction: column;
+  min-width: 70px;
+  flex: 1 1 0;
+}
+
+/* Filter labels */
+.paid-labor-cost-filter-label {
+  margin: 3px;
+  font-size: 12px;
+  color: #666;
+}
+
+/* Filter select elements */
+.paid-labor-cost-filter-select {
+  font-size: 12px;
+  padding: 4px 8px;
+  height: 28px;
+  box-sizing: border-box;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: white;
+}
+
+/* Chart container */
+.paid-labor-cost-chart-container {
+  width: 100%;
+  height: 300px;
+}
+
+/* Loading indicator */
+.paid-labor-cost-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  color: #666;
+  font-size: 12px;
+}
+
+/* Date picker container styles */
+.paid-labor-cost-daterange-row {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+/* Date Picker */
+
+.paid-labor-cost-custom-date-range-picker {
+  position: relative;
+  width: 100%;
+  overflow: visible;
+  position: relative;
+
+  max-width: 300px;
+  transition: all 0.3s ease-in-out;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+.paid-labor-cost-date-range-input {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 3px;
+  padding: 2px 4px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: white;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.paid-labor-cost-date-range-input:hover {
+  border-color: #999;
+}
+
+.paid-labor-cost-date-range-text {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 12px;
+}
+
+.paid-labor-cost-date-range-icon {
+  margin-left: 8px;
+  opacity: 0.6;
+}
+
+.paid-labor-cost-date-range-calendar {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: auto;
+  width: max-content;
+  min-width: 250px;
+  max-width: 95vw;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 999;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.paid-labor-cost-calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background-color: #f8f8f8;
+  border-bottom: 1px solid #eee;
+}
+
+.paid-labor-cost-month-nav {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.paid-labor-cost-month-nav:hover {
+  background-color: #eee;
+}
+
+.paid-labor-cost-current-month {
+  font-weight: 500;
+}
+
+.paid-labor-cost-calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.paid-labor-cost-weekday {
+  font-size: 12px;
+  color: #666;
+  padding: 4px 0;
+}
+
+.paid-labor-cost-calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  padding: 4px;
+}
+
+.paid-labor-cost-day {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  cursor: pointer;
+  border-radius: 50%;
+  font-size: 13px;
+  transition: background-color 0.2s;
+  aspect-ratio: 1 / 1; /* Makes each day cell square */
+  min-height: 30px;
+}
+
+.paid-labor-cost-day.paid-labor-cost-current-month {
+  color: #333;
+}
+
+.paid-labor-cost-day.paid-labor-cost-other-month {
+  color: #ccc;
+}
+
+.paid-labor-cost-day:hover:not(.disabled) {
+  background-color: #f0f0f0;
+}
+
+.paid-labor-cost-day.paid-labor-cost-start-date,
+.paid-labor-cost-day.paid-labor-cost-end-date {
+  background-color: #3498db;
+  color: white !important;
+}
+
+.paid-labor-cost-day.in-range {
+  background-color: #e9f5ff;
+}
+
+.paid-labor-cost-day.disabled {
+  color: #ddd;
+  cursor: not-allowed;
+  text-decoration: line-through;
+}
+
+.paid-labor-cost-calendar-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border-top: 1px solid #eee;
+}
+
+.paid-labor-cost-reset-button {
+  background: none;
+  border: none;
+  color: #3498db;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.paid-labor-cost-reset-button:hover {
+  text-decoration: underline;
+}
+
+.paid-labor-cost-selection-text {
+  font-size: 13px;
+  color: #666;
+}
+
+@media screen and (max-width: 768px) {
+  .paid-labor-cost-custom-date-range-picker {
+    max-width: 100%;
+    min-width: auto;
+    flex: 1 1 100%;
+  }
+  .paid-labor-cost-date-range-calendar {
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 95vw;
+  }
+}
