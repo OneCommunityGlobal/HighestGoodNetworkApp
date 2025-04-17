@@ -14,12 +14,17 @@ import {
   GET_USER_ID,
   GET_BADGE_COUNT,
   RESET_BADGE_COUNT,
+  SET_ACTIVE_TAB,
 } from '../constants/badge';
 import { ENDPOINTS } from '../utils/URL';
 
 const getAllBadges = allBadges => ({
   type: GET_ALL_BADGE_DATA,
   allBadges,
+});
+export const setActiveTab = tab => ({
+  type: SET_ACTIVE_TAB,
+  payload: tab,
 });
 
 export const fetchAllBadges = () => {
