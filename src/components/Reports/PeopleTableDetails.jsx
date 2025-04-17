@@ -15,25 +15,9 @@ function PeopleTableDetails(props) {
   const [assign, setAssign] = useState('');
   const [estimatedHours, setEstimatedHours] = useState('');
   const [order, setOrder] = useState('');
-  const [startDate] = useState('');
-  const [endDate] = useState('');
-
+  const [startDate,updateStartDate] = useState(new Date('01/01/2010'));
+  const [endDate, updateEndDate] = useState(new Date());
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  // useEffect(() => {
-  //   function handleResize() {
-  //     const w = window.innerWidth
-  //     if (w <= 1020) {
-  //       setisMobile(true);
-  //     } else {
-  //       setisMobile(false)
-  //     }
-  //   }
-  //   window.addEventListener('resize', handleResize);
-
-  //   return () => {
-  //     window.removeEventListener('resize', handleResize);
-  //   };
-  // }, []);
 
   useEffect(() => {
     const handleResize = () => {
@@ -82,6 +66,8 @@ function PeopleTableDetails(props) {
     setActive('');
     setAssign('');
     setEstimatedHours('');
+    updateStartDate(new Date('01/01/2010'));
+    updateEndDate(new Date());
   };
 
   const filterOptions = tasks => {
@@ -108,13 +94,22 @@ function PeopleTableDetails(props) {
     const simple = [];
     // eslint-disable-next-line array-callback-return,consistent-return
     let filteredList = tasks.filter(task => {
+      // Convert task dates to Date objects for comparison
+      const taskStartDate = new Date(task.startDate);
+      // const taskEndDate = new Date(task.endDate);
+      
+      // Check if dates are within the selected range
+      const isWithinDateRange = (!startDate || taskStartDate <= endDate) 
+      // && (!endDate || taskEndDate <= endDate);
+
       if (
         task.taskName.toLowerCase().includes(name.toLowerCase()) &&
         task?.priority?.toLowerCase().includes(priority.toLowerCase()) &&
         task?.status?.toLowerCase().includes(status.toLowerCase()) &&
         task?.active?.toLowerCase().includes(active.toLowerCase()) &&
         task?.estimatedHours?.toLowerCase().includes(estimatedHours.toLowerCase()) &&
-        task?.assign?.toLowerCase().includes(assign.toLowerCase())
+        task?.assign?.toLowerCase().includes(assign.toLowerCase()) &&
+        isWithinDateRange
       ) {
         return true;
       }
@@ -175,7 +170,7 @@ function PeopleTableDetails(props) {
                   if (index < 2) {
                     return (
                       <img
-                        key={resource.index}
+                        key={`${value._id}-${resource.name}`}
                         alt={resource.name}
                         src={resource.profilePic || '/pfp-default.png'}
                         className="img-circle"
@@ -225,7 +220,7 @@ function PeopleTableDetails(props) {
               if (index < 2) {
                 return (
                   <img
-                    key={resource.index}
+                    key={`${value._id}-${resource.name}`}
                     alt={resource.name}
                     src={resource.profilePic || '/pfp-default.png'}
                     className="img-circle"
@@ -284,7 +279,7 @@ function PeopleTableDetails(props) {
   );
 
   // const renderFilteredTask = () => (
-
+    
   // )
   return (
     <Container fluid className={`wrapper ${darkMode ? 'text-light' : ''}`}>
@@ -307,8 +302,10 @@ function PeopleTableDetails(props) {
           active={active}
           assign={assign}
           estimatedHours={estimatedHours}
-          startDate={startDate}
+          StartDate={startDate}
+          UpdateStartDate={updateStartDate}
           EndDate={endDate}
+          UpdateEndDate={updateEndDate}
         />
         <button type="button" onClick={resetFilters} className="tasks-table-clear-filter-button">
           Clear Filters
@@ -327,6 +324,7 @@ function PeopleTableDetails(props) {
       </div>
       <div className="people-table">
         {filteredTasks.map(value => (
+
           // eslint-disable-next-line react/no-unstable-nested-components
           <NewModal header="Task info" trigger={() => <> {(windowWidth <= 1020) ? renderMobileFilteredTask(value) : renderFilteredTask(value)}</>}>
             <div>Why This Task is important</div>
