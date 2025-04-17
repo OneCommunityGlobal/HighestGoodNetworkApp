@@ -1,13 +1,41 @@
-import React from 'react';
 import './Resources.css';
 
 function Resources() {
     const data = [
-        { sNo: 1, name: 'Harsh Kadyan', materials: '????', facilities: 'Software Engineer Team', status: { text: 'Debited', color: 'green' }, dueDate: '23 April 2025' },
-        { sNo: 2, name: 'John Doe', materials: '????', facilities: 'HR Facilities', status: { text: 'Partially Debited', color: 'yellow' }, dueDate: '12 May 2025' },
-        { sNo: 3, name: 'Jane Smith', materials: '????', facilities: 'IT Equipment', status: { text: 'Not Debited', color: 'red' }, dueDate: '15 March 2025' },
-        { sNo: 4, name: 'Alex Brown', materials: '????', facilities: 'Admin Facilities', status: { text: 'Debited', color: 'green' }, dueDate: '20 April 2025' },
+      {
+        sNo: 1,
+        name: 'Harsh Kadyan',
+        materials: '????',
+        facilities: 'Software Engineer Team',
+        status: { text: 'Debited', color: 'green' },
+        dueDate: '23 April 2025',
+      },
+      {
+        sNo: 2,
+        name: 'John Doe',
+        materials: '????',
+        facilities: 'HR Facilities',
+        status: { text: 'Partially Debited', color: 'yellow' },
+        dueDate: '12 May 2025',
+      },
+      {
+        sNo: 3,
+        name: 'Jane Smith',
+        materials: '????',
+        facilities: 'IT Equipment',
+        status: { text: 'Not Debited', color: 'red' },
+        dueDate: '15 March 2025',
+      },
+      {
+        sNo: 4,
+        name: 'Alex Brown',
+        materials: '????',
+        facilities: 'Admin Facilities',
+        status: { text: 'Debited', color: 'green' },
+        dueDate: '20 April 2025',
+      },
     ];
+
 
     return (
       <div className="resources-usage">
