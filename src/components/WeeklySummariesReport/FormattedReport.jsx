@@ -702,7 +702,10 @@ function Index({ summary, weekIndex, allRoleInfo, auth, handleSpecialColorDotCli
               height: '15px',
               margin: '0 5px',
               borderRadius: '50%',
-              backgroundColor: summary.filterColor === color ? color : 'transparent',
+              backgroundColor:
+                Array.isArray(summary.filterColor) && summary.filterColor.includes(color)
+                  ? color
+                  : 'transparent',
               border: `3px solid ${color}`,
               cursor: 'pointer',
             }}
