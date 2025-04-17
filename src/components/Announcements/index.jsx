@@ -315,6 +315,7 @@ function Announcements({ title, email }) {
   };
 
   const handleCreateFbPost = async () => {
+    handleFacebookLogin();
     if (!emailContent || emailContent.trim() === '') {
       toast.error('Error: No content to post. Please add some content in Weekly progress editor');
       return;
@@ -435,6 +436,7 @@ function Announcements({ title, email }) {
       toast.error("Failed to post tweet.");
     });
   }
+
   const postToPlatform = (postId, textContent, platform) => {
 
     const confirmDelete = window.confirm(`Are you sure you want to post this on ${platform}`);
@@ -604,14 +606,6 @@ function Announcements({ title, email }) {
 
           {title ? null : (
             <div className="social-buttons-container">
-              <button
-                type="button"
-                className="send-button"
-                onClick={handleFacebookLogin}
-                style={darkMode ? boxStyleDark : boxStyle}
-              >
-                Login with Facebook
-              </button>
               <button
                 type="button"
                 className="send-button"
