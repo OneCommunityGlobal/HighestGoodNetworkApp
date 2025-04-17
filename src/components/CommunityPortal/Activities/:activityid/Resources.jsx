@@ -52,7 +52,7 @@ function Resources() {
       </div>
 
       {/* data for each row */}
-      {data.map((row) => (
+      {data.map(row => (
         <div key={row.sNo} className="resource-row">
           <div className="column">{row.sNo}</div>
           <div className="column">{row.name}</div>
@@ -61,7 +61,9 @@ function Resources() {
           <div className={`column status-${row.status.color}`}>{row.status.text}</div>
           <div className="column">{row.dueDate}</div>
           <div className="column action-column">
-            <button type="button" className="view-details">View Details</button>
+            <button type="button" className="view-details">
+              View Details
+            </button>
           </div>
         </div>
       ))}
