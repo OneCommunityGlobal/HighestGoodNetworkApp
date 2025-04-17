@@ -48,6 +48,8 @@ const Projects = function(props) {
   const [searchName, setSearchName] = useState("");
   const [allProjects, setAllProjects] = useState(null);
 
+  const [isArchiving, setIsArchiving] = useState(false);
+
   const useDebounce = (value, delay) => {
     const [debouncedValue, setDebouncedValue] = useState(value);
   
@@ -104,9 +106,11 @@ const Projects = function(props) {
   };
 
   const confirmArchive = async () => {
+    setIsArchiving(true); // show loading on confirm
     const updatedProject = { ...projectTarget, isArchived: true };
     await onUpdateProject(updatedProject);
     await props.fetchAllProjects();
+    setIsArchiving(false); // reset loading
     onCloseModal();
   };
 
@@ -251,6 +255,8 @@ const Projects = function(props) {
           modalMessage={modalData.modalMessage}
           modalTitle={modalData.modalTitle}
           darkMode={darkMode}
+          confirmButtonText={isArchiving ? 'Archiving...' : 'Confirm'}
+          isConfirmDisabled={isArchiving}
         />
       </div>
     </>

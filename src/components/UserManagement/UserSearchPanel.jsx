@@ -90,8 +90,9 @@ function UserSearchPanel({
         onChange={e => {
           onSearch(e.target.value);
         }}
+        style={{marginRight: "5px"}}
       />
-      <div className="input-group-prepend ml-2">
+      <div className="input-group-prepend">
         <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>{SHOW}</span>
         <select
           id="active-filter-dropdown"

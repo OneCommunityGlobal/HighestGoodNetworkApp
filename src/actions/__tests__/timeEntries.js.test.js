@@ -1,8 +1,9 @@
 // Import the functions to test
+import moment from 'moment-timezone'; // Import moment-timezone
+import axios from 'axios';
 import {
   setTimeEntriesForPeriod,
   setTimeEntriesForWeek,
-  updateTimeEntries,
   getTimeEntriesForWeek,
   deleteTimeEntry,
   editTimeEntry,
@@ -15,9 +16,7 @@ import { GET_TIME_ENTRIES_PERIOD, GET_TIME_ENTRIES_WEEK } from '../../constants/
 // Import ENDPOINTS
 import { ENDPOINTS } from '../../utils/URL';
 // Import moment for date manipulation
-import moment from 'moment-timezone'; // Import moment-timezone
 // Mock axios for HTTP requests
-import axios from 'axios';
 
 // Mock axios module
 jest.mock('axios');
@@ -29,6 +28,7 @@ describe('timeEntries action creators', () => {
   });
 
   afterAll(() => {
+    // eslint-disable-next-line no-console
     console.error.mockRestore();
   });
 
@@ -189,53 +189,85 @@ describe('timeEntries action creators', () => {
     it('should return the last entry date', async () => {
       const dispatchMock = jest.fn(); // Mock dispatch function
       const userId = '123'; // Sample user ID
-      const fromDate = moment().subtract(2, 'weeks').toISOString(); // Sample from date
+      const fromDate = moment()
+        .subtract(2, 'weeks')
+        .toISOString(); // Sample from date
       const toDate = moment().toISOString(); // Sample to date
-      const formattedToDate = moment(toDate).endOf('day').format('YYYY-MM-DDTHH:mm:ss'); // Adjusted toDate
+      const formattedToDate = moment(toDate)
+        .endOf('day')
+        .format('YYYY-MM-DDTHH:mm:ss'); // Adjusted toDate
       const timeEntries = [
-      { dateOfWork: moment().subtract(1, 'days').toISOString(), createdDateTime: moment().subtract(1, 'days').toISOString() },
-      { dateOfWork: moment().subtract(2, 'days').toISOString(), createdDateTime: moment().subtract(2, 'days').toISOString() },
-    ];  // Sample time entries
+        {
+          dateOfWork: moment()
+            .subtract(1, 'days')
+            .toISOString(),
+          createdDateTime: moment()
+            .subtract(1, 'days')
+            .toISOString(),
+        },
+        {
+          dateOfWork: moment()
+            .subtract(2, 'days')
+            .toISOString(),
+          createdDateTime: moment()
+            .subtract(2, 'days')
+            .toISOString(),
+        },
+      ]; // Sample time entries
       axios.get.mockResolvedValue({ data: timeEntries }); // Mock axios get response
 
       const result = await getTimeEndDateEntriesByPeriod(userId, fromDate, toDate)(dispatchMock); // Call getTimeEndDateEntriesByPeriod
-      
+
       // Verify the result is the formatted date of the last entry
       expect(result).toBe(timeEntries[0].createdDateTime);
       // Verify axios.get was called with the correct URL
-      expect(axios.get).toHaveBeenCalledWith(ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate, formattedToDate));
+      expect(axios.get).toHaveBeenCalledWith(
+        ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate, formattedToDate),
+      );
     });
 
     it('should return "N/A" if no entries are found', async () => {
       const dispatchMock = jest.fn(); // Mock dispatch function
       const userId = '123'; // Sample user ID
-      const fromDate = moment().subtract(2, 'weeks').toISOString(); // Sample from date
+      const fromDate = moment()
+        .subtract(2, 'weeks')
+        .toISOString(); // Sample from date
       const toDate = moment().toISOString(); // Sample to date
-      const formattedToDate = moment(toDate).endOf('day').format('YYYY-MM-DDTHH:mm:ss'); // Adjusted toDate
+      const formattedToDate = moment(toDate)
+        .endOf('day')
+        .format('YYYY-MM-DDTHH:mm:ss'); // Adjusted toDate
       axios.get.mockResolvedValue({ data: [] }); // Mock axios get response with no data
 
       const result = await getTimeEndDateEntriesByPeriod(userId, fromDate, toDate)(dispatchMock); // Call getTimeEndDateEntriesByPeriod
 
       // Verify the result is "N/A"
-      expect(result).toBe("N/A");
+      expect(result).toBe('N/A');
       // Verify axios.get was called with the correct URL
-      expect(axios.get).toHaveBeenCalledWith(ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate, formattedToDate));
+      expect(axios.get).toHaveBeenCalledWith(
+        ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate, formattedToDate),
+      );
     });
 
     it('should handle errors and return "N/A"', async () => {
       const dispatchMock = jest.fn(); // Mock dispatch function
       const userId = '123'; // Sample user ID
-      const fromDate = moment().subtract(2, 'weeks').toISOString(); // Sample from date
+      const fromDate = moment()
+        .subtract(2, 'weeks')
+        .toISOString(); // Sample from date
       const toDate = moment().toISOString(); // Sample to date
-      const formattedToDate = moment(toDate).endOf('day').format('YYYY-MM-DDTHH:mm:ss'); // Adjusted toDate
+      const formattedToDate = moment(toDate)
+        .endOf('day')
+        .format('YYYY-MM-DDTHH:mm:ss'); // Adjusted toDate
       axios.get.mockRejectedValue(new Error('Request failed')); // Mock axios get error response
 
       const result = await getTimeEndDateEntriesByPeriod(userId, fromDate, toDate)(dispatchMock); // Call getTimeEndDateEntriesByPeriod
 
       // Verify the result is "N/A"
-      expect(result).toBe("N/A");
+      expect(result).toBe('N/A');
       // Verify axios.get was called with the correct URL
-      expect(axios.get).toHaveBeenCalledWith(ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate, formattedToDate));
+      expect(axios.get).toHaveBeenCalledWith(
+        ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate, formattedToDate),
+      );
     });
   });
 
@@ -244,12 +276,24 @@ describe('timeEntries action creators', () => {
     it('should dispatch setTimeEntriesForPeriod with filtered and sorted entries', async () => {
       const dispatchMock = jest.fn(); // Mock dispatch function
       const userId = '123'; // Sample user ID
-      const fromDate = moment().subtract(2, 'weeks').toISOString(); // Sample from date
+      const fromDate = moment()
+        .subtract(2, 'weeks')
+        .toISOString(); // Sample from date
       const toDate = moment().toISOString(); // Sample to date
-      const formattedToDate = moment(toDate).endOf('day').format('YYYY-MM-DDTHH:mm:ss'); // Adjusted toDate
+      const formattedToDate = moment(toDate)
+        .endOf('day')
+        .format('YYYY-MM-DDTHH:mm:ss'); // Adjusted toDate
       const timeEntries = [
-        { dateOfWork: moment().subtract(1, 'days').toISOString() },
-        { dateOfWork: moment().subtract(2, 'days').toISOString() },
+        {
+          dateOfWork: moment()
+            .subtract(1, 'days')
+            .toISOString(),
+        },
+        {
+          dateOfWork: moment()
+            .subtract(2, 'days')
+            .toISOString(),
+        },
       ]; // Sample time entries
       axios.get.mockResolvedValue({ data: timeEntries }); // Mock axios get response
 
@@ -258,10 +302,14 @@ describe('timeEntries action creators', () => {
       // Verify dispatchMock was called with setTimeEntriesForPeriod and filtered entries
       expect(dispatchMock).toHaveBeenCalledWith({
         type: GET_TIME_ENTRIES_PERIOD,
-        payload: timeEntries.sort((a, b) => moment(b.dateOfWork).valueOf() - moment(a.dateOfWork).valueOf()),
+        payload: timeEntries.sort(
+          (a, b) => moment(b.dateOfWork).valueOf() - moment(a.dateOfWork).valueOf(),
+        ),
       });
       // Verify axios.get was called with the correct URL
-      expect(axios.get).toHaveBeenCalledWith(ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate, formattedToDate));
+      expect(axios.get).toHaveBeenCalledWith(
+        ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate, formattedToDate),
+      );
     });
   });
 
@@ -271,11 +319,27 @@ describe('timeEntries action creators', () => {
       const dispatchMock = jest.fn(); // Mock dispatch function
       const userId = '123'; // Sample user ID
       const offset = 1; // Sample offset
-      const fromDate = moment().tz('America/Los_Angeles').startOf('week').subtract(offset, 'weeks').format('YYYY-MM-DDTHH:mm:ss');
-      const toDate = moment().tz('America/Los_Angeles').endOf('week').subtract(offset, 'weeks').format('YYYY-MM-DDTHH:mm:ss');
+      const fromDate = moment()
+        .tz('America/Los_Angeles')
+        .startOf('week')
+        .subtract(offset, 'weeks')
+        .format('YYYY-MM-DDTHH:mm:ss');
+      const toDate = moment()
+        .tz('America/Los_Angeles')
+        .endOf('week')
+        .subtract(offset, 'weeks')
+        .format('YYYY-MM-DDTHH:mm:ss');
       const timeEntries = [
-        { dateOfWork: moment().subtract(1, 'days').toISOString() },
-        { dateOfWork: moment().subtract(2, 'days').toISOString() },
+        {
+          dateOfWork: moment()
+            .subtract(1, 'days')
+            .toISOString(),
+        },
+        {
+          dateOfWork: moment()
+            .subtract(2, 'days')
+            .toISOString(),
+        },
       ]; // Sample time entries
       axios.get.mockResolvedValue({ data: timeEntries }); // Mock axios get response
 
@@ -291,7 +355,9 @@ describe('timeEntries action creators', () => {
         offset,
       });
       // Verify axios.get was called with the correct URL
-      expect(axios.get).toHaveBeenCalledWith(ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate, toDate));
+      expect(axios.get).toHaveBeenCalledWith(
+        ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate, toDate),
+      );
     });
   });
 });
