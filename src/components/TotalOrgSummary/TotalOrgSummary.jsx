@@ -12,6 +12,7 @@ import { getAllUserProfile } from 'actions/userManagement';
 import { getAllUsersTimeEntries } from 'actions/allUsersTimeEntries';
 import { getTimeEntryForOverDate } from 'actions/index';
 import { getTaskAndProjectStats, getTotalOrgSummary } from 'actions/totalOrgSummary';
+import { fetchVolunteerWorkloadStats } from 'actions/totalOrgSummary';
 
 import '../Header/DarkMode.css';
 import './TotalOrgSummary.css';
@@ -172,42 +173,42 @@ function TotalOrgSummary(props) {
   }, [allUsersTimeEntries, usersId, fromOverDate, toOverDate]);
   useEffect(() => {
     async function fetchData() {
-      // const { taskHours, projectHours } = await props.getTaskAndProjectStats(fromDate, toDate);
-      // const {
-      //   taskHours: lastTaskHours,
-      //   projectHours: lastProjectHours,
-      // } = await props.getTaskAndProjectStats(fromOverDate, toOverDate);
-      const {
-        taskHours: { count: taskHours },
-        projectHours: { count: projectHours },
-      } = await props.getTaskAndProjectStats(fromDate, toDate);
-      const {
-        taskHours: { count: lastTaskHours },
-        projectHours: { count: lastProjectHours },
-      } = await props.getTaskAndProjectStats(fromOverDate, toOverDate);
+      // ✅ Hours Completed data
+      const currentHours = await props.getTaskAndProjectStats(fromDate, toDate);
+      const previousHours = await props.getTaskAndProjectStats(fromOverDate, toOverDate);
 
-      if (taskHours && projectHours) {
-        setTaskProjectHours({
-          taskHours,
-          projectHours,
-          lastTaskHours,
-          lastProjectHours,
+      const taskHours = currentHours?.taskHours?.count ?? 0;
+      const projectHours = currentHours?.projectHours?.count ?? 0;
+      const lastTaskHours = previousHours?.taskHours?.count ?? 0;
+      const lastProjectHours = previousHours?.projectHours?.count ?? 0;
+
+      setTaskProjectHours({
+        taskHours,
+        projectHours,
+        lastTaskHours,
+        lastProjectHours,
+      });
+
+      // ✅ Task Completed data — using props.volunteerOverview
+      // console.log(volunteerOverview);
+      // console.log(volunteerStats);
+      if (volunteerOverview?.tasksStats) {
+        const activeCurrent = volunteerOverview.tasksStats.active?.current ?? 0;
+        const completeCurrent = volunteerOverview.tasksStats.complete?.current ?? 0;
+        const activeChange = volunteerOverview.tasksStats.active?.percentage ?? 0;
+        const completeChange = volunteerOverview.tasksStats.complete?.percentage ?? 0;
+
+        setTaskCompletedStats({
+          tasksStats: {
+            active: { current: activeCurrent, percentage: activeChange },
+            complete: { current: completeCurrent, percentage: completeChange },
+          },
         });
       }
-      const activeCurrent = volunteerOverview?.tasksStats?.active?.current ?? 0;
-      const completeCurrent = volunteerOverview?.tasksStats?.complete?.current ?? 0;
-      const activeChange = volunteerOverview?.tasksStats?.active?.percentage ?? 0;
-      const completeChange = volunteerOverview?.tasksStats?.complete?.percentage ?? 0;
-
-      setTaskCompletedStats({
-        tasksStats: {
-          active: { current: activeCurrent, percentage: activeChange },
-          complete: { current: completeCurrent, percentage: completeChange },
-        },
-      });
     }
+
     fetchData();
-  }, [fromDate, toDate, fromOverDate, toOverDate]);
+  }, [fromDate, toDate, fromOverDate, toOverDate, volunteerOverview]);
 
   useEffect(() => {
     const fetchVolunteerStats = async () => {
@@ -465,6 +466,8 @@ const mapDispatchToProps = dispatch => ({
   getTaskAndProjectStats: () => dispatch(getTaskAndProjectStats(fromDate, toDate)),
   hasPermission: permission => dispatch(hasPermission(permission)),
   getAllUserProfile: () => dispatch(getAllUserProfile()),
+  fetchVolunteerWorkloadStats: (startDate, endDate, comparisonStartDate, comparisonEndDate) =>
+    dispatch(fetchVolunteerWorkloadStats(startDate, endDate, comparisonStartDate, comparisonEndDate)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(TotalOrgSummary);
