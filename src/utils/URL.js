@@ -226,6 +226,9 @@ export const ENDPOINTS = {
   BM_TAG_ADD: `${APIEndpoint}/bm/tags`,
   BM_TAGS_DELETE: `${APIEndpoint}/bm/tags`,
 
+  BM_ORGS_WITH_LOCATION: `${APIEndpoint}/bm/orgLocation`,
+  ORG_DETAILS: (projectId) => `${APIEndpoint}/bm/orgLocation/${projectId}`,
+
   GET_TIME_OFF_REQUESTS: () => `${APIEndpoint}/getTimeOffRequests`,
   ADD_TIME_OFF_REQUEST: () => `${APIEndpoint}/setTimeOffRequest`,
   UPDATE_TIME_OFF_REQUEST: id => `${APIEndpoint}/updateTimeOffRequest/${id}`,
