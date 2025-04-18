@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import Image from './Image'; // Adjust the import path as necessary
@@ -12,7 +13,9 @@ describe('Image Component', () => {
       className: 'test-class',
     };
 
-    render(<Image {...props} />);
+    render(
+      <Image label="Test Image" name="testImage" src="test-image.jpg" className="test-class" />,
+    );
 
     const image = screen.getByRole('img', { name: props.label });
     expect(image).toHaveAttribute('src', props.src);
@@ -29,7 +32,9 @@ describe('Image Component', () => {
       name: 'testImage',
     };
 
-    render(<Image {...props} />);
+    // render(<Image {...props} />); -> fails due to 'react/jsx-props-no-spreading'
+    render(<Image label="Test Image" name="testImage" />);
+
     const label = screen.getByText(props.label);
     expect(label).toBeInTheDocument();
     expect(label).toHaveAttribute('for', props.name);
@@ -43,7 +48,8 @@ describe('Image Component', () => {
       error: 'Error loading image',
     };
 
-    render(<Image {...props} />);
+    // render(<Image {...props} />); -> fails due to 'react/jsx-props-no-spreading'
+    render(<Image label="Test Image" name="testImage" error="Error loading image" />);
     const errorMessage = screen.getByText(props.error);
     expect(errorMessage).toBeInTheDocument();
     expect(errorMessage).toHaveClass('alert alert-danger mt-1');
@@ -51,12 +57,13 @@ describe('Image Component', () => {
 
   // Test Case 4: It should not display an error message when there is no error
   it('does not display an error message when there is no error', () => {
-    const props = {
-      label: 'Test Image',
-      name: 'testImage',
-    };
+    // const props = {
+    //  label: 'Test Image',
+    //  name: 'testImage',
+    // };
 
-    render(<Image {...props} />);
+    // render(<Image {...props} />); -> fails due to 'react/jsx-props-no-spreading'
+    render(<Image label="Test Image" name="testImage" />);
     const errorMessage = screen.queryByText(/error/i);
     expect(errorMessage).not.toBeInTheDocument();
   });
