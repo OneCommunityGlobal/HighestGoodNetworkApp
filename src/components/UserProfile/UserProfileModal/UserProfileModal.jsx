@@ -60,7 +60,7 @@ const UserProfileModal = props => {
 
   const [addButton, setAddButton] = useState(true);
   const [summaryFieldView, setSummaryFieldView] = useState(true);
-
+  
   const [personalLinks, dispatchPersonalLinks] = useReducer(
     (personalLinks, { type, value, passedIndex }) => {
       switch (type) {
@@ -348,6 +348,16 @@ const UserProfileModal = props => {
                 <span>{blueSquare[0]?.createdDate}</span>
               </Label>
             </FormGroup>
+            {blueSquare[0]?.manuallyAssignedBy && (
+              <FormGroup>
+                <Label className={fontColor} for="manuallyAssignedBy">
+                  Manual Assignment
+                </Label>
+                <div style={{ fontSize: '1rem', color: 'grey', marginLeft: '0.2rem', marginBottom: '0.4rem', fontWeight: 'bold' }}>
+                {blueSquare[0]?.manuallyAssignedBy?.firstName} {blueSquare[0]?.manuallyAssignedBy?.lastName}
+                </div>
+              </FormGroup>
+            )}
             <FormGroup>
               <Label className={fontColor} for="report">Summary</Label>
               {canEditInfringements ? <Input 
@@ -360,6 +370,13 @@ const UserProfileModal = props => {
               />
               :<p>{blueSquare[0]?.description}</p>}
             </FormGroup>
+            {blueSquare[0]?.editedBy && (
+              <FormGroup>
+                <Label className={fontColor} for="editedBy" style={{ fontSize: '0.8rem', color: 'grey', textAlign: 'right', display: 'block' }}>
+                  Edited By {blueSquare[0]?.editedBy?.firstName} {blueSquare[0]?.editedBy?.lastName}
+                </Label>
+              </FormGroup>
+            )}
           </>
         )}
 
@@ -377,10 +394,24 @@ const UserProfileModal = props => {
                 <span>{blueSquare[0]?.createdDate}</span>
               </Label>
             </FormGroup>
+            {blueSquare[0]?.manuallyAssignedBy && (
+              <FormGroup>
+                <Label className={fontColor} for="manuallyAssignedBy">
+                  Manual Assignment: {blueSquare[0]?.manuallyAssignedBy?.firstName} {blueSquare[0]?.manuallyAssignedBy?.lastName}
+                </Label>
+              </FormGroup>
+            )}
             <FormGroup>
               <Label className={fontColor} for="description">Summary</Label>
               <p className={fontColor}>{blueSquare[0]?.description}</p>
             </FormGroup>
+            {blueSquare[0]?.editedBy && (
+              <FormGroup>
+                <Label className={fontColor} for="editedBy" style={{ fontSize: '0.8rem', color: 'grey' }}>
+                  Edited By {blueSquare[0]?.editedBy?.firstName} {blueSquare[0]?.editedBy?.lastName}
+                </Label>
+              </FormGroup>
+            )}
           </>
         )}
 
