@@ -71,8 +71,6 @@ import CPDashboard from './components/CommunityPortal';
 import ActivityList from './components/CommunityPortal/Activities/ActivityList';
 import ActivitiesPage from './components/CommunityPortal/Activities/ActivitiesPage'; 
 
-import AddActivities from './components/CommunityPortal/Activities/AddActivities';
-import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
 
 // import AddActivities from './components/CommunityPortal/Activities/AddActivities';
 // import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
