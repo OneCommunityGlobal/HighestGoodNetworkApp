@@ -27,6 +27,7 @@ const SocialMediaPostDetails = () => {
         const foundPost = posts.find((p) => String(p._id) === String(postId));
 
         if (foundPost) {
+          console.log("Reached post here ", foundPost);
           setPost(foundPost);
           setEditableContent(foundPost.textContent || '');
 
@@ -115,9 +116,9 @@ const SocialMediaPostDetails = () => {
       <Label for="postImage">Post Image</Label>
       {imageBase64 ? (
         <img 
-          src={`data:image/png;base64,${imageBase64}`} 
+          src={`${imageBase64}`} 
           alt="Post Image" 
-          style={{ width: '100%', maxWidth: '300px', marginBottom: '10px', display: 'block' }} 
+          style={{ width: '80%', height: "70%", maxWidth: '300px', marginBottom: '10px', display: 'block' }} 
         />
       ) : (
         <p style={{ color: 'gray' }}>No Image Uploaded</p>

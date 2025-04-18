@@ -663,6 +663,19 @@ function Announcements({ title, email }) {
                       : post.textContent}
                   </Link> 
                   <br />
+      {post.base64Srcs && post.base64Srcs.length > 0 && (
+        <div className="flex gap-9 mt-9 flex-wrap">
+          {post.base64Srcs.map((src, index) => (
+            <img
+              key={index}
+              src={`${src}`}
+              alt={`Uploaded ${index}`}
+              className="w-[300px] h-[300px] object-contain rounded max-w-none"
+              loading="lazy"
+            />
+          ))}
+        </div>
+      )}
                 </div>
 
                 <Button color="success" size="sm" style={{ marginRight: '8px' }} onClick={() => postToPlatform(post._id, post.textContent, post.platform)}>
