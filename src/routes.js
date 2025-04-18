@@ -43,7 +43,7 @@ import UnsubscribeForm from './components/EmailSubscribeForm/Unsubscribe';
 import NotFoundPage from './components/NotFound/NotFoundPage';
 import { EmailSender } from './components/common/EmailSender/EmailSender';
 import Collaboration from './components/Collaboration';
-import ApplicantsAgeChart from './components/ApplicantsAgeChart';
+import ApplicantsAgeChart from './components/ApplicantsChart';
 
 // LB Dashboard
 import LBProtectedRoute from './components/common/LBDashboard/LBProtectedRoute';
