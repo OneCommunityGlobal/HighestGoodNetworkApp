@@ -72,7 +72,7 @@ function TotalReportBarGraph({ barData, range }) {
         .style('fill', 'white')
         .style('font-size', '20px')
         .style('font-weight', 'bold')
-        .text(isNaN(d.value) ? '' : d.value);
+        .text(Number.isNaN(d.value) ? '' : d.value);
     });
 
    
