@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import Countdown from '../Countdown'; 
+import Countdown from '../Countdown';
 
 describe('Countdown Component', () => {
   const defaultProps = {
@@ -84,13 +84,13 @@ describe('Countdown Component', () => {
     const { rerender } = render(<Countdown {...defaultProps} />);
     const editButton = screen.getByTitle('edit initial goal');
     fireEvent.click(editButton);
-  
+
     const hourInput = screen.getByDisplayValue('1');
     fireEvent.change(hourInput, { target: { value: '2' } });
-  
+
     const saveButton = screen.getByTitle('save initial goal');
     fireEvent.click(saveButton);
-  
+
     expect(defaultProps.wsMessageHandler.sendSetGoal).toHaveBeenCalledWith(7200000); // 2 hours in milliseconds
   });
 });
