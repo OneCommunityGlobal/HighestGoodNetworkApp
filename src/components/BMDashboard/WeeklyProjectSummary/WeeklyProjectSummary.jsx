@@ -3,6 +3,7 @@ import './WeeklyProjectSummary.css';
 import { useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
+import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 
 const projectStatusButtons = [
   {
@@ -185,14 +186,12 @@ export default function WeeklyProjectSummary() {
       title: 'Lessons Learned',
       key: 'Lessons Learned',
       className: 'half',
-      content: [1, 2].map(() => {
-        const uniqueId = uuidv4();
-        return (
-          <div key={uniqueId} className="weekly-project-summary-card normal-card">
-            📊 Card
-          </div>
-        );
-      }),
+      content: [
+        <MostFrequentKeywords key="frequent-tags-card" />,
+        <div key="another-lessons-card" className="weekly-project-summary-card normal-card">
+          📊 Card
+        </div>,
+      ],
     },
     {
       title: 'Financials',
