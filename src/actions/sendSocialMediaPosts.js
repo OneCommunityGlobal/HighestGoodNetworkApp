@@ -29,12 +29,40 @@ export const sendTweet = (html) => {
   };
 };
 
-export const sendFbPost = (html, accessToken) => {
+export const ssendFbPost = (html, accessToken) => {
+  //const url = ENDPOINTS.CREATE_FB_POST();
+  return async () => {
+    try {
+      //console.log(html, "reached here html");
+      const response = axios.post(ENDPOINTS.CREATE_FB_POST(), {
+        emailContent: html,
+        accessToken,
+      });
+      console.log('Successfully posted on Facebook Feed:', response);
+
+      // Display a success toast
+      toast.success('Successfully posted on Facebook Feed', {
+        position: 'top-right', // You can adjust the position as needed
+        autoClose: 3000, // Close the toast after 3 seconds (adjust as needed)
+      });
+    } catch (error) {
+      console.error('Error posting on Facebook:', error);
+
+      // Display an error toast
+      toast.error('Error posting on Facebook', {
+        position: 'top-right', // You can adjust the position as needed
+        autoClose: 3000, // Close the toast after 3 seconds (adjust as needed)
+      });
+    }
+  };
+};
+
+export const sendFbPost = (html, base64Srcs, accessToken) => {
   const url = ENDPOINTS.POST_FB;
   return async () => {
     try {
       //console.log(html, "reached here html");
-      const response = await axios.post(url, { emailContent: html, accessToken, });
+      const response = await axios.post(url, { emailContent: html, base64Content: base64Srcs, accessToken });
       console.log('Successfully posted on Facebook Feed:', response);
 
       // Display a success toast

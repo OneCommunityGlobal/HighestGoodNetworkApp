@@ -3,11 +3,10 @@ import { useState, useEffect, useRef } from 'react';
 import './Announcements.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react'; // Import Editor from TinyMCE
-import { sendTweet, scheduleTweet, scheduleFbPost, fetchPosts, fetchPosts_separately, deletePost, sendFbPost } from '../../actions/sendSocialMediaPosts';
+import { sendTweet, scheduleTweet, scheduleFbPost, fetchPosts, fetchPosts_separately, deletePost, sendFbPost, ssendFbPost } from '../../actions/sendSocialMediaPosts';
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
-
 import {
   Label,
   Input,
@@ -15,7 +14,6 @@ import {
 } from 'reactstrap';
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
 import { ENDPOINTS } from '../../utils/URL';
-import Modal from "../Modal";
 
 const APIEndpoint = process.env.REACT_APP_APIENDPOINT || 'https://highestgoodnetwork.netlify.app';
 
@@ -40,9 +38,9 @@ function Announcements({ title, email }) {
   const [scheduleTime, setScheduleTime] = useState("");
   const [selectedPlatform, setSelectedPlatform] = useState('');
   const tinymce = useRef(null);
+  const maxLength = 280;
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [postToDelete, setPostToDelete] = useState(null);
+
 
 
   useEffect(() => {
@@ -199,7 +197,22 @@ function Announcements({ title, email }) {
     dispatch(broadcastEmailsToAll('Weekly Update', htmlContent));
   };
 
+  const [charCount, setCharCount] = useState(0);
+  
+
+  const handleEditorChange = (content) => {
+    setEmailContent(content);
+  
+    const charCount = content.length;
+    setCharCount(charCount);
+  };
+
+
   const handlePostTweets = () => {
+    if (charCount > maxLength) {
+      toast.error('Character limit exceeded. Please shorten your text to 280 characters.');
+      return;
+    }
     const htmlContent = `${emailContent}`;
     dispatch(sendTweet(htmlContent));
   };
@@ -226,17 +239,6 @@ function Announcements({ title, email }) {
   const handleDateContentChange = e => {
     setDateContent(e.target.value);    
   }  
-  const handleOpenModal = (postId) => {
-    setPostToDelete(postId);
-    setIsModalOpen(true);
-  };
-
-  // Function to close the modal
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setPostToDelete(null);
-  };
-
 
   const handleDeletePost = async (postId) => {
     const confirmDelete = window.confirm("Are you sure you want to delete this post?");
@@ -314,29 +316,82 @@ function Announcements({ title, email }) {
     ); // Adjust permissions as needed
   };
 
-  const handleCreateFbPost = async () => {
-    handleFacebookLogin();
+  const handleCreateFbPost = () => {
+    
     if (!emailContent || emailContent.trim() === '') {
       toast.error('Error: No content to post. Please add some content in Weekly progress editor');
       return;
     }
     const EmailContent = emailContent;
-    try {
-      // response = await axios.post(ENDPOINTS.CREATE_FB_POST(), {
-      await axios.post(ENDPOINTS.CREATE_FB_POST(), {
-        emailContent: EmailContent,
-        accessToken,
-      });
-      toast.success('Post successfully created on Facebook!');
-    } catch (error) {
-      toast.error('Failed to create post on Facebook');
+    console.log("reached here in facebook");
+      window.FB.login(
+        response => {
+          if (response.authResponse) {
+            const accessToken = response.authResponse.accessToken;
+            dispatch(ssendFbPost(emailContent, accessToken))
+              .then(() => {
+                //console.log("Facebook posted successfully! Now calling handleDeletePost for post ID:", postId);
+                toast.success('Post successfully created on Facebook!');
+              })
+              .catch((error) => {
+                console.error("Error posting on Facebook:", error.message || error);
+                toast.error("Failed to post on Facebook.");
+              });
+          } else {
+            toast.error('Facebook login failed or was cancelled.');
+          }
+        },
+        {
+          scope: 'public_profile,email,pages_show_list,pages_manage_posts',
+        }
+      );
+    };
+
+  /*const handleCreateFbPost = async () => {
+    if (charCount > maxLength) {
+      toast.error('Character limit exceeded. Please shorten your text to 280 characters.');
+      return;
+    } 
+    
+    if (!emailContent || emailContent.trim() === '') {
+      toast.error('Error: No content to post. Please add some content in Weekly progress editor');
+      return;
     }
+    const EmailContent = emailContent;
+    window.FB.login(
+      response => {
+        if (response.authResponse) {
+          const accessToken = response.authResponse.accessToken;
+
+          try {
+    // response = await axios.post(ENDPOINTS.CREATE_FB_POST(), {
+              axios.post(ENDPOINTS.CREATE_FB_POST(), {
+              emailContent: EmailContent,
+              accessToken,
+            });
+            toast.success('Post successfully created on Facebook!');
+            } catch (error) {
+              toast.error('Failed to create post on Facebook');
+            }
+        } else {
+          toast.error('Facebook login failed or was cancelled.');
+        }
+      },
+      {
+        scope: 'public_profile,email,pages_show_list,pages_manage_posts',
+      }
+    );
   };
+*/
   const handleScheduleClick = () => {
     setShowDropdown(true);
   };
 
   const handleSubmit = async () => {
+    if (charCount > maxLength) {
+      toast.error('Character limit exceeded. Please shorten your text to 280 characters.');
+      return;
+    } 
     if (!platform) {
       alert("Please select a platform.");
       return;
@@ -389,18 +444,14 @@ function Announcements({ title, email }) {
       await getAllPosts();
     }
   };
-
   
-
-
-  
-  const handlePostScheduledFbPost = (postId, textContent, platform) => {
+  const handlePostScheduledFbPost = (postId, textContent, base64Srcs, platform) => {
     console.log("reached here in facebook");
       window.FB.login(
         response => {
           if (response.authResponse) {
             const accessToken = response.authResponse.accessToken;
-            dispatch(sendFbPost(textContent, accessToken))
+            dispatch(sendFbPost(textContent, base64Srcs, accessToken))
               .then(() => {
                 //console.log("Facebook posted successfully! Now calling handleDeletePost for post ID:", postId);
                 setTimeout(() => {
@@ -437,15 +488,15 @@ function Announcements({ title, email }) {
     });
   }
 
-  const postToPlatform = (postId, textContent, platform) => {
+  const postToPlatform = (postId, textContent,base64Srcs, platform) => {
 
     const confirmDelete = window.confirm(`Are you sure you want to post this on ${platform}`);
     if (!confirmDelete) return;
 
     if (platform === 'facebook'){
-      handlePostScheduledFbPost(postId, textContent, platform)
+      handlePostScheduledFbPost(postId, textContent, base64Srcs, platform)
     } else if (platform === 'twitter'){
-      handlePostScheduledTweets(postId, textContent, platform)
+      handlePostScheduledTweets(postId, textContent, base64Srcs, platform)
     }
   };
 
@@ -513,15 +564,24 @@ function Announcements({ title, email }) {
 
           {showEditor && (
             <Editor
-              tinymceScriptSrc="/tinymce/tinymce.min.js"
-              id="email-editor"
-              initialValue="<p>This is the initial content of the editor</p>"
-              init={editorInit}
-              onEditorChange={content => {
-                setEmailContent(content);
-              }}
-            />
+            tinymceScriptSrc="/tinymce/tinymce.min.js"
+              id="email-editor"  // No need for a real API key here, "free" works for basic usage
+            initialValue={`<div style="background-color: #f0f0f0; color: #555; padding: 6px; border-radius: 4px; font-size: 14px;">
+              Post limited to 280 characters
+            </div>`}
+        init={{
+          height: 500,
+          menubar: false,
+          plugins: ['advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview', 'anchor', 'searchreplace'],
+          toolbar:
+            'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
+        }}
+        onEditorChange={handleEditorChange}
+        />
           )}
+          <div style={{ color: charCount > 280 ? 'red' : 'black' }}>
+             {charCount} 
+         </div>
           {title ? (
             ''
           ) : (
@@ -658,9 +718,7 @@ function Announcements({ title, email }) {
                       marginRight: '10px',
                     }}
                   >
-                    {post.textContent && post.textContent.length > 50
-                      ? post.textContent.slice(0, 50) + '...'
-                      : post.textContent}
+                    {post.textContent}
                   </Link> 
                   <br />
       {post.base64Srcs && post.base64Srcs.length > 0 && (
@@ -677,16 +735,12 @@ function Announcements({ title, email }) {
         </div>
       )}
                 </div>
-
-                <Button color="success" size="sm" style={{ marginRight: '8px' }} onClick={() => postToPlatform(post._id, post.textContent, post.platform)}>
+                <Button color="success" size="sm" style={{ marginRight: '8px' }} onClick={() => postToPlatform(post._id, post.textContent, post.base64Srcs, post.platform)}>
                   Post
                 </Button>
                 <Button color="danger" size="sm" onClick={() => handleDeletePost(post._id)}>
                   Delete
                 </Button>
-
-                
-
               </li>
             ))
             }
