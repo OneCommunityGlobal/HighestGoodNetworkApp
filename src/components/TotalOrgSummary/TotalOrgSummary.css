@@ -6,6 +6,10 @@
   width: 100%;
 }
 
+.container-total-org-wrapper.bg-oxford-blue h3 {
+  color: #fff;
+}
+
 .container-total-org-wrapper .row {
   width: 100% !important;
   margin: 0 0 15px 0;
