@@ -78,6 +78,7 @@ import CPProtectedRoute from './components/common/CPDashboard/CPProtectedRoute';
 import CPLogin from './components/CommunityPortal/Login';
 import CPDashboard from './components/CommunityPortal';
 import ActivityList from './components/CommunityPortal/Activities/ActivityList';
+import EventStats from './components/CommunityPortal/EventPersonalization/EventStats';
 // import AddActivities from './components/CommunityPortal/Activities/AddActivities';
 // import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
 
@@ -425,6 +426,7 @@ export default(
         <Route path="/educationportal/login" component={EPLogin} />
 
 
+        <CPProtectedRoute path="/communityportal/reports/event/personalization" exact component={EventStats} />
         {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
 
 
