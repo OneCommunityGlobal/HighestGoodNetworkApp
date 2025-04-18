@@ -13,6 +13,7 @@ import { v4 as uuidv4 } from 'uuid';
 import moment from 'moment';
 import './PaidLaborCost.css';
 import { toast } from 'react-toastify';
+import { useSelector } from 'react-redux';
 import PaidLaborCostDatePicker from './PaidLaborCostDatePicker';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
@@ -103,7 +104,8 @@ function aggregateData(data, taskFilter, projectFilter, dateMode, startDate, end
 export default function PaidLaborCost() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const darkMode = useSelector(state => state.theme.darkMode);
+  const textColor = darkMode ? '#ffffff' : '#666';
   // Filter States
   const [taskFilter, setTaskFilter] = useState('ALL'); // Default: All tasks
   const [projectFilter, setProjectFilter] = useState('All Projects'); // Default: All projects
@@ -245,7 +247,7 @@ export default function PaidLaborCost() {
     plugins: {
       legend: {
         position: 'top',
-        labels: { font: { size: 12 } },
+        labels: { font: { size: 12 }, color: textColor },
       },
       tooltip: {
         callbacks: {
@@ -261,7 +263,7 @@ export default function PaidLaborCost() {
     scales: {
       x: {
         grid: { display: false }, // Remove vertical grid lines
-        ticks: { font: { size: 12 } },
+        ticks: { font: { size: 12 }, color: textColor },
       },
       y: {
         grid: { color: '#ccc' },
@@ -269,15 +271,16 @@ export default function PaidLaborCost() {
           display: true,
           text: 'Cost (000s)', // More compact label
           font: { size: 12 },
+          color: textColor,
         },
-        ticks: { font: { size: 12 } },
+        ticks: { font: { size: 12 }, color: textColor },
       },
     },
   };
 
   return (
     <div>
-      <div className="paid-labor-cost-container">
+      <div className={`paid-labor-cost-container ${darkMode ? 'dark-mode' : ''}`}>
         <h4 className="paid-labor-cost-title">Paid Labor Cost</h4>
 
         {/* Loading indicator */}

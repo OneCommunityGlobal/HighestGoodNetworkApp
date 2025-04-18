@@ -89,6 +89,13 @@ function PaidLaborCostDatePicker({
 
   // Function to check if a date is disabled
   const isDisabled = date => {
+    const today = new Date();
+
+    // Disable future dates (after today)
+    if (isAfter(startOfDay(date), startOfDay(today))) {
+      return true;
+    }
+
     if (minDate && isBefore(date, startOfDay(minDate))) {
       return true;
     }
@@ -114,6 +121,11 @@ function PaidLaborCostDatePicker({
       if (isBefore(date, tempStartDate)) {
         setTempStartDate(date);
         setSelectionStage('END_DATE');
+        return;
+      }
+
+      // Prevent selecting the same date as start and end
+      if (isEqual(startOfDay(date), startOfDay(tempStartDate))) {
         return;
       }
 
@@ -242,6 +254,11 @@ function PaidLaborCostDatePicker({
               const isEnd = tempEndDate && isEqual(startOfDay(date), startOfDay(tempEndDate));
               const rangeClass = isInRange(date) ? 'in-range' : '';
               const disabledClass = isDisabled(date) ? 'disabled' : '';
+              const isFutureDate = isAfter(startOfDay(date), startOfDay(new Date()));
+              const isSameAsStart =
+                tempStartDate &&
+                selectionStage === 'END_DATE' &&
+                isEqual(startOfDay(date), startOfDay(tempStartDate));
 
               return (
                 <div
@@ -257,6 +274,8 @@ function PaidLaborCostDatePicker({
                     ${isEnd ? 'paid-labor-cost-end-date' : ''}
                     ${rangeClass}
                     ${disabledClass}
+                    ${isFutureDate ? 'paid-labor-cost-future-date' : ''}
+                    ${isSameAsStart ? 'paid-labor-cost-same-as-start' : ''}
                   `}
                   onClick={() => handleDateClick(date)}
                   onMouseEnter={() => handleDateMouseEnter(date)}

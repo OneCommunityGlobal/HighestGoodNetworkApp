@@ -249,7 +249,7 @@
   color: #666;
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 1130px) {
   .paid-labor-cost-custom-date-range-picker {
     max-width: 100%;
     min-width: auto;
@@ -261,4 +261,117 @@
     width: 100%;
     max-width: 95vw;
   }
+}
+
+/* Dark Mode Support for Paid Labor Cost Component */
+.dark-mode .paid-labor-cost-container {
+  background-color: var(--card-bg);
+  box-shadow: 0 1px 3px var(--card-shadow);
+}
+
+.dark-mode .paid-labor-cost-title {
+  color: var(--text-color);
+}
+
+.dark-mode .paid-labor-cost-filter-label {
+  color: var(--text-color);
+  opacity: 0.8;
+}
+
+.dark-mode .paid-labor-cost-filter-select {
+  background-color: var(--section-bg);
+  border-color: var(--section-title-bg);
+  color: var(--text-color);
+}
+
+.dark-mode .paid-labor-cost-loading {
+  color: var(--text-color);
+  opacity: 0.7;
+}
+
+/* Date Picker Dark Mode */
+.dark-mode .paid-labor-cost-date-range-input {
+  background-color: var(--section-bg);
+  border-color: var(--section-title-bg);
+  color: var(--text-color);
+}
+
+.dark-mode .paid-labor-cost-date-range-input:hover {
+  border-color: var(--button-bg);
+}
+
+.dark-mode .paid-labor-cost-date-range-text {
+  color: var(--text-color);
+}
+
+.dark-mode .paid-labor-cost-date-range-calendar {
+  background-color: var(--card-bg);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.dark-mode .paid-labor-cost-calendar-header {
+  background-color: var(--section-title-bg);
+  border-bottom-color: var(--section-title-hover);
+}
+
+.dark-mode .paid-labor-cost-month-nav {
+  color: var(--text-color);
+}
+
+.dark-mode .paid-labor-cost-month-nav:hover {
+  background-color: var(--section-title-hover);
+}
+
+.dark-mode .paid-labor-cost-current-month {
+  color: var(--text-color);
+}
+
+.dark-mode .paid-labor-cost-weekday {
+  color: var(--text-color);
+  opacity: 0.7;
+}
+
+.dark-mode .paid-labor-cost-calendar-weekdays {
+  border-bottom-color: var(--section-title-hover);
+}
+
+.dark-mode .paid-labor-cost-day {
+  color: var(--text-color);
+}
+
+.dark-mode .paid-labor-cost-day.paid-labor-cost-other-month {
+  color: var(--text-color);
+  opacity: 0.5;
+}
+
+.dark-mode .paid-labor-cost-day:hover:not(.disabled) {
+  background-color: var(--section-title-hover);
+}
+
+.dark-mode .paid-labor-cost-day.paid-labor-cost-start-date,
+.dark-mode .paid-labor-cost-day.paid-labor-cost-end-date {
+  background-color: var(--button-bg);
+  color: var(--bg-color) !important;
+}
+
+.dark-mode .paid-labor-cost-day.in-range {
+  background-color: rgba(232, 167, 28, 0.2); /* var(--button-bg) with opacity */
+}
+
+.dark-mode .paid-labor-cost-day.disabled {
+  color: var(--text-color);
+  opacity: 0.3;
+}
+
+.dark-mode .paid-labor-cost-calendar-footer {
+  border-top-color: var(--section-title-hover);
+}
+
+.dark-mode .paid-labor-cost-reset-button {
+  color: var(--button-bg);
+}
+
+.dark-mode .paid-labor-cost-selection-text {
+  color: var(--text-color);
+  opacity: 0.8;
 }
