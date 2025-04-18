@@ -153,15 +153,18 @@ function QuantityOfMaterialsUsed({ data }) {
   };
 
   useEffect(() => {
-    setChartData(null);
-
     if (!Array.isArray(data) || data.length === 0) {
-      setTimeout(() => {
-        setChartData({
-          labels: [],
-          datasets: [{ label: 'Quantity Used', data: [], backgroundColor: [] }],
-        });
-      }, 0);
+      setChartData({
+        labels: [],
+        datasets: [
+          {
+            label: 'Quantity Used',
+            data: [],
+            backgroundColor: [],
+            type: 'bar', // Explicitly define type
+          },
+        ],
+      });
       return;
     }
 
@@ -764,6 +767,7 @@ function QuantityOfMaterialsUsed({ data }) {
           >
             <Bar
               data={chartData}
+              key={uuidv4()}
               options={{
                 maintainAspectRatio: false,
                 responsive: true,
@@ -802,6 +806,17 @@ function QuantityOfMaterialsUsed({ data }) {
                     },
                     grid: {
                       color: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
+                    },
+                  },
+                },
+                animation: {
+                  duration: 100,
+                },
+                type: 'bar',
+                transitions: {
+                  active: {
+                    animation: {
+                      duration: 100,
                     },
                   },
                 },

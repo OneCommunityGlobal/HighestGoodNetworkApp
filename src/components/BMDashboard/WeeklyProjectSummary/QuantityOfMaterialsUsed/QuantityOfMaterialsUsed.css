@@ -241,6 +241,8 @@ div.weekly-project-summary-card.normal-card .dropdown-item {
 .quantity-of-materials-used-card .custom-select__option--is-focused {
   background-color: var(--button-hover) !important;
   color: var(--card-bg) !important;
+  overflow: visible !important;
+  min-width: max-content;
 }
 
 /* Placeholder text inside dropdown */
