@@ -125,24 +125,6 @@
     scale: 100%;
   }
 
-  /* Ensure header container is compact */
-  .header-wrapper {
-    height: auto !important;
-    min-height: auto !important;
-    width: 100% !important;
-    position: relative !important;
-    page-break-inside: avoid !important;
-    break-inside: avoid !important;
-  }
-
-  /* Set header bottom margin */
-  .header-margin,
-  .header-margin-light {
-    height: 20px !important;
-    display: block !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
 
   /* Ensure navbar is compact and font size is correct */
   .navbar {

@@ -19,6 +19,8 @@
   margin-bottom: 20px;
   width: 100%;
   padding: 0 15px;
+  position: relative;
+  /* Ensure button aligns absolutely inside here */
 }
 
 .container-total-org-wrapper .header-row .left-section {
@@ -31,6 +33,7 @@
   margin: 0;
   font-size: 32px;
   font-weight: 600;
+  line-height: 36px;
   color: #000;
 }
 
@@ -87,6 +90,7 @@
   border-radius: 4px !important;
 }
 
+/* Hover for PDF button */
 .share-pdf-btn:hover {
   background-color: #333 !important;
 }
@@ -131,4 +135,34 @@
   text-align: center;
   margin: 10px;
   color: #333;
+}
+
+/* Report Header Styles */
+.report-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  width: 100%;
+  padding: 0 15px;
+  position: relative;
+  min-height: 60px;
+  padding-bottom: 1rem;
+}
+
+.report-header-title {
+  display: flex;
+  align-items: center;
+}
+
+.report-header-title h3 {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 600;
+  color: #000;
+}
+
+.report-header-actions {
+  display: flex;
+  justify-content: flex-end;
 }

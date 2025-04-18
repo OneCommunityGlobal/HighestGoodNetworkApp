@@ -187,8 +187,7 @@ function TotalOrgSummary(props) {
       const pdfContainer = document.createElement('div');
       pdfContainer.id = 'pdf-export-container';
       pdfContainer.style.width = '100%';
-      pdfContainer.style.padding = '20px';
-      pdfContainer.style.backgroundColor = '#fff';
+      pdfContainer.style.padding = '0';
       pdfContainer.style.position = 'absolute';
       pdfContainer.style.left = '-9999px';
       pdfContainer.style.top = '0';
@@ -234,7 +233,6 @@ function TotalOrgSummary(props) {
           box-shadow: none !important;
           border: none !important;
           width: 100% !important;
-          background-color: #fff !important;
           min-height: 100% !important;
         }
         .row.d-flex.justify-content-between.align-items-center {
@@ -252,7 +250,6 @@ function TotalOrgSummary(props) {
           padding: 20px !important;
           border: 1px solid #eee !important;
           border-radius: 8px !important;
-          background-color: #fff !important;
           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
         }
         .component-border {
@@ -275,7 +272,8 @@ function TotalOrgSummary(props) {
           page-break-inside: avoid !important;
         }
         .Collapsible__trigger {
-          background-color: #fff !important;
+          background-color: ${darkMode ? '#1C2541' : '#fff'} !important;
+          color: ${darkMode ? '#fff' : '#000'} !important;
         }
         .volunteer-status-grid {
           display: grid !important;
@@ -309,7 +307,7 @@ function TotalOrgSummary(props) {
       const screenshotCanvas = await html2canvas(pdfContainer, {
         scale: 2,
         useCORS: true,
-        backgroundColor: '#fff',
+        // backgroundColor: '#fff',
         windowWidth: pdfContainer.scrollWidth,
         windowHeight: pdfContainer.scrollHeight,
         logging: false,
@@ -475,11 +473,11 @@ function TotalOrgSummary(props) {
         darkMode ? 'bg-oxford-blue text-light' : 'cbg--white-smoke'
       }`}
     >
-      <Row className="d-flex justify-content-between align-items-center mb-4">
-        <Col lg={{ size: 6 }} className="d-flex align-items-center">
+      <Row className="report-header-row">
+        <Col lg={{ size: 6 }} className="report-header-title">
           <h3 className="my-0">Total Org Summary</h3>
         </Col>
-        <Col lg={{ size: 6 }} className="d-flex justify-content-end">
+        <Col lg={{ size: 6 }} className="report-header-actions">
           <Button className="share-pdf-btn" onClick={handleSaveAsPDF} disabled={isGeneratingPDF}>
             {isGeneratingPDF ? 'Generating PDF...' : 'Save as PDF'}
           </Button>
