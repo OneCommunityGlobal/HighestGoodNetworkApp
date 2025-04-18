@@ -75,7 +75,11 @@ export default function TaskCompletedBarChart({ isLoading, data, darkMode }) {
   return (
     <div style={{ height: cardSize.height }}>
       {isLoading ? (
-        <Loading />
+        <div className="d-flex justify-content-center align-items-center">
+          <div className="w-100vh">
+            <Loading />
+          </div>
+        </div>
       ) : (
         <TinyBarChart
           chartData={chartData}
