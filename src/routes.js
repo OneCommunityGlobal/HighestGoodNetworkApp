@@ -72,9 +72,6 @@ import ActivityList from './components/CommunityPortal/Activities/ActivityList';
 import ActivitiesPage from './components/CommunityPortal/Activities/ActivitiesPage'; 
 
 
-// import AddActivities from './components/CommunityPortal/Activities/AddActivities';
-// import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
-
 import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
 import EPDashboard from './components/EductionPortal';
