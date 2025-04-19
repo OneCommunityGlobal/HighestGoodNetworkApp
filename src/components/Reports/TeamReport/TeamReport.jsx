@@ -6,13 +6,9 @@ import moment from 'moment';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { FiUsers } from 'react-icons/fi';
-import Dropdown from 'react-bootstrap/Dropdown';
 import axios from 'axios';
-import { persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
-import { compressToUTF16, decompressFromUTF16 } from 'lz-string';
-import { rootReducers } from '../../../store.js';
 import { ENDPOINTS } from 'utils/URL';
+import { useRef } from 'react';
 import {
   getAllUserTeams,
   postNewTeam,
@@ -26,25 +22,9 @@ import {
 import './TeamReport.css';
 import { ReportPage } from '../sharedComponents/ReportPage';
 import UserLoginPrivileges from './components/UserLoginPrivileges';
-import { useRef } from 'react';
 
-const parser = val => {
-  try {
-    return JSON.parse(val);
-  } catch (error) {
-    console.error('Failed to parse state:', error);
-    return null;
-  }
-};
 
-const persistConfig = {
-  key: 'root',
-  storage,
-  serialize: outboundState => compressToUTF16(JSON.stringify(outboundState)),
-  deserialize: inboundState => parser(decompressFromUTF16(inboundState)),
-};
 
-const persistedReducer = persistReducer(persistConfig, rootReducers);
 
 export function TeamReport({ match }) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -55,7 +35,6 @@ const [team,setTeam] = useState({});
 const [teamDataLoading,setTeamDataLoading] = useState(false);
   const user = useSelector(state => state.auth.user);
   const [teamMembers, setTeamMembers] = useState([]);
-  const [allTeams, setAllTeams] = useState([]);
   const [allTeamsMembers, setAllTeamsMembers] = useState([]);
   const [searchParams, setSearchParams] = useState({
     teamName: '',
@@ -66,7 +45,7 @@ const [teamDataLoading,setTeamDataLoading] = useState(false);
   });
   const hasFetchIds = useRef(new Set());
 
-  const [selectedTeams, setSelectedTeams] = useState([]);
+  const [selectedTeams] = useState([]);
 
   // Create a state variable to store the selected radio input
   // eslint-disable-next-line no-unused-vars
@@ -98,59 +77,7 @@ const [teamDataLoading,setTeamDataLoading] = useState(false);
      }
   }
 
-  const handleStatus = useMemo(
-    () =>
-      // eslint-disable-next-line react/no-unstable-nested-components,func-names
-      function(isActive) {
-        return isActive ? (
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '0.5rem',
-            }}
-          >
-            <span
-              className="dot"
-              style={{ backgroundColor: '#00ff00', width: '0.7rem', height: '0.7rem' }}
-            />
-            <strong>Active</strong>
-          </div>
-        ) : (
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '0.5rem',
-            }}
-          >
-            <span
-              className="dot"
-              style={{ backgroundColor: 'red', width: '0.7rem', height: '0.7rem' }}
-            />
-            <strong>Inactive</strong>
-          </div>
-        );
-      },
-    [],
-  );
 
-  const handleSelectTeam = useCallback(
-    (event, selectedTeam, index) => {
-      if (event.target.checked) {
-        if (selectedTeams.length < 4) {
-          setSelectedTeams([...selectedTeams, { selectedTeam, index }]);
-        }
-      } else {
-        setSelectedTeams(prevSelectedTeams =>
-          prevSelectedTeams.filter(team => team.selectedTeam._id !== selectedTeam._id),
-        );
-      }
-    },
-    [selectedTeams],
-  );
 
   const debounceSearchByName = debounce(value => {
     setSearchParams(prevParams => ({
@@ -190,39 +117,7 @@ const [teamDataLoading,setTeamDataLoading] = useState(false);
     }
   }
 
-  const memoizedSearchResults = useMemo(() => {
-    return allTeams
-      .filter(team => {
-        const isMatchedName = team.teamName
-          .toLowerCase()
-          .includes(searchParams.teamName.toLowerCase());
-        const isMatchedCreatedDate = moment(team.createdDatetime).isSameOrAfter(
-          moment(searchParams.createdAt).startOf('day'),
-        );
-        const isMatchedModifiedDate = moment(team.modifiedDatetime).isSameOrAfter(
-          moment(searchParams.modifiedAt).startOf('day'),
-        );
-        const isActive = team.isActive === searchParams.isActive;
-        const isInactive = team.isActive !== searchParams.isInactive;
-        return (
-          isMatchedName && isMatchedCreatedDate && isMatchedModifiedDate && (isActive || isInactive)
-        );
-      })
-      .slice(0, 5);
-  }, [allTeams, searchParams]);
 
-  function handleDate(date) {
-    const formattedDates = {};
-    // eslint-disable-next-line no-shadow
-    const getFormattedDate = date => {
-      if (!formattedDates[date]) {
-        formattedDates[date] = moment(date).format('MM-DD-YYYY');
-      }
-      return formattedDates[date];
-    };
-
-    return getFormattedDate(date);
-  }
 
   useEffect(()=>{
     if(match&&match.params&&match.params.teamId){
@@ -234,40 +129,28 @@ const [teamDataLoading,setTeamDataLoading] = useState(false);
   useEffect(() => {
     let isMounted = true; // flag to check component mount status
     const fetchTeamDetails = async (teamId)=>{
-       try {
-        if (teamDataLoading || (team && team._id === match.params.teamId)) {
-          return; // Prevent repeated calls if data is already loading or loaded
-         }
-          await getTeamDetails(teamId);
-       } catch (error) {
-         console.log("Error fetching team Details:",error);
-       }
+      if (teamDataLoading || (team && team._id === match.params.teamId)) {
+        return; // Prevent repeated calls if data is already loading or loaded
+        }
+        await getTeamDetails(teamId);
     }
 
     const fetchTeamMembers = async (teamId)=>{
-       try {
-        await dispatch(getTeamMembers(teamId)).then(result => {
-          if (isMounted) { // Only update state if component is still mounted
-            setTeamMembers([...result]);
-          }
-        });
-       } catch (error) {
-          console.log("Error: fetching teamMembers:",error);
-       }
+      await dispatch(getTeamMembers(teamId)).then(result => {
+        if (isMounted) { // Only update state if component is still mounted
+          setTeamMembers([...result]);
+        }
+      });
     }
 
     const fetchAllUserTeams = async () =>{
-        try {
              if(isMounted){
               dispatch(getAllUserTeams())
               .then(result => {
-                if (isMounted) {
-                  setAllTeams([...result]);
-                }
                 return result;
               })
               .then(result => {
-                const allTeamMembersPromises = result.map(team => dispatch(getTeamMembers(team._id)));
+                const allTeamMembersPromises = result.map(t => dispatch(getTeamMembers(t._id)));
                 Promise.all(allTeamMembersPromises).then(results => {
                   if (isMounted) { // Only update state if component is still mounted
                     setAllTeamsMembers([...results]);
@@ -275,9 +158,6 @@ const [teamDataLoading,setTeamDataLoading] = useState(false);
                 });
               });
              }
-        } catch (error) {
-           console.log("Error:All users error:",error);
-        }
     }
     if (match && match.params && match.params.teamId) {
       fetchTeamDetails(match.params.teamId);
@@ -614,7 +494,7 @@ const [teamDataLoading,setTeamDataLoading] = useState(false);
                     <td>{handleDate(team?.createdDatetime)}</td>
                     <td>{handleDate(team?.modifiedDatetime)}</td>
                   </tr>
-                ))*/}
+                )) */}
               </tbody>
             ) : (
               <tbody>
