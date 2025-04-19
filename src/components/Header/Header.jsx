@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo } from 'react';
-// import { getUserProfile } from '../../actions/userProfile'
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import { getWeeklySummaries } from 'actions/weeklySummaries';
@@ -61,6 +60,7 @@ import {
 import NotificationCard from '../Notification/notificationCard';
 import DarkModeButton from './DarkModeButton';
 import BellNotification from './BellNotification';
+import { getUserProfile } from '../../actions/userProfile';
 
 export function Header(props) {
   const location = useLocation();
@@ -215,6 +215,26 @@ export function Header(props) {
   const openModal = () => {
     setLogoutPopup(true);
   };
+  
+  const handlePermissionChangeAck = async() => {
+    // handle setting the ack true
+    try {
+      const {firstName: name, lastName, personalLinks, adminLinks, _id} = props.userProfile
+      axios.put(ENDPOINTS.USER_PROFILE(_id), {
+        // req fields for updation
+        firstName: name, 
+        lastName, 
+        personalLinks,
+        adminLinks,
+        
+        isAcknowledged: true,
+      }).then(()=>{
+        dispatch(getUserProfile(_id));
+      });
+    } catch (e) {
+      // console.log('update ack', e);
+    }
+  }
 
   const removeViewingUser = () => {
     setPopup(false);
@@ -303,6 +323,7 @@ export function Header(props) {
 
   if (location.pathname === '/login') return null;
 
+  const viewingUser = JSON.parse(window.sessionStorage.getItem('viewingUser'))
   return (
     <div className="header-wrapper">
       <Navbar className="py-3 navbar" color="dark" dark expand="md">
@@ -555,8 +576,14 @@ export function Header(props) {
       </Navbar>
       {!isAuthUser && (
         <PopUpBar
+          message={`You are currently viewing the header for ${viewingUser.firstName} ${viewingUser.lastName}`}
           onClickClose={() => setPopup(prevPopup => !prevPopup)}
-          viewingUser={JSON.parse(window.sessionStorage.getItem('viewingUser'))}
+          />
+      )}
+      {props.auth.isAuthenticated && props.userProfile?.permissions?.isAcknowledged===false && (
+        <PopUpBar
+          message="Heads Up, there were permission changes made to this account"
+          onClickClose={handlePermissionChangeAck}
         />
       )}
       <div>
@@ -608,4 +635,5 @@ export default connect(mapStateToProps, {
   getAllRoles,
   hasPermission,
   getWeeklySummaries,
+  getUserProfile,
 })(Header);
