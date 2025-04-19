@@ -59,10 +59,22 @@ export default function TaskCompletedBarChart({ isLoading, data, darkMode }) {
     const { percentage, change, fontcolor } = chartData[index];
     return (
       <g>
-        <text x={x + width / 2} y={y - 40} fontWeight="bold" textAnchor="middle">
+        <text
+          x={x + width / 2}
+          y={y - 40}
+          fill={darkMode ? 'white' : 'black'}
+          fontWeight="bold"
+          textAnchor="middle"
+        >
           {value}
         </text>
-        <text x={x + width / 2} y={y - 25} fontSize="0.8em" textAnchor="middle">
+        <text
+          x={x + width / 2}
+          y={y - 25}
+          fill={darkMode ? 'white' : 'black'}
+          fontSize="0.8em"
+          textAnchor="middle"
+        >
           ({percentage})
         </text>
         <text x={x + width / 2} y={y - 10} fill={fontcolor} fontSize="0.8em" textAnchor="middle">
