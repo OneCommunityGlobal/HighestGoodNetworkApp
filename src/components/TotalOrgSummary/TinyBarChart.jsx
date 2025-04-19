@@ -11,6 +11,7 @@ import {
 
 export default function TinyBarChart(props) {
   const { chartData, maxY, tickInterval, renderCustomizedLabel, darkMode } = props;
+
   return (
     <ResponsiveContainer maxWidth={600} maxHeight={600} minWidth={180} minHeight={320}>
       <BarChart
@@ -32,7 +33,7 @@ export default function TinyBarChart(props) {
         <Tooltip cursor={{ fill: 'transparent' }} />
         <Bar dataKey="amount" fill="#8884d8">
           {chartData.map((entry, index) => (
-            /* eslint-disable react/no-array-index-key */
+            // eslint-disable-next-line react/no-array-index-key
             <Cell key={`cell-${index}`} fill={entry.color[index]} />
           ))}
           <LabelList dataKey="amount" content={renderCustomizedLabel} />

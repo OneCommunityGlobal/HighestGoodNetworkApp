@@ -7,11 +7,10 @@ import 'moment-timezone';
 import hasPermission from 'utils/permissions';
 
 // actions
-import { getTotalOrgSummary } from 'actions/totalOrgSummary';
 import { getAllUserProfile } from 'actions/userManagement';
 import { getAllUsersTimeEntries } from 'actions/allUsersTimeEntries';
 import { getTimeEntryForOverDate } from 'actions/index';
-import { getTaskAndProjectStats } from 'actions/totalOrgSummary';
+import { getTaskAndProjectStats, getTotalOrgSummary } from 'actions/totalOrgSummary';
 
 import '../Header/DarkMode.css';
 import './TotalOrgSummary.css';
@@ -30,6 +29,7 @@ import NumbersVolunteerWorked from './NumbersVolunteerWorked/NumbersVolunteerWor
 import AnniversaryCelebrated from './AnniversaryCelebrated/AnniversaryCelebrated';
 import RoleDistributionPieChart from './VolunteerRolesTeamDynamics/RoleDistributionPieChart';
 import WorkDistributionBarChart from './VolunteerRolesTeamDynamics/WorkDistributionBarChart';
+import TaskCompletedBarChart from './TaskCompleted/TaskCompletedBarChart';
 
 function calculateFromDate() {
   const currentDate = new Date();
@@ -170,11 +170,6 @@ function TotalOrgSummary(props) {
   }, [allUsersTimeEntries, usersId, fromOverDate, toOverDate]);
   useEffect(() => {
     async function fetchData() {
-      // const { taskHours, projectHours } = await props.getTaskAndProjectStats(fromDate, toDate);
-      // const {
-      //   taskHours: lastTaskHours,
-      //   projectHours: lastProjectHours,
-      // } = await props.getTaskAndProjectStats(fromOverDate, toOverDate);
       const {
         taskHours: { count: taskHours },
         projectHours: { count: projectHours },
@@ -329,6 +324,13 @@ function TotalOrgSummary(props) {
             <div className="component-container component-border">
               <div className="chart-title">
                 <p>Task Completed</p>
+              </div>
+              <div className="mt-4">
+                <TaskCompletedBarChart
+                  isLoading={isLoading}
+                  data={volunteerStats?.tasksStats}
+                  darkMode={darkMode}
+                />
               </div>
             </div>
           </Col>
