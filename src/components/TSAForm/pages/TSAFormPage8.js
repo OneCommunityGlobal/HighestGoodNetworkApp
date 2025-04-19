@@ -1,4 +1,14 @@
+import { useEffect } from 'react';
+import { useHistory } from 'react-router';
+
 function TSAFormPage8() {
+  const history = useHistory();
+  useEffect(() => {
+    const submitted = JSON.parse(localStorage.getItem('submittedPages') || '{}');
+    if (!submitted.tsaformpage7) {
+      history.push('/tsaform/page7');
+    }
+  }, []);
   return (
     <div
       style={{

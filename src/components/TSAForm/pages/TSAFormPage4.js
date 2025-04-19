@@ -1,8 +1,15 @@
 import { useHistory } from 'react-router-dom';
 import { useState } from 'react';
+import { useEffect } from 'react';
 
 function TSAFormPage4() {
   const history = useHistory();
+  useEffect(() => {
+    const submitted = JSON.parse(localStorage.getItem('submittedPages') || '{}');
+    if (!submitted.tsaformpage3) {
+      history.push('/tsaform/page3');
+    }
+  }, []);
   const [errors, setErrors] = useState({
     interested: false,
     availability: false,
@@ -45,7 +52,10 @@ function TSAFormPage4() {
       return;
     }
 
-    history.push('/tsaformpage5');
+    const submitted = JSON.parse(localStorage.getItem('submittedPages') || '{}');
+    localStorage.setItem('submittedPages', JSON.stringify({ ...submitted, tsaformpage4: true }));
+
+    history.push('/tsaform/page5');
   };
 
   return (
@@ -681,7 +691,7 @@ function TSAFormPage4() {
         {/* Back Button */}
         <button
           type="button"
-          onClick={() => history.push('/tsaformpage3')}
+          onClick={() => history.push('/tsaform/page3')}
           style={{
             backgroundColor: '#4d87a1',
             color: '#fff',
