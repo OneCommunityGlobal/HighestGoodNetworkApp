@@ -66,7 +66,7 @@ function MapComponent({ locations = [], isLoading, error }) {
   }
 
   return (
-    <div className="map-container">
+    <div className="map-container" style={{ marginTop: '20px' }}>
       {isMapVisible && (
         <>
           {error && (
