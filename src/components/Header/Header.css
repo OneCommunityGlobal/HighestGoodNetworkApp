@@ -4,10 +4,8 @@
 }
 
 .close-button {
-  position: absolute;
-  top: 0;
-  left: 0;
-  padding: 12px; 
+  height : 2vh;
+  width : 99%;
 }
 
 .card-content {

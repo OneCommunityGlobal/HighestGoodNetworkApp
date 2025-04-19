@@ -21,14 +21,15 @@ import {
 } from 'reactstrap';
 import ReactTooltip from 'react-tooltip';
 import { MultiSelect } from 'react-multi-select-component';
-import './WeeklySummariesReport.css';
 import moment from 'moment';
-import 'moment-timezone';
 import { boxStyle, boxStyleDark } from 'styles';
-import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
-import { ENDPOINTS } from 'utils/URL';
+import 'moment-timezone';
 import axios from 'axios';
-import { getAllUserTeams } from '../../actions/allTeamsAction';
+import cn from 'classnames';
+
+import { ENDPOINTS } from 'utils/URL';
+import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+import { getAllUserTeams, getAllTeamCode } from '../../actions/allTeamsAction';
 import TeamChart from './TeamChart';
 import SkeletonLoading from '../common/SkeletonLoading';
 import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
@@ -40,6 +41,10 @@ import { fetchAllBadges } from '../../actions/badgeManagement';
 import PasswordInputModal from './PasswordInputModal';
 import WeeklySummaryRecipientsPopup from './WeeklySummaryRecepientsPopup';
 import SelectTeamPieChart from './SelectTeamPieChart';
+import { setTeamCodes } from '../../actions/teamCodes';
+
+import styles from './WeeklySummariesReport.module.scss';
+import { SlideToggle } from './components';
 
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
 const fullCodeRegex = /^.{5,7}$/;
@@ -88,6 +93,11 @@ export class WeeklySummariesReport extends Component {
       replaceCodeError: null,
       replaceCodeLoading: false,
       // weeklyRecipientAuthPass: '',
+      selectedSpecialColors: {
+        purple: false,
+        green: false,
+        navy: false,
+      },
     };
   }
 
@@ -102,20 +112,26 @@ export class WeeklySummariesReport extends Component {
       getInfoCollections,
       hasPermission,
       auth,
+      setTeamCodes,
+      getAllTeamCode,
     } = this.props;
+    await getAllTeamCode();
     // 1. fetch report
     const res = await getWeeklySummariesReport();
     // eslint-disable-next-line react/destructuring-assignment
     const summaries = res?.data ?? this.props.summaries;
     const badgeStatusCode = await fetchAllBadges();
     this.canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
-    this.bioEditPermission = this.canPutUserProfileImportantInfo;
+    this.canRequestBio = hasPermission('requestBio');
     this.canEditSummaryCount = this.canPutUserProfileImportantInfo;
     this.codeEditPermission =
       hasPermission('editTeamCode') ||
       auth.user.role === 'Owner' ||
       auth.user.role === 'Administrator';
     this.canSeeBioHighlight = hasPermission('highlightEligibleBios');
+
+    const teamCodeGroup = {};
+    const teamCodes = [];
 
     // 2. shallow copy and sort
     let summariesCopy = [...summaries];
@@ -133,8 +149,6 @@ export class WeeklySummariesReport extends Component {
     /*
      * refactor logic of commentted codes above
      */
-    const teamCodeGroup = {};
-    const teamCodes = [];
     const colorOptionGroup = new Set();
     const colorOptions = [];
     const COLORS = [
@@ -180,6 +194,9 @@ export class WeeklySummariesReport extends Component {
         });
       }
     });
+
+    setTeamCodes(teamCodes);
+
     colorOptionGroup.forEach(option => {
       colorOptions.push({
         value: option,
@@ -389,6 +406,7 @@ export class WeeklySummariesReport extends Component {
       selectedBioStatus,
       tableData,
       COLORS,
+      selectedSpecialColors,
     } = this.state;
     const chartData = [];
     let temptotal = 0;
@@ -396,6 +414,10 @@ export class WeeklySummariesReport extends Component {
 
     const selectedCodesArray = selectedCodes.map(e => e.value);
     const selectedColorsArray = selectedColors.map(e => e.value);
+
+    const activeFilterColors = Object.entries(selectedSpecialColors)
+      .filter(([, isSelected]) => isSelected)
+      .map(([color]) => color);
 
     const temp = summaries.filter(summary => {
       const { activeTab } = this.state;
@@ -412,14 +434,20 @@ export class WeeklySummariesReport extends Component {
           hoursLogged > 0 &&
           hoursLogged >= summary.promisedHoursByWeek[navItems.indexOf(activeTab)] * 1.25);
 
+      // const matchesSelectedUsers = selectedUserIds.size === 0 || selectedUserIds.has(summary._id);
+      const matchesSpecialColor =
+        activeFilterColors.length === 0 || activeFilterColors.includes(summary.filterColor);
       return (
         (selectedCodesArray.length === 0 || selectedCodesArray.includes(summary.teamCode)) &&
         (selectedColorsArray.length === 0 ||
           selectedColorsArray.includes(summary.weeklySummaryOption)) &&
+        matchesSpecialColor &&
         isOverHours &&
         isBio
       );
     });
+
+    this.setState({ filteredSummaries: temp });
 
     if (selectedCodes[0]?.value === '' || selectedCodes.length >= 52) {
       if (selectedCodes.length >= 52) {
@@ -532,6 +560,31 @@ export class WeeklySummariesReport extends Component {
     );
   };
 
+  handleColorToggleChange = (color, state) => {
+    this.setState(
+      prevState => ({
+        selectedSpecialColors: {
+          ...prevState.selectedSpecialColors,
+          [color]: state,
+        },
+      }),
+      this.filterWeeklySummaries,
+    );
+  };
+
+  handleSpecialColorDotClick = (userId, color) => {
+    this.setState(prevState => {
+      const updatedSummaries = prevState.summaries.map(summary => {
+        // Update the summary if the userId matches (using summary._id)
+        if (summary._id === userId) {
+          return { ...summary, filterColor: color };
+        }
+        return summary;
+      });
+      return { summaries: updatedSummaries };
+    }, this.filterWeeklySummaries);
+  };
+
   handleTeamCodeChange = (oldTeamCode, newTeamCode, userIdObj) => {
     try {
       this.setState(prevState => {
@@ -562,7 +615,7 @@ export class WeeklySummariesReport extends Component {
           }
           return acc;
         }, {});
-        // console.log(Object.entries(teamCodeCounts), 'teamCodecounts');
+
         // Update teamCodes by filtering out those with zero count
         teamCodes = Object.entries(teamCodeCounts)
           .filter(([code, count]) => code.length > 0 && count > 0)
@@ -617,44 +670,74 @@ export class WeeklySummariesReport extends Component {
 
   handleAllTeamCodeReplace = async () => {
     try {
-      const { replaceCode } = this.state;
+      const { replaceCode, selectedCodes, summaries, teamCodes } = this.state;
       this.setState({ replaceCodeLoading: true });
-      const boolean = fullCodeRegex.test(replaceCode);
-      if (boolean) {
-        const userIds = this.state.selectedCodes.flatMap(item => item._ids);
-        const url = ENDPOINTS.USERS_ALLTEAMCODE_CHANGE;
-        const payload = {
-          userIds,
-          replaceCode,
-        };
-        try {
-          const data = await axios.patch(url, payload);
-          const userObjs = userIds.reduce((acc, curr) => {
-            acc[curr] = true;
-            return acc;
-          }, {});
-          if (data?.data?.isUpdated) {
-            this.handleTeamCodeChange('', replaceCode, userObjs);
-            this.setState({ replaceCode: '', replaceCodeError: null });
-            this.filterWeeklySummaries();
-          } else {
-            this.setState({
-              replaceCode: '',
-              replaceCodeError: 'Update failed Please try again with another code!',
-            });
-          }
-        } catch (err) {
-          this.setState({ replaceCode: '', replaceCodeError: err.toJSON().message });
-        }
-      } else {
+
+      const isValidCode = fullCodeRegex.test(replaceCode);
+      if (!isValidCode) {
         this.setState({
           replaceCodeError: 'NOT SAVED! The code must be between 5 and 7 characters long.',
+        });
+        return;
+      }
+
+      const oldTeamCodes = selectedCodes.map(code => code.value);
+
+      // Call the new backend API with a POST request
+      const response = await axios.post(ENDPOINTS.REPLACE_TEAM_CODE, {
+        oldTeamCodes,
+        newTeamCode: replaceCode,
+      });
+
+      if (response.data?.updatedCount > 0) {
+        // Update the summaries in the local state
+        const updatedSummaries = summaries.map(summary => {
+          if (oldTeamCodes.includes(summary.teamCode)) {
+            return { ...summary, teamCode: replaceCode };
+          }
+          return summary;
+        });
+
+        // Remove old team codes and add the new team code in teamCodes
+        const updatedTeamCodes = teamCodes
+          .filter(teamCode => !oldTeamCodes.includes(teamCode.value)) // Remove old team codes
+          .concat({
+            value: replaceCode,
+            label: `${replaceCode} (${
+              updatedSummaries.filter(s => s.teamCode === replaceCode).length
+            })`,
+            _ids: updatedSummaries.filter(s => s.teamCode === replaceCode).map(s => s._id),
+          });
+
+        // Remove old team codes and add the new team code in selectedCodes
+        const updatedSelectedCodes = selectedCodes
+          .filter(code => !oldTeamCodes.includes(code.value)) // Remove old team codes
+          .concat({
+            value: replaceCode,
+            label: `${replaceCode} (${
+              updatedSummaries.filter(s => s.teamCode === replaceCode).length
+            })`,
+            _ids: updatedSummaries.filter(s => s.teamCode === replaceCode).map(s => s._id),
+          });
+
+        this.setState({
+          summaries: updatedSummaries,
+          teamCodes: updatedTeamCodes,
+          selectedCodes: updatedSelectedCodes,
+          replaceCode: '',
+          replaceCodeError: null,
+        });
+
+        // Re-filter the summaries to update the table
+        this.filterWeeklySummaries();
+      } else {
+        this.setState({
+          replaceCodeError: 'No users found with the selected team codes.',
         });
       }
     } catch (error) {
       this.setState({
-        replaceCode: '',
-        replaceCodeError: 'Something went wrong please try again!',
+        replaceCodeError: 'Something went wrong. Please try again!',
       });
     } finally {
       this.setState({ replaceCodeLoading: false });
@@ -693,7 +776,7 @@ export class WeeklySummariesReport extends Component {
 
     if (error) {
       return (
-        <Container className={`container-wsr-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
+        <Container className={cn(styles.containerWsrWrapper, darkMode ? 'bg-oxford-blue' : '')}>
           <Row
             className="align-self-center pt-2"
             data-testid="error"
@@ -722,9 +805,10 @@ export class WeeklySummariesReport extends Component {
     return (
       <Container
         fluid
-        className={`container-wsr-wrapper py-3 mb-5 ${
-          darkMode ? 'bg-oxford-blue text-light' : 'bg--white-smoke'
-        }`}
+        className={cn(
+          styles.containerWsrWrapper,
+          `py-3 mb-5 ${darkMode ? 'bg-oxford-blue text-light' : styles.bgWhiteSmoke}`,
+        )}
       >
         {this.passwordInputModalToggle()}
         {this.popUpElements()}
@@ -762,22 +846,14 @@ export class WeeklySummariesReport extends Component {
         )}
         <Row>
           <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }} xs={{ size: 6 }}>
-            <div className="filter-container-teamcode">
+            <div className={styles.filterContainerTeamcode}>
               <div>Select Team Code</div>
-              <div className="filter-style">
+              <div className={styles.filterStyle}>
                 <span>Show Chart</span>
-                <div className="switch-toggle-control">
-                  <input
-                    type="checkbox"
-                    className="switch-toggle"
-                    id="chart-status-toggle"
-                    onChange={this.handleChartStatusToggleChange}
-                  />
-                  <label className="switch-toggle-label" htmlFor="chart-status-toggle">
-                    <span className="switch-toggle-inner" />
-                    <span className="switch-toggle-switch" />
-                  </label>
-                </div>
+                <SlideToggle
+                  className={styles.slideToggle}
+                  onChange={this.handleChartStatusToggleChange}
+                />
               </div>
             </div>
           </Col>
@@ -788,8 +864,14 @@ export class WeeklySummariesReport extends Component {
         <Row>
           <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }} xs={{ size: 6 }}>
             <MultiSelect
-              className="multi-select-filter text-dark"
-              options={teamCodes}
+              className={cn(styles.multiSelectFilter, `text-dark ${darkMode ? 'dark-mode' : ''}`)}
+              options={teamCodes.map(item => {
+                const [code, count] = item.label.split(' (');
+                return {
+                  ...item,
+                  label: `${code.padEnd(10, ' ')} (${count}`, // count already has closing parenthesis
+                };
+              })}
               value={selectedCodes}
               onChange={e => {
                 this.handleSelectCodeChange(e);
@@ -799,7 +881,7 @@ export class WeeklySummariesReport extends Component {
           </Col>
           <Col lg={{ size: 5 }} md={{ size: 6, offset: -1 }} xs={{ size: 6, offset: -1 }}>
             <MultiSelect
-              className="multi-select-filter text-dark"
+              className={cn(styles.multiSelectFilter, `text-dark ${darkMode ? 'dark-mode' : ''}`)}
               options={colorOptions}
               value={selectedColors}
               onChange={e => {
@@ -825,39 +907,36 @@ export class WeeklySummariesReport extends Component {
         )}
         <Row style={{ marginBottom: '10px' }}>
           <Col lg={{ size: 10, offset: 1 }} xs={{ size: 8, offset: 4 }}>
-            <div className="filter-container">
-              {(hasPermissionToFilter || this.canSeeBioHighlight) && (
-                <div className="filter-style margin-right">
-                  <span>Filter by Bio Status</span>
-                  <div className="switch-toggle-control">
-                    <input
-                      type="checkbox"
-                      className="switch-toggle"
-                      id="bio-status-toggle"
-                      onChange={this.handleBioStatusToggleChange}
+            <div className={styles.filterContainer}>
+              {hasPermissionToFilter && (
+                <div className={cn(styles.filterStyle, styles.filterMarginRight)}>
+                  <span>Filter by Special</span>
+                  {['purple', 'green', 'navy'].map(color => (
+                    <SlideToggle
+                      key={`${color}-toggle`}
+                      className={styles.slideToggle}
+                      color={color}
+                      onChange={this.handleColorToggleChange}
                     />
-                    <label className="switch-toggle-label" htmlFor="bio-status-toggle">
-                      <span className="switch-toggle-inner" />
-                      <span className="switch-toggle-switch" />
-                    </label>
-                  </div>
+                  ))}
+                </div>
+              )}
+              {(hasPermissionToFilter || this.canSeeBioHighlight) && (
+                <div className={cn(styles.filterStyle, styles.filterMarginRight)}>
+                  <span>Filter by Bio Status</span>
+                  <SlideToggle
+                    className={styles.slideToggle}
+                    onChange={this.handleBioStatusToggleChange}
+                  />
                 </div>
               )}
               {hasPermissionToFilter && (
-                <div className="filter-style">
-                  <span>Filter by Over Hours {}</span>
-                  <div className="switch-toggle-control">
-                    <input
-                      type="checkbox"
-                      className="switch-toggle"
-                      id="over-hours-toggle"
-                      onChange={this.handleOverHoursToggleChange}
-                    />
-                    <label className="switch-toggle-label" htmlFor="over-hours-toggle">
-                      <span className="switch-toggle-inner" />
-                      <span className="switch-toggle-switch" />
-                    </label>
-                  </div>
+                <div className={styles.filterStyle}>
+                  <span>Filter by Over Hours</span>
+                  <SlideToggle
+                    className={styles.slideToggle}
+                    onChange={this.handleOverHoursToggleChange}
+                  />
                   <ReactTooltip
                     id="filterTooltip"
                     place="top"
@@ -899,7 +978,7 @@ export class WeeklySummariesReport extends Component {
                 </Button>
               )}
               {replaceCodeError && (
-                <Alert className="code-alert" color="danger">
+                <Alert className={styles.codeAlert} color="danger">
                   {replaceCodeError}
                 </Alert>
               )}
@@ -916,6 +995,7 @@ export class WeeklySummariesReport extends Component {
                     data-testid={item}
                     active={item === activeTab}
                     onClick={() => this.toggleTab(item)}
+                    className={darkMode ? 'dark-mode' : ''}
                   >
                     {item}
                   </NavLink>
@@ -967,7 +1047,7 @@ export class WeeklySummariesReport extends Component {
                       <FormattedReport
                         summaries={filteredSummaries}
                         weekIndex={index}
-                        bioCanEdit={this.bioEditPermission}
+                        bioCanEdit={this.canRequestBio}
                         canEditSummaryCount={this.canEditSummaryCount}
                         allRoleInfo={allRoleInfo}
                         badges={badges}
@@ -977,6 +1057,7 @@ export class WeeklySummariesReport extends Component {
                         canSeeBioHighlight={this.canSeeBioHighlight}
                         darkMode={darkMode}
                         handleTeamCodeChange={this.handleTeamCodeChange}
+                        handleSpecialColorDotClick={this.handleSpecialColorDotClick}
                       />
                     </Col>
                   </Row>
@@ -995,6 +1076,7 @@ WeeklySummariesReport.propTypes = {
   loading: PropTypes.bool.isRequired,
   summaries: PropTypes.array.isRequired,
   infoCollections: PropTypes.array,
+  setTeamCodes: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({
@@ -1006,6 +1088,7 @@ const mapStateToProps = state => ({
   role: state.auth.user.role,
   auth: state.auth,
   darkMode: state.theme.darkMode,
+  teamCodes: state.teamCodes.teamCodes,
   authEmailWeeklySummaryRecipient: state.auth.user.email, // capturing the user email through Redux store - Sucheta
 });
 
@@ -1015,6 +1098,8 @@ const mapDispatchToProps = dispatch => ({
   hasPermission: permission => dispatch(hasPermission(permission)),
   getInfoCollections: () => getInfoCollections(),
   getAllUserTeams: () => dispatch(getAllUserTeams()),
+  getAllTeamCode: () => dispatch(getAllTeamCode()),
+  setTeamCodes: teamCodes => dispatch(setTeamCodes(teamCodes)),
 });
 
 function WeeklySummariesReportTab({ tabId, hidden, children }) {

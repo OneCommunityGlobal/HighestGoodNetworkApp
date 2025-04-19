@@ -47,3 +47,46 @@ th[data-testid="desktop-earned-dates"] {
     display: table-cell; /* adjust width or alignment here */
   }
 }
+
+.badge_count_report {
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  background: #007bff;
+  color: #fff;
+  text-align: center;
+  font: 15px Arial, sans-serif;
+  position: absolute;
+  right: 26px;
+  bottom: 2px;
+  z-index: 10;
+}
+
+.badge_count_personalmax_report {
+	padding-top: 4px;
+	border-radius: 45%;
+	width: 19px;
+	height: 19px;
+	background: #800080;
+	color: #fff;
+	text-align: center;
+	font: 11px Arial, sans-serif;
+	position: absolute;
+	right: 26px;
+	bottom: 3px;
+	z-index: 10;
+}
+
+.badge_count_3_digit_report {
+  border-radius: 50%;
+  width: 20px;
+  height: 15px;
+  background: #007bff;
+  color: #fff;
+  text-align: center;
+  font: 11px Arial, sans-serif;
+  position: absolute;
+  right: 26px;
+  bottom: 2px;
+  z-index: 10;
+}

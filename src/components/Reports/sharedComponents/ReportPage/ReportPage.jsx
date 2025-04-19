@@ -1,3 +1,4 @@
+/* eslint-disable import/prefer-default-export */
 import { ReportHeader } from './components/ReportHeader';
 import { ReportBlock } from './components/ReportBlock';
 import { ReportCard } from './components/ReportCard';

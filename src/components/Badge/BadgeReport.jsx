@@ -5,18 +5,12 @@ import {
   Button,
   ButtonGroup,
   Input,
-  Card,
-  CardTitle,
-  CardBody,
-  CardImg,
-  CardText,
   DropdownToggle,
   Modal,
   ModalBody,
   ModalFooter,
   FormGroup,
   UncontrolledDropdown,
-  UncontrolledPopover,
   DropdownMenu,
   DropdownItem,
   UncontrolledTooltip,
@@ -36,6 +30,7 @@ import { changeBadgesByUserID } from '../../actions/badgeManagement';
 import './BadgeReport.css';
 import { getUserProfile } from '../../actions/userProfile';
 import { PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE } from 'utils/constants';
+import BadgeImage from './BadgeImage';
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 function BadgeReport(props) {
@@ -89,54 +84,68 @@ function BadgeReport(props) {
     };
   }
 
-  const FormatReportForPdf = (badges, callback) => {
-    const bgReport = [];
-    bgReport[0] = `<h3>Badge Report (Page 1 of ${Math.ceil(badges.length / 4)})</h3>
-  <div style="margin-bottom: 20px; color: orange;"><h4>For ${props.firstName} ${
-      props.lastName
-    }</h4></div>
-  <div style="color:#DEE2E6; margin:10px 0px 20px 0px; text-align:center;">_______________________________________________________________________________________________</div>`;
-
-    for (let i = 0; i < badges.length; i += 1) {
-      imageToUri(badges[i].badge.imageUrl, function(uri) {
-        bgReport[i + 1] = `
-      <table>
-        <thead>
-          <tr>
-            <th>Badge Image</th>
-            <th>Badge Name, Count Awarded & Badge Description</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td style="width:160px">
-              <div><img height="150" width="150" src=${uri}/></div>
-            </td>
-            <td style="width:500px">
-              <div><b>Name:</b> <span class="name">${badges[i].badge.badgeName}</span></div>
-              <div><b>Count:</b> ${badges[i].count}</div>
-              <div><b>Description:</b> ${badges[i].badge.description}</div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      ${
-        (i + 1) % 4 === 0 && i + 1 !== badges.length
-          ? `</br></br></br>
-      <h3>Badge Report (Page ${1 + Math.ceil((i + 1) / 4)} of ${Math.ceil(badges.length / 4)})</h3>
-    <div style="margin-bottom: 20px; color: orange;"><h4>For ${props.firstName} ${
-              props.lastName
-            }</h4></div>
-    <div style="color:#DEE2E6; margin:10px 0px 20px 0px; text-align:center;">_______________________________________________________________________________________________</div>
-      `
-          : ''
-      }`;
-        if (i === badges.length - 1) {
-          setTimeout(() => {
-            callback(bgReport.join('\n'));
-          }, 100);
-        }
+  const FormatReportForPdf = async (badges, callback) => {
+    try {
+      const bgReport = [];
+      bgReport[0] = `<h3>Badge Report (Page 1 of ${Math.ceil(badges.length / 4)})</h3>
+        <div style="margin-bottom: 20px; color: orange;"><h4>For ${props.firstName} ${
+        props.lastName
+      }</h4></div>
+        <div style="color:#DEE2E6; margin:10px 0px 20px 0px; text-align:center;">_______________________________________________________________________________________________</div>`;
+  
+      const badgePromises = badges.map((badge, i) => {
+        const imageUrl = badge.badge?.imageUrl || ''; // Fallback to empty string if imageUrl is missing
+        const badgeName = badge.badge?.badgeName || 'Unknown Badge'; // Fallback for missing badgeName
+        const description = badge.badge?.description || 'No description available'; // Fallback for missing description
+  
+        return new Promise((resolve) => {
+          imageToUri(imageUrl, (uri) => {
+            const badgeHtml = `
+              <table>
+                <thead>
+                  <tr>
+                    <th>Badge Image</th>
+                    <th>Badge Name, Count Awarded & Badge Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style="width:160px">
+                      <div><img height="150" width="150" src="${uri}" /></div>
+                    </td>
+                    <td style="width:500px">
+                      <div><b>Name:</b> <span class="name">${badgeName}</span></div>
+                      <div><b>Count:</b> ${badge.count}</div>
+                      <div><b>Description:</b> ${description}</div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              ${
+                (i + 1) % 4 === 0 && i + 1 !== badges.length
+                  ? `</br></br></br>
+              <h3>Badge Report (Page ${1 + Math.ceil((i + 1) / 4)} of ${Math.ceil(
+                      badges.length / 4
+                    )})</h3>
+              <div style="margin-bottom: 20px; color: orange;"><h4>For ${props.firstName} ${
+                      props.lastName
+                    }</h4></div>
+              <div style="color:#DEE2E6; margin:10px 0px 20px 0px; text-align:center;">_______________________________________________________________________________________________</div>
+              `
+                  : ''
+              }`;
+            resolve(badgeHtml);
+          });
+        });
       });
+  
+      const badgeHtmlArray = await Promise.all(badgePromises);
+      bgReport.push(...badgeHtmlArray);
+  
+      callback(bgReport.join('\n'));
+    } catch (error) {
+      console.error('Error generating badge report:', error);
+      callback('<p>Error generating badge report. Please try again later.</p>');
     }
   };
 
@@ -394,26 +403,15 @@ function BadgeReport(props) {
                   <tr key={index}>
                     <td className="badge_image_sm">
                       {' '}
-                      <img src={value.badge.imageUrl} id={'popover_' + index.toString()} />
+                      <BadgeImage
+                        personalBestMaxHrs={props.personalBestMaxHrs}
+                        count={value.count}
+                        badgeData={value.badge}
+                        index={index}
+                        key={index}
+                        cssSuffix={'_report'}
+                      />
                     </td>
-                    <UncontrolledPopover trigger="hover" target={'popover_' + index.toString()}>
-                      <Card className="text-center">
-                        <CardImg className="badge_image_lg" src={value?.badge?.imageUrl} />
-                        <CardBody>
-                          <CardTitle
-                            style={{
-                              fontWeight: 'bold',
-                              fontSize: 18,
-                              color: '#285739',
-                              marginBottom: 15,
-                            }}
-                          >
-                            {value.badge?.badgeName}
-                          </CardTitle>
-                          <CardText>{value.badge?.description}</CardText>
-                        </CardBody>
-                      </Card>
-                    </UncontrolledPopover>
                     <td>{value.badge.badgeName}</td>
                     <td>
                       {typeof value.lastModified == 'string'
@@ -576,26 +574,15 @@ function BadgeReport(props) {
                   <tr key={index}>
                     <td className="badge_image_sm">
                       {' '}
-                      <img src={value.badge.imageUrl} id={'popover_' + index.toString()} />
+                      <BadgeImage
+                        personalBestMaxHrs={props.personalBestMaxHrs}
+                        count={value.count}
+                        badgeData={value.badge}
+                        index={index}
+                        key={index}
+                        cssSuffix={'_report'}
+                      />
                     </td>
-                    <UncontrolledPopover trigger="hover" target={'popover_' + index.toString()}>
-                      <Card className="text-center">
-                        <CardImg className="badge_image_lg" src={value?.badge?.imageUrl} />
-                        <CardBody>
-                          <CardTitle
-                            style={{
-                              fontWeight: 'bold',
-                              fontSize: 18,
-                              color: '#285739',
-                              marginBottom: 15,
-                            }}
-                          >
-                            {value.badge?.badgeName}
-                          </CardTitle>
-                          <CardText>{value.badge?.description}</CardText>
-                        </CardBody>
-                      </Card>
-                    </UncontrolledPopover>
                     <td>{value.badge.badgeName}</td>
                     <td>
                       {typeof value.lastModified == 'string'
