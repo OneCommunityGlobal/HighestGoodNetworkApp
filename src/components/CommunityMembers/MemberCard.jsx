@@ -18,6 +18,7 @@ const MemberCard = ({
   isNotApplicable,
   darkMode: darkModeProp,
   userId,
+  isContactPublic = true,
 }) => {
   // Use the passed darkMode prop if provided, otherwise use Redux state
   const darkModeFromRedux = useSelector(state => state.theme.darkMode);
@@ -40,12 +41,22 @@ const MemberCard = ({
     : score.toFixed(1);
 
   const handleEmailClick = e => {
+    if (!isContactPublic) {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
     e.preventDefault();
     e.stopPropagation();
     window.location.href = `mailto:${email}`;
   };
 
   const handleSlackClick = e => {
+    if (!isContactPublic) {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
     e.preventDefault();
     e.stopPropagation();
     // This would ideally open Slack with the user's profile - for now just show an alert
@@ -77,15 +88,19 @@ const MemberCard = ({
       )}
 
       <div className="member-card__contact">
-        <div className="member-card__email" onClick={handleEmailClick} title="Click to send email">
-          <i className="fa fa-envelope"></i> {email}
+        <div
+          className={`member-card__email ${!isContactPublic ? 'private-contact' : ''}`}
+          onClick={handleEmailClick}
+        >
+          <i className="fa fa-envelope"></i> {isContactPublic ? email : 'Private'}
+          {!isContactPublic && <span className="custom-tooltip">No ID found</span>}
         </div>
         <div
-          className="member-card__slack"
+          className={`member-card__slack ${!isContactPublic ? 'private-contact' : ''}`}
           onClick={handleSlackClick}
-          title="Click to open in Slack"
         >
-          <i className="fa fa-slack"></i> {slackId}
+          <i className="fa fa-slack"></i> {isContactPublic ? slackId : 'Private'}
+          {!isContactPublic && <span className="custom-tooltip">No ID found</span>}
         </div>
         {github && (
           <div
@@ -128,6 +143,7 @@ MemberCard.propTypes = {
   isNotApplicable: PropTypes.bool,
   darkMode: PropTypes.bool,
   userId: PropTypes.string,
+  isContactPublic: PropTypes.bool,
 };
 
 MemberCard.defaultProps = {
@@ -137,6 +153,7 @@ MemberCard.defaultProps = {
   isNotApplicable: false,
   darkMode: undefined,
   userId: null,
+  isContactPublic: true,
 };
 
 export default MemberCard;

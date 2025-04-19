@@ -221,4 +221,68 @@
 .dark-mode .member-card .member-card__skills,
 .member-card.dark-mode .member-card__skills {
   color: rgb(192, 192, 192) !important; /* text-custom-grey */
+}
+
+/* Private contact info styles */
+.private-contact {
+  opacity: 0.7;
+  cursor: default;
+  position: relative;
+}
+
+.private-contact:hover {
+  text-decoration: none !important;
+  color: #666 !important;
+}
+
+.dark-mode .private-contact:hover,
+.member-card.dark-mode .private-contact:hover {
+  color: rgb(192, 192, 192) !important;
+  text-decoration: none !important;
+}
+
+/* Custom tooltip styles */
+.custom-tooltip {
+  position: absolute;
+  background-color: #333;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s, visibility 0.3s;
+  z-index: 10;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.custom-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #333 transparent transparent transparent;
+}
+
+.private-contact:hover .custom-tooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
+.dark-mode .custom-tooltip,
+.member-card.dark-mode .custom-tooltip {
+  background-color: #3a506b; /* bg-yinmn-blue */
+  color: white;
+}
+
+.dark-mode .custom-tooltip::after,
+.member-card.dark-mode .custom-tooltip::after {
+  border-color: #3a506b transparent transparent transparent;
 } 

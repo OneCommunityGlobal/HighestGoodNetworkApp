@@ -516,6 +516,8 @@ const CommunityMembers = () => {
               key={member.userId}
               to={`/hgnhelp/profile/${member.userId}`}
               className="member-card-link"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               <MemberCard
                 name={member.name.displayName}
@@ -528,6 +530,7 @@ const CommunityMembers = () => {
                 location={member.skillInfo.general.location}
                 darkMode={darkMode}
                 userId={member.userId}
+                isContactPublic={member.contactInfo.public !== false}
               />
             </Link>
           ))
