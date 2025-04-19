@@ -107,9 +107,9 @@ export default function PaidLaborCost() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const textColor = darkMode ? '#ffffff' : '#666';
   // Filter States
-  const [taskFilter, setTaskFilter] = useState('ALL'); // Default: All tasks
-  const [projectFilter, setProjectFilter] = useState('All Projects'); // Default: All projects
-  const [dateMode, setDateMode] = useState('ALL'); // Date mode: ALL or CUSTOM
+  const [taskFilter, setTaskFilter] = useState('ALL');
+  const [projectFilter, setProjectFilter] = useState('All Projects');
+  const [dateMode, setDateMode] = useState('ALL');
   const [dateRange, setDateRange] = useState({
     startDate: null,
     endDate: null,
@@ -217,21 +217,21 @@ export default function PaidLaborCost() {
   // Always include the Total Cost dataset
   const totalCostDataset = {
     label: 'Total Cost',
-    backgroundColor: '#00A3A1', // Teal color from wireframe
-    borderRadius: 4, // Rounded tops
+    backgroundColor: '#00A3A1',
+    borderRadius: 4,
     data: labels.map(label => Math.round(aggregation[label].totalCost / 1000)),
   };
 
   // Color mapping for tasks (can be extended)
   const colorMap = {
-    'Task 1': '#0A3A59', // Dark blue from wireframe
-    'Task 2': '#7ED957', // Light green from wireframe
+    'Task 1': '#FB9AAC',
+    'Task 2': '#7ED957',
   };
 
   const taskDatasets = tasksToInclude.map(task => ({
     label: `${task}`,
     backgroundColor: colorMap[task] || '#999',
-    borderRadius: 4, // Rounded tops
+    borderRadius: 4,
     data: labels.map(label => Math.round(aggregation[label][task] / 1000)),
   }));
 
@@ -262,14 +262,14 @@ export default function PaidLaborCost() {
     },
     scales: {
       x: {
-        grid: { display: false }, // Remove vertical grid lines
+        grid: { display: false },
         ticks: { font: { size: 12 }, color: textColor },
       },
       y: {
         grid: { color: '#ccc' },
         title: {
           display: true,
-          text: 'Cost (000s)', // More compact label
+          text: 'Cost (000s)',
           font: { size: 12 },
           color: textColor,
         },
