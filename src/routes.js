@@ -81,6 +81,7 @@ import ActivityList from './components/CommunityPortal/Activities/ActivityList';
 import EventStats from './components/CommunityPortal/EventPersonalization/EventStats';
 // import AddActivities from './components/CommunityPortal/Activities/AddActivities';
 // import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
+import RegistrationPopup from './components/CommunityPortal/RegistrationConfirmation/Registration';
 
 import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
@@ -412,6 +413,7 @@ export default(
         <CPProtectedRoute path="/communityportal" exact component={CPDashboard} />
         <Route path="/communityportal/login" component={CPLogin} />
         <CPProtectedRoute path="/communityportal/Activities" exact component={ActivityList} />
+        <CPProtectedRoute path="/communityportal/activities/registration" exact component={RegistrationPopup} />
 
 
         {/* Listing and Bidding Routes */}
