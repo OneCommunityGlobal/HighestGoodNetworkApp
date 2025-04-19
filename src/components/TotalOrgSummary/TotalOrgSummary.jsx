@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { Alert, Col, Container, Row } from 'reactstrap';
 import 'moment-timezone';
-
 import hasPermission from 'utils/permissions';
 
 // actions
@@ -30,6 +29,7 @@ import NumbersVolunteerWorked from './NumbersVolunteerWorked/NumbersVolunteerWor
 import AnniversaryCelebrated from './AnniversaryCelebrated/AnniversaryCelebrated';
 import RoleDistributionPieChart from './VolunteerRolesTeamDynamics/RoleDistributionPieChart';
 import WorkDistributionBarChart from './VolunteerRolesTeamDynamics/WorkDistributionBarChart';
+import GlobalVolunteerMap from './GlobalVolunteerMap/GlobalVolunteerMap';
 
 function calculateFromDate() {
   const currentDate = new Date();
@@ -279,9 +279,9 @@ function TotalOrgSummary(props) {
           <Col lg={{ size: 6 }}>
             <div className="component-container component-border">
               <div className="chart-title">
-                <p>Global Volunteer Network: Uniting Communities Worldwide</p>
+                <p> Active Global Volunteer Locations: Uniting Communities Worldwide</p>
               </div>
-              In progress...
+              <GlobalVolunteerMap isLoading={isLoading} locations={volunteerStats?.userLocations} />
             </div>
           </Col>
           <Col lg={{ size: 6 }}>
