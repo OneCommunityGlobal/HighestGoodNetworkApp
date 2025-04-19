@@ -273,7 +273,7 @@ function TotalOrgSummary(props) {
         <Row>
           <Col lg={{ size: 6 }}>
             <div className="component-container component-border">
-              <div className="chart-title">
+              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
                 <p>Global Volunteer Network: Uniting Communities Worldwide</p>
               </div>
               In progress...
@@ -281,7 +281,7 @@ function TotalOrgSummary(props) {
           </Col>
           <Col lg={{ size: 6 }}>
             <div className="component-container component-border">
-              <div className="chart-title">
+              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
                 <p>Volunteer Status</p>
               </div>
               <VolunteerStatusChart
@@ -298,7 +298,7 @@ function TotalOrgSummary(props) {
         >
           <Col lg={{ size: 6 }}>
             <div className="component-container component-border">
-              <div className="chart-title">
+              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
                 <p>Volunteer Hours Distribution</p>
               </div>
               <div className="d-flex flex-row justify-content-center flex-wrap my-4">
@@ -322,7 +322,7 @@ function TotalOrgSummary(props) {
           </Col>
           <Col lg={{ size: 3 }}>
             <div className="component-container component-border">
-              <div className="chart-title">
+              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
                 <p>Task Completed</p>
               </div>
               <div className="mt-4">
@@ -336,7 +336,7 @@ function TotalOrgSummary(props) {
           </Col>
           <Col lg={{ size: 3 }}>
             <div className="component-container component-border">
-              <div className="chart-title">
+              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
                 <p>Hours Completed</p>
               </div>
               <div className="mt-4">
@@ -354,7 +354,7 @@ function TotalOrgSummary(props) {
         <Row>
           <Col lg={{ size: 7 }}>
             <div className="component-container component-border">
-              <div className="chart-title">
+              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
                 <p>Volunteer Trends by Time</p>
               </div>
               <span className="text-center"> Work in progres...</span>
@@ -362,7 +362,7 @@ function TotalOrgSummary(props) {
           </Col>
           <Col lg={{ size: 5 }}>
             <div className="component-container component-border">
-              <div className="chart-title">
+              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
                 <p>Anniversary Celebrated</p>
               </div>
               <AnniversaryCelebrated
@@ -378,7 +378,7 @@ function TotalOrgSummary(props) {
         <Row>
           <Col lg={{ size: 7 }}>
             <div className="component-container component-border">
-              <div className="chart-title">
+              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
                 <p>Work Distribution</p>
               </div>
               <WorkDistributionBarChart
@@ -389,7 +389,7 @@ function TotalOrgSummary(props) {
           </Col>
           <Col lg={{ size: 5 }}>
             <div className="component-container component-border">
-              <div className="chart-title">
+              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
                 <p>Role Distribution</p>
               </div>
               <RoleDistributionPieChart
@@ -404,7 +404,7 @@ function TotalOrgSummary(props) {
         <Row>
           <Col lg={{ size: 6 }}>
             <div className="component-container component-border">
-              <div className="chart-title">
+              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
                 <p>Team Stats</p>
               </div>
               <TeamStats
@@ -416,7 +416,7 @@ function TotalOrgSummary(props) {
           </Col>
           <Col lg={{ size: 6 }}>
             <div className="component-container component-border">
-              <div className="chart-title">
+              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
                 <p>Blue Square Stats</p>
               </div>
               <BlueSquareStats
