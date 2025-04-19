@@ -903,6 +903,7 @@ function UserProfile(props) {
   const canUpdateSummaryRequirements = props.hasPermission('updateSummaryRequirements');
   const canManageAdminLinks = props.hasPermission('manageAdminLinks');
   const canSeeQSC = props.hasPermission('seeQSC');
+  const canSeeReports = props.hasPermission('getReports');
   const canEditVisibility = props.hasPermission('toggleInvisibility');
   const canSeeReports = props.hasPermission('getReports');
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
@@ -953,6 +954,10 @@ function UserProfile(props) {
     // console.log("userProfile:startDate, endDate", startDate === '' ? "EMPTY" : startDate, endDate === '' ? "EMPTY" : endDate );
     return endDate ? startDate <= endDate : true;
   };
+
+  const handleReportsPageRouting =()=>{
+      history.push('/peoplereport/'+ targetUserId);
+  }
 
   const isStartDateValid = startDateValidation(userProfile.createdDate, userProfile.startDate);
   const isEndDateValid = endDateValidation(userProfile.startDate, userProfile.endDate);
@@ -1171,6 +1176,24 @@ function UserProfile(props) {
                     onClick={handleRehireableChange}
                   />
                 </span>
+              )}
+             {canSeeReports && (
+               <span
+               aria-hidden="true"
+               style={{
+                 fontSize: 28,
+                 cursor: 'pointer',
+                 marginTop: '4px',
+                 fontWeight: 'bold',
+                 fontFamily: 'Arial, sans-serif',
+               }}
+               className='mr-2'
+               title="Click here to visit the People Report for this individual"
+               onClick={handleReportsPageRouting}
+             >
+               R
+               <i title='Click here to visit the People Report for this individual'></i>
+             </span>
               )}
               <Button
                 onClick={() => {
