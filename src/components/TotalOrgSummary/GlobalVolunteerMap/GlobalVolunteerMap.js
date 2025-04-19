@@ -1,10 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import L from 'leaflet';
 import { MapContainer, TileLayer, useMap, CircleMarker } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.heat';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import Loading from 'components/common/Loading';
 
 const volunteerColors = {
@@ -40,13 +38,6 @@ function HeatMap({ points }) {
 }
 
 function MapComponent({ locations = [], isLoading, error }) {
-  const [isMapVisible, setIsMapVisible] = useState(false);
-
-  useEffect(() => {
-    setIsMapVisible(true);
-    toast.info('This map displays only active volunteers.');
-  }, []);
-
   const heatMapPoints = (locations || []).map(location => [
     location._id.lat,
     location._id.lng,
@@ -67,44 +58,39 @@ function MapComponent({ locations = [], isLoading, error }) {
 
   return (
     <div className="map-container" style={{ marginTop: '20px' }}>
-      {isMapVisible && (
-        <>
-          {error && (
-            <div className="error-container">
-              <p>Error: {error}</p>
-              <button
-                type="button"
-                onClick={() => {
-                  /* Add retry logic here */
-                }}
-              >
-                Retry
-              </button>
-            </div>
-          )}
-          <MapContainer center={[20, 0]} zoom={2} style={{ height: '500px', width: '100%' }}>
-            <TileLayer
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            />
-            <HeatMap points={heatMapPoints} />
-            {activeVolunteers.length > 0 &&
-              activeVolunteers.map(volunteer => (
-                <CircleMarker
-                  key={`active-${volunteer._id.lat}-${volunteer._id.lng}`}
-                  center={[volunteer._id.lat, volunteer._id.lng]}
-                  radius={8}
-                  pathOptions={{
-                    color: volunteerColors.active,
-                    fillColor: volunteerColors.active,
-                    fillOpacity: 0.8,
-                  }}
-                />
-              ))}
-          </MapContainer>
-        </>
+      {error && (
+        <div className="error-container">
+          <p>Error: {error}</p>
+          <button
+            type="button"
+            onClick={() => {
+              /* Add retry logic here */
+            }}
+          >
+            Retry
+          </button>
+        </div>
       )}
-      <ToastContainer />
+      <MapContainer center={[20, 0]} zoom={2} style={{ height: '500px', width: '100%' }}>
+        <TileLayer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        />
+        <HeatMap points={heatMapPoints} />
+        {activeVolunteers.length > 0 &&
+          activeVolunteers.map(volunteer => (
+            <CircleMarker
+              key={`active-${volunteer._id.lat}-${volunteer._id.lng}`}
+              center={[volunteer._id.lat, volunteer._id.lng]}
+              radius={8}
+              pathOptions={{
+                color: volunteerColors.active,
+                fillColor: volunteerColors.active,
+                fillOpacity: 0.8,
+              }}
+            />
+          ))}
+      </MapContainer>
     </div>
   );
 }
