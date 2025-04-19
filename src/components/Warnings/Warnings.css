@@ -19,22 +19,30 @@
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  align-items: center;
   flex-shrink: 0;
   width: 100%;
+  margin-bottom: 0.9em;
 }
 .icons-wrapper {
   display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+}
+
+.warning-icon {
+  display: flex;
+  justify-content: flex-start;
 }
 .warning-icons {
   display: flex;
+  justify-content: center;
 }
 
 .warning-text {
-  text-align: center;
+  text-align: left;
   font-size: 0.93em;
   margin: 0;
-  margin-bottom: 0.3em;
 }
 
 .popover-body {
