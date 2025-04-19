@@ -81,11 +81,10 @@ import ActivityList from './components/CommunityPortal/Activities/ActivityList';
 import EventStats from './components/CommunityPortal/EventPersonalization/EventStats';
 // import AddActivities from './components/CommunityPortal/Activities/AddActivities';
 // import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
-
+import EventList from './components/CommunityPortal/Event/EventList/EventList';
 import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
 import EPDashboard from './components/EductionPortal';
-
 
 
 
@@ -144,7 +143,7 @@ const PermissionsManagement = lazy(() =>
 );
 const UserRoleTab = lazy(() => import('./components/PermissionsManagement/UserRoleTab'));
 const Teams = lazy(() => import('./components/Teams/Teams'));
-
+// const EventList = lazy(() => import('./components/CommunityPortal/Event/EventList/EventList'));
 
 export default(
   <Switch>
@@ -328,6 +327,7 @@ export default(
         />
         <ProtectedRoute path="/job-notification-dashboard" exact component={JobCCDashboard} fallback allowedRoles={[UserRole.Owner]}/>
 
+
         {/* ----- BEGIN BM Dashboard Routing ----- */}
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
         <Route path="/bmdashboard/login" component={BMLogin} />
@@ -412,7 +412,7 @@ export default(
         <CPProtectedRoute path="/communityportal" exact component={CPDashboard} />
         <Route path="/communityportal/login" component={CPLogin} />
         <CPProtectedRoute path="/communityportal/Activities" exact component={ActivityList} />
-
+        <CPProtectedRoute path="/communityportal/database/design" exact component={EventList} />
 
         {/* Listing and Bidding Routes */}
         <LBProtectedRoute path="/lbdashboard" exact component={LBDashboard} />
