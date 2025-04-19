@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
-import GET_BM_PROJECT_BY_ID from '../../constants/bmdashboard/projectConstants';
+import {GET_BM_PROJECT_BY_ID, SET_SELECTED_PROJECT_ID}from '../../constants/bmdashboard/projectConstants';
 import { GET_ERRORS } from '../../constants/errors';
+
 
 export const setProject = payload => {
   return {
@@ -32,5 +33,13 @@ export const fetchProjectById = projectId => {
 
       throw error;
     }
+  };
+};
+
+
+export const setSelectProjectId = (projectId) => {
+  return {
+    type: SET_SELECTED_PROJECT_ID,
+    payload: projectId
   };
 };

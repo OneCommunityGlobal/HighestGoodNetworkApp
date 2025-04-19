@@ -55,6 +55,7 @@ import dashboardReducer from './dashboardReducer';
 import { timeOffRequestsReducer } from './timeOffRequestReducer';
 import { totalOrgSummaryReducer } from './totalOrgSummaryReducer';
 import { allUsersTimeEntriesReducer } from './allUsersTimeEntriesReducer';
+import { selectedProjectIdReducer } from './bmdashboard/selectedProjectIdReducer';
 import HGNFormReducer from './hgnFormReducers';
 
 const localReducers = {
@@ -105,6 +106,7 @@ const localReducers = {
   bmConsumables: consumablesReducer,
   bmReusables: reusablesReducer,
   dashboard: dashboardReducer,
+  selectedProjectId: selectedProjectIdReducer,
 };
 
 const sessionReducers = {
