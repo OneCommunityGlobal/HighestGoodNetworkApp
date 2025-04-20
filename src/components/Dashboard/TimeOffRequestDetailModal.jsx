@@ -4,7 +4,7 @@ import 'moment-timezone';
 import { useSelector, useDispatch } from 'react-redux';
 import { hideTimeOffRequestModal } from '../../actions/timeOffRequestAction';
 
-const TimeOffRequestDetailModal = () => {
+function TimeOffRequestDetailModal() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const { isOpen, data } = useSelector(state => state.timeOffRequests.timeOffModal);
   const dispatch = useDispatch();
@@ -19,7 +19,7 @@ const TimeOffRequestDetailModal = () => {
       .split('T')[0];
     const intervals = [];
     let startDate = moment(dateOfLeaveStr);
-    for (let i = 0; i < req.duration; i++) {
+    for (let i = 0; i < req.duration; i += 1) {
       const endDate = startDate.clone().endOf('week');
       intervals.push([startDate.format('MM-DD-YYYY'), endDate.format('MM-DD-YYYY')]);
       startDate = startDate.add(1, 'week').startOf('week');
@@ -32,7 +32,7 @@ const TimeOffRequestDetailModal = () => {
       <Modal
         isOpen={isOpen}
         toggle={() => detailModalClose()}
-        returnFocusAfterClose={true}
+        returnFocusAfterClose
         className={darkMode ? 'dark-mode text-light' : ''}
       >
         <ModalHeader toggle={() => detailModalClose()} className={darkMode ? 'bg-space-cadet' : ''}>
@@ -50,8 +50,8 @@ const TimeOffRequestDetailModal = () => {
                 <Container className="time-off-detail-modal-card-container" key={req._id}>
                   <Row className="pl-2">
                     <Col className="mb-2 font-italic">
-                      {getWeekIntervals(req)[0].map((week, index) => (
-                        <li key={index}>
+                      {getWeekIntervals(req)[0].map(week => (
+                        <li key={week[0] * week[1]}>
                           <b>{`From `}</b>
                           {week[0]}
                           <b>{` To `}</b>
@@ -100,8 +100,8 @@ const TimeOffRequestDetailModal = () => {
               </Row>
               <Row className="pl-2">
                 <Col className="mb-2 font-italic">
-                  {getWeekIntervals(data)[0].map((week, index) => (
-                    <li key={index}>
+                  {getWeekIntervals(data)[0].map(week => (
+                    <li key={week[0] * week[1]}>
                       <b>{`From `}</b>
                       {week[0]}
                       <b>{` To `}</b>
@@ -135,6 +135,6 @@ const TimeOffRequestDetailModal = () => {
       </Modal>
     </div>
   );
-};
+}
 
 export default TimeOffRequestDetailModal;

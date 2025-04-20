@@ -102,6 +102,14 @@ class UpdatePassword extends Form {
         <h2 className="text-2xl font-bold mb-5">Change Password</h2>
         <form className="col-md-4 xs-12" onSubmit={e => this.handleSubmit(e)}>
           <div className="mb-4">
+            <div className="flex justify-between items-center">
+              <label
+                htmlFor="currentpassword"
+                className={`text-sm font-medium mr-2 ${darkMode ? 'text-azure' : 'text-gray-700'}`}
+              >
+                Current Password:
+              </label>
+            </div>
             {this.renderInput({
               name: 'currentpassword',
               type: this.state.showPassword.currentpassword ? 'text' : 'password',
@@ -110,6 +118,14 @@ class UpdatePassword extends Form {
           </div>
 
           <div className="mb-4">
+            <div className="flex justify-between items-center">
+              <label
+                htmlFor="newpassword"
+                className={`text-sm font-medium mr-2 ${darkMode ? 'text-azure' : 'text-gray-700'}`}
+              >
+                New Password:
+              </label>
+            </div>
             {this.renderInput({
               name: 'newpassword',
               type: this.state.showPassword.newpassword ? 'text' : 'password',
@@ -118,6 +134,14 @@ class UpdatePassword extends Form {
           </div>
 
           <div className="mb-4">
+            <div className="flex justify-between items-center">
+              <label
+                htmlFor="confirmnewpassword"
+                className={`text-sm font-medium mr-2 ${darkMode ? 'text-azure' : 'text-gray-700'}`}
+              >
+                Confirm Password:
+              </label>
+            </div>
             {this.renderInput({
               name: 'confirmnewpassword',
               type: this.state.showPassword.confirmnewpassword ? 'text' : 'password',

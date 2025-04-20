@@ -51,7 +51,6 @@ function TableFilter({
           type="text"
           value={emailFilter}
           onChange={e => setEmailFilter(e.target.value)}
-          placeholder='Your Email'
           className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
         />
       </td>

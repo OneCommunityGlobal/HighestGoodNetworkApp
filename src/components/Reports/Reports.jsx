@@ -538,9 +538,8 @@ class ReportsPage extends Component {
                       />
                     </div>
                   </div>
-                  <div>
-              <div className="total-report-item">
-              <Button color="info" onClick={this.showTotalTeam}>
+                  <div className="total-report-item">
+                    <Button color="info" onClick={this.showTotalTeam}>
                       {this.state.showTotalTeam
                         ? 'Hide Total Team Report'
                         : 'Show Total Team Report'}
@@ -555,10 +554,9 @@ class ReportsPage extends Component {
                         darkMode={darkMode}
                       />
                     </div>
+                  </div>
+                </div>
 
-                </div>
-                </div>
-                </div>
                 {myRole !== 'Owner' && (
                   <div className="lost-time-container">
                     <div className="lost-time-item">

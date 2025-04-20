@@ -80,7 +80,7 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
       if (hasPermission("manageAdminLinks")) {
         setUserProfile(prev => ({ ...prev, ...data }));
       }
-      const result = await handleSubmit(Object.assign({},userProfile,data));
+      const result = await handleSubmit();
 
       setTitleOnSet(true); 
       setValid(() => ({ volunteerAgree: false }));

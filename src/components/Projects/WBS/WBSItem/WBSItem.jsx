@@ -34,16 +34,16 @@ const WBSItem = ({ darkMode, index, name, wbsId, projectId, getPopupById, delete
   return (
     <React.Fragment>
       <tr>
-        <th scope="row" style={{ width: '150px', textAlign: 'center' }}>
-          {index}
+        <th scope="row">
+          <div>{index}</div>
         </th>
-        <td style={{ textAlign: 'left' }}>
+        <td className="members__name">
           <NavItem tag={Link} to={`/wbs/tasks/${wbsId}/${projectId}/${name}`} className={darkMode ? 'text-azure' : ''}>
             {name}
           </NavItem>
         </td>
-        <td style={{ width: '50px', textAlign: 'center' }}>
-          {canDeleteWBS ? (
+        {canDeleteWBS ? (
+          <td className="members__assign">
             <button
               className="btn btn-outline-danger btn-sm"
               type="button"
@@ -52,8 +52,8 @@ const WBSItem = ({ darkMode, index, name, wbsId, projectId, getPopupById, delete
             >
               <i className="fa fa-minus" aria-hidden="true"></i>
             </button>
-          ) : null}
-        </td>
+          </td>
+        ) : null}
       </tr>
 
       <ModalDelete

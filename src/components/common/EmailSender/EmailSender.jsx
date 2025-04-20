@@ -1,13 +1,13 @@
-// eslint-disable-next-line no-unused-vars
-import React from 'react';
-import { useLocation } from 'react-router-dom';
-import Announcements from 'components/Announcements';
+import React from 'react'
+import { useLocation } from 'react-router-dom'
+import Announcements from 'components/Announcements'
 
-function EmailSender() {
+export const EmailSender = () => {
+
   const location = useLocation();
-  const { email } = location.state.state;
+  const email  = location.state.state.email;
 
-  return <Announcements title="Email Form" email={email} />;
-}
-
-export default EmailSender;
+  return (
+    <Announcements title='Email Form' email={ email } />
+  )
+};

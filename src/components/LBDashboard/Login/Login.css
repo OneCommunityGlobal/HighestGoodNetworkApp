@@ -68,13 +68,13 @@
   min-width: 140px;
 }
 
-.login-form {
+form {
   display: flex;
   flex-direction: column;
   width: 100%;
 }
 
-.login-form input {
+form input {
   margin-bottom: 15px;
   padding: 5px 10px 5px 10px;
   border: 1px solid #ccc;
@@ -82,7 +82,7 @@
   font-size: 14px;
 }
 
-.login-form button {
+form button {
   margin-top: 10px;
   margin-left: auto;
   width: 40%;
@@ -97,11 +97,11 @@
   cursor: pointer;
 }
 
-.login-form button:hover {
+form button:hover {
   background-color: #218838;
 }
 
-.login-form .error-message {
+form .error-message {
   color: red;
   font-size: 12px;
   margin-top: -10px;

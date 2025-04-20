@@ -1,4 +1,3 @@
-import axios from 'axios'; // Import axios
 import {
   setTeamDetail,
   getUserTeamMembers,
@@ -9,6 +8,7 @@ import {
 import { GET_TEAM_BY_ID } from '../../constants/team';
 import httpService from '../../services/httpService';
 import { ENDPOINTS } from '../../utils/URL';
+import axios from 'axios'; // Import axios
 
 jest.mock('../../services/httpService');
 jest.mock('axios'); // Mock axios
@@ -126,7 +126,7 @@ describe('fetchAllManagingTeams', () => {
       .mockResolvedValueOnce(mockTeamMembersResponse) // Mock the HTTP GET request for team members of team1
       .mockResolvedValueOnce(mockTeamMembersResponse) // Mock the HTTP GET request for team members of team2
       .mockResolvedValueOnce(mockTimeEntriesResponse) // Mock the HTTP GET request for time entries of member1
-      .mockResolvedValueOnce(mockTimeEntriesResponse); // Mock the HTTP GET request for time entries of member2
+      .mockResolvedValueOnce(mockTimeEntriesResponse) // Mock the HTTP GET request for time entries of member2
 
     const dispatch = jest.fn(); // Create a mock dispatch function
 

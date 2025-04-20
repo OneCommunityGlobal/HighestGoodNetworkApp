@@ -1,10 +1,9 @@
-// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWindowClose } from '@fortawesome/free-regular-svg-icons';
 import { useSelector } from 'react-redux';
 
-function CustomModalHeader({ title, toggle, children }) {
+const CustomModalHeader = ({ title, toggle, children }) => {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   return (
@@ -19,18 +18,13 @@ function CustomModalHeader({ title, toggle, children }) {
           {children}
         </div>
         {toggle ? (
-          <button
-            type="button"
-            className={darkMode ? 'text-light' : ''}
-            onClick={() => toggle()}
-            aria-label="Close modal"
-          >
+          <button className={darkMode ? 'text-light' : ''} onClick={() => toggle()}>
             <FontAwesomeIcon size="lg" icon={faWindowClose} />
           </button>
         ) : null}
       </div>
     </div>
   );
-}
+};
 
 export default CustomModalHeader;

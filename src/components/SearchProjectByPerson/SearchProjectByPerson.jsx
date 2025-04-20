@@ -47,7 +47,7 @@ export default function SearchProjectByPerson({ onSearch, suggestions, onSelectS
         />
       </form>
 
-      {showSuggestions && suggestions?.length > 0 && (
+      {showSuggestions && suggestions.length > 0 && (
         <ul className="suggestions-list">
           {suggestions.map(suggestion => (
             <li key={suggestion._id} className="suggestion-item">
