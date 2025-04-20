@@ -18,11 +18,13 @@ import { toast } from 'react-toastify';
 import { rejectTaskEditSuggestionHTTP } from '../service';
 import { rejectTaskEditSuggestionSuccess } from '../actions';
 import { fetchTaskEditSuggestions } from '../thunks';
+import { incrementDashboardTaskCount } from 'actions/dashboardActions';
 
 export const TaskEditSuggestionsModal = ({
   isTaskEditSuggestionModalOpen,
   taskEditSuggestion,
   handleToggleTaskEditSuggestionModal,
+  userRole
 }) => {
   const dispatch = useDispatch();
 
@@ -38,6 +40,11 @@ export const TaskEditSuggestionsModal = ({
         )(dispatch, getState);
       });
       dispatch(rejectTaskEditSuggestionSuccess(taskEditSuggestion._id));
+      
+      if (userRole !== 'Volunteer') {
+        console.log(`Incrementing count for task ${taskEditSuggestion.taskId}`);
+        dispatch(incrementDashboardTaskCount(taskEditSuggestion.taskId));
+      }
     } catch (e) {
       dispatch(fetchTaskEditSuggestions()); 
       toast.error('The suggestion might have already been resolved. Reloading the suggestion list...');

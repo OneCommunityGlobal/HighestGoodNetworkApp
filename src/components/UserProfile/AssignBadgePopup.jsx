@@ -71,6 +71,7 @@ function AssignBadgePopup(props) {
     //   const existBadges = props.userProfile.badgeCollection.map(badge => `assign-badge-${badge.badge._id}`);
     //   return existBadges;
     // }
+
     return [];
   };
 
