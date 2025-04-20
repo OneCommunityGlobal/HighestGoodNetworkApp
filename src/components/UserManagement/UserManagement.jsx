@@ -267,6 +267,7 @@ class UserManagement extends React.PureComponent {
             // editUser={editUser}
               isMobile={isMobile}
               mobileFontSize={mobileFontSize}
+              onUserUpdate={this.onUserUpdate}
             />
           );
         });
@@ -376,6 +377,29 @@ class UserManagement extends React.PureComponent {
         selectedUser: user,
       });
     }
+  };
+
+  onUserUpdate = updatedUser => {
+    const { userProfiles } = this.props.state.allUserProfiles;
+  
+    // Update the userProfiles array with the updated user
+    const updatedProfiles = userProfiles.map(user =>
+      user._id === updatedUser._id ? updatedUser : user,
+    );
+  
+    // Update the state with the new userProfiles
+    this.props.state.allUserProfiles.userProfiles = updatedProfiles;
+  
+    // Re-render the table
+    this.getFilteredData(
+      updatedProfiles,
+      this.props.state.role.roles,
+      this.props.state.timeOffRequests.requests,
+      this.props.state.theme.darkMode,
+      this.state.editable,
+      this.state.isMobile,
+      this.state.mobileFontSize,
+    );
   };
 
   /**
