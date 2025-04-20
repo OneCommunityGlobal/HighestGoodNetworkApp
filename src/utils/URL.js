@@ -14,6 +14,7 @@ export const ENDPOINTS = {
   MODIFY_BLUE_SQUARE: (userId, blueSquareId) =>
     `${APIEndpoint}/userprofile/${userId}/infringements/${blueSquareId}`,
   USERS_ALLTEAMCODE_CHANGE: `${APIEndpoint}/AllTeamCodeChanges`,
+  REPLACE_TEAM_CODE: `${APIEndpoint}/userProfile/replaceTeamCode`,
 
   USERS_REMOVE_PROFILE_IMAGE: `${APIEndpoint}/userProfile/profileImage/remove`,
   USERS_UPDATE_PROFILE_FROM_WEBSITE: `${APIEndpoint}/userProfile/profileImage/imagefromwebsite`,
@@ -49,6 +50,8 @@ export const ENDPOINTS = {
     `${APIEndpoint}/TimeEntry/user/${userId}/${fromDate}/${toDate}`,
   TIME_ENTRIES_USER_LIST: `${APIEndpoint}/TimeEntry/users`,
   TIME_ENTRIES_REPORTS: `${APIEndpoint}/TimeEntry/reports`,
+  TIME_ENTRIES_REPORTS_TOTAL_PROJECT_REPORT: `${APIEndpoint}/TimeEntry/reports/projects`,
+  TIME_ENTRIES_REPORTS_TOTAL_PEOPLE_REPORT: `${APIEndpoint}/TimeEntry/reports/people`,
   TIME_ENTRIES_LOST_USER_LIST: `${APIEndpoint}/TimeEntry/lostUsers`,
   TIME_ENTRIES_LOST_PROJ_LIST: `${APIEndpoint}/TimeEntry/lostProjects`,
   TIME_ENTRIES_LOST_TEAM_LIST: `${APIEndpoint}/TimeEntry/lostTeams`,
@@ -87,8 +90,8 @@ export const ENDPOINTS = {
   DELETE_WARNINGS_BY_USER_ID: userId => `${APIEndpoint}/warnings/${userId}`,
   AUTHORIZE_WEEKLY_SUMMARY_REPORTS: () =>
     `${APIEndpoint}/userProfile/authorizeUser/weeeklySummaries`,
-  TOTAL_ORG_SUMMARY: (startDate, endDate) =>
-    `${APIEndpoint}/reports/volunteerstats?startDate=${startDate}&endDate=${endDate}`,
+  TOTAL_ORG_SUMMARY: (startDate, endDate, comparisonStartDate, comparisonEndDate) =>
+    `${APIEndpoint}/reports/volunteerstats?startDate=${startDate}&endDate=${endDate}&comparisonStartDate=${comparisonStartDate}&comparisonEndDate=${comparisonEndDate}`,
   HOURS_TOTAL_ORG_SUMMARY: (startDate, endDate) =>
     `${APIEndpoint}/reports/overviewsummaries/taskandprojectstats?startDate=${startDate}&endDate=${endDate}`,
   VOLUNTEER_ROLES_TEAM_STATS: (endDate, activeMembersMinimum) =>
@@ -126,7 +129,7 @@ export const ENDPOINTS = {
   REJECT_TASK_EDIT_SUGGESTION: taskEditSuggestionId =>
     `${APIEndpoint}/taskeditsuggestion/${taskEditSuggestionId}`,
 
-  TIMER_SERVICE: `${APIEndpoint.replace('http', 'ws').replace('api', 'timer-service')}`,
+  TIMER_SERVICE: new URL('/timer-service', APIEndpoint.replace('http', 'ws')).toString(),
   TIMEZONE_LOCATION: location => `${APIEndpoint}/timezone/${location}`,
 
   ROLES: () => `${APIEndpoint}/roles`,
@@ -231,6 +234,17 @@ export const ENDPOINTS = {
   BLUE_SQUARE_EMAIL_BCC: () => `${APIEndpoint}/AssignBlueSquareEmail`,
   DELETE_BLUE_SQUARE_EMAIL_BCC: id => `${APIEndpoint}/AssignBlueSquareEmail/${id}`,
 
+  HGN_FORM_GET_QUESTION: `${APIEndpoint}/questions`,
+  HGN_FORM_UPDATE_QUESTION: id => `${APIEndpoint}/questions/${id}`,
+  HGN_FORM_SUBMIT: `${APIEndpoint}/hgnform`,
+
+  CREATE_JOB_FORM: `${APIEndpoint}/jobforms`,
+  UPDATE_JOB_FORM: `${APIEndpoint}/jobforms`,
+  GET_JOB_FORM: formId => `${APIEndpoint}/jobforms/${formId}`,
+  GET_ALL_JOB_FORMS: `${APIEndpoint}/jobforms/all`,
+  GET_FORM_RESPONSES: formID => `${APIEndpoint}/jobforms/${formID}/responses`,
+
+  JOB_NOTIFICATION_LIST: `${APIEndpoint}/job-notification-list/`,
   // lb dashboard endpoints
   LB_REGISTER: `${APIEndpoint}/lbdashboard/register`,
   LB_LOGIN: `${APIEndpoint}/lbdashboard/login`,

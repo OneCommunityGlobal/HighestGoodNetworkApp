@@ -1,4 +1,4 @@
-import * as types from "../constants/projectMembership";
+import * as types from '../constants/projectMembership';
 
 const allMembershipInital = {
   projectName: '',
@@ -15,14 +15,19 @@ const allMembershipInital = {
 
 };
 
+// eslint-disable-next-line default-param-last
 export const projectMembershipReducer = (allMembership = allMembershipInital, action) => {
   //console.log('action', action)
   switch (action.type) {
-    case types.FETCH_MEMBERS_START:
+    case types.FETCH_MEMBERS_START: {
       return { ...allMembership, fetched: false, fetching: true, error: 'none' };
-    case types.FETCH_MEMBERS_ERROR:
+    }
+
+    case types.FETCH_MEMBERS_ERROR: {
       return { ...allMembership, fetched: true, fetching: false, error: action.err };
-    case types.RECEIVE_MEMBERS:
+    }
+
+    case types.RECEIVE_MEMBERS: {
       return {
         ...allMembership,
         members: action.members,
@@ -30,11 +35,17 @@ export const projectMembershipReducer = (allMembership = allMembershipInital, ac
         fetching: false,
         error: 'none',
       };
-    case types.FIND_USERS_START:
+    }
+
+    case types.FIND_USERS_START: {
       return { ...allMembership, fetched: false, fetching: true, error: 'none' };
-    case types.FIND_USERS_ERROR:
+    }
+
+    case types.FIND_USERS_ERROR: {
       return { ...allMembership, fetched: true, fetching: false, error: action.err };
-    case types.FOUND_USERS:
+    }
+
+    case types.FOUND_USERS: {
       return {
         ...allMembership,
         foundUsers: action.users,
@@ -42,9 +53,13 @@ export const projectMembershipReducer = (allMembership = allMembershipInital, ac
         fetching: false,
         error: 'none',
       };
-    case types.ADD_NEW_MEMBER:
+    }
+
+    case types.ADD_NEW_MEMBER: {
       return { ...allMembership, members: [action.member, ...allMembership.members] };
-    case types.ADD_NEW_MEMBER_ERROR:
+    }
+
+    case types.ADD_NEW_MEMBER_ERROR: {
       return { ...allMembership, fetched: true, fetching: false, error: action.err };
     case types.DELETE_MEMBER:
       const indexMember = allMembership.members.findIndex(member => member._id === action.userId);
@@ -79,8 +94,9 @@ export const projectMembershipReducer = (allMembership = allMembershipInital, ac
           allTimeError: 'none',
         };
 
-       
-    default:
+          default:
       return allMembership;
   }
 };
+
+export default projectMembershipReducer;

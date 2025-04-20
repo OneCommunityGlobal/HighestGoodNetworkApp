@@ -197,6 +197,7 @@ class UserProfileAdd extends Component {
                         onChange={(e) => this.handleUserProfile(e)}
                         placeholder="First Name"
                         invalid={!!(this.state.formSubmitted && this.state.formErrors.firstName)}
+                        className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                       />
                        {this.state.formSubmitted && this.state.formErrors.firstName && (
     <FormFeedback className={fontWeight}>
@@ -215,6 +216,7 @@ class UserProfileAdd extends Component {
                         onChange={(e) => this.handleUserProfile(e)}
                         placeholder="Last Name"
                         invalid={!!(this.state.formSubmitted && this.state.formErrors.lastName)}
+                        className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                       />
                       {this.state.formSubmitted && this.state.formErrors.lastName && (
     <FormFeedback className={fontWeight}>
@@ -238,6 +240,7 @@ class UserProfileAdd extends Component {
                         onChange={(e) => this.handleUserProfile(e)}
                         placeholder="Job Title"
                         invalid={!!(this.state.formSubmitted && this.state.formErrors.jobTitle)}
+                        className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                       />
                       {this.state.formSubmitted && this.state.formErrors.jobTitle && (
     <FormFeedback className={fontWeight}>
@@ -260,6 +263,7 @@ class UserProfileAdd extends Component {
                         onChange={(e) => this.handleUserProfile(e)}
                         placeholder="Email"
                         invalid={!!(this.state.formSubmitted && this.state.formErrors.email)}
+                        className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                       />
                       {this.state.formSubmitted && this.state.formErrors.email && (
     <FormFeedback className={fontWeight}>
@@ -337,6 +341,7 @@ class UserProfileAdd extends Component {
                             ? false
                             : !this.state.formValid.weeklyCommittedHours
                         }
+                        className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                       />
                       <FormFeedback className={fontWeight}>{this.state.formErrors.weeklyCommittedHours}</FormFeedback>
                     </FormGroup>
@@ -354,6 +359,7 @@ class UserProfileAdd extends Component {
                         id="role"
                         defaultValue="Volunteer"
                         onChange={(e) => this.handleUserProfile(e)}
+                        className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                       >
                         {this.props.role.roles.map(({ roleName }, index) => {
                           if (roleName === 'Owner') return;
@@ -384,6 +390,7 @@ class UserProfileAdd extends Component {
                             onChange={(e) => this.handleUserProfile(e)}
                             placeholder="Actual Email"
                             invalid={!!this.state.formErrors.actualEmail}
+                            className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                           />
                           <FormFeedback className={fontWeight}>{this.state.formErrors.actualEmail}</FormFeedback>
                         </FormGroup>
@@ -450,6 +457,7 @@ class UserProfileAdd extends Component {
                         value={this.state.userProfile.collaborationPreference}
                         onChange={(e) => this.handleUserProfile(e)}
                         placeholder="Skype, Zoom, etc."
+                        className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                       />
                     </FormGroup>
                   </Col>
@@ -467,6 +475,7 @@ class UserProfileAdd extends Component {
                         value={this.state.userProfile.googleDoc}
                         onChange={(e) => this.handleUserProfile(e)}
                         placeholder="Google Doc"
+                        className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                       />
                     </FormGroup>
                   </Col>
@@ -484,6 +493,7 @@ class UserProfileAdd extends Component {
                         value={this.state.userProfile.dropboxDoc}
                         onChange={(e) => this.handleUserProfile(e)}
                         placeholder="DropBox Folder"
+                        className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                       />
                     </FormGroup>
                   </Col>
@@ -495,7 +505,7 @@ class UserProfileAdd extends Component {
                   <Col md="6">
                     <Row>
                       <Col md="6">
-                        <Input id="location" onChange={this.handleLocation} />
+                        <Input id="location" onChange={this.handleLocation} className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}/>
                       </Col>
                       <Col md="6">
                         <div className="w-100 pt-1 mb-2 mx-auto">
@@ -546,7 +556,7 @@ class UserProfileAdd extends Component {
                               },
                             })
                           }
-                          className="form-control"
+                          className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
                         />
                       </div>
                     </FormGroup>
