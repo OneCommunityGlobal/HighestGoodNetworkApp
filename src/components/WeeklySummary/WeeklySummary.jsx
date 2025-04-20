@@ -967,7 +967,7 @@ export class WeeklySummary extends Component {
                 </Row>
                 <Row>
                   <Col>
-                    <FormGroup className="d-flex responsive-font-size">
+                   <FormGroup style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '12px' }}>
                       <CustomInput
                         id="mediaConfirm"
                         data-testid="mediaConfirm"
@@ -978,10 +978,12 @@ export class WeeklySummary extends Component {
                         valid={formElements.mediaConfirm}
                         onChange={this.handleCheckboxChange}
                       />
-                      <div className={darkMode ? 'text-light' : 'text-dark'}>
+                      <label
+                        htmlFor="mediaConfirm"
+                        style={{ marginLeft: '10px', lineHeight: '1.5',cursor: 'pointer', }} className={darkMode ? 'text-light' : 'text-dark'}>
                         I have provided a minimum of 4 screenshots (6-10 preferred) of this
                         week&apos;s work. (required)
-                      </div>
+                      </label>
                     </FormGroup>
                     {errors.mediaConfirm && (
                       <Alert color="danger">
@@ -992,7 +994,7 @@ export class WeeklySummary extends Component {
                 </Row>
                 <Row>
                   <Col>
-                    <FormGroup className="d-flex responsive-font-size">
+                   <FormGroup style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '12px' }}>
                       <CustomInput
                         id="editorConfirm"
                         data-testid="editorConfirm"
@@ -1003,9 +1005,11 @@ export class WeeklySummary extends Component {
                         valid={formElements.editorConfirm}
                         onChange={this.handleCheckboxChange}
                       />
-                      <div className={darkMode ? 'text-light' : 'text-dark'}>
-                        I used GPT (or other AI editor) with the most current prompt.
-                      </div>
+                      <label
+                        htmlFor="editorConfirm"
+                        style={{ marginLeft: '10px', lineHeight: '1.5', cursor: 'pointer',}} className={darkMode ? 'text-light' : 'text-dark'}>
+                         I used GPT (or other AI editor) with the most current prompt.
+                      </label>
                     </FormGroup>
                     {errors.editorConfirm && (
                       <Alert color="danger">
@@ -1016,7 +1020,7 @@ export class WeeklySummary extends Component {
                 </Row>
                 <Row>
                   <Col>
-                    <FormGroup className="d-flex responsive-font-size">
+                   <FormGroup style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '12px' }}>
                       <CustomInput
                         id="proofreadConfirm"
                         name="proofreadConfirm"
@@ -1027,9 +1031,11 @@ export class WeeklySummary extends Component {
                         valid={formElements.proofreadConfirm}
                         onChange={this.handleCheckboxChange}
                       />
-                      <div className={darkMode ? 'text-light' : 'text-dark'}>
-                        I proofread my weekly summary.
-                      </div>
+                      <label
+                        htmlFor="proofreadConfirm"
+                        style={{ marginLeft: '10px', lineHeight: '1.5', cursor: 'pointer', }} className={darkMode ? 'text-light' : 'text-dark'}>
+                         I proofread my weekly summary.
+                      </label>
                     </FormGroup>
                     {errors.proofreadConfirm && (
                       <Alert color="danger">
