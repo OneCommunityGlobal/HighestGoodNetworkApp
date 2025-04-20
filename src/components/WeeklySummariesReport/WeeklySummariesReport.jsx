@@ -143,7 +143,7 @@ export class WeeklySummariesReport extends Component {
       const promisedHoursByWeek = this.weekDates.map(weekDate =>
         this.getPromisedHours(weekDate.toDate, summary.weeklycommittedHoursHistory),
       );
-      return { ...summary, promisedHoursByWeek };
+      return { ...summary, promisedHoursByWeek, isDeactivated: !summary.isActive };
     });
 
     /*
@@ -213,24 +213,24 @@ export class WeeklySummariesReport extends Component {
         _ids: teamCodeGroup?.noCodeLabel?.map(item => item._id),
       });
     const chartData = [];
-    this.setState({
-      loading,
-      allRoleInfo: [],
-      summaries: summariesCopy,
-      activeTab:
-        sessionStorage.getItem('tabSelection') === null
-          ? navItems[1]
-          : sessionStorage.getItem('tabSelection'),
-      badges: allBadgeData,
-      hasSeeBadgePermission: badgeStatusCode === 200,
-      filteredSummaries: summariesCopy,
-      tableData: teamCodeGroup,
-      chartData,
-      COLORS,
-      colorOptions,
-      teamCodes,
-      auth,
-    });
+this.setState({
+  loading,
+  allRoleInfo: [],
+  summaries: summariesCopy,
+  activeTab:
+    sessionStorage.getItem('tabSelection') === null
+      ? navItems[1]
+      : sessionStorage.getItem('tabSelection'),
+  badges: allBadgeData,
+  hasSeeBadgePermission: badgeStatusCode === 200,
+  filteredSummaries: summariesCopy,
+  tableData: teamCodeGroup,
+  chartData,
+  COLORS,
+  colorOptions,
+  teamCodes,
+  auth,
+});
 
     await getInfoCollections();
     const role = authUser?.role;
@@ -248,14 +248,20 @@ export class WeeklySummariesReport extends Component {
           allRoleInfo.push(info);
         }
       });
-    }
+    } 
     this.setState({ allRoleInfo });
   }
 
-  componentDidUpdate(preProps, preState) {
-    const { loading } = this.props;
-    if (loading !== preState.loading) {
-      this.setState({ loading });
+  componentDidUpdate(prevProps, prevState) {
+    // Only update if needed
+    if (this.state.activeTab !== prevState.activeTab || 
+        this.state.summaries !== prevState.summaries) {
+      this.filterWeeklySummaries();
+    }
+    
+    // Prevent infinite loop
+    if (this.props.loading !== prevProps.loading) {
+      this.setState({ loading: this.props.loading });
     }
   }
 
@@ -397,7 +403,7 @@ export class WeeklySummariesReport extends Component {
     }
   };
 
-  filterWeeklySummaries = () => {
+  filterWeeklySummaries = (initialLoad = false) => {
     const {
       selectedCodes,
       selectedColors,
@@ -406,6 +412,7 @@ export class WeeklySummariesReport extends Component {
       selectedBioStatus,
       tableData,
       COLORS,
+      activeTab,
       selectedSpecialColors,
     } = this.state;
     const chartData = [];
@@ -419,10 +426,18 @@ export class WeeklySummariesReport extends Component {
       .filter(([, isSelected]) => isSelected)
       .map(([color]) => color);
 
-    const temp = summaries.filter(summary => {
-      const { activeTab } = this.state;
-      const hoursLogged = (summary.totalSeconds[navItems.indexOf(activeTab)] || 0) / 3600;
+      const weekIndex = initialLoad ? 
+      navItems.indexOf(this.state.activeTab) : 
+      navItems.indexOf(activeTab);
+      
+       // Validate weekDates existence
+  if (!this.weekDates[weekIndex]) {
+    console.error('Missing week dates for index:', weekIndex);
+    return;
+  }
 
+    const temp = summaries.filter(summary => {
+      const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
       const isMeetCriteria =
         summary.totalTangibleHrs > 80 && summary.daysInTeam > 60 && summary.bioPosted !== 'posted';
 
@@ -437,17 +452,34 @@ export class WeeklySummariesReport extends Component {
       // const matchesSelectedUsers = selectedUserIds.size === 0 || selectedUserIds.has(summary._id);
       const matchesSpecialColor =
         activeFilterColors.length === 0 || activeFilterColors.includes(summary.filterColor);
-      return (
+
+  const isInSelectedWeek = summary.weeklySummaries?.some(ws => {
+    if (!ws?.dueDate) return false;
+    
+    // Validate date format
+    const dueDate = moment(ws.dueDate);
+    if (!dueDate.isValid()) return false;
+  
+    return dueDate.isBetween(
+      this.weekDates[weekIndex].fromDate,
+      this.weekDates[weekIndex].toDate,
+      null,
+      '[]'
+    );
+  });
+  
+       const isDeactivated = !summary.isActive;
+    
+      return (isInSelectedWeek &&
+        (isDeactivated || !isDeactivated) &&
         (selectedCodesArray.length === 0 || selectedCodesArray.includes(summary.teamCode)) &&
         (selectedColorsArray.length === 0 ||
           selectedColorsArray.includes(summary.weeklySummaryOption)) &&
         matchesSpecialColor &&
         isOverHours &&
-        isBio
+        isBio 
       );
     });
-
-    this.setState({ filteredSummaries: temp });
 
     if (selectedCodes[0]?.value === '' || selectedCodes.length >= 52) {
       if (selectedCodes.length >= 52) {
@@ -518,10 +550,12 @@ export class WeeklySummariesReport extends Component {
     chartData.sort();
     temptotal = chartData.reduce((acc, entry) => acc + entry.value, 0);
     structuredTeamTableData.sort();
-    this.setState({ total: temptotal });
-    this.setState({ filteredSummaries: temp });
-    this.setState({ chartData });
-    this.setState({ structuredTableData: structuredTeamTableData });
+    this.setState({
+      total: temptotal,
+      filteredSummaries: temp,
+      chartData,
+      structuredTableData: structuredTeamTableData
+    });
   };
 
   handleSelectCodeChange = event => {
@@ -720,13 +754,13 @@ export class WeeklySummariesReport extends Component {
             _ids: updatedSummaries.filter(s => s.teamCode === replaceCode).map(s => s._id),
           });
 
-        this.setState({
+            this.setState({
           summaries: updatedSummaries,
           teamCodes: updatedTeamCodes,
           selectedCodes: updatedSelectedCodes,
-          replaceCode: '',
+              replaceCode: '',
           replaceCodeError: null,
-        });
+            });
 
         // Re-filter the summaries to update the table
         this.filterWeeklySummaries();
@@ -832,18 +866,18 @@ export class WeeklySummariesReport extends Component {
         </Row>
         {(authEmailWeeklySummaryRecipient === authorizedUser1 ||
           authEmailWeeklySummaryRecipient === authorizedUser2) && (
-          <Row className="d-flex justify-content-center mb-3">
-            <Button
-              color="primary"
-              className="permissions-management__button"
-              type="button"
-              onClick={() => this.onClickRecepients()}
-              style={darkMode ? boxStyleDark : boxStyle}
-            >
-              Weekly Summary Report Recipients
-            </Button>
-          </Row>
-        )}
+            <Row className="d-flex justify-content-center mb-3">
+              <Button
+                color="primary"
+                className="permissions-management__button"
+                type="button"
+                onClick={() => this.onClickRecepients()}
+                style={darkMode ? boxStyleDark : boxStyle}
+              >
+                Weekly Summary Report Recipients
+              </Button>
+            </Row>
+          )}
         <Row>
           <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }} xs={{ size: 6 }}>
             <div className={styles.filterContainerTeamcode}>
@@ -852,8 +886,8 @@ export class WeeklySummariesReport extends Component {
                 <span>Show Chart</span>
                 <SlideToggle
                   className={styles.slideToggle}
-                  onChange={this.handleChartStatusToggleChange}
-                />
+                    onChange={this.handleChartStatusToggleChange}
+                  />
               </div>
             </div>
           </Col>
@@ -926,8 +960,8 @@ export class WeeklySummariesReport extends Component {
                   <span>Filter by Bio Status</span>
                   <SlideToggle
                     className={styles.slideToggle}
-                    onChange={this.handleBioStatusToggleChange}
-                  />
+                      onChange={this.handleBioStatusToggleChange}
+                    />
                 </div>
               )}
               {hasPermissionToFilter && (
@@ -935,8 +969,8 @@ export class WeeklySummariesReport extends Component {
                   <span>Filter by Over Hours</span>
                   <SlideToggle
                     className={styles.slideToggle}
-                    onChange={this.handleOverHoursToggleChange}
-                  />
+                      onChange={this.handleOverHoursToggleChange}
+                    />
                   <ReactTooltip
                     id="filterTooltip"
                     place="top"
