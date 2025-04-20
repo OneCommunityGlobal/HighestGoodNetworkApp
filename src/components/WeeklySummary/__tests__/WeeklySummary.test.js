@@ -15,11 +15,12 @@ const weeklySummariesMockData = {
 
 const server = setupServer(
   rest.get(url, (req, res, ctx) => res(ctx.json(weeklySummariesMockData), ctx.status(200))),
+  // eslint-disable-next-line no-unused-vars
   rest.get('*', (req, res, ctx) => {
-    console.error(
+    throw new Error(
       `Please add request handler for ${req.url.toString()} in your MSW server requests.`,
     );
-    return res(ctx.status(500), ctx.json({ error: 'You must add request handler.' }));
+    //    return res(ctx.status(500), ctx.json({ error: 'You must add request handler.' }));
   }),
 );
 
