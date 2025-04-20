@@ -1014,49 +1014,47 @@ export class WeeklySummariesReport extends Component {
           <Col lg={{ size: 10, offset: 1 }} xs={{ size: 8, offset: 4 }}>
             <div className={styles.filterContainer}>
               {hasPermissionToFilter && (
-                <div className={cn(styles.filterStyle, styles.filterMarginRight)}>
-                  <span>Filter by Special</span>
-                  {['purple', 'green', 'navy'].map(color => (
-                    <SlideToggle
-                      key={`${color}-toggle`}
-                      className={styles.slideToggle}
-                      color={color}
-                      onChange={this.handleColorToggleChange}
-                    />
-                  ))}
-                </div>
-              )}
-              {selectedCodes.length > 0 && (
-                <div
-                  className={styles.filterStyle} // Use the same style as other filters
-                  style={{ marginTop: '10px' }} // Push it below "Filter by Special"
-                >
-                  <strong>Select All (Visible Users)</strong>
-                  <div
-                    className={styles.dotSelector}
-                    style={{ marginLeft: '10px', display: 'inline-flex' }}
-                  >
+                <>
+                  <div className={cn(styles.filterStyle, styles.filterMarginRight)}>
+                    <span>Filter by Special</span>
                     {['purple', 'green', 'navy'].map(color => (
-                      <span
-                        key={color}
-                        onClick={() => this.handleBulkDotClick(color)}
-                        style={{
-                          display: 'inline-block',
-                          width: '15px',
-                          height: '15px',
-                          margin: '0 5px',
-                          borderRadius: '50%',
-                          backgroundColor: this.state.bulkSelectedColors[color]
-                            ? color
-                            : 'transparent',
-                          border: `3px solid ${color}`,
-                          cursor: 'pointer',
-                        }}
+                      <SlideToggle
+                        key={`${color}-toggle`}
+                        className={styles.slideToggle}
+                        color={color}
+                        onChange={this.handleColorToggleChange}
                       />
                     ))}
                   </div>
-                </div>
+
+                  {selectedCodes.length > 0 && (
+                    <div className={cn(styles.filterStyle, styles.filterMarginRight)}>
+                      <span className={styles.selectAllLabel}>Select All (Visible Users)</span>
+                      <div className={styles.dotSelector}>
+                        {['purple', 'green', 'navy'].map(color => (
+                          <span
+                            key={color}
+                            onClick={() => this.handleBulkDotClick(color)}
+                            style={{
+                              display: 'inline-block',
+                              width: '15px',
+                              height: '15px',
+                              margin: '0 5px',
+                              borderRadius: '50%',
+                              backgroundColor: this.state.bulkSelectedColors[color]
+                                ? color
+                                : 'transparent',
+                              border: `3px solid ${color}`,
+                              cursor: 'pointer',
+                            }}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
+
               {(hasPermissionToFilter || this.canSeeBioHighlight) && (
                 <div className={cn(styles.filterStyle, styles.filterMarginRight)}>
                   <span>Filter by Bio Status</span>
