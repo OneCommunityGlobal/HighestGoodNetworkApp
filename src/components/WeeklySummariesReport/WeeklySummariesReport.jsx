@@ -99,6 +99,11 @@ export class WeeklySummariesReport extends Component {
         green: false,
         navy: false,
       },
+      bulkSelectedColors: {
+        purple: false,
+        green: false,
+        navy: false,
+      },
     };
   }
 
@@ -542,7 +547,27 @@ export class WeeklySummariesReport extends Component {
   };
 
   handleSelectCodeChange = event => {
-    this.setState({ selectedCodes: event }, () => this.filterWeeklySummaries());
+    const selectedCodesArray = event.map(e => e.value);
+    const selectedSummaries = this.state.summaries.filter(summary =>
+      selectedCodesArray.includes(summary.teamCode),
+    );
+
+    // Count how many users have each color selected
+    const colorStates = ['purple', 'green', 'navy'].reduce((acc, color) => {
+      const allHaveColor =
+        selectedSummaries.length > 0 &&
+        selectedSummaries.every(summary => summary.filterColor?.includes?.(color));
+      acc[color] = allHaveColor;
+      return acc;
+    }, {});
+
+    this.setState(
+      {
+        selectedCodes: event,
+        bulkSelectedColors: colorStates,
+      },
+      this.filterWeeklySummaries,
+    );
   };
 
   handleSelectColorChange = event => {
@@ -619,6 +644,50 @@ export class WeeklySummariesReport extends Component {
         this.filterWeeklySummaries();
       },
     );
+  };
+
+  handleBulkDotClick = async color => {
+    const isActive = this.state.bulkSelectedColors[color];
+    const newState = !isActive;
+
+    const updatedFilteredSummaries = this.state.filteredSummaries.map(user => {
+      const existing = user.filterColor || [];
+      const newFilterColors = newState
+        ? [...new Set([...existing, color])]
+        : existing.filter(c => c !== color);
+      return { ...user, filterColor: newFilterColors };
+    });
+
+    this.setState(prev => ({
+      bulkSelectedColors: {
+        ...prev.bulkSelectedColors,
+        [color]: newState,
+      },
+      summaries: prev.summaries.map(summary => {
+        const updatedUser = updatedFilteredSummaries.find(u => u._id === summary._id);
+        return updatedUser || summary;
+      }),
+    }));
+
+    await Promise.all(
+      updatedFilteredSummaries.map(user =>
+        this.props
+          .updateOneSummaryReport(user._id, {
+            filterColor: user.filterColor,
+            requestor: {
+              requestorId: this.props.auth?.user?._id,
+              role: this.props.auth?.user?.role,
+              permissions: this.props.auth?.user?.permissions,
+              email: this.props.auth?.user?.email,
+            },
+          })
+          .catch(err => {
+            // eslint-disable-next-line no-console
+            console.error(`Failed to update user ${user._id}`, err);
+          }),
+      ),
+    );
+    this.filterWeeklySummaries();
   };
 
   handleTeamCodeChange = (oldTeamCode, newTeamCode, userIdObj) => {
@@ -955,6 +1024,37 @@ export class WeeklySummariesReport extends Component {
                       onChange={this.handleColorToggleChange}
                     />
                   ))}
+                </div>
+              )}
+              {selectedCodes.length > 0 && (
+                <div
+                  className={styles.filterStyle} // Use the same style as other filters
+                  style={{ marginTop: '10px' }} // Push it below "Filter by Special"
+                >
+                  <strong>Select All (Visible Users)</strong>
+                  <div
+                    className={styles.dotSelector}
+                    style={{ marginLeft: '10px', display: 'inline-flex' }}
+                  >
+                    {['purple', 'green', 'navy'].map(color => (
+                      <span
+                        key={color}
+                        onClick={() => this.handleBulkDotClick(color)}
+                        style={{
+                          display: 'inline-block',
+                          width: '15px',
+                          height: '15px',
+                          margin: '0 5px',
+                          borderRadius: '50%',
+                          backgroundColor: this.state.bulkSelectedColors[color]
+                            ? color
+                            : 'transparent',
+                          border: `3px solid ${color}`,
+                          cursor: 'pointer',
+                        }}
+                      />
+                    ))}
+                  </div>
                 </div>
               )}
               {(hasPermissionToFilter || this.canSeeBioHighlight) && (

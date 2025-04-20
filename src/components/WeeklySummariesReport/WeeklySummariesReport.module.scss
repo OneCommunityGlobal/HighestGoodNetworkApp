@@ -51,6 +51,22 @@
   justify-content: flex-end;
 }
 
+.selectAllDotsWrapper {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  margin-left: 5px;
+}
+
+.selectAllLabel {
+  margin-right: 10px;
+}
+
+.dotSelector {
+  display: flex;
+}
+
+
 .filterContainerTeamcode {
   display: flex;
   justify-content: space-between;
