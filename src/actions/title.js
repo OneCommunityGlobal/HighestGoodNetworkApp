@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { toast } from 'react-toastify';
 import { ENDPOINTS } from '../utils/URL';
 
 export async function addTitle(titleData) {
@@ -16,13 +15,14 @@ export async function addTitle(titleData) {
   }
 }
 
-export async function editTitle(titleData) {
+
+export async function editTitle(titleData){
   try {
     const url = ENDPOINTS.EDIT_OLD_TITLE();
     const response = await axios.post(url, titleData);
     return Promise.resolve(response);
   } catch (error) {
-    toast.info(error);
+    console.log(error)
     return {
       message: error.response.data.message,
       errorCode: error.response.data.message,
@@ -50,7 +50,7 @@ export async function getTitleById(titleId) {
     const url = ENDPOINTS.TITLE_BY_ID(titleId);
     const response = await axios.get(url);
     return Promise.resolve(response);
-  } catch (error) {
+  } catch {
     return {
       message: error.response.data.message,
       errorCode: error.response.data.message,
@@ -64,7 +64,7 @@ export async function deleteTitleById(titleId) {
     const url = ENDPOINTS.DELETE_TITLE_BY_ID(titleId);
     const response = await axios.put(url);
     return Promise.resolve(response);
-  } catch (error) {
+  } catch {
     return {
       message: error.response.data.message,
       errorCode: error.response.data.message,

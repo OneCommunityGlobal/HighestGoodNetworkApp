@@ -6,7 +6,7 @@
 }
 
 .container-total-org-wrapper .row {
-  width: 100% !important;
+  width: 99% !important;
   margin: 1px 10px 15px 10px;
 }
 
@@ -48,8 +48,4 @@
   font-weight: bold;
   text-align: center;
   margin: 10px;
-}
-
-.chart-title.dark-mode p{
-  color: white;
 }

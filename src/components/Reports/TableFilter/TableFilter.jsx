@@ -37,17 +37,13 @@ function TableFilter({
   resources,
   status,
   priority,
-  StartDate,
-  EndDate,
-  UpdateStartDate,
-  UpdateEndDate,
 }) {
   const taskPriority = ['Primary', 'Secondary', 'Tertiary'];
   const taskStatus = ['Paused', 'Complete', 'Active'];
   const [taskActive, setTaskActive] = useState(true);
   const [taskAssign, setTaskAssign] = useState(true);
-  // const [startDate, setStartDate] = useState(new Date('01/01/2010'));
-  // const [endDate, setEndDate] = useState(new Date());
+  const [startDate, setStartDate] = useState(new Date('01/01/2010'));
+  const [endDate, setEndDate] = useState(new Date());
   const taskName = taskNameList.map((item) => item.taskName)
   const taskHour = taskNameList.map((item) => item.estimatedHours)
   const taskResource = taskNameList.map(function taskResource(item) { return [item.resources.map((e) => e[0].name)].join() })
@@ -99,17 +95,17 @@ function TableFilter({
       />
       <DatePicker
         customInput={<InputWithCalendarIcon />}
-        selected={StartDate}
+        selected={startDate}
         minDate={new Date('01/01/2010')}
         maxDate={new Date()}
-        onChange={date => UpdateStartDate(date)}
+        onChange={date => setStartDate(date)}
       />
       <DatePicker
         customInput={<InputWithCalendarIcon />}
-        selected={EndDate}
+        selected={endDate}
         maxDate={new Date()}
         minDate={new Date('01/01/2010')}
-        onChange={date => UpdateEndDate(date)}
+        onChange={date => setEndDate(date)}
       />
       <Checkbox
         value={taskActive}

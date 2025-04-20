@@ -1,11 +1,7 @@
-import {
-  INCREMENT_DASHBOARD_TASK_COUNT,
-  UPDATE_SUMMARY_BAR_DATA,
-} from '../actions/dashboardActions';
+import { INCREMENT_DASHBOARD_TASK_COUNT } from '../actions/dashboardActions';
 
 const initialState = {
   taskCounts: {},
-  summaryBarData: {},
 };
 
 // eslint-disable-next-line default-param-last
@@ -22,14 +18,6 @@ const dashboardReducer = (state = initialState, action) => {
           ...state.taskCounts,
           [taskId]: newCount,
         },
-      };
-    }
-    case UPDATE_SUMMARY_BAR_DATA: {
-      // Wrap case block in braces to avoid scoping issues
-      const { summaryBarData } = action.payload;
-      return {
-        ...state,
-        summaryBarData,
       };
     }
     default: {

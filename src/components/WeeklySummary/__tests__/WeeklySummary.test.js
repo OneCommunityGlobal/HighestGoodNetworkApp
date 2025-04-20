@@ -1,6 +1,5 @@
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { toast } from 'react-toastify';
 import { getWeeklySummaries, updateWeeklySummaries } from '../../../actions/weeklySummaries';
 import configureStore from '../../../store';
 import { ENDPOINTS } from '../../../utils/URL';
@@ -17,7 +16,7 @@ const weeklySummariesMockData = {
 const server = setupServer(
   rest.get(url, (req, res, ctx) => res(ctx.json(weeklySummariesMockData), ctx.status(200))),
   rest.get('*', (req, res, ctx) => {
-    toast.error(
+    console.error(
       `Please add request handler for ${req.url.toString()} in your MSW server requests.`,
     );
     return res(ctx.status(500), ctx.json({ error: 'You must add request handler.' }));

@@ -2,11 +2,6 @@ import axios from 'axios';
 import { ENDPOINTS } from '../utils/URL';
 import { GET_PROJECT_BY_ID } from '../constants/project';
 
-export const setProjectDetail = data => ({
-  type: GET_PROJECT_BY_ID,
-  payload: data,
-});
-
 export const getProjectDetail = projectId => {
   const url = ENDPOINTS.PROJECT_BY_ID(projectId);
   return async dispatch => {
@@ -21,3 +16,8 @@ export const getProjectDetail = projectId => {
     }
   };
 };
+
+export const setProjectDetail = data => ({
+  type: GET_PROJECT_BY_ID,
+  payload: data,
+});

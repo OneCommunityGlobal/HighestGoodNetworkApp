@@ -17,8 +17,20 @@ const Project = props => {
   const [projectData, setProjectData] = useState(props.projectData);
   const { projectName, isActive,isArchived, _id: projectId } = projectData;
   const [displayName, setDisplayName] = useState(projectName);
-  
-  const [category, setCategory] = useState(props.category || 'Unspecified'); // Initialize with props or default
+  const initialModalData = {
+    showModal: false,
+    modalMessage: "",
+    modalTitle: "",
+    hasConfirmBtn: false,
+    hasInactiveBtn: false,
+  };
+
+  const [modalData, setModalData] = useState(initialModalData);
+
+  const onCloseModal = () => {
+    setModalData(initialModalData);
+    props.clearError();
+  };  const [category, setCategory] = useState(props.category || 'Unspecified'); // Initialize with props or default
 
   const canPutProject = props.hasPermission('putProject');
   const canDeleteProject = props.hasPermission('deleteProject');
@@ -59,7 +71,13 @@ const Project = props => {
   };
 
   const onArchiveProject = () => {
-    props.onClickArchiveBtn(projectData);
+    setModalData({
+      showModal: true,
+      modalMessage: `<p>Do you want to archive ${projectData.projectName}?</p>`,
+      modalTitle: CONFIRM_ARCHIVE,
+      hasConfirmBtn: true,
+      hasInactiveBtn: isActive,
+    });
   }
   
   const setProjectInactive = () => {
@@ -193,6 +211,16 @@ const Project = props => {
         </td>
       ) : null}
     </tr>
+      <ModalTemplate
+          isOpen={modalData.showModal}
+          closeModal={onCloseModal}
+          confirmModal={modalData.hasConfirmBtn ? confirmArchive : null}
+          setInactiveModal={modalData.hasInactiveBtn ? setProjectInactive : null}
+          modalMessage={modalData.modalMessage}
+          modalTitle={modalData.modalTitle}
+          darkMode={darkMode}
+        />
+
     </>
   );
 };

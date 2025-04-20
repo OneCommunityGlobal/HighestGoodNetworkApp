@@ -1,14 +1,15 @@
-import { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import React, { useState, useEffect } from 'react';
 import styles from './SubscribePage.module.css'; // Import the CSS module
 import {
   addNonHgnUserEmailSubscription,
   confirmNonHgnUserEmailSubscription,
 } from '../../actions/sendEmails';
+import { useLocation } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import ConfirmationMessage from './ConfirmationMessage';
+import { set } from 'lodash';
 
-function UnsubscribeForm() {
+const UnsubscribeForm = () => {
   const dispatch = useDispatch();
   const query = new URLSearchParams(useLocation().search);
   const [email, setEmail] = useState('');
@@ -32,8 +33,8 @@ function UnsubscribeForm() {
     }
   }, [query]);
 
-  const validateEmail = emailVal => {
-    return /\S+@\S+\.\S+/.test(emailVal);
+  const validateEmail = email => {
+    return /\S+@\S+\.\S+/.test(email);
   };
 
   const confirmationMessageCallback = () => {
@@ -44,7 +45,7 @@ function UnsubscribeForm() {
     event.preventDefault();
     if (validateEmail(email)) {
       dispatch(addNonHgnUserEmailSubscription(email));
-      // console.log('Email valid, submit to the server:', email);
+      console.log('Email valid, submit to the server:', email);
       setEmail('');
       setError('');
     } else {
@@ -54,11 +55,13 @@ function UnsubscribeForm() {
 
   if (confirmationMessage) {
     return (
-      <ConfirmationMessage
-        message={confirmationMessage}
-        isSuccess={confirmationStatus}
-        confirmationMessageCallback={confirmationMessageCallback}
-      />
+      <>
+        <ConfirmationMessage
+          message={confirmationMessage}
+          isSuccess={confirmationStatus}
+          confirmationMessageCallback={confirmationMessageCallback}
+        />
+      </>
     );
   }
 
@@ -67,9 +70,9 @@ function UnsubscribeForm() {
       <h1 className={styles.header}>Subscribe for Weekly Updates</h1>
       {/* ... */}
       <p className={styles.description}>
-        Join our mailing list for updates. We&apo;ll send a confirmation to ensure you&apo;re the
-        owner of the email provided. Once confirmed, we promise only a single email per week.
-        Don&apo;t forget to check your spam folder if you didn&apo;t receive the confirmation!
+        Join our mailing list for updates. We'll send a confirmation to ensure you're the owner of
+        the email provided. Once confirmed, we promise only a single email per week. Don't forget to
+        check your spam folder if you didn't receive the confirmation!
       </p>
       <p className={styles.note}>
         Want to opt out later? No problem, every email has an unsubscribe link at the bottom.
@@ -89,6 +92,6 @@ function UnsubscribeForm() {
       {/* ... */}
     </div>
   );
-}
+};
 
 export default UnsubscribeForm;

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-// import { useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import {
   Button,
   Modal,
@@ -28,8 +28,6 @@ const ModalExample = props => {
     type,
     linkType,
     darkMode,
-    confirmButtonText = 'Confirm',
-    isConfirmDisabled = false,
   } = props;
 
   const [linkName, setLinkName] = useState('');
@@ -85,13 +83,8 @@ const ModalExample = props => {
         </Button>
 
         {confirmModal != null ? (
-          <Button
-            color="danger"
-            onClick={confirmModal}
-            disabled={isConfirmDisabled}
-            style={darkMode ? boxStyleDark : boxStyle}
-          >
-            {confirmButtonText || 'Confirm'}
+          <Button color="danger" onClick={confirmModal} style={darkMode ? boxStyleDark : boxStyle}>
+            Confirm
           </Button>
         ) : null}
         {setInactiveModal != null ? (

@@ -17,9 +17,6 @@ jest.mock('axios');
 jest.mock('react-toastify', () => ({
   toast: {
     error: jest.fn(),
-    success: jest.fn(),
-    info: jest.fn(),
-    warn: jest.fn(),
   },
 }));
 
@@ -43,7 +40,6 @@ describe('User Profile Actions', () => {
   });
 
   afterEach(() => {
-    // eslint-disable-next-line no-console
     console.log.mockRestore();
   });
 

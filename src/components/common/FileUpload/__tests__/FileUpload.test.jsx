@@ -15,39 +15,36 @@ describe('FileUpload Component', () => {
     expect(getByText(/File is too large/)).toBeInTheDocument();
   });
 
-  it('calls onUpload with error if uploaded file type is invalid', () => {
-    const onUploadMock = jest.fn();
-    const file = new File(['dummy content'], 'dummy.jpeg', { type: 'image/jpeg' });
-  
-    const { container } = render(
-      <FileUpload name="test-upload" accept="image/png" onUpload={onUploadMock} />,
-    );
-  
+  it('alerts an error if the uploaded file type is invalid', () => {
+    const alertSpy = jest.spyOn(window, 'alert').mockImplementation(() => {});
+    const file = new File(['dummy content'], 'dummy.jpeg', { type: 'image/jpeg' }); // Notice the incorrect file type
+
+    const { container } = render(<FileUpload name="test-upload" accept="image/png" />);
+    // Target the file input
     const input = container.querySelector('input[type="file"]');
+
     fireEvent.change(input, { target: { files: [file] } });
-  
-    expect(onUploadMock).toHaveBeenCalledWith(null, null, 'File type must be image/png.');
+    expect(alertSpy).toHaveBeenCalledWith('File type must be image/png.');
+    alertSpy.mockRestore();
   });
 
-  it('calls onUpload with error if file exceeds max size', () => {
-    const onUploadMock = jest.fn();
+  it('alerts an error if the uploaded file exceeds maximum size', () => {
+    const alertSpy = jest.spyOn(window, 'alert').mockImplementation(() => {});
+    // Create a dummy file with a size larger than 1KB
     const file = new File(['a'.repeat(1025)], 'dummy.png', { type: 'image/png' });
-  
+
     const { container } = render(
-      <FileUpload name="test-upload" accept="image/png" maxSizeinKB={1} onUpload={onUploadMock} />,
+      <FileUpload name="test-upload" accept="image/png" maxSizeinKB={1} />,
     );
-  
+    // Target the file input
     const input = container.querySelector('input[type="file"]');
+
     fireEvent.change(input, { target: { files: [file] } });
-  
-    expect(onUploadMock).toHaveBeenCalledWith(
-      null,
-      null,
-      'The file you are trying to upload exceeds the maximum size of 1KB.',
+    expect(alertSpy).toHaveBeenCalledWith(
+      expect.stringContaining('The file you are trying to upload exceed the maximum size'),
     );
-    
+    alertSpy.mockRestore();
   });
-  
 
   it('calls onUpload prop with correct arguments', () => {
     const onUploadMock = jest.fn();
@@ -63,17 +60,18 @@ describe('FileUpload Component', () => {
     expect(onUploadMock).toHaveBeenCalled();
   });
 
-  it('calls onUpload with error when no file is selected', () => {
-    const onUploadMock = jest.fn();
-  
-    const { container } = render(
-      <FileUpload name="test-upload" onUpload={onUploadMock} />,
-    );
-  
+  it('alerts when no file is chosen', () => {
+    const alertSpy = jest.spyOn(window, 'alert');
+    alertSpy.mockImplementation(() => {}); // Mock the implementation
+
+    const { container } = render(<FileUpload name="test-upload" />);
     const input = container.querySelector('input[type="file"]');
+
+    // Trigger change event without providing a file
     fireEvent.change(input, { target: { files: [] } });
-  
-    expect(onUploadMock).toHaveBeenCalledWith(null, null, 'Choose a valid file');
+
+    expect(alertSpy).toHaveBeenCalledWith('Choose a valid file');
+
+    alertSpy.mockRestore(); // Restore the original function
   });
-  
 });

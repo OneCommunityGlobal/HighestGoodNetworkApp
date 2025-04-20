@@ -143,7 +143,6 @@
 
 .taskName {
   height: auto;
-  text-align: left !important;
 }
 
 .taskDrop {
@@ -203,10 +202,6 @@
   padding-left: 8mm
 }
 
-.mw-4 {
-  max-width: 4rem;
-}
-
 @media (max-width: 250px) {
   .flex-responsive{
     flex-direction: column;
@@ -230,6 +225,9 @@
 }
 
 @media (min-width: 200px) and (max-width: 1496px) {
+  table.responsive {
+    table-layout: fixed;
+  }
 
   .flex-responsive {
     display: flex;

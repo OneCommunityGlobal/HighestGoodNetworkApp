@@ -356,7 +356,7 @@ describe('User Table Data: Jae protected account record and login as Jae related
     it('should fire alert() once the user clicks the active/inactive button', () => {
       const alertMock = jest.spyOn(window, 'alert').mockImplementation();
       userEvent.click(screen.getByRole('button', { name: /Set Final Day/i }));
-      expect(alertMock).toHaveBeenCalledTimes(0);
+      expect(alertMock).toHaveBeenCalledTimes(1);
     });
   });
 });

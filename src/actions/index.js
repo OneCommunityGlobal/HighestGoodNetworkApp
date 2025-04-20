@@ -1,13 +1,14 @@
-import axios from 'axios';
 import httpService from '../services/httpService';
+import axios from 'axios';
 import { ApiEndpoint } from '../utils/URL';
 import { ENDPOINTS } from '../utils/URL';
+
 
 const APIEndpoint = ApiEndpoint;
 
 export function clearUserProfile() {
   return { type: 'CLEAR_USER_PROFILE' };
-}
+};
 
 export function getUserTeamMembers(userId) {
   const request = httpService.get(`${APIEndpoint}/userprofile/teammembers/${userId}`);
@@ -20,7 +21,7 @@ export function getUserTeamMembers(userId) {
       });
     });
   };
-}
+};
 
 export function getUserProjectMembers(projectId) {
   const request = httpService.get(`${APIEndpoint}/userprofile/project/${projectId}`);
@@ -33,7 +34,7 @@ export function getUserProjectMembers(projectId) {
       });
     });
   };
-}
+};
 
 export function getDashboardData(userId) {
   const request = httpService.get(`${APIEndpoint}/dashboard/${userId}`);
@@ -46,7 +47,7 @@ export function getDashboardData(userId) {
       });
     });
   };
-}
+};
 
 export function getWeeklyDashboardData(userId, fromDate, toDate) {
   const request = httpService.get(
@@ -61,7 +62,7 @@ export function getWeeklyDashboardData(userId, fromDate, toDate) {
       });
     });
   };
-}
+};
 
 export function getMonthlyDashboardData(userId, fromDate, toDate) {
   const request = httpService.get(
@@ -76,7 +77,7 @@ export function getMonthlyDashboardData(userId, fromDate, toDate) {
       });
     });
   };
-}
+};
 
 export function getLeaderboardData(userId) {
   const request = httpService.get(`${APIEndpoint}/dashboard/leaderboard/${userId}`);
@@ -89,7 +90,7 @@ export function getLeaderboardData(userId) {
       });
     });
   };
-}
+};
 
 export function getActionItems(userId) {
   const request = httpService.get(`${APIEndpoint}/actionItem/user/${userId}`);
@@ -102,7 +103,7 @@ export function getActionItems(userId) {
       });
     });
   };
-}
+};
 
 export function getNotifications(userId) {
   const request = httpService.get(`${APIEndpoint}/notification/user/${userId}`);
@@ -115,7 +116,7 @@ export function getNotifications(userId) {
       });
     });
   };
-}
+};
 
 export function getAllProjects() {
   const request = httpService.get(`${APIEndpoint}/projects`);
@@ -128,7 +129,7 @@ export function getAllProjects() {
       });
     });
   };
-}
+};
 
 export function getProjectById(projectId) {
   const request = httpService.get(`${APIEndpoint}/project/${projectId}`);
@@ -141,7 +142,7 @@ export function getProjectById(projectId) {
       });
     });
   };
-}
+};
 
 export function getProjectsByUser(userId) {
   const request = httpService.get(`${APIEndpoint}/projects/user/${userId}`);
@@ -154,7 +155,7 @@ export function getProjectsByUser(userId) {
       });
     });
   };
-}
+};
 
 export function getProjectMembership(projectId) {
   const request = httpService.get(`${APIEndpoint}/project/${projectId}/users`);
@@ -167,7 +168,7 @@ export function getProjectMembership(projectId) {
       });
     });
   };
-}
+};
 
 export function getAllTeams() {
   const request = httpService.get(`${APIEndpoint}/team`);
@@ -179,7 +180,7 @@ export function getAllTeams() {
       });
     });
   };
-}
+};
 
 export function getTeamById(teamId) {
   const request = httpService.get(`${APIEndpoint}/team/${teamId}`);
@@ -192,7 +193,7 @@ export function getTeamById(teamId) {
       });
     });
   };
-}
+};
 
 export function getTeamMembership(teamId) {
   const request = httpService.get(`${APIEndpoint}/team/${teamId}/users`);
@@ -205,7 +206,7 @@ export function getTeamMembership(teamId) {
       });
     });
   };
-}
+};
 
 export function getAllTimeEntries() {
   const request = httpService.get(`${APIEndpoint}/TimeEntry`);
@@ -218,7 +219,7 @@ export function getAllTimeEntries() {
       });
     });
   };
-}
+};
 
 export function getTimeEntryForSpecifiedPeriod(userId, fromDate, toDate) {
   const request = httpService.get(`${APIEndpoint}/TimeEntry/user/${userId}/${fromDate}/${toDate}`);
@@ -231,7 +232,7 @@ export function getTimeEntryForSpecifiedPeriod(userId, fromDate, toDate) {
       });
     });
   };
-}
+};
 
 export function postTimeEntry(timeEntryObj) {
   const request = httpService.post(`${APIEndpoint}/TimeEntry`, timeEntryObj);
@@ -241,37 +242,33 @@ export function postTimeEntry(timeEntryObj) {
       error => dispatch({ type: 'REQUEST_FAILED', error }),
     );
   };
-}
+};
 
 export function getTimeEntryByProjectSpecifiedPeriod(projectId, fromDate, toDate) {
-  const request = httpService.get(
-    `${APIEndpoint}/TimeEntry/projects/${projectId}/${fromDate}/${toDate}`,
-  );
+  const request = httpService.get(`${APIEndpoint}/TimeEntry/projects/${projectId}/${fromDate}/${toDate}`);
 
   return dispatch => {
     return new Promise((resolve, reject) => {
-      request
-        .then(({ data }) => {
-          dispatch({
-            type: 'GET_TIME_ENTRY_By_Project_FOR_SPECIFIED_PERIOD',
-            payload: data,
-          });
-          resolve(data);
-        })
-        .catch(error => {
-          reject(error);
+      request.then(({ data }) => {
+        dispatch({
+          type: 'GET_TIME_ENTRY_By_Project_FOR_SPECIFIED_PERIOD',
+          payload: data,
         });
+        resolve(data);
+      }).catch(error => {
+        reject(error);
+      });
     });
   };
-}
+};
 
 export function getTimeEntryForOverDate(users, fromDate, toDate) {
+
   const url = ENDPOINTS.TIME_ENTRIES_USER_LIST;
 
-  return axios
-    .post(url, { users, fromDate, toDate })
-    .then(response => response.data)
-    .catch(error => {
-      throw error;
-    });
+  return axios.post(url, { users, fromDate, toDate })
+  .then(response => response.data)
+  .catch(error => {
+    throw error;
+  });
 }

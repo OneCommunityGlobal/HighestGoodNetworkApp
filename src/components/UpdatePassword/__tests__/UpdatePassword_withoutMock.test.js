@@ -59,7 +59,7 @@ describe("<UpdatePassword/>' behavior", () => {
   const userID = '5f31dcb9a1a909eadee0eecb';
   beforeEach(() => {
     renderWithRouterMatch(
-      <Route path="/updatepassword/:userId">{props => <UpdatePassword {...props} />}</Route>,
+      <Route path="/updatepassword/:userId">{(props) => <UpdatePassword {...props} />}</Route>,
       {
         route: `/updatepassword/${userID}`,
       },
@@ -69,13 +69,13 @@ describe("<UpdatePassword/>' behavior", () => {
     const newpassword = 'someRandom1!';
     const confirmnewpassword = newpassword;
     const currentpassword = 'currentPassword1';
-    await userEvent.type(screen.getByLabelText(/current password/i), currentpassword, {
+    await userEvent.type(screen.getByLabelText(/current password:/i), currentpassword, {
       allAtOnce: false,
     });
-    await userEvent.type(screen.getByLabelText(/new password/i), newpassword, {
+    await userEvent.type(screen.getByLabelText(/new password:/i), newpassword, {
       allAtOnce: false,
     });
-    await userEvent.type(screen.getByLabelText(/confirm password/i), confirmnewpassword, {
+    await userEvent.type(screen.getByLabelText(/confirm password:/i), confirmnewpassword, {
       allAtOnce: false,
     });
     userEvent.click(screen.getByRole('button'), { name: /submit/i });
@@ -88,13 +88,13 @@ describe("<UpdatePassword/>' behavior", () => {
     const newpassword = non400Password;
     const confirmnewpassword = newpassword;
     const currentpassword = 'currentPassword1';
-    await userEvent.type(screen.getByLabelText(/current password/i), currentpassword, {
+    await userEvent.type(screen.getByLabelText(/current password:/i), currentpassword, {
       allAtOnce: false,
     });
-    await userEvent.type(screen.getByLabelText(/new password/i), newpassword, {
+    await userEvent.type(screen.getByLabelText(/new password:/i), newpassword, {
       allAtOnce: false,
     });
-    await userEvent.type(screen.getByLabelText(/confirm password/i), confirmnewpassword, {
+    await userEvent.type(screen.getByLabelText(/confirm password:/i), confirmnewpassword, {
       allAtOnce: false,
     });
     userEvent.click(screen.getByRole('button'), { name: /submit/i });
@@ -107,13 +107,13 @@ describe("<UpdatePassword/>' behavior", () => {
     const newpassword = correctPassword;
     const confirmnewpassword = newpassword;
     const currentpassword = 'currentPassword1';
-    await userEvent.type(screen.getByLabelText(/current password/i), currentpassword, {
+    await userEvent.type(screen.getByLabelText(/current password:/i), currentpassword, {
       allAtOnce: false,
     });
-    await userEvent.type(screen.getByLabelText(/new password/i), newpassword, {
+    await userEvent.type(screen.getByLabelText(/new password:/i), newpassword, {
       allAtOnce: false,
     });
-    await userEvent.type(screen.getByLabelText(/confirm password/i), confirmnewpassword, {
+    await userEvent.type(screen.getByLabelText(/confirm password:/i), confirmnewpassword, {
       allAtOnce: false,
     });
     userEvent.click(screen.getByRole('button'), { name: /submit/i });

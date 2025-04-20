@@ -199,7 +199,7 @@ class Teams extends React.PureComponent {
             onMembersClick={this.onTeamMembersPopupShow}
             onDeleteClick={this.onDeleteTeamPopupShow}
             onStatusClick={this.onTeamStatusShow}
-            onEditTeam={this.onEditTeam}
+            onEditTeam={this.onEidtTeam}
             onClickActive={this.onClickActive}
             team={team}
           />
@@ -237,7 +237,6 @@ class Teams extends React.PureComponent {
     const selectedTeamData = allTeams
       ? allTeams.filter(team => team.teamName === this.state.selectedTeam)
       : [];
-
     return (
       <>
         <TeamMembersPopup
@@ -374,7 +373,7 @@ class Teams extends React.PureComponent {
     });
   };
 
-  onEditTeam = (teamName, teamId, status, teamCode) => {
+  onEidtTeam = (teamName, teamId, status, teamCode) => {
     this.setState({
       isEdit: true,
       createNewTeamPopupOpen: true,

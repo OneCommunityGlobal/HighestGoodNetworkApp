@@ -6,31 +6,6 @@ import axios from 'axios';
 import * as types from '../constants/popupEditorConstants';
 import { ENDPOINTS } from '../utils/URL';
 
-/** *****************************************
- * ACTION CREATORS
- ****************************************** */
-
-export const setPopup = popupItems => {
-  return {
-    type: types.RECEIVE_POPUP,
-    popupItems,
-  };
-};
-
-export const setCurrentPopup = currPopup => {
-  return {
-    type: types.CURRENT_POPUP,
-    currPopup,
-  };
-};
-
-export const setPopupError = err => {
-  return {
-    type: types.FETCH_POPUP_ERROR,
-    err,
-  };
-};
-
 export const fetchAllPopupEditor = () => {
   const request = axios.get(ENDPOINTS.POPUP_EDITORS);
   return async dispatch => {
@@ -38,7 +13,7 @@ export const fetchAllPopupEditor = () => {
       .then(res => {
         dispatch(setPopup(res.data));
       })
-      .catch(() => {
+      .catch(err => {
         dispatch(setPopupError());
       });
   };
@@ -82,5 +57,30 @@ export const backupPopupEditor = (popupId, popupContent, popupName) => {
     } catch (err) {
       dispatch(setPopupError());
     }
+  };
+};
+
+/** *****************************************
+ * ACTION CREATORS
+ ****************************************** */
+
+export const setPopup = popupItems => {
+  return {
+    type: types.RECEIVE_POPUP,
+    popupItems,
+  };
+};
+
+export const setCurrentPopup = currPopup => {
+  return {
+    type: types.CURRENT_POPUP,
+    currPopup,
+  };
+};
+
+export const setPopupError = err => {
+  return {
+    type: types.FETCH_POPUP_ERROR,
+    err,
   };
 };

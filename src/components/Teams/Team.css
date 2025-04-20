@@ -11,8 +11,7 @@ thead {
 }
 
 #teams__active {
-  width: 50px;  /* Increase to provide space */
-  text-align: center;
+  width: 10px;
 }
 
 .centered-cell {
@@ -35,23 +34,6 @@ thead {
 .teams__tr {
   text-align: start;
 }
-
-/* Targets 2nd column in team rows for better alignment and readability */
-.teams__tr td:nth-child(2) {
-  /* text-align: center; */
-  vertical-align: middle;
-  font-size: 16px;
-  font-weight: 400;
-}
-
-.teams__order--input div {
-  margin-top: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-}
-
 
 
 .teams__overview--top {
@@ -144,10 +126,8 @@ tr.dark-mode:hover {
 }
 
 .usermanagement-actions-cell {
-  height: 35px; /* Set a proper height */
-  padding: 5px 10px;
-  font-size: 14px;
-  line-height: normal;
+  display: table-cell;
+  padding-left: 10px;
 }
 
 @media (max-width: 768px) {
@@ -159,5 +139,5 @@ tr.dark-mode:hover {
 }
 
 .overflow-container table {
-  min-width: 600px;
+  min-width: 600px; 
 }
