@@ -26,11 +26,13 @@ const WBS = props => {
   }, [projectId]);
 
   useEffect(() => {
+    if (!props.state.wbs.WBSItems) return;
+    
     const sortedItems = [...props.state.wbs.WBSItems];
     if (sortOrder === 'asc') {
-      sortedItems.sort((a, b) => a.wbsName.localeCompare(b.wbsName));
+      sortedItems.sort((a, b) => a.wbsName.toLowerCase().localeCompare(b.wbsName.toLowerCase()));
     } else if (sortOrder === 'desc') {
-      sortedItems.sort((a, b) => b.wbsName.localeCompare(a.wbsName));
+      sortedItems.sort((a, b) => b.wbsName.toLowerCase().localeCompare(a.wbsName.toLowerCase()));
     } else {
       sortedItems.sort((a, b) => new Date(b.modifiedDatetime) - new Date(a.modifiedDatetime));
     }
@@ -38,7 +40,7 @@ const WBS = props => {
   }, [props.state.wbs.WBSItems, sortOrder]);
 
   const handleSortChange = (newOrder) => {
-    setSortOrder(newOrder);
+    setSortOrder(prevOrder => prevOrder === newOrder ? 'recent' : newOrder);
   };
 
   return (
@@ -46,52 +48,76 @@ const WBS = props => {
       <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{minHeight: "100%"}}>
         <div className={`container pt-2 ${darkMode ? 'bg-yinmn-blue-light text-light' : ''}`}>
           <nav aria-label="breadcrumb">
-            <ol className={`breadcrumb ${darkMode ? 'bg-space-cadet' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>
-              <NavItem tag={Link} to={`/projects/`}>
-                <button type="button" className="btn btn-secondary mr-2" style={darkMode ? boxStyleDark : boxStyle}>
-                  <i className="fa fa-chevron-circle-left" aria-hidden="true"></i>
-                </button>
-                <span style={{ marginLeft: '8px', marginRight:'8px' }}>Return to Project List</span>
-              </NavItem>
-              <div id="member_project__name" style={{ flex: '1', textAlign: 'center', fontWeight: 'bold', display: 'flex',
-                alignItems: 'center', justifyContent: 'center', }}>Project Name: {projectName}</div>
-            </ol>
+            <div className={`d-flex align-items-center breadcrumb ${darkMode ? 'bg-space-cadet' : ''}`} 
+              style={{ 
+                ...darkMode ? boxStyleDark : boxStyle,
+                backgroundColor: darkMode ? '' : '#E9ECEF',
+                margin: '0 0 16px',
+                padding: '12px 16px',
+                position: 'relative'
+              }}>
+              <div style={{ position: 'absolute', left: '1rem' }}>
+                <NavItem tag={Link} to={`/projects/`}>
+                  <button type="button" className="btn btn-secondary" style={darkMode ? boxStyleDark : boxStyle}>
+                    <i className="fa fa-chevron-circle-left" aria-hidden="true"></i>
+                    <span style={{ marginLeft: '8px' }}>Return to Project List</span>
+                  </button>
+                </NavItem>
+              </div>
+              <div style={{ 
+                width: '100%',
+                textAlign: 'center',
+                fontWeight: 'bold',
+                fontSize: '1.5rem'  
+              }}>{projectName}</div>
+            </div>
           </nav>
 
-          <AddWBS projectId={projectId} />
+          <AddWBS 
+            projectId={projectId} 
+            onSortAscending={() => handleSortChange('asc')}
+            onSortDescending={() => handleSortChange('desc')}
+          />
 
-          <table className={`table table-bordered table-responsive-sm ${darkMode ? 'bg-yinmn-blue text-light dark-mode' : '' }`}>
-            <thead>
-              <tr className={darkMode ? 'bg-space-cadet' : ''}>
-                <th scope="col" id="members__order">
-                  #
-                </th>
-                <th scope="col" id="members__name">
-                  Name
-                  <span style={{ marginLeft: '8px', cursor: 'pointer' }}>
-                    <i
-                      className={`fa ${sortOrder === 'recent' ? 'fa-sort' : sortOrder === 'asc' ? 'fa-sort-up' : 'fa-sort-down'}`}
-                      onClick={() => handleSortChange(sortOrder === 'asc' ? 'desc' : sortOrder === 'desc' ? 'recent' : 'asc')}
-                    ></i>
-                  </span>
-                </th>
-                <th scope="col" id="members__name"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {sortedWBSItems.map((item, i) =>
-                item ? (
-                  <WBSItem
-                    index={i + 1}
-                    key={item._id}
-                    wbsId={item._id}
-                    projectId={projectId}
-                    name={item.wbsName}
-                  />
-                ) : null,
-              )}
-            </tbody>
-          </table>
+          {!props.state.wbs.WBSItems ? (
+            <div className="d-flex justify-content-center align-items-center pt-4">
+              <div className="spinner-border text-primary" role="status">
+                <span className="sr-only">Loading...</span>
+              </div>
+            </div>
+          ) : (
+            <table className={`table table-bordered table-responsive-sm ${darkMode ? 'bg-yinmn-blue text-light dark-mode' : '' }`}>
+              <thead>
+                <tr className={darkMode ? 'bg-space-cadet' : ''}>
+                  <th scope="col" style={{ width: '150px' }}>#</th>
+                  <th scope="col" style={{ textAlign: 'left' }}>
+                    Name
+                    <span style={{ marginLeft: '8px', cursor: 'pointer' }}>
+                      <i
+                        className={`fa ${sortOrder === 'recent' ? 'fa-sort' : sortOrder === 'asc' ? 'fa-sort-up' : 'fa-sort-down'}`}
+                        onClick={() => handleSortChange(sortOrder === 'asc' ? 'desc' : sortOrder === 'desc' ? 'recent' : 'asc')}
+                      ></i>
+                    </span>
+                  </th>
+                  <th scope="col" style={{ width: '50px' }}></th>
+                </tr>
+              </thead>
+              <tbody>
+                {sortedWBSItems.map((item, i) =>
+                  item ? (
+                    <WBSItem
+                      index={i + 1}
+                      key={item._id}
+                      wbsId={item._id}
+                      projectId={projectId}
+                      name={item.wbsName}
+                      darkMode={darkMode}
+                    />
+                  ) : null,
+                )}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
     </React.Fragment>
