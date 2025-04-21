@@ -172,19 +172,6 @@ function Announcements({ title, email }) {
     dispatch(broadcastEmailsToAll('Weekly Update', htmlContent));
   };
 
-  const handleConnectToPinterest = async () => {
-    try {
-      const response = await axios.get(ENDPOINTS.PINTEREST_OAUTH_INIT);
-      const sessionId = response.data.sessionId;
-      location.href = `${ENDPOINTS.PINTEREST_AUTH}?client_id=${process.env.REACT_APP_PINTEREST_APP_ID}&redirect_uri=${ENDPOINTS.PINTEREST_AUTH_CALLBACK}&state=${sessionId}&response_type=code&scope=boards:read,pins:read,pins:write,boards:write`
-    } catch (err) {
-      toast.error(err.response?.data?.error || 'Failed to connect to Pinterest!', {
-        autoClose: false
-      });
-    }
-  }
-
-
   const handlePostToPinterest = async () => {
     if (!emailContent || emailContent.trim() === '') {
       toast.error('Error: No content to post. Please add some content in Weekly progress editor');
@@ -295,26 +282,14 @@ function Announcements({ title, email }) {
       </div>
       <div className='social-media'>
         <h3 className={darkMode ? 'text-light' : 'text-dark'}>Post to Social Media</h3>
-        <div className='pinterest-connect-post'>
-          <button
-            type="button"
-            className="send-button"
-            onClick={handleConnectToPinterest}
-            style={darkMode ? boxStyleDark : boxStyle}
-          >
-            {/* <a href={`${ENDPOINTS.PINTEREST_AUTH}?`}>Pinterest Connect</a> */}
-            {/* <a href={"https://www.pinterest.com/oauth?client_id=1513006&redirect_uri=http://localhost:4500/api/social/pinterest/auth&response_type=code&scope=boards:read,pins:read,pins:write,boards:write"}>Pinterest Connect</a> */}
-            Pinterest Connect
-          </button>
-          <button
-            type="button"
-            className="send-button"
-            onClick={handlePostToPinterest}
-            style={darkMode ? boxStyleDark : boxStyle}
-          >
-            Pinterest Post
-          </button>
-        </div>
+        <button
+          type="button"
+          className="send-button"
+          onClick={handlePostToPinterest}
+          style={darkMode ? boxStyleDark : boxStyle}
+        >
+          Pinterest Post
+        </button>
       </div>
     </div>
   );

@@ -14,19 +14,16 @@ label {
 }
 
 .text-light {
-  color: #fff;
-  /* White text for dark mode */
+  color: #fff; /* White text for dark mode */
 }
 
 .text-dark {
-  color: #333;
-  /* Default dark text for light mode */
+  color: #333; /* Default dark text for light mode */
 }
 
 .input-text-for-announcement,
 textarea {
-  margin-top: 5px;
-  /* Space above input fields */
+  margin-top: 5px;   /* Space above input fields */
   width: 100%;
   padding: 10px;
   border: 1px solid #ccc;
@@ -111,19 +108,6 @@ button.send-button:hover {
 .social-media {
   margin-left: 80px;
   /* Add some spacing between editor and email inputs */
-}
-
-button a,button a:hover {
-  text-decoration: none;
-  color: white;
-  /* Ensure link text is white */
-}
-
-
-
-.pinterest-connect-post {
-  display: flex;
-  gap: 1rem;
 }
 
 /* Responsive design: Adjusts the preview section on smaller screens. */
