@@ -4,7 +4,9 @@ import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { ENDPOINTS } from '../../utils/URL';
 import OneCommunityImage from './One-Community-Horizontal-Homepage-Header-980x140px-2.png';
-
+import QuestionSetManager from './QuestionSetManager';
+import QuestionFieldActions from './QuestionFieldActions';
+import QuestionEditModal from './QuestionEditModal'; 
 function JobFormBuilder() {
   const { role } = useSelector(state => state.auth.user);
   const [formFields, setFormFields] = useState([]);
@@ -62,6 +64,169 @@ function JobFormBuilder() {
 
   const [newOption, setNewOption] = useState('');
 
+
+const [editModalOpen, setEditModalOpen] = useState(false);
+const [editingQuestion, setEditingQuestion] = useState(null);
+const [editingIndex, setEditingIndex] = useState(null);
+
+  // Within your JobFormBuilder function, add these new functions:
+
+// Clone a single question field
+// const cloneField = (field, index) => {
+//   const clonedField = JSON.parse(JSON.stringify(field)); // Deep clone
+//   setFormFields([...formFields.slice(0, index + 1), clonedField, ...formFields.slice(index + 1)]);
+// };
+
+const cloneField = async (field, index) => {
+  const clonedField = JSON.parse(JSON.stringify(field)); // Deep clone
+  
+  // Update local state
+  const newFields = [...formFields.slice(0, index + 1), clonedField, ...formFields.slice(index + 1)];
+  setFormFields(newFields);
+  
+  // Sync with backend
+  try {
+    const formId = '6753982566fcf3275f129eb4';
+    await axios.post(`${ENDPOINTS.BASE_URL}/api/jobforms/${formId}/questions`, {
+      question: clonedField,
+      position: index + 1 // Position right after the original
+    });
+  } catch (error) {
+    console.error('Error cloning question on server:', error);
+  }
+};
+//pallavi
+
+// Move a field up or down in the list
+// const moveField = (index, direction) => {
+//   if (direction === 'up' && index > 0) {
+//     const newFields = [...formFields];
+//     [newFields[index], newFields[index - 1]] = [newFields[index - 1], newFields[index]];
+//     setFormFields(newFields);
+//   } else if (direction === 'down' && index < formFields.length - 1) {
+//     const newFields = [...formFields];
+//     [newFields[index], newFields[index + 1]] = [newFields[index + 1], newFields[index]];
+//     setFormFields(newFields);
+//   }
+// };
+const moveField = async (index, direction) => {
+  // Calculate new index
+  const newIndex = direction === 'up' ? index - 1 : index + 1;
+  
+  // Check if move is valid
+  if ((direction === 'up' && index > 0) || 
+      (direction === 'down' && index < formFields.length - 1)) {
+    
+    // Update local state
+    const newFields = [...formFields];
+    [newFields[index], newFields[newIndex]] = [newFields[newIndex], newFields[index]];
+    setFormFields(newFields);
+    
+    // Sync with backend
+    try {
+      const formId = '6753982566fcf3275f129eb4';
+      await axios.put(`${ENDPOINTS.BASE_URL}/api/jobforms/${formId}/questions/reorder`, {
+        fromIndex: index,
+        toIndex: newIndex
+      });
+    } catch (error) {
+      console.error('Error reordering questions on server:', error);
+    }
+  }
+};
+//pallavi
+
+// Delete a field
+// const deleteField = (index) => {
+//   const newFields = [...formFields];
+//   newFields.splice(index, 1);
+//   setFormFields(newFields);
+// };
+// Update deleteField to sync with backend
+const deleteField = async (index) => {
+  // Update local state
+  const newFields = [...formFields];
+  newFields.splice(index, 1);
+  setFormFields(newFields);
+  
+  // Sync with backend
+  try {
+    const formId = '6753982566fcf3275f129eb4';
+    await axios.delete(`${ENDPOINTS.BASE_URL}/api/jobforms/${formId}/questions/${index}`);
+  } catch (error) {
+    console.error('Error deleting question on server:', error);
+  }
+};
+//pallavi
+// Add this function for editing questions
+const editField = (field, index) => {
+  // Transform the field structure to match what QuestionEditModal expects
+  const questionForEdit = {
+    label: field.questionText,
+    type: field.questionType,
+    options: field.options,
+    required: field.required || false,
+    placeholder: field.placeholder || ''
+  };
+  
+  setEditingQuestion(questionForEdit);
+  setEditingIndex(index);
+  setEditModalOpen(true);
+};
+
+//edit question functinality
+const handleSaveEditedQuestion = async(editedQuestion) => {
+  
+  const updatedField = {
+    ...formFields[editingIndex],
+    questionText: editedQuestion.label,
+    questionType: editedQuestion.type,
+    options: editedQuestion.options || [],
+    required: editedQuestion.required,
+    placeholder: editedQuestion.placeholder
+  };
+  
+  const updatedFields = [...formFields];
+  updatedFields[editingIndex] = updatedField;
+  setFormFields(updatedFields);
+
+
+  //Pallavi
+   
+   try {
+    
+    const formId = '6753982566fcf3275f129eb4';  
+  
+  await axios.patch(
+      `${ENDPOINTS.BASE_URL}/api/jobforms/${formId}/questions/${editingIndex}`, 
+      updatedField
+    );
+    
+    console.log('Question updated successfully on server');
+  } catch (error) {
+
+    console.error('Error updating question on server:', error);
+  
+  }
+    //Pallavi
+
+  // Close the modal
+  setEditModalOpen(false);
+  setEditingQuestion(null);
+  setEditingIndex(null);
+};
+
+const handleCancelEdit = () => {
+  setEditModalOpen(false);
+  setEditingQuestion(null);
+  setEditingIndex(null);
+};
+
+// Import questions from template
+const importQuestions = (questions) => {
+  setFormFields(questions);
+};
+
   const handleAddOption = () => {
     if (newOption.trim() === '') {
       // eslint-disable-next-line no-alert
@@ -72,7 +237,7 @@ function JobFormBuilder() {
       ...prev,
       options: [...prev.options, newOption],
     }));
-    setNewOption('');
+    setNewOption(''); 
   };
 
   const handleAddField = () => {
@@ -171,9 +336,14 @@ function JobFormBuilder() {
         <div className="custom-form">
           <p>
             Fill the form with questions about a specific position you want to create an ad for. The
-            default questions will automatically appear and are alredy selected. You can pick and
+            default questions will automatically appear and are already selected. You can pick and
             choose them with the checkbox.
           </p>
+          <QuestionSetManager 
+      formFields={formFields} 
+      setFormFields={setFormFields} 
+      onImportQuestions={importQuestions} 
+    />
           <form>
             {formFields.map((field, index) => (
               <div
@@ -181,12 +351,23 @@ function JobFormBuilder() {
                 /* eslint-disable-next-line react/no-array-index-key */
                 key={index + 1}
               >
-                <input
+                {/* <input
                   type="checkbox"
                   id="form-div-checkbox"
                   checked={field.visible}
                   onChange={event => changeVisiblity(event, field)}
-                />
+                /> */}
+                 <QuestionFieldActions
+            field={field}
+            index={index}
+            totalFields={formFields.length}
+            onClone={cloneField}
+            onMove={moveField}
+            onDelete={deleteField}
+            onEdit={editField}
+            visible={field.visible}
+            onVisibilityChange={(event) => changeVisiblity(event, field)}
+          />
                 <div
                   /* eslint-disable-next-line react/no-array-index-key */
                   key={index + 1}
@@ -306,6 +487,13 @@ function JobFormBuilder() {
           <button type="submit" className="job-submit-button" onClick={handleSubmit}>
             Proceed to Submit with Details
           </button>
+          {editModalOpen && editingQuestion && (
+            <QuestionEditModal
+              question={editingQuestion}
+              onSave={handleSaveEditedQuestion}
+              onCancel={handleCancelEdit}
+            />
+          )}
         </div>
       ) : null}
     </div>
