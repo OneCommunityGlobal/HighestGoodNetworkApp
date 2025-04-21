@@ -14,7 +14,7 @@
 # src/__tests__/**
 # /src/components/**/__test__/**/*
 # /src/components/**/__tests__/**/*
- /src/reducers/**/__tests__/**/*
+# /src/reducers/**/__tests__/**/*
 
 src/components/BMDashboard/_tests_/BMDashboard.test.jsx
 # src/components/Login/ForgotPassword.test.jsx
