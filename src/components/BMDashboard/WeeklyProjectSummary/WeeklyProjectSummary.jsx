@@ -3,6 +3,7 @@ import './WeeklyProjectSummary.css';
 import { useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
+import EmbedInteractiveMap from '../InteractiveMap/EmbedInteractiveMap';
 
 const projectStatusButtons = [
   {
@@ -225,7 +226,9 @@ export default function WeeklyProjectSummary() {
       className: 'half',
       content: (
         <>
-          <div className="weekly-project-summary-card wide-card">📊 Wide Card</div>
+          <div className="weekly-project-summary-card wide-card">
+            <EmbedInteractiveMap />
+          </div>
           <div className="weekly-project-summary-card normal-card">📊 Normal Card</div>
         </>
       ),
