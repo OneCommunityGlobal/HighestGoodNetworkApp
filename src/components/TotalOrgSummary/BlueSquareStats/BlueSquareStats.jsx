@@ -21,7 +21,7 @@ function BlueSquareStats({ isLoading }) {
     missingSummary: { count: 10, percentageOutOfTotal: 4 },
     missingHoursAndSummary: { count: 96, percentageOutOfTotal: 37 },
     vacationTime: { count: 100, percentageOutOfTotal: 38 },
-    other: { count: 42, percentageOutOfTotal: 16 }
+    other: { count: 42, percentageOutOfTotal: 16 },
   };
 
   // To test no-data state, comment out the above and uncomment below
