@@ -7,7 +7,18 @@ import './DonutChart.css';
 Chart.register(ArcElement);
 
 function DonutChart(props) {
-  const { title, totalCount, percentageChange, data, colors } = props;
+  const { title, totalCount, percentageChange, data, colors, hasData } = props;
+
+  if (!hasData) {
+    return (
+      <div className="donut-container">
+        <div className="donut-no-data">
+          <p className="no-data-text">No data available</p>
+        </div>
+      </div>
+    );
+  }
+
   const chartData = {
     labels: data.map(item => item.label),
     datasets: [
@@ -42,7 +53,7 @@ function DonutChart(props) {
     cutout: '55%',
   };
 
-  const percentageChangeColor = percentageChange >= 0 ? 'green' : 'red';
+  const percentageChangeColor = percentageChange >= 0 ? 'var(--success)' : 'var(--danger)';
 
   return (
     <div className="donut-container">
@@ -86,6 +97,11 @@ DonutChart.propTypes = {
     }),
   ).isRequired,
   colors: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
+  hasData: PropTypes.bool,
+};
+
+DonutChart.defaultProps = {
+  hasData: true,
 };
 
 export default DonutChart;

@@ -30,12 +30,12 @@
 }
 
 .donut-center .donut-heading {
-  color: #828282;
+  color: var(--text-secondary);
   font-size: 0.88rem;
 }
 
 .donut-center .donut-count {
-  color: #6c6c6c;
+  color: var(--text-primary);
   font-size: 2rem;
 }
 
@@ -49,6 +49,7 @@
   justify-content: center;
   margin-top: 1.8rem;
   width: 100%;
+  color: var(--text-primary);
 }
 
 .donut-label {
@@ -62,6 +63,24 @@
   min-width: 1rem;
   min-height: 1rem;
   margin-right: 1rem;
+}
+
+.donut-no-data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 21.25rem;
+  width: 100%;
+  text-align: center;
+}
+
+.no-data-text {
+  color: var(--text-primary);
+  font-size: 24px !important;
+  font-weight: 600;
+  margin-top: 1.5rem;
+  line-height: 1.2;
 }
 
 @media (max-width: 615px) {
