@@ -206,26 +206,42 @@ function UserProfile(props) {
     }
   };
 
+  const updateProjetTouserProfile = () => {
+    return new Promise((resolve) => {
+      checkIsProjectsEqual();
+      
+      setUserProfile(prevState => {
+        const updatedProfile = prevState;
+        if(updatedProfile){
+          updatedProfile.projects = projects || updatedProfile.projects;
+        }
+        return updatedProfile
+      });
+      setOriginalUserProfile(prevState => {
+        const updatedOriginalProfile = prevState;
+        if(updatedOriginalProfile){
+          updatedOriginalProfile.projects = projects || updatedOriginalProfile.projects;
+        }
+        return updatedOriginalProfile
+      });
+  
+    });
+  };
+  
+
   useEffect(() => {
     userProfileRef.current = userProfile;
   });
 
   useEffect(() => {
-    checkIsProjectsEqual();
-    setUserProfile(prevState => {
-      const updatedProfile = prevState;
-      if(updatedProfile){
-        updatedProfile.projects = projects || updatedProfile.projects;
-      }
-      return updatedProfile
-    });
-    setOriginalUserProfile(prevState => {
-      const updatedOriginalProfile = prevState;
-      if(updatedOriginalProfile){
-        updatedOriginalProfile.projects = projects || updatedOriginalProfile.projects;
-      }
-      return updatedOriginalProfile
-    });
+     const helper = async ()=>{
+        try {
+          await updateProjetTouserProfile();
+        } catch (error) {
+          
+        }
+     }
+    helper();
   }, [projects]);
 
   useEffect(() => {
@@ -336,7 +352,15 @@ function UserProfile(props) {
     try {
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
       const currentUserEmail = response.data.email;
-      dispatch(setCurrentUser({ ...props.auth.user, email: currentUserEmail }));
+      dispatch(setCurrentUser({ ...props.auth.user, email: currentUserEmail, 
+        permissions: {
+          ...props.auth.user.permissions,
+          frontPermissions: [
+            ...(props.auth.user.permissions?.frontPermissions || []),
+            ...(response.data.permissions?.frontPermissions || [])
+          ]
+        }
+      }));
     } catch (err) {
       toast.error('Error while getting current logged in user email');
     }
@@ -885,7 +909,7 @@ function UserProfile(props) {
 
   const canEditUserProfile = targetIsDevAdminUneditable
     ? false
-    : userProfile.role === 'Owner'
+    : userProfile.role === 'Owner' || userProfile.role === 'Administrator'
     ? canAddDeleteEditOwners
     : canPutUserProfile;
 
@@ -1413,12 +1437,12 @@ function UserProfile(props) {
               </TabPane>
             </TabContent>
             <div className="profileEditButtonContainer">
-              {canUpdatePassword && canEdit && !isUserSelf && (
+              {(canUpdatePassword && canEdit && !isUserSelf) && (
                 <ResetPasswordButton
                   className="mr-1 btn-bottom"
                   user={userProfile}
                   authEmail={authEmail}
-                  canResetPassword
+                  canUpdatePassword
                 />
               )}
               {isUserSelf && (activeTab === '1' || canPutUserProfile) && (
@@ -1549,7 +1573,7 @@ function UserProfile(props) {
                           className="mr-1 btn-bottom"
                           user={userProfile}
                           authEmail={authEmail}
-                          canResetPassword
+                          canUpdatePassword
                         />
                       )}
                       {isUserSelf && (activeTab == '1' || canPutUserProfile) && (

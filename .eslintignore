@@ -20,9 +20,9 @@ src/components/BMDashboard/_tests_/BMDashboard.test.jsx
 # src/components/Login/ForgotPassword.test.jsx
 # src/components/Login/LoginPage.test.js
 src/components/Reports/PeopleReport/components/PeopleTasksPieChart.test.jsx
+# src/components/PermissionsManagement/PermissionsManagement.test.js
 
 # Ignore folders in /src
-src/actions/**
 src/components/Badge/**
 src/components/Dashboard/**
 src/components/Projects/**
