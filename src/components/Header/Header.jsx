@@ -584,6 +584,7 @@ export function Header(props) {
         <PopUpBar
           message="Heads Up, there were permission changes made to this account"
           onClickClose={handlePermissionChangeAck}
+          textColor="black_text"
         />
       )}
       <div>

@@ -2,9 +2,9 @@
 import './PopUpBar.css';
 
 function PopUpBar(props) {
-  const { message, onClickClose } = props;
+  const { message, onClickClose, textColor } = props;
   return (
-    <div className="popup_container" data-testid="test-popup">
+    <div className={`popup_container ${textColor}`} data-testid="test-popup">
       {message}
       <button type="button" className="close_button" onClick={onClickClose}>
         X
