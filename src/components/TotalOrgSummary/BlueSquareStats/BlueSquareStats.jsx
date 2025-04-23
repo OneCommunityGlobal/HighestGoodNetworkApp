@@ -3,7 +3,7 @@ import './BlueSquareStats.css';
 import Loading from 'components/common/Loading';
 import DonutChart from '../DonutChart/DonutChart';
 
-function BlueSquareStats({ isLoading }) {
+function BlueSquareStats({ isLoading, blueSquareStats }) {
   if (isLoading) {
     return (
       <div className="d-flex justify-content-center align-items-center">
@@ -14,24 +14,14 @@ function BlueSquareStats({ isLoading }) {
     );
   }
 
-  // Test data with values
-  const blueSquareStats = {
-    totalBlueSquares: { count: 260, comparisonPercentage: 0 },
-    missingHours: { count: 12, percentageOutOfTotal: 5 },
-    missingSummary: { count: 10, percentageOutOfTotal: 4 },
-    missingHoursAndSummary: { count: 96, percentageOutOfTotal: 37 },
-    vacationTime: { count: 100, percentageOutOfTotal: 38 },
-    other: { count: 42, percentageOutOfTotal: 16 },
-  };
-
-  // To test no-data state, comment out the above and uncomment below
+  // Uncomment and remove blueSquareStats prop to test data with values
   // const blueSquareStats = {
-  //   totalBlueSquares: { count: 0, comparisonPercentage: -1 },
-  //   missingHours: { count: 0, percentageOutOfTotal: 0 },
-  //   missingSummary: { count: 0, percentageOutOfTotal: 0 },
-  //   missingHoursAndSummary: { count: 0, percentageOutOfTotal: 0 },
-  //   vacationTime: { count: 0, percentageOutOfTotal: 0 },
-  //   other: { count: 0, percentageOutOfTotal: 0 }
+  //   totalBlueSquares: { count: 260, comparisonPercentage: 0 },
+  //   missingHours: { count: 12, percentageOutOfTotal: 5 },
+  //   missingSummary: { count: 10, percentageOutOfTotal: 4 },
+  //   missingHoursAndSummary: { count: 96, percentageOutOfTotal: 37 },
+  //   vacationTime: { count: 100, percentageOutOfTotal: 38 },
+  //   other: { count: 42, percentageOutOfTotal: 16 },
   // };
 
   const {
@@ -51,7 +41,7 @@ function BlueSquareStats({ isLoading }) {
     { label: 'Other', value: other.count },
   ];
 
-  const hasData = data.some(item => item.value > 0);
+  const hasData = data.every(item => item.value !== 0);
 
   return (
     <section className="blue-square-stats">
