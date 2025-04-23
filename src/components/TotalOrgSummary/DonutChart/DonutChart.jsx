@@ -63,7 +63,7 @@ function DonutChart(props) {
           <div className="donut-center">
             <h5 className="donut-heading">{title}</h5>
             <h4 className="donut-count">{totalCount}</h4>
-            <h6 style={{ color: percentageChangeColor }}>
+            <h6 className="donut-comparison-percent" style={{ color: percentageChangeColor }}>
               {percentageChange >= 0
                 ? `+${percentageChange}% WEEK OVER WEEK`
                 : `${percentageChange}% WEEK OVER WEEK`}

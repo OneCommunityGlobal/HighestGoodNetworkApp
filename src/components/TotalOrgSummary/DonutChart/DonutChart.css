@@ -29,6 +29,10 @@
   font-size: 0.6em;
 }
 
+.donut-center > * {
+  margin: 0.2rem;
+}
+
 .donut-center .donut-heading {
   color: var(--text-secondary);
   font-size: 0.88rem;
@@ -37,6 +41,10 @@
 .donut-center .donut-count {
   color: var(--text-primary);
   font-size: 2rem;
+}
+
+.donut-comparison-percent {
+  font-size: 0.7rem;
 }
 
 .donut-center div {
