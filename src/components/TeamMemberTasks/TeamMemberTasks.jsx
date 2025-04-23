@@ -61,6 +61,7 @@ const TeamMemberTasks = React.memo(props => {
   const [selectedColors, setSelectedColors] = useState([]);
 
   const [teams, setTeams] = useState(displayUser.teams);
+  const [teamRoles, setTeamRoles] = useState();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [usersSelectedTeam, setUsersSelectedTeam] = useState([]);
   const [selectedTeamName, setSelectedTeamName] = useState('Select a Team');
@@ -320,6 +321,23 @@ const TeamMemberTasks = React.memo(props => {
     }
   };
 
+  const filteredTeamRoles = teams => {
+    const roles = {}; 
+
+    teamRoles && teams.forEach(team => {
+        if (teamRoles[team.teamName]) {
+            Object.entries(teamRoles[team.teamName]).forEach(([role, { id, name }]) => {
+                if (!roles[role]) {
+                    roles[role] = []; 
+                }
+                roles[role].push({ id, name });
+            });
+        }
+    });
+
+    return Object.keys(roles).length === 0 ? '' : roles;
+  }
+
   const renderFilters = () => {
     const teamGroup = {};
     const teamCodeGroup = {};
@@ -327,18 +345,29 @@ const TeamMemberTasks = React.memo(props => {
     const teamOptions = [];
     const teamCodeOptions = [];
     const colorOptions = [];
+    const rolesGroup = {};
 
     if (usersWithTasks.length > 0) {
       usersWithTasks.forEach(user => {
         const teamNames = user.teams !== undefined ? user.teams.map(team => team.teamName) : [];
         const code = user.teamCode || 'noCodeLabel';
         const color = user.weeklySummaryOption || 'noColorLabel';
+        const role = user.role;
 
         teamNames.forEach(name => {
           if (teamGroup[name]) {
             teamGroup[name].push(user.personId);
           } else {
             teamGroup[name] = [user.personId];
+          }
+          if(['Manager', "Assistant Manager", 'Mentor'].includes(role)){
+            if (!rolesGroup[name]) {
+              rolesGroup[name] = {};
+            } 
+            rolesGroup[name][role] = {
+                id: user.personId,
+                name: user.name
+            }
           }
         });
 
@@ -389,6 +418,7 @@ const TeamMemberTasks = React.memo(props => {
       setTeamNames(teamOptions);
       setTeamCodes(teamCodeOptions);
       setColors(colorOptions);
+      setTeamRoles(rolesGroup);
     }
   };
 
@@ -626,7 +656,7 @@ const TeamMemberTasks = React.memo(props => {
           <Col lg={{ size: 4 }} xs={{ size: 12 }} className="ml-3">
             <span className={darkMode ? 'text-light responsive-font-size' : ''}>Select Team</span>
             <MultiSelect
-              className="multi-select-filter responsive-font-size"
+              className={`multi-select-filter responsive-font-size ${darkMode ?'dark-mode' : ''}`}
               options={teamNames}
               value={selectedTeamNames}
               onChange={e => {
@@ -639,7 +669,7 @@ const TeamMemberTasks = React.memo(props => {
               Select Team Code
             </span>
             <MultiSelect
-              className="multi-select-filter responsive-font-size"
+              className={`multi-select-filter responsive-font-size ${darkMode ?'dark-mode' : ''}`}
               options={teamCodes}
               value={selectedCodes}
               onChange={e => {
@@ -650,7 +680,7 @@ const TeamMemberTasks = React.memo(props => {
           <Col lg={{ size: 4 }} xs={{ size: 12 }} className="ml-3">
             <span className={darkMode ? 'text-light responsive-font-size' : ''}>Select Color</span>
             <MultiSelect
-              className="multi-select-filter responsive-font-size"
+              className={`multi-select-filter responsive-font-size ${darkMode ?'dark-mode' : ''}`}
               options={colors}
               value={selectedColors}
               onChange={e => {
@@ -749,6 +779,9 @@ const TeamMemberTasks = React.memo(props => {
                         userPermission={props?.auth?.user?.permissions?.frontPermissions?.includes(
                           'putReviewStatus',
                         )}
+                        teamRoles = {(
+                          (user.teams!==undefined && user.teams.length > 0) ? filteredTeamRoles(user.teams) : ''
+                        )}
                         key={user.personId}
                         handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
                         handleMarkAsDoneModal={handleMarkAsDoneModal}
@@ -770,6 +803,9 @@ const TeamMemberTasks = React.memo(props => {
                           user={user}
                           userPermission={props?.auth?.user?.permissions?.frontPermissions?.includes(
                             'putReviewStatus',
+                          )}
+                          teamRoles = {(
+                            (user.teams!==undefined && user.teams.length > 0) ? filteredTeamRoles(user.teams) : ''
                           )}
                           handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
                           handleMarkAsDoneModal={handleMarkAsDoneModal}

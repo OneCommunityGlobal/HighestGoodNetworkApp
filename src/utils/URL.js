@@ -14,6 +14,7 @@ export const ENDPOINTS = {
   MODIFY_BLUE_SQUARE: (userId, blueSquareId) =>
     `${APIEndpoint}/userprofile/${userId}/infringements/${blueSquareId}`,
   USERS_ALLTEAMCODE_CHANGE: `${APIEndpoint}/AllTeamCodeChanges`,
+  REPLACE_TEAM_CODE: `${APIEndpoint}/userProfile/replaceTeamCode`,
 
   USERS_REMOVE_PROFILE_IMAGE: `${APIEndpoint}/userProfile/profileImage/remove`,
   USERS_UPDATE_PROFILE_FROM_WEBSITE: `${APIEndpoint}/userProfile/profileImage/imagefromwebsite`,
@@ -130,7 +131,7 @@ export const ENDPOINTS = {
   REJECT_TASK_EDIT_SUGGESTION: taskEditSuggestionId =>
     `${APIEndpoint}/taskeditsuggestion/${taskEditSuggestionId}`,
 
-  TIMER_SERVICE: `${APIEndpoint.replace('http', 'ws').replace('api', 'timer-service')}`,
+  TIMER_SERVICE: new URL('/timer-service', APIEndpoint.replace('http', 'ws')).toString(),
   TIMEZONE_LOCATION: location => `${APIEndpoint}/timezone/${location}`,
 
   ROLES: () => `${APIEndpoint}/roles`,
