@@ -38,9 +38,14 @@
 .btns {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0;
   color: white;
   border:none;
+}
+
+.btns > * {
+  margin-right: 2px;
+  padding: 2px;
 }
 
 .timer {
