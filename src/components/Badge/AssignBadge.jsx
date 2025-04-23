@@ -214,12 +214,7 @@ function AssignBadge(props) {
         >
           Assign Badge
         </Button>
-        <Modal
-          isOpen={isOpen}
-          toggle={toggle}
-          backdrop="static"
-          className={darkMode ? 'text-light dark-mode' : ''}
-        >
+        <Modal isOpen={isOpen} toggle={toggle} className={darkMode ? 'text-light dark-mode' : ''}>
           <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={toggle}>
             Assign Badge
           </ModalHeader>

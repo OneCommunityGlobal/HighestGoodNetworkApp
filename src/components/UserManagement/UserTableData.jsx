@@ -12,14 +12,15 @@ import ResetPasswordButton from './ResetPasswordButton';
 import { DELETE, PAUSE, RESUME, SET_FINAL_DAY, CANCEL } from '../../languages/en/ui';
 import { UserStatus, FinalDay } from '../../utils/enums';
 import ActiveCell from './ActiveCell';
+import TimeDifference from './TimeDifference';
 import hasPermission from '../../utils/permissions';
 import { boxStyle } from '../../styles';
 import { formatDateLocal } from '../../utils/formatDate';
 import { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import { formatDate, formatDateYYYYMMDD } from '../../utils/formatDate';
-
 import { faUser, faUsers, faShieldAlt, faBriefcase, faUserTie, faCrown, faChalkboardTeacher, faBug, faGlobe, faStar } from '@fortawesome/free-solid-svg-icons';
 import { UncontrolledTooltip } from 'reactstrap';
+import SetUpFinalDayButton from './SetUpFinalDayButton';
 /**
  * The body row of the user table
  */
@@ -139,7 +140,7 @@ const UserTableData = React.memo(props => {
     <tr
       className={`usermanagement__tr ${darkMode ? 'dark-usermanagement-data' : 'light-usermanagement-data'}`}
       id={`tr_user_${props.index}`}
-      style={{fontSize: isMobile ? mobileFontSize : 'initial'}}
+      style={{ fontSize: isMobile ? mobileFontSize : 'initial' }}
     >
       <td className="usermanagement__active--input" style={{ position: 'relative' }}>
         <ActiveCell
@@ -177,12 +178,12 @@ const UserTableData = React.memo(props => {
                 event.preventDefault();
                 return;
               }
-            
+
               if (event.metaKey || event.ctrlKey || event.button === 1) {
                 window.open(`/peoplereport/${props.user._id}`, '_blank');
                 return;
               }
-            
+
               event.preventDefault(); // prevent full reload
               history.push(`/peoplereport/${props.user._id}`);
             }}
@@ -198,6 +199,11 @@ const UserTableData = React.memo(props => {
             />
           </button>
         </span>
+        <TimeDifference
+          userProfile={props.user}
+          isUserSelf={props.user.email === props.authEmail}
+          darkMode={darkMode}
+        />
       </td>
       <td className="email_cell">
         {editUser?.first ? (
@@ -379,7 +385,10 @@ const UserTableData = React.memo(props => {
               props.isActive ? UserStatus.InActive : UserStatus.Active,
             );
           }}
-          style={darkMode ? { boxShadow: '0 0 0 0', fontWeight: 'bold' } : boxStyle}
+          style={{
+            ...darkMode ? { boxShadow: '0 0 0 0', fontWeight: 'bold' } : boxStyle,
+            padding: '5px', // Added 2px padding
+          }}
           disabled={!canChangeUserStatus}
           id={`btn-pause-profile-${props.user._id}`}
         >
@@ -394,7 +403,10 @@ const UserTableData = React.memo(props => {
             }`}
           onClick={() => props.onLogTimeOffClick(props.user)}
           id="requested-time-off-btn"
-          style={darkMode ? { boxShadow: '0 0 0 0', fontWeight: 'bold' } : boxStyle}
+          style={{
+            ...darkMode ? { boxShadow: '0 0 0 0', fontWeight: 'bold' } : boxStyle,
+            padding: '5px', // Added 2px padding
+          }}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -435,28 +447,14 @@ const UserTableData = React.memo(props => {
             ) : (
               ''
             )}
-            <button
-              type="button"
-              className={`btn btn-outline-${props.user.endDate ? 'warning' : 'success'} btn-sm`}
-              onClick={() => {
-                if (cantUpdateDevAdminDetails(props.user.email, props.authEmail)) {
-                  alert(
-                    'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.',
-                  );
-                  return;
-                }
-
-                props.onFinalDayClick(
-                  props.user,
-                  props.user.endDate ? FinalDay.NotSetFinalDay : FinalDay.FinalDay,
-                );
+            <SetUpFinalDayButton
+              userProfile={props.user}
+              darkMode={darkMode}
+              onFinalDaySave={updatedUser => {
+                // Update the user object in the parent state
+                props.onUserUpdate(updatedUser);
               }}
-              style={darkMode ? { boxShadow: '0 0 0 0', fontWeight: 'bold' } : boxStyle}
-              id={`btn-final-day-${props.user._id}`}
-              disabled={!canChangeUserStatus}
-            >
-              {props.user.endDate ? CANCEL : SET_FINAL_DAY}
-            </button>
+            />
           </>
         )}
       </td>
@@ -532,7 +530,10 @@ const UserTableData = React.memo(props => {
               onClick={() => {
                 props.onDeleteClick(props.user, 'archive');
               }}
-              style={darkMode ? { boxShadow: '0 0 0 0', fontWeight: 'bold' } : boxStyle}
+              style={{
+                ...darkMode ? { boxShadow: '0 0 0 0', fontWeight: 'bold' } : boxStyle,
+                padding: '5px', // Added 2px padding
+              }}
               disabled={props.auth?.user.userid === props.user._id || !canDeleteUsers}
             >
               {DELETE}
@@ -544,7 +545,7 @@ const UserTableData = React.memo(props => {
               user={props.user}
               darkMode={darkMode}
               isSmallButton
-              canResetPassword={resetPasswordStatus || updatePasswordStatus}
+              canUpdatePassword={resetPasswordStatus || updatePasswordStatus}
             />
           </span>
         </td>

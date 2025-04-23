@@ -154,6 +154,15 @@ td#usermanagement_role svg {
   max-width: initial;
 }
 
+.time_difference{
+  cursor: pointer;
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 0.7rem;
+  margin: 2px 4px;
+}
+
 .copy_icon {
   cursor: pointer;
   position: absolute;

@@ -49,13 +49,14 @@ import Inventory from './components/Inventory';
 import EmailSubscribeForm from './components/EmailSubscribeForm';
 import UnsubscribeForm from './components/EmailSubscribeForm/Unsubscribe';
 import NotFoundPage from './components/NotFound/NotFoundPage';
-import { EmailSender } from './components/common/EmailSender/EmailSender';
+import EmailSender from './components/common/EmailSender/EmailSender';
 import Collaboration from './components/Collaboration';
 
 // LB Dashboard
 import LBProtectedRoute from './components/common/LBDashboard/LBProtectedRoute';
 import LBLogin from './components/LBDashboard/Login';
 import LBDashboard from './components/LBDashboard';
+import MasterPlan from './components/LBDashboard/Map/MasterPlan/MasterPlan';
 import ListOveriew from './components/LBDashboard/ListingOverview/ListOverview';
 import LBBidOverview from './components/LBDashboard/BiddingOverview/BiddingOverview';
 
@@ -77,6 +78,7 @@ import CPProtectedRoute from './components/common/CPDashboard/CPProtectedRoute';
 import CPLogin from './components/CommunityPortal/Login';
 import CPDashboard from './components/CommunityPortal';
 import ActivityList from './components/CommunityPortal/Activities/ActivityList';
+import EventStats from './components/CommunityPortal/EventPersonalization/EventStats';
 // import AddActivities from './components/CommunityPortal/Activities/AddActivities';
 // import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
 
@@ -415,6 +417,7 @@ export default(
         {/* Listing and Bidding Routes */}
         <LBProtectedRoute path="/lbdashboard" exact component={LBDashboard} />
         <LBProtectedRoute path="/lbdashboard/listOverview" exact component={ListOveriew} />
+        <LBProtectedRoute path="/lbdashboard/masterplan" exact component={MasterPlan} />
         <Route path="/lbdashboard/login" component={LBLogin} />
         <Route path="/lbdashboard/bidoverview" exact component={LBBidOverview} />
 
@@ -423,6 +426,7 @@ export default(
         <Route path="/educationportal/login" component={EPLogin} />
 
 
+        <CPProtectedRoute path="/communityportal/reports/event/personalization" exact component={EventStats} />
         {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
 
 
