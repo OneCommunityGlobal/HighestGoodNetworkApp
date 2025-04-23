@@ -270,7 +270,7 @@ export const fetchProjectsWithActiveUsers = () => {
       const response = await axios.get(ENDPOINTS.PROJECTS_WITH_ACTIVE_USERS);
       dispatch(fetchProjectsActiveUsers(response.data));
     } catch (error) {
-      console.error(error);
+      // console.error(error);
       dispatch(fetchProjectsActiveUsersWithError(error));
     }
   };
