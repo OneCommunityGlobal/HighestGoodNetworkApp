@@ -12,6 +12,28 @@ const getAllSubpermissionKeys = permissions => {
   return keys;
 };
 
+export const generatePermissionLabelKeyMapping = (permissionLabels, start) => {
+  if (start >= permissionLabels.length) {
+    return {};
+  }
+  if (!permissionLabels?.length) {
+    return {};
+  }
+  const firstEle = permissionLabels[start];
+  const { label, key, subperms } = firstEle;
+  // console.log('label', label);
+  let currentVal;
+  if (subperms) {
+    currentVal = generatePermissionLabelKeyMapping(subperms, 0);
+  } else {
+    currentVal = { [key]: label };
+  }
+  return {
+    ...currentVal,
+    ...generatePermissionLabelKeyMapping(permissionLabels, start + 1),
+  };
+};
+
 export const permissionLabels = [
   {
     label: 'General',
@@ -135,6 +157,12 @@ export const permissionLabels = [
         key: 'updateSummaryRequirements',
         description:
           'Gives the user permission to change the requirement to the user to submit a summary.',
+      },
+      {
+        label: 'Update Password (Others)',
+        key: 'updatePassword',
+        description:
+          'Gives the user permission to update the password of any user but Owner/Admin classes. ',
       },
       {
         label: 'Manage Time Off Requests',
@@ -535,6 +563,8 @@ export const permissionLabels = [
     ],
   },
 ];
+
+export const permissionLabelKeyMappingObj = generatePermissionLabelKeyMapping(permissionLabels, 0);
 
 export const roleOperationLabels = [
   {

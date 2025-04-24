@@ -12,7 +12,7 @@
 
 .container-total-org-wrapper .row {
   width: 100% !important;
-  margin: 0 0 15px 0;
+  margin: 1px 10px 15px 10px;
 }
 
 /* Header section styles */
@@ -169,4 +169,8 @@
 .report-header-actions {
   display: flex;
   justify-content: flex-end;
+}
+
+.chart-title.dark-mode p {
+  color: white;
 }

@@ -13,22 +13,6 @@ import { isEmpty, isEqual } from 'lodash';
 import { getUserProfile } from 'actions/userProfile';
 import { postTimeEntry } from 'actions/timeEntries';
 
-const TINY_MCE_INIT_OPTIONS = {
-  license_key: 'gpl',
-  menubar: false,
-  placeholder: '',
-  plugins:
-    'advlist autolink autoresize lists link charmap table paste help wordcount',
-  toolbar: `bold italic underline link removeformat | bullist numlist outdent indent |
-                    styleselect fontsizeselect | table| strikethrough forecolor backcolor |
-                    subscript superscript charmap  | help`,
-  branding: false,
-  min_height: 180,
-  max_height: 300,
-  autoresize_bottom_margin: 1,
-  content_style: 'body { cursor: text !important; }',
-};
-
 function AddLostTime(props) {
 
   const darkMode = useSelector((state) => state.theme.darkMode);
@@ -46,6 +30,24 @@ function AddLostTime(props) {
     minutes: 0,
     notes: '',
     isTangible: true,
+  };
+
+  const TINY_MCE_INIT_OPTIONS = {
+    license_key: 'gpl',
+    menubar: false,
+    placeholder: '',
+    plugins:
+      'advlist autolink autoresize lists link charmap table paste help wordcount',
+    toolbar: `bold italic underline link removeformat | bullist numlist outdent indent |
+                      styleselect fontsizeselect | table| strikethrough forecolor backcolor |
+                      subscript superscript charmap  | help`,
+    branding: false,
+    min_height: 180,
+    max_height: 300,
+    autoresize_bottom_margin: 1,
+    content_style: 'body { cursor: text !important; }',
+    skin: darkMode ? 'oxide-dark' : 'oxide',
+    content_css: darkMode ? 'dark' : 'default',
   };
 
   const dispatch = useDispatch();
@@ -341,6 +343,7 @@ function AddLostTime(props) {
                   id="dateOfWork"
                   value={inputs.dateOfWork}
                   onChange={handleInputChange}
+                  className={darkMode ? "bg-darkmode-liblack text-light border-0 calendar-icon-dark" : ''}
                 />
                 {'dateOfWork' in errors && (
                   <div className="text-danger">
@@ -361,6 +364,7 @@ function AddLostTime(props) {
                     placeholder="Hours"
                     value={inputs.hours}
                     onChange={handleInputChange}
+                    className={darkMode ? "bg-darkmode-liblack text-light border-0" : ''}
                   />
                 </Col>
                 <Col>
@@ -373,6 +377,7 @@ function AddLostTime(props) {
                     placeholder="Minutes"
                     value={inputs.minutes}
                     onChange={handleInputChange}
+                    className={darkMode ? "bg-darkmode-liblack text-light border-0" : ''}
                   />
                 </Col>
               </Row>

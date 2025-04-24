@@ -4,24 +4,34 @@
 }
 
 .close-button {
-  height: 2vh;
-  width: 99%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 12px;
 }
 
 .card-content {
   padding: 5px;
-  /* Add padding around the card content */
   padding-left: 40px;
-  padding-right: 40px;
+  padding-right: 30px;
   white-space: pre-line;
   color: white;
   font-size: medium;
 }
 
+.card {
+  margin-left: 35px;
+  margin-right: 50px;
+}
+
+.card-wrapper {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
 .navbar {
-  /* z-index: 100; */
+  z-index: 100;
   white-space: nowrap;
-  /* margin-bottom: 20px; */
 }
 
 .timer-message-section {
@@ -91,9 +101,9 @@
 }
 
 @media screen and (min-width: 1400px) and (max-width: 1700px) {
-  /* .owner-message {
+  .owner-message {
     display: none;
-  } */
+  }
 }
 
 @media screen and (max-width: 769px) {
@@ -124,7 +134,6 @@
     margin: 0;
     scale: 100%;
   }
-
 
   /* Ensure navbar is compact and font size is correct */
   .navbar {
