@@ -72,7 +72,7 @@ const mockMembers = [
 function CommunityMembersList({ userTeamIds = [] }) {
   const [members, setMembers] = useState(mockMembers);
   const [search, setSearch] = useState('');
-  const [filter, setFilter] = useState(null);
+  const [filter, setFilter] = useState(false);
   const [sortOrder, setSortOrder] = useState('asc');
 
   useEffect(() => {
@@ -87,7 +87,7 @@ function CommunityMembersList({ userTeamIds = [] }) {
     }
 
     if (filter) {
-      filtered = filtered.filter(m => m.skills.includes(filter));
+      filtered = filtered.filter(m => m.score > 7);
     }
 
     filtered.sort((a, b) => {
@@ -109,13 +109,10 @@ function CommunityMembersList({ userTeamIds = [] }) {
           value={search}
           onChange={e => setSearch(e.target.value)}
         />
-        <button
-          type="button"
-          className="control-button"
-          onClick={() => setFilter(filter === 'React' ? null : 'React')}
-        >
-          <span className="icon">≡</span> Filter
+        <button type="button" className="control-button" onClick={() => setFilter(prev => !prev)}>
+          <span className="icon">≡</span> {filter ? 'Show All' : 'Filter (Score>7)'}
         </button>
+
         <button
           type="button"
           className="control-button"
