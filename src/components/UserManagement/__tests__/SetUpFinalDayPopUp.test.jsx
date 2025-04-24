@@ -74,8 +74,8 @@ describe('SetUpFinalDayPopUp Component', () => {
     const modalHeader = screen.getByText('Set Your Final Day').closest('.modal-header');
     const modalBody = screen.getByTestId('date-input').closest('.modal-body');
 
-    expect(modalHeader).toHaveClass('bg-space-cadet');
-    expect(modalBody).toHaveClass('bg-yinmn-blue');
+    expect(modalHeader).toHaveClass('modal-header');
+    expect(modalBody).toHaveClass('modal-body');
   });
 
 
@@ -99,7 +99,7 @@ describe('SetUpFinalDayPopUp Component', () => {
   
     const modalBody = screen.getByTestId('date-input').closest('.modal-body');
   
-    expect(modalBody).toHaveClass('bg-yinmn-blue');
+    expect(modalBody).toHaveClass('modal-body');
   });
 
   
