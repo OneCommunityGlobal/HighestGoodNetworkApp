@@ -2,10 +2,8 @@
 import { connect } from 'react-redux';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
-import { Alert, Col, Container, Row, Button } from 'reactstrap';
+import { Alert, Col, Container, Row } from 'reactstrap';
 import 'moment-timezone';
-import html2canvas from 'html2canvas';
-import { jsPDF } from 'jspdf';
 
 import hasPermission from 'utils/permissions';
 
@@ -122,157 +120,6 @@ function TotalOrgSummary(props) {
   const dispatch = useDispatch();
 
   const allUsersTimeEntries = useSelector(state => state.allUsersTimeEntries);
-
-  const handleSaveAsPDF = async () => {
-    const triggers = document.querySelectorAll('.Collapsible__trigger');
-    const originalStates = Array.from(triggers, trigger => trigger.classList.contains('is-open'));
-
-    try {
-      // Expand all collapsible sections
-      triggers.forEach(trigger => {
-        if (!trigger.classList.contains('is-open')) trigger.click();
-      });
-
-      // Convert canvas charts to static images
-      document.querySelectorAll('.volunteer-status-chart canvas').forEach(canvas => {
-        try {
-          const img = document.createElement('img');
-          img.src = canvas.toDataURL('image/jpeg');
-          img.width = canvas.width;
-          img.height = canvas.height;
-          img.style.cssText = canvas.style.cssText;
-          canvas.parentNode?.replaceChild(img, canvas);
-        } catch (err) {
-          // eslint-disable-next-line no-console
-          console.error('Error converting canvas to image:', err);
-        }
-      });
-
-      // Clone and isolate content for PDF rendering
-      const originalContent = document.querySelector('.container-total-org-wrapper');
-      if (!originalContent) throw new Error('Main content not found.');
-
-      const pdfContainer = document.createElement('div');
-      pdfContainer.id = 'pdf-export-container';
-      Object.assign(pdfContainer.style, {
-        width: '420mm',
-        padding: '24mm',
-        backgroundColor: '#fff',
-        position: 'absolute',
-        left: '-9999px',
-        boxSizing: 'border-box',
-      });
-
-      const clonedContent = originalContent.cloneNode(true);
-
-      clonedContent
-        .querySelectorAll('button, .share-pdf-btn, .controls, .no-print')
-        .forEach(el => el.remove());
-
-      const titleRow = clonedContent.querySelector(
-        '.row.d-flex.justify-content-between.align-items-center',
-      );
-      titleRow?.querySelector('.col')?.setAttribute('style', 'width: 100%');
-      const mainTitle = titleRow?.querySelector('h3');
-      if (mainTitle) {
-        Object.assign(mainTitle.style, {
-          fontSize: '24pt',
-          fontWeight: 'bold',
-          textAlign: 'left',
-          color: '#000',
-          margin: '0',
-        });
-      }
-
-      const styleElem = document.createElement('style');
-      styleElem.textContent = `
-         .container-total-org-wrapper {
-          box-shadow: none !important;
-          border: none !important;
-          width: 100% !important;
-          background-color: #fff !important;
-        }
-        .row.d-flex.justify-content-between.align-items-center {
-          display: flex !important;
-          justify-content: space-between !important;
-          align-items: center !important;
-          margin-bottom: 20px !important;
-          width: 100% !important;
-          padding: 0 !important;
-        }
-        .component-container {
-          page-break-inside: avoid;
-          break-inside: avoid;
-          margin: 8mm 0 !important;
-          padding: 5mm !important;
-          border: 1px solid #eee !important;
-          border-radius: 0 !important;
-          background-color: #fff !important;
-        }
-        .component-border {
-          background-color: #fff !important;
-        }
-        img, svg {
-          height: auto !important;
-          page-break-inside: avoid !important;
-        }
-        .recharts-wrapper {
-          width: 100% !important;
-          height: auto !important;
-        }
-        table {
-          page-break-inside: avoid !important;
-        }
-        .Collapsible__trigger {
-          background-color: #fff !important;
-        }
-      `;
-      clonedContent.prepend(styleElem);
-      pdfContainer.appendChild(clonedContent);
-      document.body.appendChild(pdfContainer);
-
-      // Capture canvas
-      const screenshotCanvas = await html2canvas(pdfContainer, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: '#fff',
-        windowWidth: pdfContainer.scrollWidth,
-        windowHeight: pdfContainer.scrollHeight,
-        logging: false,
-      });
-
-      if (!screenshotCanvas) throw new Error('html2canvas failed to capture the content.');
-
-      const imgData = screenshotCanvas.toDataURL('image/jpeg');
-      if (!imgData || imgData.length < 100) throw new Error('Invalid image data generated.');
-
-      // Generate PDF
-      const pdfWidth = 210; // A4 width in mm
-      const imgHeight = (screenshotCanvas.height * pdfWidth) / screenshotCanvas.width;
-      const doc = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: [pdfWidth, imgHeight],
-      });
-
-      doc.addImage(imgData, 'JPEG', 0, 0, pdfWidth, imgHeight);
-
-      doc.save(`volunteer-report-${new Date().toISOString().slice(0, 10)}.pdf`);
-
-      // Cleanup
-      document.body.removeChild(pdfContainer);
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error('PDF generation failed:', err);
-    } finally {
-      // Restore collapsible state
-      triggers.forEach((trigger, idx) => {
-        if (trigger.classList.contains('is-open') !== originalStates[idx]) {
-          trigger.click();
-        }
-      });
-    }
-  };
 
   useEffect(() => {
     dispatch(getAllUserProfile());
@@ -391,11 +238,6 @@ function TotalOrgSummary(props) {
       <Row className="d-flex justify-content-between align-items-center mb-4">
         <Col lg={{ size: 6 }} className="d-flex align-items-center">
           <h3 className="my-0">Total Org Summary</h3>
-        </Col>
-        <Col lg={{ size: 6 }} className="d-flex justify-content-end">
-          <Button className="share-pdf-btn" onClick={handleSaveAsPDF} disabled={isLoading}>
-            Save PDF
-          </Button>
         </Col>
       </Row>
       <hr />

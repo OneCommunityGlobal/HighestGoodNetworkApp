@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import moment from 'moment-timezone';
 import './WeeklyProjectSummary.css';
 
-export default function WeeklyProjectSummaryHeader() {
+export default function WeeklyProjectSummaryHeader({ handleSaveAsPDF }) {
   const [projectFilter, setProjectFilter] = useState('One Community');
   const [selectDateRange, setSelectDateRange] = useState('');
   const [comparisonPeriod, setComparisonPeriod] = useState('');
@@ -92,7 +92,9 @@ export default function WeeklyProjectSummaryHeader() {
             ))}
           </Input>
 
-          <Button className="weekly-summary-share-btn">Share PDF</Button>
+          <Button className="weekly-summary-share-btn" onClick={handleSaveAsPDF}>
+            Share PDF
+          </Button>
         </div>
       </header>
     </div>
