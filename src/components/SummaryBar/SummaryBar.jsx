@@ -864,7 +864,7 @@ function SummaryBar(props) {
                     -- select an option --
                   </option>
                   {suggestionCategory.map((item, index) => (
-                    <option key={index} value={item}>
+                    <option key={item} value={item}>
                       {`${index + 1}. ${item}`}
                     </option>
                   ))}
