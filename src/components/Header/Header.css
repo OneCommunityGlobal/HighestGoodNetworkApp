@@ -1,5 +1,5 @@
 .header-wrapper {
-  height: fit-content;
+  height: 98px; /*  fit-content; */
   width: clamp(100vw, 0.1rem + 1vw, 100%);
 }
 
