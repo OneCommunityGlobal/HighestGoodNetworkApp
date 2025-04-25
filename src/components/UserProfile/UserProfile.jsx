@@ -125,6 +125,7 @@ function UserProfile(props) {
   const [isRehireable, setIsRehireable] = useState(null);
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
   const toggleRemoveModal = () => setIsRemoveModalOpen(!isRemoveModalOpen);
+  const [loadingSummaries, setLoadingSummaries] = useState(false);
 
   const updateRemovedImage = async () => {
     try {
@@ -410,21 +411,19 @@ function UserProfile(props) {
 
     if (!userId) return;
 
+    setLoadingSummaries(true);
     try {
       const response = await axios.get(ENDPOINTS.LEADER_BOARD(userId));
       const leaderBoardData = response.data;
-      const allSummaries = [];
-
-      for (let i = 0; i < leaderBoardData.length; i++) {
-        allSummaries.push({
-          value: [leaderBoardData[i].name, leaderBoardData[i].personId],
-          label: `View ${leaderBoardData[i].name}'s summary.`,
-        });
-      }
+      const allSummaries = leaderBoardData.map(item => ({
+        value: [item.name, item.personId],
+        label: `View ${item.name}'s summary.`,
+      }));
       setSummaries(allSummaries);
-      return;
     } catch (err) {
       console.log('Could not load leaderBoard data.', err);
+    } finally {
+      setLoadingSummaries(false);
     }
   };
 
@@ -686,7 +685,6 @@ function UserProfile(props) {
     setShowLoading(true);
     loadUserProfile();
     loadUserTasks();
-    getTeamMembersWeeklySummary();
   }, [props?.match?.params?.userId]);
 
   useEffect(() => {
@@ -1149,6 +1147,11 @@ function UserProfile(props) {
                 setShowSelect(!showSelect);
                 setSummarySelected(null);
                 setSummaryName(null);
+                // Only fetch summaries data when the user is showing them and they haven't been loaded yet
+                // additional optimization, we can just not load all summaries at once and load only slected team member summary within TeamWeeklySummaries component
+                if (!showSelect && summaries === undefined) {
+                  getTeamMembersWeeklySummary();
+                }
               }}
               color="primary"
               size="sm"
@@ -1187,13 +1190,13 @@ function UserProfile(props) {
               {userProfile.endDate ? formatDateLocal(userProfile.endDate) : 'N/A'}
             </span>
           </p>
-          {showSelect && summaries === undefined ? <div>Loading</div> : <div />}
-          {showSelect && summaries !== undefined ? (
+          {showSelect ? (
             <div>
               <Select
                 className={darkMode ? 'bg-darkmode-liblack text-azure' : ''}
                 options={summaries}
                 styles={customStyles}
+                isLoading={loadingSummaries}
                 onChange={e => {
                   setSummaryName(e.value[0]);
                   getWeeklySummary(e.value[1]);
