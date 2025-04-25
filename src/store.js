@@ -4,6 +4,8 @@ import storage from 'redux-persist/lib/storage'; // defaults to localStorage for
 
 import thunk from 'redux-thunk';
 import { localReducers, sessionReducers } from './reducers';
+import { userPreferencesReducer } from 'reducers/lbdashboard/userPreferencesReducer';
+import { messagingReducer } from 'reducers/lbdashboard/messagingReducer';
 
 const middleware = [thunk];
 const initialState = {};
@@ -12,6 +14,8 @@ const devTools = window.__REDUX_DEVTOOLS_EXTENSION__
   : f => f;
 
 export const rootReducers = combineReducers({
+  userPreferences: userPreferencesReducer,
+  messages: messagingReducer,
   ...localReducers,
   ...sessionReducers,
 });

@@ -247,10 +247,11 @@ export const ENDPOINTS = {
   // lb dashboard endpoints
   LB_REGISTER: `${APIEndpoint}/lbdashboard/register`,
   LB_LOGIN: `${APIEndpoint}/lbdashboard/login`,
-  LB_SEND_MESSAGE: `${APIEndpoint}/lb/send`,
-  LB_READ_MESSAGE: (userId) => `${APIEndpoint}/lb/${userId}`,
-  LB_GET_USER_PREFERENCES: (userId) => `${APIEndpoint}/lb/notification/${userId}`,
-  LB_UPDATE_USER_PREFERENCES: (userId) => `${APIEndpoint}/lb/notification/${userId}`,
+  LB_SEND_MESSAGE: `${APIEndpoint}/lb/messages`,
+  LB_READ_MESSAGE: `${APIEndpoint}/lb/messages/conversation`,
+  LB_UPDATE_MESSAGE_STATUS: `${APIEndpoint}/lb/messages/status`,
+  LB_GET_USER_PREFERENCES: `${APIEndpoint}/lb/preferences`,
+  LB_UPDATE_USER_PREFERENCES: `${APIEndpoint}/lb/preferences`,
   LB_SEND_EMAIL: `${APIEndpoint}/lb/notification/email`,
   LB_SEND_SMS: `${APIEndpoint}/lb/notification/sms`,
 };

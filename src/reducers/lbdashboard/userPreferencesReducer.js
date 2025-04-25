@@ -1,53 +1,34 @@
-// Add required imports
 import {
-  FETCH_USER_PREFERENCE_START,
-  FETCH_USER_PREFERENCE_END,
-  UPDATE_USER_PREFERENCE_START,
-  UPDATE_USER_PREFERENCE_END,
-} from '../../constants/lbdashboard/userPreferenceConstants';
+  FETCH_USER_PREFERENCES_REQUEST,
+  FETCH_USER_PREFERENCES_SUCCESS,
+  FETCH_USER_PREFERENCES_FAILURE,
+  UPDATE_USER_PREFERENCES_REQUEST,
+  UPDATE_USER_PREFERENCES_SUCCESS,
+  UPDATE_USER_PREFERENCES_FAILURE,
+} from "../../constants/lbdashboard/userPreferenceConstants";
 
 const initialState = {
-  user: null,
-  notifyInApp: false,
-  notifySMS: false,
-  notifyEmail: false,
   loading: false,
+  preferences: null,
+  error: null,
 };
-// eslint-disable-next-line default-param-last
-const userPreferencesReducer = (state = initialState, action) => {
-  // Debug logging
-  // console.log('Action:', {
-  //     type: action.type,
-  //     payload: action.payload
-  // });
-  // console.log('Current State:', state);
+
+export const userPreferencesReducer = (state = initialState, action) => {
   switch (action.type) {
-    case FETCH_USER_PREFERENCE_START:
-      return {
-        loading: true,
-        user: null,
-        notifyInApp: false,
-        notifySMS: false,
-        notifyEmail: false,
-      };
-    case UPDATE_USER_PREFERENCE_START:
-      return {
-        loading: true,
-        user: state.user,
-        notifyInApp: state.notifyInApp,
-        notifySMS: state.notifySMS,
-        notifyEmail: state.notifyEmail,
-      };
-    case FETCH_USER_PREFERENCE_END:
-    case UPDATE_USER_PREFERENCE_END:
-      return {
-        // Remove ...state spread
-        loading: false,
-        user: action.payload?.user || state.user,
-        notifyInApp: action.payload?.notifyInApp ?? state.notifyInApp,
-        notifySMS: action.payload?.notifySMS ?? state.notifySMS,
-        notifyEmail: action.payload?.notifyEmail ?? state.notifyEmail,
-      };
+    case FETCH_USER_PREFERENCES_REQUEST:
+    case UPDATE_USER_PREFERENCES_REQUEST:
+      return { ...state, loading: true, error: null };
+
+    case FETCH_USER_PREFERENCES_SUCCESS:
+      return { ...state, loading: false, preferences: action.payload };
+
+      case UPDATE_USER_PREFERENCES_SUCCESS:
+        return { ...state, loading: false, preferences: action.payload };
+
+    case FETCH_USER_PREFERENCES_FAILURE:
+    case UPDATE_USER_PREFERENCES_FAILURE:
+      return { ...state, loading: false, error: action.payload };
+
     default:
       return state;
   }

@@ -1,67 +1,56 @@
 import {
-  FETCH_MESSAGES_START,
-  FETCH_MESSAGES_END,
-  SEND_MESSAGE_START,
-  SEND_MESSAGE_END,
-  UPDATE_MESSAGES_READ_STATUS,
-  UPDATE_MESSAGE_STATUS,
-  SEND_MESSAGE_FAILED,
-  SEND_MESSAGE_PENDING,
-} from '../../constants/lbdashboard/messagingConstants';
+  FETCH_MESSAGES_REQUEST,
+  FETCH_MESSAGES_SUCCESS,
+  FETCH_MESSAGES_FAILURE,
+  SEND_MESSAGE_REQUEST,
+  SEND_MESSAGE_SUCCESS,
+  SEND_MESSAGE_FAILURE,
+  UPDATE_MESSAGE_STATUS_REQUEST,
+  UPDATE_MESSAGE_STATUS_SUCCESS,
+  UPDATE_MESSAGE_STATUS_FAILURE,
+} from "../../constants/lbdashboard/messagingConstants";
 
 const initialState = {
-  messages: [],
   loading: false,
+  messages: [],
+  error: null,
 };
 
-// eslint-disable-next-line default-param-last
-const messageReducer = (state = initialState, action) => {
+export const messagingReducer = (state = initialState, action) => {
   switch (action.type) {
-    case FETCH_MESSAGES_START:
-    case SEND_MESSAGE_START:
-      return { ...state, loading: true };
+    case FETCH_MESSAGES_REQUEST:
+    case SEND_MESSAGE_REQUEST:
+    case UPDATE_MESSAGE_STATUS_REQUEST:
+      return { ...state, loading: true, error: null };
 
-    case FETCH_MESSAGES_END:
-      return { ...state, loading: false, messages: action.payload.messages };
+    case FETCH_MESSAGES_SUCCESS:
+      return { ...state, loading: false, messages: action.payload };
 
-    case SEND_MESSAGE_END:
+    case SEND_MESSAGE_SUCCESS:
+      return { ...state, loading: false, messages: [...state.messages, action.payload] };
+
+    case 'RECEIVE_MESSAGE':
+      return { ...state, messages: [...state.messages, action.payload] };
+      
+    case UPDATE_MESSAGE_STATUS_SUCCESS:
       return {
         ...state,
         loading: false,
-        messages: [...state.messages, action.payload],
-      };
-    case UPDATE_MESSAGES_READ_STATUS:
-      return {
-        ...state,
-        messages: state.messages.map(message =>
-          action.payload.messageIds.includes(message._id)
-            ? { ...message, isRead: true, status: 'read' }
-            : message,
+        messages: state.messages.map((message) =>
+          message._id === action.payload.messageId
+            ? { ...message, status: action.payload.status }
+            : message
         ),
-      };
-    case SEND_MESSAGE_FAILED:
-      return {
-        ...state,
-        messages: [...state.messages, { ...action.payload }],
       };
 
-    case UPDATE_MESSAGE_STATUS:
-      return {
-        ...state,
-        messages: state.messages.map(message =>
-          message.messageId === action.payload.messageId
-            ? { ...message, status: action.payload.status }
-            : message,
-        ),
-      };
-    case SEND_MESSAGE_PENDING:
-      return {
-        ...state,
-        messages: [...state.messages, action.payload],
-      };
+    case FETCH_MESSAGES_FAILURE:
+    case SEND_MESSAGE_FAILURE:
+    case UPDATE_MESSAGE_STATUS_FAILURE:
+      return { ...state, loading: false, error: action.payload };
+
     default:
       return state;
   }
 };
 
-export default messageReducer;
+export default messagingReducer;
