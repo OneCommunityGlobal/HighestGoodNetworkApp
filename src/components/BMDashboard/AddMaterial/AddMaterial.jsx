@@ -11,7 +11,7 @@ import {
 } from '../../../actions/bmdashboard/invTypeActions';
 import { fetchInvUnits } from '../../../actions/bmdashboard/invUnitActions';
 import { boxStyle } from '../../../styles';
-import './AddMaterial.css';
+import styles from './AddMaterial.module.css';
 import DragAndDrop from '../../common/DragAndDrop/DragAndDrop';
 
 const initialFormState = {
@@ -213,15 +213,15 @@ export default function AddMaterialForm() {
   };
 
   return (
-    <main className="add-material-container">
-      <header className="add-material-header">
+    <main className={`${styles.addMaterialContainer}`}>
+      <header className={`${styles.addMaterialHeader}`}>
         <h2>ADD TYPE: Material</h2>
       </header>
 
-      <Form className="add-material-form container" onSubmit={handleSubmit}>
+      <Form className={`${styles.addMaterialForm} container`} onSubmit={handleSubmit}>
         <FormGroup>
           <Label for="material-select">
-            Select Material <span className="field-required">*</span>
+            Select Material <span className={`${styles.fieldRequired}`}>*</span>
           </Label>
           <Input
             id="material-select"
@@ -253,7 +253,7 @@ export default function AddMaterialForm() {
               placeholder="Enter new material name"
             />
             {errors.name && (
-              <Label for="materialNameErr" sm={12} className="materialFormError">
+              <Label for="materialNameErr" sm={12} className={`${styles.materialFormError}`}>
                 {/* Tool &quot;name&quot; length must be at least 4 characters that are not space. */}
                 {errors.name}
               </Label>
@@ -262,7 +262,7 @@ export default function AddMaterialForm() {
         )}
         <FormGroup>
           <Label for="unit-select">
-            Select Unit <span className="field-required">*</span>
+            Select Unit <span className={`${styles.fieldRequired}`}>*</span>
           </Label>
           <Input
             id="unit-select"
@@ -296,7 +296,7 @@ export default function AddMaterialForm() {
               placeholder="Enter new unit name"
             />
             {errors.unit && (
-              <Label for="materialUnitErr" sm={12} className="materialFormError">
+              <Label for="materialUnitErr" sm={12} className={`${styles.materialFormError}`}>
                 {/* Tool &quot;name&quot; length must be at least 4 characters that are not space. */}
                 {errors.unit}
               </Label>
@@ -305,7 +305,7 @@ export default function AddMaterialForm() {
         )}
         <FormGroup>
           <Label for="invoice-number">
-            Invoice Number or ID <span className="field-required">*</span>
+            Invoice Number or ID <span className={`${styles.fieldRequired}`}>*</span>
           </Label>
           <Input
             id="invoice-number"
@@ -316,15 +316,16 @@ export default function AddMaterialForm() {
             onChange={event => handleInputChange('invoice', event.target.value)}
           />
           {errors.invoice && (
-            <Label for="materialInvoiceErr" sm={12} className="materialFormError">
+            <Label for="materialInvoiceErr" sm={12} className={`${styles.materialFormError}`}>
               {errors.invoice}
             </Label>
           )}
         </FormGroup>
-        <div className="add-material-flex-group">
+        <div className={`${styles.addMaterialFlexGroup}`}>
           <FormGroup>
             <Label for="unit-price">
-              Unit Price (excl.taxes & shipping) <span className="field-required">*</span>
+              Unit Price (excl.taxes & shipping){' '}
+              <span className={`${styles.fieldRequired}`}>*</span>
             </Label>
             <Input
               id="unit-price"
@@ -334,7 +335,7 @@ export default function AddMaterialForm() {
               onChange={event => handleInputChange('unitPrice', event.target.value)}
             />
             {errors.unitPrice && (
-              <Label for="materialUnitPriceErr" sm={12} className="materialFormError">
+              <Label for="materialUnitPriceErr" sm={12} className={`${styles.materialFormError}`}>
                 {errors.unitPrice}
               </Label>
             )}
@@ -355,7 +356,7 @@ export default function AddMaterialForm() {
           </FormGroup>
           <FormGroup>
             <Label for="quantity">
-              Total quantity <span className="field-required">*</span>
+              Total quantity <span className={`${styles.fieldRequired}`}>*</span>
             </Label>
             <Input
               id="quantity"
@@ -365,16 +366,16 @@ export default function AddMaterialForm() {
               onChange={event => handleInputChange('quantity', event.target.value)}
             />
             {errors.quantity && (
-              <Label for="materialQuantityErr" sm={12} className="materialFormError">
+              <Label for="materialQuantityErr" sm={12} className={`${styles.materialFormError}`}>
                 {errors.quantity}
               </Label>
             )}
           </FormGroup>
         </div>
-        <div className="add-material-flex-group">
+        <div className={`${styles.addMaterialFlexGroup}`}>
           <FormGroup>
             <Label for="purchase-date">
-              Purchase Date <span className="field-required">*</span>
+              Purchase Date <span className={`${styles.fieldRequired}`}>*</span>
             </Label>
             <Input
               id="purchase-date"
@@ -384,13 +385,13 @@ export default function AddMaterialForm() {
               onChange={event => handleInputChange('purchaseDate', event.target.value)}
             />
             {errors.purchaseDate && (
-              <Label for="purchaseDateErr" sm={12} className="materialFormError">
+              <Label for="purchaseDateErr" sm={12} className={`${styles.materialFormError}`}>
                 Enter Date
               </Label>
             )}
           </FormGroup>
         </div>
-        <div className="add-material-flex-group">
+        <div className={`${styles.addMaterialFlexGroup}`}>
           <FormGroup>
             <Label for="shipping-fee">Shipping Fee excluding taxes (enter 0 if free)</Label>
             <Input
@@ -433,7 +434,7 @@ export default function AddMaterialForm() {
             updateUploadedFiles={setUploadedFiles}
           />
           {uploadedFiles.length > 0 && (
-            <div className="file-preview-container">
+            <div className={`${styles.filePreviewContainer}`}>
               {uploadedFiles.map((file, index) => (
                 <div key={`${file.name} - ${file.lastModified}`} className="file-preview">
                   <img src={URL.createObjectURL(file)} alt={`preview-${index}`} />
@@ -459,7 +460,7 @@ export default function AddMaterialForm() {
         </FormGroup>
         <FormGroup>
           <Label for="description">
-            Material Description <span className="field-required">*</span>
+            Material Description <span className={`${styles.fieldRequired}`}>*</span>
           </Label>
           <Input
             type="textarea"
@@ -470,21 +471,21 @@ export default function AddMaterialForm() {
             onChange={event => handleInputChange('description', event.target.value)}
           />
           {errors.description && (
-            <Label for="materialDescriptionErr" sm={12} className="materialFormError">
+            <Label for="materialDescriptionErr" sm={12} className={`${styles.materialFormError}`}>
               {/* Tool &quot;description&quot; length must be at least 4 characters that are not space. */}
               {errors.description}
             </Label>
           )}
         </FormGroup>
-        <div className="add-material-total-price">
+        <div className={`${styles.addMaterialTotalPrice}`}>
           <div>Total Price</div>
-          <div className="total-price-calculated">
+          <div className={`${styles.totalPriceCalculated}`}>
             {totalPriceWithShipping} {formData.currency}
           </div>
         </div>
-        <div className="add-material-createdby">
+        <div className={`${styles.addMaterialCreatedby}`}>
           <div>Created By</div>
-          <div className="createdby">{createdBy}</div>
+          <div className={`${styles.createdby}`}>{createdBy}</div>
         </div>
         {errors &&
           (errors.name ||
@@ -493,8 +494,10 @@ export default function AddMaterialForm() {
             errors.quantity ||
             errors.unitPrice ||
             errors.toDate ||
-            errors.fromDate) && <div className="materialFormError"> Missing Required Field </div>}
-        <div className="add-material-buttons">
+            errors.fromDate) && (
+            <div className={`${styles.materialFormError}`}> Missing Required Field </div>
+          )}
+        <div className={`${styles.addMaterialButtons}`}>
           <Button outline style={boxStyle} onClick={handleCancelClick}>
             Cancel
           </Button>

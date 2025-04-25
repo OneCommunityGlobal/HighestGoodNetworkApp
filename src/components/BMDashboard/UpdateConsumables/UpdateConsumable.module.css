@@ -83,7 +83,7 @@
 
 
 @media (max-width: 992px) {
-  .modal-body {
+  .modalBody {
     padding: 0 !important;
   }   
 }

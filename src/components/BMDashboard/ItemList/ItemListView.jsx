@@ -5,7 +5,7 @@ import BMError from '../shared/BMError';
 import SelectForm from './SelectForm';
 import SelectItem from './SelectItem';
 import ItemsTable from './ItemsTable';
-import './ItemListView.css';
+import styles from './ItemListView.module.css';
 
 export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamicColumns }) {
   const [filteredItems, setFilteredItems] = useState(items);
@@ -42,7 +42,7 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
 
   if (isError) {
     return (
-      <main className="items_list_container">
+      <main className={`${styles.itemsListContainer}`}>
         <h2>{itemType} List</h2>
         <BMError errors={errors} />
       </main>
@@ -50,7 +50,7 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
   }
 
   return (
-    <main className="items_list_container">
+    <main className={`${styles.itemsListContainer}`}>
       <h3>{itemType}</h3>
       <section>
         <span style={{ display: 'flex', margin: '5px' }}>

@@ -1,5 +1,5 @@
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Table } from 'reactstrap';
-import './Equipments.css';
+import styles from './Equipments.module.css';
 import moment from 'moment';
 
 function EquipmentListModal({ modal, setModal, record, recordType }) {
@@ -9,7 +9,7 @@ function EquipmentListModal({ modal, setModal, record, recordType }) {
     };
 
     return (
-      <Modal isOpen={modal} size="xl" className="ModalViewContainer">
+      <Modal isOpen={modal} size="xl" className={`${styles.ModalViewContainer}`}>
         <ModalHeader>
           Equipments &nbsp;
           {recordType === 'UpdatesView' && 'Update History'}

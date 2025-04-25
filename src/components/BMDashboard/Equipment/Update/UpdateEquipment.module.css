@@ -1,34 +1,25 @@
-.drag-drop-container {
+.dragDropContainer {
   border: 2px dashed #ccc;
   text-align: center;
   padding: 20px;
   margin-bottom: 20px;
 }
 
-.update-confirm-text {
+.updateConfirmText {
   color: red;
   font-weight: bold;
   margin-bottom: 10px;
 }
 
-.cancel-button {
+.cancelButton {
   width: 100%;
 }
 
-.submit-button {
+.submitButton {
   width: 100%;
 }
 
-.square-image {
-  width: 100%;
-  height: auto;
-  max-width: 250px;
-  max-height: 250px;
-  object-fit: cover;
-  border-radius: 4px;
-}
-
-.square-image {
+.squareImage {
   width: 100%;
   height: auto;
   max-width: 250px;
@@ -37,7 +28,16 @@
   border-radius: 4px;
 }
 
-.read-only-div {
+.squareImage {
+  width: 100%;
+  height: auto;
+  max-width: 250px;
+  max-height: 250px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.readOnlyDiv {
   padding: 8px;
   background-color: #e6f5f2;
   border-radius: 4px;

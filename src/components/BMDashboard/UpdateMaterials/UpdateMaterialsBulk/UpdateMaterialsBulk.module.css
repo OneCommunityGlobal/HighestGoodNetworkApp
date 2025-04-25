@@ -1,49 +1,49 @@
-.logReusableContainer {
+.logMaterialContainer {
   padding: 0% !important;
 }
 
-.logReusableTitle {
+.logMaterialTitle {
   font-weight: bold;
   margin-bottom: 20px;
 }
 
-.logReusableInputRow {
+.logMaterialInputRow {
   margin: 0.5rem;
 }
 
 @media (min-width: 1024px) {
-  .logReusableInputCol {
+  .logMaterialInputCol {
     margin: 0rem;
   }
 }
 
 @media (min-width: 992px) and (max-width: 1024px) {
-  .logReusableInputCol {
+  .logMaterialInputCol {
     margin: 0rem;
   }
 }
 
 
 @media (min-width: 768px) and (max-width: 992px) {
-  .logReusableInputCol {
+  .logMaterialInputCol {
     margin: 0.1rem;
   }
 }
 
 @media (min-width: 480px) and (max-width: 768px) {
-  .logReusableInputCol {
+  .logMaterialInputCol {
     margin: 0.2rem;
   }
 }
 
 @media (max-width: 480px) {
-  .logReusableInputCol {
+  .logMaterialInputCol {
     margin: 0.3rem;
   }
 }
 
 
-.logReusablePage {
+.logMaterialPage {
   background-color: #E8F4F9;
   width: 100%;
   min-height: 100vh;
@@ -52,7 +52,7 @@
   padding: 3rem 4rem;
 }
 
-.logReusable {
+.logMaterial {
   background-color: white;
   border-radius: 1rem;
   padding: 2rem;
@@ -60,7 +60,7 @@
 }
 
 
-.logReusableTable {
+.logMaterialTable {
   color: #a2a5aa !important;
 }
 
@@ -96,15 +96,15 @@
   color: #2E5061 !important;
 }
 
-.logReusableClearAll {
+.logMaterialClearAll {
   cursor: pointer;
 }
 
-.logReusableClearAll:hover {
+.logMaterialClearAll:hover {
   color: #1C8BCC;
 }
 
-.cursor-pointer {
+.cursorPointer {
   cursor: pointer;
 }
 

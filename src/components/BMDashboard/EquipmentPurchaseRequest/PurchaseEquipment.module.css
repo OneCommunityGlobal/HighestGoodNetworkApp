@@ -1,20 +1,18 @@
-.add-tool-container{
+.purchaseEquipmentContainer {
   width: 100%;
   max-width: 800px;
   margin: 1rem auto;
   padding: 1rem 2rem;
   border: 1px solid #ccc;
-  border-radius: 20px;
+  border-radius: 40px;
 }
 
-.add-tool-header h2{
- font-size: clamp(1.5rem, 2.5vw, 2.5rem);
- margin-left: 1rem;
+.purchaseEquipmentHeader {
+  margin: 1rem auto;
 }
-
 
 @media screen and (max-width: 800px) {
-  .add-tool-container {
+  .purchaseEquipmentContainer {
     width: 95%;
   }
 }

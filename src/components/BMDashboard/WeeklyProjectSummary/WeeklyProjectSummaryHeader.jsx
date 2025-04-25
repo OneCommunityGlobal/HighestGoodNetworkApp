@@ -7,7 +7,7 @@ import {
   setDateRangeFilter,
   setComparisonPeriodFilter,
 } from '../../../actions/bmdashboard/weeklyProjectSummaryActions';
-import './WeeklyProjectSummary.css';
+import styles from './WeeklyProjectSummary.module.css';
 
 export default function WeeklyProjectSummaryHeader() {
   const dispatch = useDispatch();
@@ -57,10 +57,10 @@ export default function WeeklyProjectSummaryHeader() {
 
   return (
     <div className={`weekly-summary-header-wrapper ${darkMode ? 'dark-mode' : ''}`}>
-      <header className="weekly-summary-header-container">
-        <h1 className="weekly-summary-header-title">Weekly Project Summary</h1>
+      <header className={`${styles.weeklySummaryHeaderContainer}`}>
+        <h1 className={`${styles.weeklySummaryHeaderTitle}`}>Weekly Project Summary</h1>
 
-        <div className="weekly-summary-header-controls">
+        <div className={`${styles.weeklySummaryHeaderControls}`}>
           <Input
             type="select"
             value={projectFilter}
@@ -100,7 +100,7 @@ export default function WeeklyProjectSummaryHeader() {
             ))}
           </Input>
 
-          <Button className="weekly-summary-share-btn">Share PDF</Button>
+          <Button className={`${styles.weeklySummaryShareBtn}`}>Share PDF</Button>
         </div>
       </header>
     </div>

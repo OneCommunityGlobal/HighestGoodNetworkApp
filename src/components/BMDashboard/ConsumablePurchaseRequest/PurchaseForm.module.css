@@ -1,52 +1,52 @@
-.purchase-tool-form {
+.purchaseToolForm {
     margin-top: 2rem;
 }
 
-.purchase-tool-form input,
-.purchase-tool-form select {
+.purchaseToolForm input,
+.purchaseToolForm select {
     background-color: rgb(249, 249, 249);
 }
 
-.purchase-tool-flex-group {
+.purchaseToolFlexGroup {
     display: flex;
     gap: 2rem;
 }
 
-.purchase-tool-flex-group input {
+.purchaseToolFlexGroup input {
     width: 100px;
 }
 
-.flex-group-qty {
+.flexGroupQty {
     width: 10%;
 }
 
-.flex-group-qty-container {
+.flexGroupQtyContainer {
     display: flex;
     align-items: center;
     gap: 0.5rem;
 }
 
-.purchase-tool-buttons {
+.purchaseToolButtons {
     display: flex;
     gap: 1rem;
     margin: 0 auto 2rem;
 }
 
-.purchase-tool-buttons button {
+.purchaseToolButtons button {
     width: 50%;
 }
 
-.purchase-tool-error {
+.purchaseToolError {
     height: 2.5rem;
     color: red;
 }
 
 @media screen and (max-width: 640px) {
-    .purchase-tool-flex-group {
+    .purchaseToolFlexGroup {
         display: block;
     }
 
-    .flex-group-qty {
+    .flexGroupQty {
         width: auto;
     }
 }

@@ -1,27 +1,27 @@
-.add-material-form{
+.addMaterialForm{
   width: 100%;
 }
 
-.add-material-form Label{
+.addMaterialForm Label{
 font-size: .8em;
 }
 
-.add-material-flex-group{
+.addMaterialFlexGroup{
   display: flex;  
   gap: 2rem;
 }
 
-.add-material-buttons{
+.addMaterialButtons{
   display: flex;
   gap: 1rem;
   margin: 1rem auto 2rem;
 }
 
-.add-material-buttons button{
+.addMaterialButtons button{
   width: 50%;
 }
 
-.add-material-total-price{
+.addMaterialTotalPrice{
   display: flex;  
   border-radius: 10px;
   line-height: 3rem;
@@ -30,16 +30,16 @@ font-size: .8em;
   padding-left: 1em;
 }
 
-.add-material-total-price div{
+.addMaterialTotalPrice div{
   width: 50%;
 }
 
-.total-price-calculated{
+.totalPriceCalculated{
   text-align: end;
   padding-right: 1em;
 }
 
-.add-material-createdby{
+.addMaterialCreatedby{
   display: flex;  
   border-radius: 10px;
   line-height: 3rem;
@@ -49,7 +49,7 @@ font-size: .8em;
   margin-top: 1em;
 }
 
-.add-material-createdby div{
+.addMaterialCreatedby div{
   width: 50%;
 }
 
@@ -58,7 +58,7 @@ font-size: .8em;
   padding-right: 1em;
 }
 
-.file-preview-container{
+.filePreviewContainer{
   display: flex;
   flex-direction: row;
   gap: 0.5rem;
@@ -74,21 +74,21 @@ font-size: .8em;
   justify-content: flex-start;
 }
 
-.field-required{
+.fieldRequired{
   color: red;
 }
 
 @media screen and (max-width: 640px) {
-  .add-material-flex-group {
+  .addMaterialFlexGroup {
     display: block;
   }
 
-  .file-preview-container{
+  .filePreviewContainer{
     display: block;
   }
 }
 
-.add-material-container{
+.addMaterialContainer{
   width: 100%;
   max-width: 800px;
   margin: 1rem auto;
@@ -97,14 +97,14 @@ font-size: .8em;
   border-radius: 20px;
 }
 
-.add-material-header h2{
+.addMaterialHeader h2{
  font-size: clamp(1.5rem, 2.5vw, 2.5rem);
  margin-left: 1rem;
 }
 
 
 @media screen and (max-width: 800px) {
-  .add-material-container {
+  .addMaterialContainer {
     width: 95%;
   }
 }
