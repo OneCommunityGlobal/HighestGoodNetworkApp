@@ -22,10 +22,28 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 const mockData = [
   { project: 'Project A', task: 'Task 1', date: '2025-04-01', cost: 5000 },
   { project: 'Project A', task: 'Task 2', date: '2025-04-02', cost: 3000 },
-  { project: 'Project B', task: 'Task 1', date: '2025-04-03', cost: 10000 },
+  { project: 'Project A', task: 'Task 3', date: '2025-04-03', cost: 12000 },
+  { project: 'Project A', task: 'Task 4', date: '2025-04-04', cost: 8000 },
+
+  { project: 'Project B', task: 'Task 1', date: '2025-04-02', cost: 10000 },
   { project: 'Project B', task: 'Task 2', date: '2025-04-03', cost: 7000 },
-  { project: 'Project C', task: 'Task 1', date: '2025-04-02', cost: 25000 },
-  { project: 'Project C', task: 'Task 2', date: '2025-04-03', cost: 20000 },
+  { project: 'Project B', task: 'Task 3', date: '2025-04-04', cost: 15000 },
+  { project: 'Project B', task: 'Task 4', date: '2025-04-05', cost: 9000 },
+
+  { project: 'Project C', task: 'Task 1', date: '2025-04-03', cost: 25000 },
+  { project: 'Project C', task: 'Task 2', date: '2025-04-04', cost: 20000 },
+  { project: 'Project C', task: 'Task 3', date: '2025-04-05', cost: 18000 },
+  { project: 'Project C', task: 'Task 4', date: '2025-04-06', cost: 22000 },
+
+  { project: 'Project D', task: 'Task 1', date: '2025-04-04', cost: 4000 },
+  { project: 'Project D', task: 'Task 2', date: '2025-04-05', cost: 6000 },
+  { project: 'Project D', task: 'Task 3', date: '2025-04-06', cost: 14000 },
+  { project: 'Project D', task: 'Task 4', date: '2025-04-07', cost: 10000 },
+
+  { project: 'Project E', task: 'Task 1', date: '2025-04-05', cost: 8000 },
+  { project: 'Project E', task: 'Task 2', date: '2025-04-06', cost: 11000 },
+  { project: 'Project E', task: 'Task 3', date: '2025-04-07', cost: 9000 },
+  { project: 'Project E', task: 'Task 4', date: '2025-04-08', cost: 13000 },
 ];
 
 /**
@@ -222,18 +240,20 @@ export default function PaidLaborCost() {
     data: labels.map(label => Math.round(aggregation[label].totalCost / 1000)),
   };
 
-  // Color mapping for tasks (can be extended)
-  const colorMap = {
-    'Task 1': '#FB9AAC',
-    'Task 2': '#7ED957',
-  };
-
-  const taskDatasets = tasksToInclude.map(task => ({
-    label: `${task}`,
-    backgroundColor: colorMap[task] || '#999',
-    borderRadius: 4,
-    data: labels.map(label => Math.round(aggregation[label][task] / 1000)),
-  }));
+  // Generate one distinct HSL color per task
+  const taskDatasets = tasksToInclude.map((task, idx) => {
+    // spread hues evenly around the 360° color wheel
+    const hue = Math.round((idx * 360) / tasksToInclude.length);
+    // keep saturation moderate, and lightness high so bars pop in dark mode
+    const saturation = 65;
+    const lightness = darkMode ? 70 : 50;
+    return {
+      label: task,
+      backgroundColor: `hsl(${hue}, ${saturation}%, ${lightness}%)`,
+      borderRadius: 4,
+      data: labels.map(label => Math.round(aggregation[label][task] / 1000)),
+    };
+  });
 
   const chartData = {
     labels,

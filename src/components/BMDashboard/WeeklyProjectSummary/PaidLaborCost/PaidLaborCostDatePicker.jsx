@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import { Info } from 'lucide-react';
 import { format, startOfDay, isAfter, isBefore, isEqual } from 'date-fns';
 import './PaidLaborCost.css';
 
@@ -13,205 +14,176 @@ function PaidLaborCostDatePicker({
   placeholder = 'Select date range',
 }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [showInfo, setShowInfo] = useState(false);
   const [hoverDate, setHoverDate] = useState(null);
   const [tempStartDate, setTempStartDate] = useState(startDate);
   const [tempEndDate, setTempEndDate] = useState(endDate);
   const [selectionStage, setSelectionStage] = useState(startDate ? 'END_DATE' : 'START_DATE');
 
-  // Generate days for the current month
+  // Generate calendar days
   const generateCalendarDays = () => {
-    // Default to current date if no start date is selected
     const baseDate = tempStartDate || new Date();
     const firstDayOfMonth = new Date(baseDate.getFullYear(), baseDate.getMonth(), 1);
     const lastDayOfMonth = new Date(baseDate.getFullYear(), baseDate.getMonth() + 1, 0);
 
-    // Find the day of the week for the first day (0 = Sunday, 6 = Saturday)
     const firstDay = firstDayOfMonth.getDay();
-
     const daysInMonth = lastDayOfMonth.getDate();
 
-    // Calculate days from previous month to show
     const previousMonthDays = [];
     if (firstDay > 0) {
-      const prevMonthLastDay = new Date(baseDate.getFullYear(), baseDate.getMonth(), 0).getDate();
+      const prevLast = new Date(baseDate.getFullYear(), baseDate.getMonth(), 0).getDate();
       for (let i = firstDay - 1; i >= 0; i -= 1) {
-        const day = new Date(baseDate.getFullYear(), baseDate.getMonth() - 1, prevMonthLastDay - i);
-        previousMonthDays.push(day);
+        previousMonthDays.push(
+          new Date(baseDate.getFullYear(), baseDate.getMonth() - 1, prevLast - i),
+        );
       }
     }
 
-    // Current month days
     const currentMonthDays = [];
     for (let i = 1; i <= daysInMonth; i += 1) {
-      const day = new Date(baseDate.getFullYear(), baseDate.getMonth(), i);
-      currentMonthDays.push(day);
+      currentMonthDays.push(new Date(baseDate.getFullYear(), baseDate.getMonth(), i));
     }
 
-    // Next month days to fill the calendar (to have 6 rows total)
+    const totalDays = previousMonthDays.length + currentMonthDays.length;
     const nextMonthDays = [];
-    const totalDaysDisplayed = previousMonthDays.length + currentMonthDays.length;
-    const daysNeeded = 42 - totalDaysDisplayed; // 6 rows * 7 days = 42 days total
-
-    for (let i = 1; i <= daysNeeded; i += 1) {
-      const day = new Date(baseDate.getFullYear(), baseDate.getMonth() + 1, i);
-      nextMonthDays.push(day);
+    for (let i = 1; i <= 42 - totalDays; i += 1) {
+      nextMonthDays.push(new Date(baseDate.getFullYear(), baseDate.getMonth() + 1, i));
     }
 
     return [...previousMonthDays, ...currentMonthDays, ...nextMonthDays];
   };
 
-  // Function to check if a date is within the selected range
+  // Check if date in range
   const isInRange = date => {
     if (!tempStartDate || !tempEndDate) {
       if (tempStartDate && hoverDate && selectionStage === 'END_DATE') {
-        // When only start date is selected and user is hovering for end date
-        const hoverEndDate = startOfDay(hoverDate);
         const start = startOfDay(tempStartDate);
+        const hoverEnd = startOfDay(hoverDate);
         const current = startOfDay(date);
-
         return (
           (isAfter(current, start) || isEqual(current, start)) &&
-          (isBefore(current, hoverEndDate) || isEqual(current, hoverEndDate))
+          (isBefore(current, hoverEnd) || isEqual(current, hoverEnd))
         );
       }
       return false;
     }
-
-    const currentDate = startOfDay(date);
     const start = startOfDay(tempStartDate);
     const end = startOfDay(tempEndDate);
-
+    const current = startOfDay(date);
     return (
-      (isAfter(currentDate, start) || isEqual(currentDate, start)) &&
-      (isBefore(currentDate, end) || isEqual(currentDate, end))
+      (isAfter(current, start) || isEqual(current, start)) &&
+      (isBefore(current, end) || isEqual(current, end))
     );
   };
 
-  // Function to check if a date is disabled
+  // Check if date disabled
   const isDisabled = date => {
-    const today = new Date();
-
-    // Disable future dates (after today)
-    if (isAfter(startOfDay(date), startOfDay(today))) {
-      return true;
-    }
-
-    if (minDate && isBefore(date, startOfDay(minDate))) {
-      return true;
-    }
-
-    if (maxDate && isAfter(date, startOfDay(maxDate))) {
-      return true;
-    }
-
+    const today = startOfDay(new Date());
+    const d = startOfDay(date);
+    if (isAfter(d, today)) return true;
+    if (minDate && isBefore(d, startOfDay(minDate))) return true;
+    if (maxDate && isAfter(d, startOfDay(maxDate))) return true;
     return false;
   };
 
   // Handle date click
   const handleDateClick = date => {
     if (isDisabled(date)) return;
-
     if (selectionStage === 'START_DATE') {
       setTempStartDate(date);
       setTempEndDate(null);
       setSelectionStage('END_DATE');
     } else {
-      // If clicking a date before start date when selecting end date,
-      // swap and make it the new start date
       if (isBefore(date, tempStartDate)) {
         setTempStartDate(date);
-        setSelectionStage('END_DATE');
         return;
       }
-
-      // Prevent selecting the same date as start and end
-      if (isEqual(startOfDay(date), startOfDay(tempStartDate))) {
-        return;
-      }
-
+      if (isEqual(startOfDay(date), startOfDay(tempStartDate))) return;
       setTempEndDate(date);
       setSelectionStage('START_DATE');
-      onDatesChange({
-        startDate: tempStartDate,
-        endDate: date,
-      });
+      onDatesChange({ startDate: tempStartDate, endDate: date });
       setIsOpen(false);
     }
   };
 
-  // Handle mouse enter on a date cell
-  const handleDateMouseEnter = date => {
-    setHoverDate(date);
-  };
-
-  // Handle mouse leave on the calendar
-  const handleMouseLeave = () => {
-    setHoverDate(null);
-  };
-
-  // Navigate to the previous month
+  const handleDateMouseEnter = date => setHoverDate(date);
+  const handleMouseLeave = () => setHoverDate(null);
   const navigateToPrevMonth = () => {
-    const baseDate = tempStartDate || new Date();
-    const newDate = new Date(baseDate);
-    newDate.setMonth(newDate.getMonth() - 1);
-    setTempStartDate(newDate);
+    const base = tempStartDate || new Date();
+    const prev = new Date(base);
+    prev.setMonth(prev.getMonth() - 1);
+    setTempStartDate(prev);
   };
-
-  // Navigate to the next month
   const navigateToNextMonth = () => {
-    const baseDate = tempStartDate || new Date();
-    const newDate = new Date(baseDate);
-    newDate.setMonth(newDate.getMonth() + 1);
-    setTempStartDate(newDate);
+    const base = tempStartDate || new Date();
+    const next = new Date(base);
+    next.setMonth(next.getMonth() + 1);
+    setTempStartDate(next);
   };
 
-  // Generate the calendar display
   const calendarDays = generateCalendarDays();
 
-  // Format the date for display
+  // Format display
   const formatDisplayDate = () => {
     if (!startDate && !endDate) return placeholder;
-
-    if (startDate && !endDate) {
-      return `${format(startDate, 'MMM d, yyyy')} - ?`;
-    }
-
+    if (startDate && !endDate) return `${format(startDate, 'MMM d, yyyy')} - ?`;
     return `${format(startDate, 'MMM d, yyyy')} - ${format(endDate, 'MMM d, yyyy')}`;
   };
 
-  // Handle clicks outside of the component
+  // Outside click
   const handleWindowClick = e => {
-    // Close the calendar if clicking outside
-    if (isOpen && !e.target.closest('.custom-date-range-picker')) {
+    if (isOpen && !e.target.closest('.paid-labor-cost-custom-date-range-picker')) {
       setIsOpen(false);
     }
   };
-
-  // Add event listener for clicks outside the component
-  React.useEffect(() => {
-    if (isOpen) {
-      window.addEventListener('click', handleWindowClick);
-    }
-
-    return () => {
-      window.removeEventListener('click', handleWindowClick);
-    };
+  useEffect(() => {
+    if (isOpen) window.addEventListener('click', handleWindowClick);
+    return () => window.removeEventListener('click', handleWindowClick);
   }, [isOpen]);
 
   return (
     <div className={`paid-labor-cost-custom-date-range-picker ${className}`}>
-      {/* Input display */}
-      <div
-        className="paid-labor-cost-date-range-input"
-        onClick={e => {
-          e.stopPropagation();
-          setIsOpen(!isOpen);
-        }}
-      >
-        <div className="paid-labor-cost-date-range-text">{formatDisplayDate()}</div>
-        <div className="paid-labor-cost-date-range-icon">📅</div>
-      </div>
+      <div className="paid-labor-cost-input-wrapper">
+        {/* Date input */}
+        <div
+          className="paid-labor-cost-date-range-input"
+          onClick={e => {
+            e.stopPropagation();
+            setIsOpen(!isOpen);
+          }}
+        >
+          <div className="paid-labor-cost-date-range-text">{formatDisplayDate()}</div>
+          <div className="paid-labor-cost-date-range-icon">📅</div>
+        </div>
 
+        {/* Info icon + tooltip on hover only */}
+        <div
+          className="paid-labor-cost-info-wrapper"
+          onMouseEnter={() => setShowInfo(true)}
+          onMouseLeave={() => setShowInfo(false)}
+        >
+          <button
+            type="button"
+            className="paid-labor-cost-info-button"
+            aria-label="Date picker info"
+          >
+            <Info size={16} />
+          </button>
+          {showInfo && (
+            <div className="paid-labor-cost-info-tooltip">
+              <p>
+                <strong>Date Range Picker</strong>
+              </p>
+              <ul>
+                <li>Click the calendar or input to open the picker.</li>
+                <li>Select a start date, then an end date.</li>
+                <li>Disabled dates cannot be selected.</li>
+                <li>Click Reset to clear your selection.</li>
+              </ul>
+            </div>
+          )}
+        </div>
+      </div>
       {/* Calendar dropdown */}
       {isOpen && (
         <div
