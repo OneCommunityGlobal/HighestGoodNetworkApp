@@ -161,17 +161,6 @@ function UserProfile(props) {
   const canEditTeamCode = props.hasPermission('editTeamCode');
   const [titleOnSet, setTitleOnSet] = useState(false);
 
-  /* useEffect functions */
-  useEffect(() => {
-    loadUserProfile();
-    getCurretLoggedinUserEmail();
-    dispatch(fetchAllProjects());
-    dispatch(getAllUserTeams());
-    dispatch(getAllTimeOffRequests());
-    dispatch(getAllTeamCode());
-    canEditTeamCode && fetchTeamCodeAllUsers();
-  }, []);
-
   // TO-DO Performance Optimization: Replace fetchTeamCodeAllUsers with getAllTeamCode(), a leener version API to retrieve all team codes (reduce data payload and response time)
   //        Also, replace passing inputAutoComplete, inputAutoStatus, and isLoading to the
   //        child component with access global redux store data (complexity)
@@ -219,33 +208,6 @@ function UserProfile(props) {
       });
     });
   };
-
-  useEffect(() => {
-    userProfileRef.current = userProfile;
-  });
-
-  useEffect(() => {
-    const helper = async () => {
-      try {
-        await updateProjetTouserProfile();
-      } catch (error) {}
-    };
-    helper();
-  }, [projects]);
-
-  useEffect(() => {
-    setShowLoading(true);
-    loadUserProfile();
-    loadUserTasks();
-  }, [props?.match?.params?.userId]);
-
-  useEffect(() => {
-    if (userProfile?.firstName || userProfile?.lastName) {
-      document.title = `${userProfile.firstName ?? ''} ${userProfile.lastName ?? ''}`.trim();
-    } else {
-      document.title = 'User';
-    }
-  }, [userProfile]);
 
   const checkIsProjectsEqual = () => {
     const originalProjectProperties = [];
@@ -365,58 +327,61 @@ function UserProfile(props) {
     if (!userId) return;
 
     try {
-      const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
+      // run requests in parallel
+      const [response] = await Promise.all([axios.get(ENDPOINTS.USER_PROFILE(userId))]);
+
       const newUserProfile = response.data;
-      // Assuming newUserProfile contains isRehireable attribute
-      setIsRehireable(newUserProfile.isRehireable); // Update isRehireable based on fetched data
       newUserProfile.totalIntangibleHrs = Number(newUserProfile.totalIntangibleHrs.toFixed(2));
 
-      const teamId = newUserProfile?.teams[0]?._id;
-      await loadSummaryIntroDetails(teamId, response.data);
+      // sanitize data first
+      newUserProfile.teams = (newUserProfile.teams || []).filter(team => team !== null);
+      newUserProfile.projects = (newUserProfile.projects || []).filter(project => project !== null);
 
-      const startDate = await dispatch(
-        getTimeStartDateEntriesByPeriod(userId, newUserProfile.createdDate, newUserProfile.toDate),
-      );
-
-      if (startDate !== 'N/A') {
-        newUserProfile.startDate = startDate.split('T')[0];
-      }
-      // Validate team and project data. Remove incorrect data which may lead to page crash. E.g teams: [null]
-      const createdDate = newUserProfile?.createdDate
-        ? newUserProfile.createdDate.split('T')[0]
-        : null;
-
-      if (startDate && createdDate && new Date(startDate) < new Date(createdDate)) {
-        newUserProfile.startDate = createdDate;
-      }
-      // if start date is earlier than createdDate, update it to createdDate
-      newUserProfile.teams = newUserProfile.teams.filter(team => team !== null);
-      newUserProfile.projects = newUserProfile.projects.filter(project => project !== null);
+      // set values first so UI can start rendering
       setTeams(newUserProfile.teams);
       setProjects(newUserProfile.projects);
       setOriginalProjects(newUserProfile.projects);
       setResetProjects(newUserProfile.projects);
-      setUserProfile({
+
+      const profileWithFormattedDates = {
         ...newUserProfile,
         jobTitle: newUserProfile.jobTitle[0],
         phoneNumber: newUserProfile.phoneNumber[0],
-        // startDate: newUserProfile?.startDate.split('T')[0],
         startDate: newUserProfile?.startDate ? formatDateYYYYMMDD(newUserProfile?.startDate) : '',
         createdDate: formatDateYYYYMMDD(newUserProfile?.createdDate),
         ...(newUserProfile?.endDate &&
           newUserProfile.endDate !== '' && { endDate: formatDateYYYYMMDD(newUserProfile.endDate) }),
+      };
+
+      setUserProfile(profileWithFormattedDates);
+      setOriginalUserProfile(profileWithFormattedDates);
+      setIsRehireable(newUserProfile.isRehireable);
+
+      // run after main profile is loaded
+      const teamId = newUserProfile?.teams[0]?._id;
+      loadSummaryIntroDetails(teamId, newUserProfile);
+
+      // fetch start date separately tonot block main profile rendering
+      dispatch(
+        getTimeStartDateEntriesByPeriod(userId, newUserProfile.createdDate, newUserProfile.toDate),
+      ).then(startDate => {
+        if (startDate !== 'N/A') {
+          const formattedStartDate = startDate.split('T')[0];
+          setUserStartDate(formattedStartDate);
+
+          // Update start date if needed
+          const createdDate = newUserProfile?.createdDate
+            ? newUserProfile.createdDate.split('T')[0]
+            : null;
+
+          if (createdDate && new Date(startDate) < new Date(createdDate)) {
+            setUserProfile(prev => ({ ...prev, startDate: createdDate }));
+          } else {
+            setUserProfile(prev => ({ ...prev, startDate: formattedStartDate }));
+          }
+        }
       });
-      setOriginalUserProfile({
-        ...newUserProfile,
-        jobTitle: newUserProfile.jobTitle[0],
-        phoneNumber: newUserProfile.phoneNumber[0],
-        // startDate: newUserProfile?.startDate.split('T')[0],
-        startDate: newUserProfile?.startDate ? formatDateYYYYMMDD(newUserProfile?.startDate) : '',
-        createdDate: formatDateYYYYMMDD(newUserProfile?.createdDate),
-        ...(newUserProfile?.endDate &&
-          newUserProfile.endDate !== '' && { endDate: formatDateYYYYMMDD(newUserProfile.endDate) }),
-      });
-      setUserStartDate(startDate);
+
       checkIsProjectsEqual();
       setShowLoading(false);
     } catch (err) {
@@ -694,13 +659,56 @@ function UserProfile(props) {
 
   const toggle = modalName => setMenuModalTabletScreen(modalName);
 
+  /* useEffect functions */
+  useEffect(() => {
+    getCurretLoggedinUserEmail();
+    dispatch(fetchAllProjects());
+    dispatch(getAllUserTeams());
+    dispatch(getAllTimeOffRequests());
+    dispatch(getAllTeamCode());
+    canEditTeamCode && getAllTeamCode();
+  }, []);
+
+  useEffect(() => {
+    userProfileRef.current = userProfile;
+  });
+
+  useEffect(() => {
+    const helper = async () => {
+      try {
+        await updateProjetTouserProfile();
+      } catch (error) {}
+    };
+    helper();
+  }, [projects]);
+
+  useEffect(() => {
+    setShowLoading(true);
+    loadUserProfile();
+    loadUserTasks();
+    getTeamMembersWeeklySummary();
+  }, [props?.match?.params?.userId]);
+
+  useEffect(() => {
+    if (userProfile?.firstName || userProfile?.lastName) {
+      document.title = `${userProfile.firstName ?? ''} ${userProfile.lastName ?? ''}`.trim();
+    } else {
+      document.title = 'User';
+    }
+  }, [userProfile]);
+
+  useEffect(() => {
+    if (!shouldRefresh) return;
+    setShouldRefresh(false);
+    loadUserProfile();
+  }, [shouldRefresh]);
+
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 1025) {
         setMenuModalTabletScreen('');
       }
     };
-
     window.addEventListener('resize', handleResize);
 
     return () => {
@@ -794,17 +802,6 @@ function UserProfile(props) {
   const handleCancelChange = () => {
     setShowConfirmDialog(false);
   };
-
-  useEffect(() => {
-    getTeamMembersWeeklySummary();
-    loadUserProfile();
-  }, []);
-
-  useEffect(() => {
-    if (!shouldRefresh) return;
-    setShouldRefresh(false);
-    loadUserProfile();
-  }, [shouldRefresh]);
 
   /**
    *
