@@ -42,7 +42,7 @@ describe('Teams Team Members Reducer', () => {
       };
 
       const expectedResult = { 
-        teamMembers:Object.assign([...teamMembers.teamMembers, action.member]), 
+        teamMembers:[...teamMembers.teamMembers, action.member], 
         fetching: false, 
         fetched: true, 
         status: '200'
@@ -61,7 +61,7 @@ describe('Teams Team Members Reducer', () => {
       };
 
       const expectedResult = { 
-        teamMembers:Object.assign(teamMembers.teamMembers.filter(item => item._id !== action.member)), 
+        teamMembers:[...teamMembers.teamMembers.filter(item => item._id !== action.member._id)], 
         fetching: false, 
         fetched: true, 
         status: '200'
@@ -81,7 +81,7 @@ describe('Teams Team Members Reducer', () => {
 
     });
 
-    it('Should return initial teamMemebres in default case ', () =>{
+    it('Should return initial teamMembers in default case ', () =>{
 
       const result = teamUsersReducer( teamMembers, {} );
       expect(result).toEqual(teamMembers);
