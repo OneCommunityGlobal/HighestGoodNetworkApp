@@ -6,6 +6,57 @@
   width: 100%;
 }
 
+.container-total-org-wrapper.bg-oxford-blue .component-border {
+  background-color: #1b2a41 !important;
+  border-color: #2f4157 !important;
+}
+
+.container-total-org-wrapper.bg-oxford-blue .recharts-surface {
+  background-color: #1b2a41;
+}
+
+.container-total-org-wrapper.bg-oxford-blue .chart-title p {
+  color: #fff !important;
+}
+
+.container-total-org-wrapper.bg-oxford-blue .component-container .recharts-text,
+.container-total-org-wrapper.bg-oxford-blue .component-container .recharts-label,
+.container-total-org-wrapper.bg-oxford-blue
+  .component-container
+  .recharts-cartesian-axis-tick-value,
+.container-total-org-wrapper.bg-oxford-blue .component-container text,
+.container-total-org-wrapper.bg-oxford-blue .component-container tspan {
+  fill: #fff !important;
+  color: #fff !important;
+}
+
+.container-total-org-wrapper.bg-oxford-blue .recharts-text tspan,
+.container-total-org-wrapper.bg-oxford-blue .recharts-label tspan,
+.container-total-org-wrapper.bg-oxford-blue .recharts-cartesian-axis-tick-value tspan,
+.container-total-org-wrapper.bg-oxford-blue text tspan {
+  fill: #fff !important;
+}
+
+.container-total-org-wrapper.bg-oxford-blue > .row > .col h3,
+.container-total-org-wrapper.bg-oxford-blue .Collapsible__trigger {
+  color: #fff;
+}
+
+.container-total-org-wrapper.bg-oxford-blue .component-container h3,
+.container-total-org-wrapper.bg-oxford-blue .statistics-title,
+.container-total-org-wrapper.bg-oxford-blue .volunteer-status-grid h3,
+.container-total-org-wrapper.bg-oxford-blue .component-container .recharts-text,
+.container-total-org-wrapper.bg-oxford-blue .statistics-value {
+  color: #000 !important;
+  fill: #000 !important;
+}
+
+.container-total-org-wrapper.bg-oxford-blue .recharts-text,
+.container-total-org-wrapper.bg-oxford-blue .recharts-label,
+.container-total-org-wrapper.bg-oxford-blue .recharts-cartesian-axis-tick-value {
+  fill: #000 !important;
+}
+
 .container-total-org-wrapper.bg-oxford-blue h3 {
   color: #fff;
 }
@@ -171,6 +222,7 @@
   justify-content: flex-end;
 }
 
-.chart-title.dark-mode p {
-  color: white;
+.container-total-org-wrapper.bg-oxford-blue .component-container p.m-0,
+.container-total-org-wrapper.bg-oxford-blue .component-container span {
+  color: #fff !important;
 }
