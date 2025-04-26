@@ -40,7 +40,8 @@
   
   .cards-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+
     gap: 80px;
   }
   
@@ -117,3 +118,28 @@
     display: block;
   }
   
+
+  @media (max-width: 600px) {
+    .heading {
+      font-size: 20px;
+      text-align: center;
+    }
+  
+    .controls {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  
+    .search-input, .control-button {
+      width: 100%;
+      max-width: none;
+    }
+  
+    .cards-grid {
+      gap: 20px;
+    }
+  
+    .member-footer {
+      text-align: center;
+    }
+  }
