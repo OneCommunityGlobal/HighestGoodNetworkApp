@@ -1,6 +1,6 @@
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Table } from 'reactstrap';
-import styles from './Equipments.module.css';
 import moment from 'moment';
+import styles from './Equipments.module.css';
 
 function EquipmentListModal({ modal, setModal, record, recordType }) {
   if (record) {
