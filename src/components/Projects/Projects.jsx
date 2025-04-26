@@ -2,11 +2,10 @@ import { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import {
   fetchAllProjects,
-  postNewProject,
   modifyProject,
   clearError,
 } from '../../actions/projects';
-import {getProjectsByUsersName} from '../../actions/userProfile';
+import { getProjectsByUsersName } from '../../actions/userProfile';
 import { getPopupById } from '../../actions/popupEditorAction';
 import Overview from './Overview';
 import AddProject from './AddProject';
@@ -48,6 +47,8 @@ const Projects = function(props) {
   const [projectList, setProjectList] = useState(null);
   const [searchName, setSearchName] = useState("");
   const [allProjects, setAllProjects] = useState(null);
+
+  const [isArchiving, setIsArchiving] = useState(false);
 
   const useDebounce = (value, delay) => {
     const [debouncedValue, setDebouncedValue] = useState(value);
@@ -105,9 +106,11 @@ const Projects = function(props) {
   };
 
   const confirmArchive = async () => {
+    setIsArchiving(true); // show loading on confirm
     const updatedProject = { ...projectTarget, isArchived: true };
     await onUpdateProject(updatedProject);
     await props.fetchAllProjects();
+    setIsArchiving(false); // reset loading
     onCloseModal();
   };
 
@@ -119,6 +122,7 @@ const Projects = function(props) {
 
   const postProject = async (name, category) => {
     await props.postNewProject(name, category);
+    refreshProjects(); // Refresh project list after adding a project
   };
 
   const generateProjectList = (categorySelectedForSort, showStatus, sortedByName) => {
@@ -128,8 +132,10 @@ const Projects = function(props) {
         return project.category === categorySelectedForSort && project.isActive === showStatus;
       } else if (categorySelectedForSort) {
         return project.category === categorySelectedForSort;
-      } else if (showStatus) {
-        return project.isActive === showStatus;
+      } else if (showStatus === 'Active') {
+        return project.isActive === true;
+      } else if (showStatus === 'Inactive') {
+        return project.isActive === false;
       } else {
         return true;
       }
@@ -157,21 +163,25 @@ const Projects = function(props) {
     setAllProjects(projectList);
   }
 
+  const refreshProjects = async () => {
+    await props.fetchAllProjects();
+  };
+
   useEffect(() => {
     props.fetchAllProjects();
   }, []);
 
   useEffect(() => {
-      generateProjectList(categorySelectedForSort, showStatus, sortedByName);
-      if (status !== 200) {
-        setModalData({
-          showModal: true,
-          modalMessage: error,
-          modalTitle: 'ERROR',
-          hasConfirmBtn: false,
-          hasInactiveBtn: false,
-        });
-      }
+    generateProjectList(categorySelectedForSort, showStatus, sortedByName);
+    if (status !== 200) {
+      setModalData({
+        showModal: true,
+        modalMessage: error,
+        modalTitle: 'ERROR',
+        hasConfirmBtn: false,
+        hasInactiveBtn: false,
+      });
+    }
   }, [categorySelectedForSort, showStatus, sortedByName, props.state.allProjects, props.state.theme.darkMode]);
 
   useEffect(() => {
@@ -183,7 +193,7 @@ const Projects = function(props) {
             projects.some(p => p === project.key)
           );
           setProjectList(newProjectList);
-        }else{
+        } else {
           setProjectList(allProjects);
         }
       } else {
@@ -200,7 +210,7 @@ const Projects = function(props) {
   return (
     <>
       <div className={darkMode ? 'bg-oxford-blue text-light' : ''}>
-        <div className="container py-3">
+        <div className={`container py-3 ${darkMode ? 'bg-yinmn-blue-light text-light' : ''}`}>
           {fetching || !fetched ? <Loading align="center" /> : null}
           <div className="d-flex align-items-center">
             <h3 style={{ display: 'inline-block', marginRight: 10 }}>Projects</h3>
@@ -210,27 +220,30 @@ const Projects = function(props) {
               fontSize={30}
               isPermissionPage={true}
               role={role}
+              darkMode={darkMode}
             />
             <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
+
+            {canPostProject ? <AddProject hasPermission={hasPermission} /> : null}
           </div>
 
-          {canPostProject ? <AddProject onAddNewProject={postProject} /> : null}
-
-          <SearchProjectByPerson onSearch={handleSearchName}/>
+          <SearchProjectByPerson onSearch={handleSearchName} />
 
           <table className="table table-bordered table-responsive-sm">
             <thead>
-            <ProjectTableHeader 
-              onChange={onChangeCategory} 
-              selectedValue={categorySelectedForSort} 
-              showStatus={showStatus} 
-              selectStatus={onSelectStatus}
-              sorted={sortedByName}
-              handleSort = {handleSort}
-              darkMode={darkMode}
-            />
+              <ProjectTableHeader 
+                onChange={onChangeCategory} 
+                selectedValue={categorySelectedForSort} 
+                showStatus={showStatus} 
+                selectStatus={onSelectStatus}
+                sorted={sortedByName}
+                handleSort={handleSort}
+                darkMode={darkMode}
+              />
             </thead>
-            <tbody className={darkMode ? 'bg-yinmn-blue dark-mode' : ''}>{projectList}</tbody>
+            <tbody className={darkMode ? 'bg-yinmn-blue dark-mode' : ''}>
+              {projectList}
+            </tbody>
           </table>
         </div>
 
@@ -241,6 +254,9 @@ const Projects = function(props) {
           setInactiveModal={modalData.hasInactiveBtn ? setInactiveProject : null}
           modalMessage={modalData.modalMessage}
           modalTitle={modalData.modalTitle}
+          darkMode={darkMode}
+          confirmButtonText={isArchiving ? 'Archiving...' : 'Confirm'}
+          isConfirmDisabled={isArchiving}
         />
       </div>
     </>
@@ -253,7 +269,6 @@ const mapStateToProps = state => {
 
 export default connect(mapStateToProps, {
   fetchAllProjects,
-  postNewProject,
   modifyProject,
   clearError,
   getPopupById,

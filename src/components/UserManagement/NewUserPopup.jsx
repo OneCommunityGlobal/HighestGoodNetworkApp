@@ -1,17 +1,17 @@
 import React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import AddNewUserProfile from '../UserProfile/AddNewUserProfile';
 import { useHistory } from 'react-router-dom';
-import { boxStyle, boxStyleDark } from 'styles';
-import '../Header/DarkMode.css'
-import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
-import { connect, useSelector } from 'react-redux';
-import { getDayOfWeekStringFromUTC } from '../../utils/formatDate';
+import { connect } from 'react-redux';
+import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
+import AddNewUserProfile from '../UserProfile/AddNewUserProfile';
+import { boxStyle, boxStyleDark } from '../../styles';
+import '../Header/DarkMode.css';
+
 /**
  * Modal popup to show the user profile in create mode
  */
 const NewUserPopup = React.memo(props => {
-  const closePopup = e => {
+  const closePopup = () => {
     props.onUserPopupClose();
   };
   const history = useHistory();
@@ -25,20 +25,35 @@ const NewUserPopup = React.memo(props => {
     props.userCreated();
   };
 
+  const confirmAction = () => {
+    // Logic for confirming action goes here
+  };
+
+  const cancelAction = () => {
+    // Logic for canceling action goes here
+  };
+
   return (
     <>
-      <div className="d-flex justify-content-start align-items-center" style={{ paddingTop: '1rem' }}>
-        <h3 className='mr-2'>User Management</h3>
+      <div
+        className="d-flex justify-content-start align-items-center"
+        style={{ paddingTop: '1rem' }}
+      >
+        <h3 className="mr-2">User Management</h3>
         <EditableInfoModal
-            areaName="UserManagment"
-            areaTitle="User Management"
-            fontSize={24}
-            isPermissionPage={true}
-            role={role} // Pass the 'role' prop to EditableInfoModal
-            darkMode={darkMode}
-          />
+          areaName="UserManagment"
+          areaTitle="User Management"
+          fontSize={24}
+          isPermissionPage
+          role={role} // Pass the 'role' prop to EditableInfoModal
+          darkMode={darkMode}
+        />
       </div>
-        <Modal isOpen={props.open} toggle={closePopup} className={`modal-dialog modal-lg ${darkMode ? 'text-light dark-mode' : ''}`}>
+      <Modal
+        isOpen={props.open}
+        toggle={closePopup}
+        className={`modal-dialog modal-lg ${darkMode ? 'text-light dark-mode' : ''}`}
+      >
         <ModalHeader
           className={darkMode ? 'bg-space-cadet' : ''}
           toggle={closePopup}
@@ -49,46 +64,47 @@ const NewUserPopup = React.memo(props => {
             areaName="NewUserPopup"
             areaTitle="New User"
             fontSize={24}
-            isPermissionPage={true}
+            isPermissionPage
             role={role} // Pass the 'role' prop to EditableInfoModal
             darkMode={darkMode}
           />
         </ModalHeader>
-      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
-        <AddNewUserProfile
-          closePopup={closePopup}
-          isAddNewUser={true}
-          history={history}
-          userCreated={userCreated}
-          userProfiles={props.userProfiles}
-        />
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+          <AddNewUserProfile
+            closePopup={closePopup}
+            isAddNewUser
+            history={history}
+            userCreated={userCreated}
+            userProfiles={props.userProfiles}
+          />
 
-        {/* Nested Modal that triggers when a first and last name user already exists */}
+          {/* Nested Modal that triggers when a first and last name user already exists */}
 
-        <Modal isOpen={props.close} className={darkMode ? 'text-light' : ''}>
-          <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>WARNING: Duplicate Name Exists!</ModalHeader>
-          <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
-            A user with a first and/or last name already exists. Do you still want to create this
-            user?
-          </ModalBody>
-          <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-            <Button color="primary" onClick={function noRefCheck() {}}>
-              Confirm
-            </Button>{' '}
-            <Button onClick={function noRefCheck() {}}>Cancel</Button>
-          </ModalFooter>
-        </Modal>
+          <Modal isOpen={props.close} className={darkMode ? 'text-light' : ''}>
+            <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>
+              WARNING: Duplicate Name Exists!
+            </ModalHeader>
+            <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+              A user with a first and/or last name already exists. Do you still want to create this
+              user?
+            </ModalBody>
+            <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+              <Button color="primary" onClick={confirmAction}>
+                Confirm
+              </Button>{' '}
+              <Button onClick={cancelAction}>Cancel</Button>
+            </ModalFooter>
+          </Modal>
 
-        {/* Nested Modal that triggers when a first and last name user already exists */}
-      </ModalBody>
-      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-        <Button color="secondary" onClick={closePopup} style={darkMode ? boxStyleDark : boxStyle}>
-          Close
-        </Button>
-      </ModalFooter>
-    </Modal>
+          {/* Nested Modal that triggers when a first and last name user already exists */}
+        </ModalBody>
+        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+          <Button color="secondary" onClick={closePopup} style={darkMode ? boxStyleDark : boxStyle}>
+            Close
+          </Button>
+        </ModalFooter>
+      </Modal>
     </>
-
   );
 });
 

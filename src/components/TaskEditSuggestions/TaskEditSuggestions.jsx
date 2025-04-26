@@ -81,6 +81,7 @@ export const TaskEditSuggestions = () => {
                     taskEditSuggestion={taskEditSuggestion}
                     handleToggleTaskEditSuggestionModal={handleToggleTaskEditSuggestionModal}
                     darkMode={darkMode}
+                    userRole={userRole}
                   />
                 ))}
               </tbody>
@@ -91,6 +92,7 @@ export const TaskEditSuggestions = () => {
           isTaskEditSuggestionModalOpen={isTaskEditSuggestionModalOpen}
           taskEditSuggestion={currentTaskEditSuggestion}
           handleToggleTaskEditSuggestionModal={handleToggleTaskEditSuggestionModal}
+          userRole={userRole}
         />
       </Container>
     </div>

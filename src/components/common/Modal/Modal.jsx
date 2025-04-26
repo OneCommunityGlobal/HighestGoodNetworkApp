@@ -1,4 +1,5 @@
 import { useState } from 'react';
+// import { useSelector } from 'react-redux';
 import {
   Button,
   Modal,
@@ -16,6 +17,7 @@ import '../../Header/DarkMode.css';
 
 // eslint-disable-next-line react/function-component-definition
 const ModalExample = props => {
+  // const darkMode = useSelector(state => state.theme.darkMode);
   const {
     isOpen,
     closeModal,
@@ -26,6 +28,8 @@ const ModalExample = props => {
     type,
     linkType,
     darkMode,
+    confirmButtonText = 'Confirm',
+    isConfirmDisabled = false,
   } = props;
 
   const [linkName, setLinkName] = useState('');
@@ -81,8 +85,13 @@ const ModalExample = props => {
         </Button>
 
         {confirmModal != null ? (
-          <Button color="danger" onClick={confirmModal} style={darkMode ? boxStyleDark : boxStyle}>
-            Confirm
+          <Button
+            color="danger"
+            onClick={confirmModal}
+            disabled={isConfirmDisabled}
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
+            {confirmButtonText || 'Confirm'}
           </Button>
         ) : null}
         {setInactiveModal != null ? (
