@@ -85,6 +85,7 @@ import EventStats from './components/CommunityPortal/EventPersonalization/EventS
 import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
 import EPDashboard from './components/EductionPortal';
+import MostSusceptibleTools from './components/MostSesceptible/toolBreakdownChart'
 
 
 
@@ -153,6 +154,7 @@ export default(
     <Route path="/form" component={FormEditor} />
     <Route path="/formviewer" component={FormViewer} />
     <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
+    <Route path="/mostsusceptibletoolschart" component={MostSusceptibleTools} />
     <>
      {/* Comment out the Header component and its import during phase 2 development. */}
       {/* Uncomment BMHeader and its import during phase 2 development. */}
