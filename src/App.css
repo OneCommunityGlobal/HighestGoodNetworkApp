@@ -116,7 +116,7 @@ button {
 
 /* .bg-space-cadet:hover{
   background-color: #1C2541 !important;
-  color:black; 
+  color:black;
 } */
 
 .bg-yinmn-blue {
@@ -260,4 +260,12 @@ input[type='checkbox']:not([disabled]):hover {
 
 .pdrl-1 {
   padding: 0 1em !important;
+}
+
+.user-card-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 24px;
+  padding: 20px;
 }

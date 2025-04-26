@@ -1,4 +1,4 @@
-import { userProjectsReducer } from '../userProjectsReducer';
+import  userProjectsReducer  from '../userProjectsReducer';
 import types from '../../constants/userProjects';
 
 describe('userProjectsReducer', () => {

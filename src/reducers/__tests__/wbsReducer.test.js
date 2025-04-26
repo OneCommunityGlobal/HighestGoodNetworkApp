@@ -1,4 +1,4 @@
-import { wbsReducer } from "../wbsReducer";
+import  wbsReducer  from "../wbsReducer";
 import * as types from "../../constants/WBS";
 
 describe("wbsReducer", () => {
