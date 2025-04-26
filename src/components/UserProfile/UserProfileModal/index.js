@@ -1,1 +1,3 @@
-export { default } from './UserProfileModal';
+import UserProfileModal from './UserProfileModal';
+
+export default UserProfileModal;
