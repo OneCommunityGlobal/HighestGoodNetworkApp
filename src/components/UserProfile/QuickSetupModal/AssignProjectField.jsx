@@ -3,12 +3,11 @@ import { Dropdown, Input } from 'reactstrap';
 import { useSelector } from 'react-redux';
 
 const AssignProjectField = React.memo(props => {
-  const [searchText, onInputChange] = useState(()=>{
-    if(props.editMode){
-      return props.value.projectName
-    }else{
-      return ''
+  const [searchText, onInputChange] = useState(() => {
+    if (props.editMode) {
+      return props.value.projectName;
     }
+    return '';
   });
   const [isOpen, toggle] = useState(false);
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -39,7 +38,7 @@ const AssignProjectField = React.memo(props => {
         className={`${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
       />
 
-      {props.projectsData && props.projectsData.length > 0 ? (
+      {props.projectsData && props.projectsData.length > 0 && (
         <div
           tabIndex="-1"
           role="menu"
@@ -50,11 +49,7 @@ const AssignProjectField = React.memo(props => {
           style={{ marginTop: '0px', width: '100%' }}
         >
           {props.projectsData
-            .filter(project => {
-              if (project.projectName.toLowerCase().indexOf(searchText.toLowerCase()) > -1) {
-                return project;
-              }
-            })
+            .filter(project => project.projectName.toLowerCase().includes(searchText.toLowerCase()))
             .slice(0, 10)
             .map(item => (
               <div
@@ -70,8 +65,6 @@ const AssignProjectField = React.memo(props => {
               </div>
             ))}
         </div>
-      ) : (
-        <></>
       )}
     </Dropdown>
   );

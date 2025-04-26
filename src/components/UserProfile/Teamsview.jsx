@@ -1,26 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Card,
-  Table,
-  CardTitle,
-  CardText,
-  CardBody,
-  Button,
-  Dropdown,
-  DropdownMenu,
-  DropdownItem,
-  DropdownToggle,
-} from 'reactstrap';
+import { Table, Button } from 'reactstrap';
 import PropTypes from 'prop-types';
 import TeamsModal from './AddNewTeamModal';
 
-const Teamdataheader = () => (
-  <tr>
-    <th>Name</th>
-  </tr>
-);
-
-const Teamtabledata = ({ teammembers, edit, handleTeam }) => {
+function Teamtabledata({ teammembers, edit, handleTeam }) {
   const handleDelete = e => {
     const id = e.target.getAttribute('data-item');
     handleTeam('delete', id);
@@ -43,7 +26,7 @@ const Teamtabledata = ({ teammembers, edit, handleTeam }) => {
       </td>
     </tr>
   );
-};
+}
 Teamtabledata.propTypes = {
   teammembers: PropTypes.shape({
     _id: PropTypes.string.isRequired,
@@ -55,7 +38,7 @@ Teamtabledata.propTypes = {
 const Teams = React.memo(props => {
   const [addNewTeamModal, setAddNewTeamModal] = useState(false);
   const [remainedTeams, setRemainedTeams] = useState([]);
-  const [teams, setTeams] = useState(props.teamsdata);
+  const [teams] = useState(props.teamsdata);
   useEffect(() => {
     const teamsId = props.allTeams.map(team => {
       const { _id, teamName } = team;
@@ -76,7 +59,7 @@ const Teams = React.memo(props => {
     setAddNewTeamModal(!addNewTeamModal);
   };
   return (
-    <React.Fragment>
+    <>
       <TeamsModal
         isOpen={addNewTeamModal}
         toggle={onAddNewTeam}
@@ -107,14 +90,22 @@ const Teams = React.memo(props => {
           ))}
         </tbody>
       </Table>
-    </React.Fragment>
+    </>
   );
 });
 
 Teams.propTypes = {
   edit: PropTypes.bool.isRequired,
-  allTeams: PropTypes.arrayOf(PropTypes.object).isRequired,
-  teamsdata: PropTypes.arrayOf(PropTypes.object).isRequired,
+  allTeams: PropTypes.arrayOf(
+    PropTypes.shape({
+      _id: PropTypes.string.isRequired,
+      teamName: PropTypes.string.isRequired,
+      isActive: PropTypes.bool.isRequired,
+      createdDatetime: PropTypes.string.isRequired,
+      modifiedDatetime: PropTypes.string.isRequired,
+      __v: PropTypes.number, // optional if not always present
+    }),
+  ).isRequired,
   handleTeam: PropTypes.func.isRequired,
 };
 

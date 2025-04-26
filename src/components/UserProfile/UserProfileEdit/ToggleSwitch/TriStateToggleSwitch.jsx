@@ -1,20 +1,20 @@
 import './TriStateToggleSwitch.css';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 function TriStateToggleSwitch({ pos, onChange }) {
   const [position, setPosition] = useState(pos);
   const [bgColor, setBgColor] = useState('');
 
-  const handleClick = pos => {
-    setPosition(pos);
+  const handleClick = posParam => {
+    setPosition(posParam);
 
     if (onChange) {
-      onChange(pos);
+      onChange(posParam);
     }
 
-    if (pos === 'posted') {
+    if (posParam === 'posted') {
       setBgColor('blue');
-    } else if (pos === 'default') {
+    } else if (posParam === 'default') {
       setBgColor('darkgray');
     } else {
       setBgColor('green');
@@ -38,11 +38,11 @@ function TriStateToggleSwitch({ pos, onChange }) {
   return (
     <div className={`toggle-switch bg-${bgColor}`}>
       <div className="knob-area">
-        <div onClick={() => handleClick('posted')}></div>
-        <div onClick={() => handleClick('default')}></div>
-        <div onClick={() => handleClick('requested')}></div>
+        <div onClick={() => handleClick('posted')} />
+        <div onClick={() => handleClick('default')} />
+        <div onClick={() => handleClick('requested')} />
       </div>
-      <div className={`knob ${position}`}></div>
+      <div className={`knob ${position}`} />
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import {
   Row,
   Label,
@@ -20,6 +20,7 @@ import Image from 'react-bootstrap/Image';
 import { Link } from 'react-router-dom';
 
 import classnames from 'classnames';
+import { connect } from 'react-redux';
 import Loading from '../../common/Loading';
 import BlueSquare from '../BlueSquares';
 import UserProfileModal from '../UserProfileModal';
@@ -32,34 +33,25 @@ import LinkModButton from './LinkModButton';
 import ProjectsTab from '../TeamsAndProjects/ProjectsTab';
 import TeamsTab from '../TeamsAndProjects/TeamsTab';
 import hasPermission from '../../../utils/permissions';
-import { connect } from 'react-redux';
 
 const styleProfile = {};
 class UserProfileEdit extends Component {
-  state = {
-    showWarning: false,
-    isLoading: true,
-    formValid: {
-      firstName: true,
-      lastName: true,
-      email: true,
-    },
-    error: '',
-    userProfile: {},
-    firstNameError: '',
-    lastNameError: '',
-    imageUploadError: '',
-    isValid: false,
-    id: '',
-    privacySettings: {
-      email: true,
-      phoneNumber: true,
-      blueSquares: true,
-    },
-    selectedTeamId: 0,
-    selectedTeam: '',
-    activeTab: '1',
-  };
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      showWarning: false,
+      isLoading: true,
+      formValid: {
+        firstName: true,
+        lastName: true,
+        email: true,
+      },
+      userProfile: {},
+      id: '',
+      activeTab: '1',
+    };
+  }
 
   async componentDidMount() {
     this.props.getAllUserTeams();
@@ -91,13 +83,14 @@ class UserProfileEdit extends Component {
   };
 
   onDeleteTeam = deletedTeamId => {
-    const _userProfile = Object.assign({}, this.state.userProfile);
-    const filteredTeam = _userProfile.teams.filter(team => team._id !== deletedTeamId);
-    _userProfile.teams = filteredTeam;
-
     this.setState(
-      {
-        userProfile: _userProfile,
+      prevState => {
+        const updatedProfile = { ...prevState.userProfile };
+        updatedProfile.teams = updatedProfile.teams.filter(team => team._id !== deletedTeamId);
+
+        return {
+          userProfile: updatedProfile,
+        };
       },
       () => {
         this.saveChanges();
@@ -106,15 +99,16 @@ class UserProfileEdit extends Component {
   };
 
   onDeleteProject = deletedProjectId => {
-    const _userProfile = Object.assign({}, this.state.userProfile);
-    const filteredProject = _userProfile.projects.filter(
-      project => project._id !== deletedProjectId,
-    );
-    _userProfile.projects = filteredProject;
-
     this.setState(
-      {
-        userProfile: _userProfile,
+      prevState => {
+        const updatedProfile = { ...prevState.userProfile };
+        updatedProfile.projects = updatedProfile.projects.filter(
+          project => project._id !== deletedProjectId,
+        );
+
+        return {
+          userProfile: updatedProfile,
+        };
       },
       () => {
         this.saveChanges();
@@ -123,16 +117,19 @@ class UserProfileEdit extends Component {
   };
 
   onAssignTeam = assignedTeam => {
-    const _userProfile = Object.assign({}, this.state.userProfile);
-    if (_userProfile.teams) {
-      _userProfile.teams.push(assignedTeam);
-    } else {
-      _userProfile.teams = [assignedTeam];
-    }
-
     this.setState(
-      {
-        userProfile: _userProfile,
+      prevState => {
+        const updatedProfile = { ...prevState.userProfile };
+
+        if (updatedProfile.teams) {
+          updatedProfile.teams = [...updatedProfile.teams, assignedTeam];
+        } else {
+          updatedProfile.teams = [assignedTeam];
+        }
+
+        return {
+          userProfile: updatedProfile,
+        };
       },
       () => {
         this.saveChanges();
@@ -141,16 +138,19 @@ class UserProfileEdit extends Component {
   };
 
   onAssignProject = assignedProject => {
-    const _userProfile = Object.assign({}, this.state.userProfile);
-    if (_userProfile.projects) {
-      _userProfile.projects.push(assignedProject);
-    } else {
-      _userProfile.projects = [assignedProject];
-    }
-
     this.setState(
-      {
-        userProfile: _userProfile,
+      prevState => {
+        const updatedProfile = { ...prevState.userProfile };
+
+        if (updatedProfile.projects) {
+          updatedProfile.projects = [...updatedProfile.projects, assignedProject];
+        } else {
+          updatedProfile.projects = [assignedProject];
+        }
+
+        return {
+          userProfile: updatedProfile,
+        };
       },
       () => {
         this.saveChanges();
@@ -167,7 +167,7 @@ class UserProfileEdit extends Component {
       showWarning: true,
     });
     const { userProfile, formValid } = this.state;
-    const patt = new RegExp(/^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/i);
+    const patt = /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/i;
     switch (event.target.id) {
       case 'firstName':
         this.setState({
@@ -285,6 +285,12 @@ class UserProfileEdit extends Component {
     }
   };
 
+  handleSubmit = () => {
+    this.saveChanges();
+    this.setState({ showWarning: false });
+    return Promise.resolve(); // because SaveButton expects a Promise
+  };
+
   handleImageUpload = async e => {
     e.preventDefault();
 
@@ -292,16 +298,12 @@ class UserProfileEdit extends Component {
 
     const allowedTypesString = 'image/png,image/jpeg, image/jpg';
     const allowedTypes = allowedTypesString.split(',');
-    let isValid = true;
     let imageUploadError = '';
     if (!allowedTypes.includes(file.type)) {
       imageUploadError = `File type must be ${allowedTypesString}.`;
-      isValid = false;
 
       return this.setState({
         type: 'image',
-        imageUploadError,
-        isValid,
         showModal: true,
         modalTitle: 'Profile Pic Error',
         modalMessage: imageUploadError,
@@ -311,12 +313,9 @@ class UserProfileEdit extends Component {
     if (filesizeKB > 50) {
       imageUploadError = `\nThe file you are trying to upload exceeds the maximum size of 50KB. You can either 
 														choose a different file, or use an online file compressor.`;
-      isValid = false;
 
       return this.setState({
         type: 'image',
-        imageUploadError,
-        isValid,
         showModal: true,
         modalTitle: 'Profile Pic Error',
         modalMessage: imageUploadError,
@@ -326,57 +325,14 @@ class UserProfileEdit extends Component {
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onloadend = () => {
-      this.setState({
-        imageUploadError: '',
+      this.setState(prevState => ({
         userProfile: {
-          ...this.state.userProfile,
+          ...prevState.userProfile,
           profilePic: reader.result,
         },
-      });
+      }));
     };
-  };
-
-  handleTeam = (type, newTeam) => {
-    const { userProfile } = this.state;
-    switch (type) {
-      case 'add':
-        userProfile.teams.push(newTeam);
-        this.setState({
-          ...userProfile,
-        });
-        break;
-      case 'delete':
-        userProfile.teams = userProfile.teams.filter(team => team._id !== newTeam);
-        this.setState({
-          ...userProfile,
-        });
-        break;
-      default:
-        this.setState({
-          ...userProfile,
-        });
-        break;
-    }
-  };
-
-  handleNullState = kind => {
-    switch (kind) {
-      case 'settings':
-        this.setState(() => ({
-          showModal: false,
-          userProfile: {
-            ...this.state.userProfile,
-            privacySettings: {
-              email: true,
-              phoneNumber: true,
-              blueSquares: true,
-            },
-          },
-        }));
-        break;
-      default:
-        break;
-    }
+    return null;
   };
 
   handleBlueSquare = (status = true, type = 'message', blueSquareID = '') => {
@@ -416,71 +372,59 @@ class UserProfileEdit extends Component {
       this.setState(prevState => ({
         showModal: false,
         userProfile: {
-          ...this.state.userProfile,
-          infringements: prevState.userProfile.infringements.concat(newBlueSquare),
+          ...prevState.userProfile,
+          infringements: [...prevState.userProfile.infringements, newBlueSquare],
         },
       }));
     } else if (kind === 'update') {
-      this.setState(() => {
-        const currentBlueSquares = this.state.userProfile.infringements;
-        if (dateStamp != null) {
-          currentBlueSquares.find(blueSquare => blueSquare._id === id).date = dateStamp;
-        }
-        if (summary != null) {
-          currentBlueSquares.find(blueSquare => blueSquare._id === id).description = summary;
-        }
+      this.setState(prevState => {
+        const updatedBlueSquares = prevState.userProfile.infringements.map(blueSquare => {
+          if (blueSquare._id === id) {
+            return {
+              ...blueSquare,
+              date: dateStamp != null ? dateStamp : blueSquare.date,
+              description: summary != null ? summary : blueSquare.description,
+            };
+          }
+          return blueSquare;
+        });
+
         return {
           showModal: false,
           userProfile: {
-            ...this.state.userProfile,
-            infringements: currentBlueSquares,
+            ...prevState.userProfile,
+            infringements: updatedBlueSquares,
           },
         };
       });
     } else if (kind === 'delete') {
-      this.setState(() => {
-        const currentBlueSquares = this.state.userProfile.infringements.filter(blueSquare => {
-          if (blueSquare._id !== id) {
-            return blueSquare;
-          }
-        });
+      this.setState(prevState => {
+        const filteredBlueSquares = prevState.userProfile.infringements.filter(
+          blueSquare => blueSquare._id !== id,
+        );
+
         return {
           showModal: false,
           userProfile: {
-            ...this.state.userProfile,
-            infringements: currentBlueSquares,
+            ...prevState.userProfile,
+            infringements: filteredBlueSquares,
           },
         };
       });
     }
   };
 
-  handleSaveError = message => {
-    this.setState({
-      showModal: true,
-      modalMessage: 'Must save first.',
-      modalTitle: `Error, ${message}`,
-      type: 'message',
-    });
-  };
-
-  handleSubmit = async event => {
-    const { updateUserProfile, match } = this.props;
-    const { userProfile, formValid } = this.state;
-    const submitResult = await updateUserProfile(userProfile);
-  };
-
   updateLink = (personalLinksUpdate, adminLinksUpdate) =>
-    this.setState(() => ({
+    this.setState(prevState => ({
       showModal: false,
       userProfile: {
-        ...this.state.userProfile,
+        ...prevState.userProfile,
         personalLinks: personalLinksUpdate,
         adminLinks: adminLinksUpdate,
       },
     }));
 
-  handleLinkModel = (status = true, type = 'message', linkSection) => {
+  handleLinkModel = (linkSection, status = true, type = 'message') => {
     if (type === 'addLink') {
       this.setState({
         showModal: status,
@@ -503,15 +447,6 @@ class UserProfileEdit extends Component {
   // once team is selected, push userid & teamid with addTeamMember...
 
   // HOW TO UPDATE TEAM WITH NEW MEMBER  this.props.addTeamMember(this.state.selectedTeamId, user._id, user.firstName, user.lastName);
-
-  addUserToTeam = () => {
-    this.props.addTeamMember(
-      this.state.selectedTeamId,
-      this.user._id,
-      this.user.firstName,
-      this.user.lastName,
-    );
-  };
 
   render() {
     const { userId: targetUserId } = this.props.match
@@ -559,6 +494,7 @@ class UserProfileEdit extends Component {
           </Sticky>
         );
       }
+      return null;
     };
     const {
       firstName,
@@ -824,55 +760,54 @@ class UserProfileEdit extends Component {
                         </Col>
                       </Row>
                       <Row>
-  <Col md="6">
-    <Label>Current Password</Label>
-  </Col>
-  <Col md="6">
-    <FormGroup>
-      <Input
-        type="password"
-        name="currentPassword"
-        id="currentPassword"
-        placeholder="Enter Current Password"
-        onChange={this.handleUserProfile}
-      />
-    </FormGroup>
-  </Col>
-</Row>
-<Row>
-  <Col md="6">
-    <Label>New Password</Label>
-  </Col>
-  <Col md="6">
-    <FormGroup>
-      <Input
-        type="password"
-        name="newPassword"
-        id="newPassword"
-        placeholder="Enter New Password"
-        onChange={this.handleUserProfile}
-      />
-    </FormGroup>
-  </Col>
-</Row>
-<Row>
-  <Col md="6">
-    <Label>Confirm New Password</Label>
-  </Col>
-  <Col md="6">
-    <FormGroup>
-      <Input
-        type="password"
-        name="confirmPassword"
-        id="confirmPassword"
-        placeholder="Confirm New Password"
-        onChange={this.handleUserProfile}
-      />
-    </FormGroup>
-  </Col>
-</Row>
+                        <Col md="6">
+                          <Label>Current Password</Label>
+                        </Col>
+                        <Col md="6">
+                          <FormGroup>
+                            <Input
+                              type="password"
+                              name="currentPassword"
+                              id="currentPassword"
+                              placeholder="Enter Current Password"
+                              onChange={this.handleUserProfile}
+                            />
+                          </FormGroup>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col md="6">
+                          <Label>New Password</Label>
+                        </Col>
+                        <Col md="6">
+                          <FormGroup>
+                            <Input
+                              type="password"
+                              name="newPassword"
+                              id="newPassword"
+                              placeholder="Enter New Password"
+                              onChange={this.handleUserProfile}
+                            />
+                          </FormGroup>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col md="6">
+                          <Label>Confirm New Password</Label>
+                        </Col>
+                        <Col md="6">
+                          <FormGroup>
+                            <Input
+                              type="password"
+                              name="confirmPassword"
+                              id="confirmPassword"
+                              placeholder="Confirm New Password"
+                              onChange={this.handleUserProfile}
+                            />
+                          </FormGroup>
+                        </Col>
+                      </Row>
 
-                      
                       <Row>
                         <Col md="6">
                           <Label>Phone</Label>
@@ -938,7 +873,7 @@ class UserProfileEdit extends Component {
                         <Label>Account Created Date</Label>
                       </Col>
                       <Col md="6">
-                      <p>{moment(userProfile.createdDate).format('YYYY-MM-DD')}</p>
+                        <p>{moment(userProfile.createdDate).format('YYYY-MM-DD')}</p>
                       </Col>
                     </Row>
                     <Row>
@@ -962,7 +897,7 @@ class UserProfileEdit extends Component {
                           value={userProfile.weeklyCommittedHours}
                           onChange={this.handleUserProfile}
                           placeholder="weeklyCommittedHours"
-                          invalid={/*!canPutUserProfile*/ true}
+                          invalid
                         />
                       </Col>
                     </Row>

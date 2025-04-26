@@ -1,7 +1,6 @@
-import React from "react";
-import { Modal, ModalHeader, ModalBody, Button } from "reactstrap";
+import { Modal, ModalHeader, ModalBody, Button } from 'reactstrap';
 
-const ConfirmRemoveModal = ({ isOpen, toggleModal, confirmRemove }) => {
+function ConfirmRemoveModal({ isOpen, toggleModal, confirmRemove }) {
   return (
     <Modal isOpen={isOpen} toggle={toggleModal}>
       <ModalHeader toggle={toggleModal}>Remove Profile Image</ModalHeader>
@@ -23,6 +22,6 @@ const ConfirmRemoveModal = ({ isOpen, toggleModal, confirmRemove }) => {
       </ModalBody>
     </Modal>
   );
-};
+}
 
 export default ConfirmRemoveModal;

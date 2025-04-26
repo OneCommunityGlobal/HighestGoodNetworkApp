@@ -2,11 +2,10 @@ import React from 'react';
 import { forwardRef } from 'react';
 import { Form, FormControl, Button } from 'react-bootstrap';
 import { FaCalendarAlt } from 'react-icons/fa';
-import styles from './CustomDatePickerInput.css';
 
 const CustomDatePickerInput = forwardRef(({ value, onClick }, ref) => (
   <Form.Group>
-    <Form.Label>Choose the Sunday of the week you'll return:</Form.Label>
+    <Form.Label>Choose the Sunday of the week you will return:</Form.Label>
     <div className="input-group">
       <FormControl
         value={value}

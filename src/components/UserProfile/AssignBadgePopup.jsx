@@ -2,15 +2,19 @@ import { useState, useEffect } from 'react';
 import { Table, Button, UncontrolledTooltip } from 'reactstrap';
 import { connect } from 'react-redux';
 import axios from 'axios';
+import { toast } from 'react-toastify';
+import { PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE } from '../../utils/constants';
 import AssignTableRow from '../Badge/AssignTableRow';
-import { assignBadgesByUserID, clearNameAndSelected, addSelectBadge } from '../../actions/badgeManagement';
+import {
+  assignBadgesByUserID,
+  clearNameAndSelected,
+  addSelectBadge,
+} from '../../actions/badgeManagement';
 import { ENDPOINTS } from '../../utils/URL';
 import { boxStyle, boxStyleDark } from '../../styles';
-import { toast } from 'react-toastify';
-import { PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE } from 'utils/constants';
 
 function AssignBadgePopup(props) {
-  const {darkMode} = props;
+  const { darkMode } = props;
   const [searchedName, setSearchedName] = useState('');
   const [badgeList, setBadgeList] = useState([]);
   // Added state to disable confirm button while updating.
@@ -22,8 +26,8 @@ function AssignBadgePopup(props) {
 
   // Update: Added toast message effect for success and error. Added restriction: Jae's badges only editable by Jae or Owner
   const assignBadges = async () => {
-    if(props.isRecordBelongsToJaeAndUneditable){
-      alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
+    if (props.isRecordBelongsToJaeAndUneditable) {
+      toast.error(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
       return;
     }
     try {
@@ -36,7 +40,7 @@ function AssignBadgePopup(props) {
       });
       toast.success('Badge update successfully');
     } catch (e) {
-      //TODO: Proper error handling.
+      // TODO: Proper error handling.
       toast.error('Badge update failed');
     }
     setConfirmButtonDisable(false);
@@ -44,27 +48,26 @@ function AssignBadgePopup(props) {
     props.close();
   };
 
-  useEffect(() => {
-    loadAllBadges();
-  }, []);
-
   const loadAllBadges = async () => {
     try {
       const response = await axios.get(ENDPOINTS.BADGE());
       setBadgeList(response.data);
-    } catch (error) {}
+    } catch (error) {
+      toast.error('Error detected');
+    }
   };
+
+  useEffect(() => {
+    loadAllBadges();
+  }, []);
 
   const filterBadges = allBadges => {
-    let filteredList = allBadges.filter(badge => {
-      if (badge.badgeName.toLowerCase().indexOf(searchedName.toLowerCase()) > -1) {
-        return badge;
-      }
-    });
-    return filteredList;
+    return allBadges.filter(badge =>
+      badge.badgeName.toLowerCase().includes(searchedName.toLowerCase()),
+    );
   };
 
-  let filteredBadges = filterBadges(badgeList);
+  const filteredBadges = filterBadges(badgeList);
 
   const addExistBadges = () => {
     if (props.userProfile && props.userProfile.badgeCollection) {
@@ -76,9 +79,7 @@ function AssignBadgePopup(props) {
     return [];
   };
 
-  let existBadges = addExistBadges();
-
-
+  const existBadges = addExistBadges();
 
   return (
     <div data-testid="test-assignbadgepopup">
@@ -120,19 +121,24 @@ function AssignBadgePopup(props) {
           </thead>
           <tbody>
             {filteredBadges.map((value, index) => (
-              <AssignTableRow badge={value} index={index} key={index} existBadges={existBadges} />
+              <AssignTableRow
+                badge={value}
+                index={index}
+                key={value._id}
+                existBadges={existBadges}
+              />
             ))}
           </tbody>
         </Table>
       </div>
       <Button
         className="btn--dark-sea-green float-right"
-        style={darkMode ? {...boxStyleDark, margin: 5 } : { ...boxStyle, margin: 5 }}
+        style={darkMode ? { ...boxStyleDark, margin: 5 } : { ...boxStyle, margin: 5 }}
         onClick={assignBadges}
         disabled={shouldConfirmButtonDisable}
         data-testid="test-button"
       >
-        {!shouldConfirmButtonDisable ? 'Confirm' : 'Updating...'} 
+        {!shouldConfirmButtonDisable ? 'Confirm' : 'Updating...'}
       </Button>
     </div>
   );

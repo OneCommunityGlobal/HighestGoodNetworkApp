@@ -1,1 +1,3 @@
-export { default } from './UserLinkLayout';
+import UserLinkLayout from './UserLinkLayout';
+
+export default UserLinkLayout;

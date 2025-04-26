@@ -1,8 +1,7 @@
-import React from 'react';
 import style from './ToggleSwitch.module.scss';
 import TriStateToggleSwitch from './TriStateToggleSwitch';
 
-const ToggleSwitch = ({
+function ToggleSwitch({
   switchType,
   state,
   handleUserProfile,
@@ -10,12 +9,12 @@ const ToggleSwitch = ({
   toggleClass,
   fontColor,
   darkMode,
-}) => {
+}) {
   switch (switchType) {
     case 'bluesquares':
       if (state) {
         return (
-          <div className={`blueSqare ${toggleClass ? toggleClass : ''}`}>
+          <div className={`blueSqare ${toggleClass || ''}`}>
             <div className={style.switchSection}>
               {/* <div> Blue Squares: </div> */}
               <div className={style.switchContainer} style={darkMode ? { color: 'white' } : {}}>
@@ -34,7 +33,7 @@ const ToggleSwitch = ({
         );
       }
       return (
-        <div className={`blueSqare ${toggleClass ? toggleClass : ''}`}>
+        <div className={`blueSqare ${toggleClass || ''}`}>
           <div className={style.switchSection}>
             {/* <div> Blue Squares: </div> */}
             <div className={style.switchContainer} style={darkMode ? { color: 'white' } : {}}>
@@ -173,7 +172,7 @@ const ToggleSwitch = ({
                 <input
                   data-testid="phone-switch"
                   id="phonePubliclyAccessible"
-                  //data-testid="custom-element"
+                  // data-testid="custom-element"
                   type="checkbox"
                   className={darkMode ? style.toggleDark : style.toggle}
                   onChange={handleUserProfile}
@@ -250,7 +249,7 @@ const ToggleSwitch = ({
     case 'bio':
       return (
         <div className="blueSqare">
-          <div className={style.switchSection} style={{ fontSize: fontSize, color: fontColor }}>
+          <div className={style.switchSection} style={{ fontSize, color: fontColor }}>
             <div
               style={{ wordBreak: 'keep-all', color: darkMode ? 'white' : '' }}
               className={style.switchContainer}
@@ -304,6 +303,6 @@ const ToggleSwitch = ({
       break;
   }
   return <div>ERROR: Toggle Switch.</div>;
-};
+}
 
 export default ToggleSwitch;

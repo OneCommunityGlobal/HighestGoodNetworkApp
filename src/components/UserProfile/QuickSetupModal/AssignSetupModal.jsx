@@ -1,13 +1,22 @@
 import { useState, useEffect } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Label, Input } from 'reactstrap';
-import hasPermission from '../../../utils/permissions';
-import { deleteTitleById } from 'actions/title';
+import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
+import hasPermission from '../../../utils/permissions';
+import { deleteTitleById } from '../../../actions/title';
 import '../../Header/DarkMode.css';
-import { toast } from "react-toastify";
 
-function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfile, setTitleOnSet, refreshModalTitles, updateUserProfile}) {
-  const darkMode = useSelector(state => state.theme.darkMode)
+function AssignSetUpModal({
+  isOpen,
+  setIsOpen,
+  title,
+  userProfile,
+  setUserProfile,
+  setTitleOnSet,
+  refreshModalTitles,
+  updateUserProfile,
+}) {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [validation, setValid] = useState({
     volunteerAgree: false,
   });
@@ -17,7 +26,7 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
     checkbox: 'Need to be confirmed',
   });
   const [isGoogleDocValid, setIsGoogleDocValid] = useState(true);
-  const [mediaFolder, setMediaFolder] = useState("")
+  const [mediaFolder, setMediaFolder] = useState('');
 
   const checkboxOnClick = () => {
     // eslint-disable-next-line no-unused-expressions
@@ -38,31 +47,38 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
     if (validation.volunteerAgree && googleDoc.length !== 0) {
       const originalTeamId = userProfile.teams.map(team => team._id);
       const originalProjectId = userProfile.projects.map(project => project._id);
-      // If the title has team assigned, add the team to the user profile. Remove duplicate teams
-      const teamsAssigned = title.teamAssiged
-        ? originalTeamId.includes(title?.teamAssiged._id)
-          ? userProfile.teams
-          : [...userProfile.teams, title.teamAssiged]
-        : userProfile.teams;
-      // If the title has project assigned, add the project to the user profile. Remove duplicate projects
-      const projectAssigned = title.projectAssigned
-        ? originalProjectId.includes(title?.projectAssigned._id)
-          ? userProfile.projects
-          : [...userProfile.projects, title.projectAssigned]
-        : userProfile.projects;
+      // Handle teams
+      let teamsAssigned = userProfile.teams;
+      if (title.teamAssiged) {
+        if (!originalTeamId.includes(title.teamAssiged._id)) {
+          teamsAssigned = [...userProfile.teams, title.teamAssiged];
+        }
+      }
+
+      // Handle projects
+      let projectAssigned = userProfile.projects;
+      if (title.projectAssigned) {
+        if (!originalProjectId.includes(title.projectAssigned._id)) {
+          projectAssigned = [...userProfile.projects, title.projectAssigned];
+        }
+      }
 
       // Ensure adminLinks is not undefined or null
       const updatedAdminLinks = (userProfile.adminLinks || []).map(obj => {
-        if (obj.Name === "Media Folder") obj.Link = mediaFolder || '';
-        if (obj.Name === "Google Doc") obj.Link = googleDoc || '';
+        if (obj.Name === 'Media Folder') {
+          return { ...obj, Link: mediaFolder || '' };
+        }
+        if (obj.Name === 'Google Doc') {
+          return { ...obj, Link: googleDoc || '' };
+        }
         return obj;
       });
 
-      if (!updatedAdminLinks.find(obj => obj.Name === "Media Folder")) {
-        updatedAdminLinks.push({ Name: "Media Folder", Link: mediaFolder || '' });
+      if (!updatedAdminLinks.find(obj => obj.Name === 'Media Folder')) {
+        updatedAdminLinks.push({ Name: 'Media Folder', Link: mediaFolder || '' });
       }
-      if (!updatedAdminLinks.find(obj => obj.Name === "Google Doc")) {
-        updatedAdminLinks.push({ Name: "Google Doc", Link: googleDoc || '' });
+      if (!updatedAdminLinks.find(obj => obj.Name === 'Google Doc')) {
+        updatedAdminLinks.push({ Name: 'Google Doc', Link: googleDoc || '' });
       }
 
       const data = {
@@ -77,22 +93,21 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
       if (userProfile.teams.includes(title?.teamAssiged)) data.teams.pop();
       if (userProfile.projects.includes(title.projectAssigned)) data.projects.pop();
 
-      const result = await updateUserProfile({...userProfile,...data});
-      if (hasPermission("manageAdminLinks")) {
+      await updateUserProfile({ ...userProfile, ...data });
+      if (hasPermission('manageAdminLinks')) {
         setUserProfile(prev => ({ ...prev, ...data }));
       }
 
-      setTitleOnSet(true); 
+      setTitleOnSet(true);
       setValid(() => ({ volunteerAgree: false }));
       setIsOpen(false);
 
       const SUCCESS_MESSAGE =
-        "Success! Google Doc, Team Code, Project Assignment, " +
-        "and Media Folder details are now updated for this individual.";
-      toast.success(SUCCESS_MESSAGE, { autoClose: 10000 }); 
+        'Success! Google Doc, Team Code, Project Assignment, ' +
+        'and Media Folder details are now updated for this individual.';
+      toast.success(SUCCESS_MESSAGE, { autoClose: 10000 });
     }
   };
-
 
   // close the modal
   const setNoOnClick = () => {
@@ -107,42 +122,40 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
         setIsOpen(false);
       })
       .catch(e => {
-        console.log(e);
+        toast.error(e);
       });
   };
 
   const isLink = str => {
     try {
-      const url = new URL(str);
+      URL(str);
       return true;
     } catch (_) {
       return false;
     }
   };
 
-    // UseEffect to get the media folder when userProfile or isOpen changes
-    useEffect(() => {
-      if (isOpen && userProfile) {
-        getMediaFolder(userProfile);
-      }
-    }, [isOpen, userProfile]);
+  // Gets the media Folder url from the mediaUrl
+  const getMediaFolder = userProfileParam => {
+    const currMediaFile = userProfileParam.adminLinks?.find(obj => obj.Name === 'Media Folder');
 
-    // Gets the media Folder url from the mediaUrl
-    const getMediaFolder = (userProfile) => {
-      const currMediaFile = userProfile.adminLinks?.find(obj => obj.Name === "Media Folder");
-      
-      if (currMediaFile && currMediaFile.Link) {
-        setMediaFolder(currMediaFile.Link);
-      } else if (userProfile.mediaUrl) {
-        setMediaFolder(userProfile.mediaUrl);
-      } else if(title && title.mediaFolder) {
-        setMediaFolder(title.mediaFolder);
-      } else {
-        // setMediaFolder("No media folder available");
-        setMediaFolder(null);
-      }
-    };
-
+    if (currMediaFile && currMediaFile.Link) {
+      setMediaFolder(currMediaFile.Link);
+    } else if (userProfileParam.mediaUrl) {
+      setMediaFolder(userProfileParam.mediaUrl);
+    } else if (title && title.mediaFolder) {
+      setMediaFolder(title.mediaFolder);
+    } else {
+      // setMediaFolder("No media folder available");
+      setMediaFolder(null);
+    }
+  };
+  // UseEffect to get the media folder when userProfile or isOpen changes
+  useEffect(() => {
+    if (isOpen && userProfile) {
+      getMediaFolder(userProfile);
+    }
+  }, [isOpen, userProfile]);
   const fontColor = darkMode ? 'text-light' : '';
 
   return (
@@ -159,8 +172,10 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
           <Label className={fontColor}>
             <h6>Google Doc: </h6>
           </Label>
-          <Input type="text" onChange={e => setGoogleDoc(e.target.value)}></Input>
-          {!isGoogleDocValid || googleDoc === ""?  <p className="text-danger">{warning.googleDoc}</p> : null}
+          <Input type="text" onChange={e => setGoogleDoc(e.target.value)} />
+          {!isGoogleDocValid || googleDoc === '' ? (
+            <p className="text-danger">{warning.googleDoc}</p>
+          ) : null}
 
           <h6>Team Code: {title?.teamCode}</h6>
           <h6>Project Assignment: {title?.projectAssigned?.projectName}</h6>

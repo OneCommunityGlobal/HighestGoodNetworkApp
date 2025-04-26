@@ -1,1 +1,3 @@
-export { default } from './BlueSquare';
+import BlueSquare from './BlueSquare';
+
+export default BlueSquare;

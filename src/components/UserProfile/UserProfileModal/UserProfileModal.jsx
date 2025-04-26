@@ -1,4 +1,4 @@
-import React, { useState, useReducer } from 'react';
+import { useState, useReducer } from 'react';
 import {
   Button,
   Modal,
@@ -12,12 +12,12 @@ import {
   Card,
   Col,
 } from 'reactstrap';
-import { boxStyle, boxStyleDark } from 'styles';
-import '../../Header/DarkMode.css'
-import hasPermission from 'utils/permissions';
 import { connect, useSelector } from 'react-redux';
+import { boxStyle, boxStyleDark } from '../../../styles';
+import '../../Header/DarkMode.css';
+import hasPermission from '../../../utils/permissions';
 
-const UserProfileModal = props => {
+function UserProfileModal(props) {
   const {
     isOpen,
     closeModal,
@@ -39,11 +39,11 @@ const UserProfileModal = props => {
 
   if (type !== 'message' && type !== 'addBlueSquare') {
     if (id.length > 0) {
-      blueSquare = userProfile.infringements?.filter(blueSquare => blueSquare._id === id);
+      blueSquare = userProfile.infringements?.filter(blueSquareParam => blueSquareParam._id === id);
     }
   }
 
-  const darkMode = useSelector(state=>state.theme.darkMode);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const canPutUserProfile = props.hasPermission('putUserProfile');
   const canEditInfringements = props.hasPermission('editInfringements');
@@ -62,60 +62,80 @@ const UserProfileModal = props => {
   const [summaryFieldView, setSummaryFieldView] = useState(true);
 
   const [personalLinks, dispatchPersonalLinks] = useReducer(
-    (personalLinks, { type, value, passedIndex }) => {
-      switch (type) {
+    (personalLinksParam, { typeParam, value, passedIndex }) => {
+      switch (typeParam) {
         case 'add':
-          return [...personalLinks, value];
+          return [...personalLinksParam, value];
         case 'remove':
-          return personalLinks.filter((_, index) => index !== passedIndex);
+          return personalLinksParam.filter((_, index) => index !== passedIndex);
         case 'updateName':
-          return personalLinks.filter((_, index) => {
+          return personalLinksParam.filter((_, index) => {
+            const param1 = _;
             if (index === passedIndex) {
-              _.Name = value;
+              param1.Name = value;
             }
-            return _;
+            return param1;
           });
         case 'updateLink':
-          return personalLinks.filter((_, index) => {
+          return personalLinksParam.filter((_, index) => {
+            const param2 = _;
             if (index === passedIndex) {
-              _.Link = value;
+              param2.Link = value;
             }
-            return _;
+            return param2;
           });
         default:
-          return personalLinks;
+          return personalLinksParam;
       }
     },
     userProfile.personalLinks,
   );
 
   const [adminLinks, dispatchAdminLinks] = useReducer(
-    (adminLinks, { type, value, passedIndex }) => {
-      switch (type) {
+    (adminLinksParam, { typeParam2, value, passedIndex }) => {
+      switch (typeParam2) {
         case 'add':
-          return [...adminLinks, value];
+          return [...adminLinksParam, value];
         case 'remove':
-          return adminLinks.filter((_, index) => index !== passedIndex);
+          return adminLinksParam.filter((_, index) => index !== passedIndex);
         case 'updateName':
-          return adminLinks.filter((_, index) => {
+          return adminLinksParam.filter((_, index) => {
+            const param3 = _;
             if (index === passedIndex) {
-              _.Name = value;
+              param3.Name = value;
             }
-            return _;
+            return param3;
           });
         case 'updateLink':
-          return adminLinks.filter((_, index) => {
+          return adminLinksParam.filter((_, index) => {
+            const param4 = _;
             if (index === passedIndex) {
-              _.Link = value;
+              param4.Link = value;
             }
-            return _;
+            return param4;
           });
         default:
-          return adminLinks;
+          return adminLinksParam;
       }
     },
     userProfile.adminLinks,
   );
+
+  function checkFields(field1, field2) {
+    // console.log('f1:', field1, ' f2:', field2);
+
+    if (field1 != null && field2 != null) {
+      setAddButton(false);
+    } else {
+      setAddButton(true);
+    }
+  }
+
+  const adjustTextareaHeight = originalTextarea => {
+    const textarea = originalTextarea;
+    textarea.style.height = 'auto';
+    textarea.style.height = `${textarea.scrollHeight}px`;
+  };
 
   const handleChange = event => {
     event.preventDefault();
@@ -135,41 +155,30 @@ const UserProfileModal = props => {
     }
   };
 
-  function checkFields(field1, field2) {
-    // console.log('f1:', field1, ' f2:', field2);
-
-    if (field1 != null && field2 != null) {
-      setAddButton(false);
-    } else {
-      setAddButton(true);
-    }
-  }
-
-  const adjustTextareaHeight = (textarea) => {
-    textarea.style.height = 'auto';
-    textarea.style.height = `${textarea.scrollHeight}px`;
-  };
-
   const boxStyling = darkMode ? boxStyleDark : boxStyle;
   const fontColor = darkMode ? 'text-light' : '';
 
   return (
     <Modal isOpen={isOpen} toggle={closeModal} className={darkMode ? 'text-light dark-mode' : ''}>
-      <ModalHeader toggle={closeModal} className={darkMode ? 'bg-space-cadet' : ''}>{modalTitle}</ModalHeader>
+      <ModalHeader toggle={closeModal} className={darkMode ? 'bg-space-cadet' : ''}>
+        {modalTitle}
+      </ModalHeader>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         {type === 'updateLink' && (
           <div>
             {canPutUserProfile && (
               <CardBody>
                 <Card>
-                  <Label className={fontColor} style={{ display: 'flex', margin: '5px' }}>Admin Links:</Label>
+                  <Label className={fontColor} style={{ display: 'flex', margin: '5px' }}>
+                    Admin Links:
+                  </Label>
                   <Col>
                     <div style={{ display: 'flex', margin: '5px' }}>
                       <div className="customTitle">Name</div>
                       <div className="customTitle">Link URL</div>
                     </div>
                     {adminLinks.map((link, index) => (
-                      <div key={index} style={{ display: 'flex', margin: '5px' }}>
+                      <div key={link.Name || link.Link} style={{ display: 'flex', margin: '5px' }}>
                         <input
                           className="customInput"
                           value={link.Name}
@@ -195,6 +204,7 @@ const UserProfileModal = props => {
                         <button
                           className="closeButton"
                           color="danger"
+                          type="button"
                           onClick={() => dispatchAdminLinks({ type: 'remove', passedIndex: index })}
                         >
                           X
@@ -220,6 +230,7 @@ const UserProfileModal = props => {
                         onChange={e => setAdminLinkURL(e.target.value.trim())}
                       />
                       <button
+                        type="button"
                         className="addButton"
                         onClick={() =>
                           dispatchAdminLinks({
@@ -237,14 +248,16 @@ const UserProfileModal = props => {
             )}
             <CardBody>
               <Card>
-                <Label className={fontColor} style={{ display: 'flex', margin: '5px' }}>Personal Links:</Label>
+                <Label className={fontColor} style={{ display: 'flex', margin: '5px' }}>
+                  Personal Links:
+                </Label>
                 <Col>
                   <div style={{ display: 'flex', margin: '5px' }}>
                     <div className="customTitle">Name</div>
                     <div className="customTitle">Link URL</div>
                   </div>
                   {personalLinks.map((link, index) => (
-                    <div key={index} style={{ display: 'flex', margin: '5px' }}>
+                    <div key={link.Name || link.Link} style={{ display: 'flex', margin: '5px' }}>
                       <input
                         className="customInput"
                         value={link.Name}
@@ -268,6 +281,7 @@ const UserProfileModal = props => {
                         }
                       />
                       <button
+                        type="button"
                         className="closeButton"
                         color="danger"
                         onClick={() =>
@@ -297,6 +311,7 @@ const UserProfileModal = props => {
                       onChange={e => setLinkURL(e.target.value.trim())}
                     />
                     <button
+                      type="button"
                       className="addButton"
                       onClick={() =>
                         dispatchPersonalLinks({
@@ -317,19 +332,23 @@ const UserProfileModal = props => {
         {type === 'addBlueSquare' && (
           <>
             <FormGroup>
-              <Label className={fontColor} for="date">Date</Label>
+              <Label className={fontColor} for="date">
+                Date
+              </Label>
               <Input type="date" name="date" id="date" onChange={handleChange} />
             </FormGroup>
 
             <FormGroup hidden={summaryFieldView}>
-              <Label className={fontColor} for="report">Summary</Label>
-              <Input 
-                type="textarea" 
-                id="summary" 
-                onChange={handleChange} 
-                value={summary} 
-                style={{ minHeight: '200px', overflow: 'hidden'}} 
-                onInput={e => adjustTextareaHeight(e.target)} 
+              <Label className={fontColor} for="report">
+                Summary
+              </Label>
+              <Input
+                type="textarea"
+                id="summary"
+                onChange={handleChange}
+                value={summary}
+                style={{ minHeight: '200px', overflow: 'hidden' }}
+                onInput={e => adjustTextareaHeight(e.target)}
               />
             </FormGroup>
           </>
@@ -338,9 +357,14 @@ const UserProfileModal = props => {
         {type === 'modBlueSquare' && (
           <>
             <FormGroup>
-              <Label className={fontColor} for="date">Date:</Label>
-              {canEditInfringements ? <Input type="date" onChange={e => setDateStamp(e.target.value)} value={dateStamp} />
-              : <span> {blueSquare[0]?.date}</span>}
+              <Label className={fontColor} for="date">
+                Date:
+              </Label>
+              {canEditInfringements ? (
+                <Input type="date" onChange={e => setDateStamp(e.target.value)} value={dateStamp} />
+              ) : (
+                <span> {blueSquare[0]?.date}</span>
+              )}
             </FormGroup>
             <FormGroup>
               <Label className={fontColor} for="createdDate">
@@ -349,25 +373,30 @@ const UserProfileModal = props => {
               </Label>
             </FormGroup>
             <FormGroup>
-              <Label className={fontColor} for="report">Summary</Label>
-              {canEditInfringements ? <Input 
-                type="textarea" 
-                id="summary" 
-                onChange={handleChange} 
-                value={summary} 
-                style={{ minHeight: '200px', overflow: 'hidden'}} // 4x taller than usual
-                onInput={e => adjustTextareaHeight(e.target)} // auto-adjust height
-              />
-              :<p>{blueSquare[0]?.description}</p>}
+              <Label className={fontColor} for="report">
+                Summary
+              </Label>
+              {canEditInfringements ? (
+                <Input
+                  type="textarea"
+                  id="summary"
+                  onChange={handleChange}
+                  value={summary}
+                  style={{ minHeight: '200px', overflow: 'hidden' }} // 4x taller than usual
+                  onInput={e => adjustTextareaHeight(e.target)} // auto-adjust height
+                />
+              ) : (
+                <p>{blueSquare[0]?.description}</p>
+              )}
             </FormGroup>
           </>
         )}
 
-        {type === 'viewBlueSquare'  && (
+        {type === 'viewBlueSquare' && (
           <>
             <FormGroup>
               <Label className={fontColor} for="date">
-                Date: 
+                Date:
                 <span>{blueSquare[0]?.date}</span>
               </Label>
             </FormGroup>
@@ -378,7 +407,9 @@ const UserProfileModal = props => {
               </Label>
             </FormGroup>
             <FormGroup>
-              <Label className={fontColor} for="description">Summary</Label>
+              <Label className={fontColor} for="description">
+                Summary
+              </Label>
               <p className={fontColor}>{blueSquare[0]?.description}</p>
             </FormGroup>
           </>
@@ -407,8 +438,8 @@ const UserProfileModal = props => {
         )}
 
         {type === 'modBlueSquare' && (
-            <>
-            {canEditInfringements && 
+          <>
+            {canEditInfringements && (
               <Button
                 color="info"
                 onClick={() => {
@@ -418,8 +449,8 @@ const UserProfileModal = props => {
               >
                 Update
               </Button>
-              }
-            {canDeleteInfringements &&
+            )}
+            {canDeleteInfringements && (
               <Button
                 color="danger"
                 onClick={() => {
@@ -429,7 +460,7 @@ const UserProfileModal = props => {
               >
                 Delete
               </Button>
-            }
+            )}
           </>
         )}
 
@@ -475,6 +506,6 @@ const UserProfileModal = props => {
       </ModalFooter>
     </Modal>
   );
-};
+}
 
 export default connect(null, { hasPermission })(UserProfileModal);

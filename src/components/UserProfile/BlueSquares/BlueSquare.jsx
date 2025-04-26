@@ -1,51 +1,56 @@
 import './BlueSquare.css';
-import hasPermission from 'utils/permissions';
 import { connect } from 'react-redux';
-import { formatCreatedDate, formatDate } from 'utils/formatDate';
+import hasPermission from '../../../utils/permissions';
+import { formatCreatedDate, formatDate } from '../../../utils/formatDate';
 
+function BlueSquare(props) {
+  const { blueSquares, handleBlueSquare, hasPermission: checkPermission, darkMode } = props;
 
-const BlueSquare = (props) => {
-  const {
-    blueSquares,
-    handleBlueSquare,
-    hasPermission,
-    darkMode
-  } = props;
+  const canAddInfringements = checkPermission('addInfringements');
+  const canEditInfringements = checkPermission('editInfringements');
+  const canDeleteInfringements = checkPermission('deleteInfringements');
+  const isInfringementAuthorizer =
+    canAddInfringements || canEditInfringements || canDeleteInfringements;
 
-  const canAddInfringements = hasPermission('addInfringements');
-  const canEditInfringements = hasPermission('editInfringements');
-  const canDeleteInfringements = hasPermission('deleteInfringements');
-  const isInfringementAuthorizer = canAddInfringements || canEditInfringements || canDeleteInfringements;
-
-  const handleOnClick = (blueSquare) => {    
+  const handleOnClick = blueSquare => {
     if (!blueSquare._id) {
-      handleBlueSquare, darkMode(isInfringementAuthorizer, 'message', 'none');
+      handleBlueSquare();
+      darkMode(isInfringementAuthorizer, 'message', 'none');
     } else if (canEditInfringements || canDeleteInfringements) {
       handleBlueSquare(true, 'modBlueSquare', blueSquare._id);
     } else {
       handleBlueSquare(true, 'viewBlueSquare', blueSquare._id);
     }
-  };    
+  };
+
   return (
     <div className={`blueSquareContainer ${darkMode ? 'bg-darkmode-liblack' : ''}`}>
       <div className={`blueSquares ${blueSquares?.length ? '' : 'NoBlueSquares'}`}>
         {blueSquares?.length ? (
           blueSquares
-            .sort((a, b) => (a.date > b.date ? 1 : -1))  // sorting by most recent date(awareded) last
-            .map((blueSquare, index) => (
+            .sort((a, b) => (a.date > b.date ? 1 : -1))
+            .map(blueSquare => (
               <div
-                key={index}
+                key={blueSquare._id}
                 role="button"
                 id="wrapper"
+                tabIndex={0}
                 data-testid="blueSquare"
                 className="blueSquareButton"
                 onClick={() => handleOnClick(blueSquare)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    handleOnClick(blueSquare);
+                  }
+                }}
               >
                 <div className="report" data-testid="report">
                   <div className="title">{formatDate(blueSquare.date)}</div>
                   {blueSquare.description && (
                     <div className="summary">
-                      {blueSquare.createdDate ? `${formatCreatedDate(blueSquare.createdDate)}: ` : ''}
+                      {blueSquare.createdDate
+                        ? `${formatCreatedDate(blueSquare.createdDate)}: `
+                        : ''}
                       {blueSquare.description}
                     </div>
                   )}
@@ -57,7 +62,14 @@ const BlueSquare = (props) => {
         )}
         {canAddInfringements && (
           <div
+            role="button"
+            tabIndex={0}
             onClick={() => handleBlueSquare(true, 'addBlueSquare', '')}
+            onKeyDown={e => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                handleBlueSquare(true, 'addBlueSquare', '');
+              }
+            }}
             className="blueSquareButton"
             color="primary"
             data-testid="addBlueSquare"
@@ -68,8 +80,6 @@ const BlueSquare = (props) => {
       </div>
     </div>
   );
-};
-
-
+}
 
 export default connect(null, { hasPermission })(BlueSquare);

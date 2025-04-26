@@ -22,7 +22,7 @@ const AssignTeamCodeField = React.memo(props => {
   });
   const [isOpen, toggle] = useState(false);
   const darkMode = useSelector(state => state.theme.darkMode);
-  
+
   useEffect(() => {
     if (selectedTeamCode && selectedTeamCode !== searchText) {
       onSelectTeamCode(undefined);
@@ -67,10 +67,10 @@ const AssignTeamCodeField = React.memo(props => {
               return teamCode.value.toLowerCase().includes(searchText.toLowerCase());
             })
             .slice(0, 10)
-            .map((teamCode, index) => (
+            .map(teamCode => (
               <div
                 className="project-auto-complete"
-                key={index}
+                key={teamCode.teamCodeData}
                 onClick={() => {
                   onInputChange(teamCode.value);
                   toggle(false);

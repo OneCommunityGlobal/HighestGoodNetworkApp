@@ -1,13 +1,12 @@
-import React from 'react';
-import TeamMembersPopup from './../../Teams/TeamMembersPopup.jsx';
+import { useSelector, connect } from 'react-redux';
+import TeamMembersPopup from '../../Teams/TeamMembersPopup';
 import {
   deleteTeamMember,
   addTeamMember,
   updateTeamMemeberVisibility,
-} from '../../../actions/allTeamsAction.js';
-import { useSelector, connect } from 'react-redux';
+} from '../../../actions/allTeamsAction';
 
-export const TeamMember = props => {
+export function TeamMember(props) {
   const { isOpenModalTeamMember, setIsOpenModalTeamMember, members, fetchTeamSelected } = props;
 
   const toggle = () => setIsOpenModalTeamMember(!isOpenModalTeamMember);
@@ -34,23 +33,21 @@ export const TeamMember = props => {
   };
 
   return (
-    <>
-      {isOpenModalTeamMember && (
-        <TeamMembersPopup
-          open={isOpenModalTeamMember}
-          onClose={toggle}
-          members={members.members}
-          onDeleteClick={deleteMyTeamMember}
-          usersdata={allUserProfiles}
-          onAddUser={addMyTeamMember}
-          teamData={members.TeamData}
-          onUpdateTeamMemberVisibility={updateTeamMemberVisibility}
-          selectedTeamName={members.myTeamName}
-        />
-      )}
-    </>
+    isOpenModalTeamMember && (
+      <TeamMembersPopup
+        open={isOpenModalTeamMember}
+        onClose={toggle}
+        members={members.members}
+        onDeleteClick={deleteMyTeamMember}
+        usersdata={allUserProfiles}
+        onAddUser={addMyTeamMember}
+        teamData={members.TeamData}
+        onUpdateTeamMemberVisibility={updateTeamMemberVisibility}
+        selectedTeamName={members.myTeamName}
+      />
+    )
   );
-};
+}
 
 const mapStateToProps = state => ({ state });
 export default connect(mapStateToProps, {

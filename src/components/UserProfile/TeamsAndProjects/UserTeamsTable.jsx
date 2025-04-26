@@ -1,11 +1,11 @@
-import { React, useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button, Col, Input } from 'reactstrap';
 import './TeamsAndProjects.css';
-import hasPermission from '../../../utils/permissions';
-import styles from './UserTeamsTable.css';
-import { boxStyle, boxStyleDark } from 'styles';
+import { toast } from 'react-toastify';
+import axios from 'axios';
 import { connect } from 'react-redux';
-import Switch from './Switch';
+import { boxStyle } from '../../../styles';
+import hasPermission from '../../../utils/permissions';
 import './TeamsAndProjects.css';
 import './UserTeamsTable.css';
 
@@ -13,18 +13,14 @@ import { AutoCompleteTeamCode } from './AutoCompleteTeamCode';
 
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 
-import './../../Teams/Team.css';
+import '../../Teams/Team.css';
 import { TeamMember } from './TeamMember';
-import axios from 'axios';
-import { ENDPOINTS } from '../../../utils/URL.js';
-import { toast } from 'react-toastify';
+import { ENDPOINTS } from '../../../utils/URL';
 
-const UserTeamsTable = props => {
+function UserTeamsTable(props) {
   const { darkMode } = props;
 
   const [showDropdown, setShowDropdown] = useState(false);
-
-  const [autoComplete, setAutoComplete] = useState(false);
 
   const [arrayInputAutoComplete, setArrayInputAutoComplete] = useState(props.inputAutoComplete);
 
@@ -54,16 +50,37 @@ const UserTeamsTable = props => {
     }
   }, [props.userProfile?.teamCode]);
 
-  const handleCodeChange = async (e, autoComplete) => {
-    const validation = autoComplete ? e : e.target.value;
+  const filterInputAutoComplete = result =>
+    result
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, '');
+
+  const validationUpdateAutoComplete = (value, inputArray) => {
+    if (value !== '' && !props.isLoading) {
+      const matchingSearch = inputArray.filter(item =>
+        filterInputAutoComplete(item).includes(filterInputAutoComplete(value)),
+      );
+      setArrayInputAutoComplete(matchingSearch);
+      return matchingSearch.filter(
+        item => filterInputAutoComplete(item) === filterInputAutoComplete(value),
+      );
+    }
+    setArrayInputAutoComplete(props.inputAutoComplete);
+    return null;
+  };
+
+  const handleCodeChange = async (e, isAutoComplete) => {
+    const validation = isAutoComplete ? e : e.target.value;
     setTeamCode(validation);
-    // prettier-ignore
-    validationUpdateAutoComplete(validation, props.inputAutoComplete);
+
     if (validation !== '') {
       const regexTest = fullCodeRegex.test(validation);
       refInput.current = validation;
+
       if (regexTest) {
         props.setCodeValid(true);
+
         if (props.userProfile) {
           try {
             const url = ENDPOINTS.USER_PROFILE_PROPERTY(props.userProfile._id);
@@ -79,30 +96,18 @@ const UserTeamsTable = props => {
         setTeamCode(validation);
         props.setCodeValid(false);
       }
-      autoComplete ? setShowDropdown(false) : null;
-      autoComplete = false;
+
+      if (isAutoComplete) {
+        setShowDropdown(false);
+      }
     }
+
+    validationUpdateAutoComplete(validation, props.inputAutoComplete);
   };
 
-  const validationUpdateAutoComplete = (e, autoComplete) => {
-    if (e !== '' && !props.isLoading) {
-      const isMatchingSearch = autoComplete.filter(item =>
-        filterInputAutoComplete(item).includes(filterInputAutoComplete(e)),
-      );
-      setArrayInputAutoComplete(isMatchingSearch);
-      //prettier-ignore
-      return isMatchingSearch.filter(item => filterInputAutoComplete(item) === filterInputAutoComplete(e));
-    } else setArrayInputAutoComplete(props.inputAutoComplete);
-  };
-  //prettier-ignore
-  useEffect(() => {setArrayInputAutoComplete(props.inputAutoComplete)}, [props.inputAutoStatus]);
-
-  const filterInputAutoComplete = result => {
-    return result
-      .toLowerCase()
-      .trim()
-      .replace(/\s+/g, '');
-  };
+  useEffect(() => {
+    setArrayInputAutoComplete(props.inputAutoComplete);
+  }, [props.inputAutoStatus]);
 
   const styleDefault = {
     cursor: !props.canEditTeamCode ? 'not-allowed' : 'pointer',
@@ -135,9 +140,13 @@ const UserTeamsTable = props => {
         myTeamName: teamName,
       });
 
-      isUpdate ? toast.info('Team updated successfully') : setIsOpenModalTeamMember(true);
+      if (isUpdate) {
+        toast.info('Team updated successfully');
+      } else {
+        setIsOpenModalTeamMember(true);
+      }
     } catch (error) {
-      console.log(error);
+      toast.error(error);
     }
   };
 
@@ -223,33 +232,17 @@ const UserTeamsTable = props => {
         </div>
         {props.edit && props.role && (
           <Col md="12" style={{ padding: '0' }}>
-            {canAssignTeamToUsers ? (
-              props.disabled ? (
-                <Button
-                  id="teamCodeAssign"
-                  className="btn-addteam"
-                  color="primary"
-                  style={boxStyle}
-                  disabled
-                >
-                  Assign Team
-                </Button>
-              ) : (
-                <>
-                  <Button
-                    id="teamCodeAssign"
-                    className="btn-addteam"
-                    color="primary"
-                    onClick={() => {
-                      props.onButtonClick();
-                    }}
-                  >
-                    Assign Team
-                  </Button>
-                </>
-              )
-            ) : (
-              <></>
+            {canAssignTeamToUsers && (
+              <Button
+                id="teamCodeAssign"
+                className="btn-addteam"
+                color="primary"
+                style={props.disabled ? boxStyle : undefined}
+                onClick={!props.disabled ? props.onButtonClick : undefined}
+                disabled={props.disabled}
+              >
+                Assign Team
+              </Button>
             )}
           </Col>
         )}
@@ -273,17 +266,18 @@ const UserTeamsTable = props => {
             )}
           </thead>
           <tbody className={darkMode ? 'text-light' : ''}>
-            {props.userTeamsById.length > 0 ? (
+            {props.userTeamsById.length > 0 &&
               props.userTeamsById.map((team, index) => (
-                <tr key={index} className={`tr ${darkMode ? 'dark-mode' : ''}`}>
+                <tr key={team._id} className={`tr ${darkMode ? 'dark-mode' : ''}`}>
                   <td>{index + 1}</td>
-                  <td>{`${team.teamName}`}</td>
+                  <td>{team.teamName}</td>
                   {props.edit && props.role && (
                     <>
                       <td
                         style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
                       >
                         <button
+                          aria-label="Assign team to users"
                           style={darkMode ? {} : boxStyle}
                           disabled={!canAssignTeamToUsers}
                           type="button"
@@ -306,9 +300,7 @@ const UserTeamsTable = props => {
                           <Button
                             disabled={!canAssignTeamToUsers}
                             color="danger"
-                            onClick={e => {
-                              props.onDeleteClick(team._id);
-                            }}
+                            onClick={() => props.onDeleteClick(team._id)}
                           >
                             Delete
                           </Button>
@@ -317,15 +309,12 @@ const UserTeamsTable = props => {
                     </>
                   )}
                 </tr>
-              ))
-            ) : (
-              <></>
-            )}
+              ))}
           </tbody>
         </table>
       </div>
     </div>
   );
-};
+}
 
 export default connect(null, { hasPermission })(UserTeamsTable);

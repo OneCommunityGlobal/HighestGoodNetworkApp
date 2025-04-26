@@ -7,14 +7,13 @@ const AssignTeamField = React.memo(props => {
   const [isOpen, toggle] = React.useState(false);
   const [searchText, setSearchText] = useState(() => {
     if (props.editMode) {
-      return (props.value == undefined ? "" : props.value.teamName)
-    } else {
-      return props.searchText
+      return props.value === undefined ? '' : props.value.teamName;
     }
-  })
- 
+    return props.searchText;
+  });
+
   const darkMode = useSelector(state => state.theme.darkMode);
- 
+
   React.useEffect(() => {
     if (props.selectedTeam && props.selectedTeam.teamName !== searchText) {
       props.onSelectTeam(undefined);
@@ -51,7 +50,7 @@ const AssignTeamField = React.memo(props => {
         }}
       />
 
-      {props.teamsData && props.teamsData.allTeams.length > 0 ? (
+      {props.teamsData && props.teamsData.allTeams.length > 0 && (
         <div
           tabIndex="-1"
           role="menu"
@@ -62,15 +61,11 @@ const AssignTeamField = React.memo(props => {
           style={{ marginTop: '0px', width: '100%' }}
         >
           {props.teamsData.allTeams
-            .filter(team => {
-              if (team.teamName.toLowerCase().indexOf(searchText.toLowerCase()) > -1) {
-                return team;
-              }
-            })
+            .filter(team => team.teamName.toLowerCase().includes(searchText.toLowerCase()))
             .slice(0, 10)
-            .map((item, index) => (
+            .map(item => (
               <div
-                key={index}
+                key={item._id}
                 className="team-auto-complete"
                 onClick={() => {
                   setSearchText(item.teamName);
@@ -82,8 +77,6 @@ const AssignTeamField = React.memo(props => {
               </div>
             ))}
         </div>
-      ) : (
-        <></>
       )}
     </Dropdown>
   );

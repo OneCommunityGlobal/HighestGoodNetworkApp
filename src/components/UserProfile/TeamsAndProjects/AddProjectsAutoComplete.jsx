@@ -23,7 +23,7 @@ const AddProjectsAutoComplete = React.memo(props => {
       <Input
         type="text"
         value={props.searchText}
-        autoFocus={true}
+        autoFocus
         onChange={e => {
           props.onInputChange(e.target.value);
           toggle(true);
@@ -32,7 +32,7 @@ const AddProjectsAutoComplete = React.memo(props => {
         className={`${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
       />
 
-      {props.searchText !== '' && props.projectsData && props.projectsData.length > 0 ? (
+      {props.searchText !== '' && props.projectsData && props.projectsData.length > 0 && (
         <div
           tabIndex="-1"
           role="menu"
@@ -43,14 +43,9 @@ const AddProjectsAutoComplete = React.memo(props => {
           style={{ marginTop: '0px', width: '100%' }}
         >
           {props.projectsData
-            .filter(project => {
-              if (
-                //prettier-ignore
-                props.formatText(project.projectName).indexOf(props.formatText(props.searchText)) >-1
-              ) {
-                return project;
-              }
-            })
+            .filter(project =>
+              props.formatText(project.projectName).includes(props.formatText(props.searchText)),
+            )
             .slice(0, 10)
             .map(item => (
               <div
@@ -60,6 +55,15 @@ const AddProjectsAutoComplete = React.memo(props => {
                   props.onInputChange(item.projectName);
                   toggle(false);
                   props.onDropDownSelect(item);
+                }}
+                role="button"
+                tabIndex={0}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    props.onInputChange(item.projectName);
+                    toggle(false);
+                    props.onDropDownSelect(item);
+                  }
                 }}
               >
                 {item.projectName}
@@ -75,13 +79,19 @@ const AddProjectsAutoComplete = React.memo(props => {
                 toggle(false);
                 props.setIsOpenDropdown(true);
               }}
+              role="button"
+              tabIndex={0}
+              onKeyDown={e => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  toggle(false);
+                  props.setIsOpenDropdown(true);
+                }
+              }}
             >
               Create new project: {props.searchText}
             </div>
           )}
         </div>
-      ) : (
-        <></>
       )}
     </Dropdown>
   );

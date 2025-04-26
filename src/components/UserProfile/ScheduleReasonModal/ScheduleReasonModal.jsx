@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Form from 'react-bootstrap/Form';
 import moment from 'moment-timezone';
 import DatePicker from 'react-datepicker';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '../../../styles';
 import ScheduleReasonModalCard from './ScheduleReasonModalCard';
 import {
   addTimeOffRequestThunk,
@@ -14,7 +14,7 @@ import {
 import 'react-datepicker/dist/react-datepicker.css';
 import './ScheduleReasonModal.css';
 
-const ScheduleReasonModal = ({
+function ScheduleReasonModal({
   handleClose,
   userId,
   infringements,
@@ -22,7 +22,7 @@ const ScheduleReasonModal = ({
   canManageTimeOffRequests,
   checkIfUserCanScheduleTimeOff,
   darkMode,
-}) => {
+}) {
   const dispatch = useDispatch();
   const allRequests = useSelector(state => state.timeOffRequests.requests);
 
@@ -30,11 +30,10 @@ const ScheduleReasonModal = ({
     .isoWeekday(7)
     .startOf('day');
   const nextSunday = new Date(nextSundayStr.year(), nextSundayStr.month(), nextSundayStr.date());
-  
-  const currSundayStr = moment()
-    .startOf('week');
+
+  const currSundayStr = moment().startOf('week');
   const currSunday = new Date(currSundayStr.year(), currSundayStr.month(), currSundayStr.date());
-  
+
   const initialRequestData = {
     dateOfLeave: nextSunday,
     numberOfWeeks: 1,
@@ -239,7 +238,7 @@ const ScheduleReasonModal = ({
     const dateOfLeaveStr = getDateWithoutTimeZone(data.dateOfLeave);
     const intervals = [];
     let startDate = moment(dateOfLeaveStr);
-    for (let i = 0; i < data.numberOfWeeks; i++) {
+    for (let i = 0; i < data.numberOfWeeks; i += 1) {
       const endDate = startDate.clone().endOf('week');
       intervals.push([startDate.format('MM-DD-YYYY'), endDate.format('MM-DD-YYYY')]);
       startDate = startDate.add(1, 'week').startOf('week');
@@ -253,7 +252,7 @@ const ScheduleReasonModal = ({
     return day === 0;
   };
 
-  const handleSave = ( data = requestData ) => {
+  const handleSave = (data = requestData) => {
     const { intervals, startDate } = getWeekIntervals(data);
     setConfirmationModalData({
       offTimeWeeks: intervals,
@@ -261,19 +260,18 @@ const ScheduleReasonModal = ({
       reasonForLeave: data.reasonForLeave,
     });
     toggleConfirmationModal();
-  }
+  };
 
-  const handleWeekStart = (selectedSunday) => {
+  const handleWeekStart = selectedSunday => {
     setRequestData(prev => {
       const newData = {
-      ...prev,
-      dateOfLeave: selectedSunday,
-      }
+        ...prev,
+        dateOfLeave: selectedSunday,
+      };
       handleSave(newData);
       return newData;
-    })
-    
-  }
+    });
+  };
 
   const handleSaveReason = e => {
     e.preventDefault();
@@ -285,10 +283,9 @@ const ScheduleReasonModal = ({
     if (!validateNumberOfWeeks(requestData)) return;
     if (!validateReasonForLeave(requestData)) return;
 
-    if(nextSunday.getTime() === requestData.dateOfLeave.getTime()){
+    if (nextSunday.getTime() === requestData.dateOfLeave.getTime()) {
       toggleStartWeekConfirmationModal();
-    }
-    else{
+    } else {
       handleSave();
     }
   };
@@ -356,7 +353,7 @@ const ScheduleReasonModal = ({
     <>
       {checkIfUserCanScheduleTimeOff() && (
         <>
-          <Modal.Header closeButton={true} className={darkMode ? 'bg-space-cadet' : ''}>
+          <Modal.Header closeButton className={darkMode ? 'bg-space-cadet' : ''}>
             <Modal.Title className="centered-container">
               <div className="centered-text mt-0 p1">Choose to Use a Blue Square</div>
             </Modal.Title>
@@ -403,7 +400,7 @@ const ScheduleReasonModal = ({
                   min="0"
                   step="1"
                   onChange={e => {
-                    const value = e.target.value;
+                    const { value } = e.target;
                     if (value === '' || /^[0-9]+$/.test(value)) {
                       handleAddRequestDataChange(e);
                     }
@@ -463,8 +460,8 @@ const ScheduleReasonModal = ({
                     {confirmationModalData.offTimeWeeks?.length > 0 && (
                       <Row className="pl-2">
                         <Col className="mb-2 font-italic">
-                          {confirmationModalData.offTimeWeeks.map((week, index) => (
-                            <li key={index}>
+                          {confirmationModalData.offTimeWeeks.map(week => (
+                            <li key={`${week[0]}-${week[1]}`}>
                               <b>{`From `}</b>
                               {week[0]}
                               <b>{` To `}</b>
@@ -503,10 +500,13 @@ const ScheduleReasonModal = ({
                   </Container>
                 </ModalBody>
                 <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-                  <Button variant="primary" onClick={()=>{
-                    handelConfirmReason()
-                    handleStartWeekConfirmationModal()
-                  }}>
+                  <Button
+                    variant="primary"
+                    onClick={() => {
+                      handelConfirmReason();
+                      handleStartWeekConfirmationModal();
+                    }}
+                  >
                     Confirm
                   </Button>
                   <Button variant="secondary" onClick={toggleConfirmationModal}>
@@ -530,31 +530,38 @@ const ScheduleReasonModal = ({
                   </Button>
                 </ModalFooter>
               </NestedModal>
-              <NestedModal isOpen={showStartWeekModal} toggle={toggleStartWeekConfirmationModal} className={darkMode ? 'text-light dark-mode' : ''}>
+              <NestedModal
+                isOpen={showStartWeekModal}
+                toggle={toggleStartWeekConfirmationModal}
+                className={darkMode ? 'text-light dark-mode' : ''}
+              >
                 <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                   <Container>
-                    <Row>You are about to schedule time off starting next week. Please confirm this is what you want to do.</Row>
+                    <Row>
+                      You are about to schedule time off starting next week. Please confirm this is
+                      what you want to do.
+                    </Row>
                   </Container>
                 </ModalBody>
                 <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
                   <Button
-                      variant="primary"
-                      onClick={()=>handleWeekStart(nextSunday)}
-                      className="w-100"
-                      size="md"
-                      style={darkMode ? boxStyleDark : boxStyle}
-                    >
-                      Yes, NEXT WEEK is when I want my time off to start! 
+                    variant="primary"
+                    onClick={() => handleWeekStart(nextSunday)}
+                    className="w-100"
+                    size="md"
+                    style={darkMode ? boxStyleDark : boxStyle}
+                  >
+                    Yes, NEXT WEEK is when I want my time off to start!
                   </Button>
                   <Button
-                      variant="primary"
-                      onClick={()=>handleWeekStart(currSunday)}
-                      className="w-100"
-                      size="md"
-                      style={darkMode ? boxStyleDark : boxStyle}
-                    >
-                      No, I meant to start my time off THIS WEEK.
-                      Please adjust this request to start this week instead. 
+                    variant="primary"
+                    onClick={() => handleWeekStart(currSunday)}
+                    className="w-100"
+                    size="md"
+                    style={darkMode ? boxStyleDark : boxStyle}
+                  >
+                    No, I meant to start my time off THIS WEEK. Please adjust this request to start
+                    this week instead.
                   </Button>
                 </ModalFooter>
               </NestedModal>
@@ -625,6 +632,6 @@ const ScheduleReasonModal = ({
       )}
     </>
   );
-};
+}
 
 export default React.memo(ScheduleReasonModal);

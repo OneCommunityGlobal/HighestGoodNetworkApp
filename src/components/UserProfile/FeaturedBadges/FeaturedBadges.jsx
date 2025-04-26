@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import BadgeImage from '../BadgeImage';
 
-const FeaturedBadges = props => {
+function FeaturedBadges(props) {
   const [filteredBadges, setFilteredBadges] = useState([]);
 
   const filterBadges = allBadges => {
     if (!Array.isArray(allBadges)) return [];
 
-    let filteredList = allBadges.filter(badge => badge && badge.badge);
+    const filteredList = allBadges.filter(badge => badge && badge.badge);
 
     filteredList.sort((a, b) => {
       const featuredA = a.featured ?? false;
@@ -34,16 +34,16 @@ const FeaturedBadges = props => {
   return (
     <div data-testid="badge_featured_container" className="badge_featured_container">
       {filteredBadges.map((value, index) => (
-        <BadgeImage 
-          personalBestMaxHrs={props.personalBestMaxHrs} 
-          count={value.count} 
-          badgeData={value.badge} 
-          index={index} 
-          key={value.badge?._id || index} 
+        <BadgeImage
+          personalBestMaxHrs={props.personalBestMaxHrs}
+          count={value.count}
+          badgeData={value.badge}
+          index={index}
+          key={value.badge?._id || index}
         />
       ))}
     </div>
   );
-};
+}
 
 export default FeaturedBadges;

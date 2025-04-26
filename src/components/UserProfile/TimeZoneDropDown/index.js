@@ -1,1 +1,3 @@
-export { default } from './TimeZoneDropDown';
+import TimeZoneDropDown from './TimeZoneDropDown';
+
+export default TimeZoneDropDown;

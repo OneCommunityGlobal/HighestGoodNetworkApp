@@ -15,48 +15,6 @@ class UserTeamProjectContainer extends React.PureComponent {
     };
   }
 
-  render() {
-    return (
-      <Container fluid>
-        <AddTeamPopup
-          open={this.state.addTeamPopupOpen}
-          onClose={this.onAddTeamPopupClose}
-          teamsData={this.props.teamsData}
-          userTeamsById={this.props.userTeams}
-          onSelectAssignTeam={this.onSelectAssignTeam}
-        />
-        <AddProjectPopup
-          open={this.state.postProjectPopupOpen}
-          onClose={this.onAddProjectPopupClose}
-          userProjectsById={this.props.userProjects}
-          projects={this.props.projectsData}
-          onSelectAssignProject={this.onSelectAssignProject}
-        />
-
-        <div>
-          <div className="row">
-            <div className="col">
-              <UserTeamsTable
-                userTeamsById={this.props.userTeams}
-                onButtonClick={this.onAddTeamPopupShow}
-                onDeleteClick={this.onSelectDeleteTeam}
-                renderedOn={this.state.renderedOn}
-              />
-            </div>
-            <div className="col">
-              <UserProjectsTable
-                userProjectsById={this.props.userProjects}
-                onButtonClick={this.onAddProjectPopupShow}
-                onDeleteClicK={this.onSelectDeleteProject}
-                renderedOn={this.state.renderedOn}
-              />
-            </div>
-          </div>
-        </div>
-      </Container>
-    );
-  }
-
   onSelectDeleteTeam = teamId => {
     this.props.onDeleteteam(teamId);
   };
@@ -104,5 +62,47 @@ class UserTeamProjectContainer extends React.PureComponent {
       addTeamPopupOpen: false,
     });
   };
+
+  render() {
+    return (
+      <Container fluid>
+        <AddTeamPopup
+          open={this.state.addTeamPopupOpen}
+          onClose={this.onAddTeamPopupClose}
+          teamsData={this.props.teamsData}
+          userTeamsById={this.props.userTeams}
+          onSelectAssignTeam={this.onSelectAssignTeam}
+        />
+        <AddProjectPopup
+          open={this.state.postProjectPopupOpen}
+          onClose={this.onAddProjectPopupClose}
+          userProjectsById={this.props.userProjects}
+          projects={this.props.projectsData}
+          onSelectAssignProject={this.onSelectAssignProject}
+        />
+
+        <div>
+          <div className="row">
+            <div className="col">
+              <UserTeamsTable
+                userTeamsById={this.props.userTeams}
+                onButtonClick={this.onAddTeamPopupShow}
+                onDeleteClick={this.onSelectDeleteTeam}
+                renderedOn={this.state.renderedOn}
+              />
+            </div>
+            <div className="col">
+              <UserProjectsTable
+                userProjectsById={this.props.userProjects}
+                onButtonClick={this.onAddProjectPopupShow}
+                onDeleteClicK={this.onSelectDeleteProject}
+                renderedOn={this.state.renderedOn}
+              />
+            </div>
+          </div>
+        </div>
+      </Container>
+    );
+  }
 }
 export default UserTeamProjectContainer;

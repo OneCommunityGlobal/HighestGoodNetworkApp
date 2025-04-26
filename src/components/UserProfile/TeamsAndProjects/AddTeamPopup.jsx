@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Alert, Spinner } from 'reactstrap';
-import AddTeamsAutoComplete from './AddTeamsAutoComplete';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
+import axios from 'axios';
+import AddTeamsAutoComplete from './AddTeamsAutoComplete';
 import 'react-toastify/dist/ReactToastify.css';
 import '../../Header/DarkMode.css';
-import { postNewTeam, getAllUserTeams } from '../../../../src/actions/allTeamsAction';
-import axios from 'axios';
+import { postNewTeam, getAllUserTeams } from '../../../actions/allTeamsAction';
+
 const AddTeamPopup = React.memo(props => {
   const { darkMode } = props;
 
@@ -24,7 +25,9 @@ const AddTeamPopup = React.memo(props => {
 
   const closePopup = () => {
     props.onClose();
-    !isNotDisplayAlert && setIsNotDisplayAlert(true);
+    if (!isNotDisplayAlert) {
+      setIsNotDisplayAlert(true);
+    }
   };
 
   // prettier-ignore
@@ -36,21 +39,9 @@ const AddTeamPopup = React.memo(props => {
     );
     if (result.length > 0) {
       if (arrayOrObj) return result[0];
-      else return result;
-    } else return undefined;
-  };
-
-  const IfTheUserNotSelectedSuggestionAutoComplete = () => {
-    // prettier-ignore
-    if(searchText === '')  {onValidation(false);  return;}
-
-    const filterTeamData = FilteredToTeamSpecific(true);
-
-    if (filterTeamData) {
-      onAssignTeam(filterTeamData);
-      onValidation(true);
-      !isNotDisplayAlert && setIsNotDisplayAlert(true);
-    } else setIsNotDisplayAlert(false);
+      return result;
+    }
+    return undefined;
   };
 
   const onAssignTeam = result => {
@@ -62,16 +53,33 @@ const AddTeamPopup = React.memo(props => {
     const some = !props.userTeamsById.some(x => x._id === idToCheck);
 
     if ((result || selectedTeam) && some) {
-      props.onSelectAssignTeam(result ? result : selectedTeam);
+      props.onSelectAssignTeam(result || selectedTeam);
 
       setSearchText('');
-
-      selectedTeam && (onSelectTeam(undefined), onValidation(false));
+      if (selectedTeam) {
+        onSelectTeam(undefined);
+        onValidation(false);
+      }
       closePopup(); // automatically closes the popup after team assigned
     } else
       toast.error(
         'Your user has been found in this team. Please select another team to add your user.',
       );
+  };
+
+  const IfTheUserNotSelectedSuggestionAutoComplete = () => {
+    // prettier-ignore
+    if(searchText === '')  {onValidation(false);  return;}
+
+    const filterTeamData = FilteredToTeamSpecific(true);
+
+    if (filterTeamData) {
+      onAssignTeam(filterTeamData);
+      onValidation(true);
+      if (!isNotDisplayAlert) {
+        setIsNotDisplayAlert(true);
+      }
+    } else setIsNotDisplayAlert(false);
   };
 
   const axiosResponseExceededTimeout = source => {
@@ -81,7 +89,7 @@ const AddTeamPopup = React.memo(props => {
 
   const onCreateTeam = async () => {
     if (searchText !== '') {
-      const CancelToken = axios.CancelToken;
+      const { CancelToken } = axios;
       const source = CancelToken.source();
       const timeout = setTimeout(() => axiosResponseExceededTimeout(source), 20000);
 
@@ -90,7 +98,9 @@ const AddTeamPopup = React.memo(props => {
       clearTimeout(timeout);
       if (response.status === 200) {
         setDuplicateTeam(false);
-        !isNotDisplayAlert && setIsNotDisplayAlert(true);
+        if (!isNotDisplayAlert) {
+          setIsNotDisplayAlert(true);
+        }
         // Get updated teams list and select the new team
         await dispatch(getAllUserTeams());
         toast.success('Team created successfully');
@@ -103,7 +113,11 @@ const AddTeamPopup = React.memo(props => {
           response.status === 500
             ? 'No response received from the server'
             : 'Error occurred while creating team';
-        response.status === 403 ? setDuplicateTeam(true) : toast.error(messageToastError);
+        if (response.status === 403) {
+          setDuplicateTeam(true);
+        } else {
+          toast.error(messageToastError);
+        }
       }
     } else {
       onNewTeamValidation(false);

@@ -1,5 +1,3 @@
-import { useSelector } from 'react-redux';
-
 function QuickSetupCodes({
   titles,
   setShowAssignModal,
@@ -7,9 +5,8 @@ function QuickSetupCodes({
   setShowAddTitle,
   editMode,
   assignMode,
-  teamCodes
+  teamCodes,
 }) {
-
   return (
     <div className="blueSquares mt-3" id="qsc-outer-wrapper">
       {titles.map(title => {
@@ -18,6 +15,7 @@ function QuickSetupCodes({
           <div
             key={title._id}
             role="button"
+            tabIndex={0}
             id="wrapper"
             className={`role-button ${isTeamCodeInList ? 'bg-warning' : 'bg-danger'}`}
             onClick={() => {
@@ -27,6 +25,17 @@ function QuickSetupCodes({
                 setShowAssignModal(true);
               }
               setTitleOnClick(title);
+            }}
+            onKeyDown={e => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                if (editMode) {
+                  setShowAddTitle(true);
+                } else if (assignMode) {
+                  setShowAssignModal(true);
+                }
+                setTitleOnClick(title);
+              }
             }}
             value={title.titleName}
           >

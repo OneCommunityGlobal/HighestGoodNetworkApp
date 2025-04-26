@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { connect, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 import hasPermission from '../../../utils/permissions';
 import { boxStyle, boxStyleDark } from '../../../styles';
 import AssignSetUpModal from './AssignSetupModal';
 import QuickSetupCodes from './QuickSetupCodes';
-import SaveButton from '../UserProfileEdit/SaveButton';
 import AddNewTitleModal from './AddNewTitleModal';
 import EditTitlesModal from './EditTitlesModal';
 import { getAllTitle } from '../../../actions/title';
@@ -25,10 +25,9 @@ function QuickSetupModal(props) {
   const [editMode, setEditMode] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
   const [warningMessage, setWarningMessage] = useState({});
-  const [adminLinks, setAdminLinks] = useState([]);
   const [editModal, showEditModal] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
-  const [QSTTeamCodes, setQSTTeamCodes] = useState([])
+  const [QSTTeamCodes, setQSTTeamCodes] = useState([]);
 
   const stateTeamCodes = useSelector(state => state.teamCodes?.teamCodes || []);
 
@@ -37,7 +36,7 @@ function QuickSetupModal(props) {
       .then(res => {
         setTitles(res.data);
       })
-      .catch(err => console.log(err));
+      .catch(err => toast.error(err));
   }, [editModal, refreshTrigger]);
 
   // refresh the QSCs after CREATE/DELETE operations on titles
@@ -48,7 +47,7 @@ function QuickSetupModal(props) {
       const sortedData = response.data.sort((a, b) => a.order - b.order);
       setTitles(sortedData);
     } catch (err) {
-      console.error(err);
+      toast.error(err);
     }
   };
 
@@ -84,7 +83,7 @@ function QuickSetupModal(props) {
             color="primary"
             onClick={() => setShowAddTitle(true)}
             style={darkMode ? boxStyleDark : boxStyle}
-            disabled={editMode == true}
+            disabled={editMode === true}
             title="Click this to add a new Quick Setup Title"
           >
             Add New QST
@@ -97,7 +96,7 @@ function QuickSetupModal(props) {
             color="primary mx-2"
             onClick={() => showEditModal(true)}
             style={darkMode ? boxStyleDark : boxStyle}
-            disabled={editMode == true}
+            disabled={editMode === true}
             title="Click this to change the order of QST codes"
           >
             Change Order
@@ -105,27 +104,16 @@ function QuickSetupModal(props) {
         ) : (
           ''
         )}
-        {canEditTitle ? (
-          !editMode ? (
-            <Button
-              color="primary mx-2"
-              onClick={() => setEditMode(true)}
-              style={darkMode ? boxStyleDark : boxStyle}
-            >
-              Edit
-            </Button>
-          ) : (
-            <Button
-              color="primary mx-2"
-              onClick={() => setEditMode(false)}
-              style={darkMode ? boxStyleDark : boxStyle}
-            >
-              Save
-            </Button>
-          )
-        ) : (
-          ''
+        {canEditTitle && (
+          <Button
+            color="primary mx-2"
+            onClick={() => setEditMode(!editMode)}
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
+            {editMode ? 'Save' : 'Edit'}
+          </Button>
         )}
+
         <EditTitlesModal
           isOpen={editModal}
           toggle={() => showEditModal(false)}

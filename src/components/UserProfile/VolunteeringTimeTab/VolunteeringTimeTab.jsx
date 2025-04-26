@@ -2,16 +2,21 @@ import React, { useState, useEffect } from 'react';
 import { Row, Label, Input, Col, Button, FormGroup, FormFeedback } from 'reactstrap';
 import moment from 'moment-timezone';
 import { capitalize } from 'lodash';
-import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
+import { toast } from 'react-toastify';
+import { ENDPOINTS } from '../../../utils/URL';
 import HistoryModal from './HistoryModal';
 import './timeTab.css';
-import { boxStyle, boxStyleDark } from 'styles';
-import { formatDate, formatDateYYYYMMDD, formatDateMMDDYYYY, CREATED_DATE_CRITERIA } from 'utils/formatDate';
+import { boxStyle, boxStyleDark } from '../../../styles';
+import {
+  formatDateYYYYMMDD,
+  formatDateMMDDYYYY,
+  CREATED_DATE_CRITERIA,
+} from '../../../utils/formatDate';
 
 const MINIMUM_WEEK_HOURS = 0;
 const MAXIMUM_WEEK_HOURS = 168;
-const darkModeClass = "bg-darkmode-liblack text-light border-0";
+const darkModeClass = 'bg-darkmode-liblack text-light border-0';
 
 const startEndDateValidation = props => {
   return (
@@ -19,7 +24,7 @@ const startEndDateValidation = props => {
   );
 };
 
-const StartDate = props => {
+function StartDate(props) {
   const { darkMode, startDateAlert } = props;
 
   if (!props.canEdit) {
@@ -35,25 +40,29 @@ const StartDate = props => {
         type="date"
         name="StartDate"
         id="startDate"
-        className={`${startEndDateValidation(props) ? 'border-error-validation' : ''} ${darkMode ? "bg-darkmode-liblack text-light border-0 calendar-icon-dark" : ''}`}
+        className={`${startEndDateValidation(props) ? 'border-error-validation' : ''} ${
+          darkMode ? 'bg-darkmode-liblack text-light border-0 calendar-icon-dark' : ''
+        }`}
         value={props.userProfile.startDate}
-        min={props.userProfile.createdDate < CREATED_DATE_CRITERIA ? '' : props.userProfile.createdDate}
+        min={
+          props.userProfile.createdDate < CREATED_DATE_CRITERIA ? '' : props.userProfile.createdDate
+        }
         onChange={e => {
           props.setUserProfile({ ...props.userProfile, startDate: e.target.value });
           props.onStartDateComponent(e.target.value);
         }}
         placeholder="Start Date"
         invalid={!props.canEdit}
-        max={props.userProfile.endDate ? formatDateYYYYMMDD(props.userProfile.endDate) : '9999-12-31'}
+        max={
+          props.userProfile.endDate ? formatDateYYYYMMDD(props.userProfile.endDate) : '9999-12-31'
+        }
       />
-      {startDateAlert && (
-        <FormFeedback style={{ display: 'block' }}>{startDateAlert}</FormFeedback>
-      )}
+      {startDateAlert && <FormFeedback style={{ display: 'block' }}>{startDateAlert}</FormFeedback>}
     </FormGroup>
   );
-};
+}
 
-const EndDate = props => {
+function EndDate(props) {
   const { darkMode, endDateAlert } = props;
 
   if (!props.canEdit) {
@@ -67,34 +76,28 @@ const EndDate = props => {
   return (
     <FormGroup>
       <Input
-        className={`${startEndDateValidation(props) ? 'border-error-validation' : ''} ${darkMode ? "bg-darkmode-liblack text-light border-0 calendar-icon-dark" : ''}`}
+        className={`${startEndDateValidation(props) ? 'border-error-validation' : ''} ${
+          darkMode ? 'bg-darkmode-liblack text-light border-0 calendar-icon-dark' : ''
+        }`}
         type="date"
         name="EndDate"
         id="endDate"
-        value={
-          props.userProfile.endDate ? props.userProfile.endDate : ''
-        }
+        value={props.userProfile.endDate ? props.userProfile.endDate : ''}
         onChange={e => {
           props.setUserProfile({ ...props.userProfile, endDate: e.target.value });
           props.onEndDateComponent(e.target.value);
         }}
         placeholder="End Date"
         invalid={!props.canEdit}
-        min={
-          props.userProfile.startDate
-            ? props.userProfile.startDate
-            : ''
-        }
-        max={'9999-12-31'}
+        min={props.userProfile.startDate ? props.userProfile.startDate : ''}
+        max="9999-12-31"
       />
-      {endDateAlert && (
-        <FormFeedback style={{ display: 'block' }}>{endDateAlert}</FormFeedback>
-      )}
+      {endDateAlert && <FormFeedback style={{ display: 'block' }}>{endDateAlert}</FormFeedback>}
     </FormGroup>
   );
-};
+}
 
-const WeeklySummaryOptions = props => {
+function WeeklySummaryOptions(props) {
   const { darkMode } = props;
 
   if (!props.canEdit) {
@@ -119,7 +122,7 @@ const WeeklySummaryOptions = props => {
   ];
 
   const handleOnChange = e => {
-    let temp = { ...props.userProfile };
+    const temp = { ...props.userProfile };
     temp.weeklySummaryOption = e.target.value;
     if (e.target.value === 'Not Required') {
       temp.weeklySummaryNotReq = true;
@@ -150,11 +153,11 @@ const WeeklySummaryOptions = props => {
       </select>
     </FormGroup>
   );
-};
+}
 
-const WeeklyCommittedHours = props => {
-  //Do Not change the property name "weeklycommittedHours"
-  //Otherwise it will not update in the backend.
+function WeeklyCommittedHours(props) {
+  // Do Not change the property name "weeklycommittedHours"
+  // Otherwise it will not update in the backend.
 
   const { darkMode } = props;
 
@@ -164,17 +167,17 @@ const WeeklyCommittedHours = props => {
   const handleChange = e => {
     // Max: 168 hrs  Min: 0 hr
     // Convert value from string into easy number
-    const value = parseInt(e.target.value);
+    const value = parseInt(e.target.value, 10);
     if (value > MAXIMUM_WEEK_HOURS) {
       // Check if Value is greater than maximum hours and set it to maximum hours if needed
-      alert(`You can't commit more than ${MAXIMUM_WEEK_HOURS} hours per week.`);
+      toast.error(`You can't commit more than ${MAXIMUM_WEEK_HOURS} hours per week.`);
       props.setUserProfile({ ...props.userProfile, weeklycommittedHours: MAXIMUM_WEEK_HOURS });
     } else if (value < MINIMUM_WEEK_HOURS) {
-      //Check if value is less than minimum hours and set it to minimum hours if needed
-      alert(`You can't commit less than ${MINIMUM_WEEK_HOURS} hours per week.`);
+      // Check if value is less than minimum hours and set it to minimum hours if needed
+      toast.error(`You can't commit less than ${MINIMUM_WEEK_HOURS} hours per week.`);
       props.setUserProfile({ ...props.userProfile, weeklycommittedHours: MINIMUM_WEEK_HOURS });
     } else {
-      //update weekly hours whatever numbers in the input
+      // update weekly hours whatever numbers in the input
       props.setUserProfile({ ...props.userProfile, weeklycommittedHours: value });
     }
   };
@@ -193,9 +196,9 @@ const WeeklyCommittedHours = props => {
       className={darkMode ? darkModeClass : ''}
     />
   );
-};
+}
 
-const MissedHours = props => {
+function MissedHours(props) {
   const { darkMode } = props;
 
   if (!props.canEdit) {
@@ -218,9 +221,9 @@ const MissedHours = props => {
       placeholder="Additional Make-up Hours This Week"
     />
   );
-};
+}
 
-const TotalIntangibleHours = props => {
+function TotalIntangibleHours(props) {
   const { darkMode } = props;
 
   if (!props.canEdit) {
@@ -245,7 +248,7 @@ const TotalIntangibleHours = props => {
       placeholder="Total Intangible Hours"
     />
   );
-};
+}
 
 /**
  *
@@ -255,11 +258,18 @@ const TotalIntangibleHours = props => {
  *
  * @returns
  */
-const ViewTab = props => {
-  const { userProfile, setUserProfile, role, canEdit, canUpdateSummaryRequirements, darkMode } = props;
+function ViewTab(props) {
+  const {
+    userProfile,
+    setUserProfile,
+    role,
+    canEdit,
+    canUpdateSummaryRequirements,
+    darkMode,
+  } = props;
   const [totalTangibleHoursThisWeek, setTotalTangibleHoursThisWeek] = useState(0);
   const [totalTangibleHours, setTotalTangibleHours] = useState(0);
-  const { hoursByCategory, totalIntangibleHrs } = userProfile;
+  const { hoursByCategory } = userProfile;
   const [historyModal, setHistoryModal] = useState(false);
   const [startDateAlert, setStartDateAlert] = useState('');
   const [endDateAlert, setEndDateAlert] = useState('');
@@ -275,15 +285,11 @@ const ViewTab = props => {
     props.onEndDate(endDate);
   };
 
-  useEffect(() => {
-    sumOfCategoryHours();
-  }, [hoursByCategory]);
-
   const calculateTotalHrsForPeriod = timeEntries => {
-    let hours = { totalTangibleHrs: 0, totalIntangibleHrs: 0 };
+    const hours = { totalTangibleHrs: 0, totalIntangibleHrs: 0 };
     if (timeEntries.length < 1) return hours;
 
-    for (let i = 0; i < timeEntries.length; i++) {
+    for (let i = 0; i < timeEntries.length; i += 1) {
       const timeEntry = timeEntries[i];
       if (timeEntry.isTangible) {
         hours.totalTangibleHrs += parseFloat(timeEntry.hours) + parseFloat(timeEntry.minutes) / 60;
@@ -295,18 +301,22 @@ const ViewTab = props => {
     return hours;
   };
 
-  //This function is return totalTangibleHours which is the sum of all the tangible categories
+  // This function is return totalTangibleHours which is the sum of all the tangible categories
   const sumOfCategoryHours = () => {
     const hours = Object.values(hoursByCategory).reduce((prev, curr) => prev + curr, 0);
     setTotalTangibleHours(hours.toFixed(2));
   };
+
+  useEffect(() => {
+    sumOfCategoryHours();
+  }, [hoursByCategory]);
 
   const toggleHistoryModal = () => {
     setHistoryModal(!historyModal);
   };
 
   useEffect(() => {
-    //Get Total Tangible Hours this week
+    // Get Total Tangible Hours this week
     const startOfWeek = moment()
       .tz('America/Los_Angeles')
       .startOf('week')
@@ -324,21 +334,20 @@ const ViewTab = props => {
         setTotalTangibleHoursThisWeek(output.totalTangibleHrs.toFixed(2));
       })
       .catch(err => {
-        console.log(err.message);
+        toast.error(err.message);
       });
 
-    //Get total tangible & intangible hours
+    // Get total tangible & intangible hours
     const createdDate = formatDateYYYYMMDD(userProfile.createdDate);
     const today = moment().format('YYYY-MM-DD');
 
     axios
       .get(ENDPOINTS.TIME_ENTRIES_PERIOD(userProfile._id, createdDate, today))
-      .then(res => {
-        const timeEntries = res.data;
+      .then(() => {
         sumOfCategoryHours();
       })
       .catch(err => {
-        console.log(err.message);
+        toast.error(err.message);
       });
   }, []);
 
@@ -347,7 +356,7 @@ const ViewTab = props => {
   };
 
   const handleOnChangeHours = (e, key) => {
-    let value = e.target.value;
+    let { value } = e.target;
     if (!value) value = 0;
     setUserProfile({
       ...userProfile,
@@ -360,17 +369,20 @@ const ViewTab = props => {
 
   useEffect(() => {
     if (userProfile.startDate === '') {
-      setStartDateAlert("Invalid date");
-    } else if (userProfile.createdDate >= CREATED_DATE_CRITERIA && userProfile.startDate < userProfile.createdDate) {
-      setStartDateAlert("The start date is before the account created date");
+      setStartDateAlert('Invalid date');
+    } else if (
+      userProfile.createdDate >= CREATED_DATE_CRITERIA &&
+      userProfile.startDate < userProfile.createdDate
+    ) {
+      setStartDateAlert('The start date is before the account created date');
     } else {
-      setStartDateAlert('')
+      setStartDateAlert('');
     }
   }, [userProfile.startDate, userProfile.createdDate]);
 
   useEffect(() => {
     if (userProfile.endDate !== '' && userProfile.endDate < userProfile.startDate) {
-      setEndDateAlert("The end date is before the start date");
+      setEndDateAlert('The end date is before the start date');
     } else {
       setEndDateAlert('');
     }
@@ -380,10 +392,14 @@ const ViewTab = props => {
     <div data-testid="volunteering-time-tab">
       <Row className="volunteering-time-row">
         <Col md="6">
-          <Label className={`hours-label ${darkMode ? 'text-light' : ''}`}>Account Created Date</Label>
+          <Label className={`hours-label ${darkMode ? 'text-light' : ''}`}>
+            Account Created Date
+          </Label>
         </Col>
         <Col md="6">
-          <p className={darkMode ? 'text-azure' : ''}>{formatDateMMDDYYYY(userProfile.createdDate)}</p>
+          <p className={darkMode ? 'text-azure' : ''}>
+            {formatDateMMDDYYYY(userProfile.createdDate)}
+          </p>
         </Col>
       </Row>
       <Row className="volunteering-time-row">
@@ -470,7 +486,7 @@ const ViewTab = props => {
             userHistory={userProfile.weeklycommittedHoursHistory}
           />
           <span className="history-icon">
-            <i className="fa fa-history" aria-hidden="true" onClick={toggleHistoryModal}></i>
+            <i className="fa fa-history" aria-hidden="true" onClick={toggleHistoryModal} />
           </span>
         </Col>
       </Row>
@@ -530,42 +546,42 @@ const ViewTab = props => {
       </Row>
       {props?.userProfile?.hoursByCategory
         ? Object.keys(userProfile.hoursByCategory).map(key => (
-          <React.Fragment key={'hours-by-category-' + key}>
-            <Row className="volunteering-time-row">
-              <Col md="6">
-                <Label className={`hours-label ${darkMode ? 'text-light' : ''}`}>
-                  {key !== 'unassigned' ? (
-                    <>Total Tangible {capitalize(key)} Hours</>
+            <React.Fragment key={`hours-by-category-${key}`}>
+              <Row className="volunteering-time-row">
+                <Col md="6">
+                  <Label className={`hours-label ${darkMode ? 'text-light' : ''}`}>
+                    {key !== 'unassigned' ? (
+                      <>Total Tangible {capitalize(key)} Hours</>
+                    ) : (
+                      <>Total Unassigned Category Hours</>
+                    )}
+                  </Label>
+                </Col>
+                <Col md="6">
+                  {canEdit ? (
+                    <Input
+                      type="number"
+                      pattern="^\d*\.?\d{0,2}$"
+                      id={`${key}Hours`}
+                      step=".01"
+                      min="0"
+                      className={darkMode ? darkModeClass : ''}
+                      value={roundToTwo(userProfile.hoursByCategory[key])}
+                      onChange={e => handleOnChangeHours(e, key)}
+                      placeholder={`Total Tangible ${capitalize(key)} Hours`}
+                    />
                   ) : (
-                    <>Total Unassigned Category Hours</>
+                    <p className={darkMode ? 'text-azure' : ''}>
+                      {userProfile.hoursByCategory[key]?.toFixed(2)}
+                    </p>
                   )}
-                </Label>
-              </Col>
-              <Col md="6">
-                {canEdit ? (
-                  <Input
-                    type="number"
-                    pattern="^\d*\.?\d{0,2}$"
-                    id={`${key}Hours`}
-                    step=".01"
-                    min="0"
-                    className={darkMode ? darkModeClass : ''}
-                    value={roundToTwo(userProfile.hoursByCategory[key])}
-                    onChange={e => handleOnChangeHours(e, key)}
-                    placeholder={`Total Tangible ${capitalize(key)} Hours`}
-                  />
-                ) : (
-                  <p className={darkMode ? 'text-azure' : ''}>
-                    {userProfile.hoursByCategory[key]?.toFixed(2)}
-                  </p>
-                )}
-              </Col>
-            </Row>
-          </React.Fragment>
-        ))
+                </Col>
+              </Row>
+            </React.Fragment>
+          ))
         : []}
     </div>
   );
-};
+}
 
 export default ViewTab;

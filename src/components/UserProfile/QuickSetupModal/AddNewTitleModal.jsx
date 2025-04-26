@@ -28,10 +28,9 @@ function AddNewTitleModal({
   setShowMessage,
   editMode,
   title,
-  QSTTeamCodes
+  QSTTeamCodes,
 }) {
   const darkMode = useSelector(state => state.theme.darkMode);
-  const teamCodes = useSelector(state => state.teamCodes?.teamCodes || []);
 
   const [titleData, setTitleData] = useState(() => {
     if (editMode && Object.keys(title).length !== 0) {
@@ -42,7 +41,8 @@ function AddNewTitleModal({
         mediaFolder: title.mediaFolder,
         teamCode: title.teamCode,
         projectAssigned: title.projectAssigned,
-        teamAssiged: title.teamAssiged == undefined ? { teamName: '', _id: '' } : title.teamAssiged,
+        teamAssiged:
+          title.teamAssiged === undefined ? { teamName: '', _id: '' } : title.teamAssiged,
       };
     }
     return {
@@ -94,22 +94,19 @@ function AddNewTitleModal({
     );
   }, [titleData.teamCode, QSTTeamCodes]);
 
-  let existTeamCodes = new Set();
   let existTeamName = new Set();
 
   if (teamsData?.allTeams) {
-    const codes = teamsData.allTeams.map(team => team.teamCode);
     const names = teamsData.allTeams.map(team => team.teamName);
     // Use allTeamCode rather than allTeams since team code is not related to records in the Team table.
     // It is all distinct team codes from the UserProfile teamCode field.
-    existTeamCodes = new Set(teamsData?.allTeamCode?.distinctTeamCodes);
     existTeamName = new Set(names);
   }
 
   const [selectedTeam, onSelectTeam] = useState(undefined);
   const [selectedProject, onSelectProject] = useState(undefined);
   const [selectedTeamCode, onSelectTeamCode] = useState(undefined);
-  const [isValidProject, onValidation] = useState(false);
+  const [, onValidation] = useState(false);
   const [searchText, setSearchText] = useState(''); // For addTeamAutoComplete
 
   const selectProject = project => {
@@ -176,6 +173,18 @@ function AddNewTitleModal({
     });
   };
 
+  const onTeamNameValidation = teamName => {
+    if (teamName && teamName !== '') {
+      if (!existTeamName.has(teamName.teamName)) {
+        setWarningMessage({ title: 'Error', content: 'Team Name Not Exists' });
+        setShowMessage(true);
+        return false;
+      }
+    }
+    setShowMessage(false);
+    return true;
+  };
+
   // confirm and save
   const confirmOnClick = () => {
     const isValidTeamName = onTeamNameValidation(titleData.teamAssiged);
@@ -197,7 +206,7 @@ function AddNewTitleModal({
           }
         })
         .catch(e => {
-          console.log(e);
+          toast.log(e);
         });
     } else {
       addTitle(titleData)
@@ -212,41 +221,9 @@ function AddNewTitleModal({
           }
         })
         .catch(e => {
-          console.log(e);
+          toast.log(e);
         });
     }
-  };
-
-  const onTeamCodeValidation = teamCode => {
-    const format1 = /^[A-Za-z]-[A-Za-z]{3}$/;
-    const format2 = /^[A-Z]{5}$/;
-    // Check if the input value matches either of the formats
-    const isValidFormat = format1.test(teamCode) || format2.test(teamCode);
-    if (!isValidFormat) {
-      setWarningMessage({ title: 'Error', content: 'Invalid Team Code Format' });
-      setShowMessage(true);
-      setTitleData({ ...titleData, teamCode: '' });
-      return;
-    }
-    if (!existTeamCodes.has(teamCode)) {
-      setWarningMessage({ title: 'Error', content: 'Team Code Not Exists' });
-      setShowMessage(true);
-      setTitleData({ ...titleData, teamCode: '' });
-      return;
-    }
-    setShowMessage(false);
-  };
-
-  const onTeamNameValidation = teamName => {
-    if (teamName && teamName !== '') {
-      if (!existTeamName.has(teamName.teamName)) {
-        setWarningMessage({ title: 'Error', content: 'Team Name Not Exists' });
-        setShowMessage(true);
-        return false;
-      }
-    }
-    setShowMessage(false);
-    return true;
   };
 
   const fontColor = darkMode ? 'text-light' : '';
@@ -362,7 +339,8 @@ function AddNewTitleModal({
           color="primary"
           onClick={() => confirmOnClick()}
           disabled={
-            !/^(https?:\/\/[^\s]+)$/.test(titleData.mediaFolder.trim()) || titleData.mediaFolder === ''
+            !/^(https?:\/\/[^\s]+)$/.test(titleData.mediaFolder.trim()) ||
+            titleData.mediaFolder === ''
           }
         >
           Confirm

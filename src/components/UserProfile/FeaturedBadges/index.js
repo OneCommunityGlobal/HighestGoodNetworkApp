@@ -1,1 +1,3 @@
-export {default} from './FeaturedBadges'
+import FeaturedBadges from './FeaturedBadges';
+
+export default FeaturedBadges;

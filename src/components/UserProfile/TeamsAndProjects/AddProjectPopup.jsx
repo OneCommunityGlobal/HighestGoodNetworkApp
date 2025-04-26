@@ -1,20 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Alert, Input } from 'reactstrap';
-import AddProjectsAutoComplete from './AddProjectsAutoComplete';
-import { boxStyle, boxStyleDark } from 'styles';
-import '../../Header/DarkMode.css';
 import { toast } from 'react-toastify';
 import axios from 'axios';
+import AddProjectsAutoComplete from './AddProjectsAutoComplete';
+import { boxStyle, boxStyleDark } from '../../../styles';
+import '../../Header/DarkMode.css';
 import { ENDPOINTS } from '../../../utils/URL';
 
 const AddProjectPopup = React.memo(props => {
   const { darkMode } = props;
-
-  const closePopup = () => {
-    props.onClose();
-    setIsOpenDropdown(false);
-    isSetShowAlert(false);
-  };
 
   const [selectedProject, onSelectProject] = useState(undefined);
   const [isValidProject, onValidation] = useState(true);
@@ -26,6 +20,11 @@ const AddProjectPopup = React.memo(props => {
   const [searchText, onInputChange] = useState('');
   const [allProjects, setAllProjects] = useState(props.projects);
 
+  const closePopup = () => {
+    props.onClose();
+    setIsOpenDropdown(false);
+    isSetShowAlert(false);
+  };
   const formatText = result =>
     result
       .toLowerCase()
@@ -37,29 +36,6 @@ const AddProjectPopup = React.memo(props => {
     const uniqueCategoriesProjects = Array.from(new Set(categoriesProjects));
     setItemsDropdown(uniqueCategoriesProjects);
   }, [props.projects]);
-
-  const onAssignProject = async () => {
-    if (isUserIsNotSelectedAutoComplete) {
-      const validateProjectName = validationProjectName();
-
-      if (!validateProjectName) {
-        isSetShowAlert(true);
-        setIsOpenDropdown(true);
-        return;
-      }
-    }
-
-    if (selectedProject && !props.userProjectsById.some(x => x._id === selectedProject._id)) {
-      await props.onSelectAssignProject(selectedProject);
-      onSelectProject(undefined);
-      toast.success('Project assigned successfully');
-    } else {
-      onValidation(false);
-    }
-    if (props.handleSubmit !== undefined) {
-      props.handleSubmit();
-    }
-  };
 
   const selectProject = project => {
     onSelectProject(project);
@@ -73,13 +49,13 @@ const AddProjectPopup = React.memo(props => {
 
   const finishFetch = status => {
     setIsOpenDropdown(false);
-    
+
     toast.success(
       status === 200
         ? 'Project created successfully'
         : 'Project created successfully, but it is not possible to retrieve the new project.',
     );
-  
+
     setDropdownText(dropdownText);
   };
 
@@ -110,7 +86,7 @@ const AddProjectPopup = React.memo(props => {
       await axios.post(urlCreateProject, newProject);
       const url = ENDPOINTS.PROJECTS;
       const res = await axios.get(url);
-      const status = res.status;
+      const { status } = res;
       const projects = res.data;
       if (status === 200) {
         const findNewProject = projects.filter((item, i) => i === 0)[0];
@@ -127,6 +103,28 @@ const AddProjectPopup = React.memo(props => {
     }
   };
 
+  const onAssignProject = async () => {
+    if (isUserIsNotSelectedAutoComplete) {
+      const validateProjectName = validationProjectName();
+
+      if (!validateProjectName) {
+        isSetShowAlert(true);
+        setIsOpenDropdown(true);
+        return;
+      }
+    }
+
+    if (selectedProject && !props.userProjectsById.some(x => x._id === selectedProject._id)) {
+      await props.onSelectAssignProject(selectedProject);
+      onSelectProject(undefined);
+      toast.success('Project assigned successfully');
+    } else {
+      onValidation(false);
+    }
+    if (props.handleSubmit !== undefined) {
+      props.handleSubmit();
+    }
+  };
   return (
     <Modal
       isOpen={props.open}
@@ -177,7 +175,9 @@ const AddProjectPopup = React.memo(props => {
               <Button
                 color="danger"
                 onClick={() => {
-                  setIsOpenDropdown(false), isSetShowAlert(false), onInputChange('');
+                  setIsOpenDropdown(false);
+                  isSetShowAlert(false);
+                  onInputChange('');
                 }}
                 style={{ width: '100%' }}
               >

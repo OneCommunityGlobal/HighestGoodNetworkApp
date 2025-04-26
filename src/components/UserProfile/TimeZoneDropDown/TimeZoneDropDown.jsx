@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import timeZoneMap from 'constants/timeZones';
+import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import timeZoneMap from '../../../constants/timeZones';
 
 /**
  *
@@ -10,7 +10,7 @@ import { useSelector } from 'react-redux';
  * @param {string} [props.name=timeZone] 'name' HTML property of component
  * @param {string} [props.selected=] Name of the time zone selected by default
  */
-const TimeZoneDropDown = props => {
+function TimeZoneDropDown(props) {
   const id = props.id || 'timeZone';
   const darkMode = useSelector(state => state.theme.darkMode);
 
@@ -42,14 +42,19 @@ const TimeZoneDropDown = props => {
           timeZoneString.toLocaleLowerCase().includes(props.filter.toLocaleLowerCase())
         ) {
           return (
-            <option data-testid="time_zone_option" value={timeZoneName} key={`timeZone-${timeZoneName}`}>
+            <option
+              data-testid="time_zone_option"
+              value={timeZoneName}
+              key={`timeZone-${timeZoneName}`}
+            >
               {timeZoneString}
             </option>
           );
         }
+        return null;
       })}
     </select>
   );
-};
+}
 
 export default TimeZoneDropDown;

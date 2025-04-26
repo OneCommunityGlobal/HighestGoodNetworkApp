@@ -1,26 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardTitle, CardBody, CardImg, CardText, Popover } from 'reactstrap';
 
-const BadgeImage = props => {
+function BadgeImage(props) {
   const [isOpen, setOpen] = useState(false);
   const [badgeValue, setBadgeValue] = useState(props.count);
 
-  const toggle = () => setOpen(isOpen => !isOpen);
+  const toggle = () => setOpen(open => !open);
 
   const updateBadgeValue = (countValue, personalBestMaxHrs) => {
-    if(props.badgeData.type == 'Personal Max'){ 
+    if (props.badgeData.type === 'Personal Max') {
       // show the personal best hours or mannually updated hours
       if (countValue > personalBestMaxHrs) {
         setBadgeValue(countValue);
-      }
-      else{
+      } else {
         setBadgeValue(personalBestMaxHrs);
       }
-    }
-    else{
+    } else {
       setBadgeValue(countValue);
     }
-  }
+  };
 
   useEffect(() => {
     // update the badge value when save changes simultaneously
@@ -34,26 +32,46 @@ const BadgeImage = props => {
           <img
             data-testid={`badge-image-${props.index}`}
             src={props?.badgeData?.imageUrl}
-            id={'popover_' + props.time + props.index.toString()}
+            id={`popover_${props.time}${props.index.toString()}`}
             alt=""
           />
 
-          {props.badgeData.type == 'Personal Max' ? (
-            <span data-testid="badge_featured_count_personalmax" className={'badge_featured_count_personalmax'}>
-              {`${Math.floor(badgeValue)} ${Math.floor(badgeValue) <= 1 ? ' hr' : ' hrs'}`}
-            </span>
-          ) : props.count < 100 ? (
-            <span data-testid="badge_featured_count" className={'badge_featured_count'}>{Math.round(badgeValue)}</span>
-          ) : (
-            <span data-testid="badge_featured_count_3_digit" className="badge_featured_count_3_digit">{Math.round(badgeValue)}</span>
-          )}
+          {(() => {
+            if (props.badgeData.type === 'Personal Max') {
+              return (
+                <span
+                  data-testid="badge_featured_count_personalmax"
+                  className="badge_featured_count_personalmax"
+                >
+                  {`${Math.floor(badgeValue)} ${Math.floor(badgeValue) <= 1 ? ' hr' : ' hrs'}`}
+                </span>
+              );
+            }
+
+            if (props.count < 100) {
+              return (
+                <span data-testid="badge_featured_count" className="badge_featured_count">
+                  {Math.round(badgeValue)}
+                </span>
+              );
+            }
+
+            return (
+              <span
+                data-testid="badge_featured_count_3_digit"
+                className="badge_featured_count_3_digit"
+              >
+                {Math.round(badgeValue)}
+              </span>
+            );
+          })()}
         </div>
       </div>
       <Popover
         trigger="hover"
         isOpen={isOpen}
         toggle={toggle}
-        target={'popover_' + props.time + props.index.toString()}
+        target={`popover_${props.time}${props.index.toString()}`}
       >
         <Card className="text-center">
           <CardImg className="badge_image_lg" src={props?.badgeData?.imageUrl} />
@@ -74,6 +92,6 @@ const BadgeImage = props => {
       </Popover>
     </>
   );
-};
+}
 
 export default BadgeImage;

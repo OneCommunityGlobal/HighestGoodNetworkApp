@@ -1,10 +1,12 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import { useEffect, useState } from 'react';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { toast } from 'react-toastify';
+import { ENDPOINTS } from '../../../utils/URL';
 
-const EditTitlesModal = ({ isOpen, toggle, titles, refreshModalTitles, darkMode }) => {
+function EditTitlesModal({ isOpen, toggle, titles, refreshModalTitles, darkMode }) {
   const [orderedTitles, setOrderedTitles] = useState([]);
 
   useEffect(() => {
@@ -13,7 +15,7 @@ const EditTitlesModal = ({ isOpen, toggle, titles, refreshModalTitles, darkMode 
     }
   }, [titles]);
 
-  const handleDragEnd = (result) => {
+  const handleDragEnd = result => {
     if (!result.destination) return;
     const items = Array.from(orderedTitles);
     const [reorderedItem] = items.splice(result.source.index, 1);
@@ -25,21 +27,19 @@ const EditTitlesModal = ({ isOpen, toggle, titles, refreshModalTitles, darkMode 
     try {
       const orderData = orderedTitles.map((title, index) => ({
         id: title._id,
-        order: index + 1
+        order: index + 1,
       }));
-      console.log('Sending order data:', orderData);
-  
+
       const url = ENDPOINTS.REORDER_TITLES();
-      const response = await axios.put(url, { orderData });
-      console.log('Server response:', response.data);
-      
+      await axios.put(url, { orderData });
+
       await refreshModalTitles();
       toggle();
     } catch (error) {
-      console.error("Error saving title order: ", error);
+      toast.error('Error saving title order: ', error);
     }
   };
-  
+
   return (
     <Modal
       isOpen={isOpen}
@@ -47,53 +47,46 @@ const EditTitlesModal = ({ isOpen, toggle, titles, refreshModalTitles, darkMode 
       className={darkMode ? 'text-light dark-mode' : ''}
       style={{ maxHeight: '100vh' }}
     >
-      <ModalHeader 
-        toggle={toggle}
-        className={darkMode ? 'bg-space-cadet' : ''}
-      >
+      <ModalHeader toggle={toggle} className={darkMode ? 'bg-space-cadet' : ''}>
         Edit Titles Order
       </ModalHeader>
-      <ModalBody 
-        className={darkMode ? 'bg-yinmn-blue' : ''} 
-        style={{ 
+      <ModalBody
+        className={darkMode ? 'bg-yinmn-blue' : ''}
+        style={{
           overflowY: 'auto',
-          maxHeight: 'calc(100vh - 200px)'
+          maxHeight: 'calc(100vh - 200px)',
         }}
       >
         <DragDropContext onDragEnd={handleDragEnd}>
           <Droppable droppableId="titles">
-            {(provided) => (
-              <div 
+            {provided => (
+              <div
                 {...provided.droppableProps}
                 ref={provided.innerRef}
                 className="titles-list"
                 style={{ minHeight: '100%' }}
               >
                 {orderedTitles.map((title, index) => (
-                  <Draggable 
-                    key={title._id} 
-                    draggableId={title._id} 
-                    index={index}
-                  >
-                    {(provided, snapshot) => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                      className={`role-buttons ${snapshot.isDragging ? 'dragging' : ''}`}
-                      style={{
-                        ...provided.draggableProps.style,
-                        padding: '10px',
-                        margin: '8px 0',
-                        backgroundColor: darkMode ? '#2c3e50' : '#f8f9fa',
-                        border: '1px solid #dee2e6',
-                        borderRadius: '4px',
-                        cursor: 'grab'
-                      }}
-                    >
-                      {title?.titleCode ? title.titleCode : title?.titleName?.substring(0, 7)}
-                    </div>
-                  )}
+                  <Draggable key={title._id} draggableId={title._id} index={index}>
+                    {(providedParam, snapshot) => (
+                      <div
+                        ref={providedParam.innerRef}
+                        {...providedParam.draggableProps}
+                        {...providedParam.dragHandleProps}
+                        className={`role-buttons ${snapshot.isDragging ? 'dragging' : ''}`}
+                        style={{
+                          ...providedParam.draggableProps.style,
+                          padding: '10px',
+                          margin: '8px 0',
+                          backgroundColor: darkMode ? '#2c3e50' : '#f8f9fa',
+                          border: '1px solid #dee2e6',
+                          borderRadius: '4px',
+                          cursor: 'grab',
+                        }}
+                      >
+                        {title?.titleCode ? title.titleCode : title?.titleName?.substring(0, 7)}
+                      </div>
+                    )}
                   </Draggable>
                 ))}
                 {provided.placeholder}
@@ -112,6 +105,6 @@ const EditTitlesModal = ({ isOpen, toggle, titles, refreshModalTitles, darkMode 
       </ModalFooter>
     </Modal>
   );
-};
+}
 
 export default EditTitlesModal;
