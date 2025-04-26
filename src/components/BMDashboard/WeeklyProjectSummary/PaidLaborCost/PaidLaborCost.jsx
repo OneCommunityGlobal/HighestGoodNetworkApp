@@ -23,12 +23,26 @@ const mockData = [
   { project: 'Project A', task: 'Task 1', date: '2025-04-01', cost: 5000 },
   { project: 'Project A', task: 'Task 2', date: '2025-04-02', cost: 3000 },
   { project: 'Project A', task: 'Task 3', date: '2025-04-03', cost: 12000 },
-  { project: 'Project A', task: 'Task 4', date: '2025-04-04', cost: 8000 },
-
-  { project: 'Project B', task: 'Task 1', date: '2025-04-02', cost: 10000 },
-  { project: 'Project B', task: 'Task 2', date: '2025-04-03', cost: 7000 },
-  { project: 'Project B', task: 'Task 3', date: '2025-04-04', cost: 15000 },
-  { project: 'Project B', task: 'Task 4', date: '2025-04-05', cost: 9000 },
+  { project: 'Project A', task: 'Task 4', date: '2025-04-04', cost: 48000 },
+  { project: 'Project A', task: 'Task 5', date: '2025-04-04', cost: 18000 },
+  { project: 'Project A', task: 'Task 6', date: '2025-04-04', cost: 82000 },
+  { project: 'Project A', task: 'Task 7', date: '2025-04-04', cost: 48000 },
+  { project: 'Project A', task: 'Task 8', date: '2025-04-04', cost: 28000 },
+  { project: 'Project A', task: 'Task 9', date: '2025-04-04', cost: 87000 },
+  { project: 'Project A', task: 'Task 10', date: '2025-04-04', cost: 88000 },
+  { project: 'Project A', task: 'Task 11', date: '2025-04-04', cost: 180900 },
+  { project: 'Project A', task: 'Task 12', date: '2025-04-04', cost: 280000 },
+  { project: 'Project A', task: 'Task 13', date: '2025-04-04', cost: 480050 },
+  { project: 'Project A', task: 'Task 14', date: '2025-04-04', cost: 68000 },
+  { project: 'Project A', task: 'Task 15', date: '2025-04-04', cost: 80500 },
+  { project: 'Project A', task: 'Task 16', date: '2025-04-04', cost: 80400 },
+  { project: 'Project A', task: 'Task 17', date: '2025-04-04', cost: 680360 },
+  { project: 'Project A', task: 'Task 18', date: '2025-04-04', cost: 80600 },
+  { project: 'Project A', task: 'Task 19', date: '2025-04-04', cost: 800230 },
+  { project: 'Project B', task: 'Task 20', date: '2025-04-02', cost: 100200 },
+  { project: 'Project B', task: 'Task 21', date: '2025-04-03', cost: 70200 },
+  { project: 'Project B', task: 'Task 22', date: '2025-04-04', cost: 215000 },
+  { project: 'Project B', task: 'Task 23', date: '2025-04-05', cost: 92000 },
 
   { project: 'Project C', task: 'Task 1', date: '2025-04-03', cost: 25000 },
   { project: 'Project C', task: 'Task 2', date: '2025-04-04', cost: 20000 },
@@ -388,8 +402,16 @@ export default function PaidLaborCost() {
             )}
 
             {/* Chart Container */}
-            <div className="paid-labor-cost-chart-container">
-              <Bar data={chartData} options={options} />
+            <div className="paid-labor-cost-chart-scroll-wrapper">
+              <div
+                style={{
+                  width:
+                    tasksToInclude.length > 3 ? `${(tasksToInclude.length + 1) * 50}px` : '100%',
+                  height: '300px',
+                }}
+              >
+                <Bar data={chartData} options={options} />
+              </div>
             </div>
           </>
         )}

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { Info } from 'lucide-react';
 import { format, startOfDay, isAfter, isBefore, isEqual } from 'date-fns';
@@ -15,68 +15,74 @@ function PaidLaborCostDatePicker({
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
-  const [hoverDate, setHoverDate] = useState(null);
+
+  // *** SELECTION STATE ***
   const [tempStartDate, setTempStartDate] = useState(startDate);
   const [tempEndDate, setTempEndDate] = useState(endDate);
-  const [selectionStage, setSelectionStage] = useState(startDate ? 'END_DATE' : 'START_DATE');
+  const [selectionStage, setSelectionStage] = useState(
+    startDate && !endDate ? 'END_DATE' : 'START_DATE',
+  );
 
-  // Generate calendar days
+  // *** CALENDAR VIEW STATE ***
+  const [calendarMonth, setCalendarMonth] = useState(startDate || new Date());
+
+  // Reset temps & calendar whenever picker opens or props change
+  useEffect(() => {
+    if (isOpen) {
+      setTempStartDate(startDate);
+      setTempEndDate(endDate);
+      setSelectionStage(startDate && !endDate ? 'END_DATE' : 'START_DATE');
+      setCalendarMonth(startDate || new Date());
+    }
+  }, [isOpen, startDate, endDate]);
+
+  // Generate a 6×7 grid for the current calendarMonth
   const generateCalendarDays = () => {
-    const baseDate = tempStartDate || new Date();
-    const firstDayOfMonth = new Date(baseDate.getFullYear(), baseDate.getMonth(), 1);
-    const lastDayOfMonth = new Date(baseDate.getFullYear(), baseDate.getMonth() + 1, 0);
+    const year = calendarMonth.getFullYear();
+    const month = calendarMonth.getMonth();
+    const firstOfMonth = new Date(year, month, 1);
+    const lastOfMonth = new Date(year, month + 1, 0);
+    const daysInMonth = lastOfMonth.getDate();
 
-    const firstDay = firstDayOfMonth.getDay();
-    const daysInMonth = lastDayOfMonth.getDate();
-
-    const previousMonthDays = [];
-    if (firstDay > 0) {
-      const prevLast = new Date(baseDate.getFullYear(), baseDate.getMonth(), 0).getDate();
-      for (let i = firstDay - 1; i >= 0; i -= 1) {
-        previousMonthDays.push(
-          new Date(baseDate.getFullYear(), baseDate.getMonth() - 1, prevLast - i),
-        );
+    const prevDays = [];
+    const lead = firstOfMonth.getDay();
+    if (lead > 0) {
+      const prevLast = new Date(year, month, 0).getDate();
+      for (let i = lead - 1; i >= 0; i -= 1) {
+        prevDays.push(new Date(year, month - 1, prevLast - i));
       }
     }
 
-    const currentMonthDays = [];
-    for (let i = 1; i <= daysInMonth; i += 1) {
-      currentMonthDays.push(new Date(baseDate.getFullYear(), baseDate.getMonth(), i));
+    const currDays = Array.from({ length: daysInMonth }, (_, i) => new Date(year, month, i + 1));
+
+    const total = prevDays.length + currDays.length;
+    const nextDays = [];
+    for (let i = 1; i <= 42 - total; i += 1) {
+      nextDays.push(new Date(year, month + 1, i));
     }
 
-    const totalDays = previousMonthDays.length + currentMonthDays.length;
-    const nextMonthDays = [];
-    for (let i = 1; i <= 42 - totalDays; i += 1) {
-      nextMonthDays.push(new Date(baseDate.getFullYear(), baseDate.getMonth() + 1, i));
-    }
-
-    return [...previousMonthDays, ...currentMonthDays, ...nextMonthDays];
+    return [...prevDays, ...currDays, ...nextDays];
   };
 
-  // Check if date in range
+  // Range‐highlight logic
+  const [hoverDate, setHoverDate] = useState(null);
   const isInRange = date => {
-    if (!tempStartDate || !tempEndDate) {
-      if (tempStartDate && hoverDate && selectionStage === 'END_DATE') {
-        const start = startOfDay(tempStartDate);
-        const hoverEnd = startOfDay(hoverDate);
-        const current = startOfDay(date);
-        return (
-          (isAfter(current, start) || isEqual(current, start)) &&
-          (isBefore(current, hoverEnd) || isEqual(current, hoverEnd))
-        );
-      }
-      return false;
+    const curr = startOfDay(date);
+    // preview range while choosing end date
+    if (tempStartDate && !tempEndDate && selectionStage === 'END_DATE' && hoverDate) {
+      const s = startOfDay(tempStartDate);
+      const e = startOfDay(hoverDate);
+      return (isAfter(curr, s) || isEqual(curr, s)) && (isBefore(curr, e) || isEqual(curr, e));
     }
-    const start = startOfDay(tempStartDate);
-    const end = startOfDay(tempEndDate);
-    const current = startOfDay(date);
-    return (
-      (isAfter(current, start) || isEqual(current, start)) &&
-      (isBefore(current, end) || isEqual(current, end))
-    );
+    if (tempStartDate && tempEndDate) {
+      const s = startOfDay(tempStartDate);
+      const e = startOfDay(tempEndDate);
+      return (isAfter(curr, s) || isEqual(curr, s)) && (isBefore(curr, e) || isEqual(curr, e));
+    }
+    return false;
   };
 
-  // Check if date disabled
+  // Disabled‐date logic
   const isDisabled = date => {
     const today = startOfDay(new Date());
     const d = startOfDay(date);
@@ -86,7 +92,7 @@ function PaidLaborCostDatePicker({
     return false;
   };
 
-  // Handle date click
+  // Click a date cell
   const handleDateClick = date => {
     if (isDisabled(date)) return;
     if (selectionStage === 'START_DATE') {
@@ -106,57 +112,59 @@ function PaidLaborCostDatePicker({
     }
   };
 
-  const handleDateMouseEnter = date => setHoverDate(date);
+  // Hover handlers
+  const handleMouseEnter = date => setHoverDate(date);
   const handleMouseLeave = () => setHoverDate(null);
-  const navigateToPrevMonth = () => {
-    const base = tempStartDate || new Date();
-    const prev = new Date(base);
-    prev.setMonth(prev.getMonth() - 1);
-    setTempStartDate(prev);
-  };
-  const navigateToNextMonth = () => {
-    const base = tempStartDate || new Date();
-    const next = new Date(base);
-    next.setMonth(next.getMonth() + 1);
-    setTempStartDate(next);
-  };
+
+  // Month navigation
+  const prevMonth = () =>
+    setCalendarMonth(m => {
+      const d = new Date(m);
+      d.setMonth(d.getMonth() - 1);
+      return d;
+    });
+  const nextMonth = () =>
+    setCalendarMonth(m => {
+      const d = new Date(m);
+      d.setMonth(d.getMonth() + 1);
+      return d;
+    });
 
   const calendarDays = generateCalendarDays();
 
-  // Format display
+  // Display text
   const formatDisplayDate = () => {
     if (!startDate && !endDate) return placeholder;
     if (startDate && !endDate) return `${format(startDate, 'MMM d, yyyy')} - ?`;
     return `${format(startDate, 'MMM d, yyyy')} - ${format(endDate, 'MMM d, yyyy')}`;
   };
 
-  // Outside click
-  const handleWindowClick = e => {
-    if (isOpen && !e.target.closest('.paid-labor-cost-custom-date-range-picker')) {
-      setIsOpen(false);
-    }
-  };
+  // Outside‐click to close
+  const wrapperRef = useRef();
   useEffect(() => {
-    if (isOpen) window.addEventListener('click', handleWindowClick);
-    return () => window.removeEventListener('click', handleWindowClick);
+    const onClick = e => {
+      if (isOpen && !wrapperRef.current.contains(e.target)) {
+        setIsOpen(false);
+      }
+    };
+    window.addEventListener('click', onClick);
+    return () => window.removeEventListener('click', onClick);
   }, [isOpen]);
 
   return (
-    <div className={`paid-labor-cost-custom-date-range-picker ${className}`}>
+    <div ref={wrapperRef} className={`paid-labor-cost-custom-date-range-picker ${className}`}>
+      {/* Input + Info */}
       <div className="paid-labor-cost-input-wrapper">
-        {/* Date input */}
         <div
           className="paid-labor-cost-date-range-input"
           onClick={e => {
             e.stopPropagation();
-            setIsOpen(!isOpen);
+            setIsOpen(o => !o);
           }}
         >
           <div className="paid-labor-cost-date-range-text">{formatDisplayDate()}</div>
           <div className="paid-labor-cost-date-range-icon">📅</div>
         </div>
-
-        {/* Info icon + tooltip on hover only */}
         <div
           className="paid-labor-cost-info-wrapper"
           onMouseEnter={() => setShowInfo(true)}
@@ -175,82 +183,69 @@ function PaidLaborCostDatePicker({
                 <strong>Date Range Picker</strong>
               </p>
               <ul>
-                <li>Click the calendar or input to open the picker.</li>
-                <li>Select a start date, then an end date.</li>
-                <li>Disabled dates cannot be selected.</li>
-                <li>Click Reset to clear your selection.</li>
+                <li>Click input to open.</li>
+                <li>Select start date, then end date.</li>
+                <li>Disabled dates cannot be chosen.</li>
+                <li>Click Reset to clear.</li>
               </ul>
             </div>
           )}
         </div>
       </div>
-      {/* Calendar dropdown */}
+
+      {/* Calendar */}
       {isOpen && (
         <div
           className="paid-labor-cost-date-range-calendar"
           onMouseLeave={handleMouseLeave}
           onClick={e => e.stopPropagation()}
         >
+          {/* Header */}
           <div className="paid-labor-cost-calendar-header">
-            <button
-              type="button"
-              className="paid-labor-cost-month-nav paid-labor-cost-prev-month"
-              onClick={navigateToPrevMonth}
-            >
+            <button type="button" className="paid-labor-cost-month-nav" onClick={prevMonth}>
               &lt;
             </button>
             <div className="paid-labor-cost-current-month">
-              {format(tempStartDate || new Date(), 'MMMM yyyy')}
+              {format(calendarMonth, 'MMMM yyyy')}
             </div>
-            <button
-              type="button"
-              className="paid-labor-cost-month-nav paid-labor-cost-next-month"
-              onClick={navigateToNextMonth}
-            >
+            <button type="button" className="paid-labor-cost-month-nav" onClick={nextMonth}>
               &gt;
             </button>
           </div>
 
+          {/* Weekdays */}
           <div className="paid-labor-cost-calendar-weekdays">
-            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-              <div key={day} className="paid-labor-cost-weekday">
-                {day}
+            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(d => (
+              <div key={d} className="paid-labor-cost-weekday">
+                {d}
               </div>
             ))}
           </div>
 
+          {/* Days grid */}
           <div className="paid-labor-cost-calendar-days">
             {calendarDays.map(date => {
-              const isCurrentMonth = date.getMonth() === (tempStartDate || new Date()).getMonth();
+              const isCurrMonth = date.getMonth() === calendarMonth.getMonth();
               const isStart = tempStartDate && isEqual(startOfDay(date), startOfDay(tempStartDate));
               const isEnd = tempEndDate && isEqual(startOfDay(date), startOfDay(tempEndDate));
-              const rangeClass = isInRange(date) ? 'in-range' : '';
-              const disabledClass = isDisabled(date) ? 'disabled' : '';
-              const isFutureDate = isAfter(startOfDay(date), startOfDay(new Date()));
-              const isSameAsStart =
-                tempStartDate &&
-                selectionStage === 'END_DATE' &&
-                isEqual(startOfDay(date), startOfDay(tempStartDate));
+              const inRange = isCurrMonth && isInRange(date);
+              const disabled = isDisabled(date);
 
               return (
                 <div
                   key={uuidv4()}
-                  className={`
-                    paid-labor-cost-day 
-                    ${
-                      isCurrentMonth
-                        ? 'paid-labor-cost-current-month'
-                        : 'paid-labor-cost-other-month'
-                    } 
-                    ${isStart ? 'paid-labor-cost-start-date' : ''} 
-                    ${isEnd ? 'paid-labor-cost-end-date' : ''}
-                    ${rangeClass}
-                    ${disabledClass}
-                    ${isFutureDate ? 'paid-labor-cost-future-date' : ''}
-                    ${isSameAsStart ? 'paid-labor-cost-same-as-start' : ''}
-                  `}
+                  className={[
+                    'paid-labor-cost-day',
+                    isCurrMonth ? 'paid-labor-cost-current-month' : 'paid-labor-cost-other-month',
+                    isStart && 'paid-labor-cost-start-date',
+                    isEnd && 'paid-labor-cost-end-date',
+                    inRange && 'in-range',
+                    disabled && 'disabled',
+                  ]
+                    .filter(Boolean)
+                    .join(' ')}
                   onClick={() => handleDateClick(date)}
-                  onMouseEnter={() => handleDateMouseEnter(date)}
+                  onMouseEnter={() => handleMouseEnter(date)}
                 >
                   {date.getDate()}
                 </div>
@@ -258,6 +253,7 @@ function PaidLaborCostDatePicker({
             })}
           </div>
 
+          {/* Footer */}
           <div className="paid-labor-cost-calendar-footer">
             <button
               type="button"
@@ -272,7 +268,6 @@ function PaidLaborCostDatePicker({
             >
               Reset
             </button>
-
             <div className="paid-labor-cost-selection-text">
               {selectionStage === 'START_DATE' ? 'Select start date' : 'Select end date'}
             </div>

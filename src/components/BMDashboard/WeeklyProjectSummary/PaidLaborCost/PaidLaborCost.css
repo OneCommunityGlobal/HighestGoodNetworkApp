@@ -211,7 +211,7 @@
 .paid-labor-cost-day.paid-labor-cost-start-date,
 .paid-labor-cost-day.paid-labor-cost-end-date {
   background-color: #3498db;
-  color: white !important;
+  color: var(--button-bg);
 }
 
 .paid-labor-cost-day.in-range {
@@ -351,7 +351,7 @@
 .dark-mode .paid-labor-cost-day.paid-labor-cost-start-date,
 .dark-mode .paid-labor-cost-day.paid-labor-cost-end-date {
   background-color: var(--button-bg);
-  color: var(--bg-color) !important;
+  color: var(--button-bg) !important;
 }
 
 .dark-mode .paid-labor-cost-day.in-range {
@@ -510,4 +510,28 @@
     right: 8px;
     border-width: 4px;
   }
+}
+
+.paid-labor-cost-chart-scroll-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  background-color: var(--bg-color);
+}
+
+.paid-labor-cost-chart-scroll-wrapper::-webkit-scrollbar {
+  height: 6px;
+}
+
+.paid-labor-cost-chart-scroll-wrapper::-webkit-scrollbar-track {
+  background: var(--bg-color);
+}
+
+.paid-labor-cost-chart-scroll-wrapper::-webkit-scrollbar-thumb {
+  background: var(--button-bg);
+  border-radius: 3px;
+}
+
+.paid-labor-cost-chart-scroll-wrapper {
+  scrollbar-width: thin;
+  scrollbar-color: var(--button-bg) var(--card-shadow);
 }
