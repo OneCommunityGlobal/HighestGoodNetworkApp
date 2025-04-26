@@ -217,8 +217,6 @@ function BadgeDevelopmentTable(props) {
     
   };
 
-  const filteredBadges = sortedBadges;
-
   const reportBadge = badgeValue => {
     // Returns true for all checked badges and false for all unchecked
     const checkValue = !!badgeValue.showReport;
