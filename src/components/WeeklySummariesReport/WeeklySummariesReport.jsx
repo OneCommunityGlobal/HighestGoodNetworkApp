@@ -93,6 +93,8 @@ export class WeeklySummariesReport extends Component {
       replaceCodeError: null,
       replaceCodeLoading: false,
       loadedTabs: [navItems[1]], // Initialize with the default active tab
+      summariesByTab: {}, // Store tab-specific data
+      tabsLoading: {}, // Track loading state by tab
       // weeklyRecipientAuthPass: '',
       selectedSpecialColors: {
         purple: false,
@@ -104,7 +106,6 @@ export class WeeklySummariesReport extends Component {
 
   async componentDidMount() {
     const {
-      loading,
       allBadgeData,
       authUser,
       infoCollections,
@@ -116,11 +117,28 @@ export class WeeklySummariesReport extends Component {
       setTeamCodes,
       getAllTeamCode,
     } = this.props;
+
     await getAllTeamCode();
-    // 1. fetch report
-    const res = await getWeeklySummariesReport();
-    // eslint-disable-next-line react/destructuring-assignment
-    const summaries = res?.data ?? this.props.summaries;
+
+    // Get the active tab from session storage or use default
+    const activeTab =
+      sessionStorage.getItem('tabSelection') === null
+        ? navItems[1]
+        : sessionStorage.getItem('tabSelection');
+
+    // Get the week index for the active tab
+    const weekIndex = navItems.indexOf(activeTab);
+
+    // Set initial loading state
+    this.setState({
+      loading: true,
+      activeTab,
+      tabsLoading: {
+        [activeTab]: true,
+      },
+    });
+
+    // Get permissions
     const badgeStatusCode = await fetchAllBadges();
     this.canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
     this.canRequestBio = hasPermission('requestBio');
@@ -131,25 +149,27 @@ export class WeeklySummariesReport extends Component {
       auth.user.role === 'Administrator';
     this.canSeeBioHighlight = hasPermission('highlightEligibleBios');
 
+    // Fetch data for the active tab only
+    const res = await getWeeklySummariesReport(weekIndex);
+    // eslint-disable-next-line react/destructuring-assignment
+    const summaries = res?.data ?? this.props.summaries;
+
+    // Process the data as in your original code
     const teamCodeGroup = {};
     const teamCodes = [];
 
-    // 2. shallow copy and sort
+    // Shallow copy and sort
     let summariesCopy = [...summaries];
     summariesCopy = this.alphabetize(summariesCopy);
 
-    // 3. add new key of promised hours by week
+    // Add new key of promised hours by week
     summariesCopy = summariesCopy.map(summary => {
-      // append the promised hours starting from the latest week (this week)
       const promisedHoursByWeek = this.weekDates.map(weekDate =>
         this.getPromisedHours(weekDate.toDate, summary.weeklycommittedHoursHistory),
       );
       return { ...summary, promisedHoursByWeek };
     });
 
-    /*
-     * refactor logic of commentted codes above
-     */
     const colorOptionGroup = new Set();
     const colorOptions = [];
     const COLORS = [
@@ -175,6 +195,7 @@ export class WeeklySummariesReport extends Component {
       '#C8A2C8',
     ];
 
+    // Process team codes and colors
     summariesCopy.forEach(summary => {
       const code = summary.teamCode || 'noCodeLabel';
       if (teamCodeGroup[code]) {
@@ -213,15 +234,18 @@ export class WeeklySummariesReport extends Component {
         label: `Select All With NO Code (${teamCodeGroup.noCodeLabel?.length || 0})`,
         _ids: teamCodeGroup?.noCodeLabel?.map(item => item._id),
       });
+
     const chartData = [];
+
+    // Store the data in the tab-specific state
     this.setState({
-      loading,
+      loading: false,
       allRoleInfo: [],
       summaries: summariesCopy,
-      activeTab:
-        sessionStorage.getItem('tabSelection') === null
-          ? navItems[1]
-          : sessionStorage.getItem('tabSelection'),
+      loadedTabs: [activeTab],
+      summariesByTab: {
+        [activeTab]: summariesCopy,
+      },
       badges: allBadgeData,
       hasSeeBadgePermission: badgeStatusCode === 200,
       filteredSummaries: summariesCopy,
@@ -231,12 +255,17 @@ export class WeeklySummariesReport extends Component {
       colorOptions,
       teamCodes,
       auth,
+      tabsLoading: {
+        [activeTab]: false,
+      },
     });
 
+    // Load additional collections
     await getInfoCollections();
     const role = authUser?.role;
     const roleInfoNames = this.getAllRoles(summariesCopy);
     const allRoleInfo = [];
+
     if (Array.isArray(infoCollections)) {
       infoCollections.forEach(info => {
         if (roleInfoNames?.includes(info.infoName)) {
@@ -250,6 +279,7 @@ export class WeeklySummariesReport extends Component {
         }
       });
     }
+
     this.setState({ allRoleInfo });
   }
 
@@ -391,20 +421,31 @@ export class WeeklySummariesReport extends Component {
   };
 
   toggleTab = tab => {
-    const { activeTab, loadedTabs } = this.state; // Destructure loadedTabs from state
+    const { activeTab, loadedTabs, summariesByTab } = this.state; // Destructure loadedTabs from state
     if (activeTab !== tab) {
-      // If the tab is not already loaded, add it to loadedTabs
+      // Switch to the new tab immediately
+      this.setState({ activeTab: tab });
+
+      // If the tab isn't loaded yet, load its data
       if (!loadedTabs.includes(tab)) {
+        this.loadTabData(tab).then(() => {
+          // Mark the tab as loaded once data is available
+          this.setState(prevState => ({
+            loadedTabs: [...prevState.loadedTabs, tab],
+          }));
+        });
+      } else {
+        // Tab already loaded, just update current summaries
+        const tabData = summariesByTab[tab] || [];
         this.setState(
-          prevState => ({
-            activeTab: tab,
-            loadedTabs: [...prevState.loadedTabs, tab], // Add the new tab to loadedTabs
-          }),
+          {
+            summaries: tabData,
+            filteredSummaries: tabData,
+          },
           () => this.filterWeeklySummaries(),
         );
-      } else {
-        this.setState({ activeTab: tab }, () => this.filterWeeklySummaries());
       }
+
       sessionStorage.setItem('tabSelection', tab);
     }
   };
@@ -746,6 +787,106 @@ export class WeeklySummariesReport extends Component {
     }
   };
 
+  refreshCurrentTab = async () => {
+    const { activeTab } = this.state;
+
+    // Make sure we set the loading state BEFORE starting the async operation
+    this.setState(prevState => ({
+      tabsLoading: {
+        ...prevState.tabsLoading,
+        [activeTab]: true,
+      },
+    }));
+
+    try {
+      // Reload the tab data (this is an async operation)
+      await this.loadTabData(activeTab);
+    } finally {
+      // Make sure loading state is turned off even if there's an error
+      this.setState(prevState => ({
+        tabsLoading: {
+          ...prevState.tabsLoading,
+          [activeTab]: false,
+        },
+      }));
+    }
+  };
+
+  async loadTabData(tab) {
+    // console.log('loadTabData called for tab:', tab);
+
+    const { getWeeklySummariesReport } = this.props;
+    const weekIndex = navItems.indexOf(tab);
+
+    // console.log('weekIndex:', weekIndex);
+
+    // Set loading state for this tab
+    this.setState(prevState => ({
+      tabsLoading: {
+        ...prevState.tabsLoading,
+        [tab]: true,
+      },
+    }));
+
+    try {
+      // console.log('About to call getWeeklySummariesReport with weekIndex:', weekIndex);
+
+      // Get data only for this tab
+      const res = await getWeeklySummariesReport(weekIndex);
+
+      // console.log('API response:', res);
+
+      const summaries = res?.data ?? [];
+
+      // Process the summaries
+      let summariesCopy = [...summaries];
+      summariesCopy = this.alphabetize(summariesCopy);
+      summariesCopy = summariesCopy.map(summary => {
+        const promisedHoursByWeek = this.weekDates.map(weekDate =>
+          this.getPromisedHours(weekDate.toDate, summary.weeklycommittedHoursHistory),
+        );
+        return { ...summary, promisedHoursByWeek };
+      });
+
+      // Store the processed summaries for this tab
+      this.setState(
+        prevState => ({
+          summariesByTab: {
+            ...prevState.summariesByTab,
+            [tab]: summariesCopy,
+          },
+          // If this is the active tab, update summaries and filteredSummaries
+          ...(tab === prevState.activeTab
+            ? {
+                summaries: summariesCopy,
+                filteredSummaries: summariesCopy,
+              }
+            : {}),
+          tabsLoading: {
+            ...prevState.tabsLoading,
+            [tab]: false,
+          },
+        }),
+        () => {
+          if (tab === this.state.activeTab) {
+            this.filterWeeklySummaries();
+          }
+        },
+      );
+
+      return summariesCopy;
+    } catch (error) {
+      // Handle error without console.error
+      this.setState(prevState => ({
+        tabsLoading: {
+          ...prevState.tabsLoading,
+          [tab]: false,
+        },
+      }));
+      return [];
+    }
+  }
+
   render() {
     const { role, darkMode } = this.props;
     const {
@@ -770,7 +911,8 @@ export class WeeklySummariesReport extends Component {
       replaceCodeError,
       replaceCodeLoading,
       loadedTabs, // Destructure loadedTabs from state
-    } = this.state; // Updated to include loadedTabs
+      tabsLoading, // Destructure tabsLoading from state
+    } = this.state; // Updated to include loadedTabs and tabsLoading
     const { error } = this.props;
     const hasPermissionToFilter = role === 'Owner' || role === 'Administrator';
     const { authEmailWeeklySummaryRecipient } = this.props;
@@ -1004,10 +1146,19 @@ export class WeeklySummariesReport extends Component {
               className={`p-4 ${darkMode ? 'bg-yinmn-blue border-0' : ''}`}
             >
               {navItems.map((item, index) => (
-                // Conditionally render content based on loadedTabs
                 <WeeklySummariesReportTab tabId={item} key={item} hidden={item !== activeTab}>
-                  {/* Only render the tab content if it has been loaded */}
-                  {loadedTabs.includes(item) && (
+                  {/* Check loading state */}
+                  {tabsLoading && tabsLoading[item] && (
+                    <Row className="text-center py-5">
+                      <Col>
+                        <Spinner color="primary" />
+                        <p className="mt-3">Loading data...</p>
+                      </Col>
+                    </Row>
+                  )}
+
+                  {/* Check if tab is loaded and not in loading state */}
+                  {loadedTabs.includes(item) && !(tabsLoading && tabsLoading[item]) && (
                     <>
                       <Row>
                         <Col sm="12" md="6" className="mb-2">
@@ -1023,7 +1174,7 @@ export class WeeklySummariesReport extends Component {
                           />
                           {hasSeeBadgePermission && (
                             <Button
-                              className="btn--dark-sea-green"
+                              className="btn--dark-sea-green mr-2"
                               style={darkMode ? boxStyleDark : boxStyle}
                               onClick={() => this.setState({ loadBadges: !loadBadges })}
                             >
@@ -1035,6 +1186,13 @@ export class WeeklySummariesReport extends Component {
                             style={darkMode ? boxStyleDark : boxStyle}
                           >
                             Load Trophies
+                          </Button>
+                          <Button
+                            className="btn--dark-sea-green mr-2"
+                            style={darkMode ? boxStyleDark : boxStyle}
+                            onClick={this.refreshCurrentTab}
+                          >
+                            Refresh
                           </Button>
                         </Col>
                       </Row>
@@ -1097,7 +1255,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   fetchAllBadges: () => dispatch(fetchAllBadges()),
-  getWeeklySummariesReport: () => dispatch(getWeeklySummariesReport()),
+  getWeeklySummariesReport: weekIndex => dispatch(getWeeklySummariesReport(weekIndex)),
   hasPermission: permission => dispatch(hasPermission(permission)),
   getInfoCollections: () => getInfoCollections(),
   getAllUserTeams: () => dispatch(getAllUserTeams()),

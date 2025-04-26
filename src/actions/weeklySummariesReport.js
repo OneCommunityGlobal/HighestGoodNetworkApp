@@ -44,19 +44,36 @@ export const updateSummaryReport = ({ _id, updatedField }) => ({
  * Gets all active users' summaries + a few other selected fields from the userProfile that
  * might be useful for the weekly summary report.
  */
-export const getWeeklySummariesReport = () => {
-  const url = ENDPOINTS.WEEKLY_SUMMARIES_REPORT();
-  return async dispatch => {
-    dispatch(fetchWeeklySummariesReportBegin());
-    try {
-      const response = await axios.get(url);
-      dispatch(fetchWeeklySummariesReportSuccess(response.data));
-      return {status: response.status, data: response.data};
-    } catch (error) {
-      dispatch(fetchWeeklySummariesReportError(error));
-      return error.response.status;
-    }
-  };
+export const getWeeklySummariesReport = (weekIndex = null) => async dispatch => {
+  // console.log('getWeeklySummariesReport action called with weekIndex:', weekIndex);
+  dispatch({ type: 'WEEKLY_SUMMARIES_REPORT_REQUEST' });
+  try {
+    // Use the APIEndpoint constant directly from the URL.js file or from environment
+    const APIEndpoint = process.env.REACT_APP_APIENDPOINT || 'https://hgn-rest-beta.azurewebsites.net/api';
+    const baseUrl = `${APIEndpoint}/reports/weeklysummaries`;
+    
+    // Add the week parameter if provided
+    const url = weekIndex !== null 
+      ? `${baseUrl}?week=${weekIndex}` 
+      : baseUrl;
+    
+    // console.log('API URL being called:', url);
+    
+    const res = await axios.get(url);
+    
+    dispatch({
+      type: 'WEEKLY_SUMMARIES_REPORT_SUCCESS',
+      payload: res.data,
+    });
+    return res;
+  } catch (error) {
+    console.error('API error:', error);
+    dispatch({
+      type: 'WEEKLY_SUMMARIES_REPORT_FAILURE',
+      payload: error,
+    });
+    return error;
+  }
 };
 
 export const updateOneSummaryReport = (userId, updatedField) => {
