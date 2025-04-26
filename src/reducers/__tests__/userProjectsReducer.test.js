@@ -1,4 +1,4 @@
-import { userProjectsReducer } from '../userProjectsReducer';
+import userProjectsReducer from '../userProjectsReducer';
 import types from '../../constants/userProjects';
 
 describe('userProjectsReducer', () => {
@@ -52,5 +52,4 @@ describe('userProjectsReducer', () => {
     const result = userProjectsReducer(initialState, action);
     expect(result).toEqual(expectedState);
   });
-
 });

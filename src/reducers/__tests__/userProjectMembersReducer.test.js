@@ -1,4 +1,4 @@
-import { userProjectMembersReducer } from "../userProjectMembersReducer";
+import userProjectMembersReducer from "../userProjectMembersReducer";
 
 describe("userProjectMembersReducer", () => {
   it("should return the initial state when no action is provided", () => {
