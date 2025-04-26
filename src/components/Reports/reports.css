@@ -1,9 +1,91 @@
-.container-box-shadow {
-  box-shadow: 2px 2px 4px 1px rgba(78, 32, 125, 0.2);
+/* Basic Reset */
+* {
+  box-sizing: border-box;
+  margin: 0;
 }
-@media screen and (max-width: 1100px) {
-  .custom-scrollbar {
-    overflow-y: scroll;
-    display: relative;
-  }
+
+/* Wrapper for the entire page */
+.container-component-wrapper {
+  min-height: 100%;
+  width: 100%;
+  display: grid;
+  justify-content: center;
+  align-content: start;
+  background-color: #faf7fc; /* Default background for light mode */
+  margin: 0;
+  justify-items: center;
+  overflow-x: hidden;
+}
+
+/* Dark Mode Styling */
+body.dark-mode,
+.container-component-wrapper.dark-mode {
+  background-color: #1e1e2f; /* Dark background */
+  color: white; /* Default text color for dark mode */
+}
+
+/* Ensure that the text for select category and headers are white in dark mode */
+body.dark-mode .category-data-container,
+body.dark-mode .category-container,
+body.dark-mode .card-category-item {
+  color: white; /* Make text white in dark mode */
+}
+
+/* Reports Page Header Styling */
+body.dark-mode .category-data-container h2,
+body.dark-mode .category-data-container p,
+body.dark-mode .category-container .card-category-item-title {
+  color: white; /* Make sure titles are white in dark mode */
+}
+
+/* Card Category Item Background and Text Color */
+body.dark-mode .card-category-item {
+  background-color: #3a3a57; /* Dark background for cards */
+  color: white; /* White text for card items */
+}
+
+/* Active state for the category items */
+body.dark-mode .card-category-item.selected {
+  background-color: #4b4e69; /* Darker background for selected items */
+  box-shadow: 0px 8px 16px rgba(78, 32, 125, 0.2);
+  transform: scale(1.03);
+}
+
+/* Button and links text */
+body.dark-mode .btn,
+body.dark-mode a {
+  color: white;
+  background-color: #3a3a57;
+}
+
+/* Button hover states in dark mode */
+body.dark-mode .btn:hover {
+  background-color: #5e5e8d;
+}
+
+/* Light Mode Adjustments */
+body:not(.dark-mode) {
+  background-color: #faf7fc; /* Light mode background */
+}
+
+body:not(.dark-mode) .category-data-container,
+body:not(.dark-mode) .category-container,
+body:not(.dark-mode) .card-category-item {
+  color: black; /* Black text color in light mode */
+}
+
+body:not(.dark-mode) .card-category-item {
+  background-color: #f1ebf7; /* Light background for card items */
+}
+
+/* Adjustments for text and titles in light mode */
+body:not(.dark-mode) .category-data-container h2,
+body:not(.dark-mode) .category-data-container p,
+body:not(.dark-mode) .category-container .card-category-item-title {
+  color: black; /* Black text for titles in light mode */
+}
+
+/* Adjust for active state in light mode */
+body:not(.dark-mode) .card-category-item.selected {
+  background-color: #d7cdda; /* Lighter background for selected items */
 }

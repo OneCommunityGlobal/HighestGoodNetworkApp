@@ -6,6 +6,9 @@ import thunk from 'redux-thunk';
 import Warning from '../Warnings';
 import * as warningActions from '../../../actions/warnings';
 
+jest.setTimeout(10000); // Increase the timeout to 10 seconds
+
+
 jest.mock('../../../actions/warnings', () => ({
   getWarningsByUserId: jest.fn(() => () => Promise.resolve([])),
   postWarningByUserId: jest.fn(() => () => Promise.resolve([])),

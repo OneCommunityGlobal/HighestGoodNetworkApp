@@ -2,6 +2,7 @@ import { Component } from 'react';
 import { connect } from 'react-redux';
 import { Container, Button } from 'reactstrap';
 import { boxStyle, boxStyleDark } from 'styles';
+import './reportsPage.css';  
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import { searchWithAccent } from 'utils/search';
 import { fetchAllProjects } from '../../actions/projects';
@@ -12,7 +13,6 @@ import ProjectTable from './ProjectTable';
 import { getUserProfileBasicInfo } from '../../actions/userManagement';
 import { fetchAllTasks } from '../../actions/task';
 import 'react-datepicker/dist/react-datepicker.css';
-import './reportsPage.css';
 import projectsImage from './images/Projects.svg';
 import peopleImage from './images/People.svg';
 import teamsImage from './images/Teams.svg';
@@ -399,11 +399,15 @@ class ReportsPage extends Component {
     const isYinmnBlue = darkMode ? 'bg-yinmn-blue' : '';
     const textColor = darkMode ? 'text-light' : '';
     const boxStyling = darkMode ? boxStyleDark : boxStyle;
+    const textColorClass = darkMode ? 'text-light' : 'text-dark';  // Conditionally apply text color class
+    const buttonColor = darkMode ? 'btn-light' : 'btn-dark';  // Button color change based on mode
+
 
     return (
-      <Container fluid className={`mb-5 container-component-wrapper ${isOxfordBlue}`}>
+      <Container fluid className={`mb-5 container-component-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
+
         <div
-          className={`category-data-container ${isOxfordBlue} ${
+          className={`category-data-container ${darkMode ? 'bg-dark' : 'bg-light'} ${
               this.state.showPeople ||
               this.state.showProjects ||
               this.state.showTeams ||
