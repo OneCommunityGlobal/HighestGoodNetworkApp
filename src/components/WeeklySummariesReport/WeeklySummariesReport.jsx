@@ -98,6 +98,7 @@ export class WeeklySummariesReport extends Component {
         green: false,
         navy: false,
       },
+      teamCodeWarningUsers: [],
     };
   }
 
@@ -196,6 +197,8 @@ export class WeeklySummariesReport extends Component {
     });
 
     setTeamCodes(teamCodes);
+
+    this.setState({ teamCodeWarningUsers: summariesCopy.filter(s => s.teamCodeWarning) });
 
     colorOptionGroup.forEach(option => {
       colorOptions.push({
@@ -670,7 +673,7 @@ export class WeeklySummariesReport extends Component {
 
   handleAllTeamCodeReplace = async () => {
     try {
-      const { replaceCode, selectedCodes, summaries, teamCodes } = this.state;
+      const { replaceCode, selectedCodes, summaries, teamCodes, teamCodeWarningUsers } = this.state;
       this.setState({ replaceCodeLoading: true });
 
       const isValidCode = fullCodeRegex.test(replaceCode);
@@ -683,24 +686,36 @@ export class WeeklySummariesReport extends Component {
 
       const oldTeamCodes = selectedCodes.map(code => code.value);
 
-      // Call the new backend API with a POST request
+      const warningUsersToSend = teamCodeWarningUsers
+        .filter(user => oldTeamCodes.includes(user.teamCode))
+        .map(user => user._id);
+
+      // Call the new backend API
       const response = await axios.post(ENDPOINTS.REPLACE_TEAM_CODE, {
         oldTeamCodes,
         newTeamCode: replaceCode,
+        warningUsers: warningUsersToSend,
       });
 
-      if (response.data?.updatedCount > 0) {
-        // Update the summaries in the local state
+      if (response.data?.updatedUsers?.length > 0) {
+        const { updatedUsers } = response.data; // Array of { userId, teamCodeWarning }
+
+        // 1. Update summaries with new teamCode and teamCodeWarning
         const updatedSummaries = summaries.map(summary => {
-          if (oldTeamCodes.includes(summary.teamCode)) {
-            return { ...summary, teamCode: replaceCode };
+          const updateInfo = updatedUsers.find(user => user.userId === summary._id);
+          if (updateInfo) {
+            return {
+              ...summary,
+              teamCode: replaceCode,
+              teamCodeWarning: updateInfo.teamCodeWarning,
+            };
           }
           return summary;
         });
 
-        // Remove old team codes and add the new team code in teamCodes
+        // 2. Update teamCodes (remove old ones and add the new one)
         const updatedTeamCodes = teamCodes
-          .filter(teamCode => !oldTeamCodes.includes(teamCode.value)) // Remove old team codes
+          .filter(teamCode => !oldTeamCodes.includes(teamCode.value))
           .concat({
             value: replaceCode,
             label: `${replaceCode} (${
@@ -709,9 +724,9 @@ export class WeeklySummariesReport extends Component {
             _ids: updatedSummaries.filter(s => s.teamCode === replaceCode).map(s => s._id),
           });
 
-        // Remove old team codes and add the new team code in selectedCodes
+        // 3. Update selectedCodes similarly
         const updatedSelectedCodes = selectedCodes
-          .filter(code => !oldTeamCodes.includes(code.value)) // Remove old team codes
+          .filter(code => !oldTeamCodes.includes(code.value))
           .concat({
             value: replaceCode,
             label: `${replaceCode} (${
@@ -719,6 +734,29 @@ export class WeeklySummariesReport extends Component {
             })`,
             _ids: updatedSummaries.filter(s => s.teamCode === replaceCode).map(s => s._id),
           });
+
+        // 4. Update teamCodeWarningUsers array
+        const updatedWarningUsers = [...teamCodeWarningUsers];
+        updatedUsers.forEach(({ userId, teamCodeWarning }) => {
+          const existingIndex = updatedWarningUsers.findIndex(user => user._id === userId);
+
+          if (teamCodeWarning) {
+            if (existingIndex !== -1) {
+              // If already exists, just update the teamCodeWarning field
+              updatedWarningUsers[existingIndex].teamCodeWarning = true;
+            } else {
+              // If not exists, find in summaries and add to warning list
+              const userProfile = summaries.find(summary => summary._id === userId);
+              if (userProfile) {
+                userProfile.teamCodeWarning = true;
+                updatedWarningUsers.push({ userProfile });
+              }
+            }
+          } else if (existingIndex !== -1) {
+            // If teamCodeWarning is now false, remove from array
+            updatedWarningUsers.splice(existingIndex, 1);
+          }
+        });
 
         this.setState({
           summaries: updatedSummaries,
@@ -726,9 +764,9 @@ export class WeeklySummariesReport extends Component {
           selectedCodes: updatedSelectedCodes,
           replaceCode: '',
           replaceCodeError: null,
+          teamCodeWarningUsers: updatedWarningUsers,
         });
 
-        // Re-filter the summaries to update the table
         this.filterWeeklySummaries();
       } else {
         this.setState({
@@ -862,14 +900,42 @@ export class WeeklySummariesReport extends Component {
           </Col>
         </Row>
         <Row>
-          <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }} xs={{ size: 6 }}>
+          <Col
+            lg={{ size: 5, offset: 1 }}
+            md={{ size: 6 }}
+            xs={{ size: 6 }}
+            style={{ position: 'relative' }}
+          >
+            {this.state.teamCodeWarningUsers.length > 0 && (
+              <>
+                <i
+                  className="fa fa-info-circle text-danger"
+                  data-tip
+                  data-placement="top"
+                  data-for="teamCodeWarningTooltip"
+                  style={{
+                    position: 'absolute',
+                    left: '-25px', // adjust as needed
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    fontSize: '20px',
+                    cursor: 'pointer',
+                  }}
+                />
+                <ReactTooltip id="teamCodeWarningTooltip" place="top" effect="solid">
+                  {this.state.teamCodeWarningUsers.length} users have mismatched team codes!
+                </ReactTooltip>
+              </>
+            )}
             <MultiSelect
-              className={cn(styles.multiSelectFilter, `text-dark ${darkMode ? 'dark-mode' : ''}`)}
+              className={cn(styles.multiSelectFilter, `text-dark ${darkMode ? 'dark-mode' : ''}`, {
+                [styles.warningBorder]: this.state.teamCodeWarningUsers.length > 0,
+              })}
               options={teamCodes.map(item => {
                 const [code, count] = item.label.split(' (');
                 return {
                   ...item,
-                  label: `${code.padEnd(10, ' ')} (${count}`, // count already has closing parenthesis
+                  label: `${code.padEnd(10, ' ')} (${count}`,
                 };
               })}
               value={selectedCodes}
@@ -879,6 +945,7 @@ export class WeeklySummariesReport extends Component {
               labelledBy="Select"
             />
           </Col>
+
           <Col lg={{ size: 5 }} md={{ size: 6, offset: -1 }} xs={{ size: 6, offset: -1 }}>
             <MultiSelect
               className={cn(styles.multiSelectFilter, `text-dark ${darkMode ? 'dark-mode' : ''}`)}
@@ -890,6 +957,7 @@ export class WeeklySummariesReport extends Component {
             />
           </Col>
         </Row>
+
         {chartShow && (
           <Row>
             <Col lg={{ size: 6, offset: 1 }} md={{ size: 12 }} xs={{ size: 11 }}>
