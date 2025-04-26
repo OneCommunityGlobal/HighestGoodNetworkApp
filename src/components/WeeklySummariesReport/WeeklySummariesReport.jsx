@@ -923,7 +923,7 @@ export class WeeklySummariesReport extends Component {
                   }}
                 />
                 <ReactTooltip id="teamCodeWarningTooltip" place="top" effect="solid">
-                  {this.state.teamCodeWarningUsers.length} users have mismatched team codes!
+                  {this.state.teamCodeWarningUsers.length} users have invalid team codes!
                 </ReactTooltip>
               </>
             )}
