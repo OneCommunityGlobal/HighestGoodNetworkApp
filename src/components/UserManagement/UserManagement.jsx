@@ -510,8 +510,6 @@ class UserManagement extends React.PureComponent {
         selectedUser: undefined,      
         isUpdating: true    
       });
-      
-      console.log("setActiveInactive: ", this.state.selectedUser);
     
       this.props.updateUserStatus(      
         this.state.selectedUser, isActive ? UserStatus.Active : UserStatus.InActive,      
