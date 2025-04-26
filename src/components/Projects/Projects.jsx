@@ -165,8 +165,8 @@ const Projects = function(props) {
           darkMode={darkMode}
         />
     ));
-    setProjectList(projectList);
-    setAllProjects(projectList);
+    setProjectList(filteredProjects);
+    setAllProjects(filteredProjects);
   }
 
   const refreshProjects = async () => {
