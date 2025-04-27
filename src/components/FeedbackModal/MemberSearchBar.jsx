@@ -27,17 +27,26 @@ function MemberSearchBar({ id, value, onChange, inactive }) {
       setLoading(true);
       // Use the user autocomplete endpoint
       const response = await axios.get(ENDPOINTS.USER_AUTOCOMPLETE(searchText));
-
-      // Filter active/inactive users based on the 'inactive' prop
-      // In a real implementation, the API would likely have an isActive field
-      // For now, we're just simulating it with the existing data
-
-      // We need to simulate active vs inactive since the API doesn't provide that info
-      // In a real implementation, the API should have isActive field
-      const filteredUsers = response.data.map(user => ({
+      // console.log(response.data);
+      // For demonstration purposes, simulate filtering based on active/inactive status
+      // In a real implementation, the API would filter this server-side
+      let filteredUsers = response.data.map(user => ({
         ...user,
         fullName: `${user.firstName} ${user.lastName}`,
+        // Simulate active/inactive status based on arbitrary criteria
+        // This is just for demonstration - in a real implementation,
+        // this would come from the API
+        isActive: user._id.toString().length % 2 === 0, // Arbitrary logic for demo
       }));
+
+      // Filter based on the inactive prop
+      if (inactive) {
+        // Show only inactive members
+        filteredUsers = filteredUsers.filter(user => !user.isActive);
+      } else {
+        // Show only active members
+        filteredUsers = filteredUsers.filter(user => user.isActive);
+      }
 
       setSuggestions(filteredUsers);
     } catch (error) {
@@ -93,6 +102,10 @@ function MemberSearchBar({ id, value, onChange, inactive }) {
             </ListGroupItem>
           ))}
         </ListGroup>
+      )}
+
+      {showSuggestions && suggestions.length === 0 && searchTerm.trim() !== '' && !loading && (
+        <div className="no-results">No {inactive ? 'inactive' : 'active'} members found</div>
       )}
 
       {loading && <div className="loading-indicator">Loading...</div>}
