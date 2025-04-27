@@ -4,11 +4,23 @@ import './EducationalStatusChart.css';
 
 const COLORS = ['#0088FE', '#FF8042', '#FFBB28'];
 
-const dummyData = [
-  { name: "High School/Associate's", value: 100, trend: '0%' },
-  { name: "Bachelor's", value: 150, trend: '5% less', trendType: 'decrease' },
-  { name: "Master's", value: 250, trend: '10% more', trendType: 'increase' },
-];
+const dummyData = {
+  Designer: [
+    { name: "High School/Associate's", value: 80, trend: '0%' },
+    { name: "Bachelor's", value: 120, trend: '5% less', trendType: 'decrease' },
+    { name: "Master's", value: 200, trend: '10% more', trendType: 'increase' },
+  ],
+  Developer: [
+    { name: "High School/Associate's", value: 100, trend: '0%' },
+    { name: "Bachelor's", value: 150, trend: '5% less', trendType: 'decrease' },
+    { name: "Master's", value: 250, trend: '10% more', trendType: 'increase' },
+  ],
+  Manager: [
+    { name: "High School/Associate's", value: 50, trend: '0%' },
+    { name: "Bachelor's", value: 100, trend: '5% less', trendType: 'decrease' },
+    { name: "Master's", value: 150, trend: '10% more', trendType: 'increase' },
+  ],
+};
 
 const renderCustomizedLabel = ({ percent, x, y, name, value }) => {
   const percentText = `${(percent * 100).toFixed(0)}%`;
@@ -21,19 +33,39 @@ const renderCustomizedLabel = ({ percent, x, y, name, value }) => {
 
 function EducationalStatusChart() {
   const [timeFilter, setTimeFilter] = useState('Weekly');
-  const [selectedRoles, setSelectedRoles] = useState([]);
+  const [selectedRole, setSelectedRole] = useState('Developer');
+  const [filteredData, setFilteredData] = useState(dummyData.Developer);
+
+  const updateData = (role = selectedRole) => {
+    let data = dummyData[role];
+
+    if (timeFilter === 'Weekly') {
+      data = data.map(item => ({
+        ...item,
+        value: item.value * 0.9,
+      }));
+    } else if (timeFilter === 'Monthly') {
+      data = data.map(item => ({
+        ...item,
+        value: item.value * 1.1,
+      }));
+    } else if (timeFilter === 'Yearly') {
+      data = data.map(item => ({
+        ...item,
+        value: item.value * 1.2,
+      }));
+    }
+    setFilteredData(data);
+  };
 
   const handleTimeChange = e => {
     setTimeFilter(e.target.value);
+    updateData();
   };
 
   const handleRoleChange = e => {
-    const { value, checked } = e.target;
-    if (checked) {
-      setSelectedRoles(prev => [...prev, value]);
-    } else {
-      setSelectedRoles(prev => prev.filter(role => role !== value));
-    }
+    setSelectedRole(e.target.value);
+    updateData(e.target.value);
   };
 
   const renderCustomTooltip = ({ active, payload }) => {
@@ -76,25 +108,19 @@ function EducationalStatusChart() {
         </label>
 
         <div className="role-filter">
-          <label>Select Roles:</label>
-          {['Designer', 'Developer', 'Manager'].map(role => (
-            <label key={role}>
-              <input
-                type="checkbox"
-                value={role}
-                checked={selectedRoles.includes(role)}
-                onChange={handleRoleChange}
-              />
-              {role}
-            </label>
-          ))}
+          <label>Select Role:</label>
+          <select value={selectedRole} onChange={handleRoleChange}>
+            <option value="Designer">Designer</option>
+            <option value="Developer">Developer</option>
+            <option value="Manager">Manager</option>
+          </select>
         </div>
       </div>
 
       <ResponsiveContainer width="100%" height={400}>
         <PieChart>
           <Pie
-            data={dummyData}
+            data={filteredData}
             cx="50%"
             cy="50%"
             labelLine={false}
@@ -102,8 +128,8 @@ function EducationalStatusChart() {
             outerRadius={150}
             dataKey="value"
           >
-            {dummyData.map(entry => (
-              <Cell key={entry.name} fill={COLORS[dummyData.indexOf(entry) % COLORS.length]} />
+            {filteredData.map(entry => (
+              <Cell key={entry.name} fill={COLORS[filteredData.indexOf(entry) % COLORS.length]} />
             ))}
           </Pie>
           {timeFilter !== 'Custom' && <Tooltip content={renderCustomTooltip} />}
