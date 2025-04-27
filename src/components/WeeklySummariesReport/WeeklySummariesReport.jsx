@@ -744,11 +744,13 @@ export class WeeklySummariesReport extends Component {
             if (existingIndex !== -1) {
               // If already exists, just update the teamCodeWarning field
               updatedWarningUsers[existingIndex].teamCodeWarning = true;
+              updatedWarningUsers[existingIndex].teamCode = replaceCode;
             } else {
               // If not exists, find in summaries and add to warning list
               const userProfile = summaries.find(summary => summary._id === userId);
               if (userProfile) {
                 userProfile.teamCodeWarning = true;
+                userProfile.teamCode = replaceCode;
                 updatedWarningUsers.push({ userProfile });
               }
             }
@@ -923,7 +925,22 @@ export class WeeklySummariesReport extends Component {
                   }}
                 />
                 <ReactTooltip id="teamCodeWarningTooltip" place="top" effect="solid">
-                  {this.state.teamCodeWarningUsers.length} users have invalid team codes!
+                  {this.state.teamCodeWarningUsers.length > 0 ? (
+                    <div>
+                      Warning: Below codes are not valid
+                      <ul style={{ paddingLeft: '1rem', marginTop: '0.5rem' }}>
+                        {Array.from(
+                          new Set(this.state.teamCodeWarningUsers.map(user => user.teamCode)),
+                        )
+                          .filter(code => code && code.length > 0)
+                          .map(code => (
+                            <li key={code}>{code}</li>
+                          ))}
+                      </ul>
+                    </div>
+                  ) : (
+                    'No invalid team codes'
+                  )}
                 </ReactTooltip>
               </>
             )}
