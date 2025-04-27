@@ -1,0 +1,29 @@
+.edu-chart-container {
+  width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.chart-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.date-picker-wrapper {
+  display: flex;
+  gap: 10px;
+}
+
+.role-select {
+  width: 100%;
+}
+
+.tooltip-box {
+  background: white;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+}

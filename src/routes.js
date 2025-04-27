@@ -81,7 +81,7 @@ import ActivityList from './components/CommunityPortal/Activities/ActivityList';
 import EventStats from './components/CommunityPortal/EventPersonalization/EventStats';
 // import AddActivities from './components/CommunityPortal/Activities/AddActivities';
 // import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
-
+import EducationalStatusChart from './components/CommunityPortal/EducationStatus/EducationalStatusChart';
 import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
 import EPDashboard from './components/EductionPortal';
@@ -311,6 +311,9 @@ export default(
           routePermissions={RoutePermissions.projects}
         />
 
+        <ProtectedRoute path="/educationalstatus" exact component={EducationalStatusChart} />
+
+
         <ProtectedRoute
           path="/totalorgsummary"
           exact
@@ -412,7 +415,6 @@ export default(
         <CPProtectedRoute path="/communityportal" exact component={CPDashboard} />
         <Route path="/communityportal/login" component={CPLogin} />
         <CPProtectedRoute path="/communityportal/Activities" exact component={ActivityList} />
-
 
         {/* Listing and Bidding Routes */}
         <LBProtectedRoute path="/lbdashboard" exact component={LBDashboard} />
