@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Input, ListGroup, ListGroupItem } from 'reactstrap';
 import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
 import './MemberSearchBar.css';
 
-const MemberSearchBar = ({ id, value, onChange, inactive = false }) => {
+function MemberSearchBar({ id, value, onChange, inactive }) {
   const [searchTerm, setSearchTerm] = useState(value);
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -41,7 +41,7 @@ const MemberSearchBar = ({ id, value, onChange, inactive = false }) => {
 
       setSuggestions(filteredUsers);
     } catch (error) {
-      console.error('Error fetching users:', error);
+      // Silently handle error
       setSuggestions([]);
     } finally {
       setLoading(false);
@@ -49,13 +49,13 @@ const MemberSearchBar = ({ id, value, onChange, inactive = false }) => {
   };
 
   const handleInputChange = e => {
-    const value = e.target.value;
-    setSearchTerm(value);
-    onChange(value);
+    const inputValue = e.target.value;
+    setSearchTerm(inputValue);
+    onChange(inputValue);
 
     // Debounce the API call
     const timeoutId = setTimeout(() => {
-      fetchUsers(value);
+      fetchUsers(inputValue);
       setShowSuggestions(true);
     }, 300);
 
@@ -83,9 +83,9 @@ const MemberSearchBar = ({ id, value, onChange, inactive = false }) => {
 
       {showSuggestions && suggestions.length > 0 && (
         <ListGroup className="suggestions-list">
-          {suggestions.map((suggestion, index) => (
+          {suggestions.map(suggestion => (
             <ListGroupItem
-              key={`suggestion-${id}-${index}`}
+              key={`suggestion-${id}-${suggestion._id}`}
               onClick={() => handleSuggestionClick(suggestion)}
               action
             >
@@ -98,13 +98,17 @@ const MemberSearchBar = ({ id, value, onChange, inactive = false }) => {
       {loading && <div className="loading-indicator">Loading...</div>}
     </div>
   );
-};
+}
 
 MemberSearchBar.propTypes = {
   id: PropTypes.number.isRequired,
   value: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
   inactive: PropTypes.bool,
+};
+
+MemberSearchBar.defaultProps = {
+  inactive: false,
 };
 
 export default MemberSearchBar;

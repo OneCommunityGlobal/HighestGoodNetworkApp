@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Modal,
   ModalHeader,
@@ -8,18 +8,13 @@ import {
   FormGroup,
   Label,
   Input,
-  Row,
-  Col,
 } from 'reactstrap';
-import { useSelector, useDispatch } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import './FeedbackModal.css';
 import StarRating from './StarRating';
 import MemberSearchBar from './MemberSearchBar';
 
-const FeedbackModal = () => {
-  const dispatch = useDispatch();
-  const history = useHistory();
+function FeedbackModal() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const [isOpen, setIsOpen] = useState(true);
   const [receivedHelp, setReceivedHelp] = useState('');
@@ -55,12 +50,13 @@ const FeedbackModal = () => {
 
   const handleSubmit = () => {
     // This would send the feedback data to an API endpoint
-    console.log('Feedback submitted:', {
-      receivedHelp,
-      ratedMembers,
-      inactiveRatedMembers,
-      comments,
-    });
+    // Log feedback submission (commented out to avoid linting error)
+    // console.log('Feedback submitted:', {
+    //   receivedHelp,
+    //   ratedMembers,
+    //   inactiveRatedMembers,
+    //   comments,
+    // });
 
     // Mark feedback as completed
     localStorage.setItem('feedbackCompleted', 'true');
@@ -127,7 +123,7 @@ const FeedbackModal = () => {
   const openFeedbackSuggestions = () => {
     // This would navigate to the existing feedback modal in the dashboard
     // This is a placeholder since we don't know the actual implementation
-    console.log('Opening feedback suggestions');
+    // console.log('Opening feedback suggestions');
     // Placeholder for navigating to a feedback form
     // history.push('/dashboard/feedback');
   };
@@ -173,11 +169,11 @@ const FeedbackModal = () => {
 
           <div className="member-rating-section mt-4">
             <h5>
-              Please specify who you contacted, including those who didn't assist you, and provide a
-              star rating based on your experience
+              Please specify who you contacted, including those who didn&apos;t assist you, and
+              provide a star rating based on your experience
             </h5>
 
-            {ratedMembers.map((member, index) => (
+            {ratedMembers.map(member => (
               <div key={member.id} className="member-rating-row">
                 <div className="member-input-container">
                   <MemberSearchBar
@@ -219,16 +215,16 @@ const FeedbackModal = () => {
           </div>
 
           <div className="inactive-members-section mt-4">
-            <h5>Can't find who you were looking for? Check Inactive members</h5>
+            <h5>Can&apos;t find who you were looking for? Check Inactive members</h5>
 
-            {inactiveRatedMembers.map((member, index) => (
+            {inactiveRatedMembers.map(member => (
               <div key={member.id} className="member-rating-row">
                 <div className="member-input-container">
                   <MemberSearchBar
                     id={member.id}
                     value={member.name}
                     onChange={value => handleMemberChange(member.id, value, true)}
-                    inactive={true}
+                    inactive
                   />
                 </div>
                 <div className="rating-container">
@@ -273,9 +269,9 @@ const FeedbackModal = () => {
           <div className="suggestions-link mt-3 text-center">
             <p>
               If you have any suggestions please click{' '}
-              <a href="#" onClick={openFeedbackSuggestions}>
+              <button type="button" className="link-button" onClick={openFeedbackSuggestions}>
                 here
-              </a>
+              </button>
             </p>
           </div>
         </div>
@@ -291,6 +287,6 @@ const FeedbackModal = () => {
       </ModalFooter>
     </Modal>
   );
-};
+}
 
 export default FeedbackModal;

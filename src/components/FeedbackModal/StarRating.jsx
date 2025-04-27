@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 import './StarRating.css';
 
-const StarRating = ({ id, rating, onChange }) => {
+function StarRating({ id, rating, onChange }) {
   const [hover, setHover] = useState(0);
 
   return (
@@ -12,7 +12,7 @@ const StarRating = ({ id, rating, onChange }) => {
 
         return (
           <span
-            key={`star-${id}-${index}`}
+            key={`star-${id}-${starValue}`}
             className={`star ${starValue <= (hover || rating) ? 'filled' : 'empty'}`}
             onClick={() => onChange(starValue)}
             onMouseEnter={() => setHover(starValue)}
@@ -24,7 +24,7 @@ const StarRating = ({ id, rating, onChange }) => {
       })}
     </div>
   );
-};
+}
 
 StarRating.propTypes = {
   id: PropTypes.number.isRequired,
