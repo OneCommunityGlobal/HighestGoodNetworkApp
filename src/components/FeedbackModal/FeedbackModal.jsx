@@ -1,0 +1,296 @@
+import React, { useState, useEffect } from 'react';
+import {
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+  FormGroup,
+  Label,
+  Input,
+  Row,
+  Col,
+} from 'reactstrap';
+import { useSelector, useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+import './FeedbackModal.css';
+import StarRating from './StarRating';
+import MemberSearchBar from './MemberSearchBar';
+
+const FeedbackModal = () => {
+  const dispatch = useDispatch();
+  const history = useHistory();
+  const darkMode = useSelector(state => state.theme.darkMode);
+  const [isOpen, setIsOpen] = useState(true);
+  const [receivedHelp, setReceivedHelp] = useState('');
+  const [ratedMembers, setRatedMembers] = useState([{ id: 1, name: '', rating: 0 }]);
+  const [inactiveRatedMembers, setInactiveRatedMembers] = useState([
+    { id: 1, name: '', rating: 0 },
+  ]);
+  const [comments, setComments] = useState('');
+
+  // Placeholder for getting help request status
+  useEffect(() => {
+    // In a real implementation, this would check if a help request was made a week ago
+    // For now, we're just showing the modal when navigating to the dashboard
+    const checkHelpRequest = () => {
+      // This would be replaced with actual API call to check if user made a help request a week ago
+      const hasUncompletedFeedback = localStorage.getItem('feedbackNeeded') === 'true';
+      const feedbackCompleted = localStorage.getItem('feedbackCompleted') === 'true';
+
+      if (hasUncompletedFeedback && !feedbackCompleted) {
+        setIsOpen(true);
+      } else {
+        setIsOpen(false);
+      }
+    };
+
+    // Set feedback needed to true for demo purposes
+    if (localStorage.getItem('feedbackNeeded') === null) {
+      localStorage.setItem('feedbackNeeded', 'true');
+    }
+
+    checkHelpRequest();
+  }, []);
+
+  const handleSubmit = () => {
+    // This would send the feedback data to an API endpoint
+    console.log('Feedback submitted:', {
+      receivedHelp,
+      ratedMembers,
+      inactiveRatedMembers,
+      comments,
+    });
+
+    // Mark feedback as completed
+    localStorage.setItem('feedbackCompleted', 'true');
+    setIsOpen(false);
+  };
+
+  const handleCloseForever = () => {
+    // Mark feedback as completed and prevent it from showing again
+    localStorage.setItem('feedbackCompleted', 'true');
+    setIsOpen(false);
+  };
+
+  const addNewMember = (isInactive = false) => {
+    if (isInactive) {
+      setInactiveRatedMembers([
+        ...inactiveRatedMembers,
+        { id: inactiveRatedMembers.length + 1, name: '', rating: 0 },
+      ]);
+    } else {
+      setRatedMembers([...ratedMembers, { id: ratedMembers.length + 1, name: '', rating: 0 }]);
+    }
+  };
+
+  const removeMember = (id, isInactive = false) => {
+    if (isInactive) {
+      // Ensure we don't remove the last entry
+      if (inactiveRatedMembers.length <= 1) return;
+
+      setInactiveRatedMembers(inactiveRatedMembers.filter(member => member.id !== id));
+    } else {
+      // Ensure we don't remove the last entry
+      if (ratedMembers.length <= 1) return;
+
+      setRatedMembers(ratedMembers.filter(member => member.id !== id));
+    }
+  };
+
+  const handleMemberChange = (id, value, isInactive = false) => {
+    if (isInactive) {
+      setInactiveRatedMembers(
+        inactiveRatedMembers.map(member =>
+          member.id === id ? { ...member, name: value } : member,
+        ),
+      );
+    } else {
+      setRatedMembers(
+        ratedMembers.map(member => (member.id === id ? { ...member, name: value } : member)),
+      );
+    }
+  };
+
+  const handleRatingChange = (id, rating, isInactive = false) => {
+    if (isInactive) {
+      setInactiveRatedMembers(
+        inactiveRatedMembers.map(member => (member.id === id ? { ...member, rating } : member)),
+      );
+    } else {
+      setRatedMembers(
+        ratedMembers.map(member => (member.id === id ? { ...member, rating } : member)),
+      );
+    }
+  };
+
+  const openFeedbackSuggestions = () => {
+    // This would navigate to the existing feedback modal in the dashboard
+    // This is a placeholder since we don't know the actual implementation
+    console.log('Opening feedback suggestions');
+    // Placeholder for navigating to a feedback form
+    // history.push('/dashboard/feedback');
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <Modal isOpen={isOpen} size="lg" className={darkMode ? 'dark-mode' : ''}>
+      <ModalHeader
+        className={darkMode ? 'bg-space-cadet text-light' : ''}
+        toggle={() => setIsOpen(false)}
+      >
+        <h4>Help Request Feedback</h4>
+      </ModalHeader>
+
+      <ModalBody className={darkMode ? 'bg-yinmn-blue text-light' : ''}>
+        <div className="feedback-form">
+          <FormGroup tag="fieldset" className="mb-4">
+            <legend>Were we able to help you last week?</legend>
+            <FormGroup check>
+              <Label check>
+                <Input
+                  type="radio"
+                  name="receivedHelp"
+                  value="Yes"
+                  onChange={e => setReceivedHelp(e.target.value)}
+                />{' '}
+                Yes
+              </Label>
+            </FormGroup>
+            <FormGroup check>
+              <Label check>
+                <Input
+                  type="radio"
+                  name="receivedHelp"
+                  value="No"
+                  onChange={e => setReceivedHelp(e.target.value)}
+                />{' '}
+                No
+              </Label>
+            </FormGroup>
+          </FormGroup>
+
+          <div className="member-rating-section mt-4">
+            <h5>
+              Please specify who you contacted, including those who didn't assist you, and provide a
+              star rating based on your experience
+            </h5>
+
+            {ratedMembers.map((member, index) => (
+              <div key={member.id} className="member-rating-row">
+                <div className="member-input-container">
+                  <MemberSearchBar
+                    id={member.id}
+                    value={member.name}
+                    onChange={value => handleMemberChange(member.id, value)}
+                  />
+                </div>
+                <div className="rating-container">
+                  <StarRating
+                    id={member.id}
+                    rating={member.rating}
+                    onChange={rating => handleRatingChange(member.id, rating)}
+                  />
+                </div>
+                <div className="remove-btn-container">
+                  <button
+                    type="button"
+                    className="remove-entry-btn"
+                    onClick={() => removeMember(member.id)}
+                    disabled={ratedMembers.length <= 1}
+                    aria-label="Remove entry"
+                  >
+                    ×
+                  </button>
+                </div>
+              </div>
+            ))}
+
+            <div className="text-center">
+              <Button
+                color="primary"
+                className="add-member-btn"
+                onClick={() => addNewMember(false)}
+              >
+                Add another entry
+              </Button>
+            </div>
+          </div>
+
+          <div className="inactive-members-section mt-4">
+            <h5>Can't find who you were looking for? Check Inactive members</h5>
+
+            {inactiveRatedMembers.map((member, index) => (
+              <div key={member.id} className="member-rating-row">
+                <div className="member-input-container">
+                  <MemberSearchBar
+                    id={member.id}
+                    value={member.name}
+                    onChange={value => handleMemberChange(member.id, value, true)}
+                    inactive={true}
+                  />
+                </div>
+                <div className="rating-container">
+                  <StarRating
+                    id={member.id}
+                    rating={member.rating}
+                    onChange={rating => handleRatingChange(member.id, rating, true)}
+                  />
+                </div>
+                <div className="remove-btn-container">
+                  <button
+                    type="button"
+                    className="remove-entry-btn"
+                    onClick={() => removeMember(member.id, true)}
+                    disabled={inactiveRatedMembers.length <= 1}
+                    aria-label="Remove entry"
+                  >
+                    ×
+                  </button>
+                </div>
+              </div>
+            ))}
+
+            <div className="text-center">
+              <Button color="primary" className="add-member-btn" onClick={() => addNewMember(true)}>
+                Add another entry
+              </Button>
+            </div>
+          </div>
+
+          <div className="comments-section mt-4">
+            <h5>Additional comments</h5>
+            <Input
+              type="textarea"
+              rows="5"
+              placeholder="Want to send a special shout out to someone who helped you? Let us know here!"
+              value={comments}
+              onChange={e => setComments(e.target.value)}
+            />
+          </div>
+
+          <div className="suggestions-link mt-3 text-center">
+            <p>
+              If you have any suggestions please click{' '}
+              <a href="#" onClick={openFeedbackSuggestions}>
+                here
+              </a>
+            </p>
+          </div>
+        </div>
+      </ModalBody>
+
+      <ModalFooter className={darkMode ? 'bg-yinmn-blue text-light' : ''}>
+        <Button color="danger" className="mr-auto" onClick={handleCloseForever}>
+          Found help another way. Close Permanently
+        </Button>
+        <Button color="primary" onClick={handleSubmit} disabled={!receivedHelp}>
+          Submit
+        </Button>
+      </ModalFooter>
+    </Modal>
+  );
+};
+
+export default FeedbackModal;
