@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
@@ -30,6 +31,7 @@ describe('Countdown Component', () => {
   };
 
   it('renders the countdown component with the correct initial values', () => {
+    // eslint-disable-next-line react/jsx-props-no-spreading
     render(<Countdown {...defaultProps} />);
     expect(screen.getByText('Goal: 01:00:00')).toBeInTheDocument();
     expect(screen.getByText('Elapsed: 00:30:00')).toBeInTheDocument();
@@ -39,6 +41,7 @@ describe('Countdown Component', () => {
   });
 
   it('calls toggleTimer when the close button is clicked', () => {
+    // eslint-disable-next-line react/jsx-props-no-spreading
     render(<Countdown {...defaultProps} />);
     const closeButton = screen.getByTitle('close timer dropdown');
     fireEvent.click(closeButton);
@@ -46,6 +49,7 @@ describe('Countdown Component', () => {
   });
 
   it('displays correct remaining time based on props', () => {
+    // eslint-disable-next-line react/jsx-props-no-spreading
     const { rerender } = render(<Countdown {...defaultProps} />);
     expect(screen.getByText('00')).toBeInTheDocument(); // Hours
     expect(screen.getByText('30')).toBeInTheDocument(); // Minutes
@@ -53,6 +57,7 @@ describe('Countdown Component', () => {
 
     rerender(
       <Countdown
+        // eslint-disable-next-line react/jsx-props-no-spreading
         {...defaultProps}
         remaining={5400000} // 1 hour 30 minutes in milliseconds
       />,
@@ -62,6 +67,7 @@ describe('Countdown Component', () => {
   });
 
   it('calls handleStartButton when the start button is clicked', () => {
+    // eslint-disable-next-line react/jsx-props-no-spreading
     render(<Countdown {...defaultProps} />);
     const startButton = screen.getByLabelText('Start timer');
     fireEvent.click(startButton);
@@ -74,6 +80,7 @@ describe('Countdown Component', () => {
       message: { ...defaultProps.message, started: true },
       running: true,
     };
+    // eslint-disable-next-line react/jsx-props-no-spreading
     render(<Countdown {...props} />);
     const stopButton = screen.getByLabelText('Stop timer and log timer');
     fireEvent.click(stopButton);
@@ -81,6 +88,7 @@ describe('Countdown Component', () => {
   });
 
   it('calls wsMessageHandler.sendSetGoal when a new goal is validated', () => {
+    // eslint-disable-next-line react/jsx-props-no-spreading, no-unused-vars
     const { rerender } = render(<Countdown {...defaultProps} />);
     const editButton = screen.getByTitle('edit initial goal');
     fireEvent.click(editButton);
