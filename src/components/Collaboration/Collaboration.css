@@ -26,7 +26,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  /* margin-bottom: 20px; */
   background-color: #9c0;
   padding: 10px;
   flex-flow: row nowrap;
@@ -47,6 +47,7 @@
 .search-form input {
   margin-right: 10px;
   padding: 5px;
+  margin-bottom: 0;
   border: 1px solid #ccc;
   border-radius: 4px;
 }
@@ -115,4 +116,32 @@ select {
   background-color: #fff;
   border: 1px solid #fff;
   border-radius: 5px;
+}
+.search-form button {
+  margin-top: 0;
+  margin-left: 10px;
+  min-width: auto;
+  max-width: 250px;
+  padding: 5px 15px 5px 15px;
+}
+
+@media (max-width: 1000px) {
+  .job-list {
+    display: block;
+    width: 85%;
+  }
+  .job-ad {
+    margin: 5%;
+  }
+  .search-form {
+    display: grid;
+  }
+  .search-form button, 
+  .search-form input,
+  .navbar-right select {
+    margin-top: 2%;
+    margin-left: 1px;
+    min-width: fit-content;
+    padding: 5px 15px;
+  }
 }
