@@ -395,6 +395,7 @@ function TotalOrgSummary(props) {
               <RoleDistributionPieChart
                 isLoading={isLoading}
                 roleDistributionStats={volunteerOverview?.roleDistributionStats}
+                darkMode={darkMode}
               />
             </div>
           </Col>
