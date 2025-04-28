@@ -5,7 +5,7 @@ import { ApiEndpoint } from 'utils/URL'; // Your API base
 
 const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff7f50'];
 
-const categories = ['Plumbing', 'Electrical', 'Structural', 'Mechanical'];
+const categories = ['plumbing', 'electrical', 'structural', 'mechanical'];
 
 const ActualCostBreakdownDonut = () => {
   const [projects, setProjects] = useState([]);
@@ -59,6 +59,7 @@ const ActualCostBreakdownDonut = () => {
           ))}
         </select>
       </div>
+      
 
       {/* Only show chart if project selected */}
       {selectedProjectId && (
