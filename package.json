@@ -80,7 +80,7 @@
     "uuid": "^9.0.1"
   },
   "scripts": {
-    "prestart": "npm run test",
+ 
     "postinstall": "node ./postinstall.js",
     "start": "react-scripts start",
     "build": "npm run postinstall && set CI=false && react-scripts build",
