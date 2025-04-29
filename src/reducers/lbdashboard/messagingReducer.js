@@ -8,6 +8,8 @@ import {
   UPDATE_MESSAGE_STATUS_REQUEST,
   UPDATE_MESSAGE_STATUS_SUCCESS,
   UPDATE_MESSAGE_STATUS_FAILURE,
+  MESSAGE_RECEIVED,
+  MESSAGE_STATUS_UPDATED,
 } from "../../constants/lbdashboard/messagingConstants";
 
 const initialState = {
@@ -29,13 +31,26 @@ export const messagingReducer = (state = initialState, action) => {
     case SEND_MESSAGE_SUCCESS:
       return { ...state, loading: false, messages: [...state.messages, action.payload] };
 
-    case 'RECEIVE_MESSAGE':
-      return { ...state, messages: [...state.messages, action.payload] };
-      
     case UPDATE_MESSAGE_STATUS_SUCCESS:
       return {
         ...state,
         loading: false,
+        messages: state.messages.map((message) =>
+          message._id === action.payload.messageId
+            ? { ...message, status: action.payload.status }
+            : message
+        ),
+      };
+
+    case MESSAGE_RECEIVED:
+      return {
+        ...state,
+        messages: [...state.messages, action.payload],
+      };
+
+    case MESSAGE_STATUS_UPDATED:
+      return {
+        ...state,
         messages: state.messages.map((message) =>
           message._id === action.payload.messageId
             ? { ...message, status: action.payload.status }
