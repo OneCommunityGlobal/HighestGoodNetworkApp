@@ -7,7 +7,7 @@
   flex-direction: column;
   align-items: flex-start;
   padding: 10px;
-  width: 250px;
+  width: 252px;
 }
 
 .warning-item-container {
@@ -37,6 +37,7 @@
 .warning-icons {
   display: flex;
   justify-content: center;
+  margin-right: 1em;
 }
 
 .warning-text {
