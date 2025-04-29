@@ -25,3 +25,9 @@
   right: 30px;
   transform: translateY(-50%);
 }
+
+.close_button.btn_padding{
+  @media (max-width: 768px) { 
+    top: 70%;
+  }
+}
