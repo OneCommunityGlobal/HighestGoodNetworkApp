@@ -89,7 +89,7 @@ const RoleInfoModal = ({ info, auth}) => {
             <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>Welcome to Information Page!</ModalHeader>
             <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
               {canEditInfoModal && isEditing ?
-                <RichTextEditor disabled={!isEditing} value={infoContentModal} onEditorChange={handleInputChange} /> :
+                <RichTextEditor disabled={!isEditing} value={infoContentModal} onEditorChange={handleInputChange} darkMode={darkMode}/> :
                 <div
                   style={{ paddingLeft: '20px' }}
                   dangerouslySetInnerHTML={{ __html: infoContentModal }}

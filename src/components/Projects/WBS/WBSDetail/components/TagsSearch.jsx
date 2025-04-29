@@ -6,7 +6,15 @@ import ReadOnlySectionWrapper from '../EditTask/ReadOnlySectionWrapper';
 import { findProjectMembers } from '../../../../../actions/projectMembers';
 
 function TagsSearch(props) {
-  const { placeholder, resourceItems, addResources, removeResource, disableInput } = props;
+  const {
+    placeholder,
+    resourceItems,
+    addResources,
+    removeResource,
+    disableInput,
+    darkMode,
+    members,
+  } = props;
   const [searchWord, setSearchWord] = useState('');
   const [isFocused, setIsFocused] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -65,7 +73,9 @@ function TagsSearch(props) {
             <input
               type="text"
               placeholder={placeholder}
-              className="border border-dark rounded form-control px-2"
+              className={`border border-dark rounded form-control px-2 ${
+                darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+              }`}
               value={searchWord}
               onChange={e => handleFilter(e)}
               onFocus={handleFocus}

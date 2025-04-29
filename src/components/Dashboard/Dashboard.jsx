@@ -15,6 +15,8 @@ import {
   DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
   PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
 } from 'utils/constants';
+import { useDispatch } from 'react-redux';
+import { updateSummaryBarData } from 'actions/dashboardActions';
 
 export function Dashboard(props) {
   const [popup, setPopup] = useState(false);
@@ -27,7 +29,9 @@ export function Dashboard(props) {
   const isNotAllowedToEdit = cantUpdateDevAdminDetails(viewingUser?.email, authUser.email);
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const toggle = (forceOpen = null) => {
+  const dispatch = useDispatch();
+
+  const toggle = () => {
     if (isNotAllowedToEdit) {
       const warningMessage =
         viewingUser?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY
@@ -37,8 +41,7 @@ export function Dashboard(props) {
       return;
     }
 
-    const shouldOpen = forceOpen !== null ? forceOpen : !popup;
-    setPopup(shouldOpen);
+    setPopup(!popup);
 
     setTimeout(() => {
       const elem = document.getElementById('weeklySum');
@@ -60,6 +63,11 @@ export function Dashboard(props) {
       window.removeEventListener('storage', handleStorageEvent);
     };
   }, []);
+
+  useEffect(()=>{
+    console.log(summaryBarData)
+    dispatch(updateSummaryBarData({summaryBarData}));
+  },[summaryBarData])
 
   return (
     <Container fluid className={darkMode ? 'bg-oxford-blue' : ''}>

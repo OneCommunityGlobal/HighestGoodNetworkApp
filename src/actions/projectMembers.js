@@ -1,10 +1,12 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-use-before-define */
+/* eslint-disable no-return-assign */
 /** *******************************************************************************
  * Action: MEMBER MEMBERSHIP
  * Author: Henry Ng - 02/03/20
  ******************************************************************************* */
 import axios from 'axios';
 import * as types from '../constants/projectMembership';
-import { searchWithAccent } from 'utils/search';
 import { ENDPOINTS } from '../utils/URL';
 /** *****************************************
  * ACTION CREATORS
@@ -18,10 +20,10 @@ export const getAllUserProfiles = () => {
       .then(res => {
         const { members } = getState().projectMembers;
         const users = res.data.map(user => {
-          if (!members.find(member => member._id === user._id)) {
-            return (user = { ...user, assigned: false });
+          if (!members.some(member => member._id === user._id)) {
+            return { ...user, assigned: false };
           }
-          return (user = { ...user, assigned: true });
+          return { ...user, assigned: true };
         });
         // console.log(users);
         dispatch(foundUsers(users));
@@ -38,7 +40,7 @@ export const getAllUserProfiles = () => {
  */
 export const findUserProfiles = keyword => {
   // Creates an array containing the first and last name and filters out whitespace
-  const fullNameRegex = keyword.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'); // Escape special characters
+  const fullNameRegex = keyword.replace(/[-\\/\\^$*+?.()|[\]{}]/g, '\\$&'); // Escape special characters
 
   return async (dispatch, getState) => {
     try {
@@ -150,7 +152,7 @@ export const assignProject = (projectId, userId, operation, firstName, lastName)
  */
 export const findProjectMembers = (projectId, query) => {
   // Escape special characters in the query
-  const queryRegex = query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+  const queryRegex = query.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
 
   return async (dispatch, getState) => {
     try {
