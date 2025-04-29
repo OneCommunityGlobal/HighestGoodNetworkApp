@@ -1,10 +1,6 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import { render, screen, fireEvent } from '@testing-library/react';
 import PopUpBar from '../PopUpBar';
-
-const viewingUser = {
-  firstName: 'TestUser',
-  lastName: 'LastName',
-};
 
 // render Component
 const renderComponent = (props = {}) => {
