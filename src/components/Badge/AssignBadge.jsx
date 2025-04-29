@@ -164,7 +164,7 @@ function AssignBadge(props) {
         </Alert>
       )}
 
-      {filteredUsers.length > 0 && (
+      {filteredUsers.length > 0 ? (
         <div className="table-responsive mb-3">
           <Table
             className={`table table-bordered ${
@@ -204,6 +204,15 @@ function AssignBadge(props) {
             </tbody>
           </Table>
         </div>
+      ) : (
+        filteredUsers.length === 0 &&
+        fullName && (
+          <>
+            <h3 className={`${darkMode ? 'text-light' : 'text-dark'} text-center`}>
+              No user is found
+            </h3>
+          </>
+        )
       )}
       <FormGroup className="mb-3">
         <Button
