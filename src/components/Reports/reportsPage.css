@@ -141,7 +141,7 @@
 .total-report-container {
   display: flex;
   flex-direction: row;
-  justify-content: flex-start;
+  justify-content: center;
   padding: 8px 0px 8px 0px;
   flex-wrap: wrap;
   gap: 1rem;

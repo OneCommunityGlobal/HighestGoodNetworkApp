@@ -5,6 +5,7 @@ import HoursWorkedPieChart from '../HoursWorkedPieChart/HoursWorkedPieChart';
 import Loading from '../../common/Loading';
 
 export default function VolunteerHoursDistribution({
+  isLoading,
   darkMode,
   usersTimeEntries = [],
   usersOverTimeEntries = [],
@@ -85,19 +86,14 @@ export default function VolunteerHoursDistribution({
 
   return (
     <div>
-      {!Array.isArray(userData) || userData.length === 0 ? (
+      {isLoading ? (
         <div className="d-flex justify-content-center align-items-center">
           <div className="w-100vh">
             <Loading />
           </div>
         </div>
       ) : (
-        <div>
-          <h6 className={`${darkMode ? 'text-light' : 'text-dark'} fw-bold text-center`}>
-            Volunteer Hours Distribution
-          </h6>
-          <HoursWorkedPieChart darkmode={darkMode} windowSize={windowSize} userData={userData} />
-        </div>
+        <HoursWorkedPieChart darkmode={darkMode} windowSize={windowSize} userData={userData} />
       )}
     </div>
   );
