@@ -45,9 +45,10 @@ import { EmailSender } from './components/common/EmailSender/EmailSender';
 import Collaboration from './components/Collaboration';
 
 // LB Dashboard
+import LBProtectedRoute from './components/LBDashboard/LBProtectedRoute/LBProtectedRoute';
 import LBRegister from './components/LBDashboard/Auth/Register';
 import LBLogin from './components/LBDashboard/Auth/Login';
-import LBHome from './components/LBDashboard/Home/Home2';
+import LBHome from './components/LBDashboard/Home/Home';
 import ListOverview from './components/LBDashboard/ListOverview/ListOverview';
 
 // BM Dashboard
@@ -149,7 +150,7 @@ export default (
       )}
     />
 
-    <Route
+    <Route // Should be LBProtectedRoute
       path="/lbdashboard/listingshome"
       render={() => (
         <>
