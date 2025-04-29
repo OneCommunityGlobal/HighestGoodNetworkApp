@@ -152,6 +152,7 @@ export function Header(props) {
   const history = useHistory();
 
   const [showProjectDropdown, setShowProjectDropdown] = useState(false);
+  const [isAckLoading, setIsAckLoading] = useState(false);
 
   useEffect(() => {
     const handleStorageEvent = () => {
@@ -216,9 +217,10 @@ export function Header(props) {
     setLogoutPopup(true);
   };
   
-  const handlePermissionChangeAck = async() => {
+  const handlePermissionChangeAck = async () => {
     // handle setting the ack true
     try {
+      setIsAckLoading(true)
       const {firstName: name, lastName, personalLinks, adminLinks, _id} = props.userProfile
       axios.put(ENDPOINTS.USER_PROFILE(_id), {
         // req fields for updation
@@ -229,6 +231,7 @@ export function Header(props) {
         
         isAcknowledged: true,
       }).then(()=>{
+        setIsAckLoading(false);
         dispatch(getUserProfile(_id));
       });
     } catch (e) {
@@ -585,6 +588,7 @@ export function Header(props) {
           message="Heads Up, there were permission changes made to this account"
           onClickClose={handlePermissionChangeAck}
           textColor="black_text"
+          isLoading={isAckLoading}
         />
       )}
       <div>
