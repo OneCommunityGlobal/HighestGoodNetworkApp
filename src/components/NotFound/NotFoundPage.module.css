@@ -9,25 +9,44 @@
   background-color: #fff;
 }
 
+.sectionImage {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px 0px;
+  height: 20rem;
+  width: 70%;
+}
+
 .notFoundImage {
+  flex-grow: 1;
   max-width: 100%;
-  height: auto;
+  width: 100%;
+  height: 25rem;
+  display: block;
+  object-fit: contain;
+  /* object-fit: cover; */
+
   /* margin-bottom:-20px; */
+  height: 38%;
+
 }
 
 .notFoundText {
   padding: 0 20px;
+  position: relative;
 }
 
-.notFoundText h1 {
+/* .notFoundText h1 {
   font-size: 2em;
   margin-bottom: 10px;
 }
 
 .notFoundText p {
   font-size: 1.1em;
-  margin-bottom: 10px;
-}
+  margin-bottom: 15px;
+} */
 
 .backHomeLink {
   color: #3293f9;
@@ -42,12 +61,12 @@
 
 .darkMode {
   color: #f1f1f1;
-
-  .notFoundImage {
-    height: 38%;
-    width: auto;
-  }
 }
+
+/* .notFoundImage {
+  height: 38%;
+  width: auto;
+} */
 
 .bgBlack {
   background-color: #121212;
@@ -60,5 +79,10 @@
 
   .notFoundText p {
     font-size: 1em;
+  }
+
+  .notFoundImage {
+    flex-grow: 0;
+    max-width: 95%;
   }
 }
