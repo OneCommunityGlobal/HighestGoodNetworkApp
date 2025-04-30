@@ -45,6 +45,7 @@ import LogTimeOffPopUp from './logTimeOffPopUp';
 import SetupNewUserPopup from './setupNewUserPopup';
 import { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
+import moment from 'moment';
 
 class UserManagement extends React.PureComponent {
   filteredUserDataCount = 0;
@@ -91,6 +92,12 @@ class UserManagement extends React.PureComponent {
     // Initiating the user profile fetch action.
     this.props.getAllUserProfile();
     this.props.getAllTimeOffRequests();
+    this.props.getAllRoles();
+    this.checkAndUpdateUserStatuses();
+    // Set up interval to check user statuses every minute
+    this.statusCheckInterval = setInterval(() => {
+      this.checkAndUpdateUserStatuses();
+    }, 60000); // Check every minute
     const { darkMode } = this.props.state.theme;
     const { userProfiles } = this.props.state.allUserProfiles;
     const { roles: rolesPermissions } = this.props.state.role;
@@ -109,6 +116,10 @@ class UserManagement extends React.PureComponent {
 
   componentWillUnmount() {
     window.removeEventListener('resize', this.handleResize);
+    // Clear the interval when component unmounts
+    if (this.statusCheckInterval) {
+      clearInterval(this.statusCheckInterval);
+    }
   }
 
   handleResize = () => {
@@ -149,6 +160,25 @@ class UserManagement extends React.PureComponent {
       this.getFilteredData(userProfiles, rolesPermissions, timeOffRequests, darkMode, this.state.editable, this.state.isMobile, this.state.mobileFontSize,);
     }
   }
+
+  checkAndUpdateUserStatuses = async () => {
+    const { allUserProfiles } = this.props.state;
+    const now = moment();
+    
+    for (const user of allUserProfiles) {
+      if (!user.isActive && user.reactivationDate) {
+        const reactivationDate = moment(user.reactivationDate);
+        if (now.isSameOrAfter(reactivationDate)) {
+          try {
+            await this.props.updateUserStatus(user, UserStatus.Active, undefined);
+            toast.success(`${user.firstName} ${user.lastName} has been automatically reactivated.`);
+          } catch (error) {
+            console.error('Error auto-reactivating user:', error);
+          }
+        }
+      }
+    }
+  };
 
   /**
    * Returns the differenet popup components to render
