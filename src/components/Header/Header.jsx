@@ -308,25 +308,19 @@ export function Header(props) {
     <div className="header-wrapper">
       <Navbar className="py-3 navbar" color="dark" dark expand="md">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
-        <div
-          className="timer-message-section"
-          style={user.role === 'Owner' ? { marginRight: '0.5rem' } : { marginRight: '1rem' }}
-        >
-          {isAuthenticated && <Timer darkMode={darkMode} />}
-          {isAuthenticated && (
-            <div className="owner-message">
-              <OwnerMessage />
-            </div>
-          )}
-        </div>
+
+        {isAuthenticated && <Timer darkMode={darkMode} />}
+         
         <NavbarToggler onClick={toggle} />
         {isAuthenticated && (
           <Collapse isOpen={isOpen} navbar>
-            <Nav className="ml-auto nav-links" navbar>
-              <div
-                className="d-flex justify-content-center align-items-center"
-                style={{ width: '100%' }}
-              >
+            {isAuthenticated && (
+              <div className="navbar-owner-message">
+                <OwnerMessage />
+              </div>
+            )}
+            <Nav className="ml-auto menu-container" navbar>
+
                 {canUpdateTask && (
                   <NavItem className="responsive-spacing">
                     <NavLink tag={Link} to="/taskeditsuggestions">
@@ -399,8 +393,7 @@ export function Header(props) {
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 )}
-              </div>
-              <div className="d-flex align-items-center justify-content-center">
+            
                 {canGetReports || canGetWeeklySummaries || canGetWeeklyVolunteerSummary ? (
                   <UncontrolledDropdown nav inNavbar className="responsive-spacing">
                     <DropdownToggle nav caret>
@@ -441,9 +434,6 @@ export function Header(props) {
                     </NavLink>
                   </NavItem>
                 )}
-                <NavItem className="responsive-spacing">
-                  <BellNotification userId={displayUserId}/>
-                </NavItem>
                 {(canAccessUserManagement ||
                   canAccessBadgeManagement ||
                   canAccessProjects ||
@@ -497,6 +487,9 @@ export function Header(props) {
                   </UncontrolledDropdown>
                 )}
                 <NavItem className="responsive-spacing">
+                  <BellNotification userId={displayUserId}/>
+                </NavItem>
+                <NavItem className="responsive-spacing">
                   <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
                     <img
                       src={`${profilePic || '/pfp-default-header.png'}`}
@@ -545,7 +538,6 @@ export function Header(props) {
                     </DropdownItem>
                   </DropdownMenu>
                 </UncontrolledDropdown>
-              </div>
             </Nav>
           </Collapse>
         )}
