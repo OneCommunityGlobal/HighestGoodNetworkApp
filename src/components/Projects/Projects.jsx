@@ -48,6 +48,8 @@ const Projects = function(props) {
   const [searchName, setSearchName] = useState("");
   const [allProjects, setAllProjects] = useState(null);
 
+  const [isArchiving, setIsArchiving] = useState(false);
+
   const useDebounce = (value, delay) => {
     const [debouncedValue, setDebouncedValue] = useState(value);
   
@@ -104,9 +106,11 @@ const Projects = function(props) {
   };
 
   const confirmArchive = async () => {
+    setIsArchiving(true); // show loading on confirm
     const updatedProject = { ...projectTarget, isArchived: true };
     await onUpdateProject(updatedProject);
     await props.fetchAllProjects();
+    setIsArchiving(false); // reset loading
     onCloseModal();
   };
 
@@ -206,7 +210,7 @@ const Projects = function(props) {
   return (
     <>
       <div className={darkMode ? 'bg-oxford-blue text-light' : ''}>
-        <div className="container py-3">
+        <div className={`container py-3 ${darkMode ? 'bg-yinmn-blue-light text-light' : ''}`}>
           {fetching || !fetched ? <Loading align="center" /> : null}
           <div className="d-flex align-items-center">
             <h3 style={{ display: 'inline-block', marginRight: 10 }}>Projects</h3>
@@ -216,6 +220,7 @@ const Projects = function(props) {
               fontSize={30}
               isPermissionPage={true}
               role={role}
+              darkMode={darkMode}
             />
             <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
 
@@ -249,6 +254,9 @@ const Projects = function(props) {
           setInactiveModal={modalData.hasInactiveBtn ? setInactiveProject : null}
           modalMessage={modalData.modalMessage}
           modalTitle={modalData.modalTitle}
+          darkMode={darkMode}
+          confirmButtonText={isArchiving ? 'Archiving...' : 'Confirm'}
+          isConfirmDisabled={isArchiving}
         />
       </div>
     </>
