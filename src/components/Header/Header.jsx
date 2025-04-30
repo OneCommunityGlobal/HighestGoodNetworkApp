@@ -456,19 +456,15 @@ export function Header(props) {
                       <span className="dashboard-text-link">{OTHER_LINKS}</span>
                     </DropdownToggle>
                     <DropdownMenu className={darkMode ? 'bg-yinmn-blue' : ''}>
-                      {canAccessUserManagement ? (
+                      {canAccessUserManagement && (
                         <DropdownItem tag={Link} to="/usermanagement" className={fontColor}>
                           {USER_MANAGEMENT}
                         </DropdownItem>
-                      ) : (
-                        `null`
                       )}
-                      {canAccessBadgeManagement ? (
+                      {canAccessBadgeManagement && (
                         <DropdownItem tag={Link} to="/badgemanagement" className={fontColor}>
                           {BADGE_MANAGEMENT}
                         </DropdownItem>
-                      ) : (
-                        `null`
                       )}
                       {canAccessProjects && (
                         <DropdownItem tag={Link} to="/projects" className={fontColor}>
