@@ -128,7 +128,7 @@ function TopCommunityMembers() {
         </tbody>
       </table>
 
-      <a href="/usermanagement" className="underline-link">
+      <a href="/hgnform/community" className="underline-link">
         Show your team members &gt;
       </a>
     </div>
