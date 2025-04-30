@@ -199,12 +199,20 @@ function Announcements({ title, email }) {
 
   const [charCount, setCharCount] = useState(0);
   
-
+  const stripHtml = (html) => {
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    return div.textContent || '';
+  };
+  
   const handleEditorChange = (content) => {
     setEmailContent(content);
+    const charCount = stripHtml(content).trim(); // e.g., "hi"
+    setCharCount(charCount.length);
+
   
-    const charCount = content.length;
-    setCharCount(charCount);
+   // const charCount = content.length;
+   // setCharCount(charCount);
   };
 
 
