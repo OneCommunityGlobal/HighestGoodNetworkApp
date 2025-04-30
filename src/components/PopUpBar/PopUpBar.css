@@ -31,3 +31,8 @@
     top: 70%;
   }
 }
+
+.close_button > .container-fluid {
+  padding: 0px;
+}
+  
