@@ -34,6 +34,7 @@ import ReminderModal from './ReminderModal';
 import TimeLogConfirmationModal from './TimeLogConfirmationModal';
 import { ENDPOINTS } from '../../../utils/URL';
 import '../../Header/DarkMode.css';
+import { useRef } from 'react';
 
 // Images are not allowed in timelog
 const customImageUploadHandler = () =>
@@ -67,6 +68,7 @@ function TimeEntryForm(props) {
   const { from, sendStop, edit, data, toggle, isOpen, tab, darkMode } = props;
   // props from store
   const { authUser } = props;
+  const isMounted = useRef( false );
 
   const viewingUser = JSON.parse(sessionStorage.getItem('viewingUser') ?? '{}');
 
@@ -321,13 +323,17 @@ function TimeEntryForm(props) {
     }
 
     const handleFormReset = () => {
+      if( !isMounted.current ) return;
       setFormValues(initialFormValues);
       setReminder(initialReminder);
-      if (isOpen) toggle();
       setSubmitting(false);
+      if( isMounted.current && isOpen ){
+        toggle();
+      }
     };
 
     const handleError = error => {
+      if( !isMounted.current ) return;
       toast.error(`An error occurred while attempting to submit your time entry. Error: ${error}`);
       setSubmitting(false);
     };
@@ -369,10 +375,14 @@ function TimeEntryForm(props) {
         await props.editTimeEntry(data._id, timeEntry, initialDateOfWork);
       } else {
         await props.postTimeEntry(timeEntry);
+        window.dispatchEvent(new Event('timeEntrySubmitted'));
       }
 
       await handlePostSubmitActions();
       handleFormReset();
+      if (props.triggerRefresh) {
+        props.triggerRefresh(); // 👈 This triggers update in TeamMemberTasks
+      }
     } catch (error) {
       handleError(error);
     }
@@ -507,28 +517,29 @@ function TimeEntryForm(props) {
   /**
    * Rectify: This will run whenever TimeEntryForm is opened, since time entry data does not bound to store states (e.g., userProfile, userProjects, userTasks..)
    * */
-  const loadAsyncData = async tuid => {
+  const loadAsyncData = async (tuid) => {
     setIsAsyncDataLoaded(false);
     try {
       const profileURL = ENDPOINTS.USER_PROFILE(tuid);
       const projectURL = ENDPOINTS.USER_PROJECTS(tuid);
       const taskURL = ENDPOINTS.TASKS_BY_USERID(tuid);
 
-      const profilePromise = axios.get(profileURL);
-      const projectPromise = axios.get(projectURL);
-      const taskPromise = axios.get(taskURL);
-
       const [userProfileRes, userProjectsRes, userTasksRes] = await Promise.all([
-        profilePromise,
-        projectPromise,
-        taskPromise,
+        axios.get(profileURL),
+        axios.get(projectURL),
+        axios.get(taskURL),
       ]);
+
+      if( !isMounted.current ) return;
+
       setTimeEntryFormUserProfile(userProfileRes.data);
       setTimeEntryFormUserProjects(userProjectsRes.data);
       setTimeEntryFormUserTasks(userTasksRes.data);
       setIsAsyncDataLoaded(true);
     } catch (e) {
-      toast.error('An error occurred while loading the form data. Please try again later.');
+      if( isMounted.current ){
+        toast.error('An error occurred while loading the form data. Please try again later.');
+      }
     }
   };
 
@@ -542,8 +553,16 @@ function TimeEntryForm(props) {
 
   // grab form data before editing
   useEffect(() => {
+    isMounted.current = true;
+
+    const fetchData = async() => {
+      await loadAsyncData(timeEntryUserId, isMounted);
+    }
     if (isOpen) {
-      loadAsyncData(timeEntryUserId);
+      fetchData().catch( console.error );
+    }
+    return () => {
+      isMounted.current = false;
     }
   }, [isOpen, timeEntryUserId]);
 

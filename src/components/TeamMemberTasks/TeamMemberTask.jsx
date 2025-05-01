@@ -27,6 +27,8 @@ import GoogleDocIcon from '../common/GoogleDocIcon';
 import FollowupCheckButton from './FollowupCheckButton';
 import FollowUpInfoModal from './FollowUpInfoModal';
 import * as messages from '../../constants/followUpConstants';
+import { useEffect } from 'react';
+import { getUserTasks } from 'actions/userProfile';
 
 const NUM_TASKS_SHOW_TRUNCATE = 6;
 
@@ -45,6 +47,7 @@ const TeamMemberTask = React.memo(
     onTimeOff,
     goingOnTimeOff,
     displayUser,
+    refreshTrigger
   }) => {
     const darkMode = useSelector(state => state.theme.darkMode);
     const taskCounts = useSelector(state => state.dashboard?.taskCounts ?? {});
@@ -53,17 +56,30 @@ const TeamMemberTask = React.memo(
     const dispatch = useDispatch();
     const canSeeFollowUpCheckButton = userRole !== 'Volunteer';
     const history = useHistory();
+    const [updatedTasks, setUpdatedTasks] = useState(user.tasks);
 
-    const totalHoursRemaining = user.tasks.reduce((total, task) => {
-      task.hoursLogged = task.hoursLogged || 0;
-      task.estimatedHours = task.estimatedHours || 0;
-      if (task.status !== 'Complete' && task.isAssigned !== 'false') {
-        return total + Math.max(0, task.estimatedHours - task.hoursLogged);
+    useEffect( () => {
+      if( refreshTrigger > 0 ){
+        if( user && user.personId ){
+          dispatch( getUserTasks( user.personId ) );
+        }
       }
-      return total;
-    }, 0);
+    }, [ refreshTrigger, dispatch, user?.personId ] );
 
-    const activeTasks = user.tasks.filter(
+    useEffect( () => {
+      setUpdatedTasks( [...user.tasks] );
+    }, [user.tasks] );
+    const totalHoursRemaining = updatedTasks.reduce((sum, task) => {
+        const hoursLogged = task.hoursLogged || 0;
+        const estimatedHours = task.estimatedHours || 0;
+
+        if (task.status !== 'Complete' && task.isAssigned !== 'false') {
+          return sum + Math.max(0, estimatedHours - hoursLogged);
+        }
+        return sum;
+      }, 0);
+
+    const activeTasks = updatedTasks.filter(
       task =>
         !task.resources?.some(
           resource => resource.userID === user.personId && resource.completedTask,
@@ -76,7 +92,7 @@ const TeamMemberTask = React.memo(
       showWhoHasTimeOff && (onTimeOff || goingOnTimeOff),
     );
 
-   const completedTasks = user.tasks.filter(
+   const completedTasks = updatedTasks.filter(
     task =>
       task.resources?.some(
         resource => resource.userID === user.personId && resource.completedTask,
@@ -128,7 +144,7 @@ const TeamMemberTask = React.memo(
       if (event.metaKey || event.ctrlKey || event.button === 1) {
         return;
       }
-  
+
       event.preventDefault(); // prevent full reload
       history.push(`/peoplereport/${to}`);
     }
@@ -272,7 +288,7 @@ const TeamMemberTask = React.memo(
                               fontSize: '20px',
                             }}
                           >{`${user.name}`}</Link>
-                          
+
                           {user.role !== 'Volunteer' && (
                             <div
                               className="user-role"
@@ -283,7 +299,7 @@ const TeamMemberTask = React.memo(
                           )}
 
                           {canGetWeeklySummaries && <GoogleDocIcon link={userGoogleDocLink} />}
-                           
+
                            {
                             canSeeReports &&
                             <Link
@@ -291,7 +307,7 @@ const TeamMemberTask = React.memo(
                               to= {`/peoplereport/${user?.personId}`}
                               onClick={(event)=>handleReportClick(event,user?.personId)}
                             >
-                               <img 
+                               <img
                                   src ="/report_icon.png"
                                   alt='reportsicon'
                                   className='team-member-tasks-user-report-link-image'
@@ -336,7 +352,7 @@ const TeamMemberTask = React.memo(
                   <div className="grid-container">
                     <Table borderless className="team-member-tasks-subtable">
                       <tbody>
-                        {user.tasks &&
+                        {updatedTasks &&
                           activeTasks.slice(0, numTasksToShow).map((task, index) => {
                             return (
                               <tr

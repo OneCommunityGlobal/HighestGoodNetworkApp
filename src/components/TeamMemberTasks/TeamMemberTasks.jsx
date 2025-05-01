@@ -70,6 +70,13 @@ const TeamMemberTasks = React.memo(props => {
   const [textButton, setTextButton] = useState('My Team');
   const [innerWidth, setInnerWidth] = useState();
   const [controlUseEfffect, setControlUseEfffect] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  // useEffect(() => {
+  //   if (!isTimeFilterActive) {
+  //     setTeamList(usersWithTasks);  // ✅ Sync local state with Redux update
+  //   }
+  // }, [usersWithTasks]);
+
 
   const handleToggleButtonClick = () => {
     if (textButton === 'View All') {
@@ -96,6 +103,17 @@ const TeamMemberTasks = React.memo(props => {
   useEffect(() => {
     dispatch(getAllTimeOffRequests());
     dispatch(fetchAllFollowUps());
+
+    const handleTimeEntrySubmitted = () => {
+      setRefreshTrigger( prev => prev + 1 );
+    }
+
+    window.addEventListener('timeEntrySubmitted', handleTimeEntrySubmitted);
+
+    return () => {
+      window.removeEventListener('timeEntrySubmitted', handleTimeEntrySubmitted);
+    }
+
   }, []);
 
   const closeMarkAsDone = () => {
@@ -322,13 +340,13 @@ const TeamMemberTasks = React.memo(props => {
   };
 
   const filteredTeamRoles = teams => {
-    const roles = {}; 
+    const roles = {};
 
     teamRoles && teams.forEach(team => {
         if (teamRoles[team.teamName]) {
             Object.entries(teamRoles[team.teamName]).forEach(([role, { id, name }]) => {
                 if (!roles[role]) {
-                    roles[role] = []; 
+                    roles[role] = [];
                 }
                 roles[role].push({ id, name });
             });
@@ -363,7 +381,7 @@ const TeamMemberTasks = React.memo(props => {
           if(['Manager', "Assistant Manager", 'Mentor'].includes(role)){
             if (!rolesGroup[name]) {
               rolesGroup[name] = {};
-            } 
+            }
             rolesGroup[name][role] = {
                 id: user.personId,
                 name: user.name
@@ -794,6 +812,7 @@ const TeamMemberTasks = React.memo(props => {
                         onTimeOff={userOnTimeOff[user.personId]}
                         goingOnTimeOff={userGoingOnTimeOff[user.personId]}
                         displayUser={displayUser}
+                        refreshTrigger={refreshTrigger}
                       />
                     );
                   } else {
@@ -816,6 +835,7 @@ const TeamMemberTasks = React.memo(props => {
                           userId={displayUser._id}
                           showWhoHasTimeOff={showWhoHasTimeOff}
                           onTimeOff={userOnTimeOff[user.personId]}
+                          refreshTrigger={refreshTrigger}
                           goingOnTimeOff={userGoingOnTimeOff[user.personId]}
                         />
                         {timeEntriesList.length > 0 &&
@@ -830,6 +850,7 @@ const TeamMemberTasks = React.memo(props => {
                                     displayYear
                                     key={timeEntry._id}
                                     timeEntryUserProfile={timeEntry.userProfile}
+                                    triggerRefresh={() => setRefreshTrigger(prev => prev + 1)}
                                   />
                                 </td>
                               </tr>
