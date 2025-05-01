@@ -23,7 +23,7 @@ function AddTaskModal(props) {
   * -------------------------------- variable declarations -------------------------------- 
   */
   // props from store 
-  const { tasks, copiedTask, allMembers, allProjects, error, darkMode } = props;
+  const { tasks, copiedTask, allProjects, error, darkMode } = props;
 
   const TINY_MCE_INIT_OPTIONS = {
     license_key: 'gpl',
@@ -419,7 +419,7 @@ function AddTaskModal(props) {
                 <span className="add_new_task_form-input_area">
                     <TagsSearch
                       placeholder="Add resources"
-                      members={allMembers.filter(user=>user.isActive)}
+                      projectId={props.projectId}
                       addResources={addResources}
                       removeResource={removeResource}
                       resourceItems={resourceItems}
@@ -757,7 +757,6 @@ function AddTaskModal(props) {
 const mapStateToProps = state => ({ 
   tasks: state.tasks.taskItems,
   copiedTask: state.tasks.copiedTask,
-  allMembers: state.projectMembers.members,
   allProjects: state.allProjects,
   error: state.tasks.error,
   darkMode: state.theme.darkMode,

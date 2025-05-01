@@ -348,7 +348,7 @@ function EditTaskModal(props) {
                   <div>
                     <TagsSearch
                       placeholder="Add resources"
-                      members={allMembers.filter(user=>user.isActive)}
+                      projectId={props.projectId}
                       addResources={editable? addResources : () => {}}
                       removeResource={editable? removeResource : () => {}}
                       resourceItems={resourceItems}
