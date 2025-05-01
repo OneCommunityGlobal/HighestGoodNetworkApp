@@ -352,7 +352,7 @@ export default function ExpenditureLineGraph() {
           color: darkMode ? 'var(--text-color)' : 'inherit',
         }}
       >
-        Cost Breakdown by Type of Expenditure
+        Cost Breakdown by Type of Expenditures
       </h1>
 
       <div
