@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-/* prettier-ignore */
-/* eslint-disable react/no-array-index-key, jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/label-has-associated-control, react/self-closing-comp */
 function ListingForm() {
   const [formData, setFormData] = useState({
     hostName: '',
@@ -22,7 +20,7 @@ function ListingForm() {
 
   const [errors, setErrors] = useState({});
   const [uploadProgress, setUploadProgress] = useState({});
-  
+
   const handleChange = e => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -30,11 +28,11 @@ function ListingForm() {
   };
 
   const processFiles = files => {
-    const validFiles = files.filter(file => file.size <= 2 * 1024 * 1024);
+    const validFiles = files.filter(file => file.size <= 5 * 1024 * 1024); // Limit to 5MB
     const newErrors = {};
 
-    if (files.some(file => file.size > 2 * 1024 * 1024)) {
-      newErrors.propertyImages = 'Some files exceed 2MB and were not uploaded.';
+    if (files.some(file => file.size > 5 * 1024 * 1024)) {
+      newErrors.propertyImages = 'Some files exceed 5MB and were not uploaded.';
     }
 
     if (validFiles.length > 0) {
@@ -82,10 +80,8 @@ function ListingForm() {
   };
 
   return (
-    <div className="container d-flex justify-content-center align-items-center min-vh-100"
-      >
-      <div className="card shadow-lg p-4 w-100" style={{ maxWidth: "600px", backgroundColor: "#f0f0f0" }}
-        >
+    <div className="container d-flex justify-content-center align-items-center min-vh-100">
+      <div className="card shadow-lg p-4 w-100" style={{ maxWidth: "600px", backgroundColor: "#f0f0f0" }}>
         <h2 className="text-center text-dark mb-4">Create a Listing</h2>
         <form onSubmit={handleSubmit}>
           {/* Input Fields */}
@@ -99,8 +95,7 @@ function ListingForm() {
             { label: 'Nearby Property Landmarks', name: 'landmarks' },
             { label: 'Places to Visit Nearby', name: 'nearbyPlaces' },
             { label: 'Exact Address', name: 'exactAddress' },
-           ].map(({ label, name, type = 'text' }) => (
-
+          ].map(({ label, name, type = 'text' }) => (
             <div className="mb-3" key={name}>
               <label className="form-label fw-bold">{label}</label>
               <input
@@ -135,7 +130,7 @@ function ListingForm() {
             onDragOver={(e) => e.preventDefault()}
             onDrop={handleDrop}
           >
-            <label className="form-label fw-bold">Drag & Drop or Select Images (Max: 2MB, PNG/JPEG)</label>
+            <label className="form-label fw-bold">Drag & Drop or Select Images (Max: 5MB, PNG/JPEG)</label>
             <input
               type="file"
               accept="image/png, image/jpeg"
@@ -161,7 +156,7 @@ function ListingForm() {
                         height="80"
                         className="border rounded"
                         style={{ cursor: "pointer" }}
-                        onClick={() => reorderImages(index, index === 0 ? formData.propertyImages.length - 1 : index - 1)}
+                        onClick={() => reorderImages(index, formData.propertyImages.length - 1)}
                       />
                       <button
                         type="button"
