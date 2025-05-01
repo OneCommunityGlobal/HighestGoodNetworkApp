@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import './MemberList.css';
 
+const names = ['Shreya Laheri', 'Anjali', 'Rahul Verma'];
 const dummyMembers = Array.from({ length: 45 }, (_, i) => ({
   id: i + 1,
-  name: `Shreya Laheri`,
-  email: `shreya@onecommunity.com`,
-  slack: `shreya_laheri`,
+  name: names[i % names.length],
+  email: `user${i + 1}@onecommunity.com`,
   score: `${6 - (i % 3)}/10`,
-  skills: 'HTML, CSS, Java, Reactjs'
+  skills: 'HTML, CSS, Java, Reactjs',
 }));
 
 const MemberList = () => {
@@ -35,8 +35,7 @@ const MemberList = () => {
             <img src="https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y"
                alt={`${member.name}'s avatar`} className="member-avatar"/>
 
-            <p><i className="fa fa-envelope" style={{ marginRight: '6px' }}></i>{member.email}</p>
-            <p><i className="fab fa-slack" style={{ marginRight: '6px', color: '#4A154B' }}></i> {member.slack}</p>
+            <p><i className="fa fa-envelope" style={{ marginRight: '5px' }}></i>{member.email}</p>
             <p style={{ color: parseInt(member.score) >= 5 ? 'green' : 'red' }}>
                 Score: {member.score}
             </p>
