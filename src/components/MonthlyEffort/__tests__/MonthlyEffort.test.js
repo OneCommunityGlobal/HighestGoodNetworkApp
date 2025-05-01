@@ -1,19 +1,19 @@
-import React from 'react';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { MonthlyEffort } from '../MonthlyEffort';
 
-describe('Monthly Effort component structure', () => {
-  let mountedMonthlyEffort, props;
+describe('MonthlyEffort', () => {
+  const props = {
+    auth: { isAuthenticated: true, user: { userid: 'abcdef' } },
+  };
+
   beforeEach(() => {
-    props = {
-      auth: { isAuthenticated: true, user: { userid: 'abcdef' } },
-    };
-    mountedMonthlyEffort = render(<MonthlyEffort {...props} />);
+    render(<MonthlyEffort {...props} />);
   });
 
-  it('should be rendered with one h5 labeled Please Sign In', () => {
-    const h5 = mountedMonthlyEffort.find('h5');
-    expect(h5.length).toEqual(1);
-    expect(h5.first().text()).toContain('Monthly Efforts');
+  it('renders one <h5> heading with text "Monthly Efforts"', () => {
+    // <h5> elements are mapped to role="heading" level=5
+    const headings = screen.getAllByRole('heading', { level: 5 });
+    expect(headings).toHaveLength(1);
+    expect(headings[0]).toHaveTextContent('Monthly Efforts');
   });
 });

@@ -12,7 +12,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
     "@fortawesome/react-fontawesome": "^0.1.19",
     "@react-leaflet/core": ">=1.0.0 <1.1.0",
-    "@sentry/browser": "^4.6.6",
+    "@sentry/browser": "^9.15.0",
     "@tinymce/tinymce-react": "^3.14.0",
     "ajv": "^6.12.6",
     "ajv-keywords": "^3.5.2",
@@ -143,7 +143,6 @@
     "redux-mock-store": "^1.5.4",
     "sass": "^1.86.3",
     "sass-loader": "^16.0.5",
-    "sinon": "^7.3.2",
-    "surge": "^0.21.6"
+    "sinon": "^7.3.2"
   }
 }

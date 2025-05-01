@@ -1,46 +1,49 @@
 import React from 'react';
-import { render } from '@testing-library/react';
-import TeamTableHeader from 'components/Teams/TeamTableHeader';
-import { Provider } from 'react-redux';
-import configureStore from 'redux-mock-store';
+import { render, screen } from '@testing-library/react';
+import { TeamTableHeader } from 'components/Teams/TeamTableHeader';
 
-const mockStore = configureStore([]);
-const store = mockStore({});
+const defaultProps = {
+  hasPermission: () => true,
+  darkMode: false,
+  sortTeamNameState: '',
+  sortTeamActiveState: '',
+  onTeamNameSort: jest.fn(),
+  onTeamActiveSort: jest.fn(),
+};
 
-describe('TeamTableHeader Component', () => {
-  it('should render correctly', () => {
-    const wrapper = render(
-      <Provider store={store}>
-        <TeamTableHeader hasPermission={() => true} />
-      </Provider>,
+describe('TeamTableHeader (pure)', () => {
+  it('renders correctly with all standard columns', () => {
+    render(
+      <table>
+        <tbody>
+          <TeamTableHeader {...defaultProps} />
+        </tbody>
+      </table>,
     );
 
-    expect(wrapper.exists()).toBe(true);
+    expect(screen.getByText('#')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Team Name/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Active/i })).toBeInTheDocument();
+    expect(screen.getByText(/Members/i)).toBeInTheDocument();
+    // delete column should appear since hasPermission() returns true
+    expect(screen.getByTestId('teams__delete')).toBeInTheDocument();
   });
 
-  it('should not render delete column when both deleteTeam and putTeam permissions are not available', () => {
-    const wrapper = render(
-      <Provider store={store}>
-        <TeamTableHeader hasPermission={() => false} />
-      </Provider>,
+  it('hides the delete column when no delete or put permission', () => {
+    render(
+      <table>
+        <tbody>
+          <TeamTableHeader {...defaultProps} hasPermission={() => false} />
+        </tbody>
+      </table>,
     );
 
-    expect(wrapper.find('#teams__delete')).toHaveLength(0);
+    expect(screen.queryByTestId('teams__delete')).toBeNull();
   });
 
-  it('should be memoized', () => {
-    const wrapper1 = render(
-      <Provider store={store}>
-        <TeamTableHeader hasPermission={() => true} />
-      </Provider>,
-    );
-
-    const wrapper2 = render(
-      <Provider store={store}>
-        <TeamTableHeader hasPermission={() => true} />
-      </Provider>,
-    );
-
-    expect(wrapper1.instance() === wrapper2.instance()).toBe(true);
+  it('is wrapped in React.memo', () => {
+    // React.memo components share the same $$typeof
+    const dummyMemo = React.memo(() => {});
+    expect(TeamTableHeader.$$typeof).toBe(dummyMemo.$$typeof);
   });
 });

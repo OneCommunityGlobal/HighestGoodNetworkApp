@@ -1,12 +1,27 @@
-import React from 'react';
-import { render } from '@testing-library/react';
-import AddProjectPopup from '../AddProjectPopup';
-import UserProjectsTable from '../UserProjectsTable';
+/* eslint-disable func-names */
+import { render, fireEvent } from '@testing-library/react';
+import configureMockStore from 'redux-mock-store';
+import thunk from 'redux-thunk';
+import { Provider } from 'react-redux';
 import '@testing-library/jest-dom/extend-expect';
 import ProjectsTab from '../ProjectsTab';
 
-describe('ProjectsTab', () => {
+const mockStore = configureMockStore([thunk]);
+const defaultState = {};
 
+function renderWithRedux(
+  ui,
+  { initialState = defaultState, store = mockStore(initialState) } = {},
+) {
+  return render(<Provider store={store}>{ui}</Provider>);
+}
+
+test('setup mock store and provider', () => {
+  const store = mockStore(defaultState);
+  expect(store.getState()).toEqual(defaultState);
+});
+
+describe('ProjectsTab', () => {
   const projectsData = [];
   const userProjects = [];
   const onDeleteProject = jest.fn();
@@ -19,9 +34,14 @@ describe('ProjectsTab', () => {
   const handleSubmit = jest.fn();
   const disabled = false;
 
-  // check for props rendering
+  it('should render AddProjectPopup and UserProjectsTable components', () => {
+    const { getByTestId } = renderWithRedux(<ProjectsTab />);
+    expect(getByTestId('add-project-popup')).toBeInTheDocument();
+    expect(getByTestId('user-projects-table')).toBeInTheDocument();
+  });
+
   it('should render all the props correctly', () => {
-    const wrapper = render(
+    const { getByTestId } = renderWithRedux(
       <ProjectsTab
         projectsData={projectsData}
         userProjects={userProjects}
@@ -34,75 +54,67 @@ describe('ProjectsTab', () => {
         updateTask={updateTask}
         handleSubmit={handleSubmit}
         disabled={disabled}
-      />
+      />,
     );
-    expect(wrapper.find(UserProjectsTable).prop('userTasks')).toEqual(userTasks);
-    expect(wrapper.find(UserProjectsTable).prop('userProjectsById')).toEqual(userProjects);
-    expect(wrapper.find(UserProjectsTable).prop('onButtonClick')).toBeInstanceOf(Function);
-    expect(wrapper.find(UserProjectsTable).prop('onDeleteClicK')).toBeInstanceOf(Function);
-    expect(wrapper.find(UserProjectsTable).prop('edit')).toEqual(edit);
-    expect(wrapper.find(UserProjectsTable).prop('role')).toEqual(role);
-    expect(typeof wrapper.find(UserProjectsTable).prop('updateTask')).toEqual('function');
-    expect(wrapper.find(UserProjectsTable).prop('userId')).toEqual(userId);
-    expect(wrapper.find(UserProjectsTable).prop('disabled')).toEqual(disabled);
-  });
 
-  it('should render AddProjectPopup and UserProjectsTable components', () => {
-    const wrapper = render(<ProjectsTab />);
-    expect(wrapper.find(AddProjectPopup)).toHaveLength(1);
-    expect(wrapper.find(UserProjectsTable)).toHaveLength(1);
+    const popupInfo = getByTestId('popup-info');
+    expect(popupInfo.getAttribute('data-projects')).toBe(JSON.stringify(projectsData));
+    expect(popupInfo.getAttribute('data-userprojectsbyid')).toBe(JSON.stringify(userProjects));
+    expect(popupInfo).toHaveAttribute('data-handlesubmit', 'true');
+
+    const tableInfo = getByTestId('table-info');
+    expect(tableInfo.getAttribute('data-usertasks')).toBe(JSON.stringify(userTasks));
+    expect(tableInfo.getAttribute('data-userprojectsbyid')).toBe(JSON.stringify(userProjects));
+    expect(tableInfo).toHaveAttribute('data-edit', edit.toString());
+    expect(tableInfo).toHaveAttribute('data-role', role);
+    expect(tableInfo).toHaveAttribute('data-userid', userId);
+    expect(tableInfo).toHaveAttribute('data-disabled', disabled.toString());
   });
 
   it('should call onAssignProject when project is selected in AddProjectPopup', () => {
-    const onAssignProject = jest.fn();
-    const wrapper = render(<ProjectsTab onAssignProject={onAssignProject} />);
-    const addProjectPopup = wrapper.find(AddProjectPopup);
-    addProjectPopup.props().onSelectAssignProject({ _id: '123' });
+    const { getByTestId } = renderWithRedux(<ProjectsTab onAssignProject={onAssignProject} />);
+    fireEvent.click(getByTestId('assign-btn'));
     expect(onAssignProject).toHaveBeenCalledWith({ _id: '123' });
   });
 
   it('should call onDeleteProject when project is deleted in UserProjectsTable', () => {
-    const onDeleteProject = jest.fn();
-    const wrapper = render(<ProjectsTab onDeleteProject={onDeleteProject} />);
-    const userProjectsTable = wrapper.find(UserProjectsTable);
-    userProjectsTable.props().onDeleteClicK('123');
+    const { getByTestId } = renderWithRedux(<ProjectsTab onDeleteProject={onDeleteProject} />);
+    fireEvent.click(getByTestId('delete-btn'));
     expect(onDeleteProject).toHaveBeenCalledWith('123');
   });
 
-  // Edge cases
   it('should have undefined handleSubmit prop', () => {
-    const wrapper = render(<ProjectsTab />);
-    expect(wrapper.find(AddProjectPopup).prop('handleSubmit')).toBeUndefined();
+    const { queryByTestId } = renderWithRedux(<ProjectsTab />);
+    const popupInfo = queryByTestId('popup-info');
+    expect(popupInfo).not.toHaveAttribute('data-handlesubmit');
   });
 
   it('should render UserProjectsTable and AddProjectPopup', () => {
-    const wrapper = render(<ProjectsTab />);
-    expect(wrapper.find(AddProjectPopup)).toHaveLength(1);
-    expect(wrapper.find(UserProjectsTable)).toHaveLength(1);
+    const { getByTestId } = renderWithRedux(<ProjectsTab />);
+    expect(getByTestId('add-project-popup')).toBeInTheDocument();
+    expect(getByTestId('user-projects-table')).toBeInTheDocument();
   });
 
   it('should render AddProjectPopup with empty userProjectsById', () => {
-    const wrapper = render(<ProjectsTab />);
-    const addProjectPopup = wrapper.find(AddProjectPopup);
-    expect(addProjectPopup.prop('userProjectsById')).toBe(undefined);
+    const { getByTestId } = renderWithRedux(<ProjectsTab />);
+    const popupInfo = getByTestId('popup-info');
+    expect(popupInfo).not.toHaveAttribute('data-userprojectsbyid');
   });
 
   it('should render AddProjectPopup with no projects', () => {
-    const wrapper = render(<ProjectsTab projectsData={[]} />);
-    expect(wrapper.find(AddProjectPopup).prop('projects')).toEqual([]);
+    const { getByTestId } = renderWithRedux(<ProjectsTab projectsData={[]} />);
+    expect(getByTestId('popup-info')).toHaveAttribute('data-projects', JSON.stringify([]));
   });
 
   it('should call onAssignProject with an undefined project', () => {
-    const onAssignProject = jest.fn();
-    const wrapper = render(<ProjectsTab onAssignProject={onAssignProject} />);
-    const addProjectPopup = wrapper.find(AddProjectPopup);
-    addProjectPopup.props().onSelectAssignProject(undefined);
+    const { getByTestId } = renderWithRedux(<ProjectsTab onAssignProject={onAssignProject} />);
+    fireEvent.click(getByTestId('assign-undefined-btn'));
     expect(onAssignProject).toHaveBeenCalledWith(undefined);
   });
 
   it('should call onAssignProject with a project that has already been assigned to the user', () => {
-    const userProjectsTest = [{ _id: '123' }];       
-    const wrapper = render(
+    const userProjectsTest = [{ _id: '123' }];
+    const { getByTestId } = renderWithRedux(
       <ProjectsTab
         projectsData={projectsData}
         userProjects={userProjectsTest}
@@ -115,13 +127,90 @@ describe('ProjectsTab', () => {
         updateTask={updateTask}
         handleSubmit={handleSubmit}
         disabled={disabled}
-      />
+      />,
     );
-  
-    const addProjectPopup = wrapper.find(AddProjectPopup);
-    addProjectPopup.props().onSelectAssignProject({ _id: '123' });
-    expect(wrapper.find(AddProjectPopup).prop('userProjectsById')).toEqual(userProjectsTest);
+    fireEvent.click(getByTestId('assign-btn'));
+    const popupInfo = getByTestId('popup-info');
+    expect(popupInfo.getAttribute('data-userprojectsbyid')).toBe(JSON.stringify(userProjectsTest));
     expect(onAssignProject).toHaveBeenCalledWith({ _id: '123' });
   });
 });
 
+jest.mock(
+  '../AddProjectPopup',
+  () =>
+    function(props) {
+      const { projects, userProjectsById, onSelectAssignProject, handleSubmit, darkMode } = props;
+      return (
+        <div data-testid="add-project-popup">
+          <div
+            data-testid="popup-info"
+            data-projects={JSON.stringify(projects)}
+            data-userprojectsbyid={
+              userProjectsById !== undefined ? JSON.stringify(userProjectsById) : undefined
+            }
+            data-darkmode={darkMode ? 'true' : 'false'}
+            data-handlesubmit={handleSubmit ? 'true' : undefined}
+          />
+          <button
+            type="button"
+            aria-label="Assign Project"
+            data-testid="assign-btn"
+            onClick={() => onSelectAssignProject({ _id: '123' })}
+          />
+          <button
+            type="button"
+            aria-label="Assign Project"
+            data-testid="assign-undefined-btn"
+            onClick={() => onSelectAssignProject(undefined)}
+          />
+        </div>
+      );
+    },
+);
+
+jest.mock(
+  '../UserProjectsTable',
+  () =>
+    function(props) {
+      const {
+        userTasks,
+        userProjectsById,
+        onButtonClick,
+        onDeleteClicK,
+        edit,
+        role,
+        userId,
+        disabled,
+        darkMode,
+      } = props;
+      return (
+        <div data-testid="user-projects-table">
+          <div
+            data-testid="table-info"
+            data-usertasks={JSON.stringify(userTasks)}
+            data-userprojectsbyid={
+              userProjectsById !== undefined ? JSON.stringify(userProjectsById) : undefined
+            }
+            data-edit={edit ? 'true' : 'false'}
+            data-role={role}
+            data-userid={userId}
+            data-disabled={disabled ? 'true' : 'false'}
+            data-darkmode={darkMode ? 'true' : 'false'}
+          />
+          <button
+            type="button"
+            data-testid="add-btn"
+            onClick={onButtonClick}
+            aria-label="Add Project"
+          />
+          <button
+            type="button"
+            data-testid="delete-btn"
+            onClick={() => onDeleteClicK('123')}
+            aria-label="Delete Project"
+          />
+        </div>
+      );
+    },
+);

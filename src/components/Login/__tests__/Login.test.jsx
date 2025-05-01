@@ -1,134 +1,325 @@
-// Version 1.0.0 - Initial tests for Login page structure, input handling, and login behavior
-
-import React from 'react';
-import { render } from '@testing-library/react';
+// Version 1.0.0 - Updated tests for Login page structure, input handling, and login behavior
+import { render, fireEvent, waitFor } from '@testing-library/react';
+import { Provider } from 'react-redux';
+import { Router } from 'react-router-dom';
+import { createMemoryHistory } from 'history';
+import configureStore from 'redux-mock-store';
+import thunk from 'redux-thunk';
 import { Login } from '../Login';
-import { loginUser } from '../../../actions/authActions';
-import { clearErrors } from '../../../actions/errorsActions';
-import { BrowserRouter } from 'react-router-dom';
+
+// Mock required modules and actions
+jest.mock('../../../actions/authActions', () => ({
+  loginUser: jest.fn(),
+}));
+jest.mock('../../../actions/errorsActions', () => ({
+  clearErrors: jest.fn(),
+}));
+
+// Create mock store
+const mockStore = configureStore([thunk]);
+
+// Custom render function with all required providers
+const renderWithProviders = (
+  ui,
+  {
+    initialState = {
+      auth: { isAuthenticated: false, user: {} },
+      errors: {},
+      theme: { darkMode: false },
+    },
+    history = createMemoryHistory(),
+    store = mockStore(initialState),
+    ...renderOptions
+  } = {},
+) => {
+  function Wrapper({ children }) {
+    return (
+      <Provider store={store}>
+        <Router history={history}>{children}</Router>
+      </Provider>
+    );
+  }
+
+  return {
+    store,
+    history,
+    ...render(ui, { wrapper: Wrapper, ...renderOptions }),
+  };
+};
 
 describe('Login page structure', () => {
-  let mountedLogin, props;
+  let store;
+  let history;
 
-  // Before each test, we initialize the props and shallow render the Login component
   beforeEach(() => {
-    props = {
-      auth: { isAuthenticated: false }, // Simulate a non-authenticated user
-      errors: {}, // No errors initially
-      loginUser: loginUser, // Action for logging in
-      clearErrors: clearErrors, // Action for clearing errors
+    // Set up store and history for each test
+    const initialState = {
+      auth: { isAuthenticated: false, user: {} },
+      errors: {},
+      theme: { darkMode: false },
     };
-    // Shallow render the component to test its structure
-    mountedLogin = render(<Login {...props} />);
+    store = mockStore(initialState);
+    history = createMemoryHistory();
+
+    // Render the Login component
+    const { container } = renderWithProviders(
+      <Login
+        auth={{ isAuthenticated: false, user: {} }}
+        errors={{}}
+        loginUser={jest.fn()}
+        clearErrors={jest.fn()}
+        history={history}
+        location={{}}
+      />,
+      { store, history },
+    );
+
+    // Add container to global scope for tests that need to query it
+    global.container = container;
   });
 
-  // Test for ensuring that there are two input fields (e.g., email and password)
+  afterEach(() => {
+    delete global.container;
+  });
+
   it('should be rendered with two input fields', () => {
-    const inputs = mountedLogin.find('Input');
+    // Use query selectors since the Input component might not have proper roles
+    const inputs = global.container.querySelectorAll('input');
     expect(inputs.length).toBe(2);
   });
 
-  // Test to ensure there is one button on the form
   it('should be rendered with one button', () => {
-    const button = mountedLogin.find('button');
-    expect(button.length).toBe(1);
+    const button = global.container.querySelector('button');
+    expect(button).toBeTruthy();
   });
 
-  // Test to verify that there is an h2 header labeled "Please Sign in"
   it('should be rendered with one h2 labeled Please Sign In', () => {
-    const h2 = mountedLogin.find('h2');
-    expect(h2.length).toEqual(1);
-    expect(h2.first().text()).toContain('Please Sign in');
+    const h2 = global.container.querySelector('h2');
+    expect(h2).toBeTruthy();
+    expect(h2.textContent).toContain('Please Sign in');
   });
 });
 
 describe('When user tries to input data', () => {
-  let mountedLoginPage, props, loginU;
+  let store;
+  let history;
+  let loginUserMock;
 
-  // Before each test, we reset props and shallow render the Login component with mock data
   beforeEach(() => {
-    loginU = jest.fn(); // Mock function to simulate loginUser action
-    props = {
-      auth: { isAuthenticated: false }, // User is not authenticated
-      errors: {}, // No errors initially
-      loginUser: loginU, // Mock login function
+    // Reset all mocks
+    jest.clearAllMocks();
+
+    // Create fresh mocks for each test
+    loginUserMock = jest.fn();
+    const initialState = {
+      auth: { isAuthenticated: false, user: {} },
+      errors: {},
+      theme: { darkMode: false },
     };
-    mountedLoginPage = render(<Login {...props} />);
-  });
+    store = mockStore(initialState);
+    history = createMemoryHistory();
 
-  // Test for calling the handleInput method when the input field changes
-  it('should call handleInput when input is changed', () => {
-    const spy = jest.spyOn(mountedLoginPage.instance(), 'handleInput'); // Spy on the handleInput method
-    mountedLoginPage
-      .find("[name='email']")
-      .simulate('change', { currentTarget: { name: 'email', value: 'abc' } }); // Simulate input change event
-    expect(spy).toHaveBeenCalled(); // Ensure handleInput is called
-  });
-
-  // Test to ensure that the email value in the component's state updates correctly
-  it('should correctly update the email value in the state', () => {
-    const expected = 'sh@gmail.com';
-    const Input = { name: 'email', value: expected };
-    const mockEvent = { currentTarget: Input };
-    mountedLoginPage.instance().handleInput(mockEvent); // Trigger input change
-
-    expect(mountedLoginPage.instance().state.data.email).toEqual(expected); // Check if state updates
-  });
-
-  // Test to ensure that the password value in the component's state updates correctly
-  it('should correctly update the password value in the state', () => {
-    const expected = 'trapp';
-    const Input = { name: 'password', value: expected };
-    const mockEvent = { currentTarget: Input };
-    mountedLoginPage.instance().handleInput(mockEvent); // Trigger input change
-
-    expect(mountedLoginPage.instance().state.data.password).toEqual(expected); // Check if state updates
-  });
-
-  // Test to ensure that the errors object updates correctly if the password is empty
-  it('should correctly update the errors object if the password is empty', () => {
-    const expected = '';
-    const Input = { name: 'password', value: expected };
-    const mockEvent = { currentTarget: Input };
-    mountedLoginPage.instance().handleInput(mockEvent); // Trigger input change
-    expect(mountedLoginPage.instance().state.errors.password).toEqual(
-      '"Password" is not allowed to be empty' // Expected error message for an empty password field
+    // Render the Login component with mocks
+    const { container } = renderWithProviders(
+      <Login
+        auth={{ isAuthenticated: false, user: {} }}
+        errors={{}}
+        loginUser={loginUserMock}
+        clearErrors={jest.fn()}
+        history={history}
+        location={{}}
+      />,
+      { store, history },
     );
+
+    global.container = container;
   });
 
-  // Test to ensure that the submit button is disabled if the form is invalid
-  it('should have disabled submit button if form is invalid', () => {
-    const button = mountedLoginPage.find('button');
-    expect(button.props()).toHaveProperty('disabled'); // Ensure the button is disabled
+  afterEach(() => {
+    delete global.container;
   });
 
-  // Test to simulate form submission and ensure that the callback is called
-  it('form can be submitted', () => {
-    const callback = jest.fn(); // Mock submission callback
-    const mountedLoginPagewithCallBack = render(<form onSubmit={callback} />); // Simulate form submission
-    mountedLoginPagewithCallBack.find('form').simulate('submit'); // Simulate form submission
-    expect(callback).toHaveBeenCalled(); // Check if callback is invoked
+  // Use fireEvent instead of direct state manipulation
+  it('should allow typing in the email field', () => {
+    const emailInput = global.container.querySelector('input[name="email"]');
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+    expect(emailInput.value).toBe('test@example.com');
   });
 
-  // Test to ensure that the loginUser function is called with the correct credentials upon form submission
-  it('onSubmit loginPage method is called with credentials', async () => {
-    await mountedLoginPage.instance().doSubmit(); // Trigger form submission
-    expect(loginU).toHaveBeenCalledWith({ email: '', password: '' }); // Ensure loginUser is called with correct credentials
+  it('should allow typing in the password field', () => {
+    const passwordInput = global.container.querySelector('input[name="password"]');
+    fireEvent.change(passwordInput, { target: { value: 'password123' } });
+    expect(passwordInput.value).toBe('password123');
+  });
+
+  it('should have disabled submit button initially (when form is invalid)', () => {
+    const button = global.container.querySelector('button');
+    expect(button.disabled).toBeTruthy();
+  });
+
+  it('should enable submit button when form is valid', () => {
+    const emailInput = global.container.querySelector('input[name="email"]');
+    const passwordInput = global.container.querySelector('input[name="password"]');
+
+    // Fill in valid values
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+    fireEvent.change(passwordInput, { target: { value: 'password123' } });
+
+    // Button should now be enabled
+    const button = global.container.querySelector('button');
+    expect(button.disabled).toBeFalsy();
+  });
+
+  it('should call loginUser when form is submitted', async () => {
+    const emailInput = global.container.querySelector('input[name="email"]');
+    const passwordInput = global.container.querySelector('input[name="password"]');
+    const form = global.container.querySelector('form');
+
+    // Fill in valid values
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+    fireEvent.change(passwordInput, { target: { value: 'password123' } });
+
+    // Submit the form
+    fireEvent.submit(form);
+
+    // Check if loginUser was called with correct data
+    await waitFor(() => {
+      expect(loginUserMock).toHaveBeenCalledWith({
+        email: 'test@example.com',
+        password: 'password123',
+      });
+    });
   });
 });
 
 describe('Login behavior', () => {
-  let props;
+  it('should redirect to homepage if user is authenticated', () => {
+    const history = createMemoryHistory();
+    const pushSpy = jest.spyOn(history, 'push');
 
-  // Test to check if the user is redirected to the homepage after successful authentication
-  it('should have redirection set to homepage', () => {
-    props = {
-      auth: { isAuthenticated: true }, // Simulate authenticated user
-      errors: {},
-      loginUser: loginUser,
-      history: [], // Mock browser history object
-    };
-    const wrapper = render(<Login {...props} />); // Shallow render the component
-    expect(wrapper.instance().props.history).toEqual(['/']); // Ensure the user is redirected to '/'
+    renderWithProviders(
+      <Login
+        auth={{ isAuthenticated: true, user: {} }}
+        errors={{}}
+        loginUser={jest.fn()}
+        clearErrors={jest.fn()}
+        history={history}
+        location={{}}
+      />,
+      {
+        initialState: {
+          auth: { isAuthenticated: true, user: {} },
+          errors: {},
+          theme: { darkMode: false },
+        },
+        history,
+      },
+    );
+
+    // Check if history.push was called with '/'
+    expect(pushSpy).toHaveBeenCalledWith('/');
+  });
+
+  it('should redirect to /forcePasswordUpdate if user is new', () => {
+    const history = createMemoryHistory();
+    const pushSpy = jest.spyOn(history, 'push');
+
+    // First render with isAuthenticated: false
+    const { rerender } = renderWithProviders(
+      <Login
+        auth={{
+          isAuthenticated: false,
+          user: {},
+        }}
+        errors={{}}
+        loginUser={jest.fn()}
+        clearErrors={jest.fn()}
+        history={history}
+        location={{}}
+      />,
+      {
+        initialState: {
+          auth: {
+            isAuthenticated: false,
+            user: {},
+          },
+          errors: {},
+          theme: { darkMode: false },
+        },
+        history,
+      },
+    );
+
+    // Clear previous history.push calls
+    pushSpy.mockClear();
+
+    // Now rerender with isAuthenticated: true and user.new: true
+    rerender(
+      <Login
+        auth={{
+          isAuthenticated: true,
+          user: { new: true, userId: '123' },
+        }}
+        errors={{}}
+        loginUser={jest.fn()}
+        clearErrors={jest.fn()}
+        history={history}
+        location={{}}
+      />,
+    );
+
+    // Now componentDidUpdate should be called, pushing to /forcePasswordUpdate/123
+    expect(pushSpy).toHaveBeenCalledWith('/forcePasswordUpdate/123');
+  });
+  it('should redirect to /dashboard when user becomes authenticated and is not new', () => {
+    const history = createMemoryHistory();
+    const pushSpy = jest.spyOn(history, 'push');
+
+    // First render with isAuthenticated: false
+    const { rerender } = renderWithProviders(
+      <Login
+        auth={{
+          isAuthenticated: false,
+          user: {},
+        }}
+        errors={{}}
+        loginUser={jest.fn()}
+        clearErrors={jest.fn()}
+        history={history}
+        location={{}}
+      />,
+      {
+        initialState: {
+          auth: {
+            isAuthenticated: false,
+            user: {},
+          },
+          errors: {},
+          theme: { darkMode: false },
+        },
+        history,
+      },
+    );
+
+    // Clear previous history.push calls
+    pushSpy.mockClear();
+
+    // Now rerender with isAuthenticated: true and regular user
+    rerender(
+      <Login
+        auth={{
+          isAuthenticated: true,
+          user: { new: false },
+        }}
+        errors={{}}
+        loginUser={jest.fn()}
+        clearErrors={jest.fn()}
+        history={history}
+        location={{}}
+      />,
+    );
+
+    // Should redirect to dashboard
+    expect(pushSpy).toHaveBeenCalledWith('/dashboard');
   });
 });

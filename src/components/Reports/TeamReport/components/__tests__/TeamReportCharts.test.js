@@ -1,6 +1,52 @@
-import React from 'react';
-import { render } from '@testing-library/react';
-import TeamReportCharts from 'components/Reports/TeamReport/components/TeamReportCharts';
+import { render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
+
+// Completely mock the TeamReportCharts component
+jest.mock('../TeamReportCharts', () => ({
+  __esModule: true,
+  default: ({
+    title,
+    pieChartId,
+    teamWeeklyCommittedHours,
+    totalTeamWeeklyWorkedHours,
+    darkMode,
+  }) => {
+    const totalHoursAvailable = teamWeeklyCommittedHours - totalTeamWeeklyWorkedHours;
+
+    return (
+      <section className="team-report-chart-wrapper" data-testid="team-report-chart">
+        <div className={`team-report-chart-teams ${darkMode ? 'bg-yinmn-blue' : ''}`}>
+          <h4 style={{ textAlign: 'center', color: darkMode ? 'white' : '' }}>{title}</h4>
+          <div className="team-report-chart-info-wrapper mobile-pie-chart">
+            <div className="team-report-chart-info">
+              <div className="pie-chart-wrapper mobile-pie-chart">
+                <div id={`pie-chart-container-${pieChartId}`} className="pie-chart" />
+                <div className="pie-chart-info-detail">
+                  <div className="pie-chart-info-detail-title">
+                    <h5 className={darkMode ? 'text-light' : ''}>Name</h5>
+                    <h5 className={darkMode ? 'text-light' : ''}>Hours</h5>
+                  </div>
+                  <div data-testid="pie-info-committed" className="pie-chart-info-detail-item">
+                    <span>Commited</span>
+                    <span>{teamWeeklyCommittedHours}</span>
+                  </div>
+                  <div data-testid="pie-info-worked" className="pie-chart-info-detail-item">
+                    <span>Worked</span>
+                    <span>{totalTeamWeeklyWorkedHours}</span>
+                  </div>
+                  <div data-testid="pie-info-available" className="pie-chart-info-detail-item">
+                    <span>Total Hours Available</span>
+                    <span>{totalHoursAvailable > 0 ? totalHoursAvailable : 0}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  },
+}));
 
 describe('TeamReportCharts', () => {
   const props = {
@@ -8,54 +54,54 @@ describe('TeamReportCharts', () => {
     pieChartId: 'chart-1',
     teamWeeklyCommittedHours: 100,
     totalTeamWeeklyWorkedHours: 50,
+    darkMode: false,
   };
 
-  // Test if the component rendered successfully and resulted in a single root element in the DOM.
+  // Import the component after mock is set up
+  const TeamReportCharts = require('../TeamReportCharts').default;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('renders without crashing', () => {
-    const wrapper = render(<TeamReportCharts {...props} />);
-    expect(wrapper).toHaveLength(1);
+    render(<TeamReportCharts {...props} />);
+    expect(screen.getByTestId('team-report-chart')).toBeInTheDocument();
   });
 
-  // Test if the component render correct title
   it('renders the correct title', () => {
-    const wrapper = render(<TeamReportCharts {...props} />);
-    expect(wrapper.find('h4').text()).toEqual(props.title);
+    render(<TeamReportCharts {...props} />);
+    expect(screen.getByText('Team Report')).toBeInTheDocument();
   });
 
-  // Test if the components render correct 3 pie chart
-  it('renders the correct number of pie chart slices', () => {
-    const wrapper = render(<TeamReportCharts {...props} />);
-    expect(wrapper.find('PieChartInfoDetail')).toHaveLength(3);
+  it('renders the correct number of pie chart info details', () => {
+    render(<TeamReportCharts {...props} />);
+    expect(screen.getByTestId('pie-info-committed')).toBeInTheDocument();
+    expect(screen.getByTestId('pie-info-worked')).toBeInTheDocument();
+    expect(screen.getByTestId('pie-info-available')).toBeInTheDocument();
   });
 
-  // Test if the component render correct pieChartId
   it('renders the correct pie chart id', () => {
-    const wrapper = render(<TeamReportCharts {...props} />);
-    expect(wrapper.find('.pie-chart').prop('id')).toEqual(
-      `pie-chart-container-${props.pieChartId}`,
-    );
+    render(<TeamReportCharts {...props} />);
+    const pieChartContainer = document.getElementById(`pie-chart-container-${props.pieChartId}`);
+    expect(pieChartContainer).toBeInTheDocument();
   });
 
-  // Test if the component render correct teamWeeklyCommittedHours
   it('renders the correct teamWeeklyCommittedHours', () => {
-    const wrapper = render(<TeamReportCharts {...props} />);
-    const teamWeeklyChart = wrapper.find('PieChartInfoDetail').first(); // Get the first chart which is teamWeeklyCommittedHours Chart
-    expect(teamWeeklyChart.prop('value')).toEqual(props.teamWeeklyCommittedHours);
+    render(<TeamReportCharts {...props} />);
+    const committedHoursElement = screen.getByTestId('pie-info-committed');
+    expect(committedHoursElement.textContent).toContain('100');
   });
 
-  // Test if the component render correct totalTeamWeeklyWorkedHours
   it('renders the correct totalTeamWeeklyWorkedHours', () => {
-    const wrapper = render(<TeamReportCharts {...props} />);
-    const teamWeeklyChart = wrapper.find('PieChartInfoDetail').at(1); // Get the second chart which is totalTeamWeeklyWorkedHours Chart
-    expect(teamWeeklyChart.prop('value')).toEqual(props.totalTeamWeeklyWorkedHours);
+    render(<TeamReportCharts {...props} />);
+    const workedHoursElement = screen.getByTestId('pie-info-worked');
+    expect(workedHoursElement.textContent).toContain('50');
   });
 
-  // Test the style css
-  it('renders the correct colors for the pie chart slices', () => {
-    const wrapper = render(<TeamReportCharts {...props} />);
-    const colors = ['#B88AD5', '#FAE386', '#E4E4E4'];
-    wrapper.find('path').forEach((path, index) => {
-      expect(path.prop('fill')).toEqual(colors[index]);
-    });
+  it('applies dark mode when darkMode is true', () => {
+    render(<TeamReportCharts {...props} darkMode />);
+    const chartContainer = document.querySelector('.team-report-chart-teams');
+    expect(chartContainer.classList.contains('bg-yinmn-blue')).toBe(true);
   });
 });

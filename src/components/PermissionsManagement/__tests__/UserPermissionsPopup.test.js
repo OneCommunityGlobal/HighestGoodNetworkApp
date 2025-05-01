@@ -1,7 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import UserPermissionsPopUp from '../UserPermissionsPopUp';
 import thunk from 'redux-thunk';
 import mockAdminState from '__tests__/mockAdminState';
 import configureStore from 'redux-mock-store';
@@ -10,6 +9,7 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 import { themeMock } from '__tests__/mockStates';
 import { ModalContext } from 'context/ModalContext';
+import UserPermissionsPopUp from '../UserPermissionsPopUp';
 
 const mockStore = configureStore([thunk]);
 let store;
@@ -82,7 +82,10 @@ jest.mock('react-toastify', () => ({
     error: jest.fn(),
   },
 }));
-const flushAllPromises = () => new Promise(setImmediate);
+const flushAllPromises = () =>
+  new Promise(resolve => {
+    setTimeout(resolve, 0);
+  });
 
 describe('UserPermissionsPopup component', () => {
   it('check if user name is present', async () => {

@@ -7,7 +7,13 @@ import { CHART_RADIUS, CHART_SIZE } from '../../../common/PieChart/constants';
 import '../../../common/PieChart/PieChart.css';
 import PieChartInfoDetail from './PieChartInfoDetail';
 
-function TeamsReportCharts({ title, pieChartId, selectedTeamsData, selectedTeamsWeeklyEffort, darkMode }) {
+function TeamsReportCharts({
+  title,
+  pieChartId,
+  selectedTeamsData,
+  selectedTeamsWeeklyEffort,
+  darkMode,
+}) {
   const chart = {
     team1:
       title === 'Weekly Commited Hours'

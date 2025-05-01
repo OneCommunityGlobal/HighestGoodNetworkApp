@@ -1,12 +1,11 @@
-import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import BMLogin from '..';
 import { useDispatch, Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
 import { BrowserRouter as Router } from 'react-router-dom';
 import axios from 'axios';
+import BMLogin from '../BMLogin';
 
 const mockStore = configureStore([thunk]);
 let store;
@@ -32,7 +31,7 @@ beforeEach(() => {
 
 jest.mock('axios');
 
-jest.mock('jwt-decode', () => jest.fn(token => ({ decodedPayload: 'mocked_decoded_payload' })));
+jest.mock('jwt-decode', () => jest.fn(() => ({ decodedPayload: 'mocked_decoded_payload' })));
 
 const history = {
   push: jest.fn(),
@@ -145,23 +144,26 @@ describe('BMLogin component', () => {
       statusText: 'OK',
       data: { token: '1234' },
     });
+
     const { container } = renderComponent(store);
 
     const emailElement = container.querySelector('[name="email"]');
-    fireEvent.change(emailElement, { target: { value: 'test@gmail.com' } });
-
     const passwordElement = container.querySelector('[name="password"]');
-    fireEvent.change(passwordElement, { target: { value: 'Test12345' } });
-
     const submitElement = screen.getByText('Submit');
+
+    fireEvent.change(emailElement, { target: { value: 'test@gmail.com' } });
+    fireEvent.change(passwordElement, { target: { value: 'Test12345' } });
     fireEvent.click(submitElement);
 
-    expect(screen.queryByText('"email" must be a valid email')).not.toBeInTheDocument();
-    expect(
-      screen.queryByText('"password" length must be at least 8 characters long'),
-    ).not.toBeInTheDocument();
-    expect(emailElement).not.toBeInvalid();
-    expect(passwordElement).not.toBeInvalid();
+    await waitFor(() => {
+      expect(emailElement).not.toBeInvalid();
+      expect(passwordElement).not.toBeInvalid();
+      expect(screen.queryByText('"email" must be a valid email')).not.toBeInTheDocument();
+      expect(
+        screen.queryByText('"password" length must be at least 8 characters long'),
+      ).not.toBeInTheDocument();
+    });
+
     await waitFor(() => {
       expect(history.push).toHaveBeenCalledWith('/bmdashboard');
     });

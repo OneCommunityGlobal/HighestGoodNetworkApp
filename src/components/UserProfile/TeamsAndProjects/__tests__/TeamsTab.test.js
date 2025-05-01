@@ -1,23 +1,55 @@
-import React from 'react';
-import { render } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import TeamsTab from '../TeamsTab';
-import AddTeamPopup from '../AddTeamPopup';
-import UserTeamsTable from '../UserTeamsTable';
-import { addTeamMember, deleteTeamMember } from 'actions/allTeamsAction';
-import { Provider } from 'react-redux';
-import configureStore from 'redux-mock-store';
 
-const mockStore = configureStore();
-let store;
+// Stub out the two heavy child modules
+jest.mock(
+  '../AddTeamPopup',
+  () =>
+    function(props) {
+      return (
+        <div
+          data-testid="add-team-popup"
+          data-open={props.open ? 'true' : 'false'}
+          // close on click
+          onClick={() => props.onClose && props.onClose()}
+          // assign on double-click with a fixed team object
+          onDoubleClick={() =>
+            props.onSelectAssignTeam && props.onSelectAssignTeam({ _id: 'TEAM999' })
+          }
+        />
+      );
+    },
+);
+jest.mock(
+  '../UserTeamsTable',
+  () =>
+    function(props) {
+      return (
+        <div
+          data-testid="user-teams-table"
+          // simulate the “Add” button click via single click
+          onClick={() => props.onButtonClick && props.onButtonClick()}
+          // simulate delete via double-click with a fixed ID
+          onDoubleClick={() => props.onDeleteClick && props.onDeleteClick('TEAM123')}
+        />
+      );
+    },
+);
 
+// Stub your action creators and toast
 jest.mock('actions/allTeamsAction', () => ({
   addTeamMember: jest.fn(),
-  deleteTeamMember: jest.fn()
+  deleteTeamMember: jest.fn(),
+}));
+jest.mock('react-toastify', () => ({
+  toast: {
+    success: jest.fn(),
+    error: jest.fn(),
+  },
 }));
 
-describe('TeamsTab Component', () => {
-  let wrapper;
-  const props = {
+describe('TeamsTab (unit)', () => {
+  const baseProps = {
     teamsData: [],
     userTeams: {},
     onDeleteTeam: jest.fn(),
@@ -32,126 +64,78 @@ describe('TeamsTab Component', () => {
     disabled: false,
     canEditTeamCode: true,
     setUserProfile: jest.fn(),
-    userProfile: {_id: 'userId', firstName: 'John', lastName: 'Doe'},
+    userProfile: { _id: 'userId', firstName: 'John', lastName: 'Doe' },
     codeValid: true,
     setCodeValid: jest.fn(),
-    saved: true
+    saved: false,
+    inputAutoComplete: '',
+    inputAutoStatus: '',
+    isLoading: false,
+    fetchTeamCodeAllUsers: jest.fn(),
+    darkMode: false,
   };
 
-  const initialState = {
-    userProfile: {
-      _id: 'userId',
-      firstName: 'John',
-      lastName: 'Doe'
-    },
-    teams: {
-      teamsData: [],
-      userTeams: {}
-    }
-  };
-
-  beforeEach(() => {
-    store = mockStore(initialState);
-    wrapper = render(<TeamsTab {...props} />);
+  it('1. renders without crashing', () => {
+    const { container } = render(<TeamsTab {...baseProps} />);
+    expect(container).toBeInTheDocument();
   });
 
-
-  afterEach(() => {
-    jest.clearAllMocks();
+  it('2. always renders the AddTeamPopup stub', () => {
+    render(<TeamsTab {...baseProps} />);
+    expect(screen.getByTestId('add-team-popup')).toBeInTheDocument();
   });
 
-  it('renders without crashing', () => {
-    expect(wrapper.exists()).toBe(true);
+  it('3. always renders the UserTeamsTable stub', () => {
+    render(<TeamsTab {...baseProps} />);
+    expect(screen.getByTestId('user-teams-table')).toBeInTheDocument();
   });
 
-  it('renders AddTeamPopup component', () => {
-    expect(wrapper.find(AddTeamPopup).exists()).toBe(true);
+  it('4. opens the popup when UserTeamsTable “add” is clicked', () => {
+    render(<TeamsTab {...baseProps} />);
+    fireEvent.click(screen.getByTestId('user-teams-table'));
+    expect(screen.getByTestId('add-team-popup')).toHaveAttribute('data-open', 'true');
   });
 
-  it('renders UserTeamsTable component', () => {
-    expect(wrapper.find(UserTeamsTable).exists()).toBe(true);
+  it('5. closes the popup when AddTeamPopup is clicked (onClose)', () => {
+    render(<TeamsTab {...baseProps} />);
+    fireEvent.click(screen.getByTestId('user-teams-table')); // open
+    fireEvent.click(screen.getByTestId('add-team-popup')); // close
+    expect(screen.getByTestId('add-team-popup')).toHaveAttribute('data-open', 'false');
   });
 
-  it('handles onAddTeamPopupShow correctly', () => {
-    wrapper.find(UserTeamsTable).prop('onButtonClick')();
-    expect(wrapper.find(AddTeamPopup).exists()).toBe(true);
+  it('6. calls onDeleteTeam and toast.success on delete', () => {
+    render(<TeamsTab {...baseProps} />);
+    fireEvent.doubleClick(screen.getByTestId('user-teams-table'));
+    expect(baseProps.onDeleteTeam).toHaveBeenCalledWith('TEAM123');
+    const { toast } = require('react-toastify');
+    expect(toast.success).toHaveBeenCalledWith('Team Deleted successfully');
   });
-  
 
-  it('handles onAddTeamPopupClose correctly', () => {
-    wrapper.find(UserTeamsTable).prop('onButtonClick')();
-    expect(wrapper.find(AddTeamPopup).exists()).toBe(true);
-  
-    wrapper.find(AddTeamPopup).prop('onClose')();
-    expect(wrapper.find(AddTeamPopup).exists()).toBe(true);
+  it('7. calls onAssignTeam, addTeamMember and toast.success on assign', () => {
+    render(<TeamsTab {...baseProps} />);
+    // open popup so it's mounted with open=true
+    fireEvent.click(screen.getByTestId('user-teams-table'));
+    // double-click popup to simulate assign
+    fireEvent.doubleClick(screen.getByTestId('add-team-popup'));
+
+    expect(baseProps.onAssignTeam).toHaveBeenCalledWith({ _id: 'TEAM999' });
+
+    const { addTeamMember } = require('actions/allTeamsAction');
+    expect(addTeamMember).toHaveBeenCalledWith(
+      'TEAM999',
+      baseProps.userProfile._id,
+      baseProps.userProfile.firstName,
+      baseProps.userProfile.lastName,
+    );
+
+    const { toast } = require('react-toastify');
+    expect(toast.success).toHaveBeenCalledWith('Team assigned successfully');
   });
-  
 
-  it('handles onSelectDeleteTeam correctly', () => {
-    const teamId = 'team123';
-    wrapper.find(UserTeamsTable).prop('onDeleteClick')(teamId);
-    expect(props.onDeleteTeam).toHaveBeenCalledWith(teamId);
+  it('8. runs the saved→useEffect and clears removedTeams', () => {
+    const { rerender } = render(<TeamsTab {...baseProps} saved={false} />);
+    rerender(<TeamsTab {...baseProps} saved />);
+    const { deleteTeamMember } = require('actions/allTeamsAction');
+    expect(deleteTeamMember).not.toHaveBeenCalled();
   });
-  
-  // it('handles onSelectAssignTeam correctly', () => {
-  //   const teamId = 'team123';
-  //   const team = { _id: teamId };
-
-  //   // Mount the component to get access to the "Assign" button
-  //   const wrapper = render(
-  //     <Provider store={store}>
-  //       <TeamsTab {...props} />
-  //     </Provider>
-  //   );
-  
-  //   // Mount the component to get access to the "Assign" button
-  //   // const wrapper = render(<TeamsTab {...props} />);
-  
-  //   // Find the "Assign" button within the UserTeamsTable
-  //   const assignButton = wrapper.find(UserTeamsTable).findWhere(n => n.prop('title') === 'Assign').first();
-  
-  //   // Simulate a click event on the "Assign" button
-  //   assignButton.simulate('click');
-  
-  //   // Verify that onAssignTeam prop is called with the correct parameters
-  //   expect(props.onAssignTeam).toHaveBeenCalledWith(team);
-  
-  //   // Verify that addTeamMember is called with the correct parameters
-  //   expect(addTeamMember).toHaveBeenCalledWith(
-  //     teamId,
-  //     props.userProfile._id,
-  //     props.userProfile.firstName,
-  //     props.userProfile.lastName
-  //   );
-  
-  //   // Verify that renderedOn state is updated
-  //   expect(wrapper.state('renderedOn')).not.toBe(0);
-  // });
-
-  // it('calls deleteTeamMember when saved and removedTeams is not empty', () => {
-  //   wrapper.setState({ removedTeams: ['team123', 'team456'] });
-  //   wrapper.setProps({ saved: true });
-  //   expect(deleteTeamMember).toHaveBeenCalledTimes(2);
-  //   expect(deleteTeamMember).toHaveBeenCalledWith('team123', props.userProfile._id);
-  //   expect(deleteTeamMember).toHaveBeenCalledWith('team456', props.userProfile._id);
-  //   expect(wrapper.state('removedTeams')).toEqual([]);
-  // });
-
-  // it('calls deleteTeamMember when saved and removedTeams is not empty', () => {
-  //   const wrapper = render(<TeamsTab {...props} />);
-  //   const instance = wrapper.instance();
-  //   const teamIds = ['team123', 'team456'];
-
-  //   // Simulate props change
-  //   wrapper.setProps({ saved: true });
-
-  //   // Call the method directly
-  //   teamIds.forEach(teamId => instance.onSelectDeleteTeam(teamId));
-
-  //   // Verify expectations
-  //   expect(deleteTeamMember).toHaveBeenCalledTimes(2);
-  //   expect(deleteTeamMember).toHaveBeenCalledWith('team123', props.userProfile._id);
-  //   expect(deleteTeamMember).toHaveBeenCalledWith('team456', props.userProfile._id);
-  // });
-
 });

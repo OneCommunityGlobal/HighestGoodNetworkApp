@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { useSelector } from 'react-redux';
 import { PeopleTasksPieChart } from './PeopleTasksPieChart';
@@ -6,6 +5,50 @@ import { PeopleTasksPieChart } from './PeopleTasksPieChart';
 // Mock useSelector
 jest.mock('react-redux', () => ({
   useSelector: jest.fn(),
+}));
+
+// Mock PieChart component to avoid D3 dependency issues
+jest.mock('../../../common/PieChart', () => ({
+  PieChart: ({ pieChartId, data, dataLegend, dataLegendHeader, darkMode }) => {
+    const totalHours = Object.values(data || {}).reduce((sum, val) => sum + val, 0);
+    return (
+      <div
+        className={`mock-pie-chart ${darkMode ? 'text-light' : ''}`}
+        data-testid={`pie-chart-${pieChartId}`}
+      >
+        <div className="pie-chart-container" id={`pie-chart-container-${pieChartId}`} />
+        <div className="pie-chart-legend-container">
+          <div className="pie-chart-legend-header">
+            <div>Name</div>
+            <div>{dataLegendHeader}</div>
+          </div>
+          {Object.entries(dataLegend || {}).map(([key, value]) => (
+            <div key={key} className="mock-legend-item" data-testid={`legend-item-${key}`}>
+              {value.map((item, index) => (
+                // eslint-disable-next-line react/no-array-index-key
+                <span key={index}>{item}</span>
+              ))}
+            </div>
+          ))}
+          <div className="data-total-value">Total Hours : {totalHours.toFixed(2)}</div>
+        </div>
+      </div>
+    );
+  },
+}));
+
+// Mock ReportPage.ReportBlock component
+jest.mock('../../sharedComponents/ReportPage', () => ({
+  ReportPage: {
+    ReportBlock: ({ children, darkMode }) => (
+      <div
+        className={`mock-report-block ${darkMode ? 'dark-mode' : ''}`}
+        data-testid="report-block"
+      >
+        {children}
+      </div>
+    ),
+  },
 }));
 
 describe('PeopleTasksPieChart', () => {
@@ -35,7 +78,7 @@ describe('PeopleTasksPieChart', () => {
     useSelector.mockReturnValue(defaultSelectorData);
 
     render(<PeopleTasksPieChart darkMode={false} />);
-    
+
     expect(screen.getByText(/Tasks With Completed Hours/i)).toBeInTheDocument();
   });
 
@@ -57,14 +100,14 @@ describe('PeopleTasksPieChart', () => {
     });
 
     render(<PeopleTasksPieChart darkMode={false} />);
-    
+
     expect(screen.getByText('Projects With Completed Hours')).toBeInTheDocument();
   });
 
   it('renders in dark mode when darkMode prop is true', () => {
     useSelector.mockReturnValue(defaultSelectorData);
 
-    const { container } = render(<PeopleTasksPieChart darkMode={true} />);
+    const { container } = render(<PeopleTasksPieChart darkMode />);
     expect(container.firstChild).toHaveClass('text-light');
   });
 
@@ -72,12 +115,12 @@ describe('PeopleTasksPieChart', () => {
     useSelector.mockReturnValue(defaultSelectorData);
 
     render(<PeopleTasksPieChart darkMode={false} />);
-    
+
     const viewAllButton = screen.getByText('View all');
     expect(viewAllButton).toBeInTheDocument();
-    
+
     fireEvent.click(viewAllButton);
-    
+
     expect(screen.getByText('Collapse')).toBeInTheDocument();
   });
 
@@ -88,7 +131,7 @@ describe('PeopleTasksPieChart', () => {
     });
 
     render(<PeopleTasksPieChart darkMode={false} />);
-    
+
     expect(screen.queryByText('View all')).not.toBeInTheDocument();
   });
 
@@ -100,7 +143,7 @@ describe('PeopleTasksPieChart', () => {
     });
 
     render(<PeopleTasksPieChart darkMode={false} />);
-    
+
     expect(screen.getByText('Total Hours : 0.00')).toBeInTheDocument();
   });
 
@@ -108,7 +151,7 @@ describe('PeopleTasksPieChart', () => {
     useSelector.mockReturnValue(defaultSelectorData);
 
     render(<PeopleTasksPieChart darkMode={false} />);
-    
+
     expect(screen.getByText('Task 1')).toBeInTheDocument();
     expect(screen.getByText('10 hours')).toBeInTheDocument();
     expect(screen.getByText('Task 2')).toBeInTheDocument();
@@ -123,9 +166,8 @@ describe('PeopleTasksPieChart', () => {
     });
 
     render(<PeopleTasksPieChart darkMode={false} />);
-    
+
     expect(screen.getByText(/Tasks With Completed Hours/i)).toBeInTheDocument();
     expect(screen.getByText('Projects With Completed Hours')).toBeInTheDocument();
   });
-
 });

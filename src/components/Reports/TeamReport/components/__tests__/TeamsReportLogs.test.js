@@ -1,6 +1,8 @@
-import React from 'react';
-import { render } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import TeamsReportLogs from '../TeamsReportLogs';
+
+// Ensure jest-dom matchers are available
+import '@testing-library/jest-dom/extend-expect';
 
 describe('TeamsReportLogs Component', () => {
   const selectedTeamsTotalValues = {
@@ -9,105 +11,67 @@ describe('TeamsReportLogs Component', () => {
     selectedTeamsTotalCommitedHours: 200,
   };
 
-  const selectedTeamsWeeklyEffort = [30, 40, 20, 35]; // Example values for selectedTeamsWeeklyEffort
+  const selectedTeamsWeeklyEffort = [30, 40, 20, 35];
+  const totalWorkedHours = selectedTeamsWeeklyEffort.reduce((acc, curr) => acc + curr, 0);
+
+  const renderComponent = (values = selectedTeamsTotalValues, effort = selectedTeamsWeeklyEffort) =>
+    render(
+      <TeamsReportLogs
+        title="Teams Report"
+        selectedTeamsTotalValues={values}
+        selectedTeamsWeeklyEffort={effort}
+      />,
+    );
+
   it('displays the correct title', () => {
-    const title = 'Teams Report';
-    const wrapper = render(
-      <TeamsReportLogs
-        title={title}
-        selectedTeamsTotalValues={selectedTeamsTotalValues}
-        selectedTeamsWeeklyEffort={selectedTeamsWeeklyEffort}
-      />,
-    );
-
-    const renderedTitle = wrapper.find('.teams-report-time-title').text();
-    expect(renderedTitle).toEqual(title);
+    renderComponent();
+    const titleEl = screen.getByRole('heading', { level: 2, name: /Teams Report/i });
+    expect(titleEl).toBeInTheDocument();
   });
 
-  it('displays the correct number of members', () => {
-    const wrapper = render(
-      <TeamsReportLogs
-        title="Teams Report"
-        selectedTeamsTotalValues={selectedTeamsTotalValues}
-        selectedTeamsWeeklyEffort={selectedTeamsWeeklyEffort}
-      />,
-    );
-
-    const numberOfMembers = wrapper.findWhere(
-      node =>
-        node.hasClass('team-report-time-log-block') && node.contains(<p>Number of Members</p>),
-    );
-    expect(numberOfMembers.find('h3').text()).toEqual(
-      String(selectedTeamsTotalValues.selectedTeamsTotalPeople),
-    );
+  it('displays the correct Number of Members', () => {
+    renderComponent();
+    const block = screen.getByText('Number of Members').closest('.team-report-time-log-block');
+    expect(block).toBeInTheDocument();
+    const valueEl = within(block).getByRole('heading', { level: 3 });
+    expect(valueEl).toHaveTextContent(String(selectedTeamsTotalValues.selectedTeamsTotalPeople));
   });
 
-  it('displays the correct total team blue squares', () => {
-    const wrapper = render(
-      <TeamsReportLogs
-        title="Teams Report"
-        selectedTeamsTotalValues={selectedTeamsTotalValues}
-        selectedTeamsWeeklyEffort={selectedTeamsWeeklyEffort}
-      />,
-    );
-
-    const totalBlueSquaresBlock = wrapper.findWhere(
-      node =>
-        node.hasClass('team-report-time-log-block') &&
-        node.contains(<p>Total Team Blue Squares</p>),
-    );
-    expect(totalBlueSquaresBlock.find('h3').text()).toEqual(
+  it('displays the correct Total Team Blue Squares', () => {
+    renderComponent();
+    const block = screen
+      .getByText('Total Team Blue Squares')
+      .closest('.team-report-time-log-block');
+    expect(block).toBeInTheDocument();
+    const valueEl = within(block).getByRole('heading', { level: 3 });
+    expect(valueEl).toHaveTextContent(
       String(selectedTeamsTotalValues.selectedTeamsTotalBlueSquares),
     );
   });
 
-  it('displays the correct total Weekly Committed Hours', () => {
-    const wrapper = render(
-      <TeamsReportLogs
-        title="Teams Report"
-        selectedTeamsTotalValues={selectedTeamsTotalValues}
-        selectedTeamsWeeklyEffort={selectedTeamsWeeklyEffort}
-      />,
-    );
-
-    const totalWeeklyCommitedHour = wrapper.findWhere(
-      node =>
-        node.hasClass('team-report-time-log-block') && node.contains(<p>Weekly Committed Hours</p>),
-    );
-    expect(totalWeeklyCommitedHour.find('h3').text()).toEqual(
+  it('displays the correct Weekly Committed Hours', () => {
+    renderComponent();
+    const block = screen.getByText('Weekly Committed Hours').closest('.team-report-time-log-block');
+    expect(block).toBeInTheDocument();
+    const valueEl = within(block).getByRole('heading', { level: 3 });
+    expect(valueEl).toHaveTextContent(
       String(selectedTeamsTotalValues.selectedTeamsTotalCommitedHours),
     );
   });
 
-  it('displays the correct total Teams Work Hours', () => {
-    const wrapper = render(
-      <TeamsReportLogs
-        title="Teams Report"
-        selectedTeamsTotalValues={selectedTeamsTotalValues}
-        selectedTeamsWeeklyEffort={selectedTeamsWeeklyEffort}
-      />,
-    );
-
-    const totalWeeklyWorkedHour = wrapper.findWhere(
-      node =>
-        node.hasClass('team-report-time-log-block') &&
-        node.contains(<p>Total Worked Hours This Week</p>),
-    );
-    expect(totalWeeklyWorkedHour.find('h3').text()).toEqual(
-      String(selectedTeamsWeeklyEffort.reduce((accumulator, current) => accumulator + current, 0)), // Calculate the weekly hour of team follow the rule in TeamsReportLogs component
-    );
+  it('displays the correct Total Worked Hours This Week', () => {
+    renderComponent();
+    const block = screen
+      .getByText('Total Worked Hours This Week')
+      .closest('.team-report-time-log-block');
+    expect(block).toBeInTheDocument();
+    const valueEl = within(block).getByRole('heading', { level: 3 });
+    expect(valueEl).toHaveTextContent(String(totalWorkedHours));
   });
 
-  it('component still display empty blocks when no team data is provided', () => {
-    const wrapper = render(
-      <TeamsReportLogs
-        title="Teams Report"
-        selectedTeamsTotalValues={{}}
-        selectedTeamsWeeklyEffort={[]}
-      />,
-    );
-
-    const reportBlocks = wrapper.find('.team-report-time-log-block');
-    expect(reportBlocks).toHaveLength(4);
+  it('renders 4 blocks even with no team data', () => {
+    const { container } = renderComponent({}, []);
+    const blocks = container.querySelectorAll('.team-report-time-log-block');
+    expect(blocks).toHaveLength(4);
   });
 });

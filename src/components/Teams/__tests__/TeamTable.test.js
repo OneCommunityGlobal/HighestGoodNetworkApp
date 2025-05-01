@@ -1,85 +1,76 @@
-import { render } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
 import configureMockStore from 'redux-mock-store';
-import TeamTable from '../../Reports/TeamTable.jsx';
 import thunk from 'redux-thunk';
+import TeamTable from '../../Reports/TeamTable';
+import '@testing-library/jest-dom/extend-expect';
 
-const middlewares = [thunk];
-const mockStore = configureMockStore(middlewares);
+const mockStore = configureMockStore([thunk]);
 
 describe('<TeamTable />', () => {
   let store;
-  let component;
+  const mockTeams = [
+    { _id: '1', teamName: 'Team1', isActive: true, teamCode: 'A-123' },
+    { _id: '2', teamName: 'Team2', isActive: false, teamCode: 'B-456' },
+  ];
 
   beforeEach(() => {
     store = mockStore({
-      role: {
-        roles: [
-          { roleName: 'User', permissions: ['somePermission'] },
-        ],
-      },
+      role: { roles: [{ roleName: 'User', permissions: ['somePermission'] }] },
       auth: {
-        user: {
-          role: 'Owner',
-          permissions: { frontPermissions: ['editTeamCode'] },
-        },
+        user: { role: 'Owner', permissions: { frontPermissions: ['editTeamCode'] } },
       },
     });
+  });
 
-    const mockTeamsData = [
-      { _id: '1', teamName: 'Team1', isActive: true, teamCode: 'A-123' },
-      { _id: '2', teamName: 'Team2', isActive: false, teamCode: 'B-456' },
-    ];
-
-    component = render(
+  const renderTable = () =>
+    render(
       <Provider store={store}>
-        <MemoryRouter> {/* Use MemoryRouter for testing */}
-          <TeamTable allTeams={mockTeamsData} />
+        <MemoryRouter>
+          <TeamTable allTeams={mockTeams} darkMode={false} />
         </MemoryRouter>
-      </Provider>
+      </Provider>,
     );
+
+  it('renders header and one row per team', () => {
+    const { container } = renderTable();
+    expect(container.querySelectorAll('thead tr')).toHaveLength(1);
+    expect(container.querySelectorAll('tbody tr')).toHaveLength(2);
   });
 
-  it('renders without crashing', () => {
-    expect(component.exists()).toBeTruthy();
+  it('renders each team name as a link', () => {
+    renderTable();
+    expect(screen.getByRole('link', { name: 'Team1' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Team2' })).toBeInTheDocument();
   });
 
-  it('renders correct number of teams', () => {
-    expect(component.find('tr').length).toBe(3); // 2 teams + 1 header
+  it('shows exactly one active and one inactive indicator', () => {
+    const { container } = renderTable();
+    expect(container.querySelectorAll('.isActive')).toHaveLength(1);
+    expect(container.querySelectorAll('.isNotActive')).toHaveLength(1);
   });
 
-  // Test for correct rendering of team names
-  it('renders correct team names', () => {
-    const teamRows = component.find('tr').slice(1); // Skip the header row
-    expect(teamRows.length).toBe(2); // Ensure we have 2 team rows
-
-    const teamNames = teamRows.map(row => {
-      const nameCell = row.find('td').at(0);
-      expect(nameCell.exists()).toBe(true); // Check if the cell exists
-      return nameCell.text();
-    });
-
-    expect(teamNames).toEqual(['Team1', 'Team2']);
+  it('renders a code input for each team when permitted', () => {
+    renderTable();
+    const inputs = screen.getAllByPlaceholderText('X-XXX');
+    expect(inputs).toHaveLength(2);
+    expect(inputs[0]).toHaveValue('A-123');
+    expect(inputs[1]).toHaveValue('B-456');
   });
 
-  // Test for correctly displaying active/inactive status
-  it('displays correct active/inactive status', () => {
-    const isActive = component.find('.isActive').hostNodes().length;
-    const isNotActive = component.find('.isNotActive').hostNodes().length;
-    expect(isActive).toBe(1); // One team is active
-    expect(isNotActive).toBe(1); // One team is not active
+  it('accepts valid code changes and flags invalid ones', () => {
+    renderTable();
+    const [firstInput] = screen.getAllByPlaceholderText('X-XXX');
+
+    // valid length (5–7 chars)
+    fireEvent.change(firstInput, { target: { value: 'NEW01' } });
+    expect(firstInput).toHaveValue('NEW01');
+    expect(firstInput).not.toHaveClass('is-invalid');
+
+    // invalid length (<5 chars)
+    fireEvent.change(firstInput, { target: { value: 'AB' } });
+    expect(firstInput).toHaveValue('AB');
+    expect(firstInput).toHaveClass('is-invalid');
   });
-
-  // Test edit team code interaction
-  it('allows editing team code if permitted', () => {
-    // Assuming 'editTeamCode' permission allows editing the team code
-    const firstTeamInput = component.find('Input').first();
-    firstTeamInput.simulate('change', { target: { value: 'New-Code' } });
-
-    // Verify the input value change
-    expect(firstTeamInput.prop('value')).toBe('A-123');
-  });
-
-
 });

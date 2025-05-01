@@ -12,7 +12,7 @@ function TeamReportCharts({
   pieChartId,
   teamWeeklyCommittedHours,
   totalTeamWeeklyWorkedHours,
-  darkMode
+  darkMode,
 }) {
   const totalHoursAvailable = teamWeeklyCommittedHours - totalTeamWeeklyWorkedHours;
 
