@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
 import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
+import ExpenseBarChart from './Financials/ExpenseBarChart';   
 
 const projectStatusButtons = [
   {
@@ -220,20 +221,17 @@ export default function WeeklyProjectSummary() {
         key: 'Financials',
         className: 'large',
         content: (
-          <>
-            {Array.from({ length: 4 }).map(() => {
-              const uniqueId = uuidv4();
-              return (
-                <div key={uniqueId} className="weekly-project-summary-card financial-small">
-                  📊 Card
-                </div>
-              );
-            })}
-
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
+            <div className="weekly-project-summary-card financial-small">📊 Card</div>
+            <div className="weekly-project-summary-card financial-chart">
+              <ExpenseBarChart />
+            </div>
+            <div className="weekly-project-summary-card financial-small">📊 Card</div>
+            <div className="weekly-project-summary-card financial-small">📊 Card</div>
             <div className="weekly-project-summary-card financial-big">📊 Big Card</div>
-          </>
+          </div>
         ),
-      },
+      },           
       {
         title: 'Loss Tracking',
         key: 'Loss Tracking',
@@ -267,7 +265,7 @@ export default function WeeklyProjectSummary() {
     ],
     [quantityOfMaterialsUsedData],
   );
-
+  
   return (
     <div className={`weekly-project-summary-container ${darkMode ? 'dark-mode' : ''}`}>
       <WeeklyProjectSummaryHeader />
