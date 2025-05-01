@@ -18,6 +18,8 @@ import { boxStyle } from '../../styles';
 import { formatDateLocal } from '../../utils/formatDate';
 import { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import { formatDate, formatDateYYYYMMDD } from '../../utils/formatDate';
+import { faUser, faUsers, faShieldAlt, faBriefcase, faUserTie, faCrown, faChalkboardTeacher, faBug, faGlobe, faStar } from '@fortawesome/free-solid-svg-icons';
+import { UncontrolledTooltip } from 'reactstrap';
 import SetUpFinalDayButton from './SetUpFinalDayButton';
 /**
  * The body row of the user table
@@ -72,6 +74,18 @@ const UserTableData = React.memo(props => {
   const togglePauseTooltip = () => setTooltipPause(!tooltipPauseOpen);
   const toggleFinalDayTooltip = () => setTooltipFinalDay(!tooltipFinalDayOpen);
   const toggleReportsTooltip = () => setTooltipReports(!tooltipReportsOpen);
+  const roleIcons = {
+    Volunteer: faUser,
+    'Core Team': faUsers,
+    Administrator: faShieldAlt,
+    'Assistant Manager': faUserTie,
+    Owner: faCrown,
+    Mentor: faChalkboardTeacher,
+    Manager: faBriefcase,
+    TestRole: faBug,
+    General: faGlobe,
+    Creator: faStar,
+  };
 
   /**
    * reset the changing state upon rerender with new isActive status
@@ -247,10 +261,16 @@ const UserTableData = React.memo(props => {
       </td>
       <td id="usermanagement_role">
         {editUser?.role && roles !== undefined ? (
-          formData.role
+          <>
+          <FontAwesomeIcon id={`role-icon-${props.index}`} icon={roleIcons[formData.role] || faUser} />
+          <UncontrolledTooltip placement="top" target={`role-icon-${props.index}`}>
+            {formData.role}
+          </UncontrolledTooltip>
+        </>
         ) : (
           <select
             id=""
+            style={{ width: '100px'}}
             value={formData.role}
             onChange={e => {
               updateFormData({ ...formData, role: e.target.value });
