@@ -106,6 +106,7 @@ class UserProfileEdit extends Component {
   };
 
   onDeleteProject = deletedProjectId => {
+    console.log('deletedProjectId', deletedProjectId);
     const _userProfile = Object.assign({}, this.state.userProfile);
     const filteredProject = _userProfile.projects.filter(
       project => project._id !== deletedProjectId,
