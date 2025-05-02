@@ -1,7 +1,7 @@
-/* eslint-disable import/prefer-default-export */
+
 import axios from 'axios';
-import { toast } from 'react-toastify'; // Import the toast library
-import 'react-toastify/dist/ReactToastify.css'; // Import the toast styles
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { ENDPOINTS } from '../utils/URL';
 
 export const sendTweet = (html) => {
@@ -12,46 +12,37 @@ export const sendTweet = (html) => {
       const response = await axios.post(url, { "EmailContent": html });
       console.log('Tweet posted successfully:', response);
 
-      // Display a success toast
+
       toast.success('Tweet successfully posted', {
-        position: 'top-right', // You can adjust the position as needed
-        autoClose: 3000, // Close the toast after 3 seconds (adjust as needed)
+        position: 'top-right',
+        autoClose: 3000,
       });
     } catch (error) {
       console.error('Error posting Tweet:', error);
-
-      // Display an error toast
       toast.error('Error posting Tweet', {
-        position: 'top-right', // You can adjust the position as needed
-        autoClose: 3000, // Close the toast after 3 seconds (adjust as needed)
+        position: 'top-right',
+        autoClose: 3000,
       });
     }
   };
 };
 
 export const ssendFbPost = (html, accessToken) => {
-  //const url = ENDPOINTS.CREATE_FB_POST();
   return async () => {
     try {
-      //console.log(html, "reached here html");
+
       const response = axios.post(ENDPOINTS.CREATE_FB_POST(), {
         emailContent: html,
         accessToken,
       });
-      console.log('Successfully posted on Facebook Feed:', response);
 
-      // Display a success toast
-      toast.success('Successfully posted on Facebook Feed', {
-        position: 'top-right', // You can adjust the position as needed
-        autoClose: 3000, // Close the toast after 3 seconds (adjust as needed)
-      });
     } catch (error) {
       console.error('Error posting on Facebook:', error);
 
-      // Display an error toast
+
       toast.error('Error posting on Facebook', {
-        position: 'top-right', // You can adjust the position as needed
-        autoClose: 3000, // Close the toast after 3 seconds (adjust as needed)
+        position: 'top-right',
+        autoClose: 3000,
       });
     }
   };
@@ -61,22 +52,17 @@ export const sendFbPost = (html, base64Srcs, accessToken) => {
   const url = ENDPOINTS.POST_FB;
   return async () => {
     try {
-      //console.log(html, "reached here html");
-      const response = await axios.post(url, { emailContent: html, base64Content: base64Srcs, accessToken });
-      console.log('Successfully posted on Facebook Feed:', response);
 
-      // Display a success toast
+      const response = await axios.post(url, { emailContent: html, base64Content: base64Srcs, accessToken });
       toast.success('Successfully posted on Facebook Feed', {
-        position: 'top-right', // You can adjust the position as needed
-        autoClose: 3000, // Close the toast after 3 seconds (adjust as needed)
+        position: 'top-right',
+        autoClose: 3000,
       });
     } catch (error) {
       console.error('Error posting on Facebook:', error);
-
-      // Display an error toast
       toast.error('Error posting on Facebook', {
-        position: 'top-right', // You can adjust the position as needed
-        autoClose: 3000, // Close the toast after 3 seconds (adjust as needed)
+        position: 'top-right',
+        autoClose: 3000,
       });
     }
   };
@@ -184,23 +170,20 @@ export const scheduleTweet = (scheduleDate, scheduleTime, html) => {
 
   return async () => {
     try {
-      console.log('ScheduleDate', scheduleDate);
-      console.log('ScheduleTime', scheduleTime);
+
       const response = await axios.post(url, { "ScheduleDate": scheduleDate, "ScheduleTime": scheduleTime, "EmailContent": html });
       console.log('Tweet scheduled successfully:', response);
 
-      // Display a success toast
+
       toast.success('Tweet successfully scheduled', {
-        position: 'top-right', // You can adjust the position as needed
-        autoClose: 3000, // Close the toast after 3 seconds (adjust as needed)
+        position: 'top-right',
+        autoClose: 3000,
       });
     } catch (error) {
       console.error('Error scheduling Tweet:', error);
-
-      // Display an error toast
       toast.error('Error scheduling Tweet', {
-        position: 'top-right', // You can adjust the position as needed
-        autoClose: 3000, // Close the toast after 3 seconds (adjust as needed)
+        position: 'top-right',
+        autoClose: 3000,
       });
     }
   };
@@ -211,23 +194,20 @@ export const scheduleFbPost = (scheduleDate, scheduleTime, html) => {
 
   return async () => {
     try {
-      console.log('ScheduleDate', scheduleDate);
-      console.log('ScheduleTime', scheduleTime);
+
       const response = await axios.post(url, { "ScheduleDate": scheduleDate, "ScheduleTime": scheduleTime, "EmailContent": html });
       console.log('Facebook Post scheduled successfully:', response);
 
-      // Display a success toast
+
       toast.success('Facebook Post successfully scheduled', {
-        position: 'top-right', // You can adjust the position as needed
-        autoClose: 3000, // Close the toast after 3 seconds (adjust as needed)
+        position: 'top-right',
+        autoClose: 3000,
       });
     } catch (error) {
       console.error('Error scheduling Facebook Post:', error);
-
-      // Display an error toast
       toast.error('Error scheduling Tweet', {
-        position: 'top-right', // You can adjust the position as needed
-        autoClose: 3000, // Close the toast after 3 seconds (adjust as needed)
+        position: 'top-right',
+        autoClose: 3000,
       });
     }
   };

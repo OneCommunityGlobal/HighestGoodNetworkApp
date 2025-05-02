@@ -35,7 +35,7 @@ function Announcements({ title, email }) {
   const [posts, setPosts] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [platform, setPlatform] = useState("");
-  const [scheduleTime, setScheduleTime] = useState("");
+  //const [scheduleTime, setScheduleTime] = useState("");
   const [selectedPlatform, setSelectedPlatform] = useState('');
   const tinymce = useRef(null);
   const maxLength = 280;
@@ -44,7 +44,7 @@ function Announcements({ title, email }) {
 
 
   useEffect(() => {
-    // Toggle the showEditor state to force re-render when dark mode changes
+    
     setShowEditor(false);
     setTimeout(() => setShowEditor(true), 0);
   }, [darkMode]);
@@ -109,26 +109,24 @@ function Announcements({ title, email }) {
     }
   }, [email]);
 
-  /*useEffect(() => {
-    getAllPosts();
-  }, []);*/
+ 
 
   const getAllPosts = async () => {
-    const data = await fetchPosts(); // Call API
-    setPosts(data); // Set state with fetched posts
+    const data = await fetchPosts(); 
+    setPosts(data); 
   };
 
   const handleEmailListChange = e => {
     const { value } = e.target;
-    setEmailTo(value); // Update emailTo for the input field
-    setEmailList(value.split(',')); // Update emailList for the email list
+    setEmailTo(value); 
+    setEmailList(value.split(',')); 
   };
 
   const handleHeaderContentChange = e => {
     setHeaderContent(e.target.value);
   };
 
-  // const htmlContent = `<html><head><title>Weekly Update</title></head><body>${emailContent}</body></html>`;
+ 
   const addHeaderToEmailContent = () => {
     if (!headerContent) return;
     const imageTag = `<img src="${headerContent}" alt="Header Image" style="width: 100%; max-width: 100%; height: auto;">`;
@@ -137,7 +135,7 @@ function Announcements({ title, email }) {
       editor.insertContent(imageTag);
       setEmailContent(editor.getContent());
     }
-    setHeaderContent(''); // Clear the input field after inserting the header
+    setHeaderContent(''); 
   };
 
   const convertImageToBase64 = (file, callback) => {
@@ -163,7 +161,7 @@ function Announcements({ title, email }) {
   };
 
   const validateEmail = e => {
-    /* Add a regex pattern for email validation */
+
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     return emailPattern.test(e);
   };
@@ -227,7 +225,7 @@ function Announcements({ title, email }) {
     const scheduleTime = `${timeContent}`;
 
     dispatch(scheduleTweet(scheduleDate, scheduleTime, htmlContent));
-    //await getAllPosts();
+  
   };
 
   const handleScheduleFbPost = async () => {
@@ -236,7 +234,7 @@ function Announcements({ title, email }) {
     const scheduleTime = `${timeContent}`;
 
     dispatch(scheduleFbPost(scheduleDate, scheduleTime, htmlContent));
-    //await getAllPosts();
+   
   };
 
 
@@ -328,7 +326,7 @@ function Announcements({ title, email }) {
             const accessToken = response.authResponse.accessToken;
             dispatch(ssendFbPost(emailContent, accessToken))
               .then(() => {
-                //console.log("Facebook posted successfully! Now calling handleDeletePost for post ID:", postId);
+                
                 toast.success('Post successfully created on Facebook!');
               })
               .catch((error) => {
@@ -345,42 +343,6 @@ function Announcements({ title, email }) {
       );
     };
 
-  /*const handleCreateFbPost = async () => {
-    if (charCount > maxLength) {
-      toast.error('Character limit exceeded. Please shorten your text to 280 characters.');
-      return;
-    } 
-    
-    if (!emailContent || emailContent.trim() === '') {
-      toast.error('Error: No content to post. Please add some content in Weekly progress editor');
-      return;
-    }
-    const EmailContent = emailContent;
-    window.FB.login(
-      response => {
-        if (response.authResponse) {
-          const accessToken = response.authResponse.accessToken;
-
-          try {
-    // response = await axios.post(ENDPOINTS.CREATE_FB_POST(), {
-              axios.post(ENDPOINTS.CREATE_FB_POST(), {
-              emailContent: EmailContent,
-              accessToken,
-            });
-            toast.success('Post successfully created on Facebook!');
-            } catch (error) {
-              toast.error('Failed to create post on Facebook');
-            }
-        } else {
-          toast.error('Facebook login failed or was cancelled.');
-        }
-      },
-      {
-        scope: 'public_profile,email,pages_show_list,pages_manage_posts',
-      }
-    );
-  };
-*/
   const handleScheduleClick = () => {
     setShowDropdown(true);
   };
@@ -419,9 +381,7 @@ function Announcements({ title, email }) {
         console.error("Invalid platform selected");
         break;
     }
-    // Wait for the posts to refresh after dispatch
-    //await getAllPosts();
-    // Optionally, close the dropdown menu
+    
     setShowDropdown(false);
   };
 
@@ -711,7 +671,7 @@ function Announcements({ title, email }) {
               <li key={post._id} className="flex justify-between items-center p-4 bg-gray-50 border border-gray-200 rounded-lg shadow-md">
                 <div>
                 <strong>Platform:</strong> {post.platform} <br />
-                <strong>Scheduled Time:</strong> {post.scheduledTime} <br />
+                <strong>Scheduled Date & Time:</strong> {post.scheduledDate}  at {post.scheduledTime} <br />
                 <strong>Content: </strong>
                   <Link 
                     to={`/socialMediaPosts/${post._id}`} 
