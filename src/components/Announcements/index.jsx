@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useState, useEffect, useRef } from 'react';
 import './Announcements.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { Editor } from '@tinymce/tinymce-react'; // Import Editor from TinyMCE
+import { Editor } from '@tinymce/tinymce-react'; 
 import { sendTweet, scheduleTweet, scheduleFbPost, fetchPosts, fetchPosts_separately, deletePost, sendFbPost, ssendFbPost } from '../../actions/sendSocialMediaPosts';
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
@@ -207,12 +207,8 @@ function Announcements({ title, email }) {
   
   const handleEditorChange = (content) => {
     setEmailContent(content);
-    const charCount = stripHtml(content).trim(); // e.g., "hi"
+    const charCount = stripHtml(content).trim();
     setCharCount(charCount.length);
-
-  
-   // const charCount = content.length;
-   // setCharCount(charCount);
   };
 
 
@@ -300,12 +296,6 @@ function Announcements({ title, email }) {
 
   useEffect(() => {
     loadFacebookSDK();
-    /**   .then(FB => {
-        console.log("Facebook SDK Loaded", FB);
-      })
-      .catch((error) => {
-        console.error("Error loading Facebook SDK:", error);
-      }); */
   }, []);
 
   const handleFacebookLogin = () => {
@@ -461,7 +451,6 @@ function Announcements({ title, email }) {
             const accessToken = response.authResponse.accessToken;
             dispatch(sendFbPost(textContent, base64Srcs, accessToken))
               .then(() => {
-                //console.log("Facebook posted successfully! Now calling handleDeletePost for post ID:", postId);
                 setTimeout(() => {
                   handleDeletePost(postId, true);
                 }, 1500);
@@ -485,7 +474,6 @@ function Announcements({ title, email }) {
       dispatch(sendTweet(textContent))
     .then(() => {
       console.log("Tweet posted successfully! Now calling handleDeletePost for post ID:", postId);
-      // ✅ Call handleDeletePost after successful tweet
       setTimeout(() => {
                   handleDeletePost(postId, true);
                 }, 1500);
@@ -497,9 +485,18 @@ function Announcements({ title, email }) {
   }
 
   const postToPlatform = (postId, textContent,base64Srcs, platform) => {
-
+    const skipConfirm = localStorage.getItem('skipPostConfirm') === 'true';
+    
+    if (!skipConfirm) {
     const confirmDelete = window.confirm(`Are you sure you want to post this on ${platform}`);
     if (!confirmDelete) return;
+
+    const dontAskAgain = window.confirm("Don't ask again for future posts?");
+    if (dontAskAgain) {
+      localStorage.setItem('skipPostConfirm', 'true');
+    }
+    }
+
 
     if (platform === 'facebook'){
       handlePostScheduledFbPost(postId, textContent, base64Srcs, platform)
@@ -573,7 +570,7 @@ function Announcements({ title, email }) {
           {showEditor && (
             <Editor
             tinymceScriptSrc="/tinymce/tinymce.min.js"
-              id="email-editor"  // No need for a real API key here, "free" works for basic usage
+              id="email-editor"  
             initialValue={`<div style="background-color: #f0f0f0; color: #555; padding: 6px; border-radius: 4px; font-size: 14px;">
               Post limited to 280 characters
             </div>`}
