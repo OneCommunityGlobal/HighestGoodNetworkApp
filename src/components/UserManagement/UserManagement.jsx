@@ -227,10 +227,11 @@ class UserManagement extends React.PureComponent {
        * the rows for currently selected page .
        * Applying the Default sort in the order of created date as well
        */
+
       return usersSearchData
         .sort((a, b) => {
-          if (a.createdDate >= b.createdDate) return -1;
-          if (a.createdDate < b.createdDate) return 1;
+          if (a.startDate >= b.startDate) return -1;
+          if (a.startDate < b.startDate) return 1;
           return 0;
         })
         .slice(
@@ -267,6 +268,7 @@ class UserManagement extends React.PureComponent {
             // editUser={editUser}
               isMobile={isMobile}
               mobileFontSize={mobileFontSize}
+              onUserUpdate={this.onUserUpdate}
             />
           );
         });
@@ -337,7 +339,7 @@ class UserManagement extends React.PureComponent {
       return (
         nameMatches &&
         user.role.toLowerCase().includes(this.state.roleSearchText.toLowerCase()) &&
-        user.jobTitle.toLowerCase().includes(this.state.titleSearchText.toLowerCase()) &&
+       // user.jobTitle.toLowerCase().includes(this.state.titleSearchText.toLowerCase()) &&
         user.email.toLowerCase().includes(this.state.emailSearchText.toLowerCase()) &&
         (this.state.weeklyHrsSearchText === '' ||
           user.weeklycommittedHours === Number(this.state.weeklyHrsSearchText)) &&
@@ -363,7 +365,6 @@ class UserManagement extends React.PureComponent {
     }));
   };
 
-
   /**
    * Call back on Pause or Resume button click to trigger the action to update user status
    */
@@ -378,11 +379,34 @@ class UserManagement extends React.PureComponent {
     }
   };
 
+  onUserUpdate = updatedUser => {
+    const { userProfiles } = this.props.state.allUserProfiles;
+  
+    // Update the userProfiles array with the updated user
+    const updatedProfiles = userProfiles.map(user =>
+      user._id === updatedUser._id ? updatedUser : user,
+    );
+  
+    // Update the state with the new userProfiles
+    this.props.state.allUserProfiles.userProfiles = updatedProfiles;
+  
+    // Re-render the table
+    this.getFilteredData(
+      updatedProfiles,
+      this.props.state.role.roles,
+      this.props.state.timeOffRequests.requests,
+      this.props.state.theme.darkMode,
+      this.state.editable,
+      this.state.isMobile,
+      this.state.mobileFontSize,
+    );
+  };
+
   /**
    * Call back on log time off button click
    */
   onLogTimeOffClick = user => {
-    // Check if target user is Jae's related user and authroized to manage time off requests
+    // Check if target user is Jae's related user and authorized to manage time off requests
     if (cantUpdateDevAdminDetails(user.email, this.authEmail)) {
       if (user?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
         alert(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
@@ -391,7 +415,7 @@ class UserManagement extends React.PureComponent {
       }
       return;
     }
-    const canManageTimeOffRequests = this.props.hasPermission('manageTimeOffRequests')
+    const canManageTimeOffRequests = this.props.hasPermission('manageTimeOffRequests');
 
     const hasRolePermission =
       this.props.state.auth.user.role === 'Administrator' ||
@@ -853,5 +877,4 @@ export default connect(mapStateToProps, {
   disableEditUserInfo,
   getAllRoles,
 })(UserManagement);
-// exporting without connect
-export { UserManagement as UnconnectedUserManagement };
+
