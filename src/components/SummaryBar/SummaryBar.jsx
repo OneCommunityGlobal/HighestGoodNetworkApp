@@ -861,14 +861,16 @@ function SummaryBar(props) {
                   required
                 >
                   <option disabled value="" hidden>
-                    {' '}
-                    -- select an option --{' '}
+                    -- select an option --
                   </option>
-                  {suggestionCategory.map(item => {
-                    return <option key={item.id} value={item}>{`${item.id + 1}. ${item}`}</option>;
-                  })}
+                  {suggestionCategory.map((item, index) => (
+                    <option key={item} value={item}>
+                      {`${index + 1}. ${item}`}
+                    </option>
+                  ))}
                 </Input>
               </FormGroup>
+
               {takeInput && (
                 <FormGroup>
                   <Label for="suggestion" className={fontColor}>

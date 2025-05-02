@@ -18,7 +18,7 @@ import {
 } from 'reactstrap';
 import Select from 'react-select';
 import Image from 'react-bootstrap/Image';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import classnames from 'classnames';
 import moment from 'moment';
 import Alert from 'reactstrap/lib/Alert';
@@ -90,6 +90,7 @@ function UserProfile(props) {
   };
   const roles = props?.role.roles;
   const dispatch = useDispatch();
+  const history = useHistory();
 
   /* Hooks */
   const [showLoading, setShowLoading] = useState(true);
@@ -205,26 +206,42 @@ function UserProfile(props) {
     }
   };
 
+  const updateProjetTouserProfile = () => {
+    return new Promise((resolve) => {
+      checkIsProjectsEqual();
+      
+      setUserProfile(prevState => {
+        const updatedProfile = prevState;
+        if(updatedProfile){
+          updatedProfile.projects = projects || updatedProfile.projects;
+        }
+        return updatedProfile
+      });
+      setOriginalUserProfile(prevState => {
+        const updatedOriginalProfile = prevState;
+        if(updatedOriginalProfile){
+          updatedOriginalProfile.projects = projects || updatedOriginalProfile.projects;
+        }
+        return updatedOriginalProfile
+      });
+  
+    });
+  };
+  
+
   useEffect(() => {
     userProfileRef.current = userProfile;
   });
 
   useEffect(() => {
-    checkIsProjectsEqual();
-    setUserProfile(prevState => {
-      const updatedProfile = prevState;
-      if(updatedProfile){
-        updatedProfile.projects = projects || updatedProfile.projects;
-      }
-      return updatedProfile
-    });
-    setOriginalUserProfile(prevState => {
-      const updatedOriginalProfile = prevState;
-      if(updatedOriginalProfile){
-        updatedOriginalProfile.projects = projects || updatedOriginalProfile.projects;
-      }
-      return updatedOriginalProfile
-    });
+     const helper = async ()=>{
+        try {
+          await updateProjetTouserProfile();
+        } catch (error) {
+          
+        }
+     }
+    helper();
   }, [projects]);
 
   useEffect(() => {
@@ -335,7 +352,15 @@ function UserProfile(props) {
     try {
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
       const currentUserEmail = response.data.email;
-      dispatch(setCurrentUser({ ...props.auth.user, email: currentUserEmail }));
+      dispatch(setCurrentUser({ ...props.auth.user, email: currentUserEmail, 
+        permissions: {
+          ...props.auth.user.permissions,
+          frontPermissions: [
+            ...(props.auth.user.permissions?.frontPermissions || []),
+            ...(response.data.permissions?.frontPermissions || [])
+          ]
+        }
+      }));
     } catch (err) {
       toast.error('Error while getting current logged in user email');
     }
@@ -740,6 +765,14 @@ function UserProfile(props) {
   const activeInactivePopupClose = () => {
     setActiveInactivePopupOpen(false);
   };
+  const handleReportClick = (event,to) => {
+    if (event.metaKey || event.ctrlKey || event.button === 1) {
+      return;
+    }
+
+    event.preventDefault(); // prevent full reload
+    history.push(`/peoplereport/${to}`);
+  }
 
   const handleRehireableChange = () => {
     const newRehireableStatus = !isRehireable;
@@ -876,7 +909,7 @@ function UserProfile(props) {
 
   const canEditUserProfile = targetIsDevAdminUneditable
     ? false
-    : userProfile.role === 'Owner'
+    : userProfile.role === 'Owner' || userProfile.role === 'Administrator'
     ? canAddDeleteEditOwners
     : canPutUserProfile;
 
@@ -1118,6 +1151,7 @@ function UserProfile(props) {
                     className="team-member-tasks-user-report-link"
                     style={{ fontSize: 24, cursor: 'pointer', marginTop: '6px' }}
                     to={`/peoplereport/${userProfile._id}`}
+                    onClick={(event)=>handleReportClick(event,userProfile._id)}
                   >
                     <img
                       src="/report_icon.png"
@@ -1403,12 +1437,12 @@ function UserProfile(props) {
               </TabPane>
             </TabContent>
             <div className="profileEditButtonContainer">
-              {canUpdatePassword && canEdit && !isUserSelf && (
+              {(canUpdatePassword && canEdit && !isUserSelf) && (
                 <ResetPasswordButton
                   className="mr-1 btn-bottom"
                   user={userProfile}
                   authEmail={authEmail}
-                  canResetPassword
+                  canUpdatePassword
                 />
               )}
               {isUserSelf && (activeTab === '1' || canPutUserProfile) && (
@@ -1539,7 +1573,7 @@ function UserProfile(props) {
                           className="mr-1 btn-bottom"
                           user={userProfile}
                           authEmail={authEmail}
-                          canResetPassword
+                          canUpdatePassword
                         />
                       )}
                       {isUserSelf && (activeTab == '1' || canPutUserProfile) && (
