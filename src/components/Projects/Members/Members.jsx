@@ -24,7 +24,6 @@ import { getProjectDetail } from 'actions/project';
 
 const Members = props => {
   const darkMode = props.state.theme.darkMode;
-
   const projectId = props.match.params.projectId;
   const [showFindUserList, setShowFindUserList] = useState(false);
   const [membersList, setMembersList] = useState(props.state.projectMembers.members);
