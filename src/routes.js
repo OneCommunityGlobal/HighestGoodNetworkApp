@@ -72,6 +72,8 @@ import CheckTypes from './components/BMDashboard/shared/CheckTypes';
 import Toolslist from './components/BMDashboard/Tools/ToolsList';
 import AddTool from './components/BMDashboard/Tools/AddTool';
 import AddTeamMember from './components/BMDashboard/AddTeamMember/AddTeamMember';
+import CreateNewTeam from './components/BMDashboard/Team/CreateNewTeam/CreateNewTeam';
+
 
 // Community Portal
 import CPProtectedRoute from './components/common/CPDashboard/CPProtectedRoute';
@@ -402,6 +404,7 @@ export default(
           fallback
           component={InventoryTypesList}
         />
+        <BMProtectedRoute path="/bmdashboard/AddNewTeam" fallback component={CreateNewTeam} />
         <BMProtectedRoute
           path="/bmdashboard/totalconstructionsummary"
           fallback
