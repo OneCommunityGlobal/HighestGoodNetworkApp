@@ -36,6 +36,4 @@ const store = createStore(
 
 const persistor = persistStore(store);
 
-export default () => {
-  return { store, persistor };
-}
+export { store, persistor };

@@ -10,13 +10,12 @@ import logger from '../services/logService';
 import httpService from '../services/httpService';
 import { setCurrentUser, logoutUser } from '../actions/authActions';
 
-import configureStore from '../store';
+import { persistor, store } from '../store';
 import Loading from './common/Loading';
 
 import config from '../config.json';
 import '../App.css';
 
-const { persistor, store } = configureStore();
 const { tokenKey } = config;
 // Require re-login 2 days before the token expires on server side
 // Avoid failure due to token expiration when user is working

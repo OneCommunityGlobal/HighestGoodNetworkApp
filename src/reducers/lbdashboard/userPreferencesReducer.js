@@ -16,16 +16,18 @@ const initialState = {
 export const userPreferencesReducer = (state = initialState, action) => {
   switch (action.type) {
     case FETCH_USER_PREFERENCES_REQUEST:
+      return { ...state, loading: true, error: null };
     case UPDATE_USER_PREFERENCES_REQUEST:
       return { ...state, loading: true, error: null };
 
     case FETCH_USER_PREFERENCES_SUCCESS:
       return { ...state, loading: false, preferences: action.payload };
 
-      case UPDATE_USER_PREFERENCES_SUCCESS:
-        return { ...state, loading: false, preferences: action.payload };
+    case UPDATE_USER_PREFERENCES_SUCCESS:
+      return { ...state, loading: false, preferences: action.payload };
 
     case FETCH_USER_PREFERENCES_FAILURE:
+      return { ...state, loading: false, error: action.payload };
     case UPDATE_USER_PREFERENCES_FAILURE:
       return { ...state, loading: false, error: action.payload };
 
