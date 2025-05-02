@@ -67,10 +67,10 @@
   padding-right: 20px;
 }
 
-.nav-links {
+/* .nav-links {
   display: flex;
   align-items: center;
-}
+} */
 
 .menu-container {
   display: flex;
@@ -79,24 +79,41 @@
   flex-wrap: wrap;
 }
 
-.dropdown-item-hover:hover {
+/* .dropdown-item-hover:hover {
+  background-color: #2f4157 !important;
+} */
+
+.dark-menu-dropdown {
+  background-color: #3a506b !important;
+}
+
+.dark-dropdown-text {
+  color: white !important;
+}
+
+.dark-dropdown-item:hover {
   background-color: #2f4157 !important;
 }
 
-@media (max-width: 1400px) {
+.no-max-height {
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+.show-in-mobile {
+  display: none;
+}
+
+/* @media (max-width: 1400px) {
   .nav-links {
     flex-direction: column !important;
   }
-}
+} */
 
 @media (max-width: 1500px) {
   .dashboard-text-link {
     font-size: 14px;
   }
-
-  /* .owner-message {
-    margin-right: 0;
-  } */
 }
 
 @media (max-width: 1050px) {
@@ -105,10 +122,6 @@
     width: 0;
     margin-right: 0;
   }
-
-  /* .owner-message {
-    display: none;
-  } */
 }
 
 @media (max-width: 1700px) {
@@ -117,8 +130,45 @@
   }
 }
 
-@media screen and (max-width: 769px) {
+@media screen and (max-width: 991px) {
+  .menu-container {
+    align-items: start;
+    width: 100%;
+    padding-left: 50px;
+  }
+  .mobile-menu-dropdown {
+    background-color: #343a40 !important;
+    border: none !important;
+  }
+  .mobile-dropdown-text{
+    color: rgba(255, 255, 255, 0.5) !important;
+  }
+  .mobile-dropdown-item:hover{
+    background-color: #343a40 !important;
+    color: rgba(255, 255, 255, 0.75) !important;
+  }
+  .dark-menu-dropdown {
+    background-color: #343a40 !important;
+    border: none !important;
+  }
+  .dark-dropdown-text {
+    color: rgba(255, 255, 255, 0.5) !important;
+  }
+  .dark-dropdown-item:hover {
+    background-color: #343a40 !important;
+    color: rgba(255, 255, 255, 0.75) !important;
+  }
+  .hide-in-mobile {
+    display: none;
+  }
+  .show-in-mobile {
+    display: block;
+  }
+}
+/* 
+@media screen and (max-width: 768px) {
   .responsive-spacing {
     margin-right: 5px;
   }
-}
+
+} */
