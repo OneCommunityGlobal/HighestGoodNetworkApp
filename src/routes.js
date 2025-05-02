@@ -53,6 +53,14 @@ import CPProtectedRoute from './components/common/CPDashboard/CPProtectedRoute';
 import CPLogin from './components/CommunityPortal/Login';
 import CPDashboard from './components/CommunityPortal';
 import ActivityList from './components/CommunityPortal/Activities/ActivityList';
+import EventPage from './components/CommunityPortal/EventManagement/EventPage';
+import EventManagementTabs from './components/CommunityPortal/EventManagement/EventManagementTabs';
+
+
+
+
+
+
 // import AddActivities from './components/CommunityPortal/Activities/AddActivities';
 // import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
 
@@ -392,6 +400,32 @@ export default (
         <CPProtectedRoute path="/communityportal" exact component={CPDashboard} />
         <Route path="/communityportal/login" component={CPLogin} />
         <CPProtectedRoute path="/communityportal/Activities" exact component={ActivityList} />
+        <CPProtectedRoute path="/communityportal/activity/:activityid/event" exact component={EventPage} />
+        <CPProtectedRoute
+          path="/communityportal/activity/:activityid/description"
+          exact
+          component={EventManagementTabs}
+        />
+        <CPProtectedRoute
+          path="/communityportal/activity/:activityid/analysis"
+          exact
+          component={EventManagementTabs}
+        />
+        <CPProtectedRoute
+          path="/communityportal/activity/:activityid/resources"
+          exact
+          component={EventManagementTabs}
+        />
+        <CPProtectedRoute
+          path="/communityportal/activity/:activityid/engagement/comments"
+          exact
+          component={EventManagementTabs}
+        />
+        <CPProtectedRoute
+          path="/communityportal/activity/:activityid/engagement/feedback"
+          exact
+          component={EventManagementTabs}
+        />
 
         {/* Good Education  Portal Routes */}
         <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />

@@ -1,0 +1,318 @@
+.event-page {
+  padding: 50px;
+}
+
+.event-card {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  background: var(--background);
+  color: var(--text-color);
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #D3D3D3;
+}
+
+.event-card:hover {
+  box-shadow: none;
+  transform: none;
+}
+
+.event-card__left {
+  width: 20%;
+  height: 90%;
+}
+
+.event-card__middle {
+  width: 60%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.event-card__right {
+  width: 20%;
+  max-height: 90%;
+  padding-top: 90px;
+}
+
+.event-card__image {
+  width: 100%;
+  height: 400px;
+  background: #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+}
+
+.event-card__media-upload {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.event-card__title {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  border: none;
+  outline: none;
+  background: transparent;
+  width: 100%;
+}
+
+.event-card_12 {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+  max-width: 98%;
+  padding: 15px;
+  margin: 10px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  margin-right: 10px;
+}
+
+
+.event-card__info,
+.event-card__extra {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 15px;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+}
+
+.info-item,
+.extra-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 1;
+  padding: 5px;
+  margin: 0 5px;
+  width: auto;
+  /* Spacing between items */
+}
+
+.status-active {
+  background-color: green;
+  color: white;
+}
+
+.status-finished {
+  background-color: gray;
+  color: white;
+}
+
+.status-participated {
+  background-color: blue;
+  color: white;
+}
+
+.event-description {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.textarea {
+  width: 100%;
+  height: 90px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.media-upload-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.description-media-upload {
+  margin-right: 10px;
+  /* Spacing between media upload and button */
+  /* Optional: You can adjust the size of the input if needed. */
+}
+
+.post-btn {
+  min-height: 10px;
+  border-radius: 10px;
+  width: 250px;
+  padding: 10px 10px;
+  border: 1px solid #ccc;
+  background-color: #2E5061;
+  color: #ffffff;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.post-btn:hover {
+  color: #ffffff;
+}
+
+/* Ensure all calendar elements are visible */
+.react-calendar {
+  width: 100%;
+  max-width: 400px;
+  max-height: 100%;
+  background: var(--background, #fff);
+  color: var(--text-color, #000);
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+}
+
+
+/* Improve visibility of month & year navigation */
+.react-calendar__navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+  font-size: 16px;
+  color: var(--text-color, #333);
+  padding: 5px;
+}
+
+
+.react-calendar__navigation button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 5px;
+  color: var(--text-color, #333);
+}
+
+
+/* Ensure all calendar dates are visible */
+.react-calendar__tile {
+  padding: 10px;
+  font-size: 14px;
+  text-align: center;
+  border-radius: 4px;
+  cursor: pointer;
+  background: var(--tile-background, #fff);
+  color: var(--text-color, #000);
+  transition: background 0.3s ease;
+}
+
+/* Highlight the selected date */
+.react-calendar__tile--active {
+  background: #007bff !important;
+  color: white !important;
+  font-weight: bold;
+}
+
+/* 🌙 Dark Mode Styling */
+.event-page-dark {
+  background-color: #1B2A41;
+  /* Oxford Blue */
+  color: #ffffff;
+  min-height: 100%;
+}
+
+/* Card Styling */
+.event-page-dark .event-card {
+  background-color: #3A506B;
+  /* Space Cadet */
+  border: 1px solid #333;
+}
+
+
+/* Input Fields*/
+.input-dark,
+.event-page-dark input,
+.event-page-dark textarea {
+  background-color: #2c2c2c;
+  color: #ffffff;
+  border: 1px solid #444;
+  border-radius: 5px;
+}
+
+.event-page-dark select {
+  background-color: #ffffff;
+  color: #2c2c2c;
+  border: 1px solid #444;
+}
+
+/* Description Box */
+.description-box-dark {
+  background-color: #3A506B;
+  /* Yinmn Blue */
+  color: white;
+  border: 1px solid #444;
+}
+
+/* Buttons */
+.post-btn-dark {
+  background-color: #fff;
+  color: #2E5061;
+  border: 1px solid #666;
+}
+
+.post-btn-dark:hover {
+  background-color: #2E5061;
+}
+
+.event-card_12-dark {
+  background-color: #1C2541;
+}
+
+/* Dark Mode Styling for event-card__info and event-card__extra */
+.event-card__info-dark,
+.event-card__extra-dark {
+  background-color: #3A506B;
+  color: #ffffff;
+  border: 1px solid #444;
+}
+
+/* Dark Mode Styles for React Calendar */
+.react-calendar.dark-mode {
+  background-color: #2a2a2a;
+  color: #ffffff;
+  border: 1px solid #444;
+}
+
+.react-calendar.dark-mode .react-calendar__tile {
+  background: transparent;
+  color: #ffffff;
+}
+
+.react-calendar.dark-mode .react-calendar__tile--active {
+  background: #444;
+  color: #fff;
+}
+
+.react-calendar.dark-mode .react-calendar__tile--now {
+  background: #666;
+  color: #fff;
+}
+
+.react-calendar.dark-mode .react-calendar__month-view__weekdays {
+  color: #bbb;
+}
+
+.react-calendar.dark-mode .react-calendar__navigation {
+  background: #222;
+  color: #fff;
+  border-bottom: 1px solid #444;
+}
+
+.react-calendar.dark-mode .react-calendar__navigation button {
+  color: rgb(85, 84, 84);
+}
+
+.react-calendar.dark-mode .react-calendar__tile:hover {
+  background: #555;
+  color: #fff;
+}

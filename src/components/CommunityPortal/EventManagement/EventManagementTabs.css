@@ -1,0 +1,48 @@
+.tab-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.tab-btn {
+  padding: 10px 15px;
+  border: none;
+  background-color: transparent;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  font-weight: normal;
+  /* Default font weight */
+}
+
+.tab-btn:hover {
+  font-weight: bold;
+  /* Bold on hover */
+}
+
+.tab-btn.active {
+  font-weight: bold;
+  /* Keep bold when active */
+  border-bottom: 2px solid black;
+  /* Optional: Underline active tab */
+}
+
+.engagement-sections {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.section-btn {
+  padding: 8px 12px;
+  border: none;
+  background-color: lightgray;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.section-btn.active {
+  font-weight: bold;
+  background-color: gray;
+  color: white;
+}

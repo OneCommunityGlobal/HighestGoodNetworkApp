@@ -5,6 +5,8 @@ import { BrowserRouter as Router , useLocation} from 'react-router-dom';
 import { PersistGate } from 'redux-persist/integration/react';
 import routes from '../routes';
 import logger from '../services/logService';
+//import EventPage from './components/EventPage';
+//import EventManagementTabs from './components/CommunityPortal/EventManagement/EventManagementTabs';
 
 import httpService from '../services/httpService';
 import { setCurrentUser, logoutUser } from '../actions/authActions';
