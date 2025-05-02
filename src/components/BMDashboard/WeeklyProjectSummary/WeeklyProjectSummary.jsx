@@ -3,6 +3,7 @@ import './WeeklyProjectSummary.css';
 import { useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
+import MostExpensiveIssuesChart from '../Issues/MostExpensiveIssuesChart';
 
 export default function WeeklyProjectSummary() {
   const [openSections, setOpenSections] = useState({});
@@ -52,6 +53,16 @@ export default function WeeklyProjectSummary() {
       key: 'Issue Tracking',
       className: 'small',
       content: <div className="weekly-project-summary-card normal-card">📊 Card</div>,
+    },
+    {
+      title: 'MostExpensiveIssues',
+      key: 'MostExpIssues',
+      className: 'full',
+      content: (
+        <div className="project-status-grid">
+          <MostExpensiveIssuesChart/>
+        </div>
+      ),
     },
     {
       title: 'Tools and Equipment Tracking',

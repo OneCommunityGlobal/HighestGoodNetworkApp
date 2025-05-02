@@ -24,3 +24,4 @@ src/components/TeamMemberTasks/**
 src/components/Timelog/**
 src/components/UserManagement/**
 src/components/UserProfile/**
+src/components/BMDashboard/**
