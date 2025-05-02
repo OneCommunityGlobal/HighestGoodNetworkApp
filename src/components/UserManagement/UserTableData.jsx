@@ -3,7 +3,7 @@ import { Tooltip } from 'reactstrap';
 import { connect, useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCopy } from '@fortawesome/free-solid-svg-icons';
+import { faCopy, faClock } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-toastify';
 import { Link, useHistory } from 'react-router-dom';
 import { updateUserInfomation } from '../../actions/userManagement';
@@ -126,7 +126,17 @@ const UserTableData = React.memo(props => {
       id={`tr_user_${props.index}`}
       style={{fontSize: isMobile ? mobileFontSize : 'initial'}}
     >
-      <td className="usermanagement__active--input" style={{ position: 'relative' }}>
+    <td className="usermanagement__active--input">
+      <div
+        style={{
+          position: 'relative',
+          width: '100%',
+          height: '60px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
         <ActiveCell
           isActive={props.isActive}
           canChange={canChangeUserStatus}
@@ -134,56 +144,69 @@ const UserTableData = React.memo(props => {
           index={props.index}
           onClick={() => props.onActiveInactiveClick(props.user)}
         />
-        {!canSeeReports ? (
-          <Tooltip
-            placement="bottom"
-            isOpen={tooltipReportsOpen}
-            target={`report-icon-${props.user._id}`}
-            toggle={toggleReportsTooltip}
-          >
-            You don&apos;t have permission to view user reports
-          </Tooltip>
-        ) : (
-          ''
-        )}
-        <span style={{ position: 'absolute', top: 0, right: 0 }}>
-          <button
-            type="button"
-            className="team-member-tasks-user-report-link"
+        <button
+          type="button"
+          onClick={(event) => {
+            if (!canSeeReports) {
+              event.preventDefault();
+              return;
+            }
+            if (event.metaKey || event.ctrlKey || event.button === 1) {
+              window.open(`/peoplereport/${props.user._id}`, '_blank');
+              return;
+            }
+            event.preventDefault();
+            history.push(`/peoplereport/${props.user._id}`);
+          }}
+          title="Click for this person’s report page"
+          style={{
+            position: 'absolute',
+            top: '4px',
+            right: '4px',
+            background: 'none',
+            border: 'none',
+            padding: 0,
+            cursor: canSeeReports ? 'pointer' : 'not-allowed',
+          }}
+        >
+          <img
+            src="/report_icon.png"
+            alt="reportsicon"
+            style={{ width: '14px', height: '14px', opacity: canSeeReports ? 1 : 0.7 }}
+          />
+        </button>
+        <button
+          type="button"
+          onClick={(event) => {
+            if (event.metaKey || event.ctrlKey || event.button === 1) {
+              window.open(`/timelog/${props.user._id}`, '_blank');
+              return;
+            }
+            event.preventDefault();
+            history.push(`/timelog/${props.user._id}`);
+          }}
+          title="Click for this person’s timelog page"
+          style={{
+            position: 'absolute',
+            bottom: '4px',
+            right: '4px',
+            background: 'none',
+            border: 'none',
+            padding: 0,
+            cursor: 'pointer',
+          }}
+        >
+          <i
+            className="fa fa-clock-o"
+            aria-hidden="true"
             style={{
-              fontSize: 24,
-              opacity: canSeeReports ? 1 : 0.7,
-              background: 'none',
-              border: 'none',
-              padding: 0,
+              fontSize: '14px',
+              color: '#000',
             }}
-            onClick={(event) => {
-              if (!canSeeReports) {
-                event.preventDefault();
-                return;
-              }
-            
-              if (event.metaKey || event.ctrlKey || event.button === 1) {
-                window.open(`/peoplereport/${props.user._id}`, '_blank');
-                return;
-              }
-            
-              event.preventDefault(); // prevent full reload
-              history.push(`/peoplereport/${props.user._id}`);
-            }}
-          >
-            <img
-              src="/report_icon.png"
-              alt="reportsicon"
-              className="team-member-tasks-user-report-link-image"
-              id={`report-icon-${props.user._id}`}
-              style={{
-                cursor: canSeeReports ? 'pointer' : 'not-allowed', // Change cursor style to indicate the disabled state
-              }}
-            />
-          </button>
-        </span>
-      </td>
+          />
+        </button>
+      </div>
+    </td>
       <td className="email_cell">
         {editUser?.first ? (
           <div>
