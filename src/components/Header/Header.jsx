@@ -49,6 +49,7 @@ import {
   PERMISSIONS_MANAGEMENT,
   SEND_EMAILS,
   TOTAL_ORG_SUMMARY,
+  TOTAL_ORG_SUMMARY_EMAIL,
   TOTAL_CONSTRUCTION_SUMMARY,
 } from '../../languages/en/ui';
 import Logout from '../Logout/Logout';
@@ -420,6 +421,11 @@ export function Header(props) {
                       {canGetWeeklyVolunteerSummary && (
                         <DropdownItem tag={Link} to="/totalorgsummary" className={fontColor}>
                           {TOTAL_ORG_SUMMARY}
+                        </DropdownItem>
+                      )}
+                      {canGetWeeklyVolunteerSummary && (
+                        <DropdownItem tag={Link} to="/TotalorgSummaryEmail" className={fontColor}>
+                          {TOTAL_ORG_SUMMARY_EMAIL}
                         </DropdownItem>
                       )}
                       <DropdownItem tag={Link} to="/teamlocations" className={fontColor}>
