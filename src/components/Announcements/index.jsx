@@ -577,9 +577,10 @@ function Announcements({ title, email }) {
             value={emailTo}
             id="email-list-input"
             onChange={handleEmailListChange}
-            className="input-text-for-announcement"
+            className={`input-text-for-announcement ${
+              darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+            }`}
           />
-
           <button
             type="button"
             className="send-button"
@@ -598,7 +599,9 @@ function Announcements({ title, email }) {
             id="header-content-input"
             onChange={handleHeaderContentChange}
             value={headerContent}
-            className="input-text-for-announcement"
+            className={`input-text-for-announcement ${
+              darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+            }`}
           />
           <button
             type="button"

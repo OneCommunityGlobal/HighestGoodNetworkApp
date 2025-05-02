@@ -88,6 +88,7 @@ function CreateNewRolePopup({ toggle, roleNames, darkMode, addRole }) {
           placeholder="Please enter a new role name"
           value={newRoleName}
           onChange={handleRoleName}
+          className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
         />
         {isValidRole === false || isNotDuplicateRole === false ? (
           <Alert className="createRole__alert" color="danger">
