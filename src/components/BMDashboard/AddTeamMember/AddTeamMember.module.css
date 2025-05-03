@@ -1,21 +1,21 @@
-.icon-add-person {
+.iconAddPerson {
     padding: 50px;
     justify-content: center;
     text-align: center;
 }
 
-.title-member {
+.titleMember {
     color: #f49441;
 }
 
-.container-add {
+.containerAdd {
     background-color: white;
     border-radius: 10%;
     padding-bottom: 50px;
 }
 
 /* Name Section */
-.name-container {
+.nameContainer {
     display: flex;
     gap: 40px;
     justify-content: center;
@@ -23,26 +23,26 @@
     width: 500px;
 }
 
-.input-name {
+.inputName {
     display: flex;
     flex-direction: column;
     width: 230px;
 }
 
-.input-name input {
+.inputName input {
     width: 100%;
     padding: 10px;
     box-sizing: border-box;
     height: 38px;
 }
 
-.input-name label {
+.inputName label {
     margin-bottom: 5px;
     text-align: left;
 }
 
 /* Role Section */
-.role-container {
+.roleContainer {
     display: flex;
     gap: 40px;
     justify-content: center;
@@ -50,25 +50,25 @@
     margin: 20px auto;
 }
 
-.role-input {
+.roleInput {
     display: flex;
     flex-direction: column;
     width: 230px;
 }
 
-.role-input label {
+.roleInput label {
     margin-bottom: 5px;
     text-align: left;
 }
 
-.role-input input,
-.role-input .css-b62m3t-container {
+.roleInput input,
+.roleInput .cssB62m3tContainer {
     width: 100%;
     box-sizing: border-box;
 }
 
 /* Team Section */
-.team-container {
+.teamContainer {
     display: flex;
     gap: 40px;
     justify-content: center;
@@ -76,25 +76,25 @@
     margin: 20px auto;
 }
 
-.team-input {
+.teamInput {
     display: flex;
     flex-direction: column;
     width: 230px;
 }
 
-.team-input label {
+.teamInput label {
     margin-bottom: 5px;
     text-align: left;
 }
 
-.team-input input,
-.team-input .css-b62m3t-container {
+.teamInput input,
+.teamInput .cssB62m3tContainer {
     width: 100%;
     box-sizing: border-box;
 }
 
 /* Contact Info Section */
-.contact-info {
+.contactInfo {
     display: flex;
     flex-direction: column;
     gap: 15px;
@@ -103,37 +103,37 @@
     margin: 0 auto;
 }
 
-.contact-info label {
+.contactInfo label {
     margin-bottom: 5px;
     text-align: left;
 }
 
-.contact-info input {
+.contactInfo input {
     width: 100%;
     padding: 10px;
     box-sizing: border-box;
     height: 38px;
 }
 
-.phone-input-group {
+.phoneInputGroup {
     display: flex;
     gap: 10px;
 }
 
-.country-code-select {
+.countryCodeSelect {
     width: 150px;
 }
 
 /* Button Section */
-.submit-cancel {
+.submitCancel {
   display: flex;
   justify-content: center;
   gap: 20px;
   padding-top: 60px;
 }
 
-.submit-button,
-.cancel-button {
+.submitButton,
+.cancelButton {
     padding: 15px 40px;
     border-radius: 5px;
     font-size: 16px;
@@ -141,13 +141,13 @@
     margin: 0px 50px;
 }
 
-.submit-button {
+.submitButton {
     background-color: #26505e;
     color: white;
     border: none;
 }
 
-.cancel-button {
+.cancelButton {
     background-color: white;
     border: 2px solid #26505e;
     color: black;
@@ -158,7 +158,7 @@
     border-color: red;
 }
 
-.error-message {
+.errorMessage {
     color: red;
     font-size: 12px;
     margin-top: 5px;

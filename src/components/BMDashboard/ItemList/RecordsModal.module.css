@@ -1,4 +1,4 @@
-.records_modal_table_container {
+.recordsModalTableContainer {
   overflow: scroll;
   height: 75vh;
   text-align: center;
@@ -7,12 +7,12 @@
 }
 
 @media (min-width: 1200px) {
-  .records_modal_table_container {
+  .recordsModalTableContainer {
     font-size: medium;
   }
 }
 
-.approve-button {
+.approveButton {
   background-color: green;
   color: white;
   border: none;
@@ -22,7 +22,7 @@
   margin-right: 8px;
 }
 
-.reject-button {
+.rejectButton {
   background-color: red;
   color: white;
   border: none;

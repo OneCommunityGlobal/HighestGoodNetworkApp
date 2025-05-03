@@ -17,10 +17,10 @@ import {
   LineController,
 } from 'chart.js';
 import { useSelector } from 'react-redux';
-import './QuantityOfMaterialsUsed.css';
 import ReactTooltip from 'react-tooltip';
 import { Info, Repeat } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
+import styles from './QuantityOfMaterialsUsed.module.css';
 
 ChartJS.register(
   BarElement,
@@ -558,12 +558,14 @@ function QuantityOfMaterialsUsed({ data }) {
       className={`weekly-project-summary-card normal-card ${darkMode ? 'dark-mode' : ''}`}
       style={{ position: 'relative' }}
     >
-      <div className="chart-title-container">
-        <h2 className="quantity-of-materials-used-chart-title">Quantity of Materials Used</h2>
+      <div className={`${styles.chartTitleContainer}`}>
+        <h2 className={`${styles.quantityOfMaterialsUsedChartTitle}`}>
+          Quantity of Materials Used
+        </h2>
 
         <button
           type="button"
-          className="quantity-of-materials-used-chart-info-button"
+          className={`${styles.quantityOfMaterialsUsedChartInfoButton}`}
           data-tip
           data-for="materials-info"
           aria-label="Chart Info"
@@ -576,7 +578,7 @@ function QuantityOfMaterialsUsed({ data }) {
         id="materials-info"
         place="left"
         effect="solid"
-        className="quantity-of-materials-used-chart-tooltip"
+        className={`${styles.quantityOfMaterialsUsedChartTooltip}`}
         clickable
         event="click"
         globalEventOff="click"
@@ -629,7 +631,9 @@ function QuantityOfMaterialsUsed({ data }) {
           <li>Scrollbars only appear when content overflows, maintaining a clean layout.</li>
         </ul>
       </ReactTooltip>
-      <div className="quantity-of-materials-used-dropdown dropdown-container quantity-of-materials-used-card">
+      <div
+        className={`quantity-of-materials-used-dropdown ${styles.dropdownContainer} ${styles.quantityOfMaterialsUsedCard}`}
+      >
         <Select
           isMulti
           isSearchable
@@ -640,7 +644,7 @@ function QuantityOfMaterialsUsed({ data }) {
           }
           placeholder="All Materials"
           classNamePrefix="custom-select"
-          className="quantity-of-materials-used-dropdown-item dropdown-item custom-scrollbar multi-select"
+          className={`quantity-of-materials-used-dropdown-item ${styles.dropdownItem} custom-scrollbar ${styles.multiSelect}`}
           menuPosition="fixed"
           menuPlacement={isSmallScreen ? 'top' : 'auto'}
           closeMenuOnSelect={false}
@@ -653,7 +657,7 @@ function QuantityOfMaterialsUsed({ data }) {
           placeholder="Organization"
           menuPlacement={isSmallScreen ? 'top' : 'auto'}
           classNamePrefix="custom-select"
-          className="quantity-of-materials-used-dropdown-item dropdown-item"
+          className={`quantity-of-materials-used-dropdown-item ${styles.dropdownItem}`}
           // isDisabled
         />
         <Select
@@ -668,12 +672,12 @@ function QuantityOfMaterialsUsed({ data }) {
           }}
           placeholder="Date"
           classNamePrefix="custom-select"
-          className="quantity-of-materials-used-dropdown-item dropdown-item"
+          className={`quantity-of-materials-used-dropdown-item ${styles.dropdownItem}`}
         />
       </div>
 
       {selectedDate === 'Custom' && (
-        <div className="quantity-of-material-used-date-picker-container">
+        <div className={`${styles.quantityOfMaterialUsedDatePickerContainer}`}>
           <DatePicker
             selected={dateRangeOne[0]}
             onChange={dates => {
@@ -691,7 +695,7 @@ function QuantityOfMaterialsUsed({ data }) {
             maxDate={new Date()}
             dateFormat="MM/dd/yy - MM/dd/yy"
             placeholderText="Select Date Range one"
-            className="quantity-of-material-used-custom-date-picker"
+            className={`${styles.quantityOfMaterialUsedCustomDatePicker}`}
             disabledKeyboardNavigation
             calendarStartDay={1}
             shouldCloseOnSelect={false}
@@ -708,7 +712,7 @@ function QuantityOfMaterialsUsed({ data }) {
           />
           <button
             type="button"
-            className="quantity-of-materials-used-swap-dates-button"
+            className={`${styles.quantityOfMaterialsUsedSwapDatesButton}`}
             onClick={() => {
               const newRangeOne = [...dateRangeTwo];
               const newRangeTwo = [...dateRangeOne];
@@ -736,7 +740,7 @@ function QuantityOfMaterialsUsed({ data }) {
             maxDate={new Date()}
             dateFormat="MM/dd/yy - MM/dd/yy"
             placeholderText="Select Date Range two"
-            className="quantity-of-material-used-custom-date-picker"
+            className={`${styles.quantityOfMaterialUsedCustomDatePicker}`}
             disabledKeyboardNavigation
             calendarStartDay={1}
             shouldCloseOnSelect={false}
@@ -755,13 +759,13 @@ function QuantityOfMaterialsUsed({ data }) {
       )}
 
       <div
-        className="quantity-of-materials-used-chart-container"
+        className={`${styles.quantityOfMaterialsUsedChartContainer}`}
         ref={chartContainerRef}
         onScroll={handleScroll}
       >
         {chartData ? (
           <div
-            className="quantity-of-materials-used-chart-inner-scrollable"
+            className={`${styles.quantityOfMaterialsUsedChartInnerScrollable}`}
             style={{
               minWidth: `${chartData.labels.length * barWidth}px`,
             }}
@@ -856,7 +860,7 @@ function QuantityOfMaterialsUsed({ data }) {
       {/* Fixed legend below label */}
       {chartData && chartData.labels && visibleRange && (
         <div
-          className="quantity-of-materials-used-custom-legend-container"
+          className={`${styles.quantityOfMaterialsUsedCustomLegendContainer}`}
           style={{
             color: 'var(--text-color)',
           }}
@@ -879,9 +883,9 @@ function QuantityOfMaterialsUsed({ data }) {
             .sort((a, b) => b.usage - a.usage)
             .slice(0, 10)
             .map(({ name, color }, index) => (
-              <span key={uuidv4()} className="quantity-of-materials-used-legend-item">
+              <span key={uuidv4()} className={`${styles.quantityOfMaterialsUsedLegendItem}`}>
                 <span
-                  className="quantity-of-materials-used-legend-dot"
+                  className={`${styles.quantityOfMaterialsUsedLegendDot}`}
                   style={{
                     backgroundColor: color,
                     display: 'inline-block',
@@ -898,16 +902,16 @@ function QuantityOfMaterialsUsed({ data }) {
         </div>
       )}
       {showModal && selectedMaterialName && (
-        <div className="quantity-modal-overlay">
-          <div className="quantity-modal-content">
-            <div className="quantity-modal-header">
-              <h3 className="quantity-modal-heading">
+        <div className={`${styles.quantityModalOverlay}`}>
+          <div className={`${styles.quantityModalContent}`}>
+            <div className={`${styles.quantityModalHeader}`}>
+              <h3 className={`${styles.quantityModalHeading}`}>
                 <span>{selectedMaterialName} – Usage Details</span>
               </h3>
               <button
                 type="button"
                 onClick={() => setShowModal(false)}
-                className="quantity-modal-close-button"
+                className={`${styles.quantityModalCloseButton}`}
               >
                 Close
               </button>
@@ -926,12 +930,12 @@ function QuantityOfMaterialsUsed({ data }) {
                     <strong>Total Quantity:</strong> {details.total}
                   </p>
 
-                  <h4 className="quantity-modal-subheading">📅 Usage Timeline</h4>
-                  <div className="quantity-modal-timeline">
+                  <h4 className={`${styles.quantityModalSubheading}`}>📅 Usage Timeline</h4>
+                  <div className={`${styles.quantityModalTimeline}`}>
                     {details.timeline.map(item => (
-                      <div key={uuidv4()} className="timeline-row">
-                        <span className="timeline-date">{item.date}</span>
-                        <span className="timeline-qty">{item.quantity}</span>
+                      <div key={uuidv4()} className={`${styles.timelineRow}`}>
+                        <span className={`${styles.timelineDate}`}>{item.date}</span>
+                        <span className={`${styles.timelineQty}`}>{item.quantity}</span>
                       </div>
                     ))}
                   </div>

@@ -1,4 +1,4 @@
-.types-list-container {
+.typesListContainer {
   width: 100%;
   max-width: 1080px;
   margin: 1rem auto;
@@ -12,7 +12,7 @@
   --font-clickable: Roboto;
 }
 
-.timestamp-container {
+.timestampContainer {
   display: flex;
   gap: 5px;
   margin: 10px 0;
@@ -24,7 +24,7 @@
   border-radius: 5px;
 }
 
-.card-header {
+.cardHeader {
   background-color: var(--color-h50);
   color: var(--color-text);
   font-weight: bold;
@@ -32,12 +32,12 @@
   text-align: start;
 }
 
-.button-container {
+.buttonContainer {
   margin-top: 10px;
   display: flex;
 }
 
-.button-container a {
+.buttonContainer a {
   background-color: var(--color-h500);
   color: var(--color-n0);
   padding: 10px 16px;
@@ -46,23 +46,23 @@
   text-decoration: none;
 }
 
-.btn-types {
+.btnTypes {
   background-color: var(--color-h100);
   color: var(--color-n0);
   border: none;
 }
 
-.table-header {
+.tableHeader {
   border-bottom: 1px solid rgba(0, 0, 0, 0.125);
 }
 
-.arrow-icon {
+.arrowIcon {
   padding-right: 4px;
   width: 20px;
   height: auto;
 }
 
-.accordion-collapse {
+.accordionCollapse {
   max-height: 50vh;
   overflow: auto;
 }

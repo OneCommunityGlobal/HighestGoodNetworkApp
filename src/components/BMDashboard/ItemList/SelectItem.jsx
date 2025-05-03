@@ -1,4 +1,5 @@
 import { Form, FormGroup, Label, Input } from 'reactstrap';
+import styles from './ItemListView.module.css';
 
 export default function SelectItem({
   items,
@@ -41,7 +42,7 @@ export default function SelectItem({
 
   return (
     <Form>
-      <FormGroup className="select_input">
+      <FormGroup className={`${styles.selectInput}`}>
         <Label htmlFor="select-material" style={{ marginLeft: '10px' }}>
           {label ? `${label}:` : 'Material:'}
         </Label>

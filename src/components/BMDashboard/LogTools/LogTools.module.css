@@ -11,7 +11,7 @@
   flex-wrap: nowrap;
 }
 
-.log-form-container {
+.logFormContainer {
   background-color: #ffffff;
   margin: 0 auto;
   max-width: 100vw;
@@ -21,13 +21,13 @@
   padding: 50px;
 }
 
-.title-label {
+.titleLabel {
   font-size: large;
   font-weight: bold;
   margin-bottom: 2rem;
 }
 
-.subtitle-row {
+.subtitleRow {
   background-color: #e8f4f9;
   border-radius: 10px;
   text-align: center;
@@ -36,12 +36,12 @@
   border-bottom: 1px solid #595d62;
 }
 
-.subtitle-row span {
+.subtitleRow span {
   display: inline-block;
   width: 33.33%;
 }
 
-.log-form-cancel-button {
+.logFormCancelButton {
   padding: 0.5rem 1.8rem !important;
   font-size: 20px;
   background-color: #ffffff !important;
@@ -51,7 +51,7 @@
   border-color: #2e5061 !important;
 }
 
-.log-form-submit-button {
+.logFormSubmitButton {
   background-color: #2e5061 !important;
   color: #ffffff !important;
   border-color: #2e5061 !important;
@@ -61,7 +61,7 @@
   border-radius: 0.6rem !important;
 }
 
-.input-group-div {
+.inputGroupDiv {
   border-radius: 10px;
   padding: 5px;
   border: 1px solid #ccc;
@@ -71,17 +71,17 @@
   overflow: hidden;
 }
 
-.input-group-div.expanded {
+.inputGroupDiv.expanded {
   height: 200px;
 }
 
-.input-item-div {
+.inputItemDiv {
   position: relative;
   display: inline-block;
   height: auto;
 }
 
-.input-dropdown-toggle {
+.inputDropdownToggle {
   background: none;
   border: none;
   cursor: pointer;
@@ -93,26 +93,26 @@
   height: 2em;
 }
 
-.span-and-input-box {
+.spanAndInputBox {
   display: flex;
   align-items: center;
 }
 
-.span-text {
+.spanText {
   margin-right: 8px;
 }
 
-.transparent-dropdown-caret {
+.transparentDropdownCaret {
   background-color: transparent !important;
   border-color: transparent !important;
   color: inherit !important;
 }
 
-.transparent-dropdown-toggle:focus {
+.transparentDropdownToggle:focus {
   outline: none;
 }
 
-.working-column {
+.workingColumn {
   width: 10px;
 }
 
@@ -124,19 +124,19 @@
   justify-content: space-between;
 }
 
-.selector_label {
+.selectorLabel {
   white-space: nowrap;
   font-weight: 400;
 }
 
-.select_input {
+.selectInput {
   display: flex;
   align-items: center;
   column-gap: 1rem;
   /* margin-top: 1rem; */
 }
 
-.table-subtitle {
+.tableSubtitle {
   font-weight: 500;
   /* color: #9fd0e5 */
   /* color: #78bdda */
@@ -144,23 +144,23 @@
   color: #869aa3
 }
 
-.subtitle-highlight {
+.subtitleHighlight {
   color: #168dc0
 }
 
-.action-buttons {
+.actionButtons {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
 }
 
-.tool-type-head {
+.toolTypeHead {
   color: #aaacaf;
   border-bottom: 2px solid #aaacaf !important;
 }
 
-.tool-type-row {
+.toolTypeRow {
   border: none !important;
   color:#aaacaf;
 }

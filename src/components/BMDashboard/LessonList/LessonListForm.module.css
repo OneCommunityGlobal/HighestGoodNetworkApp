@@ -1,29 +1,29 @@
 
-.form-container{
+.formContainer{
   
-  .form-control {
+  .formControl {
    max-width: unset !important;
    font-size: small !important;
  } 
- .form-label{
+ .formLabel{
   margin: 5px 0;
   font-size: small;
   }
 }
 
-.form-control-delete {
+.formControlDelete {
   margin-left: 10px;
   font-size: small !important;
   max-width: 100%;
 }
 
-.tag .delete-tag {
+.tag .deleteTag {
   margin-left: 10px;
   background-color: red;
   
 }
 
-.main-container{
+.mainContainer{
  display: flex;
  flex-direction: column;
  height: 100%;
@@ -32,18 +32,18 @@
    padding-top: 5%;
    padding-bottom: 1%;
 }
-.lesson-label{
+.lessonLabel{
    font-size: larger !important;
    font-weight: bold ;
 }
-.form-select-container{
+.formSelectContainer{
    display: flex;
    flex-direction: row;
    justify-content: flex-start;
    font-size: small;
 }
 
-.single-form {
+.singleForm {
   display: flex !important;
   gap: 5px;
   text-align: center !important;
@@ -52,12 +52,12 @@
   
  
 }
-.single-form-select {
+.singleFormSelect {
   background-color: #F2F2F266 !important;
 
 }
 
-.tag-container {
+.tagContainer {
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
@@ -65,18 +65,18 @@
   margin-top: 10px;
 }
 
-.delete-input-wrapper {
+.deleteInputWrapper {
   position: relative;
   flex: 1;
 }
 
-.form-control-delete {
+.formControlDelete {
   width: 100%;
   margin-left: 0;
   font-size: small !important;
 }
 
-.tags-input-container {
+.tagsInputContainer {
   display: flex;
   align-items: flex-start;
   gap: 10px;
@@ -99,26 +99,26 @@
   cursor: pointer;
 } 
 
-.tag .button-close {
+.tag .buttonClose {
   background-color: #F2F2F266;
   border-color: #F2F2F266;
   color: black;
 }
 
-.tags-input-container {
+.tagsInputContainer {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-.tags-wrapper {
+.tagsWrapper {
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
 }
 
 
-.tag-dropdown {
+.tagDropdown {
   position: absolute;
   background: white;
   border: 1px solid #ccc;
@@ -128,17 +128,17 @@
   width: 100%;
 }
 
-.tag-dropdown-item {
+.tagDropdownItem {
   padding: 8px;
   cursor: pointer;
 }
 
-.tag-dropdown-item:hover {
+.tagDropdownItem:hover {
   background-color: #f0f0f0;
 }
 
   @media (max-width: 570px) {
-   .form-select-container {
+   .formSelectContainer {
      flex-direction: column;
    }
   }
