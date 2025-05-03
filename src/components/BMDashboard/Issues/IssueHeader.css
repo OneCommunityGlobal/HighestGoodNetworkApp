@@ -1,0 +1,133 @@
+.issue-header-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background-color: white;
+}
+
+.top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  border-bottom: 1px solid #E0E0E0;
+  padding: 14px 20px;
+}
+
+.title-section {
+  display: flex;
+  align-items: center;
+}
+
+.title-section h1 {
+  font-size: 36px;
+  font-weight: 600;
+  margin: 0;
+  color: #1C1E1C;
+}
+
+.action-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-right: 50px;
+}
+
+.more-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: black;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  background-color: #EEEEEE;
+  border-radius: 8px;
+}
+
+.back-button {
+  background-color: #000;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.avatar {
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  gap: 10px
+}
+
+.avatar img {
+  width: 32px;
+  height: 32px;
+  object-fit: cover;
+}
+
+.bottom-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 20px;
+}
+
+.project-tab {
+  display: inline-flex;
+  background-color: #F3F4F6;
+  border-radius: 8px;    
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  padding: 6px;
+}
+
+.project-tab .tab-item {
+  border: none;
+  background: transparent;
+  padding: 6px 12px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+  border-radius: 4px;
+}
+
+.project-tab .tab-item.active {
+  background-color: #FFFFFF; 
+}
+
+.project-tab .tab-item:not(.active):hover {
+  background-color: #E5E7EB; 
+}
+.search-container {
+  position: relative;
+}
+
+.search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #828282;
+  display: flex;
+  align-items: center;
+}
+
+.search-input {
+  padding: 8px 16px 8px 35px;
+  border: 1px solid #E0E0E0;
+  border-radius: 8px;
+  font-size: 16px;
+  width: 405px;
+  background-color: #FFFFFF;
+  color:#828282;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #b9b9b9;
+}

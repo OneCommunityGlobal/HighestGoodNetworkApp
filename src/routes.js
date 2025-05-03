@@ -92,6 +92,7 @@ import EPDashboard from './components/EductionPortal';
 
 // eslint-disable-next-line import/order, import/no-unresolved
 import LogTools from './components/BMDashboard/LogTools/LogTools';
+import IssueDashboard from './components/BMDashboard/Issues/IssueDashboard';
 
 
 const ReusableListView = lazy(() => import('./components/BMDashboard/ReusableList'));
@@ -408,6 +409,7 @@ export default (
           exact
           component={WeeklyProjectSummary}
         />
+        <BMProtectedRoute path="/bmdashboard/issues/" component={IssueDashboard} />
 
         {/* Community Portal Routes */}
         <CPProtectedRoute path="/communityportal" exact component={CPDashboard} />
