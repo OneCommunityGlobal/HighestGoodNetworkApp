@@ -38,6 +38,7 @@ import { boxStyleDark } from '../../styles';
 import '../Header/DarkMode.css';
 import '../UserProfile/TeamsAndProjects/autoComplete.css';
 import { ENDPOINTS } from '../../utils/URL';
+import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
@@ -183,7 +184,6 @@ function LeaderBoard({
     );
     setStateOrganizationData(newOrganizationData);
   };
-
   const renderTeamsList = async team => {
     setIsDisplayAlert(false);
     if (!team || team === 'Show all') {
@@ -239,7 +239,6 @@ function LeaderBoard({
         const scrollWindow = document.getElementById('leaderboard');
         if (scrollWindow) {
           const elem = document.getElementById(`id${userId}`);
-
           if (elem) {
             const topPos = elem.offsetTop;
             scrollWindow.scrollTo(0, topPos - 100 < 100 ? 0 : topPos - 100);
@@ -269,15 +268,16 @@ function LeaderBoard({
         email,
         profilePic: profilePic || '/pfp-default-header.png',
       };
-
       sessionStorage.setItem('viewingUser', JSON.stringify(viewingUser));
       window.dispatchEvent(new Event('storage'));
       dashboardClose();
     });
   };
+
   const updateLeaderboardHandler = async () => {
     setIsLoading(true);
     if (isEqual(leaderBoardData, teamsUsers)) {
+      await dispatch(getAllTimeOffRequests());
       await getLeaderboardData(userId);
       setTeamsUsers(leaderBoardData);
     } else {
@@ -313,21 +313,12 @@ function LeaderBoard({
       moment(mostRecentRequest.startingDate).isBefore(endOfWeek) &&
       moment(mostRecentRequest.endingDate).isSameOrAfter(startOfWeek);
 
-    // const isCurrentlyOff = moment().isBetween(
-    //   moment(mostRecentRequest.startingDate),
-    //   moment(mostRecentRequest.endingDate),
-    //   null,
-    //   '[]',
-    // );
-
     let additionalWeeks = 0;
-    // additional weeks until back
     if (isCurrentlyOff) {
       additionalWeeks = moment(mostRecentRequest.endingDate).diff(
         moment(moment().startOf('week')),
         'weeks',
       );
-      // weeks before time off
     } else if (moment().isBefore(moment(mostRecentRequest.startingDate))) {
       additionalWeeks = moment(mostRecentRequest.startingDate).diff(moment(), 'weeks') + 1;
     }
@@ -365,7 +356,6 @@ function LeaderBoard({
     refInput.current = e.target.value;
     // prettier-ignore
     const obj = {_id: 1, teamName: `This team is not found: ${e.target.value}`,}
-
     const searchTeam = formatSearchInput(e.target.value);
     if (searchTeam === '') setTeams(refTeam.current);
     else {
