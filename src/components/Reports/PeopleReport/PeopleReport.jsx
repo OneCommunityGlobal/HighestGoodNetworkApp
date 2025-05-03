@@ -1,13 +1,13 @@
-// eslint-disable-next-line no-unused-vars
-import React, { Component, useState } from 'react';
+/* eslint-disable no-nested-ternary */
+import { Component } from 'react';
 import '../../Teams/Team.css';
 import './PeopleReport.css';
-import { formatDate } from 'utils/formatDate';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { FiUser } from 'react-icons/fi';
-import moment from 'moment';
 import { toast } from 'react-toastify';
+import { Spinner, Alert } from 'reactstrap';
+import { formatDate } from '../../../utils/formatDate';
 import {
   updateUserProfileProperty,
   getUserProfile,
@@ -28,6 +28,7 @@ import { getPeopleReportData } from './selectors';
 import { PeopleTasksPieChart } from './components';
 import ToggleSwitch from '../../UserProfile/UserProfileEdit/ToggleSwitch';
 import { Checkbox } from '../../common/Checkbox';
+import { updateRehireableStatus } from '../../../actions/userManagement';
 
 class PeopleReport extends Component {
   constructor(props) {
@@ -46,7 +47,7 @@ class PeopleReport extends Component {
       // eslint-disable-next-line react/no-unused-state
       isAssigned: '',
       isActive: '',
-      isRehireable: false,
+      isRehireable: true,
       // eslint-disable-next-line react/no-unused-state
       priority: '',
       // eslint-disable-next-line react/no-unused-state
@@ -63,7 +64,7 @@ class PeopleReport extends Component {
       priorityList: [],
       statusList: [],
       fromDate: '2016-01-01',
-      toDate: this.endOfWeek(0),
+      toDate: '3000-12-31',
       timeEntries: {},
       // eslint-disable-next-line react/no-unused-state
       startDate: '',
@@ -86,7 +87,7 @@ class PeopleReport extends Component {
   }
 
   async componentDidMount() {
-    const { match, userProfile, userTask, userProjects, timeEntries, auth } = this.props;
+    const { match } = this.props;
     const { fromDate, toDate } = this.state;
 
     if (match) {
@@ -162,7 +163,7 @@ class PeopleReport extends Component {
     });
 
     try {
-      await updateUserProfileProperty(userProfile, 'isRehireable', rehireValue);
+      await updateRehireableStatus(userProfile, rehireValue);
       toast.success(`You have changed the rehireable status of this user to ${rehireValue}`);
     } catch (err) {
       // eslint-disable-next-line no-alert
@@ -232,7 +233,7 @@ class PeopleReport extends Component {
         classification: '',
         users: '',
         fromDate: '2016-01-01',
-        toDate: this.endOfWeek(0),
+        toDate: '3000-12-31',
         startDate: '',
         endDate: '',
       };
@@ -267,13 +268,14 @@ class PeopleReport extends Component {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  endOfWeek(offset) {
-    return moment()
-      .tz('America/Los_Angeles')
-      .endOf('week')
-      .subtract(offset, 'weeks')
-      .format('YYYY-MM-DD');
-  }
+  // endOfWeek(offset) {
+  //   return moment()
+  //     .tz('America/Los_Angeles')
+  //     .endOf('week')
+  //     .subtract(offset, 'weeks')
+  //     .format('YYYY-MM-DD');
+  // }
+
 
   render() {
     const {
@@ -288,23 +290,19 @@ class PeopleReport extends Component {
     } = this.state;
     // eslint-disable-next-line no-unused-vars
     const { firstName, lastName, weeklycommittedHours, hoursByCategory } = userProfile;
-    const { tangibleHoursReportedThisWeek, auth, match } = this.props;
+    const { tangibleHoursReportedThisWeek, auth, match, darkMode } = this.props;
 
-    let totalTangibleHrsRound = 0;
-    if (hoursByCategory) {
-      const hours = hoursByCategory
-        ? Object.values(hoursByCategory).reduce((prev, curr) => prev + curr, 0)
-        : 0;
-      totalTangibleHrsRound = hours.toFixed(2);
-    }
+    const totalTangibleHrsRound = (timeEntries.period?.reduce((total, entry) => {
+      return total + (entry.hours + (entry.minutes / 60));
+    }, 0) || 0).toFixed(2);    
 
     // eslint-disable-next-line react/no-unstable-nested-components,no-unused-vars
-    const UserProject = props => {
+    function UserProject(props) {
       const userProjectList = [];
       return <div>{userProjectList}</div>;
-    };
+    }
     // eslint-disable-next-line react/no-unstable-nested-components
-    const Infringements = props => {
+    function Infringements(props) {
       const dict = {};
 
       // aggregate infringements
@@ -320,7 +318,7 @@ class PeopleReport extends Component {
         }
       }
 
-      const startdate = Object.keys(dict)[0];
+      const [startdate] = Object.keys(dict);
       if (startdate) {
         startdate.toString();
       }
@@ -338,10 +336,10 @@ class PeopleReport extends Component {
           <div />
         </div>
       );
-    };
+    }
 
     // eslint-disable-next-line react/no-unstable-nested-components,no-unused-vars
-    const PeopleDataTable = props => {
+    function PeopleDataTable(props) {
       const peopleData = {
         alertVisible: false,
         taskData: [],
@@ -369,7 +367,7 @@ class PeopleReport extends Component {
           intentInfo: '',
         };
         const resourcesName = [];
-
+        
         if (userTask[i].isActive) {
           task.active = 'Yes';
         } else {
@@ -401,12 +399,17 @@ class PeopleReport extends Component {
         }
         task._id = userTask[i]._id;
         task.resources.push(resourcesName);
-        if (userTask[i].startedDatetime == null) {
-          task.startDate = 'null';
-        }
-        if (userTask[i].endedDatime == null) {
-          task.endDate = 'null';
-        }
+        // startedDatetime
+        // if (userTask[i].startedDatetime === null && userTask[i].startedDatetime !== "") {
+        //   task.startDate = 'null';
+        // }
+        // if (userTask[i].dueDatetime === null && userTask[i].dueDatetime !== "") {
+        //   task.endDate = 'null';
+        // }
+        // task.startDate = userTask[i].startedDatetime.split('T')[0];
+        // task.endDate = userTask[i].dueDatetime.split('T')[0];
+        task.startDate = userTask[i].startedDatetime ? userTask[i].startedDatetime.split('T')[0] : 'null';
+        task.endDate = userTask[i].dueDatetime ? userTask[i].dueDatetime.split('T')[0] : 'null';
         task.hoursBest = userTask[i].hoursBest;
         task.hoursMost = userTask[i].hoursMost;
         task.hoursWorst = userTask[i].hoursWorst;
@@ -416,43 +419,55 @@ class PeopleReport extends Component {
         peopleData.taskData.push(task);
       }
 
-      return <PeopleTableDetails taskData={peopleData.taskData} />;
+      return (
+        <PeopleTableDetails
+          taskData={peopleData.taskData}
+          showFilter={tangibleHoursReportedThisWeek !== 0}
+          darkMode={darkMode}
+        />
+      );
     };
-
     const renderProfileInfo = () => {
       const { isRehireable, bioStatus, authRole } = this.state;
-      const { profilePic, role, jobTitle, endDate, _id, createdDate } = userProfile;
+      const { profilePic, role, jobTitle, endDate, _id, startDate } = userProfile;
 
       return (
         <ReportPage.ReportHeader
           src={profilePic}
           avatar={profilePic ? undefined : <FiUser />}
           isActive={isActive}
+          darkMode={darkMode}
         >
-          <div className="report-stats">
+          <div className={`report-stats ${darkMode ? 'text-light' : ''}`}>
             <p>
-              <Link to={`/userProfile/${_id}`} title="View Profile">
+              <Link to={`/userProfile/${_id}`}
+                title="View Profile"
+                className={darkMode ? 'text-light font-weight-bold' : ''}
+                style={{ fontSize: "24px" }}>
                 {firstName} {lastName}
               </Link>
             </p>
             <p>Role: {role}</p>
             <p>Title: {jobTitle}</p>
 
-            {endDate ? (
-              <div className="rehireable">
-                <Checkbox
-                  value={isRehireable}
-                  onChange={() => this.setRehireable(!isRehireable)}
-                  label="Rehireable"
-                />
-              </div>
-            ) : (
+            {/* {endDate ? ( */}
+            <div className="rehireable">
+              <Checkbox
+                value={isRehireable}
+                onChange={() => this.setRehireable(!isRehireable)}
+                label="Rehireable"
+                darkMode={darkMode}
+                backgroundColorCN={darkMode ? "bg-yinmn-blue" : ""}
+                textColorCN={darkMode ? "text-light" : ""}
+              />
+            </div>
+            {/* ) : (
               ''
-            )}
+            )} */}
 
             <div className="stats">
               <div>
-                <h4>{formatDate(createdDate)}</h4>
+                <h4>{formatDate(startDate)}</h4>
                 <p>Start Date</p>
               </div>
               <div>
@@ -465,6 +480,7 @@ class PeopleReport extends Component {
                   {authRole === 'Administrator' || authRole === 'Owner' ? (
                     <ToggleSwitch
                       fontSize="13px"
+                      fontColor="#007BFF"
                       switchType="bio"
                       state={bioStatus}
                       /* eslint-disable-next-line no-use-before-define */
@@ -488,7 +504,7 @@ class PeopleReport extends Component {
       });
 
       try {
-        await updateUserProfileProperty(userProfile, 'bioPosted', bioStatus);
+        await this.props.updateUserProfileProperty(userProfile, 'bioPosted', bioStatus);
         toast.success('You have changed the bio announcement status of this user.');
       } catch (err) {
         // eslint-disable-next-line no-alert
@@ -496,16 +512,24 @@ class PeopleReport extends Component {
       }
     };
 
+    const activeTasks = userTask.reduce((accumulator, item) => {
+      const incompleteTasks = item.resources.filter(
+        task => task.completedTask === false && task.userID === userProfile._id,
+      );
+      return accumulator.concat(incompleteTasks);
+    }, []);
+
     return (
-      <div className="container-people-wrapper">
-        <ReportPage renderProfile={renderProfileInfo}>
-          <div className="people-report-time-logs-wrapper">
+      <div className={`container-people-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
+        <ReportPage renderProfile={renderProfileInfo} darkMode={darkMode}>
+          <div className={`people-report-time-logs-wrapper ${tangibleHoursReportedThisWeek === 0 && !Number.isNaN(tangibleHoursReportedThisWeek)? "auto-width-report-time-logs-wrapper" : ""}`}>
             <ReportPage.ReportBlock
               firstColor="#ff5e82"
               secondColor="#e25cb2"
               className="people-report-time-log-block"
+              darkMode={darkMode}
             >
-              <h3>{weeklycommittedHours}</h3>
+              <h3 className="text-light">{weeklycommittedHours}</h3>
               <p>Weekly Committed Hours</p>
             </ReportPage.ReportBlock>
 
@@ -516,8 +540,9 @@ class PeopleReport extends Component {
                 firstColor="#b368d2"
                 secondColor="#831ec4"
                 className="people-report-time-log-block"
+                darkMode={darkMode}
               >
-                <h3>{tangibleHoursReportedThisWeek}</h3>
+                <h3 className="text-light">{!Number.isNaN(tangibleHoursReportedThisWeek)?tangibleHoursReportedThisWeek:""}</h3>
                 <p>Hours Logged This Week</p>
               </ReportPage.ReportBlock>
             )}
@@ -526,31 +551,44 @@ class PeopleReport extends Component {
               firstColor="#64b7ff"
               secondColor="#928aef"
               className="people-report-time-log-block"
+              darkMode={darkMode}
             >
-              <h3>{infringements.length}</h3>
+              <h3 className="text-light">{infringements.length}</h3>
               <p>Blue squares</p>
             </ReportPage.ReportBlock>
             <ReportPage.ReportBlock
               firstColor="#ffdb56"
               secondColor="#ff9145"
               className="people-report-time-log-block"
+              darkMode={darkMode}
             >
-              <h3>{totalTangibleHrsRound}</h3>
+              <h3 className="text-light">{totalTangibleHrsRound}</h3>
               <p>Total Hours Logged</p>
             </ReportPage.ReportBlock>
           </div>
 
-          <PeopleTasksPieChart />
+          <PeopleTasksPieChart darkMode={darkMode} />
           <div className="mobile-people-table">
-            <ReportPage.ReportBlock>
-              <div className="intro_date">
-                <h4>Tasks contributed</h4>
-              </div>
-
-              <PeopleDataTable />
-
-              <div className="container">
-                <table>
+            <ReportPage.ReportBlock darkMode={darkMode}>
+              {this.state.isLoading ? (
+                <div
+                  className={`${darkMode ? 'text-light' : ''}
+                   d-flex align-items-center flex-row justify-content-center`}
+                >
+                  Loading tasks: &nbsp; <Spinner color={`${darkMode ? 'light' : 'dark'}`} />
+                </div>
+              ) : activeTasks.length > 0 ? (
+                <>
+                  <div className={`intro_date ${darkMode ? 'text-light' : ''}`}>
+                    <h4>Tasks contributed</h4>
+                  </div>
+                  <PeopleDataTable />
+                </>
+              ) : (
+                <Alert color="danger" style={{ margin: '0 35% ' }}>You have no tasks.</Alert>
+              )}
+              <div className="Infringementcontainer">
+                <div className="InfringementcontainerInner">
                   <UserProject userProjects={userProjects} />
                   <Infringements
                     infringements={infringements}
@@ -559,34 +597,95 @@ class PeopleReport extends Component {
                     timeEntries={timeEntries}
                   />
                   <div className="visualizationDiv">
+                    <TimeEntriesViz
+                      timeEntries={timeEntries}
+                      fromDate={fromDate}
+                      toDate={toDate}
+                      darkMode={darkMode}
+                    />
+                  </div>
+                  <div className="visualizationDiv">
                     <InfringementsViz
                       infringements={infringements}
                       fromDate={fromDate}
                       toDate={toDate}
+                      darkMode={darkMode}
                     />
                   </div>
-                  <div className="visualizationDiv">
-                    <TimeEntriesViz timeEntries={timeEntries} fromDate={fromDate} toDate={toDate} />
+                  <div className="visualizationDivRow">
+                    <div className="BadgeSummaryDiv">
+                      <BadgeSummaryViz
+                        authId={auth.user.userid}
+                        userId={match.params.userId}
+                        badges={userProfile.badgeCollection}
+                        personalBestMaxHrs={userProfile.personalBestMaxHrs}
+                      />
+                    </div>
+                    <div className="BadgeSummaryPreviewDiv">
+                      <BadgeSummaryPreview
+                        badges={userProfile.badgeCollection}
+                        darkMode={darkMode}
+                        personalBestMaxHrs={userProfile.personalBestMaxHrs}
+                      />
+                    </div>
                   </div>
-                  <div className="visualizationDiv">
-                    <BadgeSummaryViz
-                      authId={auth.user.userid}
-                      userId={match.params.userId}
-                      badges={userProfile.badgeCollection}
-                    />
-                  </div>
-                  <div className="visualizationDiv">
-                    <BadgeSummaryPreview badges={userProfile.badgeCollection} />
-                  </div>
-                </table>
+                </div>
               </div>
             </ReportPage.ReportBlock>
           </div>
+          {/* {tangibleHoursReportedThisWeek === 0 ? (
+            <div className="report-no-log-message">No task has been logged this week...</div>
+          ) : (
+            <div className="mobile-people-table">
+              <ReportPage.ReportBlock>
+                <div className="intro_date">
+                  <h4>Tasks contributed</h4>
+                </div>
+
+                <PeopleDataTable />
+
+                <div className="Infringementcontainer">
+                  <div className="InfringementcontainerInner">
+                    <UserProject userProjects={userProjects} />
+                    <Infringements
+                      infringements={infringements}
+                      fromDate={fromDate}
+                      toDate={toDate}
+                      timeEntries={timeEntries}
+                    />
+                    <div className="visualizationDiv">
+                      <TimeEntriesViz timeEntries={timeEntries} fromDate={fromDate} toDate={toDate} />
+                    </div>
+                    <div className="visualizationDiv">
+                      <InfringementsViz
+                        infringements={infringements}
+                        fromDate={fromDate}
+                        toDate={toDate}
+                      />
+                    </div>
+                    <div className="visualizationDivRow">
+                      <div className="BadgeSummaryDiv">
+                        <BadgeSummaryViz
+                          authId={auth.user.userid}
+                          userId={match.params.userId}
+                          badges={userProfile.badgeCollection}
+                        />
+                      </div>
+                      <div className="BadgeSummaryPreviewDiv">
+                        <BadgeSummaryPreview badges={userProfile.badgeCollection} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </ReportPage.ReportBlock>
+            </div>
+          )} */}
         </ReportPage>
       </div>
     );
   }
 }
+
 export default connect(getPeopleReportData, {
   getUserProfile,
   updateUserProfileProperty,

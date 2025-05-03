@@ -5,5 +5,6 @@ export const getTaskEditSuggestionsData = state => {
     taskEditSuggestions: state.taskEditSuggestions.taskEditSuggestions,
     userSortDirection: state.taskEditSuggestions.userSortDirection,
     dateSuggestedSortDirection: state.taskEditSuggestions.dateSuggestedSortDirection,
+    darkMode: state.theme.darkMode,
   };
 };

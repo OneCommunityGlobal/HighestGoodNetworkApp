@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 /* eslint-disable no-shadow */
 /* eslint-disable react/require-default-props */
 /* eslint-disable react/forbid-prop-types */
@@ -15,13 +16,21 @@ import {
   NavItem,
   NavLink,
   Button,
+  Input,
+  Spinner,
 } from 'reactstrap';
+import ReactTooltip from 'react-tooltip';
 import { MultiSelect } from 'react-multi-select-component';
-import './WeeklySummariesReport.css';
 import moment from 'moment';
+import { boxStyle, boxStyleDark } from 'styles';
 import 'moment-timezone';
-import { boxStyle } from 'styles';
+import axios from 'axios';
+import cn from 'classnames';
+
+import { ENDPOINTS } from 'utils/URL';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+import { getAllUserTeams, getAllTeamCode } from '../../actions/allTeamsAction';
+import TeamChart from './TeamChart';
 import SkeletonLoading from '../common/SkeletonLoading';
 import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
 import FormattedReport from './FormattedReport';
@@ -29,9 +38,16 @@ import GeneratePdfReport from './GeneratePdfReport';
 import hasPermission from '../../utils/permissions';
 import { getInfoCollections } from '../../actions/information';
 import { fetchAllBadges } from '../../actions/badgeManagement';
+import PasswordInputModal from './PasswordInputModal';
+import WeeklySummaryRecipientsPopup from './WeeklySummaryRecepientsPopup';
+import SelectTeamPieChart from './SelectTeamPieChart';
+import { setTeamCodes } from '../../actions/teamCodes';
+
+import styles from './WeeklySummariesReport.module.scss';
+import { SlideToggle } from './components';
 
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
-
+const fullCodeRegex = /^.{5,7}$/;
 export class WeeklySummariesReport extends Component {
   weekDates = Array.from({ length: 4 }).map((_, index) => ({
     fromDate: moment()
@@ -50,9 +66,17 @@ export class WeeklySummariesReport extends Component {
     super(props);
 
     this.state = {
+      tableData: [],
+      structuredTableData: [],
+      chartData: [],
+      total: 0,
+      COLORS: [],
       loading: true,
       summaries: [],
       activeTab: navItems[1],
+      passwordModalOpen: false,
+      summaryRecepientsPopupOpen: false,
+      isValidPwd: true,
       badges: [],
       loadBadges: false,
       hasSeeBadgePermission: false,
@@ -62,6 +86,18 @@ export class WeeklySummariesReport extends Component {
       teamCodes: [],
       colorOptions: [],
       auth: [],
+      selectedOverTime: false,
+      selectedBioStatus: false,
+      chartShow: false,
+      replaceCode: '',
+      replaceCodeError: null,
+      replaceCodeLoading: false,
+      // weeklyRecipientAuthPass: '',
+      selectedSpecialColors: {
+        purple: false,
+        green: false,
+        navy: false,
+      },
     };
   }
 
@@ -76,21 +112,26 @@ export class WeeklySummariesReport extends Component {
       getInfoCollections,
       hasPermission,
       auth,
+      setTeamCodes,
+      getAllTeamCode,
     } = this.props;
+    await getAllTeamCode();
     // 1. fetch report
     const res = await getWeeklySummariesReport();
     // eslint-disable-next-line react/destructuring-assignment
     const summaries = res?.data ?? this.props.summaries;
     const badgeStatusCode = await fetchAllBadges();
-
     this.canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
-    this.bioEditPermission = this.canPutUserProfileImportantInfo;
+    this.canRequestBio = hasPermission('requestBio');
     this.canEditSummaryCount = this.canPutUserProfileImportantInfo;
     this.codeEditPermission =
       hasPermission('editTeamCode') ||
       auth.user.role === 'Owner' ||
       auth.user.role === 'Administrator';
     this.canSeeBioHighlight = hasPermission('highlightEligibleBios');
+
+    const teamCodeGroup = {};
+    const teamCodes = [];
 
     // 2. shallow copy and sort
     let summariesCopy = [...summaries];
@@ -108,10 +149,30 @@ export class WeeklySummariesReport extends Component {
     /*
      * refactor logic of commentted codes above
      */
-    const teamCodeGroup = {};
-    const teamCodes = [];
     const colorOptionGroup = new Set();
     const colorOptions = [];
+    const COLORS = [
+      '#e8a71c',
+      '#0088FE',
+      '#43BFC7',
+      '#08b493',
+      '#c861c8',
+      '#FFBB28',
+      '#76916a',
+      '#ac4f7c',
+      '#E2725B',
+      '#6B8E23',
+      '#253342',
+      '#43a5be',
+      '#7698B3',
+      '#F07857',
+      '#87CEEB',
+      '#FF8243',
+      '#4169E1',
+      '#009999',
+      '#9ACD32',
+      '#C8A2C8',
+    ];
 
     summariesCopy.forEach(summary => {
       const code = summary.teamCode || 'noCodeLabel';
@@ -129,9 +190,13 @@ export class WeeklySummariesReport extends Component {
         teamCodes.push({
           value: code,
           label: `${code} (${teamCodeGroup[code].length})`,
+          _ids: teamCodeGroup[code]?.map(item => item._id),
         });
       }
     });
+
+    setTeamCodes(teamCodes);
+
     colorOptionGroup.forEach(option => {
       colorOptions.push({
         value: option,
@@ -145,7 +210,9 @@ export class WeeklySummariesReport extends Component {
       .push({
         value: '',
         label: `Select All With NO Code (${teamCodeGroup.noCodeLabel?.length || 0})`,
+        _ids: teamCodeGroup?.noCodeLabel?.map(item => item._id),
       });
+    const chartData = [];
     this.setState({
       loading,
       allRoleInfo: [],
@@ -157,6 +224,9 @@ export class WeeklySummariesReport extends Component {
       badges: allBadgeData,
       hasSeeBadgePermission: badgeStatusCode === 200,
       filteredSummaries: summariesCopy,
+      tableData: teamCodeGroup,
+      chartData,
+      COLORS,
       colorOptions,
       teamCodes,
       auth,
@@ -192,6 +262,70 @@ export class WeeklySummariesReport extends Component {
   componentWillUnmount() {
     sessionStorage.removeItem('tabSelection');
   }
+
+  onSummaryRecepientsPopupClose = () => {
+    this.setState({ summaryRecepientsPopupOpen: false });
+  };
+
+  setSummaryRecepientsPopup = val => {
+    this.setState({ summaryRecepientsPopupOpen: val });
+  };
+
+  popUpElements = () => {
+    return (
+      <WeeklySummaryRecipientsPopup
+        open={this.state.summaryRecepientsPopupOpen}
+        onClose={this.onSummaryRecepientsPopupClose}
+        summaries={this.props.summaries}
+        password={this.state.weeklyRecipientAuthPass}
+        authEmailWeeklySummaryRecipient={this.props.authEmailWeeklySummaryRecipient}
+      />
+    );
+  };
+
+  onpasswordModalClose = () => {
+    this.setState({
+      passwordModalOpen: false,
+    });
+  };
+
+  checkForValidPwd = booleanVal => {
+    this.setState({ isValidPwd: booleanVal });
+  };
+
+  passwordInputModalToggle = () => {
+    return (
+      <PasswordInputModal
+        open={this.state.passwordModalOpen}
+        onClose={this.onpasswordModalClose}
+        checkForValidPwd={this.checkForValidPwd}
+        isValidPwd={this.state.isValidPwd}
+        setSummaryRecepientsPopup={this.setSummaryRecepientsPopup}
+        setAuthpassword={this.setAuthpassword}
+        authEmailWeeklySummaryRecipient={this.props.authEmailWeeklySummaryRecipient}
+      />
+    );
+  };
+
+  // Authorization for the weeklySummary Recipients is required once
+  setAuthpassword = authPass => {
+    this.setState({
+      weeklyRecipientAuthPass: authPass,
+    });
+  };
+
+  onClickRecepients = () => {
+    if (this.state.weeklyRecipientAuthPass) {
+      this.setState({
+        summaryRecepientsPopupOpen: true,
+      });
+    } else {
+      this.setState({
+        passwordModalOpen: true,
+      });
+      this.checkForValidPwd(true);
+    }
+  };
 
   /**
    * Sort the summaries in alphabetixal order
@@ -258,23 +392,136 @@ export class WeeklySummariesReport extends Component {
   toggleTab = tab => {
     const { activeTab } = this.state;
     if (activeTab !== tab) {
-      this.setState({ activeTab: tab });
+      this.setState({ activeTab: tab }, () => this.filterWeeklySummaries());
       sessionStorage.setItem('tabSelection', tab);
     }
   };
 
   filterWeeklySummaries = () => {
-    const { selectedCodes, selectedColors, summaries } = this.state;
+    const {
+      selectedCodes,
+      selectedColors,
+      summaries,
+      selectedOverTime,
+      selectedBioStatus,
+      tableData,
+      COLORS,
+      selectedSpecialColors,
+    } = this.state;
+    const chartData = [];
+    let temptotal = 0;
+    const structuredTeamTableData = [];
 
     const selectedCodesArray = selectedCodes.map(e => e.value);
     const selectedColorsArray = selectedColors.map(e => e.value);
-    const temp = summaries.filter(
-      summary =>
+
+    const activeFilterColors = Object.entries(selectedSpecialColors)
+      .filter(([, isSelected]) => isSelected)
+      .map(([color]) => color);
+
+    const temp = summaries.filter(summary => {
+      const { activeTab } = this.state;
+      const hoursLogged = (summary.totalSeconds[navItems.indexOf(activeTab)] || 0) / 3600;
+
+      const isMeetCriteria =
+        summary.totalTangibleHrs > 80 && summary.daysInTeam > 60 && summary.bioPosted !== 'posted';
+
+      const isBio = !selectedBioStatus || isMeetCriteria;
+
+      const isOverHours =
+        !selectedOverTime ||
+        (summary.weeklycommittedHours > 0 &&
+          hoursLogged > 0 &&
+          hoursLogged >= summary.promisedHoursByWeek[navItems.indexOf(activeTab)] * 1.25);
+
+      // const matchesSelectedUsers = selectedUserIds.size === 0 || selectedUserIds.has(summary._id);
+      const matchesSpecialColor =
+        activeFilterColors.length === 0 || activeFilterColors.includes(summary.filterColor);
+      return (
         (selectedCodesArray.length === 0 || selectedCodesArray.includes(summary.teamCode)) &&
         (selectedColorsArray.length === 0 ||
-          selectedColorsArray.includes(summary.weeklySummaryOption)),
-    );
+          selectedColorsArray.includes(summary.weeklySummaryOption)) &&
+        matchesSpecialColor &&
+        isOverHours &&
+        isBio
+      );
+    });
+
     this.setState({ filteredSummaries: temp });
+
+    if (selectedCodes[0]?.value === '' || selectedCodes.length >= 52) {
+      if (selectedCodes.length >= 52) {
+        selectedCodes.forEach(code => {
+          if (code.value === '') return;
+          chartData.push({
+            name: code.label,
+            value: temp.filter(summary => summary.teamCode === code.value).length,
+          });
+          const team = tableData[code.value];
+          const index = selectedCodesArray.indexOf(code.value);
+          const color = COLORS[index % COLORS.length];
+          const members = [];
+          team.forEach(member => {
+            members.push({
+              name: `${member.firstName} ${member.lastName}`,
+              role: member.role,
+              id: member._id,
+            });
+          });
+          structuredTeamTableData.push({ team: code.value, color, members });
+        });
+      } else {
+        chartData.push({
+          name: 'All With NO Code',
+          value: temp.filter(summary => summary.teamCode === '').length,
+        });
+        const team = tableData.noCodeLabel;
+        const index = selectedCodesArray.indexOf('noCodeLabel');
+        const color = COLORS[index % COLORS.length];
+        const members = [];
+        team.forEach(member => {
+          members.push({
+            name: `${member.firstName} ${member.lastName}`,
+            role: member.role,
+            id: member._id,
+          });
+        });
+        structuredTeamTableData.push({ team: 'noCodeLabel', color, members });
+      }
+    } else {
+      selectedCodes.forEach(code => {
+        const val = temp.filter(summary => summary.teamCode === code.value).length;
+        if (val > 0) {
+          chartData.push({
+            name: code.label,
+            value: val,
+          });
+        }
+
+        const team = tableData[code.value];
+        const index = selectedCodesArray.indexOf(code.value);
+        const color = COLORS[index % COLORS.length];
+        const members = [];
+        if (team !== undefined) {
+          team.forEach(member => {
+            members.push({
+              name: `${member.firstName} ${member.lastName}`,
+              role: member.role,
+              id: member._id,
+            });
+          });
+          structuredTeamTableData.push({ team: code.value, color, members });
+        }
+      });
+    }
+
+    chartData.sort();
+    temptotal = chartData.reduce((acc, entry) => acc + entry.value, 0);
+    structuredTeamTableData.sort();
+    this.setState({ total: temptotal });
+    this.setState({ filteredSummaries: temp });
+    this.setState({ chartData });
+    this.setState({ structuredTableData: structuredTeamTableData });
   };
 
   handleSelectCodeChange = event => {
@@ -285,8 +532,220 @@ export class WeeklySummariesReport extends Component {
     this.setState({ selectedColors: event }, () => this.filterWeeklySummaries());
   };
 
+  handleOverHoursToggleChange = () => {
+    this.setState(
+      prevState => ({
+        selectedOverTime: !prevState.selectedOverTime,
+      }),
+      () => {
+        this.filterWeeklySummaries();
+      },
+    );
+  };
+
+  handleChartStatusToggleChange = () => {
+    this.setState(prevState => ({
+      chartShow: !prevState.chartShow,
+    }));
+  };
+
+  handleBioStatusToggleChange = () => {
+    this.setState(
+      prevState => ({
+        selectedBioStatus: !prevState.selectedBioStatus,
+      }),
+      () => {
+        this.filterWeeklySummaries();
+      },
+    );
+  };
+
+  handleColorToggleChange = (color, state) => {
+    this.setState(
+      prevState => ({
+        selectedSpecialColors: {
+          ...prevState.selectedSpecialColors,
+          [color]: state,
+        },
+      }),
+      this.filterWeeklySummaries,
+    );
+  };
+
+  handleSpecialColorDotClick = (userId, color) => {
+    this.setState(prevState => {
+      const updatedSummaries = prevState.summaries.map(summary => {
+        // Update the summary if the userId matches (using summary._id)
+        if (summary._id === userId) {
+          return { ...summary, filterColor: color };
+        }
+        return summary;
+      });
+      return { summaries: updatedSummaries };
+    }, this.filterWeeklySummaries);
+  };
+
+  handleTeamCodeChange = (oldTeamCode, newTeamCode, userIdObj) => {
+    try {
+      this.setState(prevState => {
+        let { teamCodes, summaries, selectedCodes } = prevState;
+        // Find and update the user's team code in summaries
+        summaries = summaries.map(summary => {
+          if (userIdObj[summary._id]) {
+            return { ...summary, teamCode: newTeamCode };
+          }
+          return summary;
+        });
+        let noTeamCodeCount = 0;
+        summaries.forEach(summary => {
+          if (summary.teamCode.length <= 0) {
+            noTeamCodeCount += 1;
+          }
+        });
+        // Count the occurrences of each team code
+        const teamCodeCounts = summaries.reduce((acc, { teamCode }) => {
+          acc[teamCode] = (acc[teamCode] || 0) + 1;
+          return acc;
+        }, {});
+        const teamCodeWithUserId = summaries.reduce((acc, { _id, teamCode }) => {
+          if (acc && acc[teamCode]) {
+            acc[teamCode].push(_id);
+          } else {
+            acc[teamCode] = [_id];
+          }
+          return acc;
+        }, {});
+
+        // Update teamCodes by filtering out those with zero count
+        teamCodes = Object.entries(teamCodeCounts)
+          .filter(([code, count]) => code.length > 0 && count > 0)
+          .map(([code, count]) => ({
+            label: `${code} (${count})`,
+            value: code,
+            _ids: teamCodeWithUserId[code],
+          }));
+        // Update selectedCodes labels and filter out those with zero count
+        selectedCodes = selectedCodes
+          .map(selected => {
+            const count = teamCodeCounts[selected.value];
+            const ids = teamCodeWithUserId[selected.value];
+            if (selected?.label.includes('Select All With NO Code') && noTeamCodeCount > 0) {
+              return {
+                ...selected,
+                label: `Select All With NO Code (${noTeamCodeCount || 0})`,
+                _ids: ids,
+              };
+            }
+            if (count !== undefined && count > 0) {
+              return { ...selected, label: `${selected.value} (${count})`, _ids: ids };
+            }
+            return null;
+          })
+          .filter(Boolean);
+
+        if (!selectedCodes.find(code => code.value === newTeamCode)) {
+          const ids = teamCodeWithUserId[newTeamCode];
+          if (newTeamCode !== undefined && newTeamCode.length > 0) {
+            selectedCodes.push({
+              label: `${newTeamCode} (${teamCodeCounts[newTeamCode]})`,
+              value: newTeamCode,
+              _ids: ids,
+            });
+          }
+        }
+        // Sort teamCodes by label
+        teamCodes
+          .sort((a, b) => a.label.localeCompare(b.label))
+          .push({
+            value: '',
+            label: `Select All With NO Code (${noTeamCodeCount || 0})`,
+            _ids: teamCodeWithUserId[''],
+          });
+        return { summaries, teamCodes, selectedCodes };
+      });
+    } catch (error) {
+      // console.log(error);
+    }
+  };
+
+  handleAllTeamCodeReplace = async () => {
+    try {
+      const { replaceCode, selectedCodes, summaries, teamCodes } = this.state;
+      this.setState({ replaceCodeLoading: true });
+
+      const isValidCode = fullCodeRegex.test(replaceCode);
+      if (!isValidCode) {
+        this.setState({
+          replaceCodeError: 'NOT SAVED! The code must be between 5 and 7 characters long.',
+        });
+        return;
+      }
+
+      const oldTeamCodes = selectedCodes.map(code => code.value);
+
+      // Call the new backend API with a POST request
+      const response = await axios.post(ENDPOINTS.REPLACE_TEAM_CODE, {
+        oldTeamCodes,
+        newTeamCode: replaceCode,
+      });
+
+      if (response.data?.updatedCount > 0) {
+        // Update the summaries in the local state
+        const updatedSummaries = summaries.map(summary => {
+          if (oldTeamCodes.includes(summary.teamCode)) {
+            return { ...summary, teamCode: replaceCode };
+          }
+          return summary;
+        });
+
+        // Remove old team codes and add the new team code in teamCodes
+        const updatedTeamCodes = teamCodes
+          .filter(teamCode => !oldTeamCodes.includes(teamCode.value)) // Remove old team codes
+          .concat({
+            value: replaceCode,
+            label: `${replaceCode} (${
+              updatedSummaries.filter(s => s.teamCode === replaceCode).length
+            })`,
+            _ids: updatedSummaries.filter(s => s.teamCode === replaceCode).map(s => s._id),
+          });
+
+        // Remove old team codes and add the new team code in selectedCodes
+        const updatedSelectedCodes = selectedCodes
+          .filter(code => !oldTeamCodes.includes(code.value)) // Remove old team codes
+          .concat({
+            value: replaceCode,
+            label: `${replaceCode} (${
+              updatedSummaries.filter(s => s.teamCode === replaceCode).length
+            })`,
+            _ids: updatedSummaries.filter(s => s.teamCode === replaceCode).map(s => s._id),
+          });
+
+        this.setState({
+          summaries: updatedSummaries,
+          teamCodes: updatedTeamCodes,
+          selectedCodes: updatedSelectedCodes,
+          replaceCode: '',
+          replaceCodeError: null,
+        });
+
+        // Re-filter the summaries to update the table
+        this.filterWeeklySummaries();
+      } else {
+        this.setState({
+          replaceCodeError: 'No users found with the selected team codes.',
+        });
+      }
+    } catch (error) {
+      this.setState({
+        replaceCodeError: 'Something went wrong. Please try again!',
+      });
+    } finally {
+      this.setState({ replaceCodeLoading: false });
+    }
+  };
+
   render() {
-    const { role } = this.props;
+    const { role, darkMode } = this.props;
     const {
       loading,
       activeTab,
@@ -299,14 +758,30 @@ export class WeeklySummariesReport extends Component {
       filteredSummaries,
       colorOptions,
       teamCodes,
+      structuredTableData,
+      chartData,
+      total,
+      COLORS,
       auth,
+      chartShow,
+      replaceCode,
+      replaceCodeError,
+      replaceCodeLoading,
     } = this.state;
     const { error } = this.props;
+    const hasPermissionToFilter = role === 'Owner' || role === 'Administrator';
+    const { authEmailWeeklySummaryRecipient } = this.props;
+    const authorizedUser1 = 'jae@onecommunityglobal.org';
+    const authorizedUser2 = 'sucheta_mu@test.com'; // To test please include your email here
 
     if (error) {
       return (
-        <Container>
-          <Row className="align-self-center" data-testid="error">
+        <Container className={cn(styles.containerWsrWrapper, darkMode ? 'bg-oxford-blue' : '')}>
+          <Row
+            className="align-self-center pt-2"
+            data-testid="error"
+            style={{ width: '30%', margin: '0 auto' }}
+          >
             <Col>
               <Alert color="danger">Error! {error.message}</Alert>
             </Col>
@@ -317,15 +792,26 @@ export class WeeklySummariesReport extends Component {
 
     if (loading) {
       return (
-        <Container fluid style={{ backgroundColor: '#f3f4f6' }}>
+        <Container fluid style={{ backgroundColor: darkMode ? '#1B2A41' : '#f3f4f6' }}>
           <Row className="text-center" data-testid="loading">
-            <SkeletonLoading template="WeeklySummariesReport" />
+            <SkeletonLoading
+              template="WeeklySummariesReport"
+              className={darkMode ? 'bg-yinmn-blue' : ''}
+            />
           </Row>
         </Container>
       );
     }
     return (
-      <Container fluid className="bg--white-smoke py-3 mb-5">
+      <Container
+        fluid
+        className={cn(
+          styles.containerWsrWrapper,
+          `py-3 mb-5 ${darkMode ? 'bg-oxford-blue text-light' : styles.bgWhiteSmoke}`,
+        )}
+      >
+        {this.passwordInputModalToggle()}
+        {this.popUpElements()}
         <Row>
           <Col lg={{ size: 10, offset: 1 }}>
             <h3 className="mt-3 mb-5">
@@ -338,27 +824,64 @@ export class WeeklySummariesReport extends Component {
                   fontSize={24}
                   isPermissionPage
                   className="p-2" // Add Bootstrap padding class to the EditableInfoModal
+                  darkMode={darkMode}
                 />
               </div>
             </h3>
           </Col>
         </Row>
-        <Row style={{ marginBottom: '10px' }}>
-          <Col lg={{ size: 5, offset: 1 }} xs={{ size: 5, offset: 1 }}>
-            Select Team Code
+        {(authEmailWeeklySummaryRecipient === authorizedUser1 ||
+          authEmailWeeklySummaryRecipient === authorizedUser2) && (
+          <Row className="d-flex justify-content-center mb-3">
+            <Button
+              color="primary"
+              className="permissions-management__button"
+              type="button"
+              onClick={() => this.onClickRecepients()}
+              style={darkMode ? boxStyleDark : boxStyle}
+            >
+              Weekly Summary Report Recipients
+            </Button>
+          </Row>
+        )}
+        <Row>
+          <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }} xs={{ size: 6 }}>
+            <div className={styles.filterContainerTeamcode}>
+              <div>Select Team Code</div>
+              <div className={styles.filterStyle}>
+                <span>Show Chart</span>
+                <SlideToggle
+                  className={styles.slideToggle}
+                  onChange={this.handleChartStatusToggleChange}
+                />
+              </div>
+            </div>
+          </Col>
+          <Col lg={{ size: 6 }} md={{ size: 6 }} xs={{ size: 6 }}>
+            <div>Select Color</div>
+          </Col>
+        </Row>
+        <Row>
+          <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }} xs={{ size: 6 }}>
             <MultiSelect
-              className="multi-select-filter"
-              options={teamCodes}
+              className={cn(styles.multiSelectFilter, `text-dark ${darkMode ? 'dark-mode' : ''}`)}
+              options={teamCodes.map(item => {
+                const [code, count] = item.label.split(' (');
+                return {
+                  ...item,
+                  label: `${code.padEnd(10, ' ')} (${count}`, // count already has closing parenthesis
+                };
+              })}
               value={selectedCodes}
               onChange={e => {
                 this.handleSelectCodeChange(e);
               }}
+              labelledBy="Select"
             />
           </Col>
-          <Col lg={{ size: 5 }} xs={{ size: 5 }}>
-            Select Color
+          <Col lg={{ size: 5 }} md={{ size: 6, offset: -1 }} xs={{ size: 6, offset: -1 }}>
             <MultiSelect
-              className="multi-select-filter"
+              className={cn(styles.multiSelectFilter, `text-dark ${darkMode ? 'dark-mode' : ''}`)}
               options={colorOptions}
               value={selectedColors}
               onChange={e => {
@@ -367,6 +890,101 @@ export class WeeklySummariesReport extends Component {
             />
           </Col>
         </Row>
+        {chartShow && (
+          <Row>
+            <Col lg={{ size: 6, offset: 1 }} md={{ size: 12 }} xs={{ size: 11 }}>
+              <SelectTeamPieChart
+                chartData={chartData}
+                COLORS={COLORS}
+                total={total}
+                style={{ width: '100%' }}
+              />
+            </Col>
+            <Col lg={{ size: 4 }} md={{ size: 12 }} xs={{ size: 11 }} style={{ width: '100%' }}>
+              <TeamChart teamData={structuredTableData} darkMode={darkMode} />
+            </Col>
+          </Row>
+        )}
+        <Row style={{ marginBottom: '10px' }}>
+          <Col lg={{ size: 10, offset: 1 }} xs={{ size: 8, offset: 4 }}>
+            <div className={styles.filterContainer}>
+              {hasPermissionToFilter && (
+                <div className={cn(styles.filterStyle, styles.filterMarginRight)}>
+                  <span>Filter by Special</span>
+                  {['purple', 'green', 'navy'].map(color => (
+                    <SlideToggle
+                      key={`${color}-toggle`}
+                      className={styles.slideToggle}
+                      color={color}
+                      onChange={this.handleColorToggleChange}
+                    />
+                  ))}
+                </div>
+              )}
+              {(hasPermissionToFilter || this.canSeeBioHighlight) && (
+                <div className={cn(styles.filterStyle, styles.filterMarginRight)}>
+                  <span>Filter by Bio Status</span>
+                  <SlideToggle
+                    className={styles.slideToggle}
+                    onChange={this.handleBioStatusToggleChange}
+                  />
+                </div>
+              )}
+              {hasPermissionToFilter && (
+                <div className={styles.filterStyle}>
+                  <span>Filter by Over Hours</span>
+                  <SlideToggle
+                    className={styles.slideToggle}
+                    onChange={this.handleOverHoursToggleChange}
+                  />
+                  <ReactTooltip
+                    id="filterTooltip"
+                    place="top"
+                    effect="solid"
+                    className="custom-tooltip"
+                  >
+                    <span
+                      style={{ whiteSpace: 'normal', wordWrap: 'break-word', maxWidth: '200px' }}
+                    >
+                      Filter people who contributed more than 25% of their committed hours
+                    </span>
+                  </ReactTooltip>
+                </div>
+              )}
+            </div>
+          </Col>
+        </Row>
+        {this.codeEditPermission && selectedCodes.length > 0 && (
+          <Row style={{ marginBottom: '10px' }}>
+            <Col lg={{ size: 5, offset: 1 }} xs={{ size: 5, offset: 1 }}>
+              Replace With
+              <Input
+                type="string"
+                placeholder="replace"
+                value={replaceCode}
+                onChange={e => {
+                  this.setState({ replaceCode: e.target.value });
+                }}
+              />
+              {replaceCodeLoading ? (
+                <Spinner className="mt-3 mr-1" color="primary" />
+              ) : (
+                <Button
+                  className="mr-1 mt-3 btn-bottom"
+                  color="primary"
+                  onClick={this.handleAllTeamCodeReplace}
+                >
+                  Replace
+                </Button>
+              )}
+              {replaceCodeError && (
+                <Alert className={styles.codeAlert} color="danger">
+                  {replaceCodeError}
+                </Alert>
+              )}
+            </Col>
+          </Row>
+        )}
         <Row>
           <Col lg={{ size: 10, offset: 1 }}>
             <Nav tabs>
@@ -377,13 +995,17 @@ export class WeeklySummariesReport extends Component {
                     data-testid={item}
                     active={item === activeTab}
                     onClick={() => this.toggleTab(item)}
+                    className={darkMode ? 'dark-mode' : ''}
                   >
                     {item}
                   </NavLink>
                 </NavItem>
               ))}
             </Nav>
-            <TabContent activeTab={activeTab} className="p-4">
+            <TabContent
+              activeTab={activeTab}
+              className={`p-4 ${darkMode ? 'bg-yinmn-blue border-0' : ''}`}
+            >
               {navItems.map((item, index) => (
                 <WeeklySummariesReportTab tabId={item} key={item} hidden={item !== activeTab}>
                   <Row>
@@ -396,17 +1018,21 @@ export class WeeklySummariesReport extends Component {
                         summaries={filteredSummaries}
                         weekIndex={index}
                         weekDates={this.weekDates[index]}
+                        darkMode={darkMode}
                       />
                       {hasSeeBadgePermission && (
                         <Button
                           className="btn--dark-sea-green"
-                          style={boxStyle}
+                          style={darkMode ? boxStyleDark : boxStyle}
                           onClick={() => this.setState({ loadBadges: !loadBadges })}
                         >
                           {loadBadges ? 'Hide Badges' : 'Load Badges'}
                         </Button>
                       )}
-                      <Button className="btn--dark-sea-green" style={boxStyle}>
+                      <Button
+                        className="btn--dark-sea-green"
+                        style={darkMode ? boxStyleDark : boxStyle}
+                      >
                         Load Trophies
                       </Button>
                     </Col>
@@ -421,7 +1047,7 @@ export class WeeklySummariesReport extends Component {
                       <FormattedReport
                         summaries={filteredSummaries}
                         weekIndex={index}
-                        bioCanEdit={this.bioEditPermission}
+                        bioCanEdit={this.canRequestBio}
                         canEditSummaryCount={this.canEditSummaryCount}
                         allRoleInfo={allRoleInfo}
                         badges={badges}
@@ -429,6 +1055,9 @@ export class WeeklySummariesReport extends Component {
                         canEditTeamCode={this.codeEditPermission}
                         auth={auth}
                         canSeeBioHighlight={this.canSeeBioHighlight}
+                        darkMode={darkMode}
+                        handleTeamCodeChange={this.handleTeamCodeChange}
+                        handleSpecialColorDotClick={this.handleSpecialColorDotClick}
                       />
                     </Col>
                   </Row>
@@ -447,6 +1076,7 @@ WeeklySummariesReport.propTypes = {
   loading: PropTypes.bool.isRequired,
   summaries: PropTypes.array.isRequired,
   infoCollections: PropTypes.array,
+  setTeamCodes: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({
@@ -455,8 +1085,11 @@ const mapStateToProps = state => ({
   summaries: state.weeklySummariesReport.summaries,
   allBadgeData: state.badge.allBadgeData,
   infoCollections: state.infoCollections.infos,
-  role: state.userProfile.role,
+  role: state.auth.user.role,
   auth: state.auth,
+  darkMode: state.theme.darkMode,
+  teamCodes: state.teamCodes.teamCodes,
+  authEmailWeeklySummaryRecipient: state.auth.user.email, // capturing the user email through Redux store - Sucheta
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -464,6 +1097,9 @@ const mapDispatchToProps = dispatch => ({
   getWeeklySummariesReport: () => dispatch(getWeeklySummariesReport()),
   hasPermission: permission => dispatch(hasPermission(permission)),
   getInfoCollections: () => getInfoCollections(),
+  getAllUserTeams: () => dispatch(getAllUserTeams()),
+  getAllTeamCode: () => dispatch(getAllTeamCode()),
+  setTeamCodes: teamCodes => dispatch(setTeamCodes(teamCodes)),
 });
 
 function WeeklySummariesReportTab({ tabId, hidden, children }) {

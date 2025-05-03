@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 
 import './ReportLogs.css';
 
-function TeamsReportLogs({ title, selectedTeamsTotalValues, selectedTeamsWeeklyEffort }) {
+function TeamsReportLogs({ title, selectedTeamsTotalValues, selectedTeamsWeeklyEffort, darkMode }) {
   const totalTeamsWorkedHours = selectedTeamsWeeklyEffort.reduce(
     (accumulator, current) => accumulator + current,
     0,
@@ -18,32 +18,37 @@ function TeamsReportLogs({ title, selectedTeamsTotalValues, selectedTeamsWeeklyE
           firstColor="#ff5e82"
           secondColor="#e25cb2"
           className="team-report-time-log-block"
+          darkMode={darkMode}
         >
-          <h3>{selectedTeamsTotalValues.selectedTeamsTotalPeople}</h3>
+          <h3 className='text-light'>{selectedTeamsTotalValues.selectedTeamsTotalPeople}</h3>
           <p>Number of Members</p>
         </ReportPage.ReportBlock>
         <ReportPage.ReportBlock
           firstColor="#64b7ff"
           secondColor="#928aef"
           className="team-report-time-log-block"
+          darkMode={darkMode}
         >
-          <h3>{selectedTeamsTotalValues.selectedTeamsTotalBlueSquares}</h3>
+          <h3 className='text-light'>{selectedTeamsTotalValues.selectedTeamsTotalBlueSquares}</h3>
           <p>Total Team Blue Squares</p>
         </ReportPage.ReportBlock>
         <ReportPage.ReportBlock
           firstColor="#b368d2"
           secondColor="#831ec4"
           className="team-report-time-log-block"
+          darkMode={darkMode}
         >
-          <h3>{selectedTeamsTotalValues.selectedTeamsTotalCommitedHours}</h3>
+          <h3 className='text-light'>{selectedTeamsTotalValues.selectedTeamsTotalCommitedHours}</h3>
           <p>Weekly Committed Hours</p>
         </ReportPage.ReportBlock>
         <ReportPage.ReportBlock
           firstColor="#ffdb56"
           secondColor="#ff9145"
           className="team-report-time-log-block"
+          darkMode={darkMode}
+
         >
-          <h3>{totalTeamsWorkedHours}</h3>
+          <h3 className='text-light'>{totalTeamsWorkedHours}</h3>
           <p>Total Worked Hours This Week</p>
         </ReportPage.ReportBlock>
       </div>

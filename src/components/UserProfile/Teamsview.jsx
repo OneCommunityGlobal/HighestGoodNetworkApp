@@ -11,7 +11,6 @@ import {
   DropdownItem,
   DropdownToggle,
 } from 'reactstrap';
-import { EditorPropTypes } from '@tinymce/tinymce-react/lib/cjs/main/ts/components/EditorPropTypes';
 import PropTypes from 'prop-types';
 import TeamsModal from './AddNewTeamModal';
 

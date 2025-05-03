@@ -11,6 +11,7 @@ function TeamReportCharts({
   pieChartId,
   teamWeeklyCommittedHours,
   totalTeamWeeklyWorkedHours,
+  darkMode
 }) {
   const totalHoursAvailable = teamWeeklyCommittedHours - totalTeamWeeklyWorkedHours;
 
@@ -61,8 +62,8 @@ function TeamReportCharts({
 
   return (
     <section className="team-report-chart-wrapper">
-      <div className="team-report-chart-teams">
-        <h4 style={{ textAlign: 'center' }}>{title}</h4>
+      <div className={`team-report-chart-teams ${darkMode ? 'bg-yinmn-blue' : ''}`}>
+        <h4 style={{ textAlign: 'center', color: darkMode ? 'white' : '' }}>{title}</h4>
         <div
           style={{
             display: 'flex',
@@ -77,23 +78,26 @@ function TeamReportCharts({
               <div id={`pie-chart-container-${pieChartId}`} className="pie-chart" />
               <div className="pie-chart-info-detail">
                 <div className="pie-chart-info-detail-title">
-                  <h5>Name</h5>
-                  <h5>Hours</h5>
+                  <h5 className={darkMode ? 'text-light' : ''}>Name</h5>
+                  <h5 className={darkMode ? 'text-light' : ''}>Hours</h5>
                 </div>
                 <PieChartInfoDetail
                   keyName="Commited"
                   value={teamWeeklyCommittedHours}
                   color="#B88AD5"
+                  darkMode={darkMode}
                 />
                 <PieChartInfoDetail
                   keyName="Worked"
                   value={totalTeamWeeklyWorkedHours}
                   color="#FAE386"
+                  darkMode={darkMode}
                 />
                 <PieChartInfoDetail
                   keyName="Total Hours Available"
                   value={totalHoursAvailable > 0 ? totalHoursAvailable : 0}
                   color="#E4E4E4"
+                  darkMode={darkMode}
                 />
               </div>
             </div>

@@ -1,1 +1,3 @@
-export { default } from './SkeletonLoading';
+import SkeletonLoading from './SkeletonLoading';
+
+export default SkeletonLoading;

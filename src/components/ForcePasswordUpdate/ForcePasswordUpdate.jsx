@@ -63,29 +63,39 @@ export class ForcePasswordUpdate extends Form {
           onClose: () => this.props.history.replace('/login'),
         },
       );
+    } else if (status === 400) {
+      toast.error('Please select a new password. New password cannot be default password.');
     } else {
       toast.error('Something went wrong. Please contact your administrator.');
     }
   };
 
   render() {
+    const { darkMode } = this.props;
+
     return (
-      <div className="container mt-5">
+      <div
+        className={`pt-5 h-100 container-fluid d-flex flex-column align-items-center ${
+          darkMode ? 'bg-oxford-blue' : ''
+        }`}
+      >
         <h2>Change Password</h2>
 
-        <form className="col-md-6 xs-12" onSubmit={e => this.handleSubmit(e)}>
+        <form className="col-md-4 xs-12" onSubmit={e => this.handleSubmit(e)}>
           {this.renderInput({
             name: 'newpassword',
             label: 'New Password:',
             type: 'password',
+            darkMode,
           })}
           {this.renderInput({
             name: 'confirmnewpassword',
             label: 'Confirm Password:',
             type: 'password',
             'data-refers': 'newpassword',
+            darkMode,
           })}
-          {this.renderButton('Submit')}
+          {this.renderButton({ label: 'Submit', darkMode })}
         </form>
       </div>
     );
@@ -94,6 +104,7 @@ export class ForcePasswordUpdate extends Form {
 
 const mapStateToProps = state => ({
   errors: state.errors,
+  darkMode: state.theme.darkMode,
 });
 
 export default withRouter(

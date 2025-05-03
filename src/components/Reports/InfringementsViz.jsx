@@ -2,31 +2,38 @@ import React from 'react';
 import * as d3 from 'd3/dist/d3.min';
 import { Button, Modal } from 'react-bootstrap';
 import './PeopleReport/PeopleReport.css';
-import { boxStyle } from '../../styles';
+import { boxStyle, boxStyleDark } from '../../styles';
 
-function InfringementsViz({ infringements, fromDate, toDate }) {
-  const [show, setShow] = React.useState(false);
-  const [modalShow, setModalShow] = React.useState(false);
+function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
+  const [graphVisible, setGraphVisible] = React.useState(false);
+  const [modalVisible, setModalVisible] = React.useState(false);
   const [focusedInf, setFocusedInf] = React.useState({});
 
   const handleModalClose = () => {
-    setModalShow(false);
+    setModalVisible(false);
     setFocusedInf({});
   };
+
   const handleModalShow = d => {
     setFocusedInf(d);
-    setModalShow(true);
+    if (graphVisible === false) {
+      setModalVisible(!modalVisible);
+    }
+    setGraphVisible(!graphVisible); // Open the graph when opening the modal
   };
   function displayGraph(bsCount, maxSquareCount) {
-    if (!show) {
+    if (!graphVisible) {
       d3.selectAll('#infplot > *').remove();
     } else {
       d3.selectAll('#infplot > *').remove();
-      const margin = { top: 10, right: 30, bottom: 30, left: 60 };
-      const width = 1000 - margin.left - margin.right;
+      const margin = { top: 30, right: 20, bottom: 30, left: 20 };
+      const containerWidth = '1000';
+      // Adjusted width based on the available space
+      const width = Math.min(containerWidth - margin.left - margin.right, 1000);
+
       const height = 400 - margin.top - margin.bottom;
 
-      const tooltipEl = function(d) {
+      const tooltipEl = function tooltipEl(d) {
         return (
           `${'<div class="tip__container">' +
             '<div class="close">' +
@@ -42,7 +49,7 @@ function InfringementsViz({ infringements, fromDate, toDate }) {
         );
       };
 
-      const legendEl = function() {
+      const legendEl = function legendEl() {
         return (
           '<div class="lengendSubContainer">' +
           '<div class="infLabelsOff">' +
@@ -61,8 +68,9 @@ function InfringementsViz({ infringements, fromDate, toDate }) {
       const svg = d3
         .select('#infplot')
         .append('svg')
-        .attr('width', width + margin.left + margin.right)
+        .attr('width', '100%')
         .attr('height', height + margin.top + margin.bottom)
+        .attr('viewBox', `0 0 ${containerWidth} ${height + margin.top + margin.bottom}`)
         .append('g')
         .attr('transform', `translate(${margin.left},${margin.top})`);
 
@@ -112,7 +120,7 @@ function InfringementsViz({ infringements, fromDate, toDate }) {
         .attr('stroke', '#69b3a2')
         .attr('stroke-width', 3)
         .attr('fill', 'white')
-        .on('click', function(event, d) {
+        .on('click', function handleCircleClick(event, d) {
           const prevTooltip = d3.select(`.inf${d.id}`);
 
           if (prevTooltip.empty()) {
@@ -134,11 +142,11 @@ function InfringementsViz({ infringements, fromDate, toDate }) {
               .style('top', `${event.pageY}px`)
               .style('opacity', 1);
 
-            Tooltip.select('.close').on('click', function() {
+            Tooltip.select('.close').on('click', function handleCloseClick() {
               Tooltip.remove();
             });
 
-            Tooltip.select('.detailsModal').on('click', function() {
+            Tooltip.select('.detailsModal').on('click', function handleDetailsModalClick() {
               handleModalShow(d);
             });
           }
@@ -175,30 +183,25 @@ function InfringementsViz({ infringements, fromDate, toDate }) {
       const legend = d3
         .select('#infplot')
         .append('div')
-        .attr('class', 'legendContainer')
-        .style('position', 'relative')
-        .style('top', `-450px`)
-        .style('left', `980px`);
-
+        .attr('class', 'legendContainer');
       legend.html(legendEl());
 
-      legend.select('.infLabelsOff').on('click', function() {
+      legend.select('.infLabelsOff').on('click', function handleLabelsOffClick() {
         d3.selectAll('.infCountLabel').style('display', 'none');
         d3.selectAll('.infDateLabel').style('display', 'none');
       });
 
-      legend.select('.infCountLabelsOn').on('click', function() {
+      legend.select('.infCountLabelsOn').on('click', function handleCountLabelsOnClick() {
         d3.selectAll('.infCountLabel').style('display', 'block');
         d3.selectAll('.infDateLabel').style('display', 'none');
       });
 
-      legend.select('.infDateLabelsOn').on('click', function() {
+      legend.select('.infDateLabelsOn').on('click', function handleDateLabelsOnClick() {
         d3.selectAll('.infDateLabel').style('display', 'block');
         d3.selectAll('.infCountLabel').style('display', 'none');
       });
     }
   }
-
   const generateGraph = () => {
     const dict = {};
     const value = [];
@@ -258,43 +261,45 @@ function InfringementsViz({ infringements, fromDate, toDate }) {
     }
 
     // eslint-disable-next-line no-console
-    console.log('INFvalues', value);
+    // console.log('INFvalues', value);
 
     displayGraph(value, maxSquareCount);
   };
 
   React.useEffect(() => {
     generateGraph();
-  }, [show, fromDate, toDate]);
+  }, [graphVisible, fromDate, toDate, focusedInf]);
 
   return (
     <div>
-      <Button onClick={() => setShow(!show)} aria-expanded={show} style={boxStyle}>
-        Show Infringements Graph
+      <Button onClick={handleModalShow} aria-expanded={graphVisible} style={darkMode ? boxStyleDark : boxStyle}>
+        {graphVisible ? 'Hide Infringements Graph' : 'Show Infringements Graph'}
       </Button>
-      <div id="infplot" />
+      <div className={`kaitest ${darkMode ? 'bg-light mt-2' : ''}`} id="infplot" />
 
-      <Modal size="lg" show={show} onHide={handleModalClose}>
+      <Modal size="lg" show={modalVisible} onHide={handleModalClose}>
         <Modal.Header closeButton>
           <Modal.Title>{focusedInf.date ? focusedInf.date.toString() : 'Infringement'}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <table id="inf">
+          <div id="inf">
             <thead>
               <tr>
                 <th>Descriptions</th>
               </tr>
-              <tbody>
-                {focusedInf.des
-                  ? focusedInf.des.map(desc => (
+            </thead>
+            <tbody>
+              {focusedInf.des
+                ? focusedInf.des.map(desc => {
+                    return (
                       <tr>
                         <td>{desc}</td>
                       </tr>
-                    ))
-                  : focusedInf.des}
-              </tbody>
-            </thead>
-          </table>
+                    );
+                  })
+                : null}
+            </tbody>
+          </div>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleModalClose}>

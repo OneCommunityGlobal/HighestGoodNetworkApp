@@ -1,6 +1,61 @@
 .reviewBtn {
-  width: 190px;
+  width: auto;
   height: auto; /* Allow the height to adjust based on content */
   white-space: normal; /* Allow content to wrap within the button */
   overflow: hidden; /* Hide any overflowing content */
+  z-index: 1000;
+}
+
+.dropdown-menu {
+  overflow-y: auto; /* enable scrolling if the dropdown is too long*/
+  z-index: 1000;
+
+}
+
+.dark-mode-btn:hover{
+  background-color: #2f4157 !important;
+}
+
+
+@media screen and (max-width: 1307px) and (min-width: 1152px) {
+  .reviewBtn {
+    padding: 5px !important;
+    font-size: 0.75rem !important;
+  }
+  .dropdown-menu{
+    max-height: 200px;
+  }
+}
+
+@media screen and (max-width: 1151px) and (min-width: 992px) {
+  .reviewBtn {
+    padding: 2px !important;
+    font-size: 0.75rem !important;
+  }
+  .dropdown-menu{
+    max-height: 150px;
+    width: 100%
+  }
+}
+@media screen and (max-width: 991px) {
+  .reviewBtn {
+    padding: 2px !important;
+    font-size: 0.75rem !important;
+    width: 100%
+  }
+  .dropdown-menu{
+    max-height: 150px;
+    width: 100%
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .reviewBtn {
+    padding: 2px !important;
+    font-size: 0.65rem !important;
+  }
+  .dropdown-menu{
+    max-height: 120px;
+    width: 100%
+  }
 }

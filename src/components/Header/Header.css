@@ -3,6 +3,32 @@
   width: clamp(100vw, 0.1rem + 1vw, 100%);
 }
 
+.close-button {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 12px;
+}
+
+.card-content {
+  padding: 5px;
+  padding-left: 40px;
+  padding-right: 30px;
+  white-space: pre-line;
+  color: white;
+  font-size: medium;
+}
+
+.card {
+  margin-left: 35px;
+  margin-right: 50px;
+}
+
+.card-wrapper {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
 .navbar {
   z-index: 100;
   white-space: nowrap;
@@ -14,10 +40,6 @@
   justify-content: space-between;
   width: 100%;
   gap: 1rem;
-}
-
-.nav-links {
-  align-items: center;
 }
 
 .redBackGroupHeader {
@@ -41,6 +63,21 @@
   margin-right: 3rem;
 }
 
+.nav-links {
+  display: flex;
+  align-items: center;
+}
+
+.dropdown-item-hover:hover {
+  background-color: #2f4157 !important;
+}
+
+@media (max-width: 1400px) {
+  .nav-links {
+    flex-direction: column !important;
+  }
+}
+
 @media (max-width: 1500px) {
   .dashboard-text-link {
     font-size: 14px;
@@ -51,7 +88,7 @@
   }
 }
 
-@media (max-width: 1400px) {
+@media (max-width: 1050px) {
   .timer-message-section {
     display: flex;
     width: 0;
@@ -60,5 +97,17 @@
 
   .owner-message {
     display: none;
+  }
+}
+
+@media screen and (min-width: 1400px) and (max-width: 1700px) {
+  .owner-message {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 769px) {
+  .responsive-spacing {
+    margin-right: 5px;
   }
 }

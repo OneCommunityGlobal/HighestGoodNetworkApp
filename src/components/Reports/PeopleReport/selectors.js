@@ -22,64 +22,63 @@ export const getPeopleReportData = state => ({
   priorityList: state.priorityList,
   statusList: state.statusList,
   tangibleHoursReportedThisWeek: parseFloat(state.userProfile.tangibleHoursReportedThisWeek),
+  darkMode: state.theme.darkMode,
 });
 
-const getRounded = number => {
-  return Math.round(number * 100) / 100;
-};
-
-export const peopleTasksPieChartViewData = ({ userTask, allProjects }) => {
-  const tasksWithLoggedHoursById = {};
-  const displayedTasksWithLoggedHoursById = {};
-  const projectsWithLoggedHoursById = {};
-  const tasksLegend = {};
-  const displayedTasksLegend = {};
-  const projectsWithLoggedHoursLegend = {};
-  const tasksWithLoggedHours = userTask?.filter(({ hoursLogged }) => hoursLogged);
-
-  tasksWithLoggedHours.forEach(({ taskId, hoursLogged, taskName }) => {
-    // renamed _id to taskId
-    tasksWithLoggedHoursById[taskId] = hoursLogged;
-    tasksLegend[taskId] = [taskName, getRounded(hoursLogged)];
-
-    const currentTask = userTask?.find(task => task._id === taskId); // changed _id to taskId
-
-    if (currentTask) {
-      const currentProjectName = allProjects?.projects?.find(
-        ({ _id }) => _id === currentTask.projectId,
-      )?.projectName;
-      const savedProjectWithLoggedHours = projectsWithLoggedHoursById[currentTask.projectId];
-
-      projectsWithLoggedHoursById[currentTask.projectId] = savedProjectWithLoggedHours
-        ? savedProjectWithLoggedHours + hoursLogged
-        : hoursLogged;
-
-      if (projectsWithLoggedHoursLegend[currentTask.projectId]) {
-        projectsWithLoggedHoursLegend[currentTask.projectId][1] += getRounded(hoursLogged);
-      } else {
-        projectsWithLoggedHoursLegend[currentTask.projectId] = [
-          currentProjectName,
-          getRounded(hoursLogged),
-        ];
-      }
+export const peopleTasksPieChartViewData = ({userProjects,timeEntries }) => {
+  
+  let hoursLoggedToProjectsOnly = {};
+  const tasksWithLoggedHoursOnly = {};
+  // let totalHours = 0;
+  //   for(let i=0; i<timeEntries.period.length; i++){
+  //     totalHours += timeEntries.period[i].hours + (timeEntries.period[i].minutes/60);
+  //  }
+  
+  timeEntries.period.forEach(entry=>{
+    if(entry.wbsId===null){
+      hoursLoggedToProjectsOnly[entry.projectId] = hoursLoggedToProjectsOnly[entry.projectId] ? hoursLoggedToProjectsOnly[entry.projectId] + entry.hours+(entry.minutes/60) : entry.hours+(entry.minutes/60);
     }
+  })
+  
+  timeEntries.period.forEach(entry=>{
+    if(entry.wbsId!==null){
+      tasksWithLoggedHoursOnly[entry.projectId] = tasksWithLoggedHoursOnly[entry.projectId] ? tasksWithLoggedHoursOnly[entry.projectId] + entry.hours+(entry.minutes/60) : entry.hours+(entry.minutes/60);
+    }
+  })
+  
+  
+  const resultArray = Object.keys(hoursLoggedToProjectsOnly).map(projectId => {
+    const project = userProjects?.projects.find(proj => proj.projectId === projectId);
+    return {
+      projectId,
+      projectName: project ? project.projectName : "Unknown", // Use "Unknown" if no matching project is found
+      totalTime: hoursLoggedToProjectsOnly[projectId]
+    };
   });
 
-  const displayedTasksCount = Math.max(4, Object.keys(projectsWithLoggedHoursById).length);
+  const resultArray2 = Object.keys(tasksWithLoggedHoursOnly).map(projectId => {
+    const project = userProjects?.projects.find(proj => proj.projectId === projectId);
+    return {
+      projectId,
+      projectName: project ? project.projectName : "Unknown", // Use "Unknown" if no matching project is found
+      totalTime: tasksWithLoggedHoursOnly[projectId]
+    };
+  });
+  
+  hoursLoggedToProjectsOnly = resultArray;
 
-  tasksWithLoggedHours
-    .sort((a, b) => new Date(b.modifiedDatetime) - new Date(a.modifiedDatetime))
-    .slice(0, displayedTasksCount)
-    .forEach(({ _id, hoursLogged, taskName }) => {
-      displayedTasksWithLoggedHoursById[_id] = hoursLogged;
-      displayedTasksLegend[_id] = [taskName, getRounded(hoursLogged)];
-    });
+  let tasksWithLoggedHoursById = {};
+  const displayedTasksWithLoggedHoursById = {};
+  const projectsWithLoggedHoursById = {};
+  let tasksLegend = {};
+  const displayedTasksLegend = {};
 
+  tasksLegend=resultArray2;
+  tasksWithLoggedHoursById=resultArray2;
   return {
+    hoursLoggedToProjectsOnly,
     tasksWithLoggedHoursById,
-    projectsWithLoggedHoursById,
     tasksLegend,
-    projectsWithLoggedHoursLegend,
     showTasksPieChart: Object.keys(tasksWithLoggedHoursById).length > 0,
     showProjectsPieChart: Object.keys(projectsWithLoggedHoursById).length > 0,
     displayedTasksWithLoggedHoursById,

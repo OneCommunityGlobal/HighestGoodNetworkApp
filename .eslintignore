@@ -1,40 +1,26 @@
-*.png
-*.svg
-*.test.js
-*.test.jsx
-src/actions/**
-src/App.css
-src/config.json
+# =======================================================================
+# ⚠️ DO NOT ADD NEW ENTRIES ⚠️
+# Only the files and folders listed below are allowed to be ignored.
+# This .gitignore is locked down to maintain consistency across the team.
+# To propose changes, please open a discussion or PR with justification.
+# =======================================================================
 
-src/index.js
-src/reducers/**
-src/styles.js
-src/utils/**
-src/__tests__/**
+# Ignore build folders
+/node_modules/
+/public/
+/build/
 
+# Ignore test files inside /src/components
+src/components/BMDashboard/_tests_/BMDashboard.test.jsx
+src/components/Reports/PeopleReport/components/PeopleTasksPieChart.test.jsx
 
-
-src/components/App.jsx
-src/components/AutoReload/**
+# Ignore folders in /src
 src/components/Badge/**
-src/components/common/**
-src/components/Header/**
-src/components/BMDashboard/BMHeader/**
-src/components/MonthlyEffort/**
-
-src/components/PermissionsManagement/**
-# src/components/PopUpBar/**
-src/components/ProfileLinks/**
+src/components/Dashboard/**
 src/components/Projects/**
-src/components/Reports/**
-src/components/SetupProfile/**
-src/components/SummaryBar/**
 src/components/SummaryManagement/**
 src/components/TaskEditSuggestions/**
 src/components/TeamMemberTasks/**
-src/components/Teams/**
-src/components/TeamLocations/**
-src/components/Timelog/**
-src/components/UpdatePassword/**
+src/components/Teams/TeamMembersPopup.jsx
 src/components/UserManagement/**
 src/components/UserProfile/**
