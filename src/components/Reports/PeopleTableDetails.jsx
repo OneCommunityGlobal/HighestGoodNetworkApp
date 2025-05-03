@@ -167,7 +167,7 @@ function PeopleTableDetails(props) {
               <div className='sub-head'>Resources</div>
               <div>{value.resources?.map((res, outerIndex) =>
                 res.map((resource, innerIndex) => {
-                  if (index < 2) {
+                  if (innerIndex < 2) {
                     return (
                       <img
                         key={`${outerIndex}-${innerIndex}`}
