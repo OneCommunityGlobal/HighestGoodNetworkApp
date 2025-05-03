@@ -1,8 +1,8 @@
-import axios from 'axios';
 import { useState, useEffect, useRef } from 'react';
 import './Announcements.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react';
+import { Label, Input, Button } from 'reactstrap';
 import {
   sendTweet,
   scheduleTweet,
@@ -16,11 +16,7 @@ import {
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
-import { Label, Input, Button } from 'reactstrap';
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
-import { ENDPOINTS } from '../../utils/URL';
-
-const APIEndpoint = process.env.REACT_APP_APIENDPOINT || 'https://highestgoodnetwork.netlify.app';
 
 function Announcements({ title, email }) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -29,18 +25,14 @@ function Announcements({ title, email }) {
   const [emailList, setEmailList] = useState([]);
   const [accessToken, setAccessToken] = useState('');
   const [emailContent, setEmailContent] = useState('');
-
   const [dateContent, setDateContent] = useState('');
   const [timeContent, setTimeContent] = useState('');
   const [errors, setErrors] = useState({});
-
   const [headerContent, setHeaderContent] = useState('');
   const [showEditor, setShowEditor] = useState(true); // State to control rendering of the editor
-
   const [posts, setPosts] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [platform, setPlatform] = useState('');
-  //const [scheduleTime, setScheduleTime] = useState("");
   const [selectedPlatform, setSelectedPlatform] = useState('');
   const tinymce = useRef(null);
   const maxLength = 280;
@@ -50,58 +42,7 @@ function Announcements({ title, email }) {
     setTimeout(() => setShowEditor(true), 0);
   }, [darkMode]);
 
-  const editorInit = {
-    license_key: 'gpl',
-    selector: 'Editor#email-editor',
-    height: 500,
-    menubar: false,
-    branding: false,
-    plugins:
-      'advlist autolink lists link image charmap preview anchor help \
-      searchreplace visualblocks code insertdatetime media table wordcount\
-      fullscreen emoticons nonbreaking',
-    image_title: true,
-    automatic_uploads: true,
-    file_picker_callback(cb, value, meta) {
-      const input = document.createElement('input');
-      input.setAttribute('type', 'file');
-      input.setAttribute('accept', 'image/*');
-      /*
-        Note: In modern browsers input[type="file"] is functional without
-        even adding it to the DOM, but that might not be the case in some older
-        or quirky browsers like IE, so you might want to add it to the DOM
-        just in case, and visually hide it. And do not forget do remove it
-        once you do not need it anymore.
-      */
-      input.onchange = function() {
-        const file = this.files[0];
-        const reader = new FileReader();
-        reader.onload = function() {
-          /*
-            Note: Now we need to register the blob in TinyMCEs image blob
-            registry. In the next release this part hopefully won't be
-            necessary, as we are looking to handle it internally.
-          */
-          const id = `blobid${new Date().getTime()}`;
-          const { blobCache } = tinymce.activeEditor.editorUpload;
-          const base64 = reader.result.split(',')[1];
-          const blobInfo = blobCache.create(id, file, base64);
-          blobCache.add(blobInfo);
-          /* call the callback and populate the Title field with the file name */
-          cb(blobInfo.blobUri(), { title: file.name });
-        };
-        reader.readAsDataURL(file);
-      };
-      input.click();
-    },
-    a11y_advanced_options: true,
-    toolbar:
-      'undo redo | bold italic | blocks fontfamily fontsize | image table |\
-      alignleft aligncenter alignright | \
-      bullist numlist outdent indent | removeformat | help',
-    skin: darkMode ? 'oxide-dark' : 'oxide',
-    content_css: darkMode ? 'dark' : 'default',
-  };
+  
 
   useEffect(() => {
     if (email) {
@@ -203,8 +144,8 @@ function Announcements({ title, email }) {
 
   const handleEditorChange = content => {
     setEmailContent(content);
-    const charCount = stripHtml(content).trim();
-    setCharCount(charCount.length);
+    const charCounts = stripHtml(content).trim();
+    setCharCount(charCounts.length);
   };
 
   const handlePostTweets = () => {
@@ -214,22 +155,6 @@ function Announcements({ title, email }) {
     }
     const htmlContent = `${emailContent}`;
     dispatch(sendTweet(htmlContent));
-  };
-
-  const handleScheduleTweets = async () => {
-    const htmlContent = `${emailContent}`;
-    const scheduleDate = `${dateContent}`;
-    const scheduleTime = `${timeContent}`;
-
-    dispatch(scheduleTweet(scheduleDate, scheduleTime, htmlContent));
-  };
-
-  const handleScheduleFbPost = async () => {
-    const htmlContent = `${emailContent}`;
-    const scheduleDate = `${dateContent}`;
-    const scheduleTime = `${timeContent}`;
-
-    dispatch(scheduleFbPost(scheduleDate, scheduleTime, htmlContent));
   };
 
   const handleDateContentChange = e => {
@@ -248,14 +173,13 @@ function Announcements({ title, email }) {
         toast.error('Failed to delete post.');
       }
     } catch (error) {
-      console.error('Error deleting post:', error);
       toast.error('Error deleting post.');
     }
   };
 
   const loadFacebookSDK = () => {
     return new Promise((resolve, reject) => {
-      // Check if Facebook SDK is already loaded on console
+      
       if (window.FB) {
         resolve(window.FB);
         return;
@@ -268,7 +192,7 @@ function Announcements({ title, email }) {
       script.onload = () => {
         window.fbAsyncInit = function fbAsyncInit() {
           window.FB.init({
-            appId: '1335318524566163', // Replace with required Facebook App ID
+            appId: '1335318524566163', 
             cookie: true,
             xfbml: true,
             version: 'v15.0',
@@ -287,39 +211,23 @@ function Announcements({ title, email }) {
     loadFacebookSDK();
   }, []);
 
-  const handleFacebookLogin = () => {
-    window.FB.login(
-      response => {
-        if (response.authResponse) {
-          setAccessToken(response.authResponse.accessToken);
-        } else {
-          toast.error('User cancelled the login or did not fully authorize.');
-        }
-      },
-      {
-        scope: 'public_profile,email,pages_show_list,pages_manage_posts',
-        redirect_uri: `${APIEndpoint}/auth/facebook/callback`,
-      },
-    ); // Adjust permissions as needed
-  };
+ 
 
   const handleCreateFbPost = () => {
     if (!emailContent || emailContent.trim() === '') {
       toast.error('Error: No content to post. Please add some content in Weekly progress editor');
       return;
     }
-    const EmailContent = emailContent;
-    console.log('reached here in facebook');
+ 
     window.FB.login(
       response => {
         if (response.authResponse) {
-          const accessToken = response.authResponse.accessToken;
-          dispatch(ssendFbPost(emailContent, accessToken))
+          const accessTokens = response.authResponse.accessToken;
+          dispatch(ssendFbPost(emailContent, accessTokens))
             .then(() => {
               toast.success('Post successfully created on Facebook!');
             })
             .catch(error => {
-              console.error('Error posting on Facebook:', error.message || error);
               toast.error('Failed to post on Facebook.');
             });
         } else {
@@ -345,29 +253,23 @@ function Announcements({ title, email }) {
       alert('Please select a platform.');
       return;
     }
-
-    console.log(platform);
     const htmlContent = `${emailContent}`;
     const scheduleDate = `${dateContent}`;
     const scheduleTime = `${timeContent}`;
     if (!htmlContent) {
-      console.error('Error: Missing text content');
       toast.error('Error: Missing Text content');
       return;
     }
     switch (platform) {
       case 'twitter':
-        // Dispatch the scheduleTweet action for Twitter
         dispatch(scheduleTweet(scheduleDate, scheduleTime, htmlContent));
         break;
 
       case 'facebook':
-        // Dispatch the scheduleFbPost action for Facebook
         dispatch(scheduleFbPost(scheduleDate, scheduleTime, htmlContent));
         break;
 
       default:
-        console.error('Invalid platform selected');
         break;
     }
 
@@ -381,21 +283,18 @@ function Announcements({ title, email }) {
 
     if (value === 'facebook') {
       setPosts(facebookPosts);
-      console.log('Facebook Scheduled Posts:', facebookPosts);
     } else if (value === 'twitter') {
       setPosts(twitterPosts);
-      console.log('Twitter Scheduled Posts:', twitterPosts);
     } else if (value === 'All') {
       await getAllPosts();
     }
   };
 
-  const handlePostScheduledFbPost = (postId, textContent, base64Srcs, platform) => {
-    console.log('reached here in facebook');
+  const handlePostScheduledFbPost = (postId, textContent, base64Srcs, platforms) => {
     window.FB.login(
       response => {
         if (response.authResponse) {
-          const accessToken = response.authResponse.accessToken;
+          accessToken = response.authResponse.accessToken;
           dispatch(sendFbPost(textContent, base64Srcs, accessToken))
             .then(() => {
               setTimeout(() => {
@@ -403,7 +302,6 @@ function Announcements({ title, email }) {
               }, 1500);
             })
             .catch(error => {
-              console.error('Error posting on Facebook:', error.message || error);
               toast.error('Failed to post on Facebook.');
             });
         } else {
@@ -416,25 +314,23 @@ function Announcements({ title, email }) {
     );
   };
 
-  const handlePostScheduledTweets = (postId, textContent, platform) => {
+  const handlePostScheduledTweets = (postId, textContent, platforms) => {
     dispatch(sendTweet(textContent))
       .then(() => {
-        console.log('Tweet posted successfully! Now calling handleDeletePost for post ID:', postId);
         setTimeout(() => {
           handleDeletePost(postId, true);
         }, 1500);
       })
       .catch(error => {
-        console.error('Error posting tweet:', error.message || error);
         toast.error('Failed to post tweet.');
       });
   };
 
-  const postToPlatform = (postId, textContent, base64Srcs, platform) => {
+  const postToPlatform = (postId, textContent, base64Srcs, platforms) => {
     const skipConfirm = localStorage.getItem('skipPostConfirm') === 'true';
 
     if (!skipConfirm) {
-      const confirmDelete = window.confirm(`Are you sure you want to post this on ${platform}`);
+      const confirmDelete = window.confirm(`Are you sure you want to post this on ${platforms}`);
       if (!confirmDelete) return;
 
       const dontAskAgain = window.confirm("Don't ask again for future posts?");
@@ -443,10 +339,10 @@ function Announcements({ title, email }) {
       }
     }
 
-    if (platform === 'facebook') {
-      handlePostScheduledFbPost(postId, textContent, base64Srcs, platform);
-    } else if (platform === 'twitter') {
-      handlePostScheduledTweets(postId, textContent, base64Srcs, platform);
+    if (platforms=== 'facebook') {
+      handlePostScheduledFbPost(postId, textContent, base64Srcs, platforms);
+    } else if (platforms === 'twitter') {
+      handlePostScheduledTweets(postId, textContent, base64Srcs, platforms);
     }
   };
 
