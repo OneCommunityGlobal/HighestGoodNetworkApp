@@ -26,7 +26,7 @@ const BlueSquare = (props) => {
     } else {
       handleBlueSquare(true, 'viewBlueSquare', blueSquare._id);
     }
-  };
+  };    
   return (
     <div className={`blueSquareContainer ${darkMode ? 'bg-darkmode-liblack' : ''}`}>
       <div className={`blueSquares ${blueSquares?.length ? '' : 'NoBlueSquares'}`}>
@@ -40,41 +40,7 @@ const BlueSquare = (props) => {
                 id="wrapper"
                 data-testid="blueSquare"
                 className="blueSquareButton"
-                onClick={() => {
-                  if (!blueSquare._id) {
-                    handleBlueSquare(isInfringementAuthorizer, 'message', 'none');
-                  } else if (canPutUserProfileImportantInfo) {
-                    handleBlueSquare(
-                      canPutUserProfileImportantInfo,
-                      'modBlueSquare',
-                      blueSquare._id,
-                    );
-                    } else if (isInfringementAuthorizer && canDeleteBuleSquare){
-                      handleBlueSquare(
-                        isInfringementAuthorizer,
-                        'handleBlueSquare',
-                        blueSquare._id,
-                      );
-                    } else if (isInfringementAuthorizer) {
-                      handleBlueSquare(
-                        isInfringementAuthorizer,
-                        'editBlueSquare',
-                        blueSquare._id,
-                      );
-                    } else if (canDeleteBuleSquare) {
-                      handleBlueSquare(
-                        canDeleteBuleSquare,
-                        'deleteBlueSquare',
-                        blueSquare._id,
-                      );
-                  } else {
-                    handleBlueSquare(
-                      !isInfringementAuthorizer,
-                      'viewBlueSquare',
-                      blueSquare._id,
-                    );
-                  }
-                }}
+                onClick={() => handleOnClick(blueSquare)}
               >
                 <div className="report" data-testid="report">
                   <div className="title">{formatDate(blueSquare.date)}</div>
