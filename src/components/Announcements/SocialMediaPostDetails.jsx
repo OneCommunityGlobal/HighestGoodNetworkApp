@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 import { Label, Input, Button } from 'reactstrap';
 import { fetchPosts, updatePost } from '../../actions/sendSocialMediaPosts';
 
-const SocialMediaPostDetails = () => {
+function SocialMediaPostDetails() {
   const { postId } = useParams();
   const [post, setPost] = useState(null);
   const [editableContent, setEditableContent] = useState('');

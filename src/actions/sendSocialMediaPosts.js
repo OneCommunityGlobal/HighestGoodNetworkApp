@@ -82,19 +82,18 @@ export const fetchPostsSeparately = async () => {
     const response = await axios.get(url);
 
     if (response.data.success) {
-      const posts = response.data.posts;
+      const { posts } = response.data;
       const twitterPosts = posts.filter(post => post.platform === 'twitter');
       const facebookPosts = posts.filter(post => post.platform === 'facebook');
       return {
         twitterPosts,
         facebookPosts,
       };
-    } else {
+    } 
       return {
         twitterPosts: [],
         facebookPosts: [],
       };
-    }
   } catch (error) {
     return {
       twitterPosts: [],
@@ -114,9 +113,8 @@ export const updatePost = async (postId, updatedData) => {
 
     if (response.status === 200) {
       return response.data;
-    } else {
-      return null;
     }
+      return null;
   } catch (error) {
     return null;
   }
@@ -133,9 +131,8 @@ export const deletePost = async (postId) => {
 
     if (response.status === 200) {
       return response.data;
-    } else {
-      return null;
     }
+      return null;
   } catch (error) {
     return null;
   }
