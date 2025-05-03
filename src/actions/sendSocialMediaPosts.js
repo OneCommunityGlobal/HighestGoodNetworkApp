@@ -66,17 +66,16 @@ export const fetchPosts = async () => {
   try {
     const response = await axios.get(url);
     if (response.data.success) {
-      const posts = response.data.posts;
+      const { posts } = response.data;
       return posts;
-    } else {
-      return [];
     }
+    return [];
   } catch (error) {
     return [];
   }
 };
 
-export const fetchPosts_separately = async () => {
+export const fetchPostsSeparately = async () => {
   const url = ENDPOINTS.SOCIAL_MEDIA_POSTS;
 
   try {
