@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 import { useParams } from 'react-router-dom';
 import { fetchPosts, updatePost } from '../../actions/sendSocialMediaPosts';
 import { Label, Input, Button } from 'reactstrap';
-import { toast } from 'react-toastify';
+
 
 const SocialMediaPostDetails = () => {
-  const { postId } = useParams(); // Get post ID from URL
-  
+  const { postId } = useParams(); 
   const [post, setPost] = useState(null);
   const [editableContent, setEditableContent] = useState('');
   const [editableDate, setEditableDate] = useState('');
@@ -14,20 +14,16 @@ const SocialMediaPostDetails = () => {
   const [imageBase64, setImageBase64] = useState(''); // State for Base64 image
 
   useEffect(() => {
-    console.log("Post ID from URL:", postId);
-
     const getPost = async () => {
       try {
         const posts = await fetchPosts();
         if (!posts || posts.length === 0) {
-          console.error("No posts found!");
           return;
         }
 
         const foundPost = posts.find((p) => String(p._id) === String(postId));
 
         if (foundPost) {
-          console.log("Reached post here ", foundPost);
           setPost(foundPost);
           setEditableContent(foundPost.textContent || '');
 
@@ -37,11 +33,9 @@ const SocialMediaPostDetails = () => {
           setEditableDate(formattedDate);
           setEditableTime(formattedTime);
           setImageBase64(foundPost.base64Srcs?.[0] || '');
-        } else {
-          console.error("Post not found with ID:", postId);
-        }
+        } 
       } catch (error) {
-        console.error("Error fetching post details:", error);
+        toast.error("Error fetching post details:", error);
       }
     };
 
@@ -78,7 +72,6 @@ const SocialMediaPostDetails = () => {
         toast.error("Failed to update post.");
       }
     } catch (error) {
-      console.error("Error updating post:", error);
       toast.error("Error updating post.");
     }
   };
