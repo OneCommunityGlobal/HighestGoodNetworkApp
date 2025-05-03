@@ -16,14 +16,18 @@ function UserCard({ user }) {
       <img src={avatar} alt="Avatar" className="avatar" />
       <div className="info">
         <div className="user-name">{name}</div>
-        <div className="contact-line">
-          <img src={emailIcon} alt="Email" className="contact-icon" />
-          <span>{email}</span>
-        </div>
-        <div className="contact-line">
-          <img src={slackIcon} alt="Slack" className="contact-icon" />
-          <span>{slack}</span>
-        </div>
+        {email && (
+          <div className="contact-line">
+            <img src={emailIcon} alt="Email" className="contact-icon" />
+            <span>{email}</span>
+          </div>
+        )}
+        {slack && (
+          <div className="contact-line">
+            <img src={slackIcon} alt="Slack" className="contact-icon" />
+            <span>{slack}</span>
+          </div>
+        )}
       </div>
 
       <div className="score-skills-wrapper">
