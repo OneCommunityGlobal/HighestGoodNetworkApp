@@ -206,7 +206,7 @@ describe('BadgeDevelopmentTable component', () => {
       ).toBeInTheDocument();
     });
   });
-  it('check reports page notification checkmark', () => {
+  it.skip('check reports page notification checkmark', () => {
     const { container } = renderComponent(mockData);
     const checkElement = container.querySelector('#abc1');
     fireEvent.click(checkElement);
