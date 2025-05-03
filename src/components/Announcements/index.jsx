@@ -3,6 +3,10 @@ import './Announcements.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react';
 import { Label, Input, Button } from 'reactstrap';
+import { boxStyle, boxStyleDark } from 'styles';
+import { toast } from 'react-toastify';
+import { Link } from 'react-router-dom';
+import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
 import {
   sendTweet,
   scheduleTweet,
@@ -13,21 +17,18 @@ import {
   sendFbPost,
   ssendFbPost,
 } from '../../actions/sendSocialMediaPosts';
-import { boxStyle, boxStyleDark } from 'styles';
-import { toast } from 'react-toastify';
-import { Link } from 'react-router-dom';
-import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
 
 function Announcements({ title, email }) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const dispatch = useDispatch();
   const [emailTo, setEmailTo] = useState('');
   const [emailList, setEmailList] = useState([]);
-  const [accessToken, setAccessToken] = useState('');
+ // const [accessToken, setAccessToken] = useState('');
   const [emailContent, setEmailContent] = useState('');
   const [dateContent, setDateContent] = useState('');
   const [timeContent, setTimeContent] = useState('');
-  const [errors, setErrors] = useState({});
+  //const [errors, setErrors] = useState({});
+  const errors = {};
   const [headerContent, setHeaderContent] = useState('');
   const [showEditor, setShowEditor] = useState(true); // State to control rendering of the editor
   const [posts, setPosts] = useState([]);
@@ -294,7 +295,7 @@ function Announcements({ title, email }) {
     window.FB.login(
       response => {
         if (response.authResponse) {
-          accessToken = response.authResponse.accessToken;
+          const accessToken = response.authResponse.accessToken;
           dispatch(sendFbPost(textContent, base64Srcs, accessToken))
             .then(() => {
               setTimeout(() => {

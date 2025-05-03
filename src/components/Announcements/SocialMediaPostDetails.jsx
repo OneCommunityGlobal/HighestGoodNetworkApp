@@ -134,6 +134,6 @@ function SocialMediaPostDetails() {
       </Button>
     </div>
   );
-};
+}
 
 export default SocialMediaPostDetails;
