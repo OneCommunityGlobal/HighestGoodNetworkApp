@@ -10,7 +10,7 @@ function SocialMediaPostDetails() {
   const [editableContent, setEditableContent] = useState('');
   const [editableDate, setEditableDate] = useState('');
   const [editableTime, setEditableTime] = useState('');
-  const [imageBase64, setImageBase64] = useState(''); // State for Base64 image
+  const [imgeBase64, setImgeBase64] = useState(''); // State for Base64 image
 
   useEffect(() => {
     const getPost = async () => {
@@ -31,7 +31,7 @@ function SocialMediaPostDetails() {
 
           setEditableDate(formattedDate);
           setEditableTime(formattedTime);
-          setImageBase64(foundPost.base64Srcs?.[0] || '');
+          setImgeBase64(foundPost.base64Srcs?.[0] || '');
         }
       } catch (error) {
         toast.error('Error fetching post details:', error);
@@ -47,7 +47,7 @@ function SocialMediaPostDetails() {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImageBase64(reader.result.split(',')[1]); // Extract Base64 string (without data type prefix)
+        setImgeBase64(reader.result.split(',')[1]); // Extract Base64 string (without data type prefix)
       };
       reader.readAsDataURL(file);
     }
@@ -60,7 +60,7 @@ function SocialMediaPostDetails() {
       textContent: editableContent,
       scheduledDate: editableDate,
       scheduledTime: editableTime,
-      base64Srcs: imageBase64 ? [imageBase64] : [], // Ensure it's an array
+      base64Srcs: imgeBase64 ? [imgeBase64] : [], // Ensure it's an array
     };
 
     try {
@@ -111,9 +111,9 @@ function SocialMediaPostDetails() {
       />
 
       <Label for="postImage">Post Image</Label>
-      {imageBase64 ? (
+      {imgeBase64 ? (
         <img
-          src={`${imageBase64}`}
+          src={`${imgeBase64}`}
           alt="Post Image"
           style={{
             width: '80%',
