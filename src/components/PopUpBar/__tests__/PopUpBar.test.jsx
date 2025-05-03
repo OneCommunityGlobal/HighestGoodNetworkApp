@@ -8,6 +8,7 @@ const viewingUser = {
 
 // render Component
 const renderComponent = (props = {}) => {
+  // eslint-disable-next-line react/jsx-props-no-spreading
   render(<PopUpBar viewingUser={viewingUser} {...props} />);
 };
 
