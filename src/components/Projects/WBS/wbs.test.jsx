@@ -20,8 +20,9 @@ jest.mock('../../../actions/wbs', () => ({
 
 jest.mock('axios');
 jest.mock('./AddWBS', () => () => <div data-testid="add-wbs">AddWBS Mock</div>);
+
 jest.mock('./WBSItem/WBSItem', () => ({ index, name }) => (
-  <tr data-testid={`wbs-item-${index}`}>{name}</tr>
+  <tr data-testid={`wbs-item-${index}`}><td>{index}</td><td>{name}</td><td></td></tr>
 ));
 
 const mockStore = configureStore([]);
@@ -69,7 +70,7 @@ describe('WBS Component', () => {
 
   it('renders the WBS component without crashing', () => {
     renderComponent();
-    expect(screen.getByText(/Projects/i)).toBeInTheDocument();
+    expect(screen.getByText(/Return to Project List/i)).toBeInTheDocument();
   });
 
   it('dispatches setWBSStart and setWBS when fetchAllWBS is called on mount', async () => {
@@ -101,7 +102,7 @@ describe('WBS Component', () => {
 
   it('renders breadcrumb with correct link', () => {
     renderComponent();
-    const backLink = screen.getByRole('link', { name: '' });
+    const backLink = screen.getByRole('link', { name: /Return to Project List/i });
     expect(backLink).toHaveAttribute('href', '/projects/');
     const backButton = screen.getByRole('button');
     expect(backButton).toBeInTheDocument();
