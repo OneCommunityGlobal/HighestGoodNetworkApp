@@ -69,6 +69,9 @@ const MemberCard = ({
     window.open(github, '_blank');
   };
 
+  // Text color for the "/ 5" part - should be black in light mode, light gray in dark mode
+  const defaultTextColor = darkMode ? '#e0e0e0' : '#000000';
+
   return (
     <div className={`member-card ${darkMode ? 'dark-mode' : ''}`}>
       <div className="member-card__image-container">
@@ -115,9 +118,9 @@ const MemberCard = ({
 
       <div className="member-card__score-container">
         <div className="member-card__score-label">Skill Rating:</div>
-        <div className="member-card__score" style={{ color: scoreColor }}>
-          {formattedScore}
-          {!isNotApplicable ? ' / 5' : ''}
+        <div className="member-card__score">
+          <span style={{ color: scoreColor }}>{formattedScore}</span>
+          {!isNotApplicable && <span style={{ color: defaultTextColor }}> / 5</span>}
         </div>
       </div>
 
