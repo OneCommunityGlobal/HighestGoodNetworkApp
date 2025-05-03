@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
 import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
+import LongestOpenIssuesChart from '../Issues/LongestOpenIssuesChart';
 
 const projectStatusButtons = [
   {
@@ -187,7 +188,7 @@ export default function WeeklyProjectSummary() {
         title: 'Issue Tracking',
         key: 'Issue Tracking',
         className: 'small',
-        content: <div className="weekly-project-summary-card normal-card">📊 Card</div>,
+        content: <LongestOpenIssuesChart />,
       },
       {
         title: 'Tools and Equipment Tracking',
