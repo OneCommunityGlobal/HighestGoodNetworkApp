@@ -1,61 +1,55 @@
 import React, { useState } from "react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, LabelList, ResponsiveContainer } from "recharts";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  LabelList,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 
 const sampleData = [
-  { project: "Alpha", tool: "Hammer", replacedPercentage: 75 },
-  { project: "Alpha", tool: "Screwdriver", replacedPercentage: 60 },
-  { project: "Beta", tool: "Drill", replacedPercentage: 80 },
-  { project: "Beta", tool: "Saw", replacedPercentage: 55 },
+  { project: "Alpha", tool: "Hammer", inUse: 120, needsReplacement: 20, yetToReceive: 10 },
+  { project: "Alpha", tool: "Screwdriver", inUse: 80, needsReplacement: 30, yetToReceive: 10 },
+  { project: "Beta", tool: "Drill", inUse: 50, needsReplacement: 80, yetToReceive: 20 },
+  { project: "Beta", tool: "Saw", inUse: 90, needsReplacement: 10, yetToReceive: 5 },
 ];
 
 const allProjects = [...new Set(sampleData.map((d) => d.project))];
 
 const ToolsBreakdownChart = () => {
   const [selectedProject, setSelectedProject] = useState("");
-  const [selectedDates, setSelectedDates] = useState({ start: "", end: "" });
 
   const handleProjectChange = (e) => {
     setSelectedProject(e.target.value);
   };
 
-  const handleDateChange = (e) => {
-    const { name, value } = e.target;
-    setSelectedDates((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const filteredData = sampleData
-    .filter((d) => (selectedProject ? d.project === selectedProject : true))
-    .sort((a, b) => b.replacedPercentage - a.replacedPercentage);
+  const filteredData = sampleData.filter((d) =>
+    selectedProject ? d.project === selectedProject : true
+  );
 
   return (
     <div className="p-4">
-      <h2 className="text-2xl font-bold mb-4">Tools Most Susceptible to Breakdown (WIP Pratyush Sahu)</h2>
+      <h2 className="text-2xl font-bold mb-4">Tools by Availability</h2>
 
-      <div className="flex flex-col md:flex-row gap-4 mb-6">
-        <select value={selectedProject} onChange={handleProjectChange} className="border p-2 rounded">
-          <option value="">Select Project</option>
-          {allProjects.map((project) => (
-            <option key={project} value={project}>
-              {project}
-            </option>
-          ))}
-        </select>
-
-        <div className="flex gap-2">
-          <input
-            type="date"
-            name="start"
-            value={selectedDates.start}
-            onChange={handleDateChange}
+      <div className="mb-6 flex gap-4">
+        <div>
+          <label className="block text-sm font-medium mb-1">Project</label>
+          <select
+            value={selectedProject}
+            onChange={handleProjectChange}
             className="border p-2 rounded"
-          />
-          <input
-            type="date"
-            name="end"
-            value={selectedDates.end}
-            onChange={handleDateChange}
-            className="border p-2 rounded"
-          />
+          >
+            <option value="">ALL</option>
+            {allProjects.map((project) => (
+              <option key={project} value={project}>
+                {project}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 
@@ -64,13 +58,22 @@ const ToolsBreakdownChart = () => {
           layout="vertical"
           data={filteredData}
           margin={{ top: 20, right: 30, left: 100, bottom: 20 }}
+          stackOffset="none"
         >
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis type="number" domain={[0, 100]} tickFormatter={(tick) => `${tick}%`} />
-          <YAxis dataKey="tool" type="category" width={150} />
-          <Tooltip formatter={(value) => `${value}%`} />
-          <Bar dataKey="replacedPercentage" fill="#8884d8">
-            <LabelList dataKey="replacedPercentage" position="right" formatter={(value) => `${value}%`} />
+          <XAxis type="number" />
+          <YAxis dataKey="tool" type="category" width={100} />
+          <Tooltip />
+          <Legend />
+
+          <Bar dataKey="inUse" stackId="a" fill="#4285F4" name="In Use">
+            <LabelList dataKey="inUse" position="insideRight" />
+          </Bar>
+          <Bar dataKey="needsReplacement" stackId="a" fill="#EA4335" name="Needs to be replaced">
+            <LabelList dataKey="needsReplacement" position="insideRight" />
+          </Bar>
+          <Bar dataKey="yetToReceive" stackId="a" fill="#FBBC04" name="Yet to receive">
+            <LabelList dataKey="yetToReceive" position="insideRight" />
           </Bar>
         </BarChart>
       </ResponsiveContainer>
