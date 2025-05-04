@@ -18,17 +18,21 @@
 }
 
 .navbar {
-  /* z-index: 100; */
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
   white-space: nowrap;
-  /* margin-bottom: 20px; */
 }
 
 .timer-message-section {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  width: 100%;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
   gap: 1rem;
+  white-space: nowrap;
 }
 
 .redBackGroupHeader {
@@ -54,7 +58,10 @@
 
 .nav-links {
   display: flex;
+  flex-direction: row;
   align-items: center;
+  flex-wrap: nowrap;
+  gap: 1rem;
 }
 
 .dropdown-item-hover:hover {
