@@ -15,6 +15,7 @@ import Loading from './common/Loading';
 
 import config from '../config.json';
 import '../App.css';
+import { initMessagingSocket } from '../utils/messagingSocket';
 
 const { tokenKey } = config;
 // Require re-login 2 days before the token expires on server side
@@ -125,6 +126,15 @@ function UpdateDocumentTitle() {
     const match = Routes.find(route => route.pattern.test(location.pathname));
     document.title = match.title;
   }, [location, fullName]);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      initMessagingSocket(token);
+    } else {
+      Error('❌ No auth token found for WebSocket connection.');
+    }
+  }, []);
 
   return null;
 }

@@ -3,9 +3,10 @@ import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage'; // defaults to localStorage for web
 
 import thunk from 'redux-thunk';
-import { localReducers, sessionReducers } from './reducers';
 import { userPreferencesReducer } from 'reducers/lbdashboard/userPreferencesReducer';
 import { messagingReducer } from 'reducers/lbdashboard/messagingReducer';
+import { localReducers, sessionReducers } from './reducers';
+
 
 const middleware = [thunk];
 const initialState = {};

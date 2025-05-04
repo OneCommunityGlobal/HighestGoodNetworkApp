@@ -10,10 +10,11 @@ import {
   FETCH_EXISTING_CHATS_REQUEST,
   FETCH_EXISTING_CHATS_SUCCESS,
   FETCH_EXISTING_CHATS_FAILURE,
-  MESSAGE_RECEIVED,
   MESSAGE_STATUS_UPDATED,
+  MARK_MESSAGES_AS_READ_REQUEST,
+  MARK_MESSAGES_AS_READ_SUCCESS,
+  MARK_MESSAGES_AS_READ_FAILURE,
 } from "../../constants/lbdashboard/messagingConstants";
-import { getMessagingSocket } from "utils/messagingSocket";
 
 export const fetchMessages = (userId, selectedUserId) => async (dispatch) => {
   try {
@@ -30,23 +31,26 @@ export const fetchMessages = (userId, selectedUserId) => async (dispatch) => {
       type: FETCH_MESSAGES_SUCCESS,
       payload: data,
     });
+    return data;
   } catch (error) {
     dispatch({
       type: FETCH_MESSAGES_FAILURE,
       payload: error.response?.data?.message || error.message,
     });
+    return null;
   }
 };
 
-export const sendMessage = (messageData) => (dispatch) => {
-  const socket = getMessagingSocket();
+export const sendMessage = (messageData, socket) => (dispatch) => {
   if (socket && socket.readyState === WebSocket.OPEN) {
     dispatch({ type: SEND_MESSAGE_REQUEST });
 
-    socket.send(JSON.stringify({
-      action: "SEND_MESSAGE",
-      ...messageData,
-    }));
+    socket.send(
+      JSON.stringify({
+        action: "SEND_MESSAGE",
+        ...messageData,
+      })
+    );
 
     dispatch({ type: SEND_MESSAGE_SUCCESS });
   } else {
@@ -55,20 +59,6 @@ export const sendMessage = (messageData) => (dispatch) => {
       payload: "WebSocket is not connected.",
     });
   }
-};
-
-export const handleMessageReceived = (message) => (dispatch) => {
-  dispatch({
-    type: MESSAGE_RECEIVED,
-    payload: message,
-  });
-};
-
-export const handleMessageStatusUpdated = (statusUpdate) => (dispatch) => {
-  dispatch({
-      type: MESSAGE_STATUS_UPDATED,
-      payload: statusUpdate,
-  });
 };
 
 export const fetchMessageStatuses = (userId, selectedUserId, messageIds) => async (dispatch) => {
@@ -88,9 +78,9 @@ export const fetchMessageStatuses = (userId, selectedUserId, messageIds) => asyn
       });
     });
   } catch (error) {
-    console.error("Error fetching message statuses:", error);
+    Error("Error fetching message statuses:", error);
   }
-  
+
 };
 
 export const fetchExistingChats = (userId) => async (dispatch) => {
@@ -112,3 +102,36 @@ export const fetchExistingChats = (userId) => async (dispatch) => {
     });
   }
 };
+
+export const markMessagesAsRead = (userId, contactId) => async (dispatch) => {
+  try {
+    dispatch({ type: MARK_MESSAGES_AS_READ_REQUEST });
+
+    const { data } = await axios.post(ENDPOINTS.LB_MARK_MESSAGES_AS_READ, {
+      userId,
+      contactId,
+    });
+
+    dispatch({
+      type: MARK_MESSAGES_AS_READ_SUCCESS,
+      payload: data.message,
+    });
+  } catch (error) {
+    dispatch({
+      type: MARK_MESSAGES_AS_READ_FAILURE,
+      payload: error.response?.data?.message || "Failed to mark messages as read.",
+    });
+  }
+};
+
+export const clearNotifications = () => (dispatch) => {
+  dispatch({
+    type: "CLEAR_NOTIFICATIONS",
+  });
+};
+
+export const clearDBNotifications = () => (dispatch) => {
+  dispatch({
+    type: "CLEAR_DB_NOTIFICATIONS",
+  });
+}

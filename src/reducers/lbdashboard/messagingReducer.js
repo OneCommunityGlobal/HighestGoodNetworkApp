@@ -5,20 +5,21 @@ import {
   FETCH_EXISTING_CHATS_REQUEST,
   FETCH_EXISTING_CHATS_SUCCESS,
   FETCH_EXISTING_CHATS_FAILURE,
-  UPDATE_MESSAGE_STATUS_REQUEST,
-  UPDATE_MESSAGE_STATUS_SUCCESS,
-  UPDATE_MESSAGE_STATUS_FAILURE,
   MESSAGE_RECEIVED,
   MESSAGE_STATUS_UPDATED,
-} from "../../constants/lbdashboard/messagingConstants";
+  MARK_MESSAGES_AS_READ_REQUEST,
+  MARK_MESSAGES_AS_READ_SUCCESS,
+  MARK_MESSAGES_AS_READ_FAILURE,
+} from '../../constants/lbdashboard/messagingConstants';
 
 const initialState = {
   loading: false,
   messages: [],
+  notifications: [],
   error: null,
 };
 
-export const messagingReducer = (state = initialState, action) => {
+export const messagingReducer = (state, action = initialState) => {
   switch (action.type) {
     case FETCH_MESSAGES_REQUEST:
       return { ...state, loading: true, error: null };
@@ -31,20 +32,41 @@ export const messagingReducer = (state = initialState, action) => {
     case MESSAGE_STATUS_UPDATED:
       return {
         ...state,
-        messages: state.messages.map((msg) =>
-          msg._id === action.payload.messageId
-            ? { ...msg, status: action.payload.status }
-            : msg
+        messages: state.messages.map(msg =>
+          msg.sender === action.payload.userId && msg.status !== 'read'
+            ? { ...msg, status: 'read' }
+            : msg,
         ),
+      };
+    case 'NEW_NOTIFICATION':
+      return {
+        ...state,
+        notifications: [...(state.notifications || []), action.payload],
+      };
+    case 'CLEAR_NOTIFICATIONS':
+      return {
+        ...state,
+        notifications: [],
+      };
+    case 'CLEAR_DB_NOTIFICATIONS':
+      return {
+        ...state,
+        notifications: state.notifications.filter(n => !action.payload.includes(n._id)),
       };
     case FETCH_EXISTING_CHATS_REQUEST:
       return { ...state, loading: true, error: null };
-      case FETCH_EXISTING_CHATS_SUCCESS:
-        return { ...state, loading: false, existingChats: action.payload };
+    case FETCH_EXISTING_CHATS_SUCCESS:
+      return { ...state, loading: false, existingChats: action.payload };
     case FETCH_EXISTING_CHATS_FAILURE:
       return { ...state, loading: false, error: action.payload };
+    case MARK_MESSAGES_AS_READ_REQUEST:
+      return { ...state, loading: true, error: null };
+    case MARK_MESSAGES_AS_READ_SUCCESS:
+      return { ...state, loading: false };
+    case MARK_MESSAGES_AS_READ_FAILURE:
+      return { ...state, loading: false, error: action.payload };
     default:
-      return state;
+      return state || initialState;
   }
 };
 

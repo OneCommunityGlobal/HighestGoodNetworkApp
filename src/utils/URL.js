@@ -244,6 +244,8 @@ export const ENDPOINTS = {
   GET_FORM_RESPONSES: formID => `${APIEndpoint}/jobforms/${formID}/responses`,
 
   JOB_NOTIFICATION_LIST: `${APIEndpoint}/job-notification-list/`,
+
+  MESSAGING_SERVICE: new URL('/messaging-service', APIEndpoint.replace('http', 'ws')).toString(),
   // lb dashboard endpoints
   LB_REGISTER: `${APIEndpoint}/lbdashboard/register`,
   LB_LOGIN: `${APIEndpoint}/lbdashboard/login`,
@@ -254,8 +256,10 @@ export const ENDPOINTS = {
   LB_SEARCH_USERS: `${APIEndpoint}/lb/messages/search-users`,
   LB_GET_USER_PREFERENCES: `${APIEndpoint}/lb/preferences`,
   LB_UPDATE_USER_PREFERENCES: `${APIEndpoint}/lb/preferences`,
-  LB_SEND_EMAIL: `${APIEndpoint}/lb/notification/email`,
-  LB_SEND_SMS: `${APIEndpoint}/lb/notification/sms`,
+  LB_MARK_MESSAGES_AS_READ: `${APIEndpoint}/lb/messages/mark-as-read`,
+
+  NOTIFICATIONS: `${APIEndpoint}/notification`,
+  MSG_NOTIFICATION: `${APIEndpoint}/lb/notifications`,
 };
 
 export const ApiEndpoint = APIEndpoint;
