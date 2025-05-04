@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
@@ -34,10 +35,10 @@ describe('NotificationCard', () => {
       </Provider>,
     );
 
-    expect(screen.getByText(/You have a new notification from John Doe!/)).toBeInTheDocument();
+    expect(screen.getByText(/You have a new notification!/)).toBeInTheDocument();
     expect(
       screen.getByText((content, node) => {
-        const hasText = node => node.textContent === 'This is a test message';
+        const hasText = thisnode => thisnode.textContent === 'This is a test message';
         const nodeHasText = hasText(node);
         const childrenDontHaveText = Array.from(node.children).every(child => !hasText(child));
         return nodeHasText && childrenDontHaveText;
