@@ -1,10 +1,9 @@
-import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
 import * as reduxHooks from 'react-redux';
 import configureStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import { waitFor } from '@testing-library/react';
-import { themeMock } from '__tests__/mockStates';
+import { themeMock } from '../../../__tests__/mockStates';
 import { toggleDateSuggestedSortDirection, toggleUserSortDirection } from '../actions';
 import TaskEditSuggestions from '../TaskEditSuggestions';
 
@@ -150,8 +149,6 @@ describe('TaskEditSuggestions loading', () => {
       taskEditSuggestions: { ...initialState.taskEditSuggestions, isLoading: true },
     });
     testStore.dispatch({ type: 'FETCH_TASK_EDIT_SUGGESTIONS_BEGIN' });
-
-    const state = testStore.getState();
 
     render(
       <Provider store={testStore}>
