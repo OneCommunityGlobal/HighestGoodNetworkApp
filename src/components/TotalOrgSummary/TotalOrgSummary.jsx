@@ -105,7 +105,7 @@ const aggregateTimeEntries = userTimeEntries => {
 };
 
 function TotalOrgSummary(props) {
-  const { darkMode, error, allUserProfiles, volunteerOverview } = props;
+  const { darkMode, error, allUserProfiles } = props;
   const [usersId, setUsersId] = useState([]);
   const [usersTimeEntries, setUsersTimeEntries] = useState([]);
   const [usersOverTimeEntries, setUsersOverTimeEntries] = useState([]);
@@ -360,7 +360,7 @@ function TotalOrgSummary(props) {
               </div>
               <WorkDistributionBarChart
                 isLoading={isLoading}
-                workDistributionStats={volunteerOverview?.workDistributionStats}
+                workDistributionStats={volunteerStats?.workDistributionStats}
               />
             </div>
           </Col>
@@ -371,7 +371,7 @@ function TotalOrgSummary(props) {
               </div>
               <RoleDistributionPieChart
                 isLoading={isLoading}
-                roleDistributionStats={volunteerOverview?.roleDistributionStats}
+                roleDistributionStats={volunteerStats?.roleDistributionStats}
                 darkMode={darkMode}
               />
             </div>
@@ -412,7 +412,6 @@ function TotalOrgSummary(props) {
 const mapStateToProps = state => ({
   error: state.error,
   loading: state.loading,
-  volunteerOverview: state.totalOrgSummary.volunteerOverview,
   role: state.auth.user.role,
   auth: state.auth,
   darkMode: state.theme.darkMode,
