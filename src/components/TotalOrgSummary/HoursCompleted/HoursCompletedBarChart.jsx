@@ -3,6 +3,16 @@ import TinyBarChart from '../TinyBarChart';
 import Loading from '../../common/Loading';
 
 export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
+  if (isLoading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center">
+        <div className="w-100vh">
+          <Loading />
+        </div>
+      </div>
+    );
+  }
+
   const initialCardSize = () => {
     if (window.innerWidth <= 680) {
       return { height: '300px' };
@@ -30,20 +40,22 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
     };
   }, []);
 
-  const { taskHours, projectHours, lastTaskHours, lastProjectHours } = data;
-  // const taskPercentage = parseFloat(taskHours) / (parseFloat(taskHours) + parseFloat(projectHours));
-  // const taskChangePercentage = parseFloat(taskHours - lastTaskHours) / parseFloat(lastTaskHours);
-  // const projectChangePercentage =
-  //   parseFloat(projectHours - lastProjectHours) / parseFloat(lastProjectHours);
-  const taskPercentage = taskHours / (taskHours + projectHours);
-  const taskChangePercentage = (taskHours - lastTaskHours) / lastTaskHours;
-  const projectChangePercentage = (projectHours - lastProjectHours) / lastProjectHours;
+  const { taskHours, projectHours } = data;
+  const taskPercentage = taskHours.submittedToCommittedHoursPercentage;
+  const projectPercentage = projectHours.submittedToCommittedHoursPercentage;
+  const taskChangePercentage = taskHours.comparisonPercentage;
+  const projectChangePercentage = projectHours.comparisonPercentage;
   const stats = [
-    { name: 'Task', amount: taskHours, percentage: taskPercentage, change: taskChangePercentage },
+    {
+      name: 'Task',
+      amount: taskHours.count,
+      percentage: taskPercentage,
+      change: taskChangePercentage,
+    },
     {
       name: 'Project',
-      amount: projectHours,
-      percentage: 1.0 - taskPercentage,
+      amount: projectHours.count,
+      percentage: projectPercentage,
       change: projectChangePercentage,
     },
   ];
