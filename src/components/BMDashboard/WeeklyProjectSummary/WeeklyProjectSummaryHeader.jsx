@@ -1,13 +1,21 @@
-import { useState, useEffect, useMemo } from 'react';
-import { Button, Input } from 'reactstrap';
-import { useSelector } from 'react-redux';
+import { useEffect, useMemo } from 'react';
+import { Input, Button } from 'reactstrap';
+import { useSelector, useDispatch } from 'react-redux';
 import moment from 'moment-timezone';
+import {
+  setProjectFilter,
+  setDateRangeFilter,
+  setComparisonPeriodFilter,
+} from '../../../actions/bmdashboard/weeklyProjectSummaryActions';
 import './WeeklyProjectSummary.css';
 
 export default function WeeklyProjectSummaryHeader() {
-  const [projectFilter, setProjectFilter] = useState('One Community');
-  const [selectDateRange, setSelectDateRange] = useState('');
-  const [comparisonPeriod, setComparisonPeriod] = useState('');
+  const dispatch = useDispatch();
+  const projectFilter = useSelector(state => state.weeklyProjectSummary.projectFilter);
+  const dateRangeFilter = useSelector(state => state.weeklyProjectSummary.dateRangeFilter);
+  const comparisonPeriodFilter = useSelector(
+    state => state.weeklyProjectSummary.comparisonPeriodFilter,
+  );
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const getLastTwoCompletedWeeks = () => {
@@ -39,9 +47,9 @@ export default function WeeklyProjectSummaryHeader() {
 
   useEffect(() => {
     const { lastWeek, prevWeek } = getLastTwoCompletedWeeks();
-    setSelectDateRange(lastWeek);
-    setComparisonPeriod(prevWeek);
-  }, []);
+    dispatch(setDateRangeFilter(lastWeek));
+    dispatch(setComparisonPeriodFilter(prevWeek));
+  }, [dispatch]);
 
   const projectOptions = useMemo(() => ['One Community'], []);
   const dateRangeOptions = useMemo(() => [getLastTwoCompletedWeeks().lastWeek], []);
@@ -56,7 +64,7 @@ export default function WeeklyProjectSummaryHeader() {
           <Input
             type="select"
             value={projectFilter}
-            onChange={e => setProjectFilter(e.target.value)}
+            onChange={e => dispatch(setProjectFilter(e.target.value))}
             aria-label="Project Filter"
           >
             {projectOptions.map(option => (
@@ -68,8 +76,8 @@ export default function WeeklyProjectSummaryHeader() {
 
           <Input
             type="select"
-            value={selectDateRange}
-            onChange={e => setSelectDateRange(e.target.value)}
+            value={dateRangeFilter}
+            onChange={e => dispatch(setDateRangeFilter(e.target.value))}
             aria-label="Select Date Range"
           >
             {dateRangeOptions.map(option => (
@@ -81,8 +89,8 @@ export default function WeeklyProjectSummaryHeader() {
 
           <Input
             type="select"
-            value={comparisonPeriod}
-            onChange={e => setComparisonPeriod(e.target.value)}
+            value={comparisonPeriodFilter}
+            onChange={e => dispatch(setComparisonPeriodFilter(e.target.value))}
             aria-label="Comparison Period"
           >
             {comparisonOptions.map(option => (
