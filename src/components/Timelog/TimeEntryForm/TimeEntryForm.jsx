@@ -35,7 +35,6 @@ import ReminderModal from './ReminderModal';
 import TimeLogConfirmationModal from './TimeLogConfirmationModal';
 import { ENDPOINTS } from '../../../utils/URL';
 import '../../Header/DarkMode.css';
-import { useDispatch } from 'react-redux';
 import { fetchTeamMembersData } from '../../TeamMemberTasks/actions.js';
 import '../../Timelog/Timelog.css';
 import { updateIndividualTaskTime } from '../../TeamMemberTasks/actions';
