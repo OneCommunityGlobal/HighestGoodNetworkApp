@@ -6,10 +6,18 @@
 }
 
 .teams__overview--top .card {
-  flex: 1;
-  background-color: white;
-  box-shadow: none;
-  border: none;
+  min-width: 220px; /* Enough for 4-digit numbers */
+  max-width: 250px;
+  height: 40px; /* Slimmer card height */
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-weight: bold;
+  font-size: 14px;
 }
 
 /* General table layout */
@@ -28,6 +36,12 @@
   table-layout: auto; /* Allows more flexibility in layout */
 }
 
+.table th {
+  text-align: center;
+  vertical-align: middle;
+}
+
+
 .table th, .table td {
   padding: 10px;
   font-size: 14px;
@@ -41,7 +55,7 @@
 .table th:nth-child(1), .table td:nth-child(1) {
   width: 5%; /* Adjust first column width */
   white-space: nowrap; /* Prevent stacking/wrapping of numbers */
-  text-align: center; 
+  text-align: center;
 }
 
 
@@ -64,6 +78,8 @@
 /* Buttons should stay aligned horizontally */
 .usermanagement-actions-cell {
   white-space: nowrap; /* Prevent line breaks in the buttons' container */
+  min-width: 100px;
+  text-align: center;
 }
 
 .usermanagement-actions-cell .btn-group {
@@ -72,7 +88,10 @@
 }
 
 .usermanagement-actions-cell .btn {
-  padding: 5px 8px; /* Adjust padding for better fit */
+  white-space: nowrap;
+  padding: 5px 10px;
+  font-size: 13px;
+  min-width: 80px;  /* Ensures button doesn't shrink */
 }
 
 /* Cards styling */
@@ -80,7 +99,8 @@
   background: linear-gradient(to bottom, #87CEEB, #1E90FF, #4169E1);
 }
 
-.card#card_active {
+.card#card_active,
+.card#card_non_active {
   background: linear-gradient(to bottom, #FFD700, #FFA500, #FF8C00);
 }
 
@@ -95,6 +115,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  white-space: nowrap;
 }
 
 .card-text i {
@@ -181,15 +202,17 @@
   }
 }
 
-/* 479px and below */
-@media (max-width: 479px) {
-  .teams__overview--top .card {
-    flex: 1 1 45%;
-    margin: 5px 0;
+
+/* 480px and below */
+@media (max-width: 480x) {
+  .teams__overview--top {
+    flex-direction: column;
+    align-items: center;
   }
 
-  .teams__overview--top {
-    justify-content: space-between;
+  .teams__overview--top .card {
+    width: 90%;
+    margin-bottom: 10px;
   }
 
   .table th, .table td {
@@ -270,7 +293,7 @@
 
 @media (max-width: 575px) {
   .teams__overview--top {
-    font-size: 9px; 
+    font-size: 9px;
   }
 }
 
@@ -281,10 +304,10 @@
 }
 
 @media (max-width: 768px) {
-  .card#card_team, .card#card_active {
+  .card#card_team, .card#card_active,
+  .card#card_non_active{
     width: auto;
     height: 30px;
     font-size: 8px;
   }
 }
-

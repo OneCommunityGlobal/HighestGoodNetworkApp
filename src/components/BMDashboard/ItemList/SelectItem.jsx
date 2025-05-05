@@ -44,17 +44,17 @@ export default function SelectItem({
         >
           {items.length ? (
             <>
-              <option value="all">All</option>
-              {itemSet.map(name => {
-                return (
-                  <option key={name} value={name}>
-                    {name}
-                  </option>
-                );
-              })}
+              <option value="all" key="all-option">
+                All
+              </option>
+              {itemSet.map(item => (
+                <option key={`item-${item.id || item.name}`} value={item.name}>
+                  {item.name}
+                </option>
+              ))}
             </>
           ) : (
-            <option>No data</option>
+            <option key="no-data">No data</option>
           )}
         </Input>
       </FormGroup>

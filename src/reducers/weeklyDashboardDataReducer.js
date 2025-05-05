@@ -1,3 +1,4 @@
+// eslint-disable-next-line default-param-last
 export const weeklyDashboardDataReducer = (weeklyDashboardData = null, action) => {
   if (action.type === 'GET_WEEKLY_DASHBOARD_DATA') {
     return action.payload;
@@ -5,3 +6,5 @@ export const weeklyDashboardDataReducer = (weeklyDashboardData = null, action) =
 
   return weeklyDashboardData;
 };
+
+export default weeklyDashboardDataReducer;

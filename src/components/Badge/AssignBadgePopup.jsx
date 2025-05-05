@@ -35,13 +35,15 @@ function AssignBadgePopup(props) {
     <div>
       <input
         type="text"
-        className="form-control assign_badge_search_box mb-3"
+        className={`form-control assign_badge_search_box mb-3 ${
+          darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+        }`}
         placeholder="Search Badge Name"
         onChange={e => onSearch(e.target.value)}
       />
       <div className={`overflow-auto mb-2 max-h-300 ${darkMode ? 'bg-dark text-light' : ''}`}>
         <Table className={darkMode ? 'table-dark' : ''}>
-          <thead>
+          <thead className={darkMode ? 'bg-space-cadet text-light border-0' : ''}>
             <tr>
               <th>Badge</th>
               <th>Name</th>
