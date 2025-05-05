@@ -12,7 +12,7 @@ function BadgeManagement(props) {
   const { darkMode, activeTab, setActiveTab, role } = props;
 
   useEffect(() => {
-    props.fetchAllBadges(); 
+    props.fetchAllBadges();
   }, [props.fetchAllBadges]);
 
   const handleTabChange = tabId => {
@@ -33,7 +33,7 @@ function BadgeManagement(props) {
       }}
     >
       <div className="d-flex justify-content-start align-items-center">
-        <h2 className="mr-2">Badge Management</h2>
+        <h2 className={`${darkMode ? 'text-light' : 'text-dark'} mr-2`}>Badge Management</h2>
         <EditableInfoModal
           areaName="BadgeManagement"
           areaTitle="Badge Management"
