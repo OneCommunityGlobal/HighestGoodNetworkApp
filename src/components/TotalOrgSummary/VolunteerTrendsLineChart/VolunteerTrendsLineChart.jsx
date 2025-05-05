@@ -50,8 +50,7 @@ const dateToYYYYMMDD = date => {
   return date.toISOString().split('T')[0];
 };
 
-export default function VolunteerTrendsLineChart(props) {
-  const { darkMode } = props;
+export default function VolunteerTrendsLineChart({ darkMode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState(null);
   const [fetchError, setFetchError] = useState(false);
@@ -60,16 +59,29 @@ export default function VolunteerTrendsLineChart(props) {
   const [requestTimeFrame, setRequestTimeFrame] = useState(1);
   const [requestOffset, setRequestOffset] = useState('week');
   const [showDatePicker, setShowDatePicker] = useState(false);
-
   const [customDateRange, setCustomDateRange] = useState([null, null]);
-  const [startDate = new Date(), endDate = new Date()] = customDateRange;
+  const [customStartDate = new Date(), customEndDate = new Date()] = customDateRange;
 
   useEffect(() => {
     // Gets backend data
     const getData = async () => {
+      // TODO: NEED TO ABSTRACT THIS TO ITS OWN REDUX REDUCER
+      let url;
+      if (customDateRange.every(date => date)) {
+        // URL for custom dates
+        const formattedDateRange = customDateRange.map(date => dateToYYYYMMDD(date));
+        url = ENDPOINTS.VOLUNTEER_TRENDS(
+          requestTimeFrame,
+          requestOffset,
+          formattedDateRange[0],
+          formattedDateRange[1],
+        );
+      } else {
+        // URL for pre-set timeframes
+        url = ENDPOINTS.VOLUNTEER_TRENDS(requestTimeFrame, requestOffset);
+      }
+
       try {
-        // TODO: NEED TO ABSTRACT THIS TO ITS OWN REDUX REDUCER
-        const url = ENDPOINTS.VOLUNTEER_TRENDS(requestTimeFrame, requestOffset);
         const response = await axios.get(url);
         const rawData = formatChartData(response.data);
         setData(rawData);
@@ -80,31 +92,7 @@ export default function VolunteerTrendsLineChart(props) {
       }
     };
     getData();
-  }, [requestTimeFrame, requestOffset]);
-
-  useEffect(() => {
-    // Gets backend data using custom date ranges
-    const getData = async () => {
-      try {
-        // TODO: NEED TO ABSTRACT THIS TO ITS OWN REDUX REDUCER
-        const formattedDateRange = customDateRange.map(date => dateToYYYYMMDD(date));
-        const url = ENDPOINTS.VOLUNTEER_TRENDS(
-          requestTimeFrame,
-          requestOffset,
-          formattedDateRange[0],
-          formattedDateRange[1],
-        );
-        const response = await axios.get(url);
-        const rawData = formatChartData(response.data);
-        setData(rawData);
-      } catch (err) {
-        setFetchError(err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    if (customDateRange.every(date => date)) getData();
-  }, [customDateRange]);
+  }, [requestTimeFrame, requestOffset, customDateRange]);
 
   useEffect(() => {
     // Add event listener to set chart width on window resize
@@ -182,23 +170,25 @@ export default function VolunteerTrendsLineChart(props) {
     return null;
   };
 
-  const setDateFilter = e => {
-    if (e.target.value === 'custom-date') {
+  const setTimeframeFilter = e => {
+    if (e.target.value === 'yearsCustom') {
       return setShowDatePicker(true);
     }
 
     setCustomDateRange([null, null]);
     setShowDatePicker(false);
-    const [years, offset] = e.target.value.split('-');
-    const numberOfYears = years.substring(5);
+    const numberOfYears = e.target.value.substring(5);
     setIsLoading(true);
     setRequestTimeFrame(numberOfYears);
-    setRequestOffset(offset);
     return undefined;
   };
 
+  const setOffsetFilter = e => {
+    const offset = e.target.value;
+    setRequestOffset(offset);
+  };
+
   const handleCustomDateRange = updatedDateRange => {
-    console.log(updatedDateRange);
     setCustomDateRange(updatedDateRange);
     if (updatedDateRange[1]) {
       setShowDatePicker(false);
@@ -213,25 +203,31 @@ export default function VolunteerTrendsLineChart(props) {
   return (
     <div className="chart-container">
       {/* DATE FILTER */}
-      <select name="date-filter" id="date-filter" onChange={setDateFilter}>
-        <option value="years1-week">This year by week</option>
-        <option value="years1-month">This year by month</option>
-        <option value="years2-month">Last 2 years by month</option>
-        <option value="years3-month">Last 3 years by month</option>
-        <option value="years5-month">Last 5 years by month</option>
-        <option value="years10-month">Last 10 years by month</option>
-        <option value="years0-month">All-time</option>
-        <option value="custom-date">Choose Date Range</option>
-      </select>
+      <div className="date-filter-container">
+        <select name="timeframe-filter" id="timeframe-filter" onChange={setTimeframeFilter}>
+          <option value="years1">This year</option>
+          <option value="years2">Last 2 years</option>
+          <option value="years3">Last 3 years</option>
+          <option value="years5">Last 5 years</option>
+          <option value="years10">Last 10 years</option>
+          <option value="years0">All-time</option>
+          <option value="yearsCustom">Choose Date Range</option>
+        </select>
+        by
+        <select name="offset-filter" id="offset-filter" onChange={setOffsetFilter}>
+          <option value="week">week</option>
+          <option value="month">month</option>
+        </select>
+      </div>
 
       {/* DATE PICKER */}
       <div className="date-picker-container">
         {showDatePicker && (
           <DatePicker
-            selected={startDate}
+            selected={customStartDate}
             onChange={handleCustomDateRange}
-            startDate={startDate}
-            endDate={endDate}
+            startDate={customStartDate}
+            endDate={customEndDate}
             selectsRange
             inline
             dateFormat="MM-dd-yyyy"
