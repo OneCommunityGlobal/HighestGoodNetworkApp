@@ -202,7 +202,7 @@ export default function VolunteerTrendsLineChart({ darkMode }) {
 
   return (
     <div className="chart-container">
-      {/* DATE FILTER */}
+      {/* DATE FILTERS */}
       <div className="date-filter-container">
         <select name="timeframe-filter" id="timeframe-filter" onChange={setTimeframeFilter}>
           <option value="years1">This year</option>

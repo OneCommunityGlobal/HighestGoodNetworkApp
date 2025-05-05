@@ -1,9 +1,3 @@
-select {
- width: 200px;
- justify-self: center;
- margin-top: 15px;
-}
-
 .date-picker-container {
   position: relative;
 }
@@ -21,6 +15,7 @@ select {
   text-align: center;
   padding: 10px;
   position: relative;
+  margin-top: 15px;
 }
 
 .custom-date-range {
@@ -29,6 +24,18 @@ select {
 
 .custom-date-range > span {
  font-weight: bold;
+}
+
+.date-filter-container {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+}
+
+.date-filter-container > select {
+  margin-top: 0;
+  width: min-content
 }
 
 @media (max-width: 500px) {
