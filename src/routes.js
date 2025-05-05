@@ -56,6 +56,7 @@ import Collaboration from './components/Collaboration';
 import LBProtectedRoute from './components/common/LBDashboard/LBProtectedRoute';
 import LBLogin from './components/LBDashboard/Login';
 import LBDashboard from './components/LBDashboard';
+import MasterPlan from './components/LBDashboard/Map/MasterPlan/MasterPlan';
 import ListOveriew from './components/LBDashboard/ListingOverview/ListOverview';
 import LBBidOverview from './components/LBDashboard/BiddingOverview/BiddingOverview';
 
@@ -71,14 +72,17 @@ import CheckTypes from './components/BMDashboard/shared/CheckTypes';
 import Toolslist from './components/BMDashboard/Tools/ToolsList';
 import AddTool from './components/BMDashboard/Tools/AddTool';
 import AddTeamMember from './components/BMDashboard/AddTeamMember/AddTeamMember';
+import Issue from './components/BMDashboard/Issue/Issue';
 
 // Community Portal
 import CPProtectedRoute from './components/common/CPDashboard/CPProtectedRoute';
 import CPLogin from './components/CommunityPortal/Login';
 import CPDashboard from './components/CommunityPortal';
 import ActivityList from './components/CommunityPortal/Activities/ActivityList';
+import EventStats from './components/CommunityPortal/EventPersonalization/EventStats';
 // import AddActivities from './components/CommunityPortal/Activities/AddActivities';
 // import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
+import Resources from './components/CommunityPortal/Activities/activityId/Resources';
 
 import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
@@ -89,6 +93,7 @@ import EPDashboard from './components/EductionPortal';
 
 // eslint-disable-next-line import/order, import/no-unresolved
 import LogTools from './components/BMDashboard/LogTools/LogTools';
+import EquipmentUpdate from './components/BMDashboard/Tools/EquipmentUpdate';
 
 
 const ReusableListView = lazy(() => import('./components/BMDashboard/ReusableList'));
@@ -144,7 +149,7 @@ const UserRoleTab = lazy(() => import('./components/PermissionsManagement/UserRo
 const Teams = lazy(() => import('./components/Teams/Teams'));
 
 
-export default(
+export default (
   <Switch>
     {/* ----- LB Dashboard Routing ----- */}
     {/* If it's possible incorporate this route with others without the header, please do */}
@@ -152,14 +157,14 @@ export default(
     <Route path="/formviewer" component={FormViewer} />
     <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
     <>
-     {/* Comment out the Header component and its import during phase 2 development. */}
+      {/* Comment out the Header component and its import during phase 2 development. */}
       {/* Uncomment BMHeader and its import during phase 2 development. */}
 
 
       {/* <BMHeader /> */}
-      
+
       {/* This will render CPHeader to the page whose path starts with /communityportal i.e Phase III */}
-      <HeaderRenderer/>
+      <HeaderRenderer />
 
       <AutoUpdate />
       <ToastContainer />
@@ -324,7 +329,7 @@ export default(
           // setting permission as Weeklysummariesreport for now. Later it will be changed to weeklyVolunteerSummary. - H
           routePermissions={RoutePermissions.weeklySummariesReport}
         />
-        <ProtectedRoute path="/job-notification-dashboard" exact component={JobCCDashboard} fallback allowedRoles={[UserRole.Owner]}/>
+        <ProtectedRoute path="/job-notification-dashboard" exact component={JobCCDashboard} fallback allowedRoles={[UserRole.Owner]} />
 
         {/* ----- BEGIN BM Dashboard Routing ----- */}
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
@@ -369,6 +374,7 @@ export default(
           fallback
           component={PurchaseConsumable}
         />
+        <BMProtectedRoute path="/bmdashboard/issue" fallback component={Issue} />
         <BMProtectedRoute path="/bmdashboard/inventory/types" component={CheckTypes} />
         <BMProtectedRoute path="/bmdashboard/equipment" fallback exact component={EquipmentList} />
         <BMProtectedRoute path="/bmdashboard/equipment/:equipmentId" component={EquipmentDetail} />
@@ -391,6 +397,7 @@ export default(
         <BMProtectedRoute path="/bmdashboard/AddTeamMember" component={AddTeamMember} />
         <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} />
         <BMProtectedRoute path="/bmdashboard/tools/log" exact component={LogTools} />
+        <BMProtectedRoute path="/bmdashboard/tools/equipmentupdate" exact component={EquipmentUpdate} />
         <BMProtectedRoute path="/bmdashboard/tools/:toolId" component={ToolDetailPage} />
         <BMProtectedRoute path="/bmdashboard/lessonform/:projectId" component={LessonForm} />
         <BMProtectedRoute path="/bmdashboard/lessonform/" component={LessonForm} />
@@ -410,11 +417,16 @@ export default(
         <CPProtectedRoute path="/communityportal" exact component={CPDashboard} />
         <Route path="/communityportal/login" component={CPLogin} />
         <CPProtectedRoute path="/communityportal/Activities" exact component={ActivityList} />
+        <CPProtectedRoute
+          path="/communityportal/Activities/:activityid/Resources"
+          exact component={Resources}
+        />
 
 
         {/* Listing and Bidding Routes */}
         <LBProtectedRoute path="/lbdashboard" exact component={LBDashboard} />
         <LBProtectedRoute path="/lbdashboard/listOverview" exact component={ListOveriew} />
+        <LBProtectedRoute path="/lbdashboard/masterplan" exact component={MasterPlan} />
         <Route path="/lbdashboard/login" component={LBLogin} />
         <Route path="/lbdashboard/bidoverview" exact component={LBBidOverview} />
 
@@ -423,6 +435,7 @@ export default(
         <Route path="/educationportal/login" component={EPLogin} />
 
 
+        <CPProtectedRoute path="/communityportal/reports/event/personalization" exact component={EventStats} />
         {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
 
 
@@ -443,20 +456,20 @@ export default(
         <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
         <Route path="/Logout" component={Logout} />
         <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
-        <ProtectedRoute path="/hgnform" exact component={Page1}/>
-        <ProtectedRoute path="/hgnform/page2" exact component={Page2}/>
-        <ProtectedRoute path="/hgnform/page3" exact component={Page3}/>
-        <ProtectedRoute path="/hgnform/page4" exact component={Page4}/>
-        <ProtectedRoute path="/hgnform/page5" exact component={Page5}/>
-        <ProtectedRoute path="/hgnform/page6" exact component={Page6}/> 
-        <ProtectedRoute path="/tsaformpage1" exact component={TSAFormPage1} /> 
-        <ProtectedRoute path="/tsaformpage2" exact component={TSAFormPage2} /> 
-        <ProtectedRoute path="/tsaformpage3" exact component={TSAFormPage3} /> 
-        <ProtectedRoute path="/tsaformpage4" exact component={TSAFormPage4} /> 
-        <ProtectedRoute path="/tsaformpage5" exact component={TSAFormPage5} /> 
-        <ProtectedRoute path="/tsaformpage6" exact component={TSAFormPage6} /> 
-        <ProtectedRoute path="/tsaformpage7" exact component={TSAFormPage7} /> 
-        <ProtectedRoute path="/tsaformpage8" exact component={TSAFormPage8} /> 
+        <ProtectedRoute path="/hgnform" exact component={Page1} />
+        <ProtectedRoute path="/hgnform/page2" exact component={Page2} />
+        <ProtectedRoute path="/hgnform/page3" exact component={Page3} />
+        <ProtectedRoute path="/hgnform/page4" exact component={Page4} />
+        <ProtectedRoute path="/hgnform/page5" exact component={Page5} />
+        <ProtectedRoute path="/hgnform/page6" exact component={Page6} />
+        <ProtectedRoute path="/tsaformpage1" exact component={TSAFormPage1} />
+        <ProtectedRoute path="/tsaformpage2" exact component={TSAFormPage2} />
+        <ProtectedRoute path="/tsaformpage3" exact component={TSAFormPage3} />
+        <ProtectedRoute path="/tsaformpage4" exact component={TSAFormPage4} />
+        <ProtectedRoute path="/tsaformpage5" exact component={TSAFormPage5} />
+        <ProtectedRoute path="/tsaformpage6" exact component={TSAFormPage6} />
+        <ProtectedRoute path="/tsaformpage7" exact component={TSAFormPage7} />
+        <ProtectedRoute path="/tsaformpage8" exact component={TSAFormPage8} />
         <ProtectedRoute path="/" exact component={Dashboard} />
         <Route path="*" component={NotFoundPage} />
       </Switch>

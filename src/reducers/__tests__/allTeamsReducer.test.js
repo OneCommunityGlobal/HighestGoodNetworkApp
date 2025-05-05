@@ -1,7 +1,7 @@
 import { allUserTeamsReducer } from '../allTeamsReducer';
 import * as types from '../../constants/allTeamsConstants';
 
-const fetched = (stuff) => {
+const fetched = stuff => {
   return {
     ...stuff,
     fetching: false,
@@ -110,7 +110,11 @@ describe('Teams Reducer', () => {
     );
     expect(result).toMatchObject(
       fetched({
-        allTeams: [{ _id: 0 }, { _id: 42, teamName: 'name', isActive: true, teamCode: 'code' }, { _id: 100 }],
+        allTeams: [
+          { _id: 0 },
+          { _id: 42, teamName: 'name', isActive: true, teamCode: 'code' },
+          { _id: 100 },
+        ],
       }),
     );
   });

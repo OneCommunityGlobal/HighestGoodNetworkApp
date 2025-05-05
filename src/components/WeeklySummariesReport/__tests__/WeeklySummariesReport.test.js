@@ -10,6 +10,7 @@ const url = ENDPOINTS.WEEKLY_SUMMARIES_REPORT();
 const server = setupServer(
   rest.get(url, (req, res, ctx) => res(ctx.status(200), ctx.json([{ _id: 1 }]))),
   rest.get('*', (req, res, ctx) => {
+    // eslint-disable-next-line no-console
     console.error(
       `Please add request handler for ${req.url.toString()} in your MSW server requests.`,
     );
