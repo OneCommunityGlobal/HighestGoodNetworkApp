@@ -35,7 +35,7 @@ import ReminderModal from './ReminderModal';
 import TimeLogConfirmationModal from './TimeLogConfirmationModal';
 import { ENDPOINTS } from '../../../utils/URL';
 import '../../Header/DarkMode.css';
-import { fetchTeamMembersData, updateIndividualTaskTime } from '../../TeamMemberTasks/actions';
+import { fetchTeamMembersTask, updateIndividualTaskTime } from '../../TeamMemberTasks/actions';
 import '../Timelog.css';
 
 // Images are not allowed in timelog
@@ -380,19 +380,19 @@ function TimeEntryForm(props) {
           );
           break;
         case 'TimeLog': {
-          // const date = moment(formValues.dateOfWork);
-          // const today = moment().tz('America/Los_Angeles');
-          // const offset = today.week() - date.week();
+          const date = moment(formValues.dateOfWork);
+          const today = moment().tz('America/Los_Angeles');
+          const offset = today.week() - date.week();
           // Use GET_TIME_ENTRIES_WEEK, and fix offset to 0 (this week)
           await props.getTimeEntriesForWeek(timeEntryUserId, 0);
-          dispatch(fetchTeamMembersData());
+          dispatch(fetchTeamMembersTask(timeEntryUserId));
           clearForm();
           break;
         }
         case 'WeeklyTab':
           await Promise.all([
             props.getUserProfile(timeEntryUserId),
-            //props.getTimeEntriesForWeek(timeEntryUserId, tab),
+            // props.getTimeEntriesForWeek(timeEntryUserId, tab),
             props.getTimeEntriesForPeriod(timeEntryUserId, today, today),
           ]);
           break;
@@ -406,7 +406,7 @@ function TimeEntryForm(props) {
           editLimitNotification: !r.editLimitNotification,
         }));
       }
-      //Soft Refresh
+      // Soft Refresh
       softRefresh();
     };
 
