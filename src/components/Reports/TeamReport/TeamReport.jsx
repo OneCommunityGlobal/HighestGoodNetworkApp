@@ -321,101 +321,93 @@ export function TeamReport({ match }) {
       />
       <div className="table-mobile">
         <ReportPage.ReportBlock darkMode={darkMode}>
-          <div className="input-group input-group-sm d-flex flex-nowrap justify-content-between active-inactive-container">
-            <div className="d-flex align-items-center">
-              <div className="d-flex flex-column">
-                {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                <label
-                  htmlFor="search-by-name"
-                  className={`text-left ${darkMode ? 'text-light' : ''}`}
-                >
-                  Name
-                </label>
-                <input
-                  type="text"
-                  className="form-control rounded-1 mr-3 w-auto"
-                  placeholder="Search team name"
-                  id="search-by-name"
-                  onChange={event => handleSearchByName(event)}
-                />
-              </div>
-              <div className={`date-picker-container ${darkMode ? 'dark-mode' : ''}`}>
-                <div id="task_startDate" className="date-picker-item">
-                  <div className="d-flex flex-column">
-                    {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                    <label
-                      htmlFor="search-by-startDate"
-                      className={`text-left ${darkMode ? 'text-light' : ''}`}
-                    >
-                      Created After
-                    </label>
-                    <DatePicker
-                      selected={searchParams.createdAt}
-                      onChange={date =>
-                        setSearchParams(prevParams => ({
-                          ...prevParams,
-                          createdAt: new Date(date),
-                        }))
-                      }
-                      className="form-control w-auto"
-                      id="search-by-startDate"
-                    />
-                  </div>
-                </div>
-                <div id="task_EndDate" className="date-picker-item">
-                  <div className="d-flex flex-column">
-                    {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                    <label
-                      htmlFor="search-by-endDate"
-                      className={`text-left ${darkMode ? 'text-light' : ''}`}
-                    >
-                      Modified After
-                    </label>
-                    <DatePicker
-                      selected={searchParams.modifiedAt}
-                      onChange={date =>
-                        setSearchParams(prevParams => ({
-                          ...prevParams,
-                          modifiedAt: new Date(date),
-                        }))
-                      }
-                      className="form-control  w-auto"
-                      id="search-by-endDate"
-                    />
-                  </div>
-                </div>
-                <div className="active-inactive-container">
-                  <div className="active-inactive-container-item mr-2">
-                    {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                    <label htmlFor="active" className={darkMode ? 'text-light' : ''}>
-                      Active
-                    </label>
-                    <input
-                      onChange={event => handleCheckboxChange(event)}
-                      type="checkbox"
-                      placeholder="Search team name"
-                      id="active"
-                      checked={searchParams.isActive}
-                    />
-                  </div>
-                  <div className="active-inactive-container-item">
-                    {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                    <label htmlFor="inactive" className={darkMode ? 'text-light' : ''}>
-                      Inactive
-                    </label>
-                    <input
-                      onChange={event => handleCheckboxChange(event)}
-                      type="checkbox"
-                      placeholder="Search team name"
-                      id="inactive"
-                      checked={searchParams.isInactive}
-                    />
-                  </div>
-                </div>
-              </div>
+          <div className="input-group input-group-sm d-flex flex-row flex-nowrap justify-content-between align-items-center active-inactive-container gap-3">
+            {/* Name Search */}
+            <div className="d-flex flex-column flex-shrink-0">
+              <label
+                htmlFor="search-by-name"
+                className={`text-left ${darkMode ? 'text-light' : ''}`}
+              >
+                Name
+              </label>
+              <input
+                type="text"
+                className="form-control rounded-1 w-auto"
+                placeholder="Search team name"
+                id="search-by-name"
+                onChange={event => handleSearchByName(event)}
+              />
+            </div>
+
+            {/* Created After Date Picker */}
+            <div className="d-flex flex-column flex-shrink-0">
+              <label
+                htmlFor="search-by-startDate"
+                className={`text-left ${darkMode ? 'text-light' : ''}`}
+              >
+                Created After
+              </label>
+              <DatePicker
+                selected={searchParams.createdAt}
+                onChange={date =>
+                  setSearchParams(prevParams => ({
+                    ...prevParams,
+                    createdAt: new Date(date),
+                  }))
+                }
+                className="form-control w-auto"
+                id="search-by-startDate"
+              />
+            </div>
+
+            {/* Modified After Date Picker */}
+            <div className="d-flex flex-column flex-shrink-0">
+              <label
+                htmlFor="search-by-endDate"
+                className={`text-left ${darkMode ? 'text-light' : ''}`}
+              >
+                Modified After
+              </label>
+              <DatePicker
+                selected={searchParams.modifiedAt}
+                onChange={date =>
+                  setSearchParams(prevParams => ({
+                    ...prevParams,
+                    modifiedAt: new Date(date),
+                  }))
+                }
+                className="form-control w-auto"
+                id="search-by-endDate"
+              />
+            </div>
+
+            {/* Active Checkbox */}
+            <div className="d-flex flex-column flex-shrink-0">
+              <label htmlFor="active" className={darkMode ? 'text-light' : ''}>
+                Active
+              </label>
+              <input
+                onChange={event => handleCheckboxChange(event)}
+                type="checkbox"
+                id="active"
+                checked={searchParams.isActive}
+              />
+            </div>
+
+            {/* Inactive Checkbox */}
+            <div className="d-flex flex-column flex-shrink-0">
+              <label htmlFor="inactive" className={darkMode ? 'text-light' : ''}>
+                Inactive
+              </label>
+              <input
+                onChange={event => handleCheckboxChange(event)}
+                type="checkbox"
+                id="inactive"
+                checked={searchParams.isInactive}
+              />
             </div>
           </div>
-          <table className="table tableHeader">
+          <table className="table tableHeader" style={{ marginTop: '10px' }}>
             <thead className={`table table-hover ${darkMode ? 'text-light table-hover-dark' : ''}`}>
               <tr className={darkMode ? 'bg-space-cadet' : ''}>
                 <td>

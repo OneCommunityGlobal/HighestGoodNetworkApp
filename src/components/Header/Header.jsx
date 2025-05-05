@@ -1,6 +1,7 @@
 /* eslint-disable no-alert */
 import { useState, useEffect, useMemo, useRef } from 'react';
 // import { getUserProfile } from '../../actions/userProfile'
+
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import { getWeeklySummaries } from 'actions/weeklySummaries';
@@ -56,6 +57,7 @@ import {
   SCHEDULE_MEETINGS,
 } from '../../languages/en/ui';
 import Logout from '../Logout/Logout';
+import '../../App.css';
 import './Header.css';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import {
@@ -68,6 +70,9 @@ import {
 } from '../../actions/meetingNotificationAction';
 import NotificationCard from '../Notification/notificationCard';
 import DarkModeButton from './DarkModeButton';
+import BellNotification from './BellNotification';
+import { getUserProfile } from '../../actions/userProfile';
+
 
 export function Header(props) {
   const location = useLocation();
@@ -171,6 +176,11 @@ export function Header(props) {
   const dispatch = useDispatch();
   const history = useHistory();
   const MeetingNotificationAudioRef = useRef(null);
+
+
+  const [showProjectDropdown, setShowProjectDropdown] = useState(false);
+  const [isAckLoading, setIsAckLoading] = useState(false);
+
 
   useEffect(() => {
     const handleStorageEvent = () => {
@@ -314,6 +324,28 @@ export function Header(props) {
   const openModal = () => {
     setLogoutPopup(true);
   };
+  
+  const handlePermissionChangeAck = async () => {
+    // handle setting the ack true
+    try {
+      setIsAckLoading(true)
+      const {firstName: name, lastName, personalLinks, adminLinks, _id} = props.userProfile
+      axios.put(ENDPOINTS.USER_PROFILE(_id), {
+        // req fields for updation
+        firstName: name, 
+        lastName, 
+        personalLinks,
+        adminLinks,
+        
+        isAcknowledged: true,
+      }).then(()=>{
+        setIsAckLoading(false);
+        dispatch(getUserProfile(_id));
+      });
+    } catch (e) {
+      // console.log('update ack', e);
+    }
+  }
 
   const removeViewingUser = () => {
     setPopup(false);
@@ -427,6 +459,7 @@ export function Header(props) {
 
   if (location.pathname === '/login') return null;
 
+  const viewingUser = JSON.parse(window.sessionStorage.getItem('viewingUser'))
   return (
     <div className="header-wrapper">
       <Navbar className="py-3 navbar" color="dark" dark expand="md">
@@ -530,19 +563,15 @@ export function Header(props) {
                       <span className="dashboard-text-link">{OTHER_LINKS}</span>
                     </DropdownToggle>
                     <DropdownMenu className={darkMode ? 'bg-yinmn-blue' : ''}>
-                      {canAccessUserManagement ? (
+                      {canAccessUserManagement && (
                         <DropdownItem tag={Link} to="/usermanagement" className={fontColor}>
                           {USER_MANAGEMENT}
                         </DropdownItem>
-                      ) : (
-                        `null`
                       )}
-                      {canAccessBadgeManagement ? (
+                      {canAccessBadgeManagement && (
                         <DropdownItem tag={Link} to="/badgemanagement" className={fontColor}>
                           {BADGE_MANAGEMENT}
                         </DropdownItem>
-                      ) : (
-                        `null`
                       )}
                       {canAccessProjects && (
                         <DropdownItem tag={Link} to="/projects" className={fontColor}>
@@ -635,8 +664,16 @@ export function Header(props) {
       </Navbar>
       {!isAuthUser && (
         <PopUpBar
+          message={`You are currently viewing the header for ${viewingUser.firstName} ${viewingUser.lastName}`}
           onClickClose={() => setPopup(prevPopup => !prevPopup)}
-          viewingUser={JSON.parse(window.sessionStorage.getItem('viewingUser'))}
+          />
+      )}
+      {props.auth.isAuthenticated && props.userProfile?.permissions?.isAcknowledged===false && (
+        <PopUpBar
+          message="Heads Up, there were permission changes made to this account"
+          onClickClose={handlePermissionChangeAck}
+          textColor="black_text"
+          isLoading={isAckLoading}
         />
       )}
       <div>
@@ -658,12 +695,14 @@ export function Header(props) {
         </Modal>
       </div>
       {props.auth.isAuthenticated && isModalVisible && (
-        <Card color="primary">
-          <div className="close-button">
-            <Button close onClick={closeModal} />
-          </div>
-          <div className="card-content">{modalContent}</div>
-        </Card>
+        <div className={`${darkMode ? 'bg-oxford-blue' : ''} card-wrapper`}>
+          <Card color="primary">
+            <div className="close-button">
+              <Button close onClick={closeModal} />
+            </div>
+            <div className="card-content">{modalContent}</div>
+          </Card>
+        </div>
       )}
       <div>
         {props.auth.isAuthenticated && isModalVisible && (
@@ -735,4 +774,5 @@ export default connect(mapStateToProps, {
   getAllRoles,
   hasPermission,
   getWeeklySummaries,
+  getUserProfile,
 })(Header);
