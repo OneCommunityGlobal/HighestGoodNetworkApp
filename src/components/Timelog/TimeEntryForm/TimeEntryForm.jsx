@@ -35,9 +35,8 @@ import ReminderModal from './ReminderModal';
 import TimeLogConfirmationModal from './TimeLogConfirmationModal';
 import { ENDPOINTS } from '../../../utils/URL';
 import '../../Header/DarkMode.css';
-import { fetchTeamMembersData } from '../../TeamMemberTasks/actions.js';
-import '../../Timelog/Timelog.css';
-import { updateIndividualTaskTime } from '../../TeamMemberTasks/actions';
+import { fetchTeamMembersData, updateIndividualTaskTime } from '../../TeamMemberTasks/actions';
+import '../Timelog.css';
 
 // Images are not allowed in timelog
 const customImageUploadHandler = () =>
@@ -46,6 +45,7 @@ const customImageUploadHandler = () =>
     reject({ message: 'Pictures are not allowed here!', remove: true });
   });
 
+/*
 const TINY_MCE_INIT_OPTIONS = {
   license_key: 'gpl',
   menubar: false,
@@ -64,11 +64,12 @@ const TINY_MCE_INIT_OPTIONS = {
   content_style: 'body { cursor: text !important; }',
   images_upload_handler: customImageUploadHandler,
 };
+*/
 
 /* Soft Refresh */
 const softRefresh = () => {
   document.body.classList.add('refreshing');
-  console.log(document.body.classList);
+  // console.log(document.body.classList);
   setTimeout(() => {
     window.location.reload();
   }, 300);
@@ -96,7 +97,7 @@ const softRefresh = () => {
 function TimeEntryForm(props) {
   /* ---------------- variables -------------- */
   // props from parent
-  const { from, sendStop, edit, data, toggle, isOpen, tab, darkMode } = props;
+  const { from, sendStop, edit, data, toggle, isOpen, darkMode } = props;
   // props from store
   const { authUser } = props;
   const dispatch = useDispatch();
@@ -379,9 +380,9 @@ function TimeEntryForm(props) {
           );
           break;
         case 'TimeLog': {
-          //const date = moment(formValues.dateOfWork);
-          //const today = moment().tz('America/Los_Angeles');
-          //const offset = today.week() - date.week();
+          // const date = moment(formValues.dateOfWork);
+          // const today = moment().tz('America/Los_Angeles');
+          // const offset = today.week() - date.week();
           // Use GET_TIME_ENTRIES_WEEK, and fix offset to 0 (this week)
           await props.getTimeEntriesForWeek(timeEntryUserId, 0);
           dispatch(fetchTeamMembersData());
