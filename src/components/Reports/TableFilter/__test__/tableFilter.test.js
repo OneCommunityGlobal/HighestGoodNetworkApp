@@ -1,8 +1,11 @@
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
-import { render, fireEvent, screen } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
+// eslint-disable-next-line no-unused-vars
 import '@testing-library/jest-dom/extend-expect';
-import TableFilter from '../TableFilter';
+// eslint-disable-next-line no-unused-vars
 import userEvent from '@testing-library/user-event';
+import TableFilter from '../TableFilter';
 
 
 describe('TableFilter component', () => {

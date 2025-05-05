@@ -1,15 +1,16 @@
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
-import { render, screen} from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import mockSummaries from 'weeklySummariesReportData'; // Located in the tested component's __mocks__ folder
+import mockSummaries from '../__mocks__/weeklySummariesReportData'; // Located in the tested component's __mocks__ folder
 import GeneratePdfReport from '../GeneratePdfReport';
 
 const getWeekDates = () => ({
   fromDate: 'June 14th',
   toDate: 'June 20th, 2020',
 });
-const dummy_summary = [];
-const dummy_WeekDates = () => ({
+const dummySummary = [];
+const dummyWeekDates = () => ({
   fromDate: 'June 14th, 2022',
   toDate: 'July 20th, 2023',
 });
@@ -17,7 +18,13 @@ const weekidx1 = 1;
 const weekidx2 = 2;
 describe('structure test', () => {
   beforeEach(() => {
-    render(<GeneratePdfReport summaries={dummy_summary} weekIndex={weekidx2} weekDates={dummy_WeekDates()} />);
+    render(
+      <GeneratePdfReport
+        summaries={dummySummary}
+        weekIndex={weekidx2}
+        weekDates={dummyWeekDates()}
+      />,
+    );
   });
   it('should render button that generates PDF reports', () => {
     expect(screen.getByRole('button', { name: /Open PDF/i }));
@@ -27,7 +34,11 @@ describe('structure test', () => {
 describe('FormattedReport Component', () => {
   it('Snapshot with mocked data', () => {
     const { asFragment } = render(
-      <GeneratePdfReport summaries={mockSummaries} weekIndex={weekidx1} weekDates={getWeekDates()} />,
+      <GeneratePdfReport
+        summaries={mockSummaries}
+        weekIndex={weekidx1}
+        weekDates={getWeekDates()}
+      />,
     );
     expect(asFragment()).toMatchSnapshot();
   });
