@@ -310,7 +310,13 @@ export function Header(props) {
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
 
         {isAuthenticated && <Timer darkMode={darkMode} />}
-         
+        
+         {/* ITEM SHOWS OUTSIDE OF THE DROPDOWN IN MOBILE */}
+        <div className="show-in-mobile ml-auto mr-3">
+          <BellNotification userId={displayUserId}/>
+        </div>
+        {/*  */}
+
         <NavbarToggler onClick={toggle} />
         {isAuthenticated && (
           <Collapse isOpen={isOpen} navbar>
@@ -320,7 +326,7 @@ export function Header(props) {
               </div>
             )}
             <Nav className="ml-auto menu-container" navbar>
-              <NavItem className="responsive-spacing show-in-mobile">
+              <NavItem className="show-in-mobile">
                 <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
                   <img
                     src={`${profilePic || '/pfp-default-header.png'}`}
@@ -330,9 +336,9 @@ export function Header(props) {
                   />
                 </NavLink>
               </NavItem>
-              <UncontrolledDropdown nav inNavbar className="responsive-spacing show-in-mobile">
+              <UncontrolledDropdown nav inNavbar className="show-in-mobile">
                   <DropdownToggle nav caret>
-                    <span className="dashboard-text-link">
+                    <span>
                       {WELCOME}, {firstName}
                     </span>
                   </DropdownToggle>
@@ -366,29 +372,33 @@ export function Header(props) {
                 </UncontrolledDropdown>
 
                 {canUpdateTask && (
-                  <NavItem className="responsive-spacing">
+                  <NavItem>
                     <NavLink tag={Link} to="/taskeditsuggestions">
-                      <div className="redBackGroupHeader">
+                      <div className="redBackGroupHeader hide-in-mobile">
                         <span>{props.taskEditSuggestionCount}</span>
                       </div>
+
+                      {/* --- MOBILE VIEW ONLY --- */}
+                      <span className='show-in-mobile'>Task Edit Suggestion ({props.taskEditSuggestionCount})</span>
+                      {/* ------------------- */}
                     </NavLink>
                   </NavItem>
                 )}
-                <NavItem className="responsive-spacing">
+                <NavItem>
                   <NavLink tag={Link} to="/dashboard">
-                    <span className="dashboard-text-link">{DASHBOARD}</span>
+                    <span>{DASHBOARD}</span>
                   </NavLink>
                 </NavItem>
-                <NavItem className="responsive-spacing">
+                <NavItem>
                   <NavLink tag={Link} to="/timelog">
-                    <span className="dashboard-text-link">{TIMELOG}</span>
+                    <span>{TIMELOG}</span>
                   </NavLink>
                 </NavItem>
 
                 {showProjectDropdown && (
-                  <UncontrolledDropdown nav inNavbar className="responsive-spacing">
+                  <UncontrolledDropdown nav inNavbar>
                     <DropdownToggle nav caret>
-                      <span className="dashboard-text-link">{PROJECTS}</span>
+                      <span>{PROJECTS}</span>
                     </DropdownToggle>
                     <DropdownMenu className={`no-max-height ${darkMode ? 'dark-menu-dropdown' : 'mobile-menu-dropdown'}`}>
                       <DropdownItem
@@ -439,9 +449,9 @@ export function Header(props) {
                 )}
             
                 {canGetReports || canGetWeeklySummaries || canGetWeeklyVolunteerSummary ? (
-                  <UncontrolledDropdown nav inNavbar className="responsive-spacing">
+                  <UncontrolledDropdown nav inNavbar>
                     <DropdownToggle nav caret>
-                      <span className="dashboard-text-link">{REPORTS}</span>
+                      <span>{REPORTS}</span>
                     </DropdownToggle>
                     <DropdownMenu className= {`no-max-height ${darkMode ? 'dark-menu-dropdown' : 'mobile-menu-dropdown'}`}>
                       {canGetReports && (
@@ -472,7 +482,7 @@ export function Header(props) {
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 ) : (
-                  <NavItem className="responsive-spacing">
+                  <NavItem>
                     <NavLink tag={Link} to="/teamlocations">
                       <span className="dashboard-text-link">{TEAM_LOCATIONS}</span>
                     </NavLink>
@@ -485,7 +495,7 @@ export function Header(props) {
                   canAccessPopups ||
                   canAccessSendEmails ||
                   canAccessPermissionsManagement) && (
-                  <UncontrolledDropdown nav inNavbar className="responsive-spacing">
+                  <UncontrolledDropdown nav inNavbar>
                     <DropdownToggle nav caret>
                       <span className="dashboard-text-link">{OTHER_LINKS}</span>
                     </DropdownToggle>
@@ -530,10 +540,10 @@ export function Header(props) {
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 )}
-                <NavItem className="responsive-spacing">
+                <NavItem className="hide-in-mobile">
                   <BellNotification userId={displayUserId}/>
                 </NavItem>
-                <NavItem className="responsive-spacing hide-in-mobile">
+                <NavItem className="hide-in-mobile">
                   <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
                     <img
                       src={`${profilePic || '/pfp-default-header.png'}`}
@@ -543,9 +553,9 @@ export function Header(props) {
                     />
                   </NavLink>
                 </NavItem>
-                <UncontrolledDropdown nav className="responsive-spacing hide-in-mobile">
+                <UncontrolledDropdown nav className="hide-in-mobile">
                   <DropdownToggle nav caret>
-                    <span className="dashboard-text-link">
+                    <span>
                       {WELCOME}, {firstName}
                     </span>
                   </DropdownToggle>
