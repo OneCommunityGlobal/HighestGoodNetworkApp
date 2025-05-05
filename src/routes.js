@@ -71,7 +71,6 @@ import ToolDetailPage from './components/BMDashboard/Tools/ToolDetailPage';
 import CheckTypes from './components/BMDashboard/shared/CheckTypes';
 import Toolslist from './components/BMDashboard/Tools/ToolsList';
 import AddTool from './components/BMDashboard/Tools/AddTool';
-import Issue from './components/BMDashboard/Issue/Issue';
 import AddTeamMember from './components/BMDashboard/AddTeamMember/AddTeamMember';
 
 // Community Portal
@@ -87,6 +86,8 @@ import Resources from './components/CommunityPortal/Activities/activityId/Resour
 import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
 import EPDashboard from './components/EductionPortal';
+
+
 
 
 // eslint-disable-next-line import/order, import/no-unresolved
@@ -372,7 +373,6 @@ export default (
           fallback
           component={PurchaseConsumable}
         />
-        <BMProtectedRoute path="/bmdashboard/issue" fallback component={Issue} />
         <BMProtectedRoute path="/bmdashboard/inventory/types" component={CheckTypes} />
         <BMProtectedRoute path="/bmdashboard/equipment" fallback exact component={EquipmentList} />
         <BMProtectedRoute path="/bmdashboard/equipment/:equipmentId" component={EquipmentDetail} />
