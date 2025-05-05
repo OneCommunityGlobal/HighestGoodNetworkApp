@@ -35,7 +35,7 @@ import ReminderModal from './ReminderModal';
 import TimeLogConfirmationModal from './TimeLogConfirmationModal';
 import { ENDPOINTS } from '../../../utils/URL';
 import '../../Header/DarkMode.css';
-import { fetchTeamMembersTask, updateIndividualTaskTime } from '../../TeamMemberTasks/actions';
+import { updateIndividualTaskTime } from '../../TeamMemberTasks/actions';
 import '../Timelog.css';
 
 // Images are not allowed in timelog
@@ -97,7 +97,7 @@ const softRefresh = () => {
 function TimeEntryForm(props) {
   /* ---------------- variables -------------- */
   // props from parent
-  const { from, sendStop, edit, data, toggle, isOpen, darkMode } = props;
+  const { from, sendStop, edit, data, toggle, isOpen, tab, darkMode } = props;
   // props from store
   const { authUser } = props;
   const dispatch = useDispatch();
@@ -383,17 +383,18 @@ function TimeEntryForm(props) {
           const date = moment(formValues.dateOfWork);
           const today = moment().tz('America/Los_Angeles');
           const offset = today.week() - date.week();
+          props.getTimeEntriesForWeek(timeEntryUserId, Math.min(offset, 3));
           // Use GET_TIME_ENTRIES_WEEK, and fix offset to 0 (this week)
-          await props.getTimeEntriesForWeek(timeEntryUserId, 0);
-          dispatch(fetchTeamMembersTask(timeEntryUserId));
+          // await props.getTimeEntriesForWeek(timeEntryUserId, 0);
+          // dispatch(fetchTeamMembersTask(timeEntryUserId));
           clearForm();
           break;
         }
         case 'WeeklyTab':
           await Promise.all([
             props.getUserProfile(timeEntryUserId),
-            // props.getTimeEntriesForWeek(timeEntryUserId, tab),
-            props.getTimeEntriesForPeriod(timeEntryUserId, today, today),
+            props.getTimeEntriesForWeek(timeEntryUserId, tab),
+            // props.getTimeEntriesForPeriod(timeEntryUserId, today, today),
           ]);
           break;
         default:
