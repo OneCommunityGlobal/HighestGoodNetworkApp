@@ -3,16 +3,6 @@ import TinyBarChart from '../TinyBarChart';
 import Loading from '../../common/Loading';
 
 export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
-  if (isLoading) {
-    return (
-      <div className="d-flex justify-content-center align-items-center">
-        <div className="w-100vh">
-          <Loading />
-        </div>
-      </div>
-    );
-  }
-
   const initialCardSize = () => {
     if (window.innerWidth <= 680) {
       return { height: '300px' };
@@ -22,7 +12,9 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
     }
     return { height: '347px' };
   };
+
   const [cardSize, setCardSize] = useState(initialCardSize);
+
   const updateCardSize = () => {
     if (window.innerWidth <= 680) {
       setCardSize({ height: '300px' });
@@ -32,6 +24,7 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
       setCardSize({ height: '347px' });
     }
   };
+
   useEffect(() => {
     window.addEventListener('resize', updateCardSize);
     updateCardSize();
@@ -39,6 +32,16 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
       window.removeEventListener('resize', updateCardSize);
     };
   }, []);
+
+  if (isLoading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center">
+        <div className="w-100vh">
+          <Loading />
+        </div>
+      </div>
+    );
+  }
 
   const { taskHours, projectHours } = data;
   const taskPercentage = taskHours.submittedToCommittedHoursPercentage;
@@ -120,21 +123,13 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
 
   return (
     <div style={{ height: cardSize.height }}>
-      {isLoading ? (
-        <div className="d-flex justify-content-center align-items-center">
-          <div className="w-100vh">
-            <Loading />
-          </div>
-        </div>
-      ) : (
-        <TinyBarChart
-          chartData={chartData}
-          maxY={maxY}
-          tickInterval={tickInterval}
-          renderCustomizedLabel={renderCustomizedLabel}
-          darkMode={darkMode}
-        />
-      )}
+      <TinyBarChart
+        chartData={chartData}
+        maxY={maxY}
+        tickInterval={tickInterval}
+        renderCustomizedLabel={renderCustomizedLabel}
+        darkMode={darkMode}
+      />
     </div>
   );
 }
