@@ -13,7 +13,7 @@
     "@fortawesome/react-fontawesome": "^0.1.19",
     "@react-leaflet/core": ">=1.0.0 <1.1.0",
     "@sentry/browser": "^9.15.0",
-    "@tinymce/tinymce-react": "^3.14.0",
+    "@tinymce/tinymce-react": "^6.1.0",
     "ajv": "^6.12.6",
     "ajv-keywords": "^3.5.2",
     "assert": "^2.1.0",

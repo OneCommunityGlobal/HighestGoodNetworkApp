@@ -90,7 +90,7 @@ function TimeEntryForm(props) {
     license_key: 'gpl',
     menubar: false,
     placeholder: 'Description (10-word minimum) and reference link',
-    plugins: 'advlist autolink autoresize lists link charmap table paste help wordcount',
+    plugins: 'advlist autolink autoresize lists link charmap table help wordcount',
     toolbar:
       // eslint-disable-next-line no-multi-str
       'bold italic underline link removeformat | bullist numlist outdent indent |\

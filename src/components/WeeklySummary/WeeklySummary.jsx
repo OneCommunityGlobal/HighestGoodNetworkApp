@@ -743,7 +743,7 @@ schema = Joi.object({
       license_key: 'gpl',
       menubar: false,
       placeholder: `Did you: Write it in 3rd person with a minimum of 50-words? Remember to run it through ChatGPT or other AI editor using the “Current AI Editing Prompt” from above? Remember to read and do a final edit before hitting Save?`,
-      plugins: 'advlist autolink autoresize lists link charmap table paste help wordcount',
+      plugins: 'advlist autolink autoresize lists link charmap table help wordcount',
       toolbar:
         'bold italic underline link removeformat | bullist numlist outdent indent | styleselect fontsizeselect | table| strikethrough forecolor backcolor | subscript superscript charmap | help',
       branding: false,

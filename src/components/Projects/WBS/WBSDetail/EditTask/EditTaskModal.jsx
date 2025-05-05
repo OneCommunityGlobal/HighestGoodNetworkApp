@@ -76,7 +76,7 @@ function EditTaskModal(props) {
   const EditorInit = {
       license_key: 'gpl',
       menubar: false,
-      plugins: 'advlist autolink autoresize lists link charmap table paste help',
+      plugins: 'advlist autolink autoresize lists link charmap table help',
       toolbar:
         'bold italic  underline numlist   |  removeformat link bullist  outdent indent |\
                         styleselect fontsizeselect | table| strikethrough forecolor backcolor |\

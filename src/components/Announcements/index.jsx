@@ -27,10 +27,10 @@ function Announcements({ title, email }) {
     selector: 'Editor#email-editor',
     height: 500,
     plugins: [
-      'advlist autolink lists link image paste',
+      'advlist autolink lists link image',
       'charmap print preview anchor help',
       'searchreplace visualblocks code',
-      'insertdatetime media table paste wordcount',
+      'insertdatetime media table wordcount',
     ],
     menubar: false,
     branding: false,
