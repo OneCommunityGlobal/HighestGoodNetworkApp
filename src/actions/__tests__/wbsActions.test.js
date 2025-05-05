@@ -19,6 +19,7 @@ describe('WBS Action Creators', () => {
   });
   afterEach(() => {
     jest.clearAllMocks();
+    // eslint-disable-next-line no-console
     console.log.mockRestore();
   });
 
