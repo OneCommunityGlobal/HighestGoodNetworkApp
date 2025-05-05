@@ -201,7 +201,7 @@ export default function BellNotification({userId}) {
           ref={notificationRef}
           style={{
             position: 'absolute',
-            top: '75%',
+            top: '4rem',
             right: '5%',
             transform: 'translateX(0)',
             backgroundColor: darkMode ? '#3A506B' : 'white',

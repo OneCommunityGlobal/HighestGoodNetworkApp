@@ -315,7 +315,7 @@ export function Header(props) {
         <div className="show-in-mobile ml-auto mr-3">
           <BellNotification userId={displayUserId}/>
         </div>
-        {/*  */}
+        {/* --------------------------------------------- */}
 
         <NavbarToggler onClick={toggle} />
         {isAuthenticated && (
@@ -497,7 +497,7 @@ export function Header(props) {
                   canAccessPermissionsManagement) && (
                   <UncontrolledDropdown nav inNavbar>
                     <DropdownToggle nav caret>
-                      <span className="dashboard-text-link">{OTHER_LINKS}</span>
+                      <span>{OTHER_LINKS}</span>
                     </DropdownToggle>
                     <DropdownMenu className={`no-max-height ${darkMode ? 'dark-menu-dropdown' : 'mobile-menu-dropdown'}`}>
                       {canAccessUserManagement && (
