@@ -6,6 +6,7 @@ const allMembershipInital = {
   fetched: false,
   members: [],
   foundUsers: [],
+  activeMemberCounts: {},
   error: '',
 };
 
@@ -65,6 +66,15 @@ export const projectMembershipReducer = (allMembership = allMembershipInital, ac
       const foundUsers = allMembership.foundUsers.filter(user => user._id !== action.userId);
       return { ...allMembership, foundUsers };
     }
+
+    case types.FETCH_PROJECTS_ACTIVE_USERS_SUCCESS:
+      return {
+        activeMemberCounts: action.payload,
+      };
+    case types.FETCH_PROJECTS_ACTIVE_USERS_ERROR:
+      return {
+        error: action.payload,
+      };
 
     default:
       return allMembership;
