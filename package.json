@@ -17,7 +17,7 @@
     "ajv": "^6.12.6",
     "ajv-keywords": "^3.5.2",
     "assert": "^2.1.0",
-    "axios": "^0.21.2",
+    "axios": "^1.9.0",
     "axios-mock-adapter": "^1.22.0",
     "bootstrap": "^4.5.3",
     "buffer": "^6.0.3",

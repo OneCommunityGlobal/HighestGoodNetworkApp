@@ -31,7 +31,7 @@ export const fetchAllBadges = () => {
       dispatch(getAllBadges(response.data));
       return response.status;
     } catch (err) {
-      return err.response.status;
+      return err.response?.status || 500;
     }
   };
 };

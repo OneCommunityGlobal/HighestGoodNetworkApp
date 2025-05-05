@@ -3,18 +3,21 @@ import moment from 'moment';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import userEvent from '@testing-library/user-event';
+import configureStore from 'redux-mock-store';
+import { themeMock } from '__tests__/mockStates';
+import { Provider } from 'react-redux';
 import { weeklySummaryMockData1 } from '../__mocks__/weeklySummaryMockData'; // Located in the tested component's __mocks__ folder
 import { WeeklySummary } from '../WeeklySummary';
 import CountdownTimer from '../CountdownTimer';
 
 import CurrentPromptModal from '../CurrentPromptModal';
-import configureStore from 'redux-mock-store';
-import { themeMock } from '__tests__/mockStates';
-import { Provider } from 'react-redux';
 
 jest.mock('../CurrentPromptModal', () => 'current-Prompt-Modal');
 const wrapper = props => render(<CurrentPromptModal {...props} />);
-
+jest.mock('react-toastify', () => ({
+  toast: jest.fn(),
+  ToastContainer: () => <div data-testid="toast-container" />,
+}));
 const mockStore = configureStore([]);
 
 describe('WeeklySummary page', () => {
@@ -237,9 +240,9 @@ describe('WeeklySummary page', () => {
         // expect(labelText).toHaveAttribute('value', 'h');
         const input = screen.getByTestId('media-input');
         fireEvent.change(input, { target: { value: 'u' } });
-        //will pop up one modal ->click confirm
+        // will pop up one modal ->click confirm
         fireEvent.click(screen.getByText('Confirm'));
-        //then type the content
+        // then type the content
         fireEvent.change(input, { target: { value: 'u' } });
         expect(input.value).toBe('u');
       });
@@ -259,9 +262,9 @@ describe('WeeklySummary page', () => {
         const input = screen.getByTestId('media-input');
         // const { queryByText } = render(<Modal/>);
         fireEvent.change(input, { target: { value: 'h' } });
-        //will pop up one modal ->click confirm
+        // will pop up one modal ->click confirm
         fireEvent.click(screen.getByText('Confirm'));
-        //then type the content
+        // then type the content
         fireEvent.change(input, { target: { value: 'h' } });
         expect(input.value).toBe('h');
         const mediaUrlError = screen.getByText(/"Media URL" must be a valid uri/i);
@@ -358,7 +361,7 @@ describe('WeeklySummary page', () => {
         const input = screen.getByTestId('media-input');
         // const { queryByText } = render(<Modal/>);
         fireEvent.change(input, { target: { value: 'u' } });
-        //will pop up one modal ->click confirm
+        // will pop up one modal ->click confirm
         fireEvent.click(screen.getByText('Confirm'));
         fireEvent.change(input, { target: { value: 'https://www.example.com/' } });
         // const labelText = screen.getByLabelText(/Link to your media files/i);
