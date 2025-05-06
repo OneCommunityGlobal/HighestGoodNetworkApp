@@ -1,13 +1,42 @@
 import { Search, MoreHorizontal, ChevronDown } from 'lucide-react';
 import './IssueHeader.css';
-import { connect } from 'react-redux';
+import { connect, useDispatch, useSelector } from 'react-redux';
 import { getHeaderData } from 'actions/authActions';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
+import { fetchBMProjects } from 'actions/bmdashboard/projectActions';
+import { useEffect } from 'react';
+import { useRef } from 'react';
 
 export function IssueHeader(props) {
+  const dispatch = useDispatch();
+
   const { profilePic, firstName } = props.auth;
+  const projects = useSelector(state => state.bmProjects);
+
   const [activeTab, setActiveTab] = useState('info');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const searchRef = useRef(null);
+
+  useEffect(() => {
+    dispatch(fetchBMProjects());
+  }, [dispatch]);
+
+  const filteredProjects = projects.filter(project =>
+    project.name.toLowerCase().includes(searchTerm.toLowerCase()),
+  );
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setIsSearchFocused(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
     <div className="issue-header-container">
@@ -17,11 +46,11 @@ export function IssueHeader(props) {
         </div>
 
         <div className="action-section">
-          <button type="button" className="more-button" aria-label="More options">
+          <button className="more-button" type="button" label="More Button">
             <MoreHorizontal size={20} />
           </button>
           <Link to="/bmdashboard/projects" style={{ textDecoration: 'none' }}>
-            <button className="back-button" aria-label="Back to Project" type="button">
+            <button className="back-button" type="button">
               Back to Projects
             </button>
           </Link>
@@ -54,11 +83,41 @@ export function IssueHeader(props) {
           </button>
         </div>
 
-        <div className="search-container">
+        <div className="search-container" ref={searchRef}>
           <div className="search-icon">
             <Search size={20} />
           </div>
-          <input type="text" placeholder="Search..." className="search-input" />
+          <input
+            type="text"
+            placeholder="Search..."
+            className="search-input"
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            onFocus={() => setIsSearchFocused(true)}
+          />
+
+          {searchTerm && isSearchFocused && (
+            <div className="search-results">
+              {filteredProjects.length > 0 ? (
+                <div className="search-results-list">
+                  {filteredProjects.map(project => (
+                    <Link
+                      to={`/bmdashboard/projects/${project._id}`}
+                      key={project.id}
+                      style={{ textDecoration: 'none' }}
+                    >
+                      <div className="search-result-item">
+                        <span className="result-name">{project.name}</span>
+                        <span className="result-category">{project.category}</span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <div className="search-no-results">No matching projects found</div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

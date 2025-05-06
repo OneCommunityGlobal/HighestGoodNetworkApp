@@ -23,9 +23,9 @@ function PermissionChangeLogTable({ changeLogs, darkMode }) {
   };
 
   const formatName = name => {
-    if (name.startsWith('INDIVIDUAL:')) {
-      return name.replace('INDIVIDUAL:', '').trim();
-    }
+    // if (name.startsWith('INDIVIDUAL:')) {
+    //   return name.replace('INDIVIDUAL:', '').trim();
+    // }
     return name;
   };
 
@@ -122,9 +122,13 @@ function PermissionChangeLogTable({ changeLogs, darkMode }) {
                 )} ${formattedAmPmTime(log.logDateTime)}`}</td>
                 <td
                   className={`permission-change-log-table--cell ${bgYinmnBlue}`}
-                  style={{
-                    fontWeight: log.name.startsWith('INDIVIDUAL:') ? 'bold' : 'normal',
-                  }}
+                  style={
+                    {
+                      // Commented out the below code as log.name is undefined currently so accessing it causes the white
+                      // screen error on the Permissions Management page
+                      // fontWeight: log.name.startsWith('INDIVIDUAL:') ? 'bold' : 'normal',
+                    }
+                  }
                 >
                   {formatName(log.name)}
                 </td>
