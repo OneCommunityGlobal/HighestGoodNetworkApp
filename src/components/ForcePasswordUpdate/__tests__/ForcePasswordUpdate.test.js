@@ -1,5 +1,6 @@
 import { renderWithRouterMatch } from '../../../__tests__/utils.js';
 import '@testing-library/jest-dom/extend-expect';
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { createMemoryHistory } from 'history';
 import { rest } from 'msw';

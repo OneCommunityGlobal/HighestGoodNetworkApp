@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
@@ -17,6 +18,7 @@ const mockUser = {
   profilePic: 'test-pic.jpg',
 };
 
+// eslint-disable-next-line no-unused-vars
 const mockState = {
   auth: {
     user: mockUser,

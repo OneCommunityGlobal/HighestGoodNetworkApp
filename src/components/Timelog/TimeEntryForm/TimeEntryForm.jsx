@@ -27,6 +27,7 @@ import { getUserProfile } from 'actions/userProfile';
 import axios from 'axios';
 import hasPermission from 'utils/permissions';
 import { boxStyle, boxStyleDark } from 'styles';
+import { useDispatch } from 'react-redux';
 import { postTimeEntry, editTimeEntry, getTimeEntriesForWeek } from '../../../actions/timeEntries';
 import AboutModal from './AboutModal';
 import TangibleInfoModal from './TangibleInfoModal';
@@ -34,6 +35,7 @@ import ReminderModal from './ReminderModal';
 import TimeLogConfirmationModal from './TimeLogConfirmationModal';
 import { ENDPOINTS } from '../../../utils/URL';
 import '../../Header/DarkMode.css';
+import { updateIndividualTaskTime } from '../../TeamMemberTasks/actions';
 
 // Images are not allowed in timelog
 const customImageUploadHandler = () =>
@@ -67,6 +69,7 @@ function TimeEntryForm(props) {
   const { from, sendStop, edit, data, toggle, isOpen, tab, darkMode } = props;
   // props from store
   const { authUser } = props;
+  const dispatch = useDispatch();
 
   const viewingUser = JSON.parse(sessionStorage.getItem('viewingUser') ?? '{}');
 
@@ -232,13 +235,17 @@ function TimeEntryForm(props) {
 
   const handleEditorChange = (content, editor) => {
     const { wordcount } = editor.plugins;
-    const hasLink = content.indexOf('http://') > -1 || content.indexOf('https://') > -1;
+    const regexFilter = /https:\/\/(?!(www\.)?localhost|(www\.)?dropbox\.com(?!\/scl\/)|(www\.)?[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}.*$/gim;
+    const hasLink = regexFilter.test(content);
+    const dropboxRegex = /https:\/\/(www\.)?dropbox\.com/gim;
+    const hasDropboxLink = dropboxRegex.test(content);
     const enoughWords = wordcount.body.getWordCount() > 10;
     setFormValues(fv => ({ ...fv, [editor.id]: content }));
     setReminder(r => ({
       ...r,
       enoughWords,
       hasLink,
+      hasDropboxLink,
     }));
   };
 
@@ -260,10 +267,14 @@ function TimeEntryForm(props) {
       remindObj.remind =
         'Please write a more detailed description of your work completed, write at least 1-2 sentences.';
       errorObj.notes = 'Description and reference link are required';
-    } else if (!reminder.hasLink) {
+    } else if (!reminder.hasLink && !reminder.hasDropboxLink) {
       remindObj.remind =
         'Do you have a link to your Google Doc or other place to review this work? You should add it if you do. (Note: Please include http[s]:// in your URL)';
       errorObj.notes = 'Description and reference link are required';
+    } else if (!reminder.hasLink && reminder.hasDropboxLink) {
+      remindObj.remind =
+        'Halt, Link Wrangler! You’ve tried to share a DropBox link by just copying the DropBox URL from your browser, creating a link like a locked door with no key. Use the DropBox “Share” option to create a link that is guest-friendly!';
+      errorObj.notes = 'A valid Dropbox link from the “Share” option is required';
     }
 
     setErrors(errorObj);
@@ -303,7 +314,7 @@ function TimeEntryForm(props) {
   };
 
   const submitTimeEntry = async () => {
-    const { hours: formHours, minutes: formMinutes } = formValues;
+    const { hours: formHours, minutes: formMinutes, personId, taskId } = formValues;
     const timeEntry = { ...formValues };
     const isTimeModified = edit && (initialHours !== formHours || initialMinutes !== formMinutes);
 
@@ -329,6 +340,13 @@ function TimeEntryForm(props) {
         case 'Timer':
           sendStop();
           clearForm();
+          dispatch(
+            updateIndividualTaskTime({
+              newTime: { hours: formHours, minutes: formMinutes },
+              taskId,
+              personId,
+            }),
+          );
           break;
         case 'TimeLog': {
           const date = moment(formValues.dateOfWork);

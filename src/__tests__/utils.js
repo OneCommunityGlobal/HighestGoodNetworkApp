@@ -1,3 +1,5 @@
+/* eslint-env jest */
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { render as rtlRender } from '@testing-library/react';
 import { createStore, applyMiddleware, compose } from 'redux';
@@ -45,7 +47,9 @@ export function renderWithRouter(
   ui,
   { route = '/', history = createMemoryHistory({ initialEntries: [route] }) } = {},
 ) {
-  const Wrapper = ({ children }) => <Router history={history}>{children}</Router>;
+  function Wrapper({ children }) {
+  return <Router history={history}>{children}</Router>
+}
   return {
     ...rtlRender(ui, { wrapper: Wrapper }),
     history,
@@ -54,7 +58,9 @@ export function renderWithRouter(
 
 // Sleep function for waiting in tests
 export function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms)
+  });
 }
 
 // re-export everything from RTL for easy access

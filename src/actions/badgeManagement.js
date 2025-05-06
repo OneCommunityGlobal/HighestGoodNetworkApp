@@ -1,6 +1,6 @@
 import axios from 'axios';
-import moment from 'moment';
-import { formatDate } from 'utils/formatDate';
+import { toast } from 'react-toastify';
+import { formatDate } from '../utils/formatDate';
 import {
   GET_ALL_BADGE_DATA,
   ADD_SELECT_BADGE,
@@ -24,7 +24,6 @@ const getAllBadges = allBadges => ({
 });
 
 export const fetchAllBadges = () => {
-  const url = ENDPOINTS.BADGE();
   return async dispatch => {
     try {
       const response = await axios.get(ENDPOINTS.BADGE());
@@ -36,6 +35,39 @@ export const fetchAllBadges = () => {
   };
 };
 
+// Return updated badgeCollection
+export const returnUpdatedBadgesCollection = (badgeCollection, selectedBadgesId) => {
+  const personalMaxBadge = '666b78265bca0bcb94080605'; // backend id for Personal Max badge
+  const badgeMap = new Map(badgeCollection?.map(badge => [badge.badge, badge]));
+
+  const currentTs = Date.now();
+  const currentDate = formatDate();
+  selectedBadgesId.forEach(originalBadgeId => {
+    const badgeId = originalBadgeId.replace('assign-badge-', '');
+    if (badgeMap.has(badgeId)) {
+      // Update the existing badge record
+      if (badgeId !== personalMaxBadge) {
+        const badge = badgeMap.get(badgeId);
+        badge.count = (badge.count || 0) + 1;
+        badge.lastModified = currentTs;
+        badge.earnedDate.push(currentDate);
+      }
+    } else {
+      // Add the new badge record
+      badgeMap.set(badgeId, {
+        badge: badgeId,
+        count: 1,
+        lastModified: currentTs,
+        earnedDate: [currentDate],
+      });
+    }
+  });
+
+  return Array.from(badgeMap.values());
+};
+
+export const gotCloseAlert = () => ({ type: CLOSE_ALERT });
+
 const getBadgeCountSuccess = badgeCount => ({
   type: GET_BADGE_COUNT,
   payload: badgeCount,
@@ -46,8 +78,9 @@ export const getBadgeCount = userId => {
     try {
       const response = await axios.get(ENDPOINTS.BADGE_COUNT(userId));
       dispatch(getBadgeCountSuccess(response.data.count));
+      return response.data.count;
     } catch (err) {
-      return err.response.status;
+      return err.response?.status || 500;
     }
   };
 };
@@ -63,7 +96,7 @@ export const resetBadgeCount = userId => async dispatch => {
       });
     }
   } catch (error) {
-    console.error('Failed to reset badge count', error);
+    toast.error('Failed to reset badge count', error);
   }
 };
 
@@ -115,8 +148,6 @@ export const setActiveTab = tab => ({
   type: SET_ACTIVE_TAB,
   payload: tab,
 });
-
-export const gotCloseAlert = () => ({ type: CLOSE_ALERT });
 
 export const validateBadges = (firstName, lastName) => {
   return async dispatch => {
@@ -225,14 +256,9 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
       }
 
       const userData = Array.isArray(res.data) ? res.data[0] : res.data;
-      
+
       if (!userData || !userData._id || !userData.badgeCollection) {
-        dispatch(
-          getMessage(
-            "User data is incomplete. Cannot assign badges.",
-            'danger',
-          ),
-        );
+        dispatch(getMessage('User data is incomplete. Cannot assign badges.', 'danger'));
         setTimeout(() => {
           dispatch(closeAlert());
         }, 6000);
@@ -240,7 +266,7 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
       }
 
       const { badgeCollection } = userData;
-      for (let i = 0; i < badgeCollection.length; i++) {
+      for (let i = 0; i < badgeCollection.length; i += 1) {
         if (typeof badgeCollection[i].badge === 'object' && badgeCollection[i].badge) {
           badgeCollection[i].badge = badgeCollection[i].badge._id;
         }
@@ -252,7 +278,7 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
         badgeCollection: newBadgeCollection,
         newBadges: selectedBadges.length,
       });
-      
+
       dispatch(
         getMessage(
           "Awesomesauce! Not only have you increased a person's badges, you've also proportionally increased their life happiness!",
@@ -263,43 +289,13 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
         dispatch(closeAlert());
       }, 6000);
     } catch (e) {
-      console.error("Badge assignment error:", e);
+      toast.error('Badge assignment error:', e);
       dispatch(getMessage('Oops, something is wrong!', 'danger'));
       setTimeout(() => {
         dispatch(closeAlert());
       }, 6000);
     }
   };
-};
-// Return updated badgeCollection
-export const returnUpdatedBadgesCollection = (badgeCollection, selectedBadgesId) => {
-  const personalMaxBadge = '666b78265bca0bcb94080605'; // backend id for Personal Max badge
-  const badgeMap = new Map(badgeCollection?.map(badge => [badge.badge, badge]));
-
-  const currentTs = Date.now();
-  const currentDate = formatDate();
-  selectedBadgesId.forEach(originalBadgeId => {
-    const badgeId = originalBadgeId.replace('assign-badge-', '');
-    if (badgeMap.has(badgeId)) {
-      // Update the existing badge record
-      if (badgeId != personalMaxBadge) {
-        const badge = badgeMap.get(badgeId);
-        badge.count = (badge.count || 0) + 1;
-        badge.lastModified = currentTs;
-        badge.earnedDate.push(currentDate);
-      }
-    } else {
-      // Add the new badge record
-      badgeMap.set(badgeId, {
-        badge: badgeId,
-        count: 1,
-        lastModified: currentTs,
-        earnedDate: [currentDate],
-      });
-    }
-  });
-
-  return Array.from(badgeMap.values());
 };
 
 // Make API call to update badgeCollection
@@ -308,24 +304,26 @@ export const sendUpdatedBadgeCollectionReq = async (
   selectedBadges,
   userToBeAssignedBadge,
 ) => {
-  const url = ENDPOINTS.BADGE_ASSIGN(userToBeAssignedBadge);
-  try {
-    await axios.put(url, { badgeCollection, newBadges: selectedBadges.length });
-    dispatch(
-      getMessage(
-        "Awesomesauce! Not only have you increased a person's badges, you've also proportionally increased their life happiness!",
-        'success',
-      ),
-    );
-    setTimeout(() => {
-      dispatch(closeAlert());
-    }, 6000);
-  } catch (e) {
-    dispatch(getMessage('Oops, something is wrong!', 'danger'));
-    setTimeout(() => {
-      dispatch(closeAlert());
-    }, 6000);
-  }
+  return async dispatch => {
+    const url = ENDPOINTS.BADGE_ASSIGN(userToBeAssignedBadge);
+    try {
+      await axios.put(url, { badgeCollection, newBadges: selectedBadges.length });
+      dispatch(
+        getMessage(
+          "Awesomesauce! Not only have you increased a person's badges, you've also proportionally increased their life happiness!",
+          'success',
+        ),
+      );
+      setTimeout(() => {
+        dispatch(closeAlert());
+      }, 6000);
+    } catch (e) {
+      dispatch(getMessage('Oops, something is wrong!', 'danger'));
+      setTimeout(() => {
+        dispatch(closeAlert());
+      }, 6000);
+    }
+  };
 };
 
 export const changeBadgesByUserID = (userId, badgeCollection) => {
@@ -365,7 +363,7 @@ export const createNewBadge = newBadge => async dispatch => {
     }, 6000);
     dispatch(fetchAllBadges());
   } catch (e) {
-    if (e.response.status === 403 || 400) {
+    if (e.response.status === 403 || e.response.status === 400) {
       dispatch(getMessage(e.response.data.error, 'danger'));
       setTimeout(() => {
         dispatch(closeAlert());
@@ -382,9 +380,9 @@ export const createNewBadge = newBadge => async dispatch => {
 export const updateBadge = (badgeId, badgeData) => async dispatch => {
   try {
     await axios.put(ENDPOINTS.BADGE_BY_ID(badgeId), badgeData);
-    dispatch(fetchAllBadges());
+    // dispatch(fetchAllBadges());
   } catch (e) {
-    if (e.response.status === 403 || 400) {
+    if (e.response.status === 403 || e.response.status === 400) {
       dispatch(getMessage(e.response.data.error, 'danger'));
       setTimeout(() => {
         dispatch(closeAlert());
@@ -407,7 +405,7 @@ export const deleteBadge = badgeId => async dispatch => {
     }, 6000);
     dispatch(fetchAllBadges());
   } catch (e) {
-    if (e.response.status === 403 || 400) {
+    if (e.response.status === 403 || e.response.status === 400) {
       dispatch(getMessage(e.response.data.error, 'danger'));
       setTimeout(() => {
         dispatch(closeAlert());

@@ -323,3 +323,4 @@ describe('Login behavior', () => {
     expect(pushSpy).toHaveBeenCalledWith('/dashboard');
   });
 });
+

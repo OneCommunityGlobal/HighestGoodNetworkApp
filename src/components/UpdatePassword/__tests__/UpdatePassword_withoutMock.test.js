@@ -43,9 +43,8 @@ const server = setupServer(
     return res(ctx.status(400), ctx.json({ error: errorMessages.error400Respnse }));
   }),
   rest.get('*', (req, res, ctx) => {
-    console.error(
-      `Please add request handler for ${req.url.toString()} in your MSW server requests.`,
-    );
+    // eslint-disable-next-line no-unused-vars
+    const unused = `Unhandled request: ${req.url.toString()}`;
     return res(ctx.status(500), ctx.json({ error: 'You must add request handler.' }));
   }),
 );
@@ -81,7 +80,11 @@ describe("<UpdatePassword/>' behavior", () => {
     toast.success = jest.fn();
     toast.error = jest.fn();
     renderWithRouterMatch(
-      <Route path="/updatepassword/:userId">{props => <UpdatePassword {...props} />}</Route>,
+      <Route path="/updatepassword/:userId">
+        {({ match, history, location }) => (
+          <UpdatePassword match={match} history={history} location={location} />
+        )}
+      </Route>,
       {
         route: `/updatepassword/${userID}`,
         initialState: {

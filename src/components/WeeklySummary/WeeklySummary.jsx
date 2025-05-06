@@ -1041,7 +1041,7 @@ schema = Joi.object({
                       />
                       <label
                         htmlFor="mediaConfirm"
-                        style={{ marginLeft: '10px', marginTop: '2px', lineHeight: '1.5',cursor: 'pointer', }} className={darkMode ? 'text-light' : 'text-dark'}>
+                        style={{ marginLeft: '10px', lineHeight: '1.5',cursor: 'pointer', }} className={darkMode ? 'text-light' : 'text-dark'}>
                         I have provided a minimum of 4 screenshots (6-10 preferred) of this
                         week&apos;s work. (required)
                       </label>
@@ -1068,7 +1068,7 @@ schema = Joi.object({
                       />
                       <label
                         htmlFor="editorConfirm"
-                        style={{ marginLeft: '10px', marginTop: '2px', lineHeight: '1.5', cursor: 'pointer',}} className={darkMode ? 'text-light' : 'text-dark'}>
+                        style={{ marginLeft: '10px', lineHeight: '1.5', cursor: 'pointer',}} className={darkMode ? 'text-light' : 'text-dark'}>
                          I used GPT (or other AI editor) with the most current prompt.
                       </label>
                     </FormGroup>
@@ -1094,7 +1094,7 @@ schema = Joi.object({
                       />
                       <label
                         htmlFor="proofreadConfirm"
-                        style={{ marginLeft: '10px', marginTop: '2px', lineHeight: '1.5', cursor: 'pointer', }} className={darkMode ? 'text-light' : 'text-dark'}>
+                        style={{ marginLeft: '10px', lineHeight: '1.5', cursor: 'pointer', }} className={darkMode ? 'text-light' : 'text-dark'}>
                          I proofread my weekly summary.
                       </label>
                     </FormGroup>
