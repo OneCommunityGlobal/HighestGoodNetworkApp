@@ -9,18 +9,22 @@ import { addNewWBS } from './../../../../actions/wbs';
 import hasPermission from 'utils/permissions';
 
 const AddWBS = props => {
-  const [showAddButton, setShowAddButton] = useState(false);
+  const darkMode = props.state.theme.darkMode;
   const [newName, setNewName] = useState('');
+  const [showAddButton, setShowAddButton] = useState(false);
   const canPostWBS = props.hasPermission('postWbs');
-  const { darkMode } = props.state.theme;
 
-  const changeNewName = newName => {
-    if (newName.length !== 0) {
-      setShowAddButton(true);
-    } else {
+  const changeNewName = value => {
+    setNewName(value);
+    setShowAddButton(value.length >= 3);
+  };
+
+  const handleAddWBS = () => {
+    if (newName.length >= 3) {
+      props.addNewWBS(props.projectId, newName);
+      setNewName('');
       setShowAddButton(false);
     }
-    setNewName(newName);
   };
 
   return (
@@ -28,7 +32,7 @@ const AddWBS = props => {
       {canPostWBS ? (
         <div className="input-group" id="new_project">
           <div className="input-group-prepend">
-          <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue border-0 text-light' : ''}`}>Add new WBS</span>
+            <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue border-0 text-light' : ''}`}>Add new WBS</span>
           </div>
 
           <input
@@ -44,11 +48,18 @@ const AddWBS = props => {
               <button
                 className="btn btn-outline-primary"
                 type="button"
-                onClick={e => props.addNewWBS(newName, props.projectId)}
+                onClick={handleAddWBS}
+                data-testid="add-wbs-button"
               >
                 <i className="fa fa-plus" aria-hidden="true"></i>
               </button>
             ) : null}
+            <button className="btn btn-primary" type="button" onClick={props.onSortAscending}>
+              A ↓
+            </button>
+            <button className="btn btn-primary" type="button" onClick={props.onSortDescending}>
+              D ↑
+            </button>
           </div>
         </div>
       ) : null}

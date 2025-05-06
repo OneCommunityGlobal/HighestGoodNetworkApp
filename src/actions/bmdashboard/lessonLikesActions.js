@@ -1,7 +1,8 @@
-import axios from "axios";
-import { ENDPOINTS } from "utils/URL";
-import { fetchBMLessons} from "./lessonsAction";
-import {BM_LESSON_LIKES} from '../../constants/bmdashboard/lessonConstants'
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import { ENDPOINTS } from '../../utils/URL';
+import { fetchBMLessons } from './lessonsAction';
+import { BM_LESSON_LIKES } from '../../constants/bmdashboard/lessonConstants';
 
 export const likeLessonAction = (lessonIndex, userId) => {
   const url = ENDPOINTS.BM_LESSON_LIKES(lessonIndex);
@@ -11,23 +12,21 @@ export const likeLessonAction = (lessonIndex, userId) => {
         lessonIndex,
         userId,
       });
-      
-      if (response.status === 200) {
-        dispatch(fetchBMLessons())
 
+      if (response.status === 200) {
+        dispatch(fetchBMLessons());
       } else {
-        console.error('Unexpected response status:', response.status);
+        toast.error('Unexpected response status:', response.status);
       }
     } catch (error) {
-      console.error('Error liking lesson:', error);
+      toast.error('Error liking lesson:', error);
     }
   };
 };
 
-
 export const setLikes = payload => {
   return {
     type: BM_LESSON_LIKES,
-    payload
-  }
-}
+    payload,
+  };
+};
