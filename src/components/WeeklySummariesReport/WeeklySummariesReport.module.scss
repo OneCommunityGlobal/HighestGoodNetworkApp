@@ -48,18 +48,19 @@
 
 .filterContainer {
   display: flex;
-  justify-content: flex-start;
+  justify-content: flex-end;
   flex-wrap: wrap;
   align-items: center;
-  gap: 20px;
+  gap: 12px;
   margin-top: 10px;
 }
 
 .selectAllDotsWrapper {
   display: flex;
   align-items: center;
-  margin-top: 10px;
-  margin-left: 5px;
+  font-size: 0.9em;
+  font-weight: bold;
+  gap: 6px;
 }
 
 .selectAllLabel {
