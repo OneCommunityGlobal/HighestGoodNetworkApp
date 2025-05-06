@@ -73,7 +73,7 @@ import Toolslist from './components/BMDashboard/Tools/ToolsList';
 import AddTool from './components/BMDashboard/Tools/AddTool';
 import AddTeamMember from './components/BMDashboard/AddTeamMember/AddTeamMember';
 import Issue from './components/BMDashboard/Issue/Issue';
-import UtilizationChart from 'components/BMDashboard/UtilizationChart/UtilizationChart';
+import UtilizationChart from './components/BMDashboard/UtilizationChart/UtilizationChart';
 
 // Community Portal
 import CPProtectedRoute from './components/common/CPDashboard/CPProtectedRoute';
