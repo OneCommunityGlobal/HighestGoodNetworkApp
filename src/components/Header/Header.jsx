@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 // import { getUserProfile } from '../../actions/userProfile'
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
@@ -74,6 +74,8 @@ export function Header(props) {
   const [displayUserId, setDisplayUserId] = useState(user.userid);
   const [popup, setPopup] = useState(false);
   const [isAuthUser, setIsAuthUser] = useState(true);
+  const collapseRef = useRef(null);
+  const toggleRef = useRef(null);
 
   const ALLOWED_ROLES_TO_INTERACT = useMemo(() => ['Owner', 'Administrator'], []);
   const canInteractWithViewingUser = useMemo(
@@ -300,6 +302,26 @@ export function Header(props) {
     setShowProjectDropdown(location.pathname.startsWith('/bmdashboard/projects/'));
   }, [location.pathname]);
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        collapseRef.current && 
+        !collapseRef.current.contains(event.target) &&
+        !toggleRef.current?.contains(event.target)
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
+
   const fontColor = darkMode ? 'dark-dropdown-text dark-dropdown-item' : 'mobile-dropdown-text mobile-dropdown-item';
 
   if (location.pathname === '/login') return null;
@@ -317,15 +339,18 @@ export function Header(props) {
         </div>
         {/* --------------------------------------------- */}
 
-        <NavbarToggler onClick={toggle} />
+        <div ref={toggleRef}>
+          <NavbarToggler onClick={toggle} className='mr-3'/>
+        </div>
+
         {isAuthenticated && (
-          <Collapse isOpen={isOpen} navbar>
+          <Collapse isOpen={isOpen} navbar innerRef={collapseRef}>
             {isAuthenticated && (
               <div className="navbar-owner-message">
                 <OwnerMessage />
               </div>
             )}
-            <Nav className="ml-auto menu-container" navbar>
+            <Nav className="ml-auto menu-container mr-3" navbar>
               <NavItem className="show-in-mobile">
                 <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
                   <img
