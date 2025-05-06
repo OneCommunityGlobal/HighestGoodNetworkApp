@@ -1,12 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import {
-  Chart as ChartJS,
-  BarElement,
-  CategoryScale,
-  LinearScale,
-  Tooltip,
-  Title,
-} from 'chart.js';
+import { useState, useEffect } from 'react';
+import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Title} from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -76,7 +69,7 @@ function UtilizationChart() {
     },
     onClick: (evt, elements) => {
       if (elements.length > 0) {
-        const index = elements[0].index;
+        const [{ index }] = elements;
         const selectedTool = toolsData[index];
         window.location.href = `/tools/${selectedTool.id}/details`;
       }
@@ -112,14 +105,12 @@ function UtilizationChart() {
         <DatePicker selected={startDate} onChange={setStartDate} placeholderText="From Date" />
         <DatePicker selected={endDate} onChange={setEndDate} placeholderText="To Date" />
 
-        <button onClick={handleApplyClick}>Apply</button>
+        <button type= "button" onClick={handleApplyClick}>Apply</button>
       </div>
 
-      {error ? (
-        <p>{error}</p>
-      ) : (
-        <Bar data={chartData} options={options} />
-      )}
+      {error ?
+        <p>{error}</p> : <Bar data={chartData} options={options} />
+      }
     </div>
   );
 }
