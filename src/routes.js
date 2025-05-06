@@ -88,9 +88,6 @@ import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
 import EPDashboard from './components/EductionPortal';
 
-
-
-
 // eslint-disable-next-line import/order, import/no-unresolved
 import LogTools from './components/BMDashboard/LogTools/LogTools';
 import EquipmentUpdate from './components/BMDashboard/Tools/EquipmentUpdate';
@@ -456,6 +453,7 @@ export default (
         <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
         <Route path="/Logout" component={Logout} />
         <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
+
         <ProtectedRoute path="/hgnform" exact component={Page1} />
         <ProtectedRoute path="/hgnform/page2" exact component={Page2} />
         <ProtectedRoute path="/hgnform/page3" exact component={Page3} />
@@ -470,6 +468,7 @@ export default (
         <ProtectedRoute path="/tsaformpage6" exact component={TSAFormPage6} />
         <ProtectedRoute path="/tsaformpage7" exact component={TSAFormPage7} />
         <ProtectedRoute path="/tsaformpage8" exact component={TSAFormPage8} />
+
         <ProtectedRoute path="/" exact component={Dashboard} />
         <Route path="*" component={NotFoundPage} />
       </Switch>
