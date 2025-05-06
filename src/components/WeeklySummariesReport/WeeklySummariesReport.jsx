@@ -143,7 +143,7 @@ export class WeeklySummariesReport extends Component {
       const promisedHoursByWeek = this.weekDates.map(weekDate =>
         this.getPromisedHours(weekDate.toDate, summary.weeklycommittedHoursHistory),
       );
-      return { ...summary, promisedHoursByWeek };
+      return { ...summary, promisedHoursByWeek, isDeactivated: !summary.isActive };
     });
 
     /*
@@ -437,7 +437,12 @@ export class WeeklySummariesReport extends Component {
       // const matchesSelectedUsers = selectedUserIds.size === 0 || selectedUserIds.has(summary._id);
       const matchesSpecialColor =
         activeFilterColors.length === 0 || activeFilterColors.includes(summary.filterColor);
+
+      const isLastWeekTab = activeTab === 'last week';
+      const isDeactivated = !summary.isActive;
+      const includeDeactivated = isLastWeekTab && isDeactivated;
       return (
+        (includeDeactivated || !isDeactivated) &&
         (selectedCodesArray.length === 0 || selectedCodesArray.includes(summary.teamCode)) &&
         (selectedColorsArray.length === 0 ||
           selectedColorsArray.includes(summary.weeklySummaryOption)) &&
@@ -805,11 +810,11 @@ export class WeeklySummariesReport extends Component {
     return (
       <Container
         fluid
+
         className={cn(
           styles.containerWsrWrapper,
           `py-3 mb-5 ${darkMode ? 'bg-oxford-blue text-light' : styles.bgWhiteSmoke}`,
-        )}
-      >
+        )}>
         {this.passwordInputModalToggle()}
         {this.popUpElements()}
         <Row>
@@ -832,18 +837,18 @@ export class WeeklySummariesReport extends Component {
         </Row>
         {(authEmailWeeklySummaryRecipient === authorizedUser1 ||
           authEmailWeeklySummaryRecipient === authorizedUser2) && (
-          <Row className="d-flex justify-content-center mb-3">
-            <Button
-              color="primary"
-              className="permissions-management__button"
-              type="button"
-              onClick={() => this.onClickRecepients()}
-              style={darkMode ? boxStyleDark : boxStyle}
-            >
-              Weekly Summary Report Recipients
-            </Button>
-          </Row>
-        )}
+            <Row className="d-flex justify-content-center mb-3">
+              <Button
+                color="primary"
+                className="permissions-management__button"
+                type="button"
+                onClick={() => this.onClickRecepients()}
+                style={darkMode ? boxStyleDark : boxStyle}
+              >
+                Weekly Summary Report Recipients
+              </Button>
+            </Row>
+          )}
         <Row>
           <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }} xs={{ size: 6 }}>
             <div className={styles.filterContainerTeamcode}>
@@ -931,6 +936,7 @@ export class WeeklySummariesReport extends Component {
                 </div>
               )}
               {hasPermissionToFilter && (
+
                 <div className={styles.filterStyle}>
                   <span>Filter by Over Hours</span>
                   <SlideToggle

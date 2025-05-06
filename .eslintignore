@@ -24,3 +24,8 @@ src/components/TeamMemberTasks/**
 src/components/Teams/TeamMembersPopup.jsx
 src/components/UserManagement/**
 src/components/UserProfile/**
+src/components/Announcements/**
+src/components/EmailSubscribeForm/**
+src/components/Dashboard/**
+src/components/WeeklySummariesReport/**
+
