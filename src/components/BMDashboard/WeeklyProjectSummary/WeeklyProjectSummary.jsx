@@ -190,19 +190,19 @@ export default function WeeklyProjectSummary() {
         className: 'small',
         content: <div className="weekly-project-summary-card normal-card">📊 Card</div>,
       },
-       {
-      title: 'Tools and Equipment Tracking',
-      key: 'Tools and Equipment Tracking',
-      className: 'half',
-      content: (
-        <div className="weekly-project-summary-card normal-card tools-tracking-layout">
-          <div className="tools-donut-wrap">
-            <ToolStatusDonutChart />
+      {
+        title: 'Tools and Equipment Tracking',
+        key: 'Tools and Equipment Tracking',
+        className: 'half',
+        content: (
+          <div className="weekly-project-summary-card normal-card tools-tracking-layout">
+            <div className="tools-donut-wrap">
+              <ToolStatusDonutChart />
+            </div>
+            <div className="tools-card-wrap">Card</div>
           </div>
-          <div className="tools-card-wrap">Card</div>
-        </div>
-      ),
-    },
+        ),
+      },
       {
         title: 'Lessons Learned',
         key: 'Lessons Learned',

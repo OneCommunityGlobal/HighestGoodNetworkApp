@@ -337,7 +337,6 @@
   .weekly-project-summary-dashboard-grid {
     grid-template-columns: 1fr;
   }
-}
 
   .weekly-project-summary-dashboard-section.full,
   .weekly-project-summary-dashboard-section.large,
