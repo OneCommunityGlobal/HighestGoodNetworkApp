@@ -251,6 +251,11 @@ export const ENDPOINTS = {
   // lb dashboard endpoints
   LB_REGISTER: `${APIEndpoint}/lbdashboard/register`,
   LB_LOGIN: `${APIEndpoint}/lbdashboard/login`,
+
+  // social media poster api
+  POST_TWEETS: `${APIEndpoint}/createTweet`,
+  SCHEDULE_TWEETS: `${APIEndpoint}/scheduleTweet`,
+  SOCIAL_MEDIA_POSTS: `${APIEndpoint}/posts`,
 };
 
 export const ApiEndpoint = APIEndpoint;

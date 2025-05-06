@@ -88,7 +88,7 @@ import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
 import EPDashboard from './components/EductionPortal';
 
-
+import SocialMediaPostDetails from './components/Announcements/SocialMediaPostDetails'
 
 
 // eslint-disable-next-line import/order, import/no-unresolved
@@ -454,6 +454,8 @@ export default (
         <ProtectedRoute path="/userprofile/:userId" fallback component={UserProfile} />
         <ProtectedRoute path="/userprofileedit/:userId" component={UserProfileEdit} />
         <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
+        <ProtectedRoute path="/socialMediaPosts/:postId" component={SocialMediaPostDetails} />
+        
         <Route path="/Logout" component={Logout} />
         <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
         <ProtectedRoute path="/hgnform" exact component={Page1} />
