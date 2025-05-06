@@ -8,11 +8,7 @@ import { toast } from 'react-toastify';
 import { FaInstagramSquare } from 'react-icons/fa';
 // import { get } from 'lodash';
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
-import {
-  loadFacebookSDK,
-  logInToFB,
-  logOutFromFB /* loginToInstagram */,
-} from './InstagramPostDetails';
+import InstagramLoginButton from './InstagramPostComponent/loginToInstagram';
 
 function Announcements({ title, email }) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -34,61 +30,61 @@ function Announcements({ title, email }) {
     setTimeout(() => setShowEditor(true), 0);
   }, [darkMode]);
 
-  useEffect(() => {
-    loadFacebookSDK();
-  }, []);
+  // useEffect(() => {
+  //   loadFacebookSDK();
+  // }, []);
 
   // Check if the user is logged in to Facebook and get the access token
-  useEffect(() => {
-    const checkLoginStatus = () => {
-      if (window.FB) {
-        window.FB.getLoginStatus(response => {
-          setFacebookUserAccessToken(response.authResponse?.accessToken);
-        });
-      }
-    };
-    if (window.FB) {
-      checkLoginStatus();
-    } else {
-      window.fbAsyncInit = function() {
-        checkLoginStatus();
-      };
-    }
-  }, []);
+  // useEffect(() => {
+  //   const checkLoginStatus = () => {
+  //     if (window.FB) {
+  //       window.FB.getLoginStatus(response => {
+  //         setFacebookUserAccessToken(response.authResponse?.accessToken);
+  //       });
+  //     }
+  //   };
+  //   if (window.FB) {
+  //     checkLoginStatus();
+  //   } else {
+  //     window.fbAsyncInit = function() {
+  //       checkLoginStatus();
+  //     };
+  //   }
+  // }, []);
 
-  const exchangeCodeForToken = async code => {
-    try {
-      const response = await fetch('/api/instagram/exchange-token', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ code }),
-      });
-      const data = await response.json();
+  // const exchangeCodeForToken = async code => {
+  //   try {
+  //     const response = await fetch('/api/instagram/exchange-token', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify({ code }),
+  //     });
+  //     const data = await response.json();
 
-      if (data.access_token) {
-        setInstagramUserAccessToken(data.access_token);
-        toast.success('Instagram access token received successfully!');
-      } else {
-        toast.error('Failed to receive Instagram access token.');
-      }
-    } catch (error) {
-      // console.error('Error exchanging code for token:', error);
-      toast.error('Error exchanging code for token.');
-    }
-  };
+  //     if (data.access_token) {
+  //       setInstagramUserAccessToken(data.access_token);
+  //       toast.success('Instagram access token received successfully!');
+  //     } else {
+  //       toast.error('Failed to receive Instagram access token.');
+  //     }
+  //   } catch (error) {
+  //     // console.error('Error exchanging code for token:', error);
+  //     toast.error('Error exchanging code for token.');
+  //   }
+  // };
 
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get('code');
+  // useEffect(() => {
+  //   const urlParams = new URLSearchParams(window.location.search);
+  //   const code = urlParams.get('code');
 
-    if (code) {
-      exchangeCodeForToken(code);
+  //   if (code) {
+  //     exchangeCodeForToken(code);
 
-      window.history.replaceState({}, document.title, window.location.pathname);
-    }
-  }, []);
+  //     window.history.replaceState({}, document.title, window.location.pathname);
+  //   }
+  // }, []);
 
   const editorInit = {
     license_key: 'gpl',
@@ -191,14 +187,25 @@ function Announcements({ title, email }) {
 
   const addImageToEmailContent = e => {
     const imageFile = document.querySelector('input[type="file"]').files[0];
+    if (!imageFile) {
+      toast.error('Please select a file first');
+      return;
+    }
     convertImageToBase64(imageFile, base64Image => {
       const imageTag = `<img src="${base64Image}" alt="Header Image" style="width: 100%; max-width: 100%; height: auto;">`;
       setHeaderContent(prevContent => `${imageTag}${prevContent}`);
-      const editor = tinymce.current.get('email-editor');
+      const editor = window.tinymce.get('email-editor');
       if (editor) {
         editor.insertContent(imageTag);
         setEmailContent(editor.getContent());
+      } else {
+        toast.warning('Editor not ready. Please try again in a moment.');
       }
+      // const editor = tinymce.current.get('email-editor');
+      // if (editor) {
+      //   editor.insertContent(imageTag);
+      //   setEmailContent(editor.getContent());
+      // }
     });
     e.target.value = '';
   };
@@ -277,7 +284,7 @@ function Announcements({ title, email }) {
                 type="button"
                 className="instagram-button"
                 onClick={() => {
-                  // console.log('instagram button clicked'); // REPLACE ME
+                  console.log('instagram button clicked'); // REPLACE ME
                 }}
                 aria-label="instagram button"
               >
@@ -291,12 +298,23 @@ function Announcements({ title, email }) {
                 type="button"
                 className="instagram-button"
                 onClick={() => {
-                  // console.log('instagram button clicked'); // REPLACE ME
+                  console.log('instagram button clicked'); // REPLACE ME
+                  console.log('email content: ', emailContent);
+                  console.log('header content: ', headerContent);
                 }}
                 aria-label="instagram button"
               >
                 <FaInstagramSquare size={50} className="instagram-icon" />
               </button>
+              <InstagramLoginButton
+                className="instagram-login-button"
+                appId={process.env.REACT_APP_INSTAGRAM_CLIENT_ID}
+                redirectUri={process.env.REACT_APP_INSTAGRAM_REDIRECT_URI}
+                scope={process.env.REACT_APP_INSTAGRAM_SCOPE}
+                onLoginSuccess={() => {
+                  console.log('Instagram login successful!');
+                }}
+              />
             </div>
           )}
 
@@ -387,7 +405,7 @@ function Announcements({ title, email }) {
           />
         </div>
       </div>
-      <h3>Log in with Facebook</h3>
+      {/* <h3>Log in with Facebook</h3>
       {facebookUserAccessToken ? (
         <div>
           <button
@@ -419,7 +437,7 @@ function Announcements({ title, email }) {
         aria-label="Login to Instagram"
       >
         {instagramUserAccessToken ? 'Log out of Instagram' : 'Log in to Instagram'}
-      </button>
+      </button> */}
     </div>
   );
 }
