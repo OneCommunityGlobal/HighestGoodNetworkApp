@@ -1,13 +1,16 @@
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { shallow } from 'enzyme';
-import { render, screen, waitFor, fireEvent} from '@testing-library/react';
-import userEvent from '@testing-library/user-event'
-import WeeklySummaryModal from '../WeeklySummaryModal';
-import configureMockStore from "redux-mock-store";
-import { Provider } from "react-redux";
-import mockState from '../../../__tests__/mockAdminState.js';
+// eslint-disable-next-line no-unused-vars
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+// eslint-disable-next-line no-unused-vars
+import userEvent from '@testing-library/user-event';
+import configureMockStore from 'redux-mock-store';
+import { Provider } from 'react-redux';
 import { themeMock } from '__tests__/mockStates';
 import thunk from 'redux-thunk';
+import mockState from '../../../__tests__/mockAdminState';
+import WeeklySummaryModal from '../WeeklySummaryModal';
 
 const mockStore = configureMockStore([thunk]);
 const store = mockStore({
@@ -21,12 +24,11 @@ const store = mockStore({
 });
 
 describe('WeeklySummaryModal Component', () => {
-
   it('should render the component without errors', () => {
     const wrapper = shallow(
       <Provider store={store}>
         <WeeklySummaryModal />
-      </Provider>
+      </Provider>,
     );
     expect(wrapper.exists()).toBe(true);
   });
@@ -35,15 +37,14 @@ describe('WeeklySummaryModal Component', () => {
     render(
       <Provider store={store}>
         <WeeklySummaryModal />
-      </Provider>
+      </Provider>,
     );
 
     // The button/div that triggers the modal toggle
+    // eslint-disable-next-line no-unused-vars
     const triggerElement = screen.getByRole('button', { name: /toggle weekly summary/i });
 
     // Initial state: Modal should not be in the document
     expect(screen.queryByText(/weekly summary/i)).not.toBeInTheDocument();
-
   });
-
 });
