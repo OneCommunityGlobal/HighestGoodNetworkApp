@@ -1,4 +1,3 @@
-
 import userProjectMembersReducer from '../userProjectMembersReducer';
 
 describe('userProjectMembersReducer', () => {
