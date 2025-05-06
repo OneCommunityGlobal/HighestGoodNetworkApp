@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
 import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
-import ExpenseBarChart from './Financials/ExpenseBarChart';   
+import ExpenseBarChart from './Financials/ExpenseBarChart';
 
 const projectStatusButtons = [
   {
@@ -231,7 +231,7 @@ export default function WeeklyProjectSummary() {
             <div className="weekly-project-summary-card financial-big">📊 Big Card</div>
           </div>
         ),
-      },           
+      },
       {
         title: 'Loss Tracking',
         key: 'Loss Tracking',
@@ -265,7 +265,7 @@ export default function WeeklyProjectSummary() {
     ],
     [quantityOfMaterialsUsedData],
   );
-  
+
   return (
     <div className={`weekly-project-summary-container ${darkMode ? 'dark-mode' : ''}`}>
       <WeeklyProjectSummaryHeader />
