@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
+import { fetchToolAvailability, fetchTools } from '../../../actions/bmdashboard/toolActions';
 import './WeeklyProjectSummary.css';
 
 const COLORS = {
@@ -8,15 +10,7 @@ const COLORS = {
   MAINTENANCE: '#6DC5DA',
 };
 
-const rawData = [
-  { name: 'AVAILABLE', value: 5 },
-  { name: 'USED', value: 20 },
-  { name: 'MAINTENANCE', value: 5 },
-];
-
-const total = rawData.reduce((sum, d) => sum + d.value, 0);
 const RADIAN = Math.PI / 180;
-
 const renderCustomizedLabel = ({ cx, cy, midAngle, outerRadius, percent, width }) => {
   const isSmall = width <= 768;
   if (isSmall) return null;
@@ -40,7 +34,21 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, outerRadius, percent, width }
 };
 
 export default function ToolStatusDonutChart() {
+  const dispatch = useDispatch();
+  const toolslist = useSelector(state => state.tools.toolslist);
+  const availabilityData = useSelector(state => state.toolAvailability.availabilityData);
+
+  const [toolId, setToolId] = useState('');
+  const [projectId, setProjectId] = useState('');
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    dispatch(fetchTools());
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(fetchToolAvailability(toolId, projectId));
+  }, [dispatch, toolId, projectId]);
 
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
@@ -49,12 +57,35 @@ export default function ToolStatusDonutChart() {
   }, []);
 
   const isXS = windowWidth <= 480;
+  const chartData = availabilityData?.data || [];
+  const total = availabilityData?.total || 0;
+
+  const toolsFromAvailability = availabilityData?.tools;
+  const allTools =
+    Array.isArray(toolsFromAvailability) && toolsFromAvailability.length
+      ? toolsFromAvailability
+      : toolslist;
+
+  const uniqueProjects = Array.from(
+    new Map(
+      allTools
+        .filter(t => t?.projectId)
+        .map(t => [t.projectId, { id: t.projectId, name: t.projectName || 'Unnamed Project' }]),
+    ).values(),
+  );
+
+  const uniqueTools = Array.from(
+    new Map(
+      allTools
+        .filter(t => t?.toolId)
+        .map(t => [t.toolId, { id: t.toolId, name: t.name || 'Unnamed Tool' }]),
+    ).values(),
+  );
 
   let innerRadius;
   let outerRadius;
   let chartHeight;
-
-  if (windowWidth <= 480) {
+  if (isXS) {
     innerRadius = 35;
     outerRadius = 60;
     chartHeight = 240;
@@ -74,52 +105,52 @@ export default function ToolStatusDonutChart() {
 
       <div className="tool-donut-filters">
         <div className="filter-item">
-          <div className="filter-label">
-            <span className="dropdown-arrow">⌄</span>
-            <span>Tool/Equipment Name</span>
-          </div>
-          <div className="filter-value">4” Bristle Brush</div>
+          <label htmlFor="tool-select">Tool/Equipment Name</label>
+          <select id="tool-select" value={toolId} onChange={e => setToolId(e.target.value)}>
+            <option value="">All</option>
+            {uniqueTools.map(tool => (
+              <option key={`tool-${tool.id}`} value={tool.id}>
+                {tool.name}
+              </option>
+            ))}
+          </select>
         </div>
+
         <div className="filter-item">
-          <div className="filter-label">
-            <span className="dropdown-arrow">⌄</span>
-            <span>Project</span>
-          </div>
-          <div className="filter-value">ALL</div>
-        </div>
-        <div className="filter-item">
-          <div className="filter-label">
-            <span className="dropdown-arrow">⌄</span>
-            <span>Dates</span>
-          </div>
-          <div className="filter-value">ALL</div>
+          <label htmlFor="project-select">Project</label>
+          <select
+            id="project-select"
+            value={projectId}
+            onChange={e => setProjectId(e.target.value)}
+          >
+            <option value="">All</option>
+            {uniqueProjects.map(project => (
+              <option key={`project-${project.id}`} value={project.id}>
+                {project.name}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 
       <ResponsiveContainer width="100%" height={chartHeight}>
-        <PieChart
-          margin={{
-            top: 30,
-            bottom: 30,
-            left: isXS ? 30 : 40,
-            right: isXS ? 30 : 40,
-          }}
-        >
+        <PieChart margin={{ top: 30, bottom: 30, left: isXS ? 30 : 40, right: isXS ? 30 : 40 }}>
           <Pie
-            data={rawData}
+            data={chartData}
             cx="50%"
             cy="50%"
             innerRadius={innerRadius}
             outerRadius={outerRadius}
             labelLine={false}
             label={props => renderCustomizedLabel({ ...props, width: windowWidth })}
-            dataKey="value"
+            dataKey="count"
             isAnimationActive={false}
           >
-            {rawData.map(entry => (
-              <Cell key={entry.name} fill={COLORS[entry.name]} />
+            {chartData.map(entry => (
+              <Cell key={entry.status} fill={COLORS[entry.status.toUpperCase()]} />
             ))}
           </Pie>
+
           <text
             x="50%"
             y="50%"
@@ -140,15 +171,13 @@ export default function ToolStatusDonutChart() {
       </ResponsiveContainer>
 
       <div className="tool-donut-legend">
-        {rawData.map(entry => (
+        {chartData.map(entry => (
           <div
-            key={entry.name}
+            key={entry.status}
             className="tool-donut-legend-item"
-            style={{
-              backgroundColor: COLORS[entry.name],
-            }}
+            style={{ backgroundColor: COLORS[entry.status.toUpperCase()] }}
           >
-            {entry.name}
+            {entry.status}
           </div>
         ))}
       </div>
