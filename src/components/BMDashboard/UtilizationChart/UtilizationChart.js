@@ -105,7 +105,7 @@ function UtilizationChart() {
         <DatePicker selected={startDate} onChange={setStartDate} placeholderText="From Date" />
         <DatePicker selected={endDate} onChange={setEndDate} placeholderText="To Date" />
 
-        <button type= "button" onClick={handleApplyClick}>
+        <button type="button" onClick={handleApplyClick}>
           Apply
         </button>
       </div>
