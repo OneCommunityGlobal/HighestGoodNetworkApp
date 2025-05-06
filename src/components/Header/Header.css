@@ -3,26 +3,43 @@
   width: clamp(100vw, 0.1rem + 1vw, 100%);
 }
 
-close-button {
+.close-button {
   position: absolute;
   top: 0;
   left: 0;
-  padding: 12px; /* Add some padding for easier clicking */
+  padding: 12px;
 }
 
 .card-content {
+  padding: 5px;
+  padding-left: 40px;
+  padding-right: 30px;
+  white-space: pre-line;
+  color: rgb(221, 214, 214);
+  font-size: medium;
+}
+.card-contents {
   padding: 5px; /* Add padding around the card content */
   padding-left: 40px;
   padding-right: 40px;
   white-space: pre-line;
-  color: white;
+  color: rgb(23, 19, 19);
   font-size: medium;
 }
 
+.card {
+  margin-left: 35px;
+  margin-right: 50px;
+}
+
+.card-wrapper {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
 .navbar {
-  /* z-index: 100; */
+  z-index: 100;
   white-space: nowrap;
-  /* margin-bottom: 20px; */
 }
 
 .timer-message-section {
@@ -92,21 +109,13 @@ close-button {
 }
 
 @media screen and (min-width: 1400px) and (max-width: 1700px) {
-  /* .owner-message {
+  .owner-message {
     display: none;
-  } */
+  }
 }
 
 @media screen and (max-width: 769px) {
   .responsive-spacing {
     margin-right: 5px;
   }
-}
-.header-margin{
-  height : 20px;
-  background-color: #1B2A41 ;
-}
-.header-margin-light{
-  height : 20px;
-  background-color: #fff;
 }
