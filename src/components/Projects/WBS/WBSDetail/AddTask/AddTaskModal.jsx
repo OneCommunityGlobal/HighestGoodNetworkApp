@@ -391,7 +391,7 @@ function AddTaskModal(props) {
                 <span className={`add_new_task_form-input_area ${fontColor}`}>{newTaskNum}</span>
               </div>
               <div className="add_new_task_form-group" >
-                <span className={`add_new_task_form-label ${fontColor}`}>Task Name</span>
+                <span className={`add_new_task_form-label ${fontColor}`}>Task Name<span className="red-asterisk">* </span></span>
                 <span className="add_new_task_form-input_area">
                   {/* Fix Task-name formatting - by Sucheta */}
                   <textarea
