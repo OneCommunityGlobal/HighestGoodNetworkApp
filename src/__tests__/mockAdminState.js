@@ -1,4 +1,4 @@
-let dt = new Date();
+const dt = new Date();
 dt.setDate(dt.getDate() + 1);
 
 export default {
@@ -1810,6 +1810,8 @@ export default {
     }
   };
 
+// eslint-disable-next-line no-undef
 describe('Stop Error', () => {
+  // eslint-disable-next-line no-undef
   it('should not error out due to no tests  (mockAdminState.js)', () => {});
 });
