@@ -9,7 +9,8 @@ const projects = ["Project A", "Project B", "Project C"];
 export default function ExpenseBarChart() {
   const [projectId, setProjectId] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('ALL');
-  const [selectedDate, setSelectedDate] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [data, setData] = useState([]);
 
   useEffect(() => {
@@ -18,14 +19,17 @@ export default function ExpenseBarChart() {
         const rawData = [
           { projectId: 'Project A', category: 'Plumbing', plannedCost: 1000, actualCost: 1200, date: '2025-04-01' },
           { projectId: 'Project A', category: 'Electrical', plannedCost: 1500, actualCost: 1300, date: '2025-04-01' },
-          { projectId: 'Project B', category: 'Plumbing', plannedCost: 1100, actualCost: 1050, date: '2025-04-01' },
-          { projectId: 'Project B', category: 'Structural', plannedCost: 2200, actualCost: 2150, date: '2025-04-01' },
-          { projectId: 'Project C', category: 'Mechanical', plannedCost: 1300, actualCost: 1350, date: '2025-04-01' },
-          { projectId: 'Project C', category: 'Electrical', plannedCost: 1400, actualCost: 1600, date: '2025-04-01' },
+          { projectId: 'Project B', category: 'Plumbing', plannedCost: 1100, actualCost: 1050, date: '2025-04-02' },
+          { projectId: 'Project B', category: 'Structural', plannedCost: 2200, actualCost: 2150, date: '2025-04-02' },
+          { projectId: 'Project C', category: 'Mechanical', plannedCost: 1300, actualCost: 1350, date: '2025-04-03' },
+          { projectId: 'Project C', category: 'Electrical', plannedCost: 1400, actualCost: 1600, date: '2025-04-03' },
         ];
 
         const filtered = rawData.filter(entry => {
-          const dateMatch = !selectedDate || entry.date === selectedDate;
+          const entryDate = new Date(entry.date);
+          const start = startDate ? new Date(startDate) : null;
+          const end = endDate ? new Date(endDate) : null;
+          const dateMatch = (!start || entryDate >= start) && (!end || entryDate <= end);
           const projectMatch = projectId === '' || entry.projectId === projectId;
           const categoryMatch = categoryFilter === 'ALL' || entry.category === categoryFilter;
           return dateMatch && projectMatch && categoryMatch;
@@ -43,12 +47,12 @@ export default function ExpenseBarChart() {
 
         setData(Object.values(aggregated));
       } catch (error) {
-        console.error("Error fetching expense comparison data:", error);
+        console.error("Error processing mock data:", error);
       }
     }
 
     fetchData();
-  }, [projectId, categoryFilter, selectedDate]);
+  }, [projectId, categoryFilter, startDate, endDate]);
 
   return (
     <div style={{ width: '100%', padding: '0.5rem' }}>
@@ -79,8 +83,11 @@ export default function ExpenseBarChart() {
             {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
           </select>
         </label>
-        <label style={{ minWidth: '150px' }}>Date:
-          <input type="date" value={selectedDate} onChange={(e) => setSelectedDate(e.target.value)} style={{ marginLeft: '0.3rem', width: '100%' }} />
+        <label style={{ minWidth: '150px' }}>Start Date:
+          <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} style={{ marginLeft: '0.3rem', width: '100%' }} />
+        </label>
+        <label style={{ minWidth: '150px' }}>End Date:
+          <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} style={{ marginLeft: '0.3rem', width: '100%' }} />
         </label>
       </div>
 
@@ -113,6 +120,3 @@ export default function ExpenseBarChart() {
     </div>
   );
 }
-
-
-
