@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Title} from 'chart.js';
+import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Title } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -105,12 +105,12 @@ function UtilizationChart() {
         <DatePicker selected={startDate} onChange={setStartDate} placeholderText="From Date" />
         <DatePicker selected={endDate} onChange={setEndDate} placeholderText="To Date" />
 
-        <button type= "button" onClick={handleApplyClick}>Apply</button>
+        <button type= "button" onClick={handleApplyClick}>
+          Apply
+        </button>
       </div>
 
-      {error ?
-        <p>{error}</p> : <Bar data={chartData} options={options} />
-      }
+      {error ? <p>{error}</p> : <Bar data={chartData} options={options} />}
     </div>
   );
 }
