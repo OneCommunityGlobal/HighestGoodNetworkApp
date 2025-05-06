@@ -183,7 +183,14 @@ const ReviewButton = ({ user, task, updateTask }) => {
     ) {
       return { isValid: true, errorType: null };
     }
-
+    // 5. Figma design file check
+    if (normalizedUrl.includes('figma.com')) {
+      if (normalizedUrl.includes('/design/')) {
+        return { isValid: true, errorType: null };
+      }
+      return { isValid: false, errorType: 'general_invalid' };
+    }
+    
     // Generic invalid domain
     return { isValid: false, errorType: 'general_invalid' };
   };
