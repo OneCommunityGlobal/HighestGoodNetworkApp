@@ -1,635 +1,795 @@
-import { useState, useEffect } from 'react';
-import { FaMapMarkerAlt, FaRegCommentDots, FaRegBell, FaUser, FaTh, FaList } from 'react-icons/fa';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import {
+  FaMapMarkerAlt,
+  FaRegCommentDots,
+  FaRegBell,
+  FaUser,
+  FaTh,
+  FaList,
+  FaTimes,
+  FaChevronLeft,
+  FaChevronRight,
+  FaSearch,
+} from 'react-icons/fa';
 import { BsSliders } from 'react-icons/bs';
-import { ENDPOINTS } from 'utils/URL';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
 import './Home.css';
+import L from 'leaflet';
 import logo from '../../../assets/images/logo2.png';
+import { VILLAGE_LOCATIONS, mockListings, mockBiddings, ENDPOINTS } from './data';
+
+// Fix for default marker icon in Leaflet
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
+  iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
+});
+
+// Default icon for regular units
+const unitIcon = new L.Icon({
+  iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+});
 
 function Home() {
-  // View state
+  // UI State
   const [viewMode, setViewMode] = useState('grid');
   const [activeTab, setActiveTab] = useState('listings');
-
-  // Filter state
   const [selectedVillage, setSelectedVillage] = useState('');
-  const [dateRange, setDateRange] = useState({ startDate: null, endDate: null });
+  const [dateRange, setDateRange] = useState({ startDate: '', endDate: '' });
   const [showDatePicker, setShowDatePicker] = useState(false);
-
-  // Data state
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [listings, setListings] = useState([]);
-  const [biddings, setBiddings] = useState([]);
-
-  // User state
-  const [userName, setUserName] = useState('');
-
-  // UI state
   const [showPropertyMap, setShowPropertyMap] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [userName, setUserName] = useState('John'); // This would come from user authentication
+  const [selectedProperty, setSelectedProperty] = useState(null);
+  const [showPropertyDetails, setShowPropertyDetails] = useState(false);
 
-  // Pagination state
-  const [pagination, setPagination] = useState({
+  // Village search and pagination state
+  const [villageSearchTerm, setVillageSearchTerm] = useState('');
+  const [villagePagination, setVillagePagination] = useState({
     currentPage: 1,
-    totalPages: 1,
-    pageSize: 10,
-    total: 0,
+    pageSize: 20, // Show 20 villages per page
   });
 
-  // Village options based on the requirements
-  const villageOptions = [
-    { value: '', label: 'Filter by Village' },
-    { value: 'Earthbag', label: 'Earthbag Village' },
-    { value: 'Straw Bale', label: 'Straw Bale Village' },
-    { value: 'Recycle Materials', label: 'Recycle Materials Village' },
-    { value: 'Cob', label: 'Cob Village' },
-    { value: 'Tree House', label: 'Tree House Village' },
-    { value: 'Strawberry', label: 'Strawberry Village' },
-    { value: 'Sustainable Living', label: 'Sustainable Living Village' },
-    { value: 'City Center', label: 'City Center' },
-  ];
+  // Data State
+  const [allListings, setAllListings] = useState([]);
+  const [allBiddings, setAllBiddings] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Page size options
-  const pageSizeOptions = [10, 20, 30, 50];
+  // Pagination State
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    pageSize: 12, // Changed to 12 to match Airbnb's approach
+    totalPages: 1,
+  });
 
-  // Handle village filter change
-  const handleVillageChange = e => {
-    setSelectedVillage(e.target.value);
-  };
+  const pageSizeOptions = [12, 24, 36, 48]; // Multiples of 12, similar to Airbnb
 
-  // Handle filter submission
-  const handleFilterSubmit = () => {
-    // Reset to first page when applying a new filter
-    setPagination(prev => ({
-      ...prev,
-      currentPage: 1,
-    }));
+  // Filter villages based on search term
+  const filteredVillages = useMemo(() => {
+    return Object.keys(VILLAGE_LOCATIONS).filter(village =>
+      village.toLowerCase().includes(villageSearchTerm.toLowerCase()),
+    );
+  }, [villageSearchTerm]);
 
-    // Fetch listings with the new filter
-    fetchListings();
-  };
+  // Paginate the filtered villages
+  const paginatedVillages = useMemo(() => {
+    const startIdx = (villagePagination.currentPage - 1) * villagePagination.pageSize;
+    return filteredVillages.slice(startIdx, startIdx + villagePagination.pageSize);
+  }, [filteredVillages, villagePagination]);
 
-  // Handle date range selection
-  const handleDateChange = dates => {
-    setDateRange(dates);
-    setShowDatePicker(false);
+  // Calculate total pages for villages
+  const totalVillagePages = useMemo(
+    () => Math.max(1, Math.ceil(filteredVillages.length / villagePagination.pageSize)),
+    [filteredVillages.length, villagePagination.pageSize],
+  );
 
-    // Reset to first page when applying a new date filter
-    setPagination(prev => ({
-      ...prev,
-      currentPage: 1,
-    }));
+  // Fetch data (API integration)
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
 
-    // Fetch listings with the new date filter
-    fetchListings();
-  };
+        // Fetch listings
+        const listingsUrl = `${ENDPOINTS.LB_LISTINGS}?page=${pagination.currentPage}&size=${pagination.pageSize}`;
+        let listingsResponse;
 
-  // Toggle date picker visibility
-  const toggleDatePicker = () => {
-    setShowDatePicker(!showDatePicker);
-  };
+        try {
+          listingsResponse = await fetch(listingsUrl);
 
-  // Handle page change
-  const handlePageChange = newPage => {
-    if (newPage < 1 || newPage > pagination.totalPages) return;
+          if (!listingsResponse.ok) {
+            throw new Error(`Failed to fetch listings: ${listingsResponse.status}`);
+          }
 
-    setPagination(prev => ({
-      ...prev,
-      currentPage: newPage,
-    }));
-  };
+          const listingsData = await listingsResponse.json();
+          setAllListings(listingsData.content || []);
 
-  // Handle page size change
-  const handlePageSizeChange = size => {
-    setPagination(prev => ({
-      ...prev,
-      pageSize: size,
-      currentPage: 1, // Reset to first page when changing page size
-    }));
-  };
+          // Update total pages if available in response
+          if (listingsData.totalPages) {
+            setPagination(prev => ({
+              ...prev,
+              totalPages: listingsData.totalPages,
+            }));
+          }
+        } catch (error) {
+          console.error('API Error:', error);
+          // Fallback to mock data in development
+          setAllListings(mockListings);
+        }
 
-  // Handler functions for navigation icons
-  const handleChatClick = () => {
-    // Navigate to chat page
-    console.log('Navigate to chat page');
-    // Implement navigation to chat page
-  };
+        // Fetch biddings
+        const biddingsUrl = `${ENDPOINTS.LB_BIDDINGS}?page=${pagination.currentPage}&size=${pagination.pageSize}`;
+        let biddingsResponse;
 
-  const handleNotificationsClick = () => {
-    // Open notifications modal
-    console.log('Open notifications modal');
-    // Implement notifications modal
-  };
+        try {
+          biddingsResponse = await fetch(biddingsUrl);
 
-  const handleProfileClick = () => {
-    // Navigate to profile page
-    console.log('Navigate to profile page');
-    // Implement navigation to profile page
-  };
+          if (!biddingsResponse.ok) {
+            throw new Error(`Failed to fetch biddings: ${biddingsResponse.status}`);
+          }
 
-  // Property map click handler
-  const handlePropertyMapClick = () => {
-    setShowPropertyMap(true);
-  };
+          const biddingsData = await biddingsResponse.json();
+          setAllBiddings(biddingsData.content || []);
+        } catch (error) {
+          console.error('API Error:', error);
+          // Fallback to mock data in development
+          setAllBiddings(mockBiddings);
+        }
 
-  // Close property map modal
-  const closePropertyMap = () => {
-    setShowPropertyMap(false);
-  };
+        setIsLoading(false);
+      } catch (err) {
+        setError('Failed to load data. Please try again later.');
+        setIsLoading(false);
+      }
+    };
 
-  // Fetch listings from the backend
-  const fetchListings = async () => {
-    setIsLoading(true);
-    setError(null);
+    fetchData();
+  }, [pagination.currentPage, pagination.pageSize, activeTab]);
 
-    try {
-      const villageParam = selectedVillage ? `&village=${selectedVillage}` : '';
-      // Add date range parameters if dates are selected
-      const dateParams =
-        dateRange.startDate && dateRange.endDate
-          ? `&startDate=${dateRange.startDate.toISOString()}&endDate=${dateRange.endDate.toISOString()}`
-          : '';
+  // Filter data based on selected criteria
+  const filterData = useCallback(
+    data => {
+      if (!data || !Array.isArray(data)) return [];
 
-      const apiUrl = `${ENDPOINTS.LB_LISTINGS}?page=${pagination.currentPage}&size=${pagination.pageSize}${villageParam}${dateParams}`;
+      let filtered = [...data];
 
-      console.log('Fetching from:', apiUrl);
+      if (selectedVillage) {
+        filtered = filtered.filter(item => item.village === selectedVillage);
+      }
 
-      const response = await fetch(apiUrl, {
-        method: 'GET',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include', // Include cookies for authentication if needed
-      });
-
-      // Check if the response is JSON
-      const contentType = response.headers.get('content-type');
-      if (!contentType || !contentType.includes('application/json')) {
-        throw new Error(
-          `API returned ${response.status}: ${
-            response.statusText
-          }. Expected JSON but got ${contentType || 'unknown content type'}`,
+      if (dateRange.startDate && dateRange.endDate) {
+        const start = new Date(dateRange.startDate);
+        const end = new Date(dateRange.endDate);
+        filtered = filtered.filter(
+          item => new Date(item.availableFrom) <= end && new Date(item.availableTo) >= start,
         );
       }
 
-      if (!response.ok) {
-        throw new Error(`Error ${response.status}: ${response.statusText}`);
-      }
+      return filtered;
+    },
+    [selectedVillage, dateRange],
+  );
 
-      const data = await response.json();
+  // Paginate the filtered data
+  const paginateData = useCallback(
+    data => {
+      if (!data || !Array.isArray(data)) return [];
+      const startIdx = (pagination.currentPage - 1) * pagination.pageSize;
+      return data.slice(startIdx, startIdx + pagination.pageSize);
+    },
+    [pagination.currentPage, pagination.pageSize],
+  );
 
-      if (data.status === 200) {
-        setListings(data.data.items);
-        setPagination({
-          currentPage: data.data.pagination.currentPage,
-          totalPages: data.data.pagination.totalPages,
-          pageSize: data.data.pagination.pageSize,
-          total: data.data.pagination.total,
-        });
-      } else {
-        throw new Error(data.message || 'Failed to fetch listings');
-      }
-    } catch (err) {
-      setError(`${err.message}. Please ensure the API server is running.`);
-      console.error('Error fetching listings:', err);
+  // Use memo to avoid recalculating filtered data on every render
+  const filteredListings = useMemo(() => filterData(allListings), [filterData, allListings]);
+  const filteredBiddings = useMemo(() => filterData(allBiddings), [filterData, allBiddings]);
 
-      // During development, load mock data if the API isn't available
-      if (process.env.NODE_ENV === 'development') {
-        console.log('Loading mock data for development');
-        setListings([
-          {
-            id: 405,
-            title: 'Unit 405',
-            village: 'Earthbag Village',
-            price: 28,
-            perUnit: 'day',
-            images: [],
-          },
-          {
-            id: 403,
-            title: 'Unit 403',
-            village: 'Straw Bale Village',
-            price: 32,
-            perUnit: 'day',
-            images: [],
-          },
-          {
-            id: 203,
-            title: 'Unit 203',
-            village: 'Recycle Materials Village',
-            price: 40,
-            perUnit: 'day',
-            images: [],
-          },
-          {
-            id: 101,
-            title: 'Unit 101',
-            village: 'Cob Village',
-            price: 25,
-            perUnit: 'day',
-            images: [],
-          },
-          {
-            id: 105,
-            title: 'Unit 105',
-            village: 'Earthbag Village',
-            price: 50,
-            perUnit: 'day',
-            images: [],
-          },
-        ]);
-        setPagination({
-          currentPage: 1,
-          totalPages: 1,
-          pageSize: 10,
-          total: 5,
-        });
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  // Use memo for paginated data as well
+  const listings = useMemo(() => paginateData(filteredListings), [paginateData, filteredListings]);
+  const biddings = useMemo(() => paginateData(filteredBiddings), [paginateData, filteredBiddings]);
 
-  // Fetch biddings (this would be replaced with actual API call in a real implementation)
-  const fetchBiddings = async () => {
-    // Mocking biddings data for now
-    return [
-      {
-        id: 405,
-        title: 'Unit 405',
-        village: 'Earthbag Village',
-        price: 28,
-        perUnit: 'day',
-        images: [],
-      },
-      {
-        id: 403,
-        title: 'Unit 403',
-        village: 'Straw Bale Village',
-        price: 32,
-        perUnit: 'day',
-        images: [],
-      },
-      {
-        id: 203,
-        title: 'Unit 203',
-        village: 'Recycle Materials Village',
-        price: 40,
-        perUnit: 'day',
-        images: [],
-      },
-      { id: 101, title: 'Unit 101', village: 'Cob Village', price: 25, perUnit: 'day', images: [] },
-      {
-        id: 105,
-        title: 'Unit 105',
-        village: 'Earthbag Village',
-        price: 50,
-        perUnit: 'day',
-        images: [],
-      },
-      {
-        id: 402,
-        title: 'Unit 402',
-        village: 'Tree House Village',
-        price: 45,
-        perUnit: 'day',
-        images: [],
-      },
-    ];
-  };
-
-  // Function to render property cards
-  const renderPropertyCards = properties => {
-    if (!properties || properties.length === 0) {
-      return <div className="no-results">No properties found</div>;
-    }
-
-    return properties.map(property => {
-      // Extract unit number from title or use id
-      const unitId = property.id || (property.title ? property.title.match(/\d+/)?.[0] : '');
-      const unitTitle = property.title || `Unit ${unitId}`;
-
-      return (
-        <div
-          key={
-            property.id ||
-            Math.random()
-              .toString(36)
-              .substring(7)
-          }
-          className="property-card"
-        >
-          <div className="property-image">
-            {property.images && property.images.length > 0 ? (
-              <img src={property.images[0]} alt={unitTitle} />
-            ) : (
-              /* Placeholder when no image is available */
-              <div className="image-placeholder" />
-            )}
-          </div>
-          <div className="property-details">
-            <h3>{unitTitle}</h3>
-            <p>{property.village}</p>
-            <div className="price">
-              ${property.price}/{property.perUnit || 'day'}
-            </div>
-          </div>
-        </div>
-      );
-    });
-  };
-
-  // Load biddings once when component mounts
+  // Update total pages when filters or data change
   useEffect(() => {
-    const loadBiddings = async () => {
-      const biddingData = await fetchBiddings();
-      setBiddings(biddingData);
-    };
+    const totalData = activeTab === 'listings' ? filteredListings.length : filteredBiddings.length;
+    const newTotalPages = Math.max(1, Math.ceil(totalData / pagination.pageSize));
 
-    loadBiddings();
+    // Only update if total pages has actually changed
+    if (newTotalPages !== pagination.totalPages) {
+      setPagination(prev => ({
+        ...prev,
+        totalPages: newTotalPages,
+        // Reset to page 1 if current page is now invalid
+        currentPage: prev.currentPage > newTotalPages ? 1 : prev.currentPage,
+      }));
+    }
+  }, [
+    filteredListings.length,
+    filteredBiddings.length,
+    pagination.pageSize,
+    activeTab,
+    pagination.totalPages,
+  ]);
+
+  // Handle page change
+  const handlePageChange = useCallback(
+    newPage => {
+      if (newPage < 1 || newPage > pagination.totalPages) return;
+      setPagination(prev => ({ ...prev, currentPage: newPage }));
+    },
+    [pagination.totalPages],
+  );
+
+  // Reset pagination when changing tab
+  useEffect(() => {
+    setPagination(prev => ({ ...prev, currentPage: 1 }));
+  }, [activeTab]);
+
+  // Handle property selection for details popup
+  const handlePropertySelect = useCallback(property => {
+    setSelectedProperty(property);
+    setShowPropertyDetails(true);
   }, []);
 
-  // Fetch user data - in a real app, this would come from your auth system
-  useEffect(() => {
-    // Mock user data fetch - replace with actual API call
-    const fetchUserData = async () => {
-      try {
-        // This would be an API call in a real implementation
-        // const response = await fetch('/api/user/profile');
-        // const userData = await response.json();
-        // setUserName(userData.firstName);
+  // Close any modal
+  const closeAllModals = useCallback(() => {
+    setShowDatePicker(false);
+    setShowPropertyMap(false);
+    setShowNotifications(false);
+    setShowPropertyDetails(false);
+  }, []);
 
-        // Mock data for demo
-        setUserName('John');
-      } catch (error) {
-        console.error('Error fetching user data:', error);
+  // Handle ESC key to close modals
+  useEffect(() => {
+    const handleEsc = event => {
+      if (event.keyCode === 27) {
+        // ESC key
+        closeAllModals();
       }
     };
 
-    fetchUserData();
+    window.addEventListener('keydown', handleEsc);
+
+    return () => {
+      window.removeEventListener('keydown', handleEsc);
+    };
+  }, [closeAllModals]);
+
+  // Apply filters and close date picker
+  const applyFilters = useCallback(() => {
+    // Reset pagination to first page when applying filters
+    setPagination(prev => ({ ...prev, currentPage: 1 }));
+    setShowDatePicker(false);
   }, []);
 
-  // Fetch listings whenever pagination or filters change
-  useEffect(() => {
-    fetchListings();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pagination.currentPage, pagination.pageSize]);
+  // Clear filters
+  const clearFilters = useCallback(() => {
+    setDateRange({ startDate: '', endDate: '' });
+    setSelectedVillage('');
+    setPagination(prev => ({ ...prev, currentPage: 1 }));
+    setShowDatePicker(false);
+  }, []);
+
+  // Adjust date by week (for Airbnb-like navigation)
+  const adjustDatesByWeek = useCallback(
+    direction => {
+      if (!dateRange.startDate || !dateRange.endDate) return;
+
+      const startDate = new Date(dateRange.startDate);
+      const endDate = new Date(dateRange.endDate);
+
+      // Add or subtract 7 days
+      const daysToAdjust = direction === 'forward' ? 7 : -7;
+      startDate.setDate(startDate.getDate() + daysToAdjust);
+      endDate.setDate(endDate.getDate() + daysToAdjust);
+
+      // Format dates as YYYY-MM-DD strings
+      const formatDate = date => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      };
+
+      setDateRange({
+        startDate: formatDate(startDate),
+        endDate: formatDate(endDate),
+      });
+    },
+    [dateRange],
+  );
+
+  // Handle Go button click - applies the village filter
+  const handleGoButtonClick = useCallback(() => {
+    // Apply the current selectedVillage filter and reset to page 1
+    setPagination(prev => ({ ...prev, currentPage: 1 }));
+  }, [selectedVillage]);
+
+  // Handle marker click in the map to show property details
+  const handleMarkerClick = useCallback(property => {
+    setSelectedProperty(property);
+    // We keep the map open so the user can see the property location
+  }, []);
+
+  // View property details from map popup
+  const viewPropertyDetailsFromMap = useCallback(property => {
+    setSelectedProperty(property);
+    setShowPropertyDetails(true);
+    setShowPropertyMap(false);
+  }, []);
+
+  // Filter properties by village from the map
+  const filterByVillageFromMap = useCallback(village => {
+    // This ensures the filter is applied when selecting from the map
+    setSelectedVillage(village);
+    setPagination(prev => ({ ...prev, currentPage: 1 }));
+    // We don't close the map so users can see all units in the village
+  }, []);
+
+  // Current data based on active tab
+  const currentItems = activeTab === 'listings' ? listings : biddings;
+  const filteredItems = activeTab === 'listings' ? filteredListings : filteredBiddings;
+  const allItems = activeTab === 'listings' ? allListings : allBiddings;
 
   return (
     <div className="outside-container">
+      {/* Logo Section */}
       <div className="logo">
-        <img src={logo} alt="One Community Logo" />
+        <img src={logo} alt="Logo" />
       </div>
 
-      {/* Navbar */}
+      {/* Navigation Bar */}
       <nav className="lb-navbar">
         <div className="nav-left">
-          <select className="village-filter" value={selectedVillage} onChange={handleVillageChange}>
-            {villageOptions.map(option => (
-              <option key={option.value} value={option.value}>
-                {option.label}
+          <select
+            className="village-filter"
+            value={selectedVillage}
+            onChange={e => setSelectedVillage(e.target.value)}
+          >
+            <option value="">Filter by Village</option>
+            {Object.keys(VILLAGE_LOCATIONS).map(v => (
+              <option key={v} value={v}>
+                {v} {v !== 'City Center' ? 'Village' : ''}
               </option>
             ))}
           </select>
-          <button className="go-button" onClick={handleFilterSubmit}>
+          <button className="go-button" onClick={handleGoButtonClick}>
             Go
           </button>
         </div>
-
         <div className="nav-right">
-          <span className="welcome-text">WELCOME {userName || 'USER_NAME'}</span>
-          <FaRegCommentDots className="nav-icon" onClick={handleChatClick} />
+          <span className="welcome-text">WELCOME {userName}</span>
+          <FaRegCommentDots
+            className="nav-icon"
+            title="Messages"
+            onClick={() => (window.location.href = '/chat')}
+          />
           <div className="notification-badge">
-            <FaRegBell className="nav-icon" onClick={handleNotificationsClick} />
+            <FaRegBell
+              className="nav-icon"
+              title="Notifications"
+              onClick={() => setShowNotifications(true)}
+            />
             <span className="badge">3</span>
           </div>
-          <FaUser className="nav-icon user-icon" onClick={handleProfileClick} />
+          <FaUser
+            className="nav-icon user-icon"
+            title="Profile"
+            onClick={() => (window.location.href = '/profile')}
+          />
         </div>
       </nav>
 
+      {/* Main Content Container */}
       <div className="inside-container">
-        <div className="content-wrapper">
-          <div className="content-header">
-            {/* Property Map on Top Right */}
-            <div className="property-map" onClick={handlePropertyMapClick}>
-              <FaMapMarkerAlt className="map-icon" />
-              <span className="map-text">Property Map</span>
+        {/* Content Header with Map Link */}
+        <div className="content-header">
+          <div
+            className="property-map"
+            onClick={() => setShowPropertyMap(true)}
+            title="View Property Map"
+          >
+            <FaMapMarkerAlt className="map-icon" />
+            <span className="map-text">Property Map</span>
+          </div>
+
+          <div className="header-content">
+            {/* Filter Section */}
+            <div
+              className="filter-section"
+              onClick={() => setShowDatePicker(true)}
+              title="Filter by Date Range"
+            >
+              <BsSliders className="filter-icon" />
+              <span className="filter-text">Filter by date</span>
             </div>
 
-            {/* Property Map Modal */}
-            {showPropertyMap && (
-              <div className="property-map-overlay">
-                <div className="property-map-modal">
-                  <div className="modal-header">
-                    <h3>Property Map</h3>
-                    <span className="close-button" onClick={closePropertyMap}>
-                      ×
-                    </span>
+            {/* Tabs Section */}
+            <div className="tabs-section">
+              <span
+                className={`tab ${activeTab === 'listings' ? 'active-tab' : 'inactive-tab'}`}
+                onClick={() => setActiveTab('listings')}
+              >
+                Listings
+              </span>
+              <span
+                className={`tab ${activeTab === 'bidding' ? 'active-tab' : 'inactive-tab'}`}
+                onClick={() => setActiveTab('bidding')}
+              >
+                Biddings
+              </span>
+            </div>
+
+            {/* View Toggle */}
+            <div className="view-toggle">
+              <button
+                className={`view-btn ${viewMode === 'grid' ? 'active' : ''}`}
+                onClick={() => setViewMode('grid')}
+                title="Grid View"
+              >
+                <FaTh />
+              </button>
+              <button
+                className={`view-btn ${viewMode === 'list' ? 'active' : ''}`}
+                onClick={() => setViewMode('list')}
+                title="List View"
+              >
+                <FaList />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Loading State */}
+        {isLoading && <div className="loading-indicator">Loading properties...</div>}
+
+        {/* Error State */}
+        {error && <div className="error-message">{error}</div>}
+
+        {/* No Results State */}
+        {!isLoading && !error && currentItems.length === 0 && (
+          <div className="no-results">
+            No properties found matching your criteria. Try adjusting your filters.
+          </div>
+        )}
+
+        {/* Properties Container */}
+        {!isLoading && !error && (
+          <div className={`properties-container ${viewMode}-view`}>
+            {currentItems.map(unit => (
+              <div
+                key={unit.id}
+                className="property-card"
+                onClick={() => handlePropertySelect(unit)}
+              >
+                <div className="property-image">
+                  <img src={unit.images[0]} alt={unit.title} />
+                </div>
+                <div className="property-details">
+                  <div>
+                    <h3>{unit.title}</h3>
+                    <p>
+                      {unit.village} {unit.village !== 'City Center' ? 'Village' : ''}
+                    </p>
                   </div>
-                  <div className="modal-content">
-                    <div className="map-container">
-                      {/* This would be replaced with an actual map component */}
-                      <div className="placeholder-map">
-                        <h4>Interactive Property Map</h4>
-                        <p>Map showing all villages and available units</p>
-                        <div className="map-villages">
-                          {villageOptions
-                            .filter(v => v.value)
-                            .map(village => (
-                              <div
-                                key={village.value}
-                                className="map-village-item"
-                                onClick={() => {
-                                  setSelectedVillage(village.value);
-                                  closePropertyMap();
-                                  handleFilterSubmit();
-                                }}
-                              >
-                                {village.label}
-                              </div>
-                            ))}
-                        </div>
-                      </div>
-                    </div>
+                  <div className="price">
+                    ${unit.price}/{unit.perUnit}
                   </div>
                 </div>
               </div>
-            )}
+            ))}
+          </div>
+        )}
 
-            {/* Main Content Section */}
-            <div className="header-content">
-              {/* Left: Filter Section */}
-              <div className="filter-section" onClick={toggleDatePicker}>
-                <BsSliders className="filter-icon" />
-                <span className="filter-text">Filter by date</span>
+        {/* Pagination Controls */}
+        {!isLoading && !error && filteredItems.length > 0 && (
+          <div className="pagination-controls">
+            <button
+              onClick={() => handlePageChange(pagination.currentPage - 1)}
+              disabled={pagination.currentPage === 1}
+              className="pagination-button"
+            >
+              Prev
+            </button>
+            <span className="pagination-info">
+              Page {pagination.currentPage} of {pagination.totalPages}
+            </span>
+            <button
+              onClick={() => handlePageChange(pagination.currentPage + 1)}
+              disabled={pagination.currentPage === pagination.totalPages}
+              className="pagination-button"
+            >
+              Next
+            </button>
+            <div className="page-size-selector">
+              <span>Show:</span>
+              <select
+                value={pagination.pageSize}
+                onChange={e => {
+                  const newSize = Number(e.target.value);
+                  setPagination(prev => ({
+                    ...prev,
+                    pageSize: newSize,
+                    currentPage: 1,
+                    totalPages: Math.max(
+                      1,
+                      Math.ceil(
+                        (activeTab === 'listings'
+                          ? filteredListings.length
+                          : filteredBiddings.length) / newSize,
+                      ),
+                    ),
+                  }));
+                }}
+              >
+                {pageSizeOptions.map(size => (
+                  <option key={size} value={size}>
+                    {size}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Date Picker Modal */}
+      {showDatePicker && (
+        <div className="modal-overlay" onClick={() => setShowDatePicker(false)}>
+          <div className="date-picker-container" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Select Date Range</h3>
+              <div className="close-button-wrapper">
+                <FaTimes className="close-button" onClick={() => setShowDatePicker(false)} />
+              </div>
+            </div>
+            <div className="date-picker-content">
+              <div className="date-inputs">
+                <div className="date-input-group">
+                  <label>Start Date</label>
+                  <input
+                    type="date"
+                    value={dateRange.startDate}
+                    onChange={e => setDateRange({ ...dateRange, startDate: e.target.value })}
+                  />
+                </div>
+                <div className="date-input-group">
+                  <label>End Date</label>
+                  <input
+                    type="date"
+                    value={dateRange.endDate}
+                    onChange={e => setDateRange({ ...dateRange, endDate: e.target.value })}
+                    min={dateRange.startDate}
+                  />
+                </div>
               </div>
 
-              {/* Date Picker Popup */}
-              {showDatePicker && (
-                <div className="date-picker-container">
-                  <div className="date-picker-header">
-                    <h3>Select Date Range</h3>
-                    <span className="close-button" onClick={() => setShowDatePicker(false)}>
-                      ×
-                    </span>
-                  </div>
-                  <div className="date-picker-content">
-                    <div className="date-inputs">
-                      <div className="date-input-group">
-                        <label>Check In</label>
-                        <input
-                          type="date"
-                          value={
-                            dateRange.startDate
-                              ? dateRange.startDate.toISOString().split('T')[0]
-                              : ''
-                          }
-                          onChange={e =>
-                            setDateRange(prev => ({
-                              ...prev,
-                              startDate: e.target.value ? new Date(e.target.value) : null,
-                            }))
-                          }
-                        />
-                      </div>
-                      <div className="date-input-group">
-                        <label>Check Out</label>
-                        <input
-                          type="date"
-                          value={
-                            dateRange.endDate ? dateRange.endDate.toISOString().split('T')[0] : ''
-                          }
-                          onChange={e =>
-                            setDateRange(prev => ({
-                              ...prev,
-                              endDate: e.target.value ? new Date(e.target.value) : null,
-                            }))
-                          }
-                        />
-                      </div>
-                    </div>
-                    <div className="date-picker-actions">
-                      <button
-                        className="apply-button"
-                        onClick={() => {
-                          if (dateRange.startDate && dateRange.endDate) {
-                            handleDateChange(dateRange);
-                          }
-                        }}
-                      >
-                        Apply
-                      </button>
-                      <button
-                        className="clear-button"
-                        onClick={() => setDateRange({ startDate: null, endDate: null })}
-                      >
-                        Clear
-                      </button>
-                    </div>
-                  </div>
+              {/* Date Navigation (week forward/backward) - Airbnb-like feature */}
+              {dateRange.startDate && dateRange.endDate && (
+                <div className="date-navigation">
+                  <button className="date-nav-button" onClick={() => adjustDatesByWeek('backward')}>
+                    <FaChevronLeft /> Previous Week
+                  </button>
+                  <button className="date-nav-button" onClick={() => adjustDatesByWeek('forward')}>
+                    Next Week <FaChevronRight />
+                  </button>
                 </div>
               )}
 
-              {/* Center: Tabs Section */}
-              <div className="tabs-section">
-                <span
-                  className={`tab ${activeTab === 'listings' ? 'active-tab' : 'inactive-tab'}`}
-                  onClick={() => setActiveTab('listings')}
-                >
-                  Listings Page
-                </span>
-                <span
-                  className={`tab ${activeTab === 'bidding' ? 'active-tab' : 'inactive-tab'}`}
-                  onClick={() => setActiveTab('bidding')}
-                >
-                  Bidding Page
-                </span>
-              </div>
-
-              {/* Right: View Toggle */}
-              <div className="view-toggle">
-                <button
-                  className={`view-btn ${viewMode === 'grid' ? 'active' : ''}`}
-                  onClick={() => setViewMode('grid')}
-                >
-                  <FaTh />
+              <div className="date-picker-actions">
+                <button className="apply-button" onClick={applyFilters}>
+                  Apply
                 </button>
-                <button
-                  className={`view-btn ${viewMode === 'list' ? 'active' : ''}`}
-                  onClick={() => setViewMode('list')}
-                >
-                  <FaList />
+                <button className="clear-button" onClick={clearFilters}>
+                  Clear All Filters
                 </button>
               </div>
             </div>
           </div>
-
-          {/* Error Message */}
-          {error && <div className="error-message">{error}</div>}
-
-          {/* Loading Indicator */}
-          {isLoading && <div className="loading-indicator">Loading...</div>}
-
-          {/* Listings Content */}
-          {!isLoading && (
-            <>
-              {/* Listings Tab Content */}
-              <div
-                className={`properties-container ${viewMode}-view ${
-                  activeTab === 'listings' ? 'show-listings' : 'hide'
-                }`}
-              >
-                {renderPropertyCards(listings)}
-              </div>
-
-              {/* Bidding Tab Content */}
-              <div
-                className={`properties-container ${viewMode}-view ${
-                  activeTab === 'bidding' ? 'show-bidding' : 'hide'
-                }`}
-              >
-                {renderPropertyCards(biddings)}
-              </div>
-
-              {/* Pagination Controls */}
-              {activeTab === 'listings' && pagination.totalPages > 0 && (
-                <div className="pagination-controls">
-                  <button
-                    onClick={() => handlePageChange(pagination.currentPage - 1)}
-                    disabled={pagination.currentPage === 1}
-                  >
-                    Previous
-                  </button>
-                  <span>
-                    Page {pagination.currentPage} of {pagination.totalPages}
-                  </span>
-                  <button
-                    onClick={() => handlePageChange(pagination.currentPage + 1)}
-                    disabled={pagination.currentPage === pagination.totalPages}
-                  >
-                    Next
-                  </button>
-
-                  {/* Page Size Selector */}
-                  <div className="page-size-selector">
-                    <span>Show: </span>
-                    <select
-                      value={pagination.pageSize}
-                      onChange={e => handlePageSizeChange(Number(e.target.value))}
-                    >
-                      {pageSizeOptions.map(size => (
-                        <option key={size} value={size}>
-                          {size}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-              )}
-            </>
-          )}
         </div>
-      </div>
+      )}
+
+      {/* Property Map Modal */}
+      {showPropertyMap && (
+        <div className="modal-overlay" onClick={() => setShowPropertyMap(false)}>
+          <div className="property-map-modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>
+                Property Map
+                {selectedVillage &&
+                  ` - ${selectedVillage} ${selectedVillage !== 'City Center' ? 'Village' : ''}`}
+              </h3>
+              <div className="close-button-wrapper">
+                <FaTimes className="close-button" onClick={() => setShowPropertyMap(false)} />
+              </div>
+            </div>
+            <div className="modal-content">
+              <MapContainer
+                center={[37.7749, -122.4194]}
+                zoom={13}
+                style={{ height: '500px', width: '100%' }}
+              >
+                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+
+                {/* Only show property units, not villages as requested */}
+                {(selectedVillage
+                  ? allItems.filter(item => item.village === selectedVillage)
+                  : allItems
+                ).map(unit => (
+                  <Marker
+                    key={`unit-${unit.id}`}
+                    position={unit.coordinates}
+                    icon={unitIcon}
+                    eventHandlers={{
+                      click: () => handleMarkerClick(unit),
+                    }}
+                  >
+                    <Popup>
+                      <div className="map-popup">
+                        <h4>{unit.title}</h4>
+                        <p>
+                          {unit.village} {unit.village !== 'City Center' ? 'Village' : ''}
+                        </p>
+                        <p>
+                          ${unit.price}/{unit.perUnit}
+                        </p>
+                        <button
+                          className="view-details-button"
+                          onClick={e => {
+                            e.stopPropagation();
+                            viewPropertyDetailsFromMap(unit);
+                          }}
+                        >
+                          View Details
+                        </button>
+                      </div>
+                    </Popup>
+                  </Marker>
+                ))}
+              </MapContainer>
+
+              <div className="map-legend">
+                <h4>Villages</h4>
+                <div className="village-search">
+                  <input
+                    type="text"
+                    className="village-search-input"
+                    placeholder="Search villages..."
+                    value={villageSearchTerm}
+                    onChange={e => {
+                      setVillageSearchTerm(e.target.value);
+                      setVillagePagination(prev => ({ ...prev, currentPage: 1 })); // Reset to first page on search
+                    }}
+                  />
+                </div>
+                <div className="village-chips">
+                  {paginatedVillages.map(village => (
+                    <div
+                      key={village}
+                      className={`village-chip ${selectedVillage === village ? 'active' : ''}`}
+                      onClick={() => {
+                        setSelectedVillage(village === selectedVillage ? '' : village);
+                      }}
+                    >
+                      {village}
+                    </div>
+                  ))}
+                </div>
+                {filteredVillages.length > villagePagination.pageSize && (
+                  <div className="village-pagination">
+                    <button
+                      className="pagination-button"
+                      disabled={villagePagination.currentPage === 1}
+                      onClick={() =>
+                        setVillagePagination(prev => ({
+                          ...prev,
+                          currentPage: prev.currentPage - 1,
+                        }))
+                      }
+                    >
+                      Previous
+                    </button>
+                    <span className="pagination-info">
+                      Page {villagePagination.currentPage} of {totalVillagePages}
+                    </span>
+                    <button
+                      className="pagination-button"
+                      disabled={villagePagination.currentPage === totalVillagePages}
+                      onClick={() =>
+                        setVillagePagination(prev => ({
+                          ...prev,
+                          currentPage: prev.currentPage + 1,
+                        }))
+                      }
+                    >
+                      Next
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Notifications Modal */}
+      {showNotifications && (
+        <div className="modal-overlay" onClick={() => setShowNotifications(false)}>
+          <div className="notification-modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Notifications</h3>
+              <div className="close-button-wrapper">
+                <FaTimes className="close-button" onClick={() => setShowNotifications(false)} />
+              </div>
+            </div>
+            <div className="modal-content notification-content">
+              <div className="notification-item unread">
+                <h4>New booking request</h4>
+                <p>Someone is interested in Unit 5</p>
+                <span className="notification-time">2 hours ago</span>
+              </div>
+              <div className="notification-item unread">
+                <h4>Price update</h4>
+                <p>Unit 12 price has been reduced</p>
+                <span className="notification-time">Yesterday</span>
+              </div>
+              <div className="notification-item unread">
+                <h4>Village announcement</h4>
+                <p>Community meeting this weekend</p>
+                <span className="notification-time">3 days ago</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Property Details Modal */}
+      {showPropertyDetails && selectedProperty && (
+        <div className="modal-overlay" onClick={() => setShowPropertyDetails(false)}>
+          <div className="property-details-modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>{selectedProperty.title}</h3>
+              <div className="close-button-wrapper">
+                <FaTimes className="close-button" onClick={() => setShowPropertyDetails(false)} />
+              </div>
+            </div>
+            <div className="modal-content property-details-content">
+              <div className="property-details-image">
+                <img src={selectedProperty.images[0]} alt={selectedProperty.title} />
+              </div>
+              <div className="property-details-info">
+                <div className="property-info-item">
+                  <strong>Village:</strong> {selectedProperty.village}
+                  {selectedProperty.village !== 'City Center' ? 'Village' : ''}
+                </div>
+                <div className="property-info-item">
+                  <strong>Price:</strong> ${selectedProperty.price}/{selectedProperty.perUnit}
+                </div>
+                <div className="property-info-item">
+                  <strong>Available From:</strong>{' '}
+                  {selectedProperty.availableFrom.toLocaleDateString()}
+                </div>
+                <div className="property-info-item">
+                  <strong>Available To:</strong> {selectedProperty.availableTo.toLocaleDateString()}
+                </div>
+                <div className="property-description">
+                  <strong>Description:</strong> {selectedProperty.description}
+                </div>
+              </div>
+              <div className="property-details-actions">
+                <button className="action-button contact-button">Contact Owner</button>
+                <button className="action-button book-button">
+                  {activeTab === 'listings' ? 'Book Now' : 'Accept Bid'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
