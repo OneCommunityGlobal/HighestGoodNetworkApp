@@ -8,6 +8,7 @@ export default function BellNotification({userId}) {
   const [isDataReady, setIsDataReady] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
   const notificationRef = useRef(null);
+  const bellRef = useRef(null);
 
   // Fetching data from the Redux store
   const timeEntries = useSelector(state => state.timeEntries?.weeks?.[0] || []);
@@ -123,7 +124,11 @@ export default function BellNotification({userId}) {
 
   useEffect(() => {
     const handleClickOutside = event => {
-      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+      if (
+        notificationRef.current && 
+        !notificationRef.current.contains(event.target) &&
+        !bellRef.current.contains(event.target)
+      ) {
         handleNotificationClick();
       }
     };
@@ -169,6 +174,7 @@ export default function BellNotification({userId}) {
     <>
       {isDataReady && (
         <i
+          ref={bellRef}
           className={`fa fa-bell i-large ${hasNotification ? 'has-notification' : ''}`}
           onClick={handleClick}
           style={{
