@@ -8,7 +8,7 @@ import { SEARCH, CREATE_NEW_TEAM } from '../../languages/en/ui';
 /**
  * The search panel stateless component for  Teams grid
  */
-export function TeamTablesearchPanel(props) {
+export function TeamTableSearchPanelBase(props) {
   const { darkMode } = props;
   const canPostTeam = props.hasPermission('postTeam');
   const inputRef = useRef(null);
@@ -31,13 +31,15 @@ export function TeamTablesearchPanel(props) {
         </button>
       )}
       <div className="input-group-prepend" style={{ marginLeft: '10px' }}>
-        <span className="input-group-text">{SEARCH}</span>
+        <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
+          {SEARCH}
+        </span>
       </div>
 
       <input
         ref={inputRef}
         type="text"
-        className="form-control"
+        className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
         aria-label="Search"
         placeholder="Search Text"
         id="team-profiles-wild-card-search"
@@ -48,5 +50,4 @@ export function TeamTablesearchPanel(props) {
     </div>
   );
 }
-
-export default connect(null, { hasPermission })(TeamTablesearchPanel);
+export default connect(null, { hasPermission })(TeamTableSearchPanelBase);
