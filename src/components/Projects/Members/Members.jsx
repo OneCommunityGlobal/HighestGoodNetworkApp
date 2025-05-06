@@ -35,13 +35,19 @@ const Members = props => {
   const canUnassignUserInProject = props.hasPermission('unassignUserInProject');
 
   useEffect(() => {
+    let isMounted = true;
     const fetchMembers = async () => {
       setIsLoading(true);
       setMembersList([]);
       await props.fetchAllMembers(projectId);
-      setIsLoading(false);
+      if (isMounted) {
+        setIsLoading(false);
+      }
     };
     fetchMembers();
+    return () => {
+      isMounted = false; 
+    };
   }, [projectId]);
 
   const assignAll = async () => {
@@ -107,7 +113,7 @@ const Members = props => {
                 </button>
               </NavItem>
 
-              <div id="member_project__name">PROJECTS {props.projectId}</div>
+              <div id="member_project__name" data-testid="projectId">PROJECTS {props.projectId}</div>
             </ol>
           </nav>
           {canAssignProjectToUsers ? (
@@ -219,6 +225,7 @@ const Members = props => {
                     uid={member._id}
                     fullName={member.firstName + ' ' + member.lastName}
                     darkMode={darkMode}
+                    data-testid={`member-${member._id}`}
                   />
                 ))}
 
