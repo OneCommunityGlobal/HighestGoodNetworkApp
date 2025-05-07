@@ -31,7 +31,7 @@ function ListOverview() {
       </div>
       <div className="content-container">
         <div className="container-top" />
-        <div className="container-main">
+        <div className="container-main-overview">
           <div className="details-left">
             <div className="listing-details mobile-display">
               <h1>{listing.title}</h1>

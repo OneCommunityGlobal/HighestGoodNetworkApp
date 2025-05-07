@@ -1,10 +1,9 @@
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { getWeeklySummariesReport } from '../../../actions/weeklySummariesReport';
-import configureStore from '../../../store';
+import { store } from '../../../store';
 import { ENDPOINTS } from '../../../utils/URL';
 
-const { store } = configureStore();
 const url = ENDPOINTS.WEEKLY_SUMMARIES_REPORT();
 
 const server = setupServer(

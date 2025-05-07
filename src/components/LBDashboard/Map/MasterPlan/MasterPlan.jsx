@@ -109,7 +109,7 @@ function MasterPlan() {
       </div>
       <div className="content-container">
         <div className="container-top" />
-        <div className="container-main">
+        <div className="container-main-map">
           <div className="container-map">
             <div className="map-details">
               <div className="map">

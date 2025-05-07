@@ -8,7 +8,7 @@
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.36",
-    "@fortawesome/free-regular-svg-icons": "^5.12.1",
+    "@fortawesome/free-regular-svg-icons": "^5.15.4",
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
     "@fortawesome/react-fontawesome": "^0.1.19",
     "@react-leaflet/core": ">=1.0.0 <1.1.0",
@@ -17,6 +17,7 @@
     "axios": "^0.21.2",
     "axios-mock-adapter": "^1.22.0",
     "bootstrap": "^4.5.3",
+    "bull": "^4.16.5",
     "chart.js": "^3.9.1",
     "chartjs-plugin-datalabels": "^2.2.0",
     "classnames": "^2.2.6",
@@ -31,7 +32,7 @@
     "html-to-pdfmake": "^2.0.6",
     "joi": "^14.0.6",
     "jwt-decode": "^2.2.0",
-    "leaflet": "1.7.1",
+    "leaflet": "^1.9.4",
     "leaflet.heat": "^0.2.0",
     "lodash": "^4.17.21",
     "lucide-react": "^0.484.0",
@@ -77,6 +78,7 @@
     "redux-concatenate-reducers": "^1.0.0",
     "redux-persist": "^5.10.0",
     "redux-thunk": "^2.3.0",
+    "socket.io-client": "^4.8.1",
     "tinymce": "^7.2.0",
     "uuid": "^9.0.1"
   },

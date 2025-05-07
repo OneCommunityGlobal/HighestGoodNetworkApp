@@ -35,7 +35,7 @@ describe('NotificationCard', () => {
       </Provider>,
     );
 
-    expect(screen.getByText(/You have a new notification from John Doe!/)).toBeInTheDocument();
+    expect(screen.getByText(/You have a new notification!/)).toBeInTheDocument();
     expect(
       screen.getByText((content, node) => {
         const hasText = thisnode => thisnode.textContent === 'This is a test message';
