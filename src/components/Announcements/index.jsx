@@ -7,6 +7,10 @@ import { toast } from 'react-toastify';
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
 import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
+import PinterestPost from './PinterestPost';
+import Tab from 'react-bootstrap/Tab';
+import Tabs from 'react-bootstrap/Tabs';
+import pinterestLogo from '../../assets/images/Pinterest-logo.png';
 
 function Announcements({ title, email }) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -172,29 +176,21 @@ function Announcements({ title, email }) {
     dispatch(broadcastEmailsToAll('Weekly Update', htmlContent));
   };
 
-  const handlePostToPinterest = async () => {
-    if (!emailContent || emailContent.trim() === '') {
-      toast.error('Error: No content to post. Please add some content in Weekly progress editor');
-      return;
-    }
-    try {
-      await axios.post(ENDPOINTS.POST_PINTEREST, {
-        emailContent: emailContent,
-      });
-      toast.success('Post to Pinterest successful!');
-    } catch (err) {
-      toast.error(err.response?.data?.error || 'Failed to post to Pinterest!', {
-        autoClose: false
-      });
-    }
-  }
-
+  
 
   return (
     <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: '100%' }}>
+
+<Tabs
+      defaultActiveKey="home"
+      id="uncontrolled-tab-example"
+      className="mb-3"
+    >
+      <Tab eventKey="home" title={title ? <h3> {title} </h3> : <h3>Weekly Progress Editor</h3>}>
+  
       <div className="email-update-container">
         <div className="editor">
-          {title ? <h3> {title} </h3> : <h3>Weekly Progress Editor</h3>}
+          {/* {title ? <h3> {title} </h3> : <h3>Weekly Progress Editor</h3>} */}
 
           <br />
           {showEditor && (
@@ -280,17 +276,15 @@ function Announcements({ title, email }) {
           />
         </div>
       </div>
+      </Tab>
+
+      <Tab eventKey="pinterest" title={<img src={pinterestLogo}/>}>
       <div className='social-media'>
         <h3 className={darkMode ? 'text-light' : 'text-dark'}>Post to Social Media</h3>
-        <button
-          type="button"
-          className="send-button"
-          onClick={handlePostToPinterest}
-          style={darkMode ? boxStyleDark : boxStyle}
-        >
-          Pinterest Post
-        </button>
+        <PinterestPost />
       </div>
+      </Tab>
+      </Tabs>
     </div>
   );
 }
