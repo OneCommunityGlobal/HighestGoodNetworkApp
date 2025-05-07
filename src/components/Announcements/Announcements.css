@@ -31,7 +31,22 @@ textarea {
 }
 
 .input-file-upload {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
   margin-top: 5px;
+}
+
+.video-preview-container{
+  margin-top: 80px;
+  padding: 10px;
+  display: inline;
+  gap: 10px;
+  flex-wrap: wrap;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+
 }
 
 button.send-button {
@@ -57,6 +72,40 @@ button.send-button:hover {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+}
+
+.social-media-container {
+  padding: 70px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+
+  justify-content: flex-start;
+}
+
+.social-media {
+  flex: 1;
+
+  margin-right: 20px;
+}
+
+.social-buttons-container {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-start;
+
+}
+
+.social-buttons-container button:hover {
+  background-color: #35508f;
+}
+
+.social-buttons-container button:nth-child(2) {
+  background-color: #34b7f1;
+}
+
+.social-buttons-container button:nth-child(2):hover {
+  background-color: #1f9dd6;
 }
 
 .editor {

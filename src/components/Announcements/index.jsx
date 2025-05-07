@@ -15,6 +15,8 @@ function Announcements({ title, email }) {
   const [headerContent, setHeaderContent] = useState('');
   const [showEditor, setShowEditor] = useState(true); // State to control rendering of the editor
   const tinymce = useRef(null);
+  const [videoFile, setVideoFile] = useState(null);
+  const [videoURL, setVideoURL] = useState('');
 
   useEffect(() => {
     // Toggle the showEditor state to force re-render when dark mode changes
@@ -170,6 +172,102 @@ function Announcements({ title, email }) {
     dispatch(broadcastEmailsToAll('Weekly Update', htmlContent));
   };
 
+  const handleVideoChange = (e) => {
+    const file = e.target.files[0];
+
+    if (file && file.type.startsWith('video/')) {
+      const url = URL.createObjectURL(file);
+      setVideoFile(file);
+      setVideoURL(url);
+    } else {
+      setVideoFile(null);
+      setVideoURL('');
+      alert('Please select a valid video file');
+    }
+  };
+
+  const oauthSignIn = () => {
+    const oauth2Endpoint = 'https://accounts.google.com/o/oauth2/v2/auth';
+    const params = {
+      client_id: '79576137807-b7j4fsdm0u9pgorsohcq97gqsaglf7la.apps.googleusercontent.com',
+      redirect_uri: 'http://localhost:3000/announcements',
+      response_type: 'token',
+      scope: 'https://www.googleapis.com/auth/youtube.force-ssl',
+      include_granted_scopes: 'true',
+      state: 'pass-through value',
+    };
+
+    const form = document.createElement('form');
+    form.setAttribute('method', 'GET');
+    form.setAttribute('action', oauth2Endpoint);
+
+    for (let p in params) {
+      const input = document.createElement('input');
+      input.setAttribute('type', 'hidden');
+      input.setAttribute('name', p);
+      input.setAttribute('value', params[p]);
+      form.appendChild(input);
+    }
+
+    document.body.appendChild(form);
+    form.submit();
+  };
+
+  useEffect(() => {
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const token = hashParams.get('access_token');
+    if (token) {
+      setAccessToken(token);
+      console.log('Access Token:', token);
+    }
+  }, []);
+
+  const uploadVideoToYouTube = async (accessToken, videoFile, title, description, tags) => {
+    const metadata = {
+      snippet: {
+        title: title,
+        description: description,
+        tags: tags,
+      },
+      status: {
+        privacyStatus: 'private', // or 'public' or 'unlisted'
+      }
+    };
+
+    const form = new FormData();
+    form.append('snippet', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+    form.append('video', videoFile);
+
+    const response = await fetch(
+      'https://www.googleapis.com/upload/youtube/v3/videos?uploadType=resumable&part=snippet,status',
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json; charset=UTF-8',
+          'X-Upload-Content-Type': videoFile.type,
+          'X-Upload-Content-Length': videoFile.size,
+        },
+        body: JSON.stringify(metadata),
+      }
+    );
+
+    const uploadUrl = response.headers.get('location');
+
+    const uploadResponse = await fetch(uploadUrl, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': videoFile.type,
+        'Content-Length': videoFile.size,
+      },
+      body: videoFile,
+    });
+
+    const uploadedVideo = await uploadResponse.json();
+    return uploadedVideo;
+  };
+
+
   return (
     <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: '100%' }}>
       <div className="email-update-container">
@@ -261,6 +359,44 @@ function Announcements({ title, email }) {
             onChange={addImageToEmailContent}
             className="input-file-upload"
           />
+        </div>
+      </div>
+      <div className="social-media-container">
+        <div className="social-media">
+          {title ? <h3>{title}</h3> : <h3>Social Media Post</h3>}
+          {title ? null : (
+            <label htmlFor="social-media-list" className={darkMode ? 'text-light' : 'text-dark'}>
+              Click on below social media to post
+            </label>
+          )}
+
+          {title ? null : (
+
+              <div className="social-buttons-container">
+                <button
+                  type="button"
+                  className="send-button"
+                  onClick={oauthSignIn}
+                  style={darkMode ? boxStyleDark : boxStyle}
+                >
+                  Sign in with Google
+                </button>
+
+            </div>
+          )}
+
+        </div>
+
+        <div className="video-preview-container">
+          <input type="file" accept="video/*" onChange={handleVideoChange} />
+          {videoURL && (
+            <div>
+              <video width="480" controls>
+                <source src={videoURL} type={videoFile.type} />
+                Your browser does not support the video tag.
+              </video>
+            </div>
+          )}
         </div>
       </div>
     </div>
