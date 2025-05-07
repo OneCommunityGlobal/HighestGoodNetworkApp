@@ -8,7 +8,9 @@ import { toast } from 'react-toastify';
 import { FaInstagramSquare } from 'react-icons/fa';
 // import { get } from 'lodash';
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
-import InstagramLoginButton from './InstagramPostComponent/loginToInstagram';
+import InstagramLoginButton from './InstagramPostComponent/InstagramLoginButton';
+import InstagramPostEditor from './InstagramPostComponent/InstagramPostEditor';
+import { set } from 'lodash';
 
 function Announcements({ title, email }) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -20,71 +22,20 @@ function Announcements({ title, email }) {
   const [showEditor, setShowEditor] = useState(true); // State to control rendering of the editor
   const tinymce = useRef(null);
 
-  const [facebookUserAccessToken, setFacebookUserAccessToken] = useState('');
-  const [instagramUserAccessToken, setInstagramUserAccessToken] = useState('');
+  // const [facebookUserAccessToken, setFacebookUserAccessToken] = useState('');
+  // const [instagramUserAccessToken, setInstagramUserAccessToken] = useState('');
   // const location = useLocation();
   // const history = useHistory();
+
+  // const [urlButtonVisibility, setUrlButtonVisibility] = useState(false);
+  const [showInstagramPostEditor, setShowInstagramPostEditor] = useState(false);
+  const [instagramAccessToken, setinstagramAccessToken] = useState('');
+
 
   useEffect(() => {
     setShowEditor(false);
     setTimeout(() => setShowEditor(true), 0);
   }, [darkMode]);
-
-  // useEffect(() => {
-  //   loadFacebookSDK();
-  // }, []);
-
-  // Check if the user is logged in to Facebook and get the access token
-  // useEffect(() => {
-  //   const checkLoginStatus = () => {
-  //     if (window.FB) {
-  //       window.FB.getLoginStatus(response => {
-  //         setFacebookUserAccessToken(response.authResponse?.accessToken);
-  //       });
-  //     }
-  //   };
-  //   if (window.FB) {
-  //     checkLoginStatus();
-  //   } else {
-  //     window.fbAsyncInit = function() {
-  //       checkLoginStatus();
-  //     };
-  //   }
-  // }, []);
-
-  // const exchangeCodeForToken = async code => {
-  //   try {
-  //     const response = await fetch('/api/instagram/exchange-token', {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: JSON.stringify({ code }),
-  //     });
-  //     const data = await response.json();
-
-  //     if (data.access_token) {
-  //       setInstagramUserAccessToken(data.access_token);
-  //       toast.success('Instagram access token received successfully!');
-  //     } else {
-  //       toast.error('Failed to receive Instagram access token.');
-  //     }
-  //   } catch (error) {
-  //     // console.error('Error exchanging code for token:', error);
-  //     toast.error('Error exchanging code for token.');
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   const urlParams = new URLSearchParams(window.location.search);
-  //   const code = urlParams.get('code');
-
-  //   if (code) {
-  //     exchangeCodeForToken(code);
-
-  //     window.history.replaceState({}, document.title, window.location.pathname);
-  //   }
-  // }, []);
 
   const editorInit = {
     license_key: 'gpl',
@@ -245,79 +196,47 @@ function Announcements({ title, email }) {
     dispatch(broadcastEmailsToAll('Weekly Update', htmlContent));
   };
 
-  // const getUrlParams = () => {
-  //   const params = new URLSearchParams(location.search);
-  //   return params;
-  // };
-
-  const loginToInstagram = () => {
-    const clientId = process.env.REACT_APP_INSTAGRAM_CLIENT_ID;
-    const redirectUri = process.env.REACT_APP_INSTAGRAM_REDIRECT_URI;
-    const scope = process.env.REACT_APP_INSTAGRAM_SCOPE;
-    const authURL = `https://www.instagram.com/oauth/authorize?enable_fb_login=0&force_authentication=1&client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}`;
-
-    const width = 600;
-    const height = 700;
-    const left = window.screen.width / 2 - width / 2;
-    const top = window.screen.height / 2 - height / 2;
-
-    const popup = window.open(
-      authURL,
-      'instagram-auth-popup',
-      `width=${width},height=${height},left=${left},top=${top},toolbar=0,location=0,menubar=0,scrollbars=1`,
-    );
-
-    if (!popup) {
-      toast.error('Failed to open Instagram login popup');
-    }
+  const handleInstagramButtonClick = () => {
+    setShowInstagramPostEditor(!showInstagramPostEditor);
   };
 
   return (
     <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: '100%' }}>
-      <div className="email-update-container">
+      {/* {title ? <h3> {title} </h3> : <h3>Weekly Progress Editor</h3>} */}
+      {title ? (
+        <div className="title-container">
+          <h3>{title}</h3>
+          <button
+            type="button"
+            className="instagram-button"
+            onClick={() => {
+              console.log('instagram post editor state: ', showInstagramPostEditor); // console.log('instagram button clicked'); // REPLACE ME
+              handleInstagramButtonClick();
+            }}
+            aria-label="instagram button"
+          >
+            <FaInstagramSquare size={50} className="instagram-icon" />
+          </button>
+        </div>
+      ) : (
+        <div className="title-container">
+          <h3>Weekly Progress Editor</h3>
+          <button
+            type="button"
+            className="instagram-button"
+            onClick={() => {
+              console.log('instagram button clicked'); // REPLACE ME
+              handleInstagramButtonClick();
+            }}
+            aria-label="instagram button"
+          >
+            <FaInstagramSquare size={50} className="instagram-icon" />
+          </button>
+        </div>
+      )}
+      {!showInstagramPostEditor && <div className="email-update-container">
         <div className="editor">
           {/* {title ? <h3> {title} </h3> : <h3>Weekly Progress Editor</h3>} */}
-          {title ? (
-            <div className="title-container">
-              <h3>{title}</h3>
-              <button
-                type="button"
-                className="instagram-button"
-                onClick={() => {
-                  console.log('instagram button clicked'); // REPLACE ME
-                }}
-                aria-label="instagram button"
-              >
-                <FaInstagramSquare size={50} className="instagram-icon" />
-              </button>
-            </div>
-          ) : (
-            <div className="title-container">
-              <h3>Weekly Progress Editor</h3>
-              <button
-                type="button"
-                className="instagram-button"
-                onClick={() => {
-                  console.log('instagram button clicked'); // REPLACE ME
-                  console.log('email content: ', emailContent);
-                  console.log('header content: ', headerContent);
-                }}
-                aria-label="instagram button"
-              >
-                <FaInstagramSquare size={50} className="instagram-icon" />
-              </button>
-              <InstagramLoginButton
-                className="instagram-login-button"
-                appId={process.env.REACT_APP_INSTAGRAM_CLIENT_ID}
-                redirectUri={process.env.REACT_APP_INSTAGRAM_REDIRECT_URI}
-                scope={process.env.REACT_APP_INSTAGRAM_SCOPE}
-                onLoginSuccess={() => {
-                  console.log('Instagram login successful!');
-                }}
-              />
-            </div>
-          )}
-
           <br />
           {showEditor && (
             <Editor
@@ -404,40 +323,13 @@ function Announcements({ title, email }) {
             className="input-file-upload"
           />
         </div>
-      </div>
-      {/* <h3>Log in with Facebook</h3>
-      {facebookUserAccessToken ? (
-        <div>
-          <button
-            type="button"
-            onClick={logOutFromFB(setFacebookUserAccessToken)}
-            className="btn action-btn"
-          >
-            Log out of Facebook
-          </button>
-          <p>access token: {facebookUserAccessToken}</p>
-        </div>
-      ) : (
-        <button
-          type="button"
-          onClick={logInToFB(setFacebookUserAccessToken)}
-          className="btn action-btn"
-        >
-          Login with Facebook
-        </button>
+      </div>}
+      {showInstagramPostEditor && (
+        <InstagramPostEditor 
+          instagramAccessToken={instagramAccessToken}
+          setInstagramAccessToken={setinstagramAccessToken}
+        />
       )}
-
-      <button
-        type="button"
-        className="instagram-login-button"
-        onClick={() => {
-          loginToInstagram();
-          // console.log('url: ', getUrlParams().get('code'));
-        }}
-        aria-label="Login to Instagram"
-      >
-        {instagramUserAccessToken ? 'Log out of Instagram' : 'Log in to Instagram'}
-      </button> */}
     </div>
   );
 }

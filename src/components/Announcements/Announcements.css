@@ -117,6 +117,7 @@ button.send-button:hover {
   display: flex;
   align-items: center;
   justify-content: flex-start;
+  padding: 0 0 0 70px;
 }
 
 
