@@ -27,6 +27,7 @@ import { getUserProfile } from 'actions/userProfile';
 import axios from 'axios';
 import hasPermission from 'utils/permissions';
 import { boxStyle, boxStyleDark } from 'styles';
+import { useDispatch } from 'react-redux';
 import { postTimeEntry, editTimeEntry, getTimeEntriesForWeek } from '../../../actions/timeEntries';
 import AboutModal from './AboutModal';
 import TangibleInfoModal from './TangibleInfoModal';
@@ -34,6 +35,8 @@ import ReminderModal from './ReminderModal';
 import TimeLogConfirmationModal from './TimeLogConfirmationModal';
 import { ENDPOINTS } from '../../../utils/URL';
 import '../../Header/DarkMode.css';
+import { updateIndividualTaskTime } from '../../TeamMemberTasks/actions';
+import '../Timelog.css';
 
 // Images are not allowed in timelog
 const customImageUploadHandler = () =>
@@ -41,6 +44,36 @@ const customImageUploadHandler = () =>
     // eslint-disable-next-line prefer-promise-reject-errors
     reject({ message: 'Pictures are not allowed here!', remove: true });
   });
+
+/*
+const TINY_MCE_INIT_OPTIONS = {
+  license_key: 'gpl',
+  menubar: false,
+  placeholder: 'Description (10-word minimum) and reference link',
+  plugins: 'advlist autolink autoresize lists link charmap table paste help wordcount',
+  toolbar:
+    // eslint-disable-next-line no-multi-str
+    'bold italic underline link removeformat bullist numlist outdent indent |\
+                    styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
+                    subscript superscript charmap  | help',
+  branding: false,
+  toolbar_mode: 'sliding',
+  min_height: 180,
+  max_height: 300,
+  autoresize_bottom_margin: 1,
+  content_style: 'body { cursor: text !important; }',
+  images_upload_handler: customImageUploadHandler,
+};
+*/
+
+/* Soft Refresh */
+const softRefresh = () => {
+  document.body.classList.add('refreshing');
+  // console.log(document.body.classList);
+  setTimeout(() => {
+    window.location.reload();
+  }, 300);
+};
 
 /**
  * Modal used to submit and edit tangible and intangible time entries.
@@ -67,6 +100,7 @@ function TimeEntryForm(props) {
   const { from, sendStop, edit, data, toggle, isOpen, tab, darkMode } = props;
   // props from store
   const { authUser } = props;
+  const dispatch = useDispatch();
 
   const viewingUser = JSON.parse(sessionStorage.getItem('viewingUser') ?? '{}');
 
@@ -122,8 +156,8 @@ function TimeEntryForm(props) {
 
   const timeEntryInitialProjectOrTaskId = edit
     ? initialProjectId +
-      (initialwbsId ? `/${initialwbsId}` : '') +
-      (initialTaskId ? `/${initialTaskId}` : '')
+    (initialwbsId ? `/${initialwbsId}` : '') +
+    (initialTaskId ? `/${initialTaskId}` : '')
     : 'defaultProject';
 
   const initialReminder = {
@@ -232,13 +266,17 @@ function TimeEntryForm(props) {
 
   const handleEditorChange = (content, editor) => {
     const { wordcount } = editor.plugins;
-    const hasLink = content.indexOf('http://') > -1 || content.indexOf('https://') > -1;
+    const regexFilter = /https:\/\/(?!(www\.)?localhost|(www\.)?dropbox\.com(?!\/scl\/)|(www\.)?[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}.*$/gim;
+    const hasLink = regexFilter.test(content);
+    const dropboxRegex = /https:\/\/(www\.)?dropbox\.com/gim;
+    const hasDropboxLink = dropboxRegex.test(content);
     const enoughWords = wordcount.body.getWordCount() > 10;
     setFormValues(fv => ({ ...fv, [editor.id]: content }));
     setReminder(r => ({
       ...r,
       enoughWords,
       hasLink,
+      hasDropboxLink,
     }));
   };
 
@@ -260,10 +298,14 @@ function TimeEntryForm(props) {
       remindObj.remind =
         'Please write a more detailed description of your work completed, write at least 1-2 sentences.';
       errorObj.notes = 'Description and reference link are required';
-    } else if (!reminder.hasLink) {
+    } else if (!reminder.hasLink && !reminder.hasDropboxLink) {
       remindObj.remind =
         'Do you have a link to your Google Doc or other place to review this work? You should add it if you do. (Note: Please include http[s]:// in your URL)';
       errorObj.notes = 'Description and reference link are required';
+    } else if (!reminder.hasLink && reminder.hasDropboxLink) {
+      remindObj.remind =
+        'Halt, Link Wrangler! You’ve tried to share a DropBox link by just copying the DropBox URL from your browser, creating a link like a locked door with no key. Use the DropBox “Share” option to create a link that is guest-friendly!';
+      errorObj.notes = 'A valid Dropbox link from the “Share” option is required';
     }
 
     setErrors(errorObj);
@@ -303,7 +345,7 @@ function TimeEntryForm(props) {
   };
 
   const submitTimeEntry = async () => {
-    const { hours: formHours, minutes: formMinutes } = formValues;
+    const { hours: formHours, minutes: formMinutes, personId, taskId } = formValues;
     const timeEntry = { ...formValues };
     const isTimeModified = edit && (initialHours !== formHours || initialMinutes !== formMinutes);
 
@@ -329,12 +371,22 @@ function TimeEntryForm(props) {
         case 'Timer':
           sendStop();
           clearForm();
+          dispatch(
+            updateIndividualTaskTime({
+              newTime: { hours: formHours, minutes: formMinutes },
+              taskId,
+              personId,
+            }),
+          );
           break;
         case 'TimeLog': {
           const date = moment(formValues.dateOfWork);
           const today = moment().tz('America/Los_Angeles');
           const offset = today.week() - date.week();
           props.getTimeEntriesForWeek(timeEntryUserId, Math.min(offset, 3));
+          // Use GET_TIME_ENTRIES_WEEK, and fix offset to 0 (this week)
+          // await props.getTimeEntriesForWeek(timeEntryUserId, 0);
+          // dispatch(fetchTeamMembersTask(timeEntryUserId));
           clearForm();
           break;
         }
@@ -342,6 +394,7 @@ function TimeEntryForm(props) {
           await Promise.all([
             props.getUserProfile(timeEntryUserId),
             props.getTimeEntriesForWeek(timeEntryUserId, tab),
+            // props.getTimeEntriesForPeriod(timeEntryUserId, today, today),
           ]);
           break;
         default:
@@ -354,6 +407,8 @@ function TimeEntryForm(props) {
           editLimitNotification: !r.editLimitNotification,
         }));
       }
+      // Soft Refresh
+      softRefresh();
     };
 
     try {
@@ -681,7 +736,7 @@ function TimeEntryForm(props) {
 
               {'notes' in errors && (
                 <div className="text-danger">
-                  <small>{errors.notes}</small>
+                  <small>{errors.notes}</small>handlePostSubmitActions
                 </div>
               )}
             </FormGroup>
@@ -773,6 +828,7 @@ TimeEntryForm.propTypes = {
 const mapStateToProps = state => ({
   authUser: state.auth.user,
   darkMode: state.theme.darkMode,
+  timeEntriesPeriod: state.timeEntries.period,
 });
 
 export default connect(mapStateToProps, {

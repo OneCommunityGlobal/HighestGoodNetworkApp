@@ -279,3 +279,9 @@
   margin-left: 5px;
   /* Add spacing between text and icon */
 }
+
+/*Soft Refresh*/
+body.refreshing {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
