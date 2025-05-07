@@ -84,7 +84,7 @@ const ReviewButton = ({ user, task, updateTask }) => {
   const toggleInvalidDomainModal = (errorType = null) => {
     if (!invalidDomainModal.isOpen && errorType) {
       let errorMessage =
-        'Nice try, but that link is about as useful as a chocolate teapot! We need a GitHub PR link, Google Doc, Dropbox folder, or One Community webpage.';
+        'Nice try, but that link is about as useful as a chocolate teapot! We need a GitHub PR link, Google Doc, Dropbox folder, Figma design, or One Community webpage.';
 
       if (errorType === 'invalid_dropbox_link') {
         errorMessage =
@@ -181,6 +181,11 @@ const ReviewButton = ({ user, task, updateTask }) => {
       normalizedUrl.includes('onecommunity.org') ||
       normalizedUrl.includes('onecommunity.com')
     ) {
+      return { isValid: true, errorType: null };
+    }
+
+    // 5. Figma check
+    if (normalizedUrl.includes('figma.com')) {
       return { isValid: true, errorType: null };
     }
 
@@ -667,6 +672,7 @@ const ReviewButton = ({ user, task, updateTask }) => {
               <li style={{ paddingLeft: '8px', marginBottom: '4px' }}>
                 One Community webpage (onecommunityglobal.org)
               </li>
+              <li style={{ paddingLeft: '8px', marginBottom: '4px' }}>Figma design (figma.com)</li>
             </ul>
           </div>
         </ModalBody>
