@@ -109,7 +109,13 @@
   }
 }
 
-@media screen and (max-width: 991px) {
+@media screen and (max-width: 1151px) and (min-width: 992px) {
+  .dropdown-menu {
+      width: auto !important;
+  }
+}
+
+@media screen and (max-width: 1199px) {
   .menu-container {
     align-items: start;
     /* width: 100%; */

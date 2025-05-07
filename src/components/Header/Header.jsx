@@ -328,12 +328,12 @@ export function Header(props) {
 
   return (
     <div className="header-wrapper">
-      <Navbar className="py-3 navbar" color="dark" dark expand="lg">
+      <Navbar className="py-3 navbar" color="dark" dark expand="xl">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
 
         {isAuthenticated && <Timer darkMode={darkMode} />}
         
-         {/* ITEM SHOWS OUTSIDE OF THE DROPDOWN IN MOBILE */}
+        {/* ITEM SHOWS OUTSIDE OF THE DROPDOWN IN MOBILE */}
         <div className="show-in-mobile ml-auto mr-3">
           <BellNotification userId={displayUserId}/>
         </div>
