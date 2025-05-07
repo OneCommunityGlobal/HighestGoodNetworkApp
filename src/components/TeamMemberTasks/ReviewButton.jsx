@@ -375,7 +375,39 @@ const ReviewButton = ({ user, task, updateTask }) => {
         </Button>
       );
     } else if (reviewStatus === 'Submitted') {
-      if (
+      // First check if it's the user's own task
+      if (user.personId === myUserId) {
+        return (
+          <UncontrolledDropdown>
+            <DropdownToggle
+              className="btn--dark-sea-green reviewBtn"
+              caret
+              style={darkMode ? boxStyleDark : boxStyle}
+            >
+              Work Submitted and Awaiting Review
+            </DropdownToggle>
+            <DropdownMenu className={darkMode ? 'bg-space-cadet' : ''}>
+              {task.relatedWorkLinks &&
+                task.relatedWorkLinks.map((link, index) => (
+                  <DropdownItem
+                    key={index}
+                    href={link}
+                    target="_blank"
+                    className={darkMode ? 'text-light dark-mode-btn' : ''}
+                  >
+                    <FontAwesomeIcon icon={faExternalLinkAlt} /> View Link
+                  </DropdownItem>
+                ))}
+              <DropdownItem
+                onClick={toggleEditLinkModal}
+                className={darkMode ? 'text-light dark-mode-btn' : ''}
+              >
+                <FontAwesomeIcon icon={faPencilAlt} /> Edit Link
+              </DropdownItem>
+            </DropdownMenu>
+          </UncontrolledDropdown>
+        );
+      } else if (
         myRole == 'Owner' ||
         myRole == 'Administrator' ||
         myRole == 'Mentor' ||
@@ -427,37 +459,6 @@ const ReviewButton = ({ user, task, updateTask }) => {
                 className={darkMode ? 'text-light dark-mode-btn' : ''}
               >
                 More work needed, reset this button
-              </DropdownItem>
-            </DropdownMenu>
-          </UncontrolledDropdown>
-        );
-      } else if (user.personId === myUserId) {
-        return (
-          <UncontrolledDropdown>
-            <DropdownToggle
-              className="btn--dark-sea-green reviewBtn"
-              caret
-              style={darkMode ? boxStyleDark : boxStyle}
-            >
-              Work Submitted and Awaiting Review
-            </DropdownToggle>
-            <DropdownMenu className={darkMode ? 'bg-space-cadet' : ''}>
-              {task.relatedWorkLinks &&
-                task.relatedWorkLinks.map((link, index) => (
-                  <DropdownItem
-                    key={index}
-                    href={link}
-                    target="_blank"
-                    className={darkMode ? 'text-light dark-mode-btn' : ''}
-                  >
-                    <FontAwesomeIcon icon={faExternalLinkAlt} /> View Link
-                  </DropdownItem>
-                ))}
-              <DropdownItem
-                onClick={toggleEditLinkModal}
-                className={darkMode ? 'text-light dark-mode-btn' : ''}
-              >
-                <FontAwesomeIcon icon={faPencilAlt} /> Edit Link
               </DropdownItem>
             </DropdownMenu>
           </UncontrolledDropdown>
