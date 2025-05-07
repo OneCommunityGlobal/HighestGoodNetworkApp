@@ -100,7 +100,7 @@ const Members = props => {
   return (
     <React.Fragment>
       <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{minHeight: "100%"}}>
-        <div className={`container pt-2 ${darkMode ? 'bg-yinmn-blue-light text-light' : ''}`}>
+        <div className={`container pt-2 ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
           <nav aria-label="breadcrumb" className="w-100">
             <div
               className={`d-flex align-items-center justify-content-center breadcrumb ${darkMode ? 'bg-space-cadet' : ''}`}
