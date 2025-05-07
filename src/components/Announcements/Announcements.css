@@ -14,16 +14,19 @@ label {
 }
 
 .text-light {
-  color: #fff; /* White text for dark mode */
+  color: #fff;
+  /* White text for dark mode */
 }
 
 .text-dark {
-  color: #333; /* Default dark text for light mode */
+  color: #333;
+  /* Default dark text for light mode */
 }
 
 .input-text-for-announcement,
 textarea {
-  margin-top: 5px;   /* Space above input fields */
+  margin-top: 5px;
+  /* Space above input fields */
   width: 100%;
   padding: 12px; /* Increased padding */
   border: 1px solid #ccc;
@@ -33,9 +36,14 @@ textarea {
 
 .input-file-upload {
   margin-top: 5px;
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
 
 button.send-button {
+  display: block;
   background-color: #4285f4;
   color: white;
   border: none;
@@ -62,11 +70,45 @@ button.send-button:hover {
   box-sizing: border-box; /* Ensures padding is included in width */
 }
 
+
+.social-media-container {
+  padding: 70px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+
+  justify-content: flex-start;
+}
+
+.social-media {
+  flex: 1;
+
+  margin-right: 20px;
+}
+
+.social-buttons-container {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-start;
+
+}
+
+.social-buttons-container button:hover {
+  background-color: #35508f;
+}
+
+.social-buttons-container button:nth-child(2) {
+  background-color: #34b7f1;
+}
+
+.social-buttons-container button:nth-child(2):hover {
+  background-color: #1f9dd6;
+}
+
 .editor {
   flex: 1;
-  /* Editor takes up remaining space */
+
   margin-right: 20px;
-  /* Add some spacing between editor and email inputs */
 }
 
 .editor h2 {
