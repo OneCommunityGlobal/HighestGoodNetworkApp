@@ -6,48 +6,40 @@
 
 .dark-mode .close {
   color: white;
-  opacity: 1;
+  opacity: 1; 
 }
 
 .dark-mode .close:hover {
   color: #f0f0f0;
-  opacity: 1;
+  opacity: 1; 
 }
-
 /* Custom styles for datepicker in darkMode */
 .dark-mode .react-datepicker {
   background-color: #3A506B;
   color: #ffffff;
 }
-
 .dark-mode .react-datepicker__header {
   background-color: #1C2541;
   border-bottom: 1px solid #555555;
 }
-
 .dark-mode .react-datepicker__current-month {
   color: #ffffff;
 }
-
 .dark-mode .react-datepicker__navigation--previous::before,
 .dark-mode .react-datepicker__navigation--next::before {
   border-color: #ffffff;
 }
-
 .dark-mode .react-datepicker__month-container {
   background-color: #3A506B;
 }
-
 .dark-mode .react-datepicker__day,
 .dark-mode .react-datepicker__time-name {
   color: #ffffff;
 }
-
 .dark-mode .react-datepicker__day-name {
   background-color: #1C2541;
   color: #ffffff;
 }
-
 .dark-mode .react-datepicker__day--selected,
 .dark-mode .react-datepicker__day--in-selecting-range,
 .dark-mode .react-datepicker__day--in-range,
@@ -55,11 +47,9 @@
   background-color: #1C2541;
   color: #ffffff;
 }
-
 .dark-mode .react-datepicker__navigation {
   background: none;
 }
-
 .dark-mode .react-datepicker__navigation::before {
   border-color: #ffffff;
 }
@@ -70,8 +60,8 @@
 }
 
 .hover-effect-reports-page-dark-mode:hover {
-  background-color: #1C2541;
-  color: #ffffff;
+  background-color: #1C2541; 
+  color: #ffffff; 
 }
 
 /* Dark mode for DayPicker (AddTaskModal) */
@@ -79,43 +69,33 @@
   background-color: #3A506B;
   color: #ffffff;
 }
-
 /* .dark-mode .DayPicker-wrapper {
   background-color: #1C2541;
 } */
 .dark-mode .DayPicker-Caption {
   color: #ffffff;
 }
-
 .dark-mode .DayPicker-NavButton {
   /* background: none; */
 }
-
 .dark-mode .DayPicker-Month {
   background-color: #3A506B;
 }
-
 .dark-mode .DayPicker-NavButton--prev::before,
 .dark-mode .DayPicker-NavButton--next::before {
   border-color: #ffffff;
 }
-
 .dark-mode .DayPicker-Day {
   color: #ffffff;
 }
-
 .dark-mode .DayPicker-Weekday {
   color: #ffffff;
 }
-
 .dark-mode .DayPicker-Day:hover {
-  background-color: #1C2541 !important;
-  /* Remove background color on hover */
-  color: #ffffff !important;
-  /* Ensure text color remains white */
+  background-color: #1C2541 !important; /* Remove background color on hover */
+  color: #ffffff !important; /* Ensure text color remains white */
 }
-
-.dark-mode tr:hover {
+.dark-mode tr:hover{
   background-color: #2f4157;
 }
 
@@ -133,8 +113,7 @@
   transition: background-color 1000ms ease-in-out;
 }
 
-.sunHoverIcon,
-.nightIcon {
+.sunHoverIcon, .nightIcon {
   height: 25px;
   padding: 2px;
   border-radius: 50%;
@@ -203,8 +182,7 @@
   transition: background-color 1000ms ease-in-out;
 }
 
-.sunIcon,
-.nightHoverIcon {
+.sunIcon, .nightHoverIcon {
   height: 25px;
   padding: 2px;
   border-radius: 50%;
@@ -257,10 +235,4 @@
 .lightModeSliderContainer:hover .darkModeHoverText {
   opacity: 1;
   transition: opacity 200ms linear 800ms;
-}
-
-/* Soft Refresh*/
-body.refreshing {
-  opacity: 0;
-  transition: opacity 0.3s ease;
 }
