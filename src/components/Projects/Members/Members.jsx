@@ -101,30 +101,51 @@ const Members = props => {
     <React.Fragment>
       <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{minHeight: "100%"}}>
         <div className={`container pt-2 ${darkMode ? 'bg-yinmn-blue-light text-light' : ''}`}>
-          <nav aria-label="breadcrumb">
-            <div className={`d-flex align-items-center breadcrumb ${darkMode ? 'bg-space-cadet' : ''}`} 
-                          style={{ 
-                            ...darkMode ? boxStyleDark : boxStyle,
-                            backgroundColor: darkMode ? '' : '#E9ECEF',
-                            margin: '0 0 16px',
-                            padding: '12px 16px',
-                            position: 'relative'
-                          }}>
-                          <div style={{ position: 'absolute', left: '1rem' }}>
-                            <NavItem tag={Link} to={`/projects/`}>
-                              <button type="button" className="btn btn-secondary" style={darkMode ? boxStyleDark : boxStyle}>
-                                <i className="fa fa-chevron-circle-left" aria-hidden="true"></i>
-                                <span style={{ marginLeft: '8px' }}>Return to Project List</span>
-                              </button>
-                            </NavItem>
-                          </div>
-                          <div style={{ 
-                            width: '100%',
-                            textAlign: 'center',
-                            fontWeight: 'bold',
-                            fontSize: '1.5rem'  
-                          }}>{projectName}</div>
-                        </div>
+          <nav aria-label="breadcrumb" className="w-100">
+            <div
+              className={`d-flex align-items-center justify-content-center breadcrumb ${darkMode ? 'bg-space-cadet' : ''}`}
+              style={{
+                ...darkMode ? boxStyleDark : boxStyle,
+                backgroundColor: darkMode ? '' : '#E9ECEF',
+                margin: '0 0 16px',
+                padding: '12px 16px',
+                position: 'relative',
+                flexWrap: 'wrap', 
+              }}
+            >
+            
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+              >
+                <NavItem tag={Link} to={`/projects/`}>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    style={darkMode ? boxStyleDark : boxStyle}
+                  >
+                    <i className="fa fa-chevron-circle-left" aria-hidden="true"></i>
+                  </button>
+                </NavItem>
+              </div>
+
+              <div
+                
+                style={{
+                  textAlign: 'center',
+                  fontWeight: 'bold',
+                  fontSize: '1.5rem',
+                  wordBreak: 'break-word', 
+                  flexGrow: 1, 
+                  whiteSpace: 'normal', 
+                }}
+              >
+                {projectName}
+              </div>
+            </div>
+
           </nav>
           {canAssignProjectToUsers ? (
             <div className="input-group" id="new_project">
