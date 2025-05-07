@@ -1,9 +1,9 @@
-import sampleData from './data';
+import data from './data';
 
 const fetchApplicantsData = filter =>
   new Promise(resolve => {
     setTimeout(() => {
-      resolve(sampleData[filter.selectedOption]);
+      resolve(data[filter.selectedOption]);
     }, 500);
   });
 
