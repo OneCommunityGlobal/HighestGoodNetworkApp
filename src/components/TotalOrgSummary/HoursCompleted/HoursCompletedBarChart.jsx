@@ -12,7 +12,9 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
     }
     return { height: '347px' };
   };
+
   const [cardSize, setCardSize] = useState(initialCardSize);
+
   const updateCardSize = () => {
     if (window.innerWidth <= 680) {
       setCardSize({ height: '300px' });
@@ -22,6 +24,7 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
       setCardSize({ height: '347px' });
     }
   };
+
   useEffect(() => {
     window.addEventListener('resize', updateCardSize);
     updateCardSize();
@@ -30,20 +33,32 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
     };
   }, []);
 
-  const { taskHours, projectHours, lastTaskHours, lastProjectHours } = data;
-  // const taskPercentage = parseFloat(taskHours) / (parseFloat(taskHours) + parseFloat(projectHours));
-  // const taskChangePercentage = parseFloat(taskHours - lastTaskHours) / parseFloat(lastTaskHours);
-  // const projectChangePercentage =
-  //   parseFloat(projectHours - lastProjectHours) / parseFloat(lastProjectHours);
-  const taskPercentage = taskHours / (taskHours + projectHours);
-  const taskChangePercentage = (taskHours - lastTaskHours) / lastTaskHours;
-  const projectChangePercentage = (projectHours - lastProjectHours) / lastProjectHours;
+  if (isLoading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center">
+        <div className="w-100vh">
+          <Loading />
+        </div>
+      </div>
+    );
+  }
+
+  const { taskHours, projectHours } = data;
+  const taskPercentage = taskHours.submittedToCommittedHoursPercentage;
+  const projectPercentage = projectHours.submittedToCommittedHoursPercentage;
+  const taskChangePercentage = taskHours.comparisonPercentage;
+  const projectChangePercentage = projectHours.comparisonPercentage;
   const stats = [
-    { name: 'Task', amount: taskHours, percentage: taskPercentage, change: taskChangePercentage },
+    {
+      name: 'Task',
+      amount: taskHours.count,
+      percentage: taskPercentage,
+      change: taskChangePercentage,
+    },
     {
       name: 'Project',
-      amount: projectHours,
-      percentage: 1.0 - taskPercentage,
+      amount: projectHours.count,
+      percentage: projectPercentage,
       change: projectChangePercentage,
     },
   ];
@@ -108,21 +123,13 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
 
   return (
     <div style={{ height: cardSize.height }}>
-      {isLoading ? (
-        <div className="d-flex justify-content-center align-items-center">
-          <div className="w-100vh">
-            <Loading />
-          </div>
-        </div>
-      ) : (
-        <TinyBarChart
-          chartData={chartData}
-          maxY={maxY}
-          tickInterval={tickInterval}
-          renderCustomizedLabel={renderCustomizedLabel}
-          darkMode={darkMode}
-        />
-      )}
+      <TinyBarChart
+        chartData={chartData}
+        maxY={maxY}
+        tickInterval={tickInterval}
+        renderCustomizedLabel={renderCustomizedLabel}
+        darkMode={darkMode}
+      />
     </div>
   );
 }

@@ -51,6 +51,7 @@ export function Dashboard(props) {
     }, 150);
   };
 
+
   const handleStorageEvent = () => {
     const sessionStorageData = checkSessionStorage();
     setViewingUser(sessionStorageData || false);

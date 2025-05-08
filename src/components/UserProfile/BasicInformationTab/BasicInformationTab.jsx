@@ -611,7 +611,7 @@ const BasicInformationTab = props => {
       </Col>
       {desktopDisplay ? (
         <Col md="1">
-          <div style={{ marginTop: topMargin, marginLeft: '-20px' }}>
+          <div style={{ marginTop: topMargin, }}>
             <EditableInfoModal
               role={role}
               areaName={'roleInfo'}
@@ -728,7 +728,6 @@ const BasicInformationTab = props => {
             display: 'flex',
             alignItems: 'center', // Ensures vertical alignment of the label and button
             justifyContent: 'space-between', // Adds spacing between label and button
-            paddingLeft: '15px',
           }}
         >
           <Col
@@ -806,7 +805,6 @@ const BasicInformationTab = props => {
             display: 'flex',
             alignItems: 'center', // Ensures vertical alignment of all items
             justifyContent: 'space-between', // Space between the columns
-            paddingLeft: '15px',
           }}
         >
           <Col
@@ -910,8 +908,8 @@ const BasicInformationTab = props => {
               {videoCallPreferenceComponent}
               <Col md="1" lg="1"></Col>
             </Row>
-            <Row>{roleComponent}</Row>
-            <Row>
+            <Row style={{ marginBottom: '10px' }}>{roleComponent}</Row>
+            <Row style={{  marginBottom: '10px' }}>
               {locationComponent}
               <Col md="1"></Col>
             </Row>
@@ -920,8 +918,8 @@ const BasicInformationTab = props => {
               <Col md="1"></Col>
             </Row>
             <Row>{timeZoneDifferenceComponent}</Row>
-            <Row style={{ marginBottom: '10px' }}>{statusComponent}</Row>
-            <Row style={{ marginBottom: '10px' }}>{endDateComponent}</Row>
+            <Row className='custom-row' style={{ marginBottom: '10px' }}>{statusComponent}</Row>
+            <Row className='custom-row' style={{ marginBottom: '10px' }}>{endDateComponent}</Row>
           </>
         ) : (
           <>
