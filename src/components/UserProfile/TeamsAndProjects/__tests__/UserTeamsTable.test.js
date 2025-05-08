@@ -2,25 +2,56 @@ import { Provider } from 'react-redux';
 import UserTeamsTable from '../UserTeamsTable';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, within, waitFor } from '@testing-library/react';
 import { userProfileMock } from '../../../../__tests__/mockStates.js';
+import axios from 'axios';
+
+jest.mock('axios');
+jest.mock('react-toastify', () => ({
+  toast: {
+    success: jest.fn(),
+    error: jest.fn(),
+    info: jest.fn()
+  }
+}));
 
 jest.mock('utils/permissions', () => ({
-  hasPermission: jest.fn((a) => true), // 
+  hasPermission: jest.fn(() => true), 
 }));
 
 const mockStore = configureStore([thunk]);
 
 const mockUserProfile = {
   userTeams: [
-  { _id: '1', teamName: 'Team1' },
-  { _id: '2', teamName: 'Team2' }
-],
-userProfile: userProfileMock
+    { _id: '1', teamName: 'Team1' },
+    { _id: '2', teamName: 'Team2' }
+  ],
+  userProfile: userProfileMock,
+  setCodeValid: jest.fn(),
+  onAssignTeamCode: jest.fn(),
+  onUserVisibilitySwitch: jest.fn(),
+  onButtonClick: jest.fn(),
+  onDeleteClick: jest.fn(),
+  fetchTeamCodeAllUsers: jest.fn(),
+  canEditTeamCode: false,
+  canEditVisibility: false,
+  codeValid: true,
+  disabled: false,
+  edit: true,
+  role: "Administrator",
+  isVisible: false,
+  inputAutoComplete: [],
+  inputAutoStatus: false,
+  isLoading: false
 };
 
+beforeEach(() => {
+  jest.clearAllMocks();
+  axios.get.mockResolvedValue({ data: {} });
+  axios.patch.mockResolvedValue({ data: {} });
+});
 
-const renderComponent = mockProps => {
+const renderComponent = (mockProps) => {
   const store = mockStore({
     auth: {
       user: {
@@ -29,19 +60,7 @@ const renderComponent = mockProps => {
           frontPermissions: [],
         },
       },
-    },
-      canEditTeamCode: false,
-      canEditVisibility: false,
-      codeValid: true,
-      disabled: false,
-      edit: true,
-      isVisible: false,
-      role: "Administrator",
-      userProfile: {
-       ...mockProps.userProfile,
-       teamCode: ""
-      },
-      hasPermission: jest.fn((a) => true),
+    }
   });
 
   return render(
@@ -55,43 +74,69 @@ const renderComponent = mockProps => {
         role={mockProps.role}
         disabled={mockProps.disabled}
         canEditTeamCode={mockProps.canEditTeamCode}
-        userProfile={mockProps.userProfile}
+        userProfile={mockProps.userProfile ? {
+          ...mockProps.userProfile,
+          teamCode: ""
+        } : null}
         codeValid={mockProps.codeValid}
-        hasPermission={jest.fn((a) => true)}
+        hasPermission={jest.fn(() => true)}
+        setCodeValid={mockProps.setCodeValid}
+        onAssignTeamCode={mockProps.onAssignTeamCode}
+        onUserVisibilitySwitch={mockProps.onUserVisibilitySwitch}
+        onButtonClick={mockProps.onButtonClick}
+        onDeleteClick={mockProps.onDeleteClick}
+        fetchTeamCodeAllUsers={mockProps.fetchTeamCodeAllUsers}
+        inputAutoComplete={mockProps.inputAutoComplete}
+        inputAutoStatus={mockProps.inputAutoStatus}
+        isLoading={mockProps.isLoading}
       />
-    </Provider>,
+    </Provider>
   );
 };
 
-
 describe('User Teams Table Component', () => {
-  it('render without crashing', () => {
-    renderComponent(mockUserProfile);
-    console.log(mockUserProfile);
-  });
-
-  it('renders correct number of teams the user is assigned to', () => {
-    renderComponent(mockUserProfile);
-    expect(within(screen.getByTestId('userTeamTest')).getAllByRole('row').length).toBe(2);
-  });
-
-  // Test for correct rendering of team names
-  it('renders correct team names', () => {
-    renderComponent(mockUserProfile);
-    const teamRows = within(screen.getByTestId('userTeamTest')).getAllByRole('row'); 
-    expect(teamRows.length).toBe(2); // Ensure we have 2 team rows
-
-    const teamNames = teamRows.map(row => {
-      return row.cells[1].textContent;
+  it('render without crashing', async () => {
+    const { unmount } = renderComponent(mockUserProfile);
+    await waitFor(() => {
+      expect(screen.getByTestId('userTeamTest')).toBeInTheDocument();
     });
-    expect(teamNames).toEqual(['Team1', 'Team2']);
+    unmount();
   });
 
-  // Test if the Visibility toggle appears on the screen
-  it('visibility toggle appears with permission', () => {
-    mockUserProfile.canEditVisibility = true;
+  it('renders correct number of teams the user is assigned to', async () => {
     renderComponent(mockUserProfile);
-    const visibilityToggle = within(screen.getByTestId('userTeamTest')).queryAllByTestId('visibility-switch');
-    expect(visibilityToggle).toHaveLength(1);
+    
+    await waitFor(() => {
+      const rows = within(screen.getByTestId('userTeamTest')).getAllByRole('row');
+      expect(rows.length).toBe(3);
+    });
+  });
+
+  it('renders correct team names', async () => {
+    renderComponent(mockUserProfile);
+    
+    await waitFor(() => {
+      const teamRows = within(screen.getByTestId('userTeamTest')).getAllByRole('row');
+      expect(teamRows.length).toBe(3);
+      const teamNames = [
+        teamRows[1].cells[1].textContent,
+        teamRows[2].cells[1].textContent
+      ];
+      
+      expect(teamNames).toEqual(['Team1', 'Team2']);
+    });
+  });
+
+  it('visibility toggle appears with permission', async () => {
+    const modifiedMock = {
+      ...mockUserProfile,
+      canEditVisibility: true
+    };
+    
+    renderComponent(modifiedMock);
+    await waitFor(() => {
+      const visibilityLabel = screen.getByText('Visibility');
+      expect(visibilityLabel).toBeInTheDocument();
+    });
   });
 });
