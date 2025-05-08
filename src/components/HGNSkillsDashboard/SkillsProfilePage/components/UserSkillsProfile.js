@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { ClipLoader } from 'react-spinners';
+import jwtDecode from 'jwt-decode';
 import LeftSection from './LeftSection';
 import RightSection from './RightSection';
 import '../styles/UserSkillsProfile.css';
@@ -19,8 +20,17 @@ function UserSkillsProfile() {
           throw new Error('No token found. Please log in.');
         }
 
+        // Decode the token to get the user ID
+        const decodedToken = jwtDecode(token);
+        console.log('Decoded Token:', decodedToken);
+        const userId = decodedToken.userid;
+        if (!userId) {
+          throw new Error('User ID not found in token.');
+        }
+
         const response = await axios.get(
-          'http://localhost:4500/api/skills/profile/665524c257ca141fe8921b41', // TODO - Update UserID Dynamically
+          // 'http://localhost:4500/api/skills/profile/665524c257ca141fe8921b41',
+          `http://localhost:4500/api/skills/profile/${userId}`,
           {
             headers: {
               Authorization: `${token}`,
