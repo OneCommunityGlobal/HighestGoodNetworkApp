@@ -1,15 +1,32 @@
+import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faInfo } from '@fortawesome/free-solid-svg-icons';
 import './FollowUpInfoModal.css';
 import { useSelector } from 'react-redux';
 
+
 const FollowUpInfoModal = () => {
   const darkMode = useSelector(state => state.theme.darkMode)
+  const [isTooltipVisible, setTooltipVisible] = useState(false);
+
+  const handleMouseEnter = () => {
+    setTooltipVisible(true);
+  };
+  
+  const handleMouseLeave = () => {
+    setTooltipVisible(false);
+  };
 
   return (
-    <div className="followup-tooltip-container">
+    <div 
+      className="followup-tooltip-container"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
       <button className="followup-tooltip-button">
         <FontAwesomeIcon className="followup-tooltip-button-icon" icon={faInfo} style={{color: darkMode ? 'silver' : 'black'}}/>
+      </button>
+      {isTooltipVisible && (
         <div className="followup-tooltip">
           <div className='mb-3'>
             This checkbox allows you to track follow-ups. By clicking it, you indicate that you have
@@ -42,7 +59,7 @@ const FollowUpInfoModal = () => {
             checkbox will be unchecked and shown in red)
           </div>
         </div>
-      </button>
+      )}
     </div>
   );
 };
