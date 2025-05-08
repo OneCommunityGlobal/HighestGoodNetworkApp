@@ -30,11 +30,6 @@ const UserProfileModal = props => {
     id,
   } = props;
   let blueSquare = [
-    {
-      date: 'ERROR',
-      description:
-        'This is auto generated text. You must save the document first before viewing newly created blue squares.',
-    },
   ];
 
   if (type !== 'message' && type !== 'addBlueSquare') {
@@ -55,12 +50,28 @@ const UserProfileModal = props => {
   const [adminLinkName, setAdminLinkName] = useState('');
   const [adminLinkURL, setAdminLinkURL] = useState('');
 
-  const [dateStamp, setDateStamp] = useState(blueSquare[0]?.date || '');
+  const getCurrentDate = () => {
+    const today = new Date();
+    return today.toLocaleDateString('en-CA').split('T')[0]; 
+  };
+
+  // Fallback to a meaningful default if no data found
+  if (blueSquare.length === 0) {
+    blueSquare = [
+      {
+        date: getCurrentDate(),  
+        description: 'This is auto-generated text. You must save the document first before viewing newly created blue squares.',
+      },
+    ];
+  }
+
+  
+  const [dateStamp, setDateStamp] = useState(blueSquare[0]?.date || getCurrentDate());
+
   const [summary, setSummary] = useState(blueSquare[0]?.description || '');
 
   const [addButton, setAddButton] = useState(true);
   const [summaryFieldView, setSummaryFieldView] = useState(true);
-  
   const [personalLinks, dispatchPersonalLinks] = useReducer(
     (personalLinks, { type, value, passedIndex }) => {
       switch (type) {
@@ -135,15 +146,14 @@ const UserProfileModal = props => {
     }
   };
 
-  function checkFields(field1, field2) {
-    // console.log('f1:', field1, ' f2:', field2);
-
-    if (field1 != null && field2 != null) {
-      setAddButton(false);
-    } else {
-      setAddButton(true);
+    function checkFields(field1, field2) { 
+      if (field1.trim() && field2.trim()) {
+        setAddButton(false);
+      } else {
+        setAddButton(true);
+      }
     }
-  }
+    
 
   const adjustTextareaHeight = (textarea) => {
     textarea.style.height = 'auto';
@@ -318,7 +328,7 @@ const UserProfileModal = props => {
           <>
             <FormGroup>
               <Label className={fontColor} for="date">Date</Label>
-              <Input type="date" name="date" id="date" onChange={handleChange} />
+              <Input type="date" name="date" id="date" value={dateStamp} onChange={handleChange} />
             </FormGroup>
 
             <FormGroup hidden={summaryFieldView}>

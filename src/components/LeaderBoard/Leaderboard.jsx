@@ -34,10 +34,11 @@ import { boxStyle } from 'styles';
 import axios from 'axios';
 import { getUserProfile } from 'actions/userProfile';
 import { useDispatch } from 'react-redux';
-import { boxStyleDark } from 'styles';
+import { boxStyleDark } from '../../styles';
 import '../Header/DarkMode.css';
 import '../UserProfile/TeamsAndProjects/autoComplete.css';
 import { ENDPOINTS } from '../../utils/URL';
+import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
@@ -183,7 +184,6 @@ function LeaderBoard({
     );
     setStateOrganizationData(newOrganizationData);
   };
-
   const renderTeamsList = async team => {
     setIsDisplayAlert(false);
     if (!team || team === 'Show all') {
@@ -239,7 +239,6 @@ function LeaderBoard({
         const scrollWindow = document.getElementById('leaderboard');
         if (scrollWindow) {
           const elem = document.getElementById(`id${userId}`);
-
           if (elem) {
             const topPos = elem.offsetTop;
             scrollWindow.scrollTo(0, topPos - 100 < 100 ? 0 : topPos - 100);
@@ -269,15 +268,16 @@ function LeaderBoard({
         email,
         profilePic: profilePic || '/pfp-default-header.png',
       };
-
       sessionStorage.setItem('viewingUser', JSON.stringify(viewingUser));
       window.dispatchEvent(new Event('storage'));
       dashboardClose();
     });
   };
+
   const updateLeaderboardHandler = async () => {
     setIsLoading(true);
     if (isEqual(leaderBoardData, teamsUsers)) {
+      await dispatch(getAllTimeOffRequests());
       await getLeaderboardData(userId);
       setTeamsUsers(leaderBoardData);
     } else {
@@ -313,21 +313,12 @@ function LeaderBoard({
       moment(mostRecentRequest.startingDate).isBefore(endOfWeek) &&
       moment(mostRecentRequest.endingDate).isSameOrAfter(startOfWeek);
 
-    // const isCurrentlyOff = moment().isBetween(
-    //   moment(mostRecentRequest.startingDate),
-    //   moment(mostRecentRequest.endingDate),
-    //   null,
-    //   '[]',
-    // );
-
     let additionalWeeks = 0;
-    // additional weeks until back
     if (isCurrentlyOff) {
       additionalWeeks = moment(mostRecentRequest.endingDate).diff(
         moment(moment().startOf('week')),
         'weeks',
       );
-      // weeks before time off
     } else if (moment().isBefore(moment(mostRecentRequest.startingDate))) {
       additionalWeeks = moment(mostRecentRequest.startingDate).diff(moment(), 'weeks') + 1;
     }
@@ -365,7 +356,6 @@ function LeaderBoard({
     refInput.current = e.target.value;
     // prettier-ignore
     const obj = {_id: 1, teamName: `This team is not found: ${e.target.value}`,}
-
     const searchTeam = formatSearchInput(e.target.value);
     if (searchTeam === '') setTeams(refTeam.current);
     else {
@@ -845,18 +835,6 @@ function LeaderBoard({
                               >
                                 <path d="M128 0c17.7 0 32 14.3 32 32V64H288V32c0-17.7 14.3-32 32-32s32 14.3 32 32V64h48c26.5 0 48 21.5 48 48v48H0V112C0 85.5 21.5 64 48 64H96V32c0-17.7 14.3-32 32-32zM0 192H448V464c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V192zm64 80v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm128 0v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H208c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H336zM64 400v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H208zm112 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H336c-8.8 0-16 7.2-16 16z" />
                               </svg>
-
-                              <i className="show-time-off-icon">
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="18"
-                                  height="18"
-                                  viewBox="0 0 512 512"
-                                  className="show-time-off-icon-svg"
-                                >
-                                  <path d="M464 256A208 208 0 1 1 48 256a208 208 0 1 1 416 0zM0 256a256 256 0 1 0 512 0A256 256 0 1 0 0 256zM232 120V256c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z" />
-                                </svg>
-                              </i>
                             </button>
                           )}
                         </div>

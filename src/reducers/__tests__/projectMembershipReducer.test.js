@@ -7,6 +7,7 @@ describe('projectMembershipReducer', () => {
     fetching: false,
     fetched: false,
     members: [],
+    activeMemberCounts: {},
     foundUsers: [],
     error: '',
   };

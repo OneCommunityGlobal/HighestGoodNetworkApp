@@ -31,7 +31,7 @@ export function Dashboard(props) {
 
   const dispatch = useDispatch();
 
-  const toggle = (forceOpen = null) => {
+  const toggle = () => {
     if (isNotAllowedToEdit) {
       const warningMessage =
         viewingUser?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY
@@ -41,8 +41,7 @@ export function Dashboard(props) {
       return;
     }
 
-    const shouldOpen = forceOpen !== null ? forceOpen : !popup;
-    setPopup(shouldOpen);
+    setPopup(!popup);
 
     setTimeout(() => {
       const elem = document.getElementById('weeklySum');
@@ -51,6 +50,7 @@ export function Dashboard(props) {
       }
     }, 150);
   };
+
 
   const handleStorageEvent = () => {
     const sessionStorageData = checkSessionStorage();
