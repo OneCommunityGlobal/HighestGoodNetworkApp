@@ -1,15 +1,21 @@
 // import React from 'react';
+import Loading from 'components/common/Loading';
 import './PopUpBar.css';
 
 function PopUpBar(props) {
-  const { viewingUser, onClickClose } = props;
-  const { firstName, lastName } = viewingUser;
+  const { message, onClickClose, textColor, isLoading = false } = props;
   return (
-    <div className="popup_container" data-testid="test-popup">
-      {`You are currently viewing the header for ${firstName} ${lastName}`}
-      <button type="button" className="close_button" onClick={onClickClose}>
-        X
-      </button>
+    <div className={`popup_container ${textColor}`} data-testid="test-popup">
+      {message}
+      {isLoading ? (
+        <span className="close_button">
+          <Loading className="fa-sm" />
+        </span>
+      ) : (
+        <button type="button" className="close_button btn_padding" onClick={onClickClose}>
+          X
+        </button>
+      )}
     </div>
   );
 }

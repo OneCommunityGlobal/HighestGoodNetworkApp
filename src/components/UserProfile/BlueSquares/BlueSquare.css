@@ -103,7 +103,7 @@
   background-color: #1da1ff;
 }
 
-@media (max-width: 1420px) {
+@media (max-width: 1450px) {
   #wrapper .report { 
      left: 102%;
      top: 0px; 

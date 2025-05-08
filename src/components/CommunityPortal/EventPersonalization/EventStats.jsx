@@ -131,7 +131,7 @@ export default function PopularEvents() {
           </div>
         ))}
       </div>
-      <div className="summary">
+      <div className="event-summary">
         <div className={`summary-item ${darkMode ? 'summary-item-dark' : ''}`}>
           <div className={`summary-title ${darkMode ? 'summary-title-dark' : ''}`}>
             Total Number of Events
