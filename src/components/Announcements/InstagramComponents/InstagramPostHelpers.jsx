@@ -65,7 +65,7 @@ const convertToJPG = (file) => {
   });
 };
 
-export const postToInstagram = async (caption, file, setInstagramError, setCaption, setFile, setImageResetKey) => {
+export const postToInstagram = async (caption, file, setInstagramError, setCaption, setFile, setImageResetKey, setButtonTextState) => {
   console.log("postToInstagram called with caption:", caption, "and file:", file);
   try {
     if (!caption) {
@@ -82,7 +82,9 @@ export const postToInstagram = async (caption, file, setInstagramError, setCapti
     const imgurFormData = new FormData();
     imgurFormData.append("image", convertedFile);
 
+    
     // Upload image to Imgur
+    setButtonTextState("Uploading image to Imgur...");
     const imgurResponse = await axios.post(ENDPOINTS.POST_IMGUR_IMAGE, imgurFormData, {
       headers: {
         "Content-Type": "multipart/form-data",
@@ -99,6 +101,7 @@ export const postToInstagram = async (caption, file, setInstagramError, setCapti
     console.log("Imgur delete hash:", deleteHash);
 
     // Create Instagram container
+    setButtonTextState("Creating Instagram container...");
     const instagramContainerCreateResponse = await axios.post(ENDPOINTS.CREATE_INSTAGRAM_CONTAINER, {
       imageUrl: imageURL,
       caption: caption,
@@ -112,6 +115,7 @@ export const postToInstagram = async (caption, file, setInstagramError, setCapti
     const containerId = instagramContainerCreateResponse.data.id;
 
     // Upload the container to Instagram
+    setButtonTextState("Uploading Instagram container...");
     const instagramContainerUploadResponse = await axios.post(ENDPOINTS.POST_INSTAGRAM_CONTAINER, {
       containerId: containerId,
     });
@@ -134,6 +138,7 @@ export const postToInstagram = async (caption, file, setInstagramError, setCapti
     setCaption("");
     setFile(null);
     setImageResetKey(prev => prev + 1);
+    setButtonTextState("");
 
     return instagramContainerUploadResponse.data;
   } catch (error) {

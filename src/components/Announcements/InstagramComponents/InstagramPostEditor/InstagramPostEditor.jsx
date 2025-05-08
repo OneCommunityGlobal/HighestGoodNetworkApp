@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import InstagramLoginButton from './InstagramLoginButton';
+import InstagramLoginButton from '../InstagramLoginButton';
 import './InstagramPostEditor.css';
-import { postToInstagram, checkInstagramAuthStatus } from '../InstagramPostDetails';
-import ImageUploader from '../ImageUploadComponent/ImageUploader';
+import { postToInstagram, checkInstagramAuthStatus } from '../InstagramPostHelpers';
+import ImageUploader from '../ImageUploader';
 import { set } from 'lodash';
 import { check } from 'prettier';
 import { timestamp } from 'joi/lib/types/date';
@@ -22,6 +22,7 @@ function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionS
     userId: null,
     timestamp: null,
   });
+  const [buttonTextState, setButtonTextState] = useState("");
 
   const [caption, setCaption] = useState('');
   const [file, setFile] = useState(null);
@@ -48,7 +49,7 @@ function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionS
 
   const handlePostToInstagram = async (caption, file) => {
     setIsLoading(true);
-    const response = await postToInstagram(caption, file, setInstagramError, setCaption, setFile, setImageResetKey);
+    const response = await postToInstagram(caption, file, setInstagramError, setCaption, setFile, setImageResetKey, setButtonTextState);
 
     if (response && response.success) {
       toast.success('Post created successfully!');
@@ -138,18 +139,31 @@ function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionS
             </div>
 
             {/* post button */}
-            <button 
-              type="button"
-              className="send-button"
-              disabled={isExceedingLimit || !file || isLoading}
-              onClick={() => {
-                console.log('Caption:', caption);
-                console.log('File:', file);
-                handlePostToInstagram(caption, file);
-              }}
-            >
-              Post to Instagram
-            </button>
+            <div className="button-container">
+              <button 
+                type="button"
+                className="send-button"
+                disabled={isExceedingLimit ||!caption || !file || isLoading}
+                title={
+                  isExceedingLimit ? "Caption exceeds character limit" : 
+                  !file ? "Please select an image" :
+                  !caption ? "Please enter a caption" : 
+                  isLoading ? "Loading..." : ""
+                }
+                onClick={() => {
+                  console.log('Caption:', caption);
+                  console.log('File:', file);
+                  handlePostToInstagram(caption, file);
+                }}
+              >
+                {buttonTextState || "Post to Instagram"}
+              </button>
+
+              <button>
+                
+              </button>
+            </div>
+
           </div>
           
           {/* scheduled post section */ }

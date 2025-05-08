@@ -8,8 +8,8 @@ import { toast } from 'react-toastify';
 import { FaInstagramSquare } from 'react-icons/fa';
 // import { get } from 'lodash';
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
-import InstagramLoginButton from './InstagramPostComponent/InstagramLoginButton';
-import InstagramPostEditor from './InstagramPostComponent/InstagramPostEditor';
+import InstagramLoginButton from './InstagramComponents/InstagramLoginButton';
+import InstagramPostEditor from './InstagramComponents/InstagramPostEditor/InstagramPostEditor';
 import { set } from 'lodash';
 
 function Announcements({ title, email }) {
