@@ -280,7 +280,7 @@ function Announcements({ title, email }) {
 
       <Tab eventKey="pinterest" title={<img src={pinterestLogo}/>}>
       <div className='social-media'>
-        <h3 className={darkMode ? 'text-light' : 'text-dark'}>Post to Social Media</h3>
+       
         <PinterestPost />
       </div>
       </Tab>

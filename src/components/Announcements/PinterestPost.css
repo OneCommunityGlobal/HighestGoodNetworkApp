@@ -42,18 +42,34 @@
   margin: 0;
 }
 
-.pinterest-scheduled-events {
+.pinterest-schedule {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
-.pinterest-scheduled-event {
+.schedule-card {
+  position:relative;
   padding: 0.5rem;
-  background-color: lightgrey;
+  background-color: rgb(240, 240, 240);
   /* border:grey solid 1px; */
   border-radius: 5px;
 }
+
+.schedule-title{
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.schedule-time{
+  color:gray;
+  font-size: 0.75rem;
+}
+
+.schedule-description{
+  font-size: 0.8rem;
+}
+
 
 @media (max-width: 768px) {
   .pinterest-main {
