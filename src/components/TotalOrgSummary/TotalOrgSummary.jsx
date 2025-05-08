@@ -113,15 +113,12 @@ function TotalOrgSummary(props) {
   const [usersId, setUsersId] = useState([]);
   const [usersTimeEntries, setUsersTimeEntries] = useState([]);
   const [usersOverTimeEntries, setUsersOverTimeEntries] = useState([]);
-<<<<<<< HEAD
   const [taskProjectHours, setTaskProjectHours] = useState({
     taskHours: 0,
     projectHours: 0,
     lastTaskHours: 0,
     lastProjectHours: 0,
   });
-=======
->>>>>>> 929f6d87057fbb8d84560107e874c1aefe86b081
   const [isVolunteerFetchingError, setIsVolunteerFetchingError] = useState(false);
   const [volunteerStats, setVolunteerStats] = useState(null);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
