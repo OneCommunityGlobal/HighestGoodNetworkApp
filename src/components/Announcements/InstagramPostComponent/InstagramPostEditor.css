@@ -24,6 +24,27 @@
   flex-shrink: 0; 
 }
 
+.instagram-login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.instagram-login-button {
+  background-color: #0095f6;
+  color: white;
+  width: 30%;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.instagram-login-button:hover {
+  background-color: #0077b5;
+}
+
 .instagram-caption-textarea {
   width: 100%;
   border: 1px solid #ccc;

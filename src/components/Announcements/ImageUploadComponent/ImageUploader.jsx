@@ -1,10 +1,19 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { FaPlus } from 'react-icons/fa';
 
-function ImageUploader({ onImageSelect }) {
+function ImageUploader({ onImageSelect, resetKey = 0 }) {
   const [isDragging, setIsDragging] = useState(false);
   const [previewUrl, setPreviewUrl] = useState(null);
   const fileInputRef = useRef(null);
+
+  useEffect(() => {
+    if (resetKey > 0) {
+      setPreviewUrl(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  }, [resetKey]);
 
   const handleDragEnter = (e) => {
     e.preventDefault();

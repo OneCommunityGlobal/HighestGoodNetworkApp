@@ -30,6 +30,7 @@ function Announcements({ title, email }) {
   // const [urlButtonVisibility, setUrlButtonVisibility] = useState(false);
   const [showInstagramPostEditor, setShowInstagramPostEditor] = useState(false);
   const [instagramAccessToken, setinstagramAccessToken] = useState('');
+  const [instagramConnectionStatus, setInstagramConnectionStatus] = useState(false);
 
 
   useEffect(() => {
@@ -326,8 +327,8 @@ function Announcements({ title, email }) {
       </div>}
       {showInstagramPostEditor && (
         <InstagramPostEditor 
-          instagramAccessToken={instagramAccessToken}
-          setInstagramAccessToken={setinstagramAccessToken}
+          instagramConnectionStatus={instagramConnectionStatus}
+          setInstagramConnectionStatus={setInstagramConnectionStatus}
         />
       )}
     </div>

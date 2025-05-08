@@ -12,8 +12,6 @@ class InstagramLoginButton extends Component {
   buildCodeRequestURL = () => {
     const { appId, redirectUri, scope } = this.props;
     const uri = encodeURIComponent(redirectUri || window.location.href);
-    // const scopeStr = Array.isArray(scope) ? scope.join(",") : "user_profile";
-    // const scopeStr = Array.isArray(scope) ? scope.replace('%2C', ',') : "user_profile";
     scope.replace(/%2C/g, ',');
     console.log("InstagramLoginButton buildCodeRequestURL: ", appId, uri, scope);
 
@@ -35,17 +33,9 @@ class InstagramLoginButton extends Component {
     if (popup) {
       console.log("instagram login popup opened with props: ", this.props);
 
-      if (this.props.setUrlButtonVisibility) {
-        this.props.setUrlButtonVisibility(true);
-      }
-
       const checkPopupClosed = setInterval(() => {
         if (popup.closed) {
           clearInterval(checkPopupClosed);
-
-          if (this.props.setUrlButtonVisibility && !this.props.codeUrl) {
-            this.props.setUrlButtonVisibility(false);
-          }
 
           if (this.props.onLoginSuccess && typeof this.props.onLoginSuccess === 'function') {
             this.props.onLoginSuccess();

@@ -157,8 +157,9 @@ export const ENDPOINTS = {
   REMOVE_EMAIL_SUBSCRIPTION: `${APIEndpoint}/remove-non-hgn-email-subscription`,
 
   // Instagram endpoints
-  GET_INSTAGRAM_SHORT_LIVED_ACCESS_TOKEN: `${APIEndpoint}/instagram/access-token`,
-  GET_INSTAGRAM_LONG_LIVED_ACCESS_TOKEN: `${APIEndpoint}/instagram/long-lived-token`,
+  GET_INSTAGRAM_AUTH_STATUS: `${APIEndpoint}/instagram/auth-status`,
+  // GET_INSTAGRAM_SHORT_LIVED_ACCESS_TOKEN: `${APIEndpoint}/instagram/access-token`,
+  // GET_INSTAGRAM_LONG_LIVED_ACCESS_TOKEN: `${APIEndpoint}/instagram/long-lived-token`,
   GET_INSTAGRAM_USER_ID: `${APIEndpoint}/instagram/get-user-id`,
   CREATE_INSTAGRAM_CONTAINER: `${APIEndpoint}/instagram/create-container`,
   POST_INSTAGRAM_CONTAINER: `${APIEndpoint}/instagram/publish-container`,
