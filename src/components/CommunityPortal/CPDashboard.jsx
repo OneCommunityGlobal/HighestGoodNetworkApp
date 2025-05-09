@@ -1,26 +1,11 @@
 import { useState, useEffect } from 'react';
-import {
-  Container,
-  Row,
-  Col,
-  Card,
-  CardBody,
-  Button,
-  Input,
-  Dropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-} from 'reactstrap';
-import { useHistory } from 'react-router-dom'; // For React Router v5
+import { Container, Row, Col, Card, CardBody, Button, Input } from 'reactstrap';
 import './CPDashboard.css';
 import { FaCalendarAlt, FaMapMarkerAlt, FaUserAlt } from 'react-icons/fa';
 
 export function CPDashboard() {
   const [events, setEvents] = useState([]);
   const [search, setSearch] = useState('');
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const history = useHistory(); // Use useHistory for navigation
 
   useEffect(() => {
     const mockEvents = [
@@ -52,12 +37,6 @@ export function CPDashboard() {
     setEvents(mockEvents);
   }, []);
 
-  const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
-
-  const handleNavigation = path => {
-    history.push(path); // Navigate to the selected path
-  };
-
   return (
     <Container fluid className="dashboard-container">
       <header className="dashboard-header">
@@ -72,7 +51,7 @@ export function CPDashboard() {
               className="dashboard-search"
             />
           </div>
-          <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown} className="community-dropdown">
+          {/* <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown} className="community-dropdown">
             <DropdownToggle caret color="secondary">
               Community Portal
             </DropdownToggle>
@@ -82,7 +61,7 @@ export function CPDashboard() {
               <DropdownItem onClick={() => handleNavigation('/about')}>About Us</DropdownItem>
               <DropdownItem onClick={() => handleNavigation('/contact')}>Contact</DropdownItem>
             </DropdownMenu>
-          </Dropdown>
+          </Dropdown> */}
         </div>
       </header>
 

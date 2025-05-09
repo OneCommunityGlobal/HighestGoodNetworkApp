@@ -23,7 +23,7 @@ function BioFunction(props) {
   };
 
   return bioCanEdit ? (
-    <div style={isMeetCriteria ? { backgroundColor: 'yellow' } : {}}>
+    <div id="bio-announcement" style={isMeetCriteria ? { backgroundColor: 'yellow' } : {}}>
       <div className={styles.bioToggle}>
         <b style={style}>Bio announcement:</b>
       </div>
