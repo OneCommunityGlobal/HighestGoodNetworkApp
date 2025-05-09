@@ -1,5 +1,6 @@
 .leaderboard {
   font-size: 1rem;
+  min-width: 500px;
 } /*1rem = 16px*/
 
 .my-custom-scrollbar {
@@ -47,6 +48,8 @@
 }
 
 
+
+
 /* Small devices (landscape phones, 544px and up) */
 @media (max-width: 544px) {
   .leaderboard {
@@ -55,7 +58,7 @@
 
   .my-custom-scrollbar {
     max-height: 500px;
-    overflow: scroll;
+    overflow: auto;
     margin-bottom: 1rem;
   }
 

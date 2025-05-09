@@ -583,7 +583,7 @@ useEffect(() => {
           <br />
         </Container>
       ) : (
-        <Container style={{ textAlign: 'right', minWidth: '100%' }}>
+        <Container style={{ textAlign: 'right'}}>
           {props.isDashboard ? null : (
             <EditableInfoModal
               areaName="DashboardTimelog"
