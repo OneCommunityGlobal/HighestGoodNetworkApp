@@ -44,8 +44,6 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
   }
 
   const { taskHours, projectHours } = data;
-  console.log('projectHours.count:', projectHours.count);
-  console.log('taskHours:', taskHours, 'projectHours:', projectHours);
 
   const taskPercentage = taskHours.submittedToCommittedHoursPercentage;
   const projectPercentage = projectHours.submittedToCommittedHoursPercentage;
@@ -67,7 +65,6 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
   ];
 
   const maxY = Math.ceil(Math.max(taskHours.count, projectHours.count) * 1.2) + 1;
-  console.log('maxY:', maxY);
 
   const tickInterval = Math.floor(maxY / 10);
   const greenColor = darkMode ? 'lightgreen' : 'green';
@@ -91,7 +88,6 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
         : `${(projectChangePercentage * 100).toFixed(0)}%`,
     fontcolor: projectChangePercentage >= 0 ? greenColor : 'red',
   };
-  console.log('projectBarInfo:', projectBarInfo);
   const renderCustomizedLabel = props => {
     const { x, y, width, value, index } = props;
     const { percentage } = chartData[index];
@@ -157,22 +153,14 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
           {`${(taskHours.totalTangibleHoursPercentage * 100).toFixed(
             2,
           )}% of Total Tangible Hours Submitted to Tasks`}
-          <span
-            style={{
-              color:
-                taskHours.totalTangibleHoursChange >= 0
-                  ? darkMode
-                    ? 'lightgreen'
-                    : 'green'
-                  : 'red',
-              marginLeft: 8,
-              fontSize: '12px',
-            }}
-          >
-            {taskHours.totalTangibleHoursChange >= 0
+          {(() => {
+            const isPositive = taskHours.totalTangibleHoursChange >= 0;
+            const color = isPositive ? (darkMode ? 'lightgreen' : 'green') : 'red';
+            const value = isPositive
               ? `+${(taskHours.totalTangibleHoursChange * 100).toFixed(0)}%`
-              : `${(taskHours.totalTangibleHoursChange * 100).toFixed(0)}%`}
-          </span>
+              : `${(taskHours.totalTangibleHoursChange * 100).toFixed(0)}%`;
+            return <span style={{ color, marginLeft: 8, fontSize: '12px' }}>{value}</span>;
+          })()}
         </div>
       </div>
       <div style={{ flex: 1, minHeight: 0 }}>
