@@ -1,5 +1,5 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-nested-ternary */
+/* eslint-disable no-console */
+/* eslint-disable no-shadow */
 import { useState, useEffect } from 'react';
 import {
   BarChart,
@@ -11,64 +11,58 @@ import {
   ResponsiveContainer,
   LabelList,
 } from 'recharts';
-import { Calendar, ChevronDown } from 'lucide-react';
+import { connect } from 'react-redux';
+import { Input } from 'reactstrap';
+import { fetchAllProjects } from '../../../actions/projects';
+import { fetchSupplierPerformance } from '../../../actions/summaryDashboard';
 
-// Mock data for initial development/testing
-const mockData = [
-  { supplierName: 'Supplier A', onTimeDeliveryPercentage: 95 },
-  { supplierName: 'Supplier B', onTimeDeliveryPercentage: 90 },
-  { supplierName: 'Supplier C', onTimeDeliveryPercentage: 87 },
-  { supplierName: 'Supplier D', onTimeDeliveryPercentage: 85 },
-];
+const SupplierPerformanceDashboard = function(props) {
+  const { onDataLoaded, className, height = 400, showTitle = true, enableFilters = true } = props;
+  const darkMode = props.state?.theme?.darkMode;
 
-// Mock projects for initial development/testing
-const mockProjects = [
-  { id: 'all', name: 'ALL' },
-  { id: 'proj1', name: 'Project Alpha' },
-  { id: 'proj2', name: 'Project Beta' },
-  { id: 'proj3', name: 'Project Gamma' },
-];
-
-export default function SupplierPerformanceDashboard({
-  showTitle = true,
-  enableFilters = true,
-  className = '',
-  height = 350,
-  onDataLoaded = null,
-}) {
-  // State variables
   const [supplierData, setSupplierData] = useState([]);
-  const [projects, setProjects] = useState(mockProjects);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedProject, setSelectedProject] = useState('all');
+  const [selectedProject, setSelectedProject] = useState('');
   const [dateRange, setDateRange] = useState({
     startDate: new Date(new Date().setDate(new Date().getDate() - 30)).toISOString().split('T')[0],
     endDate: new Date().toISOString().split('T')[0],
   });
-  const [showProjectDropdown, setShowProjectDropdown] = useState(false);
-  const [showDatePicker, setShowDatePicker] = useState(false);
 
-  // Fetch supplier performance data based on filters
+  // Fetch projects on mount
   useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        await props.fetchAllProjects();
+      } catch (error) {
+        console.error('Failed to fetch projects:', error.message);
+      }
+    };
+    fetchProjects();
+  }, [props.fetchAllProjects]);
+
+  // Fetch supplier data when filters change
+  useEffect(() => {
+    if (!selectedProject) return;
+
     const fetchSupplierData = async () => {
       setLoading(true);
       setError(null);
 
       try {
-        // In a real implementation, this would call an API
-        const sortedData = [...mockData].sort(
-          (a, b) => b.onTimeDeliveryPercentage - a.onTimeDeliveryPercentage,
-        );
+        const data = await props.fetchSupplierPerformance({
+          projectId: selectedProject,
+          startDate: dateRange.startDate,
+          endDate: dateRange.endDate,
+        });
 
-        setSupplierData(sortedData);
+        setSupplierData(data);
 
-        // Call onDataLoaded callback if provided
         if (onDataLoaded && typeof onDataLoaded === 'function') {
-          onDataLoaded(sortedData);
+          onDataLoaded(data);
         }
       } catch (err) {
-        // console.error('Error fetching supplier data:', err);
+        console.error('Failed to load supplier data:', err.message);
         setError('Failed to load data');
       } finally {
         setLoading(false);
@@ -76,12 +70,11 @@ export default function SupplierPerformanceDashboard({
     };
 
     fetchSupplierData();
-  }, [selectedProject, dateRange.startDate, dateRange.endDate, onDataLoaded]);
+  }, [selectedProject, dateRange, onDataLoaded, props.fetchSupplierPerformance]);
 
   // Event handlers
-  const handleProjectChange = projectId => {
-    setSelectedProject(projectId);
-    setShowProjectDropdown(false);
+  const handleProjectChange = e => {
+    setSelectedProject(e.target.value);
   };
 
   const handleDateChange = e => {
@@ -92,166 +85,138 @@ export default function SupplierPerformanceDashboard({
     }));
   };
 
-  // Format date for display
-  const formatDate = dateString => {
-    return new Date(dateString).toLocaleDateString(undefined, {
-      month: 'short',
-      day: 'numeric',
-    });
+  // Inline styles
+  const styles = {
+    container: {
+      fontFamily:
+        '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif',
+      ...(className && { className }),
+    },
+    dashboardContent: {
+      border: '1px solid #ddd',
+      borderRadius: '8px',
+      backgroundColor: darkMode ? '#2d3748' : '#fff',
+      boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
+      padding: '20px',
+      marginBottom: '20px',
+    },
+    title: {
+      fontSize: '18px',
+      fontWeight: '600',
+      color: darkMode ? '#e2e8f0' : '#333',
+      marginBottom: '16px',
+    },
+    filterControls: {
+      display: 'flex',
+      flexWrap: 'wrap',
+      gap: '12px',
+      marginBottom: '20px',
+      alignItems: 'center',
+    },
+    errorMessage: {
+      backgroundColor: '#f8d7da',
+      color: '#721c24',
+      padding: '10px 15px',
+      borderRadius: '4px',
+      marginBottom: '15px',
+      fontSize: '14px',
+    },
+    chartContainer: {
+      backgroundColor: darkMode ? '#1a202c' : '#f9f9f9',
+      borderRadius: '6px',
+      padding: '15px',
+      minHeight: '300px',
+    },
+    messageText: {
+      color: darkMode ? '#a0aec0' : '#6c757d',
+      fontSize: '14px',
+      padding: '20px',
+      textAlign: 'center',
+    },
   };
 
   return (
-    <div className={` ${className}`}>
-      {/* Header with title and filters */}
-      {(showTitle || enableFilters) && (
-        <div className="flex flex-row md:flex-row justify-between items-start md:items-center mb-4">
-          {showTitle && (
-            <h3 className="text-lg font-semibold text-gray-800 mb-2 md:mb-0">
-              Supplier Performance by On-Time Delivery %
-            </h3>
-          )}
+    <div style={styles.container}>
+      <div style={styles.dashboardContent}>
+        {showTitle && <h3 style={styles.title}>Supplier Performance by On-Time Delivery %</h3>}
 
-          {enableFilters && (
-            <div className="flex flex-col gap-2">
-              {/* Project filter */}
-              <div className="relative">
-                <div
-                  className="flex items-center px-3 py-1 border border-gray-300 rounded-md cursor-pointer text-sm"
-                  onClick={() => setShowProjectDropdown(!showProjectDropdown)}
-                >
-                  <span className="text-xs mr-1">Project: </span>
-                  <span className="font-medium mr-1">
-                    {selectedProject === 'all'
-                      ? 'ALL'
-                      : projects.find(p => p.id === selectedProject)?.name}
-                  </span>
-                  <ChevronDown size={14} className="text-gray-500" />
-                </div>
+        {enableFilters && (
+          <div style={styles.filterControls}>
+            {/* Project Selector */}
+            <Input
+              type="select"
+              value={selectedProject}
+              onChange={handleProjectChange}
+              aria-label="Project Filter"
+              style={{ minWidth: '140px', maxWidth: '220px' }}
+            >
+              <option value="" disabled>
+                Select a Project
+              </option>
+              <option value="all">All Projects</option>
+              {props.state.allProjects.projects.map(project => (
+                <option key={project._id} value={project._id}>
+                  {project.projectName}
+                </option>
+              ))}
+            </Input>
 
-                {showProjectDropdown && (
-                  <div className="absolute z-10 mt-1 w-40 border border-gray-200 rounded-md shadow-lg text-sm">
-                    {projects.map(project => (
-                      <div
-                        key={project.id}
-                        className="px-3 py-1 hover:bg-gray-100 cursor-pointer text-xs"
-                        onClick={() => handleProjectChange(project.id)}
-                      >
-                        {project.name}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
+            {/* Start Date Input */}
+            <Input
+              type="date"
+              name="startDate"
+              value={dateRange.startDate}
+              onChange={handleDateChange}
+              aria-label="Start Date"
+              style={{ minWidth: '140px', maxWidth: '220px' }}
+            />
 
-              {/* Date range filter */}
-              <div className="relative">
-                <div
-                  className="flex items-center px-3 py-1 border border-gray-300 rounded-md cursor-pointer text-sm"
-                  onClick={() => setShowDatePicker(!showDatePicker)}
-                >
-                  <span className="text-xs mr-1">Dates: </span>
-                  <span className="font-medium mr-1">
-                    {formatDate(dateRange.startDate)} - {formatDate(dateRange.endDate)}
-                  </span>
-                  <Calendar size={14} className="text-gray-500" />
-                </div>
-
-                {showDatePicker && (
-                  <div className="absolute z-10 right-0 mt-1 p-3 bg-white border border-gray-200 rounded-md shadow-lg">
-                    <div className="flex flex-col gap-2 text-sm">
-                      <div>
-                        <label className="block text-xs font-medium text-gray-700 mb-1">
-                          Start
-                        </label>
-                        <input
-                          type="date"
-                          name="startDate"
-                          value={dateRange.startDate}
-                          onChange={handleDateChange}
-                          className="w-full px-2 py-1 border border-gray-300 rounded-md text-xs"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-medium text-gray-700 mb-1">End</label>
-                        <input
-                          type="date"
-                          name="endDate"
-                          value={dateRange.endDate}
-                          onChange={handleDateChange}
-                          className="w-full px-2 py-1 border border-gray-300 rounded-md text-xs"
-                        />
-                      </div>
-                      <button
-                        type="button"
-                        className="mt-1 px-3 py-1 bg-blue-600 text-white rounded-md text-xs"
-                        onClick={() => setShowDatePicker(false)}
-                      >
-                        Apply
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Error message display */}
-      {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded mb-3 text-sm">
-          {error}
-        </div>
-      )}
-
-      {/* Chart content */}
-      <div style={{ height: `${height}px` }} className="w-full">
-        {loading ? (
-          <div className="flex items-center justify-center h-full">
-            <div className="animate-pulse flex flex-col items-center">
-              <div className="h-6 w-6 bg-blue-100 rounded-full mb-2" />
-              <p className="text-gray-500 text-sm">Loading...</p>
-            </div>
+            {/* End Date Input */}
+            <Input
+              type="date"
+              name="endDate"
+              value={dateRange.endDate}
+              onChange={handleDateChange}
+              aria-label="End Date"
+              style={{ minWidth: '140px', maxWidth: '220px' }}
+            />
           </div>
-        ) : supplierData.length === 0 ? (
-          <div className="flex items-center justify-center h-full text-gray-500 text-sm">
-            No supplier data available
-          </div>
-        ) : (
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={supplierData} margin={{ top: 20, right: 10, left: 10, bottom: 30 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eee" />
-              <XAxis dataKey="supplierName" tick={{ fontSize: 11 }} tickLine={false} />
-              <YAxis
-                domain={[0, 100]}
-                ticks={[0, 25, 50, 75, 100]}
-                tick={{ fontSize: 11 }}
-                tickLine={false}
-                axisLine={{ stroke: '#eee' }}
-                tickFormatter={value => `${value}%`}
-              />
-              <Tooltip
-                formatter={value => [`${value}%`, 'On-Time Delivery']}
-                contentStyle={{ fontSize: '12px' }}
-              />
-              <Bar
-                dataKey="onTimeDeliveryPercentage"
-                name="On-Time Delivery %"
-                fill="#4CAF50"
-                radius={[4, 4, 0, 0]}
-                barSize={30}
-              >
-                <LabelList
-                  dataKey="onTimeDeliveryPercentage"
-                  position="top"
-                  formatter={value => `${value}%`}
-                  style={{ fill: '#333', fontSize: 11, fontWeight: 500 }}
-                />
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
         )}
+
+        {/* Error Message */}
+        {error && <div style={styles.errorMessage}>{error}</div>}
+
+        {/* Chart Rendering */}
+        <div style={styles.chartContainer}>
+          {loading && <div style={styles.messageText}>Loading...</div>}
+          {supplierData.length > 0 ? (
+            <ResponsiveContainer width="100%" height={height}>
+              <BarChart data={supplierData} margin={{ top: 20, right: 10, left: 10, bottom: 30 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="supplierName" />
+                <YAxis />
+                <Tooltip />
+                <Bar dataKey="onTimeDeliveryPercentage" fill="#4CAF50">
+                  <LabelList dataKey="onTimeDeliveryPercentage" position="top" />
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          ) : (
+            <div style={styles.messageText}>
+              No data available for the selected project and date range.
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
-}
+};
+
+const mapStateToProps = state => ({
+  state,
+});
+
+export default connect(mapStateToProps, {
+  fetchAllProjects,
+  fetchSupplierPerformance,
+})(SupplierPerformanceDashboard);
