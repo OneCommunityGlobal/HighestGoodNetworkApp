@@ -41,14 +41,58 @@
   cursor: pointer;
 }
 
-.send-button:disabled {
+.button-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: fcenter;
+  margin-top: 20px;
+  background-color: burlywood;
+}
+
+.schedule-post-button-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  background-color: brown;
+}
+
+.send-button {
+  background-color: #0095f6;
+  color: white;
+  width: 30%;
+  border: none;
+  border-radius: 8px;
+  /* padding: 10px 20px; */
+  padding-right: 100px;
+  font-size: 16px;
+  cursor: pointer;
+  width: auto;
+  white-space: normal;
+  /* overflow: hidden;
+  text-overflow: ellipsis; */
+  /* min-width: 150px; */
+  /* text-wrap: nowrap; */
+}
+
+.date-picker {
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+  padding: 10px;
+}
+
+/* .send-button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
 }
 
 .send-button:disabled:hover {
   background-color: #ccc;
-}
+} */
 
 .instagram-login-button:hover {
   background-color: #0077b5;
