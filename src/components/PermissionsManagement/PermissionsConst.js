@@ -562,6 +562,17 @@ export const permissionLabels = [
       },
     ],
   },
+  {
+    label: 'FAQs',
+    description: 'Category for all permissions related to FAQs',
+    subperms: [
+      {
+        label: 'Manage FAQs',
+        key: 'manageFAQs',
+        description: 'Gives the user permission to add, edit, and delete FAQs.',
+      },
+    ],
+  },
 ];
 
 export const permissionLabelKeyMappingObj = generatePermissionLabelKeyMapping(permissionLabels, 0);

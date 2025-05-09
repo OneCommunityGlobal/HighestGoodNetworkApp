@@ -28,6 +28,7 @@ import NumbersVolunteerWorked from './NumbersVolunteerWorked/NumbersVolunteerWor
 import AnniversaryCelebrated from './AnniversaryCelebrated/AnniversaryCelebrated';
 import RoleDistributionPieChart from './VolunteerRolesTeamDynamics/RoleDistributionPieChart';
 import WorkDistributionBarChart from './VolunteerRolesTeamDynamics/WorkDistributionBarChart';
+import VolunteerTrendsLineChart from './VolunteerTrendsLineChart/VolunteerTrendsLineChart';
 import GlobalVolunteerMap from './GlobalVolunteerMap/GlobalVolunteerMap';
 import TaskCompletedBarChart from './TaskCompleted/TaskCompletedBarChart';
 
@@ -335,7 +336,7 @@ function TotalOrgSummary(props) {
               <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
                 <p>Volunteer Trends by Time</p>
               </div>
-              <span className="text-center"> Work in progres...</span>
+              <VolunteerTrendsLineChart darkMode={darkMode} />
             </div>
           </Col>
           <Col lg={{ size: 5 }}>

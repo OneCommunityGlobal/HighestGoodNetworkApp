@@ -17,6 +17,10 @@ import Announcements from 'components/Announcements';
 import JobFormBuilder from 'components/Collaboration/JobFormbuilder';
 import JobCCDashboard from 'components/JobCCDashboard/JobCCDashboard';
 import WeeklyProjectSummary from 'components/BMDashboard/WeeklyProjectSummary/WeeklyProjectSummary';
+import FaqSearch from 'components/Faq/FaqSearch';
+import FaqManagement from 'components/Faq/FaqManagement';
+import FaqHistory from 'components/Faq/FaqHistory';
+import UnansweredFaqs from 'components/Faq/UnansweredFaqs';
 import HeaderRenderer from 'components/Header/HeaderRenderer';
 import Page1 from './components/HGNForm/pages/Page1';
 import Page2 from './components/HGNForm/pages/Page2';
@@ -51,6 +55,7 @@ import UnsubscribeForm from './components/EmailSubscribeForm/Unsubscribe';
 import NotFoundPage from './components/NotFound/NotFoundPage';
 import EmailSender from './components/common/EmailSender/EmailSender';
 import Collaboration from './components/Collaboration';
+import ApplicantsAgeChart from './components/ApplicantsChart';
 
 // LB Dashboard
 import LBProtectedRoute from './components/common/LBDashboard/LBProtectedRoute';
@@ -88,12 +93,12 @@ import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
 import EPDashboard from './components/EductionPortal';
 
+
 import LandingPage from './components/HGNHelpSkillsDashboard/LandingPage';
 import SkillsOverviewPage from './components/HGNHelpSkillsDashboard/SkillsOverviewPage';
 import CommunityMembersPage from './components/HGNHelpSkillsDashboard/CommunityMembersPage';
 import UserProfilePage from './components/HGNHelpSkillsDashboard/UserProfilePage';
 import FeedbackModal from './components/HGNHelpSkillsDashboard/FeedbackModal';
-
 
 // eslint-disable-next-line import/order, import/no-unresolved
 import LogTools from './components/BMDashboard/LogTools/LogTools';
@@ -304,6 +309,8 @@ export default (
           routePermissions={RoutePermissions.teams}
         />
 
+        <ProtectedRoute path="/applicants-chart" exact component={ApplicantsAgeChart} fallback />
+
         <ProtectedRoute
           path="/announcements"
           exact
@@ -316,6 +323,33 @@ export default (
           component={EmailSender}
           allowedRoles={[UserRole.Administrator, UserRole.Owner]}
           routePermissions={RoutePermissions.projects}
+        />
+
+        <ProtectedRoute
+          path="/faq"
+          exact
+          component={FaqSearch}
+        />
+
+        <ProtectedRoute
+          path="/faq-management"
+          exact
+          component={FaqManagement}
+          routePermissions={RoutePermissions.faqManagement}
+        />
+
+        <ProtectedRoute
+          path="/faqs/:id/history"
+          exact
+          component={FaqHistory}
+          routePermissions={RoutePermissions.faqManagement}
+        />
+
+        <ProtectedRoute
+          path="/unanswered-faqs"
+          exact
+          component={UnansweredFaqs}
+          routePermissions={RoutePermissions.faqManagement}
         />
 
         <ProtectedRoute
@@ -467,7 +501,6 @@ export default (
         <ProtectedRoute path="/hgnhelp/community" exact component={CommunityMembersPage} />
         <ProtectedRoute path="/hgnhelp/profile/:userId" exact component={UserProfilePage} />
         <ProtectedRoute path="/hgnhelp/feedback" exact component={FeedbackModal} />
-
 
         <ProtectedRoute path="/hgnform" exact component={Page1} />
         <ProtectedRoute path="/hgnform/page2" exact component={Page2} />
