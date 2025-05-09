@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -8,7 +8,7 @@ import { useSelector } from 'react-redux';
 import './EventPage.css';
 import EventManagementTabs from './EventManagementTabs';
 
-const EventPage = () => {
+function EventPage() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const { activityid } = useParams();
   const history = useHistory();
@@ -29,7 +29,7 @@ const EventPage = () => {
 
   // Autosave Description (Simulated)
   useEffect(() => {
-    const timer = setTimeout(() => { }, 1000);
+    const timer = setTimeout(() => {}, 1000);
     return () => clearTimeout(timer);
   }, [description]);
 
@@ -71,13 +71,17 @@ const EventPage = () => {
     <div className={`event-page ${darkMode ? 'event-page-dark' : ''}`}>
       {/* Top Section */}
       <div className="event-card">
-
         {/* Left Section: Event Image */}
         <div className="event-card__left">
           <div className="event-card__image">
             {media ? <img src={media} alt="Event Media" /> : <span>No Media</span>}
           </div>
-          <input type="file" accept="image/*" onChange={handleMediaUpload} className="event-card__media-upload" />
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleMediaUpload}
+            className="event-card__media-upload"
+          />
         </div>
 
         {/* Middle Section: Event Details */}
@@ -90,46 +94,107 @@ const EventPage = () => {
           />
           <p className="event-card__type">
             Type:
-            <select value={eventType} onChange={e => setEventType(e.target.value)}
-              className={darkMode ? 'status-dropdown-dark' : 'status-dropdown'}>
+            <select
+              value={eventType}
+              onChange={e => setEventType(e.target.value)}
+              className={darkMode ? 'status-dropdown-dark' : 'status-dropdown'}
+            >
               <option>In-person</option>
               <option>Virtual</option>
             </select>
           </p>
-          <p>Location: <input type="text" value={location} onChange={e => setLocation(e.target.value)}
-            className={darkMode ? 'input-dark' : ''} /></p>
-          <div className={`event-card_12 ${darkMode ? "event-card_12-dark" : ''}`}>
+          <p>
+            Location:{' '}
+            <input
+              type="text"
+              value={location}
+              onChange={e => setLocation(e.target.value)}
+              className={darkMode ? 'input-dark' : ''}
+            />
+          </p>
+          <div className={`event-card_12 ${darkMode ? 'event-card_12-dark' : ''}`}>
             {/* First Row */}
-            <div className={`event-card__info ${darkMode ? "event-card__info-dark" : ''}`}>
-              <div className={'info-item'}><p>📅 Date: <br></br></p>
-                <DatePicker selected={startDate} onChange={handleDateChange} minDate={new Date()} selectsRange startDate={startDate} endDate={endDate} />
+            <div className={`event-card__info ${darkMode ? 'event-card__info-dark' : ''}`}>
+              <div className="info-item">
+                <p>
+                  📅 Date: <br />
+                </p>
+                <DatePicker
+                  selected={startDate}
+                  onChange={handleDateChange}
+                  minDate={new Date()}
+                  selectsRange
+                  startDate={startDate}
+                  endDate={endDate}
+                />
               </div>
-              <div className="info-item"><p>⏰ Time: <br></br></p> <input type="text" value={time} onChange={e => setTime(e.target.value)}
-                className={darkMode ? 'input-dark' : ''} /></div>
-              <div className="info-item"><p>👤 Organizer: <br></br></p> <input type="text" value={organizer} onChange={e => setOrganizer(e.target.value)}
-                className={darkMode ? 'input-dark' : ''} /></div>
+              <div className="info-item">
+                <p>
+                  ⏰ Time: <br />
+                </p>{' '}
+                <input
+                  type="text"
+                  value={time}
+                  onChange={e => setTime(e.target.value)}
+                  className={darkMode ? 'input-dark' : ''}
+                />
+              </div>
+              <div className="info-item">
+                <p>
+                  👤 Organizer: <br />
+                </p>{' '}
+                <input
+                  type="text"
+                  value={organizer}
+                  onChange={e => setOrganizer(e.target.value)}
+                  className={darkMode ? 'input-dark' : ''}
+                />
+              </div>
             </div>
 
             {/* Second Row */}
-            <div className={`event-card__extra ${darkMode ? "event-card__extra-dark" : ''}`}>
-              <div className="extra-item"> <p>👥 Capacity:<br></br> <input type="text" value={capacity} onChange={e => setCapacity(e.target.value)}
-                className={darkMode ? 'input-dark' : ''} /></p></div>
-              <div className="extra-item"> <p>⭐ Overall Rating: <br></br> {renderStars()}</p></div>
-              <div className="extra-item"> <p>Status:<br></br>
-                <select value={status} onChange={e => setStatus(e.target.value)}
-                  className={`status-dropdown ${darkMode ? 'status-dropdown-dark' : ''}`}>
-
-                  <option>Active</option>
-                  <option>Finished</option>
-                  <option>Participated</option>
-                </select>
-              </p></div>
+            <div className={`event-card__extra ${darkMode ? 'event-card__extra-dark' : ''}`}>
+              <div className="extra-item">
+                {' '}
+                <p>
+                  👥 Capacity:
+                  <br />{' '}
+                  <input
+                    type="text"
+                    value={capacity}
+                    onChange={e => setCapacity(e.target.value)}
+                    className={darkMode ? 'input-dark' : ''}
+                  />
+                </p>
+              </div>
+              <div className="extra-item">
+                {' '}
+                <p>
+                  ⭐ Overall Rating: <br /> {renderStars()}
+                </p>
+              </div>
+              <div className="extra-item">
+                {' '}
+                <p>
+                  Status:
+                  <br />
+                  <select
+                    value={status}
+                    onChange={e => setStatus(e.target.value)}
+                    className={`status-dropdown ${darkMode ? 'status-dropdown-dark' : ''}`}
+                  >
+                    <option>Active</option>
+                    <option>Finished</option>
+                    <option>Participated</option>
+                  </select>
+                </p>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Right Section: Calendar */}
-        <div className={`event-card__right ${darkMode ? "event-card__right-dark" : ''}`}>
+        <div className={`event-card__right ${darkMode ? 'event-card__right-dark' : ''}`}>
           <Calendar
             className={darkMode ? 'react-calendar dark-mode' : 'react-calendar'}
             onChange={date => {
@@ -172,17 +237,13 @@ const EventPage = () => {
             onChange={handleMediaUpload}
             className="description-media-upload"
           />
-          <button
-            type="button"
-            className={`post-btn ${darkMode ? 'post-btn-dark' : ''}`}
-          >
+          <button type="button" className={`post-btn ${darkMode ? 'post-btn-dark' : ''}`}>
             Post Description
           </button>
         </div>
       </div>
     </div>
   );
-
-};
+}
 
 export default EventPage;

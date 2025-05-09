@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import './EventManagementTabs.css';
-import './EventPage.jsx';
-import './EventPage.css';
 
 const dummyEvents = [
   { id: '1', name: 'Tech Conference 2025', date: '2025-05-15', location: 'San Francisco' },
@@ -10,7 +8,7 @@ const dummyEvents = [
   { id: '3', name: 'Developer Meetup', date: '2025-07-10', location: 'Chicago' },
 ];
 
-const EventManagementTabs = () => {
+function EventManagementTabs() {
   const { activityid, tab, section } = useParams();
   const history = useHistory();
   const [event, setEvent] = useState(null);
@@ -33,10 +31,10 @@ const EventManagementTabs = () => {
 
   const handleTabClick = newTab => {
     setActiveTab(newTab);
-    const newPath = newTab === 'engagement'
-
-      ? `../communityportal/activity/${activityid}/engagement/comments`
-      : `../communityportal/activity/${activityid}/${newTab}`;
+    const newPath =
+      newTab === 'engagement'
+        ? `../communityportal/activity/${activityid}/engagement/comments`
+        : `../communityportal/activity/${activityid}/${newTab}`;
     history.push(newPath);
   };
 
@@ -53,7 +51,9 @@ const EventManagementTabs = () => {
         <div>
           <div className="engagement-sections">
             {engagementSections.map(sec => (
-              <button key={sec}
+              <button
+                type="button"
+                key={sec}
                 onClick={() => handleEngagementSectionClick(sec)}
                 className={`section-btn ${activeSection === sec ? 'active' : ''}`}
               >
@@ -62,7 +62,11 @@ const EventManagementTabs = () => {
             ))}
           </div>
           <div className="content-box">
-            {activeSection === 'feedback' ? (<div>'Feedback·section'</div>) : (<div>'Comments·Section'</div>)}
+            {activeSection === 'feedback' ? (
+              <div>Feedback·section</div>
+            ) : (
+              <div>Comments·Section</div>
+            )}
           </div>
         </div>
       );
@@ -77,7 +81,6 @@ const EventManagementTabs = () => {
       default:
         return (
           <div className="content-box">
-
             <p>This is a detailed description of the event.</p>
           </div>
         );
@@ -89,6 +92,7 @@ const EventManagementTabs = () => {
       <div className="tab-buttons">
         {tabs.map(({ key, label }) => (
           <button
+            type="button"
             key={key}
             onClick={() => handleTabClick(key)}
             className={`tab-btn ${activeTab === key ? 'active' : ''}`}
@@ -101,6 +105,6 @@ const EventManagementTabs = () => {
       <div className="main-content">{renderContent()}</div>
     </div>
   );
-};
+}
 
 export default EventManagementTabs;
