@@ -36,7 +36,11 @@ const SkeletonLoading = ({ template, className }) => {
         for (let i = 0; i < 15; i++) {
           rows.push(
             <tr key={i}>
-              <td colSpan={6} className="skeleton-loading-team-member-tasks-row" />
+              <td
+                colSpan={6}
+                className="skeleton-loading-team-member-tasks-row"
+                aria-hidden="true"
+              />
             </tr>,
           );
         }

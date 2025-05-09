@@ -1,5 +1,7 @@
+/* eslint-disable no-unused-vars */
 import axios from 'axios';
 import { ApiEndpoint } from '../utils/URL';
+
 import * as actionTypes from '../constants/notification';
 
 const APIEndpoint = ApiEndpoint;

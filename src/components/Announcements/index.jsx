@@ -14,6 +14,7 @@ function Announcements({ title, email }) {
   const [emailContent, setEmailContent] = useState('');
   const [headerContent, setHeaderContent] = useState('');
   const [showEditor, setShowEditor] = useState(true); // State to control rendering of the editor
+  const [isFileUploaded, setIsFileUploaded] = useState(false);
   const tinymce = useRef(null);
 
   useEffect(() => {
@@ -123,6 +124,8 @@ function Announcements({ title, email }) {
 
   const addImageToEmailContent = e => {
     const imageFile = document.querySelector('input[type="file"]').files[0];
+    setIsFileUploaded(true);
+
     convertImageToBase64(imageFile, base64Image => {
       const imageTag = `<img src="${base64Image}" alt="Header Image" style="width: 100%; max-width: 100%; height: auto;">`;
       setHeaderContent(prevContent => `${imageTag}${prevContent}`);
@@ -146,6 +149,11 @@ function Announcements({ title, email }) {
 
     if (emailList.length === 0 || emailList.every(e => !e.trim())) {
       toast.error('Error: Empty Email List. Please enter AT LEAST One email.');
+      return;
+    }
+
+    if (!isFileUploaded) {
+      toast.error('Error: Please upload a file.');
       return;
     }
 

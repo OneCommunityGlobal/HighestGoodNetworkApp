@@ -187,7 +187,7 @@ function UserProjectPieChart({
             <tbody>
               {projectsData.map(project => (
                 <tr key={project.projectId}>
-                  <td>
+                  <td aria-hidden="true">
                     <div
                       id="project-chart-legend"
                       style={{ backgroundColor: `${color(project.projectId)}` }}

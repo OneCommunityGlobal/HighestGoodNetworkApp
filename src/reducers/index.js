@@ -33,10 +33,16 @@ import warningsByUserIdReducer from './warningsReducer';
 import { infoCollectionsReducer } from './informationReducer';
 import mouseoverTextReducer from './mouseoverTextReducer';
 import notificationReducer from './notificationReducer';
+
+import meetingNotificationReducer from './meetingNotificationReducer';
+
 import weeklySummaryRecipientsReducer from './weeklySummaryRecipientsReducer';
+
 import { followUpReducer } from './followUpReducer';
+
 import { BlueSquareEmailAssignment } from './blueSquareEmailBcc';
 import { userProjectsByUserNameReducer } from './userProjectsByUserNameReducer';
+// eslint-disable-next-line no-unused-vars
 import teamCodesReducer from './teamCodesReducer';
 import { projectByIdReducer } from './projectByIdReducer';
 
@@ -83,10 +89,12 @@ const localReducers = {
   mouseoverText: mouseoverTextReducer,
   weeklySummaryRecipients: weeklySummaryRecipientsReducer,
   notification: notificationReducer,
+
+  meetingNotification: meetingNotificationReducer,
   userFollowUp: followUpReducer,
   userProjectsByUserNameReducer,
-  teamCodes: teamCodesReducer,
   blueSquareEmailAssignment: BlueSquareEmailAssignment,
+
   totalOrgSummary: totalOrgSummaryReducer,
   allUsersTimeEntries: allUsersTimeEntriesReducer,
   allUserProfilesBasicInfo: allUserProfilesBasicInfoReducer,
