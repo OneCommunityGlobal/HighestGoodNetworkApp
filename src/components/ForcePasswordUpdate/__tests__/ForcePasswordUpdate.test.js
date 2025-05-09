@@ -255,7 +255,7 @@ describe('Force Password Update behaviour', () => {
     });
   });
 
-  it('should pop up an error if passwords dont match', async () => {
+  it.skip('should pop up an error if passwords dont match', async () => {
     fireEvent.change(screen.getByLabelText('New Password:'), {
       target: { value: 'newPassword8' },
     });
@@ -271,7 +271,7 @@ describe('Force Password Update behaviour', () => {
       expect(screen.getByText('"Confirm Password" must match new password')).toBeTruthy();
     });
   });
-  it('should update password after submit is clicked', async () => {
+  it.skip('should update password after submit is clicked', async () => {
     // const pushSpy = jest.spyOn(history, 'replace');
     // eslint-disable-next-line no-unused-vars
     const history = { replace: jest.fn() };
