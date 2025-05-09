@@ -15,16 +15,6 @@ jobs:
         cache: 'npm'
     - name: Install Dependencies
       run: npm ci
-    - name: Debug npm scripts
-      run: |
-        echo "Available npm scripts:"
-        npm run | grep -A 100 -B 2 "Scripts available"
-        echo "Package.json content:"
-        cat package.json
-        echo "Current working directory:"
-        pwd
-        echo "Directory contents:"
-        ls -la
     - name: Run Unit Tests
       run: npm test
     - name: Run Lint
