@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   Modal,
   ModalHeader,
@@ -18,11 +18,15 @@ function FeedbackModal() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const [isOpen, setIsOpen] = useState(true);
   const [receivedHelp, setReceivedHelp] = useState('');
-  const [ratedMembers, setRatedMembers] = useState([{ id: 1, name: '', rating: 0 }]);
+  const [ratedMembers, setRatedMembers] = useState([{ id: 'active-1', name: '', rating: 0 }]);
   const [inactiveRatedMembers, setInactiveRatedMembers] = useState([
-    { id: 1, name: '', rating: 0 },
+    { id: 'inactive-1', name: '', rating: 0 },
   ]);
   const [comments, setComments] = useState('');
+
+  // Use refs to maintain counters for unique IDs
+  const nextActiveIdRef = useRef(2);
+  const nextInactiveIdRef = useRef(2);
 
   // Placeholder for getting help request status
   useEffect(() => {
@@ -71,12 +75,13 @@ function FeedbackModal() {
 
   const addNewMember = (isInactive = false) => {
     if (isInactive) {
-      setInactiveRatedMembers([
-        ...inactiveRatedMembers,
-        { id: inactiveRatedMembers.length + 1, name: '', rating: 0 },
-      ]);
+      const newId = `inactive-${nextInactiveIdRef.current}`;
+      nextInactiveIdRef.current += 1;
+      setInactiveRatedMembers([...inactiveRatedMembers, { id: newId, name: '', rating: 0 }]);
     } else {
-      setRatedMembers([...ratedMembers, { id: ratedMembers.length + 1, name: '', rating: 0 }]);
+      const newId = `active-${nextActiveIdRef.current}`;
+      nextActiveIdRef.current += 1;
+      setRatedMembers([...ratedMembers, { id: newId, name: '', rating: 0 }]);
     }
   };
 
