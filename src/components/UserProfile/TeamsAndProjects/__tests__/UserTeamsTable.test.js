@@ -139,4 +139,30 @@ describe('User Teams Table Component', () => {
       expect(visibilityLabel).toBeInTheDocument();
     });
   });
+
+  it('renders team code input field with correct placeholder', async () => {
+    renderComponent(mockUserProfile);
+    
+    await waitFor(() => {
+      const teamCodeInput = screen.getByPlaceholderText('X-XXX');
+      expect(teamCodeInput).toBeInTheDocument();
+      expect(teamCodeInput.tagName).toBe('INPUT');
+      expect(teamCodeInput.type).toBe('text');
+      expect(teamCodeInput.id).toBe('teamCode');
+    });
+  });
+
+  it('renders table headers with correct column titles', async () => {
+    renderComponent(mockUserProfile);
+    
+    await waitFor(() => {
+      const headerCells = within(screen.getByTestId('userTeamTest'))
+        .getAllByRole('columnheader');
+      expect(headerCells.length).toBe(4);
+      expect(headerCells[0].textContent).toBe('#');
+      expect(headerCells[1].textContent).toBe('Team Name');
+      expect(headerCells[2].textContent).toBe('Members');
+      expect(headerCells[3].textContent).toBe('');
+    });
+  });
 });
