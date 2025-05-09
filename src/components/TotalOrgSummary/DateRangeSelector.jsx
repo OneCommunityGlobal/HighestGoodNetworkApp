@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import DatePicker from 'react-datepicker';
 import moment from 'moment';
 import 'react-datepicker/dist/react-datepicker.css';
 import Select from 'react-select';
+import { set } from 'date-fns';
 
 // Get the start of the current week (Sunday)
 function getStartOfWeek(date) {
@@ -25,10 +26,24 @@ function DateRangeSelector({ onDateRangeChange }) {
       .toDate(),
   );
 
+  useEffect(() => {
+    onDateRangeChange({ startDate, endDate });
+  }, []);
+
   const updateDates = (start, end) => {
-    setStartDate(start);
-    setEndDate(end);
-    onDateRangeChange({ startDate: start, endDate: end });
+    // console.log('Updating dates:', start, end);
+
+    if (!start || !end) {
+      console.error('Invalid date range', start, end);
+      return;
+    }
+
+    const startDateObject = moment(start);
+    const endDateObject = moment(end);
+
+    setStartDate(startDateObject);
+    setEndDate(endDateObject);
+    onDateRangeChange({ startDate: startDateObject, endDate: endDateObject });
   };
 
   // Handle option change
@@ -48,23 +63,24 @@ function DateRangeSelector({ onDateRangeChange }) {
       updateDates(
         moment()
           .startOf('week')
-          .format('YYYY-MM-DD'),
+          .toDate(),
         moment()
           .endOf('week')
-          .format('YYYY-MM-DD'),
+          .toDate(),
       );
     } else if (selected.value === 'lastweek') {
       const startLastWeek = moment()
         .subtract(1, 'week')
         .startOf('week')
-        .format('YYYY-MM-DD');
+        .toDate();
       const endLastWeek = moment()
         .subtract(1, 'week')
         .endOf('week')
-        .format('YYYY-MM-DD');
+        .toDate();
       updateDates(startLastWeek, endLastWeek);
     } else {
-      updateDates(null, null);
+      setStartDate(null);
+      setEndDate(null);
     }
   };
 

@@ -131,6 +131,13 @@ function TotalOrgSummary(props) {
   const [usersOverTimeEntries, setUsersOverTimeEntries] = useState([]);
   const [taskProjectHours, setTaskProjectHours] = useState([]);
 
+  const formattedTaskProjectHours = [
+    { name: 'Task Hours', value: taskProjectHours.taskHours },
+    { name: 'Project Hours', value: taskProjectHours.projectHours },
+    { name: 'Last Task Hours', value: taskProjectHours.lastTaskHours },
+    { name: 'Last Project Hours', value: taskProjectHours.lastProjectHours },
+  ];
+
   const [comparisonWeek, setComparisonWeek] = useState({ startDate: null, endDate: null });
 
   const dispatch = useDispatch();
@@ -141,18 +148,18 @@ function TotalOrgSummary(props) {
   const [selectedDateRange, setSelectedDateRange] = useState({
     startDate: moment()
       .startOf('week')
-      .format('YYYY-MM-DD'),
+      .toDate(),
     endDate: moment()
       .endOf('week')
-      .format('YYYY-MM-DD'),
+      .toDate(),
   });
 
   const handleDateRangeChange = ({ startDate, endDate }) => {
     // console.log('Selected Date Range:', startDate, endDate);
 
     setSelectedDateRange({
-      startDate: moment(startDate).format('YYYY-MM-DD'),
-      endDate: moment(endDate).format('YYYY-MM-DD'),
+      startDate: moment(startDate).toDate(),
+      endDate: moment(endDate).toDate(),
     });
   };
 
@@ -206,24 +213,28 @@ function TotalOrgSummary(props) {
   }, [allUsersTimeEntries, usersId, fromOverDate, toOverDate]);
 
   useEffect(() => {
+    
     async function fetchData() {
-      const { taskHours, projectHours } = await props.getTaskAndProjectStats(fromDate, toDate);
+      const { taskHours, projectHours } = await props.getTaskAndProjectStats(
+        selectedDateRange.startDate,
+        selectedDateRange.endDate,
+      );
       const {
         taskHours: lastTaskHours,
         projectHours: lastProjectHours,
-      } = await props.getTaskAndProjectStats(fromOverDate, toOverDate);
+      } = await props.getTaskAndProjectStats(comparisonWeek.startDate, comparisonWeek.endDate);
 
       if (taskHours && projectHours) {
         setTaskProjectHours({
-          taskHours,
-          projectHours,
-          lastTaskHours,
-          lastProjectHours,
+          taskHours: taskHours || 0,
+          projectHours: projectHours || 0,
+          lastTaskHours: lastTaskHours || 0,
+          lastProjectHours: lastProjectHours || 0,
         });
       }
     }
     fetchData();
-  }, [fromDate, toDate, fromOverDate, toOverDate]);
+  }, [selectedDateRange, comparisonWeek, props]);
 
   // useEffect(() => {
   //   props.getTotalOrgSummary(
@@ -283,8 +294,8 @@ function TotalOrgSummary(props) {
     }
 
     setComparisonWeek({
-      startDate: commonStartDate.format('YYYY-MM-DD'),
-      endDate: commonEndDate.format('YYYY-MM-DD'),
+      startDate: commonStartDate.toDate(),
+      endDate: commonEndDate.toDate(),
     });
     // console.log('Comparison Week Set:', {
     //   startDate: commonStartDate.format('YYYY-MM-DD'),
@@ -433,7 +444,7 @@ function TotalOrgSummary(props) {
           </Col>
           <Col lg={{ size: 3 }}>
             <div className="component-container component-border">
-              <HoursCompletedBarChart data={taskProjectHours} darkMode={darkMode} />
+              <HoursCompletedBarChart data={formattedTaskProjectHours} darkMode={darkMode} />
             </div>
           </Col>
         </Row>
