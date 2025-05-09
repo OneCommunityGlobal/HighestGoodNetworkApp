@@ -1,23 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import TinyBarChart from '../TinyBarChart';
 import Loading from '../../common/Loading';
 
 export default function TaskCompletedBarChart({ isLoading, data, darkMode }) {
-  const initialCardSize = () => {
-    if (window.innerWidth <= 680) return { height: '300px' };
-    if (window.innerWidth <= 1418) return { height: '548px' };
-    return { height: '347px' };
-  };
-
-  const [cardSize, setCardSize] = useState(initialCardSize);
-
-  useEffect(() => {
-    const updateCardSize = () => setCardSize(initialCardSize());
-    window.addEventListener('resize', updateCardSize);
-    updateCardSize();
-    return () => window.removeEventListener('resize', updateCardSize);
-  }, []);
-
   const active = data?.active || {};
   const complete = data?.complete || {};
 
@@ -99,9 +84,8 @@ export default function TaskCompletedBarChart({ isLoading, data, darkMode }) {
       <div style={{ flex: 1, minHeight: 0 }}>
         {isLoading ? (
           <div className="d-flex justify-content-center align-items-center">
-            <div className="w-100vh">
-              <Loading />
-            </div>
+            <div className="w-100vh" />
+            <Loading />
           </div>
         ) : (
           <TinyBarChart

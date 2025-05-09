@@ -155,7 +155,12 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
           )}% of Total Tangible Hours Submitted to Tasks`}
           {(() => {
             const isPositive = taskHours.totalTangibleHoursChange >= 0;
-            const color = isPositive ? (darkMode ? 'lightgreen' : 'green') : 'red';
+            let color;
+            if (isPositive) {
+              color = darkMode ? 'lightgreen' : 'green';
+            } else {
+              color = 'red';
+            }
             const value = isPositive
               ? `+${(taskHours.totalTangibleHoursChange * 100).toFixed(0)}%`
               : `${(taskHours.totalTangibleHoursChange * 100).toFixed(0)}%`;

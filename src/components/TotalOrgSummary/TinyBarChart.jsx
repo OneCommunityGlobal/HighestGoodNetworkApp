@@ -9,7 +9,6 @@ import {
   LabelList,
   ReferenceLine,
 } from 'recharts';
-import React from 'react';
 
 const ProjectLabel = ({ viewBox, info }) => {
   return (
@@ -69,8 +68,8 @@ export default function TinyBarChart(props) {
         <YAxis
           stroke={darkMode ? 'white' : 'gray'}
           domain={[0, maxY]}
-          axisLine={true}
-          tickLine={true}
+          axisLine
+          tickLine
           tickCount={Math.floor(maxY / tickInterval) + 1}
           interval={0}
           label={
