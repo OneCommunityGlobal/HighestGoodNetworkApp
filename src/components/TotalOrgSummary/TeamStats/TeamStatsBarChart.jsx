@@ -10,8 +10,8 @@ import {
   Label,
 } from 'recharts';
 import './TeamStatsBarChart.css';
-import TeamStatsBarLabel from './TeamStatsBarLabel';
 import { useSelector } from 'react-redux';
+import TeamStatsBarLabel from './TeamStatsBarLabel';
 
 function TeamStatsBarChart({ data, yAxisLabel }) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -59,7 +59,7 @@ function TeamStatsBarChart({ data, yAxisLabel }) {
             dataKey={yAxisLabel}
             className="team-stats-y-axis"
             tick={{ fill: darkMode ? 'white' : '#666' }}
-          ></YAxis>
+          />
           <Tooltip />
           <Bar dataKey="value" fill="#1B6DDF">
             {data.map((_, index) => (
