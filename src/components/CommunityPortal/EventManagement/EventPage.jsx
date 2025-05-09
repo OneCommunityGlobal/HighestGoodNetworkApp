@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -26,12 +26,6 @@ function EventPage() {
   const [rating] = useState(4);
   const [media, setMedia] = useState(null);
   const [description, setDescription] = useState('');
-
-  // Autosave Description (Simulated)
-  useEffect(() => {
-    const timer = setTimeout(() => { }, 1000);
-    return () => clearTimeout(timer);
-  }, [description]);
 
   // Media Upload Handler
   const handleMediaUpload = event => {
