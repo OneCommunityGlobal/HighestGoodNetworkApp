@@ -63,8 +63,6 @@ function EventPage() {
     if (start >= today) {
       setStartDate(start);
       setEndDate(end || start);
-    } else {
-      console.warn('Cannot select past dates.');
     }
   };
 
@@ -202,8 +200,6 @@ function EventPage() {
               if (date >= new Date().setHours(0, 0, 0, 0)) {
                 setStartDate(date);
                 setEndDate(date); // Update endDate dynamically
-              } else {
-                console.warn('Cannot select past dates.');
               }
             }}
             value={startDate}
