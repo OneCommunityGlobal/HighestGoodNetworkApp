@@ -51,6 +51,7 @@ import UnsubscribeForm from './components/EmailSubscribeForm/Unsubscribe';
 import NotFoundPage from './components/NotFound/NotFoundPage';
 import EmailSender from './components/common/EmailSender/EmailSender';
 import Collaboration from './components/Collaboration';
+import ApplicantsAgeChart from './components/ApplicantsChart';
 
 // LB Dashboard
 import LBProtectedRoute from './components/common/LBDashboard/LBProtectedRoute';
@@ -296,6 +297,8 @@ export default (
           allowedRoles={[UserRole.Administrator, UserRole.Owner]}
           routePermissions={RoutePermissions.teams}
         />
+
+        <ProtectedRoute path="/applicants-chart" exact component={ApplicantsAgeChart} fallback />
 
         <ProtectedRoute
           path="/announcements"
