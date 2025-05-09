@@ -15,7 +15,7 @@ jobs:
         cache: 'npm'
     - name: Install Dependencies
       run: npm ci
-    - name: Run Unit Tests
-      run: npm test
+    - name: Run Unit Tests for Changed Files Only
+      run: npm run test:changed
     - name: Run Lint
       run: npm run lint
