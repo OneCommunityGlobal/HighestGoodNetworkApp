@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import TinyBarChart from '../TinyBarChart';
 import Loading from '../../common/Loading';
 
