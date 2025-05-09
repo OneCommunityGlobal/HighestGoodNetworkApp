@@ -10,7 +10,7 @@ import {
   ReferenceLine,
 } from 'recharts';
 
-const ProjectLabel = ({ viewBox, info }) => {
+function ProjectLabel({ viewBox, info }) {
   return (
     <foreignObject
       x={viewBox.x + 60}
@@ -42,7 +42,7 @@ const ProjectLabel = ({ viewBox, info }) => {
       </div>
     </foreignObject>
   );
-};
+}
 
 export default function TinyBarChart(props) {
   const {

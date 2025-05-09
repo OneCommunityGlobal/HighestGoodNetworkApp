@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useState } from 'react';
 import TinyBarChart from '../TinyBarChart';
 import Loading from '../../common/Loading';
 
@@ -79,7 +79,7 @@ export default function TaskCompletedBarChart({ isLoading, data, darkMode }) {
         flexDirection: 'column',
       }}
     >
-      <div style={{ textAlign: 'center', marginBottom: 0 }}></div>
+      <div style={{ textAlign: 'center', marginBottom: 0 }} />
       <div style={{ height: 47 }} />
       <div style={{ flex: 1, minHeight: 0 }}>
         {isLoading ? (
