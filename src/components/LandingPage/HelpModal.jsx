@@ -1,42 +1,33 @@
 // eslint-disable-next-line no-unused-vars
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Modal, Button } from 'react-bootstrap';
+import { connect } from 'react-redux';
+import axios from 'axios';
+import { ENDPOINTS } from '../../utils/URL';
 import './HelpModal.css';
 
-function HelpModal({ show, onHide }) {
+function HelpModal({ show, onHide, auth }) {
   const [selectedOption, setSelectedOption] = useState('');
   const [isOpen, setIsOpen] = useState(false);
+  const [options, setOptions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const options = [
-    'Leadership Experience',
-    'Leadership Skills',
-    'Frontend and Backend Overall',
-    'Figma',
-    'Responsive UI',
-    'HTML Semantics',
-    'Bootstrap',
-    'CSS Advanced',
-    'React Advanced',
-    'Redux',
-    'Web Sockets',
-    'Frontend Overall',
-    'Backend Overall',
-    'MERN Stack',
-    'TDD Backend',
-    'Database',
-    'Testing',
-    'Deployment',
-    'Version Control',
-    'Code Review',
-    'Environment Setup',
-    'Advanced Coding',
-    'Agile',
-    'MongoDB',
-    'Mock MongoDB',
-    'Documentation',
-    'Markdown & Graphs'
-  ];
+  useEffect(() => {
+    const fetchHelpCategories = async () => {
+      try {
+        const response = await axios.get(ENDPOINTS.HELP_CATEGORIES);
+        setOptions(response.data.map(category => category.name));
+        setLoading(false);
+      } catch (err) {
+        setError('Failed to load help categories');
+        setLoading(false);
+      }
+    };
+
+    fetchHelpCategories();
+  }, []);
 
   const handleSelect = option => {
     setSelectedOption(option);
@@ -50,10 +41,58 @@ function HelpModal({ show, onHide }) {
   };
 
   const handleSuggestionsClick = () => {
-    // Store a flag in localStorage to indicate we want to open the suggestions modal
     localStorage.setItem('openSuggestionsModal', 'true');
-    onHide(); // Close the help modal and trigger navigation
+    onHide();
   };
+
+  const renderContent = () => {
+    if (loading) return <div>Loading categories...</div>;
+    if (error) return <div className="text-danger">{error}</div>;
+
+    return (
+      <>
+        <div
+          className="select-button"
+          onClick={() => setIsOpen(!isOpen)}
+          role="button"
+          tabIndex={0}
+          onKeyDown={e => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              setIsOpen(!isOpen);
+            }
+          }}
+        >
+          <span className={`select-button-text ${selectedOption ? 'selected' : ''}`}>
+            {selectedOption || 'Select an option'}
+          </span>
+          <span className={`select-button-arrow ${isOpen ? 'open' : ''}`} />
+        </div>
+        {isOpen && (
+          <div className="select-options" role="listbox">
+            {options.map(option => (
+              <div
+                key={option}
+                className="select-option"
+                onClick={() => handleSelect(option)}
+                role="option"
+                tabIndex={0}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    handleSelect(option);
+                  }
+                }}
+                aria-selected={selectedOption === option}
+              >
+                {option}
+              </div>
+            ))}
+          </div>
+        )}
+      </>
+    );
+  };
+
+  const isOwner = auth.user && auth.user.role === 'Owner';
 
   return (
     <Modal show={show} onHide={onHide} className="help-modal" centered>
@@ -61,45 +100,12 @@ function HelpModal({ show, onHide }) {
         <Modal.Title>What do you need help with?</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <div className="select-container">
-          <div 
-            className="select-button" 
-            onClick={() => setIsOpen(!isOpen)}
-            role="button"
-            tabIndex={0}
-            onKeyDown={e => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                setIsOpen(!isOpen);
-              }
-            }}
-          >
-            <span className={`select-button-text ${selectedOption ? 'selected' : ''}`}>
-              {selectedOption || 'Select an option'}
-            </span>
-            <span className={`select-button-arrow ${isOpen ? 'open' : ''}`} />
+        <div className="select-container">{renderContent()}</div>
+        {!isOwner && (
+          <div className="alert alert-warning mt-3">
+            Only members from the software development team can seek help
           </div>
-          {isOpen && (
-            <div className="select-options" role="listbox">
-              {options.map(option => (
-                <div
-                  key={option}
-                  className="select-option"
-                  onClick={() => handleSelect(option)}
-                  role="option"
-                  tabIndex={0}
-                  onKeyDown={e => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      handleSelect(option);
-                    }
-                  }}
-                  aria-selected={selectedOption === option}
-                >
-                  {option}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        )}
         <p className="text-muted">
           If you have any suggestions please click
           <button
@@ -113,7 +119,7 @@ function HelpModal({ show, onHide }) {
         </p>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="primary" onClick={handleSubmit} disabled={!selectedOption}>
+        <Button variant="primary" onClick={handleSubmit} disabled={!selectedOption || !isOwner}>
           Submit
         </Button>
       </Modal.Footer>
@@ -124,6 +130,15 @@ function HelpModal({ show, onHide }) {
 HelpModal.propTypes = {
   show: PropTypes.bool.isRequired,
   onHide: PropTypes.func.isRequired,
+  auth: PropTypes.shape({
+    user: PropTypes.shape({
+      role: PropTypes.string
+    }),
+  }).isRequired,
 };
 
-export default HelpModal;
+const mapStateToProps = state => ({
+  auth: state.auth,
+});
+
+export default connect(mapStateToProps)(HelpModal);

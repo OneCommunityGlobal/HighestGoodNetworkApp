@@ -498,7 +498,7 @@ const SummaryBar = React.forwardRef((props, ref) => {
 
     const message = weeklySummaryNotReq
       ? "You don't need to complete a weekly summary, but you still can. Click here to submit it."
-      : "You still need to complete the weekly summary. Click here to submit it.";
+      : 'You still need to complete the weekly summary. Click here to submit it.';
 
     if (isAuthUser) {
       return (
@@ -538,7 +538,7 @@ const SummaryBar = React.forwardRef((props, ref) => {
 
   // Expose the openSuggestionModal function through the ref
   React.useImperativeHandle(ref, () => ({
-    openSuggestionModal
+    openSuggestionModal,
   }));
 
   return displayUserProfile !== undefined && summaryBarData !== undefined ? (
