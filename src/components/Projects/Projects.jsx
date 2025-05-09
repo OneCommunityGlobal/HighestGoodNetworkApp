@@ -19,7 +19,6 @@ import Loading from '../common/Loading';
 import hasPermission from '../../utils/permissions';
 import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
 import SearchProjectByPerson from 'components/SearchProjectByPerson/SearchProjectByPerson';
-import ProjectsList from 'components/BMDashboard/Projects/ProjectsList';
 
 const Projects = function(props) {
   const role = props.state.userProfile.role;
@@ -39,6 +38,10 @@ const Projects = function(props) {
   const [categorySelectedForSort, setCategorySelectedForSort] = useState("");
   const [showStatus, setShowStatus] = useState("");
   const [sortedByName, setSortedByName] = useState("");
+  const [sorter, setSorter] = useState({
+    column: "PROJECTS",
+    direction: "DEFAULT",
+  });  
   const [projectTarget, setProjectTarget] = useState({
     projectName: '',
     projectId: -1,
@@ -95,10 +98,21 @@ const Projects = function(props) {
     setShowStatus(value);
   }
 
-  const handleSort = (e) => {
-    const clickedId = e.target.id;
-    setSortedByName(prevState => prevState === clickedId ? "" : clickedId);
-  }
+  const handleSort = (column) => {
+    setSorter(prev => {
+      if (prev.column === column) {
+        const nextDirection = prev.direction === "DEFAULT"
+          ? "ASC"
+          : prev.direction === "ASC"
+            ? "DESC"
+            : "DEFAULT";
+        return { column, direction: nextDirection };
+      } else {
+        return { column, direction: "ASC" };
+      }
+    });
+  };
+  
 
   const onUpdateProject = async (updatedProject) => {
     await props.modifyProject(updatedProject);  
@@ -126,48 +140,71 @@ const Projects = function(props) {
     refreshProjects(); // Refresh project list after adding a project
   };
 
-  const generateProjectList = (categorySelectedForSort, showStatus, sortedByName) => {
+  const generateProjectList = (categorySelectedForSort, showStatus) => {
     const { projects } = props.state.allProjects;
-    const activeMemberCounts = props.state.projectMembers?.activeMemberCounts || {};
-    const filteredProjects = projects.filter(project => !project.isArchived).filter(project => {
-      if (categorySelectedForSort && showStatus){
-        return project.category === categorySelectedForSort && project.isActive === showStatus;
-      } else if (categorySelectedForSort) {
-        return project.category === categorySelectedForSort;
-      } else if (showStatus === 'Active') {
-        return project.isActive === true;
-      } else if (showStatus === 'Inactive') {
-        return project.isActive === false;
-      } else {
-        return true;
+    const activeMemberCounts = props.state.projectMembers?.activeMemberCounts || {};  
+    const filteredProjects = projects
+      .filter(project => !project.isArchived)
+      .filter(project => {
+        if (categorySelectedForSort && showStatus){
+          return project.category === categorySelectedForSort && project.isActive === showStatus;
+        } else if (categorySelectedForSort) {
+          return project.category === categorySelectedForSort;
+        } else if (showStatus === 'Active') {
+          return project.isActive === true;
+        } else if (showStatus === 'Inactive') {
+          return project.isActive === false;
+        } else {
+          return true;
+        }
+      });
+  
+    const sortedProjects = [...filteredProjects].sort((a, b) => {
+      const { column, direction } = sorter;
+  
+      if (column === "PROJECTS") {
+        if (direction === "ASC") {
+          return a.projectName.localeCompare(b.projectName, undefined, { sensitivity: 'base' });
+        } else if (direction === "DESC") {
+          return b.projectName.localeCompare(a.projectName, undefined, { sensitivity: 'base' });
+        } else {
+          return 0; // Default: recently added, retain original order
+        }
       }
-    }).sort((a, b) => {
-      if (sortedByName === "Ascending") {
-        return a.projectName[0].toLowerCase() < b.projectName[0].toLowerCase() ? -1 : 1;
-      } else if (sortedByName === "Descending") {
-        return a.projectName[0].toLowerCase() < b.projectName[0].toLowerCase() ? 1 : -1;
-      } else if (sortedByName === "SortingByRecentEditedMembers") {
-        return a.membersModifiedDatetime < b.membersModifiedDatetime ? 1 : -1;
-      } else if (sortedByName === "SortingByMostActiveMembers") {
-        const lenA = activeMemberCounts[a._id] || 0;
-        const lenB = activeMemberCounts[b._id] || 0;
-        return lenB - lenA; // Most active first
-      } else {
-        return 0;
+  
+      if (column === "MEMBERS") {
+        if (direction === "ASC") {
+          const countA = activeMemberCounts[a._id] || 0;
+          const countB = activeMemberCounts[b._id] || 0;
+          return countA - countB;
+        } else if (direction === "DESC") {
+          const countA = activeMemberCounts[a._id] || 0;
+          const countB = activeMemberCounts[b._id] || 0;
+          return countB - countA;
+        } else {
+          return 0; // Default: keep same order as PROJECT sorting
+        }
       }
-    }).map((project, index) => (
-        <Project
-          key={project._id}
-          index={index}
-          projectData={project}
-          onUpdateProject={onUpdateProject}
-          onClickArchiveBtn={onClickArchiveBtn}
-          darkMode={darkMode}
-        />
+  
+      return 0;
+    });
+  
+    const renderedProjects = sortedProjects.map((project, index) => (
+      <Project
+        key={project._id}
+        index={index}
+        projectData={project}
+        activeMemberCounts={activeMemberCounts[project._id] || 0}
+        onUpdateProject={onUpdateProject}
+        onClickArchiveBtn={onClickArchiveBtn}
+        darkMode={darkMode}
+      />
     ));
-    setProjectList(filteredProjects);
-    setAllProjects(filteredProjects);
-  }
+  
+    setProjectList(renderedProjects);
+    setAllProjects(renderedProjects);
+  };
+  
 
   const refreshProjects = async () => {
     await props.fetchAllProjects();
@@ -192,7 +229,7 @@ const Projects = function(props) {
         hasInactiveBtn: false,
       });
     }
-  }, [categorySelectedForSort, showStatus, sortedByName, props.state.allProjects, props.state.theme.darkMode]);
+  }, [categorySelectedForSort, showStatus, sorter, sortedByName, props.state.allProjects, props.state.theme.darkMode, props.state.projectMembers?.activeMemberCounts]);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -246,7 +283,7 @@ const Projects = function(props) {
                 selectedValue={categorySelectedForSort} 
                 showStatus={showStatus} 
                 selectStatus={onSelectStatus}
-                sorted={sortedByName}
+                sorted={sorter}
                 handleSort={handleSort}
                 darkMode={darkMode}
               />
