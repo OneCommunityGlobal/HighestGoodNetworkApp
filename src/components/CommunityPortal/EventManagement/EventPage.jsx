@@ -29,7 +29,7 @@ function EventPage() {
 
   // Autosave Description (Simulated)
   useEffect(() => {
-    const timer = setTimeout(() => {}, 1000);
+    const timer = setTimeout(() => { }, 1000);
     return () => clearTimeout(timer);
   }, [description]);
 
@@ -47,8 +47,9 @@ function EventPage() {
 
   // Star Rating Display
   const renderStars = () => {
-    return [...Array(5)].map((_, index) => (
-      <span key={index} className={`star ${index < rating ? 'filled' : ''}`}>
+    const stars = ['one', 'two', 'three', 'four', 'five'];
+    return stars.map((id, i) => (
+      <span key={id} className={`star ${i < rating ? 'filled' : ''}`}>
         ⭐
       </span>
     ));
@@ -63,7 +64,7 @@ function EventPage() {
       setStartDate(start);
       setEndDate(end || start);
     } else {
-      alert('Cannot select past dates.');
+      console.warn('Cannot select past dates.');
     }
   };
 
@@ -202,7 +203,7 @@ function EventPage() {
                 setStartDate(date);
                 setEndDate(date); // Update endDate dynamically
               } else {
-                alert('Cannot select past dates.');
+                console.warn('Cannot select past dates.');
               }
             }}
             value={startDate}
