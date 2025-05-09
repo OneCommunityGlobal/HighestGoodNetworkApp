@@ -18,6 +18,6 @@ jobs:
     - name: Install Dependencies
       run: npm ci
     - name: Run Unit Tests for Changed Files Only
-      run: npm run test:changed || true
+      run: npm run test:changed
     - name: Run Lint
       run: npm run lint
