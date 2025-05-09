@@ -155,8 +155,8 @@ class Collaboration extends Component {
               <img src={OneCommunityImage} alt="One Community Logo" className="responsive-img" />
             </a>
           </div>
-          <div className="container">
-            <nav className="navbar">
+          <div className="collaboration-container">
+            <nav className="collaboration-navbar">
               <div className="navbar-left">
                 <form className="search-form">
                   <input
@@ -228,8 +228,8 @@ class Collaboration extends Component {
             <img src={OneCommunityImage} alt="One Community Logo" />
           </a>
         </div>
-        <div className="container">
-          <nav className="navbar">
+        <div className="collaboration-container">
+          <nav className="collaboration-navbar">
             <div className="navbar-left">
               <form className="search-form">
                 <input
