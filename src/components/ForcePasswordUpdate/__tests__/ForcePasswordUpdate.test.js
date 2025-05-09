@@ -283,6 +283,8 @@ describe('Force Password Update behaviour', () => {
       target: { value: 'newPassword8' },
     });
 
+    console.log('Before Submit:', screen.getByLabelText('New Password:').value);
+
     fireEvent.click(screen.getByText('Submit'));
 
     await waitFor(() => {
@@ -302,7 +304,7 @@ describe('Force Password Update behaviour', () => {
 });
 
 describe('Force Password Update page structure', () => {
-  it('should match the snapshot', () => {
+  it('should match the snapshot', async () => {
     const props = {
       match: { params: { userId: '5edf141c78f1380017b829a6' } },
       auth: { isAuthenticated: true },
@@ -321,6 +323,12 @@ describe('Force Password Update page structure', () => {
         />
       </Provider>,
     );
+
+    await waitFor(() => {
+      expect(screen.getByText('Change Password')).toBeInTheDocument();
+    });
+
+    // Now take the snapshot after the component has stabilized
     expect(asFragment()).toMatchSnapshot();
   });
 });
