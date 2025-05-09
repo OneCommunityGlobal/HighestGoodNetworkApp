@@ -2,6 +2,14 @@ import { useSelector } from 'react-redux';
 
 function TeamStatsBarLabel({ x, y, width, height, value, change, percentage }) {
   const darkMode = useSelector(state => state.theme.darkMode);
+  let changeColor;
+  if (darkMode) {
+    changeColor = 'white';
+  } else if (change >= 0) {
+    changeColor = 'green';
+  } else {
+    changeColor = 'red';
+  }
   return (
     <g>
       <text
@@ -29,7 +37,7 @@ function TeamStatsBarLabel({ x, y, width, height, value, change, percentage }) {
       <text
         x={x + width + 10}
         y={y + height / 2 + 20}
-        fill={darkMode ? 'white' : change >= 0 ? 'green' : 'red'}
+        fill={changeColor}
         fontSize="12"
         textAnchor="start"
         dominantBaseline="middle"
