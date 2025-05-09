@@ -85,22 +85,35 @@ export default function TaskCompletedBarChart({ isLoading, data, darkMode }) {
   };
 
   return (
-    <div style={{ height: cardSize.height }}>
-      {isLoading ? (
-        <div className="d-flex justify-content-center align-items-center">
-          <div className="w-100vh">
-            <Loading />
+    <div
+      style={{
+        height: '548px',
+        minHeight: '548px',
+        maxHeight: '548px',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
+      <div style={{ textAlign: 'center', marginBottom: 0 }}></div>
+      <div style={{ height: 47 }} />
+      <div style={{ flex: 1, minHeight: 0 }}>
+        {isLoading ? (
+          <div className="d-flex justify-content-center align-items-center">
+            <div className="w-100vh">
+              <Loading />
+            </div>
           </div>
-        </div>
-      ) : (
-        <TinyBarChart
-          chartData={chartData}
-          maxY={maxY}
-          tickInterval={tickInterval}
-          renderCustomizedLabel={renderCustomizedLabel}
-          darkMode={darkMode}
-        />
-      )}
+        ) : (
+          <TinyBarChart
+            chartData={chartData}
+            maxY={maxY}
+            tickInterval={tickInterval}
+            renderCustomizedLabel={renderCustomizedLabel}
+            darkMode={darkMode}
+            showYAxisLabel={false}
+          />
+        )}
+      </div>
     </div>
   );
 }
