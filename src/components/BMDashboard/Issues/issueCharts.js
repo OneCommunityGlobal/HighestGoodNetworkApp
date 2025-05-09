@@ -20,7 +20,7 @@ function IssueChart() {
   const [filters, setFilters] = useState({ issueType: '', year: '' });
   const dispatch = useDispatch();
 
-  const { loading, issues, error, issueTypes, years } = useSelector(state => state.bmissuechart);
+  const { loading, issues, error, issueTypes, years } = useSelector(state => state.bmIssues);
 
   useEffect(() => {
     dispatch(fetchIssues(filters));

@@ -6,6 +6,8 @@ import {
   FETCH_ISSUE_TYPES_YEARS_REQUEST,
   FETCH_ISSUE_TYPES_YEARS_SUCCESS,
   FETCH_ISSUE_TYPES_YEARS_FAILURE,
+  UPDATE_ISSUE,
+  DELETE_ISSUE,
 } from '../../constants/bmdashboard/issueConstants';
 import { ENDPOINTS } from '../../utils/URL'; // Import the endpoints
 
@@ -24,6 +26,52 @@ export const fetchIssues = filters => async dispatch => {
     dispatch({
       type: FETCH_ISSUES_BARCHART_FAILURE,
       payload: error.message || 'Failed to fetch issues',
+    });
+  }
+};
+
+// Action to fetch issues for the bar chart
+export const fetchOpenIssues = () => async dispatch => {
+  try {
+    dispatch({ type: FETCH_ISSUES_BARCHART_REQUEST });
+
+    const { data } = await axios.get(ENDPOINTS.BM_ISSUE_CHART);
+
+    dispatch({
+      type: FETCH_ISSUES_BARCHART_SUCCESS,
+      payload: data,
+    });
+  } catch (error) {
+    dispatch({
+      type: FETCH_ISSUES_BARCHART_FAILURE,
+      payload: error.message || 'Failed to fetch issues',
+    });
+  }
+}; 
+
+export const updateIssue = (issueId, updates) => async dispatch => {
+  try {
+    // 1. Send update to backend
+    const response = await axios.patch(ENDPOINTS.BM_ISSUE_UPDATE(issueId), updates);
+
+    // 2. Dispatch action to update Redux store
+    dispatch({ type: UPDATE_ISSUE, payload: response.data });
+  } catch (error) {
+    dispatch({
+      type: FETCH_ISSUES_BARCHART_FAILURE,
+      payload: error.message || 'Failed to update issue',
+    });
+  }
+};
+
+export const deleteIssue = (issueId) => async dispatch => {
+  try {
+    await axios.delete(ENDPOINTS.BM_ISSUE_UPDATE(issueId));
+    dispatch({ type: DELETE_ISSUE, payload: issueId }); 
+  } catch (error) {
+    dispatch({
+      type: FETCH_ISSUES_BARCHART_FAILURE,
+      payload: error.message || 'Failed to delete issue',
     });
   }
 };

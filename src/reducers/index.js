@@ -57,6 +57,7 @@ import { totalOrgSummaryReducer } from './totalOrgSummaryReducer';
 import { allUsersTimeEntriesReducer } from './allUsersTimeEntriesReducer';
 import HGNFormReducer from './hgnFormReducers';
 import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
+import { issueReducer } from './bmdashboard/issueReducer';
 
 const localReducers = {
   auth: authReducer,
@@ -96,6 +97,7 @@ const localReducers = {
   materials: materialsReducer,
   tools: toolReducer,
   bmProjects: bmProjectReducer,
+  bmIssues: issueReducer,
   bmInvTypes: bmInvTypeReducer,
   timeOffRequests: timeOffRequestsReducer,
   lessons: lessonsReducer,

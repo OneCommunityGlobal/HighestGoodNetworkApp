@@ -5,6 +5,8 @@ import {
   FETCH_ISSUE_TYPES_YEARS_REQUEST,
   FETCH_ISSUE_TYPES_YEARS_SUCCESS,
   FETCH_ISSUE_TYPES_YEARS_FAILURE,
+  UPDATE_ISSUE,
+  DELETE_ISSUE,
 } from '../../constants/bmdashboard/issueConstants';
 
 const initialState = {
@@ -16,7 +18,7 @@ const initialState = {
 };
 
 // eslint-disable-next-line default-param-last
-const issueReducer = (state = initialState, action) => {
+export const issueReducer = (state = initialState, action) => {
   switch (action.type) {
     case FETCH_ISSUES_BARCHART_REQUEST:
       return { ...state, loading: true, error: null };
@@ -37,7 +39,18 @@ const issueReducer = (state = initialState, action) => {
       };
     case FETCH_ISSUE_TYPES_YEARS_FAILURE:
       return { ...state, loading: false, error: action.payload };
-
+    case UPDATE_ISSUE:
+      return {
+        ...state,
+        issues: state.issues.map(issue =>
+          issue._id === action.payload._id ? action.payload : issue,
+        ),
+      };
+    case DELETE_ISSUE:
+      return {
+        ...state,
+        issues: state.issues.filter(issue => issue._id !== action.payload),
+      };
     default:
       return state;
   }
