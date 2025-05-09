@@ -9,15 +9,17 @@
 }
 
 .task_table-container {
-  overflow: hidden;
-  position: relative;
+  overflow-x: auto;
+  overflow-y: hidden;
+  max-width: 100%;
 }
 
 .task_table-container table {
   table-layout: fixed;
   width: 100%;
+  border-collapse: collapse;
+  overflow-y: scroll;
 }
-
 
 .team-member-tasks-bell {
   margin-right: 10px;
@@ -106,7 +108,7 @@
   position: absolute;
   text-align: center;
   vertical-align: middle;
-  background: #ff4d4f;
+  background: #FF4D4F;
   border-radius: 50%;
   color: #fff;
   height: 25px;
@@ -239,7 +241,7 @@
   border-radius: 6px;
   height: 42px;
   width: 42px;
-  border: 1px solid #17a2b8;
+  border: 1px solid #17A2B8;
   font-size: 12px;
   font-weight: bold;
   font-family: Arial, Helvetica, sans-serif;
@@ -291,17 +293,16 @@
 
 .time-off-detail-modal::-webkit-scrollbar-track {
   border-radius: 4px;
-  background-color: #e7e7e7;
-  border: 1px solid #cacaca;
+  background-color: #E7E7E7;
+  border: 1px solid #CACACA;
   box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
 }
 
 .time-off-detail-modal::-webkit-scrollbar-thumb {
   border-radius: 8px;
   background-color: #007BFF;
-  box-shadow: inset 0 0 3px #e7e7e7;
+  box-shadow: inset 0 0 3px #E7E7E7;
 }
-
 
 .time-off-detail-modal-section {
   margin-bottom: 10px;
@@ -368,7 +369,6 @@
   grid-column: 1 / span 1;
   grid-row: 1 / span 1;
   align-self: center;
-
 }
 
 .team-task-progress-time-volunteers {
@@ -580,14 +580,13 @@
     content: attr(data-label);
     font-size: 17px;
     font-weight: 500;
-
     display: block;
     text-align: left !important;
   }
 
   .table-row {
-    border: solid #e9ecef 2px;
-    background: #faf7fc;
+    border: solid #E9ECEF 2px;
+    background: #FAF7FC;
     font-size: 0.75rem !important;
   }
 
@@ -617,7 +616,6 @@
   /* .header-box {
     flex-direction: unset;
   } */
-
   .team-member-tasks h1 {
     font-size: 28px;
   }
@@ -652,6 +650,7 @@
 
 @media only screen and (max-width: 530px) {
   .hours-btn-container {
+    min-width: none;
     padding: 0;
   }
 
@@ -671,7 +670,6 @@
     font-size: 14px;
     text-align: center;
   }
-
 }
 
 @media only screen and (max-width: 544px) {
