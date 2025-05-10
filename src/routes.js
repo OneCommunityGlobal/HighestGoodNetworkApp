@@ -92,6 +92,8 @@ import Resources from './components/CommunityPortal/Activities/activityId/Resour
 import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
 import EPDashboard from './components/EductionPortal';
+import HelpPage from './components/LandingPage/HelpPage';
+
 
 // eslint-disable-next-line import/order, import/no-unresolved
 import LogTools from './components/BMDashboard/LogTools/LogTools';
@@ -150,7 +152,6 @@ const PermissionsManagement = lazy(() =>
 const UserRoleTab = lazy(() => import('./components/PermissionsManagement/UserRoleTab'));
 const Teams = lazy(() => import('./components/Teams/Teams'));
 
-
 export default (
   <Switch>
     {/* ----- LB Dashboard Routing ----- */}
@@ -171,6 +172,7 @@ export default (
       <AutoUpdate />
       <ToastContainer />
       <Switch>
+        <ProtectedRoute path="/hgnhelp" component={HelpPage} />
         <ProtectedRoute path="/dashboard" exact component={Dashboard} />
         <ProtectedRoute path="/dashboard/:userId" exact component={Dashboard} />
         <ProtectedRoute path="/project/members/:projectId" fallback component={Members} />
