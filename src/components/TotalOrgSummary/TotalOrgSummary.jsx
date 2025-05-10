@@ -113,7 +113,7 @@ function TotalOrgSummary(props) {
   const [usersId, setUsersId] = useState([]);
   const [usersTimeEntries, setUsersTimeEntries] = useState([]);
   const [usersOverTimeEntries, setUsersOverTimeEntries] = useState([]);
-  const [taskProjectHours, setTaskProjectHours] = useState({
+  const [_taskProjectHours, setTaskProjectHours] = useState({
     taskHours: 0,
     projectHours: 0,
     lastTaskHours: 0,

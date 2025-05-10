@@ -84,7 +84,7 @@ const ReviewButton = ({ user, task, updateTask }) => {
   const toggleInvalidDomainModal = (errorType = null) => {
     if (!invalidDomainModal.isOpen && errorType) {
       let errorMessage =
-        'Nice try, but that link is about as useful as a chocolate teapot! We need a GitHub PR link, Google Doc, Dropbox folder, or One Community webpage.';
+        'Nice try, but that link is about as useful as a chocolate teapot! We need a GitHub PR link, Google Doc, Dropbox folder, Figma design, or One Community webpage.';
 
       if (errorType === 'invalid_dropbox_link') {
         errorMessage =
@@ -181,6 +181,11 @@ const ReviewButton = ({ user, task, updateTask }) => {
       normalizedUrl.includes('onecommunity.org') ||
       normalizedUrl.includes('onecommunity.com')
     ) {
+      return { isValid: true, errorType: null };
+    }
+
+    // 5. Figma check
+    if (normalizedUrl.includes('figma.com')) {
       return { isValid: true, errorType: null };
     }
 
@@ -370,7 +375,39 @@ const ReviewButton = ({ user, task, updateTask }) => {
         </Button>
       );
     } else if (reviewStatus === 'Submitted') {
-      if (
+      // First check if it's the user's own task
+      if (user.personId === myUserId) {
+        return (
+          <UncontrolledDropdown>
+            <DropdownToggle
+              className="btn--dark-sea-green reviewBtn"
+              caret
+              style={darkMode ? boxStyleDark : boxStyle}
+            >
+              Work Submitted and Awaiting Review
+            </DropdownToggle>
+            <DropdownMenu className={darkMode ? 'bg-space-cadet' : ''}>
+              {task.relatedWorkLinks &&
+                task.relatedWorkLinks.map((link, index) => (
+                  <DropdownItem
+                    key={index}
+                    href={link}
+                    target="_blank"
+                    className={darkMode ? 'text-light dark-mode-btn' : ''}
+                  >
+                    <FontAwesomeIcon icon={faExternalLinkAlt} /> View Link
+                  </DropdownItem>
+                ))}
+              <DropdownItem
+                onClick={toggleEditLinkModal}
+                className={darkMode ? 'text-light dark-mode-btn' : ''}
+              >
+                <FontAwesomeIcon icon={faPencilAlt} /> Edit Link
+              </DropdownItem>
+            </DropdownMenu>
+          </UncontrolledDropdown>
+        );
+      } else if (
         myRole == 'Owner' ||
         myRole == 'Administrator' ||
         myRole == 'Mentor' ||
@@ -422,37 +459,6 @@ const ReviewButton = ({ user, task, updateTask }) => {
                 className={darkMode ? 'text-light dark-mode-btn' : ''}
               >
                 More work needed, reset this button
-              </DropdownItem>
-            </DropdownMenu>
-          </UncontrolledDropdown>
-        );
-      } else if (user.personId === myUserId) {
-        return (
-          <UncontrolledDropdown>
-            <DropdownToggle
-              className="btn--dark-sea-green reviewBtn"
-              caret
-              style={darkMode ? boxStyleDark : boxStyle}
-            >
-              Work Submitted and Awaiting Review
-            </DropdownToggle>
-            <DropdownMenu className={darkMode ? 'bg-space-cadet' : ''}>
-              {task.relatedWorkLinks &&
-                task.relatedWorkLinks.map((link, index) => (
-                  <DropdownItem
-                    key={index}
-                    href={link}
-                    target="_blank"
-                    className={darkMode ? 'text-light dark-mode-btn' : ''}
-                  >
-                    <FontAwesomeIcon icon={faExternalLinkAlt} /> View Link
-                  </DropdownItem>
-                ))}
-              <DropdownItem
-                onClick={toggleEditLinkModal}
-                className={darkMode ? 'text-light dark-mode-btn' : ''}
-              >
-                <FontAwesomeIcon icon={faPencilAlt} /> Edit Link
               </DropdownItem>
             </DropdownMenu>
           </UncontrolledDropdown>
@@ -667,6 +673,7 @@ const ReviewButton = ({ user, task, updateTask }) => {
               <li style={{ paddingLeft: '8px', marginBottom: '4px' }}>
                 One Community webpage (onecommunityglobal.org)
               </li>
+              <li style={{ paddingLeft: '8px', marginBottom: '4px' }}>Figma design (figma.com)</li>
             </ul>
           </div>
         </ModalBody>
