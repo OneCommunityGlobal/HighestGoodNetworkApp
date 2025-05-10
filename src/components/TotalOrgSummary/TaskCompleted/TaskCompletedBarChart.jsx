@@ -29,7 +29,7 @@ export default function TaskCompletedBarChart({ isLoading, data, darkMode }) {
       percentage: total > 0 ? `${((item.amount / total) * 100).toFixed(2)}%` : '0%',
       change: `${item.change >= 0 ? '+' : ''}${item.change}%`,
       fontcolor,
-      color: ['#8e44ad', '#3498db'], // Purple and Blue
+      color: ['#8e44ad', '#3498db'], 
     };
   });
 
