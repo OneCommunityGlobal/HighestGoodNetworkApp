@@ -3,6 +3,7 @@ import './WeeklyProjectSummary.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
+import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
 import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
 
@@ -255,11 +256,11 @@ export default function WeeklyProjectSummary() {
         title: 'Labor and Time Tracking',
         key: 'Labor and Time Tracking',
         className: 'half',
-        content: [1, 2].map(() => {
+        content: [1, 2].map((_, index) => {
           const uniqueId = uuidv4();
           return (
             <div key={uniqueId} className="weekly-project-summary-card normal-card">
-              📊 Card
+              {index === 1 ? <PaidLaborCost /> : '📊 Card'}
             </div>
           );
         }),
