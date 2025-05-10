@@ -50,7 +50,7 @@ export default function IssueList() {
         project: projectMap[issue.projectId] || 'Unknown Project',
         openSince: getDaysSinceCreated(issue.createdDate.split('T')[0]),
         cost: issue.cost,
-        person: issue.project,
+        person: issue.staffInvolved,
       }));
       setIssues(processed);
     }
@@ -248,7 +248,7 @@ export default function IssueList() {
               </td>
               <td>{issue.openSince}</td>
               <td>{issue.cost}</td>
-              <td>{issue.person}</td>
+              <td>{issue.person.join(', ')}</td>
               <td>
                 <Dropdown
                   show={dropdownOpenId === issue.id}
