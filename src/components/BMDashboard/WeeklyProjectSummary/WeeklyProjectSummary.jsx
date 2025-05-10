@@ -3,6 +3,7 @@ import './WeeklyProjectSummary.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
+import ToolStatusDonutChart from './ToolStatusDonutChart';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
 import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
 
@@ -193,14 +194,14 @@ export default function WeeklyProjectSummary() {
         title: 'Tools and Equipment Tracking',
         key: 'Tools and Equipment Tracking',
         className: 'half',
-        content: [1, 2].map(() => {
-          const uniqueId = uuidv4();
-          return (
-            <div key={uniqueId} className="weekly-project-summary-card normal-card">
-              📊 Card
+        content: (
+          <div className="weekly-project-summary-card normal-card tools-tracking-layout">
+            <div className="tools-donut-wrap">
+              <ToolStatusDonutChart />
             </div>
-          );
-        }),
+            <div className="tools-card-wrap">Card</div>
+          </div>
+        ),
       },
       {
         title: 'Lessons Learned',
