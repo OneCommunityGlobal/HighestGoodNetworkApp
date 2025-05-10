@@ -24,28 +24,30 @@ export const loginUser = credentials => dispatch => {
     .then(res => {
       if (res.data.new) {
         dispatch(setCurrentUser({ new: true, userId: res.data.userId }));
-      } else {
-        localStorage.setItem(tokenKey, res.data.token);
-        httpService.setjwt(res.data.token);
-        const decoded = jwtDecode(res.data.token);
-        dispatch(setCurrentUser(decoded));
+        return { success: true, new: true };
       }
+      localStorage.setItem(tokenKey, res.data.token);
+      httpService.setjwt(res.data.token);
+      const decoded = jwtDecode(res.data.token);
+      dispatch(setCurrentUser(decoded));
+      return { success: true };
     })
     .catch(err => {
       let errors;
       if (err.response && err.response.status === 404) {
         errors = { password: err.response.data.message };
-        dispatch({
-          type: GET_ERRORS,
-          payload: errors,
-        });
       } else if (err.response && err.response.status === 403) {
         errors = { email: err.response.data.message };
-        dispatch({
-          type: GET_ERRORS,
-          payload: errors,
-        });
+      } else {
+        errors = { email: 'An error occurred during login.' };
       }
+
+      dispatch({
+        type: GET_ERRORS,
+        payload: errors,
+      });
+
+      return { success: false, errors };
     });
 };
 

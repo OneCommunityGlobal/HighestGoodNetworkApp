@@ -3,7 +3,7 @@ import { Form, FormGroup, Label, Input, Button } from 'reactstrap';
 import PhoneInput from 'react-phone-input-2';
 import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
-import Joi from 'joi';
+import Joi from 'joi-browser';
 import {
   fetchMaterialTypes,
   postBuildingInventoryType,

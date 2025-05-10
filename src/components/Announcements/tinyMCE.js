@@ -36,7 +36,7 @@ export default function TinyMCEEditor() {
           plugins: [
             'mentions advlist autolink lists link image charmap print preview anchor',
             'searchreplace visualblocks code fullscreen',
-            'insertdatetime media paste code help wordcount',
+            'insertdatetime media code help wordcount',
           ],
           toolbar:
             'undo redo | formatselect | ' +

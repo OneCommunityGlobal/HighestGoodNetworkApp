@@ -83,7 +83,10 @@ jest.mock('react-toastify', () => ({
     error: jest.fn(),
   },
 }));
-const flushAllPromises = () => new Promise(setImmediate);
+const flushAllPromises = () =>
+  new Promise(resolve => {
+    setTimeout(resolve, 0);
+  });
 
 describe('UserPermissionsPopup component', () => {
   it('check if user name is present', async () => {
