@@ -608,7 +608,7 @@ export function Header(props) {
       </div>
       {props.auth.isAuthenticated && isModalVisible && (
         <div className={`${darkMode ? 'bg-oxford-blue' : ''} card-wrapper`}>
-          <Card color="primary">
+          <Card color="primary" className='headerCard'>
             <div className="close-button">
               <Button close onClick={closeModal} />
             </div>
