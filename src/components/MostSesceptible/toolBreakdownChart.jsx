@@ -12,10 +12,10 @@ import {
 } from "recharts";
 
 const sampleData = [
-  { projectid: "1", project: "Alpha", tool: "Hammer", inUse: 120, needsReplacement: 20, yetToReceive: 10 },
-  { projectid: "2", project: "Alpha", tool: "Screwdriver", inUse: 80, needsReplacement: 30, yetToReceive: 10 },
-  { projectid: "3", project: "Beta", tool: "Drill", inUse: 50, needsReplacement: 80, yetToReceive: 20 },
-  { projectid: "4", project: "Beta", tool: "Saw", inUse: 90, needsReplacement: 10, yetToReceive: 5 },
+  { projectId: "1", project: "Alpha", tool: "Hammer", inUse: 120, needsReplacement: 20, yetToReceive: 10 },
+  { projectId: "2", project: "Alpha", tool: "Screwdriver", inUse: 80, needsReplacement: 30, yetToReceive: 10 },
+  { projectId: "3", project: "Beta", tool: "Drill", inUse: 50, needsReplacement: 80, yetToReceive: 20 },
+  { projectId: "4", project: "Beta", tool: "Saw", inUse: 90, needsReplacement: 10, yetToReceive: 5 },
 ];
 
 const allProjects = [...new Set(sampleData.map((d) => d.project))];
