@@ -50,7 +50,7 @@ export default function IssueList() {
         project: projectMap[issue.projectId] || 'Unknown Project',
         openSince: getDaysSinceCreated(issue.createdDate.split('T')[0]),
         cost: issue.cost,
-        person: issue.staffInvolved,
+        person: issue.person,
       }));
       setIssues(processed);
     }
@@ -248,7 +248,7 @@ export default function IssueList() {
               </td>
               <td>{issue.openSince}</td>
               <td>{issue.cost}</td>
-              <td>{issue.person.join(', ')}</td>
+              <td>{`${issue.person.name} - ${issue.person.role}`}</td>
               <td>
                 <Dropdown
                   show={dropdownOpenId === issue.id}
@@ -257,7 +257,7 @@ export default function IssueList() {
                   <Dropdown.Toggle variant="outline-secondary" size="sm">
                     Options
                   </Dropdown.Toggle>
-                  <Dropdown.Menu className="dropdown-menu-custom">
+                  <Dropdown.Menu className="dropdown-menu-custom" popper={false}>
                     <Button
                       variant="link"
                       className="dropdown-item"
