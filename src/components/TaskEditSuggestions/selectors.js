@@ -1,4 +1,4 @@
-export const getTaskEditSuggestionsData = state => {
+const getTaskEditSuggestionsData = state => {
   return {
     userRole: state.auth.user.role,
     isLoading: state.taskEditSuggestions.isLoading,
@@ -8,3 +8,5 @@ export const getTaskEditSuggestionsData = state => {
     darkMode: state.theme.darkMode,
   };
 };
+
+export default getTaskEditSuggestionsData;
