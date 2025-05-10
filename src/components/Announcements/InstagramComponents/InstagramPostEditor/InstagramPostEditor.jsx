@@ -3,13 +3,14 @@ import InstagramLoginButton from '../InstagramLoginButton';
 import './InstagramPostEditor.css';
 import { postToInstagram, checkInstagramAuthStatus } from '../InstagramPostHelpers';
 import ImageUploader from '../ImageUploader';
+import InstagramScheduledPostsEditor from '../InstagramScheduledPostEditor/InstagramScheduledPostsEditor';
 import { set } from 'lodash';
 import { check } from 'prettier';
 import { timestamp } from 'joi/lib/types/date';
 import { toast } from 'react-toastify';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import SchedulePostButton from '../InstagramScheduledPostComponents/SchedulePostButton';
+import { getInstagramScheduledPosts, scheduleInstagramPost } from '../InstagramSchedulePostHelpers';
 
 const MAX_CAPTION_CHARACTERS = 2200; 
 function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionStatus}) {
@@ -27,14 +28,33 @@ function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionS
   });
   const [buttonTextState, setButtonTextState] = useState("");
 
+  const [scheduledButtonTextState, setScheduledButtonTextState] = useState("");
+  const [scheduledPostsError, setScheduledPostsError] = useState('');
+  const [scheduledPosts, setScheduledPosts] = useState([]);
+  const [isLoadingScheduledPosts, setIsLoadingScheduledPosts] = useState(false);
+
   const [caption, setCaption] = useState('');
   const [file, setFile] = useState(null);
 
-  const [startDate, setStartDate] = useState(new Date());
+  const [startDate, setStartDate] = useState(null);
   const [isScheduled, setIsScheduled] = useState(false);
   const [minTime, setMinTime] = useState(new Date());
+  const [scheduledDate, setScheduledDate] = useState(null);
+
+  // check connection status when component mounts
+  useEffect(() => {
+    handleInstagramLoginSuccess();
+    getInstagramScheduledPosts(
+      setScheduledPosts, 
+      setScheduledPostsError, 
+      setIsLoadingScheduledPosts
+    );
+  }, []);
+
 
   useEffect(() => {
+    if (!startDate) return;
+
     const now = new Date();
 
     if (startDate.toDateString() === now.toDateString()) {
@@ -102,16 +122,27 @@ function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionS
     setCaption(e.target.value);
   }
 
-  const handleSchedulePost = (startDate) => {
-    console.log('Scheduled post date:', startDate);
-    setIsLoading(true);
-
-    // Simulate scheduling logic
-    setTimeout(() => {
-      toast.success('Post scheduled successfully!');
-      setButtonTextState("Post to Instagram");
-      setIsLoading(false);
-    }, 2000);
+  const handleSchedulePost = () => {
+    scheduleInstagramPost(
+      startDate, 
+      caption, 
+      file, 
+      setScheduledButtonTextState, 
+      setScheduledPostsError
+    ).then((response) => {
+      if (response && response.success) {
+        toast.success('Post scheduled successfully!');
+        getInstagramScheduledPosts(
+          setScheduledPosts, 
+          setScheduledPostsError, 
+          setIsLoadingScheduledPosts
+        );
+        setCaption('');
+        setFile(null);
+        setImageResetKey(prevKey => prevKey + 1);
+        setStartDate(null);
+      }
+    });
   }
 
   return (
@@ -175,10 +206,10 @@ function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionS
             </div>
 
             {/* post button */}
-            <div className="button-container">
+            <div className="post-buttons-container">
               <button 
                 // type="button"
-                className="send-button"
+                className="schedule-post-instagram-button"
                 disabled={isExceedingLimit ||!caption || !file || isLoading}
                 title={
                   isExceedingLimit ? "Caption exceeds character limit" : 
@@ -195,10 +226,6 @@ function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionS
                 {buttonTextState || "Post to Instagram"}
               </button>
 
-              {/* <SchedulePostButton
-                onSchedulePost={handleSchedulePost}
-                isLoading={isLoading}
-              /> */}
               <div className="schedule-post-button-container">
                 <DatePicker
                   selected={startDate}
@@ -211,24 +238,63 @@ function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionS
                   dateFormat="MMMM d, yyyy h:mm aa"
                   className="date-picker"
                   placeholderText="Select date and time"
+                  isClearable
+                  clearButtonTitle="Clear date"
                 />
                 <button
                   // type="button"
-                  className="send-button"
+                  className="schedule-post-instagram-button"
                   onClick={handleSchedulePost}
-                  disabled={isLoading || isScheduled}
+                  disabled={isLoading || !startDate || isExceedingLimit || !caption || !file}
+                  title={
+                    !startDate ? "Please select a date and time" :
+                    isExceedingLimit ? "Caption exceeds character limit" : 
+                    !file ? "Please select an image" :
+                    !caption ? "Please enter a caption" : 
+                    isLoading ? "Loading..." : ""
+                  }
                 >
                   {isLoading ? 'Scheduling...' : 'Schedule Post'}
                 </button>
               </div>
             </div>
 
+            {instagramError && <p className="instagram-error">{instagramError}</p>}
+
           </div>
           
           {/* scheduled post section */ }
-          <div className="instagram-scheduled-posts-container">
+          <InstagramScheduledPostsEditor 
+            posts={scheduledPosts} 
+            isLoading={isLoadingScheduledPosts}
+            error={scheduledPostsError}
+            onDeletePost={(postId) => {
+              console.log('Deleting post:', postId);
+            }}
+            onRefresh={() => {
+              getInstagramScheduledPosts(
+                setScheduledPosts,
+                setScheduledPostsError,
+                setIsLoadingScheduledPosts
+              );
+            }}
+          />
+          {/* <div className="scheduled-posts-container">
             <h4>Scheduled Posts</h4>
-          </div>
+            <div className="">
+              {scheduledPosts.length > 0 ? (
+                scheduledPosts.map((post, index) => (
+                  <div key={index} className="">
+                    <p>Caption: {post.caption}</p>
+                    <p>Image: {post.imageUrl}</p>
+                    <p>Scheduled Time: {new Date(post.scheduledTime).toLocaleString()}</p>
+                  </div>
+                ))
+              ) : (
+                <p>No scheduled posts</p>
+              )}
+            </div>
+          </div> */}
         </div> 
       )}
     </div>
