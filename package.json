@@ -84,7 +84,7 @@
     "prestart": "npm run test",
     "postinstall": "node ./postinstall.js",
     "start": "react-scripts start",
-    "build": "node --max_old_space_size=4096 node_modules/.bin/react-scripts build",
+    "build": "npm run postinstall && cross-env GENERATE_SOURCEMAP=false CI=false react-scripts build",
     "test": "cross-env CI=true react-scripts test --env=jest-environment-jsdom-sixteen",
     "test:watch": " react-scripts test --env=jest-environment-jsdom-sixteen",
     "test:coverage": "cross-env CI=true react-scripts test --env=jest-environment-jsdom-sixteen --coverage",
