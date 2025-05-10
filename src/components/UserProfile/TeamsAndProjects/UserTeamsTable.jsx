@@ -276,8 +276,8 @@ const UserTeamsTable = props => {
             {props.userTeamsById.length > 0 ? (
               props.userTeamsById.map((team, index) => (
                 <tr key={index} className={`tr ${darkMode ? 'dark-mode' : ''}`}>
-                  <td>{index + 1}</td>
-                  <td>{`${team.teamName}`}</td>
+                  <td style={{ alignContent: 'center' }}>{index + 1}</td>
+                  <td style={{ alignContent: 'center' }}>{`${team.teamName}`}</td>
                   {props.edit && props.role && (
                     <>
                       <td
@@ -285,6 +285,7 @@ const UserTeamsTable = props => {
                       >
                         <button
                           style={darkMode ? {} : boxStyle}
+                          style={{ boxShadow: 'none' }}
                           disabled={!canAssignTeamToUsers}
                           type="button"
                           className="btn btn-outline-info"
