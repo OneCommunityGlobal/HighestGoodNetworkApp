@@ -3,7 +3,7 @@ import DatePicker from 'react-datepicker';
 import moment from 'moment';
 import 'react-datepicker/dist/react-datepicker.css';
 import Select from 'react-select';
-import { set } from 'date-fns';
+// import { set } from 'date-fns';
 
 // Get the start of the current week (Sunday)
 function getStartOfWeek(date) {
@@ -27,7 +27,11 @@ function DateRangeSelector({ onDateRangeChange }) {
   );
 
   useEffect(() => {
+    let isMounted = true;
     onDateRangeChange({ startDate, endDate });
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const updateDates = (start, end) => {

@@ -89,10 +89,10 @@ const comparisonOptions = [
   },
 ];
 
-const aggregateTimeEntries = userTimeEntries => {
+const aggregateTimeEntries = (userTimeEntries) => {
   const aggregatedEntries = {};
 
-  userTimeEntries.forEach(entry => {
+  userTimeEntries.forEach((entry) => {
     const { personId, hours, minutes } = entry;
     if (!aggregatedEntries[personId]) {
       aggregatedEntries[personId] = {
@@ -105,7 +105,7 @@ const aggregateTimeEntries = userTimeEntries => {
     }
   });
 
-  Object.keys(aggregatedEntries).forEach(personId => {
+  Object.keys(aggregatedEntries).forEach((personId) => {
     const totalMinutes = aggregatedEntries[personId].minutes;
     const additionalHours = Math.floor(totalMinutes / 60);
     aggregatedEntries[personId].hours += additionalHours;
@@ -142,16 +142,12 @@ function TotalOrgSummary(props) {
 
   const dispatch = useDispatch();
 
-  const allUsersTimeEntries = useSelector(state => state.allUsersTimeEntries);
+  const allUsersTimeEntries = useSelector((state) => state.allUsersTimeEntries);
 
   // State to hold the selected date range
   const [selectedDateRange, setSelectedDateRange] = useState({
-    startDate: moment()
-      .startOf('week')
-      .toDate(),
-    endDate: moment()
-      .endOf('week')
-      .toDate(),
+    startDate: moment().startOf('week').toDate(),
+    endDate: moment().endOf('week').toDate(),
   });
 
   const handleDateRangeChange = ({ startDate, endDate }) => {
@@ -197,7 +193,7 @@ function TotalOrgSummary(props) {
   useEffect(() => {
     if (Array.isArray(usersId) && usersId.length > 0) {
       getTimeEntryForOverDate(usersId, fromOverDate, toOverDate)
-        .then(response => {
+        .then((response) => {
           if (response && Array.isArray(response)) {
             setUsersOverTimeEntries(response);
           } else {
@@ -213,16 +209,13 @@ function TotalOrgSummary(props) {
   }, [allUsersTimeEntries, usersId, fromOverDate, toOverDate]);
 
   useEffect(() => {
-    
     async function fetchData() {
       const { taskHours, projectHours } = await props.getTaskAndProjectStats(
         selectedDateRange.startDate,
         selectedDateRange.endDate,
       );
-      const {
-        taskHours: lastTaskHours,
-        projectHours: lastProjectHours,
-      } = await props.getTaskAndProjectStats(comparisonWeek.startDate, comparisonWeek.endDate);
+      const { taskHours: lastTaskHours, projectHours: lastProjectHours } =
+        await props.getTaskAndProjectStats(comparisonWeek.startDate, comparisonWeek.endDate);
 
       if (taskHours && projectHours) {
         setTaskProjectHours({
@@ -269,7 +262,7 @@ function TotalOrgSummary(props) {
     );
   }, [selectedDateRange, comparisonWeek]);
 
-  const handleComparisonPeriodChange = option => {
+  const handleComparisonPeriodChange = (option) => {
     const { startDate, endDate } = selectedDateRange;
     let commonStartDate = moment(startDate);
     let commonEndDate = moment(endDate);
@@ -357,7 +350,7 @@ function TotalOrgSummary(props) {
             <Select
               options={comparisonOptions}
               onChange={handleComparisonPeriodChange}
-              defaultValue={comparisonOptions.find(option => option.value === 'nocomparsion')}
+              defaultValue={comparisonOptions.find((option) => option.value === 'nocomparsion')}
             />
           </div>
 
@@ -481,7 +474,7 @@ function TotalOrgSummary(props) {
   );
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   error: state.error,
   loading: state.loading,
   volunteerstats: state.totalOrgSummary.volunteerstats,
@@ -491,10 +484,10 @@ const mapStateToProps = state => ({
   allUserProfiles: state.allUserProfiles,
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   // getTotalOrgSummary: () => dispatch(getTotalOrgSummary(fromDate, toDate)),
   getTaskAndProjectStats: () => dispatch(getTaskAndProjectStats(fromDate, toDate)),
-  hasPermission: permission => dispatch(hasPermission(permission)),
+  hasPermission: (permission) => dispatch(hasPermission(permission)),
   getAllUserProfile: () => dispatch(getAllUserProfile()),
   getTotalOrgSummary: (startDate, endDate, comparisonStartDate, comparisonEndDate) =>
     dispatch(getTotalOrgSummary(startDate, endDate, comparisonStartDate, comparisonEndDate)),
