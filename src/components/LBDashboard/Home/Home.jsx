@@ -17,9 +17,8 @@ import 'leaflet/dist/leaflet.css';
 import './Home.css';
 import L from 'leaflet';
 import logo from '../../../assets/images/logo2.png';
-import { VILLAGE_LOCATIONS, mockListings, mockBiddings, ENDPOINTS } from './data';
+import api, { FIXED_VILLAGES } from './data';
 
-// Fix for default marker icon in Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
@@ -27,7 +26,6 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
 });
 
-// Default icon for regular units
 const unitIcon = new L.Icon({
   iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
   iconSize: [25, 41],
@@ -36,7 +34,6 @@ const unitIcon = new L.Icon({
 });
 
 function Home() {
-  // UI State
   const [viewMode, setViewMode] = useState('grid');
   const [activeTab, setActiveTab] = useState('listings');
   const [selectedVillage, setSelectedVillage] = useState('');
@@ -44,101 +41,110 @@ function Home() {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showPropertyMap, setShowPropertyMap] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
-  const [userName, setUserName] = useState('John'); // This would come from user authentication
+  const [userName, setUserName] = useState('John');
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [showPropertyDetails, setShowPropertyDetails] = useState(false);
 
-  // Village search and pagination state
   const [villageSearchTerm, setVillageSearchTerm] = useState('');
   const [villagePagination, setVillagePagination] = useState({
     currentPage: 1,
-    pageSize: 20, // Show 20 villages per page
+    pageSize: 20,
   });
 
-  // Data State
   const [allListings, setAllListings] = useState([]);
   const [allBiddings, setAllBiddings] = useState([]);
+  const [allVillages, setAllVillages] = useState([...FIXED_VILLAGES]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Pagination State
   const [pagination, setPagination] = useState({
     currentPage: 1,
-    pageSize: 12, // Changed to 12 to match Airbnb's approach
+    pageSize: 12,
     totalPages: 1,
   });
 
-  const pageSizeOptions = [12, 24, 36, 48]; // Multiples of 12, similar to Airbnb
+  const pageSizeOptions = [12, 24, 36, 48];
 
-  // Filter villages based on search term
+  useEffect(() => {
+    const fetchVillagesData = async () => {
+      try {
+        const villages = await api.fetchVillages();
+        setAllVillages(villages);
+      } catch (error) {
+        console.error('Error fetching villages:', error);
+        setAllVillages([...FIXED_VILLAGES]);
+      }
+    };
+
+    fetchVillagesData();
+  }, []);
+
   const filteredVillages = useMemo(() => {
-    return Object.keys(VILLAGE_LOCATIONS).filter(village =>
+    return allVillages.filter(village =>
       village.toLowerCase().includes(villageSearchTerm.toLowerCase()),
     );
-  }, [villageSearchTerm]);
+  }, [villageSearchTerm, allVillages]);
 
-  // Paginate the filtered villages
   const paginatedVillages = useMemo(() => {
     const startIdx = (villagePagination.currentPage - 1) * villagePagination.pageSize;
     return filteredVillages.slice(startIdx, startIdx + villagePagination.pageSize);
   }, [filteredVillages, villagePagination]);
 
-  // Calculate total pages for villages
   const totalVillagePages = useMemo(
     () => Math.max(1, Math.ceil(filteredVillages.length / villagePagination.pageSize)),
     [filteredVillages.length, villagePagination.pageSize],
   );
 
-  // Fetch data (API integration)
   useEffect(() => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
 
-        // Fetch listings
-        const listingsUrl = `${ENDPOINTS.LB_LISTINGS}?page=${pagination.currentPage}&size=${pagination.pageSize}`;
-        let listingsResponse;
+        const filters = {};
+        if (selectedVillage) filters.village = selectedVillage;
+        if (dateRange.startDate) filters.availableFrom = dateRange.startDate;
+        if (dateRange.endDate) filters.availableTo = dateRange.endDate;
 
-        try {
-          listingsResponse = await fetch(listingsUrl);
+        if (activeTab === 'listings') {
+          try {
+            const listingsData = await api.fetchListings(
+              pagination.currentPage,
+              pagination.pageSize,
+              filters,
+            );
 
-          if (!listingsResponse.ok) {
-            throw new Error(`Failed to fetch listings: ${listingsResponse.status}`);
-          }
+            setAllListings(listingsData.items || []);
 
-          const listingsData = await listingsResponse.json();
-          setAllListings(listingsData.content || []);
-
-          // Update total pages if available in response
-          if (listingsData.totalPages) {
             setPagination(prev => ({
               ...prev,
-              totalPages: listingsData.totalPages,
+              totalPages: listingsData.pagination.totalPages || 1,
             }));
+          } catch (error) {
+            console.error('API Error (Listings):', error);
+            setError('Failed to fetch listings. Please try again later.');
+
+            setAllListings([]);
           }
-        } catch (error) {
-          console.error('API Error:', error);
-          // Fallback to mock data in development
-          setAllListings(mockListings);
-        }
+        } else {
+          try {
+            const biddingsData = await api.fetchBiddings(
+              pagination.currentPage,
+              pagination.pageSize,
+              filters,
+            );
 
-        // Fetch biddings
-        const biddingsUrl = `${ENDPOINTS.LB_BIDDINGS}?page=${pagination.currentPage}&size=${pagination.pageSize}`;
-        let biddingsResponse;
+            setAllBiddings(biddingsData.items || []);
 
-        try {
-          biddingsResponse = await fetch(biddingsUrl);
+            setPagination(prev => ({
+              ...prev,
+              totalPages: biddingsData.pagination.totalPages || 1,
+            }));
+          } catch (error) {
+            console.error('API Error (Biddings):', error);
+            setError('Failed to fetch biddings. Please try again later.');
 
-          if (!biddingsResponse.ok) {
-            throw new Error(`Failed to fetch biddings: ${biddingsResponse.status}`);
+            setAllBiddings([]);
           }
-
-          const biddingsData = await biddingsResponse.json();
-          setAllBiddings(biddingsData.content || []);
-        } catch (error) {
-          console.error('API Error:', error);
-          // Fallback to mock data in development
-          setAllBiddings(mockBiddings);
         }
 
         setIsLoading(false);
@@ -149,73 +155,11 @@ function Home() {
     };
 
     fetchData();
-  }, [pagination.currentPage, pagination.pageSize, activeTab]);
+  }, [pagination.currentPage, pagination.pageSize, selectedVillage, dateRange, activeTab]);
 
-  // Filter data based on selected criteria
-  const filterData = useCallback(
-    data => {
-      if (!data || !Array.isArray(data)) return [];
+  const currentItems = activeTab === 'listings' ? allListings : allBiddings;
+  const allItems = activeTab === 'listings' ? allListings : allBiddings;
 
-      let filtered = [...data];
-
-      if (selectedVillage) {
-        filtered = filtered.filter(item => item.village === selectedVillage);
-      }
-
-      if (dateRange.startDate && dateRange.endDate) {
-        const start = new Date(dateRange.startDate);
-        const end = new Date(dateRange.endDate);
-        filtered = filtered.filter(
-          item => new Date(item.availableFrom) <= end && new Date(item.availableTo) >= start,
-        );
-      }
-
-      return filtered;
-    },
-    [selectedVillage, dateRange],
-  );
-
-  // Paginate the filtered data
-  const paginateData = useCallback(
-    data => {
-      if (!data || !Array.isArray(data)) return [];
-      const startIdx = (pagination.currentPage - 1) * pagination.pageSize;
-      return data.slice(startIdx, startIdx + pagination.pageSize);
-    },
-    [pagination.currentPage, pagination.pageSize],
-  );
-
-  // Use memo to avoid recalculating filtered data on every render
-  const filteredListings = useMemo(() => filterData(allListings), [filterData, allListings]);
-  const filteredBiddings = useMemo(() => filterData(allBiddings), [filterData, allBiddings]);
-
-  // Use memo for paginated data as well
-  const listings = useMemo(() => paginateData(filteredListings), [paginateData, filteredListings]);
-  const biddings = useMemo(() => paginateData(filteredBiddings), [paginateData, filteredBiddings]);
-
-  // Update total pages when filters or data change
-  useEffect(() => {
-    const totalData = activeTab === 'listings' ? filteredListings.length : filteredBiddings.length;
-    const newTotalPages = Math.max(1, Math.ceil(totalData / pagination.pageSize));
-
-    // Only update if total pages has actually changed
-    if (newTotalPages !== pagination.totalPages) {
-      setPagination(prev => ({
-        ...prev,
-        totalPages: newTotalPages,
-        // Reset to page 1 if current page is now invalid
-        currentPage: prev.currentPage > newTotalPages ? 1 : prev.currentPage,
-      }));
-    }
-  }, [
-    filteredListings.length,
-    filteredBiddings.length,
-    pagination.pageSize,
-    activeTab,
-    pagination.totalPages,
-  ]);
-
-  // Handle page change
   const handlePageChange = useCallback(
     newPage => {
       if (newPage < 1 || newPage > pagination.totalPages) return;
@@ -224,18 +168,15 @@ function Home() {
     [pagination.totalPages],
   );
 
-  // Reset pagination when changing tab
   useEffect(() => {
     setPagination(prev => ({ ...prev, currentPage: 1 }));
   }, [activeTab]);
 
-  // Handle property selection for details popup
   const handlePropertySelect = useCallback(property => {
     setSelectedProperty(property);
     setShowPropertyDetails(true);
   }, []);
 
-  // Close any modal
   const closeAllModals = useCallback(() => {
     setShowDatePicker(false);
     setShowPropertyMap(false);
@@ -243,11 +184,9 @@ function Home() {
     setShowPropertyDetails(false);
   }, []);
 
-  // Handle ESC key to close modals
   useEffect(() => {
     const handleEsc = event => {
       if (event.keyCode === 27) {
-        // ESC key
         closeAllModals();
       }
     };
@@ -259,14 +198,11 @@ function Home() {
     };
   }, [closeAllModals]);
 
-  // Apply filters and close date picker
   const applyFilters = useCallback(() => {
-    // Reset pagination to first page when applying filters
     setPagination(prev => ({ ...prev, currentPage: 1 }));
     setShowDatePicker(false);
   }, []);
 
-  // Clear filters
   const clearFilters = useCallback(() => {
     setDateRange({ startDate: '', endDate: '' });
     setSelectedVillage('');
@@ -274,7 +210,6 @@ function Home() {
     setShowDatePicker(false);
   }, []);
 
-  // Adjust date by week (for Airbnb-like navigation)
   const adjustDatesByWeek = useCallback(
     direction => {
       if (!dateRange.startDate || !dateRange.endDate) return;
@@ -282,12 +217,10 @@ function Home() {
       const startDate = new Date(dateRange.startDate);
       const endDate = new Date(dateRange.endDate);
 
-      // Add or subtract 7 days
       const daysToAdjust = direction === 'forward' ? 7 : -7;
       startDate.setDate(startDate.getDate() + daysToAdjust);
       endDate.setDate(endDate.getDate() + daysToAdjust);
 
-      // Format dates as YYYY-MM-DD strings
       const formatDate = date => {
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -303,37 +236,24 @@ function Home() {
     [dateRange],
   );
 
-  // Handle Go button click - applies the village filter
   const handleGoButtonClick = useCallback(() => {
-    // Apply the current selectedVillage filter and reset to page 1
     setPagination(prev => ({ ...prev, currentPage: 1 }));
   }, [selectedVillage]);
 
-  // Handle marker click in the map to show property details
   const handleMarkerClick = useCallback(property => {
     setSelectedProperty(property);
-    // We keep the map open so the user can see the property location
   }, []);
 
-  // View property details from map popup
   const viewPropertyDetailsFromMap = useCallback(property => {
     setSelectedProperty(property);
     setShowPropertyDetails(true);
     setShowPropertyMap(false);
   }, []);
 
-  // Filter properties by village from the map
   const filterByVillageFromMap = useCallback(village => {
-    // This ensures the filter is applied when selecting from the map
     setSelectedVillage(village);
     setPagination(prev => ({ ...prev, currentPage: 1 }));
-    // We don't close the map so users can see all units in the village
   }, []);
-
-  // Current data based on active tab
-  const currentItems = activeTab === 'listings' ? listings : biddings;
-  const filteredItems = activeTab === 'listings' ? filteredListings : filteredBiddings;
-  const allItems = activeTab === 'listings' ? allListings : allBiddings;
 
   return (
     <div className="outside-container">
@@ -351,7 +271,7 @@ function Home() {
             onChange={e => setSelectedVillage(e.target.value)}
           >
             <option value="">Filter by Village</option>
-            {Object.keys(VILLAGE_LOCATIONS).map(v => (
+            {allVillages.map(v => (
               <option key={v} value={v}>
                 {v} {v !== 'City Center' ? 'Village' : ''}
               </option>
@@ -476,7 +396,7 @@ function Home() {
                       {unit.village} {unit.village !== 'City Center' ? 'Village' : ''}
                     </p>
                   </div>
-                  <div className="price">
+                  <div className={`price ${unit.isBidding ? 'bidding-price' : ''}`}>
                     ${unit.price}/{unit.perUnit}
                   </div>
                 </div>
@@ -486,7 +406,7 @@ function Home() {
         )}
 
         {/* Pagination Controls */}
-        {!isLoading && !error && filteredItems.length > 0 && (
+        {!isLoading && !error && currentItems.length > 0 && (
           <div className="pagination-controls">
             <button
               onClick={() => handlePageChange(pagination.currentPage - 1)}
@@ -515,14 +435,6 @@ function Home() {
                     ...prev,
                     pageSize: newSize,
                     currentPage: 1,
-                    totalPages: Math.max(
-                      1,
-                      Math.ceil(
-                        (activeTab === 'listings'
-                          ? filteredListings.length
-                          : filteredBiddings.length) / newSize,
-                      ),
-                    ),
                   }));
                 }}
               >
@@ -622,7 +534,7 @@ function Home() {
                 ).map(unit => (
                   <Marker
                     key={`unit-${unit.id}`}
-                    position={unit.coordinates}
+                    position={[unit.coordinates[1], unit.coordinates[0]]}
                     icon={unitIcon}
                     eventHandlers={{
                       click: () => handleMarkerClick(unit),
@@ -779,6 +691,16 @@ function Home() {
                 <div className="property-description">
                   <strong>Description:</strong> {selectedProperty.description}
                 </div>
+                {selectedProperty.amenities && selectedProperty.amenities.length > 0 && (
+                  <div className="property-amenities">
+                    <strong>Amenities:</strong>
+                    <ul>
+                      {selectedProperty.amenities.map((amenity, index) => (
+                        <li key={index}>{amenity}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
               <div className="property-details-actions">
                 <button className="action-button contact-button">Contact Owner</button>

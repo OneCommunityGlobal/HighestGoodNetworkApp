@@ -1,62 +1,266 @@
-// data.js
-// API endpoints for listings and biddings
-export const ENDPOINTS = {
-  LB_LISTINGS: '/api/listings',
-  LB_BIDDINGS: '/api/biddings',
+import { ENDPOINTS } from 'utils/URL';
+import httpService from '../../../services/httpService';
+
+const API_BASE_URL = ENDPOINTS.LB_LISTINGS_BASE;
+
+export const FIXED_VILLAGES = [
+  'Earthbag',
+  'Straw Bale',
+  'Recycle Materials',
+  'Cob',
+  'Tree House',
+  'Strawberry',
+  'Sustainable Living',
+  'City Center',
+];
+
+const DEFAULT_IMAGE = 'https://via.placeholder.com/300x200?text=Unit';
+
+/**
+ * Transform API listing to match the frontend data format
+ * @param {Object} apiListing - Listing data from the API
+ * @returns {Object} Transformed listing object
+ */
+export const transformApiListing = apiListing => {
+  return {
+    id: apiListing._id,
+    title: apiListing.title,
+    village: apiListing.village || 'Unknown Village',
+    price: apiListing.price || 0,
+    perUnit: apiListing.perUnit || 'day',
+    images: apiListing.images && apiListing.images.length ? apiListing.images : [DEFAULT_IMAGE],
+    availableFrom: apiListing.availableFrom ? new Date(apiListing.availableFrom) : new Date(),
+    availableTo: apiListing.availableTo
+      ? new Date(apiListing.availableTo)
+      : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+    coordinates: apiListing.coordinates || [37.7749, -122.4194],
+    description:
+      apiListing.description ||
+      `This is a ${apiListing.village || 'Unknown'} style unit available for rent.`,
+    amenities: apiListing.amenities || [],
+    createdBy: apiListing.createdBy?._id,
+    updatedBy: apiListing.updatedBy?._id,
+    status: apiListing.status || 'draft',
+  };
 };
 
-// Village locations (these would be fetched from a backend API in a real implementation)
-export const VILLAGE_LOCATIONS = {
-  Earthbag: [37.7749, -122.4194],
-  'Straw Bale': [37.7755, -122.418],
-  'Recycle Materials': [37.776, -122.417],
-  Cob: [37.777, -122.416],
-  'Tree House': [37.778, -122.415],
-  Strawberry: [37.779, -122.414],
-  'Sustainable Living': [37.78, -122.413],
-  'City Center': [37.781, -122.412],
-  // Adding many more villages to simulate a large dataset
-  ...Array.from({ length: 92 }, (_, i) => {
-    const villageNum = i + 9; // Start at 9 since we already have 8 villages defined above
-    return [
-      `Village ${villageNum}`,
-      [37.7749 + (Math.random() - 0.5) * 0.02, -122.4194 + (Math.random() - 0.5) * 0.02],
-    ];
-  }).reduce((obj, [key, value]) => {
-    obj[key] = value;
-    return obj;
-  }, {}),
+const ensureAuthentication = () => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    httpService.setjwt(token);
+  }
 };
 
-// Mock data generator - would be replaced by API calls in production
-export const generateSampleData = () => {
-  const villages = Object.keys(VILLAGE_LOCATIONS);
-  return Array.from({ length: 40 }, (_, idx) => {
-    const village = villages[idx % villages.length];
-    // Add small random offset to coordinates so units in the same village appear nearby but not on top of each other
-    const baseCoords = VILLAGE_LOCATIONS[village];
-    const randomLat = (Math.random() - 0.5) * 0.005; // Random offset ±0.0025 degrees (about 250-300 meters)
-    const randomLng = (Math.random() - 0.5) * 0.005;
+/**
+ * Fetch all available villages from the backend
+ * @returns {Promise<Array>} Array of village names
+ */
+export const fetchVillages = async () => {
+  try {
+    ensureAuthentication();
+
+    const response = await httpService.get(`${API_BASE_URL}/villages`);
+
+    const apiVillages = response.data.data || [];
+
+    const allVillages = [...new Set([...FIXED_VILLAGES, ...apiVillages])];
+
+    return allVillages.sort();
+  } catch (error) {
+    console.error('Error fetching villages:', error);
+
+    if (error.response && error.response.status === 401) {
+      redirectToLoginIfNeeded();
+    }
+
+    return [...FIXED_VILLAGES];
+  }
+};
+
+/**
+ * Redirect to login page if authentication error occurs
+ */
+const redirectToLoginIfNeeded = () => {
+  const currentPath = window.location.pathname;
+  if (!currentPath.includes('login')) {
+    console.log('Authentication error, redirecting to login');
+    // Uncomment to actually redirect
+    // window.location.href = '/login?redirect=' + encodeURIComponent(currentPath);
+  }
+};
+
+/**
+ * Fetch listings with optional filters
+ * @param {number} page - Page number (1-based)
+ * @param {number} size - Page size
+ * @param {Object} filters - Optional filters
+ * @returns {Promise<Object>} Listings data with pagination info
+ */
+export const fetchListings = async (page = 1, size = 12, filters = {}) => {
+  try {
+    ensureAuthentication();
+
+    const params = new URLSearchParams({
+      page,
+      size,
+    });
+
+    if (filters.village) params.append('village', filters.village);
+    if (filters.availableFrom) params.append('availableFrom', filters.availableFrom);
+    if (filters.availableTo) params.append('availableTo', filters.availableTo);
+
+    const response = await httpService.get(`${API_BASE_URL}/listings?${params.toString()}`);
+
+    const responseData = response.data;
+    const items = responseData.data?.items || responseData.items || [];
+    const pagination = responseData.data?.pagination ||
+      responseData.pagination || {
+        total: items.length,
+        totalPages: Math.ceil(items.length / size),
+        currentPage: page,
+        pageSize: size,
+      };
+
+    const transformedItems = items.map(transformApiListing);
 
     return {
-      id: idx + 1,
-      title: `Unit ${idx + 1}`,
-      village,
-      price: 20 + (idx % 10) * 5,
-      perUnit: 'day',
-      images: ['https://via.placeholder.com/300x200?text=Unit'],
-      availableFrom: new Date(2025, 3, 1),
-      availableTo: new Date(2025, 5, 30),
-      coordinates: [baseCoords[0] + randomLat, baseCoords[1] + randomLng],
-      description: `This is a ${village} style unit available for rent. Located in a beautiful area with amazing views and access to community amenities.`,
+      items: transformedItems,
+      pagination,
     };
-  });
+  } catch (error) {
+    console.error('Error fetching listings:', error);
+
+    if (error.response && error.response.status === 401) {
+      redirectToLoginIfNeeded();
+    }
+
+    return {
+      items: [],
+      pagination: {
+        total: 0,
+        totalPages: 0,
+        currentPage: page,
+        pageSize: size,
+      },
+    };
+  }
 };
 
-// Generate mock data for listings and biddings
-export const mockListings = generateSampleData();
-export const mockBiddings = mockListings.slice(10, 30).map((d, i) => ({
-  ...d,
-  id: 1000 + i,
-  price: d.price * 0.8, // Biddings at 80% of listing price
-}));
+/**
+ * Fetch biddings with optional filters
+ * @param {number} page - Page number (1-based)
+ * @param {number} size - Page size
+ * @param {Object} filters - Optional filters
+ * @returns {Promise<Object>} Biddings data with pagination info
+ */
+export const fetchBiddings = async (page = 1, size = 12, filters = {}) => {
+  try {
+    ensureAuthentication();
+
+    const params = new URLSearchParams({
+      page,
+      size,
+    });
+
+    if (filters.village) params.append('village', filters.village);
+    if (filters.availableFrom) params.append('availableFrom', filters.availableFrom);
+    if (filters.availableTo) params.append('availableTo', filters.availableTo);
+
+    const response = await httpService.get(`${API_BASE_URL}/biddings?${params.toString()}`);
+
+    const responseData = response.data;
+    const items = responseData.data?.items || responseData.items || [];
+    const pagination = responseData.data?.pagination ||
+      responseData.pagination || {
+        total: items.length,
+        totalPages: Math.ceil(items.length / size),
+        currentPage: page,
+        pageSize: size,
+      };
+
+    const transformedItems = items.map(item => {
+      const transformedItem = transformApiListing(item);
+      return {
+        ...transformedItem,
+        isBidding: true,
+      };
+    });
+
+    return {
+      items: transformedItems,
+      pagination,
+    };
+  } catch (error) {
+    console.error('Error fetching biddings:', error);
+
+    if (error.response && error.response.status === 401) {
+      redirectToLoginIfNeeded();
+    }
+
+    return {
+      items: [],
+      pagination: {
+        total: 0,
+        totalPages: 0,
+        currentPage: page,
+        pageSize: size,
+      },
+    };
+  }
+};
+
+/**
+ * Create a new listing
+ * @param {Object} listingData - Listing data
+ * @param {File[]} images - Image files to upload
+ * @returns {Promise<Object>} Created listing data
+ */
+export const createListing = async (listingData, images) => {
+  try {
+    ensureAuthentication();
+
+    const formData = new FormData();
+
+    Object.keys(listingData).forEach(key => {
+      if (key === 'coordinates' && Array.isArray(listingData[key])) {
+        formData.append(key, JSON.stringify(listingData[key]));
+      } else if (key === 'amenities' && Array.isArray(listingData[key])) {
+        listingData[key].forEach(amenity => {
+          formData.append('amenities', amenity);
+        });
+      } else {
+        formData.append(key, listingData[key]);
+      }
+    });
+
+    if (images && images.length) {
+      images.forEach(image => {
+        formData.append('images', image);
+      });
+    }
+
+    const response = await httpService.post(`${API_BASE_URL}/listings`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    return transformApiListing(response.data.data);
+  } catch (error) {
+    console.error('Error creating listing:', error);
+
+    if (error.response && error.response.status === 401) {
+      redirectToLoginIfNeeded();
+    }
+
+    throw error;
+  }
+};
+
+export default {
+  fetchListings,
+  fetchBiddings,
+  createListing,
+  fetchVillages,
+  FIXED_VILLAGES,
+};
