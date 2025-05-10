@@ -3,6 +3,9 @@ const APIEndpoint =
 
 export const ENDPOINTS = {
   APIEndpoint: () => APIEndpoint,
+  ACTUAL_COST_BREAKDOWN: projectId =>
+    `${APIEndpoint}/projects/${projectId}/actual-cost-breakdown`,
+  GET_ALL_EXPENDITURES: `${APIEndpoint}/expenditures`,
   USER_PROFILE: userId => `${APIEndpoint}/userprofile/${userId}`,
   USER_PROFILE_PROPERTY: userId => `${APIEndpoint}/userprofile/${userId}/property`,
   USER_PROFILES: `${APIEndpoint}/userprofile/`,
