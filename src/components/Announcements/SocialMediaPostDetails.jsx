@@ -42,7 +42,7 @@ function SocialMediaPostDetails() {
   }, [postId]);
 
   // Function to handle new image upload and convert to Base64
-  const handleImageUpload = e => {
+  const handleImgeUpload = e => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
@@ -114,7 +114,7 @@ function SocialMediaPostDetails() {
       {imgeBase64 ? (
         <img
           src={`${imgeBase64}`}
-          alt="Post Image"
+          alt=""
           style={{
             width: '80%',
             height: '70%',
@@ -127,7 +127,7 @@ function SocialMediaPostDetails() {
         <p style={{ color: 'gray' }}>No Image Uploaded</p>
       )}
 
-      <Input type="file" accept="image/*" onChange={handleImageUpload} />
+      <Input type="file" accept="image/*" onChange={handleImgeUpload} />
 
       <Button color="primary" className="mt-3" onClick={handleUpdatePost}>
         Save Changes
