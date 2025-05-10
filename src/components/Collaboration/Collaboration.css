@@ -1,9 +1,11 @@
-.container,
-.job-landing .header img {
-  width: 60%;
-  max-width: 1000px;
+.job-header {
   display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  color: #fff;
 }
+
 .headings,
 .job-ad {
   text-align: center;
@@ -16,7 +18,13 @@
   background-color: #fff;
 }
 
-.job-landing .header img {
+.job-queries {
+  margin: 20px 0;
+  display: flex;
+  gap: 10px;
+}
+
+.job-landing .job-header img {
   height: auto;
   margin: 0 auto;
   flex-direction: column;
@@ -32,6 +40,21 @@
   flex-flow: row nowrap;
   box-sizing: border-box;
   flex-wrap: wrap;
+}
+
+.query-option{
+  display: flex !important;
+  align-items: center;
+  gap: 5px;
+  align-content: center;
+  justify-content: center;
+  text-align: center;
+}
+
+
+.cross-button {
+  cursor: pointer;
+  display: flex;
 }
 
 .navbar-left input,
@@ -102,11 +125,11 @@ select {
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 .pagination {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
   margin-top: 20px;
   margin-bottom: 20px;
-}
-.pagination button {
-  margin: 0 5px;
 }
 .pagination button:disabled {
   background-color: #ccc;
@@ -132,18 +155,6 @@ select {
   border-radius: 2px;
   cursor: pointer;
   font-size: 14px;
-}
-
-.search-form button {
-  background-color: #007bff;
-  color: white;
-  margin-right: 15px;
-  margin-top: -7px;
-  position: relative;
-}
-
-.search-form button:hover {
-  background-color: #0056b3;
 }
 
 .navbar {
@@ -173,7 +184,6 @@ select {
   border: none;
   border-radius: 2px;
   cursor: pointer;
-  top: -3px;
   position: relative;
 }
 
@@ -182,7 +192,6 @@ select {
   font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 5px;
-  margin-top: -14px;
 }
 
 @media screen and (max-width: 480px) {
