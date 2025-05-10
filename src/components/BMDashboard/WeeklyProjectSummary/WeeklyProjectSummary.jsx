@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
 import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
+import SupplierPerformanceGraph from './SupplierPerformanceGraph';
 
 const projectStatusButtons = [
   {
@@ -290,6 +291,7 @@ export default function WeeklyProjectSummary() {
             </div>
           ))}
         </div>
+        <SupplierPerformanceGraph />
       </div>
     </div>
   );
