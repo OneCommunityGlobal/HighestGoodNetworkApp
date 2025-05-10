@@ -18,7 +18,7 @@ if (process.env.NODE_ENV === 'test') {
     document.body.appendChild(el);
     if (typeof onClose === 'function') onClose();
   };
-  toast.error = (message) => {
+  toast.error = message => {
     const el = document.createElement('div');
     el.textContent = message;
     document.body.appendChild(el);
