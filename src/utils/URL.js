@@ -41,6 +41,9 @@ export const ENDPOINTS = {
   BADGE_COUNT: userId => `${APIEndpoint}/badge/badgecount/${userId}`,
   BADGE_COUNT_RESET: userId => `${APIEndpoint}/badge/badgecount/reset/${userId}`,
   PROJECT_MEMBER: projectId => `${APIEndpoint}/project/${projectId}/users`,
+  PROJECT_MEMBER_ACTIVE: projectId =>
+    `${APIEndpoint}/project/${projectId}/users?fields=_id,activeUserCount`,
+  PROJECTS_WITH_ACTIVE_USERS: `${APIEndpoint}/projects/with-active-users`,
   UPDATE_PASSWORD: userId => `${APIEndpoint}/userprofile/${userId}/updatePassword`,
   FORCE_PASSWORD: `${APIEndpoint}/forcepassword`,
   LEADER_BOARD: userId => `${APIEndpoint}/dashboard/leaderboard/${userId}`,
@@ -91,6 +94,9 @@ export const ENDPOINTS = {
     `${APIEndpoint}/userProfile/authorizeUser/weeeklySummaries`,
   TOTAL_ORG_SUMMARY: (startDate, endDate, comparisonStartDate, comparisonEndDate) =>
     `${APIEndpoint}/reports/volunteerstats?startDate=${startDate}&endDate=${endDate}&comparisonStartDate=${comparisonStartDate}&comparisonEndDate=${comparisonEndDate}`,
+  VOLUNTEER_TRENDS: (timeFrame, offset, customStartDate, customEndDate ) => 
+    `${APIEndpoint}/reports/volunteertrends?timeFrame=${timeFrame}&offset=${offset}${customStartDate ? `&customStartDate=${customStartDate}`: ''}${customEndDate ? `&customEndDate=${customEndDate}`: ''}`
+  ,
   HOURS_TOTAL_ORG_SUMMARY: (startDate, endDate) =>
     `${APIEndpoint}/reports/overviewsummaries/taskandprojectstats?startDate=${startDate}&endDate=${endDate}`,
   VOLUNTEER_ROLES_TEAM_STATS: (endDate, activeMembersMinimum) =>
@@ -185,6 +191,17 @@ export const ENDPOINTS = {
   SET_USER_FOLLOWUP: (userId, taskId) => `${APIEndpoint}/followup/${userId}/${taskId}`,
   GET_PROJECT_BY_PERSON: searchName => `${APIEndpoint}/userProfile/projects/${searchName}`,
 
+  FAQS: `${APIEndpoint}/faqs`,
+  FAQ_BY_ID: faqId => `${APIEndpoint}/faqs/${faqId}`,
+  SEARCH_FAQS: searchQuery => `${APIEndpoint}/faqs/search?q=${searchQuery}`,
+  LOG_UNANSWERED_QUESTION: `${APIEndpoint}/faqs/log-unanswered`,
+  ADD_FAQ: `${APIEndpoint}/faqs`,
+  EDIT_FAQ: faqId => `${APIEndpoint}/faqs/${faqId}`,
+  DELETE_FAQ: faqId => `${APIEndpoint}/faqs/${faqId}`,
+  FAQ_HISTORY: faqId => `${APIEndpoint}/faqs/${faqId}/history`,
+  UNANSWERED_FAQS: `${APIEndpoint}/faqs/unanswered`,
+  DELETE_UNANSWERED_FAQ: faqId => `${APIEndpoint}/faqs/unanswered/${faqId}`,
+
   // bm dashboard endpoints
   BM_LOGIN: `${APIEndpoint}/bm/login`,
   BM_MATERIAL_TYPES: `${APIEndpoint}/bm/invtypes/materials`,
@@ -221,6 +238,7 @@ export const ENDPOINTS = {
   BM_EQUIPMENT_BY_ID: singleEquipmentId => `${APIEndpoint}/bm/equipment/${singleEquipmentId}`,
   BM_EQUIPMENTS: `${APIEndpoint}/bm/equipments`,
   BM_INVTYPE_TYPE: type => `${APIEndpoint}/bm/invtypes/${type}`,
+  BM_ISSUE_FORM: `${APIEndpoint}/bm/issue/add`,
 
   BM_TAGS: `${APIEndpoint}/bm/tags`,
   BM_TAG_ADD: `${APIEndpoint}/bm/tags`,
