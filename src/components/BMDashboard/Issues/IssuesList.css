@@ -55,7 +55,7 @@
     border-radius: 8px;
     box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
     text-align: center !important;
-    left: 10% !important;
+    left: 0 !important;
   }
   
   .dropdown-menu-custom .dropdown-item {
