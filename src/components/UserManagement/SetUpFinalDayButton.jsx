@@ -7,6 +7,7 @@ import { boxStyle, boxStyleDark } from '../../styles';
 import SetUpFinalDayPopUp from './SetUpFinalDayPopUp';
 import { SET_FINAL_DAY, CANCEL } from '../../languages/en/ui';
 import { FinalDay } from '../../utils/enums';
+import moment from 'moment';
 
 function SetUpFinalDayButton(props) {
   const { darkMode, userProfile, onFinalDaySave } = props;
@@ -39,6 +40,12 @@ function SetUpFinalDayButton(props) {
   };
 
   const handleSaveFinalDay = async (finalDayDate) => {
+    console.log(`[SetUpFinalDay] Selected date: ${finalDayDate}`);
+  console.log(`[SetUpFinalDay] Selected date as UTC: ${moment.utc(finalDayDate).format('YYYY-MM-DD')}`);
+  console.log(`[SetUpFinalDay] Selected date as Pacific: ${moment(finalDayDate).tz('America/Los_Angeles').format('YYYY-MM-DD')}`);
+
+
+
     try {
       await updateUserFinalDayStatusIsSet(
         userProfile,

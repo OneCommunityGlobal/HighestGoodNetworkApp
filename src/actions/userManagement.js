@@ -257,11 +257,14 @@ export const updateUserFinalDayStatus = (user, status, finalDayDate) => {
 export const updateUserFinalDayStatusIsSet = (user, status, finalDayDate, isSet) => {
   return async dispatch => {
     try {
+      console.log(`[updateUserFinalDayStatusIsSet] Received finalDayDate: ${finalDayDate}`);
+      console.log(`[updateUserFinalDayStatusIsSet] Formatted for UI/email: ${moment.utc(finalDayDate).format('YYYY-MM-DD')}`);
+      console.log(`[updateUserFinalDayStatusIsSet] Formatted for deactivation: ${moment.utc(finalDayDate).add(1, 'days').format('YYYY-MM-DD')}`);
       // Prepare patch data
       const patchData = {
         status,
         endDate: finalDayDate
-          ? moment(finalDayDate).format('YYYY-MM-DD')
+          ? moment.utc(finalDayDate).format('YYYY-MM-DD')
           : undefined,
         isSet,
       };

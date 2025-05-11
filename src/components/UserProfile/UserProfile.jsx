@@ -734,7 +734,7 @@ function UserProfile(props) {
 
     if (!isActive) {
       endDate = await dispatch(
-        getTimeEndDateEntriesByPeriod(userProfile._id, userProfile.createdDate, userProfile.toDate),
+        getTimeEndDateEntriesByPeriod(userProfile._id, userProfile.createdDate, moment().format('YYYY-MM-DDTHH:mm:ss')),
       );
       if (endDate == 'N/A') {
         endDate = userProfile.createdDate;
