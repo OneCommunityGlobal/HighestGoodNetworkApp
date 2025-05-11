@@ -5,6 +5,26 @@ import './PeopleTableDetails.css';
 import NewModal from '../common/NewModal';
 import TableFilter from './TableFilter/TableFilter';
 
+function TaskModalTrigger({ value, windowWidth, renderMobileFilteredTask, renderFilteredTask }) {
+  return (
+    <>
+      {windowWidth <= 1020 ? renderMobileFilteredTask(value) : renderFilteredTask(value)}
+    </>
+  );
+}
+
+function TaskModalContent({ whyInfo, intentInfo, endstateInfo }) {
+  return (
+    <>
+      <div>Why This Task is important</div>
+      <textarea className="rectangle" type="text" value={whyInfo} readOnly />
+      <div>Design Intent</div>
+      <textarea className="rectangle" type="text" value={intentInfo} readOnly />
+      <div>End State</div>
+      <textarea className="rectangle" type="text" value={endstateInfo} readOnly />
+    </>
+  );
+}
 
 function PeopleTableDetails(props) {
   const [name, setName] = useState('');
@@ -324,9 +344,9 @@ function PeopleTableDetails(props) {
         {filteredTasks.map(value => (
 
           // eslint-disable-next-line react/no-unstable-nested-components
-          <NewModal 
+          <NewModal
             key={value._id}
-            header="Task info" 
+            header="Task info"
             trigger={
               <TaskModalTrigger
                 value={value}
