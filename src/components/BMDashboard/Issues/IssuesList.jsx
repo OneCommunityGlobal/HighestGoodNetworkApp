@@ -20,7 +20,13 @@ export default function IssueList() {
   const [dropdownOpenId, setDropdownOpenId] = useState(null);
   const closeDropdown = () => setDropdownOpenId(null);
 
-  const handleTagClick = tag => setTagFilter(tag);
+  const handleTagClick = tag => {
+    if (tagFilter === tag) {
+      setTagFilter(null);
+      return;
+    }
+    setTagFilter(tag);
+  };
   const dispatch = useDispatch();
 
   const { issues: rawIssues } = useSelector(state => state.bmIssues);
@@ -211,8 +217,8 @@ export default function IssueList() {
           <tr>
             <th>Issue Name</th>
             <th>Tag</th>
-            <th>Open Since</th>
-            <th>Cost</th>
+            <th>Open Since(days)</th>
+            <th>Cost(usd)</th>
             <th>Person</th>
             <th>Action</th>
           </tr>
@@ -257,7 +263,7 @@ export default function IssueList() {
                   <Dropdown.Toggle variant="outline-secondary" size="sm">
                     Options
                   </Dropdown.Toggle>
-                  <Dropdown.Menu className="dropdown-menu-custom" popper={false}>
+                  <Dropdown.Menu className="dropdown-menu-custom">
                     <Button
                       variant="link"
                       className="dropdown-item"
