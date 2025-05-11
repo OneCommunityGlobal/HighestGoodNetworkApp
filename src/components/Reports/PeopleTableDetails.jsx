@@ -325,15 +325,22 @@ function PeopleTableDetails(props) {
 
           // eslint-disable-next-line react/no-unstable-nested-components
           <NewModal 
-          key = {value._id}
-          header="Task info" 
-          trigger={() => <> {(windowWidth <= 1020) ? renderMobileFilteredTask(value) : renderFilteredTask(value)}</>}>
-            <div>Why This Task is important</div>
-            <textarea className="rectangle" type="text" value={value.whyInfo} />
-            <div>Design Intent</div>
-            <textarea className="rectangle" type="text" value={value.intentInfo} />
-            <div>End State</div>
-            <textarea className="rectangle" type="text" value={value.endstateInfo} />
+            key={value._id}
+            header="Task info" 
+            trigger={
+              <TaskModalTrigger
+                value={value}
+                windowWidth={windowWidth}
+                renderMobileFilteredTask={renderMobileFilteredTask}
+                renderFilteredTask={renderFilteredTask}
+              />
+            }
+          >
+            <TaskModalContent
+              whyInfo={value.whyInfo}
+              intentInfo={value.intentInfo}
+              endstateInfo={value.endstateInfo}
+            />
           </NewModal>
         ))}
       </div>
