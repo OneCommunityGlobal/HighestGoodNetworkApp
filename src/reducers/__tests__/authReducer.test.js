@@ -1,6 +1,6 @@
+import { isEmpty } from 'lodash';
 import { authReducer } from '../authReducer';
 import { SET_CURRENT_USER, SET_HEADER_DATA } from '../../constants/auth';
-import { isEmpty } from 'lodash';
 
 describe('authReducer', () => {
   const initialState = {
