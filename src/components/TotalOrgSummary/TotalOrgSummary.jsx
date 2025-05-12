@@ -120,6 +120,12 @@ function TotalOrgSummary(props) {
   const comparisonStartDate = '2025-01-16';
   const comparisonEndDate = '2025-01-26';
   const [isLoading, setIsLoading] = useState(true);
+  const [taskProjectHours, setTaskProjectHours] = useState({
+    taskHours: 0,
+    projectHours: 0,
+    lastTaskHours: 0,
+    lastProjectHours: 0,
+  });
 
   const dispatch = useDispatch();
 
