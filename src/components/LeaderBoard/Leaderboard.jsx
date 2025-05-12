@@ -26,7 +26,7 @@ import {
   viewZeroHouraMembers,
 } from 'utils/leaderboardPermissions';
 import hasPermission from 'utils/permissions';
-import MouseoverTextTotalTimeEditButton from 'components/mouseoverText/MouseoverTextTotalTimeEditButton';
+// import MouseoverTextTotalTimeEditButton from 'components/mouseoverText/MouseoverTextTotalTimeEditButton';
 import { toast } from 'react-toastify';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import moment from 'moment-timezone';
@@ -87,7 +87,7 @@ function LeaderBoard({
   const userId = displayUserId;
   const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
   const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon'); // ??? this permission doesn't exist?
-  const isOwner = ['Owner'].includes(loggedInUser.role);
+  // const isOwner = ['Owner'].includes(loggedInUser.role);
 
   const [mouseoverTextValue, setMouseoverTextValue] = useState(totalTimeMouseoverText);
   const dispatch = useDispatch();
@@ -225,9 +225,9 @@ function LeaderBoard({
     } else renderTeamsList(usersSelectedTeam);
   };
 
-  const handleMouseoverTextUpdate = text => {
-    setMouseoverTextValue(text);
-  };
+  // const handleMouseoverTextUpdate = text => {
+  //   setMouseoverTextValue(text);
+  // };
   useDeepEffect(() => {
     getLeaderboardData(userId);
     getOrgData();
@@ -600,26 +600,44 @@ function LeaderBoard({
                       <div style={{ textAlign: 'left' }}>
                         <span>{isAbbreviatedView ? 'Tot. Time' : 'Total Time'}</span>
                       </div>
-                      {isOwner && (
+                      {/*    {isOwner && (
                         <MouseoverTextTotalTimeEditButton onUpdate={handleMouseoverTextUpdate} />
-                      )}
+                      )} */}
                     </div>
                   </th>
                 </tr>
               </thead>
               <tbody className="my-custome-scrollbar responsive-font-size">
                 <tr className={darkMode ? 'dark-leaderboard-row' : 'light-leaderboard-row'}>
-                  <td aria-label="Placeholder" />
-                  <td className={`leaderboard-totals-container `}>
-                    <span>{stateOrganizationData.name}</span>
-                    {viewZeroHouraMembers(loggedInUser.role) && (
-                      <span className="leaderboard-totals-title">
-                        0 hrs Totals:{' '}
-                        {filteredUsers.filter(user => user.weeklycommittedHours === 0).length}{' '}
-                        Members
-                      </span>
-                    )}
-                  </td>
+                  {isAbbreviatedView ? (
+                    <td colSpan={2}>
+                      <div className="leaderboard-totals-container text-center">
+                        <span>{stateOrganizationData.name}</span>
+                        {viewZeroHouraMembers(loggedInUser.role) && (
+                          <span className="leaderboard-totals-title">
+                            0 hrs Totals:{' '}
+                            {filteredUsers.filter(user => user.weeklycommittedHours === 0).length}{' '}
+                            Members
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                  ) : (
+                    <>
+                      <td aria-label="Placeholder" />
+                      <td className="leaderboard-totals-container">
+                        <span>{stateOrganizationData.name}</span>
+                        {viewZeroHouraMembers(loggedInUser.role) && (
+                          <span className="leaderboard-totals-title">
+                            0 hrs Totals:{' '}
+                            {filteredUsers.filter(user => user.weeklycommittedHours === 0).length}{' '}
+                            Members
+                          </span>
+                        )}
+                      </td>
+                    </>
+                  )}
+
                   <td className="align-middle" aria-label="Description" />
                   <td className="align-middle">
                     <span title="Tangible time">
