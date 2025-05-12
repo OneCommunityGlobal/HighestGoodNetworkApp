@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable new-cap */
 import { connect } from 'react-redux';
 import { useDispatch, useSelector } from 'react-redux';
@@ -456,6 +457,8 @@ function TotalOrgSummary(props) {
 
     fetchVolunteerStats();
   }, [fromDate, toDate, props]);
+
+  const { taskHours, projectHours, lastTaskHours, lastProjectHours } = taskProjectHours;
 
   if (error || isVolunteerFetchingError) {
     return (

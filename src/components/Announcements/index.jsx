@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import './Announcements.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react';
-import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
 
@@ -57,10 +56,7 @@ function Announcements({ title, email: initialEmail }) {
       input.click();
     },
     a11y_advanced_options: true,
-    toolbar:
-      'undo redo | bold italic | blocks fontfamily fontsize | image \
-      alignleft aligncenter alignright | \
-      bullist numlist outdent indent | removeformat | help',
+    toolbar: 'undo redo | bold italic | blocks fontfamily fontsize | image alignleft aligncenter alignright | bullist numlist outdent indent | removeformat | help',
     skin: darkMode ? 'oxide-dark' : 'oxide',
     content_css: darkMode ? 'dark' : 'default',
   };
@@ -195,14 +191,14 @@ function Announcements({ title, email: initialEmail }) {
                     onChange={handleHeaderContentChange}
                     placeholder="Enter header image URL"
                   />
-                  <button onClick={addHeaderToEmailContent}>Add Header</button>
+                  <button type="button" onClick={addHeaderToEmailContent}>Add Header</button>
                 </div>
                 <div className="file-upload">
                   <input type="file" onChange={addImageToEmailContent} />
                 </div>
                 <div className="send-buttons">
-                  <button onClick={handleSendEmails}>Send Emails</button>
-                  <button onClick={handleBroadcastEmails}>Broadcast to All</button>
+                  <button type="button" onClick={handleSendEmails}>Send Emails</button>
+                  <button type="button" onClick={handleBroadcastEmails}>Broadcast to All</button>
                 </div>
               </div>
             </div>
