@@ -119,7 +119,6 @@
     margin-right: 5px;
   }
 }
-<<<<<<< HEAD
 
 .header-margin {
   height: 20px;
@@ -173,13 +172,3 @@
     vertical-align: middle !important;
   }
 }
-=======
-.header-margin{
-  height : 20px;
-  background-color: #1B2A41 ;
-}
-.header-margin-light{
-  height : 20px;
-  background-color: #fff;
-}
->>>>>>> origin/development
