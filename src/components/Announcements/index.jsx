@@ -56,7 +56,8 @@ function Announcements({ title, email: initialEmail }) {
       input.click();
     },
     a11y_advanced_options: true,
-    toolbar: 'undo redo | bold italic | blocks fontfamily fontsize | image alignleft aligncenter alignright | bullist numlist outdent indent | removeformat | help',
+    toolbar:
+      'undo redo | bold italic | blocks fontfamily fontsize | image alignleft aligncenter alignright | bullist numlist outdent indent | removeformat | help',
     skin: darkMode ? 'oxide-dark' : 'oxide',
     content_css: darkMode ? 'dark' : 'default',
   };
@@ -191,14 +192,20 @@ function Announcements({ title, email: initialEmail }) {
                     onChange={handleHeaderContentChange}
                     placeholder="Enter header image URL"
                   />
-                  <button type="button" onClick={addHeaderToEmailContent}>Add Header</button>
+                  <button type="button" onClick={addHeaderToEmailContent}>
+                    Add Header
+                  </button>
                 </div>
                 <div className="file-upload">
                   <input type="file" onChange={addImageToEmailContent} />
                 </div>
                 <div className="send-buttons">
-                  <button type="button" onClick={handleSendEmails}>Send Emails</button>
-                  <button type="button" onClick={handleBroadcastEmails}>Broadcast to All</button>
+                  <button type="button" onClick={handleSendEmails}>
+                    Send Emails
+                  </button>
+                  <button type="button" onClick={handleBroadcastEmails}>
+                    Broadcast to All
+                  </button>
                 </div>
               </div>
             </div>
