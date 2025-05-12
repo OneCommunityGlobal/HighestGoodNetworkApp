@@ -75,6 +75,15 @@
   margin-bottom: 2.5%;
 }
 
+.image-carousel img {
+  width: 100%; 
+  height: auto; 
+  object-fit: cover;
+  max-width: 100%;
+  flex-shrink: 0; 
+}
+
+
 .amenities {
   display: flex;
   justify-content: center;
@@ -96,12 +105,12 @@
   padding-left: 5%;
 }
 
-ol {
+.amenities-list {
   display: flex;
   flex-direction: column;
   list-style-position: inside;
 }
-li {
+.amenities-list li {
   margin: 0;
 }
 

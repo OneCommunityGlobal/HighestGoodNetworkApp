@@ -8,7 +8,7 @@ import { SEARCH, CREATE_NEW_TEAM } from '../../languages/en/ui';
 /**
  * The search panel stateless component for  Teams grid
  */
-export function TeamTablesearchPanel(props) {
+export function TeamTableSearchPanelBase(props) {
   const { darkMode } = props;
   const canPostTeam = props.hasPermission('postTeam');
   const inputRef = useRef(null);
@@ -50,5 +50,4 @@ export function TeamTablesearchPanel(props) {
     </div>
   );
 }
-
-export default connect(null, { hasPermission })(TeamTablesearchPanel);
+export default connect(null, { hasPermission })(TeamTableSearchPanelBase);

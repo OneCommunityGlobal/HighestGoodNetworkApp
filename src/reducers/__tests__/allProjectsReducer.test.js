@@ -39,7 +39,10 @@ describe('allProjectsReducer', () => {
   });
 
   it('should handle FETCH_PROJECTS_SUCCESS', () => {
-    const projects = [{ _id: 1, name: 'Project 1' }, { _id: 2, name: 'Project 2' }];
+    const projects = [
+      { _id: 1, name: 'Project 1' },
+      { _id: 2, name: 'Project 2' },
+    ];
     const action = {
       type: types.FETCH_PROJECTS_SUCCESS,
       projects,
@@ -105,10 +108,7 @@ describe('allProjectsReducer', () => {
     };
     const expectedState = {
       ...initialStateWithProjects,
-      projects: [
-        { _id: 1, name: 'Project 1' },
-        updatedProject,
-      ],
+      projects: [{ _id: 1, name: 'Project 1' }, updatedProject],
       status: 200,
     };
     const newState = allProjectsReducer(initialStateWithProjects, action);

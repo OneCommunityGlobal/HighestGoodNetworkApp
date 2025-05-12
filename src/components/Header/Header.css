@@ -4,31 +4,47 @@
 }
 
 .close-button {
-  height : 2vh;
-  width : 99%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 12px;
 }
 
 .card-content {
-  padding: 5px; /* Add padding around the card content */
+  padding: 5px;
   padding-left: 40px;
-  padding-right: 40px;
+  padding-right: 30px;
   white-space: pre-line;
   color: white;
   font-size: medium;
 }
 
+.headerCard {
+  margin-left: 35px;
+  margin-right: 50px;
+}
+
+.card-wrapper {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
 .navbar {
-  /* z-index: 100; */
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
   white-space: nowrap;
-  /* margin-bottom: 20px; */
 }
 
 .timer-message-section {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  width: 100%;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
   gap: 1rem;
+  white-space: nowrap;
 }
 
 .redBackGroupHeader {
@@ -54,7 +70,10 @@
 
 .nav-links {
   display: flex;
+  flex-direction: row;
   align-items: center;
+  flex-wrap: nowrap;
+  gap: 1rem;
 }
 
 .dropdown-item-hover:hover {
@@ -90,9 +109,9 @@
 }
 
 @media screen and (min-width: 1400px) and (max-width: 1700px) {
-  /* .owner-message {
+  .owner-message {
     display: none;
-  } */
+  }
 }
 
 @media screen and (max-width: 769px) {

@@ -1,17 +1,17 @@
 // @version 1.0.0
 // Unit test for DeleteModal component
-
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
-import { authMock, timeEntryMock, userProfileMock } from '../../../__tests__/mockStates';
-import { renderWithProvider } from '../../../__tests__/utils';
-import DeleteModal from '../DeleteModal';
 import { deleteTimeEntry } from 'actions/timeEntries';
 import { updateUserProfile } from 'actions/userProfile';
 import axios from 'axios';
+import { authMock, timeEntryMock, userProfileMock } from '../../../__tests__/mockStates';
+import { renderWithProvider } from '../../../__tests__/utils';
+import DeleteModal from '../DeleteModal';
 
 // Mock axios HTTP requests
 jest.mock('axios');

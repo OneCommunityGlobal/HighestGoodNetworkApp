@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
@@ -13,6 +14,7 @@ const store = mockStore(initialState);
 
 describe('ModalExample Component', () => {
   it('renders when isOpen is true', () => {
+    // eslint-disable-next-line no-unused-vars
     const { getByText } = render(
       <Provider store={store}>
         <ModalExample isOpen modalTitle="Test Modal" />

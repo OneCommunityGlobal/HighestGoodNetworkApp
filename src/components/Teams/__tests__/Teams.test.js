@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { screen, fireEvent } from '@testing-library/react';
 import Team from 'components/Teams/Team';
@@ -35,7 +36,19 @@ beforeEach(() => {
 
 describe('Team component', () => {
   it('should call onEditTeam function', () => {
-    renderWithProvider(<Team {...teamProps} />, { store });
+    renderWithProvider(
+      <Team
+        name={teamProps.name}
+        teamId={teamProps.teamId}
+        active={teamProps.active}
+        teamCode={teamProps.teamCode}
+        onEditTeam={teamProps.onEditTeam}
+        onDeleteClick={teamProps.onDeleteClick}
+        onMembersClick={teamProps.onMembersClick}
+        onStatusClick={teamProps.onStatusClick}
+      />,
+      { store },
+    );
 
     const editButton = screen.getByText('Edit');
     fireEvent.click(editButton);
@@ -44,7 +57,19 @@ describe('Team component', () => {
   });
 
   it('should call onDeleteClick function', () => {
-    renderWithProvider(<Team {...teamProps} />, { store });
+    renderWithProvider(
+      <Team
+        name={teamProps.name}
+        teamId={teamProps.teamId}
+        active={teamProps.active}
+        teamCode={teamProps.teamCode}
+        onEditTeam={teamProps.onEditTeam}
+        onDeleteClick={teamProps.onDeleteClick}
+        onMembersClick={teamProps.onMembersClick}
+        onStatusClick={teamProps.onStatusClick}
+      />,
+      { store },
+    );
 
     const deleteButton = screen.getByText('Delete');
     fireEvent.click(deleteButton);
@@ -53,7 +78,19 @@ describe('Team component', () => {
   });
 
   it('should call onMembersClick function', () => {
-    renderWithProvider(<Team {...teamProps} />, { store });
+    renderWithProvider(
+      <Team
+        name={teamProps.name}
+        teamId={teamProps.teamId}
+        active={teamProps.active}
+        teamCode={teamProps.teamCode}
+        onEditTeam={teamProps.onEditTeam}
+        onDeleteClick={teamProps.onDeleteClick}
+        onMembersClick={teamProps.onMembersClick}
+        onStatusClick={teamProps.onStatusClick}
+      />,
+      { store },
+    );
 
     const memberButton = screen.getByTestId('members-btn');
     fireEvent.click(memberButton);
@@ -62,7 +99,19 @@ describe('Team component', () => {
   });
 
   it('should call onStatusClick function', () => {
-    renderWithProvider(<Team {...teamProps} />, { store });
+    renderWithProvider(
+      <Team
+        name={teamProps.name}
+        teamId={teamProps.teamId}
+        active={teamProps.active}
+        teamCode={teamProps.teamCode}
+        onEditTeam={teamProps.onEditTeam}
+        onDeleteClick={teamProps.onDeleteClick}
+        onMembersClick={teamProps.onMembersClick}
+        onStatusClick={teamProps.onStatusClick}
+      />,
+      { store },
+    );
 
     const activeMarker = screen.getByTestId('active-marker');
     fireEvent.click(activeMarker);

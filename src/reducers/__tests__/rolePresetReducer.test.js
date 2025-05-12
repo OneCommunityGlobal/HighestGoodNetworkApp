@@ -10,13 +10,19 @@ describe('rolePresetReducer', () => {
   it('should handle RECEIVE_PRESETS', () => {
     const action = {
       type: types.RECEIVE_PRESETS,
-      presets: [{ _id: 1, presetName: 'Admin' }, { _id: 2, presetName: 'User' }],
+      presets: [
+        { _id: 1, presetName: 'Admin' },
+        { _id: 2, presetName: 'User' },
+      ],
     };
 
     const newState = rolePresetReducer(initialState, action);
 
     expect(newState).toEqual({
-      presets: [{ _id: 1, presetName: 'Admin' }, { _id: 2, presetName: 'User' }],
+      presets: [
+        { _id: 1, presetName: 'Admin' },
+        { _id: 2, presetName: 'User' },
+      ],
     });
   });
 
@@ -29,11 +35,14 @@ describe('rolePresetReducer', () => {
 
     const newState = rolePresetReducer(
       { ...initialState, presets: [{ _id: 1, presetName: 'Admin' }] },
-      action
+      action,
     );
 
     expect(newState).toEqual({
-      presets: [{ _id: 1, presetName: 'Admin' }, { _id: 3, presetName: 'Editor' }],
+      presets: [
+        { _id: 1, presetName: 'Admin' },
+        { _id: 3, presetName: 'Editor' },
+      ],
     });
   });
 
@@ -45,13 +54,19 @@ describe('rolePresetReducer', () => {
     };
 
     const initialStateWithPresets = {
-      presets: [{ _id: 1, presetName: 'Admin' }, { _id: 2, presetName: 'User' }],
+      presets: [
+        { _id: 1, presetName: 'Admin' },
+        { _id: 2, presetName: 'User' },
+      ],
     };
 
     const newState = rolePresetReducer(initialStateWithPresets, action);
 
     expect(newState).toEqual({
-      presets: [{ _id: 1, presetName: 'Admin' }, { _id: 2, presetName: 'Super User' }],
+      presets: [
+        { _id: 1, presetName: 'Admin' },
+        { _id: 2, presetName: 'Super User' },
+      ],
     });
   });
 
@@ -63,7 +78,10 @@ describe('rolePresetReducer', () => {
     };
 
     const initialStateWithPresets = {
-      presets: [{ _id: 1, presetName: 'Admin' }, { _id: 2, presetName: 'User' }],
+      presets: [
+        { _id: 1, presetName: 'Admin' },
+        { _id: 2, presetName: 'User' },
+      ],
     };
 
     const newState = rolePresetReducer(initialStateWithPresets, action);

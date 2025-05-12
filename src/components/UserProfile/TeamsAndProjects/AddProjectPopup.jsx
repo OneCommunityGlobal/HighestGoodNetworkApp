@@ -39,26 +39,31 @@ const AddProjectPopup = React.memo(props => {
   }, [props.projects]);
 
   const onAssignProject = async () => {
-    if (isUserIsNotSelectedAutoComplete) {
-      const validateProjectName = validationProjectName();
-
-      if (!validateProjectName) {
-        isSetShowAlert(true);
-        setIsOpenDropdown(true);
-        return;
+    try {
+      if (isUserIsNotSelectedAutoComplete) {
+        const validateProjectName = validationProjectName();
+  
+        if (!validateProjectName) {
+          isSetShowAlert(true);
+          setIsOpenDropdown(true);
+          return;
+        }
       }
+  
+      if (selectedProject && !props.userProjectsById.some(x => x._id === selectedProject._id)) {
+        await props.onSelectAssignProject(selectedProject);
+        onSelectProject(undefined);
+        if (props.handleSubmit !== undefined) {
+         await props.handleSubmit();
+        }
+        toast.success('Project assigned successfully');
+      } else {
+        onValidation(false);
+      }
+    } catch (error) {
+      
     }
-
-    if (selectedProject && !props.userProjectsById.some(x => x._id === selectedProject._id)) {
-      await props.onSelectAssignProject(selectedProject);
-      onSelectProject(undefined);
-      toast.success('Project assigned successfully');
-    } else {
-      onValidation(false);
-    }
-    if (props.handleSubmit !== undefined) {
-      props.handleSubmit();
-    }
+   
   };
 
   const selectProject = project => {

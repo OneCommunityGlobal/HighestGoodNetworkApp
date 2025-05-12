@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { shallow } from 'enzyme';
 import mockAdminState from '../../../__tests__/mockAdminState';
@@ -14,6 +15,7 @@ const mockUser = {
   profilePic: 'test-pic.jpg',
 };
 
+// eslint-disable-next-line no-unused-vars
 const mockState = {
   auth: {
     user: mockUser,
@@ -26,7 +28,8 @@ const mockState = {
 };
 
 describe('Leaderboard page structure', () => {
-  let mountedLeaderboard, props;
+  let mountedLeaderboard;
+  let props;
 
   beforeEach(() => {
     props = mockAdminState;
@@ -34,7 +37,17 @@ describe('Leaderboard page structure', () => {
     props.getLeaderboardData = jest.fn();
     props.loggedInUser = { role: 'Admin' };
     props.loading = true;
-    mountedLeaderboard = shallow(<Leaderboard {...props} darkMode={true} />);
+    mountedLeaderboard = shallow(
+      <Leaderboard
+        organizationData={props.organizationData}
+        getLeaderboardData={props.getLeaderboardData}
+        loggedInUser={props.loggedInUser}
+        loading={props.loading}
+        leaderBoardData={props.leaderBoardData}
+        isVisible
+        darkMode
+      />,
+    );
   });
 
   it('should be rendered with a table', () => {
@@ -56,7 +69,7 @@ describe('Leaderboard page structure', () => {
     const lBLength = lbData.length;
     expect(leaderBoardItems.length).toBe(lBLength + 1);
 
-    for (let i = 1; i < lBLength; i++) {
+    for (let i = 1; i < lBLength; i += 1) {
       const linkItem = leaderBoardItems.find({ to: `/userprofile/${lbData[i].personId}` });
       expect(linkItem.length).toBe(1);
       expect(linkItem.text().includes(lbData[i].name)).toBeTruthy();
@@ -84,7 +97,16 @@ describe('Leaderboard page structure', () => {
 
   it('should display an alert if the user is invisible', () => {
     props.isVisible = false;
-    mountedLeaderboard = shallow(<Leaderboard {...props} />);
+    mountedLeaderboard = shallow(
+      <Leaderboard
+        organizationData={props.organizationData}
+        getLeaderboardData={props.getLeaderboardData}
+        loggedInUser={props.loggedInUser}
+        loading={props.loading}
+        leaderBoardData={props.leaderBoardData}
+        isVisible={props.isVisible}
+      />,
+    );
     expect(mountedLeaderboard.find('Alert').exists()).toBe(true);
   });
 
@@ -94,7 +116,16 @@ describe('Leaderboard page structure', () => {
 
   it('renders the progress component for each user', () => {
     props.leaderBoardData = [{ personId: 1, name: 'John Doe', tangibletime: 10, totaltime: 20 }];
-    mountedLeaderboard = shallow(<Leaderboard {...props} />);
+    mountedLeaderboard = shallow(
+      <Leaderboard
+        organizationData={props.organizationData}
+        getLeaderboardData={props.getLeaderboardData}
+        loggedInUser={props.loggedInUser}
+        loading={props.loading}
+        leaderBoardData={props.leaderBoardData}
+        isVisible={props.isVisible}
+      />,
+    );
     expect(mountedLeaderboard.find('Progress').length).toBeGreaterThan(0);
   });
 
@@ -103,7 +134,16 @@ describe('Leaderboard page structure', () => {
       { personId: 1, name: 'John Doe', tangibletime: 10, totaltime: 20 },
       { personId: 2, name: 'Jane Smith', tangibletime: 15, totaltime: 25 },
     ];
-    mountedLeaderboard = shallow(<Leaderboard {...props} />);
+    mountedLeaderboard = shallow(
+      <Leaderboard
+        organizationData={props.organizationData}
+        getLeaderboardData={props.getLeaderboardData}
+        loggedInUser={props.loggedInUser}
+        loading={props.loading}
+        leaderBoardData={props.leaderBoardData}
+        isVisible={props.isVisible}
+      />,
+    );
 
     const leaderBoardBody = mountedLeaderboard.find('tbody');
     const leaderBoardItems = leaderBoardBody.find('tr');
@@ -114,7 +154,16 @@ describe('Leaderboard page structure', () => {
 
   it('should not render admin features if loggedInUser role is not Admin', () => {
     props.loggedInUser = { role: 'User' };
-    mountedLeaderboard = shallow(<Leaderboard {...props} />);
+    mountedLeaderboard = shallow(
+      <Leaderboard
+        organizationData={props.organizationData}
+        getLeaderboardData={props.getLeaderboardData}
+        loggedInUser={props.loggedInUser}
+        loading={props.loading}
+        leaderBoardData={props.leaderBoardData}
+        isVisible={props.isVisible}
+      />,
+    );
     expect(mountedLeaderboard.find('.admin-features').exists()).toBe(false);
   });
 });

@@ -1,17 +1,18 @@
 import '@testing-library/jest-dom/extend-expect';
-import mockState from '../../../__tests__/mockAdminState.js';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { ApiEndpoint, ENDPOINTS } from '../../../utils/URL.js';
+import mockState from '../../../__tests__/mockAdminState';
+import { ApiEndpoint, ENDPOINTS } from '../../../utils/URL';
+
 const userProjectsUrl = ENDPOINTS.USER_PROJECTS(mockState.auth.user.userid);
 
 window.confirm = jest.fn(() => true);
 
 const server = setupServer(
-  rest.get(ApiEndpoint + '/userprofile/*', (req, res, ctx) => {
+  rest.get(`${ApiEndpoint}/userprofile/*`, (req, res, ctx) => {
     return res(ctx.status(200), ctx.json({}));
   }),
-  rest.get(ApiEndpoint + '/api/dashboard/*', (req, res, ctx) => {
+  rest.get(`${ApiEndpoint}/api/dashboard/*`, (req, res, ctx) => {
     return res(
       ctx.status(200),
       ctx.json({
@@ -53,6 +54,7 @@ const server = setupServer(
     return res(ctx.status(200), ctx.json({}));
   }),
   rest.get('*', (req, res, ctx) => {
+    // eslint-disable-next-line no-console
     console.error(
       `Please add request handler for ${req.url.toString()} in your MSW server requests.`,
     );
@@ -64,8 +66,11 @@ beforeAll(() => server.listen());
 afterAll(() => server.close());
 afterEach(() => server.resetHandlers());
 
+// eslint-disable-next-line no-unused-vars
 function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise(resolve => {
+    setTimeout(resolve, ms);
+  });
 }
 
 describe('Logout behavior', () => {

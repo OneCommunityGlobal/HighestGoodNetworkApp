@@ -1,8 +1,7 @@
-import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import userEvent from '@testing-library/user-event';
-import { TaskEditSuggestionRow } from 'components/TaskEditSuggestions/Components/TaskEditSuggestionRow';  
+import { TaskEditSuggestionRow } from '../TaskEditSuggestionRow';
 
 // Mock the `datetimeToDate` function
 jest.mock('components/TeamMemberTasks/components/TaskDifferenceModal', () => ({
@@ -21,14 +20,12 @@ describe('TaskEditSuggestionRow', () => {
     jest.clearAllMocks();
   });
 
-
-  
   it('renders the task edit suggestion information', () => {
     render(
       <TaskEditSuggestionRow
         taskEditSuggestion={taskEditSuggestionMock}
         handleToggleTaskEditSuggestionModal={mockHandleToggle}
-      />
+      />,
     );
 
     expect(screen.getByText('Mocked Date')).toBeInTheDocument();
@@ -36,28 +33,24 @@ describe('TaskEditSuggestionRow', () => {
     expect(screen.getByText(taskEditSuggestionMock.oldTask.taskName)).toBeInTheDocument();
   });
 
-
-
   it('calls handleToggleTaskEditSuggestionModal with taskEditSuggestion data when the row is clicked', () => {
     render(
       <TaskEditSuggestionRow
         taskEditSuggestion={taskEditSuggestionMock}
         handleToggleTaskEditSuggestionModal={mockHandleToggle}
-      />
+      />,
     );
 
     fireEvent.click(screen.getByRole('row'));
     expect(mockHandleToggle).toHaveBeenCalledWith(taskEditSuggestionMock);
   });
 
-
-
   it('calls handleToggleTaskEditSuggestionModal with taskEditSuggestion data when the button is clicked', () => {
     render(
       <TaskEditSuggestionRow
         taskEditSuggestion={taskEditSuggestionMock}
         handleToggleTaskEditSuggestionModal={mockHandleToggle}
-      />
+      />,
     );
 
     fireEvent.click(screen.getByText('View Suggestion'));
@@ -66,9 +59,7 @@ describe('TaskEditSuggestionRow', () => {
     expect(mockHandleToggle).toHaveBeenCalledTimes(1);
   });
 
-
   it('prevents event propagation when the button is clicked', () => {
-    
     const mockParentHandler = jest.fn();
 
     render(
@@ -77,7 +68,7 @@ describe('TaskEditSuggestionRow', () => {
           taskEditSuggestion={taskEditSuggestionMock}
           handleToggleTaskEditSuggestionModal={mockHandleToggle}
         />
-      </div>
+      </div>,
     );
 
     const button = screen.getByText('View Suggestion');
@@ -85,16 +76,14 @@ describe('TaskEditSuggestionRow', () => {
 
     expect(mockParentHandler).not.toHaveBeenCalled();
     expect(mockHandleToggle).toHaveBeenCalledWith(taskEditSuggestionMock);
-    
   });
-
 
   it('applies inline styles to the button', () => {
     render(
       <TaskEditSuggestionRow
         taskEditSuggestion={taskEditSuggestionMock}
         handleToggleTaskEditSuggestionModal={mockHandleToggle}
-      />
+      />,
     );
 
     const button = screen.getByText('View Suggestion');
@@ -106,14 +95,12 @@ describe('TaskEditSuggestionRow', () => {
     });
   });
 
-
-
   it('updates when taskEditSuggestion prop changes', () => {
     const { rerender } = render(
       <TaskEditSuggestionRow
         taskEditSuggestion={taskEditSuggestionMock}
         handleToggleTaskEditSuggestionModal={mockHandleToggle}
-      />
+      />,
     );
 
     const newTaskEditSuggestion = {
@@ -126,7 +113,7 @@ describe('TaskEditSuggestionRow', () => {
       <TaskEditSuggestionRow
         taskEditSuggestion={newTaskEditSuggestion}
         handleToggleTaskEditSuggestionModal={mockHandleToggle}
-      />
+      />,
     );
 
     expect(screen.getByText('new-user')).toBeInTheDocument();

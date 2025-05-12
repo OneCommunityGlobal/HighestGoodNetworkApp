@@ -42,9 +42,7 @@ export default function WorkDistributionBarChart({ isLoading, workDistributionSt
     );
   }
 
-  // TODO: workDistributionStats should not require a filter. Backend api needs a fix to not return a null _id field.
   const data = workDistributionStats
-    .filter(item => item._id)
     .sort((a, b) => a._id.localeCompare(b._id))
     .map(item => {
       return { ...item, totalHours: Number(item.totalHours.toFixed(2)) };

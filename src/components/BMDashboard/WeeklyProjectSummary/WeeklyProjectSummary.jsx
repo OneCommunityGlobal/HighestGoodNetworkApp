@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import './WeeklyProjectSummary.css';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
 import CostPredictionChart from './CostPredictionChart';
+import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
+import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
 
 const projectStatusButtons = [
   {
@@ -105,9 +107,23 @@ const projectStatusButtons = [
 ];
 
 export default function WeeklyProjectSummary() {
+  const dispatch = useDispatch();
+  const materials = useSelector(state => state.materials?.materialslist || []);
   const [openSections, setOpenSections] = useState({});
 
   const darkMode = useSelector(state => state.theme.darkMode);
+
+  useEffect(() => {
+    if (materials.length === 0) {
+      dispatch(fetchAllMaterials());
+    }
+  }, [dispatch, materials.length]);
+
+  const quantityOfMaterialsUsedData = useMemo(() => {
+    if (!materials.length) return [];
+    const uniqueMaterials = Array.from(new Map(materials.map(m => [m._id, m])).values());
+    return uniqueMaterials;
+  }, [materials]);
 
   const toggleSection = category => {
     setOpenSections(prev => ({
@@ -116,86 +132,91 @@ export default function WeeklyProjectSummary() {
     }));
   };
 
-  const sections = [
-    {
-      title: 'Project Status',
-      key: 'Project Status',
-      className: 'full',
-      content: (
-        <div className="project-status-grid">
-          {projectStatusButtons.map(button => {
-            const uniqueId = uuidv4();
-            return (
-              <div
-                key={uniqueId}
-                className="weekly-project-summary-card status-card"
-                style={{ backgroundColor: button.bgColor }} // Dynamic Background
-              >
-                <div className="weekly-card-title">{button.title}</div>
+  const sections = useMemo(
+    () => [
+      {
+        title: 'Project Status',
+        key: 'Project Status',
+        className: 'full',
+        content: (
+          <div className="project-status-grid">
+            {projectStatusButtons.map(button => {
+              const uniqueId = uuidv4();
+              return (
                 <div
-                  className="weekly-status-button"
-                  style={{ backgroundColor: button.buttonColor }} // Dynamic Oval Color
+                  key={uniqueId}
+                  className="weekly-project-summary-card status-card"
+                  style={{ backgroundColor: button.bgColor }} // Dynamic Background
                 >
-                  <span className="weekly-status-value">{button.value}</span>
+                  <div className="weekly-card-title">{button.title}</div>
+                  <div
+                    className="weekly-status-button"
+                    style={{ backgroundColor: button.buttonColor }} // Dynamic Oval Color
+                  >
+                    <span className="weekly-status-value">{button.value}</span>
+                  </div>
+                  <div
+                    className="weekly-status-change"
+                    style={{ color: button.textColor }} // Dynamic Change Color
+                  >
+                    {button.change}
+                  </div>
                 </div>
-                <div
-                  className="weekly-status-change"
-                  style={{ color: button.textColor }} // Dynamic Change Color
-                >
-                  {button.change}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      ),
-    },
-    {
-      title: 'Material Consumption',
-      key: 'Material Consumption',
-      className: 'large',
-      content: [1, 2, 3].map(() => {
-        const uniqueId = uuidv4();
-        return (
-          <div key={uniqueId} className="weekly-project-summary-card normal-card">
-            📊 Card
+              );
+            })}
           </div>
-        );
-      }),
-    },
-    {
-      title: 'Issue Tracking',
-      key: 'Issue Tracking',
-      className: 'small',
-      content: <div className="weekly-project-summary-card normal-card">📊 Card</div>,
-    },
-    {
-      title: 'Tools and Equipment Tracking',
-      key: 'Tools and Equipment Tracking',
-      className: 'half',
-      content: [1, 2].map(() => {
-        const uniqueId = uuidv4();
-        return (
-          <div key={uniqueId} className="weekly-project-summary-card normal-card">
-            📊 Card
-          </div>
-        );
-      }),
-    },
-    {
-      title: 'Lessons Learned',
-      key: 'Lessons Learned',
-      className: 'half',
-      content: [1, 2].map(() => {
-        const uniqueId = uuidv4();
-        return (
-          <div key={uniqueId} className="weekly-project-summary-card normal-card">
-            📊 Card
-          </div>
-        );
-      }),
-    },
-    {
+        ),
+      },
+      {
+        title: 'Material Consumption',
+        key: 'Material Consumption',
+        className: 'large',
+        content: [1, 2, 3].map((_, index) => {
+          const uniqueId = uuidv4();
+          return (
+            <div key={uniqueId} className="weekly-project-summary-card normal-card">
+              {index === 1 ? (
+                <QuantityOfMaterialsUsed data={quantityOfMaterialsUsedData} />
+              ) : (
+                '📊 Card'
+              )}
+            </div>
+          );
+        }),
+      },
+      {
+        title: 'Issue Tracking',
+        key: 'Issue Tracking',
+        className: 'small',
+        content: <div className="weekly-project-summary-card normal-card">📊 Card</div>,
+      },
+      {
+        title: 'Tools and Equipment Tracking',
+        key: 'Tools and Equipment Tracking',
+        className: 'half',
+        content: [1, 2].map(() => {
+          const uniqueId = uuidv4();
+          return (
+            <div key={uniqueId} className="weekly-project-summary-card normal-card">
+              📊 Card
+            </div>
+          );
+        }),
+      },
+      {
+        title: 'Lessons Learned',
+        key: 'Lessons Learned',
+        className: 'half',
+        content: [1, 2].map(() => {
+          const uniqueId = uuidv4();
+          return (
+            <div key={uniqueId} className="weekly-project-summary-card normal-card">
+              📊 Card
+            </div>
+          );
+        }),
+      },
+      {
       title: 'Financials',
       key: 'Financials',
       className: 'large',
@@ -214,38 +235,40 @@ export default function WeeklyProjectSummary() {
           })}
         </>
       ),
-    },
-    {
-      title: 'Loss Tracking',
-      key: 'Loss Tracking',
-      className: 'small',
-      content: <div className="weekly-project-summary-card normal-card">📊 Card</div>,
-    },
-    {
-      title: 'Global Distribution and Project Status',
-      key: 'Global Distribution and Project Status',
-      className: 'half',
-      content: (
-        <>
-          <div className="weekly-project-summary-card wide-card">📊 Wide Card</div>
-          <div className="weekly-project-summary-card normal-card">📊 Normal Card</div>
-        </>
-      ),
-    },
-    {
-      title: 'Labor and Time Tracking',
-      key: 'Labor and Time Tracking',
-      className: 'half',
-      content: [1, 2].map(() => {
-        const uniqueId = uuidv4();
-        return (
-          <div key={uniqueId} className="weekly-project-summary-card normal-card">
-            📊 Card
-          </div>
-        );
-      }),
-    },
-  ];
+      },
+      {
+        title: 'Loss Tracking',
+        key: 'Loss Tracking',
+        className: 'small',
+        content: <div className="weekly-project-summary-card normal-card">📊 Card</div>,
+      },
+      {
+        title: 'Global Distribution and Project Status',
+        key: 'Global Distribution and Project Status',
+        className: 'half',
+        content: (
+          <>
+            <div className="weekly-project-summary-card wide-card">📊 Wide Card</div>
+            <div className="weekly-project-summary-card normal-card">📊 Normal Card</div>
+          </>
+        ),
+      },
+      {
+        title: 'Labor and Time Tracking',
+        key: 'Labor and Time Tracking',
+        className: 'half',
+        content: [1, 2].map(() => {
+          const uniqueId = uuidv4();
+          return (
+            <div key={uniqueId} className="weekly-project-summary-card normal-card">
+              📊 Card
+            </div>
+          );
+        }),
+      },
+    ],
+    [quantityOfMaterialsUsedData],
+  );
 
   return (
     <div className={`weekly-project-summary-container ${darkMode ? 'dark-mode' : ''}`}>

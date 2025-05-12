@@ -1,25 +1,42 @@
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
+// eslint-disable-next-line no-unused-vars
 import { screen, render, fireEvent, waitFor, getByText } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
 import moment from 'moment-timezone';
+// eslint-disable-next-line no-unused-vars
+import { icon } from '@fortawesome/fontawesome-svg-core';
 import { authMock, userProfileMock, timeEntryMock, userProjectMock, rolesMock, themeMock } from '../../../../__tests__/mockStates';
+// eslint-disable-next-line no-unused-vars
 import { renderWithProvider, renderWithRouterMatch } from '../../../../__tests__/utils';
 import TimeEntryForm from '../TimeEntryForm';
-import * as actions from '../../../../actions/timeEntries';
-import { icon } from '@fortawesome/fontawesome-svg-core';
+// import * as actions from '../../../../actions/timeEntries';
+
+import { postTimeEntry, editTimeEntry } from '../../../../actions/timeEntries';
+
+jest.mock('../../../../actions/timeEntries', () => ({
+  __esModule: true,
+  ...jest.requireActual('../../../../actions/timeEntries'),
+  postTimeEntry: jest.fn(() => ({ type: 'MOCK_POST_TIME_ENTRY' })),
+  editTimeEntry: jest.fn(() => ({ type: 'MOCK_EDIT_TIME_ENTRY' })),
+}));
 
 const mockStore = configureStore([thunk]);
 
 function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  return new Promise(resolve => {
+    setTimeout(resolve, ms);
+  });
 }
+
 
 xdescribe('<TimeEntryForm />', () => {
   let store;
   let toggle;
   let userProfile;
+  // eslint-disable-next-line no-unused-vars
   let role
   const data = timeEntryMock.weeks[0][0];
   beforeEach(() => {
@@ -51,6 +68,7 @@ xdescribe('<TimeEntryForm />', () => {
     );
   });
   it('should dispatch the right action with the right payload after add new time entry', async () => {
+    // eslint-disable-next-line no-unused-vars
     const expectedPayload = {
       personId: data.personId,
       dateOfWork: moment().format('YYYY-MM-DD'),
@@ -59,12 +77,13 @@ xdescribe('<TimeEntryForm />', () => {
       projectId: userProjectMock.projects[0].projectId,
       timeSpent: '01:0:00',
     };
-    actions.postTimeEntry = jest.fn();
+    // actions.postTimeEntry = jest.fn();
+    expect(postTimeEntry).toHaveBeenCalled();
     expect(screen.getByLabelText(/date/i)).toBeInTheDocument();
     expect(screen.getAllByRole('spinbutton')).toHaveLength(2);
     expect(screen.getByLabelText('Date')).toBeInTheDocument();
     expect(screen.getByDisplayValue('Select Project/Task')).toBeInTheDocument();
-    //expect(screen.getByLabelText(/notes/i)).toBeInTheDocument();
+    // expect(screen.getByLabelText(/notes/i)).toBeInTheDocument();
     userEvent.type(screen.getAllByRole('spinbutton')[0], '1');
     expect(screen.getAllByRole('spinbutton')[0]).toHaveValue(1);
 
@@ -72,13 +91,13 @@ xdescribe('<TimeEntryForm />', () => {
       target: { value: userProjectMock.projects[0].projectId },
     });
     await sleep(100);
-    //userEvent.selectOptions(screen.getByRole('combobox'), userProjectMock.projects[0].projectId);
+    // userEvent.selectOptions(screen.getByRole('combobox'), userProjectMock.projects[0].projectId);
     const notes = screen.getByLabelText(/notes/i);
     fireEvent.change(notes, { target: { value: 'Test123' } });
     await sleep(1000);
     userEvent.click(screen.getByRole('button', { name: /submit/i }));
-    //expect(actions.postTimeEntry).toHaveBeenCalledTimes(1);
-    //expect(actions.postTimeEntry).toHaveBeenCalledWith(expectedPayload);
+    // expect(actions.postTimeEntry).toHaveBeenCalledTimes(1);
+    // expect(actions.postTimeEntry).toHaveBeenCalledWith(expectedPayload);
   });
   it('should render the openInfo and the content', () => {
     const tips = screen.getByTitle('timeEntryTip');
@@ -140,7 +159,7 @@ xdescribe('<TimeEntryFormEdit />', () => {
     renderWithProvider(
       <TimeEntryForm
         userId={data.personId}
-        edit={true}
+        edit
         data={data}
         isOpen
         toggle={toggle}
@@ -155,6 +174,7 @@ xdescribe('<TimeEntryFormEdit />', () => {
   });
 
   it('should dispatch the right action with the right payload after edit a time entry', async () => {
+    // eslint-disable-next-line no-unused-vars
     const expectedPayload = {
       personId: '5edf141c78f1380017b829a6',
       dateOfWork: '2020-08-12',
@@ -162,7 +182,8 @@ xdescribe('<TimeEntryFormEdit />', () => {
       projectId: '5a849055592ca46b43db2729',
       timeSpent: '06:43:00',
     };
-    actions.editTimeEntry = jest.fn();
+    expect(editTimeEntry).toHaveBeenCalled();
+    // actions.editTimeEntry = jest.fn();
     const dateField = screen.getByLabelText(/date/i);
     const hours = screen.getAllByRole('spinbutton')[0];
     const minutes = screen.getAllByRole('spinbutton')[1];
@@ -176,7 +197,7 @@ xdescribe('<TimeEntryFormEdit />', () => {
     expect(noteField).toBeInTheDocument();
     fireEvent.change(hours, { target: { value: '6' } });
     await sleep(10);
-    //userEvent.selectOptions(projectField,userProjectMock.projects[1].projectId)
+    // userEvent.selectOptions(projectField,userProjectMock.projects[1].projectId)
     fireEvent.change(noteField, {
       target: {
         value:
@@ -184,15 +205,15 @@ xdescribe('<TimeEntryFormEdit />', () => {
       },
     });
     expect(hours).toHaveValue(6);
-    //expect(projectField).toHaveValue(userProjectMock.projects[1].projectId);
+    // expect(projectField).toHaveValue(userProjectMock.projects[1].projectId);
     fireEvent.click(screen.getByRole('button', { name: /save/i }));
     fireEvent.click(screen.getByRole('button', { name: /close/i }));
     fireEvent.click(screen.getByRole('button', { name: /save/i }));
     await waitFor(() => {
-      expect(actions.editTimeEntry).toHaveBeenCalledTimes(1);
+      expect(editTimeEntry).toHaveBeenCalledTimes(1);
       expect(toggle).toHaveBeenCalled();
     });
-    //expect(screen.getByText(/You are about to edit your time*/i)).toBeInTheDocument();
+    // expect(screen.getByText(/You are about to edit your time*/i)).toBeInTheDocument();
     /*
     userEvent.click(screen.getByRole('button', { name: /save/i }));
     expect(actions.editTimeEntry).toHaveBeenCalledTimes(1);

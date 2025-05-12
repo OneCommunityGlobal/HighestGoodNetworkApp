@@ -47,7 +47,7 @@ export function PieChart({
   };
 
   const getCreateSvgPie = totalValue => {
-    if (totalValue === 0) return;
+    if (totalValue === 0) return null;
     // Clear existing SVG before creating new one
     d3.select(`#pie-chart-${pieChartId}`).remove();
     const svg = d3
@@ -98,7 +98,7 @@ export function PieChart({
       .select('input')
       .on('change', handleTogglePercentage); // Use the existing React handler
 
-    // return svg;
+    return svg;
   };
 
   const pie = d3.pie().value(d => d.totalTime);

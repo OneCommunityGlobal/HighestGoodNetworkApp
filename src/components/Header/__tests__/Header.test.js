@@ -1,11 +1,13 @@
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
+// eslint-disable-next-line no-unused-vars
 import { shallow,mount } from 'enzyme'; 
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import axios from 'axios';
 import { MemoryRouter as Router } from 'react-router-dom';
-import { Header } from '../Header'; 
 import { act } from 'react-dom/test-utils';
+import { Header } from '../Header'; 
 
 jest.mock('axios');
 const mockStore = configureMockStore();
@@ -54,7 +56,7 @@ describe('Header Component with Mocked Axios', () => {
         role: 'Volunteer',
       },
     },
-    //userProfile: '',
+    // userProfile: '',
     taskEditSuggestionCount: 0,
     role:{roles:[],},
   }; 
@@ -98,7 +100,9 @@ describe('Header Component with Mocked Axios', () => {
 
     await act(async () => {
       // Wait for the component to re-render
-      await new Promise(resolve => setImmediate(resolve));
+      await new Promise(resolve => {
+        setImmediate(resolve)
+      });
       wrapper.update();
     });
 
@@ -126,7 +130,7 @@ describe('Header Component - volunteer, Assistan Manager', () => {
           role: 'Volunteer',
         },
       },
-      //userProfile: '',
+      // userProfile: '',
       taskEditSuggestionCount: 0,
       role:{roles:[],},
     };
@@ -209,7 +213,7 @@ describe('Header Component - Owner, Administrator, Mentor', () => {
 
 describe('Header Component Functionality', () => {
   let store;
-  const mockStore = configureMockStore();
+  const firstmockStore = configureMockStore();
   const initialState = {
     auth: {
       isAuthenticated: true,
@@ -232,7 +236,7 @@ describe('Header Component Functionality', () => {
   };
 
   beforeEach(() => {
-    store = mockStore(initialState);
+    store = firstmockStore(initialState);
     axios.get.mockResolvedValue({data: {name: 'Test User', role: 'User'}});
   });
 
@@ -250,7 +254,7 @@ describe('Header Component Functionality', () => {
 });
 
 describe('Header Component Authentication Checks', () => {
-  const mockStore = configureMockStore();
+  const secondmockStore = configureMockStore();
   const initialState = {
     auth: {
       isAuthenticated: false,
@@ -263,7 +267,7 @@ describe('Header Component Authentication Checks', () => {
   };
 
   it('does not display user-specific information when not authenticated', () => {
-    const store = mockStore(initialState);
+    const store = secondmockStore(initialState);
     const wrapper = shallow(
       <Provider store={store}>
         <Header />
