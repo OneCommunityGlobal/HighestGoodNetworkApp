@@ -116,6 +116,22 @@ export const addNewMemberError = err => {
   };
 };
 
+
+export const fetchProjectsActiveUsers = data => {
+  return {
+    type: types.FETCH_PROJECTS_ACTIVE_USERS_SUCCESS,
+    payload: data,
+  };
+};
+
+
+export const fetchProjectsActiveUsersWithError = err => {
+  return {
+    type: types.FETCH_PROJECTS_ACTIVE_USERS_ERROR,
+    payload: err,
+  };
+};
+
 /** *****************************************
  * ACTION CREATORS
  ****************************************** */
@@ -245,6 +261,18 @@ export const getProjectActiveUser = () => {
       .catch(err => {
         dispatch(findUsersError(err));
       });
+  };
+};
+
+export const fetchProjectsWithActiveUsers = () => {
+  return async dispatch => {
+    try {
+      const response = await axios.get(ENDPOINTS.PROJECTS_WITH_ACTIVE_USERS);
+      dispatch(fetchProjectsActiveUsers(response.data));
+    } catch (error) {
+      // console.error(error);
+      dispatch(fetchProjectsActiveUsersWithError(error));
+    }
   };
 };
 

@@ -19,7 +19,7 @@
   font-size: medium;
 }
 
-.card {
+.headerCard {
   margin-left: 35px;
   margin-right: 50px;
 }
@@ -30,16 +30,21 @@
 }
 
 .navbar {
-  z-index: 100;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
   white-space: nowrap;
 }
 
 .timer-message-section {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  width: 100%;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
   gap: 1rem;
+  white-space: nowrap;
 }
 
 .redBackGroupHeader {
@@ -65,7 +70,10 @@
 
 .nav-links {
   display: flex;
+  flex-direction: row;
   align-items: center;
+  flex-wrap: nowrap;
+  gap: 1rem;
 }
 
 .dropdown-item-hover:hover {
@@ -111,6 +119,7 @@
     margin-right: 5px;
   }
 }
+<<<<<<< HEAD
 
 .header-margin {
   height: 20px;
@@ -164,3 +173,13 @@
     vertical-align: middle !important;
   }
 }
+=======
+.header-margin{
+  height : 20px;
+  background-color: #1B2A41 ;
+}
+.header-margin-light{
+  height : 20px;
+  background-color: #fff;
+}
+>>>>>>> origin/development
