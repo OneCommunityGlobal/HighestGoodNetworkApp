@@ -225,6 +225,7 @@ export const ENDPOINTS = {
   BM_EQUIPMENTS: `${APIEndpoint}/bm/equipments`,
   BM_INVTYPE_TYPE: type => `${APIEndpoint}/bm/invtypes/${type}`,
   BM_ISSUE_FORM: `${APIEndpoint}/bm/issue/add`,
+  BM_RENTAL_CHART: `${APIEndpoint}/bm/rentalChart`,
 
   BM_TAGS: `${APIEndpoint}/bm/tags`,
   BM_TAG_ADD: `${APIEndpoint}/bm/tags`,

@@ -1,0 +1,1 @@
+export const GET_RENTAL_COSTS = 'GET_RENTAL_COSTS';
