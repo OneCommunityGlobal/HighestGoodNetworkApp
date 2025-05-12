@@ -202,7 +202,7 @@ export default function WeeklyProjectSummary() {
       content: (
         <>
           <div className="weekly-project-summary-card financial-big">
-            <CostPredictionChart />
+            <CostPredictionChart projectId={1} />
           </div>
           {Array.from({ length: 4 }).map(() => {
             const uniqueId = uuidv4();
