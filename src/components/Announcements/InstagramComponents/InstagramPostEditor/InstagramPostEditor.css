@@ -1,8 +1,8 @@
 .instagram-post-editor {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  background-color:azure;
+  /* gap: 1rem; */
+  /* background-color:azure; */
   padding: 0 70px 0 70px;
 }
 
@@ -14,9 +14,10 @@
 .instagram-editor-container {
   display: flex;
   flex-direction: row;
-  gap: 1rem;
+  /* gap: 1rem; */
   width: 100%;
-  background-color: bisque;
+  /* border: 1px solid #ccc; */
+  /* background-color: bisque; */
 }
 
 .instagram-editor-container > *:first-child {
@@ -49,10 +50,23 @@
 .instagram-post-preview-container {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   width: 100%;
-  background-color: black;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  /* background-color: black; */
+}
+
+.instagram-post-preview-header {
+  padding: 10px 0;
+}
+
+.instagram-post-preview-header h3 {
+  margin: 0;
+  color: #262626;
+  font-size: 30px;
 }
 
 .post-buttons-container {
@@ -61,18 +75,19 @@
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  background-color: burlywood;
+  /* background-color: burlywood; */
 }
 
 .schedule-post-button-container {
   display: flex;
   flex-direction: row;
   gap: 0;
-  justify-content: space-between;
+  justify-content: flex-end;
+  gap: 10px;
   align-items: center;
   height: 100%;
   width: 50%;
-  background-color: brown;
+  /* background-color: brown; */
 }
 
 .schedule-post-instagram-button {
@@ -84,6 +99,10 @@
   padding: 10px 20px;
   font-size: 16px;
   cursor: pointer;
+}
+
+.button-text {
+  white-space: nowrap;
 }
 
 .schedule-post-instagram-button:hover {
@@ -102,10 +121,7 @@
   font-size: 16px;
   padding: 10px;
 }
-.date-picker:focus {
-  border-color: #0095f6;
-  outline: none;
-}
+
 .instagram-login-button:hover {
   background-color: #0077b5;
 }
@@ -135,7 +151,7 @@
 .caption-character-count {
   display: flex;
   justify-content: flex-end;
-  background-color: aqua;
+  /* background-color: aqua; */
   width: 100%;
   align-items: center;
   font-size: 14px;
@@ -158,8 +174,8 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color:beige;
-  padding: 20px 0 0 0;
+  /* background-color:beige; */
+  padding: 15px 0 0 0;
   width: 100%;
 }
 
@@ -256,4 +272,19 @@
 
 .instagram-post-button:hover {
   background-color: #007bb5;
+}
+
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top: 4px solid #0095f6;
+  width: 30px;
+  height: 30px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 10px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }

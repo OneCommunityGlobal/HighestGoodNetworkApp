@@ -1,11 +1,15 @@
 .scheduled-posts-editor {
   width: 100%;
-  margin-top: 30px;
+  /* margin-top: 30px; */
   max-height: 600px; 
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 0 5px; 
+  /* padding: 0 5px;  */
+  padding: 20px;
   box-sizing: border-box;
+  border: 1px solid #dbdbdb;
+  border-radius: 5px;
+  /* background-color: blue; */
 }
 
 .scheduled-posts-editor::-webkit-scrollbar {
@@ -28,10 +32,12 @@
 
 .scheduled-posts-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   align-items: center;
   margin-bottom: 15px;
   position: sticky;
+  width: 109.5%;
+  margin-left: -4.5%;
   top: 0;
   background-color: white;
   z-index: 10;
@@ -41,7 +47,7 @@
 .scheduled-posts-header h3 {
   margin: 0;
   color: #262626;
-  font-size: 20px;
+  font-size: 30px;
 }
 
 .refresh-button {

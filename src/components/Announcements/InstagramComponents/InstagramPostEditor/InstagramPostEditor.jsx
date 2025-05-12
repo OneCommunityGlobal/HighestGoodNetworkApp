@@ -18,6 +18,8 @@ function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionS
   const [characterCount, setCharacterCount] = useState(0);
   const [isExceedingLimit, setIsExceedingLimit] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isPosting, setIsPosting] = useState(false);
+  const [isScheduling, setIsScheduling] = useState(false);
   const [imageResetKey, setImageResetKey] = useState(0);
 
   const [instagramAuthInfo, setInstagramAuthInfo] = useState({
@@ -39,7 +41,6 @@ function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionS
   const [startDate, setStartDate] = useState(null);
   const [isScheduled, setIsScheduled] = useState(false);
   const [minTime, setMinTime] = useState(new Date());
-  const [scheduledDate, setScheduledDate] = useState(null);
 
   // check connection status when component mounts
   useEffect(() => {
@@ -93,6 +94,7 @@ function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionS
 
   const handlePostToInstagram = async (caption, file) => {
     setIsLoading(true);
+    setIsPosting(true);
     const response = await postToInstagram(caption, file, setInstagramError, setCaption, setFile, setImageResetKey, setButtonTextState);
 
     if (response && response.success) {
@@ -101,6 +103,7 @@ function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionS
       toast.error('Error creating post');
     }
     setIsLoading(false);
+    setIsPosting(false);
   }
 
   const handleFileSelect = (selectedFile) => {
@@ -123,6 +126,7 @@ function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionS
   }
 
   const handleSchedulePost = () => {
+    setScheduledButtonTextState("Scheduling post...");
     scheduleInstagramPost(
       startDate, 
       caption, 
@@ -143,6 +147,7 @@ function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionS
         setStartDate(null);
       }
     });
+    setScheduledButtonTextState("");
   }
 
   return (
@@ -176,9 +181,11 @@ function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionS
       ) : (
         <div className="instagram-editor-container">
           <div className="instagram-post-preview-container">
-            <h4>Instagram Post Preview</h4>
+            <div className='instagram-post-preview-header'>
+              <h3>Instagram Post Preview</h3>
+            </div>
             <div className="instagram-post-preview">
-
+              
               {/* upload image */ }
               <ImageUploader 
                 onImageSelect={handleFileSelect} 
@@ -210,7 +217,7 @@ function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionS
               <button 
                 // type="button"
                 className="schedule-post-instagram-button"
-                disabled={isExceedingLimit ||!caption || !file || isLoading}
+                disabled={ isExceedingLimit ||!caption || !file || isLoading }
                 title={
                   isExceedingLimit ? "Caption exceeds character limit" : 
                   !file ? "Please select an image" :
@@ -223,8 +230,12 @@ function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionS
                   handlePostToInstagram(caption, file);
                 }}
               >
-                {buttonTextState || "Post to Instagram"}
+                <span className="button-text">
+                  {buttonTextState || "Post to Instagram"}
+                  {isPosting && <div className="spinner"></div>}
+                </span>
               </button>
+              
 
               <div className="schedule-post-button-container">
                 <DatePicker
@@ -254,7 +265,10 @@ function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionS
                     isLoading ? "Loading..." : ""
                   }
                 >
-                  {isLoading ? 'Scheduling...' : 'Schedule Post'}
+                  <span className="button-text">
+                  {scheduledButtonTextState || "Schedule Post"}
+                  {isLoading && <div className="spinner"></div>}
+                </span>
                 </button>
               </div>
             </div>
