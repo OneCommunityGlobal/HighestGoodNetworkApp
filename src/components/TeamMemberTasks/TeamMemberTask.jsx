@@ -462,14 +462,14 @@ const TeamMemberTask = React.memo(
                                         )} of ${parseFloat(task.estimatedHours.toFixed(2))}`}
                                       </span>
                                       {canSeeFollowUpCheckButton && (
-                                        <>
+                                        <div>
                                           <FollowupCheckButton
                                             moseoverText={followUpMouseoverText(task)}
                                             user={user}
                                             task={task}
                                           />
                                           <FollowUpInfoModal />
-                                        </>
+                                        </div>
                                       )}
                                       <Progress
                                         color={getProgressColor(

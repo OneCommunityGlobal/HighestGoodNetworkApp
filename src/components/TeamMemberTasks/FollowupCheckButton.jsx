@@ -73,7 +73,7 @@ const FollowupCheckButton = ({ moseoverText, user, task }) => {
       <input
         type="checkbox"
         title={moseoverText}
-        className={`team-task-progress-follow-up ${
+        className={`team-task-progress-follow-up mx-2 ${
           needFollowUp ? 'team-task-progress-follow-up-red' : ''
         }`}
         checked={isChecked && !needFollowUp}
