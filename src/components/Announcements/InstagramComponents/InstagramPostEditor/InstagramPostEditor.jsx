@@ -10,7 +10,7 @@ import { timestamp } from 'joi/lib/types/date';
 import { toast } from 'react-toastify';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { getInstagramScheduledPosts, scheduleInstagramPost } from '../InstagramSchedulePostHelpers';
+import { getInstagramScheduledPosts, scheduleInstagramPost, deleteInstagramScheduledPost } from '../InstagramSchedulePostHelpers';
 
 const MAX_CAPTION_CHARACTERS = 2200; 
 function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionStatus}) {
@@ -123,6 +123,20 @@ function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionS
     setIsExceedingLimit(characterCount > MAX_CAPTION_CHARACTERS);
 
     setCaption(e.target.value);
+  }
+
+  const handleDeletePost = async (postId) => {
+    const response = await deleteInstagramScheduledPost(postId, setScheduledPostsError);
+    if (response && response.success) {
+      toast.success('Post deleted successfully!');
+    } else {
+      toast.error('Error deleting post');
+    }
+    getInstagramScheduledPosts(
+      setScheduledPosts, 
+      setScheduledPostsError, 
+      setIsLoadingScheduledPosts
+    );
   }
 
   const handleSchedulePost = () => {
@@ -284,6 +298,7 @@ function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionS
             error={scheduledPostsError}
             onDeletePost={(postId) => {
               console.log('Deleting post:', postId);
+              handleDeletePost(postId);
             }}
             onRefresh={() => {
               getInstagramScheduledPosts(

@@ -19,10 +19,10 @@ function InstagramScheduledPostsEditor({
   const handleDeleteClick = async (postId) => {
     if (window.confirm('Are you sure you want to delete this scheduled post?')) {
       try {
-        // await onDeletePost(postId); // NEED TO BE IMPLEMENTED
-        toast.success('Scheduled post deleted successfully');
+        await onDeletePost(postId);
+        // toast.success('Scheduled post deleted successfully');
       } catch (error) {
-        toast.error('Failed to delete scheduled post');
+        // toast.error('Failed to delete scheduled post');
         console.error('Error deleting post:', error);
       }
     }

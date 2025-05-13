@@ -164,6 +164,7 @@ export const ENDPOINTS = {
 
   POST_INSTAGRAM_SCHEDULED_POST: `${APIEndpoint}/instagram/schedule-post`,
   GET_INSTAGRAM_SCHEDULED_POSTS: `${APIEndpoint}/instagram/posts`,
+  DELETE_INSTAGRAM_SCHEDULED_POST: postId => `${APIEndpoint}/instagram/posts/${postId}`,
 
   POST_IMGUR_IMAGE: `${APIEndpoint}/instagram/upload-imgur`,
   DELETE_IMGUR_IMAGE: `${APIEndpoint}/instagram/delete-imgur`,
