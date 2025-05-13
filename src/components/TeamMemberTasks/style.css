@@ -9,7 +9,7 @@
 }
 
 .task_table-container {
-  overflow: hidden;
+  overflow: auto;
   position: relative;
 }
 
@@ -389,10 +389,6 @@
   margin-top: 5px;
 }
 
-.task_table-container {
-  width: 100%;
-  overflow-y: hidden;
-}
 
 .hours-btn-div {
   display: flex;
