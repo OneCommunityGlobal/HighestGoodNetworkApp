@@ -55,7 +55,11 @@ import UnsubscribeForm from './components/EmailSubscribeForm/Unsubscribe';
 import NotFoundPage from './components/NotFound/NotFoundPage';
 import EmailSender from './components/common/EmailSender/EmailSender';
 import Collaboration from './components/Collaboration';
+
+import CommunityMembers from './components/CommunityMembers';
+
 import ApplicantsAgeChart from './components/ApplicantsChart';
+
 
 // LB Dashboard
 import LBProtectedRoute from './components/common/LBDashboard/LBProtectedRoute';
@@ -150,7 +154,6 @@ const PermissionsManagement = lazy(() =>
 const UserRoleTab = lazy(() => import('./components/PermissionsManagement/UserRoleTab'));
 const Teams = lazy(() => import('./components/Teams/Teams'));
 
-
 export default (
   <Switch>
     {/* ----- LB Dashboard Routing ----- */}
@@ -161,7 +164,6 @@ export default (
     <>
       {/* Comment out the Header component and its import during phase 2 development. */}
       {/* Uncomment BMHeader and its import during phase 2 development. */}
-
 
       {/* <BMHeader /> */}
 
@@ -175,14 +177,32 @@ export default (
         <ProtectedRoute path="/dashboard/:userId" exact component={Dashboard} />
         <ProtectedRoute path="/project/members/:projectId" fallback component={Members} />
         <ProtectedRoute path="/timelog/" exact render={() => <Timelog userId={null} />} />
-        <ProtectedRoute path="/timelog/:userId" exact render={(props) => {
-          const { userId } = props.match.params;
-          return <Timelog userId={userId} />
-        }} />
+        <ProtectedRoute
+          path="/timelog/:userId"
+          exact
+          render={props => {
+            const { userId } = props.match.params;
+            return <Timelog userId={userId} />;
+          }}
+        />
         <ProtectedRoute path="/peoplereport/:userId" component={PeopleReport} fallback />
         <ProtectedRoute path="/projectreport/:projectId" component={ProjectReport} fallback />
         <ProtectedRoute path="/teamreport/:teamId" component={TeamReport} fallback />
         <ProtectedRoute path="/taskeditsuggestions" component={TaskEditSuggestions} />
+
+        {/* New Community Members route */}
+        <ProtectedRoute
+          path="/hgnhelp/community"
+          component={CommunityMembers}
+          fallback
+          allowedRoles={[
+            UserRole.Administrator,
+            UserRole.Manager,
+            UserRole.CoreTeam,
+            UserRole.Owner,
+            UserRole.Mentor,
+          ]}
+        />
 
         <ProtectedRoute
           path="/inventory/:projectId"
@@ -360,7 +380,17 @@ export default (
           // setting permission as Weeklysummariesreport for now. Later it will be changed to weeklyVolunteerSummary. - H
           routePermissions={RoutePermissions.weeklySummariesReport}
         />
+
+        <ProtectedRoute
+          path="/job-notification-dashboard"
+          exact
+          component={JobCCDashboard}
+          fallback
+          allowedRoles={[UserRole.Owner]}
+        />
+
         <ProtectedRoute path="/job-notification-dashboard" exact component={JobCCDashboard} fallback allowedRoles={[UserRole.Owner]} />
+
 
         {/* ----- BEGIN BM Dashboard Routing ----- */}
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
@@ -453,7 +483,6 @@ export default (
           exact component={Resources}
         />
 
-
         {/* Listing and Bidding Routes */}
         <LBProtectedRoute path="/lbdashboard" exact component={LBDashboard} />
         <LBProtectedRoute path="/lbdashboard/listOverview" exact component={ListOveriew} />
@@ -467,9 +496,8 @@ export default (
 
 
         <CPProtectedRoute path="/communityportal/reports/event/personalization" exact component={EventStats} />
+
         {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
-
-
 
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
         {/* <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} /> */}
@@ -494,6 +522,7 @@ export default (
         <ProtectedRoute path="/hgnform/page4" exact component={Page4} />
         <ProtectedRoute path="/hgnform/page5" exact component={Page5} />
         <ProtectedRoute path="/hgnform/page6" exact component={Page6} />
+
         <ProtectedRoute path="/tsaformpage1" exact component={TSAFormPage1} />
         <ProtectedRoute path="/tsaformpage2" exact component={TSAFormPage2} />
         <ProtectedRoute path="/tsaformpage3" exact component={TSAFormPage3} />
@@ -502,6 +531,7 @@ export default (
         <ProtectedRoute path="/tsaformpage6" exact component={TSAFormPage6} />
         <ProtectedRoute path="/tsaformpage7" exact component={TSAFormPage7} />
         <ProtectedRoute path="/tsaformpage8" exact component={TSAFormPage8} />
+
 
         <ProtectedRoute path="/" exact component={Dashboard} />
         <Route path="*" component={NotFoundPage} />
