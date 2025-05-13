@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import './Announcements.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react'; // Import Editor from TinyMCE
@@ -36,6 +36,8 @@ function Announcements({ title, email }) {
     branding: false,
     image_title: true,
     automatic_uploads: true,
+
+    // eslint-disable-next-line no-unused-vars
     file_picker_callback(cb) {
       const input = document.createElement('input');
       input.setAttribute('type', 'file');
@@ -59,14 +61,14 @@ function Announcements({ title, email }) {
             registry. In the next release this part hopefully won't be
             necessary, as we are looking to handle it internally.
           */
-          const id = `blobid${new Date().getTime()}`;
-          const { blobCache } = tinymce.current.activeEditor.editorUpload;
-          const base64 = reader.result.split(',')[1];
-          const blobInfo = blobCache.create(id, file, base64);
-          blobCache.add(blobInfo);
-
+          // const id = `blobid${new Date().getTime()}`;
+          // eslint-disable-next-line no-undef
+          // const { blobCache } = tinymce.current.activeEditor.editorUpload;
+          // const base64 = reader.result.split(',')[1];
+          // const blobInfo = blobCache.create(id, file, base64);
+          // blobCache.add(blobInfo);
           /* call the callback and populate the Title field with the file name */
-          cb(blobInfo.blobUri(), { title: file.name });
+          // cb(blobInfo.blobUri(), { title: file.name });
         };
         reader.readAsDataURL(file);
       };
@@ -104,12 +106,13 @@ function Announcements({ title, email }) {
   // const htmlContent = `<html><head><title>Weekly Update</title></head><body>${emailContent}</body></html>`;
   const addHeaderToEmailContent = () => {
     if (!headerContent) return;
-    const imageTag = `<img src="${headerContent}" alt="Header Image" style="width: 100%; max-width: 100%; height: auto;">`;
-    const editor = tinymce.get('email-editor');
-    if (editor) {
-      editor.insertContent(imageTag);
-      setEmailContent(editor.getContent());
-    }
+    // const imageTag = `<img src="${headerContent}" alt="Header Image" style="width: 100%; max-width: 100%; height: auto;">`;
+
+    // const editor = tinymce.get('email-editor');
+    // if (editor) {
+    //   editor.insertContent(imageTag);
+    //   setEmailContent(editor.getContent());
+    // }
     setHeaderContent(''); // Clear the input field after inserting the header
   };
 
@@ -128,11 +131,12 @@ function Announcements({ title, email }) {
     convertImageToBase64(imageFile, base64Image => {
       const imageTag = `<img src="${base64Image}" alt="Header Image" style="width: 100%; max-width: 100%; height: auto;">`;
       setHeaderContent(prevContent => `${imageTag}${prevContent}`);
-      const editor = tinymce.current.get('email-editor');
-      if (editor) {
-        editor.insertContent(imageTag);
-        setEmailContent(editor.getContent());
-      }
+
+      // const editor = tinymce.current.get('email-editor');
+      // if (editor) {
+      //   editor.insertContent(imageTag);
+      //   setEmailContent(editor.getContent());
+      // }
     });
     e.target.value = '';
   };
@@ -156,8 +160,8 @@ function Announcements({ title, email }) {
       return;
     }
 
+    // eslint-disable-next-line no-shadow
     const invalidEmails = emailList.filter(email => !validateEmail(email.trim()));
-
 
     if (invalidEmails.length > 0) {
       toast.error(`Error: Invalid email addresses: ${invalidEmails.join(', ')}`);

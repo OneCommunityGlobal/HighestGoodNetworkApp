@@ -57,22 +57,38 @@ function BadgeDevelopment(props) {
         onClick={toggleFilters}
         style={darkMode ? { ...boxStyleDark, margin: 20 } : { ...boxStyle, margin: 20 }}
       >
-        Add Filters
+        {isAddFiltersOpen ? 'Remove Filters' : 'Add Filters'}
       </Button>
       {isAddFiltersOpen && (
         <div style={{ marginTop: '20px', paddingLeft: '20px' }}>
           <div style={{ marginBottom: '10px' }}>
-            <p style={{ display: 'inline', marginRight: '8px' }}>Search for a badge:</p>
+            <p
+              className={`${darkMode ? 'text-light' : 'text-dark'}`}
+              style={{ display: 'inline', marginRight: '8px' }}
+            >
+              Search for a badge:
+            </p>
             <input
               type="text"
               placeholder="Enter name here"
               value={searchName}
               onChange={e => setSearchName(e.target.value)}
               className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+              style={{
+                padding: '5px',
+                borderRadius: '5px',
+                border: '1px solid #ccc',
+                outline: 'none',
+              }}
             />
           </div>
           <div style={{ marginBottom: '10px' }}>
-            <p style={{ display: 'inline', marginRight: '8px' }}>Filter by type:</p>
+            <p
+              className={`${darkMode ? 'text-light' : 'text-dark'}`}
+              style={{ display: 'inline', marginRight: '8px' }}
+            >
+              Filter by type:
+            </p>
             <select
               value={searchType}
               onChange={e => setSearchType(e.target.value)}
@@ -87,7 +103,10 @@ function BadgeDevelopment(props) {
             </select>
           </div>
           <div>
-            <p style={{ display: 'inline', marginRight: '8px' }}>
+            <p
+              className={`${darkMode ? 'text-light' : 'text-dark'}`}
+              style={{ display: 'inline', marginRight: '8px' }}
+            >
               Filter by Rank (0 - {rankFilter}):
             </p>
             <input
@@ -99,13 +118,25 @@ function BadgeDevelopment(props) {
               onChange={e => setRankFilter(e.target.value)}
             />
             <div style={{ display: 'inline-block', marginLeft: '8px', verticalAlign: 'middle' }}>
-              <p style={{ display: 'inline', marginRight: '8px' }}>Or choose a rank:</p>
+              <p
+                className={`${darkMode ? 'text-light' : 'text-dark'}`}
+                style={{ display: 'inline', marginRight: '8px' }}
+              >
+                Or choose a rank:
+              </p>
               <input
                 type="text"
                 placeholder="Rank Number"
                 value={chooseRankFilter}
                 onChange={e => setChooseRankFilter(e.target.value)}
-                style={{ width: '80px', textAlign: 'center' }}
+                style={{
+                  width: '80px',
+                  textAlign: 'center',
+                  padding: '5px',
+                  borderRadius: '5px',
+                  border: '1px solid #ccc',
+                  outline: 'none',
+                }}
                 className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
               />
             </div>
