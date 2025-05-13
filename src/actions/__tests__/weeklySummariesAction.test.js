@@ -2,7 +2,7 @@ import axios from 'axios';
 import * as actions from '../../constants/weeklySummaries';
 import { ENDPOINTS } from '../../utils/URL';
 import { fetchWeeklySummariesBegin, fetchWeeklySummariesSuccess, fetchWeeklySummariesError, getWeeklySummaries, updateWeeklySummaries } from '../weeklySummaries'
-import { getUserProfileActionCreator } from '../../actions/userProfile';
+import { getUserProfileActionCreator } from '../userProfile';
 
 
 jest.mock('axios');
