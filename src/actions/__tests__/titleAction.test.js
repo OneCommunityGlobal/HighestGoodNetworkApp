@@ -45,7 +45,10 @@ describe('Title Actions', () => {
 
   describe('getAllTitle', () => {
     it('should return response when API call is successful', async () => {
-      const mockResponse = [{ id: '123', title: 'Title 1' }, { id: '124', title: 'Title 2' }];
+      const mockResponse = [
+        { id: '123', title: 'Title 1' },
+        { id: '124', title: 'Title 2' },
+      ];
       jest.spyOn(titleActions, 'getAllTitle').mockResolvedValue(mockResponse);
 
       const response = await titleActions.getAllTitle();
