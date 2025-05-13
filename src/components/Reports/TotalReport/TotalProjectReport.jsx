@@ -173,7 +173,7 @@ function TotalProjectReport(props) {
   const onClickTotalProjectDetail = () => setShowTotalProjectTable(prevState => !prevState);
 
   const totalProjectTable = totalProject => (
-    <table className="table table-bordered table-responsive-sm">
+    <table className="details-table table table-bordered table-responsive-sm">
       <thead className={darkMode ? 'bg-space-cadet text-light' : ''} style={{ pointerEvents: 'none' }}>
         <tr>
           <th scope="col" id="projects__order">#</th>
@@ -273,7 +273,7 @@ function TotalProjectReport(props) {
       ) : (
         <div>
           <div>{totalProjectInfo(allProject)}</div>
-          <div>{showTotalProjectTable ? totalProjectTable(allProject) : null}</div>
+          <div className='tables'>{showTotalProjectTable ? totalProjectTable(allProject) : null}</div>
         </div>
       )}
     </div>

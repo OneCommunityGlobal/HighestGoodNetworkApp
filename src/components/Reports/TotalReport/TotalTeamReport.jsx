@@ -478,7 +478,7 @@ const groupedDate = useMemo(() => {
     }
 
     return (
-      <table className="table table-bordered table-responsive-sm team-table">
+      <table className="details-table table table-bordered table-responsive-sm team-table">
         <thead className={darkMode ? 'bg-space-cadet text-light' : ''} style={{pointerEvents: 'none' }}>
           <tr>
             <th scope="col" id="projects__order">

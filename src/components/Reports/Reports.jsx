@@ -32,6 +32,7 @@ class ReportsPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      showCharts: false,
       showProjects: false,
       showPeople: false,
       showTeams: false,
@@ -210,6 +211,7 @@ class ReportsPage extends Component {
       showAddProjHistory: false,
       showAddPersonHistory: false,
       showAddTeamHistory: false,
+      showCharts: !prevState.showProjects,
     }));
   }
 
@@ -225,6 +227,7 @@ class ReportsPage extends Component {
       showAddProjHistory: false,
       showAddPersonHistory: false,
       showAddTeamHistory: false,
+      showCharts: !prevState.showTeams,
     }));
   }
 
@@ -240,6 +243,7 @@ class ReportsPage extends Component {
       showAddProjHistory: false,
       showAddPersonHistory: false,
       showAddTeamHistory: false,
+      showCharts: !prevState.showPeople,
     }));
   }
 
@@ -255,6 +259,7 @@ class ReportsPage extends Component {
       showAddProjHistory: false,
       showAddPersonHistory: false,
       showAddTeamHistory: false,
+      showCharts: !prevState.showTotalPeople,
     }));
   }
 
@@ -270,6 +275,7 @@ class ReportsPage extends Component {
       showAddProjHistory: false,
       showAddPersonHistory: false,
       showAddTeamHistory: false,
+      showCharts: !prevState.showTotalTeam,
     }));
   }
 
@@ -277,6 +283,7 @@ class ReportsPage extends Component {
     if (this.state.showTotalProject) {
       this.setState({
         showTotalProject: false,
+        showCharts: false,
         loading: false,
       });
       return;
@@ -299,6 +306,7 @@ class ReportsPage extends Component {
         this.setState({
           loading: false,
           showTotalProject: true,  // Show the report after loading completes
+          showCharts: true,
         });
       }, 2000);  // Adjust the delay as needed
     });
@@ -397,25 +405,24 @@ class ReportsPage extends Component {
 
     const isOxfordBlue = darkMode ? 'bg-oxford-blue' : '';
     const isYinmnBlue = darkMode ? 'bg-yinmn-blue' : '';
-    const textColor = darkMode ? 'text-light' : '';
+    const textColor = darkMode ? 'text-light' : 'text-dark';
     const boxStyling = darkMode ? boxStyleDark : boxStyle;
 
     return (
       <Container fluid className={`mb-5 container-component-wrapper ${isOxfordBlue}`}>
         <div
-          className={`category-data-container ${isOxfordBlue} ${
-              this.state.showPeople ||
-              this.state.showProjects ||
-              this.state.showTeams ||
-              this.state.showTotalProject ||
-              this.state.showTotalPeople ||
-              this.state.showTotalTeam ||
-              this.state.showAddTimeForm ||
-              this.state.showAddPersonHistory ||
-              this.state.showAddTeamHistory ||
-              this.state.showAddProjHistory
-              ? ''
-              : 'no-active-selection'
+          className={`category-data-container ${isOxfordBlue} ${this.state.showPeople ||
+            this.state.showProjects ||
+            this.state.showTeams ||
+            this.state.showTotalProject ||
+            this.state.showTotalPeople ||
+            this.state.showTotalTeam ||
+            this.state.showAddTimeForm ||
+            this.state.showAddPersonHistory ||
+            this.state.showAddTeamHistory ||
+            this.state.showAddProjHistory
+            ? ''
+            : 'no-active-selection'
             }`}
           type="button">
           <div className="container-component-category">
@@ -427,7 +434,7 @@ class ReportsPage extends Component {
                 </div>
               )}
               <div className="d-flex align-items-center">
-                <span className="mr-2">Reports Page</span>
+                <span className={`mr-2 ${textColor}`}>Reports Page</span>
                 <EditableInfoModal
                   areaName="ReportsPage"
                   areaTitle="Reports Page"
@@ -439,339 +446,339 @@ class ReportsPage extends Component {
                 />
               </div>
             </h2>
-            <div className={textColor}>
-              <p>Select a Category</p>
+            <div>
+              <p className={textColor} >Select a Category</p>
             </div>
-            <div className="container-box-shadow">
-              <div className="category-container">
-                <button
-                  type="button"
-                  className={`card-category-item ${
-                      this.state.showProjects ? 'selected' : ''
-                    } ${isYinmnBlue}`}
-                  style={boxStyling}
-                  onClick={this.showProjectTable}
+            <div className='report-container-data'>
+              <div className='data-container' style={this.state.showCharts ? {width: '50%'} : {width: '100%'}}>
+                <div className="category-container">
+                  <button
+                    type="button"
+                    className={`card-category-item ${this.state.showProjects ? 'selected' : ''
+                      } ${isYinmnBlue}`}
+                    style={boxStyling}
+                    onClick={this.showProjectTable}
+                  >
+                    <h3 className="card-category-item-title"> Projects</h3>
+                    <h3 className="card-category-item-number">
+                      {this.state.projectSearchData.length}{' '}
+                    </h3>
+                    <img src={projectsImage} alt="Projects" />
+                  </button>
+                  <button
+                    type="button"
+                    className={`card-category-item ${this.state.showPeople ? 'selected' : ''
+                      } ${isYinmnBlue}`}
+                    style={boxStyling}
+                    onClick={this.showPeopleTable}
+                  >
+                    <h3 className="card-category-item-title"> People </h3>
+                    <h3 className="card-category-item-number">
+                      {this.state.peopleSearchData.length}
+                    </h3>
+                    <img src={peopleImage} alt="that representes the people" />
+                  </button>
+                  <button
+                    type="button"
+                    className={`card-category-item ${this.state.showTeams ? 'selected' : ''
+                      } ${isYinmnBlue}`}
+                    style={boxStyling}
+                    onClick={this.showTeamsTable}
+                  >
+                    <h3 className="card-category-item-title"> Teams </h3>
+                    <h3 className="card-category-item-number">{this.state.teamSearchData?.length}</h3>
+                    <img src={teamsImage} alt="that representes the teams" />
+                  </button>
+                </div>
+                <div
+                  className={`mt-4 p-3 rounded-lg ${darkMode ? 'bg-yinmn-blue text-light' : 'bg-white'
+                    }`}
+                  style={darkMode ? boxStyleDark : boxStyle}
                 >
-                  <h3 className="card-category-item-title"> Projects</h3>
-                  <h3 className="card-category-item-number">
-                    {this.state.projectSearchData.length}{' '}
-                  </h3>
-                  <img src={projectsImage} alt="Projects" />
-                </button>
-                <button
-                  type="button"
-                  className={`card-category-item ${
-                      this.state.showPeople ? 'selected' : ''
-                    } ${isYinmnBlue}`}
-                  style={boxStyling}
-                  onClick={this.showPeopleTable}
-                >
-                  <h3 className="card-category-item-title"> People </h3>
-                  <h3 className="card-category-item-number">
-                    {this.state.peopleSearchData.length}
-                  </h3>
-                  <img src={peopleImage} alt="that representes the people" />
-                </button>
-                <button
-                  type="button"
-                  className={`card-category-item ${
-                      this.state.showTeams ? 'selected' : ''
-                    } ${isYinmnBlue}`}
-                  style={boxStyling}
-                  onClick={this.showTeamsTable}
-                >
-                  <h3 className="card-category-item-title"> Teams </h3>
-                  <h3 className="card-category-item-number">{this.state.teamSearchData?.length}</h3>
-                  <img src={teamsImage} alt="that representes the teams" />
-                </button>
-              </div>
-              <div
-                className={`mt-4 p-3 rounded-lg ${
-                  darkMode ? 'bg-yinmn-blue text-light' : 'bg-white'
-                  }`}
-                style={darkMode ? boxStyleDark : boxStyle}
-              >
-                <ReportFilter
-                  setFilterStatus={this.setFilterStatus}
-                  onWildCardSearch={this.onWildCardSearch}
-                  onCreateNewTeamShow={this.onCreateNewTeamShow}
-                />
-                <ViewReportByDate
-                  minDate={new Date(DATE_PICKER_MIN_DATE)}
-                  maxDate={new Date()}
-                  textColor={textColor}
-                  onDateChange={this.onDateChange}
-                  darkMode={darkMode}
-                />
-                <div className="total-report-container">
-                  <div className="total-report-item">
-                    <Button type="button" color="info" onClick={this.showTotalProject}>
-                      {this.state.showTotalProject
-                        ? 'Hide Total Project Report'
-                        : 'Show Total Project Report'}
-                    </Button>
-                    <div style={{ display: 'inline-block', marginLeft: 10 }}>
-                      <EditableInfoModal
-                        areaName="totalProjectReportInfoPoint"
-                        areaTitle="Total Project Report"
-                        role={userRole}
-                        fontSize={15}
-                        isPermissionPage
-                        darkMode={darkMode}
-                      />
+                  <ReportFilter
+                    setFilterStatus={this.setFilterStatus}
+                    onWildCardSearch={this.onWildCardSearch}
+                    onCreateNewTeamShow={this.onCreateNewTeamShow}
+                  />
+                  <ViewReportByDate
+                    minDate={new Date(DATE_PICKER_MIN_DATE)}
+                    maxDate={new Date()}
+                    textColor={textColor}
+                    onDateChange={this.onDateChange}
+                    darkMode={darkMode}
+                  />
+                  <div className="total-report-container">
+                    <div className="total-report-item">
+                      <Button type="button" color="info" onClick={this.showTotalProject}>
+                        {this.state.showTotalProject
+                          ? 'Hide Total Project Report'
+                          : 'Show Total Project Report'}
+                      </Button>
+                      <div style={{ display: 'inline-block', marginLeft: 10 }}>
+                        <EditableInfoModal
+                          areaName="totalProjectReportInfoPoint"
+                          areaTitle="Total Project Report"
+                          role={userRole}
+                          fontSize={15}
+                          isPermissionPage
+                          darkMode={darkMode}
+                        />
+                      </div>
                     </div>
-                  </div>
-                  <div className="total-report-item">
-                    <Button type="button" color="info" onClick={this.showTotalPeople}>
-                      {this.state.showTotalPeople
-                        ? 'Hide Total People Report'
-                        : 'Show Total People Report'}
-                    </Button>
-                    <div style={{ display: 'inline-block', marginLeft: 10 }}>
-                      <EditableInfoModal
-                        areaName="totalPeopleReportInfoPoint"
-                        areaTitle="Total People Report"
-                        role={userRole}
-                        fontSize={15}
-                        isPermissionPage
-                        darkMode={darkMode}
-                      />
+                    <div className="total-report-item">
+                      <Button type="button" color="info" onClick={this.showTotalPeople}>
+                        {this.state.showTotalPeople
+                          ? 'Hide Total People Report'
+                          : 'Show Total People Report'}
+                      </Button>
+                      <div style={{ display: 'inline-block', marginLeft: 10 }}>
+                        <EditableInfoModal
+                          areaName="totalPeopleReportInfoPoint"
+                          areaTitle="Total People Report"
+                          role={userRole}
+                          fontSize={15}
+                          isPermissionPage
+                          darkMode={darkMode}
+                        />
+                      </div>
                     </div>
-                  </div>
-                  <div>
-              <div className="total-report-item">
-              <Button color="info" onClick={this.showTotalTeam}>
-                      {this.state.showTotalTeam
-                        ? 'Hide Total Team Report'
-                        : 'Show Total Team Report'}
-                    </Button>
-                    <div style={{ display: 'inline-block', marginLeft: 10 }}>
-                      <EditableInfoModal
-                        areaName="totalTeamReportInfoPoint"
-                        areaTitle="Total Team Report"
-                        role={userRole}
-                        fontSize={15}
-                        isPermissionPage
-                        darkMode={darkMode}
-                      />
-                    </div>
+                    <div>
+                      <div className="total-report-item">
+                        <Button color="info" onClick={this.showTotalTeam}>
+                          {this.state.showTotalTeam
+                            ? 'Hide Total Team Report'
+                            : 'Show Total Team Report'}
+                        </Button>
+                        <div style={{ display: 'inline-block', marginLeft: 10 }}>
+                          <EditableInfoModal
+                            areaName="totalTeamReportInfoPoint"
+                            areaTitle="Total Team Report"
+                            role={userRole}
+                            fontSize={15}
+                            isPermissionPage
+                            darkMode={darkMode}
+                          />
+                        </div>
 
-                </div>
-                </div>
-                </div>
-                {myRole !== 'Owner' && (
-                  <div className="lost-time-container">
-                    <div className="lost-time-item">
-                      <Button color="info" onClick={this.showAddProjHistory}>
-                        {this.state.showAddProjHistory
-                          ? 'Hide Project Lost Time'
-                          : 'Show Project Lost Time'}
-                      </Button>
-                      <div style={{ display: 'inline-block', marginLeft: 10 }}>
-                        <EditableInfoModal
-                          areaName="projectLostTimeInfoPoint"
-                          areaTitle="Project Lost Time"
-                          role={myRole}
-                          fontSize={15}
-                          isPermissionPage
-                          darkMode={darkMode}
-                        />
                       </div>
                     </div>
-                    <div className="lost-time-item">
-                      <Button color="info" onClick={this.showAddPersonHistory}>
-                        {this.state.showAddPersonHistory
-                          ? 'Hide Person Lost Time'
-                          : 'Show Person Lost Time'}
-                      </Button>
-                      <div style={{ display: 'inline-block', marginLeft: 10 }}>
-                        <EditableInfoModal
-                          areaName="personLostTimeInfoPoint"
-                          areaTitle="Person Lost Time"
-                          role={myRole}
-                          fontSize={15}
-                          isPermissionPage
-                          darkMode={darkMode}
-                        />
+                  </div>
+                  {myRole !== 'Owner' && (
+                    <div className="lost-time-container">
+                      <div className="lost-time-item">
+                        <Button color="info" onClick={this.showAddProjHistory}>
+                          {this.state.showAddProjHistory
+                            ? 'Hide Project Lost Time'
+                            : 'Show Project Lost Time'}
+                        </Button>
+                        <div style={{ display: 'inline-block', marginLeft: 10 }}>
+                          <EditableInfoModal
+                            areaName="projectLostTimeInfoPoint"
+                            areaTitle="Project Lost Time"
+                            role={myRole}
+                            fontSize={15}
+                            isPermissionPage
+                            darkMode={darkMode}
+                          />
+                        </div>
+                      </div>
+                      <div className="lost-time-item">
+                        <Button color="info" onClick={this.showAddPersonHistory}>
+                          {this.state.showAddPersonHistory
+                            ? 'Hide Person Lost Time'
+                            : 'Show Person Lost Time'}
+                        </Button>
+                        <div style={{ display: 'inline-block', marginLeft: 10 }}>
+                          <EditableInfoModal
+                            areaName="personLostTimeInfoPoint"
+                            areaTitle="Person Lost Time"
+                            role={myRole}
+                            fontSize={15}
+                            isPermissionPage
+                            darkMode={darkMode}
+                          />
+                        </div>
+                      </div>
+                      <div className="lost-time-item">
+                        <Button color="info" onClick={this.showAddTeamHistory}>
+                          {this.state.showAddTeamHistory
+                            ? 'Hide Team Lost Time'
+                            : 'Show Team Lost Time'}
+                        </Button>
+                        <div style={{ display: 'inline-block', marginLeft: 10 }}>
+                          <EditableInfoModal
+                            areaName="teamLostTimeInfoPoint"
+                            areaTitle="Team Lost Time"
+                            role={myRole}
+                            fontSize={15}
+                            isPermissionPage
+                            darkMode={darkMode}
+                          />
+                        </div>
                       </div>
                     </div>
-                    <div className="lost-time-item">
-                      <Button color="info" onClick={this.showAddTeamHistory}>
-                        {this.state.showAddTeamHistory
-                          ? 'Hide Team Lost Time'
-                          : 'Show Team Lost Time'}
-                      </Button>
-                      <div style={{ display: 'inline-block', marginLeft: 10 }}>
-                        <EditableInfoModal
-                          areaName="teamLostTimeInfoPoint"
-                          areaTitle="Team Lost Time"
-                          role={myRole}
-                          fontSize={15}
-                          isPermissionPage
-                          darkMode={darkMode}
-                        />
+                  )}
+                </div>
+
+                {myRole === 'Owner' && (
+                  <div
+                    className={`mt-4 p-3 rounded-lg ${darkMode ? 'bg-yinmn-blue' : 'bg-white'}`}
+                    style={darkMode ? boxStyleDark : boxStyle}
+                  >
+                    <div className="lost-time-container">
+                      <div className="lost-time-item">
+                        <Button color="success" onClick={this.setAddTime}>
+                          Add Lost Time
+                        </Button>
+                        <div style={{ display: 'inline-block', marginLeft: 10 }}>
+                          <EditableInfoModal
+                            areaName="addLostTimeInfoPoint"
+                            areaTitle="Add Lost Time"
+                            role={myRole}
+                            fontSize={15}
+                            isPermissionPage
+                            darkMode={darkMode}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="lost-time-container">
+                      <div className="lost-time-item">
+                        <Button color="info" onClick={this.showAddProjHistory}>
+                          {this.state.showAddProjHistory
+                            ? 'Hide Project Lost Time'
+                            : 'Show Project Lost Time'}
+                        </Button>
+                        <div style={{ display: 'inline-block', marginLeft: 10 }}>
+                          <EditableInfoModal
+                            areaName="projectLostTimeInfoPoint"
+                            areaTitle="Project Lost Time"
+                            role={myRole}
+                            fontSize={15}
+                            isPermissionPage
+                            darkMode={darkMode}
+                          />
+                        </div>
+                      </div>
+                      <div className="lost-time-item">
+                        <Button color="info" onClick={this.showAddPersonHistory}>
+                          {this.state.showAddPersonHistory
+                            ? 'Hide Person Lost Time'
+                            : 'Show Person Lost Time'}
+                        </Button>
+                        <div style={{ display: 'inline-block', marginLeft: 10 }}>
+                          <EditableInfoModal
+                            areaName="personLostTimeInfoPoint"
+                            areaTitle="Person Lost Time"
+                            role={myRole}
+                            fontSize={15}
+                            isPermissionPage
+                            darkMode={darkMode}
+                          />
+                        </div>
+                      </div>
+                      <div className="lost-time-item">
+                        <Button color="info" onClick={this.showAddTeamHistory}>
+                          {this.state.showAddTeamHistory
+                            ? 'Hide Team Lost Time'
+                            : 'Show Team Lost Time'}
+                        </Button>
+                        <div style={{ display: 'inline-block', marginLeft: 10 }}>
+                          <EditableInfoModal
+                            areaName="teamLostTimeInfoPoint"
+                            areaTitle="Team Lost Time"
+                            role={myRole}
+                            fontSize={15}
+                            isPermissionPage
+                            darkMode={darkMode}
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
                 )}
               </div>
-
-              {myRole === 'Owner' && (
-                <div
-                  className={`mt-4 p-3 rounded-lg ${darkMode ? 'bg-yinmn-blue' : 'bg-white'}`}
-                  style={darkMode ? boxStyleDark : boxStyle}
-                >
-                  <div className="lost-time-container">
-                    <div className="lost-time-item">
-                      <Button color="success" onClick={this.setAddTime}>
-                        Add Lost Time
-                      </Button>
-                      <div style={{ display: 'inline-block', marginLeft: 10 }}>
-                        <EditableInfoModal
-                          areaName="addLostTimeInfoPoint"
-                          areaTitle="Add Lost Time"
-                          role={myRole}
-                          fontSize={15}
-                          isPermissionPage
-                          darkMode={darkMode}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="lost-time-container">
-                    <div className="lost-time-item">
-                      <Button color="info" onClick={this.showAddProjHistory}>
-                        {this.state.showAddProjHistory
-                          ? 'Hide Project Lost Time'
-                          : 'Show Project Lost Time'}
-                      </Button>
-                      <div style={{ display: 'inline-block', marginLeft: 10 }}>
-                        <EditableInfoModal
-                          areaName="projectLostTimeInfoPoint"
-                          areaTitle="Project Lost Time"
-                          role={myRole}
-                          fontSize={15}
-                          isPermissionPage
-                          darkMode={darkMode}
-                        />
-                      </div>
-                    </div>
-                    <div className="lost-time-item">
-                      <Button color="info" onClick={this.showAddPersonHistory}>
-                        {this.state.showAddPersonHistory
-                          ? 'Hide Person Lost Time'
-                          : 'Show Person Lost Time'}
-                      </Button>
-                      <div style={{ display: 'inline-block', marginLeft: 10 }}>
-                        <EditableInfoModal
-                          areaName="personLostTimeInfoPoint"
-                          areaTitle="Person Lost Time"
-                          role={myRole}
-                          fontSize={15}
-                          isPermissionPage
-                          darkMode={darkMode}
-                        />
-                      </div>
-                    </div>
-                    <div className="lost-time-item">
-                      <Button color="info" onClick={this.showAddTeamHistory}>
-                        {this.state.showAddTeamHistory
-                          ? 'Hide Team Lost Time'
-                          : 'Show Team Lost Time'}
-                      </Button>
-                      <div style={{ display: 'inline-block', marginLeft: 10 }}>
-                        <EditableInfoModal
-                          areaName="teamLostTimeInfoPoint"
-                          areaTitle="Team Lost Time"
-                          role={myRole}
-                          fontSize={15}
-                          isPermissionPage
-                          darkMode={darkMode}
-                        />
-                      </div>
-                    </div>
-                  </div>
+              {this.state.showCharts && (
+                <div className="table-data-container" style={(this.state.showPeople || this.state.showProjects || this.state.showTeams) ? { overflowY: 'auto' } : {overflowY: 'none'}}>
+                  {this.state.showPeople && (
+                    <PeopleTable userProfiles={this.state.peopleSearchData} darkMode={darkMode} />
+                  )}
+                  {this.state.showProjects && (
+                    <ProjectTable projects={this.state.projectSearchData} darkMode={darkMode} />
+                  )}
+                  {this.state.showTeams && (
+                    <TeamTable allTeams={this.state.teamSearchData} darkMode={darkMode} />
+                  )}
+                  {this.state.showTotalPeople && (
+                    <TotalPeopleReport
+                      startDate={this.state.startDate}
+                      endDate={this.state.endDate}
+                      userProfiles={userProfilesBasicInfo}
+                      darkMode={darkMode}
+                    />
+                  )}
+                  {this.state.showTotalTeam && (
+                    <TotalTeamReport
+                      startDate={this.state.startDate}
+                      endDate={this.state.endDate}
+                      userProfiles={userProfilesBasicInfo}
+                      allTeamsData={this.props.state.allTeamsData.allTeams}
+                      passTeamMemberList={this.setTeamMemberList}
+                      savedTeamMemberList={this.state.teamMemberList}
+                      darkMode={darkMode}
+                    />
+                  )}
+                  {!this.state.loading && this.state.showTotalProject && (
+                    <TotalProjectReport
+                      startDate={this.state.startDate}
+                      endDate={this.state.endDate}
+                      userProfiles={userProfilesBasicInfo}
+                      projects={projects}
+                      darkMode={darkMode}
+                    />
+                  )}
+                  {this.state.showAddTimeForm && myRole === 'Owner' && (
+                    <AddLostTime
+                      isOpen={this.state.showAddTimeForm}
+                      toggle={this.setAddTime}
+                      projects={projects}
+                      teams={allTeams}
+                      users={userProfilesBasicInfo}
+                    />
+                  )}
+                  {this.state.showAddPersonHistory && (
+                    <LostTimeHistory
+                      type="person"
+                      isOpen={this.state.showAddPersonHistory}
+                      startDate={this.state.startDate}
+                      endDate={this.state.endDate}
+                      allData={userProfilesBasicInfo}
+                      darkMode={darkMode}
+                    />
+                  )}
+                  {this.state.showAddTeamHistory && (
+                    <LostTimeHistory
+                      type="team"
+                      isOpen={this.state.showAddTeamHistory}
+                      startDate={this.state.startDate}
+                      endDate={this.state.endDate}
+                      allData={allTeams}
+                      darkMode={darkMode}
+                    />
+                  )}
+                  {this.state.showAddProjHistory && (
+                    <LostTimeHistory
+                      type="project"
+                      isOpen={this.state.showAddProjHistory}
+                      startDate={this.state.startDate}
+                      endDate={this.state.endDate}
+                      allData={projects}
+                      darkMode={darkMode}
+                    />
+                  )}
                 </div>
               )}
             </div>
-          </div>
-          <div className="table-data-container mt-5">
-            {this.state.showPeople && (
-              <PeopleTable userProfiles={this.state.peopleSearchData} darkMode={darkMode} />
-            )}
-            {this.state.showProjects && (
-              <ProjectTable projects={this.state.projectSearchData} darkMode={darkMode} />
-            )}
-            {this.state.showTeams && (
-              <TeamTable allTeams={this.state.teamSearchData} darkMode={darkMode} />
-            )}
-            {this.state.showTotalPeople && (
-              <TotalPeopleReport
-                startDate={this.state.startDate}
-                endDate={this.state.endDate}
-                userProfiles={userProfilesBasicInfo}
-                darkMode={darkMode}
-              />
-            )}
-            {this.state.showTotalTeam && (
-              <TotalTeamReport
-                startDate={this.state.startDate}
-                endDate={this.state.endDate}
-                userProfiles={userProfilesBasicInfo}
-                allTeamsData={this.props.state.allTeamsData.allTeams}
-                passTeamMemberList={this.setTeamMemberList}
-                savedTeamMemberList={this.state.teamMemberList}
-                darkMode={darkMode}
-              />
-            )}
-            {!this.state.loading && this.state.showTotalProject && (
-              <TotalProjectReport
-                startDate={this.state.startDate}
-                endDate={this.state.endDate}
-                userProfiles={userProfilesBasicInfo}
-                projects={projects}
-                darkMode={darkMode}
-              />
-            )}
-            {this.state.showAddTimeForm && myRole === 'Owner' && (
-              <AddLostTime
-                isOpen={this.state.showAddTimeForm}
-                toggle={this.setAddTime}
-                projects={projects}
-                teams={allTeams}
-                users={userProfilesBasicInfo}
-              />
-            )}
-            {this.state.showAddPersonHistory && (
-              <LostTimeHistory
-                type="person"
-                isOpen={this.state.showAddPersonHistory}
-                startDate={this.state.startDate}
-                endDate={this.state.endDate}
-                allData={userProfilesBasicInfo}
-                darkMode={darkMode}
-              />
-            )}
-            {this.state.showAddTeamHistory && (
-              <LostTimeHistory
-                type="team"
-                isOpen={this.state.showAddTeamHistory}
-                startDate={this.state.startDate}
-                endDate={this.state.endDate}
-                allData={allTeams}
-                darkMode={darkMode}
-              />
-            )}
-            {this.state.showAddProjHistory && (
-              <LostTimeHistory
-                type="project"
-                isOpen={this.state.showAddProjHistory}
-                startDate={this.state.startDate}
-                endDate={this.state.endDate}
-                allData={projects}
-                darkMode={darkMode}
-              />
-            )}
           </div>
         </div>
       </Container>
