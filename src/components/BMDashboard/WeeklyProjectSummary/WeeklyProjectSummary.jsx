@@ -217,24 +217,23 @@ export default function WeeklyProjectSummary() {
         }),
       },
       {
-      title: 'Financials',
-      key: 'Financials',
-      className: 'large',
-      content: (
-        <>
-          <div className="weekly-project-summary-card financial-big">
-            <CostPredictionChart projectId={1} />
-          </div>
-          {Array.from({ length: 4 }).map(() => {
-            const uniqueId = uuidv4();
-            return (
-              <div key={uniqueId} className="weekly-project-summary-card financial-small">
-                📊 Card
-              </div>
-            );
-          })}
-        </>
-      ),
+        title: 'Financials',
+        key: 'Financials',
+        className: 'large',
+        content: (
+          <>
+            {Array.from({ length: 4 }).map(() => {
+              const uniqueId = uuidv4();
+              return (
+                <div key={uniqueId} className="weekly-project-summary-card financial-small">
+                  📊 Card
+                </div>
+              );
+            })}
+
+            <div className="weekly-project-summary-card financial-big">📊 Big Card</div>
+          </>
+        ),
       },
       {
         title: 'Loss Tracking',
@@ -262,6 +261,19 @@ export default function WeeklyProjectSummary() {
           return (
             <div key={uniqueId} className="weekly-project-summary-card normal-card">
               📊 Card
+            </div>
+          );
+        }),
+      },
+      {
+        title: 'Financials Tracking',
+        key: 'Financials Tracking',
+        className: 'full',
+        content: [1, 2, 3, 4].map((_, index) => {
+          const uniqueId = uuidv4();
+          return (
+            <div key={uniqueId} className="weekly-project-summary-card normal-card">
+              {index === 3 ? <CostPredictionChart projectId={1} /> : '📊 Card'}
             </div>
           );
         }),

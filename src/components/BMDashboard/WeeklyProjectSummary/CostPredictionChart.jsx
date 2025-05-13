@@ -12,6 +12,55 @@ import {
 } from 'recharts';
 import projectCostService from '../../../services/projectCostService';
 
+// Custom dot renderer to show value above the top line and below the bottom line
+function renderDotTopOrBottom(lineKey, color) {
+  return function CustomDot(props) {
+    const { cx, cy, value, payload, index } = props;
+    if (value == null) return null;
+    // Get all three values for this x-position
+    const planned = payload.plannedCost;
+    const actual = payload.actualCost;
+    const predicted = payload.predictedCost;
+    const values = [planned, actual, predicted].filter(v => v !== null && v !== undefined);
+    if (values.length === 0) return null;
+    const max = Math.max(...values);
+    const min = Math.min(...values);
+    const dx = index === 0 ? 32 : 0; // shift more right for first value
+    // Only render if this line is the top or bottom at this x
+    if (value === max) {
+      return (
+        <text
+          x={cx + dx}
+          y={cy - 20}
+          fill={color}
+          fontSize={10}
+          fontWeight="bold"
+          textAnchor="middle"
+          alignmentBaseline="middle"
+        >
+          {value}
+        </text>
+      );
+    }
+    if (value === min) {
+      return (
+        <text
+          x={cx + dx}
+          y={cy + 18}
+          fill={color}
+          fontSize={10}
+          fontWeight="bold"
+          textAnchor="middle"
+          alignmentBaseline="middle"
+        >
+          {value}
+        </text>
+      );
+    }
+    return null;
+  };
+}
+
 function CostPredictionChart({ projectId }) {
   const [chartData, setChartData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -79,7 +128,7 @@ function CostPredictionChart({ projectId }) {
           fontWeight: 'normal',
         }}
       >
-        Project Cost Analysis
+        Planned Vs Actual costs tracking
       </h2>
       <ResponsiveContainer width="100%" height={400}>
         <LineChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
@@ -94,12 +143,12 @@ function CostPredictionChart({ projectId }) {
               paddingTop: '20px',
             }}
           />
-          <ReferenceLine 
-            x={currentMonth} 
-            stroke="#ff0000" 
-            strokeDasharray="3 3" 
-            label={{ 
-              value: 'Current Month', 
+          <ReferenceLine
+            x={currentMonth}
+            stroke="#ff0000"
+            strokeDasharray="3 3"
+            label={{
+              value: 'Current Month',
               position: 'top',
               fill: '#ff0000',
             }}
@@ -110,7 +159,7 @@ function CostPredictionChart({ projectId }) {
             stroke="#82ca9d"
             strokeWidth={2}
             name="Planned Cost"
-            dot={{ r: 4, fill: '#82ca9d' }}
+            dot={renderDotTopOrBottom('plannedCost', '#82ca9d')}
           />
           <Line
             type="monotone"
@@ -118,7 +167,7 @@ function CostPredictionChart({ projectId }) {
             stroke="#8884d8"
             strokeWidth={2}
             name="Actual Cost"
-            dot={{ r: 4, fill: '#8884d8' }}
+            dot={renderDotTopOrBottom('actualCost', '#8884d8')}
           />
           <Line
             type="monotone"
@@ -127,7 +176,7 @@ function CostPredictionChart({ projectId }) {
             strokeWidth={2}
             strokeDasharray="5 5"
             name="Predicted Cost"
-            dot={{ r: 4, fill: '#ff7300' }}
+            dot={renderDotTopOrBottom('predictedCost', '#ff7300')}
           />
         </LineChart>
       </ResponsiveContainer>
