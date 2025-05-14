@@ -1,5 +1,14 @@
 import Loading from 'components/common/Loading';
-import { ResponsiveContainer, BarChart, XAxis, YAxis, Tooltip, Legend, Bar, Cell } from 'recharts';
+import {
+  ResponsiveContainer,
+  BarChart,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+  Bar,
+  Cell
+} from 'recharts';
 
 const COLORS = [
   '#14b32b',
@@ -9,13 +18,13 @@ const COLORS = [
   '#eb34b4',
   '#47c4ed',
   '#59f0cf',
-  '#f0ec18',
+  '#f0ec18'
 ];
 
 function CustomizedLabel(props) {
   const { x, y, value, sum, width } = props;
 
-  if (!sum || isNaN(sum) || !isFinite(sum) || !isFinite(value)) return null;
+  if (!sum || Number.isNaN(sum) || !Number.isFinite(sum) || !Number.isFinite(value)) return null;
 
   const percentage = ((value / sum) * 100).toFixed(2);
   const centerX = x + width / 2;
@@ -47,28 +56,26 @@ export default function WorkDistributionBarChart({ isLoading, workDistributionSt
 
   // Prepare and sanitize data
   const filteredStats = (workDistributionStats || []).filter(
-    item => item._id && isFinite(item.totalHours)
+    (item) => item._id && Number.isFinite(item.totalHours)
   );
 
-  const data = filteredStats.map(item => ({
+  const data = filteredStats.map((item) => ({
     ...item,
-    totalHours: Number(item.totalHours.toFixed(2)),
+    totalHours: Number(item.totalHours.toFixed(2))
   }));
 
-  const totalValues = data.map(item => item.totalHours);
+  const totalValues = data.map((item) => item.totalHours);
   const sum = totalValues.reduce((acc, val) => acc + val, 0);
-
-  // Debug logs
-  console.log('Raw stats:', workDistributionStats);
-  console.log('Processed data:', data);
-  console.log('Sum of totalHours:', sum);
 
   const isDarkMode =
     window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-  if (!data.length || !isFinite(sum) || sum === 0) {
+  if (!data.length || !Number.isFinite(sum) || sum === 0) {
     return (
-      <div className="d-flex justify-content-center align-items-center" style={{ height: '400px' }}>
+      <div
+        className="d-flex justify-content-center align-items-center"
+        style={{ height: '400px' }}
+      >
         <h5>No work distribution data available</h5>
       </div>
     );
@@ -88,17 +95,16 @@ export default function WorkDistributionBarChart({ isLoading, workDistributionSt
           angle={-30}
           textAnchor="end"
         />
-       <YAxis
-  tick={{ fontSize: 12, fill: isDarkMode ? '#FFFFFF' : '#333333' }}
-  label={{
-    value: 'Total Hours',
-    angle: -90,
-    position: 'insideLeft',
-    fill: isDarkMode ? '#FFFFFF' : '#333333',
-    fontSize: 14,
-  }}
-/>
-
+        <YAxis
+          tick={{ fontSize: 12, fill: isDarkMode ? '#FFFFFF' : '#333333' }}
+          label={{
+            value: 'Total Hours',
+            angle: -90,
+            position: 'insideLeft',
+            fill: isDarkMode ? '#FFFFFF' : '#333333',
+            fontSize: 14
+          }}
+        />
         <Tooltip />
         <Legend />
         <Bar

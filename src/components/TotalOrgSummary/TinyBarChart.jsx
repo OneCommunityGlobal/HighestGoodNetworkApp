@@ -6,7 +6,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   Cell,
-  LabelList,
+  LabelList
 } from 'recharts';
 
 export default function TinyBarChart(props) {
@@ -14,7 +14,7 @@ export default function TinyBarChart(props) {
 
   // Guard tick count
   const safeTickCount =
-    tickInterval && isFinite(maxY / tickInterval)
+    tickInterval && Number.isFinite(maxY / tickInterval)
       ? Math.floor(maxY / tickInterval) + 1
       : 5;
 
@@ -24,13 +24,13 @@ export default function TinyBarChart(props) {
         data={chartData}
         margin={{
           top: 30,
-          bottom: 20,
+          bottom: 20
         }}
       >
         <XAxis dataKey="name" stroke={darkMode ? 'white' : 'gray'} />
         <YAxis
           stroke={darkMode ? 'white' : 'gray'}
-          domain={[0, isFinite(maxY) ? maxY : 1]}
+          domain={[0, Number.isFinite(maxY) ? maxY : 1]}
           axisLine={false}
           tickLine={false}
           tickCount={safeTickCount}
@@ -38,11 +38,8 @@ export default function TinyBarChart(props) {
         />
         <Tooltip cursor={{ fill: 'transparent' }} />
         <Bar dataKey="amount" fill="#8884d8">
-          {chartData.map((entry, index) => (
-            <Cell
-              key={`cell-${index}`}
-              fill={entry.color || '#8884d8'}
-            />
+          {chartData.map((entry) => (
+            <Cell key={`cell-${entry.name}`} fill={entry.color || '#8884d8'} />
           ))}
           <LabelList dataKey="amount" content={renderCustomizedLabel} />
         </Bar>
@@ -50,3 +47,4 @@ export default function TinyBarChart(props) {
     </ResponsiveContainer>
   );
 }
+
