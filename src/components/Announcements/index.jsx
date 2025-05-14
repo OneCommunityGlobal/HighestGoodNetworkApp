@@ -1,7 +1,8 @@
+// eslint-disable-next-line no-unused-vars
 import { useState, useEffect, useRef } from 'react';
 import './Announcements.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { Editor } from '@tinymce/tinymce-react'; // Import Editor from TinyMCE
+import { Editor } from '@tinymce/tinymce-react';
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
@@ -13,8 +14,9 @@ function Announcements({ title, email }) {
   const [emailList, setEmailList] = useState([]);
   const [emailContent, setEmailContent] = useState('');
   const [headerContent, setHeaderContent] = useState('');
-  const [showEditor, setShowEditor] = useState(true); // State to control rendering of the editor
+  const [showEditor, setShowEditor] = useState(true);
   const [isFileUploaded, setIsFileUploaded] = useState(false);
+  const editorRef = useRef(null);
 
   useEffect(() => {
     // Toggle the showEditor state to force re-render when dark mode changes
@@ -60,7 +62,7 @@ function Announcements({ title, email }) {
             necessary, as we are looking to handle it internally.
           */
           const id = `blobid${new Date().getTime()}`;
-          const { blobCache } = tinymce.current.activeEditor.editorUpload;
+          const { blobCache } = editorRef.current.editorUpload;
           const base64 = reader.result.split(',')[1];
           const blobInfo = blobCache.create(id, file, base64);
           blobCache.add(blobInfo);
@@ -105,12 +107,11 @@ function Announcements({ title, email }) {
   const addHeaderToEmailContent = () => {
     if (!headerContent) return;
     const imageTag = `<img src="${headerContent}" alt="Header Image" style="width: 100%; max-width: 100%; height: auto;">`;
-    const editor = tinymce.get('email-editor');
-    if (editor) {
-      editor.insertContent(imageTag);
-      setEmailContent(editor.getContent());
+    if (editorRef.current) {
+      editorRef.current.insertContent(imageTag);
+      setEmailContent(editorRef.current.getContent());
     }
-    setHeaderContent(''); // Clear the input field after inserting the header
+    setHeaderContent('');
   };
 
   const convertImageToBase64 = (file, callback) => {
@@ -128,10 +129,9 @@ function Announcements({ title, email }) {
     convertImageToBase64(imageFile, base64Image => {
       const imageTag = `<img src="${base64Image}" alt="Header Image" style="width: 100%; max-width: 100%; height: auto;">`;
       setHeaderContent(prevContent => `${imageTag}${prevContent}`);
-      const editor = tinymce.current.get('email-editor');
-      if (editor) {
-        editor.insertContent(imageTag);
-        setEmailContent(editor.getContent());
+      if (editorRef.current) {
+        editorRef.current.insertContent(imageTag);
+        setEmailContent(editorRef.current.getContent());
       }
     });
     e.target.value = '';
@@ -156,8 +156,7 @@ function Announcements({ title, email }) {
       return;
     }
 
-    const invalidEmails = emailList.filter(email => !validateEmail(email.trim()));
-
+    const invalidEmails = emailList.filter(emailS => !validateEmail(emailS.trim()));
 
     if (invalidEmails.length > 0) {
       toast.error(`Error: Invalid email addresses: ${invalidEmails.join(', ')}`);
@@ -193,6 +192,9 @@ function Announcements({ title, email }) {
               init={editorInit}
               onEditorChange={content => {
                 setEmailContent(content);
+              }}
+              onInit={(evt, editor) => {
+                editorRef.current = editor;
               }}
             />
           )}
