@@ -58,6 +58,7 @@ export const scheduleInstagramPost = async (startDate, caption, file, setSchedul
       setScheduledPostsError(imageValidation.message);
       return null;
     }
+    setScheduledButtonTextState("Image validation complete");
     const convertedFile = await convertToJPG(file);
 
     const imgurFormData = new FormData();
@@ -74,18 +75,23 @@ export const scheduleInstagramPost = async (startDate, caption, file, setSchedul
       setScheduledPostsError("Imgur upload failed. Please try again.");
       return null;
     }
-
+    setScheduledButtonTextState("Imgur upload complete");
     console.log("Imgur upload response:", imgurResponse.data);
     const imageURL = imgurResponse.data.data.link;
     const deleteHash = imgurResponse.data.data.deletehash;
 
+    setScheduledButtonTextState("Scheduling post...");
     const response = await axios.post(ENDPOINTS.POST_INSTAGRAM_SCHEDULED_POST, {
       imgurImageUrl: imageURL,
       imgurDeleteHash: deleteHash,
       caption: caption,
       scheduledTime: formattedDate
     });
-
+    if (response.data.success != true) {
+      setScheduledPostsError("Instagram post scheduling failed. Please try again.");
+      return null;
+    }
+    setScheduledButtonTextState("Post scheduled");
     return response.data;
     
   } catch (error) {

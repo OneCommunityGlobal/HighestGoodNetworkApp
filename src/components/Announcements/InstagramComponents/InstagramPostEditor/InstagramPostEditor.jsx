@@ -1,20 +1,18 @@
 import { useState, useEffect } from 'react';
 import InstagramLoginButton from '../InstagramLoginButton';
 import './InstagramPostEditor.css';
-import { postToInstagram, checkInstagramAuthStatus } from '../InstagramPostHelpers';
+import { postToInstagram, checkInstagramAuthStatus, disconnectFromInstagram } from '../helpers/InstagramPostHelpers';
 import ImageUploader from '../ImageUploader';
 import InstagramScheduledPostsEditor from '../InstagramScheduledPostEditor/InstagramScheduledPostsEditor';
-import { set } from 'lodash';
-import { check } from 'prettier';
-import { timestamp } from 'joi/lib/types/date';
 import { toast } from 'react-toastify';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { getInstagramScheduledPosts, scheduleInstagramPost, deleteInstagramScheduledPost } from '../InstagramSchedulePostHelpers';
+import { getInstagramScheduledPosts, scheduleInstagramPost, deleteInstagramScheduledPost } from '../helpers/InstagramSchedulePostHelpers';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheckCircle, faTimesCircle, faClock, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 
 const MAX_CAPTION_CHARACTERS = 2200; 
 function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionStatus}) {
-  const [instagramError, setInstagramError] = useState('');
   const [characterCount, setCharacterCount] = useState(0);
   const [isExceedingLimit, setIsExceedingLimit] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -29,9 +27,11 @@ function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionS
     timestamp: null,
   });
   const [buttonTextState, setButtonTextState] = useState("");
-
   const [scheduledButtonTextState, setScheduledButtonTextState] = useState("");
+
+  const [instagramError, setInstagramError] = useState('');
   const [scheduledPostsError, setScheduledPostsError] = useState('');
+
   const [scheduledPosts, setScheduledPosts] = useState([]);
   const [isLoadingScheduledPosts, setIsLoadingScheduledPosts] = useState(false);
 
@@ -69,7 +69,7 @@ function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionS
 
   const handleDateChange = (date) => {
     setStartDate(date);
-    setIsScheduled(false); // Reset scheduled state when date changes
+    setIsScheduled(false);
   }
 
   const handleInstagramLoginSuccess = async () => {
@@ -141,6 +141,7 @@ function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionS
 
   const handleSchedulePost = () => {
     setScheduledButtonTextState("Scheduling post...");
+    setIsScheduling(true);
     scheduleInstagramPost(
       startDate, 
       caption, 
@@ -161,21 +162,53 @@ function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionS
         setStartDate(null);
       }
     });
+    setIsScheduling(false);
     setScheduledButtonTextState("");
+  }
+
+  const handleInstagramDisconnect = () => {
+    disconnectFromInstagram(setInstagramError);
+    checkInstagramAuthStatus(setInstagramError);
+    setInstagramConnectionStatus(false);
+    setInstagramAuthInfo({
+      hasValidToken: false,
+      tokenExpires: null,
+      userId: null,
+      timestamp: null,
+    });
+    setInstagramError('Disconnected from Instagram');
   }
 
   return (
     <div className='instagram-post-editor'>
-      <h2>Connection Status: {instagramConnectionStatus ? (
-        <div className="connected-status">
-          Connected
-          <span className="connected-icon">✔️</span>
-          <div className="connected-status-token-expiry">
-            Token Expiry: {instagramAuthInfo.tokenExpires ?
-              new Date(instagramAuthInfo.tokenExpires).toLocaleString() : 'N/A'}
-          </div>
+      <h2 className="connection-status-header">
+        <div className="connection-status-badge">
+          {instagramConnectionStatus ? (
+            <>
+              <span className="connection-badge connected">
+                <FontAwesomeIcon icon={faCheckCircle} /> Connected
+                <span className="expiry-info">
+                  <FontAwesomeIcon icon={faClock} /> Expires: {
+                    instagramAuthInfo.tokenExpires 
+                      ? new Date(instagramAuthInfo.tokenExpires).toLocaleString() 
+                      : 'N/A'
+                  }
+                </span>
+              </span>
+              <button 
+                className="disconnect-button" 
+                onClick={handleInstagramDisconnect}
+                title="Disconnect from Instagram"
+              >
+                <FontAwesomeIcon icon={faSignOutAlt} /> Disconnect
+              </button>
+            </>
+          ) : (
+            <span className="connection-badge disconnected">
+              <FontAwesomeIcon icon={faTimesCircle} /> Disconnected
+            </span>
+          )}
         </div>
-        ) : 'Not Connected'}
       </h2>
       {!instagramConnectionStatus ? (
         <div className="instagram-login-container">
@@ -190,7 +223,7 @@ function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionS
             }}
           />
 
-          {instagramError && <p className="error">{instagramError}</p>}
+          {instagramError && <p className="instagram-error">{instagramError}</p>}
         </div>
       ) : (
         <div className="instagram-editor-container">
@@ -209,7 +242,7 @@ function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionS
               {/* caption textarea */}
               <textarea 
                 className="instagram-caption-textarea"
-                placeholder='Write a caption...'
+                placeholder='Write a caption... (e.g. use engaging captions that are concise, add value, and include a call to action. Some examples include: "Ready to take on the week? ✨" ) and use hashtags to increase visibility. (e.g. #MondayMotivation #Inspiration)'
                 onChange={(e) => handleCaptionChange(e)}
                 value={caption}
               />
@@ -281,7 +314,7 @@ function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionS
                 >
                   <span className="button-text">
                   {scheduledButtonTextState || "Schedule Post"}
-                  {isLoading && <div className="spinner"></div>}
+                  {isScheduling && <div className="spinner"></div>}
                 </span>
                 </button>
               </div>

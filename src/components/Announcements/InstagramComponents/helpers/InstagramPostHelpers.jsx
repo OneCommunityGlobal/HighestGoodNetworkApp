@@ -19,6 +19,23 @@ export const checkInstagramAuthStatus = async (setInstagramError) => {
   }
 }
 
+export const disconnectFromInstagram = async (setInstagramError) => {
+  try {
+    const response = await axios.delete(ENDPOINTS.DISCONNECT_INSTAGRAM);
+    console.log("Disconnect from Instagram response:", response.data);
+    checkInstagramAuthStatus(setInstagramError);
+    if (response.data.success) {
+      toast.success("Successfully disconnected from Instagram.");
+    } else {
+      toast.error("Failed to disconnect from Instagram.");
+    }
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || "Unknown error occurred";
+    setInstagramError(errorMessage);
+    toast.error(errorMessage);
+  }
+}
+
 export const postToInstagram = async (caption, file, setInstagramError, setCaption, setFile, setImageResetKey, setButtonTextState) => {
   console.log("postToInstagram called with caption:", caption, "and file:", file);
   try {
@@ -57,6 +74,8 @@ export const postToInstagram = async (caption, file, setInstagramError, setCapti
       setInstagramError("Imgur upload failed. Please try again.");
       return null;
     }
+    setButtonTextState("Imgur upload complete");
+
     console.log("Imgur upload response:", imgurResponse.data);
     const imageURL = imgurResponse.data.data.link;
     const deleteHash = imgurResponse.data.data.deletehash;
@@ -73,6 +92,7 @@ export const postToInstagram = async (caption, file, setInstagramError, setCapti
       setInstagramError("Instagram container creation failed. Please try again.");
       return null;
     }
+    setButtonTextState("Instagram container created");
     console.log("Instagram container response:", instagramContainerCreateResponse.data);
 
     const containerId = instagramContainerCreateResponse.data.id;
@@ -86,9 +106,11 @@ export const postToInstagram = async (caption, file, setInstagramError, setCapti
       setInstagramError("Instagram container upload failed. Please try again.");
       return null;
     }
+    setButtonTextState("Instagram container uploaded");
     console.log("Instagram container upload response:", instagramContainerUploadResponse.data);
 
     // Delete the image from Imgur after posting to Instagram
+    setButtonTextState("Deleting image from Imgur...");
     const deleteImgurResponse = await axios.delete(ENDPOINTS.DELETE_IMGUR_IMAGE, {
       data: { deleteHash: deleteHash },
     });
@@ -96,6 +118,7 @@ export const postToInstagram = async (caption, file, setInstagramError, setCapti
       setInstagramError("Imgur image deletion failed.");
       return null;
     }
+    setButtonTextState("Imgur image deleted");
     console.log("Imgur image deletion response:", deleteImgurResponse.data);
 
     setCaption("");

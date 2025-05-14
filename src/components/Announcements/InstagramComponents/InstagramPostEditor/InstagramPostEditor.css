@@ -1,9 +1,82 @@
 .instagram-post-editor {
   display: flex;
   flex-direction: column;
-  /* gap: 1rem; */
-  /* background-color:azure; */
   padding: 0 70px 0 70px;
+}
+
+.connection-status-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.connection-status-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.disconnect-button {
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  padding: 4px 10px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #dc3545;
+  transition: all 0.2s ease;
+}
+
+.disconnect-button:hover {
+  background-color: #dc3545;
+  color: white;
+  border-color: #dc3545;
+}
+
+.disconnect-button svg {
+  font-size: 12px;
+}
+
+.connection-status-badge {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+}
+
+.connection-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 20px;
+  margin-left: 8px;
+  font-weight: normal;
+}
+
+.connected {
+  background-color: rgba(40, 167, 69, 0.15);
+  color: #28a745;
+}
+
+.disconnected {
+  background-color: rgba(108, 117, 125, 0.15);
+  color: #6c757d;
+}
+
+.status-icon, .connection-badge svg {
+  width: 16px;
+  height: 16px;
+  margin-right: 6px;
+}
+
+.expiry-info {
+  font-size: 12px;
+  margin-left: 10px;
+  opacity: 0.8;
 }
 
 .instagram-error {
@@ -14,10 +87,7 @@
 .instagram-editor-container {
   display: flex;
   flex-direction: row;
-  /* gap: 1rem; */
   width: 100%;
-  /* border: 1px solid #ccc; */
-  /* background-color: bisque; */
 }
 
 .instagram-editor-container > *:first-child {
@@ -32,6 +102,7 @@
 
 .instagram-login-container {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 }
@@ -56,7 +127,6 @@
   padding: 20px;
   border: 1px solid #ccc;
   border-radius: 5px;
-  /* background-color: black; */
 }
 
 .instagram-post-preview-header {
@@ -75,7 +145,6 @@
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  /* background-color: burlywood; */
 }
 
 .schedule-post-button-container {
@@ -87,7 +156,6 @@
   align-items: center;
   height: 100%;
   width: 50%;
-  /* background-color: brown; */
 }
 
 .schedule-post-instagram-button {
@@ -131,7 +199,6 @@
   border: 1px solid #ccc;
   border-radius: 8px;
   font-size: 16px;
-  /* resize: none; */
 }
 
 .instagram-caption-textarea {
@@ -151,7 +218,6 @@
 .caption-character-count {
   display: flex;
   justify-content: flex-end;
-  /* background-color: aqua; */
   width: 100%;
   align-items: center;
   font-size: 14px;
@@ -174,7 +240,6 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  /* background-color:beige; */
   padding: 15px 0 0 0;
   width: 100%;
 }

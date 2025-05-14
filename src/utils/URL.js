@@ -159,6 +159,7 @@ export const ENDPOINTS = {
   // Instagram endpoints
   GET_INSTAGRAM_AUTH_STATUS: `${APIEndpoint}/instagram/auth-status`,
   GET_INSTAGRAM_USER_ID: `${APIEndpoint}/instagram/get-user-id`,
+  DISCONNECT_INSTAGRAM: `${APIEndpoint}/instagram/disconnect`,
   CREATE_INSTAGRAM_CONTAINER: `${APIEndpoint}/instagram/create-container`,
   POST_INSTAGRAM_CONTAINER: `${APIEndpoint}/instagram/publish-container`,
 
