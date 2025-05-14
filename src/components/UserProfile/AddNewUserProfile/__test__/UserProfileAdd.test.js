@@ -51,7 +51,7 @@ describe('AddUserProfile page structure', () => {
 
   it('should be rendered with 13 input fields', () => {
     const inputs = mountedUserProfileAdd.find('Input');
-    expect(inputs.length).toBe(12);
+    expect(inputs.length).toBe(13);
   });
 
   it('should be rendered with 6 button', () => {
