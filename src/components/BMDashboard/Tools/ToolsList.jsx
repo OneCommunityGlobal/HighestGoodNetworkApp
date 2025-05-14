@@ -10,6 +10,22 @@ function ToolsList() {
   const errors = useSelector(state => state.errors);
   const postToolUpdateResult = useSelector(state => state.tools.updateTools);
 
+  const toolsWithId = tools
+    ? tools.map(item => {
+        let numericId;
+        if (item._id && typeof item._id === 'string' && item._id.length >= 6) {
+          numericId = parseInt(item._id.substring(item._id.length - 6), 16);
+        } else {
+          numericId = Math.floor(Math.random() * 1000000);
+        }
+
+        return {
+          ...item,
+          id: numericId,
+        };
+      })
+    : [];
+
   useEffect(() => {
     dispatch(fetchTools());
   }, []);
@@ -33,7 +49,7 @@ function ToolsList() {
   return (
     <ToolItemListView
       itemType={itemType}
-      items={tools}
+      items={toolsWithId}
       errors={errors}
       UpdateItemModal={UpdateToolModal}
       dynamicColumns={dynamicColumns}

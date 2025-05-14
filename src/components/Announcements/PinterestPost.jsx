@@ -10,6 +10,7 @@ import ToggleButton from 'react-bootstrap/ToggleButton';
 import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
 import { Modal, Button } from 'react-bootstrap';
 import { CloseButton } from 'react-bootstrap';
+import moment from 'moment';
 
 
 import Form from 'react-bootstrap/Form';
@@ -90,14 +91,14 @@ function PinterestPost() {
     return postValue;
   }
 
-  function resetForm(){
+  function resetForm() {
     setValidated(false);
     setTitle('');
     setDescription('');
     // setRadioValue('URL');
     setScheduleUpdate(!scheduleUpdate);
     setImageUrl("");
-    if(imageFileRef.current){
+    if (imageFileRef.current) {
       imageFileRef.current.value = null;
     }
 
@@ -201,7 +202,7 @@ function PinterestPost() {
               <Modal.Title>Select Date and Time</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              <input aria-label="Date and time" type="datetime-local" min={new Date().toISOString().slice(0, 16)} onChange={(e) => setScheduledTime(e.target.value)} />
+              <input aria-label="Date and time" type="datetime-local" min={moment().format('YYYY-MM-DDThh:mm')} onChange={(e) => setScheduledTime(e.target.value)} />
             </Modal.Body>
             <Modal.Footer>
               <Button variant="secondary" onClick={handleClose}>
@@ -231,10 +232,12 @@ function PinterestPost() {
             </Form.Control.Feedback>
           </Form.Group>
 
-          <Form.Label>Image*</Form.Label>
+          <div>
+            <Form.Label>Image*</Form.Label>
+          </div>
 
           {/* image options */}
-          <ToggleButtonGroup type="radio" name="options" defaultValue={"URL"}>
+          <ToggleButtonGroup className="image-type-toggole" type="radio" name="options" defaultValue={"URL"}>
             <ToggleButton id="tbg-radio-1" value={"URL"} onChange={(e) => setRadioValue(e.currentTarget.value)}>
               URL
             </ToggleButton>

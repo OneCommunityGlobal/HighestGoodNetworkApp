@@ -25,6 +25,10 @@
   margin-top: 0.25rem;
 }
 
+.image-type-toggole{
+  width:100%;
+}
+
 .pinterest-submit-buttons {
   display: flex;
   flex-direction: row;
