@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { toast } from 'react-toastify';
 import * as actions from '../constants/weeklySummariesReport';
 import { ENDPOINTS } from '../utils/URL';
 
@@ -50,7 +51,7 @@ export const getWeeklySummariesReport = () => {
     try {
       const response = await axios.get(url);
       dispatch(fetchWeeklySummariesReportSuccess(response.data));
-      return {status: response.status, data: response.data};
+      return { status: response.status, data: response.data };
     } catch (error) {
       dispatch(fetchWeeklySummariesReportError(error));
       return error.response.status;
@@ -61,20 +62,43 @@ export const getWeeklySummariesReport = () => {
 export const updateOneSummaryReport = (userId, updatedField) => {
   const url = ENDPOINTS.USER_PROFILE(userId);
   return async dispatch => {
-    try {
-      const { data: userProfile } = await axios.get(url);
-      const res = await axios.put(url, {
-        ...userProfile,
-        ...updatedField,
-      });
-      if (res.status === 200) {
-        dispatch(updateSummaryReport({ _id: userId, updatedField }));
-        return res;
-      } else {
-        throw new Error(`An error occurred while attempting to save the changes to the profile.`)
-      }
-    } catch (err) {
-      throw err;
+    const { data: userProfile } = await axios.get(url);
+    const res = await axios.put(url, {
+      ...userProfile,
+      ...updatedField,
+    });
+
+    if (res.status === 200) {
+      dispatch(updateSummaryReport({ _id: userId, updatedField }));
+      return res;
     }
-  }
+
+    throw new Error(`An error occurred while attempting to save the changes to the profile.`);
+  };
+};
+
+/**
+ * Toggle the user's bio status (posted, requested, default).
+ */
+export const toggleUserBio = (userId, bioPosted) => {
+  const url = ENDPOINTS.TOGGLE_BIO_STATUS(userId);
+  return async dispatch => {
+    try {
+      const res = await axios.patch(url, { bioPosted });
+
+      if (res.status === 200) {
+        const updatedField = { bioPosted };
+
+        // Dispatch an action to update the store
+        dispatch(updateSummaryReport({ _id: userId, updatedField }));
+
+        toast.success(`Bio status updated to "${bioPosted}"`);
+      }
+
+      return res;
+    } catch (error) {
+      toast.error('An error occurred while updating bio status.');
+      throw error;
+    }
+  };
 };
