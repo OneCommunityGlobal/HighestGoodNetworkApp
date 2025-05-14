@@ -19,7 +19,6 @@ src/components/Badge/**
 src/components/Dashboard/**
 src/components/Projects/**
 src/components/SummaryManagement/**
-src/components/TaskEditSuggestions/**
 src/components/TeamMemberTasks/**
 src/components/Teams/TeamMembersPopup.jsx
 src/components/UserManagement/**

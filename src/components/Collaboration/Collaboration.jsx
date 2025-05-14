@@ -146,8 +146,8 @@ const Collaboration = () => {
             <img src={OneCommunityImage} alt="One Community Logo" className="responsive-img" />
           </a>
         </div>
-        <div className="container">
-          <nav className="navbar">
+        <div className="collaboration-container">
+          <nav className="collaboration-navbar">
             <div className="navbar-left">
               <form className="search-form">
                 <input
@@ -205,32 +205,38 @@ const Collaboration = () => {
     );
   }
 
-  return (
-    <div className="job-landing">
-      <div className='job-header'>
-        <a
-          href="https://www.onecommunityglobal.org/collaboration/"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <img src={OneCommunityImage} alt="One Community Logo" />
-        </a>
-      </div>
-      <div className="container">
-        <nav className="navbar">
-          <div className="navbar-left">
-            <form className="search-form">
-              <input
-                type="text"
-                placeholder="Search by title..."
-                value={query}
-                onChange={handleSearch}
-              />
-              <button className="btn btn-secondary" type="submit" onClick={handleSubmit}>
-                Go
-              </button>
-            </form>
-          </div>
+    return (
+      <div className="job-landing">
+        <div className="header">
+          <a
+            href="https://www.onecommunityglobal.org/collaboration/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <img src={OneCommunityImage} alt="One Community Logo" />
+          </a>
+        </div>
+        <div className="collaboration-container">
+          <nav className="collaboration-navbar">
+            <div className="navbar-left">
+              <form className="search-form">
+                <input
+                  type="text"
+                  placeholder="Search by title..."
+                  value={searchTerm}
+                  onChange={this.handleSearch}
+                />
+                <button className="search-button" type="submit" onClick={this.handleSubmit}>
+                  Go
+                </button>
+                <button type="button" onClick={this.handleResetFilters}>
+                  Reset
+                </button>
+                <button className="show-summaries" type="button" onClick={this.handleShowSummaries}>
+                  Show Summaries
+                </button>
+              </form>
+            </div>
 
           <div className="navbar-right">
             <select value={category} onChange={handleCategoryChange}>

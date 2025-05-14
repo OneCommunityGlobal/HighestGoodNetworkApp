@@ -1,3 +1,10 @@
+.collaboration-container,
+.job-landing .header img {
+  width: 60%;
+  max-width: 1000px;
+  display: flex;
+}
+
 .job-header {
   display: flex;
   justify-content: center;
@@ -10,7 +17,7 @@
 .job-ad {
   text-align: center;
 }
-.container {
+.collaboration-container {
   width: 90%;
   margin: 0 auto;
   flex-direction: column;
@@ -29,7 +36,7 @@
   margin: 0 auto;
   flex-direction: column;
 }
-.navbar {
+.collaboration-navbar {
   width: 100%;
   display: flex;
   justify-content: space-between;
@@ -157,7 +164,7 @@ select {
   font-size: 14px;
 }
 
-.navbar {
+.collaboration-navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -199,7 +206,7 @@ select {
     grid-template-columns: 1fr;
   }
 
-  .navbar {
+  .collaboration-navbar {
     flex-direction: column;
     padding: 5px;
     text-align: center;
@@ -255,7 +262,7 @@ select {
 }
 
 @media screen and (max-width: 800px) {
-  .navbar {
+  .collaboration-navbar {
     flex-direction: column;
     align-items: center;
   }

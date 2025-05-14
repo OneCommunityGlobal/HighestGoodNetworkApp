@@ -7,7 +7,7 @@ import { Route, Switch } from 'react-router-dom';
 import SetupProfile from 'components/SetupProfile/SetupProfile';
 import { ToastContainer } from 'react-toastify';
 import AutoUpdate from 'components/AutoUpdate';
-import { TaskEditSuggestions } from 'components/TaskEditSuggestions/TaskEditSuggestions';
+import TaskEditSuggestions from 'components/TaskEditSuggestions/TaskEditSuggestions';
 import RoutePermissions from 'utils/routePermissions';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import RoleInfoCollections from 'components/UserProfile/EditableModal/RoleInfoModal';
@@ -17,6 +17,10 @@ import Announcements from 'components/Announcements';
 import JobFormBuilder from 'components/Collaboration/JobFormbuilder';
 import JobCCDashboard from 'components/JobCCDashboard/JobCCDashboard';
 import WeeklyProjectSummary from 'components/BMDashboard/WeeklyProjectSummary/WeeklyProjectSummary';
+import FaqSearch from 'components/Faq/FaqSearch';
+import FaqManagement from 'components/Faq/FaqManagement';
+import FaqHistory from 'components/Faq/FaqHistory';
+import UnansweredFaqs from 'components/Faq/UnansweredFaqs';
 import HeaderRenderer from 'components/Header/HeaderRenderer';
 import Page1 from './components/HGNForm/pages/Page1';
 import Page2 from './components/HGNForm/pages/Page2';
@@ -51,6 +55,7 @@ import UnsubscribeForm from './components/EmailSubscribeForm/Unsubscribe';
 import NotFoundPage from './components/NotFound/NotFoundPage';
 import EmailSender from './components/common/EmailSender/EmailSender';
 import Collaboration from './components/Collaboration';
+import ApplicantsAgeChart from './components/ApplicantsChart';
 
 // LB Dashboard
 import LBProtectedRoute from './components/common/LBDashboard/LBProtectedRoute';
@@ -297,6 +302,8 @@ export default (
           routePermissions={RoutePermissions.teams}
         />
 
+        <ProtectedRoute path="/applicants-chart" exact component={ApplicantsAgeChart} fallback />
+
         <ProtectedRoute
           path="/announcements"
           exact
@@ -309,6 +316,33 @@ export default (
           component={EmailSender}
           allowedRoles={[UserRole.Administrator, UserRole.Owner]}
           routePermissions={RoutePermissions.projects}
+        />
+
+        <ProtectedRoute
+          path="/faq"
+          exact
+          component={FaqSearch}
+        />
+
+        <ProtectedRoute
+          path="/faq-management"
+          exact
+          component={FaqManagement}
+          routePermissions={RoutePermissions.faqManagement}
+        />
+
+        <ProtectedRoute
+          path="/faqs/:id/history"
+          exact
+          component={FaqHistory}
+          routePermissions={RoutePermissions.faqManagement}
+        />
+
+        <ProtectedRoute
+          path="/unanswered-faqs"
+          exact
+          component={UnansweredFaqs}
+          routePermissions={RoutePermissions.faqManagement}
         />
 
         <ProtectedRoute
