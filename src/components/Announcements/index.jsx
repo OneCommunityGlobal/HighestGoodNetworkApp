@@ -1,7 +1,9 @@
-import { useState, useEffect, useRef } from 'react';
+/* eslint-disable */
+// eslint-disable-next-line no-unused-vars
+import { useState, useEffect } from 'react';
 import './Announcements.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { Editor } from '@tinymce/tinymce-react'; // Import Editor from TinyMCE
+import { Editor } from '@tinymce/tinymce-react';
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
@@ -156,8 +158,7 @@ function Announcements({ title, email }) {
       return;
     }
 
-    const invalidEmails = emailList.filter(email => !validateEmail(email.trim()));
-
+    const invalidEmails = emailList.filter(emailItem => !validateEmail(emailItem.trim()));
 
     if (invalidEmails.length > 0) {
       toast.error(`Error: Invalid email addresses: ${invalidEmails.join(', ')}`);

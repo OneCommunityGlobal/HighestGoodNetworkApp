@@ -278,7 +278,7 @@ function TotalPeopleReport(props) {
       ) : (
         <div>
           <div>{totalPeopleInfo(allPeople)}</div>
-          <div>{showTotalPeopleTable ? totalPeopleTable(allPeople) : null}</div>
+          <div className='tables'>{showTotalPeopleTable ? totalPeopleTable(allPeople) : null}</div>
         </div>
       )}
     </div>
