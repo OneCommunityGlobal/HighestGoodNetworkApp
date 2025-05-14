@@ -3,6 +3,10 @@
   width: calc(100% - 40px);
 }
 
+.task-name {
+  min-width: 200px;
+}
+
 .level-space-1 {
   margin-left: 0px;
 }
@@ -93,12 +97,8 @@
 /* Added controlBtn class to ensure uniform margin between buttons */
 .controlBtn {
   margin-right: 8px; /* Adds margin between buttons */
-}
-
-
-.controlBtn {
   float: left;
-  margin-left: 10px;
+  /* margin-left: 10px; */
 }
 
 
@@ -187,7 +187,7 @@
 }
 
 .tasks-table {
-  overflow-x: scroll;
+  overflow-x: auto;
   width: 100% !important;
 }
 

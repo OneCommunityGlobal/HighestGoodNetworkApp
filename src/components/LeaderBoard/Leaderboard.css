@@ -59,7 +59,7 @@
   .my-custom-scrollbar {
     max-height: 500px;
     overflow: auto;
-    margin-bottom: 1rem;
+    margin-bottom: 50px;
   }
 
   .leaderboard thead th {

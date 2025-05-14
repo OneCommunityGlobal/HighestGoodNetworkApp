@@ -121,6 +121,9 @@
     padding: 0 8%;
     margin-left: 15px;
   }
+  .container-timelog-wrapper {
+    margin-bottom: 50px;
+  }
 }
 
 @media screen and (max-width: 575px) and (min-width: 399px) {
