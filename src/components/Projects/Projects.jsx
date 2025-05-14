@@ -79,7 +79,7 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
     setProjectTarget(projectData);
     setModalData({
       showModal: true,
-      modalMessage: `<p>Do you want to archive ${projectData.projectName}?</p>`,
+      modalMessage: `<p style="${darkMode ? 'color: white' : 'color: black;'}">Do you want to archive ${projectData.projectName}?</p>`,
       modalTitle: CONFIRM_ARCHIVE,
       hasConfirmBtn: true,
       hasInactiveBtn: false,
@@ -93,7 +93,7 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
       // If the project is archived, allow unarchiving
       setModalData({
         showModal: true,
-        modalMessage: `<p>${PROJECT_INACTIVE_CONFIRMATION}</p>`,
+        modalMessage: `<p style="${darkMode ? 'color: white' : 'color: black'}">${PROJECT_INACTIVE_CONFIRMATION}</p>`,
         modalTitle: `Inactive Confirmation - ${projectData.projectName} `,
         hasConfirmBtn: false,
         hasInactiveBtn: true, // No need for inactive button
@@ -103,7 +103,7 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
       // If the project is inactive, allow setting it to active
       setModalData({
         showModal: true,
-        modalMessage: `<p>${PROJECT_ACTIVE_CONFIRMATION}</p>`,
+        modalMessage: `<p style="${darkMode ? 'color: white' : 'color: black;'}">${PROJECT_ACTIVE_CONFIRMATION}</p>`,
         modalTitle: `Active Confirmation - ${projectData.projectName} `,
         hasConfirmBtn: false,
         hasInactiveBtn: false, // No need for inactive button
