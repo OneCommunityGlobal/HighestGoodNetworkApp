@@ -151,16 +151,7 @@ const UserTableData = React.memo(props => {
           onClick={() => props.onActiveInactiveClick(props.user)}
         />
         {props.user?.infringements?.length > 0 && (
-          <span
-            style={{
-              position: 'absolute',
-              bottom: 2,
-              left: 4,
-              fontSize: 12,
-              color: '#dc3545',
-              fontWeight: 'bold',
-            }}
-          >
+          <span className="infringement-count">
             {props.user.infringements.length}
           </span>
         )}

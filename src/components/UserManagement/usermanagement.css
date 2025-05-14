@@ -477,3 +477,11 @@ td {
   opacity: 0;
   transition: opacity 0.2s ease-in-out;
 }
+
+.infringement-count {
+  position: absolute;
+  top: 2px;
+  left: 4px;
+  font-size: 12px;
+  font-weight: bold;
+}
