@@ -132,7 +132,7 @@ HelpModal.propTypes = {
   onHide: PropTypes.func.isRequired,
   auth: PropTypes.shape({
     user: PropTypes.shape({
-      role: PropTypes.string
+      role: PropTypes.string,
     }),
   }).isRequired,
 };
