@@ -78,7 +78,7 @@ function QuickSetupModal(props) {
         ''
       )}
 
-      <div className="col text-center mt-3 flex">
+      <div className="col text-center mt-3 flex text-nowrap">
         {canAddTitle ? (
           <Button
             color="primary"

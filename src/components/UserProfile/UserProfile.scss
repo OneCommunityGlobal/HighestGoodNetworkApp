@@ -61,11 +61,11 @@
 
 .profile-head {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
-  flex-wrap: wrap;
   gap: 4px;
   margin-bottom: 10px;
+  white-space: nowrap;
 }
 
 .profile-edit-btn {
@@ -428,9 +428,9 @@ button.btn.btn-outline-primary {
   display: grid;
   grid-template-columns: 1fr 2fr; /* Left = 1fr, Right = 2fr */
   grid-template-rows: auto auto 1fr;/* Forces left columns to take only the required height */
-  grid-auto-rows: min-content; 
-  gap: 10px; 
-  align-items: start; 
+  grid-auto-rows: min-content;
+  gap: 10px;
+  align-items: start;
 }
 
 .left-top {
@@ -456,11 +456,11 @@ button.btn.btn-outline-primary {
 .left-dummy { /* This is the new empty space filler */
   grid-column: 1;
   grid-row: 3;
-  background-color: transparent; 
+  background-color: transparent;
 }
 
 /* Mobile & Tablet Layout */
-@media (max-width: 767px) { 
+@media (max-width: 767px) {
   #containerProfile {
     grid-template-columns: 1fr; /* Single-column layout */
     grid-template-rows: auto auto auto; /* Three stacked rows */
@@ -468,20 +468,20 @@ button.btn.btn-outline-primary {
 
   .left-top {
     grid-column: 1;
-    grid-row: 1; 
+    grid-row: 1;
   }
 
   .right-column {
     grid-column: 1;
-    grid-row: 2; 
+    grid-row: 2;
   }
 
   .left-bottom {
     grid-column: 1;
-    grid-row: 3; 
+    grid-row: 3;
   }
 
   .left-dummy {
-    display: none; 
+    display: none;
   }
 }
