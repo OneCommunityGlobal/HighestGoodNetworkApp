@@ -3,6 +3,10 @@
   margin: 0;
 }
 
+.red-asterisk {
+  color: #e00000;
+}
+
 .container-component-wrapper {
   min-height: 100%;
   width: 100%;

@@ -10,7 +10,7 @@ describe('totalOrgSummaryReducer', () => {
     fetchingError: null,
     volunteerRolesTeamStats: {},
     isTeamStatsLoading: false,
-    isTeamStatsError: null
+    isTeamStatsError: null,
   };
 
   it('should return the initial state when no action is provided', () => {

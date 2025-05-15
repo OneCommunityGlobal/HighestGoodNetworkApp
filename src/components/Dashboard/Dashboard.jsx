@@ -22,10 +22,12 @@ export function Dashboard(props) {
   const [popup, setPopup] = useState(false);
   const [filteredUserTeamIds, setFilteredUserTeamIds] = useState([]);
   const [summaryBarData, setSummaryBarData] = useState(null);
-  const {match, authUser} = props;
+  const { match, authUser } = props;
   const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
   const [viewingUser, setViewingUser] = useState(checkSessionStorage);
-  const [displayUserId, setDisplayUserId] = useState(match.params.userId || viewingUser?.userId || authUser.userid);
+  const [displayUserId, setDisplayUserId] = useState(
+    match.params.userId || viewingUser?.userId || authUser.userid,
+  );
   const isNotAllowedToEdit = cantUpdateDevAdminDetails(viewingUser?.email, authUser.email);
   const darkMode = useSelector(state => state.theme.darkMode);
 
@@ -64,10 +66,10 @@ export function Dashboard(props) {
     };
   }, []);
 
-  useEffect(()=>{
-    console.log(summaryBarData)
-    dispatch(updateSummaryBarData({summaryBarData}));
-  },[summaryBarData])
+  useEffect(() => {
+    console.log(summaryBarData);
+    dispatch(updateSummaryBarData({ summaryBarData }));
+  }, [summaryBarData]);
 
   return (
     <Container fluid className={darkMode ? 'bg-oxford-blue' : ''}>

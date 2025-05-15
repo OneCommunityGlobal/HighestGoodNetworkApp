@@ -3,14 +3,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { Alert, Col, Container, Row } from 'reactstrap';
 import 'moment-timezone';
-
 import hasPermission from 'utils/permissions';
 
 // actions
 import { getAllUserProfile } from 'actions/userManagement';
 import { getAllUsersTimeEntries } from 'actions/allUsersTimeEntries';
 import { getTimeEntryForOverDate } from 'actions/index';
-import { getTaskAndProjectStats, getTotalOrgSummary } from 'actions/totalOrgSummary';
+import { getTotalOrgSummary } from 'actions/totalOrgSummary';
 
 import '../Header/DarkMode.css';
 import './TotalOrgSummary.css';
@@ -29,6 +28,8 @@ import NumbersVolunteerWorked from './NumbersVolunteerWorked/NumbersVolunteerWor
 import AnniversaryCelebrated from './AnniversaryCelebrated/AnniversaryCelebrated';
 import RoleDistributionPieChart from './VolunteerRolesTeamDynamics/RoleDistributionPieChart';
 import WorkDistributionBarChart from './VolunteerRolesTeamDynamics/WorkDistributionBarChart';
+import VolunteerTrendsLineChart from './VolunteerTrendsLineChart/VolunteerTrendsLineChart';
+import GlobalVolunteerMap from './GlobalVolunteerMap/GlobalVolunteerMap';
 import TaskCompletedBarChart from './TaskCompleted/TaskCompletedBarChart';
 
 function calculateFromDate() {
@@ -105,11 +106,10 @@ const aggregateTimeEntries = userTimeEntries => {
 };
 
 function TotalOrgSummary(props) {
-  const { darkMode, error, allUserProfiles, volunteerOverview } = props;
+  const { darkMode, error, allUserProfiles } = props;
   const [usersId, setUsersId] = useState([]);
   const [usersTimeEntries, setUsersTimeEntries] = useState([]);
   const [usersOverTimeEntries, setUsersOverTimeEntries] = useState([]);
-  const [taskProjectHours, setTaskProjectHours] = useState([]);
   const [isVolunteerFetchingError, setIsVolunteerFetchingError] = useState(false);
   const [volunteerStats, setVolunteerStats] = useState(null);
   const comparisonStartDate = '2025-01-16';
@@ -168,28 +168,6 @@ function TotalOrgSummary(props) {
         });
     }
   }, [allUsersTimeEntries, usersId, fromOverDate, toOverDate]);
-  useEffect(() => {
-    async function fetchData() {
-      const {
-        taskHours: { count: taskHours },
-        projectHours: { count: projectHours },
-      } = await props.getTaskAndProjectStats(fromDate, toDate);
-      const {
-        taskHours: { count: lastTaskHours },
-        projectHours: { count: lastProjectHours },
-      } = await props.getTaskAndProjectStats(fromOverDate, toOverDate);
-
-      if (taskHours && projectHours) {
-        setTaskProjectHours({
-          taskHours,
-          projectHours,
-          lastTaskHours,
-          lastProjectHours,
-        });
-      }
-    }
-    fetchData();
-  }, [fromDate, toDate, fromOverDate, toOverDate]);
 
   useEffect(() => {
     const fetchVolunteerStats = async () => {
@@ -276,7 +254,7 @@ function TotalOrgSummary(props) {
               <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
                 <p>Global Volunteer Network: Uniting Communities Worldwide</p>
               </div>
-              In progress...
+              <GlobalVolunteerMap isLoading={isLoading} locations={volunteerStats?.userLocations} />
             </div>
           </Col>
           <Col lg={{ size: 6 }}>
@@ -308,12 +286,13 @@ function TotalOrgSummary(props) {
                   usersTimeEntries={usersTimeEntries}
                   usersOverTimeEntries={usersOverTimeEntries}
                   hoursData={volunteerStats?.volunteerHoursStats}
+                  totalHoursData={volunteerStats?.totalHoursWorked}
                 />
                 <div className="d-flex flex-column align-items-center justify-content-center">
-                  <HoursWorkList darkMode={darkMode} usersTimeEntries={usersTimeEntries} />
+                  <HoursWorkList />
                   <NumbersVolunteerWorked
                     isLoading={isLoading}
-                    usersTimeEntries={usersTimeEntries}
+                    data={volunteerStats?.volunteersOverAssignedTime}
                     darkMode={darkMode}
                   />
                 </div>
@@ -342,7 +321,7 @@ function TotalOrgSummary(props) {
               <div className="mt-4">
                 <HoursCompletedBarChart
                   isLoading={isLoading}
-                  data={taskProjectHours}
+                  data={volunteerStats?.taskAndProjectStats}
                   darkMode={darkMode}
                 />
               </div>
@@ -357,7 +336,7 @@ function TotalOrgSummary(props) {
               <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
                 <p>Volunteer Trends by Time</p>
               </div>
-              <span className="text-center"> Work in progres...</span>
+              <VolunteerTrendsLineChart darkMode={darkMode} />
             </div>
           </Col>
           <Col lg={{ size: 5 }}>
@@ -383,7 +362,7 @@ function TotalOrgSummary(props) {
               </div>
               <WorkDistributionBarChart
                 isLoading={isLoading}
-                workDistributionStats={volunteerOverview?.workDistributionStats}
+                workDistributionStats={volunteerStats?.workDistributionStats}
               />
             </div>
           </Col>
@@ -394,7 +373,8 @@ function TotalOrgSummary(props) {
               </div>
               <RoleDistributionPieChart
                 isLoading={isLoading}
-                roleDistributionStats={volunteerOverview?.roleDistributionStats}
+                roleDistributionStats={volunteerStats?.roleDistributionStats}
+                darkMode={darkMode}
               />
             </div>
           </Col>
@@ -434,7 +414,6 @@ function TotalOrgSummary(props) {
 const mapStateToProps = state => ({
   error: state.error,
   loading: state.loading,
-  volunteerOverview: state.totalOrgSummary.volunteerOverview,
   role: state.auth.user.role,
   auth: state.auth,
   darkMode: state.theme.darkMode,
@@ -444,7 +423,6 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   getTotalOrgSummary: (startDate, endDate, comparisonStartDate, comparisonEndDate) =>
     dispatch(getTotalOrgSummary(startDate, endDate, comparisonStartDate, comparisonEndDate)),
-  getTaskAndProjectStats: () => dispatch(getTaskAndProjectStats(fromDate, toDate)),
   hasPermission: permission => dispatch(hasPermission(permission)),
   getAllUserProfile: () => dispatch(getAllUserProfile()),
 });
