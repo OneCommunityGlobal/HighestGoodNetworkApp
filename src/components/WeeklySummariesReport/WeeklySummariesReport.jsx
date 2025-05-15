@@ -424,7 +424,10 @@ export class WeeklySummariesReport extends Component {
       const hoursLogged = (summary.totalSeconds[navItems.indexOf(activeTab)] || 0) / 3600;
 
       const isMeetCriteria =
-        summary.totalTangibleHrs > 80 && summary.daysInTeam > 60 && summary.bioPosted !== 'posted';
+        summary.totalTangibleHrs > 80 &&
+        summary.daysInTeam > 60 &&
+        summary.weeklySummariesCount >= 8 &&
+        summary.bioPosted !== 'posted';
 
       const isBio = !selectedBioStatus || isMeetCriteria;
 
