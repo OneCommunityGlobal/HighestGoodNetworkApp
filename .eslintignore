@@ -21,5 +21,7 @@ src/components/Projects/**
 src/components/SummaryManagement/**
 src/components/TeamMemberTasks/**
 src/components/Teams/TeamMembersPopup.jsx
+# Oh god spare me from this
+src/components/Announcements/index.jsx
 src/components/UserManagement/**
 src/components/UserProfile/**

@@ -1,91 +1,79 @@
-import { RECEIVE_TEAM_USERS, TEAM_MEMBER_ADD, TEAM_MEMBER_DELETE, FETCH_TEAM_USERS_START } from '../../constants/allTeamsConstants';
-import { teamUsersReducer, updateObject } from '../teamsTeamMembersReducer'
-
-const teamUsersInitial = {
-  fetching: false,
-  fetched: false,
-  teamMembers: [],
-  status: 404
-};
+import {
+  RECEIVE_TEAM_USERS,
+  TEAM_MEMBER_ADD,
+  TEAM_MEMBER_DELETE,
+  FETCH_TEAM_USERS_START,
+} from '../../constants/allTeamsConstants';
+import { teamUsersReducer, updateObject } from '../teamsTeamMembersReducer';
 
 const teamMembers = {
-  teamMembers: [{ 
-    _id: '1', 
-    firstName: 'First name', 
-    lastName: 'Last name', 
-    jobTitle: [''], 
-    teams: [], 
-    projects: ['p1', 'p2']
-  }]
+  teamMembers: [
+    {
+      _id: '1',
+      firstName: 'First name',
+      lastName: 'Last name',
+      jobTitle: [''],
+      teams: [],
+      projects: ['p1', 'p2'],
+    },
+  ],
 };
 
 describe('Teams Team Members Reducer', () => {
+  it('Should receive team users', () => {
+    const expectedState = { teamMembers: {}, fetching: false, fetched: true, status: '200' };
+    const action = {
+      payload: {},
+      type: RECEIVE_TEAM_USERS,
+    };
 
-    it('Should receive team users', () => {
+    const result = teamUsersReducer(teamMembers, action);
+    expect(result).toEqual(expectedState);
+  });
 
-      const expectedState = { teamMembers:{}, fetching: false, fetched: true, status: '200'};
-      const action = { 
-        payload: {}, 
-        type:RECEIVE_TEAM_USERS 
-      };
+  it('Should add team member to team', () => {
+    const action = {
+      member: { _id: '2', firstName: 'First name', lastName: 'Last name' },
+      type: TEAM_MEMBER_ADD,
+    };
 
-      const result = teamUsersReducer( teamMembers, action );
-      expect(result).toEqual(expectedState);
+    const expectedResult = {
+      teamMembers: [...teamMembers.teamMembers, action.member],
+      fetching: false,
+      fetched: true,
+      status: '200',
+    };
 
-    });
+    const result = teamUsersReducer(teamMembers, action);
+    expect(result).toEqual(expectedResult);
+  });
 
-    it('Should add team member to team', () => {
+  it('Should delete member from team', () => {
+    const action = {
+      member: { _id: '2', firstName: 'First name', lastName: 'Last name' },
+      type: TEAM_MEMBER_DELETE,
+    };
 
-      const action = { 
-        member: { _id: '2', firstName: 'First name', lastName: 'Last name' }, 
-        type:TEAM_MEMBER_ADD 
-      };
+    const expectedResult = {
+      teamMembers: [...teamMembers.teamMembers.filter(item => item._id !== action.member._id)],
+      fetching: false,
+      fetched: true,
+      status: '200',
+    };
 
-      const expectedResult = { 
-        teamMembers:[...teamMembers.teamMembers, action.member], 
-        fetching: false, 
-        fetched: true, 
-        status: '200'
-      };
+    const result = teamUsersReducer(teamMembers, action);
+    expect(result).toEqual(expectedResult);
+  });
 
-      const result = teamUsersReducer(teamMembers, action);
-      expect(result).toEqual(expectedResult);
+  it('Should fetch teams user start', () => {
+    const expectedResult = updateObject(teamMembers, { fetching: true, fetched: false });
 
-    });
+    const result = teamUsersReducer(teamMembers, { type: FETCH_TEAM_USERS_START });
+    expect(result).toEqual(expectedResult);
+  });
 
-    it('Should delete member from team', () => {
-      
-      const action = { 
-        member: { _id: '2', firstName: 'First name', lastName: 'Last name' }, 
-        type: TEAM_MEMBER_DELETE 
-      };
-
-      const expectedResult = { 
-        teamMembers:[...teamMembers.teamMembers.filter(item => item._id !== action.member._id)], 
-        fetching: false, 
-        fetched: true, 
-        status: '200'
-      };
-
-      const result = teamUsersReducer(teamMembers, action);
-      expect(result).toEqual(expectedResult);
-
-    });
-
-    it('Should fetch teams user start', () => {
-      
-      const expectedResult = updateObject(teamMembers, {fetching: true, fetched: false});
-      
-      const result = teamUsersReducer( teamMembers,{ type: FETCH_TEAM_USERS_START } );
-      expect(result).toEqual(expectedResult);
-
-    });
-
-    it('Should return initial teamMembers in default case ', () =>{
-
-      const result = teamUsersReducer( teamMembers, {} );
-      expect(result).toEqual(teamMembers);
-
-    });
-
-})
+  it('Should return initial teamMembers in default case ', () => {
+    const result = teamUsersReducer(teamMembers, {});
+    expect(result).toEqual(teamMembers);
+  });
+});
