@@ -307,7 +307,7 @@ function EditTaskModal(props) {
                 <td id="edit-modal-td" scope="col">{thisTask?.num}</td>
               </tr>
               <tr>
-                <td id="edit-modal-td" scope="col">Task Name</td>
+                <td id="edit-modal-td" scope="col">Task Name<span className="red-asterisk">* </span></td>
                 <td id="edit-modal-td">
                   {ReadOnlySectionWrapper(
                     <textarea
