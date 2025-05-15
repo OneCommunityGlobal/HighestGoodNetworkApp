@@ -3,6 +3,7 @@ import { useState } from 'react';
 import './PermissionChangeLogTable.css';
 import { FiChevronLeft, FiChevronRight, FiChevronDown, FiChevronUp } from 'react-icons/fi';
 import { formatDate, formattedAmPmTime } from 'utils/formatDate';
+import { permissionLabelKeyMappingObj } from './PermissionsConst';
 
 function PermissionChangeLogTable({ changeLogs, darkMode }) {
   const [currentPage, setCurrentPage] = useState(1);
@@ -15,7 +16,6 @@ function PermissionChangeLogTable({ changeLogs, darkMode }) {
   const fontColor = darkMode ? 'text-light' : '';
   const bgYinmnBlue = darkMode ? 'bg-yinmn-blue' : '';
   const addDark = darkMode ? '-dark' : '';
-
   const paginate = pageNumber => {
     if (pageNumber > 0 && pageNumber <= totalPages) {
       setCurrentPage(pageNumber);
@@ -23,9 +23,9 @@ function PermissionChangeLogTable({ changeLogs, darkMode }) {
   };
 
   const formatName = name => {
-    if (name.startsWith('INDIVIDUAL:')) {
-      return name.replace('INDIVIDUAL:', '').trim();
-    }
+    // if (name.startsWith('INDIVIDUAL:')) {
+    //   return name.replace('INDIVIDUAL:', '').trim();
+    // }
     return name;
   };
 
@@ -74,7 +74,9 @@ function PermissionChangeLogTable({ changeLogs, darkMode }) {
 
   const renderPermissions = (permissions, rowId) => {
     // Filter out empty or falsy values before joining the permissions
-    const filteredPermissions = permissions.filter(permission => permission);
+    const filteredPermissions = permissions
+      .map(permission => permissionLabelKeyMappingObj?.[permission])
+      .filter(e => e);
 
     return (
       <div className="permissions-cell">
@@ -120,9 +122,13 @@ function PermissionChangeLogTable({ changeLogs, darkMode }) {
                 )} ${formattedAmPmTime(log.logDateTime)}`}</td>
                 <td
                   className={`permission-change-log-table--cell ${bgYinmnBlue}`}
-                  style={{
-                    fontWeight: log.name.startsWith('INDIVIDUAL:') ? 'bold' : 'normal',
-                  }}
+                  style={
+                    {
+                      // Commented out the below code as log.name is undefined currently so accessing it causes the white
+                      // screen error on the Permissions Management page
+                      // fontWeight: log.name.startsWith('INDIVIDUAL:') ? 'bold' : 'normal',
+                    }
+                  }
                 >
                   {formatName(log.name)}
                 </td>

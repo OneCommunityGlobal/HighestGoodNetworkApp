@@ -1,8 +1,3 @@
-
-/*********************************************************************************
- * Component: TASK
- * Author: Henry Ng - 21/03/20 ≢
- ********************************************************************************/
 import React, { useState, useEffect, useRef } from 'react';
 import { connect, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
@@ -24,10 +19,6 @@ import { boxStyle, boxStyleDark } from 'styles';
 import { getProjectDetail } from 'actions/project';
 
 function WBSTasks(props) {
-  /*
-  * -------------------------------- variable declarations --------------------------------
-  */
-  // props from store
   const { tasks, fetched, darkMode } = props;
 
   const { wbsId } = props.match.params;
@@ -69,7 +60,6 @@ function WBSTasks(props) {
       case 'inactive': return tasks.filter(task => ['Not Started', 'Paused'].includes(task.status))
       case 'complete': return tasks.filter(task => task.status === 'Complete')
       case 'paused': return tasks.filter(task => task.status === 'Paused');
-
     }
   }
 
@@ -86,56 +76,6 @@ function WBSTasks(props) {
     props.deleteTask(taskId, mother);
     setIsDeleted(true);
   };
-
-  /**
-   * Drag and drop is not being used anywhere, and it seems to be replaced by the copy and paste functionality,
-   * so here comments it out for future reference if such functionality is desired again.  
-   */
-
-  // let drag = '';
-  // let dragParent = '';
-  // const dragTask = (taskIdFrom, parentId) => {
-  //   drag = taskIdFrom;
-  //   dragParent = parentId;
-  // };
-
-  // const dropTask = (taskIdTo, parentId) => {
-  //   const tasksClass = document.getElementsByClassName('taskDrop');
-  //   for (let i = 0; i < tasks.length; i++) {
-  //     tasksClass[i].style.display = 'none';
-  //   }
-
-  //   const list = [];
-  //   const target = tasks.find(task => task._id === taskIdTo);
-  //   const siblings = tasks.filter(task => task.parentId === dragParent);
-
-  //   let modifiedList = false;
-  //   if (dragParent === target._id) {
-  //     list.push({
-  //       id: drag,
-  //       num: siblings[0].num,
-  //     });
-  //     modifiedList = true;
-  //   }
-  //   for (let i = 0; i < siblings.length - 1; i++) {
-  //     if (siblings[i]._id === drag) {
-  //       modifiedList = false;
-  //     }
-  //     if (modifiedList) {
-  //       list.push({
-  //         id: siblings[i]._id,
-  //         num: siblings[i + 1].num,
-  //       });
-  //     }
-  //     if (siblings[i]._id === target._id) {
-  //       list.push({
-  //         id: drag,
-  //         num: siblings[i + 1].num,
-  //       });
-  //       modifiedList = true;
-  //     }
-  //   }
-  // };
 
   /*
   * -------------------------------- useEffects -------------------------------- 
@@ -195,10 +135,8 @@ function WBSTasks(props) {
           </ol>
         </nav>
         <div
-          className='mb-2 button-group' // Grouping the buttons
+          className='mb-2 wbs-button-group' // Group the buttons
           style={{
-            // display: 'flex',
-            // justifyContent: 'space-between'
           }}>
           {/* <span> */}
           {canPostTask ? (
@@ -371,7 +309,7 @@ function WBSTasks(props) {
             {/* <tr className="taskDrop">   // Drag and drop functionality is deserted for now
               <td colSpan={14} />
             </tr> */}
-            {fetched && levelOneTasks.map((task, i) => (
+            {levelOneTasks.map((task, i) => (
               <Task
                 key={`${task._id}${i}`}
                 taskId={task._id}

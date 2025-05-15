@@ -11,7 +11,7 @@ import {
 import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
 import { Table, Progress } from 'reactstrap';
 
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import hasPermission from 'utils/permissions';
 import './style.css';
 
@@ -33,6 +33,7 @@ const NUM_TASKS_SHOW_TRUNCATE = 6;
 const TeamMemberTask = React.memo(
   ({
     user,
+    teamRoles,
     handleMarkAsDoneModal,
     handleRemoveFromTaskModal,
     handleOpenTaskNotificationModal,
@@ -47,12 +48,11 @@ const TeamMemberTask = React.memo(
   }) => {
     const darkMode = useSelector(state => state.theme.darkMode);
     const taskCounts = useSelector(state => state.dashboard?.taskCounts ?? {});
-    // console.log('Task counts:', taskCounts);
-    // console.log('Task IDs:', Object.keys(taskCounts));
     const ref = useRef(null);
     const currentDate = moment.tz('America/Los_Angeles').startOf('day');
     const dispatch = useDispatch();
     const canSeeFollowUpCheckButton = userRole !== 'Volunteer';
+    const history = useHistory();
 
     const totalHoursRemaining = user.tasks.reduce((total, task) => {
       task.hoursLogged = task.hoursLogged || 0;
@@ -76,6 +76,12 @@ const TeamMemberTask = React.memo(
       showWhoHasTimeOff && (onTimeOff || goingOnTimeOff),
     );
 
+   const completedTasks = user.tasks.filter(
+    task =>
+      task.resources?.some(
+        resource => resource.userID === user.personId && resource.completedTask,
+      ),
+  );
     const thisWeekHours = user.totaltangibletime_hrs;
 
     // these need to be changed to actual permissions...
@@ -87,10 +93,26 @@ const TeamMemberTask = React.memo(
     // ^^^
 
     const canGetWeeklySummaries = dispatch(hasPermission('getWeeklySummaries'));
+    const canSeeReports = rolesAllowedToResolveTasks.includes(userRole)||dispatch(hasPermission('getReports'));
     const canUpdateTask = dispatch(hasPermission('updateTask'));
     const canRemoveUserFromTask = dispatch(hasPermission('removeUserFromTask'));
     const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
 
+    const colors_objs = {
+      'Assistant Manager' :'#849ced', // blue
+      'Manager' : '#90e766', // green
+      'Mentor' : '#e9dd57' // yellow
+    }
+
+    function getInitials(name) {
+      const initials = name
+        .split(' ')
+        .filter((n, index) => index === 0 || index === name.split(' ').length - 1)
+        .map(n => n[0])
+        .join('')
+        .toUpperCase();
+      return initials;
+    }
     const handleTruncateTasksButtonClick = () => {
       if (!isTruncated) {
         ref.current?.scrollIntoView({ behavior: 'smooth' });
@@ -101,6 +123,15 @@ const TeamMemberTask = React.memo(
         setIsTruncated(!isTruncated);
       }
     };
+
+    const handleReportClick = (event,to) => {
+      if (event.metaKey || event.ctrlKey || event.button === 1) {
+        return;
+      }
+  
+      event.preventDefault(); // prevent full reload
+      history.push(`/peoplereport/${to}`);
+    }
 
     const openDetailModal = request => {
       dispatch(showTimeOffRequestModal(request));
@@ -162,34 +193,60 @@ const TeamMemberTask = React.memo(
               </div>
             )}
             <Table className="no-bottom-margin">
+            <tbody>
               <tr className="remove-child-borders">
                 {/* green if member has met committed hours for the week, red if not */}
-                <td colSpan={1} className={`${darkMode ? 'bg-yinmn-blue' : ''}`}>
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <div className="committed-hours-circle">
-                      <FontAwesomeIcon
-                        style={{
-                          color:
-                            user.totaltangibletime_hrs >= user.weeklycommittedHours
-                              ? 'green'
-                              : 'red',
-                        }}
-                        icon={faCircle}
-                        data-testid="icon"
-                      />
+                <td colSpan={1} className={`${darkMode ? "bg-yinmn-blue" : ""}`}>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', flexDirection: 'column' }}>
+                    <div className='member-links-wrapper'>
+                      <div className="committed-hours-circle">
+                        <FontAwesomeIcon
+                          style={{
+                            color:
+                              user.totaltangibletime_hrs >= user.weeklycommittedHours ? 'green' : 'red',
+                          }}
+                          icon={faCircle}
+                          data-testid="icon"
+                        />
+                      </div>
+                      <Link to={`/timelog/${user.personId}`} className='timelog-info'>
+                        <i
+                          className="fa fa-clock-o"
+                          aria-hidden="true"
+                          style={{
+                            fontSize: 24,
+                            cursor: 'pointer',
+                            color: darkMode ? 'lightgray' : 'black',
+                          }}
+                          title="Click to see user's timelog"
+                        />
+                      </Link>
                     </div>
-                    <Link to={`/timelog/${user.personId}`}>
-                      <i
-                        className="fa fa-clock-o"
-                        aria-hidden="true"
-                        style={{
-                          fontSize: 24,
-                          cursor: 'pointer',
-                          color: darkMode ? 'lightgray' : 'black',
-                        }}
-                        title="Click to see user's timelog"
-                      />
-                    </Link>
+                    {canUpdateTask && teamRoles && <div className="name-wrapper">
+                      {['Manager', 'Assistant Manager', 'Mentor'].map((role, roleIndex) => {
+                          return teamRoles[role]?.map((elm, i) => {
+                            const name = elm.name; // Getting initials and formatting them here
+                            const initials = getInitials(name);
+                            // Getting background color dynamically based on the role
+                            const bg = colors_objs[role];
+                            return (
+                              <a
+                                key={`res_${roleIndex}_${i}`}
+                                title={`${role} : ${name}`}
+                                className="name"
+                                href={`/userprofile/${elm.id}`}
+                                target="_blank"
+                                rel="noreferrer"
+                              >
+                                <span className="name-initial" style={{ backgroundColor: bg }}>
+                                  {initials}{' '}
+                                </span>
+                              </a>
+                            );
+                          });
+                        })}
+                      </div>
+                      }
                   </div>
                 </td>
                 <td colSpan={2} className={`${darkMode ? 'bg-yinmn-blue' : ''}`}>
@@ -215,7 +272,7 @@ const TeamMemberTask = React.memo(
                               fontSize: '20px',
                             }}
                           >{`${user.name}`}</Link>
-
+                          
                           {user.role !== 'Volunteer' && (
                             <div
                               className="user-role"
@@ -226,7 +283,30 @@ const TeamMemberTask = React.memo(
                           )}
 
                           {canGetWeeklySummaries && <GoogleDocIcon link={userGoogleDocLink} />}
-
+                           
+                           {
+                            canSeeReports &&
+                            <Link
+                              className='team-member-tasks-user-report-link'
+                              to= {`/peoplereport/${user?.personId}`}
+                              onClick={(event)=>handleReportClick(event,user?.personId)}
+                            >
+                               <img 
+                                  src ="/report_icon.png"
+                                  alt='reportsicon'
+                                  className='team-member-tasks-user-report-link-image'
+                               />
+                            </Link>
+                            }
+                            {
+                              canSeeReports &&
+                              <Link
+                                to= {`/peoplereport/${user?.personId}`}
+                                onClick={(event)=>handleReportClick(event,user?.personId)}
+                               >
+                                <span className="team-member-tasks-number">{completedTasks.length}</span>
+                              </Link>
+                            }
                           <Warning
                             username={user.name}
                             userName={user}
@@ -440,6 +520,7 @@ const TeamMemberTask = React.memo(
                   </div>
                 </td>
               </tr>
+              </tbody>
             </Table>
           </div>
         </td>

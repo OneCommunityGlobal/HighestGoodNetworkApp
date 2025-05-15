@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import DatePicker from 'react-datepicker';
 import { Button } from 'reactstrap';
 import { boxStyle, boxStyleDark } from 'styles';
@@ -54,7 +54,7 @@ class ViewReportByDate extends Component {
             minDate={minDate}
             maxDate={maxDate}
             onChange={this.onStartDateChange}
-            className="form-control"
+            className={`form-control ${darkMode ? "bg-darkmode-liblack text-light border-0" : ''}`}
             popperPlacement="top-start"
           />
         </div>
@@ -67,7 +67,7 @@ class ViewReportByDate extends Component {
             minDate={minDate}
             maxDate={maxDate}
             onChange={this.onEndDateChange}
-            className="form-control"
+            className={`form-control ${darkMode ? "bg-darkmode-liblack text-light border-0" : ''}`}
             popperPlacement="top"
           />
         </div>

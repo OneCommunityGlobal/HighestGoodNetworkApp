@@ -10,6 +10,15 @@ function MaterialListView() {
   const errors = useSelector(state => state.errors);
   const postMaterialUpdateResult = useSelector(state => state.materials.updateMaterials);
 
+  const materialsWithId = materials
+    ? materials.map(item => ({
+        ...item,
+        id:
+          parseInt(item._id?.substring(item._id.length - 6), 16) ||
+          Math.floor(Math.random() * 1000000),
+      }))
+    : [];
+
   useEffect(() => {
     dispatch(fetchAllMaterials());
   }, []);
@@ -22,17 +31,19 @@ function MaterialListView() {
   const itemType = 'Materials';
 
   const dynamicColumns = [
-    { label: 'Unit', key: 'itemType.unit' },
+    { label: 'PID', key: 'product id' },
+    { label: 'Measurement', key: 'itemType.unit' },
     { label: 'Bought', key: 'stockBought' },
     { label: 'Used', key: 'stockUsed' },
     { label: 'Available', key: 'stockAvailable' },
-    { label: 'Waste', key: 'stockWasted' },
+    { label: 'Wasted', key: 'stockWasted' },
+    { label: 'Hold', key: 'stockHold' },
   ];
 
   return (
     <ItemListView
       itemType={itemType}
-      items={materials}
+      items={materialsWithId}
       errors={errors}
       UpdateItemModal={UpdateMaterialModal}
       dynamicColumns={dynamicColumns}
