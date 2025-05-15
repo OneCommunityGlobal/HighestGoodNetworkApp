@@ -58,6 +58,8 @@ import dashboardReducer from './dashboardReducer';
 import { timeOffRequestsReducer } from './timeOffRequestReducer';
 import { totalOrgSummaryReducer } from './totalOrgSummaryReducer';
 import { allUsersTimeEntriesReducer } from './allUsersTimeEntriesReducer';
+import HGNFormReducer from './hgnFormReducers';
+import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
 
 const localReducers = {
   auth: authReducer,
@@ -109,9 +111,11 @@ const localReducers = {
   dashboard: dashboardReducer,
   bmProjectMembers: bmProjectMemberReducer,
   bmTimeLogger: bmTimeLoggerReducer,
+  weeklyProjectSummary: weeklyProjectSummaryReducer,
 };
 
 const sessionReducers = {
+  hgnForm: HGNFormReducer,
   userPagination: changeUserPageStatusReducer,
   userProfileEdit: enableUserInfoEditReducer,
   userProfile: userProfileByIdReducer,

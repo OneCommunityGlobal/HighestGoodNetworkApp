@@ -4,6 +4,7 @@ import { useState, useContext, useEffect } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { connect } from 'react-redux';
 import { boxStyle, boxStyleDark } from 'styles';
+import { useSelector } from 'react-redux';
 // eslint-disable-next-line import/no-cycle
 import { ModalContext } from 'context/ModalContext';
 // eslint-disable-next-line import/no-cycle
@@ -22,7 +23,6 @@ function PermissionListItem(props) {
     editable,
     depth,
     setPermissions,
-    darkMode,
   } = props;
   const isCategory = !!subperms;
   const [infoRoleModal, setinfoRoleModal] = useState(false);
@@ -31,6 +31,8 @@ function PermissionListItem(props) {
   const hasThisPermission =
     rolePermissions.includes(permission) || immutablePermissions.includes(permission);
   const { updateModalStatus } = useContext(ModalContext);
+
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const handleResize = () => {
     setIsMobile(window.innerWidth <= 768);

@@ -53,13 +53,17 @@ export const CreateNewTeamPopup = React.memo(props => {
         {props.isEdit ? 'Update Team Name' : 'Create New Team'}
       </ModalHeader>
       <ModalBody style={{ textAlign: 'start' }} className={darkMode ? 'bg-yinmn-blue' : ''}>
-        <label className={darkMode ? 'text-light' : ''}>Name of the Team</label>
+        <label className={darkMode ? 'text-light' : ''}>
+          Name of the Team<span className="red-asterisk">* </span>
+        </label>
+
         <Input
           autoFocus
           id="teamName"
           placeholder="Please enter a new team name"
           value={newTeam}
           onChange={handleTeamNameChange}
+          className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
           required
         />
         {!isValidTeam && <Alert color="danger">Please enter a team name.</Alert>}

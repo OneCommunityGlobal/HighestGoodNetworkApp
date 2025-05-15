@@ -7,18 +7,17 @@ import '../Header/DarkMode.css';
 /**
  * Modal popup to show the user profile in create mode
  */
-const SetUpFinalDayPopUp = React.memo(props => {
-  const darkMode = useSelector(state => state.theme.darkMode);
+const SetUpFinalDayPopUp = React.memo(({ open, onClose, onSave, darkMode }) => {
   const [finalDayDate, onDateChange] = useState(Date.now());
   const [dateError, setDateError] = useState(false);
 
   const closePopup = () => {
-    props.onClose();
+    onClose();
   };
 
   const deactiveUser = () => {
     if (moment().isBefore(moment(finalDayDate))) {
-      props.onSave(finalDayDate);
+      onSave(finalDayDate); // Pass the selected date to the parent component
     } else {
       setDateError(true);
     }
@@ -26,7 +25,7 @@ const SetUpFinalDayPopUp = React.memo(props => {
 
   return (
     <Modal
-      isOpen={props.open}
+      isOpen={open}
       toggle={closePopup}
       autoFocus={false}
       className={darkMode ? 'text-light dark-mode' : ''}
@@ -46,6 +45,7 @@ const SetUpFinalDayPopUp = React.memo(props => {
             onDateChange(event.target.value);
           }}
           data-testid="date-input"
+          className={darkMode ? 'bg-darkmode-liblack text-light border-0 calendar-icon-dark' : ''}
         />
         {dateError && <Alert color="danger">Please choose a future date.</Alert>}
       </ModalBody>
@@ -60,4 +60,5 @@ const SetUpFinalDayPopUp = React.memo(props => {
     </Modal>
   );
 });
+
 export default SetUpFinalDayPopUp;
