@@ -16,7 +16,8 @@ import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
-import TagsSearch from '../components/TagsSearch';
+import UserSearch from './UserSearch';
+import UserTag from './UserTag';
 import ReadOnlySectionWrapper from './ReadOnlySectionWrapper';
 import '../../../../Header/DarkMode.css'
 import '../wbs.css'
@@ -26,7 +27,7 @@ function EditTaskModal(props) {
   * -------------------------------- variable declarations --------------------------------
   */
   // props from store
-  const { allMembers, error, darkMode } = props;
+  const { /* allMembers, */ error, darkMode } = props;
 
   // permissions
   const canUpdateTask = props.hasPermission('updateTask');
@@ -218,7 +219,6 @@ function EditTaskModal(props) {
     const updateTaskDirectly = (currentMode === "Edit");
     console.log({canSuggestTask, canUpdateTask, updateTaskDirectly});
 
-    props.setIsLoading?.(true);
     await props.updateTask(
       props.taskId,
       updatedTask,
@@ -227,7 +227,6 @@ function EditTaskModal(props) {
     );
     props.setTask?.(updatedTask);
     await props.load?.();
-    props.setIsLoading?.(false);
 
     if (error === 'none' || Object.keys(error).length === 0) {
       toggle();
@@ -346,15 +345,17 @@ function EditTaskModal(props) {
                 <td id="edit-modal-td" scope="col">Resources</td>
                 <td id="edit-modal-td" scope="col">
                   <div>
-                    <TagsSearch
-                      placeholder="Add resources"
-                      members={allMembers.filter(user=>user.isActive)}
-                      addResources={editable? addResources : () => {}}
-                      removeResource={editable? removeResource : () => {}}
-                      resourceItems={resourceItems}
-                      disableInput={!editable}
-                      darkMode={darkMode}
-                    />
+                    <UserSearch addedUsers={resourceItems} onAddUser={editable ? addResources : () => {}} />
+                    <div className="d-flex flex-wrap align-items-start justify-content-start">
+                      {resourceItems?.map((user) => (
+                        <ul
+                          key={`${user.name}`}
+                          className="d-flex align-items-start justify-content-start m-0 p-1"
+                        >
+                          <UserTag userName={user.name} userId={user.userID} onRemoveUser={editable ? removeResource : () => {}} />
+                        </ul>
+                      ))}
+                    </div>
                   </div>
                 </td>
               </tr>
@@ -771,7 +772,7 @@ function EditTaskModal(props) {
 };
 
 const mapStateToProps = state => ({
-  allMembers: state.projectMembers.members,
+  // allMembers: state.projectMembers.members,
   error: state.tasks.error,
   darkMode: state.theme.darkMode,
 });
