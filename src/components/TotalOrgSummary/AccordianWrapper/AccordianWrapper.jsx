@@ -7,7 +7,6 @@ export default function AccordianWrapper({ children, title }) {
 
   return (
     <Collapsible
-      open
       className={darkMode ? 'bg-space-cadet text-light' : ''}
       openedClassName={darkMode ? 'bg-space-cadet text-light' : ''}
       trigger={title}

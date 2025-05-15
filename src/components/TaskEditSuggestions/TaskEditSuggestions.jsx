@@ -1,26 +1,16 @@
-import './TaskEditSuggestions.css';
-import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import "./TaskEditSuggestions.css"
+import Loading from 'components/common/Loading';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector, connect } from 'react-redux';
 import { Container, Table } from 'reactstrap';
 import { FaUndoAlt } from 'react-icons/fa';
 import { TaskEditSuggestionRow } from './Components/TaskEditSuggestionRow';
 import { TaskEditSuggestionsModal } from './Components/TaskEditSuggestionsModal';
-import getTaskEditSuggestionsData from './selectors';
+import { getTaskEditSuggestionsData } from './selectors';
 import { toggleDateSuggestedSortDirection, toggleUserSortDirection } from './actions';
 import { fetchTaskEditSuggestions } from './thunks';
-import Loading from '../common/Loading';
 
-function SortArrow({ sortDirection }) {
-  if (sortDirection === 'asc') {
-    return <i className="fa fa-arrow-up" />;
-  }
-  if (sortDirection === 'desc') {
-    return <i className="fa fa-arrow-down" />;
-  }
-  return null;
-}
-
-function TaskEditSuggestions() {
+export const TaskEditSuggestions = () => {
   const [isTaskEditSuggestionModalOpen, setIsTaskEditSuggestionModalOpen] = useState(false);
   const [currentTaskEditSuggestion, setCurrentTaskEditSuggestion] = useState();
 
@@ -30,36 +20,41 @@ function TaskEditSuggestions() {
     userSortDirection,
     dateSuggestedSortDirection,
     userRole,
-    darkMode,
+    darkMode
   } = useSelector(getTaskEditSuggestionsData);
 
   const dispatch = useDispatch();
 
-  const handleToggleTaskEditSuggestionModal = currentTaskEditSuggestionParam => {
-    setCurrentTaskEditSuggestion(currentTaskEditSuggestionParam);
+  const handleToggleTaskEditSuggestionModal = currentTaskEditSuggestion => {
+    setCurrentTaskEditSuggestion(currentTaskEditSuggestion);
     setIsTaskEditSuggestionModalOpen(!isTaskEditSuggestionModalOpen);
   };
 
   const handleLoadTaskEditSuggestions = () => {
     dispatch(fetchTaskEditSuggestions());
+  }
+
+  const SortArrow = ({ sortDirection }) => {
+    if (sortDirection === 'asc') {
+      return <i className="fa fa-arrow-up"></i>;
+    } else if (sortDirection === 'desc') {
+      return <i className="fa fa-arrow-down"></i>;
+    } else {
+      return <></>;
+    }
   };
 
   useEffect(() => {
     handleLoadTaskEditSuggestions();
-  }, []);
+  }, [])
 
   return (
-    <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: '100%' }}>
+    <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{minHeight: "100%"}}>
       <Container>
-        <div className="task-edit-suggestions-title">
+        <div className='task-edit-suggestions-title'>
           <h1>Task Edit Suggestions</h1>
-          <button
-            aria-label="Load Task Edit Suggestions"
-            type="button"
-            title="Refresh"
-            onClick={handleLoadTaskEditSuggestions}
-          >
-            <FaUndoAlt size={20} className={darkMode ? 'text-light' : ''} />
+          <button type='button' title='Refresh' onClick={handleLoadTaskEditSuggestions}>
+            <FaUndoAlt size={20} className={darkMode ? 'text-light' : ''}/>
           </button>
         </div>
         {/* {isUserPermitted ? <h1>Task Edit Suggestions</h1> : <h1>{userRole} is not permitted to view this</h1>} */}
@@ -76,7 +71,7 @@ function TaskEditSuggestions() {
                     User <SortArrow sortDirection={userSortDirection} />
                   </th>
                   <th>Task</th>
-                  <th aria-label="Task" />
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
@@ -102,6 +97,4 @@ function TaskEditSuggestions() {
       </Container>
     </div>
   );
-}
-
-export default TaskEditSuggestions;
+};

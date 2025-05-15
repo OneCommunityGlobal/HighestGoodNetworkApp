@@ -8,18 +8,22 @@ import { connect } from 'react-redux';
 import { addNewWBS } from './../../../../actions/wbs';
 import hasPermission from 'utils/permissions';
 
-const AddWBS = (props) => {
+const AddWBS = props => {
   const darkMode = props.state.theme.darkMode;
-  const [taskTitle, setTaskTitle] = useState('');
+  const [newName, setNewName] = useState('');
+  const [showAddButton, setShowAddButton] = useState(false);
   const canPostWBS = props.hasPermission('postWbs');
 
-  const handleSubmit = () => {
-    if (!taskTitle.trim()) return;
+  const changeNewName = value => {
+    setNewName(value);
+    setShowAddButton(value.length >= 3);
+  };
 
-    const confirmed = window.confirm(`Add task "${taskTitle}" to the database?`);
-    if (confirmed) {
-      props.addNewWBS(taskTitle, props.projectId);
-      setTaskTitle('');
+  const handleAddWBS = () => {
+    if (newName.length >= 3) {
+      props.addNewWBS(props.projectId, newName);
+      setNewName('');
+      setShowAddButton(false);
     }
   };
 
@@ -37,15 +41,14 @@ const AddWBS = (props) => {
             className={`form-control ${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
             aria-label="WBS WBS"
             placeholder="WBS Name"
-            value={taskTitle}
-            onChange={(e) => setTaskTitle(e.target.value)}
+            onChange={e => changeNewName(e.target.value)}
           />
           <div className="input-group-append">
-            {taskTitle.length >= 3 ? (
+            {showAddButton ? (
               <button
                 className="btn btn-outline-primary"
                 type="button"
-                onClick={handleSubmit}
+                onClick={handleAddWBS}
                 data-testid="add-wbs-button"
               >
                 <i className="fa fa-plus" aria-hidden="true"></i>

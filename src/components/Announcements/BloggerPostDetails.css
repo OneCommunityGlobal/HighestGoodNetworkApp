@@ -1,0 +1,416 @@
+.blogger-post-details {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.blogger-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.blogger-title h3 {
+    font-size: 1.5rem;
+    color: #333;
+}
+
+.connection-status span {
+    font-weight: 500;
+    color: #34A853;
+    margin-left: 8px;
+}
+
+.blog-content {
+    margin-top: 20px;
+    width: 100%;
+}
+
+.post-stats {
+    font-size: 14px;
+    margin-bottom: 16px;
+    color: #555;
+    display: flex;
+    gap: 16px;
+}
+
+.post-form {
+    display: grid;
+    grid-template-columns: 1fr 2fr auto;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.post-title-input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 14px;
+    width: 600px;
+}
+
+.quill {
+    border-radius: 8px;
+    background: white;
+}
+
+.ql-toolbar {
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    background: #f8f9fa;
+    border-color: #ccc !important;
+}
+
+.ql-container {
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    border-color: #ccc !important;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+.ql-editor {
+    min-height: 200px;
+    font-size: 14px;
+    line-height: 1.2;
+}
+
+.ql-editor p {
+    margin-bottom: 1em;
+}
+
+.publish-button {
+    background-color: #34A853;
+}
+
+.publish-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.posts-list {
+    padding-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.post-item {
+    padding: 16px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    background: #fafafa;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.post-info h4 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.post-meta {
+    font-size: 13px;
+    color: #666;
+    margin-top: 4px;
+    display: flex;
+    gap: 12px;
+}
+
+.view-post {
+    font-size: 14px;
+    color: #1a73e8;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.view-post:hover {
+    text-decoration: underline;
+}
+
+.status.draft {
+    color: #f57c00;
+}
+
+.status.published {
+    color: #388e3c;
+}
+
+.button-group {
+    display: inline-flex;
+    gap: 10px;
+    margin-top: 10px;
+    max-width: 10px;
+}
+
+.publish-button,
+.update-button,
+.cancel-button {
+    min-width: 150px;
+    max-width: 200px;
+    height: 44px;
+    font-size: 14px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: none;
+    font-weight: 500;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    white-space: nowrap;
+}
+
+.update-button {
+    background-color: #2196f3;
+    color: white;
+}
+
+.cancel-button {
+    background-color: #f44336;
+    color: white;
+}
+
+.update-button:hover {
+    background-color: #1976d2;
+    transform: translateY(-1px);
+}
+
+.cancel-button:hover {
+    background-color: #d32f2f;
+    transform: translateY(-1px);
+}
+
+.update-button:disabled,
+.cancel-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.post-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.ql-editor {
+    line-height: 1.2 !important;
+    font-size: 14px !important;
+}
+
+.ql-editor p {
+    margin-bottom: 0.5em !important;
+}
+
+.ql-container {
+    font-family: inherit !important;
+}
+
+.edit-button,
+.delete-button,
+.view-post {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    text-decoration: none;
+    transition: all 0.2s;
+    min-width: 80px;
+    justify-content: center;
+}
+
+.edit-button {
+    background-color: #ff9800;
+    color: white;
+}
+
+.delete-button {
+    background-color: #f44336;
+    color: white;
+}
+
+.view-post {
+    background-color: #4caf50;
+    color: white;
+}
+
+.edit-button:hover,
+.delete-button:hover,
+.view-post:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.edit-button:hover {
+    background-color: #f57c00;
+}
+
+.delete-button:hover {
+    background-color: #d32f2f;
+}
+
+.view-post:hover {
+    background-color: #388e3c;
+}
+
+.edit-button:active,
+.delete-button:active,
+.view-post:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+.edit-button,
+.delete-button {
+    padding: 6px 10px;
+    font-size: 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.edit-button {
+    background-color: #f1c40f;
+    color: white;
+}
+
+.delete-button {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.edit-button:hover {
+    background-color: #d4ac0d;
+}
+
+.delete-button:hover {
+    background-color: #c0392b;
+}
+
+.post-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.datepicker-wrapper {
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+}
+
+.datepicker-wrapper label {
+    font-weight: 600;
+    padding-right: 12px;
+    margin-bottom: 6px;
+    display: inline-block;
+    font-size: 14px;
+    color: #333;
+}
+
+.datepicker-input-group {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 8px 12px;
+    max-width: 300px;
+    background-color: white;
+}
+
+.calendar-icon {
+    margin-right: 8px;
+    color: #888;
+}
+
+.date-picker-input {
+    border: none;
+    outline: none;
+    width: 100%;
+    font-size: 14px;
+}
+
+.date-picker-input:focus {
+    outline: none;
+    border-color: #1976d2;
+    box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.2);
+}
+
+.react-datepicker {
+    z-index: 10000 !important;
+    font-size: 14px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.react-datepicker__header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e0e0e0;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.react-datepicker__day,
+.react-datepicker__day-name {
+    width: 2rem;
+    line-height: 2rem;
+    margin: 0.2rem;
+    font-size: 13px;
+}
+
+.react-datepicker__day--selected {
+    background-color: #1976d2;
+    color: #fff;
+    border-radius: 50%;
+}
+
+.react-datepicker__day--today {
+    font-weight: bold;
+    color: #1976d2;
+}
+
+.react-datepicker__time-container {
+    border-left: 1px solid #eee;
+}
+
+.react-datepicker__time-list-item--selected {
+    background-color: #1976d2;
+    color: white;
+}
+
+.react-datepicker__triangle {
+    display: block;
+}
+
+.sort-button-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 16px;
+}
+
+.sort-button {
+    padding: 8px 16px;
+    font-size: 14px;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.2s ease;
+}
+
+.sort-button:hover {
+    background-color: #f0f0f0;
+}
