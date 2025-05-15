@@ -20,6 +20,7 @@ export const ENDPOINTS = {
   USERS_UPDATE_PROFILE_FROM_WEBSITE: `${APIEndpoint}/userProfile/profileImage/imagefromwebsite`,
   USER_PROFILE_BASIC_INFO: `${APIEndpoint}/userProfile/basicInfo`,
   USER_AUTOCOMPLETE: searchText => `${APIEndpoint}/userProfile/autocomplete/${searchText}`,
+  SEARCH_USER: `${APIEndpoint}/users/search`,
   TOGGLE_BIO_STATUS: userId => `${APIEndpoint}/userProfile/${userId}/toggleBio`,
 
   INFO_COLLECTIONS: `${APIEndpoint}/informations`,
@@ -94,8 +95,8 @@ export const ENDPOINTS = {
     `${APIEndpoint}/userProfile/authorizeUser/weeeklySummaries`,
   TOTAL_ORG_SUMMARY: (startDate, endDate, comparisonStartDate, comparisonEndDate) =>
     `${APIEndpoint}/reports/volunteerstats?startDate=${startDate}&endDate=${endDate}&comparisonStartDate=${comparisonStartDate}&comparisonEndDate=${comparisonEndDate}`,
-  VOLUNTEER_TRENDS: (timeFrame, offset, customStartDate, customEndDate ) => 
-    `${APIEndpoint}/reports/volunteertrends?timeFrame=${timeFrame}&offset=${offset}${customStartDate ? `&customStartDate=${customStartDate}`: ''}${customEndDate ? `&customEndDate=${customEndDate}`: ''}`
+  VOLUNTEER_TRENDS: (timeFrame, offset, customStartDate, customEndDate) =>
+    `${APIEndpoint}/reports/volunteertrends?timeFrame=${timeFrame}&offset=${offset}${customStartDate ? `&customStartDate=${customStartDate}` : ''}${customEndDate ? `&customEndDate=${customEndDate}` : ''}`
   ,
   HOURS_TOTAL_ORG_SUMMARY: (startDate, endDate) =>
     `${APIEndpoint}/reports/overviewsummaries/taskandprojectstats?startDate=${startDate}&endDate=${endDate}`,
