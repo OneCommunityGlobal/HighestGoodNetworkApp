@@ -4,21 +4,20 @@ import { Link } from 'react-router-dom';
 import { NavItem, Button } from 'reactstrap';
 import ReactTooltip from 'react-tooltip';
 import hasPermission from 'utils/permissions';
-import {
-  fetchAllTasks,
-  emptyTaskItems,
-  updateNumList,
-  deleteTask,
-} from '../../../../actions/task';
+import { boxStyle, boxStyleDark } from 'styles';
+import { getProjectDetail } from 'actions/project';
+import { fetchAllTasks, emptyTaskItems, updateNumList, deleteTask } from '../../../../actions/task';
 import { fetchAllMembers } from '../../../../actions/projectMembers.js';
 import Task from './Task';
 import AddTaskModal from './AddTask/AddTaskModal';
 import ImportTask from './ImportTask';
 import './wbs.css';
-import { boxStyle, boxStyleDark } from 'styles';
-import { getProjectDetail } from 'actions/project';
+
+import { useFetchWbsTasks } from './hook';
+import { FilterBar } from './FilterBar';
 
 function WBSTasks(props) {
+  // const { tasks, fetched, darkMode } = props;
   const { tasks, fetched, darkMode } = props;
 
   const { wbsId } = props.match.params;
@@ -35,14 +34,41 @@ function WBSTasks(props) {
   const [levelOneTasks, setLevelOneTasks] = useState([]);
   const [controllerId, setControllerId] = useState(null);
   const [pageLoadTime, setPageLoadTime] = useState(Date.now());
+  const [copiedTask, setCopiedTask] = useState(null);
   const myRef = useRef(null);
+
+  // const { tasks, isLoading, error, refresh } = useFetchWbsTasks(wbsId);
+
+  useEffect(() => {
+    setLevelOneTasks(
+      filterTasks(
+        tasks.filter(task => task.level === 1),
+        filterState,
+      ),
+    );
+  }, [tasks, filterState]);
 
   // permissions
   const canPostTask = props.hasPermission('postTask');
+  const filterTasks = (tasks, filterState) => {
+    switch (filterState) {
+      case 'all':
+        return tasks;
+      case 'assigned':
+        return tasks.filter(task => task.isAssigned === true);
+      case 'unassigned':
+        return tasks.filter(task => task.isAssigned === false);
+      case 'active':
+        return tasks.filter(task => ['Active', 'Started'].includes(task.status));
+      case 'inactive':
+        return tasks.filter(task => ['Not Started', 'Paused'].includes(task.status));
+      case 'complete':
+        return tasks.filter(task => task.status === 'Complete');
+      case 'paused':
+        return tasks.filter(task => task.status === 'Paused');
+    }
+  };
 
-  /*
-  * -------------------------------- functions --------------------------------
-  */
   const load = async () => {
     setIsLoading(true);
     const levelList = [0, 1, 2, 3, 4];
@@ -51,25 +77,12 @@ function WBSTasks(props) {
     setIsLoading(false);
   };
 
-  const filterTasks = (tasks, filterState) => {
-    switch (filterState) {
-      case 'all': return tasks
-      case 'assigned': return tasks.filter(task => task.isAssigned === true)
-      case 'unassigned': return tasks.filter(task => task.isAssigned === false)
-      case 'active': return tasks.filter(task => ['Active', 'Started'].includes(task.status))
-      case 'inactive': return tasks.filter(task => ['Not Started', 'Paused'].includes(task.status))
-      case 'complete': return tasks.filter(task => task.status === 'Complete')
-      case 'paused': return tasks.filter(task => task.status === 'Paused');
-    }
-  }
-
-
   const refresh = async () => {
     setIsLoading(true);
     props.emptyTaskItems();
     await load();
-    setOpenAll(false)
-    setIsLoading(false)
+    setOpenAll(false);
+    setIsLoading(false);
   };
 
   const deleteWBSTask = (taskId, mother) => {
@@ -78,14 +91,14 @@ function WBSTasks(props) {
   };
 
   /*
-  * -------------------------------- useEffects -------------------------------- 
-  */
+   * -------------------------------- useEffects --------------------------------
+   */
   useEffect(() => {
     const observer = new MutationObserver(ReactTooltip.rebuild);
     const observerOptions = {
       childList: true,
       subtree: true,
-    }
+    };
     observer.observe(myRef.current, observerOptions); // only rebuild ReactTooltip when DOM tree changes
     return () => {
       observer.disconnect();
@@ -101,7 +114,7 @@ function WBSTasks(props) {
       setIsLoading(false);
     };
     initialLoad();
-    props.getProjectDetail(projectId); 
+    props.getProjectDetail(projectId);
   }, [wbsId, projectId]);
 
   useEffect(() => {
@@ -109,7 +122,7 @@ function WBSTasks(props) {
     const filteredTasks = filterTasks(newLevelOneTasks, filterState);
     setShowImport(tasks.length === 0);
     setLevelOneTasks(filteredTasks);
-  }, [tasks, filterState])
+  }, [tasks, filterState]);
 
   useEffect(() => {
     if (isDeleted) {
@@ -119,34 +132,55 @@ function WBSTasks(props) {
   }, [isDeleted]);
 
   return (
-    <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: "100%" }}>
+    <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: '100%' }}>
       <ReactTooltip delayShow={300} />
-      <div className={`container-tasks m-0 p-2`}>
+      <div className="container-tasks m-0 p-2">
         <nav aria-label="breadcrumb">
-          <ol className={`breadcrumb ${darkMode ? 'bg-space-cadet' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>
+          <ol
+            className={`breadcrumb ${darkMode ? 'bg-space-cadet' : ''}`}
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
             <NavItem tag={Link} to={`/project/wbs/${projectId}`}>
-              <button type="button" className="btn btn-secondary mr-2" style={darkMode ? boxStyleDark : boxStyle}>
+              <button
+                type="button"
+                className="btn btn-secondary mr-2"
+                style={darkMode ? boxStyleDark : boxStyle}
+              >
                 <i className="fa fa-chevron-circle-left" aria-hidden="true" />
               </button>
               <span style={{ marginLeft: '1px' }}>Return to WBS List: {projectName}</span>
             </NavItem>
-            <div id="member_project__name" style={{ flex: '1', textAlign: 'center', fontWeight: 'bold', display: 'flex',
-              alignItems: 'center', justifyContent: 'center', }}> WBS Name: {wbsName}</div>
+            <div
+              id="member_project__name"
+              style={{
+                flex: '1',
+                textAlign: 'center',
+                fontWeight: 'bold',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              {' '}
+              WBS Name: {wbsName}
+            </div>
           </ol>
         </nav>
         <div
-          className='mb-2 wbs-button-group' // Group the buttons
-          style={{
-          }}>
+          className="mb-2 wbs-button-group" // Group the buttons
+          style={{}}
+        >
           {/* <span> */}
           {canPostTask ? (
             <AddTaskModal
+              copiedTask={copiedTask}
               key="task_modal_null"
               taskNum={null}
               taskId={null}
               wbsId={wbsId}
               projectId={projectId}
-              load={load}
+              // load={load}
+              load={refresh}
               pageLoadTime={pageLoadTime}
               darkMode={darkMode}
             />
@@ -156,106 +190,40 @@ function WBSTasks(props) {
             <ImportTask
               wbsId={wbsId}
               projectId={projectId}
-              load={load}
-              setIsLoading={setIsLoading}
+              // load={load}
+              load={refresh}
+              setIsLoading={() => {}}
+              // setIsLoading={setIsLoading}
               darkMode={darkMode}
             />
           ) : null}
           <Button
-            color="success"
-            className="ml-2"
+            color={isLoading ? 'warning' : 'success'}
             size="sm"
             onClick={refresh}
             style={darkMode ? boxStyleDark : boxStyle}
+            disabled={isLoading}
           >
-            Refresh{' '}
+            <i className={`fa fa-refresh ${isLoading ? 'fa-spin' : ''}`} /> Refresh
           </Button>
-          {isLoading ? (
-            <Button color="warning" size="sm" className="ml-3" style={darkMode ? boxStyleDark : boxStyle}>
-              {' '}
-              Task Loading......{' '}
-            </Button>
-          ) : null}
-          {/* </span> */}
-
-          {/* <span className="toggle-all"> */}
           <Button
             color="light"
             size="sm"
             className="ml-2"
             onClick={() => setOpenAll(!openAll)}
             style={darkMode ? boxStyleDark : boxStyle}
+            disabled={isLoading}
           >
-            {openAll ? 'fold All' : 'Unfold All'}
+            {openAll ? 'Fold All' : 'Unfold All'}
           </Button>
-          <Button
-            color="primary"
-            size="sm"
-            className="ml-2"
-            onClick={() => setFilterState('all')}
-            style={darkMode ? boxStyleDark : boxStyle}
-          >
-            All
-          </Button>
-          <Button
-            color="secondary"
-            size="sm"
-            onClick={() => setFilterState('assigned')}
-            className="ml-2"
-            style={darkMode ? boxStyleDark : boxStyle}
-          >
-            Assigned
-          </Button>
-          <Button
-            color="success"
-            size="sm"
-            onClick={() => setFilterState('unassigned')}
-            className="ml-2"
-            style={darkMode ? boxStyleDark : boxStyle}
-          >
-            Unassigned
-          </Button>
-          <Button
-            color="info"
-            size="sm"
-            onClick={() => setFilterState('active')}
-            className="ml-2"
-            style={darkMode ? boxStyleDark : boxStyle}
-          >
-            Active
-          </Button>
-        
-          <Button
-         color="info"
-        size="sm"
-        onClick={() => setFilterState('paused')}
-       className="ml-2"
-       style={darkMode ? boxStyleDark : boxStyle}
-        >
-          Paused
-        </Button>
-          <Button
-            color="warning"
-            size="sm"
-            onClick={() => setFilterState('inactive')}
-            className="ml-2"
-            style={darkMode ? boxStyleDark : boxStyle}
-          >
-            Inactive
-          </Button>
-          <Button
-            color="danger"
-            size="sm"
-            onClick={() => setFilterState('complete')}
-            className="ml-2"
-            style={darkMode ? boxStyleDark : boxStyle}
-          >
-            Complete
-          </Button>
+          <FilterBar currentFilter={filterState} onChange={setFilterState} isLoading={isLoading} />
           {/* </span> */}
         </div>
 
-        <table className={`table table-bordered tasks-table ${darkMode ? 'text-light' : ''}`} ref={myRef}>
+        <table
+          className={`table table-bordered tasks-table ${darkMode ? 'text-light' : ''}`}
+          ref={myRef}
+        >
           <thead>
             <tr className={darkMode ? 'bg-space-cadet' : ''}>
               <th scope="col" className="tasks-detail-actions" data-tip="Action" colSpan="2">
@@ -306,11 +274,12 @@ function WBSTasks(props) {
             </tr>
           </thead>
           <tbody>
-            {/* <tr className="taskDrop">   // Drag and drop functionality is deserted for now
-              <td colSpan={14} />
-            </tr> */}
-            {levelOneTasks.map((task, i) => (
+            {filterTasks(
+              tasks.filter(task => task.level === 1),
+              filterState,
+            ).map((task, i) => (
               <Task
+                copyCurrentTask={setCopiedTask}
                 key={`${task._id}${i}`}
                 taskId={task._id}
                 level={task.level}
@@ -345,16 +314,17 @@ function WBSTasks(props) {
                 filterState={filterState}
                 controllerId={controllerId}
                 setControllerId={setControllerId}
-                load={load}
+                tasks={tasks}
+                load={refresh}
                 pageLoadTime={pageLoadTime}
-                setIsLoading={setIsLoading}
+                setIsLoading={() => {}}
                 darkMode={darkMode}
               />
             ))}
           </tbody>
         </table>
       </div>
-    </div >
+    </div>
   );
 }
 
