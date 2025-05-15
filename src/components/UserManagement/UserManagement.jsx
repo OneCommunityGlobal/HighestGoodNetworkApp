@@ -36,7 +36,6 @@ import NewUserPopup from './NewUserPopup';
 import ActivationDatePopup from './ActivationDatePopup';
 import { UserStatus, UserDeleteType, FinalDay } from '../../utils/enums';
 import hasPermission, { cantDeactivateOwner } from '../../utils/permissions';
-import { searchWithAccent } from '../../utils/search';
 import SetupHistoryPopup from './SetupHistoryPopup';
 import DeleteUserPopup from './DeleteUserPopup';
 import ActiveInactiveConfirmationPopup from './ActiveInactiveConfirmationPopup';
