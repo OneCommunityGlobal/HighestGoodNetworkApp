@@ -154,6 +154,7 @@ const AddProject = (props) => {
           borderColor: 'green',
           color: 'green',
           borderWidth: '1px',
+          marginBottom: '10px'
         }}
       >
         <i className="fa fa-plus" aria-hidden="true"></i> Add New Project

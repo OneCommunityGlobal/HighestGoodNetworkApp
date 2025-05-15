@@ -222,7 +222,7 @@ const Projects = function(props) {
       <div className={darkMode ? 'bg-oxford-blue text-light' : ''}>
         <div className={`container py-3 ${darkMode ? 'bg-yinmn-blue-light text-light' : ''}`}>
           {fetching || !fetched ? <Loading align="center" /> : null}
-          <div className="d-flex align-items-center">
+          <div className="d-flex align-items-center flex-wrap w-100">
             <h3 style={{ display: 'inline-block', marginRight: 10 }}>Projects</h3>
             <EditableInfoModal
               areaName="projectsInfoModal"

@@ -173,9 +173,7 @@ function SingleTask(props) {
                           onClick={() => showUpDeleteModal()}
                           style={darkMode ? boxStyleDark : boxStyle}
                         >
-                          <span className='desktop-view'>Delete</span>
-                          {' '}
-                          <i className="fa fa-trash" aria-hidden="true" />
+                          Delete
                         </Button>
                         <ModalDelete
                           isOpen={modalDelete}

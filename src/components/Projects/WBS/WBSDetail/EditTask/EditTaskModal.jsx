@@ -751,17 +751,13 @@ function EditTaskModal(props) {
       {
         canUpdateTask &&
         <Button className="mr-2 controlBtn" color="primary" size="sm" onClick={e => handleModalShow("Edit")} style={darkMode ? boxStyleDark : boxStyle}>
-          <span className='desktop-view'>Edit</span>
-          {' '} 
-          <i class="fa fa-edit"></i>
+          Edit
         </Button>
       }
       {
         canSuggestTask &&
         <Button className="controlBtn" color="primary" size="sm" onClick={e => handleModalShow("Suggest")} style={darkMode ? boxStyleDark : boxStyle}>
-          <span className='desktop-view'>Suggest</span>
-          {' '} 
-          <i class="fa fa-lightbulb-o"></i>
+          Suggest
         </Button>
       }
       {
