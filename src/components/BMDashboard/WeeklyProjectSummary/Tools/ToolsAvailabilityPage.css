@@ -1,0 +1,22 @@
+.tools-availability-page {
+  padding: 24px;
+  min-height: 100vh;
+  background-color: var(--bg-color);
+}
+
+.tools-availability-page.dark-mode {
+  background-color: var(--dark-bg);
+}
+
+.tools-availability-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+  background-color: var(--card-bg);
+  border-radius: 8px;
+  box-shadow: 0 2px 5px var(--card-shadow);
+}
+
+.tools-availability-page.dark-mode .tools-availability-content {
+  background-color: var(--section-bg);
+} 

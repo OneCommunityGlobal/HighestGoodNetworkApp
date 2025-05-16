@@ -17,6 +17,7 @@ import Announcements from 'components/Announcements';
 import JobFormBuilder from 'components/Collaboration/JobFormbuilder';
 import JobCCDashboard from 'components/JobCCDashboard/JobCCDashboard';
 import WeeklyProjectSummary from 'components/BMDashboard/WeeklyProjectSummary/WeeklyProjectSummary';
+import ToolsAvailabilityPage from 'components/BMDashboard/WeeklyProjectSummary/Tools/ToolsAvailabilityPage';
 import FaqSearch from 'components/Faq/FaqSearch';
 import FaqManagement from 'components/Faq/FaqManagement';
 import FaqHistory from 'components/Faq/FaqHistory';
@@ -97,7 +98,6 @@ import EPDashboard from './components/EductionPortal';
 import LogTools from './components/BMDashboard/LogTools/LogTools';
 import EquipmentUpdate from './components/BMDashboard/Tools/EquipmentUpdate';
 
-
 const ReusableListView = lazy(() => import('./components/BMDashboard/ReusableList'));
 const ConsumableListView = lazy(() => import('./components/BMDashboard/ConsumableList'));
 const MaterialListView = lazy(() => import('./components/BMDashboard/MaterialList'));
@@ -150,7 +150,6 @@ const PermissionsManagement = lazy(() =>
 const UserRoleTab = lazy(() => import('./components/PermissionsManagement/UserRoleTab'));
 const Teams = lazy(() => import('./components/Teams/Teams'));
 
-
 export default (
   <Switch>
     {/* ----- LB Dashboard Routing ----- */}
@@ -161,7 +160,6 @@ export default (
     <>
       {/* Comment out the Header component and its import during phase 2 development. */}
       {/* Uncomment BMHeader and its import during phase 2 development. */}
-
 
       {/* <BMHeader /> */}
 
@@ -175,10 +173,14 @@ export default (
         <ProtectedRoute path="/dashboard/:userId" exact component={Dashboard} />
         <ProtectedRoute path="/project/members/:projectId" fallback component={Members} />
         <ProtectedRoute path="/timelog/" exact render={() => <Timelog userId={null} />} />
-        <ProtectedRoute path="/timelog/:userId" exact render={(props) => {
-          const { userId } = props.match.params;
-          return <Timelog userId={userId} />
-        }} />
+        <ProtectedRoute
+          path="/timelog/:userId"
+          exact
+          render={props => {
+            const { userId } = props.match.params;
+            return <Timelog userId={userId} />;
+          }}
+        />
         <ProtectedRoute path="/peoplereport/:userId" component={PeopleReport} fallback />
         <ProtectedRoute path="/projectreport/:projectId" component={ProjectReport} fallback />
         <ProtectedRoute path="/teamreport/:teamId" component={TeamReport} fallback />
@@ -318,11 +320,7 @@ export default (
           routePermissions={RoutePermissions.projects}
         />
 
-        <ProtectedRoute
-          path="/faq"
-          exact
-          component={FaqSearch}
-        />
+        <ProtectedRoute path="/faq" exact component={FaqSearch} />
 
         <ProtectedRoute
           path="/faq-management"
@@ -360,7 +358,13 @@ export default (
           // setting permission as Weeklysummariesreport for now. Later it will be changed to weeklyVolunteerSummary. - H
           routePermissions={RoutePermissions.weeklySummariesReport}
         />
-        <ProtectedRoute path="/job-notification-dashboard" exact component={JobCCDashboard} fallback allowedRoles={[UserRole.Owner]} />
+        <ProtectedRoute
+          path="/job-notification-dashboard"
+          exact
+          component={JobCCDashboard}
+          fallback
+          allowedRoles={[UserRole.Owner]}
+        />
 
         {/* ----- BEGIN BM Dashboard Routing ----- */}
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
@@ -428,7 +432,11 @@ export default (
         <BMProtectedRoute path="/bmdashboard/AddTeamMember" component={AddTeamMember} />
         <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} />
         <BMProtectedRoute path="/bmdashboard/tools/log" exact component={LogTools} />
-        <BMProtectedRoute path="/bmdashboard/tools/equipmentupdate" exact component={EquipmentUpdate} />
+        <BMProtectedRoute
+          path="/bmdashboard/tools/equipmentupdate"
+          exact
+          component={EquipmentUpdate}
+        />
         <BMProtectedRoute path="/bmdashboard/tools/:toolId" component={ToolDetailPage} />
         <BMProtectedRoute path="/bmdashboard/lessonform/:projectId" component={LessonForm} />
         <BMProtectedRoute path="/bmdashboard/lessonform/" component={LessonForm} />
@@ -444,15 +452,22 @@ export default (
           component={WeeklyProjectSummary}
         />
 
+        <BMProtectedRoute
+          path="/bmdashboard/tools-availability"
+          fallback
+          exact
+          component={ToolsAvailabilityPage}
+        />
+
         {/* Community Portal Routes */}
         <CPProtectedRoute path="/communityportal" exact component={CPDashboard} />
         <Route path="/communityportal/login" component={CPLogin} />
         <CPProtectedRoute path="/communityportal/Activities" exact component={ActivityList} />
         <CPProtectedRoute
           path="/communityportal/Activities/:activityid/Resources"
-          exact component={Resources}
+          exact
+          component={Resources}
         />
-
 
         {/* Listing and Bidding Routes */}
         <LBProtectedRoute path="/lbdashboard" exact component={LBDashboard} />
@@ -465,11 +480,12 @@ export default (
         <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />
         <Route path="/educationportal/login" component={EPLogin} />
 
-
-        <CPProtectedRoute path="/communityportal/reports/event/personalization" exact component={EventStats} />
+        <CPProtectedRoute
+          path="/communityportal/reports/event/personalization"
+          exact
+          component={EventStats}
+        />
         {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
-
-
 
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
         {/* <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} /> */}
@@ -508,4 +524,4 @@ export default (
       </Switch>
     </>
   </Switch>
-)
+);

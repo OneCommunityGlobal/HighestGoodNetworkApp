@@ -1,0 +1,174 @@
+.tools-horizontal-chart-container {
+  background-color: var(--card-bg);
+  border-radius: 8px;
+  padding: 20px;
+  height: 100%;
+  box-shadow: 0 2px 5px var(--card-shadow);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease;
+}
+
+.tools-horizontal-chart-container:not(.full-page):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px var(--card-shadow);
+}
+
+.tools-horizontal-chart-container.dark-mode {
+  background-color: var(--section-bg);
+  color: white;
+}
+
+.tools-chart-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  color: var(--text-color);
+}
+
+.full-page .tools-chart-title {
+  font-size: 24px;
+  margin-bottom: 32px;
+}
+
+.tools-chart-filters {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 200px;
+}
+
+.filter-group label {
+  font-size: 13px;
+  color: var(--text-color);
+  font-weight: 500;
+}
+
+.project-select {
+  width: 100%;
+}
+
+.date-picker-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.date-picker {
+  width: 110px;
+  padding: 6px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 13px;
+  background-color: var(--card-bg);
+  color: var(--text-color);
+}
+
+.dark-mode .date-picker {
+  background-color: var(--section-bg);
+  border-color: #555;
+  color: #e0e0e0;
+}
+
+.date-picker-group span {
+  color: var(--text-color);
+  font-size: 13px;
+}
+
+/* React-Select Custom Styles */
+.select__control {
+  background-color: var(--card-bg) !important;
+  border-color: #ccc !important;
+}
+
+.dark-mode .select__control {
+  background-color: var(--section-bg) !important;
+  border-color: #555 !important;
+}
+
+.select__single-value {
+  color: var(--text-color) !important;
+}
+
+.select__menu {
+  background-color: var(--card-bg) !important;
+  border: 1px solid #ccc;
+}
+
+.dark-mode .select__menu {
+  background-color: var(--section-bg) !important;
+  border-color: #555;
+}
+
+.select__option {
+  background-color: var(--card-bg) !important;
+  color: var(--text-color) !important;
+}
+
+.select__option:hover {
+  background-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+.dark-mode .select__option:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.tools-chart-tooltip {
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 8px 12px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+.dark-mode .tools-chart-tooltip {
+  background-color: #333;
+  border-color: #555;
+  color: #e0e0e0;
+}
+
+.tool-name {
+  font-weight: bold;
+  margin: 0 0 5px;
+}
+
+.tool-usage {
+  margin: 0;
+  font-size: 13px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .tools-horizontal-chart-container {
+    padding: 16px;
+  }
+  
+  .tools-chart-title {
+    font-size: 18px;
+    margin-bottom: 20px;
+  }
+  
+  .full-page .tools-chart-title {
+    font-size: 20px;
+    margin-bottom: 24px;
+  }
+  
+  .filter-group {
+    min-width: 100%;
+  }
+  
+  .date-picker-group {
+    flex-wrap: wrap;
+  }
+  
+  .date-picker {
+    width: 100%;
+  }
+} 
