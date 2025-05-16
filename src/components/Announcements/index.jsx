@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
 import './Announcements.css';
 import { useDispatch, useSelector } from 'react-redux';
+import tinymce from 'tinymce';
 import { Editor } from '@tinymce/tinymce-react'; // Import Editor from TinyMCE
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
-import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
-import PinterestPost from './PinterestPost';
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
+import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
+import PinterestPost from './PinterestPost';
 import pinterestLogo from '../../assets/images/Pinterest-logo.png';
 
 function Announcements({ title, email }) {
@@ -160,8 +161,7 @@ function Announcements({ title, email }) {
       return;
     }
 
-    const invalidEmails = emailList.filter(email => !validateEmail(email.trim()));
-
+    const invalidEmails = emailList.filter(emailItem => !validateEmail(emailItem.trim()));
 
     if (invalidEmails.length > 0) {
       toast.error(`Error: Invalid email addresses: ${invalidEmails.join(', ')}`);
@@ -182,117 +182,114 @@ function Announcements({ title, email }) {
     dispatch(broadcastEmailsToAll('Weekly Update', htmlContent));
   };
 
-  
-
   return (
     <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: '100%' }}>
+      <Tabs defaultActiveKey="home" id="uncontrolled-tab-example" className="mb-3">
+        <Tab eventKey="home" title={title ? <h3> {title} </h3> : <h3>Weekly Progress Editor</h3>}>
+          <div className="email-update-container">
+            <div className="editor">
+              {/* {title ? <h3> {title} </h3> : <h3>Weekly Progress Editor</h3>} */}
 
-<Tabs
-      defaultActiveKey="home"
-      id="uncontrolled-tab-example"
-      className="mb-3"
-    >
-      <Tab eventKey="home" title={title ? <h3> {title} </h3> : <h3>Weekly Progress Editor</h3>}>
-  
-      <div className="email-update-container">
-        <div className="editor">
-          {/* {title ? <h3> {title} </h3> : <h3>Weekly Progress Editor</h3>} */}
-
-          <br />
-          {showEditor && (
-            <Editor
-              tinymceScriptSrc="/tinymce/tinymce.min.js"
-              id="email-editor"
-              initialValue="<p>This is the initial content of the editor</p>"
-              init={editorInit}
-              onEditorChange={content => {
-                setEmailContent(content);
-              }}
-            />
-          )}
-          {title ? (
-            ''
-          ) : (
-            <button
-              type="button"
-              className="send-button"
-              onClick={handleBroadcastEmails}
+              <br />
+              {showEditor && (
+                <Editor
+                  tinymceScriptSrc="/tinymce/tinymce.min.js"
+                  id="email-editor"
+                  initialValue="<p>This is the initial content of the editor</p>"
+                  init={editorInit}
+                  onEditorChange={content => {
+                    setEmailContent(content);
+                  }}
+                />
+              )}
+              {title ? (
+                ''
+              ) : (
+                <button
+                  type="button"
+                  className="send-button"
+                  onClick={handleBroadcastEmails}
+                  style={darkMode ? boxStyleDark : boxStyle}
+                >
+                  Broadcast Weekly Update
+                </button>
+              )}
+            </div>
+            <div
+              className={`emails ${darkMode ? 'bg-yinmn-blue' : ''}`}
               style={darkMode ? boxStyleDark : boxStyle}
             >
-              Broadcast Weekly Update
-            </button>
-          )}
-        </div>
-        <div
-          className={`emails ${darkMode ? 'bg-yinmn-blue' : ''}`}
-          style={darkMode ? boxStyleDark : boxStyle}
-        >
-          {title ? (
-            <p>Email</p>
-          ) : (
-            <label htmlFor="email-list-input" className={darkMode ? 'text-light' : 'text-dark'}>
-              Email List (comma-separated):
-            </label>
-          )}
-          <input
-            type="text"
-            value={emailTo}
-            id="email-list-input"
-            onChange={handleEmailListChange}
-            className={`input-text-for-announcement ${
-              darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
-            }`}
-          />
-          <button
-            type="button"
-            className="send-button"
-            onClick={handleSendEmails}
-            style={darkMode ? boxStyleDark : boxStyle}
-          >
-            {title ? 'Send Email' : 'Send mail to specific users'}
-          </button>
+              {title ? (
+                <p>Email</p>
+              ) : (
+                <label htmlFor="email-list-input" className={darkMode ? 'text-light' : 'text-dark'}>
+                  Email List (comma-separated):
+                </label>
+              )}
+              <input
+                type="text"
+                value={emailTo}
+                id="email-list-input"
+                onChange={handleEmailListChange}
+                className={`input-text-for-announcement ${
+                  darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+                }`}
+              />
+              <button
+                type="button"
+                className="send-button"
+                onClick={handleSendEmails}
+                style={darkMode ? boxStyleDark : boxStyle}
+              >
+                {title ? 'Send Email' : 'Send mail to specific users'}
+              </button>
 
-          <hr />
-          <label htmlFor="header-content-input" className={darkMode ? 'text-light' : 'text-dark'}>
-            Insert header or image link:
-          </label>
-          <input
-            type="text"
-            id="header-content-input"
-            onChange={handleHeaderContentChange}
-            value={headerContent}
-            className={`input-text-for-announcement ${
-              darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
-            }`}
-          />
-          <button
-            type="button"
-            className="send-button"
-            onClick={addHeaderToEmailContent}
-            style={darkMode ? boxStyleDark : boxStyle}
-          >
-            Insert
-          </button>
-          <hr />
-          <label htmlFor="upload-header-input" className={darkMode ? 'text-light' : 'text-dark'}>
-            Upload Header (or footer):
-          </label>
-          <input
-            type="file"
-            id="upload-header-input"
-            onChange={addImageToEmailContent}
-            className="input-file-upload"
-          />
-        </div>
-      </div>
-      </Tab>
+              <hr />
+              <label
+                htmlFor="header-content-input"
+                className={darkMode ? 'text-light' : 'text-dark'}
+              >
+                Insert header or image link:
+              </label>
+              <input
+                type="text"
+                id="header-content-input"
+                onChange={handleHeaderContentChange}
+                value={headerContent}
+                className={`input-text-for-announcement ${
+                  darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+                }`}
+              />
+              <button
+                type="button"
+                className="send-button"
+                onClick={addHeaderToEmailContent}
+                style={darkMode ? boxStyleDark : boxStyle}
+              >
+                Insert
+              </button>
+              <hr />
+              <label
+                htmlFor="upload-header-input"
+                className={darkMode ? 'text-light' : 'text-dark'}
+              >
+                Upload Header (or footer):
+              </label>
+              <input
+                type="file"
+                id="upload-header-input"
+                onChange={addImageToEmailContent}
+                className="input-file-upload"
+              />
+            </div>
+          </div>
+        </Tab>
 
-      <Tab eventKey="pinterest" title={<img src={pinterestLogo}/>}>
-      <div className='social-media'>
-       
-        <PinterestPost />
-      </div>
-      </Tab>
+        <Tab eventKey="pinterest" title={<img src={pinterestLogo} alt="" />}>
+          <div className="social-media">
+            <PinterestPost />
+          </div>
+        </Tab>
       </Tabs>
     </div>
   );
