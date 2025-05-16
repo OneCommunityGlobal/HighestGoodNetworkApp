@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Container,
   Modal,
@@ -12,10 +12,11 @@ import {
   FormFeedback,
   Button,
 } from 'reactstrap';
-import getUserTimeZone from '../../services/timezoneApiService';
+import httpService from 'services/httpService';
+import { ENDPOINTS } from 'utils/URL';
 import RequirementModal from './requirementModal';
 
-const HomeCountryModal = ({ isOpen, toggle, apiKey, setLocation }) => {
+function HomeCountryModal({ isOpen, toggle, setLocation, token }) {
   const [inputError, setInputError] = useState('');
   const locationInitialState = {
     userProvided: '',
@@ -25,7 +26,7 @@ const HomeCountryModal = ({ isOpen, toggle, apiKey, setLocation }) => {
   };
   const [locationInput, setLocationInput] = useState(locationInitialState);
   const [locationAdded, setLocationAdded] = useState(false);
-  const [locationRefused, setLocationRefused] = useState(false); 
+  const [locationRefused, setLocationRefused] = useState(false);
   const [requirementsBoxChecked, setrequirementsBoxChecked] = useState(false);
   const [requirementModalOpen, setRequirementModalOpen] = useState(false);
   const [requirementModalError, setrequirementModalError] = useState('');
@@ -46,8 +47,8 @@ const HomeCountryModal = ({ isOpen, toggle, apiKey, setLocation }) => {
   const handleRequirementsBoxChecked = () => setrequirementsBoxChecked(!requirementsBoxChecked);
 
   const getTimeZone = () => {
-    if(!requirementsBoxChecked){
-      setrequirementModalError('You need to read and accept the requirements first')
+    if (!requirementsBoxChecked) {
+      setrequirementModalError('You need to read and accept the requirements first');
       return;
     }
     setInputError('');
@@ -58,59 +59,50 @@ const HomeCountryModal = ({ isOpen, toggle, apiKey, setLocation }) => {
       setInputError('Please enter valid location');
       return;
     }
-    if (!apiKey) {
-      setInputError('Geocoding API key missing');
-      return;
-    }
-    getUserTimeZone(location, apiKey)
-      .then(response => {
-        if (
-          response.data.status.code === 200 &&
-          response.data.results &&
-          response.data.results.length
-        ) {
-          let currentLocation = {
-            userProvided: location,
-            coords: {
-              lat: response.data.results[0].geometry.lat,
-              lng: response.data.results[0].geometry.lng,
-            },
-            country: response.data.results[0].components.country,
-            city: response.data.results[0].components.city || '',
-          };
+    httpService
+      .post(ENDPOINTS.TIMEZONE_LOCATION(location), { token })
+      .then(res => {
+        if (res.status === 200) {
+          const { currentLocation } = res.data;
           setLocationInput({
             ...currentLocation,
           });
-        } else {
-          setInputError('Invalid location or ' + response.data.status.message);
         }
       })
-      .catch(err => console.log(err));
+      .catch(err => {
+        setInputError(`An error occured: ${err.response.data}`);
+      });
   };
 
   const handleYesClick = () => {
     setLocationAdded(true);
     setLocation(locationInput);
     setLocationInput(locationInitialState);
+    setTimeout(() => {
+      toggle();
+    }, 1000);
   };
 
   const handleNoClick = () => {
     setLocationRefused(true);
     setLocationInput(locationInitialState);
+    setTimeout(() => {
+      toggle();
+    }, 1000);
   };
 
-  const reset = () =>{
+  const reset = () => {
     setLocationInput(locationInitialState);
     setLocationAdded(false);
-    setLocationRefused(false); 
+    setLocationRefused(false);
     setrequirementsBoxChecked(false);
-  }
+  };
 
   return (
     <Modal isOpen={isOpen} toggle={toggle} onOpened={reset}>
       <ModalHeader toggle={toggle}>Set Home City and/or Country</ModalHeader>
       <ModalBody>
-        <Row className='mb-3'>
+        <Row className="mb-3">
           <Col md="12">
             <Button
               color="primary"
@@ -163,26 +155,26 @@ const HomeCountryModal = ({ isOpen, toggle, apiKey, setLocation }) => {
       {locationInput?.country && (
         <ModalFooter className="justify-content-start">
           <Container>
-          <Row>
-            <Col>
-              <p>
-                {' '}
-                {`Do you want to represent ${
-                  locationInput?.city ? `${locationInput?.city}, ` : ''
-                } ${locationInput?.country} ?`}{' '}
-              </p>
-            </Col>
-          </Row>
-          <Row>
-            <Col>
-              <Button color="primary" className="mr-2" onClick={handleYesClick}>
-                Yes
-              </Button>
-              <Button color="danger" onClick={handleNoClick}>
-                No
-              </Button>
-            </Col>
-          </Row>
+            <Row>
+              <Col>
+                <p>
+                  {' '}
+                  {`Do you want to represent ${
+                    locationInput?.city ? `${locationInput?.city}, ` : ''
+                  } ${locationInput?.country} ?`}{' '}
+                </p>
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <Button color="primary" className="mr-2" onClick={handleYesClick}>
+                  Yes
+                </Button>
+                <Button color="danger" onClick={handleNoClick}>
+                  No
+                </Button>
+              </Col>
+            </Row>
           </Container>
         </ModalFooter>
       )}
@@ -198,6 +190,6 @@ const HomeCountryModal = ({ isOpen, toggle, apiKey, setLocation }) => {
       )}
     </Modal>
   );
-};
+}
 
 export default HomeCountryModal;

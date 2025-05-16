@@ -1,21 +1,37 @@
-import React from 'react';
 import './BlueSquare.css';
 import hasPermission from 'utils/permissions';
 import { connect } from 'react-redux';
-import { formatDate } from 'utils/formatDate';
-import { formatDateFromDescriptionString } from 'utils/formatDateFromDescriptionString';
+import { formatCreatedDate, formatDate } from 'utils/formatDate';
+
 
 const BlueSquare = (props) => {
-  const isInfringementAuthorizer = props.hasPermission('infringementAuthorizer');
-  const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
-  const { blueSquares, handleBlueSquare } = props;
+  const {
+    blueSquares,
+    handleBlueSquare,
+    hasPermission,
+    darkMode
+  } = props;
 
+  const canAddInfringements = hasPermission('addInfringements');
+  const canEditInfringements = hasPermission('editInfringements');
+  const canDeleteInfringements = hasPermission('deleteInfringements');
+  const isInfringementAuthorizer = canAddInfringements || canEditInfringements || canDeleteInfringements;
+
+  const handleOnClick = (blueSquare) => {    
+    if (!blueSquare._id) {
+      handleBlueSquare, darkMode(isInfringementAuthorizer, 'message', 'none');
+    } else if (canEditInfringements || canDeleteInfringements) {
+      handleBlueSquare(true, 'modBlueSquare', blueSquare._id);
+    } else {
+      handleBlueSquare(true, 'viewBlueSquare', blueSquare._id);
+    }
+  };    
   return (
-    <div className="blueSquareContainer">
-      <div className="blueSquares">
-        {blueSquares
-          ? blueSquares
-            .sort((a, b) => (a.date > b.date ? 1 : -1))
+    <div className={`blueSquareContainer ${darkMode ? 'bg-darkmode-liblack' : ''}`}>
+      <div className={`blueSquares ${blueSquares?.length ? '' : 'NoBlueSquares'}`}>
+        {blueSquares?.length ? (
+          blueSquares
+            .sort((a, b) => (a.date > b.date ? 1 : -1))  // sorting by most recent date(awareded) last
             .map((blueSquare, index) => (
               <div
                 key={index}
@@ -23,50 +39,37 @@ const BlueSquare = (props) => {
                 id="wrapper"
                 data-testid="blueSquare"
                 className="blueSquareButton"
-                onClick={() => {
-                  if (!blueSquare._id) {
-                    handleBlueSquare(isInfringementAuthorizer, 'message', 'none');
-                  } else if (canPutUserProfileImportantInfo) {
-                    handleBlueSquare(
-                      canPutUserProfileImportantInfo,
-                      'modBlueSquare',
-                      blueSquare._id,
-                    );
-                  } else {
-                    handleBlueSquare(
-                      !canPutUserProfileImportantInfo,
-                      'viewBlueSquare',
-                      blueSquare._id,
-                    );
-                  }
-                }}
+                onClick={() => handleOnClick(blueSquare)}
               >
                 <div className="report" data-testid="report">
                   <div className="title">{formatDate(blueSquare.date)}</div>
-                  {blueSquare.description !== undefined &&
-                    <div className="summary">{formatDateFromDescriptionString(blueSquare.description)}</div>
-                  }
+                  {blueSquare.description && (
+                    <div className="summary">
+                      {blueSquare.createdDate ? `${formatCreatedDate(blueSquare.createdDate)}: ` : ''}
+                      {blueSquare.description}
+                    </div>
+                  )}
                 </div>
               </div>
             ))
-          : null}
+        ) : (
+          <div>No blue squares.</div>
+        )}
+        {canAddInfringements && (
+          <div
+            onClick={() => handleBlueSquare(true, 'addBlueSquare', '')}
+            className="blueSquareButton"
+            color="primary"
+            data-testid="addBlueSquare"
+          >
+            +
+          </div>
+        )}
       </div>
-
-      {isInfringementAuthorizer && (
-        <div
-          onClick={() => {
-            handleBlueSquare(true, 'addBlueSquare', '');
-          }}
-          className="blueSquareButton"
-          color="primary"
-          data-testid="addBlueSquare"
-        >
-          +
-        </div>
-      )}
-      <br />
     </div>
   );
 };
+
+
 
 export default connect(null, { hasPermission })(BlueSquare);

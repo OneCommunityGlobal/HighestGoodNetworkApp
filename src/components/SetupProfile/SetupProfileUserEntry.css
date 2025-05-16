@@ -39,7 +39,7 @@
   padding-bottom: 1rem;
 }
 #add-profile-picture-btn {
-  align-self: flex-end;
+  align-self: center;
 }
 .profile-setup-user-entry-container {
   display: grid;
@@ -70,16 +70,51 @@
   max-width: 100%;
   background-color: red;
 }
-#profile-setup-user-entry-form{
-    max-width: 2000px;
-    width: 95%;
+#profile-setup-user-entry-form {
+  max-width: 2000px;
+  width: 95%;
 }
 .tooltip.show {
-    opacity: 1 !important; /* Your desired opacity value */
-  }
+  opacity: 1 !important; /* Your desired opacity value */
+}
 
-  @media (max-width: 768px) {
-    #password-input-group{
-        margin-bottom: 1rem;
-    }
+#collaboration-suggestion-dd {
+  width: 100%;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  max-height: 200px;
+  overflow-y: scroll;
+}
+#collaboration-suggestion-dd::-webkit-scrollbar {
+  width: 12px;
+}
+
+#collaboration-suggestion-dd::-webkit-scrollbar-track {
+  border-radius: 8px;
+  background-color: #e7e7e7;
+  border: 1px solid #cacaca;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+}
+
+#collaboration-suggestion-dd::-webkit-scrollbar-thumb {
+  border-radius: 8px;
+  background-color: #6c757d ;
+}
+
+.collaboration-suggestion-dd-item{
+  display: flex !important;
+  flex-direction: row !important;
+}
+
+.collaboration-suggestion-dd-item-logo{
+  width: 30px;
+  height: auto;
+  background-color: white;
+  margin-right: 10px;
+}
+
+
+@media (max-width: 768px) {
+  #password-input-group {
+    margin-bottom: 1rem;
   }
+}

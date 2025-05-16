@@ -1,13 +1,14 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form } from 'reactstrap';
 import Input from 'components/common/Input';
-import CustomInput from './CustomInput.jsx';
-import getUserTimeZone from 'services/timezoneApiService';
-import { useSelector } from 'react-redux';
-import { boxStyle } from 'styles';
-import { toast } from 'react-toastify';
 import { createLocation, editLocation } from 'services/mapLocationsService';
-import { useEffect, useRef } from 'react';
+import axios from 'axios';
+import { ENDPOINTS } from 'utils/URL';
+import { boxStyle, boxStyleDark } from 'styles';
+import '../Header/DarkMode.css';
+import { toast } from 'react-toastify';
+import { useSelector } from 'react-redux';
+import CustomInput from './CustomInput';
 
 const initialLocationData = {
   firstName: '',
@@ -31,8 +32,9 @@ function AddOrEditPopup({
   isEdit,
   editProfile,
   submitText,
-  apiKey,
 }) {
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   const [locationData, setLocationData] = useState(initialLocationData);
   const [timeZone, setTimeZone] = useState('');
   const [errors, setErrors] = useState({
@@ -42,48 +44,32 @@ function AddOrEditPopup({
     location: null,
   });
 
-  const getCoordsHandler = async () => {
+  const getCoordsHandler = () => {
     const location = locationData.location.userProvided;
     if (!location) {
       toast.error('Please enter valid location');
       return;
     }
-    if (!apiKey) {
-      toast.error("Timezone key doesn't exist");
-      return;
-    }
+
     if (errors.location === 'Please get the coordinates of location') {
       setErrors(prev => ({ ...prev, location: null }));
     }
 
-    if (apiKey) {
-      try {
-        const res = await getUserTimeZone(location, apiKey);
-        if (res.data.status.code === 200 && res.data.results && res.data.results.length) {
-          const timezone = res.data.results[0].annotations.timezone.name;
-          const currentLocation = {
-            userProvided: location,
-            coords: {
-              lat: res.data.results[0].geometry.lat,
-              lng: res.data.results[0].geometry.lng,
-            },
-            country: res.data.results[0].components.country || '',
-            city: res.data.results[0].components.city || '',
-          };
+    axios
+      .get(ENDPOINTS.TIMEZONE_LOCATION(location))
+      .then(res => {
+        if (res.status === 200) {
+          const { timezone, currentLocation } = res.data;
           setLocationData(prev => ({
             ...prev,
             location: currentLocation,
           }));
           setTimeZone(timezone);
-        } else if (res.data.status.code !== 200) {
-          throw new Error('Something went wrong with a request');
-        } else {
-          throw new Error('Invalid location');
         }
-      } catch (err) {
-        toast.error(err.message);
-      }
-    }
+      })
+      .catch(err => {
+        toast.error(`An error occurred : ${err.response.data}`);
+      });
   };
   useEffect(() => {
     if (isEdit) {
@@ -173,6 +159,7 @@ function AddOrEditPopup({
         toast.success('A person successfully added to a map!');
         setManuallyUserProfiles(prev => [...prev, { ...res.data, type: 'm_user' }]);
         setLocationData(initialLocationData);
+        // eslint-disable-next-line no-use-before-define
         setFormSubmitted(true);
       } else if (isEdit) {
         const res = await editLocation(newLocationObject);
@@ -231,46 +218,75 @@ function AddOrEditPopup({
   }, [open, formSubmitted]);
 
   return (
-    <Modal isOpen={open} toggle={onClose} className="modal-dialog modal-lg">
-      <ModalHeader toggle={onClose} cssModule={{ 'modal-title': 'w-100 text-center my-auto pl-2' }}>
+    <Modal
+      isOpen={open}
+      toggle={onClose}
+      className={`modal-dialog modal-lg ${darkMode ? 'text-light dark-mode' : ''}`}
+    >
+      <ModalHeader
+        className={darkMode ? 'bg-space-cadet' : ''}
+        toggle={onClose}
+        cssModule={{ 'modal-title': 'w-100 text-center my-auto pl-2' }}
+      >
         {title}
       </ModalHeader>
-      <ModalBody>
+      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <Form onSubmit={onSubmitHandler}>
           <CustomInput
             type="text"
             name="firstName"
             value={locationData.firstName}
-            label="First Name"
+            label={
+              <>
+                First Name
+                <span className="red-asterisk">* </span>
+              </>
+            }
             placeholder="Please enter a first name"
             onChange={locationDataHandler}
             required
             error={errors.firstName}
             ref={firstNameRef}
+            darkMode={darkMode}
           />
           <Input
             type="text"
             name="lastName"
             value={locationData.lastName}
-            label="Last Name"
+            label={
+              <>
+                Last Name
+                <span className="red-asterisk">* </span>
+              </>
+            }
             placeholder="Please enter a last name"
             onChange={locationDataHandler}
             required
             error={errors.lastName}
+            darkMode={darkMode}
           />
 
           <Input
             type="text"
             name="jobTitle"
             value={locationData.jobTitle}
-            label="Job Title"
+            label={
+              <>
+                Job Title
+                <span className="red-asterisk">* </span>
+              </>
+            }
             placeholder="Please enter user job title"
             onChange={locationDataHandler}
             required
             error={errors.jobTitle}
+            darkMode={darkMode}
           />
           <div>
-            <p className="mb-2">Location</p>
+            <span className={`mb-2  font-weight-bold ${darkMode ? 'text-azure' : ''}`}>
+              Location
+            </span>
+            <span className="red-asterisk">* </span>
             <div id="location" className="d-flex justify-content-stretch gap-1">
               <div className="w-50 mr-1 position-relative">
                 <input
@@ -301,7 +317,7 @@ function AddOrEditPopup({
               <Button
                 color="secondary"
                 onClick={getCoordsHandler}
-                style={boxStyle}
+                style={darkMode ? boxStyleDark : boxStyle}
                 className="px-0 w-50"
               >
                 Get location
@@ -310,14 +326,19 @@ function AddOrEditPopup({
             {errors.location && <div className="alert alert-danger mt-1">{errors.location}</div>}
           </div>
           <div className="text-center">
-            <Button className="btn btn-primary mt-5" type="submit" color="primary" style={boxStyle}>
+            <Button
+              className="btn btn-primary mt-5"
+              type="submit"
+              color="primary"
+              style={darkMode ? boxStyleDark : boxStyle}
+            >
               {submitText}
             </Button>
           </div>
         </Form>
       </ModalBody>
-      <ModalFooter>
-        <Button style={boxStyle} color="secondary" onClick={onClose}>
+      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <Button style={darkMode ? boxStyleDark : boxStyle} color="secondary" onClick={onClose}>
           Close
         </Button>
       </ModalFooter>

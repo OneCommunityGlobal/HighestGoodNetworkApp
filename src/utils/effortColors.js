@@ -22,7 +22,7 @@ export const getProgressColor = (effort, commit, invert = false) => {
     if (inRange(percentage, 60, 80)) color = 'success'; // green
     if (inRange(percentage, 80, 90)) color = 'orange'; // orange
     if (inRange(percentage, 90, 100)) color = 'almost-red';
-    if (percentage >= 100) color = color = 'bright-red'; // bright red
+    if (percentage >= 100) color = 'bright-red'; // bright red
   }
   return color;
 };

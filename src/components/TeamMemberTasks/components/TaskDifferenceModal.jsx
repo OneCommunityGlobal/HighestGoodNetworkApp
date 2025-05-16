@@ -1,7 +1,8 @@
 import React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Table } from 'reactstrap';
 import DiffedText from './DiffedText';
-import { boxStyle } from 'styles';
+import { boxStyleDark, boxStyle } from 'styles';
+import '../../Header/DarkMode.css'
 
 export const resourcesToString = resources => {
   if (!resources) {
@@ -59,18 +60,19 @@ export const TaskDifferenceModal = ({
   isOpen,
   toggle,
   loggedInUserId,
+  darkMode,
 }) => (
-  <Modal size="xl" isOpen={isOpen} toggle={() => toggle(undefined, [])}>
-    <ModalHeader toggle={() => toggle(undefined, [])}>Task Info Changes</ModalHeader>
-    <ModalBody>
+  <Modal className={darkMode ? 'text-light dark-mode' : ''} size="xl" isOpen={isOpen} toggle={() => toggle(undefined, [])}>
+    <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={() => toggle(undefined, [])}>Task Info Changes</ModalHeader>
+    <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
       {taskNotifications &&
         taskNotifications.map(
           taskNotification =>
             taskNotification.userId === userId && (
               <div key={taskNotification.taskId} style={{ textAlign: 'center' }}>
                 <div>
-                  <span style={{ color: 'black', fontWeight: 'bold' }}>
-                    Black Bold = No Changes
+                  <span style={{ color: darkMode ? 'white' : 'black', fontWeight: 'bold' }}>
+                    {darkMode ? 'White' : 'Black'} Bold = No Changes
                   </span>
                   <span
                     style={{ color: 'red', textDecorationLine: 'line-through', marginLeft: '30px' }}
@@ -79,7 +81,7 @@ export const TaskDifferenceModal = ({
                   </span>
                   <span style={{ color: 'green', marginLeft: '30px' }}>Green = Added</span>
                 </div>
-                <table className="table table-bordered">
+                <table className={`table table-bordered ${darkMode ? 'text-light' : ''}`}>
                   <tbody>
                     <tr>
                       <td scope="col" data-tip="WBS ID">
@@ -246,12 +248,12 @@ export const TaskDifferenceModal = ({
             ),
         )}
     </ModalBody>
-    <ModalFooter>
+    <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
       {loggedInUserId === userId && (
         <Button
           color="primary"
           onClick={() => onApprove(userId, task._id, taskNotifications[0]._id)}
-          style={boxStyle}
+          style={darkMode ? boxStyleDark : boxStyle}
         >
           Mark as read
         </Button>

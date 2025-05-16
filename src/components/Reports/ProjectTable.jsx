@@ -1,20 +1,21 @@
 // eslint-disable-next-line no-unused-vars
 import React from 'react';
+import { boxStyle, boxStyleDark } from 'styles';
 // These styles were not being used
 // import './reports.css';
 import { Link } from 'react-router-dom';
 
-function ProjectTable({ projects }) {
+function ProjectTable({ projects, darkMode }) {
   // Display project lists
   let ProjectsList = [];
   if (projects.length > 0) {
     ProjectsList = projects.map((project, index) => (
       <tr id={`tr_${project._id}`} key={project._id}>
-        <th scope="row">
+        <th scope="row" className={darkMode ? 'text-light' : ''}>
           <div>{index + 1}</div>
         </th>
         <td>
-          <Link to={`/projectreport/${project._id}`}>{project.projectName}</Link>
+          <Link to={`/projectreport/${project._id}`} className={darkMode ? 'text-light' : ''}>{project.projectName}</Link>
         </td>
         <td>
           {project.isActive ? (
@@ -32,9 +33,9 @@ function ProjectTable({ projects }) {
   }
 
   return (
-    <table className="table table-bordered">
+    <table className={`table ${darkMode ? 'bg-yinmn-blue' : 'table-bordered'}`} style={darkMode ? boxStyleDark : boxStyle}>
       <thead>
-        <tr>
+        <tr className={darkMode ? 'bg-space-cadet text-light' : ''}>
           <th scope="col" id="projects__order">
             #
           </th>
@@ -44,7 +45,7 @@ function ProjectTable({ projects }) {
           </th>
         </tr>
       </thead>
-      <tbody>{ProjectsList}</tbody>
+      <tbody className={darkMode ? 'dark-mode' : ''}>{ProjectsList}</tbody>
     </table>
   );
 }
