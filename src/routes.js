@@ -7,7 +7,7 @@ import { Route, Switch } from 'react-router-dom';
 import SetupProfile from 'components/SetupProfile/SetupProfile';
 import { ToastContainer } from 'react-toastify';
 import AutoUpdate from 'components/AutoUpdate';
-import { TaskEditSuggestions } from 'components/TaskEditSuggestions/TaskEditSuggestions';
+import TaskEditSuggestions from 'components/TaskEditSuggestions/TaskEditSuggestions';
 import RoutePermissions from 'utils/routePermissions';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import RoleInfoCollections from 'components/UserProfile/EditableModal/RoleInfoModal';
@@ -88,6 +88,8 @@ import EventStats from './components/CommunityPortal/EventPersonalization/EventS
 // import AddActivities from './components/CommunityPortal/Activities/AddActivities';
 // import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
 import Resources from './components/CommunityPortal/Activities/activityId/Resources';
+
+import EventParticipation from './components/CommunityPortal/Reports/Participation/EventParticipation';
 
 import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
@@ -460,6 +462,9 @@ export default (
         <LBProtectedRoute path="/lbdashboard/masterplan" exact component={MasterPlan} />
         <Route path="/lbdashboard/login" component={LBLogin} />
         <Route path="/lbdashboard/bidoverview" exact component={LBBidOverview} />
+
+        <CPProtectedRoute path="/communityportal/reports/participation" exact component={EventParticipation} />
+
 
         {/* Good Education  Portal Routes */}
         <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />
