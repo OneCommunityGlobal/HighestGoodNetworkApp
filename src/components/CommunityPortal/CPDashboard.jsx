@@ -41,14 +41,27 @@ export function CPDashboard() {
     <Container fluid className="dashboard-container">
       <header className="dashboard-header">
         <h1>All Events</h1>
-        <div className="dashboard-search-container">
-          <Input
-            type="search"
-            placeholder="Search events..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="dashboard-search"
-          />
+        <div className="dashboard-controls">
+          <div className="dashboard-search-container">
+            <Input
+              type="search"
+              placeholder="Search events..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="dashboard-search"
+            />
+          </div>
+          {/* <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown} className="community-dropdown">
+            <DropdownToggle caret color="secondary">
+              Community Portal
+            </DropdownToggle>
+            <DropdownMenu>
+              <DropdownItem onClick={() => handleNavigation('/home')}>Home</DropdownItem>
+              <DropdownItem onClick={() => handleNavigation('/events')}>Events</DropdownItem>
+              <DropdownItem onClick={() => handleNavigation('/about')}>About Us</DropdownItem>
+              <DropdownItem onClick={() => handleNavigation('/contact')}>Contact</DropdownItem>
+            </DropdownMenu>
+          </Dropdown> */}
         </div>
       </header>
 
