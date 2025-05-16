@@ -115,18 +115,23 @@ function ToolsHorizontalBarChart({ darkMode, isFullPage = false }) {
         <BarChart
           layout="vertical"
           data={data}
-          margin={{ top: 20, right: 30, left: 100, bottom: 5 }}
+          margin={
+            isFullPage
+              ? { top: 20, right: 30, left: 100, bottom: 5 }
+              : { top: 20, right: 20, left: 60, bottom: 5 }
+          }
         >
           <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-          <XAxis type="number" />
+          <XAxis type="number" domain={[0, 'dataMax + 20']} tickCount={6} />
           <YAxis
             type="category"
             dataKey="name"
             tick={{ fill: darkMode ? '#e0e0e0' : '#333' }}
-            width={90}
+            width={isFullPage ? 90 : 60}
+            tickMargin={5}
           />
           <Tooltip content={<CustomTooltip />} />
-          <Legend />
+          <Legend verticalAlign={isFullPage ? 'bottom' : 'top'} height={36} />
           <Bar dataKey="inUse" stackId="a" fill="#4589FF" name="In Use">
             <LabelList content={<CustomLabel />} />
           </Bar>
