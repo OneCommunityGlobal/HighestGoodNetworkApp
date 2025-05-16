@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import './Announcements.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react';
@@ -14,6 +14,7 @@ function Announcements({ title, email: initialEmail }) {
   const [headerContent, setHeaderContent] = useState('');
   const [showEditor, setShowEditor] = useState(true);
   const [isFileUploaded, setIsFileUploaded] = useState(false);
+  const tinymce = useRef(null);
 
   useEffect(() => {
     setShowEditor(false);
@@ -101,8 +102,6 @@ function Announcements({ title, email: initialEmail }) {
 
   const addImageToEmailContent = e => {
     const imageFile = document.querySelector('input[type="file"]').files[0];
-    setIsFileUploaded(true);
-
     convertImageToBase64(imageFile, base64Image => {
       const imageTag = `<img src="${base64Image}" alt="Header Image" style="width: 100%; max-width: 100%; height: auto;">`;
       setHeaderContent(prevContent => `${imageTag}${prevContent}`);
@@ -210,6 +209,67 @@ function Announcements({ title, email: initialEmail }) {
               </div>
             </div>
           )}
+        </div>
+        <div
+          className={`emails ${darkMode ? 'bg-yinmn-blue' : ''}`}
+          style={darkMode ? boxStyleDark : boxStyle}
+        >
+          {title ? (
+            <p>Email</p>
+          ) : (
+            <label htmlFor="email-list-input" className={darkMode ? 'text-light' : 'text-dark'}>
+              Email List (comma-separated)<span className="red-asterisk">* </span>:
+            </label>
+          )}
+          <input
+            type="text"
+            value={emailTo}
+            id="email-list-input"
+            onChange={handleEmailListChange}
+            className={`input-text-for-announcement ${
+              darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+            }`}
+          />
+          <button
+            type="button"
+            className="send-button"
+            onClick={handleSendEmails}
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
+            {title ? 'Send Email' : 'Send mail to specific users'}
+          </button>
+
+          <hr />
+          <label htmlFor="header-content-input" className={darkMode ? 'text-light' : 'text-dark'}>
+            Insert header or image link:
+          </label>
+          <input
+            type="text"
+            id="header-content-input"
+            onChange={handleHeaderContentChange}
+            value={headerContent}
+            className={`input-text-for-announcement ${
+              darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+            }`}
+          />
+          <button
+            type="button"
+            className="send-button"
+            onClick={addHeaderToEmailContent}
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
+            Insert
+          </button>
+          <hr />
+          <label htmlFor="upload-header-input" className={darkMode ? 'text-light' : 'text-dark'}>
+            Upload Header (or footer):
+          </label>
+          <input
+            type="file"
+            id="upload-header-input"
+            onChange={addImageToEmailContent}
+            className="input-file-upload"
+          />
         </div>
       </div>
     </div>

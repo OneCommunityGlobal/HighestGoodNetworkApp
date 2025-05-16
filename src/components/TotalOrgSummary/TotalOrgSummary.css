@@ -226,3 +226,7 @@
 .container-total-org-wrapper.bg-oxford-blue .component-container span {
   color: #fff !important;
 }
+
+.chart-title.dark-mode p {
+  color: white;
+}
