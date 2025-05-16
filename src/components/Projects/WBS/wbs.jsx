@@ -46,7 +46,7 @@ const WBS = props => {
   return (
     <React.Fragment>
       <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{minHeight: "100%"}}>
-        <div className={`container pt-2 ${darkMode ? 'bg-yinmn-blue-light text-light' : ''}`}>
+        <div className={`container mb-5 pt-2 ${darkMode ? 'bg-yinmn-blue-light text-light' : ''}`}>
           <nav aria-label="breadcrumb" className='align-items-start w-100'>
             <NavItem tag={Link} to={`/projects/`}>
               <button type="button" className="btn btn-secondary" style={darkMode ? boxStyleDark : boxStyle}>

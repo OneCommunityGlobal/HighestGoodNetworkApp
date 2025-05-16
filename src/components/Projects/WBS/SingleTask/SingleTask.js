@@ -192,7 +192,7 @@ function SingleTask(props) {
                 <th scope="row">{task.num}</th>
                 <td>{task.taskName}</td>
                 <td>{task.priority}</td>
-                <td className="desktop-view">
+                <td>
                   {task?.resources &&
                       task.resources.map((elem, i) => {
                         try {
@@ -242,7 +242,7 @@ function SingleTask(props) {
                 <td>{task.startedDatetime ? formatDate(task.startedDatetime) : 'N/A'}</td>
                 <td>{task.dueDatetime ? formatDate(task.dueDatetime) : 'N/A'}</td>
                 <td>{task.links}</td>
-                <td className="desktop-view" onClick={toggleModel}>
+                <td onClick={toggleModel}>
                   <i className="fa fa-book" aria-hidden="true" />
                 </td>
               </tr>

@@ -191,7 +191,7 @@ function WBSTasks(props) {
               <span style={{ marginLeft: '1px' }}>Return to WBS List: {projectName}</span>
             </NavItem>
             <div id="member_project__name" style={{ flex: '1', textAlign: 'center', fontWeight: 'bold', display: 'flex',
-              alignItems: 'center', justifyContent: 'center', }}> WBS Name: {wbsName}</div>
+              alignItems: 'center', justifyContent: 'center', minWidth: '300px'}}> WBS Name: {wbsName}</div>
           </ol>
         </nav>
         <div
@@ -315,7 +315,7 @@ function WBSTasks(props) {
           {/* </span> */}
         </div>
 
-        <div className='tasks-table'>
+        <div className='tasks-table mb-5'>
           <table className={`table table-bordered ${darkMode ? 'text-light' : ''}`} ref={myRef}>
             <thead>
               <tr className={darkMode ? 'bg-space-cadet' : ''}>
