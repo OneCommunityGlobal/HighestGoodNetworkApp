@@ -776,9 +776,6 @@ const TeamMemberTasks = React.memo(props => {
                     return (
                       <TeamMemberTask
                         user={user}
-                        userPermission={props?.auth?.user?.permissions?.frontPermissions?.includes(
-                          'putReviewStatus',
-                        )}
                         teamRoles = {(
                           (user.teams!==undefined && user.teams.length > 0) ? filteredTeamRoles(user.teams) : ''
                         )}
