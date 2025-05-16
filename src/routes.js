@@ -89,6 +89,8 @@ import EventStats from './components/CommunityPortal/EventPersonalization/EventS
 // import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
 import Resources from './components/CommunityPortal/Activities/activityId/Resources';
 
+import EventParticipation from './components/CommunityPortal/Reports/Participation/EventParticipation';
+
 import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
 import EPDashboard from './components/EductionPortal';
@@ -460,6 +462,9 @@ export default (
         <LBProtectedRoute path="/lbdashboard/masterplan" exact component={MasterPlan} />
         <Route path="/lbdashboard/login" component={LBLogin} />
         <Route path="/lbdashboard/bidoverview" exact component={LBBidOverview} />
+
+        <CPProtectedRoute path="/communityportal/reports/participation" exact component={EventParticipation} />
+
 
         {/* Good Education  Portal Routes */}
         <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />
