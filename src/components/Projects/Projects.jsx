@@ -21,7 +21,7 @@ import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
 import SearchProjectByPerson from 'components/SearchProjectByPerson/SearchProjectByPerson';
 import ProjectsList from 'components/BMDashboard/Projects/ProjectsList';
 
-const Projects = function(props) {
+const Projects = function (props) {
   const role = props.state.userProfile.role;
   const { darkMode } = props.state.theme;
   const numberOfProjects = props.state.allProjects.projects.length;
@@ -53,17 +53,17 @@ const Projects = function(props) {
 
   const useDebounce = (value, delay) => {
     const [debouncedValue, setDebouncedValue] = useState(value);
-  
+
     useEffect(() => {
       const handler = setTimeout(() => {
         setDebouncedValue(value);
       }, delay);
-  
+
       return () => {
         clearTimeout(handler);
       };
     }, [value, delay]);
-  
+
     return debouncedValue;
   };
 
@@ -78,7 +78,7 @@ const Projects = function(props) {
       modalMessage: `<p>Do you want to archive ${projectData.projectName}?</p>`,
       modalTitle: CONFIRM_ARCHIVE,
       hasConfirmBtn: true,
-      hasInactiveBtn: true,
+      hasInactiveBtn: projectData.isActive,
     });
   };
 
@@ -101,9 +101,8 @@ const Projects = function(props) {
   }
 
   const onUpdateProject = async (updatedProject) => {
-    await props.modifyProject(updatedProject);  
-    /* refresh the page after updating the project */
-    await props.fetchAllProjects();
+    await props.modifyProject(updatedProject);
+
   };
 
   const confirmArchive = async () => {
@@ -116,18 +115,18 @@ const Projects = function(props) {
   };
 
   const setInactiveProject = async () => {
-    const updatedProject = { ...projectTarget, isActive: !isActive };
+    const updatedProject = { ...projectTarget, isActive: false };
     await onUpdateProject(updatedProject);
     onCloseModal();
   };
 
   const postProject = async (name, category) => {
     await props.postNewProject(name, category);
-    refreshProjects(); // Refresh project list after adding a project
   };
 
   const generateProjectList = (categorySelectedForSort, showStatus, sortedByName) => {
     const { projects } = props.state.allProjects;
+
     const activeMemberCounts = props.state.projectMembers?.activeMemberCounts || {};
     const filteredProjects = projects.filter(project => !project.isArchived).filter(project => {
       if (categorySelectedForSort && showStatus){
@@ -156,22 +155,20 @@ const Projects = function(props) {
         return 0;
       }
     }).map((project, index) => (
-        <Project
-          key={project._id}
-          index={index}
-          projectData={project}
-          onUpdateProject={onUpdateProject}
-          onClickArchiveBtn={onClickArchiveBtn}
-          darkMode={darkMode}
-        />
+      <Project
+        key={project._id}
+        index={index}
+        projectData={project}
+        onUpdateProject={onUpdateProject}
+        onClickArchiveBtn={onClickArchiveBtn}
+        darkMode={darkMode}
+      />
     ));
     setProjectList(filteredProjects);
     setAllProjects(filteredProjects);
   }
 
-  const refreshProjects = async () => {
-    await props.fetchAllProjects();
-  };
+
 
   useEffect(() => {
     props.fetchAllProjects();
@@ -241,10 +238,10 @@ const Projects = function(props) {
 
           <table className="table table-bordered table-responsive-sm">
             <thead>
-              <ProjectTableHeader 
-                onChange={onChangeCategory} 
-                selectedValue={categorySelectedForSort} 
-                showStatus={showStatus} 
+              <ProjectTableHeader
+                onChange={onChangeCategory}
+                selectedValue={categorySelectedForSort}
+                showStatus={showStatus}
                 selectStatus={onSelectStatus}
                 sorted={sortedByName}
                 handleSort={handleSort}
