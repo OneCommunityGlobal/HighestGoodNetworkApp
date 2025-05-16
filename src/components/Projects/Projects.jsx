@@ -5,6 +5,7 @@ import {
   modifyProject,
   clearError,
 } from '../../actions/projects';
+import { fetchProjectsWithActiveUsers } from '../../actions/projectMembers';
 import { getProjectsByUsersName } from '../../actions/userProfile';
 import { getPopupById } from '../../actions/popupEditorAction';
 import Overview from './Overview';
@@ -47,6 +48,8 @@ const Projects = function(props) {
   const [projectList, setProjectList] = useState(null);
   const [searchName, setSearchName] = useState("");
   const [allProjects, setAllProjects] = useState(null);
+
+  const [isArchiving, setIsArchiving] = useState(false);
 
   const useDebounce = (value, delay) => {
     const [debouncedValue, setDebouncedValue] = useState(value);
@@ -104,9 +107,11 @@ const Projects = function(props) {
   };
 
   const confirmArchive = async () => {
+    setIsArchiving(true); // show loading on confirm
     const updatedProject = { ...projectTarget, isArchived: true };
     await onUpdateProject(updatedProject);
     await props.fetchAllProjects();
+    setIsArchiving(false); // reset loading
     onCloseModal();
   };
 
@@ -123,13 +128,16 @@ const Projects = function(props) {
 
   const generateProjectList = (categorySelectedForSort, showStatus, sortedByName) => {
     const { projects } = props.state.allProjects;
-    const projectList = projects.filter(project => {
+    const activeMemberCounts = props.state.projectMembers?.activeMemberCounts || {};
+    const filteredProjects = projects.filter(project => !project.isArchived).filter(project => {
       if (categorySelectedForSort && showStatus){
         return project.category === categorySelectedForSort && project.isActive === showStatus;
       } else if (categorySelectedForSort) {
         return project.category === categorySelectedForSort;
-      } else if (showStatus) {
-        return project.isActive === showStatus;
+      } else if (showStatus === 'Active') {
+        return project.isActive === true;
+      } else if (showStatus === 'Inactive') {
+        return project.isActive === false;
       } else {
         return true;
       }
@@ -140,6 +148,10 @@ const Projects = function(props) {
         return a.projectName[0].toLowerCase() < b.projectName[0].toLowerCase() ? 1 : -1;
       } else if (sortedByName === "SortingByRecentEditedMembers") {
         return a.membersModifiedDatetime < b.membersModifiedDatetime ? 1 : -1;
+      } else if (sortedByName === "SortingByMostActiveMembers") {
+        const lenA = activeMemberCounts[a._id] || 0;
+        const lenB = activeMemberCounts[b._id] || 0;
+        return lenB - lenA; // Most active first
       } else {
         return 0;
       }
@@ -153,8 +165,8 @@ const Projects = function(props) {
           darkMode={darkMode}
         />
     ));
-    setProjectList(projectList);
-    setAllProjects(projectList);
+    setProjectList(filteredProjects);
+    setAllProjects(filteredProjects);
   }
 
   const refreshProjects = async () => {
@@ -163,6 +175,10 @@ const Projects = function(props) {
 
   useEffect(() => {
     props.fetchAllProjects();
+  }, []);
+
+  useEffect(() => {
+    props.fetchProjectsWithActiveUsers();
   }, []);
 
   useEffect(() => {
@@ -204,7 +220,7 @@ const Projects = function(props) {
   return (
     <>
       <div className={darkMode ? 'bg-oxford-blue text-light' : ''}>
-        <div className="container py-3">
+        <div className={`container py-3 ${darkMode ? 'bg-yinmn-blue-light text-light' : ''}`}>
           {fetching || !fetched ? <Loading align="center" /> : null}
           <div className="d-flex align-items-center">
             <h3 style={{ display: 'inline-block', marginRight: 10 }}>Projects</h3>
@@ -214,6 +230,7 @@ const Projects = function(props) {
               fontSize={30}
               isPermissionPage={true}
               role={role}
+              darkMode={darkMode}
             />
             <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
 
@@ -247,6 +264,9 @@ const Projects = function(props) {
           setInactiveModal={modalData.hasInactiveBtn ? setInactiveProject : null}
           modalMessage={modalData.modalMessage}
           modalTitle={modalData.modalTitle}
+          darkMode={darkMode}
+          confirmButtonText={isArchiving ? 'Archiving...' : 'Confirm'}
+          isConfirmDisabled={isArchiving}
         />
       </div>
     </>
@@ -263,5 +283,6 @@ export default connect(mapStateToProps, {
   clearError,
   getPopupById,
   hasPermission,
-  getProjectsByUsersName
+  getProjectsByUsersName,
+  fetchProjectsWithActiveUsers
 })(Projects);

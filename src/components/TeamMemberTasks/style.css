@@ -77,17 +77,33 @@
   border-bottom: none;
 }
 
+.dark-teammember-row th {
+  background-color: #3a506b;
+  color: white;
+}
+
+.light-teammember-row th {
+  background-color: #f0f8ff;
+  color: black;
+}
+
 .task-align {
   text-align: left;
   display: flex;
   flex-direction: column;
   /* Stack children vertically */
   gap: 8px;
-  /* Space bet*/
+  /* Space between children */
 }
 
 .team-member-tasks-user-name {
-  width: 70%;
+  width: 50%;
+}
+
+.team-member-tasks-user-report-link .team-member-tasks-user-report-link-image {
+  width: 20px;
+  height: 20px;
+  margin: 0 0 5px 5px;
 }
 
 .deadlineCount {
@@ -107,6 +123,19 @@
 .team-clocks {
   display: flex;
   justify-content: space-around;
+}
+
+.team-member-tasks-number {
+  display: inline-block;
+  text-align: center;
+  vertical-align: middle;
+  background: #ff4d4f;
+  border-radius: 50%;
+  color: #fff;
+  height: 22px;
+  font-size: 14px;
+  width: 22px;
+  margin: 0 0 5px 5px;
 }
 
 .dashboard-team-clocks {
@@ -158,7 +187,7 @@
 }
 
 .right-padding-temp-fix {
-  padding-right: 0px !important;
+  padding-right: 0 !important;
 }
 
 .table-row {
@@ -182,7 +211,6 @@
   z-index: 10;
   display: flex;
   justify-content: center;
-  align-items: center;
 }
 
 .row-content {
@@ -223,6 +251,12 @@
   color: white;
   box-shadow: 2px 2px 4px 1px lightgray;
   box-sizing: border-box;
+  /* Icon group centering */
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 .show-time-off-btn-selected {
@@ -243,11 +277,11 @@
 }
 
 .show-time-off-icon {
+  position: absolute;
+  top: 6px;
+  right: 6px;
   width: 16px;
   height: 16px;
-  position: relative;
-  top: -16px;
-  left: 7px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -263,12 +297,7 @@
   fill: #17A2B8;
 }
 
-.show-time-off-icon-selected path {
-  fill: white;
-}
-
 .taking-time-off-content-btn {
-  background-color: none;
   color: white;
   box-sizing: border-box;
   border: 1px solid white;
@@ -303,7 +332,7 @@
 .time-off-detail-modal::-webkit-scrollbar-thumb {
   border-radius: 8px;
   background-color: #007BFF;
-  box-shadow: inset 0 0 3px #E7E7E7;
+  box-shadow: inset 0 0 3px #e7e7e7;
 }
 
 .time-off-detail-modal-section {
@@ -350,14 +379,11 @@
   display: inline-flex;
   align-items: flex-start;
   gap: 8px;
-  /* Adjust the gap as needed */
 }
 
 .team-member-tasks-content {
   align-items: center;
-  /* Vertically center-align children */
   gap: 8px;
-  /* Space between children */
 }
 
 .team-task-progress-container {
@@ -407,6 +433,74 @@
   flex-direction: row;
 }
 
+.container .google-icon-wrapper img {
+  width: 24px;
+  height: auto;
+}
+
+.name {
+  margin-bottom: 4px;
+  margin-right: 4px;
+  width: 2.5rem;
+  display: flex;
+  justify-content: center;
+}
+
+.name-initial {
+  height: 24px;
+  width: 24px;
+  border-radius: 50%;
+  color: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.name-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.member-links-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.timelog-info {
+  width: 2.5rem;
+  display: flex;
+  justify-content: center;
+}
+
+.dark-mode.multi-select-filter .dropdown-container {
+  background-color: #1C1C1C !important;
+}
+
+.rmsc.dark-mode .dropdown-content,
+.rmsc.dark-mode .dropdown-content .panel-content {
+  background-color: #1C1C1C !important;
+  color: #fff !important;
+}
+
+.rmsc.dark-mode .select-item,
+.rmsc.dark-mode .select-item.selected {
+  color: #fff !important;
+  background: #252525 !important;
+}
+
+.rmsc.dark-mode .select-item:hover {
+  background: #252525 !important;
+  color: #fff !important;
+}
+
+.rmsc.dark-mode .search input:focus {
+  background: #252525 !important;
+  color: #fff !important;
+}
+
 @media (max-width: 1240px) and (min-width: 992px) {
   .header-box {
     flex-direction: column;
@@ -447,11 +541,9 @@
 }
 
 @media only screen and (max-width: 768px) {
-
   /* Adjust 768px to the breakpoint you want */
   .team-task-progress {
     width: 100%;
-    /* or any other value that fits your design */
     min-width: auto;
     max-width: none;
   }
@@ -480,11 +572,7 @@
     padding: 0 5%;
   }
 
-  .card-body {
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-  }
-
+  .card-body,
   .card-body .container {
     padding-left: 0 !important;
     padding-right: 0 !important;
@@ -533,17 +621,10 @@
 
 @media only screen and (min-width: 768px) {
   .team-member-tasks h1 {
-    font-size: 24px;
-  }
-
-  /* .header-box {
-    flex-direction: unset;
-  } */
-  .team-member-tasks h1 {
     font-size: 28px;
   }
 
-  .remove-child-borders>td {
+  .remove-child-borders > td {
     border-top-width: 0 !important;
   }
 }
@@ -573,8 +654,9 @@
 
 @media only screen and (max-width: 530px) {
   .hours-btn-container {
-    min-width: none;
     padding: 0;
+    /* preserve min-width:none from one side of the conflict */
+    min-width: none;
   }
 
   .team-selector-container {

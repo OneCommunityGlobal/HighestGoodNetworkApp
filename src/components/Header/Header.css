@@ -7,29 +7,44 @@
   position: absolute;
   top: 0;
   left: 0;
-  padding: 12px; /* Add some padding for easier clicking */
+  padding: 12px;
 }
 
 .card-content {
-  padding: 5px; /* Add padding around the card content */
+  padding: 5px;
   padding-left: 40px;
-  padding-right: 40px;
+  padding-right: 30px;
   white-space: pre-line;
   color: white;
   font-size: medium;
 }
 
+.headerCard {
+  margin-left: 35px;
+  margin-right: 50px;
+}
+
+.card-wrapper {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
 .navbar {
-  z-index: 100;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
   white-space: nowrap;
 }
 
 .timer-message-section {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  width: 100%;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
   gap: 1rem;
+  white-space: nowrap;
 }
 
 .redBackGroupHeader {
@@ -55,15 +70,18 @@
 
 .nav-links {
   display: flex;
+  flex-direction: row;
   align-items: center;
+  flex-wrap: nowrap;
+  gap: 1rem;
 }
 
-.dropdown-item-hover:hover{
+.dropdown-item-hover:hover {
   background-color: #2f4157 !important;
 }
 
 @media (max-width: 1400px) {
-  .nav-links{
+  .nav-links {
     flex-direction: column !important;
   }
 }
@@ -97,7 +115,15 @@
 }
 
 @media screen and (max-width: 769px) {
-  .responsive-spacing{
+  .responsive-spacing {
     margin-right: 5px;
   }
+}
+.header-margin{
+  height : 20px;
+  background-color: #1B2A41 ;
+}
+.header-margin-light{
+  height : 20px;
+  background-color: #fff;
 }
