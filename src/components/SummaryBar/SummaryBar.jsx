@@ -541,8 +541,27 @@ function SummaryBar(props) {
             </font>
             <CardTitle className={`align-middle ${darkMode ? 'text-light' : 'text-dark'}`} tag="h3">
               <div className="font-weight-bold">
-                {userProfile?.firstName || displayUserProfile.firstName}{' '}
-                {userProfile?.lastName || displayUserProfile.lastName}
+                <span
+                  className="name-segment"
+                  title={userProfile?.firstName || displayUserProfile.firstName}
+                >
+                  {(userProfile?.firstName || displayUserProfile.firstName).split(' ')[0]}
+                </span>
+                <span
+                  className="name-segment"
+                  title={userProfile?.firstName || displayUserProfile.firstName}
+                >
+                  {(userProfile?.firstName || displayUserProfile.firstName)
+                    .split(' ')
+                    .slice(1)
+                    .join(' ')}
+                </span>
+                <span
+                  className="name-segment"
+                  title={userProfile?.lastName || displayUserProfile.lastName}
+                >
+                  {userProfile?.lastName || displayUserProfile.lastName}
+                </span>
               </div>
             </CardTitle>
           </div>

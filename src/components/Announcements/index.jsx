@@ -469,7 +469,7 @@ function Announcements({ title, email }) {
             <p>Email</p>
           ) : (
             <label htmlFor="email-list-input" className={darkMode ? 'text-light' : 'text-dark'}>
-              Email List (comma-separated):
+              Email List (comma-separated)<span className="red-asterisk">* </span>:
             </label>
           )}
           <input
