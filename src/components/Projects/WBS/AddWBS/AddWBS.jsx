@@ -21,7 +21,7 @@ const AddWBS = props => {
 
   const handleAddWBS = () => {
     if (newName.length >= 3) {
-      props.addNewWBS(props.projectId, newName);
+      props.addNewWBS(newName, props.projectId);
       setNewName('');
       setShowAddButton(false);
     }
