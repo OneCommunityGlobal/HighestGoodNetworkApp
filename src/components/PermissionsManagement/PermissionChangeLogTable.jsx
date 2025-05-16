@@ -123,8 +123,7 @@ function PermissionChangeLogTable({ changeLogs, darkMode }) {
                 <td
                   className={`permission-change-log-table--cell ${bgYinmnBlue}`}
                   style={{
-                    // Commented out the below code as log.name is undefined currently so accessing it causes the white
-                    // screen error on the Permissions Management page
+                    // Uncommented lines below and in formatName, using individualName for users, and roleName for role changes
                     fontWeight: log?.individualName ? 'bold' : 'normal',
                   }}
                 >
