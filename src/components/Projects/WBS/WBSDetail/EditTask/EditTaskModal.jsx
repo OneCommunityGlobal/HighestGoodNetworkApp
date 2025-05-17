@@ -16,16 +16,18 @@ import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
-import TagsSearch from '../components/TagsSearch';
+import UserSearch from './UserSearch';
+import UserTag from './UserTag';
 import ReadOnlySectionWrapper from './ReadOnlySectionWrapper';
 import '../../../../Header/DarkMode.css'
+import '../wbs.css'
 
 function EditTaskModal(props) {
   /*
   * -------------------------------- variable declarations --------------------------------
   */
   // props from store
-  const { allMembers, error, darkMode } = props;
+  const { /* allMembers, */ error, darkMode } = props;
 
   // permissions
   const canUpdateTask = props.hasPermission('updateTask');
@@ -217,7 +219,6 @@ function EditTaskModal(props) {
     const updateTaskDirectly = (currentMode === "Edit");
     console.log({canSuggestTask, canUpdateTask, updateTaskDirectly});
 
-    props.setIsLoading?.(true);
     await props.updateTask(
       props.taskId,
       updatedTask,
@@ -226,7 +227,6 @@ function EditTaskModal(props) {
     );
     props.setTask?.(updatedTask);
     await props.load?.();
-    props.setIsLoading?.(false);
 
     if (error === 'none' || Object.keys(error).length === 0) {
       toggle();
@@ -306,7 +306,7 @@ function EditTaskModal(props) {
                 <td id="edit-modal-td" scope="col">{thisTask?.num}</td>
               </tr>
               <tr>
-                <td id="edit-modal-td" scope="col">Task Name</td>
+                <td id="edit-modal-td" scope="col">Task Name<span className="red-asterisk">* </span></td>
                 <td id="edit-modal-td">
                   {ReadOnlySectionWrapper(
                     <textarea
@@ -345,15 +345,17 @@ function EditTaskModal(props) {
                 <td id="edit-modal-td" scope="col">Resources</td>
                 <td id="edit-modal-td" scope="col">
                   <div>
-                    <TagsSearch
-                      placeholder="Add resources"
-                      members={allMembers.filter(user=>user.isActive)}
-                      addResources={editable? addResources : () => {}}
-                      removeResource={editable? removeResource : () => {}}
-                      resourceItems={resourceItems}
-                      disableInput={!editable}
-                      darkMode={darkMode}
-                    />
+                    <UserSearch addedUsers={resourceItems} onAddUser={editable ? addResources : () => {}} />
+                    <div className="d-flex flex-wrap align-items-start justify-content-start">
+                      {resourceItems?.map((user) => (
+                        <ul
+                          key={`${user.name}`}
+                          className="d-flex align-items-start justify-content-start m-0 p-1"
+                        >
+                          <UserTag userName={user.name} userId={user.userID} onRemoveUser={editable ? removeResource : () => {}} />
+                        </ul>
+                      ))}
+                    </div>
                   </div>
                 </td>
               </tr>
@@ -402,7 +404,7 @@ function EditTaskModal(props) {
                     {ReadOnlySectionWrapper(
                       <div className="fd-flex  flex-column">
                       <div className="d-flex"> {/* Added: New div to group Active and Not Started */}
-                        <div className="form-check form-check-inline mr-5">
+                        <div className="form-check form-check-inline mr-5 mw-4">
                             <input
                               className={`form-check-input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
                               type="radio"
@@ -433,7 +435,7 @@ function EditTaskModal(props) {
                         </div>
                         {/* Second row: Paused and Complete */}
                       <div className="d-flex mt-2"> {/* Added: New div for Paused and Complete with margin-top */}
-                          <div className="form-check form-check-inline mr-5">
+                          <div className="form-check form-check-inline mr-5 mw-4">
                             <input
                               className={`form-check-input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
                               type="radio"
@@ -770,7 +772,7 @@ function EditTaskModal(props) {
 };
 
 const mapStateToProps = state => ({
-  allMembers: state.projectMembers.members,
+  // allMembers: state.projectMembers.members,
   error: state.tasks.error,
   darkMode: state.theme.darkMode,
 });

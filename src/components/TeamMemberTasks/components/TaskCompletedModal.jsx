@@ -27,7 +27,15 @@ const TaskCompletedModal = React.memo(props => {
     });
 
     const updatedTask = { ...task, resources: newResources };
+
     props.updateTask(task._id, updatedTask);
+
+    if (props.setUpdatedTasks) {
+      props.setUpdatedTasks(prevTasks =>
+        prevTasks.map(t => (t._id === task._id ? updatedTask : t)),
+      );
+    }
+
     toast.success('Task is successfully marked as done.');
   };
 
@@ -40,6 +48,7 @@ const TaskCompletedModal = React.memo(props => {
   };
 
   const handleClick = () => {
+    const { scrollY } = window; // Save scroll position
     closeFunction();
 
     if (props.taskModalOption === 'Checkmark') {
@@ -47,6 +56,8 @@ const TaskCompletedModal = React.memo(props => {
     } else {
       removeUserFromTask(props.task);
     }
+
+    window.scrollTo(0, scrollY);
   };
 
   const isCheckmark = props.taskModalOption === 'Checkmark';
