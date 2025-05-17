@@ -1,7 +1,7 @@
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import UserPermissionsPopUp from '../UserPermissionsPopUp';
 import thunk from 'redux-thunk';
 import mockAdminState from '__tests__/mockAdminState';
 import configureStore from 'redux-mock-store';
@@ -9,9 +9,17 @@ import { Provider } from 'react-redux';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { themeMock } from '__tests__/mockStates';
+import { ModalContext } from 'context/ModalContext';
+import UserPermissionsPopUp from '../UserPermissionsPopUp';
 
 const mockStore = configureStore([thunk]);
 let store;
+
+const mockModalContext = {
+  modalStatus: false,
+  updateModalStatus: jest.fn(),
+};
+
 beforeEach(() => {
   store = mockStore({
     auth: {
@@ -85,7 +93,9 @@ describe('UserPermissionsPopup component', () => {
     });
     render(
       <Provider store={store}>
-        <UserPermissionsPopUp />
+        <ModalContext.Provider value={mockModalContext}>
+          <UserPermissionsPopUp />
+        </ModalContext.Provider>
       </Provider>,
     );
     await flushAllPromises();
@@ -98,7 +108,9 @@ describe('UserPermissionsPopup component', () => {
     });
     render(
       <Provider store={store}>
-        <UserPermissionsPopUp />
+        <ModalContext.Provider value={mockModalContext}>
+          <UserPermissionsPopUp />
+        </ModalContext.Provider>
       </Provider>,
     );
     await flushAllPromises();
@@ -117,7 +129,9 @@ describe('UserPermissionsPopup component', () => {
     });
     render(
       <Provider store={store}>
-        <UserPermissionsPopUp />
+        <ModalContext.Provider value={mockModalContext}>
+          <UserPermissionsPopUp />
+        </ModalContext.Provider>
       </Provider>,
     );
     await flushAllPromises();
@@ -138,7 +152,9 @@ describe('UserPermissionsPopup component', () => {
 
     render(
       <Provider store={store}>
-        <UserPermissionsPopUp />
+        <ModalContext.Provider value={mockModalContext}>
+          <UserPermissionsPopUp />
+        </ModalContext.Provider>
       </Provider>,
     );
     const nameElement = screen.getByText('Test1 Volunteer');
@@ -148,9 +164,8 @@ describe('UserPermissionsPopup component', () => {
     });
     expect(toast.success).toHaveBeenCalledWith(
       `
-        Permission has been updated successfully. Be sure to tell them that you are changing these
-        permissions and for that they need to log out and log back in for their new permissions to take
-        place.`,
+        Permissions have been updated successfully. 
+        Please inform the user to log out and log back in for the new permissions to take effect.`,
       {
         autoClose: 10000,
       },
@@ -171,7 +186,9 @@ describe('UserPermissionsPopup component', () => {
 
     render(
       <Provider store={store}>
-        <UserPermissionsPopUp />
+        <ModalContext.Provider value={mockModalContext}>
+          <UserPermissionsPopUp />
+        </ModalContext.Provider>
       </Provider>,
     );
     const nameElement = screen.getByText('Test1 Volunteer');
@@ -179,9 +196,8 @@ describe('UserPermissionsPopup component', () => {
     await waitFor(() => {
       expect(toast.success).not.toHaveBeenCalledWith(
         `
-            Permission has been updated successfully. Be sure to tell them that you are changing these
-            permissions and for that they need to log out and log back in for their new permissions to take
-            place.`,
+        Permissions have been updated successfully. 
+        Please inform the user to log out and log back in for the new permissions to take effect.`,
         {
           autoClose: 10000,
         },
@@ -202,7 +218,9 @@ describe('UserPermissionsPopup component', () => {
     axios.put.mockRejectedValue({ err: 'server error' });
     render(
       <Provider store={store}>
-        <UserPermissionsPopUp />
+        <ModalContext.Provider value={mockModalContext}>
+          <UserPermissionsPopUp />
+        </ModalContext.Provider>
       </Provider>,
     );
     const mockObject = {};
@@ -238,7 +256,9 @@ describe('UserPermissionsPopup component', () => {
 
     render(
       <Provider store={store}>
-        <UserPermissionsPopUp />
+        <ModalContext.Provider value={mockModalContext}>
+          <UserPermissionsPopUp />
+        </ModalContext.Provider>
       </Provider>,
     );
     const userElement = screen.getByText('Test2 Manager');

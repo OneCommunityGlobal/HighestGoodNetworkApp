@@ -30,14 +30,9 @@ const UserProfileModal = props => {
     id,
   } = props;
   let blueSquare = [
-    {
-      date: 'ERROR',
-      description:
-        'This is auto generated text. You must save the document first before viewing newly created blue squares.',
-    },
   ];
 
-  if (type === 'modBlueSquare' || type === 'viewBlueSquare') {
+  if (type !== 'message' && type !== 'addBlueSquare') {
     if (id.length > 0) {
       blueSquare = userProfile.infringements?.filter(blueSquare => blueSquare._id === id);
     }
@@ -46,6 +41,8 @@ const UserProfileModal = props => {
   const darkMode = useSelector(state=>state.theme.darkMode);
 
   const canPutUserProfile = props.hasPermission('putUserProfile');
+  const canEditInfringements = props.hasPermission('editInfringements');
+  const canDeleteInfringements = props.hasPermission('deleteInfringements');
 
   const [linkName, setLinkName] = useState('');
   const [linkURL, setLinkURL] = useState('');
@@ -53,11 +50,29 @@ const UserProfileModal = props => {
   const [adminLinkName, setAdminLinkName] = useState('');
   const [adminLinkURL, setAdminLinkURL] = useState('');
 
-  const [dateStamp, setDateStamp] = useState(blueSquare[0]?.date || '');
+  const getCurrentDate = () => {
+    const today = new Date();
+    return today.toLocaleDateString('en-CA').split('T')[0]; 
+  };
+
+  // Fallback to a meaningful default if no data found
+  if (blueSquare.length === 0) {
+    blueSquare = [
+      {
+        date: getCurrentDate(),  
+        description: 'This is auto-generated text. You must save the document first before viewing newly created blue squares.',
+      },
+    ];
+  }
+
+  
+  const [dateStamp, setDateStamp] = useState(blueSquare[0]?.date || getCurrentDate());
+
   const [summary, setSummary] = useState(blueSquare[0]?.description || '');
 
-  const [addButton, setAddButton] = useState(true);
-  const [summaryFieldView, setSummaryFieldView] = useState(true);
+
+  const [addButton, setAddButton] = useState(false); 
+  const [summaryFieldView, setSummaryFieldView] = useState(false); 
 
   const [personalLinks, dispatchPersonalLinks] = useReducer(
     (personalLinks, { type, value, passedIndex }) => {
@@ -133,15 +148,14 @@ const UserProfileModal = props => {
     }
   };
 
-  function checkFields(field1, field2) {
-    console.log('f1:', field1, ' f2:', field2);
-
-    if (field1 != null && field2 != null) {
-      setAddButton(false);
-    } else {
-      setAddButton(true);
+    function checkFields(field1, field2) { 
+      if (field1.trim() && field2.trim()) {
+        setAddButton(false);
+      } else {
+        setAddButton(true);
+      }
     }
-  }
+    
 
   const adjustTextareaHeight = (textarea) => {
     textarea.style.height = 'auto';
@@ -316,7 +330,7 @@ const UserProfileModal = props => {
           <>
             <FormGroup>
               <Label className={fontColor} for="date">Date</Label>
-              <Input type="date" name="date" id="date" onChange={handleChange} />
+              <Input type="date" name="date" id="date" value={dateStamp} onChange={handleChange} />
             </FormGroup>
 
             <FormGroup hidden={summaryFieldView}>
@@ -336,18 +350,19 @@ const UserProfileModal = props => {
         {type === 'modBlueSquare' && (
           <>
             <FormGroup>
-              <Label className={fontColor} for="date">Date</Label>
-              <Input type="date" onChange={e => setDateStamp(e.target.value)} value={dateStamp} />
+              <Label className={fontColor} for="date">Date:</Label>
+              {canEditInfringements ? <Input type="date" onChange={e => setDateStamp(e.target.value)} value={dateStamp} />
+              : <span> {blueSquare[0]?.date}</span>}
             </FormGroup>
             <FormGroup>
               <Label className={fontColor} for="createdDate">
                 Created Date:
-                {blueSquare[0]?.createdDate}
+                <span>{blueSquare[0]?.createdDate}</span>
               </Label>
             </FormGroup>
             <FormGroup>
               <Label className={fontColor} for="report">Summary</Label>
-              <Input 
+              {canEditInfringements ? <Input 
                 type="textarea" 
                 id="summary" 
                 onChange={handleChange} 
@@ -355,27 +370,28 @@ const UserProfileModal = props => {
                 style={{ minHeight: '200px', overflow: 'hidden'}} // 4x taller than usual
                 onInput={e => adjustTextareaHeight(e.target)} // auto-adjust height
               />
+              :<p>{blueSquare[0]?.description}</p>}
             </FormGroup>
           </>
         )}
 
-        {type === 'viewBlueSquare' && (
+        {type === 'viewBlueSquare'  && (
           <>
             <FormGroup>
               <Label className={fontColor} for="date">
-                Date:
-                {blueSquare[0]?.date}
+                Date: 
+                <span>{blueSquare[0]?.date}</span>
               </Label>
             </FormGroup>
             <FormGroup>
               <Label className={fontColor} for="createdDate">
                 Created Date:
-                {blueSquare[0]?.createdDate}
+                <span>{blueSquare[0]?.createdDate}</span>
               </Label>
             </FormGroup>
             <FormGroup>
               <Label className={fontColor} for="description">Summary</Label>
-              <Label className={fontColor}>{blueSquare[0]?.description}</Label>
+              <p className={fontColor}>{blueSquare[0]?.description}</p>
             </FormGroup>
           </>
         )}
@@ -403,25 +419,29 @@ const UserProfileModal = props => {
         )}
 
         {type === 'modBlueSquare' && (
-          <>
-            <Button
-              color="info"
-              onClick={() => {
-                modifyBlueSquares(id, dateStamp, summary, 'update');
-              }}
-              style={boxStyling}
-            >
-              Update
-            </Button>
-            <Button
-              color="danger"
-              onClick={() => {
-                modifyBlueSquares(id, dateStamp, summary, 'delete');
-              }}
-              style={boxStyling}
-            >
-              Delete
-            </Button>
+            <>
+            {canEditInfringements && 
+              <Button
+                color="info"
+                onClick={() => {
+                  modifyBlueSquares(id, dateStamp, summary, 'update');
+                }}
+                style={boxStyling}
+              >
+                Update
+              </Button>
+              }
+            {canDeleteInfringements &&
+              <Button
+                color="danger"
+                onClick={() => {
+                  modifyBlueSquares(id, dateStamp, summary, 'delete');
+                }}
+                style={boxStyling}
+              >
+                Delete
+              </Button>
+            }
           </>
         )}
 

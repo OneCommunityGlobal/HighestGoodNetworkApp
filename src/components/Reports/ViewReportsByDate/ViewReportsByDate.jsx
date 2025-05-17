@@ -1,6 +1,9 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import DatePicker from 'react-datepicker';
+import { Button } from 'reactstrap';
+import { boxStyle, boxStyleDark } from 'styles';
 import 'react-datepicker/dist/react-datepicker.css';
+import '../../Header/DarkMode.css';
 
 class ViewReportByDate extends Component {
   constructor(props) {
@@ -12,6 +15,7 @@ class ViewReportByDate extends Component {
 
     this.onStartDateChange = this.onStartDateChange.bind(this);
     this.onEndDateChange = this.onEndDateChange.bind(this);
+    this.clearDates = this.clearDates.bind(this);
   }
 
   onStartDateChange(date) {
@@ -28,11 +32,19 @@ class ViewReportByDate extends Component {
     }
   }
 
+  clearDates() {
+    this.setState({
+      startDate: new Date(this.props.minDate),
+      endDate: new Date(),
+    });
+    this.props.onClearFilters();
+  }
+
   render() {
-    const { minDate, maxDate, textColor } = this.props;
+    const { minDate, maxDate, textColor, darkMode } = this.props;
 
     return (
-      <div className="date-picker-container">
+      <div className={`date-picker-container ${darkMode ? 'dark-mode' : ''}`}>
         <div id="task_startDate" className="date-picker-item">
           <label htmlFor="task_startDate" className={`date-picker-label ${textColor}`}>
             Start Date
@@ -42,7 +54,7 @@ class ViewReportByDate extends Component {
             minDate={minDate}
             maxDate={maxDate}
             onChange={this.onStartDateChange}
-            className="form-control"
+            className={`form-control ${darkMode ? "bg-darkmode-liblack text-light border-0" : ''}`}
             popperPlacement="top-start"
           />
         </div>
@@ -55,9 +67,19 @@ class ViewReportByDate extends Component {
             minDate={minDate}
             maxDate={maxDate}
             onChange={this.onEndDateChange}
-            className="form-control"
+            className={`form-control ${darkMode ? "bg-darkmode-liblack text-light border-0" : ''}`}
             popperPlacement="top"
           />
+        </div>
+        <div id="task_EndDate" className="date-picker-item">
+          <label htmlFor="task_EndDate" className={`date-picker-label ${textColor}`} />
+          <Button
+            onClick={this.clearDates}
+            color="danger"
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
+            Clear
+          </Button>
         </div>
       </div>
     );

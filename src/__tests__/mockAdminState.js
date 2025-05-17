@@ -1,4 +1,4 @@
-let dt = new Date();
+const dt = new Date();
 dt.setDate(dt.getDate() + 1);
 
 export default {
@@ -1632,7 +1632,6 @@ export default {
             'updatePassword',
             'deleteUserProfile',
             'infringementAuthorizer',
-            'manageAdminLinks',
             // WBS
             'postWbs',
             'deleteWbs',
@@ -1692,7 +1691,9 @@ export default {
             'getUserProfiles',
             'getProjectMembers',
             'putUserProfile',
-            'infringementAuthorizer',
+            'addInfringements',
+            'editInfringements',
+            'deleteInfringements',
             'getReporteesLimitRoles',
             'suggestTask',
             'getAllInvInProjectWBS',
@@ -1720,7 +1721,9 @@ export default {
             'getUserProfiles',
             'getProjectMembers',
             'putUserProfile',
-            'infringementAuthorizer',
+            'addInfringements',
+            'editInfringements',
+            'deleteInfringements',
             'getReporteesLimitRoles',
             'getAllInvInProjectWBS',
             'postInvInProjectWBS',
@@ -1770,6 +1773,7 @@ export default {
             'assignTeamToUsers',
             'editTimeEntry',
             'deleteTimeEntry',
+            'sendEmails',
             'updatePassword',
             'getUserProfiles',
             'getProjectMembers',
@@ -1777,7 +1781,9 @@ export default {
             'putUserProfile',
             'putUserProfileImportantInfo',
             'deleteUserProfile',
-            'infringementAuthorizer',
+            'addInfringements',
+            'editInfringements',
+            'deleteInfringements',
             'postWbs',
             'deleteWbs',
             'getAllInvInProjectWBS',
@@ -1804,6 +1810,8 @@ export default {
     }
   };
 
+// eslint-disable-next-line no-undef
 describe('Stop Error', () => {
+  // eslint-disable-next-line no-undef
   it('should not error out due to no tests  (mockAdminState.js)', () => {});
 });

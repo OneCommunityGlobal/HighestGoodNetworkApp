@@ -15,26 +15,9 @@ function PeopleTableDetails(props) {
   const [assign, setAssign] = useState('');
   const [estimatedHours, setEstimatedHours] = useState('');
   const [order, setOrder] = useState('');
-  const [startDate] = useState('');
-  const [endDate] = useState('');
-  const [isMobile, setisMobile] = useState(false);
-
+  const [startDate,updateStartDate] = useState(new Date('01/01/2010'));
+  const [endDate, updateEndDate] = useState(new Date());
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  // useEffect(() => {
-  //   function handleResize() {
-  //     const w = window.innerWidth
-  //     if (w <= 1020) {
-  //       setisMobile(true);
-  //     } else {
-  //       setisMobile(false)
-  //     }
-  //   }
-  //   window.addEventListener('resize', handleResize);
-
-  //   return () => {
-  //     window.removeEventListener('resize', handleResize);
-  //   };
-  // }, []);
 
   useEffect(() => {
     const handleResize = () => {
@@ -83,20 +66,20 @@ function PeopleTableDetails(props) {
     setActive('');
     setAssign('');
     setEstimatedHours('');
+    updateStartDate(new Date('01/01/2010'));
+    updateEndDate(new Date());
   };
 
   const filterOptions = tasks => {
     let filterTaskslist = tasks.filter(task => {
-      if (
+      return (
         task.taskName.toLowerCase().includes(name.toLowerCase()) &&
         task?.estimatedHours?.toLowerCase().includes(estimatedHours.toLowerCase())
-      ) {
-        return true;
-      }
+      );
     });
     // addtasknamelist
     filterTaskslist = filterTaskslist.filter(task => {
-      let tasklist = []
+      const tasklist = []
       for (let i = 0; i < task.taskName.length; i += 1) {
         tasklist.push(task.taskName[i])
 
@@ -111,13 +94,22 @@ function PeopleTableDetails(props) {
     const simple = [];
     // eslint-disable-next-line array-callback-return,consistent-return
     let filteredList = tasks.filter(task => {
+      // Convert task dates to Date objects for comparison
+      const taskStartDate = new Date(task.startDate);
+      // const taskEndDate = new Date(task.endDate);
+      
+      // Check if dates are within the selected range
+      const isWithinDateRange = (!startDate || taskStartDate <= endDate) 
+      // && (!endDate || taskEndDate <= endDate);
+
       if (
         task.taskName.toLowerCase().includes(name.toLowerCase()) &&
         task?.priority?.toLowerCase().includes(priority.toLowerCase()) &&
         task?.status?.toLowerCase().includes(status.toLowerCase()) &&
         task?.active?.toLowerCase().includes(active.toLowerCase()) &&
         task?.estimatedHours?.toLowerCase().includes(estimatedHours.toLowerCase()) &&
-        task?.assign?.toLowerCase().includes(assign.toLowerCase())
+        task?.assign?.toLowerCase().includes(assign.toLowerCase()) &&
+        isWithinDateRange
       ) {
         return true;
       }
@@ -153,90 +145,15 @@ function PeopleTableDetails(props) {
 
   const renderMobileFilteredTask = (value) => {
     return (
-      // <div className="mobile-table">
-      //   <div key={value._id} >
-      //     <h5 >Task :</h5>
-      //     <div>  {value.taskName}</div>
-      //     <h5 >Priority :</h5>
-      //     <div >{value.priority}</div>
-      //     <h5 >Status :</h5>
-      //     <div > {value.status}</div>
-      //     <h5 >Resources:</h5>
-      //     <div >
-      //       {value.resources?.map(res =>
-      //         res.map((resource, index) => {
-      //           if (index < 2) {
-      //             return (
-      //               <img
-      //                 key={resource.index}
-      //                 alt={resource.name}
-      //                 src={resource.profilePic || '/pfp-default.png'}
-      //                 className="img-circle"
-      //                 title={resource.name}
-      //               />
-      //             );
-      //           }
-      //           return null;
-      //         }),
-      //       )}
-      //       {value.resources?.map((res, index) =>
-      //         res.length > 2 ? (
-      //           <button
-      //             key={index}
-      //             type="button"
-      //             className="name resourceMoreToggle"
-      //             onClick={() => toggleMoreResources(value._id)}
-      //           >
-      //             <span className="dot">{res.length - 2}+</span>
-      //           </button>
-      //         ) : null,
-      //       )}
-      //       <div id={value._id} className="extra">
-      //         <div className="extra1">
-      //           {value.resources?.map(res =>
-      //             // eslint-disable-next-line array-callback-return,consistent-return
-      //             res.map((resource, index) => {
-      //               if (index >= 2) {
-      //                 return (
-      //                   <img
-      //                     key={resource.index}
-      //                     alt={resource.name}
-      //                     src={resource.profilePic || '/pfp-default.png'}
-      //                     className="img-circle"
-      //                     title={resource.name}
-      //                   />
-      //                 );
-      //               }
-      //             }),
-      //           )}
-      //         </div>
-      //       </div>
-      //     </div>
-      //     <div className="people-table-center-cell">
-      //       <h5 >Active: {value.active === 'Yes' ? <span>&#10003;</span> : <span>&#10060;</span>}</h5>
-
-      //     </div>
-      //     <div className="people-table-center-cell">
-      //       <h5 >Assign: {value.assign === 'Yes' ? <span>&#10003;</span> : <span>&#10060;</span>}</h5>
-      //     </div>
-      //     <div className="people-table-end-cell">
-
-      //       <h5 >Estimated Hours: {value.estimatedHours}</h5>
-      //     </div>
-      //     <div className="people-table-end-cell">
-      //       <h5>Start Date: {value.startDate}</h5>
-      //     </div>
-      //     <div className="people-table-end-cell">
-      //       <h5>End Date: {value.endDate}</h5>
-      //     </div>
-      //   </div>
-      // </div>
       <div className={`task-card ${darkMode ? 'text-dark' : ''}`}>
         <div key={value._id} >
           <div className='task-header'>
-            <div className='task-title'>
-              {value.taskName}
+            <div>
+              <div className='task-title people-report-task-name task-name-word-break'>
+                {value.taskName}
+              </div>  
             </div>
+            
             <div className='task-status'>
               {value.status}
             </div>
@@ -253,7 +170,7 @@ function PeopleTableDetails(props) {
                   if (index < 2) {
                     return (
                       <img
-                        key={resource.index}
+                        key={`${value._id}-${resource.name}`}
                         alt={resource.name}
                         src={resource.profilePic || '/pfp-default.png'}
                         className="img-circle"
@@ -293,8 +210,8 @@ function PeopleTableDetails(props) {
 
   const renderFilteredTask = value => (
     <div>
-      <div key={value._id} className="people-table-row people-table-body-row">
-        <div>{value.taskName}</div>
+      <div key={value._id} className={`people-table-row people-table-body-row ${darkMode ? 'people-table-row-dark' : ''}`}>
+        <div className='people-report-task-name'>{value.taskName}</div>
         <div>{value.priority}</div>
         <div>{value.status}</div>
         <div>
@@ -303,7 +220,7 @@ function PeopleTableDetails(props) {
               if (index < 2) {
                 return (
                   <img
-                    key={resource.index}
+                    key={`${value._id}-${resource.name}`}
                     alt={resource.name}
                     src={resource.profilePic || '/pfp-default.png'}
                     className="img-circle"
@@ -314,10 +231,10 @@ function PeopleTableDetails(props) {
               return null;
             }),
           )}
-          {value.resources?.map((res, index) =>
+          {value.resources?.map((res) =>
             res.length > 2 ? (
               <button
-                key={index}
+                key={res[0]?.name || res[0]?.id}
                 type="button"
                 className="name resourceMoreToggle"
                 onClick={() => toggleMoreResources(value._id)}
@@ -362,7 +279,7 @@ function PeopleTableDetails(props) {
   );
 
   // const renderFilteredTask = () => (
-
+    
   // )
   return (
     <Container fluid className={`wrapper ${darkMode ? 'text-light' : ''}`}>
@@ -385,26 +302,30 @@ function PeopleTableDetails(props) {
           active={active}
           assign={assign}
           estimatedHours={estimatedHours}
-          startDate={startDate}
+          StartDate={startDate}
+          UpdateStartDate={updateStartDate}
           EndDate={endDate}
+          UpdateEndDate={updateEndDate}
         />
-        <button onClick={resetFilters} className="tasks-table-clear-filter-button">
+        <button type="button" onClick={resetFilters} className="tasks-table-clear-filter-button">
           Clear Filters
         </button>
       </div>
       <div className={`people-table-row reports-table-head ${darkMode ? 'bg-space-cadet' : ''}`}>
-        <div>Task</div>
-        <div>Priority</div>
-        <div>Status</div>
-        <div className="people-table-center-cell">Resources</div>
-        <div className="people-table-center-cell">Active</div>
-        <div className="people-table-center-cell">Assign</div>
-        <div className="people-table-end-cell">Estimated Hours</div>
-        <div className="people-table-end-cell">Start Date</div>
-        <div className="people-table-end-cell">End Date</div>
+        <div data-testid="task">Task</div>
+        <div data-testid="priority">Priority</div>
+        <div data-testid="status">Status</div>
+        <div data-testid="resources" className="people-table-center-cell">Resources</div>
+        <div data-testid="active" className="people-table-center-cell">Active</div>
+        <div data-testid="assign" className="people-table-center-cell">Assign</div>
+        <div data-testid="eh" className="people-table-end-cell">Estimated Hours</div>
+        <div data-testid="sd" className="people-table-end-cell">Start Date</div>
+        <div data-testid="ed" className="people-table-end-cell">End Date</div>
       </div>
       <div className="people-table">
         {filteredTasks.map(value => (
+
+          // eslint-disable-next-line react/no-unstable-nested-components
           <NewModal header="Task info" trigger={() => <> {(windowWidth <= 1020) ? renderMobileFilteredTask(value) : renderFilteredTask(value)}</>}>
             <div>Why This Task is important</div>
             <textarea className="rectangle" type="text" value={value.whyInfo} />

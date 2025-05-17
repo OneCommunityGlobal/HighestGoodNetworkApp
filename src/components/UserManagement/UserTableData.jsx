@@ -1,107 +1,382 @@
 import React, { useState, useEffect } from 'react';
+import { Tooltip } from 'reactstrap';
+import { connect, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCopy } from '@fortawesome/free-solid-svg-icons';
+import { toast } from 'react-toastify';
+import { Link, useHistory } from 'react-router-dom';
+import { updateUserInfomation } from '../../actions/userManagement';
+import { getAllRoles } from '../../actions/role';
 import ResetPasswordButton from './ResetPasswordButton';
 import { DELETE, PAUSE, RESUME, SET_FINAL_DAY, CANCEL } from '../../languages/en/ui';
 import { UserStatus, FinalDay } from '../../utils/enums';
 import ActiveCell from './ActiveCell';
-import hasPermission from 'utils/permissions';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCopy, faCalendarDay, faCheck, faClock } from '@fortawesome/free-solid-svg-icons';
-import { toast } from 'react-toastify';
-import { boxStyle, boxStyleDark } from 'styles';
-import { connect } from 'react-redux';
-import { formatDateLocal } from 'utils/formatDate';
-import { cantUpdateDevAdminDetails } from 'utils/permissions';
+import TimeDifference from './TimeDifference';
+import hasPermission from '../../utils/permissions';
+import { boxStyle } from '../../styles';
+import { formatDateLocal } from '../../utils/formatDate';
+import { cantUpdateDevAdminDetails } from '../../utils/permissions';
+import { formatDate, formatDateYYYYMMDD } from '../../utils/formatDate';
+import { faUser, faUsers, faShieldAlt, faBriefcase, faUserTie, faCrown, faChalkboardTeacher, faBug, faGlobe, faStar } from '@fortawesome/free-solid-svg-icons';
+import { UncontrolledTooltip } from 'reactstrap';
+import SetUpFinalDayButton from './SetUpFinalDayButton';
 /**
  * The body row of the user table
  */
 const UserTableData = React.memo(props => {
-  const darkMode = props.darkMode;
+  const { darkMode } = props;
+  const editUser = useSelector(state => state.userProfileEdit?.editable);
+  const [tooltipDeleteOpen, setTooltipDelete] = useState(false);
+  const [tooltipPauseOpen, setTooltipPause] = useState(false);
+  const [tooltipFinalDayOpen, setTooltipFinalDay] = useState(false);
+  const isMobile = props.isMobile;
+  const mobileFontSize = props.mobileFontSize;
+  const [tooltipReportsOpen, setTooltipReports] = useState(false);
 
   const [isChanging, onReset] = useState(false);
   const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
-  // const canChangeUserStatus = props.hasPermission('changeUserStatus');
+  const [formData, updateFormData] = useState({
+    firstName: props.user.firstName,
+    lastName: props.user.lastName,
+    id: props.user._id,
+    role: props.user.role,
+    jobTitle: props.user.jobTitle,
+    email: props.user.email,
+    weeklycommittedHours: props.user.weeklycommittedHours,
+    startDate: formatDate(props.user.startDate),
+    endDate: formatDate(props.user.endDate),
+  });
+  const dispatch = useDispatch();
+  const history = useHistory();
+  const { roles } = useSelector(state => state.role);
+  const joinTimeStamp = date => {
+    const now = new Date();
+    let formattedTimestamp = now.toISOString();
+    formattedTimestamp = `${date.toString()}T${formattedTimestamp.split('T')[1]}`;
+    return formattedTimestamp;
+  };
+  const addUserInformation = (item, value, id) => {
+    dispatch(
+      updateUserInfomation({
+        item,
+        value,
+        user_id: id,
+      }),
+    );
+  };
+  const canDeleteUsers = props.hasPermission('deleteUserProfile');
+  const resetPasswordStatus = props.hasPermission('resetPassword');
+  const updatePasswordStatus = props.hasPermission('updatePassword');
+  const canChangeUserStatus = props.hasPermission('changeUserStatus');
+  const canSeeReports = props.hasPermission('getReports');
+  const toggleDeleteTooltip = () => setTooltipDelete(!tooltipDeleteOpen);
+  const togglePauseTooltip = () => setTooltipPause(!tooltipPauseOpen);
+  const toggleFinalDayTooltip = () => setTooltipFinalDay(!tooltipFinalDayOpen);
+  const toggleReportsTooltip = () => setTooltipReports(!tooltipReportsOpen);
+  const roleIcons = {
+    Volunteer: faUser,
+    'Core Team': faUsers,
+    Administrator: faShieldAlt,
+    'Assistant Manager': faUserTie,
+    Owner: faCrown,
+    Mentor: faChalkboardTeacher,
+    Manager: faBriefcase,
+    TestRole: faBug,
+    General: faGlobe,
+    Creator: faStar,
+  };
 
   /**
    * reset the changing state upon rerender with new isActive status
    */
   useEffect(() => {
     onReset(false);
+    dispatch(getAllRoles());
   }, [props.isActive, props.resetLoading]);
 
+  useEffect(() => {
+    updateFormData({
+      firstName: props.user.firstName,
+      lastName: props.user.lastName,
+      id: props.user._id,
+      role: props.user.role,
+      jobTitle: props.user.jobTitle,
+      email: props.user.email,
+      weeklycommittedHours: props.user.weeklycommittedHours,
+      startDate: formatDateYYYYMMDD(props.user.startDate),
+      endDate: formatDateYYYYMMDD(props.user.endDate),
+    });
+  }, [props.user]);
 
   /**
    * Checks whether users should be able to change the record of other users.
-   * @returns {boolean} true if the target user record has a owner role, the logged in 
+   * @returns {boolean} true if the target user record has a owner role, the logged in
    * user does not have the addDeleteEditOwners permission, or the target user is only
    * editable by Jae's account.
    */
   const checkPermissionsOnOwner = () => {
     const recordEmail = props.user.email;
     const loginUserEmail = props.authEmail;
-
-    return (props.user.role === 'Owner' && !canAddDeleteEditOwners)
-      || cantUpdateDevAdminDetails(recordEmail, loginUserEmail);
+    return (
+      (props.user.role === 'Owner' && !canAddDeleteEditOwners) ||
+      cantUpdateDevAdminDetails(recordEmail, loginUserEmail)
+    );
   };
 
   const isCurrentUser = props.user.email === props.authEmail;
 
+  const getButtonText = () => {
+    if (isChanging) {
+      return '...';
+    }
+    if (props.isActive) {
+      return PAUSE;
+    }
+    return RESUME;
+  };
+
   return (
-    <tr className={`usermanagement__tr ${darkMode ? 'bg-yinmn-blue' : ''}`} id={`tr_user_${props.index}`}>
-      <td className="usermanagement__active--input">
+    <tr
+      className={`usermanagement__tr ${darkMode ? 'dark-usermanagement-data' : 'light-usermanagement-data'}`}
+      id={`tr_user_${props.index}`}
+      style={{ fontSize: isMobile ? mobileFontSize : 'initial' }}
+    >
+      <td className="usermanagement__active--input" style={{ position: 'relative' }}>
         <ActiveCell
           isActive={props.isActive}
-          canChange={props.canChangeUserStatus}
+          canChange={canChangeUserStatus}
           key={`active_cell${props.index}`}
           index={props.index}
           onClick={() => props.onActiveInactiveClick(props.user)}
         />
-      </td>
-      <td className="email_cell">
-        <a href={`/userprofile/${props.user._id}`} className={darkMode ? 'text-azure' : ''}>{props.user.firstName} </a>
-        <FontAwesomeIcon
-          className="copy_icon"
-          icon={faCopy}
-          onClick={() => {
-            navigator.clipboard.writeText(props.user.firstName);
-            toast.success('First Name Copied!');
-          }}
+        {!canSeeReports ? (
+          <Tooltip
+            placement="bottom"
+            isOpen={tooltipReportsOpen}
+            target={`report-icon-${props.user._id}`}
+            toggle={toggleReportsTooltip}
+          >
+            You don&apos;t have permission to view user reports
+          </Tooltip>
+        ) : (
+          ''
+        )}
+        <span style={{ position: 'absolute', top: 0, right: 0 }}>
+          <button
+            type="button"
+            className="team-member-tasks-user-report-link"
+            style={{
+              fontSize: 24,
+              opacity: canSeeReports ? 1 : 0.7,
+              background: 'none',
+              border: 'none',
+              padding: 0,
+            }}
+            onClick={(event) => {
+              if (!canSeeReports) {
+                event.preventDefault();
+                return;
+              }
+
+              if (event.metaKey || event.ctrlKey || event.button === 1) {
+                window.open(`/peoplereport/${props.user._id}`, '_blank');
+                return;
+              }
+
+              event.preventDefault(); // prevent full reload
+              history.push(`/peoplereport/${props.user._id}`);
+            }}
+          >
+            <img
+              src="/report_icon.png"
+              alt="reportsicon"
+              className="team-member-tasks-user-report-link-image"
+              id={`report-icon-${props.user._id}`}
+              style={{
+                cursor: canSeeReports ? 'pointer' : 'not-allowed', // Change cursor style to indicate the disabled state
+              }}
+            />
+          </button>
+        </span>
+        <TimeDifference
+          userProfile={props.user}
+          isUserSelf={props.user.email === props.authEmail}
+          darkMode={darkMode}
         />
       </td>
       <td className="email_cell">
-        <a href={`/userprofile/${props.user._id}`} className={darkMode ? 'text-azure' : ''}>{props.user.lastName}</a>
-        <FontAwesomeIcon
-          className="copy_icon"
-          icon={faCopy}
-          onClick={() => {
-            navigator.clipboard.writeText(props.user.lastName);
-            toast.success('Last Name Copied!');
-          }}
-        />
+        {editUser?.first ? (
+          <div>
+            <a href={`/userprofile/${props.user._id}`} className={darkMode ? 'text-white' : 'text-dark'}>
+              {formData.firstName}{' '}
+            </a>
+            <FontAwesomeIcon
+              className="copy_icon"
+              icon={faCopy}
+              onClick={() => {
+                navigator.clipboard.writeText(formData.firstName);
+                toast.success('First Name Copied!');
+              }}
+            />
+          </div>
+        ) : (
+          <input
+            type="text"
+            className={`edituser_input_firstname ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
+            value={formData.firstName}
+            onChange={e => {
+              updateFormData({ ...formData, firstName: e.target.value });
+              addUserInformation('firstName', e.target.value, props.user._id);
+            }}
+          />
+        )}
       </td>
-      <td>{props.user.role}</td>
       <td className="email_cell">
-        {props.user.email}
-        <FontAwesomeIcon
-          className="copy_icon"
-          icon={faCopy}
-          onClick={() => {
-            navigator.clipboard.writeText(props.user.email);
-            toast.success('Email Copied!');
-          }}
-        />
+        {editUser?.last ? (
+          <div>
+            <a href={`/userprofile/${props.user._id}`} className={darkMode ? 'text-white' : 'text-dark'}>
+              {formData.lastName}
+            </a>
+            <FontAwesomeIcon
+              className="copy_icon"
+              icon={faCopy}
+              onClick={() => {
+                navigator.clipboard.writeText(formData.lastName);
+                toast.success('Last Name Copied!');
+              }}
+            />
+          </div>
+        ) : (
+          <input
+            type="text"
+            className={`edituser_input text-center ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
+            value={formData.lastName}
+            onChange={e => {
+              updateFormData({ ...formData, lastName: e.target.value });
+              addUserInformation('lastName', e.target.value, props.user._id);
+            }}
+          />
+        )}
       </td>
-      <td>{props.user.weeklycommittedHours}</td>
+      <td id="usermanagement_role">
+        {editUser?.role && roles !== undefined ? (
+          <>
+          <FontAwesomeIcon id={`role-icon-${props.index}`} icon={roleIcons[formData.role] || faUser} />
+          <UncontrolledTooltip placement="top" target={`role-icon-${props.index}`}>
+            {formData.role}
+          </UncontrolledTooltip>
+        </>
+        ) : (
+          <select
+            id=""
+            style={{ width: '100px'}}
+            value={formData.role}
+            onChange={e => {
+              updateFormData({ ...formData, role: e.target.value });
+              addUserInformation('role', e.target.value, props.user._id);
+            }}
+            className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+          >
+            {roles?.map((e, index) => (
+              // eslint-disable-next-line react/no-array-index-key
+              <option key={index} value={e.roleName}>
+                {e.roleName}
+              </option>
+            ))}
+          </select>
+        )}
+      </td>
+
+      <td title={formData.jobTitle}>
+        {editUser?.jobTitle ? (
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", maxWidth: "100%" }}>
+            <span className="tooltip-container">{formData.jobTitle}</span>
+            <FontAwesomeIcon
+              className="copy_icon"
+              icon={faCopy}
+              onClick={() => {
+                navigator.clipboard.writeText(formData.jobTitle);
+                toast.success('Title Copied!');
+              }}
+            />
+          </div>
+        ) : (
+          <input
+            type="text"
+            className="edituser_input"
+            style={{ maxWidth: "100%" }}
+            value={formData.jobTitle}
+            onChange={e => {
+              updateFormData({ ...formData, jobTitle: e.target.value });
+              addUserInformation('jobTitle', e.target.value, props.user._id);
+            }}
+          />
+        )}
+
+      </td>
+
+      <td className="email_cell">
+        {editUser?.email ? (
+          <div>
+            {formData.email}
+            <FontAwesomeIcon
+              className="copy_icon"
+              icon={faCopy}
+              onClick={() => {
+                navigator.clipboard.writeText(formData.email);
+                toast.success('Email Copied!');
+              }}
+            />
+          </div>
+        ) : (
+          <input
+            type="text"
+            className={`edituser_input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
+            value={formData.email}
+            onChange={e => {
+              updateFormData({ ...formData, email: e.target.value });
+              addUserInformation('email', e.target.value, props.user._id);
+            }}
+          />
+        )}
+      </td>
       <td>
+        {editUser?.weeklycommittedHours ? (
+          <span>{formData.weeklycommittedHours}</span>
+        ) : (
+          <input
+            type="number"
+            className={`edituser_input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
+            value={formData.weeklycommittedHours}
+            onChange={e => {
+              updateFormData({ ...formData, weeklycommittedHours: e.target.value });
+              addUserInformation('weeklycommittedHours', e.target.value, props.user._id);
+            }}
+          />
+        )}
+      </td>
+      <td>
+        {!canChangeUserStatus ? (
+          <Tooltip
+            placement="bottom"
+            isOpen={tooltipPauseOpen}
+            target={`btn-pause-profile-${props.user._id}`}
+            toggle={togglePauseTooltip}
+          >
+            You don&apos;t have permission to change user status
+          </Tooltip>
+        ) : (
+          ''
+        )}
         <button
           type="button"
           className={`btn btn-outline-${props.isActive ? 'warning' : 'success'} btn-sm`}
-          onClick={e => {
-            if(!props.canChangeUserStatus) {
-              toast.warn('You Do not have permissions to update this user’s status! ');
-              return;
-            }
-            if(cantUpdateDevAdminDetails(props.user.email , props.authEmail)){
-              alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+          onClick={() => {
+            if (cantUpdateDevAdminDetails(props.user.email, props.authEmail)) {
+              alert(
+                'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.',
+              );
               return;
             }
             onReset(true);
@@ -110,18 +385,28 @@ const UserTableData = React.memo(props => {
               props.isActive ? UserStatus.InActive : UserStatus.Active,
             );
           }}
-          style={darkMode ? { boxShadow: "0 0 0 0", fontWeight: "bold" } : boxStyle}
+          style={{
+            ...darkMode ? { boxShadow: '0 0 0 0', fontWeight: 'bold' } : boxStyle,
+            padding: '5px', // Added 2px padding
+          }}
+          disabled={!canChangeUserStatus}
+          id={`btn-pause-profile-${props.user._id}`}
         >
-          {isChanging ? '...' : props.isActive ? PAUSE : RESUME}
+          {/* {isChanging ? '...' : props.isActive ? PAUSE : RESUME} */}
+          {getButtonText()}
         </button>
       </td>
       <td className="centered-td">
         <button
+          type="button"
           className={`btn btn-outline-primary btn-sm${props.timeOffRequests?.length > 0 ? ` time-off-request-btn-moved` : ''
             }`}
-          onClick={e => props.onLogTimeOffClick(props.user)}
+          onClick={() => props.onLogTimeOffClick(props.user)}
           id="requested-time-off-btn"
-          style={darkMode ? { boxShadow: "0 0 0 0", fontWeight: "bold" } : boxStyle}
+          style={{
+            ...darkMode ? { boxShadow: '0 0 0 0', fontWeight: 'bold' } : boxStyle,
+            padding: '5px', // Added 2px padding
+          }}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -149,24 +434,28 @@ const UserTableData = React.memo(props => {
       </td>
       <td>
         {!isCurrentUser && (
-          <button
-            type="button"
-            className={`btn btn-outline-${props.user.endDate ? 'warning' : 'success'} btn-sm`}
-            onClick={e => {
-              if (cantUpdateDevAdminDetails(props.user.email, props.authEmail)) {
-                alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
-                return;
-              }
-
-              props.onFinalDayClick(
-                props.user,
-                props.user.endDate ? FinalDay.NotSetFinalDay : FinalDay.FinalDay,
-              );
-            }}
-            style={darkMode ? { boxShadow: "0 0 0 0", fontWeight: "bold" } : boxStyle}
-          >
-            {props.user.endDate ? CANCEL : SET_FINAL_DAY}
-          </button>
+          <>
+            {!canChangeUserStatus ? (
+              <Tooltip
+                placement="bottom"
+                isOpen={tooltipFinalDayOpen}
+                target={`btn-final-day-${props.user._id}`}
+                toggle={toggleFinalDayTooltip}
+              >
+                You don&apos;t have permission to change user status
+              </Tooltip>
+            ) : (
+              ''
+            )}
+            <SetUpFinalDayButton
+              userProfile={props.user}
+              darkMode={darkMode}
+              onFinalDaySave={updatedUser => {
+                // Update the user object in the parent state
+                props.onUserUpdate(updatedUser);
+              }}
+            />
+          </>
         )}
       </td>
       <td>
@@ -174,36 +463,90 @@ const UserTableData = React.memo(props => {
           ? formatDateLocal(props.user.reactivationDate)
           : ''}
       </td>
-      
-      <td>{props.user.startDate ? formatDateLocal(props.user.startDate) : 'N/A'}</td>
+      <td>
+        {editUser?.startDate ? (
+          <span>
+            {props.user.startDate ? formatDate(formData.startDate) : 'N/A'}
+            {/* {formData.startDate},{props.user.startDate} */}
+          </span>
+        ) : (
+          <input
+            type="date"
+            className={`edituser_input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
+            value={formData.startDate}
+            onChange={e => {
+              updateFormData({ ...formData, startDate: e.target.value });
+              addUserInformation('startDate', joinTimeStamp(e.target.value), props.user._id);
+            }}
+          />
+        )}
+      </td>
       <td className="email_cell">
-        {props.user.endDate ? formatDateLocal(props.user.endDate) : 'N/A'}
-        <FontAwesomeIcon
-          className="copy_icon"
-          icon={faCopy}
-          onClick={() => {
-            navigator.clipboard.writeText(props.user.endDate ? formatDateLocal(props.user.endDate) : 'N/A');
-            toast.success('End Date Copied!');
-          }}
-        />
+        {editUser?.endDate ? (
+          <div>
+            {props.user.endDate ? formatDate(formData.endDate) : 'N/A'}
+            <FontAwesomeIcon
+              className="copy_icon"
+              icon={faCopy}
+              onClick={() => {
+                navigator.clipboard.writeText(
+                  props.user.endDate ? formatDate(formData.endDate) : 'N/A',
+                );
+                toast.success('End Date Copied!');
+              }}
+            />
+          </div>
+        ) : (
+          <input
+            type="date"
+            className={`edituser_input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
+            value={formData.endDate}
+            onChange={e => {
+              updateFormData({ ...formData, endDate: e.target.value });
+              addUserInformation('endDate', joinTimeStamp(e.target.value), props.user._id);
+            }}
+          />
+        )}
       </td>
       {checkPermissionsOnOwner() ? null : (
         <td>
           <span className="usermanagement-actions-cell">
+            {!canDeleteUsers ? (
+              <Tooltip
+                placement="bottom"
+                isOpen={tooltipDeleteOpen}
+                target={`btn-delete-${props.user._id}`}
+                toggle={toggleDeleteTooltip}
+              >
+                You don&apos;t have permission to delete the user
+              </Tooltip>
+            ) : (
+              ''
+            )}
             <button
               type="button"
+              id={`btn-delete-${props.user._id}`}
               className="btn btn-outline-danger btn-sm"
-              onClick={e => {
+              onClick={() => {
                 props.onDeleteClick(props.user, 'archive');
               }}
-              style={darkMode ? { boxShadow: "0 0 0 0", fontWeight: "bold" } : boxStyle}
-              disabled={props.auth?.user.userid === props.user._id}
+              style={{
+                ...darkMode ? { boxShadow: '0 0 0 0', fontWeight: 'bold' } : boxStyle,
+                padding: '5px', // Added 2px padding
+              }}
+              disabled={props.auth?.user.userid === props.user._id || !canDeleteUsers}
             >
               {DELETE}
             </button>
           </span>
           <span className="usermanagement-actions-cell">
-            <ResetPasswordButton authEmail={props.authEmail} user={props.user} darkMode={darkMode} isSmallButton />
+            <ResetPasswordButton
+              authEmail={props.authEmail}
+              user={props.user}
+              darkMode={darkMode}
+              isSmallButton
+              canUpdatePassword={resetPasswordStatus || updatePasswordStatus}
+            />
           </span>
         </td>
       )}
