@@ -58,7 +58,8 @@ import Collaboration from './components/Collaboration';
 import ApplicantsAgeChart from './components/ApplicantsChart';
 
 // LB Dashboard
-import LBProtectedRoute from './components/common/LBDashboard/LBProtectedRoute';
+import LBProtectedRoute from './components/common/LBDashboard/LBProtectedRoute/LBProtectedRoute';
+import LBHome from './components/LBDashboard/Home/Home';
 import LBLogin from './components/LBDashboard/Login';
 import LBDashboard from './components/LBDashboard';
 import MasterPlan from './components/LBDashboard/Map/MasterPlan/MasterPlan';
@@ -470,6 +471,15 @@ export default (
         <LBProtectedRoute path="/lbdashboard/listOverview" exact component={ListOveriew} />
         <LBProtectedRoute path="/lbdashboard/masterplan" exact component={MasterPlan} />
         <Route path="/lbdashboard/login" component={LBLogin} />
+        <Route // Should be LBProtectedRoute
+          path="/lbdashboard/listingshome"
+          render={() => (
+            <>
+              <AutoUpdate />
+              <LBHome />
+            </>
+          )}
+        />
         <Route path="/lbdashboard/bidoverview" exact component={LBBidOverview} />
 
         <CPProtectedRoute path="/communityportal/reports/participation" exact component={EventParticipation} />
