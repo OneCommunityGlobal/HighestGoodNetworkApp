@@ -4,11 +4,12 @@ import { connect } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
 import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from 'languages/en/messages';
 import DayPickerInput from 'react-day-picker/DayPickerInput';
-import { DateUtils } from 'react-day-picker';
 import 'react-day-picker/lib/style.css';
 import dateFnsFormat from 'date-fns/format';
 import dateFnsParse from 'date-fns/parse';
 import parseISO from 'date-fns/parseISO';
+import { isValid } from 'date-fns';
+import { utcToZonedTime } from 'date-fns-tz';
 import { updateTask } from 'actions/task';
 import { Editor } from '@tinymce/tinymce-react';
 import hasPermission from 'utils/permissions';
@@ -61,7 +62,6 @@ function EditTaskModal(props) {
   const [dateWarning, setDateWarning] = useState(false);
   const [currentMode, setCurrentMode] = useState('');
 
-  const res = [...(resourceItems || [])];
   const categoryOptions = [
     { value: 'Unspecified', label: 'Unspecified' },
     { value: 'Housing', label: 'Housing' },
@@ -74,6 +74,7 @@ function EditTaskModal(props) {
     { value: 'Other', label: 'Other' },
   ];
   const FORMAT = 'MM/dd/yy';
+  const TIMEZONE = 'America/Los_Angeles';
 
   const EditorInit = {
     license_key: 'gpl',
@@ -150,7 +151,7 @@ function EditTaskModal(props) {
 
   const changeDateEnd = dueDate => {
     if (!startedDate) {
-      const newDate = dateFnsFormat(new Date(), FORMAT);
+      const newDate = dateFnsFormat(utcToZonedTime(new Date(), TIMEZONE), FORMAT);
       setStartedDate(newDate);
     }
     setDueDate(dueDate);
@@ -176,7 +177,11 @@ function EditTaskModal(props) {
     }
   }, [startedDate, dueDate]);
 
-  const formatDate = (date, format, locale) => dateFnsFormat(date, format, { locale });
+  const formatDate = (date, format) => {
+    // consistent timezone handling
+    const zonedDate = utcToZonedTime(date, TIMEZONE);
+    return dateFnsFormat(zonedDate, format);
+  };
   const parseDate = (str, format, locale) => {
     const parsed = dateFnsParse(str, format, new Date(), { locale });
     if (DateUtils.isDate(parsed)) {
@@ -222,8 +227,9 @@ function EditTaskModal(props) {
     };
 
     const updateTaskDirectly = currentMode === 'Edit';
-    console.log({ canSuggestTask, canUpdateTask, updateTaskDirectly });
+    // console.log({canSuggestTask, canUpdateTask, updateTaskDirectly});
 
+    props.setIsLoading?.(true);
     await props.updateTask(props.taskId, updatedTask, updateTaskDirectly, oldTask);
     props.setTask?.(updatedTask);
     await props.load?.();
@@ -231,14 +237,31 @@ function EditTaskModal(props) {
     if (error === 'none' || Object.keys(error).length === 0) {
       toggle();
       toast.success('Update Success!');
+      toast.success('Update Success!');
     } else {
+      toast.error(`Update failed! Error is ${props.tasks.error}`);
       toast.error(`Update failed! Error is ${props.tasks.error}`);
     }
   };
 
   const convertDate = date => {
-    if (date) {
-      return dateFnsFormat(new Date(date), FORMAT);
+    try {
+      if (!date) return;
+
+      // Handle ISO strings
+      if (date.includes('T')) {
+        const parsedDate = parseISO(date);
+        if (!isValid(parsedDate)) return;
+
+        // Convert to timezone-aware date
+        const zonedDate = utcToZonedTime(parsedDate, TIMEZONE);
+        return dateFnsFormat(zonedDate, FORMAT);
+      }
+
+      // Handle date string in FORMAT format
+      return date;
+    } catch (error) {
+      console.log(error);
     }
   };
   /*
@@ -284,6 +307,31 @@ function EditTaskModal(props) {
   useEffect(() => {
     ReactTooltip.rebuild();
   }, [links]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    if (isMounted && startedDate && dueDate) {
+      // Convert both dates to the same timezone for comparison
+      const parsedDueDate = dueDate.includes('T')
+        ? utcToZonedTime(parseISO(dueDate), TIMEZONE)
+        : utcToZonedTime(dateFnsParse(dueDate, FORMAT, new Date()), TIMEZONE);
+
+      const parsedStartedDate = startedDate.includes('T')
+        ? utcToZonedTime(parseISO(startedDate), TIMEZONE)
+        : utcToZonedTime(dateFnsParse(startedDate, FORMAT, new Date()), TIMEZONE);
+
+      if (parsedDueDate < parsedStartedDate) {
+        setDateWarning(true);
+      } else {
+        setDateWarning(false);
+      }
+    }
+
+    return () => {
+      isMounted = false;
+    };
+  }, [startedDate, dueDate]);
 
   return (
     <div className="text-center">
