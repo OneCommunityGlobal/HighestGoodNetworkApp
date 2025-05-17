@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
+/* global tinymce */
+import { useState, useEffect } from 'react';
 import './Announcements.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react';
@@ -132,7 +133,7 @@ function Announcements({ title, email: initialEmail }) {
       return;
     }
 
-    const invalidEmails = emailList.filter(email => !validateEmail(email.trim()));
+    const invalidEmails = emailList.filter(address => !validateEmail(address.trim()));
 
     if (invalidEmails.length > 0) {
       toast.error(`Error: Invalid email addresses: ${invalidEmails.join(', ')}`);
