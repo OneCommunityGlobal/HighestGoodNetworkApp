@@ -33,7 +33,7 @@ import moment from 'moment-timezone';
 import { boxStyle } from 'styles';
 import axios from 'axios';
 import { getUserProfile } from 'actions/userProfile';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { boxStyleDark } from '../../styles';
 import '../Header/DarkMode.css';
 import '../UserProfile/TeamsAndProjects/autoComplete.css';
@@ -70,7 +70,7 @@ function displayDaysLeft(lastDay) {
 function LeaderBoard({
   getLeaderboardData,
   getOrgData,
-  getMouseoverText,
+  // getMouseoverText,
   leaderBoardData,
   displayUserRole,
   organizationData,
@@ -89,12 +89,12 @@ function LeaderBoard({
 
   // const isOwner = ['Owner'].includes(loggedInUser.role);
 
-
   const [mouseoverTextValue, setMouseoverTextValue] = useState(totalTimeMouseoverText);
   const dispatch = useDispatch();
+  const loggedInUser = useSelector(state => state.auth.user);
 
   useEffect(() => {
-    getMouseoverText();
+    // getMouseoverText();
     setMouseoverTextValue(totalTimeMouseoverText);
   }, [totalTimeMouseoverText]);
   const [teams, setTeams] = useState([]);
@@ -604,7 +604,6 @@ function LeaderBoard({
               </thead>
               <tbody className="my-custome-scrollbar responsive-font-size">
                 <tr className={darkMode ? 'dark-leaderboard-row' : 'light-leaderboard-row'}>
-
                   {isAbbreviatedView ? (
                     <td colSpan={2}>
                       <div className="leaderboard-totals-container text-center">
@@ -633,7 +632,6 @@ function LeaderBoard({
                       </td>
                     </>
                   )}
-
 
                   <td className="align-middle" aria-label="Description" />
                   <td className="align-middle">
