@@ -8,6 +8,7 @@ import { jsPDF } from 'jspdf';
 import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
 import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
+import SupplierPerformanceGraph from './SupplierPerformanceGraph';
 
 const projectStatusButtons = [
   {
@@ -381,6 +382,7 @@ export default function WeeklyProjectSummary() {
             </div>
           ))}
         </div>
+        <SupplierPerformanceGraph />
       </div>
     </div>
   );
