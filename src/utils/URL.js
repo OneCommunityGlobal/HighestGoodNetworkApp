@@ -192,6 +192,7 @@ export const ENDPOINTS = {
 
   SET_USER_FOLLOWUP: (userId, taskId) => `${APIEndpoint}/followup/${userId}/${taskId}`,
   GET_PROJECT_BY_PERSON: searchName => `${APIEndpoint}/userProfile/projects/${searchName}`,
+  CREATE_FB_POST: () => `${APIEndpoint}/createFbPost`,
 
   FAQS: `${APIEndpoint}/faqs`,
   FAQ_BY_ID: faqId => `${APIEndpoint}/faqs/${faqId}`,
