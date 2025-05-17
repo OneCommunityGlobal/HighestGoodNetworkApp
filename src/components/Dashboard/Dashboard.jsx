@@ -50,7 +50,7 @@ export function Dashboard(props) {
 
   const dispatch = useDispatch();
 
-  const toggle = (forceOpen = null) => {
+  const toggle = () => {
     if (isNotAllowedToEdit) {
       const warningMessage =
         displayUser?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY
@@ -60,8 +60,7 @@ export function Dashboard(props) {
       return;
     }
 
-    const shouldOpen = forceOpen !== null ? forceOpen : !popup;
-    setPopup(shouldOpen);
+    setPopup(!popup);
 
     setTimeout(() => {
       const elem = document.getElementById('weeklySum');
