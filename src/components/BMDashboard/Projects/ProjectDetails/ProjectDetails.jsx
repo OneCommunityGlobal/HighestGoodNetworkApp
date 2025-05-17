@@ -1,4 +1,3 @@
-import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { Container, Row, Col } from 'reactstrap';
 import LogBar from './LogBar';
@@ -7,17 +6,24 @@ import MaterialsDisplay from './Materials/MaterialsDisplay';
 import ProjectLog from './ProjectLog';
 import './ProjectDetails.css';
 
-function ProjectDetails() {
-  const { projectId } = useParams();
-  // Get all projects
-  const projects = useSelector(state => state.bmProjects);
-  // Filter the current project based off of the id from the url param
-  const currProject = projects.filter(project => String(project._id) === projectId);
+function ProjectDetails({ projectId }) {
+  // ✅ Accept projectId as a prop
+  const projects = useSelector(state => state.bmProjects) || [];
+  const currProject = projects.find(project => String(project._id) === String(projectId));
+
+  if (!currProject) {
+    return (
+      <Container className="project-details text-center mt-5">
+        <h2 className="text-danger">Project Not Found</h2>
+        <p>Please check if the project exists or try selecting another project.</p>
+      </Container>
+    );
+  }
 
   return (
     <Container className="project-details" fluid>
       <Row className="mx-auto">
-        <h1>Project {currProject[0].name} Dashboard</h1>
+        <h1>Project {currProject.name} Dashboard</h1>
       </Row>
       <Row className="mx-auto">
         <LogBar projectId={projectId} />
