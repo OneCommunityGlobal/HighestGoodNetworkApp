@@ -9,11 +9,11 @@
 .inputGroup {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.35rem;
 }
 
 .inputGroup label {
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   font-weight: 500;
 }
 
@@ -25,3 +25,17 @@
   font-size: 0.75rem;
 }
 
+.dateInputs {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.dateInputs input {
+  max-width: 120px;
+}
+.noData {
+  text-align: center;
+  padding: 2rem;
+  color: #6c757d;
+  font-style: italic;
+}

@@ -128,6 +128,18 @@ function IssuesCharts() {
   return (
     <div>
       <div className={styles.container}>
+        <div className={styles.inputGroup}>
+          <label htmlFor="type">Type:</label>
+          <select
+            id="type"
+            value={selectedProject}
+            onChange={e => setSelectedProject(e.target.value)}
+          >
+            <option>Longest Open</option>
+            <option>Most Expensive</option>
+          </select>
+        </div>
+
         <div className={styles.dateInputs}>
           <div className={styles.inputGroup}>
             <label htmlFor="startDate">Start:</label>
