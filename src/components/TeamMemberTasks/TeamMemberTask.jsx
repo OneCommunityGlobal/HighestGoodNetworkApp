@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faBell,
+  faCircle,
   faCheck,
   faTimes,
   faExpandArrowsAlt,
@@ -12,8 +13,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Table, Progress } from 'reactstrap';
 
 import { Link, useHistory } from 'react-router-dom';
-import CopyToClipboard from '../common/Clipboard/CopyToClipboard';
 import hasPermission from '../../utils/permissions';
+import CopyToClipboard from '../common/Clipboard/CopyToClipboard';
 import './style.css';
 import Warning from '../Warnings/Warnings';
 
@@ -207,6 +208,8 @@ const TeamMemberTask = React.memo(
                                   ? 'green'
                                   : 'red',
                             }}
+                            icon={faCircle}
+                            data-testid="icon"
                           >{`${user.name}`}</FontAwesomeIcon>
 
                           {user.role !== 'Volunteer' && (
