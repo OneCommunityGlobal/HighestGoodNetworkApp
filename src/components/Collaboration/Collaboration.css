@@ -1,10 +1,3 @@
-.collaboration-container,
-.job-landing .header img {
-  width: 60%;
-  max-width: 1000px;
-  display: flex;
-}
-
 .job-header {
   display: flex;
   justify-content: center;
@@ -17,7 +10,7 @@
 .job-ad {
   text-align: center;
 }
-.collaboration-container {
+.container {
   width: 90%;
   margin: 0 auto;
   flex-direction: column;
@@ -31,12 +24,16 @@
   gap: 10px;
 }
 
+.job-queries p {
+  margin: 0;
+}
+
 .job-landing .job-header img {
   height: auto;
   margin: 0 auto;
   flex-direction: column;
 }
-.collaboration-navbar {
+.navbar {
   width: 100%;
   display: flex;
   justify-content: space-between;
@@ -49,7 +46,42 @@
   flex-wrap: wrap;
 }
 
-.query-option{
+.job-tooltip {
+  position: absolute;
+  background-color: #f9f9f9;
+  border: 1px solid #ccc;
+  top: 60px;
+  border-radius: 5px;
+  padding: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-wrap: wrap;
+}
+
+.category-tooltip {
+  top: 65px;
+}
+
+.job-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 10%;
+  transform: translateX(-50%) rotate(-45deg);
+  border-width: 0 5px 5px 5px;
+  border-style: solid;
+  border-color: transparent #f9f9f9 transparent transparent;
+}
+
+.job-tooltip-dismiss {
+  background: none;
+  border: none;
+  color: #007bff;
+  cursor: pointer;
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+.query-option {
   display: flex !important;
   align-items: center;
   gap: 5px;
@@ -57,7 +89,6 @@
   justify-content: center;
   text-align: center;
 }
-
 
 .cross-button {
   cursor: pointer;
@@ -164,7 +195,7 @@ select {
   font-size: 14px;
 }
 
-.collaboration-navbar {
+.navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -201,12 +232,38 @@ select {
   border-radius: 5px;
 }
 
+.job-query {
+  color: gray;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.jobs-summaries-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.jobs-summaries-list h3 {
+  font-size: 1.5rem;
+  color: black;
+
+  text-decoration: underline;
+}
+
+.job-summary-content{
+  text-indent: 25px;
+}
+
+.job-summary-content p {
+  margin: 0;
+}
+
 @media screen and (max-width: 480px) {
   .job-list {
     grid-template-columns: 1fr;
   }
 
-  .collaboration-navbar {
+  .navbar {
     flex-direction: column;
     padding: 5px;
     text-align: center;
@@ -262,7 +319,7 @@ select {
 }
 
 @media screen and (max-width: 800px) {
-  .collaboration-navbar {
+  .navbar {
     flex-direction: column;
     align-items: center;
   }
@@ -294,5 +351,17 @@ select {
   .search-form button {
     padding: 10px;
     font-size: 14px;
+  }
+
+  .job-tooltip {
+    width: 65%;
+  }
+
+  .job-tooltip::after {
+    left: 50%;
+  }
+
+  .category-tooltip {
+    top: 175px;
   }
 }

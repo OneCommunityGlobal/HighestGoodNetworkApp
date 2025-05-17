@@ -5,6 +5,7 @@ import { ApiEndpoint } from 'utils/URL';
 import OneCommunityImage from '../../assets/images/logo2.png';
 
 import 'leaflet/dist/leaflet.css';
+import { useSelector } from 'react-redux';
 
 const Collaboration = () => {
   const [query, setQuery] = useState('');
@@ -17,6 +18,21 @@ const Collaboration = () => {
   const [categories, setCategories] = useState([]);
   const [summaries, setSummaries] = useState(null);
   const [showSearchResults, setShowSearchResults] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false);
+  const [tooltipPosition, setTooltipPosition] = useState(null);
+
+  const darkMode = useSelector(state => state.theme.darkMode);
+
+
+  useEffect(() => {
+    const tooltipDismissed = localStorage.getItem('tooltipDismissed');
+    console.log('Tooltip dismissed:', tooltipDismissed);
+    if (!tooltipDismissed) {
+      setShowTooltip(true);
+      setTooltipPosition('search');
+      console.log('Tooltip shown');
+    }
+  }, []);
 
   useEffect(() => {
     fetchJobAds(query, category);
@@ -63,6 +79,10 @@ const Collaboration = () => {
 
   const handleSearch = event => {
     setQuery(event.target.value);
+    if (!selectedCategory && !localStorage.getItem('tooltipDismissed')) {
+      setTooltipPosition('category');
+      setShowTooltip(true);
+    }
   };
 
   const handleSubmit = event => {
@@ -78,6 +98,10 @@ const Collaboration = () => {
   const handleCategoryChange = event => {
     const selectedValue = event.target.value;
     setCategory(selectedValue);
+    if (!searchTerm && !localStorage.getItem('tooltipDismissed')) {
+      setTooltipPosition('search');
+      setShowTooltip(true);
+    }
   };
 
   const handleRemoveQuery = () => {
@@ -87,7 +111,7 @@ const Collaboration = () => {
   }
 
   const handleRemoveCategory = () => {
-    setCategory(''); 
+    setCategory('');
     setSelectedCategory('');
     fetchJobAds(query, '');
   }
@@ -134,46 +158,53 @@ const Collaboration = () => {
     }
   };
 
+  const dismissCategoryTooltip = () => {
+    setShowTooltip(false);
+    localStorage.setItem('tooltipDismissed', 'true');
+  };
+
+  const dismissSearchTooltip = () => {
+    setTooltipPosition('category');
+  }
+
   if (summaries) {
     return (
       <div className="job-landing">
-        <div className="header">
+        <div className='job-header'>
           <a
             href="https://www.onecommunityglobal.org/collaboration/"
             target="_blank"
             rel="noreferrer"
           >
-            <img src={OneCommunityImage} alt="One Community Logo" className="responsive-img" />
+            <img src={OneCommunityImage} alt="One Community Logo" />
           </a>
         </div>
-        <div className="collaboration-container">
-          <nav className="collaboration-navbar">
+        <div className="container">
+          <nav className="navbar">
             <div className="navbar-left">
               <form className="search-form">
                 <input
                   type="text"
                   placeholder="Search by title..."
-                  value={searchTerm}
+                  value={query}
                   onChange={handleSearch}
                 />
-                <button className="search-button" type="submit" onClick={handleSubmit}>
+                <button className="btn btn-secondary" type="submit" onClick={handleSubmit}>
                   Go
                 </button>
-                <button type="button" onClick={handleResetFilters}>
-                  Reset
-                </button>
-                <button
-                  className="show-summaries"
-                  type="button"
-                  onClick={handleShowSummaries}
-                >
-                  Show Summaries
-                </button>
               </form>
+              {(showTooltip && tooltipPosition === 'search') && (
+                <div className="job-tooltip">
+                  <p>Use the search bar to refine your search further!</p>
+                  <button className="job-tooltip-dismiss" onClick={dismissSearchTooltip}>
+                    Got it
+                  </button>
+                </div>
+              )}
             </div>
 
             <div className="navbar-right">
-              <select value={selectedCategory} onChange={handleCategoryChange}>
+              <select value={category} onChange={handleCategoryChange}>
                 <option value="">Select from Categories</option>
                 {categories.map(category => (
                   <option key={category} value={category}>
@@ -181,19 +212,73 @@ const Collaboration = () => {
                   </option>
                 ))}
               </select>
+              {showTooltip && tooltipPosition === 'category' && (
+                <div className="job-tooltip category-tooltip">
+                  <p>Use the categories to refine your search further!</p>
+                  <button className="job-tooltip-dismiss" onClick={dismissCategoryTooltip}>
+                    Got it
+                  </button>
+                </div>
+              )}
             </div>
           </nav>
-
-          <div className="summaries-list">
-            <h1>Summaries</h1>
-            {summaries && summaries.jobs && summaries.jobs.length > 0 ? (
+          <div className='job-queries'>
+            {searchTerm.length !== 0 || selectedCategory.length !== 0 ? (
+              <p className='job-query'>
+                Listing results for
+                {(searchTerm && !selectedCategory) && (<strong> '{searchTerm}'</strong>)}
+                {(selectedCategory && !searchTerm) && (<strong> '{selectedCategory}'</strong>)}
+                {(searchTerm && selectedCategory) && (
+                  <strong> '{searchTerm} + {selectedCategory}'</strong>
+                )}.
+              </p>
+            ) : (
+              <p className='job-query'>Listing all job ads.</p>
+            )}
+            <button
+              className="btn btn-secondary active"
+              type="button"
+              onClick={() => {
+                setSummaries(null);
+                setShowSearchResults(true);
+              }}
+            >
+              Show Summaries
+            </button>
+            {searchTerm && (
+              <div
+                className="query-option btn btn-secondary "
+                type="button"
+              >
+                <span>{searchTerm}</span>
+                <button className="cross-button" type="button" onClick={handleRemoveQuery}>
+                  <img width="30" height="30" src="https://img.icons8.com/ios-glyphs/30/delete-sign.png" alt="delete-sign" />
+                </button>
+              </div>
+            )}
+            {selectedCategory && (
+              <div
+                className="btn btn-secondary query-option"
+                type="button"
+              >
+                {selectedCategory}
+                <button className="cross-button" type="button" onClick={handleRemoveCategory}>
+                  <img width="30" height="30" src="https://img.icons8.com/ios-glyphs/30/delete-sign.png" alt="delete-sign" />
+                </button>
+              </div>
+            )}
+          </div>
+          <div className="jobs-summaries-list">
+            {(summaries && summaries.jobs && summaries.jobs.length > 0) ? (
               summaries.jobs.map(summary => (
-                <div key={summary._id} className="summary-item">
+                <div key={summary._id} className="job-summary-item">
                   <h3>
                     <a href={summary.jobDetailsLink}>{summary.title}</a>
                   </h3>
-                  <p>{summary.description}</p>
-                  <p>Date Posted: {new Date(summary.datePosted).toLocaleDateString()}</p>
+                  <div className='job-summary-content'>
+                    <p>{summary.description}</p>
+                    <p>Date Posted: {new Date(summary.datePosted).toLocaleDateString()}</p>
+                  </div>
                 </div>
               ))
             ) : (
@@ -205,38 +290,40 @@ const Collaboration = () => {
     );
   }
 
-    return (
-      <div className="job-landing">
-        <div className="header">
-          <a
-            href="https://www.onecommunityglobal.org/collaboration/"
-            target="_blank"
-            rel="noreferrer"
-          >
-            <img src={OneCommunityImage} alt="One Community Logo" />
-          </a>
-        </div>
-        <div className="collaboration-container">
-          <nav className="collaboration-navbar">
-            <div className="navbar-left">
-              <form className="search-form">
-                <input
-                  type="text"
-                  placeholder="Search by title..."
-                  value={searchTerm}
-                  onChange={this.handleSearch}
-                />
-                <button className="search-button" type="submit" onClick={this.handleSubmit}>
-                  Go
+  return (
+    <div className="job-landing">
+      <div className='job-header'>
+        <a
+          href="https://www.onecommunityglobal.org/collaboration/"
+          target="_blank"
+          rel="noreferrer"
+        >
+          <img src={OneCommunityImage} alt="One Community Logo" />
+        </a>
+      </div>
+      <div className="container">
+        <nav className="navbar">
+          <div className="navbar-left">
+            <form className="search-form">
+              <input
+                type="text"
+                placeholder="Search by title..."
+                value={query}
+                onChange={handleSearch}
+              />
+              <button className="btn btn-secondary" type="submit" onClick={handleSubmit}>
+                Go
+              </button>
+            </form>
+            {(showTooltip && tooltipPosition === 'search') && (
+              <div className="job-tooltip">
+                <p>Use the search bar to refine your search further!</p>
+                <button className="job-tooltip-dismiss" onClick={dismissSearchTooltip}>
+                  Got it
                 </button>
-                <button type="button" onClick={this.handleResetFilters}>
-                  Reset
-                </button>
-                <button className="show-summaries" type="button" onClick={this.handleShowSummaries}>
-                  Show Summaries
-                </button>
-              </form>
-            </div>
+              </div>
+            )}
+          </div>
 
           <div className="navbar-right">
             <select value={category} onChange={handleCategoryChange}>
@@ -247,12 +334,32 @@ const Collaboration = () => {
                 </option>
               ))}
             </select>
+            {showTooltip && tooltipPosition === 'category' && (
+              <div className="job-tooltip category-tooltip">
+                <p>Use the categories to refine your search further!</p>
+                <button className="job-tooltip-dismiss" onClick={dismissCategoryTooltip}>
+                  Got it
+                </button>
+              </div>
+            )}
           </div>
         </nav>
 
         {showSearchResults ? (
           <div>
             <div className='job-queries'>
+              {searchTerm.length !== 0 || selectedCategory.length !== 0 ? (
+                <p className='job-query'>
+                  Listing results for
+                  {(searchTerm && !selectedCategory) && (<strong> '{searchTerm}'</strong>)}
+                  {(selectedCategory && !searchTerm) && (<strong> '{selectedCategory}'</strong>)}
+                  {(searchTerm && selectedCategory) && (
+                    <strong> '{searchTerm} + {selectedCategory}'</strong>
+                  )}.
+                </p>
+              ) : (
+                <p className='job-query'>Listing all job ads.</p>
+              )}
               <button
                 className="btn btn-secondary"
                 type="button"
