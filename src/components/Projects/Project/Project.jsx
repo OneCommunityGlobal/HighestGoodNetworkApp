@@ -8,8 +8,7 @@ import hasPermission from 'utils/permissions';
 import { boxStyle } from 'styles';
 import { toast } from 'react-toastify';  
 import { modifyProject, clearError } from '../../../actions/projects';
-import ModalTemplate from './../../common/Modal';
-import { CONFIRM_ARCHIVE } from './../../../languages/en/messages';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 const Project = props => {
   const { darkMode, index } = props;
@@ -160,12 +159,22 @@ const Project = props => {
         </NavItem>
       </td>
       <td>
-        <NavItem tag={Link} to={`/project/members/${projectId}`}>
-          <button type="button" className="btn btn-outline-info" style={darkMode ? {} : boxStyle}>
-            {' '}
-            <i className="fa fa-users" aria-hidden="true"></i>
-          </button>
-        </NavItem>
+      <div style={{ position: 'relative', display: 'inline-block' }}>
+          <NavItem tag={Link} to={`/project/members/${projectId}`} className="d-flex align-items-center">
+            <button type="button" className="btn btn-outline-info d-flex align-items-center project-member-btn" style={darkMode ? {} : boxStyle}>
+              <i className="fa fa-users" aria-hidden="true"></i>
+            </button>
+          </NavItem>
+          <OverlayTrigger
+            placement="top"
+            overlay={<Tooltip>Active members</Tooltip>}
+          >
+            <span className="project-member-badge">
+              {props.activeMemberCounts}
+            </span>
+          </OverlayTrigger>
+        </div>
+
       </td>
 
       <td>

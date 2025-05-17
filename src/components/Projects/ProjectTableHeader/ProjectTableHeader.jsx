@@ -28,6 +28,12 @@ const ProjectTableHeader = props => {
   const categoryList = ['Unspecified', 'Food', 'Energy', 'Housing', 'Education', 'Society', 'Economics', 'Stewardship', 'Other'];
   const statusList = ['Active', 'Inactive'];
 
+  const getSortIcon = (column) => {
+    if (props.sorted.column !== column || props.sorted.direction === "DEFAULT") return faSortDown;
+    if (props.sorted.direction === "ASC") return faArrowDown;
+    if (props.sorted.direction === "DESC") return faArrowUp;
+  };
+
   return (
     <tr className={darkMode ? 'bg-space-cadet text-light' : ''}>
       <th scope="col" id="projects__order" className='align-middle'>
@@ -38,8 +44,11 @@ const ProjectTableHeader = props => {
         <span className='d-flex justify-content-between align-middle mt-1'>
           {PROJECT_NAME}
           <div>
-            <Button size='sm' className='ml-3 mb-1' id='Ascending' onClick={props.handleSort}><FontAwesomeIcon icon={faArrowDown} pointerEvents="none"/></Button>
-            <Button size='sm' className='ml-3 mb-1' id='Descending' onClick={props.handleSort}><FontAwesomeIcon icon={faArrowUp} pointerEvents="none"/></Button>
+            <Button size='sm' className='ml-3 mb-1' id='projects_sort' onClick={() => { props.handleSort("PROJECTS") }}><FontAwesomeIcon icon={props.sorted.direction === "DEFAULT"
+          ? getSortIcon("PROJECTS")
+          : props.sorted.direction === "ASC"
+            ? getSortIcon("PROJECTS")
+            : getSortIcon("PROJECTS")} pointerEvents="none"/></Button>
           </div>
         </span>
       </th>
@@ -75,17 +84,11 @@ const ProjectTableHeader = props => {
       <th scope="col" id="projects__members" className='align-middle'>
         <span className='d-flex'>
           {MEMBERS}
-          <Button
-            size='sm'
-            className={`ml-2 ${props.sorted === 'SortingByMostActiveMembers' ? 'btn-info' : ''}`}
-            id='SortingByMostActiveMembers'
-            onClick={props.handleSort}
-            title={props.sorted === 'SortingByMostActiveMembers' ? "Sorted: Most active members first" : "Sort by most active members"}>
-            <FontAwesomeIcon
-              icon={props.sorted === 'SortingByMostActiveMembers' ? faArrowDown : faSortDown}
-              pointerEvents="none"
-            />
-          </Button>
+          <Button size='sm' className='ml-3 mb-1' id='members_sort' onClick={() => { props.handleSort("MEMBERS") }}><FontAwesomeIcon icon={props.sorted.direction === "DEFAULT"
+          ? getSortIcon("MEMBERS")
+          : props.sorted.direction === "ASC"
+            ? getSortIcon("MEMBERS")
+            : getSortIcon("MEMBERS")} pointerEvents="none"/></Button>
         </span>
       </th>
       <th scope="col" id="projects__wbs" className='align-middle'>
