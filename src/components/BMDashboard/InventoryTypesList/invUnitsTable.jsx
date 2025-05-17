@@ -9,9 +9,8 @@ import {
 } from 'actions/bmdashboard/invUnitActions';
 import { toast } from 'react-toastify';
 
-export function UnitsTable(props) {
+function UnitsTable(props) {
   const { invUnits, postInvUnitsResult, deleteInvUnitResult, dispatch } = props;
-
   const [newUnit, setNewUnit] = useState('');
 
   useEffect(() => {
@@ -50,15 +49,9 @@ export function UnitsTable(props) {
 
   return (
     <div>
-      <Table hover borderless size="sm" responsive="lg">
-        <thead className="table-header">
-          <tr>
-            <th>Name</th>
-            <th>Delete</th>
-          </tr>
-        </thead>
+      <Table>
         <tbody>
-          {invUnits?.map(unit => (
+          {invUnits.map(unit => (
             <tr key={`invUnit-${unit.unit}`}>
               <td>{unit.unit}</td>
               <td>
@@ -88,11 +81,10 @@ export function UnitsTable(props) {
   );
 }
 
-const mapStateToProps = state => {
-  return {
-    invUnits: state.bmInvUnits.list,
-    postInvUnitsResult: state.bmInvUnits.postedResult,
-    deleteInvUnitResult: state.bmInvUnits.deletedResult,
-  };
-};
+const mapStateToProps = state => ({
+  invUnits: state.bmInvUnits.list,
+  postInvUnitsResult: state.bmInvUnits.postedResult,
+  deleteInvUnitResult: state.bmInvUnits.deletedResult,
+});
+
 export default connect(mapStateToProps)(UnitsTable);
