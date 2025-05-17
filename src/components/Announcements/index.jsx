@@ -1,9 +1,13 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect,useRef } from 'react';
 import './Announcements.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react';
 import { toast } from 'react-toastify';
+import Tab from 'react-bootstrap/Tab';
+import Tabs from 'react-bootstrap/Tabs';
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
+import PinterestPost from './PinterestPost';
+import pinterestLogo from '../../assets/images/Pinterest-logo.png';
 
 function Announcements({ title, email: initialEmail }) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -155,9 +159,11 @@ function Announcements({ title, email: initialEmail }) {
 
   return (
     <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: '100%' }}>
-      <div className="email-update-container">
-        <div className="editor">
-          {title ? <h3> {title} </h3> : <h3>Weekly Progress Editor</h3>}
+      <Tabs defaultActiveKey="home" id="uncontrolled-tab-example" className="mb-3">
+        <Tab eventKey="home" title={title ? <h3> {title} </h3> : <h3>Weekly Progress Editor</h3>}>
+          <div className="email-update-container">
+            <div className="editor">
+              {/* {title ? <h3> {title} </h3> : <h3>Weekly Progress Editor</h3>} */}
 
           <br />
           {showEditor && (
@@ -239,39 +245,53 @@ function Announcements({ title, email: initialEmail }) {
             {title ? 'Send Email' : 'Send mail to specific users'}
           </button>
 
-          <hr />
-          <label htmlFor="header-content-input" className={darkMode ? 'text-light' : 'text-dark'}>
-            Insert header or image link:
-          </label>
-          <input
-            type="text"
-            id="header-content-input"
-            onChange={handleHeaderContentChange}
-            value={headerContent}
-            className={`input-text-for-announcement ${
-              darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
-            }`}
-          />
-          <button
-            type="button"
-            className="send-button"
-            onClick={addHeaderToEmailContent}
-            style={darkMode ? boxStyleDark : boxStyle}
-          >
-            Insert
-          </button>
-          <hr />
-          <label htmlFor="upload-header-input" className={darkMode ? 'text-light' : 'text-dark'}>
-            Upload Header (or footer):
-          </label>
-          <input
-            type="file"
-            id="upload-header-input"
-            onChange={addImageToEmailContent}
-            className="input-file-upload"
-          />
-        </div>
-      </div>
+              <hr />
+              <label
+                htmlFor="header-content-input"
+                className={darkMode ? 'text-light' : 'text-dark'}
+              >
+                Insert header or image link:
+              </label>
+              <input
+                type="text"
+                id="header-content-input"
+                onChange={handleHeaderContentChange}
+                value={headerContent}
+                className={`input-text-for-announcement ${
+                  darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+                }`}
+              />
+              <button
+                type="button"
+                className="send-button"
+                onClick={addHeaderToEmailContent}
+                style={darkMode ? boxStyleDark : boxStyle}
+              >
+                Insert
+              </button>
+              <hr />
+              <label
+                htmlFor="upload-header-input"
+                className={darkMode ? 'text-light' : 'text-dark'}
+              >
+                Upload Header (or footer):
+              </label>
+              <input
+                type="file"
+                id="upload-header-input"
+                onChange={addImageToEmailContent}
+                className="input-file-upload"
+              />
+            </div>
+          </div>
+        </Tab>
+
+        <Tab eventKey="pinterest" title={<img src={pinterestLogo} alt="" />}>
+          <div className="social-media">
+            <PinterestPost />
+          </div>
+        </Tab>
+      </Tabs>
     </div>
   );
 }

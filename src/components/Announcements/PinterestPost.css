@@ -1,0 +1,84 @@
+.pinterest-main {
+  display: flex;
+  flex-direction: row;
+  gap: 3rem;
+  justify-content: space-between;
+}
+
+.pinterest-form {
+  flex-basis: 50%;
+  flex-grow: 1;
+}
+
+.pinterest-schedule {
+  flex-basis: 50%;
+  flex-grow: 1;
+}
+
+.pinterest-form .btn-primary {
+  background-color: white;
+  color: #0062cc;
+  font-weight: 600;
+}
+
+.pinterest-form label {
+  margin-top: 0.25rem;
+}
+
+.image-type-toggole{
+  width:100%;
+}
+
+.pinterest-submit-buttons {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.pinterest-form .pinterest-button {
+  background-color: #4285f4;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  cursor: pointer;
+  margin: 0;
+}
+
+.pinterest-schedule {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.schedule-card {
+  position:relative;
+  padding: 0.5rem;
+  background-color: rgb(240, 240, 240);
+  /* border:grey solid 1px; */
+  border-radius: 5px;
+}
+
+.schedule-title{
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.schedule-time{
+  color:gray;
+  font-size: 0.75rem;
+}
+
+.schedule-description{
+  font-size: 0.8rem;
+}
+
+
+@media (max-width: 768px) {
+  .pinterest-main {
+    flex-direction: column;
+    gap:5rem;
+    /* Reduce margin top on smaller screens */
+  }
+}
