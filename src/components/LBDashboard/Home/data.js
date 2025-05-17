@@ -52,6 +52,18 @@ const ensureAuthentication = () => {
 };
 
 /**
+ * Redirect to login page if authentication error occurs
+ */
+const redirectToLoginIfNeeded = () => {
+  const currentPath = window.location.pathname;
+  if (!currentPath.includes('login')) {
+    // console.log('Authentication error, redirecting to login');
+    // Uncomment to actually redirect
+    // window.location.href = '/login?redirect=' + encodeURIComponent(currentPath);
+  }
+};
+
+/**
  * Fetch all available villages from the backend
  * @returns {Promise<Array>} Array of village names
  */
@@ -67,25 +79,13 @@ export const fetchVillages = async () => {
 
     return allVillages.sort();
   } catch (error) {
-    console.error('Error fetching villages:', error);
+    // console.error('Error fetching villages:', error);
 
     if (error.response && error.response.status === 401) {
       redirectToLoginIfNeeded();
     }
 
     return [...FIXED_VILLAGES];
-  }
-};
-
-/**
- * Redirect to login page if authentication error occurs
- */
-const redirectToLoginIfNeeded = () => {
-  const currentPath = window.location.pathname;
-  if (!currentPath.includes('login')) {
-    console.log('Authentication error, redirecting to login');
-    // Uncomment to actually redirect
-    // window.location.href = '/login?redirect=' + encodeURIComponent(currentPath);
   }
 };
 
@@ -128,7 +128,7 @@ export const fetchListings = async (page = 1, size = 12, filters = {}) => {
       pagination,
     };
   } catch (error) {
-    console.error('Error fetching listings:', error);
+    // console.error('Error fetching listings:', error);
 
     if (error.response && error.response.status === 401) {
       redirectToLoginIfNeeded();
@@ -191,7 +191,7 @@ export const fetchBiddings = async (page = 1, size = 12, filters = {}) => {
       pagination,
     };
   } catch (error) {
-    console.error('Error fetching biddings:', error);
+    // console.error('Error fetching biddings:', error);
 
     if (error.response && error.response.status === 401) {
       redirectToLoginIfNeeded();
@@ -247,7 +247,7 @@ export const createListing = async (listingData, images) => {
 
     return transformApiListing(response.data.data);
   } catch (error) {
-    console.error('Error creating listing:', error);
+    // console.error('Error creating listing:', error);
 
     if (error.response && error.response.status === 401) {
       redirectToLoginIfNeeded();
