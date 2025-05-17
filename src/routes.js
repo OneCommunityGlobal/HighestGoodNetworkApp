@@ -78,6 +78,7 @@ import Toolslist from './components/BMDashboard/Tools/ToolsList';
 import AddTool from './components/BMDashboard/Tools/AddTool';
 import AddTeamMember from './components/BMDashboard/AddTeamMember/AddTeamMember';
 import Issue from './components/BMDashboard/Issue/Issue';
+import ToolsCostRentals from './components/ToolsCostRentals/ToolsCostRentals'
 
 // Community Portal
 import CPProtectedRoute from './components/common/CPDashboard/CPProtectedRoute';
@@ -160,6 +161,7 @@ export default (
     <Route path="/form" component={FormEditor} />
     <Route path="/formviewer" component={FormViewer} />
     <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
+    <Route path="/toolscostrentals" component={ToolsCostRentals} />
     <>
       {/* Comment out the Header component and its import during phase 2 development. */}
       {/* Uncomment BMHeader and its import during phase 2 development. */}
