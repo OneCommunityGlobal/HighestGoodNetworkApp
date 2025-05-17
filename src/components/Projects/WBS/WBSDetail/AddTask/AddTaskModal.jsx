@@ -15,7 +15,8 @@ import {
 } from '../../../../../languages/en/messages.js';
 import 'react-day-picker/lib/style.css';
 import '../../../../Header/DarkMode.css';
-import TagsSearch from '../components/TagsSearch';
+import UserSearch from '../EditTask/UserSearch';
+import UserTag from '../EditTask/UserTag';
 import './AddTaskModal.css';
 
 function AddTaskModal(props) {
@@ -24,6 +25,7 @@ function AddTaskModal(props) {
    */
   // props from store
   const { tasks, copiedTask, allMembers, allProjects, error, darkMode } = props;
+  const label = props.label ?? 'Add Task';
 
   const TINY_MCE_INIT_OPTIONS = {
     license_key: 'gpl',
@@ -392,8 +394,8 @@ function AddTaskModal(props) {
 
                 <span className={`add_new_task_form-input_area ${fontColor}`}>{newTaskNum}</span>
               </div>
-              <div className="add_new_task_form-group">
-                <span className={`add_new_task_form-label ${fontColor}`}>Task Name</span>
+              <div className="add_new_task_form-group" >
+                <span className={`add_new_task_form-label ${fontColor}`}>Task Name<span className="red-asterisk">* </span></span>
                 <span className="add_new_task_form-input_area">
                   {/* Fix Task-name formatting - by Sucheta */}
                   <textarea
@@ -426,16 +428,17 @@ function AddTaskModal(props) {
               <div className="add_new_task_form-group">
                 <span className={`add_new_task_form-label ${fontColor}`}>Resources</span>
                 <span className="add_new_task_form-input_area">
-                  <TagsSearch
-                    placeholder="Add resources"
-                    // modified below to check if allMembers is undefined before applying filter
-                    members={allMembers ? allMembers.filter(user => user.isActive) : false}
-                    addResources={addResources}
-                    removeResource={removeResource}
-                    resourceItems={resourceItems}
-                    disableInput={false}
-                    darkMode={darkMode}
-                  />
+                  <UserSearch addedUsers={resourceItems} onAddUser={addResources} />
+                  <div className="d-flex flex-wrap align-items-start justify-content-start">
+                    {resourceItems?.map((user) => (
+                      <ul
+                        key={`${user.name}`}
+                        className="d-flex align-items-start justify-content-start m-0 p-1"
+                      >
+                        <UserTag userName={user.name} userId={user.userID} onRemoveUser={removeResource} />
+                      </ul>
+                    ))}
+                  </div>
                 </span>
               </div>
               <div className="add_new_task_form-group">
@@ -790,7 +793,7 @@ function AddTaskModal(props) {
         onClick={openModal}
         style={darkMode ? boxStyleDark : boxStyle}
       >
-        Add Task
+        { label }
       </Button>
     </>
   );
@@ -798,7 +801,6 @@ function AddTaskModal(props) {
 
 const mapStateToProps = state => ({
   tasks: state.tasks.taskItems,
-  copiedTask: state.tasks.copiedTask,
   allMembers: state.projectMembers.members,
   allProjects: state.allProjects,
   error: state.tasks.error,
