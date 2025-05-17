@@ -4,26 +4,21 @@ import { Link } from 'react-router-dom';
 import { NavItem, Button } from 'reactstrap';
 import ReactTooltip from 'react-tooltip';
 import hasPermission from 'utils/permissions';
-import {
-  fetchAllTasks,
-  emptyTaskItems,
-  updateNumList,
-  deleteTask,
-} from '../../../../actions/task';
+import { boxStyle, boxStyleDark } from 'styles';
+import { getProjectDetail } from 'actions/project';
+import { fetchAllTasks, emptyTaskItems, updateNumList, deleteTask } from '../../../../actions/task';
 import { fetchAllMembers } from '../../../../actions/projectMembers.js';
 import Task from './Task';
 import AddTaskModal from './AddTask/AddTaskModal';
 import ImportTask from './ImportTask';
 import './wbs.css';
-import { boxStyle, boxStyleDark } from 'styles';
-import { getProjectDetail } from 'actions/project';
 
 import { useFetchWbsTasks } from './hook';
 import { FilterBar } from './FilterBar';
 
 function WBSTasks(props) {
   // const { tasks, fetched, darkMode } = props;
-  const { fetched, darkMode } = props;
+  const { tasks, fetched, darkMode } = props;
 
   const { wbsId } = props.match.params;
   const { projectId } = props.match.params;
@@ -34,7 +29,7 @@ function WBSTasks(props) {
   const [showImport, setShowImport] = useState(false);
   const [filterState, setFilterState] = useState('all');
   const [openAll, setOpenAll] = useState(false);
-  // const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [isDeleted, setIsDeleted] = useState(false);
   const [levelOneTasks, setLevelOneTasks] = useState([]);
   const [controllerId, setControllerId] = useState(null);
@@ -42,25 +37,53 @@ function WBSTasks(props) {
   const [copiedTask, setCopiedTask] = useState(null);
   const myRef = useRef(null);
 
-  const { tasks, isLoading, error, refresh } = useFetchWbsTasks(wbsId);
+  // const { tasks, isLoading, error, refresh } = useFetchWbsTasks(wbsId);
 
   useEffect(() => {
-    setLevelOneTasks(filterTasks(tasks.filter(task => task.level === 1), filterState));
+    setLevelOneTasks(
+      filterTasks(
+        tasks.filter(task => task.level === 1),
+        filterState,
+      ),
+    );
   }, [tasks, filterState]);
 
   // permissions
   const canPostTask = props.hasPermission('postTask');
   const filterTasks = (tasks, filterState) => {
     switch (filterState) {
-      case 'all': return tasks
-      case 'assigned': return tasks.filter(task => task.isAssigned === true)
-      case 'unassigned': return tasks.filter(task => task.isAssigned === false)
-      case 'active': return tasks.filter(task => ['Active', 'Started'].includes(task.status))
-      case 'inactive': return tasks.filter(task => ['Not Started', 'Paused'].includes(task.status))
-      case 'complete': return tasks.filter(task => task.status === 'Complete')
-      case 'paused': return tasks.filter(task => task.status === 'Paused');
+      case 'all':
+        return tasks;
+      case 'assigned':
+        return tasks.filter(task => task.isAssigned === true);
+      case 'unassigned':
+        return tasks.filter(task => task.isAssigned === false);
+      case 'active':
+        return tasks.filter(task => ['Active', 'Started'].includes(task.status));
+      case 'inactive':
+        return tasks.filter(task => ['Not Started', 'Paused'].includes(task.status));
+      case 'complete':
+        return tasks.filter(task => task.status === 'Complete');
+      case 'paused':
+        return tasks.filter(task => task.status === 'Paused');
     }
-  }
+  };
+
+  const load = async () => {
+    setIsLoading(true);
+    const levelList = [0, 1, 2, 3, 4];
+    await Promise.all(levelList.map(level => props.fetchAllTasks(wbsId, level)));
+    setPageLoadTime(Date.now());
+    setIsLoading(false);
+  };
+
+  const refresh = async () => {
+    setIsLoading(true);
+    props.emptyTaskItems();
+    await load();
+    setOpenAll(false);
+    setIsLoading(false);
+  };
 
   const deleteWBSTask = (taskId, mother) => {
     props.deleteTask(taskId, mother);
@@ -68,14 +91,14 @@ function WBSTasks(props) {
   };
 
   /*
-  * -------------------------------- useEffects -------------------------------- 
-  */
+   * -------------------------------- useEffects --------------------------------
+   */
   useEffect(() => {
     const observer = new MutationObserver(ReactTooltip.rebuild);
     const observerOptions = {
       childList: true,
       subtree: true,
-    }
+    };
     observer.observe(myRef.current, observerOptions); // only rebuild ReactTooltip when DOM tree changes
     return () => {
       observer.disconnect();
@@ -83,26 +106,70 @@ function WBSTasks(props) {
     };
   }, []);
 
+  useEffect(() => {
+    const initialLoad = async () => {
+      await load();
+      // props.fetchAllMembers(projectId);
+      setShowImport(tasks.length === 0);
+      setIsLoading(false);
+    };
+    initialLoad();
+    props.getProjectDetail(projectId);
+  }, [wbsId, projectId]);
+
+  useEffect(() => {
+    const newLevelOneTasks = tasks.filter(task => task.level === 1);
+    const filteredTasks = filterTasks(newLevelOneTasks, filterState);
+    setShowImport(tasks.length === 0);
+    setLevelOneTasks(filteredTasks);
+  }, [tasks, filterState]);
+
+  useEffect(() => {
+    if (isDeleted) {
+      refresh();
+    }
+    setIsDeleted(false);
+  }, [isDeleted]);
+
   return (
-    <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: "100%" }}>
+    <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: '100%' }}>
       <ReactTooltip delayShow={300} />
-      <div className={`container-tasks m-0 p-2`}>
+      <div className="container-tasks m-0 p-2">
         <nav aria-label="breadcrumb">
-          <ol className={`breadcrumb ${darkMode ? 'bg-space-cadet' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>
+          <ol
+            className={`breadcrumb ${darkMode ? 'bg-space-cadet' : ''}`}
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
             <NavItem tag={Link} to={`/project/wbs/${projectId}`}>
-              <button type="button" className="btn btn-secondary mr-2" style={darkMode ? boxStyleDark : boxStyle}>
+              <button
+                type="button"
+                className="btn btn-secondary mr-2"
+                style={darkMode ? boxStyleDark : boxStyle}
+              >
                 <i className="fa fa-chevron-circle-left" aria-hidden="true" />
               </button>
               <span style={{ marginLeft: '1px' }}>Return to WBS List: {projectName}</span>
             </NavItem>
-            <div id="member_project__name" style={{ flex: '1', textAlign: 'center', fontWeight: 'bold', display: 'flex',
-              alignItems: 'center', justifyContent: 'center', }}> WBS Name: {wbsName}</div>
+            <div
+              id="member_project__name"
+              style={{
+                flex: '1',
+                textAlign: 'center',
+                fontWeight: 'bold',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              {' '}
+              WBS Name: {wbsName}
+            </div>
           </ol>
         </nav>
         <div
-          className='mb-2 wbs-button-group' // Group the buttons
-          style={{
-          }}>
+          className="mb-2 wbs-button-group" // Group the buttons
+          style={{}}
+        >
           {/* <span> */}
           {canPostTask ? (
             <AddTaskModal
@@ -130,8 +197,8 @@ function WBSTasks(props) {
               darkMode={darkMode}
             />
           ) : null}
-          <Button 
-            color={isLoading ? "warning" : "success"} 
+          <Button
+            color={isLoading ? 'warning' : 'success'}
             size="sm"
             onClick={refresh}
             style={darkMode ? boxStyleDark : boxStyle}
@@ -153,7 +220,10 @@ function WBSTasks(props) {
           {/* </span> */}
         </div>
 
-        <table className={`table table-bordered tasks-table ${darkMode ? 'text-light' : ''}`} ref={myRef}>
+        <table
+          className={`table table-bordered tasks-table ${darkMode ? 'text-light' : ''}`}
+          ref={myRef}
+        >
           <thead>
             <tr className={darkMode ? 'bg-space-cadet' : ''}>
               <th scope="col" className="tasks-detail-actions" data-tip="Action" colSpan="2">
@@ -204,7 +274,10 @@ function WBSTasks(props) {
             </tr>
           </thead>
           <tbody>
-            {filterTasks(tasks.filter(task => task.level === 1), filterState).map((task, i) => (
+            {filterTasks(
+              tasks.filter(task => task.level === 1),
+              filterState,
+            ).map((task, i) => (
               <Task
                 copyCurrentTask={setCopiedTask}
                 key={`${task._id}${i}`}
@@ -251,7 +324,7 @@ function WBSTasks(props) {
           </tbody>
         </table>
       </div>
-    </div >
+    </div>
   );
 }
 

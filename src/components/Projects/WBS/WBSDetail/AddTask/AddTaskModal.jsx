@@ -17,6 +17,7 @@ import 'react-day-picker/lib/style.css';
 import '../../../../Header/DarkMode.css';
 import UserSearch from '../EditTask/UserSearch';
 import UserTag from '../EditTask/UserTag';
+import TagsSearch from '../components/TagsSearch.jsx';
 import './AddTaskModal.css';
 
 function AddTaskModal(props) {
@@ -428,17 +429,17 @@ function AddTaskModal(props) {
               <div className="add_new_task_form-group">
                 <span className={`add_new_task_form-label ${fontColor}`}>Resources</span>
                 <span className="add_new_task_form-input_area">
-                  <UserSearch addedUsers={resourceItems} onAddUser={addResources} />
-                  <div className="d-flex flex-wrap align-items-start justify-content-start">
-                    {resourceItems?.map((user) => (
-                      <ul
-                        key={`${user.name}`}
-                        className="d-flex align-items-start justify-content-start m-0 p-1"
-                      >
-                        <UserTag userName={user.name} userId={user.userID} onRemoveUser={removeResource} />
-                      </ul>
-                    ))}
-                  </div>
+                  <TagsSearch
+                    placeholder="Add resources"
+                    projectId={props.projectId}
+                    // modified below to check if allMembers is undefined before applying filter
+                    members={allMembers ? allMembers.filter(user => user.isActive) : false}
+                    addResources={addResources}
+                    removeResource={removeResource}
+                    resourceItems={resourceItems}
+                    disableInput={false}
+                    darkMode={darkMode}
+                  />
                 </span>
               </div>
               <div className="add_new_task_form-group">
@@ -801,7 +802,6 @@ function AddTaskModal(props) {
 
 const mapStateToProps = state => ({
   tasks: state.tasks.taskItems,
-  allMembers: state.projectMembers.members,
   allProjects: state.allProjects,
   error: state.tasks.error,
   darkMode: state.theme.darkMode,

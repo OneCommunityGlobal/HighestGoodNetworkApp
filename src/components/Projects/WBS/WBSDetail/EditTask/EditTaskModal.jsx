@@ -22,6 +22,7 @@ import UserTag from './UserTag';
 import ReadOnlySectionWrapper from './ReadOnlySectionWrapper';
 import '../../../../Header/DarkMode.css';
 import '../wbs.css';
+import TagsSearch from '../components/TagsSearch';
 
 function EditTaskModal(props) {
   /*
@@ -61,7 +62,6 @@ function EditTaskModal(props) {
   const [dateWarning, setDateWarning] = useState(false);
   const [currentMode, setCurrentMode] = useState('');
 
-  const res = [...(resourceItems || [])];
   const categoryOptions = [
     { value: 'Unspecified', label: 'Unspecified' },
     { value: 'Housing', label: 'Housing' },
@@ -157,10 +157,37 @@ function EditTaskModal(props) {
     setDueDate(dueDate);
   };
 
+  useEffect(() => {
+    let parsedDueDate;
+    let parsedStartedDate;
+    if (dueDate) {
+      parsedDueDate = dueDate.includes('T')
+        ? parseISO(dueDate)
+        : dateFnsParse(dueDate, FORMAT, new Date());
+    }
+    if (startedDate) {
+      parsedStartedDate = startedDate.includes('T')
+        ? parseISO(startedDate)
+        : dateFnsParse(startedDate, FORMAT, new Date());
+    }
+    if (dueDate && parsedDueDate < parsedStartedDate) {
+      setDateWarning(true);
+    } else {
+      setDateWarning(false);
+    }
+  }, [startedDate, dueDate]);
+
   const formatDate = (date, format) => {
     // consistent timezone handling
     const zonedDate = utcToZonedTime(date, TIMEZONE);
     return dateFnsFormat(zonedDate, format);
+  };
+  const parseDate = (str, format, locale) => {
+    const parsed = dateFnsParse(str, format, new Date(), { locale });
+    if (DateUtils.isDate(parsed)) {
+      return parsed;
+    }
+    return undefined;
   };
 
   const addLink = () => {
@@ -210,7 +237,9 @@ function EditTaskModal(props) {
     if (error === 'none' || Object.keys(error).length === 0) {
       toggle();
       toast.success('Update Success!');
+      toast.success('Update Success!');
     } else {
+      toast.error(`Update failed! Error is ${props.tasks.error}`);
       toast.error(`Update failed! Error is ${props.tasks.error}`);
     }
   };
@@ -374,24 +403,15 @@ function EditTaskModal(props) {
                 </td>
                 <td id="edit-modal-td" scope="col">
                   <div>
-                    <UserSearch
-                      addedUsers={resourceItems}
-                      onAddUser={editable ? addResources : () => {}}
+                    <TagsSearch
+                      placeholder="Add resources"
+                      projectId={props.projectId}
+                      addResources={editable ? addResources : () => {}}
+                      removeResource={editable ? removeResource : () => {}}
+                      resourceItems={resourceItems}
+                      disableInput={!editable}
+                      darkMode={darkMode}
                     />
-                    <div className="d-flex flex-wrap align-items-start justify-content-start">
-                      {resourceItems?.map(user => (
-                        <ul
-                          key={`${user.name}`}
-                          className="d-flex align-items-start justify-content-start m-0 p-1"
-                        >
-                          <UserTag
-                            userName={user.name}
-                            userId={user.userID}
-                            onRemoveUser={editable ? removeResource : () => {}}
-                          />
-                        </ul>
-                      ))}
-                    </div>
                   </div>
                 </td>
               </tr>
