@@ -1,27 +1,36 @@
-/* eslint-disable react/forbid-prop-types */
 import { connect } from 'react-redux';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { Alert, Col, Container, Row } from 'reactstrap';
-
+import 'moment-timezone';
 import hasPermission from 'utils/permissions';
 
 // actions
-import { getTotalOrgSummary } from 'actions/totalOrgSummary';
 import { getAllUserProfile } from 'actions/userManagement';
 import { getAllUsersTimeEntries } from 'actions/allUsersTimeEntries';
 import { getTimeEntryForOverDate } from 'actions/index';
+import { getTotalOrgSummary } from 'actions/totalOrgSummary';
 
-import SkeletonLoading from '../common/SkeletonLoading';
 import '../Header/DarkMode.css';
 import './TotalOrgSummary.css';
 
 // components
 import VolunteerHoursDistribution from './VolunteerHoursDistribution/VolunteerHoursDistribution';
 import AccordianWrapper from './AccordianWrapper/AccordianWrapper';
+import VolunteerStatus from './VolunteerStatus/VolunteerStatus';
+import VolunteerActivities from './VolunteerActivities/VolunteerActivities';
+import VolunteerStatusChart from './VolunteerStatus/VolunteerStatusChart';
+import BlueSquareStats from './BlueSquareStats/BlueSquareStats';
+import TeamStats from './TeamStats/TeamStats';
+import HoursCompletedBarChart from './HoursCompleted/HoursCompletedBarChart';
 import HoursWorkList from './HoursWorkList/HoursWorkList';
 import NumbersVolunteerWorked from './NumbersVolunteerWorked/NumbersVolunteerWorked';
-import Loading from '../common/Loading';
+import AnniversaryCelebrated from './AnniversaryCelebrated/AnniversaryCelebrated';
+import RoleDistributionPieChart from './VolunteerRolesTeamDynamics/RoleDistributionPieChart';
+import WorkDistributionBarChart from './VolunteerRolesTeamDynamics/WorkDistributionBarChart';
+import VolunteerTrendsLineChart from './VolunteerTrendsLineChart/VolunteerTrendsLineChart';
+import GlobalVolunteerMap from './GlobalVolunteerMap/GlobalVolunteerMap';
+import TaskCompletedBarChart from './TaskCompleted/TaskCompletedBarChart';
 
 function calculateFromDate() {
   const currentDate = new Date();
@@ -97,11 +106,15 @@ const aggregateTimeEntries = userTimeEntries => {
 };
 
 function TotalOrgSummary(props) {
-  const { darkMode, loading, error, allUserProfiles } = props;
-
+  const { darkMode, error, allUserProfiles } = props;
   const [usersId, setUsersId] = useState([]);
   const [usersTimeEntries, setUsersTimeEntries] = useState([]);
   const [usersOverTimeEntries, setUsersOverTimeEntries] = useState([]);
+  const [isVolunteerFetchingError, setIsVolunteerFetchingError] = useState(false);
+  const [volunteerStats, setVolunteerStats] = useState(null);
+  const comparisonStartDate = '2025-01-16';
+  const comparisonEndDate = '2025-01-26';
+  const [isLoading, setIsLoading] = useState(true);
 
   const dispatch = useDispatch();
 
@@ -156,7 +169,27 @@ function TotalOrgSummary(props) {
     }
   }, [allUsersTimeEntries, usersId, fromOverDate, toOverDate]);
 
-  if (error) {
+  useEffect(() => {
+    const fetchVolunteerStats = async () => {
+      try {
+        const volunteerStatsResponse = await props.getTotalOrgSummary(
+          fromDate,
+          toDate,
+          comparisonStartDate,
+          comparisonEndDate,
+        );
+        setVolunteerStats(volunteerStatsResponse.data);
+        await props.hasPermission('');
+        setIsLoading(false);
+      } catch (catchFetchError) {
+        setIsVolunteerFetchingError(true);
+      }
+    };
+
+    fetchVolunteerStats();
+  }, [fromDate, toDate]);
+
+  if (error || isVolunteerFetchingError) {
     return (
       <Container className={`container-wsr-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
         <Row
@@ -171,18 +204,7 @@ function TotalOrgSummary(props) {
       </Container>
     );
   }
-  if (loading) {
-    return (
-      <Container fluid style={{ backgroundColor: darkMode ? '#1B2A41' : '#f3f4f6' }}>
-        <Row className="text-center" data-testid="loading">
-          <SkeletonLoading
-            template="WeeklyVolunteerSummaries"
-            className={darkMode ? 'bg-yinmn-blue' : ''}
-          />
-        </Row>
-      </Container>
-    );
-  }
+
   return (
     <Container
       fluid
@@ -200,7 +222,11 @@ function TotalOrgSummary(props) {
         <Row>
           <Col lg={{ size: 12 }}>
             <div className="component-container">
-              <VolunteerHoursDistribution />
+              <VolunteerStatus
+                isLoading={isLoading}
+                volunteerNumberStats={volunteerStats?.volunteerNumberStats}
+                totalHoursWorked={volunteerStats?.totalHoursWorked}
+              />
             </div>
           </Col>
         </Row>
@@ -209,7 +235,14 @@ function TotalOrgSummary(props) {
         <Row>
           <Col lg={{ size: 12 }}>
             <div className="component-container">
-              <VolunteerHoursDistribution />
+              <VolunteerActivities
+                isLoading={isLoading}
+                totalSummariesSubmitted={volunteerStats?.totalSummariesSubmitted}
+                completedAssignedHours={volunteerStats?.completedAssignedHours}
+                totalBadgesAwarded={volunteerStats?.totalBadgesAwarded}
+                tasksStats={volunteerStats?.tasksStats}
+                totalActiveTeams={volunteerStats?.totalActiveTeams}
+              />
             </div>
           </Col>
         </Row>
@@ -218,12 +251,21 @@ function TotalOrgSummary(props) {
         <Row>
           <Col lg={{ size: 6 }}>
             <div className="component-container component-border">
-              <VolunteerHoursDistribution />
+              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
+                <p>Global Volunteer Network: Uniting Communities Worldwide</p>
+              </div>
+              <GlobalVolunteerMap isLoading={isLoading} locations={volunteerStats?.userLocations} />
             </div>
           </Col>
           <Col lg={{ size: 6 }}>
             <div className="component-container component-border">
-              <VolunteerHoursDistribution />
+              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
+                <p>Volunteer Status</p>
+              </div>
+              <VolunteerStatusChart
+                isLoading={isLoading}
+                volunteerNumberStats={volunteerStats?.volunteerNumberStats}
+              />
             </div>
           </Col>
         </Row>
@@ -234,41 +276,55 @@ function TotalOrgSummary(props) {
         >
           <Col lg={{ size: 6 }}>
             <div className="component-container component-border">
-              {(allUserProfiles.fetching || allUsersTimeEntries.loading) && (
-                <div className="d-flex justify-content-center align-items-center0">
-                  <div className="w-100vh ">
-                    <Loading />
-                  </div>
+              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
+                <p>Volunteer Hours Distribution</p>
+              </div>
+              <div className="d-flex flex-row justify-content-center flex-wrap my-4">
+                <VolunteerHoursDistribution
+                  isLoading={isLoading}
+                  darkMode={darkMode}
+                  usersTimeEntries={usersTimeEntries}
+                  usersOverTimeEntries={usersOverTimeEntries}
+                  hoursData={volunteerStats?.volunteerHoursStats}
+                  totalHoursData={volunteerStats?.totalHoursWorked}
+                />
+                <div className="d-flex flex-column align-items-center justify-content-center">
+                  <HoursWorkList />
+                  <NumbersVolunteerWorked
+                    isLoading={isLoading}
+                    data={volunteerStats?.volunteersOverAssignedTime}
+                    darkMode={darkMode}
+                  />
                 </div>
-              )}
-              <div className="d-flex flex-row justify-content-center flex-wrap">
-                {Array.isArray(usersTimeEntries) && usersTimeEntries.length > 0 && (
-                  <>
-                    <VolunteerHoursDistribution
-                      darkMode={darkMode}
-                      usersTimeEntries={usersTimeEntries}
-                      usersOverTimeEntries={usersOverTimeEntries}
-                    />
-                    <div className="d-flex flex-column align-items-center justify-content-center">
-                      <HoursWorkList darkMode={darkMode} usersTimeEntries={usersTimeEntries} />
-                      <NumbersVolunteerWorked
-                        usersTimeEntries={usersTimeEntries}
-                        darkMode={darkMode}
-                      />
-                    </div>
-                  </>
-                )}
               </div>
             </div>
           </Col>
           <Col lg={{ size: 3 }}>
             <div className="component-container component-border">
-              <span className="fw-bold"> Task Completed</span>
+              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
+                <p>Task Completed</p>
+              </div>
+              <div className="mt-4">
+                <TaskCompletedBarChart
+                  isLoading={isLoading}
+                  data={volunteerStats?.tasksStats}
+                  darkMode={darkMode}
+                />
+              </div>
             </div>
           </Col>
           <Col lg={{ size: 3 }}>
             <div className="component-container component-border">
-              <span className="fw-bold">Hours Completed </span>
+              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
+                <p>Hours Completed</p>
+              </div>
+              <div className="mt-4">
+                <HoursCompletedBarChart
+                  isLoading={isLoading}
+                  data={volunteerStats?.taskAndProjectStats}
+                  darkMode={darkMode}
+                />
+              </div>
             </div>
           </Col>
         </Row>
@@ -277,12 +333,22 @@ function TotalOrgSummary(props) {
         <Row>
           <Col lg={{ size: 7 }}>
             <div className="component-container component-border">
-              <VolunteerHoursDistribution />
+              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
+                <p>Volunteer Trends by Time</p>
+              </div>
+              <VolunteerTrendsLineChart darkMode={darkMode} />
             </div>
           </Col>
           <Col lg={{ size: 5 }}>
             <div className="component-container component-border">
-              <VolunteerHoursDistribution />
+              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
+                <p>Anniversary Celebrated</p>
+              </div>
+              <AnniversaryCelebrated
+                isLoading={isLoading}
+                data={volunteerStats?.anniversaryStats}
+                darkMode={darkMode}
+              />
             </div>
           </Col>
         </Row>
@@ -291,12 +357,25 @@ function TotalOrgSummary(props) {
         <Row>
           <Col lg={{ size: 7 }}>
             <div className="component-container component-border">
-              <VolunteerHoursDistribution />
+              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
+                <p>Work Distribution</p>
+              </div>
+              <WorkDistributionBarChart
+                isLoading={isLoading}
+                workDistributionStats={volunteerStats?.workDistributionStats}
+              />
             </div>
           </Col>
           <Col lg={{ size: 5 }}>
             <div className="component-container component-border">
-              <VolunteerHoursDistribution />
+              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
+                <p>Role Distribution</p>
+              </div>
+              <RoleDistributionPieChart
+                isLoading={isLoading}
+                roleDistributionStats={volunteerStats?.roleDistributionStats}
+                darkMode={darkMode}
+              />
             </div>
           </Col>
         </Row>
@@ -305,12 +384,25 @@ function TotalOrgSummary(props) {
         <Row>
           <Col lg={{ size: 6 }}>
             <div className="component-container component-border">
-              <VolunteerHoursDistribution />
+              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
+                <p>Team Stats</p>
+              </div>
+              <TeamStats
+                isLoading={isLoading}
+                usersInTeamStats={volunteerStats?.usersInTeamStats}
+                endDate={toDate}
+              />
             </div>
           </Col>
           <Col lg={{ size: 6 }}>
             <div className="component-container component-border">
-              <VolunteerHoursDistribution />
+              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
+                <p>Blue Square Stats</p>
+              </div>
+              <BlueSquareStats
+                isLoading={isLoading}
+                blueSquareStats={volunteerStats?.blueSquareStats}
+              />
             </div>
           </Col>
         </Row>
@@ -322,7 +414,6 @@ function TotalOrgSummary(props) {
 const mapStateToProps = state => ({
   error: state.error,
   loading: state.loading,
-  totalOrgSummary: state.totalOrgSummary,
   role: state.auth.user.role,
   auth: state.auth,
   darkMode: state.theme.darkMode,
@@ -330,7 +421,8 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  getTotalOrgSummary: () => dispatch(getTotalOrgSummary(fromDate, toDate)),
+  getTotalOrgSummary: (startDate, endDate, comparisonStartDate, comparisonEndDate) =>
+    dispatch(getTotalOrgSummary(startDate, endDate, comparisonStartDate, comparisonEndDate)),
   hasPermission: permission => dispatch(hasPermission(permission)),
   getAllUserProfile: () => dispatch(getAllUserProfile()),
 });

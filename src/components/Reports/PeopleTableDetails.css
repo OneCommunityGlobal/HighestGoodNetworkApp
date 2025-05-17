@@ -1,33 +1,53 @@
 .wrapper.container-fluid {
-  padding: 0;
+  overflow-x: auto;
+  width: 100%;
+  padding: 0 16px;
+  box-sizing: border-box;
 
 }
 
 .reports-table-head {
+  /* display: flex; */
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  justify-content: space-between;
+  align-items: center;
+  vertical-align: middle;
+  overflow: hidden;
   background-color: #eee7f8;
   margin-bottom: 4px;
   border-radius: 4px;
   min-height: 32px;
   padding: 8px 16px;
+  font-size: 18px;
+  width: 100%;
 }
 
 .people-table-row {
   display: grid;
-  grid-template-columns: 300px repeat(auto-fit, minmax(50px, 1fr));
-  /* display: flex; */
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
   justify-content: space-between;
   align-items: center;
+  vertical-align: middle;
   min-height: 42px;
   padding: 0 16px;
   cursor: pointer;
   border-bottom: 3px solid #f8f7f8;
+  width: 100%;
 }
+/* flex-wrap: wrap;
+flex-direction: row; */
 
-.people-table-row>div {
-
+.reports-table-head,
+.people-table-row > div {
   padding: 1%;
   text-align: center;
   margin: 1%;
+  vertical-align: middle;
+  max-width: 800px;
+  font-size: 16px;
+  word-wrap: break-word;
+  white-space: normal;
 }
 
 .people-table-row:hover {
@@ -36,6 +56,7 @@
 
 .people-table-row-dark:hover {
   background-color: #1C2541;
+  color:black;
 }
 
 .people-table-body-row:hover {
@@ -73,7 +94,7 @@
   resize: none;
   border-radius: 8px;
   border: solid 2px #e4e4e4;
-  margin: 8px 0 16px 0;
+  margin: auto;
   padding: 8px;
 }
 
@@ -117,7 +138,7 @@
 }
 
 /* Large screens (less than 1020px) */
-@media only screen and (max-width: 1020px) {
+@media only screen and (max-width: 1024px) {
 
   /* CSS rules for large screens */
   .people-table {
@@ -201,6 +222,7 @@
   background-color: #ffc107;
   color: #fff;
   width: fit-content;
+  margin-left: 5px;
 }
 
 .task-info {
@@ -240,4 +262,12 @@
   height: 30px;
   cursor: pointer;
   margin-left: auto;
+}
+
+.people-report-task-name {
+  word-wrap: break-word;
+}
+
+.task-name-word-break {
+  word-break: break-all;
 }
