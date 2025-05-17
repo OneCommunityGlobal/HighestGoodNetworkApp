@@ -19,6 +19,7 @@ import { toast } from 'react-toastify';
 import TagsSearch from '../components/TagsSearch';
 import ReadOnlySectionWrapper from './ReadOnlySectionWrapper';
 import '../../../../Header/DarkMode.css'
+import '../wbs.css'
 
 function EditTaskModal(props) {
   /*
@@ -402,7 +403,7 @@ function EditTaskModal(props) {
                     {ReadOnlySectionWrapper(
                       <div className="fd-flex  flex-column">
                       <div className="d-flex"> {/* Added: New div to group Active and Not Started */}
-                        <div className="form-check form-check-inline mr-5">
+                        <div className="form-check form-check-inline mr-5 mw-4">
                             <input
                               className={`form-check-input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
                               type="radio"
@@ -433,7 +434,7 @@ function EditTaskModal(props) {
                         </div>
                         {/* Second row: Paused and Complete */}
                       <div className="d-flex mt-2"> {/* Added: New div for Paused and Complete with margin-top */}
-                          <div className="form-check form-check-inline mr-5">
+                          <div className="form-check form-check-inline mr-5 mw-4">
                             <input
                               className={`form-check-input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
                               type="radio"

@@ -1,7 +1,7 @@
 import axios from 'axios';
+import { toast } from 'react-toastify';
 import * as actions from '../constants/weeklySummariesReport';
 import { ENDPOINTS } from '../utils/URL';
-import { toast } from 'react-toastify';
 
 /**
  * Action to set the 'loading' flag to true.
@@ -44,57 +44,46 @@ export const updateSummaryReport = ({ _id, updatedField }) => ({
  * Gets all active users' summaries + a few other selected fields from the userProfile that
  * might be useful for the weekly summary report.
  */
-export const getWeeklySummariesReport = (weekIndex = null) => async dispatch => {
-  // console.log('getWeeklySummariesReport action called with weekIndex:', weekIndex);
-  dispatch({ type: 'WEEKLY_SUMMARIES_REPORT_REQUEST' });
-  try {
-    // Use the APIEndpoint constant directly from the URL.js file or from environment
-    const APIEndpoint = process.env.REACT_APP_APIENDPOINT || 'https://hgn-rest-beta.azurewebsites.net/api';
-    const baseUrl = `${APIEndpoint}/reports/weeklysummaries`;
-    
-    // Add the week parameter if provided
-    const url = weekIndex !== null 
-      ? `${baseUrl}?week=${weekIndex}` 
-      : baseUrl;
-    
-    // console.log('API URL being called:', url);
-    
-    const res = await axios.get(url);
-    
-    dispatch({
-      type: 'WEEKLY_SUMMARIES_REPORT_SUCCESS',
-      payload: res.data,
-    });
-    return res;
-  } catch (error) {
-    console.error('API error:', error);
-    dispatch({
-      type: 'WEEKLY_SUMMARIES_REPORT_FAILURE',
-      payload: error,
-    });
-    return error;
-  }
+export const getWeeklySummariesReport = (weekIndex = null) => {
+  return async dispatch => {
+    dispatch(fetchWeeklySummariesReportBegin());
+    try {
+      // Use the APIEndpoint from ENDPOINTS
+      let url = ENDPOINTS.WEEKLY_SUMMARIES_REPORT();
+      
+      // Add the week parameter if provided
+      if (weekIndex !== null) {
+        // Check if the URL already has parameters
+        const separator = url.includes('?') ? '&' : '?';
+        url = `${url}${separator}week=${weekIndex}`;
+      }
+      
+      const response = await axios.get(url);
+      dispatch(fetchWeeklySummariesReportSuccess(response.data));
+      return { status: response.status, data: response.data };
+    } catch (error) {
+      dispatch(fetchWeeklySummariesReportError(error));
+      return error.response ? error.response : { status: 500, data: null };
+    }
+  };
 };
 
 export const updateOneSummaryReport = (userId, updatedField) => {
   const url = ENDPOINTS.USER_PROFILE(userId);
   return async dispatch => {
-    try {
-      const { data: userProfile } = await axios.get(url);
-      const res = await axios.put(url, {
-        ...userProfile,
-        ...updatedField,
-      });
-      if (res.status === 200) {
-        dispatch(updateSummaryReport({ _id: userId, updatedField }));
-        return res;
-      } else {
-        throw new Error(`An error occurred while attempting to save the changes to the profile.`)
-      }
-    } catch (err) {
-      throw err;
+    const { data: userProfile } = await axios.get(url);
+    const res = await axios.put(url, {
+      ...userProfile,
+      ...updatedField,
+    });
+
+    if (res.status === 200) {
+      dispatch(updateSummaryReport({ _id: userId, updatedField }));
+      return res;
     }
-  }
+
+    throw new Error(`An error occurred while attempting to save the changes to the profile.`);
+  };
 };
 
 /**
@@ -117,7 +106,7 @@ export const toggleUserBio = (userId, bioPosted) => {
 
       return res;
     } catch (error) {
-      toast.error("An error occurred while updating bio status.");
+      toast.error('An error occurred while updating bio status.');
       throw error;
     }
   };

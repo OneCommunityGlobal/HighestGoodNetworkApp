@@ -104,7 +104,7 @@ function Timelog(props) {
     timeEntryFormModal: false,
     summary: false,
     activeTab: 0,
-    projectsSelected: ['all'],
+    projectsOrTasksSelected: ['all'],
     fromDate: startOfWeek(0),
     toDate: endOfWeek(0),
     infoModal: false,
@@ -212,12 +212,12 @@ function Timelog(props) {
   /* ---------------- methods -------------- */
 
   const generateTimeEntries = (data, tab) => {
-    if (!timeLogState.projectsSelected.includes('all')) {
+    if (!timeLogState.projectsOrTasksSelected.includes('all')) {
       // eslint-disable-next-line no-param-reassign
       data = data.filter(
         entry =>
-          timeLogState.projectsSelected.includes(entry.projectId) ||
-          timeLogState.projectsSelected.includes(entry.taskId),
+          timeLogState.projectsOrTasksSelected.includes(entry.projectId) ||
+          timeLogState.projectsOrTasksSelected.includes(entry.taskId),
       );
     }
     return data.map(entry => (
@@ -513,11 +513,19 @@ function Timelog(props) {
     }
   }, [urlId]);
 
-  useEffect(() => {
-    if (userprofileId) {
-      setDisplayUserId(userprofileId);
-    }
-  }, [userprofileId]);
+/**
+   * made a change here to reset the user viewing to current user and not the displayed user id we were testing
+   * component reloads when we click the x icon to close the current viewing
+  */
+
+useEffect(() => {
+  // Reset displayUserId when switching btw users
+  const newUserId = getUserId();
+  if (displayUserId !== newUserId) {
+    setDisplayUserId(newUserId);
+    loadAsyncData(newUserId); // Reload data for the prev viewing user
+  }
+}, [userprofileId, viewingUser]);
 
   useEffect(() => {
     props.getBadgeCount(displayUserId);
@@ -541,7 +549,7 @@ function Timelog(props) {
   useEffect(() => {
     // Filter the time entries
     updateTimeEntryItems();
-  }, [timeLogState.projectsSelected]);
+  }, [timeLogState.projectsOrTasksSelected]);
 
   useEffect(() => {
     setDisplayUserId(getUserId());
@@ -951,12 +959,12 @@ function Timelog(props) {
                             type="select"
                             name="projectSelected"
                             id="projectSelected"
-                            value={timeLogState.projectsSelected}
+                            value={timeLogState.projectsOrTasksSelected}
                             title="Ctrl + Click to select multiple projects and tasks to filter."
                             onChange={e => {
                               setTimeLogState({
                                 ...timeLogState,
-                                projectsSelected: Array.from(
+                                projectsOrTasksSelected: Array.from(
                                   e.target.selectedOptions,
                                   option => option.value,
                                 ),
@@ -976,7 +984,7 @@ function Timelog(props) {
                     timeLogState.activeTab === 6 ? null : (
                       <EffortBar
                         activeTab={timeLogState.activeTab}
-                        projectsSelected={timeLogState.projectsSelected}
+                        projectsOrTasksSelected={timeLogState.projectsOrTasksSelected}
                         roles={roles}
                       />
                     )}

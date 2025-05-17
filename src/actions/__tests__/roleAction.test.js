@@ -92,10 +92,7 @@ describe('Role Actions', () => {
 
       const response = await actions.updateRole(roleId, updatedRole)(dispatch);
 
-      expect(axios.patch).toHaveBeenCalledWith(
-        ENDPOINTS.ROLES_BY_ID(roleId),
-        updatedRole
-      );
+      expect(axios.patch).toHaveBeenCalledWith(ENDPOINTS.ROLES_BY_ID(roleId), updatedRole);
       expect(dispatch).toHaveBeenCalledWith(actions.modifyRole(updatedRole));
       expect(response).toBe(0);
     });
