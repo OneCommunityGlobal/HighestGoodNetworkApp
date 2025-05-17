@@ -22,7 +22,7 @@ function UserSkillsProfile() {
 
         // Decode the token to get the user ID
         const decodedToken = jwtDecode(token);
-        console.log('Decoded Token:', decodedToken);
+        // console.log('Decoded Token:', decodedToken);
         const userId = decodedToken.userid;
         if (!userId) {
           throw new Error('User ID not found in token.');
@@ -37,9 +37,9 @@ function UserSkillsProfile() {
             },
           },
         );
-        console.log('Profile Data:', response.data);
+        // console.log('Profile Data:', response.data);
 
-        const data = response.data;
+        const { data } = response;
         if (!data) throw new Error('Failed to fetch profile data');
 
         setProfileData(data);
