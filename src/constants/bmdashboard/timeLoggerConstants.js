@@ -1,0 +1,4 @@
+export const START_TIME_LOG = 'START_TIME_LOG';
+export const PAUSE_TIME_LOG = 'PAUSE_TIME_LOG';
+export const STOP_TIME_LOG = 'STOP_TIME_LOG';
+export const GET_CURRENT_TIME_LOG = 'GET_CURRENT_TIME_LOG';
