@@ -412,7 +412,7 @@ export default(
         <CPProtectedRoute path="/communityportal" exact component={CPDashboard} />
         <Route path="/communityportal/login" component={CPLogin} />
         <CPProtectedRoute path="/communityportal/Activities" exact component={ActivityList} />
-        <Route path="/hgnhelp/community" exact component={Community} />
+        <CPProtectedRoute path="/hgnhelp/community" exact component={Community} />
 
 
         {/* Listing and Bidding Routes */}
