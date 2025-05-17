@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
+import CostPredictionChart from './CostPredictionChart';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
 import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
 
@@ -263,6 +264,19 @@ export default function WeeklyProjectSummary() {
           return (
             <div key={uniqueId} className="weekly-project-summary-card normal-card">
               📊 Card
+            </div>
+          );
+        }),
+      },
+      {
+        title: 'Financials Tracking',
+        key: 'Financials Tracking',
+        className: 'full',
+        content: [1, 2, 3, 4].map((_, index) => {
+          const uniqueId = uuidv4();
+          return (
+            <div key={uniqueId} className="weekly-project-summary-card normal-card">
+              {index === 2 ? <CostPredictionChart projectId={1} /> : '📊 Card'}
             </div>
           );
         }),
