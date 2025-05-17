@@ -207,12 +207,6 @@ function Announcements({ title, email }) {
 
   useEffect(() => {
     loadFacebookSDK();
-    /**   .then(FB => {
-        console.log("Facebook SDK Loaded", FB);
-      })
-      .catch((error) => {
-        console.error("Error loading Facebook SDK:", error);
-      }); */
   }, []);
 
   const handleFacebookLogin = () => {
