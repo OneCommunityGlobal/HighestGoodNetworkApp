@@ -53,6 +53,7 @@ export const ENDPOINTS = {
   ORG_DATA: `${APIEndpoint}/dashboard/leaderboard/org/data`,
   TIME_ENTRIES_PERIOD: (userId, fromDate, toDate) =>
     `${APIEndpoint}/TimeEntry/user/${userId}/${fromDate}/${toDate}`,
+  TIME_ENTRIES_USERS_HOURS_PERIOD: `${APIEndpoint}/TimeEntry/users/totalHours`,
   TIME_ENTRIES_USER_LIST: `${APIEndpoint}/TimeEntry/users`,
   TIME_ENTRIES_REPORTS: `${APIEndpoint}/TimeEntry/reports`,
   TIME_ENTRIES_REPORTS_TOTAL_PROJECT_REPORT: `${APIEndpoint}/TimeEntry/reports/projects`,
@@ -220,7 +221,7 @@ export const ENDPOINTS = {
   BM_EQUIPMENT_TYPES: `${APIEndpoint}/bm/invtypes/equipments`,
   BM_EQUIPMENT_PURCHASE: `${APIEndpoint}/bm/equipment/purchase`,
   BM_PROJECTS: `${APIEndpoint}/bm/projects`,
-  BM_PROJECT_BY_ID: projectId => `${APIEndpoint}/project/${projectId}`,
+  BM_PROJECT_BY_ID: projectId => `${APIEndpoint}/bm/project/${projectId}`,
   BM_UPDATE_MATERIAL: `${APIEndpoint}/bm/updateMaterialRecord`,
   BM_UPDATE_MATERIAL_BULK: `${APIEndpoint}/bm/updateMaterialRecordBulk`,
   BM_UPDATE_MATERIAL_STATUS: `${APIEndpoint}/bm/updateMaterialStatus`,
@@ -246,6 +247,18 @@ export const ENDPOINTS = {
   BM_TAGS: `${APIEndpoint}/bm/tags`,
   BM_TAG_ADD: `${APIEndpoint}/bm/tags`,
   BM_TAGS_DELETE: `${APIEndpoint}/bm/tags`,
+
+  BM_PROJECT_MEMBERS: projectId => `${APIEndpoint}/bm/project/${projectId}/users`,
+
+  // bm time logger endpoints
+  TIME_LOGGER_START: (projectId, memberId) =>
+    `${APIEndpoint}/bm/timelogger/${projectId}/${memberId}/start`,
+  TIME_LOGGER_PAUSE: (projectId, memberId) =>
+    `${APIEndpoint}/bm/timelogger/${projectId}/${memberId}/pause`,
+  TIME_LOGGER_STOP: (projectId, memberId) =>
+    `${APIEndpoint}/bm/timelogger/${projectId}/${memberId}/stop`,
+  TIME_LOGGER_LOGS: (projectId, memberId) =>
+    `${APIEndpoint}/bm/timelogger/${projectId}/${memberId}/logs`,
 
   GET_TIME_OFF_REQUESTS: () => `${APIEndpoint}/getTimeOffRequests`,
   ADD_TIME_OFF_REQUEST: () => `${APIEndpoint}/setTimeOffRequest`,
