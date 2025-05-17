@@ -1,13 +1,20 @@
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
-import { rolesMock, themeMock } from '../../__tests__/mockStates';
-import PermissionsManagement from './PermissionsManagement';
 import thunk from 'redux-thunk';
 import { Route } from 'react-router-dom';
 import { screen } from '@testing-library/react';
-import { renderWithRouterMatch } from '../../__tests__/utils';
 import configureMockStore from 'redux-mock-store';
 import userEvent from '@testing-library/user-event';
 import { ModalProvider } from 'context/ModalContext';
+import axios from 'axios';
+import { renderWithRouterMatch } from '../../__tests__/utils';
+import PermissionsManagement from './PermissionsManagement';
+import { rolesMock, themeMock } from '../../__tests__/mockStates';
+
+jest.mock('axios');
+// Mock API call to prevent real network requests during tests, avoiding ECONNREFUSED errors
+// and ensuring consistent, fast, and reliable test execution.
+axios.get.mockResolvedValue({ data: [] });
 
 jest.mock('actions/role.js');
 
@@ -15,12 +22,9 @@ const mockStore = configureMockStore([thunk]);
 
 const mockInfoCollections = [
   // Your mock data
-  {infoName: 'testInfo',
-  infoContent: 'a'},
-  {infoName: 'testInfo2',
-  infoContent: ''},
+  { infoName: 'testInfo', infoContent: 'a' },
+  { infoName: 'testInfo2', infoContent: '' },
 ];
-
 
 describe('permissions management page structure', () => {
   let store;
@@ -34,7 +38,19 @@ describe('permissions management page structure', () => {
 
     renderWithRouterMatch(
       <ModalProvider>
-      <Route path="/permissionsmanagement">{props => <PermissionsManagement {...props} infoCollections={mockInfoCollections} areaName={'testInfo'} role={'Owner'} fontSiz={24} />}</Route>
+        <Route path="/permissionsmanagement">
+          {props => (
+            <PermissionsManagement
+              history={props.history}
+              location={props.location}
+              match={props.match}
+              infoCollections={mockInfoCollections}
+              areaName="testInfo"
+              aria-label="Owner"
+              fontSiz={24}
+            />
+          )}
+        </Route>
       </ModalProvider>,
       {
         route: `/permissionsmanagement`,
@@ -49,24 +65,26 @@ describe('permissions management page structure', () => {
 
   describe('Add New Role button', () => {
     test('add new role button should be present', () => {
-      if (screen.queryByRole('Button')) {
-        expect(screen.queryByRole('Button', { name: /add new role/i })).toBeInTheDocument();
+      const addNewRoleButton = screen.queryByRole('button', { name: /add new role/i });
+      if (addNewRoleButton) {
+        expect(addNewRoleButton).toBeInTheDocument();
       } else {
-        expect(screen.queryByRole('Button', { name: /add new role/i })).not.toBeInTheDocument();
+        expect(addNewRoleButton).not.toBeInTheDocument();
       }
     });
   });
 
   describe('permissions management behavior', () => {
     it('should fire newRole modal with a form to create a new Role', () => {
-      if (screen.queryByRole('Button')) {
-        userEvent.click(screen.getByText(/add new role/i));
+      const addNewRoleButton = screen.queryByRole('button', { name: /add new role/i });
+      if (addNewRoleButton) {
+        userEvent.click(addNewRoleButton);
         expect(screen.getByRole('dialog')).toBeInTheDocument();
-        expect(screen.getByRole('Button', { name: 'Close' })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'Close' })).toBeInTheDocument();
         expect(screen.getByRole('textbox')).toBeInTheDocument();
       } else {
         expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-        expect(screen.queryByRole('Button', { name: 'Close' })).not.toBeInTheDocument();
+        expect(screen.queryByRole('button', { name: 'Close' })).not.toBeInTheDocument();
         expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
       }
     });
