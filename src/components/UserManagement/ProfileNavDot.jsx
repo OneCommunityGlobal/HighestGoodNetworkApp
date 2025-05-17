@@ -1,7 +1,7 @@
 import { useHistory } from 'react-router';
 
 // pass userId of an account to navigate to user profile onClick of icon and open in new tab if Command or Control key is pressed
-function ProfileNavDot({ userId }) {
+export function ProfileNavDot({ userId }) {
   const history = useHistory();
 
   const handleClick = event => {
@@ -27,5 +27,3 @@ function ProfileNavDot({ userId }) {
     </span>
   );
 }
-
-export default ProfileNavDot;
