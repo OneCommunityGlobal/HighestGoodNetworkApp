@@ -10,12 +10,9 @@ const initialState = {
 };
 
 describe('Managing Teams Reducer', () => {
-  
   it('should return the initial state when an action type is not passed', () => {
-    
     const result = managingTeamsReducer(undefined, {});
     expect(result).toEqual(initialState);
-
   });
 
   it('fetching project start', () => {
@@ -26,8 +23,8 @@ describe('Managing Teams Reducer', () => {
     });
   });
 
-  it('receiving teams',() => {
-    const result = managingTeamsReducer({}, {type: RECEIVE_TEAMS});
+  it('receiving teams', () => {
+    const result = managingTeamsReducer({}, { type: RECEIVE_TEAMS });
     expect(result).toMatchObject({
       fetching: false,
       fetched: true,
@@ -35,11 +32,12 @@ describe('Managing Teams Reducer', () => {
     });
   });
 
-  it('fetching teams error',() => {
-    const result = managingTeamsReducer({}, {type: FETCH_TEAMS_ERROR});
+  it('fetching teams error', () => {
+    const action = { type: FETCH_TEAMS_ERROR, payload: '500' };
+    const result = managingTeamsReducer({}, action);
+
     expect(result).toMatchObject({
-      fetching: false
+      fetching: false,
     });
   });
-
 });
