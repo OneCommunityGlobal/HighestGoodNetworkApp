@@ -33,9 +33,15 @@
 .dateInputs input {
   max-width: 120px;
 }
+
 .noData {
   text-align: center;
   padding: 2rem;
   color: #6c757d;
   font-style: italic;
+}
+
+.chartContainer {
+  width: 100%;
+  margin:  0;
 }

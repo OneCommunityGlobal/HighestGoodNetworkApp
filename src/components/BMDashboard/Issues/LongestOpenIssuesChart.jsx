@@ -65,6 +65,7 @@ function IssuesCharts() {
     end: '2024-12-31',
   });
   const [selectedProject, setSelectedProject] = useState('All Projects');
+  const [graphType, setGraphType] = useState('Longest Open');
 
   // Get unique projects for dropdown
   const projects = ['All Projects', ...new Set(allIssuesData.map(issue => issue.project))];
@@ -82,17 +83,26 @@ function IssuesCharts() {
 
       return projectMatch && dateMatch;
     })
-    .sort((a, b) => b.daysOpen - a.daysOpen); // Sort by daysOpen descending
+    .sort((a, b) => {
+      if (graphType === 'Longest Open') {
+        return b.daysOpen - a.daysOpen;
+      }
+      return b.totalCost - a.totalCost;
+    });
 
-  // Prepare chart data
+  // Prepare chart data based on selected type
   const data = {
     labels: filteredData.map(issue => issue.title || issue.IssueId),
     datasets: [
       {
-        label: 'Days Open',
-        data: filteredData.map(issue => issue.daysOpen),
-        backgroundColor: 'rgba(54, 162, 235, 0.7)',
-        borderColor: 'rgba(54, 162, 235, 1)',
+        label: graphType === 'Longest Open' ? 'Days Open' : 'Total Cost ($)',
+        data: filteredData.map(issue =>
+          graphType === 'Longest Open' ? issue.daysOpen : issue.totalCost,
+        ),
+        backgroundColor:
+          graphType === 'Longest Open' ? 'rgba(54, 162, 235, 0.7)' : 'rgba(255, 99, 132, 0.7)',
+        borderColor:
+          graphType === 'Longest Open' ? 'rgba(54, 162, 235, 1)' : 'rgba(255, 99, 132, 1)',
         borderWidth: 1,
       },
     ],
@@ -104,23 +114,55 @@ function IssuesCharts() {
     plugins: {
       title: {
         display: true,
-        text: 'Longest Open Issues',
-        font: { size: 16 },
+        text: graphType === 'Longest Open' ? 'Longest Open Issues' : 'Most Expensive Issues',
+        font: { size: 14 },
       },
       legend: { display: false },
       datalabels: {
         anchor: 'end',
         align: 'right',
-        formatter: value => `${value} days`,
+        formatter: value =>
+          graphType === 'Longest Open' ? `${value} days` : `$${value.toLocaleString()}`,
         color: '#000',
+        font: {
+          weight: 'bold',
+        },
       },
     },
     scales: {
       x: {
-        title: { display: true, text: 'Days Open' },
+        title: {
+          display: true,
+          text: graphType === 'Longest Open' ? 'Days Open' : 'Total Cost ($)',
+          font: {
+            size: 14,
+          },
+        },
+        ticks: {
+          font: {
+            size: 12,
+          },
+        },
       },
       y: {
-        title: { display: true, text: 'Issue Title' },
+        title: {
+          display: true,
+          text: 'Issue Title',
+          font: {
+            size: 14,
+          },
+        },
+        ticks: {
+          font: {
+            size: 12,
+          },
+        },
+      },
+    },
+    elements: {
+      bar: {
+        borderRadius: 4, // Rounded corners for bars
+        borderSkipped: false, // Applies border radius to all sides
       },
     },
   };
@@ -132,8 +174,9 @@ function IssuesCharts() {
           <label htmlFor="type">Type:</label>
           <select
             id="type"
-            value={selectedProject}
-            onChange={e => setSelectedProject(e.target.value)}
+            value={graphType}
+            onChange={e => setGraphType(e.target.value)}
+            className={styles.select}
           >
             <option>Longest Open</option>
             <option>Most Expensive</option>
@@ -148,6 +191,7 @@ function IssuesCharts() {
               type="date"
               value={dateRange.start}
               onChange={e => setDateRange({ ...dateRange, start: e.target.value })}
+              className={styles.input}
             />
           </div>
           <div className={styles.inputGroup}>
@@ -157,6 +201,7 @@ function IssuesCharts() {
               type="date"
               value={dateRange.end}
               onChange={e => setDateRange({ ...dateRange, end: e.target.value })}
+              className={styles.input}
             />
           </div>
         </div>
@@ -167,6 +212,7 @@ function IssuesCharts() {
             id="project"
             value={selectedProject}
             onChange={e => setSelectedProject(e.target.value)}
+            className={styles.select}
           >
             {projects.map(project => (
               <option key={project} value={project}>
@@ -177,11 +223,13 @@ function IssuesCharts() {
         </div>
       </div>
 
-      {filteredData.length > 0 ? (
-        <Bar data={data} options={options} plugins={[ChartDataLabels]} />
-      ) : (
-        <p className={styles.noData}>No issues match the selected filters.</p>
-      )}
+      <div className={styles.chartContainer}>
+        {filteredData.length > 0 ? (
+          <Bar data={data} options={options} plugins={[ChartDataLabels]} />
+        ) : (
+          <p className={styles.noData}>No issues match the selected filters.</p>
+        )}
+      </div>
     </div>
   );
 }
