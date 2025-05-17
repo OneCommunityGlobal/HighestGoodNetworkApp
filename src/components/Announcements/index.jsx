@@ -225,10 +225,7 @@ function Announcements({ title, email }) {
     ); // Adjust permissions as needed
   };
 
-  
-
-
-   const handleCreateFbPost = async () => {
+  const handleCreateFbPost = async () => {
     if (!emailContent || emailContent.trim() === '') {
       toast.error('Error: No content to post. Please add some content in Weekly progress editor');
       return;
