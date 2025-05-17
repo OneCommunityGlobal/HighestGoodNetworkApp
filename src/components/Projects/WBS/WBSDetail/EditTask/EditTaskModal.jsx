@@ -21,7 +21,7 @@ import UserSearch from './UserSearch';
 import UserTag from './UserTag';
 import ReadOnlySectionWrapper from './ReadOnlySectionWrapper';
 import '../../../../Header/DarkMode.css';
-import '../wbs.css'
+import '../wbs.css';
 
 function EditTaskModal(props) {
   /*
@@ -88,8 +88,8 @@ function EditTaskModal(props) {
     min_height: 180,
     max_height: 300,
     autoresize_bottom_margin: 1,
-      skin: darkMode ? 'oxide-dark' : 'oxide',
-      content_css: darkMode ? 'dark' : 'default',
+    skin: darkMode ? 'oxide-dark' : 'oxide',
+    content_css: darkMode ? 'dark' : 'default',
   };
   /*
    * -------------------------------- functions --------------------------------
@@ -233,7 +233,6 @@ function EditTaskModal(props) {
       return date;
     } catch (error) {
       console.log(error);
-      return;
     }
   };
   /*
@@ -323,16 +322,22 @@ function EditTaskModal(props) {
                 <td id="edit-modal-td" scope="col" data-tip="task ID">
                   Task #
                 </td>
-                <td id="edit-modal-td" scope="col">{thisTask?.num}</td>
+                <td id="edit-modal-td" scope="col">
+                  {thisTask?.num}
+                </td>
               </tr>
               <tr>
-                <td id="edit-modal-td" scope="col">Task Name<span className="red-asterisk">* </span></td>
+                <td id="edit-modal-td" scope="col">
+                  Task Name<span className="red-asterisk">* </span>
+                </td>
                 <td id="edit-modal-td">
                   {ReadOnlySectionWrapper(
                     <textarea
                       rows="2"
                       type="text"
-                      className={`task-name border border-dark rounded ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
+                      className={`task-name border border-dark rounded ${
+                        darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+                      }`}
                       onChange={e => setTaskName(e.target.value)}
                       onKeyPress={e => setTaskName(e.target.value)}
                       value={taskName}
@@ -343,7 +348,9 @@ function EditTaskModal(props) {
                 </td>
               </tr>
               <tr>
-                <td id="edit-modal-td" scope="col">Priority</td>
+                <td id="edit-modal-td" scope="col">
+                  Priority
+                </td>
                 <td id="edit-modal-td">
                   {ReadOnlySectionWrapper(
                     <select
@@ -362,17 +369,26 @@ function EditTaskModal(props) {
                 </td>
               </tr>
               <tr>
-                <td id="edit-modal-td" scope="col">Resources</td>
+                <td id="edit-modal-td" scope="col">
+                  Resources
+                </td>
                 <td id="edit-modal-td" scope="col">
                   <div>
-                    <UserSearch addedUsers={resourceItems} onAddUser={editable ? addResources : () => {}} />
+                    <UserSearch
+                      addedUsers={resourceItems}
+                      onAddUser={editable ? addResources : () => {}}
+                    />
                     <div className="d-flex flex-wrap align-items-start justify-content-start">
-                      {resourceItems?.map((user) => (
+                      {resourceItems?.map(user => (
                         <ul
                           key={`${user.name}`}
                           className="d-flex align-items-start justify-content-start m-0 p-1"
                         >
-                          <UserTag userName={user.name} userId={user.userID} onRemoveUser={editable ? removeResource : () => {}} />
+                          <UserTag
+                            userName={user.name}
+                            userId={user.userID}
+                            onRemoveUser={editable ? removeResource : () => {}}
+                          />
                         </ul>
                       ))}
                     </div>
@@ -380,13 +396,17 @@ function EditTaskModal(props) {
                 </td>
               </tr>
               <tr>
-                <td id="edit-modal-td" scope="col">Assigned</td>
+                <td id="edit-modal-td" scope="col">
+                  Assigned
+                </td>
                 <td id="edit-modal-td">
                   {ReadOnlySectionWrapper(
                     <div className="flex-row d-inline align-items-center">
                       <div className="form-check form-check-inline">
                         <input
-                          className={`form-check-input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
+                          className={`form-check-input ${
+                            darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+                          }`}
                           type="radio"
                           id="true"
                           name="Assigned"
@@ -403,7 +423,9 @@ function EditTaskModal(props) {
                       </div>
                       <div className="form-check form-check-inline">
                         <input
-                          className={`form-check-input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
+                          className={`form-check-input ${
+                            darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+                          }`}
                           type="radio"
                           id="false"
                           name="Assigned"
@@ -425,83 +447,98 @@ function EditTaskModal(props) {
                 </td>
               </tr>
               <tr>
-                <td id="edit-modal-td" scope="col">Status</td>
+                <td id="edit-modal-td" scope="col">
+                  Status
+                </td>
                 <td id="edit-modal-td">
                   {ReadOnlySectionWrapper(
                     <div className="fd-flex  flex-column">
-                      <div className="d-flex"> {/* Added: New div to group Active and Not Started */}
-                      <div className="form-check form-check-inline mr-5 mw-4">
-                        <input
-                          className={`form-check-input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
-                          type="radio"
-                          id="active"
-                          name="status"
-                          value="Active"
-                          checked={status === 'Active' || status === 'Started'}
-                          onChange={e => setStatus(e.target.value)}
-                        />
-                        <label
-                          className={`form-check-label ${darkMode ? 'text-light' : ''}`}
-                          htmlFor="active"
-                        >
-                          Active
-                        </label>
-                      </div>
-                      <div className="form-check form-check-inline">
-                        <input
-                          className={`form-check-input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
-                          type="radio"
-                          id="notStarted"
-                          name="status"
-                          value="Not Started"
-                          checked={status === 'Not Started'}
-                          onChange={e => setStatus(e.target.value)}
-                        />
-                        <label
-                          className={`form-check-label ${darkMode ? 'text-light' : ''}`}
-                          htmlFor="notStarted"
-                        >
-                          Not Started
-                        </label>
-                      </div>
+                      <div className="d-flex">
+                        {' '}
+                        {/* Added: New div to group Active and Not Started */}
+                        <div className="form-check form-check-inline mr-5 mw-4">
+                          <input
+                            className={`form-check-input ${
+                              darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+                            }`}
+                            type="radio"
+                            id="active"
+                            name="status"
+                            value="Active"
+                            checked={status === 'Active' || status === 'Started'}
+                            onChange={e => setStatus(e.target.value)}
+                          />
+                          <label
+                            className={`form-check-label ${darkMode ? 'text-light' : ''}`}
+                            htmlFor="active"
+                          >
+                            Active
+                          </label>
                         </div>
-                        {/* Second row: Paused and Complete */}
-                      <div className="d-flex mt-2"> {/* Added: New div for Paused and Complete with margin-top */}
-                      <div className="form-check form-check-inline mr-5 mw-4">
-                        <input
-                          className={`form-check-input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
-                          type="radio"
-                          id="paused"
-                          name="status"
-                          value="Paused"
-                          checked={status === 'Paused'}
-                          onChange={e => setStatus(e.target.value)}
-                        />
-                        <label
-                          className={`form-check-label ${darkMode ? 'text-light' : ''}`}
-                          htmlFor="paused"
-                        >
-                          Paused
-                        </label>
+                        <div className="form-check form-check-inline">
+                          <input
+                            className={`form-check-input ${
+                              darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+                            }`}
+                            type="radio"
+                            id="notStarted"
+                            name="status"
+                            value="Not Started"
+                            checked={status === 'Not Started'}
+                            onChange={e => setStatus(e.target.value)}
+                          />
+                          <label
+                            className={`form-check-label ${darkMode ? 'text-light' : ''}`}
+                            htmlFor="notStarted"
+                          >
+                            Not Started
+                          </label>
+                        </div>
                       </div>
-                      <div className="form-check form-check-inline">
-                        <input
-                          className={`form-check-input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
-                          type="radio"
-                          id="complete"
-                          name="status"
-                          value="Complete"
-                          checked={status === 'Complete'}
-                          onChange={e => setStatus(e.target.value)}
-                        />
-                        <label
-                          className={`form-check-label ${darkMode ? 'text-light' : ''}`}
-                          htmlFor="complete"
-                        >
-                          Complete
-                        </label>
-                      </div>
-                          </div> {/* Added: Closing div for the second row */}
+                      {/* Second row: Paused and Complete */}
+                      <div className="d-flex mt-2">
+                        {' '}
+                        {/* Added: New div for Paused and Complete with margin-top */}
+                        <div className="form-check form-check-inline mr-5 mw-4">
+                          <input
+                            className={`form-check-input ${
+                              darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+                            }`}
+                            type="radio"
+                            id="paused"
+                            name="status"
+                            value="Paused"
+                            checked={status === 'Paused'}
+                            onChange={e => setStatus(e.target.value)}
+                          />
+                          <label
+                            className={`form-check-label ${darkMode ? 'text-light' : ''}`}
+                            htmlFor="paused"
+                          >
+                            Paused
+                          </label>
+                        </div>
+                        <div className="form-check form-check-inline">
+                          <input
+                            className={`form-check-input ${
+                              darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+                            }`}
+                            type="radio"
+                            id="complete"
+                            name="status"
+                            value="Complete"
+                            checked={status === 'Complete'}
+                            onChange={e => setStatus(e.target.value)}
+                          />
+                          <label
+                            className={`form-check-label ${darkMode ? 'text-light' : ''}`}
+                            htmlFor="complete"
+                          >
+                            Complete
+                          </label>
+                        </div>
+                      </div>{' '}
+                      {/* Added: Closing div for the second row */}
                     </div>,
                     editable,
                     status,
@@ -509,7 +546,9 @@ function EditTaskModal(props) {
                 </td>
               </tr>
               <tr>
-                <td id="edit-modal-td" scope="col">Hours</td>
+                <td id="edit-modal-td" scope="col">
+                  Hours
+                </td>
                 <td id="edit-modal-td" scope="col" className="w-100">
                   <div className="py-1 flex-responsive">
                     <label
@@ -528,7 +567,9 @@ function EditTaskModal(props) {
                         onChange={e => setHoursBest(Math.abs(e.target.value))}
                         onBlur={() => calHoursEstimate()}
                         id="bestCase"
-                        className={`m-auto ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
+                        className={`m-auto ${
+                          darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+                        }`}
                       />,
                       editable,
                       hoursBest,
@@ -556,7 +597,9 @@ function EditTaskModal(props) {
                         value={hoursWorst}
                         onChange={e => setHoursWorst(Math.abs(e.target.value))}
                         onBlur={() => calHoursEstimate('hoursWorst')}
-                        className={`m-auto ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
+                        className={`m-auto ${
+                          darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+                        }`}
                       />,
                       editable,
                       hoursWorst,
@@ -584,7 +627,9 @@ function EditTaskModal(props) {
                         value={hoursMost}
                         onChange={e => setHoursMost(Math.abs(e.target.value))}
                         onBlur={() => calHoursEstimate('hoursMost')}
-                        className={`m-auto ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
+                        className={`m-auto ${
+                          darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+                        }`}
                       />,
                       editable,
                       hoursMost,
@@ -613,7 +658,9 @@ function EditTaskModal(props) {
                         max="500"
                         value={hoursEstimate}
                         onChange={e => setHoursEstimate(Math.abs(e.target.value))}
-                        className={`m-auto ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
+                        className={`m-auto ${
+                          darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+                        }`}
                       />,
                       editable,
                       hoursEstimate,
@@ -623,7 +670,9 @@ function EditTaskModal(props) {
                 </td>
               </tr>
               <tr>
-                <td id="edit-modal-td" scope="col">Links</td>
+                <td id="edit-modal-td" scope="col">
+                  Links
+                </td>
                 <td id="edit-modal-td" scope="col">
                   {ReadOnlySectionWrapper(
                     <div>
@@ -631,7 +680,9 @@ function EditTaskModal(props) {
                         type="text"
                         aria-label="Search user"
                         placeholder="Link"
-                        className={`task-resouces-input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
+                        className={`task-resouces-input ${
+                          darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+                        }`}
                         data-tip="Add a link"
                         onChange={e => setLink(e.target.value)}
                         value={link}
@@ -681,10 +732,16 @@ function EditTaskModal(props) {
                 </td>
               </tr>
               <tr>
-                <td id="edit-modal-td" scope="col">Category</td>
+                <td id="edit-modal-td" scope="col">
+                  Category
+                </td>
                 <td id="edit-modal-td">
                   {ReadOnlySectionWrapper(
-                    <select value={category} onChange={e => setCategory(e.target.value)} className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}>
+                    <select
+                      value={category}
+                      onChange={e => setCategory(e.target.value)}
+                      className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+                    >
                       {categoryOptions.map(cla => (
                         <option value={cla.value} key={cla.value}>
                           {cla.label}
@@ -758,7 +815,9 @@ function EditTaskModal(props) {
                 </td>
               </tr>
               <tr>
-                <td id="edit-modal-td" scope="col">Start Date</td>
+                <td id="edit-modal-td" scope="col">
+                  Start Date
+                </td>
                 <td id="edit-modal-td">
                   {ReadOnlySectionWrapper(
                     <div className="text-dark">
@@ -779,7 +838,9 @@ function EditTaskModal(props) {
                 </td>
               </tr>
               <tr>
-                <td id="edit-modal-td" scope="col">End Date</td>
+                <td id="edit-modal-td" scope="col">
+                  End Date
+                </td>
                 <td id="edit-modal-td">
                   {ReadOnlySectionWrapper(
                     <div className="text-dark">
@@ -820,7 +881,7 @@ function EditTaskModal(props) {
           </ModalFooter>
         ) : null}
       </Modal>
-      <div className="task-action-buttons d-flex"></div>
+      <div className="task-action-buttons d-flex" />
       {canUpdateTask && (
         <Button
           className="mr-2 controlBtn"
