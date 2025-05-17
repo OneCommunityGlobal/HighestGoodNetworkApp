@@ -1,4 +1,4 @@
-import { getAllPermissionKeys } from '../components/PermissionsManagement/PermissionsConst.js';
+import { getAllPermissionKeys } from '../components/PermissionsManagement/PermissionsConst';
 
 export const allTeamsMock = {
   fetching: false,
@@ -1302,7 +1302,9 @@ export const rolesMock = {
   }
 }
 
+// eslint-disable-next-line no-undef
 describe('Stop Error', () => {
+  // eslint-disable-next-line no-undef
   it('should not error out due to no tests (mockStates.js)', () => { });
 });
 
@@ -1313,7 +1315,7 @@ const allPermissionsExcept = (permissions) => {
 
 // takes a list of relevant permissions and returns two auth objects, one with the permissions and the other with all permissions not listed
 export const createAuthMocks = (permissions) => {
-  var authTemplate = {
+  const authTemplate = {
     // isAdmin: true,
     user: {
       userid: '5edf141c78f1380017b829a6',
