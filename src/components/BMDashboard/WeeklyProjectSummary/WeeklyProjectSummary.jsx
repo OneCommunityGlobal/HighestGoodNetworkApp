@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved */
 import { useEffect, useMemo, useState } from 'react';
 import './WeeklyProjectSummary.css';
 import { useDispatch, useSelector } from 'react-redux';
