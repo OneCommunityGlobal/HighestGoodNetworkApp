@@ -236,6 +236,7 @@ export const ENDPOINTS = {
   HGN_FORM_GET_QUESTION: `${APIEndpoint}/questions`,
   HGN_FORM_UPDATE_QUESTION: id => `${APIEndpoint}/questions/${id}`,
   HGN_FORM_SUBMIT: `${APIEndpoint}/hgnform`,
+  HGN_FORM_GET_COMMUNITY_MEMBERS_LIST: `${APIEndpoint}/hgnhelp/community`,
 
   CREATE_JOB_FORM: `${APIEndpoint}/jobforms`,
   UPDATE_JOB_FORM: `${APIEndpoint}/jobforms`,

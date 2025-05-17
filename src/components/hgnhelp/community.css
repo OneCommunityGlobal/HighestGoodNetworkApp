@@ -38,13 +38,26 @@
     margin-right: 5px;
   }
   
-  .cards-grid {
+  /* .cards-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 
     gap: 80px;
+  } */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* Force exactly 3 columns */
+    gap: 40px; /* Optional: reduce the gap slightly for better spacing */
   }
-  
+  .toggle-button {
+    background: none;
+    border: none;
+    color: blue;
+    cursor: pointer;
+    margin-left: 8px;
+    font-size: 12px;
+    text-decoration: underline;
+  }
   .member-card {
     border: 1px solid #ccc;
     border-radius: 8px;
