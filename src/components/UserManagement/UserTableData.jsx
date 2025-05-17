@@ -373,6 +373,10 @@ const UserTableData = React.memo(props => {
           type="button"
           className={`btn btn-outline-${props.isActive ? 'warning' : 'success'} btn-sm`}
           onClick={() => {
+            if(!canChangeUserStatus) {
+              toast.warn('You Do not have permissions to update this user’s status! ');
+              return;
+            }
             if (cantUpdateDevAdminDetails(props.user.email, props.authEmail)) {
               alert(
                 'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.',
