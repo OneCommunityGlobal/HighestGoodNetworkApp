@@ -12,6 +12,28 @@ const getAllSubpermissionKeys = permissions => {
   return keys;
 };
 
+export const generatePermissionLabelKeyMapping = (permissionLabels, start) => {
+  if (start >= permissionLabels.length) {
+    return {};
+  }
+  if (!permissionLabels?.length) {
+    return {};
+  }
+  const firstEle = permissionLabels[start];
+  const { label, key, subperms } = firstEle;
+  // console.log('label', label);
+  let currentVal;
+  if (subperms) {
+    currentVal = generatePermissionLabelKeyMapping(subperms, 0);
+  } else {
+    currentVal = { [key]: label };
+  }
+  return {
+    ...currentVal,
+    ...generatePermissionLabelKeyMapping(permissionLabels, start + 1),
+  };
+};
+
 export const permissionLabels = [
   {
     label: 'General',
@@ -55,6 +77,12 @@ export const permissionLabels = [
         key: 'highlightEligibleBios',
         description:
           'Under "Reports" -> "Weekly Summaries Reports", make the "Bio announcement" row highlighted yellow if that user is eligible for their bio to be posted (they have at least 80 tangible hours, 60 days on the team, and still don\'t have their bio posted)',
+      },
+      {
+        label: 'Toggle Request Bio',
+        key: 'requestBio',
+        description:
+          'Gives the user permission to toggle the "Bio announcement" switch under "Reports" -> "Weekly Summaries Reports"',
       },
       {
         label: 'See Volunteer Weekly Summaries',
@@ -131,6 +159,12 @@ export const permissionLabels = [
           'Gives the user permission to change the requirement to the user to submit a summary.',
       },
       {
+        label: 'Update Password (Others)',
+        key: 'updatePassword',
+        description:
+          'Gives the user permission to update the password of any user but Owner/Admin classes. ',
+      },
+      {
         label: 'Manage Time Off Requests',
         key: 'manageTimeOffRequests',
         description: 'Gives the user permission to Add/Delete/Edit Time off requests.',
@@ -152,7 +186,7 @@ export const permissionLabels = [
         description: 'Allows user to view an overview of tracking activities for all users.',
       },
       {
-        label: 'Issue a Tracking Warnings',
+        label: 'Issue Tracking Warnings',
         key: 'issueTrackingWarnings',
         description: 'Allows the user to issue warnings for violations of tracking activities.',
       },
@@ -528,7 +562,20 @@ export const permissionLabels = [
       },
     ],
   },
+  {
+    label: 'FAQs',
+    description: 'Category for all permissions related to FAQs',
+    subperms: [
+      {
+        label: 'Manage FAQs',
+        key: 'manageFAQs',
+        description: 'Gives the user permission to add, edit, and delete FAQs.',
+      },
+    ],
+  },
 ];
+
+export const permissionLabelKeyMappingObj = generatePermissionLabelKeyMapping(permissionLabels, 0);
 
 export const roleOperationLabels = [
   {

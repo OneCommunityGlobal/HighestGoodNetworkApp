@@ -11,6 +11,7 @@ import {
   Input,
 } from 'reactstrap';
 import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 import { addTitle, editTitle } from '../../../actions/title';
 import AssignProjectField from './AssignProjectField';
 import AssignTeamField from './AssignTeamField';
@@ -192,6 +193,7 @@ function AddNewTitleModal({
           } else {
             setIsOpen(false);
             refreshModalTitles();
+            toast.success('Title updated successfully');
           }
         })
         .catch(e => {
@@ -206,6 +208,7 @@ function AddNewTitleModal({
           } else {
             setIsOpen(false);
             refreshModalTitles();
+            toast.success('Title added successfully');
           }
         })
         .catch(e => {

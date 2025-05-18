@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import Loading from 'components/common/Loading';
 import { ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 
 const COLORS = [
@@ -18,17 +18,15 @@ const COLORS = [
   '#46d130',
 ];
 
-export default function RoleDistributionPieChart({ roleDistributionStats }) {
-  const [roleDistributionData, setRoleDistributionData] = useState([]);
-
-  useEffect(() => {
-    if (roleDistributionStats) {
-      setRoleDistributionData(roleDistributionStats);
-    }
-  }, [roleDistributionStats]);
-
-  if (!roleDistributionData || roleDistributionData.length === 0) {
-    return <p>Loading...</p>;
+export default function RoleDistributionPieChart({ isLoading, roleDistributionStats, darkMode }) {
+  if (isLoading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center">
+        <div className="w-100vh">
+          <Loading />
+        </div>
+      </div>
+    );
   }
 
   roleDistributionStats.sort((a, b) => b.count - a.count);
@@ -67,10 +65,10 @@ export default function RoleDistributionPieChart({ roleDistributionStats }) {
           )}
         </text>
         <text fill="blue" textAnchor="middle" dominantBaseline="central">
-          <tspan x={cx} y={cy - 15} fontSize="1.2em" fill="grey">
+          <tspan x={cx} y={cy - 15} fontSize="1.2em" fill={darkMode ? 'white ' : 'grey'}>
             TOTAL ROLES
           </tspan>
-          <tspan x={cx} y={cy + 15} fontSize="1.5em" fill="grey">
+          <tspan x={cx} y={cy + 15} fontSize="1.5em" fill={darkMode ? 'white ' : 'grey'}>
             {data.length}
           </tspan>
         </text>
@@ -81,7 +79,7 @@ export default function RoleDistributionPieChart({ roleDistributionStats }) {
   const renderCustomLegend = props => {
     const { payload } = props;
     return (
-      <ul>
+      <ul style={{ marginLeft: 20 }}>
         {payload.map(entry => (
           <li
             key={`item-${entry.value}`}
@@ -95,7 +93,9 @@ export default function RoleDistributionPieChart({ roleDistributionStats }) {
                 marginRight: '3px',
               }}
             />
-            <span style={{ color: 'grey', fontSize: '12px' }}>{entry.value}</span>
+            <span style={{ color: darkMode ? 'white ' : 'grey', fontSize: '12px' }}>
+              {entry.value}
+            </span>
           </li>
         ))}
       </ul>
@@ -103,7 +103,7 @@ export default function RoleDistributionPieChart({ roleDistributionStats }) {
   };
 
   return (
-    <div>
+    <div style={{ margin: '15px 10px 10px 10px' }}>
       <ResponsiveContainer width="100%" height="100%" minWidth={400} minHeight={430}>
         <PieChart className="test2">
           <Pie
@@ -118,6 +118,7 @@ export default function RoleDistributionPieChart({ roleDistributionStats }) {
             startAngle={-270}
             endAngle={90}
             stroke="none"
+            dataKey="value"
           >
             {data.map(entry => (
               <Cell key={`cell-${entry.name}`} fill={entry.color} />

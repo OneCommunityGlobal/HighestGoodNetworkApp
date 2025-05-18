@@ -11,6 +11,7 @@ import { formatDate, formatDateYYYYMMDD, formatDateMMDDYYYY, CREATED_DATE_CRITER
 
 const MINIMUM_WEEK_HOURS = 0;
 const MAXIMUM_WEEK_HOURS = 168;
+const darkModeClass = "bg-darkmode-liblack text-light border-0";
 
 const startEndDateValidation = props => {
   return (
@@ -34,7 +35,7 @@ const StartDate = props => {
         type="date"
         name="StartDate"
         id="startDate"
-        className={startEndDateValidation(props) ? 'border-error-validation' : null}
+        className={`${startEndDateValidation(props) ? 'border-error-validation' : ''} ${darkMode ? "bg-darkmode-liblack text-light border-0 calendar-icon-dark" : ''}`}
         value={props.userProfile.startDate}
         min={props.userProfile.createdDate < CREATED_DATE_CRITERIA ? '' : props.userProfile.createdDate}
         onChange={e => {
@@ -66,7 +67,7 @@ const EndDate = props => {
   return (
     <FormGroup>
       <Input
-        className={startEndDateValidation(props) ? 'border-error-validation' : null}
+        className={`${startEndDateValidation(props) ? 'border-error-validation' : ''} ${darkMode ? "bg-darkmode-liblack text-light border-0 calendar-icon-dark" : ''}`}
         type="date"
         name="EndDate"
         id="endDate"
@@ -133,7 +134,7 @@ const WeeklySummaryOptions = props => {
       <select
         name="WeeklySummaryOptions"
         id="weeklySummaryOptions"
-        className="form-control"
+        className={`form-control ${darkMode ? darkModeClass : ''}`}
         disabled={!props.canEdit}
         value={
           props.userProfile.weeklySummaryOption ??
@@ -189,6 +190,7 @@ const WeeklyCommittedHours = props => {
       value={props.userProfile.weeklycommittedHours}
       onChange={e => handleChange(e)}
       placeholder="Weekly Committed Hours"
+      className={darkMode ? darkModeClass : ''}
     />
   );
 };
@@ -206,6 +208,7 @@ const MissedHours = props => {
       id="missedHours"
       data-testid="missedHours"
       value={props.userProfile.missedHours ?? 0}
+      className={darkMode ? darkModeClass : ''}
       onChange={e => {
         props.setUserProfile({
           ...props.userProfile,
@@ -231,6 +234,7 @@ const TotalIntangibleHours = props => {
       step=".01"
       data-testid="totalIntangibleHours"
       value={props.userProfile.totalIntangibleHrs ?? 0}
+      className={darkMode ? darkModeClass : ''}
       onChange={e => {
         const newValue = Math.max(Number(e.target.value), 0).toFixed(2);
         props.setUserProfile({
@@ -545,6 +549,7 @@ const ViewTab = props => {
                     id={`${key}Hours`}
                     step=".01"
                     min="0"
+                    className={darkMode ? darkModeClass : ''}
                     value={roundToTwo(userProfile.hoursByCategory[key])}
                     onChange={e => handleOnChangeHours(e, key)}
                     placeholder={`Total Tangible ${capitalize(key)} Hours`}
