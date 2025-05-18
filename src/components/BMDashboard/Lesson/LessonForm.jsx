@@ -259,6 +259,7 @@ function LessonForm() {
           <div className="WriteLessonAndTagDiv">
             <Form.Group className="LessonFrom" controlId="exampleForm.ControlTextarea1">
               <Form.Label className="LessonLabel">Lesson Title</Form.Label>
+              <span className="red-asterisk">* </span>
               <Form.Control
                 required
                 className="LessonTitle"
@@ -270,6 +271,7 @@ function LessonForm() {
             </Form.Group>
             <Form.Group className="LessonForm" controlId="exampleForm.ControlTextarea1">
               <Form.Label className="LessonLabel">Write a Lesson</Form.Label>
+              <span className="red-asterisk">* </span>
               <Form.Control
                 required
                 className="LessonPlaceholderText"
