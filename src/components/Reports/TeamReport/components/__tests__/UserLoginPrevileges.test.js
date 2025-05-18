@@ -100,24 +100,16 @@ describe('UserLoginPrivileges Component', () => {
 
   // Test if the component works when given real team data
   test('renders charts and headings based on selectedTeams and allTeamsMembers data', () => {
-    render(
-      <UserLoginPrivileges
-        role={mockProps.role}
-        teamName={mockProps.teamName}
-        teamMembers={mockProps.teamMembers}
-        totalTeamWeeklyWorkedHours={mockProps.totalTeamWeeklyWorkedHours}
-        selectedTeams={[{ selectedTeam: { teamName: 'Team X' }, index: 0 }]}
-        selectedTeamsWeeklyEffort={mockProps.selectedTeamsWeeklyEffort}
-        allTeamsMembers={[
-          [
-            { name: 'Tiger', weeklycommittedHours: 10, infringements: [1, 2] },
-            { name: 'King', weeklycommittedHours: 15, infringements: [] }
-          ]
-        ]}
-        darkMode={mockProps.darkMode}
-        teamDataLoading={mockProps.teamDataLoading}
-      />
-    );
+    const customProps = {
+      ...mockProps,
+      selectedTeams: [{ selectedTeam: { teamName: 'Team X' }, index: 0 }],
+      allTeamsMembers: [[
+      { name: 'Tiger', weeklycommittedHours: 10, infringements: [1, 2] },
+      { name: 'King', weeklycommittedHours: 15, infringements: [] }
+      ]]
+    };
+
+    render(<UserLoginPrivileges {...customProps} />);
 
     const weeklyCommittedHeading = screen.getByText('Weekly Commited Hours');
     const hoursWorkedHeading = screen.getByText('Hours Worked In Current Week');
