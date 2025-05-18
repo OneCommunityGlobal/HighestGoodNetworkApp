@@ -74,7 +74,7 @@ describe('BadgeManagement validateBadges action unit test', () => {
     const actions = store.getActions();
     expect(actions[0]).toEqual({
       type: GET_MESSAGE,
-      message: 'The Name Find function does not work without entering a name. Nice try though.',
+      message: 'The Name Find function does not work without entering first and last name. Nice try though.',
       color: 'danger',
     });
 
@@ -139,7 +139,7 @@ describe('BadgeManagement assignBadges action unit test', () => {
   });
 
   test('should dispatch success message when badges are assigned successfully', async () => {
-    axios.get.mockResolvedValue({ data: [{ badgeCollection: [], _id: 'user1' }] });
+    axios.get.mockResolvedValueOnce({ data: [{ badgeCollection: [], _id: 'user1' }] }).mockResolvedValueOnce({ data: { badgeCollection: [], _id: 'user1' } });;
     axios.put.mockResolvedValue({}); // Mock successful PUT request
 
     await store.dispatch(assignBadges('John', 'Doe', ['badge1']));

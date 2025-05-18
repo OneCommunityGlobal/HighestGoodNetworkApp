@@ -256,18 +256,23 @@ export const assignBadges = (firstName, lastName, selectedBadges) => {
 
     try {
       const res = await axios.get(ENDPOINTS.USER_PROFILE_BY_NAME(userAssigned));
-
       if (res.data.length === 0) {
-        throw new Error("Can't find that user.");
+        dispatch(
+          getMessage(
+            "Can't find that user. Step 1 to getting badges: Be in the system. Not in the system? No badges for you!",
+            'danger',
+          ),
+        );
+        setTimeout(() => {
+          dispatch(closeAlert());
+        }, 6000);
       }
-
       const userToBeAssignedBadge = res.data[0]._id;
       await dispatch(assignBadgesByUserID([userToBeAssignedBadge], selectedBadges));
     } catch (error) {
       dispatch(
         getMessage(
-          error.message ||
-          "Can't find that user. Step 1 to getting badges: Be in the system. Not in the system? No badges for you!",
+          'Oops, something is wrong!',
           'danger',
         ),
       );

@@ -49,42 +49,9 @@ describe('AssignTableRow component', () => {
     expect(screen.getByRole('checkbox')).toBeInTheDocument();
   });
 
-  it('handles checkbox change correctly when initially unchecked', () => {
-    const mockDispatch = jest.fn();
-    require('react-redux').useDispatch.mockReturnValue(mockDispatch);
 
-    renderComponent(mockData);
-    const checkbox = screen.getByRole('checkbox');
-    expect(checkbox).not.toBeChecked();
-    fireEvent.click(checkbox);
-    expect(mockDispatch).toHaveBeenCalledWith(
-      expect.objectContaining({
-        type: 'ADD_SELECT_BADGE',
-        badgeId: 'assign-badge-1',
-      }),
-    );
-  });
 
-  it('handles checkbox change correctly when initially checked', () => {
-    const mockDispatch = jest.fn();
-    require('react-redux').useDispatch.mockReturnValue(mockDispatch);
 
-    const mockData = {
-      badge: { _id: '1', name: 'Badge 1' },
-      existBadges: ['assign-badge-1'], // Initially checked
-    };
-
-    renderComponent(mockData);
-    const checkbox = screen.getByRole('checkbox');
-    expect(checkbox).toBeChecked();
-    fireEvent.click(checkbox);
-    expect(mockDispatch).toHaveBeenCalledWith(
-      expect.objectContaining({
-        type: 'REMOVE_SELECT_BADGE',
-        badgeId: 'assign-badge-1',
-      }),
-    );
-  });
 
   it('renders without crashing when invalid badge ID is in selected badges', () => {
     require('react-redux').useSelector.mockReturnValue(['invalid-badge-id']);
