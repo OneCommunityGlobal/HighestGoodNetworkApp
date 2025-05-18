@@ -1,14 +1,5 @@
 import Loading from 'components/common/Loading';
-import {
-  ResponsiveContainer,
-  BarChart,
-  XAxis,
-  YAxis,
-  Tooltip,
-  Legend,
-  Bar,
-  Cell
-} from 'recharts';
+import { ResponsiveContainer, BarChart, XAxis, YAxis, Tooltip, Legend, Bar, Cell } from 'recharts';
 
 const COLORS = [
   '#14b32b',
@@ -18,7 +9,7 @@ const COLORS = [
   '#eb34b4',
   '#47c4ed',
   '#59f0cf',
-  '#f0ec18'
+  '#f0ec18',
 ];
 
 function CustomizedLabel(props) {
@@ -56,26 +47,22 @@ export default function WorkDistributionBarChart({ isLoading, workDistributionSt
 
   // Prepare and sanitize data
   const filteredStats = (workDistributionStats || []).filter(
-    (item) => item._id && Number.isFinite(item.totalHours)
+    item => item._id && Number.isFinite(item.totalHours),
   );
 
-  const data = filteredStats.map((item) => ({
+  const data = filteredStats.map(item => ({
     ...item,
-    totalHours: Number(item.totalHours.toFixed(2))
+    totalHours: Number(item.totalHours.toFixed(2)),
   }));
 
-  const totalValues = data.map((item) => item.totalHours);
+  const totalValues = data.map(item => item.totalHours);
   const sum = totalValues.reduce((acc, val) => acc + val, 0);
 
-  const isDarkMode =
-    window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
 
   if (!data.length || !Number.isFinite(sum) || sum === 0) {
     return (
-      <div
-        className="d-flex justify-content-center align-items-center"
-        style={{ height: '400px' }}
-      >
+      <div className="d-flex justify-content-center align-items-center" style={{ height: '400px' }}>
         <h5>No work distribution data available</h5>
       </div>
     );
@@ -102,7 +89,7 @@ export default function WorkDistributionBarChart({ isLoading, workDistributionSt
             angle: -90,
             position: 'insideLeft',
             fill: isDarkMode ? '#FFFFFF' : '#333333',
-            fontSize: 14
+            fontSize: 14,
           }}
         />
         <Tooltip />
