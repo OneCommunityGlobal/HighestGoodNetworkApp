@@ -15,7 +15,9 @@ import {
 } from '../../../../../languages/en/messages.js';
 import 'react-day-picker/lib/style.css';
 import '../../../../Header/DarkMode.css';
-import TagsSearch from '../components/TagsSearch';
+import UserSearch from '../EditTask/UserSearch';
+import UserTag from '../EditTask/UserTag';
+import TagsSearch from '../components/TagsSearch.jsx';
 import './AddTaskModal.css';
 
 function AddTaskModal(props) {
@@ -24,6 +26,7 @@ function AddTaskModal(props) {
    */
   // props from store
   const { tasks, copiedTask, allMembers, allProjects, error, darkMode } = props;
+  const label = props.label ?? 'Add Task';
 
   const TINY_MCE_INIT_OPTIONS = {
     license_key: 'gpl',
@@ -392,8 +395,8 @@ function AddTaskModal(props) {
 
                 <span className={`add_new_task_form-input_area ${fontColor}`}>{newTaskNum}</span>
               </div>
-              <div className="add_new_task_form-group">
-                <span className={`add_new_task_form-label ${fontColor}`}>Task Name</span>
+              <div className="add_new_task_form-group" >
+                <span className={`add_new_task_form-label ${fontColor}`}>Task Name<span className="red-asterisk">* </span></span>
                 <span className="add_new_task_form-input_area">
                   {/* Fix Task-name formatting - by Sucheta */}
                   <textarea
@@ -428,6 +431,7 @@ function AddTaskModal(props) {
                 <span className="add_new_task_form-input_area">
                   <TagsSearch
                     placeholder="Add resources"
+                    projectId={props.projectId}
                     // modified below to check if allMembers is undefined before applying filter
                     members={allMembers ? allMembers.filter(user => user.isActive) : false}
                     addResources={addResources}
@@ -790,7 +794,7 @@ function AddTaskModal(props) {
         onClick={openModal}
         style={darkMode ? boxStyleDark : boxStyle}
       >
-        Add Task
+        { label }
       </Button>
     </>
   );
@@ -798,8 +802,6 @@ function AddTaskModal(props) {
 
 const mapStateToProps = state => ({
   tasks: state.tasks.taskItems,
-  copiedTask: state.tasks.copiedTask,
-  allMembers: state.projectMembers.members,
   allProjects: state.allProjects,
   error: state.tasks.error,
   darkMode: state.theme.darkMode,
