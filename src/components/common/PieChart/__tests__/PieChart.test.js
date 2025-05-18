@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React from 'react';
 import { render, unmountComponentAtNode } from 'react-dom';
 import { act } from 'react-dom/test-utils';
@@ -5,54 +6,39 @@ import { PieChart } from '../PieChart';
 
 let container = null;
 beforeEach(() => {
-  // setup a DOM element as a render target
   container = document.createElement('div');
   document.body.appendChild(container);
 });
 
 afterEach(() => {
-  // cleanup on exiting
   unmountComponentAtNode(container);
   container.remove();
   container = null;
 });
 
+const mockTasksData = [
+  { projectId: 'a', projectName: 'A', totalTime: 1 },
+  { projectId: 'b', projectName: 'B', totalTime: 2 },
+];
+
 describe('PieChart', () => {
   it('renders without crashing', () => {
     act(() => {
-      render(
-        <PieChart data={{}} dataLegend={{}} pieChartId="test" dataLegendHeader="Test" />,
-        container,
-      );
+      render(<PieChart tasksData={mockTasksData} pieChartId="test" />, container);
     });
   });
 
   it('renders correct total hours', () => {
     act(() => {
-      render(
-        <PieChart
-          data={{ a: 1, b: 2 }}
-          dataLegend={{ a: ['A'], b: ['B'] }}
-          pieChartId="test"
-          dataLegendHeader="Test"
-        />,
-        container,
-      );
+      render(<PieChart tasksData={mockTasksData} pieChartId="test" />, container);
     });
-    expect(container.textContent).toContain('Total Hours : 3.00');
+    expect(container.textContent).toContain('Total Hours:');
+    expect(container.textContent).toContain('3.00');
   });
 
   it('renders correct legend', () => {
     act(() => {
-      render(
-        <PieChart
-          data={{ a: 1, b: 2 }}
-          dataLegend={{ a: ['A'], b: ['B'] }}
-          pieChartId="test"
-          dataLegendHeader="Test"
-        />,
-        container,
-      );
+      render(<PieChart tasksData={mockTasksData} pieChartId="test" />, container);
     });
     expect(container.textContent).toContain('A');
     expect(container.textContent).toContain('B');
@@ -60,85 +46,51 @@ describe('PieChart', () => {
 
   it('applies dark mode class correctly', () => {
     act(() => {
-      render(
-        <PieChart
-          data={{ a: 1, b: 2 }}
-          dataLegend={{ a: ['A'], b: ['B'] }}
-          pieChartId="test"
-          dataLegendHeader="Test"
-          darkMode={true}
-        />,
-        container,
-      );
+      render(<PieChart tasksData={mockTasksData} pieChartId="test" darkMode />, container);
     });
 
-    // Check if the dark mode class 'text-light' is applied
     const pieChartWrapper = container.querySelector('.pie-chart-wrapper');
     expect(pieChartWrapper.classList.contains('text-light')).toBe(true);
   });
 
   it('renders the SVG pie chart', () => {
     act(() => {
-      render(
-        <PieChart
-          data={{ a: 1, b: 2 }}
-          dataLegend={{ a: ['A'], b: ['B'] }}
-          pieChartId="test"
-          dataLegendHeader="Test"
-        />,
-        container,
-      );
+      render(<PieChart tasksData={mockTasksData} pieChartId="test" />, container);
     });
 
-    // Check if the SVG element is rendered
     const svgElement = container.querySelector('svg');
     expect(svgElement).toBeInTheDocument();
-
-    // Ensure correct number of pie slices (based on the data length)
     const paths = svgElement.querySelectorAll('path');
-    expect(paths.length).toBe(2); // since we have 2 data entries (a and b)
+    expect(paths.length).toBe(2); // 2 entries
   });
 
   it('generates the correct number of unique colors', () => {
+    const data = [
+      { projectId: 'a', projectName: 'A', totalTime: 1 },
+      { projectId: 'b', projectName: 'B', totalTime: 2 },
+      { projectId: 'c', projectName: 'C', totalTime: 3 },
+      { projectId: 'd', projectName: 'D', totalTime: 4 },
+    ];
+
     act(() => {
-      render(
-        <PieChart
-          data={{ a: 1, b: 2, c: 3, d: 4 }}
-          dataLegend={{ a: ['A'], b: ['B'], c: ['C'], d: ['D'] }}
-          pieChartId="test"
-          dataLegendHeader="Test"
-        />,
-        container,
-      );
+      render(<PieChart tasksData={data} pieChartId="test" />, container);
     });
 
-    // Ensure 4 unique colors are generated (since we have 4 data entries)
-    const legendItems = container.querySelectorAll('.data-legend-color');
+    const legendItems = container.querySelectorAll('#project-chart-legend');
     expect(legendItems.length).toBe(4);
   });
 
   it('removes SVG on unmount', () => {
     act(() => {
-      render(
-        <PieChart
-          data={{ a: 1, b: 2 }}
-          dataLegend={{ a: ['A'], b: ['B'] }}
-          pieChartId="test"
-          dataLegendHeader="Test"
-        />,
-        container,
-      );
+      render(<PieChart tasksData={mockTasksData} pieChartId="test" />, container);
     });
 
-    // Check if the SVG element is present initially
     expect(container.querySelector('svg')).toBeInTheDocument();
 
-    // Unmount the component
     act(() => {
       unmountComponentAtNode(container);
     });
 
-    // After unmounting, the SVG should be removed
     expect(container.querySelector('svg')).toBeNull();
   });
 });
