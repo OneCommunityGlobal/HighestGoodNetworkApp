@@ -1180,7 +1180,7 @@ function UserProfile(props) {
           <h6 className={darkMode ? 'text-light' : 'text-azure'}>{jobTitle}</h6>
           <p className={`proile-rating ${darkMode ? 'text-light' : ''}`}>
             {/* use converted date without tz otherwise the record's will updated with timezoned ts for start date.  */}
-            From :{' '}
+            From:{' '}
             <span className={darkMode ? 'text-light' : ''}>
               {formatDateLocal(userProfile.startDate)}
             </span>
@@ -1442,7 +1442,7 @@ function UserProfile(props) {
                   </Button>
                 </Link>
               )}
-              {canEdit && activeTab && (
+              {(canEdit && activeTab || canEditTeamCode) && (
                 <>
                   <SaveButton
                     className="mr-1 btn-bottom"
