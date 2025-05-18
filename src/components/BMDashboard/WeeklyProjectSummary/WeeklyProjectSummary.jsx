@@ -273,11 +273,7 @@ export default function WeeklyProjectSummary() {
           const uniqueId = uuidv4();
           return (
             <div key={uniqueId} className="weekly-project-summary-card normal-card">
-              {index === 3 ? (
-                <ActualVsPlannedCost/>
-              ) : (
-                '📊 Card'
-              )}
+              {index === 3 ? <ActualVsPlannedCost /> : '📊 Card'}
             </div>
           );
         }),

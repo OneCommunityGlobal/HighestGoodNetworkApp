@@ -94,9 +94,10 @@ export const ENDPOINTS = {
     `${APIEndpoint}/userProfile/authorizeUser/weeeklySummaries`,
   TOTAL_ORG_SUMMARY: (startDate, endDate, comparisonStartDate, comparisonEndDate) =>
     `${APIEndpoint}/reports/volunteerstats?startDate=${startDate}&endDate=${endDate}&comparisonStartDate=${comparisonStartDate}&comparisonEndDate=${comparisonEndDate}`,
-  VOLUNTEER_TRENDS: (timeFrame, offset, customStartDate, customEndDate ) => 
-    `${APIEndpoint}/reports/volunteertrends?timeFrame=${timeFrame}&offset=${offset}${customStartDate ? `&customStartDate=${customStartDate}`: ''}${customEndDate ? `&customEndDate=${customEndDate}`: ''}`
-  ,
+  VOLUNTEER_TRENDS: (timeFrame, offset, customStartDate, customEndDate) =>
+    `${APIEndpoint}/reports/volunteertrends?timeFrame=${timeFrame}&offset=${offset}${
+      customStartDate ? `&customStartDate=${customStartDate}` : ''
+    }${customEndDate ? `&customEndDate=${customEndDate}` : ''}`,
   HOURS_TOTAL_ORG_SUMMARY: (startDate, endDate) =>
     `${APIEndpoint}/reports/overviewsummaries/taskandprojectstats?startDate=${startDate}&endDate=${endDate}`,
   VOLUNTEER_ROLES_TEAM_STATS: (endDate, activeMembersMinimum) =>
@@ -206,7 +207,7 @@ export const ENDPOINTS = {
   BM_EQUIPMENT_TYPES: `${APIEndpoint}/bm/invtypes/equipments`,
   BM_EQUIPMENT_PURCHASE: `${APIEndpoint}/bm/equipment/purchase`,
   BM_PROJECTS: `${APIEndpoint}/bm/projects`,
-  BM_PROJECT_EXPENSE_BY_ID: (projectId) => `${APIEndpoint}/bm/project/${projectId}/expenses`,
+  BM_PROJECT_EXPENSE_BY_ID: projectId => `${APIEndpoint}/bm/project/${projectId}/expenses`,
   BM_PROJECT_BY_ID: projectId => `${APIEndpoint}/project/${projectId}`,
   BM_UPDATE_MATERIAL: `${APIEndpoint}/bm/updateMaterialRecord`,
   BM_UPDATE_MATERIAL_BULK: `${APIEndpoint}/bm/updateMaterialRecordBulk`,
