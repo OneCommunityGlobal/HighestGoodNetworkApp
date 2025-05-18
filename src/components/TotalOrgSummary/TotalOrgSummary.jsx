@@ -121,12 +121,6 @@ function TotalOrgSummary(props) {
   const comparisonStartDate = '2025-01-16';
   const comparisonEndDate = '2025-01-26';
   const [isLoading, setIsLoading] = useState(true);
-  const [taskProjectHours, setTaskProjectHours] = useState({
-    taskHours: 0,
-    projectHours: 0,
-    lastTaskHours: 0,
-    lastProjectHours: 0,
-  });
 
   const dispatch = useDispatch();
 
@@ -415,28 +409,6 @@ function TotalOrgSummary(props) {
         });
     }
   }, [allUsersTimeEntries, usersId, fromOverDate, toOverDate]);
-  useEffect(() => {
-    async function fetchData() {
-      const {
-        taskHours: { count: taskHours },
-        projectHours: { count: projectHours },
-      } = await props.getTaskAndProjectStats(fromDate, toDate);
-      const {
-        taskHours: { count: lastTaskHours },
-        projectHours: { count: lastProjectHours },
-      } = await props.getTaskAndProjectStats(fromOverDate, toOverDate);
-
-      if (taskHours && projectHours) {
-        setTaskProjectHours({
-          taskHours,
-          projectHours,
-          lastTaskHours,
-          lastProjectHours,
-        });
-      }
-    }
-    fetchData();
-  }, [fromDate, toDate, fromOverDate, toOverDate, props]);
 
   useEffect(() => {
     const fetchVolunteerStats = async () => {
@@ -457,8 +429,6 @@ function TotalOrgSummary(props) {
 
     fetchVolunteerStats();
   }, [fromDate, toDate, props]);
-
-  const { taskHours, projectHours, lastTaskHours, lastProjectHours } = taskProjectHours;
 
   if (error || isVolunteerFetchingError) {
     return (
