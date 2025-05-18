@@ -71,7 +71,7 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode
       const response = await axios.get(ENDPOINTS.PERMISSION_CHANGE_LOGS(auth?.user.userid));
       setChangeLogs(response.data);
       setLoading(false);
-    } catch (error) {
+    } catch (fetchError) {
       // Removed console.error statement
     }
   };
@@ -81,7 +81,7 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode
 
     getInfoCollections();
     getUserRole(auth?.user.userid);
-    const getChangeLogs = async () => {
+    const fetchChangeLogs = async () => {
       try {
         const response = await axios.get(ENDPOINTS.PERMISSION_CHANGE_LOGS(auth?.user.userid));
         setChangeLogs(response.data);
@@ -92,7 +92,7 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode
       }
     };
 
-    getChangeLogs();
+    fetchChangeLogs();
   }, [auth?.user.userid]);
 
   const role = userProfile?.role;
