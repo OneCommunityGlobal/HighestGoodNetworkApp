@@ -91,6 +91,7 @@ import EventStats from './components/CommunityPortal/EventPersonalization/EventS
 import Resources from './components/CommunityPortal/Activities/activityId/Resources';
 
 import EventParticipation from './components/CommunityPortal/Reports/Participation/EventParticipation';
+import NoShowList from './components/CommunityPortal/Activities/NoShow/NoShowList';
 
 import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
@@ -463,6 +464,7 @@ export default (
           path="/communityportal/Activities/:activityid/Resources"
           exact component={Resources}
         />
+        <CPProtectedRoute path="/communityportal/activity/:activityId/logattendance" exact component={NoShowList} />
 
 
         {/* Listing and Bidding Routes */}
