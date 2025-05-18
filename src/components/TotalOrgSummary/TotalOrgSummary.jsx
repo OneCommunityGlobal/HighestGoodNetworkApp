@@ -36,7 +36,6 @@ import WorkDistributionBarChart from './VolunteerRolesTeamDynamics/WorkDistribut
 import VolunteerTrendsLineChart from './VolunteerTrendsLineChart/VolunteerTrendsLineChart';
 import GlobalVolunteerMap from './GlobalVolunteerMap/GlobalVolunteerMap';
 import TaskCompletedBarChart from './TaskCompleted/TaskCompletedBarChart';
-import ActualCostBreakdownDonut from './AcutalCostBreakdown/ActualCostBreakdownDonut'
 
 function calculateFromDate() {
   const currentDate = new Date();
@@ -480,8 +479,9 @@ function TotalOrgSummary(props) {
   return (
     <Container
       fluid
-      className={`container-total-org-wrapper py-3 mb-5 ${darkMode ? 'bg-oxford-blue text-light' : 'cbg--white-smoke'
-        }`}
+      className={`container-total-org-wrapper py-3 mb-5 ${
+        darkMode ? 'bg-oxford-blue text-light' : 'cbg--white-smoke'
+      }`}
     >
       <Row className="report-header-row">
         <Col lg={{ size: 6 }} className="report-header-title">
@@ -677,19 +677,6 @@ function TotalOrgSummary(props) {
           </Col>
         </Row>
       </AccordianWrapper>
-      <AccordianWrapper title="Cost Breakdown by Expenditure">
-        <Row>
-          <Col lg={{ size: 12 }}>
-            <div className="component-container component-border">
-              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
-                <p>Actual Cost Breakdown</p>
-              </div>
-              <ActualCostBreakdownDonut />
-            </div>
-          </Col>
-        </Row>
-      </AccordianWrapper>
-
     </Container>
   );
 }
