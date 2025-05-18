@@ -2,7 +2,6 @@ import { projectByIdReducer } from '../projectByIdReducer';
 import { GET_PROJECT_BY_ID } from '../../constants/project';
 
 describe('projectByIdReducer', () => {
-
   it('should return the initial state if no action is provided', () => {
     const initialState = null;
     const action = { type: 'UNKNOWN_ACTION' };
@@ -15,12 +14,12 @@ describe('projectByIdReducer', () => {
     const projectData = {
       id: 1,
       name: 'Test Project',
-      description: 'This is a test project'
+      description: 'This is a test project',
     };
 
     const action = {
       type: GET_PROJECT_BY_ID,
-      payload: projectData
+      payload: projectData,
     };
 
     const state = projectByIdReducer(null, action);
@@ -34,12 +33,12 @@ describe('projectByIdReducer', () => {
     const updatedProject = {
       id: 1,
       name: 'Updated Project',
-      description: 'New project description'
+      description: 'New project description',
     };
 
     const action = {
       type: GET_PROJECT_BY_ID,
-      payload: updatedProject
+      payload: updatedProject,
     };
 
     const state = projectByIdReducer(initialState, action);
@@ -51,7 +50,7 @@ describe('projectByIdReducer', () => {
     const currentState = {
       id: 1,
       name: 'Test Project',
-      description: 'Current project description'
+      description: 'Current project description',
     };
 
     const action = {
@@ -62,5 +61,4 @@ describe('projectByIdReducer', () => {
 
     expect(state).toEqual(currentState);
   });
-
 });

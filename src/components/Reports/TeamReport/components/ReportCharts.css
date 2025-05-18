@@ -109,24 +109,28 @@
 @media screen and (min-width: 768px) and (max-width: 769px) {    
     .table-mobile {        
         max-width: 100%;
-        margin-left: 27.5rem;
+        overflow: auto;
+        /* background: white; */
     }
 }
 @media screen and (min-width: 319px) and (max-width: 374px) {    
     .table-mobile {        
         max-width: 100%;
-        margin-left: 32rem;
+        overflow: auto;
+        /* background: white; */
     }
 }
 @media screen and (min-width: 375px) and (max-width: 424px) {    
   .table-mobile {        
       max-width: 100%;
-      margin-left: 30rem;
+      overflow: auto;
+      /* background: white; */
   }
 }
 @media screen and (min-width: 425px) and (max-width: 767px) {    
   .table-mobile {        
       max-width: 100%;
-      margin-left: 28rem;
+      overflow: auto;
+      /* background: white; */
   }
 }
