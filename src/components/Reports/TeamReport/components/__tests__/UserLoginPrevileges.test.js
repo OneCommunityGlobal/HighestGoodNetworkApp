@@ -100,17 +100,6 @@ describe('UserLoginPrivileges Component', () => {
 
   // Test if the component works when given real team data
   test('renders charts and headings based on selectedTeams and allTeamsMembers data', () => {
-/*     const customProps = {
-    ...mockProps,
-    selectedTeams: [{ selectedTeam: { teamName: 'Team X' }, index: 0 }],
-    allTeamsMembers: [[
-      { name: 'Tiger', weeklycommittedHours: 10, infringements: [1, 2] },
-      { name: 'King', weeklycommittedHours: 15, infringements: [] }
-    ]]
-    };
-
-    render(<UserLoginPrivileges {...customProps} />); */
-
     render(
       <UserLoginPrivileges
         role={mockProps.role}
@@ -130,7 +119,7 @@ describe('UserLoginPrivileges Component', () => {
       />
     );
 
-    const weeklyCommittedHeading = screen.getByText('Weekly Commmited Hours');
+    const weeklyCommittedHeading = screen.getByText('Weekly Commited Hours');
     const hoursWorkedHeading = screen.getByText('Hours Worked In Current Week');
     const selectedTeamsHeading = screen.getByText('Selected Teams');
 
