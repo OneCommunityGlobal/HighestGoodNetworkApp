@@ -13,7 +13,6 @@ class InstagramLoginButton extends Component {
     const { appId, redirectUri, scope } = this.props;
     const uri = encodeURIComponent(redirectUri || window.location.href);
     scope.replace(/%2C/g, ',');
-    console.log("InstagramLoginButton buildCodeRequestURL: ", appId, uri, scope);
 
     return `https://api.instagram.com/oauth/authorize?app_id=${appId}&redirect_uri=${uri}&scope=${scope}&response_type=code`;
   }
@@ -31,7 +30,6 @@ class InstagramLoginButton extends Component {
     );
 
     if (popup) {
-      console.log("instagram login popup opened with props: ", this.props);
 
       const checkPopupClosed = setInterval(() => {
         if (popup.closed) {

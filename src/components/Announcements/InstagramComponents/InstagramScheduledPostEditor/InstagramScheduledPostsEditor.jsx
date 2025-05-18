@@ -3,6 +3,16 @@ import './InstagramScheduledPostsEditor.css';
 import { format } from 'date-fns';
 import { toast } from 'react-toastify';
 
+/**
+ * Component for displaying and managing scheduled Instagram posts
+ * 
+ * @param {Array} posts - List of scheduled Instagram posts
+ * @param {boolean} isLoading - Whether posts are currently loading
+ * @param {string} error - Error message if any
+ * @param {function} onDeletePost - Function to delete a post
+ * @param {function} onRefresh - Function to refresh post list
+ * @returns {JSX.Element} Scheduled posts interface
+ */
 function InstagramScheduledPostsEditor({ 
   posts = [], 
   isLoading = false, 
@@ -11,23 +21,61 @@ function InstagramScheduledPostsEditor({
   onRefresh = () => {}
 }) {
   const [expandedPostId, setExpandedPostId] = useState(null);
+  const [activeCategory, setActiveCategory] = useState('scheduled');
 
+  /**
+   * Toggles the expanded state of a post card
+   * 
+   * @param {string} postId - ID of the post to toggle expansion
+   */
   const handleExpandClick = (postId) => {
     setExpandedPostId(expandedPostId === postId ? null : postId);
   };
 
+  /**
+   * Handles the delete action for a scheduled post with confirmation
+   * 
+   * @param {string} postId - ID of the post to delete
+   * @returns {Promise<void>}
+   */
   const handleDeleteClick = async (postId) => {
     if (window.confirm('Are you sure you want to delete this scheduled post?')) {
       try {
         await onDeletePost(postId);
-        // toast.success('Scheduled post deleted successfully');
       } catch (error) {
-        // toast.error('Failed to delete scheduled post');
         console.error('Error deleting post:', error);
       }
     }
   };
 
+  /**
+   * Filters posts based on the selected category (scheduled/published/failed)
+   * 
+   * @returns {Array} Filtered posts based on active category
+   */
+  const getFilteredPosts = () => {
+    if (!posts || !posts.length) return [];
+    
+    switch(activeCategory) {
+      case 'scheduled':
+        return posts.filter(post => post.status === 'scheduled' || post.status === 'pending');
+      case 'published':
+        return posts.filter(post => post.status === 'published' || post.status === 'posted');
+      case 'failed':
+        return posts.filter(post => post.status === 'failed' || post.status === 'error');
+      default:
+        return posts;
+    }
+  };
+
+  const filteredPosts = getFilteredPosts();
+
+  /**
+   * Formats a date string into a user-friendly format
+   * 
+   * @param {string} dateString - ISO date string to format
+   * @returns {string} Formatted date string
+   */
   const formatScheduledDate = (dateString) => {
     try {
       const date = new Date(dateString);
@@ -79,10 +127,29 @@ function InstagramScheduledPostsEditor({
           Refresh
         </button>
       </div>
-
+      <div className="scheduled-posts-categories-header">
+        <button
+          onClick={() => setActiveCategory('scheduled')}
+          className={`scheduled-posts-tab-category ${activeCategory === 'scheduled' ? 'active' : ''}`}
+        >
+          Scheduled
+        </button>
+        <button
+          onClick={() => setActiveCategory('published')}
+          className={`scheduled-posts-tab-category ${activeCategory === 'published' ? 'active' : ''}`}
+        >
+          Posted
+        </button>
+        <button
+          onClick={() => setActiveCategory('failed')}
+          className={`scheduled-posts-tab-category ${activeCategory === 'failed' ? 'active' : ''}`}
+        >
+          Failed
+        </button>
+      </div>
       <div className="scheduled-posts-grid">
-        {posts && posts.length > 0 ? (
-          posts.map((post) => (
+        {filteredPosts && filteredPosts.length > 0 ? (
+          filteredPosts.map((post) => (
             <div 
               key={post._id} 
               className={`scheduled-post-card ${expandedPostId === post._id ? 'expanded' : ''}`}
@@ -136,7 +203,7 @@ function InstagramScheduledPostsEditor({
           ))
         ) : (
           <div className="no-posts-message">
-            <p>No scheduled posts found</p>
+            <p>No {activeCategory} posts found</p>
           </div>
         )}
       </div>

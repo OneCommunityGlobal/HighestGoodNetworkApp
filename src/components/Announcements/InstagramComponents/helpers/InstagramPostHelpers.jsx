@@ -4,11 +4,16 @@ import { toast } from "react-toastify";
 import { response } from "msw";
 import { convertToJPG, validateInstagramImage } from "./InstagramHelpers";
 
+/**
+ * Checks the authentication status of the Instagram connection
+ * 
+ * @param {function} setInstagramError
+ * @returns {Promise<Object|null>}
+ */
 export const checkInstagramAuthStatus = async (setInstagramError) => {
   try {
 
     const response = await axios.get(ENDPOINTS.GET_INSTAGRAM_AUTH_STATUS);
-    console.log("Instagram auth status response:", response.data);
     return response.data;
 
   } catch (error) {
@@ -19,10 +24,15 @@ export const checkInstagramAuthStatus = async (setInstagramError) => {
   }
 }
 
+/**
+ * Disconnects the current Instagram account from the application
+ * 
+ * @param {function} setInstagramError - State setter function for error messages
+ * @returns {Promise<void>}
+ */
 export const disconnectFromInstagram = async (setInstagramError) => {
   try {
     const response = await axios.delete(ENDPOINTS.DISCONNECT_INSTAGRAM);
-    console.log("Disconnect from Instagram response:", response.data);
     checkInstagramAuthStatus(setInstagramError);
     if (response.data.success) {
       toast.success("Successfully disconnected from Instagram.");
@@ -36,8 +46,19 @@ export const disconnectFromInstagram = async (setInstagramError) => {
   }
 }
 
+/**
+ * Posts an image to Instagram with the provided caption and file
+ * 
+ * @param {string} caption - The text caption for the Instagram post
+ * @param {File} file - The image file to upload
+ * @param {function} setInstagramError - State setter function for error messages
+ * @param {function} setCaption - State setter function to clear caption on success
+ * @param {function} setFile - State setter function to clear file on success
+ * @param {function} setImageResetKey - State setter function to reset image uploader
+ * @param {function} setButtonTextState - State setter function to update button text
+ * @returns {Promise<Object|null>} The Instagram API response or null if error
+ */
 export const postToInstagram = async (caption, file, setInstagramError, setCaption, setFile, setImageResetKey, setButtonTextState) => {
-  console.log("postToInstagram called with caption:", caption, "and file:", file);
   try {
     if (!caption) {
       setInstagramError("No caption provided. Please enter a caption for the post.");
@@ -56,7 +77,6 @@ export const postToInstagram = async (caption, file, setInstagramError, setCapti
       setInstagramError(validationResponse.message);
       return null;
     }
-    console.log("Image validation response:", validationResponse);
 
     const convertedFile = await convertToJPG(file);
     const imgurFormData = new FormData();
@@ -76,11 +96,8 @@ export const postToInstagram = async (caption, file, setInstagramError, setCapti
     }
     setButtonTextState("Imgur upload complete");
 
-    console.log("Imgur upload response:", imgurResponse.data);
     const imageURL = imgurResponse.data.data.link;
     const deleteHash = imgurResponse.data.data.deletehash;
-    console.log("Imgur image URL:", imageURL);
-    console.log("Imgur delete hash:", deleteHash);
 
     // Create Instagram container
     setButtonTextState("Creating Instagram container...");
@@ -93,7 +110,6 @@ export const postToInstagram = async (caption, file, setInstagramError, setCapti
       return null;
     }
     setButtonTextState("Instagram container created");
-    console.log("Instagram container response:", instagramContainerCreateResponse.data);
 
     const containerId = instagramContainerCreateResponse.data.id;
 
@@ -107,7 +123,6 @@ export const postToInstagram = async (caption, file, setInstagramError, setCapti
       return null;
     }
     setButtonTextState("Instagram container uploaded");
-    console.log("Instagram container upload response:", instagramContainerUploadResponse.data);
 
     // Delete the image from Imgur after posting to Instagram
     setButtonTextState("Deleting image from Imgur...");
@@ -119,7 +134,6 @@ export const postToInstagram = async (caption, file, setInstagramError, setCapti
       return null;
     }
     setButtonTextState("Imgur image deleted");
-    console.log("Imgur image deletion response:", deleteImgurResponse.data);
 
     setCaption("");
     setFile(null);

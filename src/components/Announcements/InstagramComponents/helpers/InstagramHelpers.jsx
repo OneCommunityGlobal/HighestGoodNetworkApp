@@ -1,3 +1,9 @@
+/**
+ * Converts any image format to JPG for Instagram compatibility
+ * 
+ * @param {File} file - The image file to convert
+ * @returns {Promise<File>} Converted JPG file
+ */
 export const convertToJPG = (file) => {
   return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -44,6 +50,12 @@ export const convertToJPG = (file) => {
   });
 };
 
+/**
+ * Validates if an image meets Instagram's requirements
+ * 
+ * @param {File} file - The image file to validate
+ * @returns {Promise<{isValid: boolean, message: string, file: File}>} Validation result
+ */
 export const validateInstagramImage = (file) => {
   const INSTAGRAM_MIN_SIZE = 320; // px (minimum dimension)
   const INSTAGRAM_MAX_SIZE = 1080; // px (Instagram will resize larger images)

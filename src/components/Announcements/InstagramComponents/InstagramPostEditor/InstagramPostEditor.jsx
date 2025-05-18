@@ -12,6 +12,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faTimesCircle, faClock, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 
 const MAX_CAPTION_CHARACTERS = 2200; 
+
+/**
+ * Instagram Post Editor component that allows users to create, schedule, and manage Instagram posts
+ * 
+ * @param {boolean} instagramConnectionStatus - Whether the user is connected to Instagram
+ * @param {function} setInstagramConnectionStatus - Function to update Instagram connection status
+ * @returns {JSX.Element} Instagram post editor interface
+ */
 function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionStatus}) {
   const [characterCount, setCharacterCount] = useState(0);
   const [isExceedingLimit, setIsExceedingLimit] = useState(false);
@@ -53,6 +61,9 @@ function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionS
   }, []);
 
 
+  /**
+   * Updates minimum allowed time for scheduled posts based on selected date
+   */
   useEffect(() => {
     if (!startDate) return;
 
@@ -67,17 +78,25 @@ function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionS
     }
   }, [startDate]);
 
+  /**
+   * Handles date selection for post scheduling
+   * 
+   * @param {Date} date - Selected date and time for scheduling
+   */
   const handleDateChange = (date) => {
     setStartDate(date);
     setIsScheduled(false);
   }
 
+  /**
+   * Attempts to authenticate with Instagram and sets connection state
+   * 
+   * @returns {Promise<void>}
+   */
   const handleInstagramLoginSuccess = async () => {
     const status = await checkInstagramAuthStatus(setInstagramError);
-    console.log('status from handleInstagramLoginSuccess:', status);
 
     if (status && status.success === true) {
-      console.log('Instagram login successful');
       setInstagramConnectionStatus(true);
       setInstagramError('');
       setInstagramAuthInfo({
@@ -92,6 +111,13 @@ function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionS
     }
   }
 
+  /**
+   * Sends a post immediately to Instagram
+   * 
+   * @param {string} caption - Text caption for the post
+   * @param {File} file - Image file to upload
+   * @returns {Promise<void>}
+   */
   const handlePostToInstagram = async (caption, file) => {
     setIsLoading(true);
     setIsPosting(true);
@@ -108,13 +134,17 @@ function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionS
 
   const handleFileSelect = (selectedFile) => {
     setFile(selectedFile);
-    console.log('File selected:', selectedFile);
   };
 
   const getCharacterCount = (text) => {
     return [...text].length; 
   };
 
+  /**
+   * Updates caption text and validates against character limits
+   * 
+   * @param {React.ChangeEvent<HTMLTextAreaElement>} e - Change event
+   */
   const handleCaptionChange = (e) => {
     const newCaption = e.target.value;
     const characterCount = getCharacterCount(newCaption);
@@ -125,6 +155,12 @@ function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionS
     setCaption(e.target.value);
   }
 
+  /**
+   * Deletes a scheduled Instagram post
+   * 
+   * @param {string} postId - ID of the post to delete
+   * @returns {Promise<void>}
+   */
   const handleDeletePost = async (postId) => {
     const response = await deleteInstagramScheduledPost(postId, setScheduledPostsError);
     if (response && response.success) {
@@ -139,6 +175,11 @@ function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionS
     );
   }
 
+  /**
+   * Schedules a post for future publication
+   * 
+   * @returns {Promise<void>}
+   */
   const handleSchedulePost = () => {
     setScheduledButtonTextState("Scheduling post...");
     setIsScheduling(true);
@@ -166,6 +207,9 @@ function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionS
     setScheduledButtonTextState("");
   }
 
+  /**
+   * Disconnects from Instagram and resets authentication state
+   */
   const handleInstagramDisconnect = () => {
     disconnectFromInstagram(setInstagramError);
     checkInstagramAuthStatus(setInstagramError);
@@ -272,8 +316,6 @@ function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionS
                   isLoading ? "Loading..." : ""
                 }
                 onClick={() => {
-                  console.log('Caption:', caption);
-                  console.log('File:', file);
                   handlePostToInstagram(caption, file);
                 }}
               >
@@ -330,7 +372,6 @@ function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionS
             isLoading={isLoadingScheduledPosts}
             error={scheduledPostsError}
             onDeletePost={(postId) => {
-              console.log('Deleting post:', postId);
               handleDeletePost(postId);
             }}
             onRefresh={() => {

@@ -4,11 +4,18 @@ import { ENDPOINTS } from "utils/URL";
 import { set } from 'lodash';
 import { convertToJPG, validateInstagramImage } from './InstagramHelpers';
 
+/**
+ * Fetches the scheduled posts from the server and updates the state
+ * 
+ * @param {function} setScheduledPosts - State setter for scheduled posts
+ * @param {function} setScheduledPostsError - State setter for error messages
+ * @param {function} setIsLoadingScheduledPosts - State setter for loading status
+ * @returns {Promise<void>}
+ */
 export const getInstagramScheduledPosts = async (setScheduledPosts, setScheduledPostsError, setIsLoadingScheduledPosts) => {
   setIsLoadingScheduledPosts(true);
   try {
     const response = await axios.get(ENDPOINTS.GET_INSTAGRAM_SCHEDULED_POSTS);
-    console.log("Instagram scheduled posts response:", response.data);
     
     if (response.data && response.data.success && Array.isArray(response.data.posts)) {
       setScheduledPosts(response.data.posts);
@@ -29,8 +36,17 @@ export const getInstagramScheduledPosts = async (setScheduledPosts, setScheduled
   }
 }
 
+/**
+ * Schedules an Instagram post with the provided date, caption, and image
+ * 
+ * @param {Date} startDate - Scheduled date and time for the post
+ * @param {string} caption - Caption text for the post
+ * @param {File} file - Image file for the post
+ * @param {function} setScheduledButtonTextState - State setter for button text
+ * @param {function} setScheduledPostsError - State setter for error messages
+ * @returns {Promise<Object|null>} Response data or null on error
+ */
 export const scheduleInstagramPost = async (startDate, caption, file, setScheduledButtonTextState,  setScheduledPostsError) => {
-  console.log('startDate:', startDate);
   if (!startDate) {
     setScheduledPostsError('Please select a date and time to schedule the post.');
     return null;
@@ -44,13 +60,14 @@ export const scheduleInstagramPost = async (startDate, caption, file, setSchedul
     return null;
   }
 
-  console.log('Scheduled post date:', startDate);
 
   const formattedDate = startDate.toISOString();
-  console.log('Formatted date:', formattedDate);
-  console.log('Caption:', caption);
-  console.log('File:', file);
   
+  /**
+   * * Validate the image file and convert it to JPG format.
+   * * Upload the image to Imgur and get the image URL and delete hash.
+   * * Schedule the Instagram post with the image URL and delete hash.
+   */
   try {
     setScheduledButtonTextState("Validating image...");
     const imageValidation = await validateInstagramImage(file);
@@ -65,7 +82,6 @@ export const scheduleInstagramPost = async (startDate, caption, file, setSchedul
     imgurFormData.append("image", convertedFile);
 
     setScheduledButtonTextState("Uploading image to Imgur...");
-    console.log("Imgur upload form data:", imgurFormData);
     const imgurResponse = await axios.post(ENDPOINTS.POST_IMGUR_IMAGE, imgurFormData, {
       headers: {
         "Content-Type": "multipart/form-data",
@@ -76,7 +92,6 @@ export const scheduleInstagramPost = async (startDate, caption, file, setSchedul
       return null;
     }
     setScheduledButtonTextState("Imgur upload complete");
-    console.log("Imgur upload response:", imgurResponse.data);
     const imageURL = imgurResponse.data.data.link;
     const deleteHash = imgurResponse.data.data.deletehash;
 
@@ -101,6 +116,13 @@ export const scheduleInstagramPost = async (startDate, caption, file, setSchedul
   }
 }
 
+/**
+ * Deletes a scheduled Instagram post with the given post ID
+ * 
+ * @param {string} postId - ID of the post to delete
+ * @param {function} setScheduledPostsError - State setter for error messages
+ * @returns {Promise<Object|null>} Response data or null on error
+ */
 export const deleteInstagramScheduledPost = async (postId, setScheduledPostsError) => {
   if (!postId) {
     setScheduledPostsError("Cannot delete post: Missing post ID");

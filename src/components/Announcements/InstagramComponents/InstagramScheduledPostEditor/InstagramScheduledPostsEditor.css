@@ -61,6 +61,26 @@
   transition: background-color 0.2s;
 }
 
+.scheduled-posts-categories-header {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.scheduled-posts-tab-category {
+  padding: 10px 15px;
+  font-size: 14px;
+  border: 1px solid #a8a8a8;
+}
+
+.scheduled-posts-tab-category.active {
+  background-color: #ffffff;
+  border-bottom: 2px solid #0095f6;
+  font-weight: bold;
+}
+
+
 .refresh-button:hover {
   background-color: #0077b5;
 }

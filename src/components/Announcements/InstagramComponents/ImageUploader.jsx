@@ -1,11 +1,21 @@
 import { useState, useRef, useEffect } from 'react';
 import { FaPlus } from 'react-icons/fa';
 
+/**
+ * Component for uploading and previewing Instagram post images
+ * 
+ * @param {function} onImageSelect - Callback function when image is selected
+ * @param {number} resetKey - Key to trigger component reset
+ * @returns {JSX.Element} Image uploader interface
+ */
 function ImageUploader({ onImageSelect, resetKey = 0 }) {
   const [isDragging, setIsDragging] = useState(false);
   const [previewUrl, setPreviewUrl] = useState(null);
   const fileInputRef = useRef(null);
 
+  /**
+   * Resets the component when resetKey changes
+   */
   useEffect(() => {
     if (resetKey > 0) {
       setPreviewUrl(null);
@@ -15,24 +25,44 @@ function ImageUploader({ onImageSelect, resetKey = 0 }) {
     }
   }, [resetKey]);
 
+  /**
+   * Handles drag enter event for drag and drop functionality
+   * 
+   * @param {React.DragEvent} e - Drag event
+   */
   const handleDragEnter = (e) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(true);
   };
 
+  /**
+   * Handles drag leave event for drag and drop functionality
+   * 
+   * @param {React.DragEvent} e - Drag event
+   */
   const handleDragLeave = (e) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(false);
   };
 
+  /**
+   * Handles drag over event for drag and drop functionality
+   * 
+   * @param {React.DragEvent} e - Drag event
+   */
   const handleDragOver = (e) => {
     e.preventDefault();
     e.stopPropagation();
     if (!isDragging) setIsDragging(true);
   };
 
+  /**
+   * Handles file drop event for drag and drop functionality
+   * 
+   * @param {React.DragEvent} e - Drop event containing files
+   */
   const handleDrop = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -43,16 +73,29 @@ function ImageUploader({ onImageSelect, resetKey = 0 }) {
     }
   };
 
+  /**
+   * Triggers file input click when upload area is clicked
+   */
   const handleClick = () => {
     fileInputRef.current.click();
   };
 
+  /**
+   * Handles file selection from file input
+   * 
+   * @param {React.ChangeEvent<HTMLInputElement>} e - Change event
+   */
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
       handleFiles(e.target.files[0]);
     }
   };
 
+  /**
+   * Processes selected file and creates preview URL
+   * 
+   * @param {File} file - Selected image file
+   */
   const handleFiles = (file) => {
     // Create preview URL
     const url = URL.createObjectURL(file);
