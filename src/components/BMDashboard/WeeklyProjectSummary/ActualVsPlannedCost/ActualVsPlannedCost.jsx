@@ -62,12 +62,12 @@ const ActualVsPlannedCost = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    if (projects.length) {
+    if (!selectedProject && projects.length) {
       const firstId = projects[0]._id;
       setSelectedProject(firstId);
       fetchExpenses(firstId);
     }
-  }, [projects]);
+  }, [projects, selectedProject]);
 
   const categories = ['Overall', ...Array.from(new Set(breakdown.map(d => d.category)))];
 
