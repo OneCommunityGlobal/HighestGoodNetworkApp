@@ -1,4 +1,3 @@
-import React from "react";
 import { Stub } from "components/common/Stub";
 import "./WbsTable.css";
 import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
@@ -24,7 +23,7 @@ export function WbsTable({ wbs, skip, take, match, canViewWBS, darkMode }) {
         <div className="projects__active--input">
           {item.isActive ? (
             <div className="isActive">
-              <i className="fa fa-circle" aria-hidden="true"></i>
+              <i className="fa fa-circle" aria-hidden="true" />
             </div>
           ) : (
             <div className="isNotActive">

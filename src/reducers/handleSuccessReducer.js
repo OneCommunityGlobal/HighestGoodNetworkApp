@@ -1,3 +1,4 @@
+// eslint-disable-next-line default-param-last
 export const handleSuccessReducer = (status = null, action) => {
   if (action.type === 'REQUEST_SUCCEEDED') {
     return action.payload;
@@ -9,3 +10,5 @@ export const handleSuccessReducer = (status = null, action) => {
 
   return status;
 };
+
+export default handleSuccessReducer;
