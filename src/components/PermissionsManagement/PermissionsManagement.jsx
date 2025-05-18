@@ -9,7 +9,6 @@ import { useHistory } from 'react-router-dom';
 import { FaInfoCircle } from 'react-icons/fa'; // Importing react-icons for the info icon
 import ReactTooltip from 'react-tooltip'; // Importing react-tooltip for tooltip functionality
 // eslint-disable-next-line import/named
-import { getAllUserProfile } from '../../actions/userProfile';
 import { updateUserProfile, getUserProfile } from '../../actions/userProfile';
 import { boxStyle, boxStyleDark } from '../../styles';
 import '../Header/DarkMode.css';
@@ -289,8 +288,6 @@ const mapDispatchToProps = dispatch => ({
   getInfoCollections: () => dispatch(getInfoCollections()),
   getAllRoles: () => dispatch(getAllRoles()),
   updateUserProfile: data => dispatch(updateUserProfile(data)),
-  getAllUsers: () => dispatch(getAllUserProfile()),
-  addNewRole: newRole => dispatch(addNewRole(newRole)),
   getUserRole: id => dispatch(getUserProfile(id)),
   hasPermission: action => dispatch(hasPermission(action)),
 });
