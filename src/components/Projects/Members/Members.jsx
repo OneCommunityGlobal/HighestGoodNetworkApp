@@ -3,7 +3,7 @@
  * Author: Henry Ng - 01/25/20
  * Display members of the project
  ********************************************************************************/
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { NavItem } from 'reactstrap';
 import { connect } from 'react-redux';
@@ -64,11 +64,13 @@ const Members = props => {
   }, [props.state.projectMembers.members, isLoading]);
 
   // ADDED: State for toggling display of active members only
-  const [showActiveMembersOnly, setShowActiveMembersOnly] = useState(false);
+  const [showActiveMembersOnly, setShowActiveMembersOnly] = useState(true);
 
-  const displayedMembers = showActiveMembersOnly
-    ? membersList.filter(member => member.isActive)
-    : membersList;
+  // avoid re-filtering the netire list on every render
+  const displayedMembers = useMemo(
+    () => (showActiveMembersOnly ? membersList.filter(member => member.isActive) : membersList),
+    [membersList, showActiveMembersOnly]
+  );
 
   const handleToggle = async () => {
     setShowActiveMembersOnly(prevState => !prevState);
@@ -79,21 +81,26 @@ const Members = props => {
   // Waits for user to finsh typing before calling API
   const handleInputChange = event => {
     const currentValue = event.target.value;
-
+  
     if (lastTimeoutId !== null) clearTimeout(lastTimeoutId);
-
+  
     const timeoutId = setTimeout(() => {
-      props.findUserProfiles(currentValue);
-      setShowFindUserList(true);
+      // Only call findUserProfiles if there's actual search text
+      if (currentValue && currentValue.trim() !== '') {
+        props.findUserProfiles(currentValue);
+        setShowFindUserList(true);
+      } else {
+        setShowFindUserList(false);
+      }
     }, 300);
-
+  
     setLastTimeoutId(timeoutId);
   };
 
   return (
     <React.Fragment>
-      <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: "100%" }}>
-        <div className="container pt-2">
+      <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{minHeight: "100%"}}>
+        <div className={`container pt-2 ${darkMode ? 'bg-yinmn-blue-light text-light' : ''}`}>
           <nav aria-label="breadcrumb">
             <ol className={`breadcrumb ${darkMode ? 'bg-space-cadet' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>
               <NavItem tag={Link} to={`/projects/`}>
@@ -108,13 +115,13 @@ const Members = props => {
           {canAssignProjectToUsers ? (
             <div className="input-group" id="new_project">
               <div className="input-group-prepend">
-                <span className="input-group-text">Find user</span>
+                <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>Find user</span>
               </div>
 
               <input
                 autoFocus
                 type="text"
-                className="form-control"
+                className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
                 aria-label="Search user"
                 placeholder="Name"
                 onChange={e => handleInputChange(e)}

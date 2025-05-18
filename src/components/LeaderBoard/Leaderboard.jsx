@@ -26,15 +26,15 @@ import {
   viewZeroHouraMembers,
 } from 'utils/leaderboardPermissions';
 import hasPermission from 'utils/permissions';
-import MouseoverTextTotalTimeEditButton from 'components/mouseoverText/MouseoverTextTotalTimeEditButton';
+// import MouseoverTextTotalTimeEditButton from 'components/mouseoverText/MouseoverTextTotalTimeEditButton';
 import { toast } from 'react-toastify';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import moment from 'moment-timezone';
 import { boxStyle } from 'styles';
 import axios from 'axios';
 import { getUserProfile } from 'actions/userProfile';
-import { useDispatch } from 'react-redux';
-import { boxStyleDark } from 'styles';
+import { useDispatch, useSelector } from 'react-redux';
+import { boxStyleDark } from '../../styles';
 import '../Header/DarkMode.css';
 import '../UserProfile/TeamsAndProjects/autoComplete.css';
 import { ENDPOINTS } from '../../utils/URL';
@@ -70,9 +70,9 @@ function displayDaysLeft(lastDay) {
 function LeaderBoard({
   getLeaderboardData,
   getOrgData,
-  getMouseoverText,
+  // getMouseoverText,
   leaderBoardData,
-  loggedInUser,
+  displayUserRole,
   organizationData,
   timeEntries,
   isVisible,
@@ -84,16 +84,17 @@ function LeaderBoard({
   getWeeklySummaries,
   setFilteredUserTeamIds,
 }) {
-  const userId = displayUserId;
   const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
   const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon'); // ??? this permission doesn't exist?
-  const isOwner = ['Owner'].includes(loggedInUser.role);
+
+  // const isOwner = ['Owner'].includes(loggedInUser.role);
 
   const [mouseoverTextValue, setMouseoverTextValue] = useState(totalTimeMouseoverText);
   const dispatch = useDispatch();
+  const loggedInUser = useSelector(state => state.auth.user);
 
   useEffect(() => {
-    getMouseoverText();
+    // getMouseoverText();
     setMouseoverTextValue(totalTimeMouseoverText);
   }, [totalTimeMouseoverText]);
   const [teams, setTeams] = useState([]);
@@ -103,6 +104,7 @@ function LeaderBoard({
   const [userRole, setUserRole] = useState();
   const [teamsUsers, setTeamsUsers] = useState([]);
   const [innerWidth, setInnerWidth] = useState();
+  const [isAbbreviatedView, setIsAbbreviatedView] = useState(false);
 
   const [isDisplayAlert, setIsDisplayAlert] = useState(false);
   const [stateOrganizationData, setStateOrganizationData] = useState(organizationData);
@@ -110,7 +112,7 @@ function LeaderBoard({
   const refTeam = useRef([]);
   const refInput = useRef('');
 
-  const hasTimeOffIndicatorPermission = hasLeaderboardPermissions(loggedInUser.role);
+  const hasTimeOffIndicatorPermission = hasLeaderboardPermissions(displayUserRole);
 
   const [searchInput, setSearchInput] = useState('');
   const [filteredUsers, setFilteredUsers] = useState(teamsUsers);
@@ -131,7 +133,7 @@ function LeaderBoard({
     };
 
     fetchInitial();
-  }, []);
+  }, [displayUserId]);
 
   useEffect(() => {
     if (usersSelectedTeam === 'Show all') setStateOrganizationData(organizationData);
@@ -146,6 +148,18 @@ function LeaderBoard({
   useEffect(() => {
     setInnerWidth(window.innerWidth);
   }, [window.innerWidth]);
+
+  useEffect(() => {
+    const checkAbbreviatedView = () => {
+      const isAbbrev = window.innerWidth < window.screen.width * 0.75;
+      setIsAbbreviatedView(isAbbrev);
+    };
+
+    checkAbbreviatedView(); // run on mount
+    window.addEventListener('resize', checkAbbreviatedView);
+
+    return () => window.removeEventListener('resize', checkAbbreviatedView);
+  }, []);
 
   const updateOrganizationData = (usersTaks, contUsers) => {
     // prettier-ignore
@@ -170,7 +184,6 @@ function LeaderBoard({
     );
     setStateOrganizationData(newOrganizationData);
   };
-
   const renderTeamsList = async team => {
     setIsDisplayAlert(false);
     if (!team || team === 'Show all') {
@@ -212,20 +225,20 @@ function LeaderBoard({
     } else renderTeamsList(usersSelectedTeam);
   };
 
-  const handleMouseoverTextUpdate = text => {
-    setMouseoverTextValue(text);
-  };
+  // const handleMouseoverTextUpdate = text => {
+  //   setMouseoverTextValue(text);
+  // };
   useDeepEffect(() => {
-    getLeaderboardData(userId);
+    getLeaderboardData(displayUserId);
     getOrgData();
-  }, [timeEntries, userId]);
+  }, [timeEntries, displayUserId]);
 
   useDeepEffect(() => {
     try {
       if (window.screen.width < 540) {
         const scrollWindow = document.getElementById('leaderboard');
         if (scrollWindow) {
-          const elem = document.getElementById(`id${userId}`);
+          const elem = document.getElementById(`id${displayUserId}`);
 
           if (elem) {
             const topPos = elem.offsetTop;
@@ -245,6 +258,11 @@ function LeaderBoard({
   const dashboardClose = () => setIsDashboardOpen(false);
 
   const showDashboard = item => {
+    if (displayUserRole !== 'Owner' && displayUserRole !== 'Administrator') {
+      dashboardClose();
+      toast.error("You do not have permission to view other's dashboard.");
+      return;
+    }
     getWeeklySummaries(item.personId);
     dispatch(getUserProfile(item.personId)).then(user => {
       const { _id, role, firstName, lastName, profilePic, email } = user;
@@ -256,19 +274,19 @@ function LeaderBoard({
         email,
         profilePic: profilePic || '/pfp-default-header.png',
       };
-
       sessionStorage.setItem('viewingUser', JSON.stringify(viewingUser));
       window.dispatchEvent(new Event('storage'));
       dashboardClose();
     });
   };
+
   const updateLeaderboardHandler = async () => {
     setIsLoading(true);
     if (isEqual(leaderBoardData, teamsUsers)) {
-      await getLeaderboardData(userId);
+      await getLeaderboardData(displayUserId);
       setTeamsUsers(leaderBoardData);
     } else {
-      await getLeaderboardData(userId);
+      await getLeaderboardData(displayUserId);
       renderTeamsList(usersSelectedTeam);
     }
     setIsLoading(false);
@@ -300,21 +318,12 @@ function LeaderBoard({
       moment(mostRecentRequest.startingDate).isBefore(endOfWeek) &&
       moment(mostRecentRequest.endingDate).isSameOrAfter(startOfWeek);
 
-    // const isCurrentlyOff = moment().isBetween(
-    //   moment(mostRecentRequest.startingDate),
-    //   moment(mostRecentRequest.endingDate),
-    //   null,
-    //   '[]',
-    // );
-
     let additionalWeeks = 0;
-    // additional weeks until back
     if (isCurrentlyOff) {
       additionalWeeks = moment(mostRecentRequest.endingDate).diff(
         moment(moment().startOf('week')),
         'weeks',
       );
-      // weeks before time off
     } else if (moment().isBefore(moment(mostRecentRequest.startingDate))) {
       additionalWeeks = moment(mostRecentRequest.startingDate).diff(moment(), 'weeks') + 1;
     }
@@ -352,7 +361,6 @@ function LeaderBoard({
     refInput.current = e.target.value;
     // prettier-ignore
     const obj = {_id: 1, teamName: `This team is not found: ${e.target.value}`,}
-
     const searchTeam = formatSearchInput(e.target.value);
     if (searchTeam === '') setTeams(refTeam.current);
     else {
@@ -405,7 +413,7 @@ function LeaderBoard({
           <EditableInfoModal
             areaName="LeaderboardOrigin"
             areaTitle="Leaderboard"
-            role={loggedInUser.role}
+            role={displayUserRole}
             fontSize={24}
             darkMode={darkMode}
             isPermissionPage
@@ -519,7 +527,7 @@ function LeaderBoard({
                 <EditableInfoModal
                   areaName="LeaderboardInvisibleInfoPoint"
                   areaTitle="Leaderboard settings"
-                  role={loggedInUser.role}
+                  role={displayUserRole}
                   fontSize={24}
                   darkMode={darkMode}
                   isPermissionPage
@@ -530,7 +538,9 @@ function LeaderBoard({
           <div id="leaderboard" className="my-custom-scrollbar table-wrapper-scroll-y">
             <div className="search-container mx-1">
               <input
-                className="form-control col-12 mb-2"
+                className={`form-control col-12 mb-2 ${
+                  darkMode ? 'text-light bg-darkmode-liblack' : ''
+                }`}
                 type="text"
                 placeholder="Search users..."
                 value={searchInput}
@@ -540,20 +550,20 @@ function LeaderBoard({
             <Table
               className={`leaderboard table-fixed ${
                 darkMode ? 'text-light dark-mode bg-yinmn-blue' : ''
-              }`}
+              } ${isAbbreviatedView ? 'abbreviated-mode' : ''}`}
             >
               <thead className="responsive-font-size">
                 <tr className={darkMode ? 'bg-space-cadet' : ''} style={darkModeStyle}>
-                  <th data-abbr="Stat." style={darkModeStyle}>
-                    <span>Status</span>
+                  <th style={darkModeStyle}>
+                    <span>{isAbbreviatedView ? 'Stat.' : 'Status'}</span>
                   </th>
-                  <th data-abbr="Name" style={darkModeStyle}>
+                  <th style={darkModeStyle}>
                     <div className="d-flex align-items-center">
-                      <span>Name</span>
+                      <span>{isAbbreviatedView ? 'Name' : 'Name'}</span>
                       <EditableInfoModal
                         areaName="Leaderboard"
                         areaTitle="Team Members Navigation"
-                        role={loggedInUser.role}
+                        role={displayUserRole}
                         fontSize={18}
                         isPermissionPage
                         darkMode={darkMode}
@@ -561,20 +571,20 @@ function LeaderBoard({
                       />
                     </div>
                   </th>
-                  <th data-abbr="Days Lft." style={darkModeStyle}>
-                    <span>Days Left</span>
+                  <th style={darkModeStyle}>
+                    <span>{isAbbreviatedView ? 'Days Lft.' : 'Days Left'}</span>
                   </th>
-                  <th data-abbr="Time Off" style={darkModeStyle}>
-                    <span>Time Off</span>
+                  <th style={darkModeStyle}>
+                    <span>{isAbbreviatedView ? 'Time Off' : 'Time Off'}</span>
                   </th>
-                  <th data-abbr="Tan. Time" style={darkModeStyle}>
-                    <span>Tangible Time</span>
+                  <th style={darkModeStyle}>
+                    <span>{isAbbreviatedView ? 'Tan. Time' : 'Tangible Time'}</span>
                   </th>
-                  <th data-abbr="Prog." style={darkModeStyle}>
-                    <span>Progress</span>
+                  <th style={darkModeStyle}>
+                    <span>{isAbbreviatedView ? 'Prog.' : 'Progress'}</span>
                   </th>
+
                   <th
-                    data-abbr="Tot. Time"
                     style={
                       darkMode
                         ? { backgroundColor: '#3a506b', color: 'white', textAlign: 'right' }
@@ -583,29 +593,46 @@ function LeaderBoard({
                   >
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                       <div style={{ textAlign: 'left' }}>
-                        <span>Total Time</span>
+                        <span>{isAbbreviatedView ? 'Tot. Time' : 'Total Time'}</span>
                       </div>
-                      {isOwner && (
+                      {/*    {isOwner && (
                         <MouseoverTextTotalTimeEditButton onUpdate={handleMouseoverTextUpdate} />
-                      )}
+                      )} */}
                     </div>
                   </th>
                 </tr>
               </thead>
-
               <tbody className="my-custome-scrollbar responsive-font-size">
                 <tr className={darkMode ? 'dark-leaderboard-row' : 'light-leaderboard-row'}>
-                  <td aria-label="Placeholder" />
-                  <td className={`leaderboard-totals-container `}>
-                    <span>{stateOrganizationData.name}</span>
-                    {viewZeroHouraMembers(loggedInUser.role) && (
-                      <span className="leaderboard-totals-title">
-                        0 hrs Totals:{' '}
-                        {filteredUsers.filter(user => user.weeklycommittedHours === 0).length}{' '}
-                        Members
-                      </span>
-                    )}
-                  </td>
+                  {isAbbreviatedView ? (
+                    <td colSpan={2}>
+                      <div className="leaderboard-totals-container text-center">
+                        <span>{stateOrganizationData.name}</span>
+                        {viewZeroHouraMembers(loggedInUser.role) && (
+                          <span className="leaderboard-totals-title">
+                            0 hrs Totals:{' '}
+                            {filteredUsers.filter(user => user.weeklycommittedHours === 0).length}{' '}
+                            Members
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                  ) : (
+                    <>
+                      <td aria-label="Placeholder" />
+                      <td className="leaderboard-totals-container">
+                        <span>{stateOrganizationData.name}</span>
+                        {viewZeroHouraMembers(loggedInUser.role) && (
+                          <span className="leaderboard-totals-title">
+                            0 hrs Totals:{' '}
+                            {filteredUsers.filter(user => user.weeklycommittedHours === 0).length}{' '}
+                            Members
+                          </span>
+                        )}
+                      </td>
+                    </>
+                  )}
+
                   <td className="align-middle" aria-label="Description" />
                   <td className="align-middle">
                     <span title="Tangible time">
@@ -831,18 +858,6 @@ function LeaderBoard({
                               >
                                 <path d="M128 0c17.7 0 32 14.3 32 32V64H288V32c0-17.7 14.3-32 32-32s32 14.3 32 32V64h48c26.5 0 48 21.5 48 48v48H0V112C0 85.5 21.5 64 48 64H96V32c0-17.7 14.3-32 32-32zM0 192H448V464c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V192zm64 80v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm128 0v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H208c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H336zM64 400v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H208zm112 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H336c-8.8 0-16 7.2-16 16z" />
                               </svg>
-
-                              <i className="show-time-off-icon">
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="18"
-                                  height="18"
-                                  viewBox="0 0 512 512"
-                                  className="show-time-off-icon-svg"
-                                >
-                                  <path d="M464 256A208 208 0 1 1 48 256a208 208 0 1 1 416 0zM0 256a256 256 0 1 0 512 0A256 256 0 1 0 0 256zM232 120V256c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z" />
-                                </svg>
-                              </i>
                             </button>
                           )}
                         </div>

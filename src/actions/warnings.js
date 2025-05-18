@@ -22,9 +22,8 @@ export const getWarningsByUserId = userId => {
     } catch (error) {
       if (error.response && error.response.status === 400) {
         return { error: error.response.data.message };
-      } else {
-        return { error: error.message };
       }
+      return { error: error.message };
     }
   };
 };
@@ -42,9 +41,8 @@ export const postWarningByUserId = warningData => {
     } catch (error) {
       if (error.response && error.response.status === 200) {
         return { error: error.message };
-      } else {
-        return { error: error };
       }
+      return { error };
     }
   };
 };
@@ -60,9 +58,8 @@ export const deleteWarningsById = (warningId, personId) => {
     } catch (error) {
       if (error.response && error.response.status === 400) {
         return { error: error.response.data.message };
-      } else {
-        return { error: 'Something else went wrong' };
       }
+      return { error: 'Something else went wrong' };
     }
   };
 };
@@ -80,9 +77,8 @@ export const getWarningDescriptions = () => {
     } catch (error) {
       if (error.response && error.response.status === 400) {
         return { error: error.response.data.message };
-      } else {
-        return { error: error };
       }
+      return { error };
     }
   };
 };

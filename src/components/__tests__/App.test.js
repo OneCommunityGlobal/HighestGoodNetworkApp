@@ -3,6 +3,14 @@
 
 // --- Global Mocks for External Modules ---
 // These mocks bypass problematic modules (like popper.js and react-leaflet) that might interfere with tests.
+// eslint-disable-next-line no-unused-vars
+import React from 'react';
+import { cleanup, render } from '@testing-library/react';
+// eslint-disable-next-line no-unused-vars
+import configureMockStore from 'redux-mock-store';
+// eslint-disable-next-line no-unused-vars
+import thunk from 'redux-thunk';
+
 jest.mock('popper.js', () => ({}));
 jest.mock('react-leaflet', () => ({}));
 jest.mock('react-leaflet-cluster', () => ({}));
@@ -12,11 +20,6 @@ jest.mock('react-leaflet-cluster', () => ({}));
 jest.mock('redux-persist/integration/react', () => ({
   PersistGate: ({ children }) => children,
 }));
-
-import React from 'react';
-import { cleanup, render } from '@testing-library/react';
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
 
 // --- Global Cleanup ---
 // Reset modules and clear localStorage after each test to avoid interference.
@@ -34,7 +37,8 @@ afterEach(() => {
 describe('App Initialization Token Checks', () => {
   let dispatchSpy;
   let setjwtMock;
-  let logoutUser, setCurrentUser;
+  let logoutUser;
+  let setCurrentUser;
   let config;
 
   beforeEach(() => {
@@ -58,7 +62,7 @@ describe('App Initialization Token Checks', () => {
       }),
     }));
 
-    // --- Mock httpService ---  
+    // --- Mock httpService ---
     // We want to check that setjwt is called when a token is valid.
     setjwtMock = jest.fn();
     jest.doMock('../../services/httpService', () => ({
@@ -66,11 +70,11 @@ describe('App Initialization Token Checks', () => {
       default: { setjwt: setjwtMock },
     }));
 
-    // --- Mock authActions ---  
+    // --- Mock authActions ---
     // We mock the logoutUser and setCurrentUser action creators.
     const actions = {
       logoutUser: jest.fn(() => ({ type: 'LOGOUT_USER' })),
-      setCurrentUser: jest.fn((user) => ({ type: 'SET_CURRENT_USER', payload: user })),
+      setCurrentUser: jest.fn(user => ({ type: 'SET_CURRENT_USER', payload: user })),
     };
     jest.doMock('../../actions/authActions', () => actions);
     logoutUser = actions.logoutUser;
@@ -78,22 +82,22 @@ describe('App Initialization Token Checks', () => {
 
     // --- Load configuration ---
     // Import configuration (e.g., tokenKey) needed for the tests.
+    // eslint-disable-next-line global-require
     config = require('../../config.json');
   });
 
   // Test 1: Expired Token
   it('should log out the user if the token is expired', () => {
     // Set an "expired" token in localStorage.
-    const tokenKey = config.tokenKey; // e.g., "jwtToken"
+    const { tokenKey } = config; // e.g., "jwtToken"
     localStorage.setItem(tokenKey, 'expiredToken');
 
     // Simulate jwt-decode returning a token expiry that is nearly immediate.
     const expiredExpiry = Date.now() + 100;
-    jest.doMock('jwt-decode', () =>
-      jest.fn(() => ({ expiryTimestamp: expiredExpiry }))
-    );
+    jest.doMock('jwt-decode', () => jest.fn(() => ({ expiryTimestamp: expiredExpiry })));
 
     // Dynamically require App to trigger the module-level token-check logic.
+    // eslint-disable-next-line global-require
     require('../App');
 
     // Assert: The logout action should be dispatched.
@@ -105,17 +109,16 @@ describe('App Initialization Token Checks', () => {
   // Test 2: Valid Token
   it('should set current user and call setjwt if token is valid', () => {
     // Place a valid token in localStorage.
-    const tokenKey = config.tokenKey;
+    const { tokenKey } = config;
     localStorage.setItem(tokenKey, 'validToken');
 
     // Simulate jwt-decode returning a far-future expiry (valid token).
     const validExpiry = Date.now() + 86400 * 3 * 1000; // 3 days in the future
     const decodedPayload = { expiryTimestamp: validExpiry, name: 'Test User' };
-    jest.doMock('jwt-decode', () =>
-      jest.fn(() => decodedPayload)
-    );
+    jest.doMock('jwt-decode', () => jest.fn(() => decodedPayload));
 
     // Dynamically require App to trigger token-check logic.
+    // eslint-disable-next-line global-require
     require('../App');
 
     // Assert: The setCurrentUser action should be dispatched and setjwt should be called.
@@ -127,15 +130,18 @@ describe('App Initialization Token Checks', () => {
   // Test 3: No Token
   it('should not dispatch any token actions if no token exists in localStorage', () => {
     // Ensure no token is stored.
-    const tokenKey = config.tokenKey;
+    const { tokenKey } = config;
     localStorage.removeItem(tokenKey);
 
     // Optionally, simulate jwt-decode throwing an error if called.
     jest.doMock('jwt-decode', () =>
-      jest.fn(() => { throw new Error('jwt-decode should not be called'); })
+      jest.fn(() => {
+        throw new Error('jwt-decode should not be called');
+      }),
     );
 
     // Dynamically require App.
+    // eslint-disable-next-line global-require
     require('../App');
 
     // Assert: No token-related actions should be dispatched.
@@ -161,6 +167,7 @@ describe('App Component Rendering', () => {
     jest.unmock('../../actions/authActions');
     jest.unmock('jwt-decode');
     localStorage.clear(); // Clear token so module-level logic does not run.
+    // eslint-disable-next-line global-require
     App = require('../App').default;
   });
 
@@ -181,6 +188,7 @@ describe('App Component Rendering', () => {
 
   // Test 5:Placeholder Test for UI Messages
   it('should display appropriate UI messages based on authentication state (placeholder)', () => {
+    // eslint-disable-next-line no-unused-vars
     const { queryByText } = render(<App />);
     // Placeholder: Depending on authentication state, the UI should either show:
   });

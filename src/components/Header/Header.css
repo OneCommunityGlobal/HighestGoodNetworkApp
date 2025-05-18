@@ -5,8 +5,10 @@
   padding: 0 1rem;
 }
 .close-button {
-  height : 2vh;
-  width : 99%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 12px;
 }
 /* Timer Message Section */
 .timer-message-section {
@@ -19,20 +21,58 @@
 }
 
 .card-content {
-  padding: 5px; /* Add padding around the card content */
+  padding: 5px;
   padding-left: 40px;
-  padding-right: 40px;
+  padding-right: 30px;
   white-space: pre-line;
   color: white;
   font-size: medium;
 }
 
-.navbar {
-  /* z-index: 100; */
-  white-space: nowrap;
-  /* margin-bottom: 20px; */
+.headerCard {
+  margin-left: 35px;
+  margin-right: 50px;
 }
 
+.card-wrapper {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.navbar {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  white-space: nowrap;
+}
+
+.timer-message-section {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+  gap: 1rem;
+  white-space: nowrap;
+}
+
+.redBackGroupHeader {
+  z-index: 10;
+  bottom: 0;
+  right: 0;
+  position: relative;
+  height: 30px;
+  text-align: center;
+  vertical-align: middle;
+  background: #ff4d4f;
+  border-radius: 40px;
+  color: #fff;
+  padding: 3px 6px;
+  max-width: 39px;
+  font-size: 1rem;
+  min-width: 29px;
+}
 
 .owner-message {
   margin-right: 1rem;
@@ -49,6 +89,7 @@
 
 .nav-links {
   display: flex;
+  flex-direction: row;
   align-items: center;
   gap: 1rem;
   flex-wrap: wrap; /* Allow wrapping of nav items */
@@ -57,6 +98,8 @@
 
 .dashboard-text-link {
   font-size: 16px;
+  flex-wrap: nowrap;
+  gap: 1rem;
 }
 
 .dropdown-item-hover:hover {
@@ -117,9 +160,9 @@
 }
 
 @media screen and (min-width: 1400px) and (max-width: 1700px) {
-  /* .owner-message {
+  .owner-message {
     display: none;
-  } */
+  }
 }
 
 @media screen and (max-width: 769px) {
@@ -137,3 +180,46 @@
   height: 20px;
   background-color: #fff;
 }
+
+@media print {
+  /* Reset all print styles */
+  * {
+    box-sizing: border-box !important;
+  }
+
+  /* Set print scaling */
+  @page {
+    size: auto;
+    margin: 0;
+    scale: 100%;
+  }
+
+  /* Ensure navbar is compact and font size is correct */
+  .navbar {
+    padding: 0.5rem 1rem !important;
+    min-height: auto !important;
+    height: auto !important;
+    width: 100% !important;
+    position: relative !important;
+    font-size: 16px !important;
+    margin: 0 !important;
+  }
+
+  /* Ensure navigation links display correctly */
+  .nav-links {
+    gap: 0.5rem !important;
+    width: auto !important;
+    font-size: 16px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Ensure all icons have correct size */
+  .navbar img,
+  .navbar svg {
+    width: auto !important;
+    height: 24px !important;
+    transform: scale(1) !important;
+    vertical-align: middle !important;
+  }
+}}

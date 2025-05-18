@@ -10,6 +10,15 @@ function ConsumableListView() {
   const errors = useSelector(state => state.errors);
   const postConsumableUpdateResult = useSelector(state => state.bmConsumables.updateConsumables);
 
+  const consumablesWithId = consumables
+    ? consumables.map(item => ({
+        ...item,
+        id:
+          parseInt(item._id.substring(item._id.length - 6), 16) ||
+          Math.floor(Math.random() * 1000000), // Convert last 6 chars of _id to number, or use random as fallback
+      }))
+    : [];
+
   useEffect(() => {
     dispatch(fetchAllConsumables());
   }, []);
@@ -32,7 +41,7 @@ function ConsumableListView() {
   return (
     <ItemListView
       itemType={itemType}
-      items={consumables}
+      items={consumablesWithId}
       errors={errors}
       UpdateItemModal={UpdateConsumableModal}
       dynamicColumns={dynamicColumns}
