@@ -234,17 +234,17 @@ function Announcements({ title, email: initialEmail }) {
             ) : (
               <button
                 type="button"
-                className="send-button"
+                className={`send-button ${darkMode ? 'boxStyleDark' : 'boxStyle'}`}
                 onClick={handleBroadcastEmails}
-                style={darkMode ? boxStyleDark : boxStyle}
+                
               >
                 Broadcast Weekly Update
               </button>
             )}
           </div>
           <div
-            className={`emails ${darkMode ? 'bg-yinmn-blue' : ''}`}
-            style={darkMode ? boxStyleDark : boxStyle}
+            className={`emails ${darkMode ? 'bg-yinmn-blue boxStyleDark' : 'boxStyle'}`}
+            
           >
             {title ? (
               <p>Email</p>
@@ -264,9 +264,9 @@ function Announcements({ title, email: initialEmail }) {
             />
             <button
               type="button"
-              className="send-button"
+              className={`send-button ${darkMode ? 'boxStyleDark' : 'boxStyle'}`}
               onClick={handleSendEmails}
-              style={darkMode ? boxStyleDark : boxStyle}
+              
             >
               {title ? 'Send Email' : 'Send mail to specific users'}
             </button>
@@ -286,9 +286,9 @@ function Announcements({ title, email: initialEmail }) {
             />
             <button
               type="button"
-              className="send-button"
+              className={`send-button ${darkMode ? 'boxStyleDark' : 'boxStyle'}`}
               onClick={addHeaderToEmailContent}
-              style={darkMode ? boxStyleDark : boxStyle}
+              
             >
               Insert
             </button>

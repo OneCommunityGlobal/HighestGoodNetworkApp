@@ -21,6 +21,22 @@ label {
   color: #333; /* Default dark text for light mode */
 }
 
+.boxStyleDark {
+  background-color: #1a1a1a; /* Dark background */
+  color: #fff; /* White text */
+  border-radius: 20px;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.boxStyle {
+  background-color: #f9f9f9; /* Light background */
+  color: #333; /* Dark text */
+  border-radius: 20px;
+  padding: 20px;
+  margin-top: 20px;
+}
+
 .input-text-for-announcement,
 textarea {
   margin-top: 5px;   /* Space above input fields */
