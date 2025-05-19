@@ -1,7 +1,6 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable new-cap */
 import { connect } from 'react-redux';
-import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { Alert, Col, Container, Row, Button } from 'reactstrap';
 import 'moment-timezone';
@@ -11,9 +10,6 @@ import { jsPDF } from 'jspdf';
 import hasPermission from 'utils/permissions';
 
 // actions
-import { getAllUserProfile } from 'actions/userManagement';
-import { getAllUsersTimeEntries } from 'actions/allUsersTimeEntries';
-import { getTimeEntryForOverDate } from 'actions/index';
 import { getTotalOrgSummary } from 'actions/totalOrgSummary';
 
 import '../Header/DarkMode.css';
@@ -37,7 +33,8 @@ import VolunteerTrendsLineChart from './VolunteerTrendsLineChart/VolunteerTrends
 import GlobalVolunteerMap from './GlobalVolunteerMap/GlobalVolunteerMap';
 import TaskCompletedBarChart from './TaskCompleted/TaskCompletedBarChart';
 
-function calculateFromDate() {
+function calculateStartDate() {
+  // returns a string date in YYYY-MM-DD format of the start of the previous week
   const currentDate = new Date();
   currentDate.setHours(0, 0, 0, 0);
   const dayOfWeek = currentDate.getDay();
@@ -46,7 +43,8 @@ function calculateFromDate() {
   return currentDate.toISOString().split('T')[0];
 }
 
-function calculateToDate() {
+function calculateEndDate() {
+  // returns a string date in YYYY-MM-DD format of the end of the previous week
   const currentDate = new Date();
   currentDate.setHours(0, 0, 0, 0);
   const dayOfWeek = currentDate.getDay();
@@ -55,7 +53,8 @@ function calculateToDate() {
   return currentDate.toISOString().split('T')[0];
 }
 
-function calculateFromOverDate() {
+function calculateComparisonStartDate() {
+  // returns a string date in YYYY-MM-DD format of the start of the second to last week
   const currentDate = new Date();
   currentDate.setHours(0, 0, 0, 0);
   const dayOfWeek = currentDate.getDay();
@@ -64,7 +63,8 @@ function calculateFromOverDate() {
   return currentDate.toISOString().split('T')[0];
 }
 
-function calculateToOverDate() {
+function calculateComparisonEndDate() {
+  // returns a string date in YYYY-MM-DD format of the end of the second to last week
   const currentDate = new Date();
   currentDate.setHours(0, 0, 0, 0);
   const dayOfWeek = currentDate.getDay();
@@ -73,58 +73,18 @@ function calculateToOverDate() {
   return currentDate.toISOString().split('T')[0];
 }
 
-const fromDate = calculateFromDate();
-const toDate = calculateToDate();
-const fromOverDate = calculateFromOverDate();
-const toOverDate = calculateToOverDate();
-
-const aggregateTimeEntries = userTimeEntries => {
-  const aggregatedEntries = {};
-
-  userTimeEntries.forEach(entry => {
-    const { personId, hours, minutes } = entry;
-    if (!aggregatedEntries[personId]) {
-      aggregatedEntries[personId] = {
-        hours: parseInt(hours, 10),
-        minutes: parseInt(minutes, 10),
-      };
-    } else {
-      aggregatedEntries[personId].hours += parseInt(hours, 10);
-      aggregatedEntries[personId].minutes += parseInt(minutes, 10);
-    }
-  });
-
-  Object.keys(aggregatedEntries).forEach(personId => {
-    const totalMinutes = aggregatedEntries[personId].minutes;
-    const additionalHours = Math.floor(totalMinutes / 60);
-    aggregatedEntries[personId].hours += additionalHours;
-    aggregatedEntries[personId].minutes = totalMinutes % 60;
-  });
-
-  const result = Object.entries(aggregatedEntries).map(([personId, { hours, minutes }]) => ({
-    personId,
-    hours,
-    minutes,
-  }));
-
-  return result;
-};
-
 function TotalOrgSummary(props) {
-  const { darkMode, error, allUserProfiles } = props;
-  const [usersId, setUsersId] = useState([]);
-  const [usersTimeEntries, setUsersTimeEntries] = useState([]);
-  const [usersOverTimeEntries, setUsersOverTimeEntries] = useState([]);
+  const { darkMode, error } = props;
   const [isVolunteerFetchingError, setIsVolunteerFetchingError] = useState(false);
   const [volunteerStats, setVolunteerStats] = useState(null);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
-  const comparisonStartDate = '2025-01-16';
-  const comparisonEndDate = '2025-01-26';
   const [isLoading, setIsLoading] = useState(true);
 
-  const dispatch = useDispatch();
-
-  const allUsersTimeEntries = useSelector(state => state.allUsersTimeEntries);
+  // default dates
+  const startDate = calculateStartDate();
+  const endDate = calculateEndDate();
+  const comparisonStartDate = calculateComparisonStartDate();
+  const comparisonEndDate = calculateComparisonEndDate();
 
   const handleSaveAsPDF = async () => {
     if (isGeneratingPDF) return;
@@ -362,60 +322,11 @@ function TotalOrgSummary(props) {
   };
 
   useEffect(() => {
-    dispatch(getAllUserProfile());
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (Array.isArray(allUserProfiles.userProfiles) && allUserProfiles.userProfiles.length > 0) {
-      const idsList = allUserProfiles.userProfiles.reduce((acc, user) => {
-        if (user.isActive) acc.push(user._id);
-        return acc;
-      }, []);
-      setUsersId(idsList);
-    }
-  }, [allUserProfiles]);
-
-  useEffect(() => {
-    if (Array.isArray(usersId) && usersId.length > 0 && fromDate && toDate) {
-      dispatch(getAllUsersTimeEntries(usersId, fromDate, toDate));
-    }
-  }, [usersId, fromDate, toDate, dispatch]);
-
-  useEffect(() => {
-    if (
-      !Array.isArray(allUsersTimeEntries.usersTimeEntries) ||
-      allUsersTimeEntries.usersTimeEntries.length === 0
-    ) {
-      return;
-    }
-    const aggregatedEntries = aggregateTimeEntries(allUsersTimeEntries.usersTimeEntries);
-    setUsersTimeEntries(aggregatedEntries);
-  }, [allUsersTimeEntries]);
-
-  useEffect(() => {
-    if (Array.isArray(usersId) && usersId.length > 0) {
-      getTimeEntryForOverDate(usersId, fromOverDate, toOverDate)
-        .then(response => {
-          if (response && Array.isArray(response)) {
-            setUsersOverTimeEntries(response);
-          } else {
-            // eslint-disable-next-line no-console
-            console.log('error on fetching data');
-          }
-        })
-        .catch(() => {
-          // eslint-disable-next-line no-console
-          console.log('error on fetching data');
-        });
-    }
-  }, [allUsersTimeEntries, usersId, fromOverDate, toOverDate]);
-
-  useEffect(() => {
     const fetchVolunteerStats = async () => {
       try {
         const volunteerStatsResponse = await props.getTotalOrgSummary(
-          fromDate,
-          toDate,
+          startDate,
+          endDate,
           comparisonStartDate,
           comparisonEndDate,
         );
@@ -428,7 +339,7 @@ function TotalOrgSummary(props) {
     };
 
     fetchVolunteerStats();
-  }, [fromDate, toDate, props]);
+  }, [startDate, endDate, props]);
 
   if (error || isVolunteerFetchingError) {
     return (
@@ -520,14 +431,13 @@ function TotalOrgSummary(props) {
                 <p>Volunteer Hours Distribution</p>
               </div>
               <div className="d-flex flex-row justify-content-center flex-wrap my-4">
-                <VolunteerHoursDistribution
+                <p>in progress...</p>
+                {/* <VolunteerHoursDistribution
                   isLoading={isLoading}
                   darkMode={darkMode}
-                  usersTimeEntries={usersTimeEntries}
-                  usersOverTimeEntries={usersOverTimeEntries}
                   hoursData={volunteerStats?.volunteerHoursStats}
                   totalHoursData={volunteerStats?.totalHoursWorked}
-                />
+                /> */}
                 <div className="d-flex flex-column align-items-center justify-content-center">
                   <HoursWorkList />
                   <NumbersVolunteerWorked
@@ -630,7 +540,7 @@ function TotalOrgSummary(props) {
               <TeamStats
                 isLoading={isLoading}
                 usersInTeamStats={volunteerStats?.usersInTeamStats}
-                endDate={toDate}
+                endDate={endDate}
               />
             </div>
           </Col>
@@ -657,14 +567,12 @@ const mapStateToProps = state => ({
   role: state.auth.user.role,
   auth: state.auth,
   darkMode: state.theme.darkMode,
-  allUserProfiles: state.allUserProfiles,
 });
 
 const mapDispatchToProps = dispatch => ({
   getTotalOrgSummary: (startDate, endDate, comparisonStartDate, comparisonEndDate) =>
     dispatch(getTotalOrgSummary(startDate, endDate, comparisonStartDate, comparisonEndDate)),
   hasPermission: permission => dispatch(hasPermission(permission)),
-  getAllUserProfile: () => dispatch(getAllUserProfile()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(TotalOrgSummary);
