@@ -76,7 +76,7 @@ describe('BMDashboard Tests', () => {
     }));
   });
 
-  //Test Case 1:
+  // Test Case 1:
   it('Renders BMDashboard and checks for header', () => {
     render(
       <Provider store={store}>
@@ -85,7 +85,7 @@ describe('BMDashboard Tests', () => {
     );
     expect(screen.getByText('Building and Inventory Management Dashboard')).toBeInTheDocument();
   });
-  //Test Case 2:
+  // Test Case 2:
   it('Renders dropdown with project options', async () => {
     render(
       <Provider store={store}>
@@ -101,7 +101,7 @@ describe('BMDashboard Tests', () => {
     expect(screen.queryByText('Project 3')).toBeNull();
   });
 
-  //Test Case 3:
+  // Test Case 3:
   it('Shows an error message if no project is selected and the button is clicked', async () => {
     render(
       <Provider store={store}>
@@ -116,7 +116,7 @@ describe('BMDashboard Tests', () => {
 
     expect(screen.getByText(/please select a project/i)).toBeInTheDocument();
   });
-  //Test Case 4:
+  // Test Case 4:
   it.skip('Displays the correct number of project summaries and verifies project summary content', () => {
     render(
       <Provider store={store}>
@@ -147,7 +147,7 @@ describe('BMDashboard Tests', () => {
     });
   });
 
-  //Test Case 5:
+  // Test Case 5:
   it('Navigates to the correct project dashboard upon selecting a project and clicking the button', async () => {
     const history = createMemoryHistory();
     render(

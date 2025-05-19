@@ -5,12 +5,17 @@ import { useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-toastify';
-import { Link, useHistory } from 'react-router-dom';
+// import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
+import { faUser, faUsers, faShieldAlt, faBriefcase, faUserTie, faCrown, faChalkboardTeacher, faBug, faGlobe, faStar } from '@fortawesome/free-solid-svg-icons';
+import { UncontrolledTooltip } from 'reactstrap';
 import { updateUserInfomation } from '../../actions/userManagement';
 import { getAllRoles } from '../../actions/role';
 import ResetPasswordButton from './ResetPasswordButton';
-import { DELETE, PAUSE, RESUME, SET_FINAL_DAY, CANCEL } from '../../languages/en/ui';
-import { UserStatus, FinalDay } from '../../utils/enums';
+// import { DELETE, PAUSE, RESUME, SET_FINAL_DAY, CANCEL } from '../../languages/en/ui';
+import { DELETE, PAUSE, RESUME } from '../../languages/en/ui';
+// import { UserStatus, FinalDay } from '../../utils/enums';
+import { UserStatus } from '../../utils/enums';
 import ActiveCell from './ActiveCell';
 import TimeDifference from './TimeDifference';
 import hasPermission from '../../utils/permissions';
@@ -18,8 +23,6 @@ import { boxStyle } from '../../styles';
 import { formatDateLocal } from '../../utils/formatDate';
 import { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import { formatDate, formatDateYYYYMMDD } from '../../utils/formatDate';
-import { faUser, faUsers, faShieldAlt, faBriefcase, faUserTie, faCrown, faChalkboardTeacher, faBug, faGlobe, faStar } from '@fortawesome/free-solid-svg-icons';
-import { UncontrolledTooltip } from 'reactstrap';
 import SetUpFinalDayButton from './SetUpFinalDayButton';
 /**
  * The body row of the user table
@@ -30,8 +33,8 @@ const UserTableData = React.memo(props => {
   const [tooltipDeleteOpen, setTooltipDelete] = useState(false);
   const [tooltipPauseOpen, setTooltipPause] = useState(false);
   const [tooltipFinalDayOpen, setTooltipFinalDay] = useState(false);
-  const isMobile = props.isMobile;
-  const mobileFontSize = props.mobileFontSize;
+  const {isMobile} = props;
+  const {mobileFontSize} = props;
   const [tooltipReportsOpen, setTooltipReports] = useState(false);
 
   const [isChanging, onReset] = useState(false);
@@ -374,6 +377,7 @@ const UserTableData = React.memo(props => {
           className={`btn btn-outline-${props.isActive ? 'warning' : 'success'} btn-sm`}
           onClick={() => {
             if (cantUpdateDevAdminDetails(props.user.email, props.authEmail)) {
+              // eslint-disable-next-line no-alert
               alert(
                 'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.',
               );
@@ -399,6 +403,7 @@ const UserTableData = React.memo(props => {
       <td className="centered-td">
         <button
           type="button"
+          aria-label="Log Time Off"
           className={`btn btn-outline-primary btn-sm${props.timeOffRequests?.length > 0 ? ` time-off-request-btn-moved` : ''
             }`}
           onClick={() => props.onLogTimeOffClick(props.user)}
