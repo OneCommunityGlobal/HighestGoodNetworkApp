@@ -302,6 +302,7 @@ const TeamMemberTask = React.memo(
                               canSeeReports &&
                               <Link
                                 to= {`/peoplereport/${user?.personId}`}
+                                onClick={(event)=>handleReportClick(event,user?.personId)}
                                >
                                 <span className="team-member-tasks-number">{completedTasks.length}</span>
                               </Link>
