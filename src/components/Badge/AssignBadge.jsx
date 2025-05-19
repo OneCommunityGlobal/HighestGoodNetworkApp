@@ -122,12 +122,14 @@ function AssignBadge(props) {
           style={{ fontWeight: 'bold', marginBottom: 10 }}
         >
           Search by Full Name
+          <span className="red-asterisk">* </span>
           <i
             className="fa fa-info-circle ml-2"
             id="NameInfo"
             data-testid="NameInfo"
             style={{ cursor: 'pointer' }}
           />
+          
           <UncontrolledTooltip
             placement="right"
             target="NameInfo"
@@ -214,12 +216,7 @@ function AssignBadge(props) {
         >
           Assign Badge
         </Button>
-        <Modal
-          isOpen={isOpen}
-          toggle={toggle}
-          backdrop="static"
-          className={darkMode ? 'text-light dark-mode' : ''}
-        >
+        <Modal isOpen={isOpen} toggle={toggle} className={darkMode ? 'text-light dark-mode' : ''}>
           <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={toggle}>
             Assign Badge
           </ModalHeader>
