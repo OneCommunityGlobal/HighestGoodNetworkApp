@@ -541,8 +541,27 @@ function SummaryBar(props) {
             </font>
             <CardTitle className={`align-middle ${darkMode ? 'text-light' : 'text-dark'}`} tag="h3">
               <div className="font-weight-bold">
-                {userProfile?.firstName || displayUserProfile.firstName}{' '}
-                {userProfile?.lastName || displayUserProfile.lastName}
+                <span
+                  className="name-segment"
+                  title={userProfile?.firstName || displayUserProfile.firstName}
+                >
+                  {(userProfile?.firstName || displayUserProfile.firstName).split(' ')[0]}
+                </span>
+                <span
+                  className="name-segment"
+                  title={userProfile?.firstName || displayUserProfile.firstName}
+                >
+                  {(userProfile?.firstName || displayUserProfile.firstName)
+                    .split(' ')
+                    .slice(1)
+                    .join(' ')}
+                </span>
+                <span
+                  className="name-segment"
+                  title={userProfile?.lastName || displayUserProfile.lastName}
+                >
+                  {userProfile?.lastName || displayUserProfile.lastName}
+                </span>
               </div>
             </CardTitle>
           </div>
@@ -578,9 +597,13 @@ function SummaryBar(props) {
               }`}
               style={{ border: '1px solid black' }}
             >
-              <div className="align-items-center" id="timelogweeklychart">
+              <div
+                className="align-items-center"
+                id="timelogweeklychart"
+                style={{ whiteSpace: 'nowrap', padding: '0px 10px' }}
+              >
                 <div className="align-items-center med_text_summary">
-                  Current Week : {totalEffort.toFixed(2)} / {weeklyCommittedHours}
+                  Current Week : {totalEffort.toFixed(2)} / {weeklyCommittedHours.toFixed(2)}
                   <Progress
                     value={getProgressValue(totalEffort, weeklyCommittedHours)}
                     color={getProgressColor(totalEffort, weeklyCommittedHours)}
@@ -857,14 +880,16 @@ function SummaryBar(props) {
                   required
                 >
                   <option disabled value="" hidden>
-                    {' '}
-                    -- select an option --{' '}
+                    -- select an option --
                   </option>
-                  {suggestionCategory.map(item => {
-                    return <option key={item.id} value={item}>{`${item.id + 1}. ${item}`}</option>;
-                  })}
+                  {suggestionCategory.map((item, index) => (
+                    <option key={item} value={item}>
+                      {`${index + 1}. ${item}`}
+                    </option>
+                  ))}
                 </Input>
               </FormGroup>
+
               {takeInput && (
                 <FormGroup>
                   <Label for="suggestion" className={fontColor}>

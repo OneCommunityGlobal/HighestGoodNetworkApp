@@ -1,14 +1,10 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import { render, screen, fireEvent } from '@testing-library/react';
 import PopUpBar from '../PopUpBar';
 
-const viewingUser = {
-  firstName: 'TestUser',
-  lastName: 'LastName',
-};
-
 // render Component
 const renderComponent = (props = {}) => {
-  render(<PopUpBar viewingUser={viewingUser} {...props} />);
+  render(<PopUpBar message="PopUpBar text message" {...props} />);
 };
 
 // Test Cases
@@ -22,6 +18,7 @@ describe('Test Suite for PopUpBar', () => {
   it('Test Case 2: Renders with correct text', () => {
     renderComponent();
     const expectedText = `You are currently functioning as ${viewingUser.firstName} ${viewingUser.lastName}, you only have the permissions of ${viewingUser.firstName}`;
+
     const actualText = screen.getByText(expectedText);
     expect(actualText).toBeInTheDocument();
   });
