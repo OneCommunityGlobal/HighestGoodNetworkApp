@@ -8,9 +8,7 @@ import { toast } from 'react-toastify';
 import { FaInstagramSquare } from 'react-icons/fa';
 // import { get } from 'lodash';
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
-import InstagramLoginButton from './InstagramComponents/InstagramLoginButton';
 import InstagramPostEditor from './InstagramComponents/InstagramPostEditor/InstagramPostEditor';
-import { set } from 'lodash';
 
 function Announcements({ title, email }) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -29,9 +27,7 @@ function Announcements({ title, email }) {
 
   // const [urlButtonVisibility, setUrlButtonVisibility] = useState(false);
   const [showInstagramPostEditor, setShowInstagramPostEditor] = useState(false);
-  const [instagramAccessToken, setinstagramAccessToken] = useState('');
   const [instagramConnectionStatus, setInstagramConnectionStatus] = useState(false);
-
 
   useEffect(() => {
     setShowEditor(false);
@@ -211,7 +207,6 @@ function Announcements({ title, email }) {
             type="button"
             className="instagram-button"
             onClick={() => {
-              console.log('instagram post editor state: ', showInstagramPostEditor); // console.log('instagram button clicked'); // REPLACE ME
               handleInstagramButtonClick();
             }}
             aria-label="instagram button"
@@ -221,12 +216,18 @@ function Announcements({ title, email }) {
         </div>
       ) : (
         <div className="title-container">
-          <h3>Weekly Progress Editor</h3>
+          <button
+            type="button"
+            onClick={() => {
+              handleInstagramButtonClick();
+            }}
+          >
+            <h3>Weekly Progress Editor</h3>
+          </button>
           <button
             type="button"
             className="instagram-button"
             onClick={() => {
-              console.log('instagram button clicked'); // REPLACE ME
               handleInstagramButtonClick();
             }}
             aria-label="instagram button"
@@ -235,98 +236,99 @@ function Announcements({ title, email }) {
           </button>
         </div>
       )}
-      {!showInstagramPostEditor && <div className="email-update-container">
-        <div className="editor">
-          {/* {title ? <h3> {title} </h3> : <h3>Weekly Progress Editor</h3>} */}
-          <br />
-          {showEditor && (
-            <Editor
-              tinymceScriptSrc="/tinymce/tinymce.min.js"
-              id="email-editor"
-              initialValue="<p>This is the initial content of the editor</p>"
-              init={editorInit}
-              onEditorChange={content => {
-                setEmailContent(content);
-              }}
+      {!showInstagramPostEditor && (
+        <div className="email-update-container">
+          <div className="editor">
+            <br />
+            {showEditor && (
+              <Editor
+                tinymceScriptSrc="/tinymce/tinymce.min.js"
+                id="email-editor"
+                initialValue="<p>This is the initial content of the editor</p>"
+                init={editorInit}
+                onEditorChange={content => {
+                  setEmailContent(content);
+                }}
+              />
+            )}
+            {title ? (
+              ''
+            ) : (
+              <button
+                type="button"
+                className="send-button"
+                onClick={handleBroadcastEmails}
+                style={darkMode ? boxStyleDark : boxStyle}
+              >
+                Broadcast Weekly Update
+              </button>
+            )}
+          </div>
+          <div
+            className={`emails ${darkMode ? 'bg-yinmn-blue' : ''}`}
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
+            {title ? (
+              <p>Email</p>
+            ) : (
+              <label htmlFor="email-list-input" className={darkMode ? 'text-light' : 'text-dark'}>
+                Email List (comma-separated):
+              </label>
+            )}
+            <input
+              type="text"
+              value={emailTo}
+              id="email-list-input"
+              onChange={handleEmailListChange}
+              className={`input-text-for-announcement ${
+                darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+              }`}
             />
-          )}
-          {title ? (
-            ''
-          ) : (
             <button
               type="button"
               className="send-button"
-              onClick={handleBroadcastEmails}
+              onClick={handleSendEmails}
               style={darkMode ? boxStyleDark : boxStyle}
             >
-              Broadcast Weekly Update
+              {title ? 'Send Email' : 'Send mail to specific users'}
             </button>
-          )}
-        </div>
-        <div
-          className={`emails ${darkMode ? 'bg-yinmn-blue' : ''}`}
-          style={darkMode ? boxStyleDark : boxStyle}
-        >
-          {title ? (
-            <p>Email</p>
-          ) : (
-            <label htmlFor="email-list-input" className={darkMode ? 'text-light' : 'text-dark'}>
-              Email List (comma-separated):
-            </label>
-          )}
-          <input
-            type="text"
-            value={emailTo}
-            id="email-list-input"
-            onChange={handleEmailListChange}
-            className={`input-text-for-announcement ${
-              darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
-            }`}
-          />
-          <button
-            type="button"
-            className="send-button"
-            onClick={handleSendEmails}
-            style={darkMode ? boxStyleDark : boxStyle}
-          >
-            {title ? 'Send Email' : 'Send mail to specific users'}
-          </button>
 
-          <hr />
-          <label htmlFor="header-content-input" className={darkMode ? 'text-light' : 'text-dark'}>
-            Insert header or image link:
-          </label>
-          <input
-            type="text"
-            id="header-content-input"
-            onChange={handleHeaderContentChange}
-            value={headerContent}
-            className={`input-text-for-announcement ${
-              darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
-            }`}
-          />
-          <button
-            type="button"
-            className="send-button"
-            onClick={addHeaderToEmailContent}
-            style={darkMode ? boxStyleDark : boxStyle}
-          >
-            Insert
-          </button>
-          <hr />
-          <label htmlFor="upload-header-input" className={darkMode ? 'text-light' : 'text-dark'}>
-            Upload Header (or footer):
-          </label>
-          <input
-            type="file"
-            id="upload-header-input"
-            onChange={addImageToEmailContent}
-            className="input-file-upload"
-          />
+            <hr />
+            <label htmlFor="header-content-input" className={darkMode ? 'text-light' : 'text-dark'}>
+              Insert header or image link:
+            </label>
+            <input
+              type="text"
+              id="header-content-input"
+              onChange={handleHeaderContentChange}
+              value={headerContent}
+              className={`input-text-for-announcement ${
+                darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+              }`}
+            />
+            <button
+              type="button"
+              className="send-button"
+              onClick={addHeaderToEmailContent}
+              style={darkMode ? boxStyleDark : boxStyle}
+            >
+              Insert
+            </button>
+            <hr />
+            <label htmlFor="upload-header-input" className={darkMode ? 'text-light' : 'text-dark'}>
+              Upload Header (or footer):
+            </label>
+            <input
+              type="file"
+              id="upload-header-input"
+              onChange={addImageToEmailContent}
+              className="input-file-upload"
+            />
+          </div>
         </div>
-      </div>}
+      )}
       {showInstagramPostEditor && (
-        <InstagramPostEditor 
+        <InstagramPostEditor
           instagramConnectionStatus={instagramConnectionStatus}
           setInstagramConnectionStatus={setInstagramConnectionStatus}
         />

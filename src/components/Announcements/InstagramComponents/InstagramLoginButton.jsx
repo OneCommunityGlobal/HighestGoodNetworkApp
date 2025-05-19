@@ -1,21 +1,13 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 
 class InstagramLoginButton extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      isCompleted: false,
-      popup: null
-    };
-  }
-
   buildCodeRequestURL = () => {
     const { appId, redirectUri, scope } = this.props;
     const uri = encodeURIComponent(redirectUri || window.location.href);
     scope.replace(/%2C/g, ',');
 
     return `https://api.instagram.com/oauth/authorize?app_id=${appId}&redirect_uri=${uri}&scope=${scope}&response_type=code`;
-  }
+  };
 
   handleLoginClick = () => {
     const width = 600;
@@ -26,11 +18,10 @@ class InstagramLoginButton extends Component {
     const popup = window.open(
       this.buildCodeRequestURL(),
       'instagram-login-popup',
-      `width=${width},height=${height},left=${left},top=${top},toolbar=0,location=0,menubar=0,scrollbars=1`
+      `width=${width},height=${height},left=${left},top=${top},toolbar=0,location=0,menubar=0,scrollbars=1`,
     );
 
     if (popup) {
-
       const checkPopupClosed = setInterval(() => {
         if (popup.closed) {
           clearInterval(checkPopupClosed);
@@ -38,22 +29,21 @@ class InstagramLoginButton extends Component {
           if (this.props.onLoginSuccess && typeof this.props.onLoginSuccess === 'function') {
             this.props.onLoginSuccess();
           }
-          
         }
       }, 500);
-
-    } else {
-      console.error("Failed to open popup");
+    } else if (this.props.onLoginFailure && typeof this.props.onLoginFailure === 'function') {
+      this.props.onLoginFailure();
     }
   };
 
   render() {
     return (
-      <button 
-        className={this.props.className || "instagram-login-button"}
+      <button
+        type="button"
+        className={this.props.className || 'instagram-login-button'}
         onClick={this.handleLoginClick}
       >
-        {this.props.buttonText || "Login with Instagram"}
+        {this.props.buttonText || 'Login with Instagram'}
       </button>
     );
   }

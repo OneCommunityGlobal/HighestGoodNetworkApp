@@ -3,7 +3,6 @@ import { FaPlus } from 'react-icons/fa';
 
 /**
  * Component for uploading and previewing Instagram post images
- * 
  * @param {function} onImageSelect - Callback function when image is selected
  * @param {number} resetKey - Key to trigger component reset
  * @returns {JSX.Element} Image uploader interface
@@ -27,10 +26,9 @@ function ImageUploader({ onImageSelect, resetKey = 0 }) {
 
   /**
    * Handles drag enter event for drag and drop functionality
-   * 
    * @param {React.DragEvent} e - Drag event
    */
-  const handleDragEnter = (e) => {
+  const handleDragEnter = e => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(true);
@@ -38,10 +36,9 @@ function ImageUploader({ onImageSelect, resetKey = 0 }) {
 
   /**
    * Handles drag leave event for drag and drop functionality
-   * 
    * @param {React.DragEvent} e - Drag event
    */
-  const handleDragLeave = (e) => {
+  const handleDragLeave = e => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(false);
@@ -49,25 +46,36 @@ function ImageUploader({ onImageSelect, resetKey = 0 }) {
 
   /**
    * Handles drag over event for drag and drop functionality
-   * 
    * @param {React.DragEvent} e - Drag event
    */
-  const handleDragOver = (e) => {
+  const handleDragOver = e => {
     e.preventDefault();
     e.stopPropagation();
     if (!isDragging) setIsDragging(true);
   };
 
   /**
+   * Processes selected file and creates preview URL
+   * @param {File} file - Selected image file
+   */
+  const handleFiles = file => {
+    // Create preview URL
+    const url = URL.createObjectURL(file);
+    setPreviewUrl(url);
+
+    // Call the callback function with the selected file
+    onImageSelect(file);
+  };
+
+  /**
    * Handles file drop event for drag and drop functionality
-   * 
    * @param {React.DragEvent} e - Drop event containing files
    */
-  const handleDrop = (e) => {
+  const handleDrop = e => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(false);
-    
+
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       handleFiles(e.dataTransfer.files[0]);
     }
@@ -82,31 +90,16 @@ function ImageUploader({ onImageSelect, resetKey = 0 }) {
 
   /**
    * Handles file selection from file input
-   * 
    * @param {React.ChangeEvent<HTMLInputElement>} e - Change event
    */
-  const handleFileChange = (e) => {
+  const handleFileChange = e => {
     if (e.target.files && e.target.files[0]) {
       handleFiles(e.target.files[0]);
     }
   };
 
-  /**
-   * Processes selected file and creates preview URL
-   * 
-   * @param {File} file - Selected image file
-   */
-  const handleFiles = (file) => {
-    // Create preview URL
-    const url = URL.createObjectURL(file);
-    setPreviewUrl(url);
-    
-    // Call the callback function with the selected file
-    onImageSelect(file);
-  };
-
   return (
-    <div 
+    <div
       className={`image-uploader ${isDragging ? 'dragging' : ''}`}
       onDragEnter={handleDragEnter}
       onDragLeave={handleDragLeave}
@@ -114,20 +107,21 @@ function ImageUploader({ onImageSelect, resetKey = 0 }) {
       onDrop={handleDrop}
       onClick={handleClick}
     >
-      <input 
-        type="file" 
-        ref={fileInputRef} 
-        onChange={handleFileChange} 
-        accept="image/*" 
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileChange}
+        accept="image/*"
         className="file-input"
       />
-      
+
       {previewUrl ? (
         <div className="image-preview-container">
           <img src={previewUrl} alt="Preview" className="image-preview" />
-          <button 
-            className="remove-image" 
-            onClick={(e) => {
+          <button
+            type="button"
+            className="remove-image"
+            onClick={e => {
               e.stopPropagation();
               setPreviewUrl(null);
               onImageSelect(null);

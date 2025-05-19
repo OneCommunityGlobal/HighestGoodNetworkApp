@@ -1,26 +1,39 @@
 import { useState, useEffect } from 'react';
+import { toast } from 'react-toastify';
+import {
+  faCheckCircle,
+  faTimesCircle,
+  faClock,
+  faSignOutAlt,
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import DatePicker from 'react-datepicker';
 import InstagramLoginButton from '../InstagramLoginButton';
 import './InstagramPostEditor.css';
-import { postToInstagram, checkInstagramAuthStatus, disconnectFromInstagram } from '../helpers/InstagramPostHelpers';
+import {
+  postToInstagram,
+  checkInstagramAuthStatus,
+  disconnectFromInstagram,
+} from '../helpers/InstagramPostHelpers';
 import ImageUploader from '../ImageUploader';
 import InstagramScheduledPostsEditor from '../InstagramScheduledPostEditor/InstagramScheduledPostsEditor';
-import { toast } from 'react-toastify';
-import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { getInstagramScheduledPosts, scheduleInstagramPost, deleteInstagramScheduledPost } from '../helpers/InstagramSchedulePostHelpers';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheckCircle, faTimesCircle, faClock, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import {
+  getInstagramScheduledPosts,
+  scheduleInstagramPost,
+  deleteInstagramScheduledPost,
+} from '../helpers/InstagramSchedulePostHelpers';
 
-const MAX_CAPTION_CHARACTERS = 2200; 
+const MAX_CAPTION_CHARACTERS = 2200;
 
 /**
  * Instagram Post Editor component that allows users to create, schedule, and manage Instagram posts
- * 
+ *
  * @param {boolean} instagramConnectionStatus - Whether the user is connected to Instagram
  * @param {function} setInstagramConnectionStatus - Function to update Instagram connection status
  * @returns {JSX.Element} Instagram post editor interface
  */
-function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionStatus}) {
+function InstagramPostEditor({ instagramConnectionStatus, setInstagramConnectionStatus }) {
   const [characterCount, setCharacterCount] = useState(0);
   const [isExceedingLimit, setIsExceedingLimit] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -34,8 +47,8 @@ function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionS
     userId: null,
     timestamp: null,
   });
-  const [buttonTextState, setButtonTextState] = useState("");
-  const [scheduledButtonTextState, setScheduledButtonTextState] = useState("");
+  const [buttonTextState, setButtonTextState] = useState('');
+  const [scheduledButtonTextState, setScheduledButtonTextState] = useState('');
 
   const [instagramError, setInstagramError] = useState('');
   const [scheduledPostsError, setScheduledPostsError] = useState('');
@@ -47,19 +60,40 @@ function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionS
   const [file, setFile] = useState(null);
 
   const [startDate, setStartDate] = useState(null);
-  const [isScheduled, setIsScheduled] = useState(false);
   const [minTime, setMinTime] = useState(new Date());
+
+  /**
+   * Attempts to authenticate with Instagram and sets connection state
+   *
+   * @returns {Promise<void>}
+   */
+  const handleInstagramLoginSuccess = async () => {
+    const status = await checkInstagramAuthStatus(setInstagramError);
+
+    if (status && status.success === true) {
+      setInstagramConnectionStatus(true);
+      setInstagramError('');
+      setInstagramAuthInfo({
+        hasValidToken: status.data.hasValidToken,
+        tokenExpires: status.data.tokenExpires,
+        userId: status.data.userId,
+        timestamp: status.timestamp,
+      });
+    } else {
+      setInstagramError('Failed to retrieve access token. Please try again.');
+      setInstagramConnectionStatus(false);
+    }
+  };
 
   // check connection status when component mounts
   useEffect(() => {
     handleInstagramLoginSuccess();
     getInstagramScheduledPosts(
-      setScheduledPosts, 
-      setScheduledPostsError, 
-      setIsLoadingScheduledPosts
+      setScheduledPosts,
+      setScheduledPostsError,
+      setIsLoadingScheduledPosts,
     );
   }, []);
-
 
   /**
    * Updates minimum allowed time for scheduled posts based on selected date
@@ -80,48 +114,40 @@ function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionS
 
   /**
    * Handles date selection for post scheduling
-   * 
+   *
    * @param {Date} date - Selected date and time for scheduling
    */
-  const handleDateChange = (date) => {
+  const handleDateChange = date => {
     setStartDate(date);
-    setIsScheduled(false);
-  }
+  };
 
   /**
-   * Attempts to authenticate with Instagram and sets connection state
-   * 
-   * @returns {Promise<void>}
+   * Handles Instagram login failure and sets error message
    */
-  const handleInstagramLoginSuccess = async () => {
-    const status = await checkInstagramAuthStatus(setInstagramError);
-
-    if (status && status.success === true) {
-      setInstagramConnectionStatus(true);
-      setInstagramError('');
-      setInstagramAuthInfo({
-        hasValidToken: status.data.hasValidToken,
-        tokenExpires: status.data.tokenExpires,
-        userId: status.data.userId,
-        timestamp: status.timestamp,
-      });
-    } else {
-      setInstagramError('Failed to retrieve access token. Please try again.');
-      setInstagramConnectionStatus(false);
-    }
-  }
+  const handleInstagramLoginFailure = () => {
+    setInstagramError('Failed to connect to Instagram. Please try again.');
+    setInstagramConnectionStatus(false);
+  };
 
   /**
    * Sends a post immediately to Instagram
-   * 
+   *
    * @param {string} caption - Text caption for the post
    * @param {File} file - Image file to upload
    * @returns {Promise<void>}
    */
-  const handlePostToInstagram = async (caption, file) => {
+  const handlePostToInstagram = async () => {
     setIsLoading(true);
     setIsPosting(true);
-    const response = await postToInstagram(caption, file, setInstagramError, setCaption, setFile, setImageResetKey, setButtonTextState);
+    const response = await postToInstagram(
+      caption,
+      file,
+      setInstagramError,
+      setCaption,
+      setFile,
+      setImageResetKey,
+      setButtonTextState,
+    );
 
     if (response && response.success) {
       toast.success('Post created successfully!');
@@ -130,38 +156,38 @@ function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionS
     }
     setIsLoading(false);
     setIsPosting(false);
-  }
+  };
 
-  const handleFileSelect = (selectedFile) => {
+  const handleFileSelect = selectedFile => {
     setFile(selectedFile);
   };
 
-  const getCharacterCount = (text) => {
-    return [...text].length; 
+  const getCharacterCount = text => {
+    return [...text].length;
   };
 
   /**
    * Updates caption text and validates against character limits
-   * 
+   *
    * @param {React.ChangeEvent<HTMLTextAreaElement>} e - Change event
    */
-  const handleCaptionChange = (e) => {
+  const handleCaptionChange = e => {
     const newCaption = e.target.value;
-    const characterCount = getCharacterCount(newCaption);
+    const newCharacterCount = getCharacterCount(newCaption);
 
-    setCharacterCount(characterCount);
-    setIsExceedingLimit(characterCount > MAX_CAPTION_CHARACTERS);
+    setCharacterCount(newCharacterCount);
+    setIsExceedingLimit(newCharacterCount > MAX_CAPTION_CHARACTERS);
 
     setCaption(e.target.value);
-  }
+  };
 
   /**
    * Deletes a scheduled Instagram post
-   * 
+   *
    * @param {string} postId - ID of the post to delete
    * @returns {Promise<void>}
    */
-  const handleDeletePost = async (postId) => {
+  const handleDeletePost = async postId => {
     const response = await deleteInstagramScheduledPost(postId, setScheduledPostsError);
     if (response && response.success) {
       toast.success('Post deleted successfully!');
@@ -169,43 +195,54 @@ function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionS
       toast.error('Error deleting post');
     }
     getInstagramScheduledPosts(
-      setScheduledPosts, 
-      setScheduledPostsError, 
-      setIsLoadingScheduledPosts
+      setScheduledPosts,
+      setScheduledPostsError,
+      setIsLoadingScheduledPosts,
     );
-  }
+  };
 
   /**
    * Schedules a post for future publication
-   * 
+   *
    * @returns {Promise<void>}
    */
-  const handleSchedulePost = () => {
-    setScheduledButtonTextState("Scheduling post...");
+  const handleSchedulePost = async () => {
+    setIsLoading(true);
+    setScheduledButtonTextState('Scheduling post...');
     setIsScheduling(true);
-    scheduleInstagramPost(
-      startDate, 
-      caption, 
-      file, 
-      setScheduledButtonTextState, 
-      setScheduledPostsError
-    ).then((response) => {
+
+    try {
+      const response = await scheduleInstagramPost(
+        startDate,
+        caption,
+        file,
+        setScheduledButtonTextState,
+        setScheduledPostsError,
+      );
+
       if (response && response.success) {
         toast.success('Post scheduled successfully!');
         getInstagramScheduledPosts(
-          setScheduledPosts, 
-          setScheduledPostsError, 
-          setIsLoadingScheduledPosts
+          setScheduledPosts,
+          setScheduledPostsError,
+          setIsLoadingScheduledPosts,
         );
         setCaption('');
         setFile(null);
         setImageResetKey(prevKey => prevKey + 1);
         setStartDate(null);
+      } else {
+        toast.error('Failed to schedule post');
       }
-    });
-    setIsScheduling(false);
-    setScheduledButtonTextState("");
-  }
+    } catch (error) {
+      toast.error('Error scheduling post');
+    } finally {
+      // Only reset states after completion (success or error)
+      setIsScheduling(false);
+      setScheduledButtonTextState('');
+      setIsLoading(false);
+    }
+  };
 
   /**
    * Disconnects from Instagram and resets authentication state
@@ -221,10 +258,35 @@ function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionS
       timestamp: null,
     });
     setInstagramError('Disconnected from Instagram');
-  }
+  };
+
+  /**
+   * Returns the button title based on the current state of the form
+   * @returns {string} Button title
+   * */
+  const getButtonTitle = () => {
+    if (isExceedingLimit) return 'Caption exceeds character limit';
+    if (!file) return 'Please select an image';
+    if (!caption) return 'Please enter a caption';
+    if (isLoading) return 'Loading...';
+    return '';
+  };
+
+  /**
+   * Returns the schedule button title based on the current state of the form
+   * @returns {string} Button title
+   * */
+  const getScheduleButtonTitle = () => {
+    if (!startDate) return 'Please select a date and time';
+    if (isExceedingLimit) return 'Caption exceeds character limit';
+    if (!file) return 'Please select an image';
+    if (!caption) return 'Please enter a caption';
+    if (isLoading) return 'Loading...';
+    return '';
+  };
 
   return (
-    <div className='instagram-post-editor'>
+    <div className="instagram-post-editor">
       <h2 className="connection-status-header">
         <div className="connection-status-badge">
           {instagramConnectionStatus ? (
@@ -232,15 +294,15 @@ function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionS
               <span className="connection-badge connected">
                 <FontAwesomeIcon icon={faCheckCircle} /> Connected
                 <span className="expiry-info">
-                  <FontAwesomeIcon icon={faClock} /> Expires: {
-                    instagramAuthInfo.tokenExpires 
-                      ? new Date(instagramAuthInfo.tokenExpires).toLocaleString() 
-                      : 'N/A'
-                  }
+                  <FontAwesomeIcon icon={faClock} /> Expires:{' '}
+                  {instagramAuthInfo.tokenExpires
+                    ? new Date(instagramAuthInfo.tokenExpires).toLocaleString()
+                    : 'N/A'}
                 </span>
               </span>
-              <button 
-                className="disconnect-button" 
+              <button
+                type="button"
+                className="disconnect-button"
                 onClick={handleInstagramDisconnect}
                 title="Disconnect from Instagram"
               >
@@ -265,6 +327,9 @@ function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionS
             onLoginSuccess={() => {
               handleInstagramLoginSuccess();
             }}
+            onLoginFailure={() => {
+              handleInstagramLoginFailure();
+            }}
           />
 
           {instagramError && <p className="instagram-error">{instagramError}</p>}
@@ -272,22 +337,18 @@ function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionS
       ) : (
         <div className="instagram-editor-container">
           <div className="instagram-post-preview-container">
-            <div className='instagram-post-preview-header'>
+            <div className="instagram-post-preview-header">
               <h3>Instagram Post Preview</h3>
             </div>
             <div className="instagram-post-preview">
-              
-              {/* upload image */ }
-              <ImageUploader 
-                onImageSelect={handleFileSelect} 
-                resetKey={imageResetKey} 
-              />
-              
+              {/* upload image */}
+              <ImageUploader onImageSelect={handleFileSelect} resetKey={imageResetKey} />
+
               {/* caption textarea */}
-              <textarea 
+              <textarea
                 className="instagram-caption-textarea"
                 placeholder='Write a caption... (e.g. use engaging captions that are concise, add value, and include a call to action. Some examples include: "Ready to take on the week? ✨" ) and use hashtags to increase visibility. (e.g. #MondayMotivation #Inspiration)'
-                onChange={(e) => handleCaptionChange(e)}
+                onChange={e => handleCaptionChange(e)}
                 value={caption}
               />
               {/* character count */}
@@ -295,36 +356,28 @@ function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionS
                 <span className={isExceedingLimit ? 'exceeding-limit' : ''}>
                   {characterCount}/{MAX_CAPTION_CHARACTERS} characters
                 </span>
-                {isExceedingLimit && 
-                  <span className="limit-warning">
-                    Character limit exceeded!
-                  </span>
-                }
+                {isExceedingLimit && (
+                  <span className="limit-warning">Character limit exceeded!</span>
+                )}
               </div>
             </div>
 
             {/* post button */}
             <div className="post-buttons-container">
-              <button 
-                // type="button"
+              <button
+                type="button"
                 className="schedule-post-instagram-button"
-                disabled={ isExceedingLimit ||!caption || !file || isLoading }
-                title={
-                  isExceedingLimit ? "Caption exceeds character limit" : 
-                  !file ? "Please select an image" :
-                  !caption ? "Please enter a caption" : 
-                  isLoading ? "Loading..." : ""
-                }
+                disabled={isExceedingLimit || !caption || !file || isLoading}
+                title={getButtonTitle()}
                 onClick={() => {
-                  handlePostToInstagram(caption, file);
+                  handlePostToInstagram();
                 }}
               >
                 <span className="button-text">
-                  {buttonTextState || "Post to Instagram"}
-                  {isPosting && <div className="spinner"></div>}
+                  {buttonTextState || 'Post to Instagram'}
+                  {isPosting && <div className="spinner" />}
                 </span>
               </button>
-              
 
               <div className="schedule-post-button-container">
                 <DatePicker
@@ -342,63 +395,40 @@ function InstagramPostEditor({instagramConnectionStatus, setInstagramConnectionS
                   clearButtonTitle="Clear date"
                 />
                 <button
-                  // type="button"
+                  type="button"
                   className="schedule-post-instagram-button"
                   onClick={handleSchedulePost}
                   disabled={isLoading || !startDate || isExceedingLimit || !caption || !file}
-                  title={
-                    !startDate ? "Please select a date and time" :
-                    isExceedingLimit ? "Caption exceeds character limit" : 
-                    !file ? "Please select an image" :
-                    !caption ? "Please enter a caption" : 
-                    isLoading ? "Loading..." : ""
-                  }
+                  title={getScheduleButtonTitle()}
                 >
                   <span className="button-text">
-                  {scheduledButtonTextState || "Schedule Post"}
-                  {isScheduling && <div className="spinner"></div>}
-                </span>
+                    {scheduledButtonTextState || 'Schedule Post'}
+                    {isScheduling && <div className="spinner" />}
+                  </span>
                 </button>
               </div>
             </div>
 
             {instagramError && <p className="instagram-error">{instagramError}</p>}
-
           </div>
-          
-          {/* scheduled post section */ }
-          <InstagramScheduledPostsEditor 
-            posts={scheduledPosts} 
+
+          {/* scheduled post section */}
+          <InstagramScheduledPostsEditor
+            posts={scheduledPosts}
             isLoading={isLoadingScheduledPosts}
             error={scheduledPostsError}
-            onDeletePost={(postId) => {
+            onDeletePost={postId => {
               handleDeletePost(postId);
             }}
             onRefresh={() => {
               getInstagramScheduledPosts(
                 setScheduledPosts,
                 setScheduledPostsError,
-                setIsLoadingScheduledPosts
+                setIsLoadingScheduledPosts,
               );
             }}
           />
-          {/* <div className="scheduled-posts-container">
-            <h4>Scheduled Posts</h4>
-            <div className="">
-              {scheduledPosts.length > 0 ? (
-                scheduledPosts.map((post, index) => (
-                  <div key={index} className="">
-                    <p>Caption: {post.caption}</p>
-                    <p>Image: {post.imageUrl}</p>
-                    <p>Scheduled Time: {new Date(post.scheduledTime).toLocaleString()}</p>
-                  </div>
-                ))
-              ) : (
-                <p>No scheduled posts</p>
-              )}
-            </div>
-          </div> */}
-        </div> 
+        </div>
       )}
     </div>
   );

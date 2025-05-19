@@ -1,54 +1,51 @@
-import axios from "axios";
-import { ENDPOINTS } from "utils/URL";
-import { toast } from "react-toastify";
-import { response } from "msw";
-import { convertToJPG, validateInstagramImage } from "./InstagramHelpers";
+import axios from 'axios';
+import { ENDPOINTS } from 'utils/URL';
+import { toast } from 'react-toastify';
+import { convertToJPG, validateInstagramImage } from './InstagramHelpers';
 
 /**
  * Checks the authentication status of the Instagram connection
- * 
+ *
  * @param {function} setInstagramError
  * @returns {Promise<Object|null>}
  */
-export const checkInstagramAuthStatus = async (setInstagramError) => {
+export const checkInstagramAuthStatus = async setInstagramError => {
   try {
-
     const response = await axios.get(ENDPOINTS.GET_INSTAGRAM_AUTH_STATUS);
     return response.data;
-
   } catch (error) {
-    const errorMessage = error.response?.data?.message || "Unknown error occurred";
+    const errorMessage = error.response?.data?.message || 'Unknown error occurred';
     setInstagramError(errorMessage);
     toast.error(errorMessage);
     return null;
   }
-}
+};
 
 /**
  * Disconnects the current Instagram account from the application
- * 
+ *
  * @param {function} setInstagramError - State setter function for error messages
  * @returns {Promise<void>}
  */
-export const disconnectFromInstagram = async (setInstagramError) => {
+export const disconnectFromInstagram = async setInstagramError => {
   try {
     const response = await axios.delete(ENDPOINTS.DISCONNECT_INSTAGRAM);
     checkInstagramAuthStatus(setInstagramError);
     if (response.data.success) {
-      toast.success("Successfully disconnected from Instagram.");
+      toast.success('Successfully disconnected from Instagram.');
     } else {
-      toast.error("Failed to disconnect from Instagram.");
+      toast.error('Failed to disconnect from Instagram.');
     }
   } catch (error) {
-    const errorMessage = error.response?.data?.message || "Unknown error occurred";
+    const errorMessage = error.response?.data?.message || 'Unknown error occurred';
     setInstagramError(errorMessage);
     toast.error(errorMessage);
   }
-}
+};
 
 /**
  * Posts an image to Instagram with the provided caption and file
- * 
+ *
  * @param {string} caption - The text caption for the Instagram post
  * @param {File} file - The image file to upload
  * @param {function} setInstagramError - State setter function for error messages
@@ -58,21 +55,29 @@ export const disconnectFromInstagram = async (setInstagramError) => {
  * @param {function} setButtonTextState - State setter function to update button text
  * @returns {Promise<Object|null>} The Instagram API response or null if error
  */
-export const postToInstagram = async (caption, file, setInstagramError, setCaption, setFile, setImageResetKey, setButtonTextState) => {
+export const postToInstagram = async (
+  caption,
+  file,
+  setInstagramError,
+  setCaption,
+  setFile,
+  setImageResetKey,
+  setButtonTextState,
+) => {
   try {
     if (!caption) {
-      setInstagramError("No caption provided. Please enter a caption for the post.");
+      setInstagramError('No caption provided. Please enter a caption for the post.');
       return null;
     }
 
     if (!file) {
-      setInstagramError("No file provided. Please select an image to upload.");
+      setInstagramError('No file provided. Please select an image to upload.');
       return null;
     }
 
-    setButtonTextState("Validating image...");
+    setButtonTextState('Validating image...');
     const validationResponse = await validateInstagramImage(file);
-    setButtonTextState("Validation complete");
+    setButtonTextState('Validation complete');
     if (!validationResponse.isValid) {
       setInstagramError(validationResponse.message);
       return null;
@@ -80,70 +85,71 @@ export const postToInstagram = async (caption, file, setInstagramError, setCapti
 
     const convertedFile = await convertToJPG(file);
     const imgurFormData = new FormData();
-    imgurFormData.append("image", convertedFile);
+    imgurFormData.append('image', convertedFile);
 
-    
     // Upload image to Imgur
-    setButtonTextState("Uploading image to Imgur...");
+    setButtonTextState('Uploading image to Imgur...');
     const imgurResponse = await axios.post(ENDPOINTS.POST_IMGUR_IMAGE, imgurFormData, {
       headers: {
-        "Content-Type": "multipart/form-data",
+        'Content-Type': 'multipart/form-data',
       },
     });
-    if (imgurResponse.data.success != true) {
-      setInstagramError("Imgur upload failed. Please try again.");
+    if (imgurResponse.data.success !== true) {
+      setInstagramError('Imgur upload failed. Please try again.');
       return null;
     }
-    setButtonTextState("Imgur upload complete");
+    setButtonTextState('Imgur upload complete');
 
     const imageURL = imgurResponse.data.data.link;
     const deleteHash = imgurResponse.data.data.deletehash;
 
     // Create Instagram container
-    setButtonTextState("Creating Instagram container...");
-    const instagramContainerCreateResponse = await axios.post(ENDPOINTS.CREATE_INSTAGRAM_CONTAINER, {
-      imageUrl: imageURL,
-      caption: caption,
-    });
-    if (instagramContainerCreateResponse.data.success != true) {
-      setInstagramError("Instagram container creation failed. Please try again.");
+    setButtonTextState('Creating Instagram container...');
+    const instagramContainerCreateResponse = await axios.post(
+      ENDPOINTS.CREATE_INSTAGRAM_CONTAINER,
+      {
+        imageUrl: imageURL,
+        caption,
+      },
+    );
+    if (instagramContainerCreateResponse.data.success !== true) {
+      setInstagramError('Instagram container creation failed. Please try again.');
       return null;
     }
-    setButtonTextState("Instagram container created");
+    setButtonTextState('Instagram container created');
 
     const containerId = instagramContainerCreateResponse.data.id;
 
     // Upload the container to Instagram
-    setButtonTextState("Uploading Instagram container...");
+    setButtonTextState('Uploading Instagram container...');
     const instagramContainerUploadResponse = await axios.post(ENDPOINTS.POST_INSTAGRAM_CONTAINER, {
-      containerId: containerId,
+      containerId,
     });
-    if (instagramContainerUploadResponse.data.success != true) {
-      setInstagramError("Instagram container upload failed. Please try again.");
+    if (instagramContainerUploadResponse.data.success !== true) {
+      setInstagramError('Instagram container upload failed. Please try again.');
       return null;
     }
-    setButtonTextState("Instagram container uploaded");
+    setButtonTextState('Instagram container uploaded');
 
     // Delete the image from Imgur after posting to Instagram
-    setButtonTextState("Deleting image from Imgur...");
+    setButtonTextState('Deleting image from Imgur...');
     const deleteImgurResponse = await axios.delete(ENDPOINTS.DELETE_IMGUR_IMAGE, {
-      data: { deleteHash: deleteHash },
+      data: { deleteHash },
     });
-    if (deleteImgurResponse.data.success != true) {
-      setInstagramError("Imgur image deletion failed.");
+    if (deleteImgurResponse.data.success !== true) {
+      setInstagramError('Imgur image deletion failed.');
       return null;
     }
-    setButtonTextState("Imgur image deleted");
+    setButtonTextState('Imgur image deleted');
 
-    setCaption("");
+    setCaption('');
     setFile(null);
     setImageResetKey(prev => prev + 1);
-    setButtonTextState("");
+    setButtonTextState('');
 
     return instagramContainerUploadResponse.data;
   } catch (error) {
-    console.error("Error in postToInstagram:", error);
-    setInstagramError("Error in postToInstagram");
+    setInstagramError('Error in postToInstagram');
     return null;
   }
-}
+};
