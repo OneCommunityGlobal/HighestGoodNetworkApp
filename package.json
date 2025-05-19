@@ -40,7 +40,7 @@
     "lodash": "^4.17.21",
     "lucide-react": "^0.484.0",
     "lz-string": "^1.5.0",
-    "moment": "^2.29.2",
+    "moment": "^2.30.1",
     "moment-timezone": "^0.5.33",
     "pdfmake": "^0.1.65",
     "prop-types": "^15.7.2",
