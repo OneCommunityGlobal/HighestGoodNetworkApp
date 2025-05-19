@@ -1059,7 +1059,7 @@ WeeklySummariesReport.propTypes = {
 
 const mapStateToProps = state => ({
   error: state.weeklySummariesReport?.error || null,
-  loading: state.weeklySummariesReport?.loading || null,
+  loading: state.weeklySummariesReport?.loading ?? false,
   summaries: state.weeklySummariesReport?.summaries,
   allBadgeData: state.badge?.allBadgeData,
   infoCollections: state.infoCollections?.infos,

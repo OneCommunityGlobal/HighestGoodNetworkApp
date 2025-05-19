@@ -649,6 +649,16 @@ function Index({ summary, weekIndex, allRoleInfo, auth, handleSpecialColorDotCli
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
   const currentDate = moment.tz('America/Los_Angeles').startOf('day');
   const colors = ['purple', 'green', 'navy'];
+  const finalWeekBadge = (
+    <span
+      style={{
+        color: 'red',
+        fontWeight: 'bold',
+      }}
+    >
+      FINAL WEEK REPORTING: This team member is no longer active
+    </span>
+  );
 
   const googleDocLink = summary.adminLinks?.reduce((targetLink, currentElement) => {
     if (currentElement.Name === 'Google Doc') {
@@ -709,6 +719,7 @@ function Index({ summary, weekIndex, allRoleInfo, auth, handleSpecialColorDotCli
           />
         ))}
       </div>
+      {!summary.isActive && <div style={{ marginTop: 4 }}>{finalWeekBadge}</div>}
 
       {showStar(hoursLogged, summary.promisedHoursByWeek[weekIndex]) && (
         <i
