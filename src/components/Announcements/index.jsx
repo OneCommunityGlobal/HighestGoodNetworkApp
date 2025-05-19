@@ -1,12 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
-// import { useLocation } from 'react-router-dom';
 import './Announcements.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react'; // Import Editor from TinyMCE
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
 import { FaInstagramSquare } from 'react-icons/fa';
-// import { get } from 'lodash';
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
 import InstagramPostEditor from './InstagramComponents/InstagramPostEditor/InstagramPostEditor';
 
@@ -17,15 +15,9 @@ function Announcements({ title, email }) {
   const [emailList, setEmailList] = useState([]);
   const [emailContent, setEmailContent] = useState('');
   const [headerContent, setHeaderContent] = useState('');
-  const [showEditor, setShowEditor] = useState(true); // State to control rendering of the editor
+  const [showEditor, setShowEditor] = useState(true);
   const tinymce = useRef(null);
 
-  // const [facebookUserAccessToken, setFacebookUserAccessToken] = useState('');
-  // const [instagramUserAccessToken, setInstagramUserAccessToken] = useState('');
-  // const location = useLocation();
-  // const history = useHistory();
-
-  // const [urlButtonVisibility, setUrlButtonVisibility] = useState(false);
   const [showInstagramPostEditor, setShowInstagramPostEditor] = useState(false);
   const [instagramConnectionStatus, setInstagramConnectionStatus] = useState(false);
 
