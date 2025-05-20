@@ -168,6 +168,7 @@ export const ENDPOINTS = {
   REMOVE_EMAIL_SUBSCRIPTION: `${APIEndpoint}/remove-non-hgn-email-subscription`,
 
   // Instagram endpoints
+  GET_INSTAGRAM_AUTH_URL: `${APIEndpoint}/instagram/auth`,
   GET_INSTAGRAM_AUTH_STATUS: `${APIEndpoint}/instagram/auth-status`,
   GET_INSTAGRAM_USER_ID: `${APIEndpoint}/instagram/get-user-id`,
   DISCONNECT_INSTAGRAM: `${APIEndpoint}/instagram/disconnect`,

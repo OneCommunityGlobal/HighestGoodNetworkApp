@@ -8,6 +8,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import DatePicker from 'react-datepicker';
+// import { ENDPOINTS } from 'utils/URL';
 import InstagramLoginButton from '../InstagramLoginButton';
 import './InstagramPostEditor.css';
 import {
@@ -321,9 +322,6 @@ function InstagramPostEditor({ instagramConnectionStatus, setInstagramConnection
           <InstagramLoginButton
             className="instagram-login-button"
             buttonText="Connect Instagram Account"
-            appId={process.env.REACT_APP_INSTAGRAM_CLIENT_ID}
-            redirectUri={process.env.REACT_APP_INSTAGRAM_REDIRECT_URI}
-            scope={process.env.REACT_APP_INSTAGRAM_SCOPE}
             onLoginSuccess={() => {
               handleInstagramLoginSuccess();
             }}

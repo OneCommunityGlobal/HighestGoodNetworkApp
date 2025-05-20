@@ -1,38 +1,61 @@
 import { Component } from 'react';
+import { ENDPOINTS } from 'utils/URL';
+import axios from 'axios';
 
 class InstagramLoginButton extends Component {
-  buildCodeRequestURL = () => {
-    const { appId, redirectUri, scope } = this.props;
-    const uri = encodeURIComponent(redirectUri || window.location.href);
-    scope.replace(/%2C/g, ',');
+  buildCodeRequestURL = async () => {
+    try {
+      const response = await axios.get(`${ENDPOINTS.GET_INSTAGRAM_AUTH_URL}`);
 
-    return `https://api.instagram.com/oauth/authorize?app_id=${appId}&redirect_uri=${uri}&scope=${scope}&response_type=code`;
+      if (response.success === false) {
+        throw new Error('Failed to fetch Instagram auth URL');
+      }
+
+      return response.data.url;
+    } catch (error) {
+      if (this.props.onLoginFailure && typeof this.props.onLoginFailure === 'function') {
+        this.props.onLoginFailure();
+      }
+
+      return null;
+    }
   };
 
-  handleLoginClick = () => {
+  handleLoginClick = async () => {
     const width = 600;
     const height = 700;
     const left = window.screen.width / 2 - width / 2;
     const top = window.screen.height / 2 - height / 2;
 
-    const popup = window.open(
-      this.buildCodeRequestURL(),
-      'instagram-login-popup',
-      `width=${width},height=${height},left=${left},top=${top},toolbar=0,location=0,menubar=0,scrollbars=1`,
-    );
+    try {
+      const authUrl = await this.buildCodeRequestURL();
+      if (!authUrl) {
+        throw new Error('Failed to build Instagram auth URL');
+      }
 
-    if (popup) {
-      const checkPopupClosed = setInterval(() => {
-        if (popup.closed) {
-          clearInterval(checkPopupClosed);
+      const popup = window.open(
+        authUrl,
+        'instagram-login-popup',
+        `width=${width},height=${height},left=${left},top=${top},toolbar=0,location=0,menubar=0,scrollbars=1`,
+      );
 
-          if (this.props.onLoginSuccess && typeof this.props.onLoginSuccess === 'function') {
-            this.props.onLoginSuccess();
+      if (popup) {
+        const checkPopupClosed = setInterval(() => {
+          if (popup.closed) {
+            clearInterval(checkPopupClosed);
+
+            if (this.props.onLoginSuccess && typeof this.props.onLoginSuccess === 'function') {
+              this.props.onLoginSuccess();
+            }
           }
-        }
-      }, 500);
-    } else if (this.props.onLoginFailure && typeof this.props.onLoginFailure === 'function') {
-      this.props.onLoginFailure();
+        }, 500);
+      } else if (this.props.onLoginFailure && typeof this.props.onLoginFailure === 'function') {
+        this.props.onLoginFailure();
+      }
+    } catch (error) {
+      if (this.props.onLoginFailure && typeof this.props.onLoginFailure === 'function') {
+        this.props.onLoginFailure();
+      }
     }
   };
 
