@@ -1,4 +1,5 @@
 import { teamMemberTasksReducer } from '../reducer';
+
 describe('teamMemberTasksReducer', () => {
   const initialState = {
     isLoading: false,
@@ -19,7 +20,9 @@ describe('teamMemberTasksReducer', () => {
   it('should handle FETCH_TEAM_MEMBERS_DATA_ERROR', () => {
     const action = { type: 'FETCH_TEAM_MEMBERS_DATA_ERROR' };
     const expectedState = { ...initialState, isLoading: false };
-    expect(teamMemberTasksReducer({ ...initialState, isLoading: true }, action)).toEqual(expectedState);
+    expect(teamMemberTasksReducer({ ...initialState, isLoading: true }, action)).toEqual(
+      expectedState,
+    );
   });
 
   it('should handle FETCH_TEAM_MEMBERS_TASK_SUCCESS', () => {
@@ -27,7 +30,11 @@ describe('teamMemberTasksReducer', () => {
       type: 'FETCH_TEAM_MEMBERS_TASK_SUCCESS',
       payload: { usersWithTasks: [{ id: 1, name: 'John Doe' }] },
     };
-    const expectedState = { ...initialState, isLoading: false, usersWithTasks: [{ id: 1, name: 'John Doe' }] };
+    const expectedState = {
+      ...initialState,
+      isLoading: false,
+      usersWithTasks: [{ id: 1, name: 'John Doe' }],
+    };
     expect(teamMemberTasksReducer(initialState, action)).toEqual(expectedState);
   });
 
@@ -36,7 +43,11 @@ describe('teamMemberTasksReducer', () => {
       type: 'FETCH_TEAM_MEMBERS_TIMEENTRIES_SUCCESS',
       payload: { usersWithTimeEntries: [{ _id: 1, hours: 10 }] },
     };
-    const expectedState = { ...initialState, isLoading: false, usersWithTimeEntries: [{ _id: 1, hours: 10 }] };
+    const expectedState = {
+      ...initialState,
+      isLoading: false,
+      usersWithTimeEntries: [{ _id: 1, hours: 10 }],
+    };
     expect(teamMemberTasksReducer(initialState, action)).toEqual(expectedState);
   });
 
