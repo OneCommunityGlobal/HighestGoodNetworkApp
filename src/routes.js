@@ -96,12 +96,12 @@ import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
 import EPDashboard from './components/EductionPortal';
 
-
 import LandingPage from './components/HGNHelpSkillsDashboard/LandingPage';
 import SkillsOverviewPage from './components/HGNHelpSkillsDashboard/SkillsOverviewPage';
 import CommunityMembersPage from './components/HGNHelpSkillsDashboard/CommunityMembersPage';
 import UserProfilePage from './components/HGNHelpSkillsDashboard/UserProfilePage';
 import FeedbackModal from './components/HGNHelpSkillsDashboard/FeedbackModal';
+
 
 // eslint-disable-next-line import/order, import/no-unresolved
 import LogTools from './components/BMDashboard/LogTools/LogTools';
@@ -509,7 +509,7 @@ export default (
         <Route path="/Logout" component={Logout} />
         <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
 
-        {/* ----- HGN Help Community Skills Dashboard Routes ----- */}
+         {/* ----- HGN Help Community Skills Dashboard Routes ----- */}
         <ProtectedRoute path="/hgnhelp" exact component={LandingPage} />
         <ProtectedRoute path="/hgnhelp/skills-overview" exact component={SkillsOverviewPage} />
         <ProtectedRoute path="/hgnhelp/community" exact component={CommunityMembersPage} />
