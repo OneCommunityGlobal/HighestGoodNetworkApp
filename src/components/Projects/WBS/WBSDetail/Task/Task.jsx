@@ -1,19 +1,19 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { connect } from 'react-redux';
-import { Modal, ModalBody, Button } from 'reactstrap';
+import { Modal, ModalBody, Button, ModalHeader } from 'reactstrap';
 import { BsFillCaretDownFill, BsFillCaretUpFill, BsFillCaretLeftFill } from 'react-icons/bs';
 import ControllerRow from '../ControllerRow';
 import {
   moveTasks,
   deleteTask,
-  copyTask,
   deleteChildrenTasks,
 } from '../../../../../actions/task.js';
 import './tagcolor.css';
 import './task.css';
+import '../../../../Header/DarkMode.css'
 import { Editor } from '@tinymce/tinymce-react';
 import { getPopupById } from './../../../../../actions/popupEditorAction';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import { formatDate } from 'utils/formatDate';
 
 function Task(props) {
@@ -21,7 +21,21 @@ function Task(props) {
    * -------------------------------- variable declarations --------------------------------
    */
   // props from store
-  const { tasks } = props;
+  const { tasks, darkMode } = props;
+
+  const { copyCurrentTask } = props;
+
+  const TINY_MCE_INIT_OPTIONS = {
+    license_key: 'gpl',
+    menubar: false,
+    toolbar: false,
+    branding: false,
+    min_height: 80,
+    max_height: 300,
+    autoresize_bottom_margin: 1,
+    skin: darkMode ? 'oxide-dark' : 'oxide',
+    content_css: darkMode ? 'dark' : 'default',
+  };
 
   const names = props.resources.map(element => element.name);
   const colors_objs = assignColorsToInitials(names);
@@ -38,11 +52,16 @@ function Task(props) {
   const [children, setChildren] = useState([]);
   const [showMoreResources, setShowMoreResources] = useState(false);
   const tableRowRef = useRef();
+  const [currentTask, setCurrentTask] = useState(undefined);
+
+  useEffect(() => {
+    setCurrentTask(tasks.find(t => t._id === props.taskId));
+  }, [tasks])
 
   /*
    * -------------------------------- functions --------------------------------
    */
-  const toggleModel = () => setModal(!modal);
+  const toggleModal = () => setModal(!modal);
 
   const openChild = () => {
     setIsOpen(!isOpen);
@@ -70,13 +89,13 @@ function Task(props) {
     props.deleteWBSTask(taskId, mother);
   };
 
-  function getInitials(name){
+  function getInitials(name) {
     const initials = name
-    .split(' ')
-    .filter((n, index) => index === 0 || index === name.split(' ').length - 1)
-    .map(n => n[0])
-    .join('')
-    .toUpperCase();
+      .split(' ')
+      .filter((n, index) => index === 0 || index === name.split(' ').length - 1)
+      .map(n => n[0])
+      .join('')
+      .toUpperCase();
     return initials;
   }
 
@@ -102,23 +121,23 @@ function Task(props) {
     ];
     let colors = {};
     let colorIndex = {};
-    
+
     for (let name of names) {
       const initials = getInitials(name);
       // If the initials haven't been encountered yet, assign a base color
       if (!colorIndex[initials]) {
         colors[name] = {
           color: '#bbb', // Base color
-          initials: initials, 
+          initials: initials,
         };
         colorIndex[initials] = 1;
       } else {
         // If initials have been encountered, assign a new color
         colors[name] = {
-          color: colorsHex[Math.floor(Math.random() * colorsHex.length)] + '30', 
-          initials: initials, 
+          color: colorsHex[Math.floor(Math.random() * colorsHex.length)] + '30',
+          initials: initials,
         };
-        colorIndex[initials]++; 
+        colorIndex[initials]++;
       }
     }
     return colors;
@@ -148,6 +167,10 @@ function Task(props) {
     setIsOpen(props.openAll);
   }, [props.openAll]);
 
+  const bgColorsDark = ['bg-yinmn-blue', 'bg-yinmn-blue-light'];
+  const bgColorsLight = ['bg-white', 'bg-light'];
+  const bgColor = darkMode ? bgColorsDark[(props.level - 1) % bgColorsDark.length] : bgColorsLight[(props.level - 1) % bgColorsLight.length];
+
   return (
     <>
       {props.taskId ? (
@@ -155,20 +178,26 @@ function Task(props) {
           <tr
             ref={tableRowRef}
             key={props.key}
-            className={`num_${props.num?.split('.').join('')} wbsTask  ${
-              props.isNew ? 'newTask' : ''
-            } parentId1_${props.parentId1} parentId2_${props.parentId2} parentId3_${
-              props.parentId3
-            } mother_${props.mother} lv_${props.level}`}
+            className={`num_${props.num?.split('.').join('')} wbsTask  ${props.isNew ? 'newTask' : ''
+              } parentId1_${props.parentId1} parentId2_${props.parentId2} parentId3_${props.parentId3
+              } mother_${props.mother} lv_${props.level} ${bgColor}`}
             id={props.taskId}
           >
             <td
-              className={`tag_color tag_color_${
-                props.num?.length > 0 ? props.num.split('.')[0] : props.num
-              } tag_color_lv_${props.level}`}
+              className={`tag_color tag_color_${props.num?.length > 0 ? props.num.split('.')[0] : props.num
+                } tag_color_lv_${props.level}`}
             ></td>
             <td>
-              <Button color="primary" size="sm" onClick={activeController} style={boxStyle}>
+              <Button
+                color="primary"
+                size="sm"
+                onClick={activeController}
+                style={{
+                  ...(darkMode ? boxStyleDark : boxStyle),
+                  display: 'flex',
+                  alignItems: 'center'
+                }}
+              >
                 <span className="action-edit-btn">EDIT</span>
                 {controllerRow ? <BsFillCaretUpFill /> : <BsFillCaretDownFill />}
               </Button>
@@ -216,31 +245,31 @@ function Task(props) {
             <td className="desktop-view">
               {props.resources.length
                 ? props.resources
-                    .filter((elm, i) => i < 2 || showMoreResources)
-                    .map((elm, i) => {
-                      const name = elm.name; //Getting initials and formatting them here
-                      const initials = getInitials(name);
-                      //getting background color here
-                      const bg = colors_objs[name].color;
-                      return (
-                        <a
-                          key={`res_${i}`}
-                          data-tip={elm.name}
-                          className="name"
-                          href={`/userprofile/${elm.userID}`}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          {!elm.profilePic || elm.profilePic === '/defaultprofilepic.png' ? (
-                            <span className="dot" style={{ backgroundColor: bg }}>
-                              {initials}{' '}
-                            </span>
-                          ) : (
-                            <img className="img-circle" src={elm.profilePic} />
-                          )}
-                        </a>
-                      );
-                    })
+                  .filter((elm, i) => i < 2 || showMoreResources)
+                  .map((elm, i) => {
+                    const name = elm.name; //Getting initials and formatting them here
+                    const initials = getInitials(name);
+                    //getting background color here
+                    const bg = colors_objs[name].color;
+                    return (
+                      <a
+                        key={`res_${i}`}
+                        data-tip={elm.name}
+                        className="name"
+                        href={`/userprofile/${elm.userID}`}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        {!elm.profilePic || elm.profilePic === '/defaultprofilepic.png' ? (
+                          <span className="dot" style={{ backgroundColor: bg }}>
+                            {initials}{' '}
+                          </span>
+                        ) : (
+                          <img className="img-circle" src={elm.profilePic} />
+                        )}
+                      </a>
+                    );
+                  })
                 : null}
               {props.resources.length > 2 ? (
                 <a
@@ -314,54 +343,37 @@ function Task(props) {
               {props.links.map((link, i) =>
                 link.length > 1 ? (
                   <a key={i} href={link} target="_blank" data-tip={link} rel="noreferrer">
-                    <i className="fa fa-link" aria-hidden="true" />
+                    <i className={`fa fa-link ${darkMode ? 'text-azure' : ''}`} aria-hidden="true" />
                   </a>
                 ) : null,
               )}
             </td>
-            <td className="desktop-view" onClick={toggleModel}>
+            <td className="desktop-view" onClick={toggleModal}>
               <i className="fa fa-book" aria-hidden="true" data-tip="More info" />
             </td>
-            <Modal isOpen={modal} toggle={toggleModel}>
-              <ModalBody>
+            <Modal isOpen={modal} toggle={toggleModal} className={darkMode ? 'text-light dark-mode' : ''}>
+              <ModalHeader toggle={toggleModal} className={darkMode ? 'bg-space-cadet' : ''}></ModalHeader>
+              <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                 <h6>WHY THIS TASK IS IMPORTANT:</h6>
                 <Editor
-                  init={{
-                    menubar: false,
-                    toolbar: false,
-                    branding: false,
-                    min_height: 80,
-                    max_height: 300,
-                    autoresize_bottom_margin: 1,
-                  }}
+                  tinymceScriptSrc="/tinymce/tinymce.min.js"
+                  init={TINY_MCE_INIT_OPTIONS}
                   disabled
                   value={props.whyInfo}
                 />
 
                 <h6>THE DESIGN INTENT:</h6>
                 <Editor
-                  init={{
-                    menubar: false,
-                    toolbar: false,
-                    branding: false,
-                    min_height: 80,
-                    max_height: 300,
-                    autoresize_bottom_margin: 1,
-                  }}
+                  tinymceScriptSrc="/tinymce/tinymce.min.js"
+                  init={TINY_MCE_INIT_OPTIONS}
                   disabled
                   value={props.intentInfo}
                 />
 
                 <h6>ENDSTATE:</h6>
                 <Editor
-                  init={{
-                    menubar: false,
-                    toolbar: false,
-                    branding: false,
-                    min_height: 80,
-                    max_height: 300,
-                    autoresize_bottom_margin: 1,
-                  }}
+                  tinymceScriptSrc="/tinymce/tinymce.min.js"
+                  init={TINY_MCE_INIT_OPTIONS}
                   disabled
                   value={props.endstateInfo}
                 />
@@ -370,6 +382,8 @@ function Task(props) {
           </tr>
           {controllerRow ? (
             <ControllerRow
+              currentTask={currentTask}
+              copyCurrentTask={copyCurrentTask}
               tableColNum={tableColNum}
               num={props.num}
               taskId={props.taskId}
@@ -386,14 +400,17 @@ function Task(props) {
               siblings={props.siblings}
               load={props.load}
               pageLoadTime={props.pageLoadTime}
-              setIsLoading={props.setIsLoading}
             />
           ) : null}
         </>
-      ) : null}
-      {isOpen && children.length
-        ? children.map((task, i) => (
+      ) : null
+      }
+      {
+        isOpen && children.length
+          ? children.map((task, i) => (
             <ConnectedTask
+              copyCurrentTask={copyCurrentTask}
+              tasks={tasks}
               key={`${task._id}${i}`}
               taskId={task._id}
               level={task.level}
@@ -433,19 +450,20 @@ function Task(props) {
               setIsLoading={props.setIsLoading}
             />
           ))
-        : null}
+          : null
+      }
     </>
   );
 }
 
 const mapStateToProps = state => ({
-  tasks: state.tasks.taskItems,
+  // tasks: state.tasks.taskItems,
+  darkMode: state.theme.darkMode,
 });
 
 const ConnectedTask = connect(mapStateToProps, {
   moveTasks,
   deleteTask,
-  copyTask,
   getPopupById,
   deleteChildrenTasks,
 })(Task);

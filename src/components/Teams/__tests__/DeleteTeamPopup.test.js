@@ -1,10 +1,11 @@
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import DeleteTeamPopup from 'components/Teams/DeleteTeamPopup';
 import { screen, fireEvent } from '@testing-library/react';
-import { renderWithProvider } from '../../../__tests__/utils';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import { authMock, userProfileMock, rolesMock } from '../../../__tests__/mockStates';
+import { renderWithProvider } from '../../../__tests__/utils';
+import { authMock, userProfileMock, rolesMock, themeMock } from '../../../__tests__/mockStates';
 
 const mock = jest.fn();
 const mockStore = configureStore([thunk]);
@@ -25,13 +26,25 @@ beforeEach(() => {
     auth: authMock,
     userProfile: userProfileMock,
     role: rolesMock.role,
+    theme: themeMock,
     ...defaultProps,
   });
 });
 
 describe('DeleteTeamPopup', () => {
   it('should call closePopup function', () => {
-    renderWithProvider(<DeleteTeamPopup {...defaultProps} />, { store });
+    renderWithProvider(
+      <DeleteTeamPopup
+        open={defaultProps.open}
+        teamName={defaultProps.teamName}
+        isEdit={defaultProps.isEdit}
+        onDeleteClick={defaultProps.onDeleteClick}
+        onSetInactiveClick={defaultProps.onSetInactiveClick}
+        onClose={defaultProps.onClose}
+        selectedTeamId={defaultProps.selectedTeamId}
+      />,
+      { store },
+    );
 
     const closeButton = screen.getByText('Close');
     fireEvent.click(closeButton);
@@ -40,7 +53,18 @@ describe('DeleteTeamPopup', () => {
   });
 
   it('should call onSetInactiveClick when "Set Inactive" button is clicked', () => {
-    renderWithProvider(<DeleteTeamPopup {...defaultProps} />, { store });
+    renderWithProvider(
+      <DeleteTeamPopup
+        open={defaultProps.open}
+        teamName={defaultProps.teamName}
+        isEdit={defaultProps.isEdit}
+        onDeleteClick={defaultProps.onDeleteClick}
+        onSetInactiveClick={defaultProps.onSetInactiveClick}
+        onClose={defaultProps.onClose}
+        selectedTeamId={defaultProps.selectedTeamId}
+      />,
+      { store },
+    );
 
     const setInactiveButton = screen.getByText('Set Inactive');
     fireEvent.click(setInactiveButton);
@@ -49,7 +73,18 @@ describe('DeleteTeamPopup', () => {
   });
 
   it('should call onDeleteClick when "Confirm" button is clicked', () => {
-    renderWithProvider(<DeleteTeamPopup {...defaultProps} />, { store });
+    renderWithProvider(
+      <DeleteTeamPopup
+        open={defaultProps.open}
+        teamName={defaultProps.teamName}
+        isEdit={defaultProps.isEdit}
+        onDeleteClick={defaultProps.onDeleteClick}
+        onSetInactiveClick={defaultProps.onSetInactiveClick}
+        onClose={defaultProps.onClose}
+        selectedTeamId={defaultProps.selectedTeamId}
+      />,
+      { store },
+    );
 
     const confirmButton = screen.getByText('Confirm');
     fireEvent.click(confirmButton);
@@ -59,7 +94,18 @@ describe('DeleteTeamPopup', () => {
   });
 
   it('should render the modal when open is true', () => {
-    renderWithProvider(<DeleteTeamPopup {...defaultProps} />, { store });
+    renderWithProvider(
+      <DeleteTeamPopup
+        open={defaultProps.open}
+        teamName={defaultProps.teamName}
+        isEdit={defaultProps.isEdit}
+        onDeleteClick={defaultProps.onDeleteClick}
+        onSetInactiveClick={defaultProps.onSetInactiveClick}
+        onClose={defaultProps.onClose}
+        selectedTeamId={defaultProps.selectedTeamId}
+      />,
+      { store },
+    );
 
     const modal = screen.getByText('Delete');
     expect(modal).toBeInTheDocument();

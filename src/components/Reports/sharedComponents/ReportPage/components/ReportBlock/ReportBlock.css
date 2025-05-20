@@ -1,18 +1,17 @@
 .report-block-wrapper {
   border-radius: 12px;
   box-shadow: 0 0 12px #eae1f6;
-  overflow: hidden;
   text-align: center;
 }
 
 .report-block-content {
   height: 100%;
   padding: 16px;
+  overflow: auto;
 }
 
 .report-block-wrapper-dark {
   border-radius: 12px;
   box-shadow: 0 0 12px black;
-  overflow: hidden;
   text-align: center;
 }

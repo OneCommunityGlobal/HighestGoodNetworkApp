@@ -1,47 +1,43 @@
-import {useState}from 'react';
+/* eslint-disable import/prefer-default-export */
 import { useSelector } from 'react-redux';
 import { PieChart } from '../../../common/PieChart';
+import { UserProjectPieChart } from '../../../common/PieChart/ProjectPieChart';
 import { peopleTasksPieChartViewData } from '../selectors';
 import { ReportPage } from '../../sharedComponents/ReportPage';
-import { NewModal } from '../../../common/NewModal';
 import './PeopleTasksPieChart.css';
+// import { ProjectPieChart } from 'components/Reports/ProjectReport/ProjectPieChart/ProjectPieChart';
 
-export const PeopleTasksPieChart = ({darkMode}) => {
+export function PeopleTasksPieChart({ darkMode }) {
   const {
     tasksWithLoggedHoursById,
     showTasksPieChart,
     showProjectsPieChart,
     tasksLegend,
-    projectsWithLoggedHoursById,
-    projectsWithLoggedHoursLegend,
-    displayedTasksWithLoggedHoursById,
-    displayedTasksLegend,
     showViewAllTasksButton,
+    hoursLoggedToProjectsOnly,
   } = useSelector(peopleTasksPieChartViewData);
-
-  const [showAllTasks, setShowAllTasks] = useState(false);
+  
+  // const [showAllTasks, setShowAllTasks] = useState(false);
 
   if (!showTasksPieChart && !showProjectsPieChart) {
     return null;
   }
 
-  function handleViewAll(){
-    setShowAllTasks(prev => !prev);
-  }
-
+  // function handleViewAll() {
+  //   setShowAllTasks(prev => !prev);
+  // }
 
   return (
     <div className={`people-pie-charts-wrapper ${darkMode ? 'text-light' : ''}`}>
-      {showProjectsPieChart && (
+      {hoursLoggedToProjectsOnly.length!==0 && (
         <ReportPage.ReportBlock darkMode={darkMode}>
           <h5 className="people-pie-charts-header">Projects With Completed Hours</h5>
-          <PieChart
-            pieChartId={'projectsPieChart'}
-            data={projectsWithLoggedHoursById}
-            dataLegend={projectsWithLoggedHoursLegend}
-            dataLegendHeader="Hours"
+          {hoursLoggedToProjectsOnly.length!==0 && <UserProjectPieChart
+            pieChartId="projectsPieChart"
             darkMode={darkMode}
-          />
+            projectsData={hoursLoggedToProjectsOnly}
+            tasksData={tasksLegend}       
+          />}
         </ReportPage.ReportBlock>
       )}
       {showTasksPieChart && (
@@ -49,30 +45,22 @@ export const PeopleTasksPieChart = ({darkMode}) => {
           <h5 className="people-pie-charts-header">{`${
             showViewAllTasksButton ? 'Last ' : ''
           }Tasks With Completed Hours`}</h5>
-          {!showAllTasks && <PieChart
-            pieChartId={'tasksPieChart'}
-            data={displayedTasksWithLoggedHoursById}
-            dataLegend={displayedTasksLegend}
-            dataLegendHeader="Hours"
+          <PieChart
+            pieChartId="tasksPieChart"
             darkMode={darkMode}
-          />}
-          {showViewAllTasksButton && (
-         <div>               
-           {showAllTasks &&   <PieChart
-                pieChartId={'allTasksPieChart'}
-                data={tasksWithLoggedHoursById}
-                dataLegend={tasksLegend}
-                dataLegendHeader="Hours"
-                darkMode={darkMode}
-              />}
-               <div onClick={handleViewAll} className="show-all-tasks-button">
-                  {showAllTasks ? "Collapse":  "View all"}
+            data={tasksWithLoggedHoursById}
+            tasksData={tasksLegend}
+            projectsData={hoursLoggedToProjectsOnly}
+          />
+          {/* {showViewAllTasksButton && (
+            <div>
+              <div onClick={handleViewAll} className="show-all-tasks-button">
+                {showAllTasks ? 'Collapse' : 'View all'}
               </div>
-        </div>
-          )}
+            </div>
+          )} */}
         </ReportPage.ReportBlock>
       )}
     </div>
   );
-
-};
+}

@@ -46,6 +46,7 @@ const ProjectsTab = props => {
         projects={projectsData}
         onSelectAssignProject={onSelectAssignProject}
         handleSubmit={handleSubmit}
+        darkMode={darkMode}
       />
       <UserProjectsTable
         userTasks={userTasks}

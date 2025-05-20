@@ -1,9 +1,10 @@
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
-import CopyToClipboard from '../CopyToClipboard';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
-import { themeMock } from '__tests__/mockStates';
+import CopyToClipboard from '../CopyToClipboard';
+import { themeMock } from '../../../../__tests__/mockStates';
 
 // Create a mock Redux store
 const mockStore = configureMockStore();
@@ -41,7 +42,7 @@ describe('CopyToClipboard', () => {
     render(
       <Provider store={store}>
         <CopyToClipboard writeText={writeText} message={message} />
-      </Provider>
+      </Provider>,
     );
 
     // Select the element using its class

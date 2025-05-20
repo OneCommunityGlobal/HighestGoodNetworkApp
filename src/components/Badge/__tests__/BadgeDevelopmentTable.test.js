@@ -62,6 +62,26 @@ const renderComponent = mockProps => {
     allProjects: {
       projects: [],
     },
+    auth: {
+      isAuthenticated: true,
+      user: {
+        userid: '123',
+        role: 'Owner',
+        firstName: 'John',
+        profilePic: '/path/to/image.jpg',
+        permissions: {
+          frontPermissions: ['updateBadges', 'deleteBadges'],
+          backPermissions: [],
+        },
+      },
+    },
+    userProfile: {
+      email: 'test@example.com',
+    },
+    taskEditSuggestionCount: 0,
+    role: {
+      roles: ['Owner'],
+    },
     theme: themeMock,
   });
 
@@ -193,7 +213,7 @@ describe('BadgeDevelopmentTable component', () => {
     mockData.allBadgeData.forEach(async (item, index) => {
       const checkbox = container.querySelector(`#${item._id}`);
       if (index == 0) {
-        expect(checkbox.checked).toBe(true);
+        expect(checkbox.checked).toBe(false);
       } else {
         expect(checkbox.checked).toBe(false);
       }

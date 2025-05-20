@@ -1,34 +1,88 @@
-import React from 'react';
+import { useState } from 'react';
+import { connect } from 'react-redux';
+import { Tooltip as ReactstrapTooltip } from 'reactstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBell } from '@fortawesome/free-solid-svg-icons';
+import { Tooltip, OverlayTrigger } from 'react-bootstrap';
+import { boxStyle, boxStyleDark } from '../../styles';
+import hasPermission from '../../utils/permissions';
 import { SEARCH, SHOW, CREATE_NEW_USER, SEND_SETUP_LINK } from '../../languages/en/ui';
-import { boxStyle, boxStyleDark } from 'styles';
+
+const setupHistoryTooltip = <Tooltip id="tooltip">Setup History Modal</Tooltip>;
+
 /**
  * The search panel stateless component for user management grid
  */
-const UserSearchPanel = ({handleNewUserSetupPopup, onNewUserClick, searchText, onSearch, onActiveFiter, darkMode}) => {
-  // console.log('UserSearchPanel props', props);
 
+function UserSearchPanel({
+  // eslint-disable-next-line no-shadow
+  hasPermission,
+  handleNewUserSetupPopup,
+  handleSetupHistoryPopup,
+  onNewUserClick,
+  searchText,
+  onSearch,
+  onActiveFiter,
+  darkMode,
+}) {
+  const canCreateUsers = hasPermission('postUserProfile');
+  const [tooltipCreateNewUserOpen, setTooltipCreateNewUserOpen] = useState(false);
+  const toggleCreateNewUserTooltip = () => setTooltipCreateNewUserOpen(!tooltipCreateNewUserOpen);
   return (
     <div className="input-group mt-3" id="new_usermanagement">
-      <button type="button" className="btn btn-info mr-2" onClick={handleNewUserSetupPopup} style={darkMode ? boxStyleDark : boxStyle}>
-        {SEND_SETUP_LINK}
-      </button>
       <button
         type="button"
+        disabled={!canCreateUsers}
         className="btn btn-info mr-2"
-        onClick={e => {
+        onClick={handleNewUserSetupPopup}
+        style={darkMode ? boxStyleDark : boxStyle}
+      >
+        {SEND_SETUP_LINK}
+      </button>
+      <OverlayTrigger placement="bottom" overlay={setupHistoryTooltip}>
+        <button
+          type="button"
+          className="btn btn-info mr-2"
+          onClick={handleSetupHistoryPopup}
+          style={darkMode ? boxStyleDark : boxStyle}
+        >
+          <FontAwesomeIcon className="bell_icon" icon={faBell} />
+        </button>
+      </OverlayTrigger>
+
+      {!canCreateUsers ? (
+        <ReactstrapTooltip
+          placement="bottom"
+          isOpen={tooltipCreateNewUserOpen}
+          target="btn-create-new-user"
+          toggle={toggleCreateNewUserTooltip}
+        >
+          You don&apos;t have permission to create a new user
+        </ReactstrapTooltip>
+      ) : (
+        ''
+      )}
+
+      <button
+        type="button"
+        disabled={!canCreateUsers}
+        className="btn btn-info mr-2"
+        onClick={() => {
           onNewUserClick();
         }}
         style={darkMode ? boxStyleDark : boxStyle}
+        id="btn-create-new-user"
       >
         {CREATE_NEW_USER}
       </button>
+
       <div className="input-group-prepend">
-        <span className="input-group-text">{SEARCH}</span>
+        <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>{SEARCH}</span>
       </div>
       <input
-        autoFocus
+        // autoFocus
         type="text"
-        className="form-control"
+        className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
         aria-label="Search"
         placeholder="Search Text"
         id="user-profiles-wild-card-search"
@@ -36,14 +90,16 @@ const UserSearchPanel = ({handleNewUserSetupPopup, onNewUserClick, searchText, o
         onChange={e => {
           onSearch(e.target.value);
         }}
+        style={{marginRight: "5px"}}
       />
-      <div className="input-group-prepend ml-2">
-        <span className="input-group-text">{SHOW}</span>
+      <div className="input-group-prepend">
+        <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>{SHOW}</span>
         <select
           id="active-filter-dropdown"
           onChange={e => {
             onActiveFiter(e.target.value);
           }}
+          className={darkMode ? 'bg-darkmode-liblack text-light' : ''}
         >
           <option value="all">All</option>
           <option value="active">Active</option>
@@ -52,9 +108,9 @@ const UserSearchPanel = ({handleNewUserSetupPopup, onNewUserClick, searchText, o
         </select>
       </div>
 
-      <div className="input-group-append"></div>
+      <div className="input-group-append" />
     </div>
   );
-};
+}
 
-export default UserSearchPanel;
+export default connect(null, { hasPermission })(UserSearchPanel);

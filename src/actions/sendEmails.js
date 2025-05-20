@@ -10,19 +10,19 @@ export const sendEmail = (to, subject, html) => {
   return async () => {
     try {
       const response = await axios.post(url, { to, subject, html });
-      console.log('Email sent successfully:', response);
+      toast.info('Email sent successfully:', response);
 
       // Display a success toast
       toast.success('Email successfully sent', {
-        position: 'top-center', // You can adjust the position as needed
+        position: 'top-right', // You can adjust the position as needed
         autoClose: 3000, // Close the toast after 3 seconds (adjust as needed)
       });
     } catch (error) {
-      console.error('Error sending email:', error);
+      toast.error('Error sending email:', error);
 
       // Display an error toast
       toast.error('Error sending email', {
-        position: 'top-center', // You can adjust the position as needed
+        position: 'top-right', // You can adjust the position as needed
         autoClose: 3000, // Close the toast after 3 seconds (adjust as needed)
       });
     }
@@ -35,7 +35,7 @@ export const broadcastEmailsToAll = (subject, html) => {
   return async () => {
     try {
       const response = await axios.post(url, { subject, html });
-      console.log('Email sent successfully:', response);
+      toast.info('Email sent successfully:', response);
 
       // Display a success toast
       toast.success('Email successfully sent', {
@@ -43,7 +43,7 @@ export const broadcastEmailsToAll = (subject, html) => {
         autoClose: 3000, // Close the toast after 3 seconds (adjust as needed)
       });
     } catch (error) {
-      console.error('Error sending email:', error);
+      toast.error('Error sending email:', error);
 
       // Display an error toast
       toast.error('Error sending email', {
@@ -54,13 +54,13 @@ export const broadcastEmailsToAll = (subject, html) => {
   };
 };
 
-export const updateEmailSubscription = (subscription=true) => {
+export const updateEmailSubscription = (subscription = true) => {
   const url = ENDPOINTS.UPDATE_EMAIL_SUBSCRIPTION;
 
   return async () => {
     try {
-      const response = await axios.post(url, { subscription});
-      console.log('Email sent successfully:', response);
+      const response = await axios.post(url, { subscription });
+      toast.info('Email sent successfully:', response);
 
       // Display a success toast
       toast.success('Successfully changed email subcription', {
@@ -68,7 +68,7 @@ export const updateEmailSubscription = (subscription=true) => {
         autoClose: 3000, // Close the toast after 3 seconds (adjust as needed)
       });
     } catch (error) {
-      console.error('Error sending email:', error);
+      toast.error('Error sending email:', error);
 
       // Display an error toast
       toast.error('Error sending request', {
@@ -79,13 +79,13 @@ export const updateEmailSubscription = (subscription=true) => {
   };
 };
 
-export const addNonHgnUserEmailSubscription = (email='') => {
+export const addNonHgnUserEmailSubscription = (email = '') => {
   const url = ENDPOINTS.NON_HGN_EMAIL_SUBSCRIPTION;
 
   return async () => {
     try {
-      const response = await axios.post(url, { email});
-      console.log('Email sent successfully:', response);
+      const response = await axios.post(url, { email });
+      toast.info('Email sent successfully:', response);
 
       // Display a success toast
       toast.success('Send confirmation to email', {
@@ -93,7 +93,7 @@ export const addNonHgnUserEmailSubscription = (email='') => {
         autoClose: 3000, // Close the toast after 3 seconds (adjust as needed)
       });
     } catch (error) {
-      console.error('Error sending email:', error);
+      toast.error('Error sending email:', error);
 
       // Display an error toast
       toast.error('Email already exists or invalid', {
@@ -103,7 +103,6 @@ export const addNonHgnUserEmailSubscription = (email='') => {
     }
   };
 };
-
 
 export const confirmNonHgnUserEmailSubscription = async (token = '') => {
   const url = ENDPOINTS.CONFIRM_EMAIL_SUBSCRIPTION;
@@ -119,7 +118,7 @@ export const confirmNonHgnUserEmailSubscription = async (token = '') => {
 
     return { success: true, data: response.data };
   } catch (error) {
-    console.error('Error sending email:', error);
+    toast.error('Error sending email:', error);
 
     // Display an error toast
     // toast.error('Error sending request', {
@@ -127,10 +126,9 @@ export const confirmNonHgnUserEmailSubscription = async (token = '') => {
     //   autoClose: 3000,
     // });
 
-    return { success: false, error: error };
+    return { success: false, error };
   }
 };
-
 
 export const removeNonHgnUserEmailSubscription = async (email = '') => {
   const url = ENDPOINTS.REMOVE_EMAIL_SUBSCRIPTION;
@@ -146,7 +144,7 @@ export const removeNonHgnUserEmailSubscription = async (email = '') => {
 
     return { success: true, data: response.data };
   } catch (error) {
-    console.error('Error sending email:', error);
+    toast.error('Error sending email:', error);
 
     // Display an error toast
     // toast.error('Error sending request', {
@@ -154,6 +152,6 @@ export const removeNonHgnUserEmailSubscription = async (email = '') => {
     //   autoClose: 3000,
     // });
 
-    return { success: false, error: error };
+    return { success: false, error };
   }
 };
