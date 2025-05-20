@@ -53,12 +53,19 @@ function JobCCDashboard() {
 
   const handleSearchChange = e => setSearch(e.target.value);
 
+  const formatTextSearch = text =>
+    text
+      .toLowerCase()
+      .split('')
+      .filter(item => item !== ' ')
+      .join('');
+
   const filteredJobs = jobs.filter(job => {
     const matchesFilter = filter ? job.category === filter : true;
     const matchesSearch =
       search.length === 0 ||
-      job.title.toLowerCase().includes(search.toLowerCase()) ||
-      job.ccList.some(entry => entry.email.toLowerCase().includes(search.toLowerCase()));
+      formatTextSearch(job.title).includes(formatTextSearch(search)) ||
+      job.ccList.some(entry => formatTextSearch(entry.email).includes(formatTextSearch(search)));
     return matchesFilter && matchesSearch;
   });
 
