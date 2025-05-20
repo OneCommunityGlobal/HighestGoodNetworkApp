@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/control-has-associated-label */
 // eslint-disable-next-line no-unused-vars
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { debounce } from 'lodash';

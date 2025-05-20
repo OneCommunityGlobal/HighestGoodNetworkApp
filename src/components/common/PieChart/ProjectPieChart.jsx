@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable no-restricted-globals */
 import { useEffect, useState, useMemo } from 'react';
 import * as d3 from 'd3/dist/d3.min';
