@@ -154,21 +154,21 @@ function JobCCDashboard() {
             </h4>
           ) : (
             filteredJobs.map(job => (
-             <tr key={job._id}>
-              <td className={`${darkMode ? 'text-light' : 'text-dark'}`}>{job.title}</td>
-              <td className={`${darkMode ? 'text-light' : 'text-dark'}`}>{job.category}</td>
-              <td className={`${darkMode ? 'text-light' : 'text-dark'}`}>
-                {new Date(job.datePosted).toLocaleDateString()}
-              </td>
-              <td className={`${darkMode ? 'text-light' : 'text-dark'}`}>
-                {job.ccList.map(entry => entry.email).join(', ') || 'No CCs'}
-              </td>
-              <td className={`${darkMode ? 'text-light' : 'text-dark'}`}>
-                <Button color="info" size="sm" onClick={() => handleOpenModal(job)}>
-                  Manage CCs
-                </Button>
-              </td>
-            </tr>
+              <tr key={job._id}>
+                <td className={`${darkMode ? 'text-light' : 'text-dark'}`}>{job.title}</td>
+                <td className={`${darkMode ? 'text-light' : 'text-dark'}`}>{job.category}</td>
+                <td className={`${darkMode ? 'text-light' : 'text-dark'}`}>
+                  {new Date(job.datePosted).toLocaleDateString()}
+                </td>
+                <td className={`${darkMode ? 'text-light' : 'text-dark'}`}>
+                  {job.ccList.map(entry => entry.email).join(', ') || 'No CCs'}
+                </td>
+                <td className={`${darkMode ? 'text-light' : 'text-dark'}`}>
+                  <Button color="info" size="sm" onClick={() => handleOpenModal(job)}>
+                    Manage CCs
+                  </Button>
+                </td>
+              </tr>
             ))
           )}
         </tbody>
