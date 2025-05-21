@@ -78,25 +78,31 @@ function FormattedReport({
   return (
     <>
       <ListGroup flush>
-        {summaries.map(summary => (
-          <ReportDetails
-            loggedInUserEmail={loggedInUserEmail}
-            key={summary._id}
-            summary={summary}
-            weekIndex={weekIndex}
-            bioCanEdit={bioCanEdit}
-            canEditSummaryCount={isEditCount}
-            allRoleInfo={allRoleInfo}
-            canEditTeamCode={canEditTeamCode}
-            badges={badges}
-            loadBzadges={loadBadges}
-            canSeeBioHighlight={canSeeBioHighlight}
-            darkMode={darkMode}
-            handleTeamCodeChange={handleTeamCodeChange}
-            auth={auth}
-            handleSpecialColorDotClick={handleSpecialColorDotClick}
-          />
-        ))}
+        {summaries
+          .filter(summary => {
+            if (!summary.endDate) return true;
+
+            return weekIndex === summary.finalWeekIndex;
+          })
+          .map(summary => (
+            <ReportDetails
+              loggedInUserEmail={loggedInUserEmail}
+              key={summary._id}
+              summary={summary}
+              weekIndex={weekIndex}
+              bioCanEdit={bioCanEdit}
+              canEditSummaryCount={isEditCount}
+              allRoleInfo={allRoleInfo}
+              canEditTeamCode={canEditTeamCode}
+              badges={badges}
+              loadBzadges={loadBadges}
+              canSeeBioHighlight={canSeeBioHighlight}
+              darkMode={darkMode}
+              handleTeamCodeChange={handleTeamCodeChange}
+              auth={auth}
+              handleSpecialColorDotClick={handleSpecialColorDotClick}
+            />
+          ))}
       </ListGroup>
       <EmailsList summaries={summaries} auth={auth} />
     </>
@@ -719,8 +725,9 @@ function Index({ summary, weekIndex, allRoleInfo, auth, handleSpecialColorDotCli
           />
         ))}
       </div>
-      {!summary.isActive && <div style={{ marginTop: 4 }}>{finalWeekBadge}</div>}
-
+      {!!summary.endDate && summary.finalWeekIndex === weekIndex && (
+        <div style={{ marginTop: 4 }}>{finalWeekBadge}</div>
+      )}
       {showStar(hoursLogged, summary.promisedHoursByWeek[weekIndex]) && (
         <i
           className="fa fa-star"

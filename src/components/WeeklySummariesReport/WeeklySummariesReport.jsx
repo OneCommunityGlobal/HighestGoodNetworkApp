@@ -194,10 +194,35 @@ const WeeklySummariesReport = props => {
 
       // 3. add new key of promised hours by week
       summariesCopy = summariesCopy.map(summary => {
-        // append the promised hours starting from the latest week (this week)
+        // a. append the promised hours starting from the latest week (this week)
         const promisedHoursByWeek = weekDates.map(weekDate =>
           getPromisedHours(weekDate.toDate, summary.weeklycommittedHoursHistory),
         );
+
+        // b. if the account is inactive find out which week the end date falls into
+        let finalWeekIndex = null;
+        if (summary.isActive === false) {
+          const finalDate = moment(summary.endDate)
+            .tz('America/Los_Angeles')
+            .toDate();
+
+          finalWeekIndex = weekDates.findIndex(({ fromDate, toDate }) => {
+            const start = moment(fromDate, 'MMM-DD-YY')
+              .startOf('day')
+              .toDate();
+            const end = moment(toDate, 'MMM-DD-YY')
+              .endOf('day')
+              .toDate();
+            return finalDate >= start && finalDate <= end;
+          });
+
+          return {
+            ...summary,
+            promisedHoursByWeek,
+            finalWeekIndex,
+          };
+        }
+
         return { ...summary, promisedHoursByWeek };
       });
 
@@ -379,19 +404,9 @@ const WeeklySummariesReport = props => {
     }
   };
 
-  const toggleTab = tab => {
-    const { activeTab } = state;
-    if (activeTab !== tab) {
-      setState(prev => ({
-        ...prev,
-        activeTab: tab,
-      }));
-      sessionStorage.setItem('tabSelection', tab);
-    }
-  };
-
   const filterWeeklySummaries = () => {
     try {
+      const currentWeekIndex = navItems.findIndex(state.activeTab);
       const {
         selectedCodes,
         selectedColors,
@@ -407,6 +422,19 @@ const WeeklySummariesReport = props => {
       const selectedCodesArray = selectedCodes.map(e => e.value);
       const selectedColorsArray = selectedColors.map(e => e.value);
       const temp = summaries.filter(summary => {
+        // if this user is inactive, only include them on their final week tab
+        if (!summary.isActive) {
+          const idx = summary.finalWeekIndex;
+          if (typeof idx !== 'number' || idx < 0 || idx >= weekDates.length) {
+            return false;
+          }
+          if (currentWeekIndex < idx) {
+            return false;
+          }
+
+          return true;
+        }
+
         const { activeTab } = state;
         const hoursLogged = (summary.totalSeconds[navItems.indexOf(activeTab)] || 0) / 3600;
         const isMeetCriteria =
@@ -508,7 +536,17 @@ const WeeklySummariesReport = props => {
       return null;
     }
   };
-
+  const toggleTab = tab => {
+    const { activeTab } = state;
+    if (activeTab !== tab) {
+      setState(prev => ({
+        ...prev,
+        activeTab: tab,
+      }));
+      sessionStorage.setItem('tabSelection', tab);
+      filterWeeklySummaries();
+    }
+  };
   const handleSelectCodeChange = event => {
     setState(prev => ({
       ...prev,
@@ -745,7 +783,13 @@ const WeeklySummariesReport = props => {
 
   useEffect(() => {
     filterWeeklySummaries();
-  }, [state.selectedOverTime, state.selectedCodes, state.selectedBioStatus, state.selectedColors]);
+  }, [
+    state.selectedOverTime,
+    state.selectedCodes,
+    state.selectedBioStatus,
+    state.selectedColors,
+    state.activeTab,
+  ]);
   const { role, darkMode } = props;
   const { error } = props;
   const hasPermissionToFilter = role === 'Owner' || role === 'Administrator';
