@@ -450,7 +450,7 @@ export default function RentalChart() {
         <div className="filter-row date-filters" style={{ display: 'flex', gap: '20px' }}>
           <div className="filter-group">
             <label style={{ marginRight: '8px' }} className={darkMode ? 'text-light' : ''}>
-              From: {' '}
+              From:{' '}
             </label>
             <DatePicker
               selected={dateRange.startDate}
@@ -468,7 +468,7 @@ export default function RentalChart() {
 
           <div className="filter-group" style={{ marginRight: '150px' }}>
             <label label style={{ marginRight: '10px' }} className={darkMode ? 'text-light' : ''}>
-              To: {' '}
+              To:{' '}
             </label>
             <DatePicker
               selected={dateRange.endDate}
