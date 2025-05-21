@@ -878,3 +878,6 @@ export default connect(mapStateToProps, {
   getAllRoles,
 })(UserManagement);
 
+// exporting without connect
+export { UserManagement as UnconnectedUserManagement };
+
