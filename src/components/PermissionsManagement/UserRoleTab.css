@@ -171,6 +171,7 @@
 
 .permission-change-log-table--cell {
   vertical-align: top;
+  width: 150px; /* Ensures columns in table besides Permission Added and Removed have a decent width  */
 }
 
 .permission-change-log-table--cell.permissions {

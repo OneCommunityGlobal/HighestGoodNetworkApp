@@ -154,6 +154,10 @@ function PermissionListItem(props) {
     return 'success';
   };
 
+  const addedPermission = currentPermission => {
+    return rolePermissions.includes(currentPermission);
+  };
+
   return (
     <>
       <li className="user-role-tab__permissions" key={permission} data-testid={permission}>
@@ -216,22 +220,37 @@ function PermissionListItem(props) {
               {howManySubpermsInRole === 'All' ? 'Delete' : 'Add'}
             </Button>
           ) : (
-            <Button
-              className="icon-button"
-              color={hasThisPermission ? 'danger' : 'success'}
-              onClick={() => {
-                togglePermission(permission);
-                updateModalStatus(true);
-              }}
-              disabled={
-                !props.hasPermission('putRole') ||
-                (immutablePermissions.includes(permission) &&
-                  !props.hasPermission('putUserProfilePermissions'))
-              }
-              style={darkMode ? boxStyleDark : boxStyle}
-            >
-              {hasThisPermission ? 'Delete' : 'Add'}
-            </Button>
+            <>
+              <Button
+                className="icon-button"
+                color={hasThisPermission ? 'danger' : 'success'}
+                onClick={() => {
+                  togglePermission(permission);
+                  updateModalStatus(true);
+                }}
+                disabled={
+                  !props.hasPermission('putRole') ||
+                  (immutablePermissions.includes(permission) &&
+                    !props.hasPermission('putUserProfilePermissions'))
+                }
+                style={darkMode ? boxStyleDark : boxStyle}
+              >
+                {hasThisPermission ? 'Delete' : 'Add'}
+              </Button>
+              <button
+                style={{
+                  color: addedPermission(permission) ? 'green' : 'white',
+                  marginRight: '-23.33px',
+                  fontSize: '1.75rem',
+                }}
+                aria-label={addedPermission(permission) ? 'Added Permission' : ''}
+                disabled
+                type="button"
+              >
+                {' '}
+                ★{' '}
+              </button>
+            </>
           )}
         </div>
       </li>
