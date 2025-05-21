@@ -1,7 +1,7 @@
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import RolePermissions from '../RolePermissions';
 import thunk from 'redux-thunk';
 import mockAdminState from '__tests__/mockAdminState';
 import configureStore from 'redux-mock-store';
@@ -11,6 +11,7 @@ import { toast } from 'react-toastify';
 import { Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
 import { ModalContext } from 'context/ModalContext';
+import RolePermissions from '../RolePermissions';
 
 const mockModalContext = {
   modalStatus: false,
@@ -66,7 +67,7 @@ jest.mock('react-toastify', () => ({
     error: jest.fn(),
   },
 }));
-
+// eslint-disable-next-line no-unused-vars
 const flushAllPromises = () => new Promise(setImmediate);
 
 const renderComponent = (newStore, history, newRoleName, newRoleId) => {
