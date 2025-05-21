@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { ENDPOINTS } from "utils/URL";
 import { GET_ERRORS } from "constants/errors";
-import { GET_RENTAL_COSTS } from '../../constants/bmdashboard/rentalChartConstants';
+import GET_RENTAL_COSTS from '../../constants/bmdashboard/rentalChartConstants';
 
 export const setRentals = payload => {
     return {
@@ -18,7 +18,7 @@ export const setErrors = payload => {
 };
 
 export const fetchRentalCharts = () => {
-    let url = ENDPOINTS.BM_RENTAL_CHART;
+    const url = ENDPOINTS.BM_RENTAL_CHART;
     return async (dispatch) => {
         try {
             const response = await axios.get(url);
