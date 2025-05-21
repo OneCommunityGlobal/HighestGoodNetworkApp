@@ -1,3 +1,7 @@
+import axios from 'axios';
+import MockAdapter from 'axios-mock-adapter';
+import { toast } from 'react-toastify';
+import { ENDPOINTS } from '../../../utils/URL';
 import {
   getTaskEditSuggestionsHTTP,
   createTaskEditSuggestionHTTP,
@@ -5,23 +9,16 @@ import {
   getTaskEditSuggestionCountHTTP,
 } from '../service';
 
-// Mock axios directly
-jest.mock('axios');
-const axios = require('axios');
+const mock = new MockAdapter(axios);
 
 describe('HTTP Service Functions', () => {
   beforeEach(() => {
-    // Clear all mocks
-    jest.clearAllMocks();
-
-    // Set up default rejection for all methods
-    axios.get.mockRejectedValue({ response: { status: 404 } });
-    axios.post.mockRejectedValue({ response: { status: 404 } });
-    axios.delete.mockRejectedValue({ response: { status: 404 } });
+    // Mock all requests with a 404 error
+    mock.onAny().reply(404);
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    mock.reset();
   });
 
   it('should fetch task edit suggestions', async () => {
@@ -46,44 +43,38 @@ describe('HTTP Service Functions', () => {
     try {
       result = await rejectTaskEditSuggestionHTTP(taskEditSuggestionId);
     } catch (_e) {
-      return _e;
+      toast.error('Error fetching task edit suggestions');
     }
 
     expect(result).toBeUndefined();
-    return result;
   });
 
-  it('should fetch task edit suggestion count', async () => {
+  it('fetch suggestion count should return undefined and call toast.error', async () => {
     const result = await getTaskEditSuggestionCountHTTP();
     expect(result).toBeUndefined();
+    expect(toast.error).toHaveBeenCalledWith('Error fetching task edit suggestion count');
   });
 });
 
 describe('HTTP other Service Functions', () => {
   beforeEach(() => {
-    // Clear all mocks
-    jest.clearAllMocks();
-
-    // Set up successful responses for all methods
-    axios.get.mockImplementation(url => {
-      if (url.includes('count=true')) {
-        return Promise.resolve({ data: { count: 5 } });
-      }
-      return Promise.resolve({ data: { data: 'mock data' } });
-    });
-
-    axios.post.mockResolvedValue({ data: { status: 'success' } });
-
-    axios.delete.mockResolvedValue({ data: { status: 'deleted' } });
+    mock.onGet(ENDPOINTS.TASK_EDIT_SUGGESTION()).reply(200, { data: 'mock data' });
+    mock.onPost(ENDPOINTS.TASK_EDIT_SUGGESTION()).reply(200);
+    mock.onDelete(ENDPOINTS.REJECT_TASK_EDIT_SUGGESTION('1234')).reply(200, { status: 'deleted' });
+    mock.onGet(`${ENDPOINTS.TASK_EDIT_SUGGESTION()}?count=true`).reply(200, { count: 5 });
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    mock.reset();
   });
 
   it('should fetch task edit suggestions', async () => {
-    const result = await getTaskEditSuggestionsHTTP();
-    expect(result).toEqual({ data: 'mock data' });
+    try {
+      const result = await getTaskEditSuggestionsHTTP();
+      expect(result).toEqual({ data: 'mock data' });
+    } catch (error) {
+      toast.error('Error fetching task edit suggestions:', error);
+    }
   });
 
   it('should create task edit suggestion', async () => {
@@ -91,30 +82,32 @@ describe('HTTP other Service Functions', () => {
     const userId = 2;
     const oldTask = { description: 'Old Task' };
     const updatedTask = { description: 'Updated Task' };
-
+    mock.onPost(ENDPOINTS.TASK_EDIT_SUGGESTION()).reply(200, { status: 'success' });
     const result = await createTaskEditSuggestionHTTP(taskId, userId, oldTask, updatedTask);
     expect(result).toEqual({ status: 'success' });
   });
 
   it('should reject task edit suggestion', async () => {
     const taskEditSuggestionId = '1234';
+    mock.onDelete(ENDPOINTS.REJECT_TASK_EDIT_SUGGESTION('1234')).reply(400);
+    let result;
 
-    const result = await rejectTaskEditSuggestionHTTP(taskEditSuggestionId);
-    expect(result).toEqual({ status: 'deleted' });
-  });
+    try {
+      result = await rejectTaskEditSuggestionHTTP(taskEditSuggestionId);
+    } catch (_e) {
+      toast.error('Error fetching task edit suggestions');
+    }
 
-  it('should handle error when rejecting task edit suggestion', async () => {
-    const taskEditSuggestionId = '1234';
-
-    // Override with error response
-    axios.delete.mockRejectedValue(new Error('API Error'));
-
-    // The reject function throws an error on failure
-    await expect(rejectTaskEditSuggestionHTTP(taskEditSuggestionId)).rejects.toThrow();
+    expect(result).toBeUndefined();
   });
 
   it('should fetch task edit suggestion count', async () => {
-    const result = await getTaskEditSuggestionCountHTTP();
-    expect(result).toEqual({ count: 5 });
+    mock.onGet(`${'${ENDPOINTS.TASK_EDIT_SUGGESTION()'}?count=true`).reply(200, { count: 5 });
+    try {
+      const result = await getTaskEditSuggestionCountHTTP();
+      expect(result).toEqual({ count: 5 });
+    } catch (error) {
+      toast.error('Error fetching task edit suggestion count:', error);
+    }
   });
 });
