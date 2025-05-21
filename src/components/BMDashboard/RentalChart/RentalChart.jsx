@@ -466,8 +466,8 @@ export default function RentalChart() {
             />
           </div>
 
-          <div className="filter-group">
-            <label label style={{ marginRight: '8px' }} className={darkMode ? 'text-light' : ''}>
+          <div className="filter-group" style={{ marginRight: '150px' }}>
+            <label label style={{ marginRight: '10px' }} className={darkMode ? 'text-light' : ''}>
               To:{' '}
             </label>
             <DatePicker
