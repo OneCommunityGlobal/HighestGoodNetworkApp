@@ -126,6 +126,8 @@ function UserProfile(props) {
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
   const toggleRemoveModal = () => setIsRemoveModalOpen(!isRemoveModalOpen);
   const [loadingSummaries, setLoadingSummaries] = useState(false);
+  const [showRemoveAccessModal, setShowRemoveAccessModal] = useState(false);
+  const [removalInProgress, setRemovalInProgress] = useState(false);
 
   const updateRemovedImage = async () => {
     try {
@@ -210,6 +212,62 @@ function UserProfile(props) {
     });
   };
 
+  const confirmRemoveAccess = async () => {
+  const email = userProfile?.email;
+  const username = userProfile?.githubUsername; // or however GitHub usernames are stored
+  const folderPath = `/${userProfile.firstName}${userProfile.lastName}`; // or however your folder naming works
+  const requestorId = props.auth.user.userid;
+  const role = props.auth.user.role;
+
+  setRemovalInProgress(true);
+
+  try {
+    const results = await Promise.allSettled([
+      // axios.post('/api/slack/remove', {
+      //   email,
+      //   requestor: { requestorId, role },
+      // }),
+      axios.delete('/api/sentry/remove', {
+        data: {
+          email,
+          requestor: { requestorId, role },
+        },
+      }),
+      axios.delete('/api/github/remove', {
+        data: {
+          username,
+          requestor: { requestorId, role },
+        },
+      }),
+      axios.post('/api/dropbox/delete-folder', {
+        folderPath,
+        requestor: { requestorId, role },
+      }),
+    ]);
+
+    const services = [
+      //'Slack',
+      'Sentry',
+      'GitHub',
+      'Dropbox'
+    ];
+
+    results.forEach((res, i) => {
+      if (res.status === 'fulfilled') {
+        toast.success(`${services[i]} access removed`);
+      } else {
+        toast.error(`Failed to remove access from ${services[i]}`);
+      }
+    });
+
+    setShowRemoveAccessModal(false);
+  } catch (error) {
+    toast.error('Unexpected error during access removal.');
+  } finally {
+    setRemovalInProgress(false);
+  }
+};
+
   const checkIsProjectsEqual = () => {
     const originalProjectProperties = [];
     originalProjects?.forEach(project => {
@@ -248,8 +306,8 @@ function UserProfile(props) {
 
     if (!teamId) {
       setSummaryIntro(
-        `This week’s summary was managed by ${currentManager.firstName} ${currentManager.lastName} and includes . 
-         These people did NOT provide a summary . 
+        `This week’s summary was managed by ${currentManager.firstName} ${currentManager.lastName} and includes .
+         These people did NOT provide a summary .
          <Insert the proofread and single-paragraph summary created by ChatGPT>`,
       );
       return;
@@ -977,6 +1035,23 @@ function UserProfile(props) {
       <TabToolTips />
       <BasicToolTips />
 
+      <Modal isOpen={showRemoveAccessModal} toggle={() => setShowRemoveAccessModal(false)}>
+        <ModalHeader toggle={() => setShowRemoveAccessModal(false)}>
+          Whoa Tiger!
+        </ModalHeader>
+        <ModalBody>
+          Are you sure you want to do this? This action is not reversible.
+        </ModalBody>
+        <ModalFooter>
+          <Button color="danger" onClick={confirmRemoveAccess} disabled={removalInProgress}>
+            Yes, I’m sure
+          </Button>
+          <Button color="secondary" onClick={() => setShowRemoveAccessModal(false)}>
+            No, take me back!
+          </Button>
+        </ModalFooter>
+      </Modal>
+
       <Container
         className={`py-5 ${darkMode ? 'bg-yinmn-blue text-light border-0' : ''}`}
         id="containerProfile"
@@ -1020,12 +1095,12 @@ function UserProfile(props) {
             ) : (
               <></>
             )}
-            {/*                   
-              {((userProfile?.profilePic==undefined || 
-                userProfile?.profilePic==null || 
-                userProfile?.profilePic=="")&& 
+            {/*
+              {((userProfile?.profilePic==undefined ||
+                userProfile?.profilePic==null ||
+                userProfile?.profilePic=="")&&
                 (userProfile?.suggestedProfilePics!==undefined &&
-                  userProfile?.suggestedProfilePics!==null && 
+                  userProfile?.suggestedProfilePics!==null &&
                   userProfile?.suggestedProfilePics.length!==0
                 ))?
                 <Button color="primary" onClick={toggleModal}>Suggested Profile Image</Button>
@@ -1129,6 +1204,23 @@ function UserProfile(props) {
                     className="team-member-tasks-user-report-link-image"
                   />
                 </Link>
+              </span>
+            )}
+            {(requestorRole === 'Owner' || requestorRole === 'Administrator') && (
+              <span className="mr-2">
+                <Button
+                  color="link"
+                  style={{ padding: '0', border: 'none', background: 'none' }}
+                  size="sm"
+                  onClick={() => setShowRemoveAccessModal(true)}
+                  title="CAREFUL: Clicking this button removes a person’s access to Sentry, Slack, and Github. Then it deletes their Dropbox and all files in it."
+                >
+                  <img
+                    src="/HGN_closeout_icon.png"
+                    alt="Remove Access"
+                    style={{ width: '20px', height: '20px' }}
+                  />
+                </Button>
               </span>
             )}
             {canChangeRehireableStatus && (
