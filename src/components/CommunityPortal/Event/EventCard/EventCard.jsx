@@ -72,7 +72,7 @@ function EventCard(props) {
         <div className="d-flex justify-content-between align-items-start">
           <div className="d-flex flex-column">
             <div className="d-flex align-items-center gap-2">
-              <h2 className="h4 mb-0">{title}</h2>
+              <h2 className={`h4 mb-0 ${darkMode ? 'text-light' : ''}`}>{title}</h2>
               <span className={`badge status-badge ${getStatusClass(status)}`}>{status}</span>
             </div>
           </div>
