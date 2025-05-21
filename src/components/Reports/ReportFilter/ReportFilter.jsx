@@ -35,7 +35,7 @@ class ReportFilter extends Component {
     return (
       <div>
         <div>
-          <button type="button" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: 'blue', textDecoration: 'underline' }}>
+          <button type="button" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: '#007bff', textDecoration: 'underline' }}>
             Select a Filter
           </button>
         </div>

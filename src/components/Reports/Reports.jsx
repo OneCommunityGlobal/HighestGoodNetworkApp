@@ -473,7 +473,7 @@ class ReportsPage extends Component {
       this.state.peopleSearchData = this.filteredPeopleList(this.state.peopleSearchData);
     }
 
-    const isOxfordBlue = darkMode ? 'bg-oxford-blue' : '';
+    const isOxfordBlue = darkMode ? 'bg-oxford-blue text-light' : 'bg-white-smoke';
     const isYinmnBlue = darkMode ? 'bg-yinmn-blue' : '';
     const textColor = darkMode ? 'text-light' : '';
     const boxStyling = darkMode ? boxStyleDark : boxStyle;
@@ -497,8 +497,8 @@ class ReportsPage extends Component {
           }`}
           type="button"
         >
-          <div className="container-component-category">
-            <h2 className="mt-3 mb-5">
+          <div className="container-component-category ">
+            <h3 className="mt-3">
               {/* Loading spinner at the top */}
               {this.state.loading && (
                 <div className="loading-spinner-top">
@@ -517,9 +517,9 @@ class ReportsPage extends Component {
                   darkMode={darkMode}
                 />
               </div>
-            </h2>
-            <div className={textColor}>
-              <p>Select a Category</p>
+            </h3>
+            <div>
+              <p className={textColor}>Select a Category</p>
             </div>
             <div className="container-box-shadow">
               <div className="category-container">
