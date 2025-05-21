@@ -88,6 +88,8 @@ import ActivityList from './components/CommunityPortal/Activities/ActivityList';
 import EventStats from './components/CommunityPortal/EventPersonalization/EventStats';
 // import AddActivities from './components/CommunityPortal/Activities/AddActivities';
 // import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
+import EventList from './components/CommunityPortal/Event/EventList/EventList';
+
 import Resources from './components/CommunityPortal/Activities/activityId/Resources';
 
 import EventParticipation from './components/CommunityPortal/Reports/Participation/EventParticipation';
@@ -102,10 +104,10 @@ import CommunityMembersPage from './components/HGNHelpSkillsDashboard/CommunityM
 import UserProfilePage from './components/HGNHelpSkillsDashboard/UserProfilePage';
 import FeedbackModal from './components/HGNHelpSkillsDashboard/FeedbackModal';
 
-
 // eslint-disable-next-line import/order, import/no-unresolved
 import LogTools from './components/BMDashboard/LogTools/LogTools';
 import EquipmentUpdate from './components/BMDashboard/Tools/EquipmentUpdate';
+
 
 
 const ReusableListView = lazy(() => import('./components/BMDashboard/ReusableList'));
@@ -160,7 +162,7 @@ const PermissionsManagement = lazy(() =>
 );
 const UserRoleTab = lazy(() => import('./components/PermissionsManagement/UserRoleTab'));
 const Teams = lazy(() => import('./components/Teams/Teams'));
-
+// const EventList = lazy(() => import('./components/CommunityPortal/Event/EventList/EventList'));
 
 export default (
   <Switch>
@@ -373,6 +375,7 @@ export default (
         />
         <ProtectedRoute path="/job-notification-dashboard" exact component={JobCCDashboard} fallback allowedRoles={[UserRole.Owner]} />
 
+
         {/* ----- BEGIN BM Dashboard Routing ----- */}
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
         <Route path="/bmdashboard/login" component={BMLogin} />
@@ -466,6 +469,9 @@ export default (
         <CPProtectedRoute path="/communityportal" exact component={CPDashboard} />
         <Route path="/communityportal/login" component={CPLogin} />
         <CPProtectedRoute path="/communityportal/Activities" exact component={ActivityList} />
+
+        <CPProtectedRoute path="/communityportal/database/design" exact component={EventList} />
+
         <CPProtectedRoute
           path="/communityportal/Activities/:activityid/Resources"
           exact component={Resources}
