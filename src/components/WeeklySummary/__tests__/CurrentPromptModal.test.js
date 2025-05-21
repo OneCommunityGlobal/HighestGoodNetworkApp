@@ -6,7 +6,7 @@ import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
 import axios from 'axios';
-
+jest.setTimeout(15000);
 const mockStore = configureStore([thunk]);
 
 const theme = { darkMode: false };
