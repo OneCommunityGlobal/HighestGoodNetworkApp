@@ -39,6 +39,8 @@ export const ENDPOINTS = {
   USER_PROJECTS: userId => `${APIEndpoint}/projects/user/${userId}`,
   PROJECT: `${APIEndpoint}/project/`,
   PROJECT_BY_ID: projectId => `${APIEndpoint}/project/${projectId}`,
+  PROJECT_MEMBER_SEARCH: (projectId, query) =>
+    `${APIEndpoint}/projects/${projectId}/users/search/${encodeURIComponent(query)}`,
   BADGE_COUNT: userId => `${APIEndpoint}/badge/badgecount/${userId}`,
   BADGE_COUNT_RESET: userId => `${APIEndpoint}/badge/badgecount/reset/${userId}`,
   PROJECT_MEMBER: projectId => `${APIEndpoint}/project/${projectId}/users`,
@@ -281,6 +283,7 @@ export const ENDPOINTS = {
   LB_LOGIN: `${APIEndpoint}/lbdashboard/login`,
   LB_LISTINGS: `${APIEndpoint}/lb/getListings`,
   LB_LISTINGS_BASE: `${APIEndpoint}/lb`,
+  HELP_CATEGORIES: `${APIEndpoint}/help-categories`,
 };
 
 export const ApiEndpoint = APIEndpoint;
