@@ -3,8 +3,9 @@ import { useState, useEffect } from 'react';
 import './Announcements.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react';
-import { toast } from 'react-toastify';
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
+import { boxStyle, boxStyleDark } from 'styles';
+import { toast } from 'react-toastify';
 
 function Announcements({ title, email: initialEmail }) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -15,7 +16,6 @@ function Announcements({ title, email: initialEmail }) {
   const [headerContent, setHeaderContent] = useState('');
   const [showEditor, setShowEditor] = useState(true);
   const [isFileUploaded, setIsFileUploaded] = useState(false);
-  const tinymce = useRef(null);
 
   useEffect(() => {
     setShowEditor(false);
