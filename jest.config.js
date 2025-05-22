@@ -16,6 +16,7 @@ module.exports = {
 
   // Bundle mapper for d3 import and other custom mocks
   moduleNameMapper: {
+    '^d3$': '<rootDir>/src/__mocks__/d3.js',
     'react-leaflet': '<rootDir>/src/_tests_/__mocks__/react-leaflet.js',
     'marker-cluster-group': '<rootDir>/src/_tests_/__mocks__/react-leaflet-cluster.js',
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy', // <-- Added to mock CSS/SCSS files
@@ -35,12 +36,14 @@ module.exports = {
 
   // This option sets the URL for the jsdom environment. It is reflected in properties such as location.href
   testURL: 'http://localhost',
-  transform: {
-    '^.+\\.jsx?$': 'babel-jest',
-  },
 
   // An array of regexp pattern strings that are matched against all source file paths, matched files will skip transformation
-  transformIgnorePatterns: ['/node_modules/(?!d3|d3-[^/]+|internmap|delaunator|robust-predicates)'],
+  transformIgnorePatterns: [
+    '/node_modules/(?!d3|d3-[^/]+|internmap|delaunator|robust-predicates)/',
+  ],
+  transform: {
+    '^.+\\.[jt]sx?$': 'babel-jest',
+  },
 
   // Include snapshot serializers
   snapshotSerializers: ['enzyme-to-json/serializer'],
