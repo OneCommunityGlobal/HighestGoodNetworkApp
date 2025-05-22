@@ -1,0 +1,171 @@
+.event-card {
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 16px;
+  font-family: Arial, sans-serif;
+  background-color: #fff;
+  max-width: 1100px;
+  margin: 10px auto;
+}
+
+.event-header {
+  display: flex;
+  gap: 20px;
+}
+
+.event-image {
+  width: 180px;
+  height: 180px;
+  background-color: #e0e0e0;
+  text-align: center;
+  line-height: 180px;
+  font-weight: bold;
+  color: #555;
+}
+
+.event-details {
+  flex-grow: 2;
+}
+
+.event-type {
+  font-size: 12px;
+  color: gray;
+}
+
+.event-title {
+  margin: 5px 0;
+}
+
+.event-location {
+  font-size: 14px;
+}
+
+.event-link {
+  color: #1a73e8;
+  text-decoration: none;
+}
+
+.event-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 10px;
+}
+
+.event-info > div {
+  min-width: 120px;
+}
+
+.capacity {
+  color: red;
+}
+
+.status-active {
+  color: green;
+  font-weight: bold;
+}
+
+.event-buttons {
+  margin-top: 10px;
+}
+
+.feedback-btn, .contact-btn {
+  padding: 5px 12px;
+  margin-right: 10px;
+  border: none;
+  border-radius: 4px;
+  background-color: #dedede;
+  cursor: pointer;
+}
+
+.calendar-box {
+  min-width: 220px;
+  text-align: center;
+}
+
+.calendar-header {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.calendar-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.calendar-table th,
+.calendar-table td {
+  width: 14.2%;
+  padding: 4px;
+  border: 1px solid #ddd;
+}
+
+.active-date {
+  background-color: #f48fb1;
+  border-radius: 50%;
+}
+
+.event-tabs {
+  display: flex;
+  gap: 20px;
+  border-top: 1px solid #ddd;
+  margin-top: 20px;
+  padding-top: 10px;
+}
+
+.tab {
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.tab.active {
+  border-bottom: 2px solid #000;
+  font-weight: bold;
+}
+
+.comments-section {
+  margin-top: 20px;
+}
+
+.comment {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.comment-user {
+  display: flex;
+  gap: 5px;
+}
+
+.avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  color: #fff;
+  text-align: center;
+  line-height: 30px;
+  font-weight: bold;
+}
+
+.purple {
+  background-color: purple;
+}
+
+.blue {
+  background-color: #3366ff;
+}
+
+.comment-text {
+  flex: 1;
+  background-color: #f4f4f4;
+  padding: 10px;
+  border-radius: 6px;
+}
+
+.comment-footer {
+  font-size: 12px;
+  color: gray;
+  margin-top: 5px;
+  padding-left: 40px;
+}
