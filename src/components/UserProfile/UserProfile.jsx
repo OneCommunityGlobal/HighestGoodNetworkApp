@@ -756,7 +756,6 @@ function UserProfile(props) {
       );
       setUserProfile(newUserProfile);
       setOriginalUserProfile(newUserProfile);
-      window.location.reload();
     } catch (error) {
       console.error('Failed to update user status:', error);
     }
