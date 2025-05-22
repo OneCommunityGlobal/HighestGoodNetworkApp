@@ -6,7 +6,6 @@ import ControllerRow from '../ControllerRow';
 import {
   moveTasks,
   deleteTask,
-  copyTask,
   deleteChildrenTasks,
 } from '../../../../../actions/task.js';
 import './tagcolor.css';
@@ -23,6 +22,8 @@ function Task(props) {
    */
   // props from store
   const { tasks, darkMode } = props;
+
+  const { copyCurrentTask } = props;
 
   const TINY_MCE_INIT_OPTIONS = {
     license_key: 'gpl',
@@ -51,6 +52,11 @@ function Task(props) {
   const [children, setChildren] = useState([]);
   const [showMoreResources, setShowMoreResources] = useState(false);
   const tableRowRef = useRef();
+  const [currentTask, setCurrentTask] = useState(undefined);
+
+  useEffect(() => {
+    setCurrentTask(tasks.find(t => t._id === props.taskId));
+  }, [tasks])
 
   /*
    * -------------------------------- functions --------------------------------
@@ -376,6 +382,8 @@ function Task(props) {
           </tr>
           {controllerRow ? (
             <ControllerRow
+              currentTask={currentTask}
+              copyCurrentTask={copyCurrentTask}
               tableColNum={tableColNum}
               num={props.num}
               taskId={props.taskId}
@@ -392,7 +400,6 @@ function Task(props) {
               siblings={props.siblings}
               load={props.load}
               pageLoadTime={props.pageLoadTime}
-              setIsLoading={props.setIsLoading}
             />
           ) : null}
         </>
@@ -402,6 +409,8 @@ function Task(props) {
         isOpen && children.length
           ? children.map((task, i) => (
             <ConnectedTask
+              copyCurrentTask={copyCurrentTask}
+              tasks={tasks}
               key={`${task._id}${i}`}
               taskId={task._id}
               level={task.level}
@@ -448,14 +457,13 @@ function Task(props) {
 }
 
 const mapStateToProps = state => ({
-  tasks: state.tasks.taskItems,
+  // tasks: state.tasks.taskItems,
   darkMode: state.theme.darkMode,
 });
 
 const ConnectedTask = connect(mapStateToProps, {
   moveTasks,
   deleteTask,
-  copyTask,
   getPopupById,
   deleteChildrenTasks,
 })(Task);

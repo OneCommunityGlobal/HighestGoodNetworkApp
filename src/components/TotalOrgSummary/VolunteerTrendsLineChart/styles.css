@@ -6,7 +6,7 @@
   position: absolute !important;
   z-index: 1;
   transform: translateX(-50%);
-  box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.2) ;
+  box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .chart-container {
@@ -23,7 +23,7 @@
 }
 
 .custom-date-range > span {
- font-weight: bold;
+  font-weight: bold;
 }
 
 .date-filter-container {
@@ -35,7 +35,7 @@
 
 .date-filter-container > select {
   margin-top: 0;
-  width: min-content
+  width: min-content;
 }
 
 @media (max-width: 500px) {
