@@ -7,10 +7,10 @@ import {
 import { teamUsersReducer, updateObject } from '../teamsTeamMembersReducer';
 
 // const teamUsersInitial = {
-//   fetching: false,
-//   fetched: false,
-//   teamMembers: [],
-//   status: 404,
+//  fetching: false,
+//  fetched: false,
+//  teamMembers: [],
+//  status: 404
 // };
 
 const teamMembers = {
