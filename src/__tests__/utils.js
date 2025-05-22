@@ -1,9 +1,12 @@
+/* eslint-env jest */
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { render as rtlRender } from '@testing-library/react';
 import { render as enzymeRender } from 'enzyme';
 import { createStore, applyMiddleware, compose } from 'redux';
 import { Provider } from 'react-redux';
 import { createMemoryHistory } from 'history';
+// eslint-disable-next-line no-unused-vars
 import { Router, Route } from 'react-router-dom';
 import thunk from 'redux-thunk';
 import { rootReducers as reducer } from '../store';
@@ -22,7 +25,9 @@ export function renderWithProvider(
 
 export function renderWithEnzymeProvider(
   ui,
-  { initialState, store = createStore(reducer), ...renderOptions } = {},
+  // { initialState, store = createStore(reducer), ...renderOptions } = {},
+  // eslint-disable-next-line no-unused-vars
+  { initialState, store = createStore(reducer) } = {},
 ) {
   return enzymeRender(<Provider store={store}>{ui}</Provider>);
 }
@@ -52,7 +57,9 @@ export function renderWithRouter(
   ui,
   { route = '/', history = createMemoryHistory({ initialEntries: [route] }) } = {},
 ) {
-  const Wrapper = ({ children }) => <Router history={history}>{children}</Router>;
+  function Wrapper({ children }) {
+  return <Router history={history}>{children}</Router>
+}
   return {
     ...rtlRender(ui, { wrapper: Wrapper }),
     // adding `history` to the returned utilities to allow us
@@ -63,7 +70,9 @@ export function renderWithRouter(
 }
 
 export function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms)
+  });
 }
 
 // export function renderWithRouterMatch(

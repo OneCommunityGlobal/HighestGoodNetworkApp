@@ -58,7 +58,7 @@ function ListUsersPopUp({ open, onClose, userProfiles, removeUser, setEdit }) {
         toggle={onClose}
         cssModule={{ 'modal-title': 'w-100 text-center my-auto pl-2' }}
       >
-        Users&apos; Location List
+        Users`&apos;` Location List
       </ModalHeader>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <div style={{ maxHeight: '300px', overflow: 'auto', margin: '4px' }}>
