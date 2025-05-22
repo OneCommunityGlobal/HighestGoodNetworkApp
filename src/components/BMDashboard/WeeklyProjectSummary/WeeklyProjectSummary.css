@@ -252,6 +252,46 @@
   background-color: var(--button-hover) !important;
 }
 
+/* First, set a max-height and make it scrollable */
+.quantity-of-materials-used-chart-tooltip {
+  max-height: 80vh !important; /* Limit to 80% of viewport height */
+  overflow-y: auto !important; /* Enable vertical scrolling */
+  padding-right: 15px !important; /* Add some padding for the scrollbar */
+}
+
+/* Style the scrollbar for better visibility */
+.quantity-of-materials-used-chart-tooltip::-webkit-scrollbar {
+  width: 8px;
+}
+
+.quantity-of-materials-used-chart-tooltip::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.quantity-of-materials-used-chart-tooltip::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+/* Support for Firefox */
+.quantity-of-materials-used-chart-tooltip {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.3) rgba(0, 0, 0, 0.1);
+}
+
+/* Additional adjustments for dark mode if needed */
+.dark-mode .quantity-of-materials-used-chart-tooltip::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .quantity-of-materials-used-chart-tooltip::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.dark-mode .quantity-of-materials-used-chart-tooltip {
+  scrollbar-color: rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0.1);
+}
 /* ---------------- RESPONSIVE DESIGN ---------------- */
 
 /* Medium Screens - Wrap Items */
@@ -297,5 +337,100 @@
 
   .weekly-project-summary-dashboard-grid {
     grid-template-columns: 1fr;
+  }
+
+  .weekly-project-summary-dashboard-section.full,
+  .weekly-project-summary-dashboard-section.large,
+  .weekly-project-summary-dashboard-section.half,
+  .weekly-project-summary-dashboard-section.small {
+    grid-column: span 1;
+  }
+
+  .project-status-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------------- STATUS CARD ---------------- */
+.status-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 25px;
+  width: 100%;
+  max-width: 284px;
+  height: 190px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  padding: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+/* ---------------- RESPONSIVE GRID LAYOUT ---------------- */
+.project-status-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 1600px;
+  margin: auto;
+}
+
+/* ---------------- OVAL STATUS BUTTON ---------------- */
+.weekly-status-button {
+  width: 130px;
+  height: 65px;
+  border-radius: 50px / 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  margin: 12px 0;
+}
+
+.weekly-card-title {
+  color: #000;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.weekly-status-value {
+  color: #000;
+  font-size: 40px;
+  font-weight: 600;
+}
+
+/* ---------------- RESPONSIVE BREAKPOINTS ---------------- */
+@media (min-width: 1600px) {
+  .project-status-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
+@media (max-width: 1400px) {
+  .project-status-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 1024px) {
+  .project-status-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .project-status-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 576px) {
+  .project-status-grid {
+    grid-template-columns: repeat(1, 1fr);
   }
 }
