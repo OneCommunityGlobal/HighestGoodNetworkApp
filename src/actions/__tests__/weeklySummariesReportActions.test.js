@@ -89,7 +89,7 @@ describe('Weekly Summary Report', () => {
 
       expect(dispatch).toHaveBeenCalledWith(weeklySummaryReport.fetchWeeklySummariesReportBegin());
       expect(dispatch).toHaveBeenCalledWith(weeklySummaryReport.fetchWeeklySummariesReportError(mockError))
-      expect(result).toBe(500);
+      expect(result.status).toBe(500);
 
     });
   
