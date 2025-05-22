@@ -17,7 +17,7 @@ import {
 import { faFacebook, faLinkedin, faMedium } from '@fortawesome/free-brands-svg-icons';
 import ReactTooltip from 'react-tooltip';
 
-import EmailPanel from './platforms/email'; // ← new
+import EmailPanel from './platforms/email';
 import SlashdotAutoPoster from './platforms/slashdot';
 
 function Announcements({ title, email: initialEmail }) {
