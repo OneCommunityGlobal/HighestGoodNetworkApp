@@ -1,5 +1,5 @@
 import Loading from 'components/common/Loading';
-import { ResponsiveContainer, PieChart, Pie, Cell, Legend , Tooltip } from 'recharts';
+import { ResponsiveContainer, PieChart, Pie, Cell, Legend, Tooltip } from 'recharts';
 
 const COLORS = [
   '#F285BB',
@@ -77,7 +77,7 @@ export default function RoleDistributionPieChart({ isLoading, roleDistributionSt
     );
   };
 
-   const renderCustomLegend = props => {
+  const renderCustomLegend = props => {
     const { payload } = props; // payload is an array of legend items provided by Recharts
 
     return (
@@ -157,7 +157,7 @@ export default function RoleDistributionPieChart({ isLoading, roleDistributionSt
             align="right"
             content={renderCustomLegend}
           />
-        <Tooltip />
+          <Tooltip />
         </PieChart>
       </ResponsiveContainer>
     </div>
