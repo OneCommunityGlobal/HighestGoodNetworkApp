@@ -1,8 +1,9 @@
 /* global tinymce */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import './Announcements.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react';
+import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
 
@@ -227,9 +228,8 @@ function Announcements({ title, email: initialEmail }) {
             value={emailTo}
             id="email-list-input"
             onChange={handleEmailListChange}
-            className={`input-text-for-announcement ${
-              darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
-            }`}
+            className={`input-text-for-announcement ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+              }`}
           />
           <button
             type="button"
@@ -249,9 +249,8 @@ function Announcements({ title, email: initialEmail }) {
             id="header-content-input"
             onChange={handleHeaderContentChange}
             value={headerContent}
-            className={`input-text-for-announcement ${
-              darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
-            }`}
+            className={`input-text-for-announcement ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+              }`}
           />
           <button
             type="button"
