@@ -153,8 +153,4 @@
   }
 }
 
-@media (max-width: 530px) {
-  .btnDiv {
-    display: none;
-  }
-}
+
