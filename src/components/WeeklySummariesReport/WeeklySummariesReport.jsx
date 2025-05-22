@@ -822,8 +822,8 @@ const WeeklySummariesReport = props => {
           </Button>
         </Row>
       )}
-      <Row>
-        <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }} xs={{ size: 6 }}>
+      <Row className="mx-max-sm-0">
+        <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }} xs={{ size: 12 }} className="px-max-sm-0">
           <div className="filter-container-teamcode">
             <div>Select Team Code</div>
             <div className="filter-style">
@@ -842,15 +842,8 @@ const WeeklySummariesReport = props => {
               </div>
             </div>
           </div>
-        </Col>
-        <Col lg={{ size: 6 }} md={{ size: 6 }} xs={{ size: 6 }}>
-          <div>Select Color</div>
-        </Col>
-      </Row>
-      <Row>
-        <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }} xs={{ size: 6 }}>
           <MultiSelect
-            className="multi-select-filter text-dark"
+            className="text-dark"
             options={state.teamCodes}
             value={state.selectedCodes}
             onChange={e => {
@@ -859,34 +852,16 @@ const WeeklySummariesReport = props => {
             labelledBy="Select"
           />
         </Col>
-        <Col lg={{ size: 5 }} md={{ size: 6, offset: -1 }} xs={{ size: 6, offset: -1 }}>
+        <Col lg={{ size: 5 }} md={{ size: 6 }} xs={{ size: 12 }} className="px-max-sm-0">
+          <div>Select Color</div>
           <MultiSelect
-            className="multi-select-filter text-dark"
+            className="text-dark"
             options={state.colorOptions}
             value={state.selectedColors}
             onChange={e => {
               handleSelectColorChange(e);
             }}
           />
-        </Col>
-      </Row>
-      {state.chartShow && (
-        <Row>
-          <Col lg={{ size: 6, offset: 1 }} md={{ size: 12 }} xs={{ size: 11 }}>
-            <SelectTeamPieChart
-              chartData={state.chartData}
-              COLORS={state.COLORS}
-              total={state.total}
-              style={{ width: '100%' }}
-            />
-          </Col>
-          <Col lg={{ size: 4 }} md={{ size: 12 }} xs={{ size: 11 }} style={{ width: '100%' }}>
-            <TeamChart teamData={state.structuredTableData} darkMode={darkMode} />
-          </Col>
-        </Row>
-      )}
-      <Row style={{ marginBottom: '10px' }}>
-        <Col lg={{ size: 10, offset: 1 }} xs={{ size: 8, offset: 4 }}>
           <div className="filter-container">
             {(hasPermissionToFilter || props.hasPermission('highlightEligibleBios')) && (
               <div className="filter-style margin-right">
@@ -935,6 +910,23 @@ const WeeklySummariesReport = props => {
           </div>
         </Col>
       </Row>
+
+      {state.chartShow && (
+        <Row>
+          <Col lg={{ size: 6, offset: 1 }} md={{ size: 12 }} xs={{ size: 11 }}>
+            <SelectTeamPieChart
+              chartData={state.chartData}
+              COLORS={state.COLORS}
+              total={state.total}
+              style={{ width: '100%' }}
+            />
+          </Col>
+          <Col lg={{ size: 4 }} md={{ size: 12 }} xs={{ size: 11 }} style={{ width: '100%' }}>
+            <TeamChart teamData={state.structuredTableData} darkMode={darkMode} />
+          </Col>
+        </Row>
+      )}
+
       {permissionState.codeEditPermission && state.selectedCodes.length > 0 && (
         <Row style={{ marginBottom: '10px' }}>
           <Col lg={{ size: 5, offset: 1 }} xs={{ size: 5, offset: 1 }}>
