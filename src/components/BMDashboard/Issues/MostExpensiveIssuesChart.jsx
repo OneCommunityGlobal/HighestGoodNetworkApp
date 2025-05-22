@@ -1,9 +1,24 @@
 import { useState } from 'react';
+// import { useDispatch } from 'react-redux';
 import Select from 'react-select';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, LabelList
 } from 'recharts';
 import './MostExpensiveIssuesChart.css';
+// import { fetchOpenIssues } from 'actions/bmdashboard/issueChartActions';
+
+// const dispatch = useDispatch();
+
+// const { loading, issues, error, issueTypes, years } = useSelector(state => state.bmissuechart);
+
+// useEffect(() => {
+//   dispatch(fetchOpenIssues());
+// }, [dispatch]);
+
+// issues.forEach(issue => issue.createdDate = issue.createdDate.split('T')[0]);
+
+// const dateOptions =  [...new Set(issues.map(issue=>issue.createdDate))];
+// const projects = 
 
 const allData = [
   { name: 'Issue 1', cost: 50, project: 'Project A', startDate: '2022-01-01', endDate: '2023-12-31' },

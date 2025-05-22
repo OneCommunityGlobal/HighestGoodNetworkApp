@@ -28,6 +28,25 @@ export const fetchIssues = filters => async dispatch => {
   }
 };
 
+//Action to fetch open issues
+export const fetchOpenIssues = () => async dispatch => {
+  try {
+    dispatch({ type: FETCH_ISSUES_BARCHART_REQUEST });
+
+    const { data } = await axios.get(ENDPOINTS.BM_ISSUE_CHART);
+
+    dispatch({
+      type: FETCH_ISSUES_BARCHART_SUCCESS,
+      payload: data,
+    });
+  } catch (error) {
+    dispatch({
+      type: FETCH_ISSUES_BARCHART_FAILURE,
+      payload: error.message || 'Failed to fetch issues',
+    });
+  }
+};
+
 // Action to fetch issue types and years (used for dropdowns)
 export const fetchIssueTypesAndYears = () => async dispatch => {
   try {

@@ -33,6 +33,7 @@
     gap: 4px;
     min-width: 160px;
     max-width: 220px;
+    color: rgb(100, 96, 96);
   }
   
   .label {
