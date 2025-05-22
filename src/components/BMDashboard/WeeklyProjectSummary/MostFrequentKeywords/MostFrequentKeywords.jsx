@@ -4,6 +4,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import * as d3 from 'd3';
 import './MostFrequentKeywords.css';
+import Select from 'react-select';
 
 const fontSizeScale = (frequency) => {
   if (frequency > 100) return 24;
@@ -119,7 +120,7 @@ const MostFrequentKeywords = () => {
         .attr('font-size', '10px')
         .text('Keywords');
 
-      const angleStep = (2 * Math.PI) / tags.length;
+      const angleStep = (2.3 * Math.PI) / tags.length;
       const angles = tags.map((_, i) => i * angleStep + Math.PI / 2 + 0.1); // Start from top
 
       const getEllipseSize = (text) => {
@@ -203,17 +204,20 @@ const MostFrequentKeywords = () => {
       <h3 className="mfk-title">📊 Most Frequent Keywords</h3>
       <div className="mfk-controls">
         <div>
-          <label>Project</label>
-          <select
-            className="mfk-select"
-            value={selectedProject}
-            onChange={(e) => setSelectedProject(e.target.value)}
-          >
-            <option value="">Select a project</option>
-            {projects.map((p) => (
-              <option key={p._id} value={p._id}>{p.projectName}</option>
-            ))}
-          </select>
+        <label>Project</label>
+<Select
+  className="mfk-select"
+  options={projects.map((p) => ({
+    label: p.projectName,
+    value: p._id,
+  }))}
+  value={projects
+    .map((p) => ({ label: p.projectName, value: p._id }))
+    .find((opt) => opt.value === selectedProject)}
+  onChange={(selected) => setSelectedProject(selected?.value || '')}
+  placeholder="Select a project..."
+  isSearchable
+/>
         </div>
         <div>
           <label>From</label>
