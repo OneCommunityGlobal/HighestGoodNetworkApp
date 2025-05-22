@@ -281,6 +281,8 @@ export const ENDPOINTS = {
   // lb dashboard endpoints
   LB_REGISTER: `${APIEndpoint}/lbdashboard/register`,
   LB_LOGIN: `${APIEndpoint}/lbdashboard/login`,
+
+  HELP_CATEGORIES: `${APIEndpoint}/help-categories`,
 };
 
 export const ApiEndpoint = APIEndpoint;
