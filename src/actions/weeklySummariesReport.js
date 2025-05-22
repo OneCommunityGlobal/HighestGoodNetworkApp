@@ -63,7 +63,7 @@ export const getWeeklySummariesReport = (weekIndex = null) => {
       return { status: response.status, data: response.data };
     } catch (error) {
       dispatch(fetchWeeklySummariesReportError(error));
-      return error.response ? error.response : { status: 500, data: null };
+      return error.response ? error.response.status : 500;
     }
   };
 };
