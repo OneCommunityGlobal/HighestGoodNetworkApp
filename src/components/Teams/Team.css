@@ -11,7 +11,8 @@ thead {
 }
 
 #teams__active {
-  width: 10px;
+  width: 50px;  /* Increase to provide space */
+  text-align: center;
 }
 
 .centered-cell {
@@ -35,9 +36,28 @@ thead {
   text-align: start;
 }
 
-/*.teams__overview--top {
-  background: gray;
-} */
+/* Targets 2nd column in team rows for better alignment and readability */
+.teams__tr td:nth-child(2) {
+  /* text-align: center; */
+  vertical-align: middle;
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.teams__order--input div {
+  margin-top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+
+
+.teams__overview--top {
+  background: transparent;
+}
+
 
 .teams__overview--top .card {
   width: 200px;
@@ -51,7 +71,8 @@ thead {
   color: white;
 }
 
-#card_active {
+#card_active,
+.card#card_non_active {
   background: #fbad4c;
   color: white;
 }
@@ -109,6 +130,10 @@ tr:hover {
   background: #e9f6ff;
 }
 
+tr.dark-mode:hover {
+  background: #2f4157;
+}
+
 .user-auto-cpmplete {
   cursor: pointer;
   padding: 5px;
@@ -119,8 +144,10 @@ tr:hover {
 }
 
 .usermanagement-actions-cell {
-  display: table-cell;
-  padding-left: 10px;
+  height: 35px; /* Set a proper height */
+  padding: 5px 10px;
+  font-size: 14px;
+  line-height: normal;
 }
 
 @media (max-width: 768px) {
@@ -132,5 +159,5 @@ tr:hover {
 }
 
 .overflow-container table {
-  min-width: 600px; 
+  min-width: 600px;
 }

@@ -7,13 +7,17 @@ import { connect } from 'react-redux';
 import hasPermission from 'utils/permissions';
 import { boxStyle } from 'styles';
 import { toast } from 'react-toastify';  
+import { modifyProject, clearError } from '../../../actions/projects';
+import ModalTemplate from './../../common/Modal';
+import { CONFIRM_ARCHIVE } from './../../../languages/en/messages';
 
 const Project = props => {
   const { darkMode, index } = props;
   const [firstLoad, setFirstLoad] = useState(true);
   const [projectData, setProjectData] = useState(props.projectData);
-  const { projectName, isActive, _id: projectId } = projectData;
+  const { projectName, isActive,isArchived, _id: projectId } = projectData;
   const [displayName, setDisplayName] = useState(projectName);
+  
   const [category, setCategory] = useState(props.category || 'Unspecified'); // Initialize with props or default
 
   const canPutProject = props.hasPermission('putProject');
@@ -22,12 +26,14 @@ const Project = props => {
   const canSeeProjectManagementFullFunctionality = props.hasPermission('seeProjectManagement');
   const canEditCategoryAndStatus = props.hasPermission('editProject');
 
-
-  const updateProject = (key, value) => {
-    setProjectData({
-      ...projectData,
-      [key]: value,
-    });
+   const updateProject = ({ updatedProject, status }) => async dispatch => {
+    try {
+      dispatch(updateProject({ updatedProject, status }));
+    } catch (err) {
+      const status = err?.response?.status || 500;
+      const error = err?.response?.data || { message: 'An error occurred' };
+      dispatch(updateProject({ status, error }));
+    }
   };
 
   const onDisplayNameChange = (e) => {
@@ -56,18 +62,33 @@ const Project = props => {
     props.onClickArchiveBtn(projectData);
   }
   
+  const setProjectInactive = () => {
+    updateProject('isActive', !isActive);
+    onCloseModal(); 
+  }
+  const confirmArchive = () => {
+    updateProject('isArchived', !isArchived);
+    props.onProjectArchived();
+    onCloseModal(); 
+  };
+
   useEffect(() => {
-    if (firstLoad) {
-      setFirstLoad(false);
-    } else {
-      props.onUpdateProject(projectData)
-    }
-    if (props.projectData.category) {
-      setCategory(props.projectData.category);
-    }
+    const onUpdateProject = async () => {
+      if (firstLoad) {
+        setFirstLoad(false);
+      } else {
+        await props.modifyProject(projectData);
+      }
+      if (props.projectData.category) {
+        setCategory(props.projectData.category);
+      }
+    };
+
+    onUpdateProject();
   }, [projectData]);
 
   return (
+    <>
     <tr className="projects__tr" id={'tr_' + props.projectId}>
 
       <th className="projects__order--input" scope="row">
@@ -101,7 +122,7 @@ const Project = props => {
             onChange={e => {
               onUpdateProjectCategory(e);
             }}
-
+            className={darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}
           >
             <option value="Unspecified">Unspecified</option>
             <option value="Food">Food</option>
@@ -165,13 +186,15 @@ const Project = props => {
             className="btn btn-outline-danger"
             onClick={onArchiveProject}
             style={darkMode ? {} : boxStyle}
+            disabled = {isArchived}
           >
             {ARCHIVE}
           </button>
         </td>
       ) : null}
     </tr>
+    </>
   );
 };
 const mapStateToProps = state => state;
-export default connect(mapStateToProps, { hasPermission })(Project);
+export default connect(mapStateToProps, { hasPermission, modifyProject, clearError })(Project);

@@ -4,12 +4,13 @@ import * as actions from '../../constants/totalOrgSummary';
 describe('totalOrgSummaryReducer', () => {
   const initialState = {
     volunteerstats: [],
+    volunteerOverview: [],
     loading: false,
     error: null,
     fetchingError: null,
     volunteerRolesTeamStats: {},
     isTeamStatsLoading: false,
-    isTeamStatsError: null
+    isTeamStatsError: null,
   };
 
   it('should return the initial state when no action is provided', () => {

@@ -4,6 +4,8 @@ import { toast } from 'react-toastify';
 import { ApiEndpoint } from 'utils/URL';
 import OneCommunityImage from './One-Community-Horizontal-Homepage-Header-980x140px-2.png';
 
+import 'leaflet/dist/leaflet.css';
+
 class Collaboration extends Component {
   constructor(props) {
     super(props);
@@ -13,11 +15,14 @@ class Collaboration extends Component {
       currentPage: 1,
       jobAds: [],
       totalPages: 0,
+      categories: [],
+      summaries: '', // Add this line
     };
   }
 
   componentDidMount() {
     this.fetchJobAds();
+    this.fetchCategories();
   }
 
   fetchJobAds = async () => {
@@ -46,25 +51,171 @@ class Collaboration extends Component {
     }
   };
 
+  fetchCategories = async () => {
+    try {
+      const response = await fetch(`${ApiEndpoint}/jobs/categories`, { method: 'GET' });
+      if (!response.ok) {
+        throw new Error(`Failed to fetch categories: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      const sortedCategories = data.categories.sort((a, b) => a.localeCompare(b));
+      this.setState({ categories: sortedCategories });
+    } catch (error) {
+      toast.error('Error fetching categories');
+    }
+  };
+
   handleSearch = event => {
     this.setState({ searchTerm: event.target.value });
   };
 
   handleSubmit = event => {
     event.preventDefault();
-    this.setState({ currentPage: 1 }, this.fetchJobAds);
+    this.setState({ summaries: null, currentPage: 1 }, this.fetchJobAds);
   };
 
   handleCategoryChange = event => {
-    this.setState({ selectedCategory: event.target.value, currentPage: 1 }, this.fetchJobAds);
+    const selectedValue = event.target.value;
+    this.setState(
+      { selectedCategory: selectedValue === '' ? '' : selectedValue, currentPage: 1 },
+      this.fetchJobAds,
+    );
+  };
+
+  handleResetFilters = async () => {
+    try {
+      const response = await fetch(`${ApiEndpoint}/jobs/reset-filters`, {
+        method: 'GET',
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to reset filters: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      this.setState({
+        searchTerm: '',
+        selectedCategory: '',
+        currentPage: 1,
+        jobAds: data.jobs,
+        totalPages: data.pagination.totalPages,
+        summaries: null,
+      });
+    } catch (error) {
+      toast.error('Error resetting filters');
+    }
   };
 
   setPage = pageNumber => {
     this.setState({ currentPage: pageNumber }, this.fetchJobAds);
   };
 
+  handleShowSummaries = async () => {
+    const { searchTerm, selectedCategory } = this.state;
+    try {
+      const response = await fetch(
+        `${ApiEndpoint}/jobs/summaries?search=${searchTerm}&category=${selectedCategory}`,
+        {
+          method: 'GET',
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch summaries: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      this.setState({ summaries: data });
+    } catch (error) {
+      toast.error('Error fetching summaries');
+    }
+  };
+
   render() {
-    const { searchTerm, selectedCategory, currentPage, jobAds, totalPages } = this.state;
+    const {
+      searchTerm,
+      selectedCategory,
+      currentPage,
+      jobAds,
+      totalPages,
+      categories,
+      summaries,
+    } = this.state;
+
+    if (summaries) {
+      return (
+        <div className="job-landing">
+          <div className="header">
+            <a
+              href="https://www.onecommunityglobal.org/collaboration/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <img src={OneCommunityImage} alt="One Community Logo" className="responsive-img" />
+            </a>
+          </div>
+          <div className="collaboration-container">
+            <nav className="collaboration-navbar">
+              <div className="navbar-left">
+                <form className="search-form">
+                  <input
+                    type="text"
+                    placeholder="Search by title..."
+                    value={searchTerm}
+                    onChange={this.handleSearch}
+                  />
+                  <button className="search-button" type="submit" onClick={this.handleSubmit}>
+                    Go
+                  </button>
+                  <button type="button" onClick={this.handleResetFilters}>
+                    Reset
+                  </button>
+                  <button
+                    className="show-summaries"
+                    type="button"
+                    onClick={this.handleShowSummaries}
+                  >
+                    Show Summaries
+                  </button>
+                </form>
+              </div>
+
+              <div className="navbar-right">
+                <select
+                  value={selectedCategory}
+                  onChange={event => this.handleCategoryChange(event)}
+                >
+                  <option value="">Select from Categories</option>
+                  {categories.map(category => (
+                    <option key={category} value={category}>
+                      {category}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </nav>
+
+            <div className="summaries-list">
+              <h1>Summaries</h1>
+              {summaries && summaries.jobs && summaries.jobs.length > 0 ? (
+                summaries.jobs.map(summary => (
+                  <div key={summary._id} className="summary-item">
+                    <h3>
+                      <a href={summary.jobDetailsLink}>{summary.title}</a>
+                    </h3>
+                    <p>{summary.description}</p>
+                    <p>Date Posted: {new Date(summary.datePosted).toLocaleDateString()}</p>
+                  </div>
+                ))
+              ) : (
+                <p>No summaries found.</p>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    }
 
     return (
       <div className="job-landing">
@@ -77,8 +228,8 @@ class Collaboration extends Component {
             <img src={OneCommunityImage} alt="One Community Logo" />
           </a>
         </div>
-        <div className="container">
-          <nav className="navbar">
+        <div className="collaboration-container">
+          <nav className="collaboration-navbar">
             <div className="navbar-left">
               <form className="search-form">
                 <input
@@ -87,17 +238,26 @@ class Collaboration extends Component {
                   value={searchTerm}
                   onChange={this.handleSearch}
                 />
-                <button className="search" type="submit" onClick={this.handleSubmit}>
+                <button className="search-button" type="submit" onClick={this.handleSubmit}>
                   Go
+                </button>
+                <button type="button" onClick={this.handleResetFilters}>
+                  Reset
+                </button>
+                <button className="show-summaries" type="button" onClick={this.handleShowSummaries}>
+                  Show Summaries
                 </button>
               </form>
             </div>
+
             <div className="navbar-right">
-              <select value={selectedCategory} onChange={this.handleCategoryChange}>
-                <option value="">All Categories</option>
-                <option value="Engineering">Engineering</option>
-                <option value="Design">Design</option>
-                <option value="Marketing">Marketing</option>
+              <select value={selectedCategory} onChange={event => this.handleCategoryChange(event)}>
+                <option value="">Select from Categories</option>
+                {categories.map(category => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
               </select>
             </div>
           </nav>
@@ -110,7 +270,14 @@ class Collaboration extends Component {
           <div className="job-list">
             {jobAds.map(ad => (
               <div key={ad._id} className="job-ad">
-                <img src={ad.imageUrl} alt={`${ad.title}`} />
+                <img
+                  src={`/api/placeholder/640/480?text=${encodeURIComponent(
+                    ad.category || 'Job Opening',
+                  )}`}
+                  alt={ad.title || 'Job Position'}
+                  loading="lazy"
+                />
+
                 <a
                   href={`https://www.onecommunityglobal.org/collaboration/seeking-${ad.category.toLowerCase()}`}
                 >

@@ -18,6 +18,7 @@ export const fetchTotalOrgSummaryReportSuccess = volunteerstats => ({
   type: actions.FETCH_TOTAL_ORG_SUMMARY_SUCCESS,
   payload: { volunteerstats },
 });
+
 /**
  * Handle the error case.
  *
@@ -28,25 +29,10 @@ export const fetchTotalOrgSummaryReportError = error => ({
   payload: { error },
 });
 
-export const getTotalOrgSummary = (startDate, endDate) => {
-  const url = ENDPOINTS.TOTAL_ORG_SUMMARY(startDate, endDate);
-  return async dispatch => {
-    dispatch(fetchTotalOrgSummaryReportBegin());
-    try {
-      const response = await axios.get(url);
-      dispatch(fetchTotalOrgSummaryReportSuccess(response.data));
-      return {status: response.status, data: response.data};
-    } catch (error) {
-      dispatch(fetchTotalOrgSummaryReportError(error));
-      return error.response.status;
-    }
-  };
-};
-
 export const getTaskAndProjectStats = (startDate, endDate) => {
   const url = ENDPOINTS.HOURS_TOTAL_ORG_SUMMARY(startDate, endDate);
   return async dispatch => {
-    dispatch(fetchTotalOrgSummaryReportBegin());
+    await dispatch(fetchTotalOrgSummaryReportBegin());
     try {
       const response = await axios.get(url);
       dispatch(fetchTotalOrgSummaryReportSuccess(response.data));
@@ -59,10 +45,50 @@ export const getTaskAndProjectStats = (startDate, endDate) => {
 };
 
 /**
+ * This action is used to set the volunteer stats data in store.
+ *
+ * @param {array} volunteerOverview An array of all volunteer stats data
+ */
+export const fetchTotalOrgSummaryDataSuccess = volunteerOverview => ({
+  type: actions.FETCH_TOTAL_ORG_SUMMARY_DATA_SUCCESS,
+  payload: { volunteerOverview },
+});
+
+/**
+ * keep record of error while fetching the volunteer stats data
+ *
+ * @param {Object} error The error object.
+ */
+export const fetchTotalOrgSummaryDataError = fetchingError => ({
+  type: actions.FETCH_TOTAL_ORG_SUMMARY_DATA_ERROR,
+  payload: { fetchingError },
+});
+
+export const getTotalOrgSummary = (startDate, endDate, comparisonStartDate, comparisonEndDate) => {
+  const url = ENDPOINTS.TOTAL_ORG_SUMMARY(
+    startDate,
+    endDate,
+    comparisonStartDate,
+    comparisonEndDate,
+  );
+  return async dispatch => {
+    dispatch(fetchTotalOrgSummaryReportBegin());
+    try {
+      const response = await axios.get(url);
+      dispatch(fetchTotalOrgSummaryDataSuccess(response.data));
+      return { status: response.status, data: response.data };
+    } catch (error) {
+      dispatch(fetchTotalOrgSummaryDataError(error));
+      return error.response.status;
+    }
+  };
+};
+
+/**
  * Action to set the 'loading' flag to true.
  */
 export const fetchVolunteerRolesTeamStatsBegin = () => ({
-  type: actions.FETCH_VOLUNTEER_ROLES_TEAM_STATS_BEGIN
+  type: actions.FETCH_VOLUNTEER_ROLES_TEAM_STATS_BEGIN,
 });
 
 /**
@@ -70,7 +96,7 @@ export const fetchVolunteerRolesTeamStatsBegin = () => ({
  *
  * @param {object} volunteerRoleTeamStats An Object with the count of active members in the team.
  */
-export const fetchVolunteerRolesTeamStatsSuccess = (volunteerRoleTeamStats) => ({
+export const fetchVolunteerRolesTeamStatsSuccess = volunteerRoleTeamStats => ({
   type: actions.FETCH_VOLUNTEER_ROLES_TEAM_STATS_SUCCESS,
   payload: { volunteerRoleTeamStats },
 });
@@ -85,20 +111,19 @@ export const fetchVolunteerRolesTeamStatsError = error => ({
   payload: { error },
 });
 
-export const getTeamStatsActiveMembers = (endDate, activeMembersMinimum) =>{
-
-const url =  ENDPOINTS.VOLUNTEER_ROLES_TEAM_STATS(endDate, activeMembersMinimum);
+export const getTeamStatsActiveMembers = (endDate, activeMembersMinimum) => {
+  const url = ENDPOINTS.VOLUNTEER_ROLES_TEAM_STATS(endDate, activeMembersMinimum);
   return async dispatch => {
     dispatch(fetchVolunteerRolesTeamStatsBegin());
     try {
       const response = await axios.get(url);
       dispatch(fetchVolunteerRolesTeamStatsSuccess(response.data));
       return {
-        data: response.data
+        data: response.data,
       };
     } catch (error) {
       dispatch(fetchVolunteerRolesTeamStatsError(error));
       return error.response.status;
     }
   };
-}
+};

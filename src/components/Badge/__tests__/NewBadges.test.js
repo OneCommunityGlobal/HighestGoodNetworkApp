@@ -64,8 +64,8 @@ describe('NewBadges component', () => {
     mockBadges.forEach(async (badge, index) => {
       fireEvent.mouseEnter(badgeImages[index]);
       await waitFor(() => {
-        expect(screen.getByText(badge.badge.badgeName)).toBeInTheDocument();
-        expect(screen.getByText(badge.badge.description)).toBeInTheDocument();
+        expect(screen.getByText(badge.badge.badge.badgeName)).toBeInTheDocument();
+        expect(screen.getByText(badge.badge.badge.description)).toBeInTheDocument();
       });
     });
   });
