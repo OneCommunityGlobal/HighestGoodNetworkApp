@@ -1,8 +1,11 @@
 import { Component } from 'react';
+import { connect } from 'react-redux';
+import hasPermission from 'utils/permissions';
 import './Collaboration.css';
 import { toast } from 'react-toastify';
 import { ApiEndpoint } from 'utils/URL';
 import OneCommunityImage from './One-Community-Horizontal-Homepage-Header-980x140px-2.png';
+import JobReorderModal from './JobReorderModal';
 
 import 'leaflet/dist/leaflet.css';
 
@@ -17,6 +20,7 @@ class Collaboration extends Component {
       totalPages: 0,
       categories: [],
       summaries: '', // Add this line
+      isReorderModalOpen: false,
     };
   }
 
@@ -132,6 +136,15 @@ class Collaboration extends Component {
     }
   };
 
+  toggleReorderModal = () => {
+    this.setState(prevState => ({ isReorderModalOpen: !prevState.isReorderModalOpen }));
+  };
+
+  handleJobsReordered = () => {
+    // Refresh job listings after reordering
+    this.fetchJobAds();
+  };
+
   render() {
     const {
       searchTerm,
@@ -141,7 +154,11 @@ class Collaboration extends Component {
       totalPages,
       categories,
       summaries,
+      isReorderModalOpen,
     } = this.state;
+
+    const { darkMode, userHasPermission } = this.props;
+    const canReorderJobs = userHasPermission('reorderJobs');
 
     if (summaries) {
       return (
@@ -247,6 +264,17 @@ class Collaboration extends Component {
                 <button className="show-summaries" type="button" onClick={this.handleShowSummaries}>
                   Show Summaries
                 </button>
+
+                {/* Only show reorder button for users with permission */}
+                {canReorderJobs && (
+                  <button
+                    className="reorder-button"
+                    type="button"
+                    onClick={this.toggleReorderModal}
+                  >
+                    Edit to Reorder
+                  </button>
+                )}
               </form>
             </div>
 
@@ -302,9 +330,25 @@ class Collaboration extends Component {
             ))}
           </div>
         </div>
+
+        {/* Reorder Modal */}
+        <JobReorderModal
+          isOpen={isReorderModalOpen}
+          toggle={this.toggleReorderModal}
+          onJobsReordered={this.handleJobsReordered}
+          darkMode={darkMode}
+        />
       </div>
     );
   }
 }
 
-export default Collaboration;
+const mapStateToProps = state => ({
+  darkMode: state.theme?.darkMode || false,
+});
+
+const mapDispatchToProps = dispatch => ({
+  userHasPermission: permission => dispatch(hasPermission(permission)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Collaboration);
