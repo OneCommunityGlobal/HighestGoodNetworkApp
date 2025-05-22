@@ -1,5 +1,5 @@
 import Loading from 'components/common/Loading';
-import { ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
+import { ResponsiveContainer, PieChart, Pie, Cell, Legend , Tooltip } from 'recharts';
 
 const COLORS = [
   '#F285BB',
@@ -35,6 +35,7 @@ export default function RoleDistributionPieChart({ isLoading, roleDistributionSt
     value: item.count,
     color: COLORS[index],
   }));
+  const totalValue = data.reduce((sum, entry) => sum + entry.value, 0);
 
   const RADIAN = Math.PI / 180;
   const renderCustomizedLabel = ({
@@ -76,28 +77,54 @@ export default function RoleDistributionPieChart({ isLoading, roleDistributionSt
     );
   };
 
-  const renderCustomLegend = props => {
-    const { payload } = props;
+   const renderCustomLegend = props => {
+    const { payload } = props; // payload is an array of legend items provided by Recharts
+
     return (
-      <ul style={{ marginLeft: 20 }}>
-        {payload.map(entry => (
-          <li
-            key={`item-${entry.value}`}
-            style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}
-          >
-            <div
-              style={{
-                width: '10px',
-                height: '10px',
-                backgroundColor: entry.color,
-                marginRight: '3px',
-              }}
-            />
-            <span style={{ color: darkMode ? 'white ' : 'grey', fontSize: '12px' }}>
-              {entry.value}
-            </span>
-          </li>
-        ))}
+      <ul
+        style={{
+          listStyle: 'none', // Remove default bullet points
+          margin: 0,
+          paddingLeft: '20px', // Indent legend from the pie
+          textAlign: 'left', // Align text to the left
+          maxHeight: '400px', // Max height for the legend area
+          overflowY: 'auto', // Make legend scrollable if it exceeds maxHeight
+        }}
+      >
+        {payload.map(entry => {
+          // 'entry.value' here corresponds to the 'nameKey' of the Pie (which we set to 'name')
+          const itemName = entry.value;
+          // Find the original data object to get the count and original color
+          const itemData = data.find(d => d.name === itemName);
+
+          // If for some reason data is not found, skip rendering this legend item
+          if (!itemData) {
+            return null;
+          }
+
+          const { value, color } = itemData; // 'value' is the count
+          const percentage = totalValue > 0 ? (value / totalValue) * 100 : 0;
+
+          return (
+            <li
+              key={`item-${itemName}`} // Use itemName for a stable key
+              style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}
+            >
+              <div
+                style={{
+                  width: '10px',
+                  height: '10px',
+                  backgroundColor: color, // Use the color from our mapped data
+                  marginRight: '5px',
+                  flexShrink: 0, // Prevent the color swatch from shrinking
+                }}
+              />
+              <span style={{ color: darkMode ? 'white' : 'grey', fontSize: '12px' }}>
+                {`${itemName}: ${value} (${percentage.toFixed(1)}%)`}
+              </span>
+            </li>
+          );
+        })}
       </ul>
     );
   };
@@ -130,6 +157,7 @@ export default function RoleDistributionPieChart({ isLoading, roleDistributionSt
             align="right"
             content={renderCustomLegend}
           />
+        <Tooltip />
         </PieChart>
       </ResponsiveContainer>
     </div>
