@@ -3,12 +3,12 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form } from 'reacts
 import Input from 'components/common/Input';
 import { createLocation, editLocation } from 'services/mapLocationsService';
 import axios from 'axios';
-import CustomInput from './CustomInput.jsx';
 import { ENDPOINTS } from 'utils/URL';
 import { boxStyle, boxStyleDark } from 'styles';
-import '../Header/DarkMode.css'
+import '../Header/DarkMode.css';
 import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
+import CustomInput from './CustomInput';
 
 const initialLocationData = {
   firstName: '',
@@ -33,7 +33,7 @@ function AddOrEditPopup({
   editProfile,
   submitText,
 }) {
-  const darkMode = useSelector(state => state.theme.darkMode)
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const [locationData, setLocationData] = useState(initialLocationData);
   const [timeZone, setTimeZone] = useState('');
@@ -55,18 +55,21 @@ function AddOrEditPopup({
       setErrors(prev => ({ ...prev, location: null }));
     }
 
-    axios.get(ENDPOINTS.TIMEZONE_LOCATION(location)).then(res => {
-      if (res.status === 200) {
-        const { timezone, currentLocation } = res.data;
-        setLocationData(prev => ({
-          ...prev,
-          location: currentLocation,
-        }));
-        setTimeZone(timezone);
-      }
-    }).catch(err => {
-      toast.error(`An error occurred : ${err.response.data}`);
-    });
+    axios
+      .get(ENDPOINTS.TIMEZONE_LOCATION(location))
+      .then(res => {
+        if (res.status === 200) {
+          const { timezone, currentLocation } = res.data;
+          setLocationData(prev => ({
+            ...prev,
+            location: currentLocation,
+          }));
+          setTimeZone(timezone);
+        }
+      })
+      .catch(err => {
+        toast.error(`An error occurred : ${err.response.data}`);
+      });
   };
   useEffect(() => {
     if (isEdit) {
@@ -156,6 +159,7 @@ function AddOrEditPopup({
         toast.success('A person successfully added to a map!');
         setManuallyUserProfiles(prev => [...prev, { ...res.data, type: 'm_user' }]);
         setLocationData(initialLocationData);
+        // eslint-disable-next-line no-use-before-define
         setFormSubmitted(true);
       } else if (isEdit) {
         const res = await editLocation(newLocationObject);
@@ -214,8 +218,16 @@ function AddOrEditPopup({
   }, [open, formSubmitted]);
 
   return (
-    <Modal isOpen={open} toggle={onClose} className={`modal-dialog modal-lg ${darkMode ? 'text-light dark-mode' : ''}`}>
-      <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={onClose} cssModule={{ 'modal-title': 'w-100 text-center my-auto pl-2' }}>
+    <Modal
+      isOpen={open}
+      toggle={onClose}
+      className={`modal-dialog modal-lg ${darkMode ? 'text-light dark-mode' : ''}`}
+    >
+      <ModalHeader
+        className={darkMode ? 'bg-space-cadet' : ''}
+        toggle={onClose}
+        cssModule={{ 'modal-title': 'w-100 text-center my-auto pl-2' }}
+      >
         {title}
       </ModalHeader>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
@@ -224,7 +236,12 @@ function AddOrEditPopup({
             type="text"
             name="firstName"
             value={locationData.firstName}
-            label="First Name"
+            label={
+              <>
+                First Name
+                <span className="red-asterisk">* </span>
+              </>
+            }
             placeholder="Please enter a first name"
             onChange={locationDataHandler}
             required
@@ -236,7 +253,12 @@ function AddOrEditPopup({
             type="text"
             name="lastName"
             value={locationData.lastName}
-            label="Last Name"
+            label={
+              <>
+                Last Name
+                <span className="red-asterisk">* </span>
+              </>
+            }
             placeholder="Please enter a last name"
             onChange={locationDataHandler}
             required
@@ -248,7 +270,12 @@ function AddOrEditPopup({
             type="text"
             name="jobTitle"
             value={locationData.jobTitle}
-            label="Job Title"
+            label={
+              <>
+                Job Title
+                <span className="red-asterisk">* </span>
+              </>
+            }
             placeholder="Please enter user job title"
             onChange={locationDataHandler}
             required
@@ -256,7 +283,10 @@ function AddOrEditPopup({
             darkMode={darkMode}
           />
           <div>
-            <p className={`mb-2 ${darkMode ? 'text-azure font-weight-bold' : ''}`}>Location</p>
+            <span className={`mb-2  font-weight-bold ${darkMode ? 'text-azure' : ''}`}>
+              Location
+            </span>
+            <span className="red-asterisk">* </span>
             <div id="location" className="d-flex justify-content-stretch gap-1">
               <div className="w-50 mr-1 position-relative">
                 <input
@@ -296,14 +326,19 @@ function AddOrEditPopup({
             {errors.location && <div className="alert alert-danger mt-1">{errors.location}</div>}
           </div>
           <div className="text-center">
-            <Button className="btn btn-primary mt-5" type="submit" color="primary" style={darkMode ? boxStyleDark : boxStyle}>
+            <Button
+              className="btn btn-primary mt-5"
+              type="submit"
+              color="primary"
+              style={darkMode ? boxStyleDark : boxStyle}
+            >
               {submitText}
             </Button>
           </div>
         </Form>
       </ModalBody>
       <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-        <Button style={darkMode ? boxStyleDark : boxStyle } color="secondary" onClick={onClose}>
+        <Button style={darkMode ? boxStyleDark : boxStyle} color="secondary" onClick={onClose}>
           Close
         </Button>
       </ModalFooter>
