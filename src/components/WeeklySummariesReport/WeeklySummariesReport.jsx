@@ -106,6 +106,17 @@ const WeeklySummariesReport = props => {
   const weekDates = getWeekDates();
   const [state, setState] = useState(initialState);
   const [permissionState, setPermissionState] = useState(intialPermissionState);
+
+  useEffect(() => {
+    // Update local state whenever allBadgeData prop changes
+    if (props.allBadgeData && props.allBadgeData.length > 0) {
+      setState(prevState => ({
+        ...prevState,
+        badges: props.allBadgeData,
+      }));
+    }
+  }, [props.allBadgeData]);
+
   // Misc functionalities
   /**
    * Sort the summaries in alphabetixal order
@@ -359,7 +370,6 @@ const WeeklySummariesReport = props => {
         summariesByTab: {
           [activeTab]: summariesCopy,
         },
-        badges: allBadgeData,
         filteredSummaries: summariesCopy,
         tableData: teamCodeGroup,
         chartData,
