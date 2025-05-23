@@ -1,22 +1,21 @@
-
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
 import axios from 'axios';
 import './ExpenditureChart.css';
 
-const COLORS = ['#6777EF', '#A0CD61', '#F5CD4B']; 
+const COLORS = ['#6777EF', '#A0CD61', '#F5CD4B'];
 const CATEGORIES = ['Labor', 'Equipment', 'Materials'];
 
 function normalizeData(data) {
-  return CATEGORIES.map((cat) => {
+  return CATEGORIES.map(cat => {
     const found = data.find(d => d.category === cat);
-    return found ? found : { category: cat, amount: 0 };
+    return found || { category: cat, amount: 0 };
   });
 }
 
 const renderCustomLabel = ({ cx, cy, midAngle, outerRadius, percent, name }) => {
   const RADIAN = Math.PI / 180;
-  let radius = outerRadius * 0.6; 
+  const radius = outerRadius * 0.6;
   const x = cx + radius * Math.cos(-midAngle * RADIAN);
   const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
@@ -35,8 +34,7 @@ const renderCustomLabel = ({ cx, cy, midAngle, outerRadius, percent, name }) => 
   );
 };
 
-
-const ExpenditureChart = ({ projectId }) => {
+function ExpenditureChart({ projectId }) {
   const [actual, setActual] = useState([]);
   const [planned, setPlanned] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -48,7 +46,9 @@ const ExpenditureChart = ({ projectId }) => {
       setLoading(true);
       setError(null);
       try {
-        const res = await axios.get(`${process.env.REACT_APP_APIENDPOINT}/bm/expenditure/${projectId}/pie`);
+        const res = await axios.get(
+          `${process.env.REACT_APP_APIENDPOINT}/bm/expenditure/${projectId}/pie`,
+        );
         setActual(res.data.actual);
         setPlanned(res.data.planned);
       } catch (err) {
@@ -63,20 +63,20 @@ const ExpenditureChart = ({ projectId }) => {
   const renderChart = (data, title) => (
     <div className="expenditure-chart-card">
       <h4 className="expenditure-chart-title">{title}</h4>
-      <PieChart width={280} height={280}> 
+      <PieChart width={280} height={280}>
         <Pie
           data={data}
           dataKey="amount"
           nameKey="category"
           cx="50%"
           cy="50%"
-          outerRadius={120} 
+          outerRadius={120}
           label={renderCustomLabel}
           labelLine={false}
-          stroke="none" 
+          stroke="none"
         >
-          {data.map((_, index) => (
-            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+          {data.map((entry, index) => (
+            <Cell key={entry.category || index} fill={COLORS[index % COLORS.length]} />
           ))}
         </Pie>
         <Tooltip />
@@ -94,6 +94,6 @@ const ExpenditureChart = ({ projectId }) => {
       {renderChart(normalizeData(planned), 'Planned Expenditure')}
     </div>
   );
-};
+}
 
 export default ExpenditureChart;

@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import ExpenditureChart from './ExpenditureChart';
 
-
-const FinancialsTrackingCard = () => {
+function FinancialsTrackingCard() {
   const [projectList, setProjectList] = useState([]);
   const [selectedProject, setSelectedProject] = useState('');
   const [loading, setLoading] = useState(true);
@@ -16,14 +15,14 @@ const FinancialsTrackingCard = () => {
         const res = await axios.get(`${process.env.REACT_APP_APIENDPOINT}/bm/expenditure/projects`);
         const labeledProjects = res.data.map((id, index) => ({
           id,
-          name: `Project ${String.fromCharCode(65 + index)}`
+          name: `Project ${String.fromCharCode(65 + index)}`,
         }));
         setProjectList(labeledProjects);
         if (labeledProjects.length > 0) {
           setSelectedProject(labeledProjects[0].id);
         }
       } catch (err) {
-        console.error('Error fetching project IDs:', err);
+        // console.error('Error fetching project IDs:', err);
         setError('Failed to load projects');
       } finally {
         setLoading(false);
@@ -54,6 +53,6 @@ const FinancialsTrackingCard = () => {
       {selectedProject && <ExpenditureChart projectId={selectedProject} />}
     </div>
   );
-};
+}
 
 export default FinancialsTrackingCard;

@@ -116,8 +116,6 @@ export default function WeeklyProjectSummary() {
   const [openSections, setOpenSections] = useState({});
 
   const darkMode = useSelector(state => state.theme.darkMode);
-  
-
   useEffect(() => {
     if (materials.length === 0) {
       dispatch(fetchAllMaterials());
@@ -276,14 +274,12 @@ export default function WeeklyProjectSummary() {
         className: 'full',
         content: [1, 2, 3, 4].map((_, index) => {
           const uniqueId = uuidv4();
-          
           return (
             <div key={uniqueId} className="weekly-project-summary-card normal-card">
               {index === 0 ? (
-                  <div className="weekly-project-summary-card normal-card" key="financial-tracking">
-                 <FinancialsTrackingCard />
-               </div>
-                
+                <div className="weekly-project-summary-card normal-card" key="financial-tracking">
+                  <FinancialsTrackingCard />
+                </div>
               ) : (
                 ':bar_chart: Card'
               )}
