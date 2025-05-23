@@ -103,6 +103,7 @@ function Announcements({ title, email: initialEmail }) {
 
   const addImageToEmailContent = e => {
     const imageFile = document.querySelector('input[type="file"]').files[0];
+    setIsFileUploaded(true);
     convertImageToBase64(imageFile, base64Image => {
       const imageTag = `<img src="${base64Image}" alt="Header Image" style="width: 100%; max-width: 100%; height: auto;">`;
       setHeaderContent(prevContent => `${imageTag}${prevContent}`);
@@ -133,7 +134,12 @@ function Announcements({ title, email: initialEmail }) {
       return;
     }
 
-    const invalidEmails = emailList.filter(address => !validateEmail(address.trim()));
+    if (!isFileUploaded) {
+      toast.error('Error: Please upload a file.');
+      return;
+    }
+
+    const invalidEmails = emailList.filter(email => !validateEmail(email.trim()));
 
     if (invalidEmails.length > 0) {
       toast.error(`Error: Invalid email addresses: ${invalidEmails.join(', ')}`);
