@@ -243,6 +243,7 @@ const WeeklySummariesReport = props => {
           auth.user.role === 'Owner' ||
           auth.user.role === 'Administrator',
         canSeeBioHighlight: hasPermission('highlightEligibleBios'),
+        hasSeeBadgePermission: hasPermission('seeBadges') && badgeStatusCode === 200,
       }));
 
       // Fetch data for the active tab only
@@ -359,7 +360,6 @@ const WeeklySummariesReport = props => {
           [activeTab]: summariesCopy,
         },
         badges: allBadgeData,
-        hasSeeBadgePermission: badgeStatusCode === 200,
         filteredSummaries: summariesCopy,
         tableData: teamCodeGroup,
         chartData,
