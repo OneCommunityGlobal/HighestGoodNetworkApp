@@ -51,11 +51,16 @@ import { bmInvUnitReducer } from './bmdashboard/inventoryUnitReducer';
 import { consumablesReducer } from './bmdashboard/consumablesReducer';
 import { toolReducer } from './bmdashboard/toolReducer';
 import { equipmentReducer } from './bmdashboard/equipmentReducer';
+import { bmProjectMemberReducer } from './bmdashboard/projectMemberReducer';
+import { bmTimeLoggerReducer } from './bmdashboard/timeLoggerReducer';
+
 import dashboardReducer from './dashboardReducer';
 import { timeOffRequestsReducer } from './timeOffRequestReducer';
 import { totalOrgSummaryReducer } from './totalOrgSummaryReducer';
 import { allUsersTimeEntriesReducer } from './allUsersTimeEntriesReducer';
 import HGNFormReducer from './hgnFormReducers';
+import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
+import { issueReducer } from './bmdashboard/issueReducer';
 
 const localReducers = {
   auth: authReducer,
@@ -95,6 +100,7 @@ const localReducers = {
   materials: materialsReducer,
   tools: toolReducer,
   bmProjects: bmProjectReducer,
+  bmIssues: issueReducer,
   bmInvTypes: bmInvTypeReducer,
   timeOffRequests: timeOffRequestsReducer,
   lessons: lessonsReducer,
@@ -105,6 +111,9 @@ const localReducers = {
   bmConsumables: consumablesReducer,
   bmReusables: reusablesReducer,
   dashboard: dashboardReducer,
+  bmProjectMembers: bmProjectMemberReducer,
+  bmTimeLogger: bmTimeLoggerReducer,
+  weeklyProjectSummary: weeklyProjectSummaryReducer,
 };
 
 const sessionReducers = {

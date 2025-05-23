@@ -1,9 +1,11 @@
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
+// eslint-disable-next-line no-unused-vars
 import { render, screen, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { BrowserRouter } from 'react-router-dom';
-import PeopleTable from '../PeopleTable';
 import moment from 'moment';
+import PeopleTable from '../PeopleTable';
 
 
 describe('PeopleTable component', () => {
@@ -29,9 +31,10 @@ describe('PeopleTable component', () => {
     renderWithRouter(<PeopleTable userProfiles={userProfiles} />);
     screen.debug();
     userProfiles.forEach(people => {
-      expect(screen.getByText(people.firstName + " " + people.lastName)).toBeInTheDocument();
+      expect(screen.getByText(`${people.firstName} ${people.lastName}`)).toBeInTheDocument();
       expect(screen.getByText(moment.utc(people.startDate).format('MM-DD-YY'))).toBeInTheDocument();
       if (people.endDate) {
+        expect(screen.getByText(moment.utc(people.endDate).format('MM-DD-YY'))).toBeInTheDocument();
         expect(screen.getByText(moment.utc(people.endDate).format('MM-DD-YY'))).toBeInTheDocument();
       }else {
         expect(screen.getByText('N/A')).toBeInTheDocument();
@@ -42,7 +45,7 @@ describe('PeopleTable component', () => {
   it('row item links to the correct page', () => {
     renderWithRouter(<PeopleTable userProfiles={userProfiles} />);
     userProfiles.forEach(people => {
-      expect(screen.getByRole('link', { name: people.firstName + " " + people.lastName })).toHaveAttribute('href', `/peoplereport/${people._id}`);
+      expect(screen.getByRole('link', { name: `${people.firstName  } ${  people.lastName}` })).toHaveAttribute('href', `/peoplereport/${people._id}`);
     });
   });
 
@@ -51,7 +54,7 @@ describe('PeopleTable component', () => {
   it('renders user profiles in sorted order by first name', () => {
     renderWithRouter(<PeopleTable userProfiles={userProfiles} />);
     const firstNameElements = screen.getAllByRole('row');
-    expect(firstNameElements[1]).toHaveTextContent('Jane');//index 0 is for header row
+    expect(firstNameElements[1]).toHaveTextContent('Jane');// index 0 is for header row
     expect(firstNameElements[2]).toHaveTextContent('John');
   });
 

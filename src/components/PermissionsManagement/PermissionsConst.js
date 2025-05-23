@@ -159,6 +159,12 @@ export const permissionLabels = [
           'Gives the user permission to change the requirement to the user to submit a summary.',
       },
       {
+        label: 'Update Password (Others)',
+        key: 'updatePassword',
+        description:
+          'Gives the user permission to update the password of any user but Owner/Admin classes. ',
+      },
+      {
         label: 'Manage Time Off Requests',
         key: 'manageTimeOffRequests',
         description: 'Gives the user permission to Add/Delete/Edit Time off requests.',
@@ -315,8 +321,21 @@ export const permissionLabels = [
               {
                 label: 'Edit Task',
                 key: 'updateTask',
-                description:
-                  'Gives the user permission to edit a task on any WBS. "Other Links" -> "Projects" -> "WBS Button" -> "Choose any WBS" -> "Edit" -> "Edit" ',
+                subperms: [
+                  {
+                    label: 'Edit Task',
+                    key: 'updateTask',
+                    description:
+                      'Gives the user permission to edit a task on any WBS. "Other Links" -> "Projects" -> "WBS Button" -> "Choose any WBS" -> "Edit" -> "Edit" ',
+                  },
+                  {
+                    // task extension count viewing permission
+                    label: 'See # of Times Time Added to Task',
+                    key: 'viewTaskDeadlineCount',
+                    description:
+                      'Gives the user permission to view the task extension count. "Other Links" -> "Permissions Management" -> "Manage User Permissions" -> "Choose any user" -> "Add button to view task deadline count" ',
+                  },
+                ],
               },
               {
                 label: 'Delete Task',
@@ -553,6 +572,17 @@ export const permissionLabels = [
         key: 'seeUsersInDashboard',
         description:
           'Lets the user see all users in the dashboard as if they were on the same team. Requires "See All Users" to function',
+      },
+    ],
+  },
+  {
+    label: 'FAQs',
+    description: 'Category for all permissions related to FAQs',
+    subperms: [
+      {
+        label: 'Manage FAQs',
+        key: 'manageFAQs',
+        description: 'Gives the user permission to add, edit, and delete FAQs.',
       },
     ],
   },
