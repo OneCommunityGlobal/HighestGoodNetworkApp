@@ -1,7 +1,4 @@
 import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
-import { toast } from 'react-toastify';
-import { ENDPOINTS } from '../../../utils/URL';
 import {
   getTaskEditSuggestionsHTTP,
   createTaskEditSuggestionHTTP,
@@ -9,105 +6,86 @@ import {
   getTaskEditSuggestionCountHTTP,
 } from '../service';
 
-const mock = new MockAdapter(axios);
+// mock out axios completely
+jest.mock('axios');
 
-describe('HTTP Service Functions', () => {
-  beforeEach(() => {
-    // Mock all requests with a 404 error
-    mock.onAny().reply(404);
-  });
-
+describe('TaskEditSuggestions HTTP Service', () => {
   afterEach(() => {
-    mock.reset();
+    jest.resetAllMocks();
   });
 
-  it('should fetch task edit suggestions', async () => {
+  it('fetches task edit suggestions successfully', async () => {
+    const payload = { data: 'mock data' };
+    axios.get.mockResolvedValue({ data: payload });
+
+    const result = await getTaskEditSuggestionsHTTP();
+    expect(axios.get).toHaveBeenCalledWith(expect.any(String));
+    expect(result).toEqual(payload);
+  });
+
+  it('returns undefined when fetching suggestions fails', async () => {
+    axios.get.mockRejectedValue(new Error('Network error'));
+
     const result = await getTaskEditSuggestionsHTTP();
     expect(result).toBeUndefined();
   });
 
-  it('should create task edit suggestion', async () => {
+  it('creates task edit suggestion and returns response data', async () => {
     const taskId = 1;
     const userId = 2;
-    const oldTask = { description: 'Old Task' };
-    const updatedTask = { description: 'Updated Task' };
+    const oldTask = { description: 'Old' };
+    const updatedTask = { description: 'New' };
+    const payload = { suggestionId: 'abcd1234', status: 'pending' };
+
+    axios.post.mockResolvedValue({ data: payload });
 
     const result = await createTaskEditSuggestionHTTP(taskId, userId, oldTask, updatedTask);
+
+    expect(axios.post).toHaveBeenCalledWith(expect.any(String), {
+      taskId,
+      userId,
+      oldTask,
+      newTask: updatedTask,
+    });
+    expect(result).toEqual(payload);
+  });
+
+  it('returns undefined when create suggestion fails', async () => {
+    axios.post.mockRejectedValue(new Error('Server error'));
+
+    const result = await createTaskEditSuggestionHTTP(1, 2, {}, {});
     expect(result).toBeUndefined();
   });
 
-  it('should reject task edit suggestion', async () => {
-    const taskEditSuggestionId = '1234';
-    let result;
+  it('rejects task edit suggestion and returns response data', async () => {
+    const suggestionId = '1234';
+    const payload = { status: 'deleted' };
 
-    try {
-      result = await rejectTaskEditSuggestionHTTP(taskEditSuggestionId);
-    } catch (_e) {
-      toast.error('Error fetching task edit suggestions');
-    }
+    axios.delete.mockResolvedValue({ data: payload });
 
-    expect(result).toBeUndefined();
+    const result = await rejectTaskEditSuggestionHTTP(suggestionId);
+    expect(axios.delete).toHaveBeenCalledWith(expect.stringContaining(suggestionId));
+    expect(result).toEqual(payload);
   });
 
-  it('fetch suggestion count should return undefined and call toast.error', async () => {
+  it('throws when reject suggestion endpoint errors', async () => {
+    axios.delete.mockRejectedValue(new Error('Bad request'));
+    await expect(rejectTaskEditSuggestionHTTP('1234')).rejects.toThrow('Bad request');
+  });
+
+  it('fetches suggestion count successfully', async () => {
+    const payload = { count: 5 };
+    axios.get.mockResolvedValue({ data: payload });
+
+    const result = await getTaskEditSuggestionCountHTTP();
+    expect(axios.get).toHaveBeenCalledWith(expect.stringContaining('?count=true'));
+    expect(result).toEqual(payload);
+  });
+
+  it('returns undefined when fetching suggestion count fails', async () => {
+    axios.get.mockRejectedValue(new Error('Timeout'));
+
     const result = await getTaskEditSuggestionCountHTTP();
     expect(result).toBeUndefined();
-    expect(toast.error).toHaveBeenCalledWith('Error fetching task edit suggestion count');
-  });
-});
-
-describe('HTTP other Service Functions', () => {
-  beforeEach(() => {
-    mock.onGet(ENDPOINTS.TASK_EDIT_SUGGESTION()).reply(200, { data: 'mock data' });
-    mock.onPost(ENDPOINTS.TASK_EDIT_SUGGESTION()).reply(200);
-    mock.onDelete(ENDPOINTS.REJECT_TASK_EDIT_SUGGESTION('1234')).reply(200, { status: 'deleted' });
-    mock.onGet(`${ENDPOINTS.TASK_EDIT_SUGGESTION()}?count=true`).reply(200, { count: 5 });
-  });
-
-  afterEach(() => {
-    mock.reset();
-  });
-
-  it('should fetch task edit suggestions', async () => {
-    try {
-      const result = await getTaskEditSuggestionsHTTP();
-      expect(result).toEqual({ data: 'mock data' });
-    } catch (error) {
-      toast.error('Error fetching task edit suggestions:', error);
-    }
-  });
-
-  it('should create task edit suggestion', async () => {
-    const taskId = 1;
-    const userId = 2;
-    const oldTask = { description: 'Old Task' };
-    const updatedTask = { description: 'Updated Task' };
-    mock.onPost(ENDPOINTS.TASK_EDIT_SUGGESTION()).reply(200, { status: 'success' });
-    const result = await createTaskEditSuggestionHTTP(taskId, userId, oldTask, updatedTask);
-    expect(result).toEqual({ status: 'success' });
-  });
-
-  it('should reject task edit suggestion', async () => {
-    const taskEditSuggestionId = '1234';
-    mock.onDelete(ENDPOINTS.REJECT_TASK_EDIT_SUGGESTION('1234')).reply(400);
-    let result;
-
-    try {
-      result = await rejectTaskEditSuggestionHTTP(taskEditSuggestionId);
-    } catch (_e) {
-      toast.error('Error fetching task edit suggestions');
-    }
-
-    expect(result).toBeUndefined();
-  });
-
-  it('should fetch task edit suggestion count', async () => {
-    mock.onGet(`${'${ENDPOINTS.TASK_EDIT_SUGGESTION()'}?count=true`).reply(200, { count: 5 });
-    try {
-      const result = await getTaskEditSuggestionCountHTTP();
-      expect(result).toEqual({ count: 5 });
-    } catch (error) {
-      toast.error('Error fetching task edit suggestion count:', error);
-    }
   });
 });

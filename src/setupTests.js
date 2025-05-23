@@ -48,10 +48,21 @@ jest.mock('react-toastify', () => {
       info: jest.fn(),
       warn: jest.fn(),
       dark: jest.fn(),
+      configure: jest.fn(),
     },
     ToastContainer: jest.fn(() => null),
   };
 });
+
+jest.mock('html2canvas', () => ({
+  default: () => Promise.resolve({}),
+}));
+jest.mock('jspdf', () => ({
+  jsPDF: jest.fn().mockImplementation(() => ({
+    addPage: jest.fn(),
+    save: jest.fn(),
+  })),
+}));
 
 // Mock d3
 jest.mock('d3', () => ({

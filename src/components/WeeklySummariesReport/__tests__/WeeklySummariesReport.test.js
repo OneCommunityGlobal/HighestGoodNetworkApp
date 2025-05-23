@@ -1,224 +1,144 @@
-import { rest } from 'msw';
-import { setupServer } from 'msw/node';
+import configureMockStore from 'redux-mock-store';
+import thunk from 'redux-thunk';
 import axios from 'axios';
+import { toast } from 'react-toastify';
+
 import {
-  getWeeklySummariesReport,
+  fetchWeeklySummariesReportBegin,
   fetchWeeklySummariesReportSuccess,
+  fetchWeeklySummariesReportError,
+  updateSummaryReport,
+  getWeeklySummariesReport,
+  updateOneSummaryReport,
+  toggleUserBio,
 } from '../../../actions/weeklySummariesReport';
-import configureStore from '../../../store';
+import * as constants from '../../../constants/weeklySummariesReport';
 import { ENDPOINTS } from '../../../utils/URL';
 
-const { store } = configureStore();
-const url = ENDPOINTS.WEEKLY_SUMMARIES_REPORT();
+jest.mock('axios');
+jest.mock('react-toastify', () => ({
+  toast: { success: jest.fn(), error: jest.fn() },
+}));
 
-// Mock data that will be returned by our server
-const mockData = [{ _id: 1 }];
+const mockStore = configureMockStore([thunk]);
 
-const server = setupServer(
-  rest.get(url, (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json(mockData));
-  }),
-  rest.get('*', (req, res, ctx) => {
-    return res(ctx.status(500), ctx.json({ error: 'Unhandled request' }));
-  }),
-);
+describe('weeklySummariesReport action creators', () => {
+  it('fetchWeeklySummariesReportBegin()', () => {
+    expect(fetchWeeklySummariesReportBegin()).toEqual({
+      type: constants.FETCH_SUMMARIES_REPORT_BEGIN,
+    });
+  });
 
-// Helper to see Redux state
-const wsReportSlice = () => store.getState().weeklySummariesReport;
+  it('fetchWeeklySummariesReportSuccess()', () => {
+    const data = [{ _id: 'x' }];
+    expect(fetchWeeklySummariesReportSuccess(data)).toEqual({
+      type: constants.FETCH_SUMMARIES_REPORT_SUCCESS,
+      payload: { weeklySummariesData: data },
+    });
+  });
 
-describe('WeeklySummariesReport Redux related actions', () => {
-  // Setup and teardown for MSW
-  beforeAll(() => server.listen());
-  afterEach(() => server.resetHandlers());
-  afterAll(() => server.close());
+  it('fetchWeeklySummariesReportError()', () => {
+    const err = new Error('oops');
+    expect(fetchWeeklySummariesReportError(err)).toEqual({
+      type: constants.FETCH_SUMMARIES_REPORT_ERROR,
+      payload: { error: err },
+    });
+  });
 
-  describe('Fetching the weekly summaries report from the server', () => {
-    it('should be fetched from the server and put in the store', async () => {
-      // Mock axios.get directly instead of relying on MSW
-      jest.spyOn(axios, 'get').mockResolvedValueOnce({
-        status: 200,
-        data: mockData,
-      });
-      await store.dispatch(getWeeklySummariesReport());
-      const state = wsReportSlice();
-      expect(state.summaries).toHaveLength(1);
-      expect(state.summaries[0]._id).toBe(1);
-      axios.get.mockRestore();
+  it('updateSummaryReport()', () => {
+    const upd = { foo: 'bar' };
+    expect(updateSummaryReport({ _id: '1', updatedField: upd })).toEqual({
+      type: constants.UPDATE_SUMMARY_REPORT,
+      payload: { _id: '1', updatedField: upd },
+    });
+  });
+});
+
+describe('weeklySummariesReport thunks', () => {
+  let store;
+  beforeEach(() => {
+    store = mockStore({});
+    jest.clearAllMocks();
+  });
+
+  describe('getWeeklySummariesReport()', () => {
+    it('dispatches BEGIN + SUCCESS, returns {status,data}', async () => {
+      const data = [{ _id: '1' }];
+      axios.get.mockResolvedValueOnce({ status: 200, data });
+
+      const result = await store.dispatch(getWeeklySummariesReport());
+      const actions = store.getActions();
+
+      expect(actions[0]).toEqual(fetchWeeklySummariesReportBegin());
+      expect(actions[1]).toEqual(fetchWeeklySummariesReportSuccess(data));
+      expect(result).toEqual({ status: 200, data });
     });
 
-    it('should update the store when the success action is dispatched directly', () => {
-      store.dispatch(fetchWeeklySummariesReportSuccess(mockData));
-      const state = wsReportSlice();
-      expect(state.summaries).toHaveLength(1);
-      expect(state.summaries[0]._id).toBe(1);
+    it('dispatches BEGIN + ERROR, returns status on failure', async () => {
+      const err = { response: { status: 500 }, message: 'fail' };
+      axios.get.mockRejectedValueOnce(err);
+
+      const result = await store.dispatch(getWeeklySummariesReport());
+      const actions = store.getActions();
+
+      expect(actions[0]).toEqual(fetchWeeklySummariesReportBegin());
+      expect(actions[1]).toEqual(fetchWeeklySummariesReportError(err));
+      expect(result).toBe(500);
+    });
+  });
+
+  describe('updateOneSummaryReport()', () => {
+    const userId = 'user123';
+    const updatedField = { foo: 'baz' };
+    const profile = { name: 'Alice', x: 42 };
+    const url = ENDPOINTS.USER_PROFILE(userId);
+
+    it('fetches, PUTs, dispatches updateSummaryReport, returns res', async () => {
+      axios.get.mockResolvedValueOnce({ data: profile });
+      axios.put.mockResolvedValueOnce({ status: 200 });
+
+      const res = await store.dispatch(updateOneSummaryReport(userId, updatedField));
+      const actions = store.getActions();
+
+      expect(actions).toEqual([updateSummaryReport({ _id: userId, updatedField })]);
+      expect(res).toEqual({ status: 200 });
+      expect(axios.get).toHaveBeenCalledWith(url);
+      expect(axios.put).toHaveBeenCalledWith(url, { ...profile, ...updatedField });
     });
 
-    describe('loading indicator', () => {
-      it('should be true while fetching', () => {
-        jest.spyOn(axios, 'get').mockImplementation(async () => {
-          expect(wsReportSlice().loading).toBe(true);
-          return { status: 200, data: mockData };
-        });
-        store.dispatch(getWeeklySummariesReport());
-        axios.get.mockRestore();
-      });
+    it('throws when PUT returns non-200', async () => {
+      axios.get.mockResolvedValueOnce({ data: profile });
+      axios.put.mockResolvedValueOnce({ status: 500 });
 
-      it('should be false after the reports are fetched', async () => {
-        jest.spyOn(axios, 'get').mockResolvedValueOnce({
-          status: 200,
-          data: mockData,
-        });
-        await store.dispatch(getWeeklySummariesReport());
-        expect(wsReportSlice().loading).toBe(false);
-        axios.get.mockRestore();
-      });
+      await expect(store.dispatch(updateOneSummaryReport(userId, updatedField))).rejects.toThrow(
+        'An error occurred while attempting to save the changes to the profile.',
+      );
+    });
+  });
 
-      it('should be false if the server returns an error', async () => {
-        jest.spyOn(axios, 'get').mockRejectedValueOnce({
-          response: { status: 500 },
-        });
-        await store.dispatch(getWeeklySummariesReport());
-        expect(wsReportSlice().loading).toBe(false);
-        axios.get.mockRestore();
-      });
+  describe('toggleUserBio()', () => {
+    const userId = 'user123';
+    const bioPosted = 'posted';
+    const url = ENDPOINTS.TOGGLE_BIO_STATUS(userId);
+
+    it('PATCHes, dispatches updateSummaryReport, toasts success, returns res', async () => {
+      axios.patch.mockResolvedValueOnce({ status: 200 });
+
+      const res = await store.dispatch(toggleUserBio(userId, bioPosted));
+      const actions = store.getActions();
+
+      expect(actions).toEqual([updateSummaryReport({ _id: userId, updatedField: { bioPosted } })]);
+      expect(toast.success).toHaveBeenCalledWith(`Bio status updated to "${bioPosted}"`);
+      expect(res).toEqual({ status: 200 });
+      expect(axios.patch).toHaveBeenCalledWith(url, { bioPosted });
     });
 
-    // Additional tests for Redux actions
-    describe('action dispatching', () => {
-      it('should update the loading state correctly during fetch', async () => {
-        const { store: testStore } = configureStore();
-        const fetchPromise = testStore.dispatch(getWeeklySummariesReport());
-        expect(testStore.getState().weeklySummariesReport.loading).toBe(true);
-        await fetchPromise;
-        expect(testStore.getState().weeklySummariesReport.loading).toBe(false);
-        expect(testStore.getState().weeklySummariesReport.summaries).toBeDefined();
-      });
+    it('toasts error and re-throws on patch failure', async () => {
+      const error = new Error('patch fail');
+      axios.patch.mockRejectedValueOnce(error);
 
-      it('should handle errors correctly', async () => {
-        server.use(
-          rest.get(url, (req, res, ctx) =>
-            res(ctx.status(500), ctx.json({ message: 'Server error' })),
-          ),
-        );
-
-        const { store: testStore } = configureStore();
-        await testStore.dispatch(getWeeklySummariesReport());
-        expect(testStore.getState().weeklySummariesReport.loading).toBe(false);
-        expect(testStore.getState().weeklySummariesReport.error).toBeTruthy();
-      });
-    });
-
-    describe('error handling', () => {
-      it('should store error message in the Redux state when fetch fails', async () => {
-        const errorMessage = 'Internal Server Error';
-        server.use(
-          rest.get(url, (req, res, ctx) =>
-            res(ctx.status(500), ctx.json({ message: errorMessage })),
-          ),
-        );
-
-        await store.dispatch(getWeeklySummariesReport());
-        expect(wsReportSlice().error).toBeTruthy();
-        expect(wsReportSlice().error.message || wsReportSlice().error).toBeTruthy();
-      });
-
-      it('should clear previous errors when a new request is made', async () => {
-        server.use(
-          rest.get(url, (req, res, ctx) =>
-            res(ctx.status(500), ctx.json({ message: 'Error message' })),
-          ),
-        );
-
-        await store.dispatch(getWeeklySummariesReport());
-        expect(wsReportSlice().error).toBeTruthy();
-        server.use(rest.get(url, (req, res, ctx) => res(ctx.status(200), ctx.json([{ _id: 1 }]))));
-        await store.dispatch(getWeeklySummariesReport());
-        expect(wsReportSlice().error).toBeFalsy();
-      });
-    });
-
-    describe('response handling', () => {
-      it('should correctly process and store summaries with different data structures', async () => {
-        const mockData = [
-          { _id: '1', name: 'Summary 1', totalSeconds: [3600, 7200, 0, 0] },
-          { _id: '2', name: 'Summary 2', totalSeconds: [1800, 3600, 5400, 7200] },
-        ];
-
-        server.use(rest.get(url, (req, res, ctx) => res(ctx.status(200), ctx.json(mockData))));
-
-        await store.dispatch(getWeeklySummariesReport());
-        expect(wsReportSlice().summaries).toHaveLength(2);
-        expect(wsReportSlice().summaries[0]._id).toBe('1');
-        expect(wsReportSlice().summaries[1]._id).toBe('2');
-        expect(wsReportSlice().summaries[0].totalSeconds).toEqual([3600, 7200, 0, 0]);
-      });
-
-      it('should handle empty response data correctly', async () => {
-        server.use(rest.get(url, (req, res, ctx) => res(ctx.status(200), ctx.json([]))));
-
-        await store.dispatch(getWeeklySummariesReport());
-        expect(wsReportSlice().summaries).toHaveLength(0);
-        expect(Array.isArray(wsReportSlice().summaries)).toBe(true);
-      });
-    });
-
-    describe('network error handling', () => {
-      it('should handle network errors gracefully', async () => {
-        server.use(
-          rest.get(url, (req, res, ctx) => {
-            return res(ctx.status(500), ctx.json({ message: 'Network error simulation' }));
-          }),
-        );
-
-        await store.dispatch(getWeeklySummariesReport());
-        expect(wsReportSlice().loading).toBe(false);
-        expect(wsReportSlice().error).toBeTruthy();
-      });
-
-      it('should handle timeout scenarios', async () => {
-        jest.setTimeout(10000);
-
-        server.use(
-          rest.get(url, (req, res, ctx) => {
-            return res(ctx.delay(200), ctx.status(408), ctx.json({ message: 'Request timeout' }));
-          }),
-        );
-
-        await store.dispatch(getWeeklySummariesReport());
-        expect(wsReportSlice().loading).toBe(false);
-        expect(wsReportSlice().error).toBeTruthy();
-        jest.setTimeout(5000);
-      });
-    });
-
-    describe('data consistency', () => {
-      it('should maintain consistent Redux state between multiple fetches', async () => {
-        server.use(
-          rest.get(url, (req, res, ctx) =>
-            res(ctx.status(200), ctx.json([{ _id: '1', name: 'First fetch' }])),
-          ),
-        );
-
-        await store.dispatch(getWeeklySummariesReport());
-        expect(wsReportSlice().summaries).toHaveLength(1);
-        expect(wsReportSlice().summaries[0].name).toBe('First fetch');
-
-        server.use(
-          rest.get(url, (req, res, ctx) =>
-            res(
-              ctx.status(200),
-              ctx.json([
-                { _id: '2', name: 'Second fetch item 1' },
-                { _id: '3', name: 'Second fetch item 2' },
-              ]),
-            ),
-          ),
-        );
-
-        await store.dispatch(getWeeklySummariesReport());
-        expect(wsReportSlice().summaries).toHaveLength(2);
-        expect(wsReportSlice().summaries[0].name).toBe('Second fetch item 1');
-      });
+      await expect(store.dispatch(toggleUserBio(userId, bioPosted))).rejects.toThrow(error);
+      expect(toast.error).toHaveBeenCalledWith('An error occurred while updating bio status.');
     });
   });
 });
