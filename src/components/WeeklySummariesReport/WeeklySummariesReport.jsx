@@ -770,14 +770,10 @@ const WeeklySummariesReport = props => {
 
   if (state.loading) {
     return (
-      <Container fluid style={{ backgroundColor: darkMode ? '#1B2A41' : '#f3f4f6' }}>
-        <Row className="text-center" data-testid="loading">
-          <SkeletonLoading
-            template="WeeklySummariesReport"
-            className={darkMode ? 'bg-yinmn-blue' : ''}
-          />
-        </Row>
-      </Container>
+      <SkeletonLoading
+        template="WeeklySummariesReport"
+        className={darkMode ? 'bg-yinmn-blue' : ''}
+      />
     );
   }
 

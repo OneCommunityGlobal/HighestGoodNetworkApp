@@ -2,7 +2,7 @@
 
 import { useSelector } from 'react-redux';
 import './SkeletonLoading.css';
-import { Container } from 'reactstrap';
+import { Container, Row, Col } from 'reactstrap';
 
 const SkeletonLoading = ({ template, className }) => {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -50,7 +50,12 @@ const SkeletonLoading = ({ template, className }) => {
       case 'WeeklySummariesReport':
         for (let i = 0; i < 10; i++) {
           reportItems.push(
-            <div key={i} className={darkMode ? 'bg-yinmn-blue' : ''}>
+            <div
+              key={i}
+              className={`skeleton-loading-weekly-summaries-report ${
+                darkMode ? 'bg-yinmn-blue' : ''
+              }`}
+            >
               <div className="skeleton-loading-weekly-summaries-report-item" />
               <div className="skeleton-loading-weekly-summaries-report-item mt-5" />
               <div className="skeleton-loading-weekly-summaries-report-item" />
@@ -65,15 +70,23 @@ const SkeletonLoading = ({ template, className }) => {
         }
 
         return (
-          <Container fluid>
-            <div style={{ marginTop: '2rem', marginLeft: '12rem', marginRight: '5rem' }}>
-              <h3 style={{ textAlign: 'left', paddingBottom: '2rem' }}>
-                Weekly Summaries Reports page
-              </h3>
-              <div className={`skeleton-loading-weekly-summaries-report ${className}`}>
+          <Container
+            fluid
+            className={`container-wsr-wrapper py-3 mb-5 ${
+              darkMode ? 'bg-oxford-blue text-light' : 'bg--white-smoke'
+            }`}
+          >
+            <Row className="mx-max-sm-0">
+              <Col lg={{ size: 10, offset: 1 }} xs={{ size: 12 }} className="px-max-sm-0">
+                <h3 className="mt-3 mb-5">
+                  <div className="d-flex align-items-center">
+                    <span className="mr-2">Weekly Summaries Reports page</span>
+                  </div>
+                </h3>
+
                 {reportItems}
-              </div>
-            </div>
+              </Col>
+            </Row>
           </Container>
         );
       case 'WeeklyVolunteerSummaries':

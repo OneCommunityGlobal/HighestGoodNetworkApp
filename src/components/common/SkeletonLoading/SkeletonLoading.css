@@ -81,14 +81,15 @@
   background-color: white;
   margin-top: 3rem;
   padding-top: 1rem;
+  align-items: center;
 }
 
 .skeleton-loading-weekly-summaries-report-item {
   border: 1px solid rgba(0, 0, 0, 0.125);
   background-color: #f3f4f6;
-  width: 35rem;
+  margin-top: 5px;
+  width: 90%;
   height: 1.5rem;
-  margin: 0.125rem 0 0.125rem 2rem;
   background: linear-gradient(90deg, #a0a0a0 0%, #c0c0c0 50%, #a0a0a0 100%);
   background-size: 200% 100%;
   animation: skeleton-loading-animation 1.5s ease-in-out infinite;
