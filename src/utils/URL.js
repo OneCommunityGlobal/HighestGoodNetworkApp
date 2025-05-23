@@ -153,11 +153,20 @@ export const ENDPOINTS = {
   CONFIRM_EMAIL_SUBSCRIPTION: `${APIEndpoint}/confirm-non-hgn-email-subscription`,
   REMOVE_EMAIL_SUBSCRIPTION: `${APIEndpoint}/remove-non-hgn-email-subscription`,
 
-  // Imgur endpoint
-  POST_IMGUR: `${APIEndpoint}/postToImgur`,
-  SCHEDULED_POSTS: `${APIEndpoint}/scheduledPosts`,
-  // IMGUR_AUTH: `${APIEndpoint}/auth/imgur/callback`,
-  // DELETE_SCHEDULED_POST: `${APIEndpoint}/deleteScheduledPost`,
+  // Instagram endpoints
+  GET_IMGUR_AUTH_URL: `${APIEndpoint}/imgur/auth`,
+  GET_IMGUR_AUTH_STATUS: `${APIEndpoint}/imgur/auth-status`,
+  GET_IMGUR_USER_ID: `${APIEndpoint}/imgur/get-user-id`,
+  DISCONNECT_IMGUR: `${APIEndpoint}/imgur/disconnect`,
+  CREATE_IMGUR_CONTAINER: `${APIEndpoint}/imgur/create-container`,
+  POST_IMGUR_CONTAINER: `${APIEndpoint}/imgur/publish-container`,
+
+  POST_IMGUR_SCHEDULED_POST: `${APIEndpoint}/imgur/schedule-post`,
+  GET_IMGUR_SCHEDULED_POSTS: `${APIEndpoint}/imgur/posts`,
+  DELETE_IMGUR_SCHEDULED_POST: postId => `${APIEndpoint}/imgur/posts/${postId}`,
+
+  POST_IMGUR_IMAGE: `${APIEndpoint}/imgur/upload-imgur`,
+  DELETE_IMGUR_IMAGE: `${APIEndpoint}/imgur/delete-imgur`,
 
   // reasons endpoints
   CREATEREASON: () => {

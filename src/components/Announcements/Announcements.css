@@ -21,13 +21,30 @@ label {
   color: #333; /* Default dark text for light mode */
 }
 
+.boxStyleDark {
+  background-color: #1a1a1a; /* Dark background */
+  color: #fff; /* White text */
+  border-radius: 20px;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.boxStyle {
+  background-color: #f9f9f9; /* Light background */
+  color: #333; /* Dark text */
+  border-radius: 20px;
+  padding: 20px;
+  margin-top: 20px;
+}
+
 .input-text-for-announcement,
 textarea {
   margin-top: 5px;   /* Space above input fields */
   width: 100%;
-  padding: 10px;
+  padding: 12px; /* Increased padding */
   border: 1px solid #ccc;
   border-radius: 4px;
+  box-sizing: border-box; /* Ensures padding is included in width */
 }
 
 .input-file-upload {
@@ -39,9 +56,10 @@ button.send-button {
   color: white;
   border: none;
   border-radius: 4px;
-  padding: 10px 20px;
+  padding: 12px 24px; /* Increased padding */
   cursor: pointer;
   margin-top: 20px;
+  box-sizing: border-box; /* Ensures padding is included in width */
 }
 
 button.send-button:hover {
@@ -57,6 +75,7 @@ button.send-button:hover {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  box-sizing: border-box; /* Ensures padding is included in width */
 }
 
 .editor {
@@ -66,14 +85,6 @@ button.send-button:hover {
   /* Add some spacing between editor and email inputs */
 }
 
-.title-container{
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: center;
-  gap: 10px;
-}
-
 .editor h2 {
   margin-top: 0;
   /* Remove top margin for the heading */
@@ -81,10 +92,11 @@ button.send-button:hover {
 
 .emails {
   margin-top: 65px;
-  padding: 20px;
+  padding: 24px; /* Increased padding */
   border: solid 1px #cacaca;
   border-radius: 20px;
   width: 300px;
+  box-sizing: border-box; /* Ensures padding is included in width */
   /* Set a fixed width for the email inputs container */
 }
 
@@ -121,334 +133,71 @@ button.send-button:hover {
   }
 }
 
-.imgur-button{
-  cursor: pointer;
+.title-container {
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding-top: 10px;
+  justify-content: flex-start;
+  padding: 0 0 0 70px;
 }
 
-:root {
-  --imgur-icon-primary: #33c481;
-  --imgur-icon-secondary: #21a366;
-  --imgur-icon-tertiary: #124787;
-}
 
-.toggle-off {
-  --imgur-icon-primary: #ccc;
-  --imgur-icon-secondary: #999;
-  --imgur-icon-tertiary: #666;
-}
-
-.imgur-icon{
-  width: 100%;
-  height: 100%;
-}
-
-.imgur-post-container {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: space-between;
-  gap: 5vw;
-  width: 100%;
-}
-
-.imgur-post-details-container,
-.imgur-preview-container,
-.imgur-scheduled-posts-container {
-  flex: 1;
-  width: 30vw;
-  box-sizing: border-box;
-  
-}
-
-.imgur-post-details-gap {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 8px;
-  margin: 0;
+.instagram-button {
+  cursor: pointer;
+  background: none;
+  border: none;
   padding: 0;
+  margin: 0 0 0 10px;
+  transition: transform 0.3s ease;
 }
 
-.imgur-post-title {
-  margin-top: 0;
-  display: flex;
-  flex-direction: column;
+.instagram-button:hover {
+  transform: scale(1.1);
 }
 
-.imgur-post-details-container {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  gap: 10px;
+.instagram-icon {
+  color: #E1306C;
+  filter: drop-shadow(0px 0px 2px rgba(193, 53, 132, 0.7));
+  transition: color 0.3s ease;
 }
 
-.imgur-post-button-container {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 10px;
+.instagram-button:hover .instagram-icon {
+  color: #833AB4; 
 }
 
-.imgur-post-button {
-  background-color: #4285f4;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 10px 20px;
-  cursor: pointer;
+/* For dark mode compatibility */
+.bg-oxford-blue .instagram-icon {
+  color: #E1306C;
 }
 
-.imgur-post-upload-container {
-  padding: 10px 0 10px 0;
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  align-items: center;
-}
-
-.imgur-album-input-file-upload {
-  display: flex;
-  outline: black solid 1px;
-  flex-direction: column;
-  gap: 10px;
-  padding: 2px 5px 2px 5px;
-  border-radius: 2px;
-  background-color: #cacaca;
-  margin: 0;
-}
-
-.imgur-schedule-container {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.imgur-schedule-buttons {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-}
-
-.scheduled-posts-container{
-  display: flex;
-  width: 33.33vw;
-  flex: 1;
-  width: 33.33vw;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.imgur-scheduled-posts-details {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-}
-
-.imgur-scheduled-post-card {
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  width: 100%;
-  max-width: 400px;
-  background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.imgur-scheduled-post-card h5 {
-  margin-top: 0;
-}
-
-.imgur-scheduled-post-files-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  width: 100%;
-  /* background-color: black; */
-}
-
-.imgur-scheduled-post-file {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  padding: 10px;
-  border-radius: 5px;
-  width: 100%;
-  border: 1px solid #ccc;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.imgur-scheduled-post-file p {
-  margin: 5px 0;
-}
-
-.imgur-scheduled-post-image {
-  max-width: 100%;
-  height: auto;
-  margin-bottom: 10px;
-}
-
-.delete-button:hover {
-  background-color: #ff1a1a;
-}
-
-.imgur-preview-container{
-  display: flex;
-  /* width: 33.33vw; */
-  flex-direction: column;
-}
-
-.imgur-preview-card {
-  background-color: rgb(53, 53, 53);
-  border-radius: 5px;
-  padding: 10px;
-  min-height: 300px;
-  padding-left: 50px;
-  padding-right: 50px;
-  padding-top: 20px;
-  padding-bottom: 20px;
-}
-
-.imgur-preview-container h4 {
-  margin-top: 0;
-  font-weight: bold;
-  color: #fff;
-}
-
-.imgur-preview-container-tags {
-  border-radius: 25px / 25px; 
-  padding-top: 10px;
-  padding-bottom: 10px;
-  padding-left: 20px;
-  padding-right: 20px;
-  margin-top: 0;
-  color: #fff;
-  gap: 10px;
-  font-weight: bold;
-  display: inline-block;
-  margin-right: 5px;
-}
-
-.imgur-preview-images-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 30px;
-  width: 100%;
-  box-sizing: border-box;
-  padding-bottom: 50px;
-}
-
-
-
-.imgur-preview-image-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-  box-sizing: border-box;
-  box-shadow: 5px 10px 20px 10px rgba(0, 0, 0, 0.5);
-}
-
-.imgur-preview-image-background {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: row;
-  background-color: rgb(0, 0, 0);
-  /* border-radius: 5px;  */
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
-  min-width: 100%;
-  min-height: 100%;
-  box-sizing: border-box;
-  position: relative;
-}
-
-.imgur-preview-remove-button {
-  position: absolute;
-  top: 0;
-  right: 0;
-  background-color: #ff1a1a;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 5px 10px;
-  cursor: pointer;
-}
-
-.imgur-preview-image {
-  display: flex;
-  justify-content: center; 
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.imgur-preview-description {
-  display: flex;
-  align-items: flex-end;
-  justify-content: flex-end;
-  color: #fff;
-  min-width: 100%;
-  padding: 20px;
-  background-color: #44474e;
-  /* border-radius: 5px; */
-  border-bottom-left-radius: 5px;
-  border-bottom-right-radius: 5px;
-  border: none;
-}
-
-.imgur-preview-description::placeholder {
-  color: #fff;
-}
-
-.imgur-preview-warning {
-  color: #ff1a1a;
-  font-weight: 300;
-  font-style: italic;
-}
-
-.imgur-scheduled-posts-container {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.imgur-scheduled-posts-card-container {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.imgur-scheduled-post-card {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  padding: 10px;
-  border-radius: 5px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  width: 100%;
-}
-
-.imgur-scheduled-post-header {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  width: 100%;
-}
-
-
-.imgur-scheduled-post-file h1{
-  margin-top: 0;
-  font-size: large;
+/* Responsive design: Adjust the layout for smaller screens */
+@media (max-width: 800px) {
+  .email-update-container {
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      box-sizing: border-box; /* Ensures padding is included in width */
+  }
+  .editor {
+      width: 100%;
+      margin-right: 0;
+      margin-bottom: 20px;
+  }
+  .emails {
+      width: 100%;
+      margin-top: 20px;
+      padding: 20px 12px; /* Adjust padding for smaller screens */
+      box-sizing: border-box; /* Ensures padding is included in width */
+  }
+  .send-button {
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 12px; /* Ensures padding is consistent */
+      box-sizing: border-box; /* Ensures padding is included in width */
+  }
+  .input-text-for-announcement,
+  textarea {
+      width: 100%;
+      padding: 12px; /* Ensures padding is consistent */
+      box-sizing: border-box; /* Ensures padding is included in width */
+  }
 }
