@@ -18,6 +18,29 @@ const COLORS = [
   '#46d130',
 ];
 
+function CustomTooltip({ active, payload }) {
+  if (active && payload && payload.length) {
+    return (
+      <div
+        style={{
+          backgroundColor: 'white',
+          border: '1px solid #ccc',
+          padding: '10px',
+          borderRadius: '4px',
+        }}
+      >
+        {payload.map(entry => (
+          <p key={entry} style={{ color: 'black' }}>
+            {`${entry.name} : ${entry.value}`}
+          </p>
+        ))}
+      </div>
+    );
+  }
+
+  return null;
+}
+
 export default function RoleDistributionPieChart({ isLoading, roleDistributionStats, darkMode }) {
   if (isLoading) {
     return (
@@ -157,7 +180,7 @@ export default function RoleDistributionPieChart({ isLoading, roleDistributionSt
             align="right"
             content={renderCustomLegend}
           />
-          <Tooltip />
+          <Tooltip content={<CustomTooltip />} />
         </PieChart>
       </ResponsiveContainer>
     </div>
