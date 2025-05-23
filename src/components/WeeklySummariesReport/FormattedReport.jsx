@@ -70,33 +70,48 @@ function FormattedReport({
   handleTeamCodeChange,
   handleSpecialColorDotClick,
 }) {
-  const loggedInUserEmail = auth?.user?.email ? auth.user.email : '';
-
   const dispatch = useDispatch();
   const isEditCount = dispatch(hasPermission('totalValidWeeklySummaries'));
+
+  // Only proceed if summaries is valid
+  if (!summaries || !Array.isArray(summaries) || summaries.length === 0) {
+    return (
+      <div className="text-center py-4">
+        <p>No data available to display</p>
+      </div>
+    );
+  }
+
+  const loggedInUserEmail = auth?.user?.email ? auth.user.email : '';
 
   return (
     <>
       <ListGroup flush>
-        {summaries.map(summary => (
-          <ReportDetails
-            loggedInUserEmail={loggedInUserEmail}
-            key={summary._id}
-            summary={summary}
-            weekIndex={weekIndex}
-            bioCanEdit={bioCanEdit}
-            canEditSummaryCount={isEditCount}
-            allRoleInfo={allRoleInfo}
-            canEditTeamCode={canEditTeamCode}
-            badges={badges}
-            loadBadges={loadBadges}
-            canSeeBioHighlight={canSeeBioHighlight}
-            darkMode={darkMode}
-            handleTeamCodeChange={handleTeamCodeChange}
-            auth={auth}
-            handleSpecialColorDotClick={handleSpecialColorDotClick}
-          />
-        ))}
+        {summaries.map(summary => {
+          // Add safety check for each summary
+          if (!summary || !summary.totalSeconds) {
+            return null;
+          }
+          return (
+            <ReportDetails
+              loggedInUserEmail={loggedInUserEmail}
+              key={summary._id}
+              summary={summary}
+              weekIndex={weekIndex}
+              bioCanEdit={bioCanEdit}
+              canEditSummaryCount={isEditCount}
+              allRoleInfo={allRoleInfo}
+              canEditTeamCode={canEditTeamCode}
+              badges={badges}
+              loadBadges={loadBadges}
+              canSeeBioHighlight={canSeeBioHighlight}
+              darkMode={darkMode}
+              handleTeamCodeChange={handleTeamCodeChange}
+              auth={auth}
+              handleSpecialColorDotClick={handleSpecialColorDotClick}
+            />
+          );
+        })}
       </ListGroup>
       <EmailsList summaries={summaries} auth={auth} />
     </>
