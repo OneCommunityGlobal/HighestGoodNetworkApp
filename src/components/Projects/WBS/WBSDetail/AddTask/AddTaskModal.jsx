@@ -423,7 +423,7 @@ function AddTaskModal(props) {
                 <div className="add_new_task_form-input_area">
                   <TagsSearch
                     placeholder="Add resources"
-                    members={allMembers.filter(user => user.isActive)}
+                    members={allMembers?.filter(user => user.isActive)}
                     addResources={addResources}
                     removeResource={removeResource}
                     resourceItems={resourceItems}
