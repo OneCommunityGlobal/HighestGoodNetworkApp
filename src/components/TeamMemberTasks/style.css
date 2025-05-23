@@ -264,12 +264,12 @@
 }
 
 .show-time-off-calender-svg {
-  fill: #17A2B8;
+  fill: white;
   width: 22px;
   height: 20px;
   position: relative;
-  top: 11px;
-  left: -2px;
+  /* top: 11px;
+  left: -2px; */
 }
 
 .show-time-off-calender-svg-selected {
