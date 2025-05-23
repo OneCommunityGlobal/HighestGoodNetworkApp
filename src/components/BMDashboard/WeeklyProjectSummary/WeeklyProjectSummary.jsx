@@ -9,6 +9,7 @@ import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
 import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
 import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
+import FinancialsTrackingCard from './ExpenditureChart/FinancialsTrackingCard';
 
 const projectStatusButtons = [
   {
@@ -115,6 +116,7 @@ export default function WeeklyProjectSummary() {
   const [openSections, setOpenSections] = useState({});
 
   const darkMode = useSelector(state => state.theme.darkMode);
+  
 
   useEffect(() => {
     if (materials.length === 0) {
@@ -264,6 +266,27 @@ export default function WeeklyProjectSummary() {
           return (
             <div key={uniqueId} className="weekly-project-summary-card normal-card">
               {index === 1 ? <PaidLaborCost /> : '📊 Card'}
+            </div>
+          );
+        }),
+      },
+      {
+        title: 'Financials Tracking',
+        key: 'Financials Tracking',
+        className: 'full',
+        content: [1, 2, 3, 4].map((_, index) => {
+          const uniqueId = uuidv4();
+          
+          return (
+            <div key={uniqueId} className="weekly-project-summary-card normal-card">
+              {index === 0 ? (
+                  <div className="weekly-project-summary-card normal-card" key="financial-tracking">
+                 <FinancialsTrackingCard />
+               </div>
+                
+              ) : (
+                ':bar_chart: Card'
+              )}
             </div>
           );
         }),
