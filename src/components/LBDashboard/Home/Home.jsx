@@ -339,17 +339,13 @@ function Home() {
             {/* Tabs Section */}
             <div className="lb-tabs-section">
               <span
-                className={`lb-tab ${
-                  activeTab === 'listings' ? 'lb-active-tab' : 'lb-inactive-tab'
-                }`}
+                className={`lb-tab ${activeTab === 'listings' ? 'lb-active-tab' : 'lb-inactive-tab'}`}
                 onClick={() => setActiveTab('listings')}
               >
                 Listings
               </span>
               <span
-                className={`lb-tab ${
-                  activeTab === 'bidding' ? 'lb-active-tab' : 'lb-inactive-tab'
-                }`}
+                className={`lb-tab ${activeTab === 'bidding' ? 'lb-active-tab' : 'lb-inactive-tab'}`}
                 onClick={() => setActiveTab('bidding')}
               >
                 Biddings
@@ -495,16 +491,10 @@ function Home() {
               {/* Date Navigation (week forward/backward) - Airbnb-like feature */}
               {dateRange.startDate && dateRange.endDate && (
                 <div className="lb-date-navigation">
-                  <button
-                    className="lb-date-nav-button"
-                    onClick={() => adjustDatesByWeek('backward')}
-                  >
+                  <button className="lb-date-nav-button" onClick={() => adjustDatesByWeek('backward')}>
                     <FaChevronLeft /> Previous Week
                   </button>
-                  <button
-                    className="lb-date-nav-button"
-                    onClick={() => adjustDatesByWeek('forward')}
-                  >
+                  <button className="lb-date-nav-button" onClick={() => adjustDatesByWeek('forward')}>
                     Next Week <FaChevronRight />
                   </button>
                 </div>
