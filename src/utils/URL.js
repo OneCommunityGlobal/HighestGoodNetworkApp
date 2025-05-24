@@ -153,20 +153,19 @@ export const ENDPOINTS = {
   CONFIRM_EMAIL_SUBSCRIPTION: `${APIEndpoint}/confirm-non-hgn-email-subscription`,
   REMOVE_EMAIL_SUBSCRIPTION: `${APIEndpoint}/remove-non-hgn-email-subscription`,
 
-  // Instagram endpoints
+  // Imgur endpoints
   GET_IMGUR_AUTH_URL: `${APIEndpoint}/imgur/auth`,
   GET_IMGUR_AUTH_STATUS: `${APIEndpoint}/imgur/auth-status`,
-  GET_IMGUR_USER_ID: `${APIEndpoint}/imgur/get-user-id`,
   DISCONNECT_IMGUR: `${APIEndpoint}/imgur/disconnect`,
-  CREATE_IMGUR_CONTAINER: `${APIEndpoint}/imgur/create-container`,
-  POST_IMGUR_CONTAINER: `${APIEndpoint}/imgur/publish-container`,
+  REFRESH_IMGUR_TOKEN: `${APIEndpoint}/imgur/refresh-token`,
 
   POST_IMGUR_SCHEDULED_POST: `${APIEndpoint}/imgur/schedule-post`,
-  GET_IMGUR_SCHEDULED_POSTS: `${APIEndpoint}/imgur/posts`,
+  GET_IMGUR_SCHEDULED_POSTS: `${APIEndpoint}/imgur/scheduled-posts`,
   DELETE_IMGUR_SCHEDULED_POST: postId => `${APIEndpoint}/imgur/posts/${postId}`,
 
-  POST_IMGUR_IMAGE: `${APIEndpoint}/imgur/upload-imgur`,
-  DELETE_IMGUR_IMAGE: `${APIEndpoint}/imgur/delete-imgur`,
+  POST_IMGUR_IMAGE: `${APIEndpoint}/imgur/upload`,
+  POST_IMGUR_IMAGE_TO_GALLERY: imageHash => `${APIEndpoint}/imgur/upload-to-gallery/${imageHash}`,
+  DELETE_IMGUR_IMAGE: deleteHash => `${APIEndpoint}/imgur/delete/${deleteHash}`,
 
   // reasons endpoints
   CREATEREASON: () => {
