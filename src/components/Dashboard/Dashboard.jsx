@@ -1,23 +1,67 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Row, Col, Container } from 'reactstrap';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
+import { cantUpdateDevAdminDetails } from 'utils/permissions';
+import {
+  DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
+  DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
+  PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
+} from 'utils/constants';
+import { useDispatch } from 'react-redux';
+import { updateSummaryBarData } from 'actions/dashboardActions';
 import Leaderboard from '../LeaderBoard';
 import WeeklySummary from '../WeeklySummary/WeeklySummary';
 import Badge from '../Badge';
 import Timelog from '../Timelog/Timelog';
 import SummaryBar from '../SummaryBar/SummaryBar';
-import PopUpBar from '../PopUpBar';
+import './Dashboard.css';
 import '../../App.css';
-import { getTimeZoneAPIKey } from '../../actions/timezoneAPIActions';
+import TimeOffRequestDetailModal from './TimeOffRequestDetailModal';
 
 export function Dashboard(props) {
   const [popup, setPopup] = useState(false);
+  const [filteredUserTeamIds, setFilteredUserTeamIds] = useState([]);
   const [summaryBarData, setSummaryBarData] = useState(null);
-  const { match, auth } = props;
-  const displayUserId = match.params.userId || auth.user.userid;
+  const { match, authUser } = props;
+  const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('displayUser')) ?? false;
+  const [displayUser, setDisplayUser] = useState(authUser);
+
+  const handleStorageEvent = () => {
+    const sessionStorageData = checkSessionStorage();
+    const normalizedUser = sessionStorageData
+      ? { ...sessionStorageData, userid: sessionStorageData.userId }
+      : authUser;
+
+    setDisplayUser(normalizedUser);
+  };
+
+  useEffect(() => {
+    // Set initial displayUser on mount
+    handleStorageEvent();
+    window.addEventListener('storage', handleStorageEvent);
+    return () => {
+      window.removeEventListener('storage', handleStorageEvent);
+    };
+  }, [authUser]);
+
+  const isNotAllowedToEdit = cantUpdateDevAdminDetails(displayUser?.email, authUser.email);
+
+  const darkMode = useSelector(state => state.theme.darkMode);
+
+  const dispatch = useDispatch();
 
   const toggle = () => {
+    if (isNotAllowedToEdit) {
+      const warningMessage =
+        displayUser?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY
+          ? DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY
+          : PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE;
+      alert(warningMessage);
+      return;
+    }
+
     setPopup(!popup);
+
     setTimeout(() => {
       const elem = document.getElementById('weeklySum');
       if (elem) {
@@ -27,37 +71,23 @@ export function Dashboard(props) {
   };
 
   useEffect(() => {
-    // eslint-disable-next-line react/destructuring-assignment
-    props.getTimeZoneAPIKey();
-  }, []);
-
-  useEffect(() => {
-    const {
-      match: { params },
-      getUserProfile,
-    } = props;
-    if (params && params.userId && displayUserId !== params.userId) {
-      getUserProfile(params.userId);
-    }
-  }, [props]);
+    console.log(summaryBarData);
+    dispatch(updateSummaryBarData({ summaryBarData }));
+  }, [summaryBarData]);
 
   return (
-    <Container fluid>
-      {match.params.userId && auth.user.userid !== match.params.userId ? (
-        <PopUpBar component="dashboard" />
-      ) : (
-        ''
-      )}
+    <Container fluid className={darkMode ? 'bg-oxford-blue' : ''}>
       <SummaryBar
-        displayUserId={displayUserId}
+        displayUserId={displayUser.userid}
         toggleSubmitForm={toggle}
-        role={auth.user.role}
+        role={displayUser.role}
         summaryBarData={summaryBarData}
+        isNotAllowedToEdit={isNotAllowedToEdit}
       />
 
-      <Row>
-        <Col lg={{ size: 7 }}>&nbsp;</Col>
-        <Col lg={{ size: 5 }}>
+      <Row className="w-100 ml-1">
+        <Col lg={7} />
+        <Col lg={5}>
           <div className="row justify-content-center">
             <div
               role="button"
@@ -69,43 +99,57 @@ export function Dashboard(props) {
               <WeeklySummary
                 isDashboard
                 isPopup={popup}
-                userRole={auth.user.role}
-                displayUserId={displayUserId}
+                userRole={displayUser.role}
+                displayUserId={displayUser.userid}
+                displayUserEmail={displayUser?.email}
+                isNotAllowedToEdit={isNotAllowedToEdit}
+                darkMode={darkMode}
               />
             </div>
           </div>
         </Col>
       </Row>
-      <Row>
-        <Col lg={{ size: 5 }} className="order-sm-12">
-          <Leaderboard displayUserId={displayUserId} />
+      <Row className="w-100 ml-1">
+        <Col lg={5} className="order-lg-2 order-2">
+          <Leaderboard
+            displayUserId={displayUser.userid}
+            displayUserRole={displayUser.role}
+            isNotAllowedToEdit={isNotAllowedToEdit}
+            darkMode={darkMode}
+            setFilteredUserTeamIds={setFilteredUserTeamIds}
+          />
         </Col>
-        <Col lg={{ size: 7 }} className="left-col-dashboard order-sm-1">
-          {popup ? (
-            <div className="my-2">
-              <div id="weeklySum">
-                <WeeklySummary
-                  displayUserId={displayUserId}
-                  setPopup={setPopup}
-                  userRole={auth.user.role}
-                />
-              </div>
+        <Col lg={7} className="left-col-dashboard order-lg-1 order-1">
+          {popup && (
+            <div className="my-2" id="weeklySum">
+              <WeeklySummary
+                displayUserId={displayUser.userid}
+                setPopup={setPopup}
+                userRole={displayUser.role}
+                isNotAllowedToEdit={isNotAllowedToEdit}
+                darkMode={darkMode}
+              />
             </div>
-          ) : null}
+          )}
           <div className="my-2" id="wsummary">
-            <Timelog isDashboard passSummaryBarData={setSummaryBarData} />
+            <Timelog
+              isDashboard
+              userId={displayUser.userid}
+              passSummaryBarData={setSummaryBarData}
+              isNotAllowedToEdit={isNotAllowedToEdit}
+              filteredUserTeamIds={filteredUserTeamIds}
+            />
           </div>
-          <Badge userId={displayUserId} role={auth.user.role} />
         </Col>
       </Row>
+      <TimeOffRequestDetailModal isNotAllowedToEdit={isNotAllowedToEdit} />
     </Container>
   );
 }
 
 const mapStateToProps = state => ({
-  auth: state.auth,
+  authUser: state.auth.user,
+  displayUserProfile: state.userProfile,
 });
 
-export default connect(mapStateToProps, {
-  getTimeZoneAPIKey,
-})(Dashboard);
+export default connect(mapStateToProps)(Dashboard);

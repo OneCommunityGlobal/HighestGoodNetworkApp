@@ -1,5 +1,5 @@
-import React from 'react';
-
+/* eslint-disable react/jsx-props-no-spreading */
+// eslint-disable-next-line react/function-component-definition
 const Dropdown = ({ value, name, label, options, className, error, ...rest }) => {
   return (
     <div className={`form-group ${className}`}>

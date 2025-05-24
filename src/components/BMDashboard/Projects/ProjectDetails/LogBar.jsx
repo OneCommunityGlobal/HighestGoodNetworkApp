@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Button } from 'reactstrap';
-
+import { Link } from 'react-router-dom';
 // button styles for each section
 const buttonStyles = {
   dailyLogging: 'green',
@@ -8,14 +8,28 @@ const buttonStyles = {
   team: 'indigo',
 };
 
-//  button labels for each section
-const buttonLabels = {
-  dailyLogging: ['Time', 'Material', 'Tool/Equipment'],
-  newItem: ['Team', 'Material', 'Tool/Equipment'],
-  team: ['Create New Team', 'Edit Existing Team', 'Log Issue'],
-};
+function LogBar(props) {
+  const { projectId } = props;
+  const buttonLabels = {
+    dailyLogging: {
+      name: ['Time', 'Material', 'Tool/Equipment'],
+      url: ['/bmdashboard/timelog', '/bmdashboard/materials/add', '/bmdashboard/tools/log'],
+    },
+    newItem: {
+      name: ['Team', 'Material', 'Tool/Equipment', 'Lessons'],
+      url: [
+        '/teams',
+        '/bmdashboard/materials/add',
+        '/bmdashboard/tools/add',
+        `/bmdashboard/lessonform/${projectId}`,
+      ],
+    },
+    team: {
+      name: ['Create New Team', 'Edit Existing Team', 'Log Issue'],
+      url: ['/teams', '/teams', '/bmdashboard/issues/add'],
+    },
+  };
 
-function LogBar() {
   return (
     <div className="log-bar">
       {Object.keys(buttonStyles).map(section => (
@@ -33,18 +47,21 @@ function LogBar() {
             })()}
           </h2>
           <ul className="log-bar__btn-group">
-            {buttonLabels[section].map(label => (
+            {buttonLabels[section].name.map((label, index) => (
               <li key={uuidv4()}>
-                <Button
-                  type="button"
-                  className={
-                    label === 'Log Issue'
-                      ? `button button--maroon`
-                      : `button button--${buttonStyles[section]}`
-                  }
-                >
-                  {label}
-                </Button>
+                {label !== 'Log Issue' ? (
+                  <Link to={buttonLabels[section].url[index]}>
+                    <Button type="button" className={`button button--${buttonStyles[section]}`}>
+                      {label}
+                    </Button>
+                  </Link>
+                ) : (
+                  <Link to="/bmdashboard/issues/add">
+                    <Button type="button" className="button button--maroon">
+                      Log Issue
+                    </Button>
+                  </Link>
+                )}
               </li>
             ))}
           </ul>

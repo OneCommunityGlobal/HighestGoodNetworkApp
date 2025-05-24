@@ -1,10 +1,12 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-use-before-define */
+/* eslint-disable no-return-assign */
 /** *******************************************************************************
  * Action: MEMBER MEMBERSHIP
  * Author: Henry Ng - 02/03/20
  ******************************************************************************* */
 import axios from 'axios';
-import * as types from "../constants/projectMembership";
-import { searchWithAccent } from 'utils/search';
+import * as types from '../constants/projectMembership';
 import { ENDPOINTS } from '../utils/URL';
 /** *****************************************
  * ACTION CREATORS
@@ -16,13 +18,12 @@ export const getAllUserProfiles = () => {
     await dispatch(findUsersStart());
     request
       .then(res => {
-        const {members} = getState().projectMembers;
+        const { members } = getState().projectMembers;
         const users = res.data.map(user => {
-          if (!members.find(member => member._id === user._id)) {
-            return (user = { ...user, assigned: false });
-          } 
-            return (user = { ...user, assigned: true });
-          
+          if (!members.some(member => member._id === user._id)) {
+            return { ...user, assigned: false };
+          }
+          return { ...user, assigned: true };
         });
         // console.log(users);
         dispatch(foundUsers(users));
@@ -38,32 +39,34 @@ export const getAllUserProfiles = () => {
  * Call API to find a user profile
  */
 export const findUserProfiles = keyword => {
-  const request = axios.get(ENDPOINTS.USER_PROFILES);
+  // Creates an array containing the first and last name and filters out whitespace
+  const fullNameRegex = keyword.replace(/[-\\/\\^$*+?.()|[\]{}]/g, '\\$&'); // Escape special characters
 
   return async (dispatch, getState) => {
-    await dispatch(findUsersStart());
-    request
-      .then(res => {
-        if (keyword.trim() !== '') {
-          let users = res.data.filter(user =>
-            searchWithAccent(user.firstName, keyword) || searchWithAccent(user.lastName, keyword)
-          );
-          const {members} = getState().projectMembers;
-          users = users.map(user => {
-            if (!members.find(member => member._id === user._id)) {
-              return (user = { ...user, assigned: false });
-            } 
-              return (user = { ...user, assigned: true });
-            
-          });
-          dispatch(foundUsers(users));
-        } else {
-          dispatch(foundUsers([]));
-        }
-      })
-      .catch(err => {
-        dispatch(findUsersError(err));
-      });
+    try {
+      // Dispatch loading action immediately
+      dispatch(findUsersStart());
+      const response = await axios.get(ENDPOINTS.USER_PROFILE_BY_FULL_NAME(fullNameRegex));
+
+      // await dispatch(findUsersStart());
+
+      if (keyword !== '') {
+        let users = response.data;
+        const { members } = getState().projectMembers;
+        // set for insatnt lookups
+        const memberIds = new Set(members.map(member => member._id));
+        users = users.map(user => ({
+          ...user,
+          assigned: memberIds.has(user._id),
+        }));
+        dispatch(foundUsers(users));
+      } else {
+        dispatch(foundUsers([]));
+      }
+    } catch (error) {
+      dispatch(foundUsers([]));
+      dispatch(findUsersError(error));
+    }
   };
 };
 
@@ -71,17 +74,16 @@ export const findUserProfiles = keyword => {
  * Call API to get all members
  */
 export const fetchAllMembers = projectId => {
-  const request = axios.get(ENDPOINTS.PROJECT_MEMBER(projectId));
+  // const request = axios.get(ENDPOINTS.PROJECT_MEMBER(projectId));
   return async dispatch => {
-    await dispatch(setMemberStart());
-    await dispatch(foundUsers([]));
-    request
-      .then(res => {
-        dispatch(setMembers(res.data));
-      })
-      .catch(err => {
-        dispatch(setMembersError(err));
-      });
+    dispatch(setMemberStart());
+    dispatch(foundUsers([])); // Clear found users
+    try {
+      const response = await axios.get(ENDPOINTS.PROJECT_MEMBER(projectId));
+      dispatch(setMembers(response.data));
+    } catch (err) {
+      dispatch(setMembersError(err));
+    }
   };
 };
 
@@ -95,15 +97,27 @@ export const getProjectActiveUser = () => {
     await dispatch(findUsersStart());
     request
       .then(res => {
-        const {members} = getState().projectMembers;
+        const { members } = getState().projectMembers;
         const users = res.data.filter(user => {
-          return (members.find(member => member._id === user._id) && user.isActive === true) 
+          return members.find(member => member._id === user._id) && user.isActive === true;
         });
         dispatch(foundUsers(users));
       })
       .catch(err => {
         dispatch(findUsersError(err));
       });
+  };
+};
+
+export const fetchProjectsWithActiveUsers = () => {
+  return async dispatch => {
+    try {
+      const response = await axios.get(ENDPOINTS.PROJECTS_WITH_ACTIVE_USERS);
+      dispatch(fetchProjectsActiveUsers(response.data));
+    } catch (error) {
+      // console.error(error);
+      dispatch(fetchProjectsActiveUsersWithError(error));
+    }
   };
 };
 
@@ -142,6 +156,33 @@ export const assignProject = (projectId, userId, operation, firstName, lastName)
         // console.log("Error", err);
         dispatch(addNewMemberError(err));
       });
+  };
+};
+
+/**
+ * Call API to find project members
+ */
+export const findProjectMembers = (projectId, query) => {
+  // Escape special characters in the query
+  const queryRegex = query.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
+
+  return async (dispatch, getState) => {
+    try {
+      // Dispatch loading action immediately
+      dispatch(findProjectMembersStart());
+      const response = await axios.get(ENDPOINTS.PROJECT_MEMBER_SEARCH(projectId, queryRegex));
+
+      if (query !== '') {
+        const members = response.data;
+
+        dispatch(foundProjectMembers(members));
+      } else {
+        dispatch(foundProjectMembers([]));
+      }
+    } catch (error) {
+      dispatch(foundProjectMembers([]));
+      dispatch(findProjectMembersError(error));
+    }
   };
 };
 
@@ -255,3 +296,47 @@ export const addNewMemberError = err => {
   };
 };
 
+export const fetchProjectsActiveUsers = data => {
+  return {
+    type: types.FETCH_PROJECTS_ACTIVE_USERS_SUCCESS,
+    payload: data,
+  };
+};
+
+export const fetchProjectsActiveUsersWithError = err => {
+  return {
+    type: types.FETCH_PROJECTS_ACTIVE_USERS_ERROR,
+    payload: err,
+  };
+};
+
+/**
+ * Set a flag that finding project members
+ */
+export const findProjectMembersStart = () => {
+  return {
+    type: types.FIND_PROJECT_MEMBERS_START,
+  };
+};
+
+/**
+ * Set project members in store
+ * @param payload : Project members []
+ */
+export const foundProjectMembers = members => {
+  return {
+    type: types.FOUND_PROJECT_MEMBERS,
+    members,
+  };
+};
+
+/**
+ * Error when finding project members
+ * @param payload : error status code
+ */
+export const findProjectMembersError = err => {
+  return {
+    type: types.FIND_PROJECT_MEMBERS_ERROR,
+    err,
+  };
+};

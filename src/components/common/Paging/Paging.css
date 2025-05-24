@@ -1,14 +1,15 @@
 .paging-wrapper {
-  height: calc(100% - 40px);
+  height: 100%;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
 }
 
 .pagination-buttons-wrapper {
   display: flex;
   align-items: center;
-
-  position: absolute;
-  bottom: -40px;
+  margin: auto;
 }
 
 .pagination-buttons {
@@ -22,7 +23,7 @@
   justify-content: center;
   width: 28px;
   height: 28px;
-  margin: 8px;
+  margin: 4px;
   cursor: pointer;
   border-radius: 4px;
   color: #a1a1a1;
@@ -44,4 +45,41 @@
 
 .page-index-button.active-button:hover {
   background-color: rgb(179, 104, 210);
+}
+
+/* DARK MODE */
+.page-index-button-dark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  margin: 8px;
+  cursor: pointer;
+  border-radius: 4px;
+  color: #ffffff;
+}
+
+.page-index-button-dark:not(.disabled):hover {
+  background-color: #007BFF;
+}
+
+.page-index-button-dark.disabled {
+  cursor: unset;
+  color: #c6c6c6;
+}
+
+.active-button-dark {
+  background-color: #1C2541;
+  color: white;
+}
+
+.page-index-button-dark.active-button:hover {
+  background-color: #007BFF;
+}
+
+.pagination-buttons-dark {
+  display: flex;
+  align-items: baseline;
+  color: white;
 }
