@@ -226,7 +226,6 @@ function ReportDetails({
   auth,
   handleSpecialColorDotClick,
 }) {
-  const [filteredBadges, setFilteredBadges] = useState([]);
   const ref = useRef(null);
   const cantEditJaeRelatedRecord = cantUpdateDevAdminDetails(summary.email, loggedInUserEmail);
 
@@ -236,10 +235,6 @@ function ReportDetails({
     summary.totalTangibleHrs > 80 &&
     summary.daysInTeam > 60 &&
     summary.bioPosted !== 'posted';
-
-  useEffect(() => {
-    setFilteredBadges(badges.filter(badge => badge.showReport === true));
-  }, []);
 
   return (
     <li className={`list-group-item px-0 ${darkMode ? 'bg-yinmn-blue' : ''}`} ref={ref}>
@@ -297,9 +292,17 @@ function ReportDetails({
               <WeeklySummaryMessage summary={summary} weekIndex={weekIndex} />
             </ListGroupItem>
           </Col>
-          <Col xs="6">
+          <Col
+            xs="6"
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'flex-start',
+              paddingTop: 0,
+            }}
+          >
             {loadBadges && summary.badgeCollection?.length > 0 && (
-              <WeeklyBadge summary={summary} weekIndex={weekIndex} badges={filteredBadges} />
+              <WeeklyBadge summary={summary} weekIndex={weekIndex} badges={badges} />
             )}
           </Col>
         </Row>
@@ -625,7 +628,15 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
   }
   return (
     badgeThisWeek.length > 0 && (
-      <ListGroupItem className="row">
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          flexWrap: 'wrap',
+          gap: '5px',
+          paddingTop: 0,
+        }}
+      >
         {badgeThisWeek.map((value, index) => (
           // eslint-disable-next-line react/no-array-index-key
           <div className={styles.badgeTd} key={`${weekIndex}_${summary._id}_${index}`}>
@@ -655,7 +666,7 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
             )}
           </div>
         ))}
-      </ListGroupItem>
+      </div>
     )
   );
 }
