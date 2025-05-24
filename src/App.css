@@ -22,6 +22,16 @@ button {
   text-align: center;
 }
 
+.Filter_Container .selected{
+  color: black;
+  border: 2px solid black;
+}
+.Filter_Container .btn-link{
+  height: 30px;
+  padding: 2px;
+  text-decoration: none;
+}
+
 /* .close{
   visibility: hidden
 } */
