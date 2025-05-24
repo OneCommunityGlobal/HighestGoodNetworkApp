@@ -50,8 +50,10 @@ import 'react-toastify/dist/ReactToastify.css';
 import { UserRole } from './utils/enums';
 import ForgotPassword from './components/Login/ForgotPassword';
 import Inventory from './components/Inventory';
-import EmailSubscribeForm from './components/EmailSubscribeForm';
-import UnsubscribeForm from './components/EmailSubscribeForm/Unsubscribe';
+
+import EmailSubscribeForm from './components/EmailSubscribeForm/SubscribePage';
+import UnsubscribeForm from './components/EmailSubscribeForm/UnsubscribePage';
+
 import NotFoundPage from './components/NotFound/NotFoundPage';
 import EmailSender from './components/common/EmailSender/EmailSender';
 import Collaboration from './components/Collaboration';

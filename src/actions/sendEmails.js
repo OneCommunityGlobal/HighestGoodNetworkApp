@@ -84,8 +84,8 @@ export const addNonHgnUserEmailSubscription = (email = '') => {
 
   return async () => {
     try {
-      const response = await axios.post(url, { email });
-      toast.info('Email sent successfully:', response);
+      await axios.post(url, { email });
+      
 
       // Display a success toast
       toast.success('Send confirmation to email', {
@@ -93,7 +93,7 @@ export const addNonHgnUserEmailSubscription = (email = '') => {
         autoClose: 3000, // Close the toast after 3 seconds (adjust as needed)
       });
     } catch (error) {
-      toast.error('Error sending email:', error);
+    
 
       // Display an error toast
       toast.error('Email already exists or invalid', {
@@ -130,28 +130,22 @@ export const confirmNonHgnUserEmailSubscription = async (token = '') => {
   }
 };
 
-export const removeNonHgnUserEmailSubscription = async (email = '') => {
+export const removeNonHgnUserEmailSubscription = (email = '') => {
   const url = ENDPOINTS.REMOVE_EMAIL_SUBSCRIPTION;
 
-  try {
-    const response = await axios.post(url, { email });
-
-    // Display a success toast
-    // toast.success('Successfully confirmed email subscription', {
-    //   position: 'top-center',
-    //   autoClose: 3000,
-    // });
-
-    return { success: true, data: response.data };
-  } catch (error) {
-    toast.error('Error sending email:', error);
-
-    // Display an error toast
-    // toast.error('Error sending request', {
-    //   position: 'top-center',
-    //   autoClose: 3000,
-    // });
-
-    return { success: false, error };
-  }
+  return async () => {
+    try {
+      await axios.post(url, { email });
+     
+      toast.success('You have been unsubscribed.', {
+        position: 'top-center',
+        autoClose: 3000,
+      });
+    } catch (error) {
+      toast.error('Email not found or already unsubscribed.', {
+        position: 'top-center',
+        autoClose: 3000,
+      });
+    }
+  };
 };

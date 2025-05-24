@@ -262,6 +262,13 @@ export function Header(props) {
                         {PERMISSIONS_MANAGEMENT}
                       </DropdownItem>
                     )}
+                    <DropdownItem divider />
+                    <DropdownItem tag={Link} to="/email-subscribe">
+                      Subscribe
+                    </DropdownItem>
+                    <DropdownItem tag={Link} to="/email-unsubscribe">
+                      Unsubscribe
+                    </DropdownItem>
                   </DropdownMenu>
                 </UncontrolledDropdown>
               )}
