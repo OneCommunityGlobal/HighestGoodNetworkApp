@@ -103,6 +103,10 @@
   border-bottom: 0 !important;
 }
 
+.notes-text-light p{
+  color: #fff; /* White text for dark mode */
+}
+
 @media screen and (max-width: 1400px) and (min-width: 1100px) {
   .timelogPageContainer {
     padding: 0 10%;
