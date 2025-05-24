@@ -150,6 +150,11 @@ const UserTableData = React.memo(props => {
           index={props.index}
           onClick={() => props.onActiveInactiveClick(props.user)}
         />
+        {props.user?.infringements?.length > 0 && (
+          <span className='infringement-count'>
+            {props.user.infringements.length}
+          </span>
+        )}
         {!canSeeReports ? (
           <Tooltip
             placement="bottom"
