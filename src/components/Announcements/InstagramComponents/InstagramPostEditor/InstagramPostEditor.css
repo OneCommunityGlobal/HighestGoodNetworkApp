@@ -1,0 +1,355 @@
+.instagram-post-editor {
+  display: flex;
+  flex-direction: column;
+  padding: 0 70px 0 70px;
+}
+
+.connection-status-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.connection-status-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.disconnect-button {
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  padding: 4px 10px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #dc3545;
+  transition: all 0.2s ease;
+}
+
+.disconnect-button:hover {
+  background-color: #dc3545;
+  color: white;
+  border-color: #dc3545;
+}
+
+.disconnect-button svg {
+  font-size: 12px;
+}
+
+.connection-status-badge {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+}
+
+.connection-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 20px;
+  margin-left: 8px;
+  font-weight: normal;
+}
+
+.connected {
+  background-color: rgba(40, 167, 69, 0.15);
+  color: #28a745;
+}
+
+.disconnected {
+  background-color: rgba(108, 117, 125, 0.15);
+  color: #6c757d;
+}
+
+.status-icon, .connection-badge svg {
+  width: 16px;
+  height: 16px;
+  margin-right: 6px;
+}
+
+.expiry-info {
+  font-size: 12px;
+  margin-left: 10px;
+  opacity: 0.8;
+}
+
+.instagram-error {
+  color: red;
+  font-size: 14px;
+}
+
+.instagram-editor-container {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+
+.instagram-editor-container > *:first-child {
+  width: 60%; 
+  flex-shrink: 0; 
+}
+
+.instagram-editor-container > *:last-child {
+  width: 40%; 
+  flex-shrink: 0; 
+}
+
+.instagram-login-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.instagram-login-button {
+  background-color: #0095f6;
+  color: white;
+  width: 30%;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.instagram-post-preview-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.instagram-post-preview-header {
+  padding: 10px 0;
+}
+
+.instagram-post-preview-header h3 {
+  margin: 0;
+  color: #262626;
+  font-size: 30px;
+}
+
+.post-buttons-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.schedule-post-button-container {
+  display: flex;
+  flex-direction: row;
+  gap: 0;
+  justify-content: flex-end;
+  gap: 10px;
+  align-items: center;
+  height: 100%;
+  width: 50%;
+}
+
+.schedule-post-instagram-button {
+  background-color: #0095f6;
+  color: white;
+  width: auto;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.button-text {
+  white-space: nowrap;
+}
+
+.schedule-post-instagram-button:hover {
+  background-color: #0077b5;
+}
+
+.schedule-post-instagram-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.date-picker {
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+  padding: 10px;
+}
+
+.instagram-login-button:hover {
+  background-color: #0077b5;
+}
+
+.instagram-caption-textarea {
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+.instagram-caption-textarea {
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+  padding: 10px;
+  resize: vertical;
+  transition: border-color 0.3s;
+}
+
+.instagram-caption-textarea.exceeding-limit {
+  border-color: #e74c3c;
+}
+
+.caption-character-count {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  align-items: center;
+  font-size: 14px;
+  color: #777;
+  padding: 4px 5px;
+}
+
+.caption-character-count .exceeding-limit {
+  color: #e74c3c;
+  font-weight: bold;
+}
+
+.limit-warning {
+  color: #e74c3c;
+  font-size: 14px;
+}
+
+.instagram-post-preview {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 15px 0 0 0;
+  width: 100%;
+}
+
+.image-uploader {
+  width: 100%;
+  height: 300px;
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  margin-bottom: 10px;
+  background-color: #f8f9fa;
+}
+
+.image-uploader.dragging {
+  border-color: #0095f6;
+  background-color: rgba(0, 149, 246, 0.1);
+}
+
+.image-uploader .file-input {
+  position: absolute;
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  z-index: -1;
+}
+
+.image-uploader .upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #8e8e8e;
+}
+
+.image-uploader .plus-icon {
+  font-size: 48px;
+  margin-bottom: 10px;
+  color: #0095f6;
+}
+
+.image-uploader .image-preview-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.image-uploader .image-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  max-height: 100%;
+  display: block;
+}
+
+.image-uploader .remove-image {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 5px 10px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.image-uploader .image-preview-container:hover .remove-image {
+  opacity: 1;
+}
+
+.instagram-post-button {
+  background-color: #0095f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.instagram-post-button:hover {
+  background-color: #007bb5;
+}
+
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top: 4px solid #0095f6;
+  width: 30px;
+  height: 30px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 10px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

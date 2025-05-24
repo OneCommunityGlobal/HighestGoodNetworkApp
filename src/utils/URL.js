@@ -167,6 +167,21 @@ export const ENDPOINTS = {
   CONFIRM_EMAIL_SUBSCRIPTION: `${APIEndpoint}/confirm-non-hgn-email-subscription`,
   REMOVE_EMAIL_SUBSCRIPTION: `${APIEndpoint}/remove-non-hgn-email-subscription`,
 
+  // Instagram endpoints
+  GET_INSTAGRAM_AUTH_URL: `${APIEndpoint}/instagram/auth`,
+  GET_INSTAGRAM_AUTH_STATUS: `${APIEndpoint}/instagram/auth-status`,
+  GET_INSTAGRAM_USER_ID: `${APIEndpoint}/instagram/get-user-id`,
+  DISCONNECT_INSTAGRAM: `${APIEndpoint}/instagram/disconnect`,
+  CREATE_INSTAGRAM_CONTAINER: `${APIEndpoint}/instagram/create-container`,
+  POST_INSTAGRAM_CONTAINER: `${APIEndpoint}/instagram/publish-container`,
+
+  POST_INSTAGRAM_SCHEDULED_POST: `${APIEndpoint}/instagram/schedule-post`,
+  GET_INSTAGRAM_SCHEDULED_POSTS: `${APIEndpoint}/instagram/posts`,
+  DELETE_INSTAGRAM_SCHEDULED_POST: postId => `${APIEndpoint}/instagram/posts/${postId}`,
+
+  POST_IMGUR_IMAGE: `${APIEndpoint}/instagram/upload-imgur`,
+  DELETE_IMGUR_IMAGE: `${APIEndpoint}/instagram/delete-imgur`,
+
   // reasons endpoints
   CREATEREASON: () => {
     return `${APIEndpoint}/reason/`;
