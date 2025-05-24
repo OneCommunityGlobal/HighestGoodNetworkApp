@@ -127,6 +127,7 @@ export const getAllUserProfile = () => {
  * @param {*} status  - Active/InActive
  */
 export const updateUserStatus = (user, status, reactivationDate) => {
+  console.log("updateUserStatus user: ", user); 
   const userProfile = { ...user };
   userProfile.isActive = status === UserStatus.Active;
   userProfile.reactivationDate = reactivationDate;
