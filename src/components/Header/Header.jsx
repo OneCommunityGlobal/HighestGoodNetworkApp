@@ -370,7 +370,7 @@ export function Header(props) {
 
   const viewingUser = JSON.parse(window.sessionStorage.getItem('viewingUser'));
   return (
-    <div className="header-wrapper">
+    <div className="header-wrapper" data-testid="header">
       <Navbar className="py-3 navbar" color="dark" dark expand="md">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
         <div

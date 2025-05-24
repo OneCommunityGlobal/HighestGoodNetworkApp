@@ -107,7 +107,7 @@ function WeeklySummaries({ userProfile }) {
   const TINY_MCE_INIT_OPTIONS = {
     license_key: 'gpl',
     menubar: false,
-    plugins: 'advlist autolink autoresize lists link charmap table paste help wordcount',
+    plugins: 'advlist autolink autoresize lists link charmap table help wordcount',
     toolbar:
       'bold italic underline link removeformat | bullist numlist outdent indent | styleselect fontsizeselect | table| strikethrough forecolor backcolor | subscript superscript charmap | help',
     branding: false,

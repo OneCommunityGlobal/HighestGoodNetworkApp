@@ -5,7 +5,7 @@ import { Link, useHistory } from 'react-router-dom';
 import { Button, Input } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
-import Joi from 'joi';
+import Joi from 'joi-browser';
 import { boxStyle, boxStyleDark } from 'styles';
 import forgotPassword from '../../services/authorizationService';
 
@@ -78,8 +78,7 @@ const ForgotPassword = React.memo(() => {
   };
 
   const onForgotPassword = () => {
-    const result = Joi.validate(user, schema, { abortEarly: false });
-    const { error } = result;
+    const { error } = Joi.object(schema).validate(user, { abortEarly: false });
     if (error) {
       const errorData = error.details.reduce((pre, cur) => {
         const name = cur.path[0];
@@ -116,11 +115,11 @@ const ForgotPassword = React.memo(() => {
 
     let validateResult = {};
     if (name === 'email') {
-      validateResult = Joi.validate({ [name]: value }, { email: emailSchema });
+      validateResult = Joi.object({ email: emailSchema }).validate({ [name]: value });
     } else if (name === 'firstName') {
-      validateResult = Joi.validate({ [name]: value }, { firstName: firstNameSchema });
+      validateResult = Joi.object({ firstName: firstNameSchema }).validate({ [name]: value });
     } else if (name === 'lastName') {
-      validateResult = Joi.validate({ [name]: value }, { lastName: lastNameSchema });
+      validateResult = Joi.object({ lastName: lastNameSchema }).validate({ [name]: value });
     }
     const { error } = validateResult;
     const errorMessage = error ? error.details[0].message : null;

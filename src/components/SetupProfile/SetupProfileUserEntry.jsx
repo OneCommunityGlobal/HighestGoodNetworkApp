@@ -28,7 +28,7 @@ import { useDispatch } from 'react-redux';
 import jwtDecode from 'jwt-decode';
 import Image from 'react-bootstrap/Image';
 import { toast } from 'react-toastify';
-import { tokenKey } from '../../config.json';
+import tokenKey from '../../config.json';
 import { setCurrentUser } from '../../actions/authActions';
 import HomeCountryModal from './homeCountryModal';
 import ProfilePictureModal from './profilePictureModal';

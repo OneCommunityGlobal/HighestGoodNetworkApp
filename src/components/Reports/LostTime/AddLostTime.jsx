@@ -37,7 +37,7 @@ function AddLostTime(props) {
     menubar: false,
     placeholder: '',
     plugins:
-      'advlist autolink autoresize lists link charmap table paste help wordcount',
+      'advlist autolink autoresize lists link charmap table help wordcount',
     toolbar: `bold italic underline link removeformat | bullist numlist outdent indent |
                       styleselect fontsizeselect | table| strikethrough forecolor backcolor |
                       subscript superscript charmap  | help`,
