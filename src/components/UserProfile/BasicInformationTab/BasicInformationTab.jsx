@@ -740,7 +740,7 @@ const BasicInformationTab = props => {
           >
             <Label style={{ margin: '0' }} className={`mr-1 ${darkMode ? 'text-light' : ''}`}>
               {userProfile.endDate
-                ? 'End Date ' + formatDateLocal(userProfile.endDate)
+                ? 'End Date ' + moment.utc(userProfile.endDate).format('MMM-DD-YY')
                 : 'End Date ' + 'N/A'}
             </Label>
           </Col>
@@ -758,6 +758,10 @@ const BasicInformationTab = props => {
                 isBigBtn={true}
                 userProfile={userProfile}
                 darkMode={darkMode}
+                onFinalDaySave={(updatedUser) => {
+                  setUserProfile(updatedUser);
+                  loadUserProfile();
+                }}
               />
             </Col>
           )}
@@ -768,7 +772,7 @@ const BasicInformationTab = props => {
           <Col md={desktopDisplay ? '8' : ''} className={desktopDisplay ? 'mr-5' : ''}>
             <Label className={`mr-1 ${darkMode ? 'text-light' : ''}`}>
               {userProfile.endDate
-                ? 'End Date ' + formatDateLocal(userProfile.endDate)
+                ? 'End Date ' + moment.utc(userProfile.endDate).format('MMM-DD-YY')
                 : 'End Date ' + 'N/A'}
             </Label>
             {canEdit && !desktopDisplay && (
@@ -789,6 +793,10 @@ const BasicInformationTab = props => {
                 isBigBtn={true}
                 userProfile={userProfile}
                 darkMode={darkMode}
+                onFinalDaySave={(updatedUser) => {
+                  setUserProfile(updatedUser);
+                  loadUserProfile();
+                }}
               />
             </Col>
           )}
