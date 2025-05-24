@@ -1,7 +1,7 @@
 import { render, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import moment from 'moment';
-import SetUpFinalDayPopUp from '../../components/UserManagement/__tests__/SetUpFinalDayPopUp.jsx';
+import SetUpFinalDayPopUp from '../SetUpFinalDayPopUp';
 
 describe('SetUpFinalDayPopUp', () => {
   it('renders without crashing', () => {
@@ -15,6 +15,7 @@ describe('SetUpFinalDayPopUp', () => {
     );
 
     fireEvent.click(getByText('Close'));
+
     expect(onCloseMock).toHaveBeenCalled();
   });
 
@@ -24,8 +25,12 @@ describe('SetUpFinalDayPopUp', () => {
       <SetUpFinalDayPopUp open onClose={() => {}} onSave={onSaveMock} />
     );
 
-    const futureDate = moment().add(1, 'days').format('YYYY-MM-DD');
-    fireEvent.change(getByTestId('date-input'), { target: { value: futureDate } });
+    const futureDate = moment()
+      .add(1, 'days')
+      .format('YYYY-MM-DD');
+    fireEvent.change(getByTestId('date-input'), {
+      target: { value: futureDate },
+    });
     fireEvent.click(getByText('Save'));
 
     expect(onSaveMock).toHaveBeenCalledWith(futureDate);
@@ -37,8 +42,12 @@ describe('SetUpFinalDayPopUp', () => {
       <SetUpFinalDayPopUp open onClose={() => {}} onSave={onSaveMock} />
     );
 
-    const pastDate = moment().subtract(1, 'days').format('YYYY-MM-DD');
-    fireEvent.change(getByTestId('date-input'), { target: { value: pastDate } });
+    const pastDate = moment()
+      .subtract(1, 'days')
+      .format('YYYY-MM-DD');
+    fireEvent.change(getByTestId('date-input'), {
+      target: { value: pastDate },
+    });
     fireEvent.click(getByText('Save'));
 
     expect(onSaveMock).not.toHaveBeenCalled();
