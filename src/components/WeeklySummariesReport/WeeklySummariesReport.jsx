@@ -212,14 +212,7 @@ const WeeklySummariesReport = props => {
   // Initial data loading
   const createIntialSummaries = async () => {
     try {
-      const {
-        allBadgeData,
-        getWeeklySummariesReport,
-        fetchAllBadges,
-        hasPermission,
-        auth,
-        setTeamCodes,
-      } = props;
+      const { getWeeklySummariesReport, fetchAllBadges, hasPermission, auth, setTeamCodes } = props;
 
       // Get the active tab from session storage or use default
       const activeTab =
