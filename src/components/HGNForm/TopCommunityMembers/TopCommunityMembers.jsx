@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import httpService from 'services/httpService';
 import { ENDPOINTS } from 'utils/URL';
 import './TopCommunityMembers.css';
-import { FaEnvelope } from 'react-icons/fa';
+import { FaEnvelope, FaPhone } from 'react-icons/fa';
 import slackLogo from '../../../assets/images/slack.png';
 
 const skillOptions = [
@@ -70,6 +70,7 @@ function TopCommunityMembers() {
             <th>Name</th>
             <th>Email</th>
             <th>Slack ID</th>
+            <th>Phone Number</th>
             <th>Skill Score</th>
           </tr>
         </thead>
@@ -109,6 +110,22 @@ function TopCommunityMembers() {
                     title={member.slack}
                   >
                     <img src={slackLogo} alt="Slack" style={{ width: '20px', height: '20px' }} />
+                  </a>
+                )}
+              </td>
+              <td>
+                {!member.phoneNumber ? (
+                  <span className="private" title="Phone number not found">
+                    <FaPhone style={{ color: '#ccc', cursor: 'not-allowed' }} />
+                  </span>
+                ) : (
+                  <a
+                    href={`tel:${member.phoneNumber}`}
+                    title={member.phoneNumber}
+                    aria-label={`Call ${member.name}`}
+                  >
+                    <FaPhone style={{ marginRight: '5px' }} />
+                    {member.phoneNumber}
                   </a>
                 )}
               </td>
