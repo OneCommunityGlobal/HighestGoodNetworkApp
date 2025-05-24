@@ -93,10 +93,6 @@ const initialState = {
   summariesByTab: {}, // Store tab-specific data
   tabsLoading: { [navItems[1]]: false }, // Track loading state per tab
   formattedReportLoading: false,
-  
-  
-  
-  
 };
 
 const intialPermissionState = {
