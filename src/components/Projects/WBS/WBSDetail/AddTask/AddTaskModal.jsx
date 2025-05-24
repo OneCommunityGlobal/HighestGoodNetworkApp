@@ -90,6 +90,7 @@ function AddTaskModal(props) {
   const [hoursMost, setHoursMost] = useState(0);
   const [hoursWorst, setHoursWorst] = useState(0);
   const [hoursEstimate, setHoursEstimate] = useState(0);
+  const [hasNegativeHours, setHasNegativeHours] = useState(false);
   const [link, setLink] = useState('');
   const [links, setLinks] = useState([]);
   const [category, setCategory] = useState(defaultCategory);
@@ -203,6 +204,14 @@ function AddTaskModal(props) {
     }
   };
 
+  useEffect(() => {
+    if (hoursBest < 0 || hoursWorst < 0 || hoursMost < 0 || hoursEstimate < 0) {
+      setHasNegativeHours(true);
+    } else {
+      setHasNegativeHours(false);
+    }
+  }, [hoursBest, hoursWorst, hoursMost, hoursEstimate]);
+
   const changeDateStart = startDate => {
     setStartedDate(startDate);
   };
@@ -253,6 +262,7 @@ function AddTaskModal(props) {
     setCategory(defaultCategory);
     setStartDateError(false);
     setEndDateError(false);
+    setHasNegativeHours(false);
   };
 
   const paste = () => {
@@ -625,6 +635,9 @@ function AddTaskModal(props) {
                       aria-label="Estimated hours"
                     />
                   </div>
+                  <div className="warning">
+                    {hasNegativeHours ? 'Negative hours are not allowed.' : ''}
+                  </div>
                 </div>
               </div>
 
@@ -779,7 +792,7 @@ function AddTaskModal(props) {
             color="primary"
             onClick={addNewTask}
             disabled={
-              taskName === '' || hoursWarning || isLoading || startDateError || endDateError
+              taskName === '' || hoursWarning || isLoading || startDateError || endDateError || hasNegativeHours
             }
             style={darkMode ? boxStyleDark : boxStyle}
           >
