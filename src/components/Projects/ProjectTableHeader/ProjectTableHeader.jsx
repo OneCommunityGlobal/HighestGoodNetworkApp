@@ -79,6 +79,13 @@ const ProjectTableHeader = props => {
       <th scope="col" id="projects__inv" className='align-middle'>
         <span className='d-flex justify-content-between'>
           {INVENTORY}
+          <div>
+            <Button size='sm' className='ml-3 mb-1' id='projects_sort' onClick={() => { props.handleSort("INVENTORY") }}><FontAwesomeIcon icon={props.sorted.direction === "DEFAULT"
+          ? getSortIcon("INVENTORY")
+          : props.sorted.direction === "ASC"
+            ? getSortIcon("INVENTORY")
+            : getSortIcon("INVENTORY")} pointerEvents="none"/></Button>
+          </div>
         </span> 
       </th>
       <th scope="col" id="projects__members" className='align-middle'>

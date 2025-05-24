@@ -25,46 +25,56 @@ export const getPeopleReportData = state => ({
   darkMode: state.theme.darkMode,
 });
 
-export const peopleTasksPieChartViewData = ({userProjects,timeEntries }) => {
-  
+export const peopleTasksPieChartViewData = ({ userProjects, timeEntries, tasks }) => {
   let hoursLoggedToProjectsOnly = {};
   const tasksWithLoggedHoursOnly = {};
-  // let totalHours = 0;
-  //   for(let i=0; i<timeEntries.period.length; i++){
-  //     totalHours += timeEntries.period[i].hours + (timeEntries.period[i].minutes/60);
-  //  }
-  
-  timeEntries.period.forEach(entry=>{
-    if(entry.wbsId===null){
-      hoursLoggedToProjectsOnly[entry.projectId] = hoursLoggedToProjectsOnly[entry.projectId] ? hoursLoggedToProjectsOnly[entry.projectId] + entry.hours+(entry.minutes/60) : entry.hours+(entry.minutes/60);
+
+  timeEntries.period.forEach(entry => {
+    if (entry.wbsId === null) {
+      hoursLoggedToProjectsOnly[entry.projectId] = hoursLoggedToProjectsOnly[entry.projectId]
+        ? hoursLoggedToProjectsOnly[entry.projectId] + entry.hours + entry.minutes / 60
+        : entry.hours + entry.minutes / 60;
     }
-  })
-  
-  timeEntries.period.forEach(entry=>{
-    if(entry.wbsId!==null){
-      tasksWithLoggedHoursOnly[entry.projectId] = tasksWithLoggedHoursOnly[entry.projectId] ? tasksWithLoggedHoursOnly[entry.projectId] + entry.hours+(entry.minutes/60) : entry.hours+(entry.minutes/60);
+  });
+
+  timeEntries.period.forEach(entry => {
+    if (entry.wbsId !== null && entry.taskId) {
+      // Try to get the task name from the global tasks list if not present in entry
+      let taskName = entry.taskName;
+      let taskItems = [];
+      if (tasks && Array.isArray(tasks.taskItems)) {
+        ({ taskItems } = tasks);
+      }
+      if (!taskName && taskItems.length > 0) {
+        const foundTask = taskItems.find(t => t._id === entry.taskId);
+        taskName = foundTask ? foundTask.taskName : `Task ${entry.taskId}`;
+      }
+      if (!tasksWithLoggedHoursOnly[entry.taskId]) {
+        tasksWithLoggedHoursOnly[entry.taskId] = {
+          taskId: entry.taskId,
+          taskName,
+          totalTime: 0,
+          projectId: entry.projectId,
+          projectName:
+            userProjects?.projects.find(proj => proj.projectId === entry.projectId)?.projectName ||
+            'Unknown',
+        };
+      }
+      tasksWithLoggedHoursOnly[entry.taskId].totalTime += entry.hours + entry.minutes / 60;
     }
-  })
-  
-  
+  });
+
   const resultArray = Object.keys(hoursLoggedToProjectsOnly).map(projectId => {
     const project = userProjects?.projects.find(proj => proj.projectId === projectId);
     return {
       projectId,
-      projectName: project ? project.projectName : "Unknown", // Use "Unknown" if no matching project is found
-      totalTime: hoursLoggedToProjectsOnly[projectId]
+      projectName: project ? project.projectName : 'Unknown', // Use 'Unknown' if no matching project is found
+      totalTime: hoursLoggedToProjectsOnly[projectId],
     };
   });
 
-  const resultArray2 = Object.keys(tasksWithLoggedHoursOnly).map(projectId => {
-    const project = userProjects?.projects.find(proj => proj.projectId === projectId);
-    return {
-      projectId,
-      projectName: project ? project.projectName : "Unknown", // Use "Unknown" if no matching project is found
-      totalTime: tasksWithLoggedHoursOnly[projectId]
-    };
-  });
-  
+  const resultArray2 = Object.values(tasksWithLoggedHoursOnly);
+
   hoursLoggedToProjectsOnly = resultArray;
 
   let tasksWithLoggedHoursById = {};
@@ -73,8 +83,8 @@ export const peopleTasksPieChartViewData = ({userProjects,timeEntries }) => {
   let tasksLegend = {};
   const displayedTasksLegend = {};
 
-  tasksLegend=resultArray2;
-  tasksWithLoggedHoursById=resultArray2;
+  tasksLegend = resultArray2;
+  tasksWithLoggedHoursById = resultArray2;
   return {
     hoursLoggedToProjectsOnly,
     tasksWithLoggedHoursById,

@@ -568,6 +568,7 @@ class PeopleReport extends Component {
           </div>
 
           <PeopleTasksPieChart darkMode={darkMode} />
+
           <div className="mobile-people-table">
             <ReportPage.ReportBlock darkMode={darkMode}>
               {this.state.isLoading ? (

@@ -7,7 +7,7 @@ import { Route, Switch } from 'react-router-dom';
 import SetupProfile from 'components/SetupProfile/SetupProfile';
 import { ToastContainer } from 'react-toastify';
 import AutoUpdate from 'components/AutoUpdate';
-import { TaskEditSuggestions } from 'components/TaskEditSuggestions/TaskEditSuggestions';
+import TaskEditSuggestions from 'components/TaskEditSuggestions/TaskEditSuggestions';
 import RoutePermissions from 'utils/routePermissions';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import RoleInfoCollections from 'components/UserProfile/EditableModal/RoleInfoModal';
@@ -17,6 +17,10 @@ import Announcements from 'components/Announcements';
 import JobFormBuilder from 'components/Collaboration/JobFormbuilder';
 import JobCCDashboard from 'components/JobCCDashboard/JobCCDashboard';
 import WeeklyProjectSummary from 'components/BMDashboard/WeeklyProjectSummary/WeeklyProjectSummary';
+import FaqSearch from 'components/Faq/FaqSearch';
+import FaqManagement from 'components/Faq/FaqManagement';
+import FaqHistory from 'components/Faq/FaqHistory';
+import UnansweredFaqs from 'components/Faq/UnansweredFaqs';
 import HeaderRenderer from 'components/Header/HeaderRenderer';
 import Page1 from './components/HGNForm/pages/Page1';
 import Page2 from './components/HGNForm/pages/Page2';
@@ -51,6 +55,7 @@ import UnsubscribeForm from './components/EmailSubscribeForm/Unsubscribe';
 import NotFoundPage from './components/NotFound/NotFoundPage';
 import EmailSender from './components/common/EmailSender/EmailSender';
 import Collaboration from './components/Collaboration';
+import ApplicantsAgeChart from './components/ApplicantsChart';
 
 // LB Dashboard
 import LBProtectedRoute from './components/common/LBDashboard/LBProtectedRoute';
@@ -72,6 +77,7 @@ import CheckTypes from './components/BMDashboard/shared/CheckTypes';
 import Toolslist from './components/BMDashboard/Tools/ToolsList';
 import AddTool from './components/BMDashboard/Tools/AddTool';
 import AddTeamMember from './components/BMDashboard/AddTeamMember/AddTeamMember';
+import BMTimeLogger from './components/BMDashboard/BMTimeLogger/BMTimeLogger';
 import Issue from './components/BMDashboard/Issue/Issue';
 
 // Community Portal
@@ -84,9 +90,18 @@ import EventStats from './components/CommunityPortal/EventPersonalization/EventS
 // import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
 import Resources from './components/CommunityPortal/Activities/activityId/Resources';
 
+import EventParticipation from './components/CommunityPortal/Reports/Participation/EventParticipation';
+
 import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
 import EPDashboard from './components/EductionPortal';
+
+import LandingPage from './components/HGNHelpSkillsDashboard/LandingPage';
+import SkillsOverviewPage from './components/HGNHelpSkillsDashboard/SkillsOverviewPage';
+import CommunityMembersPage from './components/HGNHelpSkillsDashboard/CommunityMembersPage';
+import UserProfilePage from './components/HGNHelpSkillsDashboard/UserProfilePage';
+import FeedbackModal from './components/HGNHelpSkillsDashboard/FeedbackModal';
+
 
 // eslint-disable-next-line import/order, import/no-unresolved
 import LogTools from './components/BMDashboard/LogTools/LogTools';
@@ -105,6 +120,7 @@ const PurchaseReusables = lazy(() =>
 // const PurchaseEquipment = lazy(() =>
 //   import('./components/BMDashboard/PurchaseRequests/EquipmentPurchaseRequest'),
 // );
+const BMTimeLogCard = lazy(() => import('./components/BMDashboard/BMTimeLogger/BMTimeLogCard'));
 const ProjectDetails = lazy(() =>
   import('./components/BMDashboard/Projects/ProjectDetails/ProjectDetails'),
 );
@@ -297,6 +313,8 @@ export default (
           routePermissions={RoutePermissions.teams}
         />
 
+        <ProtectedRoute path="/applicants-chart" exact component={ApplicantsAgeChart} fallback />
+
         <ProtectedRoute
           path="/announcements"
           exact
@@ -309,6 +327,33 @@ export default (
           component={EmailSender}
           allowedRoles={[UserRole.Administrator, UserRole.Owner]}
           routePermissions={RoutePermissions.projects}
+        />
+
+        <ProtectedRoute
+          path="/faq"
+          exact
+          component={FaqSearch}
+        />
+
+        <ProtectedRoute
+          path="/faq-management"
+          exact
+          component={FaqManagement}
+          routePermissions={RoutePermissions.faqManagement}
+        />
+
+        <ProtectedRoute
+          path="/faqs/:id/history"
+          exact
+          component={FaqHistory}
+          routePermissions={RoutePermissions.faqManagement}
+        />
+
+        <ProtectedRoute
+          path="/unanswered-faqs"
+          exact
+          component={UnansweredFaqs}
+          routePermissions={RoutePermissions.faqManagement}
         />
 
         <ProtectedRoute
@@ -409,6 +454,13 @@ export default (
           exact
           component={WeeklyProjectSummary}
         />
+        <BMProtectedRoute path="/bmdashboard/timelog/" component={BMTimeLogger} />
+
+        <BMProtectedRoute
+          path="/bmdashboard/timelog/:projectId"
+          fallback
+          component={BMTimeLogCard}
+        />
 
         {/* Community Portal Routes */}
         <CPProtectedRoute path="/communityportal" exact component={CPDashboard} />
@@ -426,6 +478,9 @@ export default (
         <LBProtectedRoute path="/lbdashboard/masterplan" exact component={MasterPlan} />
         <Route path="/lbdashboard/login" component={LBLogin} />
         <Route path="/lbdashboard/bidoverview" exact component={LBBidOverview} />
+
+        <CPProtectedRoute path="/communityportal/reports/participation" exact component={EventParticipation} />
+
 
         {/* Good Education  Portal Routes */}
         <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />
@@ -453,6 +508,13 @@ export default (
         <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
         <Route path="/Logout" component={Logout} />
         <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
+
+         {/* ----- HGN Help Community Skills Dashboard Routes ----- */}
+        <ProtectedRoute path="/hgnhelp" exact component={LandingPage} />
+        <ProtectedRoute path="/hgnhelp/skills-overview" exact component={SkillsOverviewPage} />
+        <ProtectedRoute path="/hgnhelp/community" exact component={CommunityMembersPage} />
+        <ProtectedRoute path="/hgnhelp/profile/:userId" exact component={UserProfilePage} />
+        <ProtectedRoute path="/hgnhelp/feedback" exact component={FeedbackModal} />
 
         <ProtectedRoute path="/hgnform" exact component={Page1} />
         <ProtectedRoute path="/hgnform/page2" exact component={Page2} />

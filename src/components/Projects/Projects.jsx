@@ -1,10 +1,10 @@
+/* eslint-disable no-shadow */
+/* eslint-disable no-use-before-define */
 import { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import {
-  fetchAllProjects,
-  modifyProject,
-  clearError,
-} from '../../actions/projects';
+import SearchProjectByPerson from 'components/SearchProjectByPerson/SearchProjectByPerson';
+import ProjectsList from 'components/BMDashboard/Projects/ProjectsList';
+import { fetchAllProjects, modifyProject, clearError } from '../../actions/projects';
 import { fetchProjectsWithActiveUsers } from '../../actions/projectMembers';
 import { getProjectsByUsersName } from '../../actions/userProfile';
 import { getPopupById } from '../../actions/popupEditorAction';
@@ -12,24 +12,24 @@ import Overview from './Overview';
 import AddProject from './AddProject';
 import ProjectTableHeader from './ProjectTableHeader';
 import Project from './Project';
-import ModalTemplate from './../common/Modal';
-import { CONFIRM_ARCHIVE } from './../../languages/en/messages';
+import ModalTemplate from '../common/Modal';
+import { CONFIRM_ARCHIVE } from '../../languages/en/messages';
 import './projects.css';
 import Loading from '../common/Loading';
 import hasPermission from '../../utils/permissions';
 import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
-import SearchProjectByPerson from 'components/SearchProjectByPerson/SearchProjectByPerson';
 
 const Projects = function(props) {
-  const role = props.state.userProfile.role;
+  const { role } = props.state.userProfile;
   const { darkMode } = props.state.theme;
   const numberOfProjects = props.state.allProjects.projects.length;
-  const numberOfActive = props.state.allProjects.projects.filter(project => project.isActive).length;
+  const numberOfActive = props.state.allProjects.projects.filter(project => project.isActive)
+    .length;
   const { fetching, fetched, status, error } = props.state.allProjects;
   const initialModalData = {
     showModal: false,
-    modalMessage: "",
-    modalTitle: "",
+    modalMessage: '',
+    modalTitle: '',
     hasConfirmBtn: false,
     hasInactiveBtn: false,
   };
@@ -49,24 +49,24 @@ const Projects = function(props) {
     category: '',
   });
   const [projectList, setProjectList] = useState(null);
-  const [searchName, setSearchName] = useState("");
+  const [searchName, setSearchName] = useState('');
   const [allProjects, setAllProjects] = useState(null);
 
   const [isArchiving, setIsArchiving] = useState(false);
 
   const useDebounce = (value, delay) => {
     const [debouncedValue, setDebouncedValue] = useState(value);
-  
+
     useEffect(() => {
       const handler = setTimeout(() => {
         setDebouncedValue(value);
       }, delay);
-  
+
       return () => {
         clearTimeout(handler);
       };
     }, [value, delay]);
-  
+
     return debouncedValue;
   };
 
@@ -74,7 +74,7 @@ const Projects = function(props) {
 
   const canPostProject = props.hasPermission('postProject');
 
-  const onClickArchiveBtn = (projectData) => {
+  const onClickArchiveBtn = projectData => {
     setProjectTarget(projectData);
     setModalData({
       showModal: true,
@@ -90,13 +90,13 @@ const Projects = function(props) {
     props.clearError();
   };
 
-  const onChangeCategory = (value) => {
+  const onChangeCategory = value => {
     setCategorySelectedForSort(value);
   };
 
-  const onSelectStatus = (value) => {
+  const onSelectStatus = value => {
     setShowStatus(value);
-  }
+  };
 
   const handleSort = (column) => {
     setSorter(prev => {
@@ -113,9 +113,13 @@ const Projects = function(props) {
     });
   };
   
-
-  const onUpdateProject = async (updatedProject) => {
-    await props.modifyProject(updatedProject);  
+  const onUpdateProject = async updatedProject => {
+    await props.modifyProject(updatedProject);
+    // Optimistically update the state
+    const updatedProjectsList = projectList.map(project =>
+      project._id === updatedProject._id ? updatedProject : project,
+    );
+    setProjectList(updatedProjectsList);
     /* refresh the page after updating the project */
     await props.fetchAllProjects();
   };
@@ -130,7 +134,7 @@ const Projects = function(props) {
   };
 
   const setInactiveProject = async () => {
-    const updatedProject = { ...projectTarget, isActive: !isActive };
+    const updatedProject = { ...projectTarget, isActive: !projectTarget.active };
     await onUpdateProject(updatedProject);
     onCloseModal();
   };
@@ -185,6 +189,14 @@ const Projects = function(props) {
           return 0; // Default: keep same order as PROJECT sorting
         }
       }
+
+      if (column === "INVENTORY") {
+        const dateA = new Date(a.inventoryModifiedDatetime);
+        const dateB = new Date(b.inventoryModifiedDatetime);
+        if (direction === "ASC") return dateA - dateB;
+        if (direction === "DESC") return dateB - dateA;
+        return 0;
+      }
   
       return 0;
     });
@@ -236,8 +248,8 @@ const Projects = function(props) {
       if (debouncedSearchName) {
         const projects = await props.getProjectsByUsersName(debouncedSearchName);
         if (projects) {
-          const newProjectList = allProjects.filter(project => 
-            projects.some(p => p === project.key)
+          const newProjectList = allProjects.filter(project =>
+            projects.some(p => p === project.key),
           );
           setProjectList(newProjectList);
         } else {
@@ -250,65 +262,61 @@ const Projects = function(props) {
     fetchProjects();
   }, [debouncedSearchName]);
 
-  const handleSearchName = (searchNameInput) => {
+  const handleSearchName = searchNameInput => {
     setSearchName(searchNameInput);
   };
 
   return (
-    <>
-      <div className={darkMode ? 'bg-oxford-blue text-light' : ''}>
-        <div className={`container py-3 ${darkMode ? 'bg-yinmn-blue-light text-light' : ''}`}>
-          {fetching || !fetched ? <Loading align="center" /> : null}
-          <div className="d-flex align-items-center">
-            <h3 style={{ display: 'inline-block', marginRight: 10 }}>Projects</h3>
-            <EditableInfoModal
-              areaName="projectsInfoModal"
-              areaTitle="Projects"
-              fontSize={30}
-              isPermissionPage={true}
-              role={role}
-              darkMode={darkMode}
-            />
-            <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
+    <div className={darkMode ? 'bg-oxford-blue text-light' : ''}>
+      <div className={`container py-3 ${darkMode ? 'bg-yinmn-blue-light text-light' : ''}`}>
+        {fetching || !fetched ? <Loading align="center" /> : null}
+        <div className="d-flex align-items-center">
+          <h3 style={{ display: 'inline-block', marginRight: 10 }}>Projects</h3>
+          <EditableInfoModal
+            areaName="projectsInfoModal"
+            areaTitle="Projects"
+            fontSize={30}
+            isPermissionPage
+            role={role}
+            darkMode={darkMode}
+          />
+          <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
 
             {canPostProject ? <AddProject hasPermission={hasPermission} /> : null}
-          </div>
-
-          <SearchProjectByPerson onSearch={handleSearchName} />
-
-          <table className="table table-bordered table-responsive-sm">
-            <thead>
-              <ProjectTableHeader 
-                onChange={onChangeCategory} 
-                selectedValue={categorySelectedForSort} 
-                showStatus={showStatus} 
-                selectStatus={onSelectStatus}
-                sorted={sorter}
-                handleSort={handleSort}
-                darkMode={darkMode}
-              />
-            </thead>
-            <tbody className={darkMode ? 'bg-yinmn-blue dark-mode' : ''}>
-              {projectList}
-            </tbody>
-          </table>
         </div>
 
-        <ModalTemplate
-          isOpen={modalData.showModal}
-          closeModal={onCloseModal}
-          confirmModal={modalData.hasConfirmBtn ? confirmArchive : null}
-          setInactiveModal={modalData.hasInactiveBtn ? setInactiveProject : null}
-          modalMessage={modalData.modalMessage}
-          modalTitle={modalData.modalTitle}
-          darkMode={darkMode}
-          confirmButtonText={isArchiving ? 'Archiving...' : 'Confirm'}
-          isConfirmDisabled={isArchiving}
-        />
+        <SearchProjectByPerson onSearch={handleSearchName} />
+
+        <table className="table table-bordered table-responsive-sm">
+          <thead>
+            <ProjectTableHeader
+              onChange={onChangeCategory}
+              selectedValue={categorySelectedForSort}
+              showStatus={showStatus}
+              selectStatus={onSelectStatus}
+              sorted={sorter}
+              handleSort={handleSort}
+              darkMode={darkMode}
+            />
+          </thead>
+          <tbody className={darkMode ? 'bg-yinmn-blue dark-mode' : ''}>{projectList}</tbody>
+        </table>
       </div>
-    </>
+
+      <ModalTemplate
+        isOpen={modalData.showModal}
+        closeModal={onCloseModal}
+        confirmModal={modalData.hasConfirmBtn ? confirmArchive : null}
+        setInactiveModal={modalData.hasInactiveBtn ? setInactiveProject : null}
+        modalMessage={modalData.modalMessage}
+        modalTitle={modalData.modalTitle}
+        darkMode={darkMode}
+        confirmButtonText={isArchiving ? 'Archiving...' : 'Confirm'}
+        isConfirmDisabled={isArchiving}
+      />
+    </div>
   );
-}
+};
 
 const mapStateToProps = state => {
   return { state };
@@ -321,5 +329,5 @@ export default connect(mapStateToProps, {
   getPopupById,
   hasPermission,
   getProjectsByUsersName,
-  fetchProjectsWithActiveUsers
+  fetchProjectsWithActiveUsers,
 })(Projects);
