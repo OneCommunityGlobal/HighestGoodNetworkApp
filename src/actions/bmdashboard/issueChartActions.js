@@ -76,7 +76,6 @@ export const fetchLongestOpenIssues = (filters) => async (dispatch) => {
       payload: response.data
     });
   } catch (error) {
-    console.error('API Error:', error.response || error); // Log full error
 
     dispatch({
       type: FETCH_LONGEST_OPEN_ISSUES_FAILURE,
@@ -101,7 +100,6 @@ export const fetchMostExpensiveIssues = (filters) => async dispatch => {
       payload: response.data
     });
   } catch (error) {
-    console.error('API Error:', error.response || error); // Log full error
 
     dispatch({
       type: FETCH_MOST_EXPENSIVE_ISSUES_FAILURE,
