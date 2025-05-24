@@ -129,7 +129,7 @@
   display: inline-block;
   text-align: center;
   vertical-align: middle;
-  background: #ff4d4f;
+  background: #0000FF;
   border-radius: 50%;
   color: #fff;
   height: 22px;
@@ -264,12 +264,12 @@
 }
 
 .show-time-off-calender-svg {
-  fill: #17A2B8;
+  fill: white;
   width: 22px;
   height: 20px;
   position: relative;
-  top: 11px;
-  left: -2px;
+  /* top: 11px;
+  left: -2px; */
 }
 
 .show-time-off-calender-svg-selected {
