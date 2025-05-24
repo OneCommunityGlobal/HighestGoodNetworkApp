@@ -226,6 +226,10 @@ export const ENDPOINTS = {
   BM_TAG_ADD: `${APIEndpoint}/bm/tags`,
   BM_TAGS_DELETE: `${APIEndpoint}/bm/tags`,
 
+  BM_LONGEST_OPEN_ISSUES: `${APIEndpoint}/issues/longest-open`,
+  BM_MOST_EXPENSIVE_ISSUES: `${APIEndpoint}/issues/most-expensive`,
+
+
   GET_TIME_OFF_REQUESTS: () => `${APIEndpoint}/getTimeOffRequests`,
   ADD_TIME_OFF_REQUEST: () => `${APIEndpoint}/setTimeOffRequest`,
   UPDATE_TIME_OFF_REQUEST: id => `${APIEndpoint}/updateTimeOffRequest/${id}`,

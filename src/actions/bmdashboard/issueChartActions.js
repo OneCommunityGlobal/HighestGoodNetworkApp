@@ -6,6 +6,12 @@ import {
   FETCH_ISSUE_TYPES_YEARS_REQUEST,
   FETCH_ISSUE_TYPES_YEARS_SUCCESS,
   FETCH_ISSUE_TYPES_YEARS_FAILURE,
+  FETCH_LONGEST_OPEN_ISSUES_REQUEST,
+  FETCH_LONGEST_OPEN_ISSUES_SUCCESS,
+  FETCH_LONGEST_OPEN_ISSUES_FAILURE,
+  FETCH_MOST_EXPENSIVE_ISSUES_REQUEST,
+  FETCH_MOST_EXPENSIVE_ISSUES_SUCCESS,
+  FETCH_MOST_EXPENSIVE_ISSUES_FAILURE
 } from '../../constants/bmdashboard/issueConstants';
 import { ENDPOINTS } from '../../utils/URL'; // Import the endpoints
 
@@ -49,6 +55,57 @@ export const fetchIssueTypesAndYears = () => async dispatch => {
     dispatch({
       type: FETCH_ISSUE_TYPES_YEARS_FAILURE,
       payload: error.message || 'Failed to fetch issue types and years',
+    });
+  }
+};
+
+// GET / issues / longest - open ? projectIds = proj1, proj2 & startDate=xxx & endDate=xxx
+export const fetchLongestOpenIssues = (filters) => async (dispatch) => {
+  try {
+    dispatch({ type: FETCH_LONGEST_OPEN_ISSUES_REQUEST });
+
+    const response = await axios.get(ENDPOINTS.BM_LONGEST_OPEN_ISSUES, { params: filters });
+
+    // Add validation
+    if (!response.data) {
+      throw new Error('Empty response from server');
+    }
+
+    dispatch({
+      type: FETCH_LONGEST_OPEN_ISSUES_SUCCESS,
+      payload: response.data
+    });
+  } catch (error) {
+    console.error('API Error:', error.response || error); // Log full error
+
+    dispatch({
+      type: FETCH_LONGEST_OPEN_ISSUES_FAILURE,
+      payload: error.message || 'Failed to parse server response'
+    });
+  }
+};
+
+// GET /issues/most-expensive?projectIds=proj1,proj2&startDate=xxx&endDate=xxx
+export const fetchMostExpensiveIssues = (filters) => async dispatch => {
+  try {
+    dispatch({ type: FETCH_MOST_EXPENSIVE_ISSUES_REQUEST });
+
+    const response = await axios.get(ENDPOINTS.BM_MOST_EXPENSIVE_ISSUES, { params: filters });
+
+     if (!response.data) {
+      throw new Error('Empty response from server');
+     }
+
+    dispatch({
+      type: FETCH_MOST_EXPENSIVE_ISSUES_SUCCESS,
+      payload: response.data
+    });
+  } catch (error) {
+    console.error('API Error:', error.response || error); // Log full error
+
+    dispatch({
+      type: FETCH_MOST_EXPENSIVE_ISSUES_FAILURE,
+      payload: error.message || 'Failed to fetch most expensive issues',
     });
   }
 };
