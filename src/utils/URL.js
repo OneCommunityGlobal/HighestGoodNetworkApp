@@ -39,6 +39,8 @@ export const ENDPOINTS = {
   USER_PROJECTS: userId => `${APIEndpoint}/projects/user/${userId}`,
   PROJECT: `${APIEndpoint}/project/`,
   PROJECT_BY_ID: projectId => `${APIEndpoint}/project/${projectId}`,
+  PROJECT_MEMBER_SEARCH: (projectId, query) =>
+    `${APIEndpoint}/projects/${projectId}/users/search/${encodeURIComponent(query)}`,
   BADGE_COUNT: userId => `${APIEndpoint}/badge/badgecount/${userId}`,
   BADGE_COUNT_RESET: userId => `${APIEndpoint}/badge/badgecount/reset/${userId}`,
   PROJECT_MEMBER: projectId => `${APIEndpoint}/project/${projectId}/users`,
@@ -51,6 +53,7 @@ export const ENDPOINTS = {
   ORG_DATA: `${APIEndpoint}/dashboard/leaderboard/org/data`,
   TIME_ENTRIES_PERIOD: (userId, fromDate, toDate) =>
     `${APIEndpoint}/TimeEntry/user/${userId}/${fromDate}/${toDate}`,
+  TIME_ENTRIES_USERS_HOURS_PERIOD: `${APIEndpoint}/TimeEntry/users/totalHours`,
   TIME_ENTRIES_USER_LIST: `${APIEndpoint}/TimeEntry/users`,
   TIME_ENTRIES_REPORTS: `${APIEndpoint}/TimeEntry/reports`,
   TIME_ENTRIES_REPORTS_TOTAL_PROJECT_REPORT: `${APIEndpoint}/TimeEntry/reports/projects`,
@@ -218,7 +221,7 @@ export const ENDPOINTS = {
   BM_EQUIPMENT_TYPES: `${APIEndpoint}/bm/invtypes/equipments`,
   BM_EQUIPMENT_PURCHASE: `${APIEndpoint}/bm/equipment/purchase`,
   BM_PROJECTS: `${APIEndpoint}/bm/projects`,
-  BM_PROJECT_BY_ID: projectId => `${APIEndpoint}/project/${projectId}`,
+  BM_PROJECT_BY_ID: projectId => `${APIEndpoint}/bm/project/${projectId}`,
   BM_UPDATE_MATERIAL: `${APIEndpoint}/bm/updateMaterialRecord`,
   BM_UPDATE_MATERIAL_BULK: `${APIEndpoint}/bm/updateMaterialRecordBulk`,
   BM_UPDATE_MATERIAL_STATUS: `${APIEndpoint}/bm/updateMaterialStatus`,
@@ -245,6 +248,18 @@ export const ENDPOINTS = {
   BM_TAG_ADD: `${APIEndpoint}/bm/tags`,
   BM_TAGS_DELETE: `${APIEndpoint}/bm/tags`,
 
+  BM_PROJECT_MEMBERS: projectId => `${APIEndpoint}/bm/project/${projectId}/users`,
+
+  // bm time logger endpoints
+  TIME_LOGGER_START: (projectId, memberId) =>
+    `${APIEndpoint}/bm/timelogger/${projectId}/${memberId}/start`,
+  TIME_LOGGER_PAUSE: (projectId, memberId) =>
+    `${APIEndpoint}/bm/timelogger/${projectId}/${memberId}/pause`,
+  TIME_LOGGER_STOP: (projectId, memberId) =>
+    `${APIEndpoint}/bm/timelogger/${projectId}/${memberId}/stop`,
+  TIME_LOGGER_LOGS: (projectId, memberId) =>
+    `${APIEndpoint}/bm/timelogger/${projectId}/${memberId}/logs`,
+
   GET_TIME_OFF_REQUESTS: () => `${APIEndpoint}/getTimeOffRequests`,
   ADD_TIME_OFF_REQUEST: () => `${APIEndpoint}/setTimeOffRequest`,
   UPDATE_TIME_OFF_REQUEST: id => `${APIEndpoint}/updateTimeOffRequest/${id}`,
@@ -266,6 +281,9 @@ export const ENDPOINTS = {
   // lb dashboard endpoints
   LB_REGISTER: `${APIEndpoint}/lbdashboard/register`,
   LB_LOGIN: `${APIEndpoint}/lbdashboard/login`,
+  LB_LISTINGS: `${APIEndpoint}/lb/getListings`,
+  LB_LISTINGS_BASE: `${APIEndpoint}/lb`,
+  HELP_CATEGORIES: `${APIEndpoint}/help-categories`,
 };
 
 export const ApiEndpoint = APIEndpoint;
