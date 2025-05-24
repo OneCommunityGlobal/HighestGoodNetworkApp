@@ -23,7 +23,7 @@ import 'leaflet/dist/leaflet.css';
 import './Home.css';
 import L from 'leaflet';
 import logo from '../../../assets/images/logo2.png';
-import api, { FIXED_VILLAGES } from './data';
+import { fetchVillages, fetchListings, fetchBiddings, FIXED_VILLAGES } from './data';
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -74,7 +74,7 @@ function Home() {
   useEffect(() => {
     const fetchVillagesData = async () => {
       try {
-        const villages = await api.fetchVillages();
+        const villages = await fetchVillages();
         setAllVillages(villages);
       } catch (error) {
         console.error('Error fetching villages:', error);
@@ -113,7 +113,7 @@ function Home() {
 
         if (activeTab === 'listings') {
           try {
-            const listingsData = await api.fetchListings(
+            const listingsData = await fetchListings(
               pagination.currentPage,
               pagination.pageSize,
               filters,
@@ -133,7 +133,7 @@ function Home() {
           }
         } else {
           try {
-            const biddingsData = await api.fetchBiddings(
+            const biddingsData = await fetchBiddings(
               pagination.currentPage,
               pagination.pageSize,
               filters,
