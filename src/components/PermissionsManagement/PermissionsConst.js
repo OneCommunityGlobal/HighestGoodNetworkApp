@@ -253,7 +253,8 @@ export const permissionLabels = [
       {
         label: 'Modify Badge Amount',
         key: 'modifyBadgeAmount',
-        description: 'Gives the user permission to increase or decrease the count of a badge on the Badge Reports Component',
+        description:
+          'Gives the user permission to increase or decrease the count of a badge on the Badge Reports Component',
       },
       {
         label: 'Assign Badges',
