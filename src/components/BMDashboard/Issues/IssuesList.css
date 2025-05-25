@@ -1,12 +1,15 @@
 
 
 /* Main table layout */
-.issue-table {
+  .issue-table {
     border-collapse: separate;
     border-spacing: 0 12px; /* vertical spacing between rows */
     width: 100%;
-    background-color: #fff;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  .issue-table{
+    background-color: #fff;
   }
   
   /* Header cells */
@@ -17,7 +20,7 @@
     text-align: left;
     padding: 12px 16px;
     border-bottom: 1px solid #dee2e6;
-    background-color: #f8f9fa;
+    background-color: white;
   }
   
   /* Body cells */
@@ -32,12 +35,14 @@
     overflow-wrap: break-word;
     max-width: 200px;
   }
-  
+
   /* Row styling */
   .issue-table tbody tr {
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   }
+
+  
   
   /* Button for tags (Virtual / In-person) */
   .issue-table .btn-outline-primary {
@@ -89,22 +94,48 @@
     padding-bottom: 12px;
   }
   
-  /* Pagination styling (if you're customizing)
-  .pagination {
-    margin-top: 16px;
-    justify-content: center;
-  }
-  
-  .pagination .page-item .page-link {
-    border-radius: 6px;
-    margin: 0 4px;
-    font-size: 14px;
-    color: #4b4b4b;
-  }
-  
-  .pagination .page-item.active .page-link {
-    background-color: #d4c684;
-    border-color: #d4c684;
-    color: #fff;
-  }
-   */
+  /* Dark theme overrides */
+.dark-theme .issue-table {
+  background-color: #2b3e59;
+}
+
+.dark-theme .issue-table thead th {
+  background-color: #1c2541;
+  color: #cccccc;
+  border: 1px solid #eceaea;
+}
+
+.dark-theme .issue-table tbody td {
+  background-color: #2b3e59;
+  color: #e0e0e0;
+  border-color: #f6f2f2;
+}
+
+.dark-theme .issue-table tbody tr {
+  box-shadow: 0 2px 4px rgba(255, 255, 255, 0.05);
+}
+
+.dark-theme .btn-outline-primary {
+  background-color: transparent;
+  color: #90caf9;
+  border-color: #90caf9;
+}
+
+.dark-theme .dropdown-menu-custom {
+  background-color: #1c2541;
+  box-shadow: 0px 4px 12px rgba(255, 255, 255, 0.1);
+}
+
+.dark-theme .dropdown-menu-custom .dropdown-item {
+  color: #e0e0e0;
+}
+
+.dark-theme .dropdown-menu-custom .dropdown-item:hover {
+  background-color: #2b3e59;
+}
+
+.dark-theme .dropdown-toggle {
+  background-color: #1c2541 !important;
+  color: #e0e0e0 !important;
+  border: 1px solid #666 !important;
+}

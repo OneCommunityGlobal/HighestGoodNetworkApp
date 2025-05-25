@@ -16,6 +16,7 @@ export default function IssueList() {
   const [issues, setIssues] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [editedName, setEditedName] = useState('');
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const [dropdownOpenId, setDropdownOpenId] = useState(null);
   const closeDropdown = () => setDropdownOpenId(null);
@@ -161,7 +162,7 @@ export default function IssueList() {
     startDate && endDate ? `${formatDate(startDate)} - ${formatDate(endDate)}` : '';
 
   return (
-    <Container style={{ padding: '20px' }}>
+    <Container className={`${darkMode ? 'dark-theme' : ''}`} style={{ padding: '20px' }}>
       <h4 className="mb-4">A List of Issues</h4>
 
       <Row className="mb-3 align-items-center">
