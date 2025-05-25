@@ -1,11 +1,10 @@
-/* global tinymce */
 import { useState, useEffect } from 'react';
 import './Announcements.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react';
-import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
+import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
 
 function Announcements({ title, email: initialEmail }) {
   const darkMode = useSelector(state => state.theme.darkMode);
