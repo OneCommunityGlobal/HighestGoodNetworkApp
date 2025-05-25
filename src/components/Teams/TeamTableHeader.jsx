@@ -28,7 +28,7 @@ export const TeamTableHeader = React.memo(
         case 'descending':
           return '↓';
         default:
-          return '⇵'; // Default icon or whatever you prefer
+          return '⇵';
       }
     };
 
@@ -53,7 +53,9 @@ export const TeamTableHeader = React.memo(
         <th scope="col" id="teams__members">
           {MEMBERS}
         </th>
-        {(canDeleteTeam || canPutTeam) && <th scope="col" id="teams__delete" />}
+        {(canDeleteTeam || canPutTeam) && (
+          <th scope="col" id="teams__delete" data-testid="teams__delete" />
+        )}
       </tr>
     );
   },

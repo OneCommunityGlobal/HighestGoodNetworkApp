@@ -20,7 +20,7 @@ function TeamsReportLogs({ title, selectedTeamsTotalValues, selectedTeamsWeeklyE
           className="team-report-time-log-block"
           darkMode={darkMode}
         >
-          <h3 className='text-light'>{selectedTeamsTotalValues.selectedTeamsTotalPeople}</h3>
+          <h3 className="text-light">{selectedTeamsTotalValues.selectedTeamsTotalPeople}</h3>
           <p>Number of Members</p>
         </ReportPage.ReportBlock>
         <ReportPage.ReportBlock
@@ -29,7 +29,7 @@ function TeamsReportLogs({ title, selectedTeamsTotalValues, selectedTeamsWeeklyE
           className="team-report-time-log-block"
           darkMode={darkMode}
         >
-          <h3 className='text-light'>{selectedTeamsTotalValues.selectedTeamsTotalBlueSquares}</h3>
+          <h3 className="text-light">{selectedTeamsTotalValues.selectedTeamsTotalBlueSquares}</h3>
           <p>Total Team Blue Squares</p>
         </ReportPage.ReportBlock>
         <ReportPage.ReportBlock
@@ -38,7 +38,7 @@ function TeamsReportLogs({ title, selectedTeamsTotalValues, selectedTeamsWeeklyE
           className="team-report-time-log-block"
           darkMode={darkMode}
         >
-          <h3 className='text-light'>{selectedTeamsTotalValues.selectedTeamsTotalCommitedHours}</h3>
+          <h3 className="text-light">{selectedTeamsTotalValues.selectedTeamsTotalCommitedHours}</h3>
           <p>Weekly Committed Hours</p>
         </ReportPage.ReportBlock>
         <ReportPage.ReportBlock
@@ -46,9 +46,8 @@ function TeamsReportLogs({ title, selectedTeamsTotalValues, selectedTeamsWeeklyE
           secondColor="#ff9145"
           className="team-report-time-log-block"
           darkMode={darkMode}
-
         >
-          <h3 className='text-light'>{totalTeamsWorkedHours}</h3>
+          <h3 className="text-light">{totalTeamsWorkedHours}</h3>
           <p>Total Worked Hours This Week</p>
         </ReportPage.ReportBlock>
       </div>

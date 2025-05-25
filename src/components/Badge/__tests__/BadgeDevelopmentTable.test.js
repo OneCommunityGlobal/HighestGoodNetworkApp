@@ -5,7 +5,7 @@ import BadgeDevelopmentTable from '../BadgeDevelopmentTable';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
-import { shallow } from 'enzyme';
+
 import { themeMock } from '__tests__/mockStates';
 
 const mockStore = configureStore([thunk]);
