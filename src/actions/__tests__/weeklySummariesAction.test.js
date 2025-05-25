@@ -4,9 +4,7 @@ import { ENDPOINTS } from '../../utils/URL';
 import { fetchWeeklySummariesBegin, fetchWeeklySummariesSuccess, fetchWeeklySummariesError, getWeeklySummaries, updateWeeklySummaries } from '../weeklySummaries'
 import { getUserProfileActionCreator } from '../userProfile';
 
-
 jest.mock('axios');
-
 
 describe('Weekly Summaries Action', () => {
 
