@@ -4,10 +4,11 @@ import { useState, useEffect, useRef } from 'react';
 import './Announcements.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react';
-import { toast } from 'react-toastify';
 import { SiImgur } from 'react-icons/si';
-import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
 import ImgurPostEditor from './ImgurComponents/ImgurPostEditor/ImgurPostEditor';
+import { boxStyle, boxStyleDark } from 'styles';
+import { toast } from 'react-toastify';
+import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
 
 function Announcements({ title, email: initialEmail }) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -18,6 +19,7 @@ function Announcements({ title, email: initialEmail }) {
   const [headerContent, setHeaderContent] = useState('');
   const [showEditor, setShowEditor] = useState(true);
   const [isFileUploaded, setIsFileUploaded] = useState(false);
+  
   const tinymce = useRef(null);
 
   const [showImgurPostEditor, setShowImgurPostEditor] = useState(false);
@@ -113,6 +115,7 @@ function Announcements({ title, email: initialEmail }) {
       toast.error('Please select a file first');
       return;
     }
+    setIsFileUploaded(true);
     convertImageToBase64(imageFile, base64Image => {
       const imageTag = `<img src="${base64Image}" alt="Header Image" style="width: 100%; max-width: 100%; height: auto;">`;
       setHeaderContent(prevContent => `${imageTag}${prevContent}`);
@@ -150,7 +153,12 @@ function Announcements({ title, email: initialEmail }) {
       return;
     }
 
-    const invalidEmails = emailList.filter(address => !validateEmail(address.trim()));
+    if (!isFileUploaded) {
+      toast.error('Error: Please upload a file.');
+      return;
+    }
+
+    const invalidEmails = emailList.filter(email => !validateEmail(email.trim()));
 
     if (invalidEmails.length > 0) {
       toast.error(`Error: Invalid email addresses: ${invalidEmails.join(', ')}`);
