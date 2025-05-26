@@ -67,8 +67,8 @@ function ImgurScheduledPostsEditor({
    * @param {string} postId - ID of the post to delete
    * @returns {Promise<void>}
    */
-  const handleDeleteClick = postId => {
-    setPostToDelete(postId);
+  const handleDeleteClick = jobId => {
+    setPostToDelete(jobId);
     setShowConfirmDialog(true);
   };
 
@@ -201,7 +201,7 @@ function ImgurScheduledPostsEditor({
               className={`scheduled-post-card ${expandedPostId === post._id ? 'expanded' : ''}`}
             >
               <div className="scheduled-post-image">
-                <img src={post.imgurImageUrl} alt="Scheduled post" />
+                <img src={post.imageUrl} alt="Scheduled post" />
                 <div className="scheduled-time">
                   <span className="time-icon">🕒</span>
                   {formatScheduledDate(post.scheduledTime)}
@@ -225,7 +225,7 @@ function ImgurScheduledPostsEditor({
                     <button
                       type="button"
                       className="delete-button"
-                      onClick={() => handleDeleteClick(post._id)}
+                      onClick={() => handleDeleteClick(post.jobId)}
                       aria-label="Delete post"
                     >
                       ✖
@@ -233,16 +233,44 @@ function ImgurScheduledPostsEditor({
                   </div>
                 </div>
 
+                { /* Post title */ }
+                <div className="scheduled-post-title">
+                  <h4>{post.title}</h4>
+                </div>
+
+                { /* Post description */ }
                 <div className="scheduled-post-caption">
                   {expandedPostId === post._id ? (
-                    <p>{post.caption}</p>
+                    <p>{post.description}</p>
                   ) : (
                     <p>
-                      {post.caption.length > 100
-                        ? `${post.caption.substring(0, 100)}...`
-                        : post.caption}
+                      {post.description.length > 100
+                        ? `${post.description.substring(0, 100)}...`
+                        : post.description}
                     </p>
                   )}
+                </div>
+
+                { /* Post tags and topic */ }
+                <div className="scheduled-post-footer">
+                  <div className="scheduled-post-tags-left">
+                    {post.tags && post.tags.length > 0 ? (
+                      post.tags.split(',').map(tag => (
+                        <span key={tag} className="scheduled-post-tag">
+                          {tag}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="scheduled-post-tag">No tags</span>
+                    )}
+                  </div>
+                  <div className="scheduled-post-topic-right">
+                    {post.topic ? (
+                      <span className="scheduled-post-topic">{post.topic}</span>
+                    ) : (
+                      <span className="scheduled-post-topic">No topic</span>
+                    )}
+                  </div>
                 </div>
 
                 {expandedPostId === post._id && (
@@ -254,7 +282,7 @@ function ImgurScheduledPostsEditor({
                       <strong>Created:</strong> {new Date(post.createdAt).toLocaleString()}
                     </p>
                     <p>
-                      <strong>Last Updated:</strong> {new Date(post.updatedAt).toLocaleString()}
+                      <strong>Image Url:</strong> {post.imageUrl}
                     </p>
                   </div>
                 )}

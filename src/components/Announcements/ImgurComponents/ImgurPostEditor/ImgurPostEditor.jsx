@@ -43,6 +43,8 @@ function ImgurPostEditor({ imgurConnectionStatus, setImgurConnectionStatus }) {
   const [imageResetKey, setImageResetKey] = useState(0);
 
   const [imgurAuthInfo, setImgurAuthInfo] = useState({
+    accountId: null,
+    accountUsername: null,
     hasValidToken: false,
     tokenExpires: null,
     userId: null,
@@ -60,6 +62,11 @@ function ImgurPostEditor({ imgurConnectionStatus, setImgurConnectionStatus }) {
   const [caption, setCaption] = useState('');
   const [file, setFile] = useState(null);
 
+  const [title, setTitle] = useState('');
+  const [topic, setTopic] = useState('');
+  const [description, setDescription] = useState('');
+  const [tags, setTags] = useState(['']);
+
   const [startDate, setStartDate] = useState(null);
   const [minTime, setMinTime] = useState(new Date());
 
@@ -70,13 +77,16 @@ function ImgurPostEditor({ imgurConnectionStatus, setImgurConnectionStatus }) {
    */
   const handleImgurLoginSuccess = async () => {
     const status = await checkImgurAuthStatus(setImgurError);
+    console.log('Imgur status:', status);
 
     if (status && status.success === true) {
       setImgurConnectionStatus(true);
       setImgurError('');
       setImgurAuthInfo({
+        accountId: status.data.accountId,
+        accountUsername: status.data.accountUsername,
         hasValidToken: status.data.hasValidToken,
-        tokenExpires: status.data.tokenExpires,
+        tokenExpires: status.data.expiresAt,
         userId: status.data.userId,
         timestamp: status.timestamp,
       });
@@ -141,9 +151,15 @@ function ImgurPostEditor({ imgurConnectionStatus, setImgurConnectionStatus }) {
     setIsLoading(true);
     setIsPosting(true);
     const response = await postToImgur(
+      title,
+      topic,
+      tags,
       caption,
       file,
       setImgurError,
+      setTitle,
+      setTopic,
+      setTags,
       setCaption,
       setFile,
       setImageResetKey,
@@ -165,6 +181,18 @@ function ImgurPostEditor({ imgurConnectionStatus, setImgurConnectionStatus }) {
 
   const getCharacterCount = text => {
     return [...text].length;
+  };
+
+  const handleTitleChange = e => {
+    setTitle(e.target.value);
+  };
+  const handleTopicChange = e => {
+    setTopic(e.target.value);
+  };
+
+  const handleTagsChange = e => {
+    const tagsArray = e.target.value.split(',').map(tag => tag.trim());
+    setTags(tagsArray);
   };
 
   /**
@@ -215,6 +243,9 @@ function ImgurPostEditor({ imgurConnectionStatus, setImgurConnectionStatus }) {
     try {
       const response = await scheduleImgurPost(
         startDate,
+        title,
+        topic,
+        tags,
         caption,
         file,
         setScheduledButtonTextState,
@@ -228,6 +259,9 @@ function ImgurPostEditor({ imgurConnectionStatus, setImgurConnectionStatus }) {
           setScheduledPostsError,
           setIsLoadingScheduledPosts,
         );
+        setTitle('');
+        setTopic('');
+        setTags(['']);
         setCaption('');
         setFile(null);
         setImageResetKey(prevKey => prevKey + 1);
@@ -253,6 +287,8 @@ function ImgurPostEditor({ imgurConnectionStatus, setImgurConnectionStatus }) {
     checkImgurAuthStatus(setImgurError);
     setImgurConnectionStatus(false);
     setImgurAuthInfo({
+      accountId: null,
+      accountUsername: null,
       hasValidToken: false,
       tokenExpires: null,
       userId: null,
@@ -268,7 +304,10 @@ function ImgurPostEditor({ imgurConnectionStatus, setImgurConnectionStatus }) {
   const getButtonTitle = () => {
     if (isExceedingLimit) return 'Caption exceeds character limit';
     if (!file) return 'Please select an image';
+    if (!title) return 'Please enter a title';
+    if (!topic) return 'Please enter a topic';
     if (!caption) return 'Please enter a caption';
+    if (!tags) return 'Please enter tags';
     if (isLoading) return 'Loading...';
     return '';
   };
@@ -342,7 +381,34 @@ function ImgurPostEditor({ imgurConnectionStatus, setImgurConnectionStatus }) {
               {/* upload image */}
               <ImageUploader onImageSelect={handleFileSelect} resetKey={imageResetKey} />
 
-              {/* caption textarea */}
+              {/* title textarea */}
+              <input
+                type="text"
+                className="imgur-title-input"
+                placeholder='Write a title... (e.g. "A Beautiful Sunset")'
+                onChange={e => handleTitleChange(e)}
+                value={title}
+              />
+
+              { /* topic input */}
+              <input
+                type="text"
+                className="imgur-topic-input"
+                placeholder='Write a topic... (e.g. "Environment, Animals, Nature")'
+                onChange={e => handleTopicChange(e)}
+                value={topic}
+              />
+
+              { /* tags input */}
+              <input
+                type="text"
+                className="imgur-tags-input"
+                placeholder='Write tags... (e.g. "#funny, #engaging, #environment")'
+                onChange={e => handleTagsChange(e)}
+                value={tags}
+              />
+
+              {/* description textarea */}
               <textarea
                 className="imgur-caption-textarea"
                 placeholder='Write a caption... (e.g. use engaging captions that are concise, add value, and include a call to action. Some examples include: "Ready to take on the week? ✨" ) and use hashtags to increase visibility. (e.g. #MondayMotivation #Inspiration)'
@@ -358,6 +424,10 @@ function ImgurPostEditor({ imgurConnectionStatus, setImgurConnectionStatus }) {
                   <span className="limit-warning">Character limit exceeded!</span>
                 )}
               </div>
+              
+
+              
+
             </div>
 
             {/* post button */}
@@ -365,7 +435,7 @@ function ImgurPostEditor({ imgurConnectionStatus, setImgurConnectionStatus }) {
               <button
                 type="button"
                 className="schedule-post-imgur-button"
-                disabled={isExceedingLimit || !caption || !file || isLoading}
+                disabled={isExceedingLimit || !caption || !file || !title || !topic || !tags || isLoading}
                 title={getButtonTitle()}
                 onClick={() => {
                   handlePostToImgur();

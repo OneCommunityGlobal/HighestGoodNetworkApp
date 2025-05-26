@@ -194,6 +194,30 @@
   background-color: #0077b5;
 }
 
+.imgur-title-input {
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+  padding: 5px;
+}
+
+.imgur-topic-input {
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+  padding: 5px;
+}
+
+.imgur-tags-input {
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+  padding: 5px;
+}
+
 .imgur-caption-textarea {
   width: 100%;
   border: 1px solid #ccc;
@@ -241,6 +265,7 @@
   justify-content: center;
   align-items: center;
   padding: 15px 0 0 0;
+  gap: 10px;
   width: 100%;
 }
 

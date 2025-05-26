@@ -48,11 +48,26 @@ export const getImgurScheduledPosts = async (
  */
 export const scheduleImgurPost = async (
   startDate,
+  title,
+  topic,
+  tags,
   caption,
   file,
   setScheduledButtonTextState,
   setScheduledPostsError,
 ) => {
+  if (!title) {
+    setScheduledPostsError('Please enter a title for the post.');
+    return null;
+  }
+  if (!topic) {
+    setScheduledPostsError('Please select a topic for the post.');
+    return null;
+  }
+  if (!tags) {
+    setScheduledPostsError('Please enter tags for the post.');
+    return null;
+  }
   if (!startDate) {
     setScheduledPostsError('Please select a date and time to schedule the post.');
     return null;
@@ -74,17 +89,11 @@ export const scheduleImgurPost = async (
    * * Schedule the Imgur post with the image URL and delete hash.
    */
   try {
-    setScheduledButtonTextState('Validating image...');
-    const imageValidation = await validateImgurImage(file);
-    if (!imageValidation.isValid) {
-      setScheduledPostsError(imageValidation.message);
-      return null;
-    }
-    setScheduledButtonTextState('Image validation complete');
-    const convertedFile = await convertToJPG(file);
 
     const imgurFormData = new FormData();
-    imgurFormData.append('image', convertedFile);
+    imgurFormData.append('title', title);
+    imgurFormData.append('image', file);
+    imgurFormData.append('description', caption);
 
     setScheduledButtonTextState('Uploading image to Imgur...');
     const imgurResponse = await axios.post(ENDPOINTS.POST_IMGUR_IMAGE, imgurFormData, {
@@ -97,18 +106,26 @@ export const scheduleImgurPost = async (
       return null;
     }
     setScheduledButtonTextState('Imgur upload complete');
-    const imageURL = imgurResponse.data.data.link;
-    const deleteHash = imgurResponse.data.data.deletehash;
+    console.log('Imgur upload response:', imgurResponse.data);
+    const deleteHash = imgurResponse.data.data.data.deletehash;
+    const imageHash = imgurResponse.data.data.data.id;
+    const formattedTags = tags.join(',');
 
     setScheduledButtonTextState('Scheduling post...');
     const response = await axios.post(ENDPOINTS.POST_IMGUR_SCHEDULED_POST, {
-      imgurImageUrl: imageURL,
-      imgurDeleteHash: deleteHash,
-      caption,
+      imageHash: imageHash,
+      tags: formattedTags,
+      topic: topic,
+      deleteHash: deleteHash,
       scheduledTime: formattedDate,
     });
     if (response.data.success !== true) {
-      setScheduledPostsError('Imgur post scheduling failed. Please try again.');
+      const deleteResponse = await axios.delete(ENDPOINTS.DELETE_IMGUR_IMAGE(deleteHash));
+      if (deleteResponse.data.success !== true) {
+        setScheduledPostsError('Error deleting image from Imgur. Please try again.');
+      }
+      console.log('imgur delete response:', deleteResponse.data);
+      setScheduledPostsError('Error scheduling Imgur post. Please try again.');
       return null;
     }
     setScheduledButtonTextState('Post scheduled');
@@ -122,18 +139,18 @@ export const scheduleImgurPost = async (
 /**
  * Deletes a scheduled Imgur post with the given post ID
  *
- * @param {string} postId - ID of the post to delete
+ * @param {string} jobId - ID of the post to delete
  * @param {function} setScheduledPostsError - State setter for error messages
  * @returns {Promise<Object|null>} Response data or null on error
  */
-export const deleteImgurScheduledPost = async (postId, setScheduledPostsError) => {
-  if (!postId) {
+export const deleteImgurScheduledPost = async (jobId, setScheduledPostsError) => {
+  if (!jobId) {
     setScheduledPostsError('Cannot delete post: Missing post ID');
     return null;
   }
 
   try {
-    const response = await axios.delete(ENDPOINTS.DELETE_IMGUR_SCHEDULED_POST(postId));
+    const response = await axios.delete(ENDPOINTS.DELETE_IMGUR_SCHEDULED_POST(jobId));
 
     return response.data;
   } catch (error) {

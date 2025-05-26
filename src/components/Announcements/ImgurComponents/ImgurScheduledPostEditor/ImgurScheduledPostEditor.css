@@ -1,7 +1,8 @@
 .scheduled-posts-editor {
   width: 100%;
   /* margin-top: 30px; */
-  max-height: 600px; 
+  /* max-height: 600px;  */
+  height: auto;
   overflow-y: auto;
   overflow-x: hidden;
   /* padding: 0 5px;  */
@@ -148,6 +149,10 @@
 .scheduled-post-status {
   margin: 0;
   font-size: 14px;
+  color: #737373;
+  background-color: #f0f0f0;
+  padding: 5px 10px;
+  border-radius: 4px;
 }
 
 .scheduled-post-status span {
@@ -206,6 +211,42 @@
   margin: 10px 0;
   font-size: 14px;
   line-height: 1.5;
+}
+
+.scheduled-post-title {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.scheduled-post-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.scheduled-post-tags-left {
+  display: flex;
+  gap: 5px;
+}
+
+.scheduled-post-topic-right {
+  display: flex;
+  align-items: center;
+}
+
+.scheduled-post-topic {
+  color: #262626;
+  font-size: 12px;
+}
+
+.scheduled-post-tag {
+  background-color: #e0e0e0;
+  color: #262626;
+  padding: 5px 10px;
+  border-radius: 10px;
+  font-size: 12px;
 }
 
 .scheduled-post-details {

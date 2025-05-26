@@ -161,7 +161,7 @@ export const ENDPOINTS = {
 
   POST_IMGUR_SCHEDULED_POST: `${APIEndpoint}/imgur/schedule-post`,
   GET_IMGUR_SCHEDULED_POSTS: `${APIEndpoint}/imgur/scheduled-posts`,
-  DELETE_IMGUR_SCHEDULED_POST: postId => `${APIEndpoint}/imgur/posts/${postId}`,
+  DELETE_IMGUR_SCHEDULED_POST: jobId => `${APIEndpoint}/imgur/posts/${jobId}`,
 
   POST_IMGUR_IMAGE: `${APIEndpoint}/imgur/upload`,
   POST_IMGUR_IMAGE_TO_GALLERY: imageHash => `${APIEndpoint}/imgur/upload-to-gallery/${imageHash}`,

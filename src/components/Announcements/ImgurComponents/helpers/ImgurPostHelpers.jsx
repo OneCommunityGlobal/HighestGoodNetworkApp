@@ -2,6 +2,7 @@ import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
 import { toast } from 'react-toastify';
 import { convertToJPG, validateImgurImage } from './ImgurHelpers';
+import { format } from 'date-fns';
 
 /**
  * Checks the authentication status of the Imgur connection
@@ -56,15 +57,36 @@ export const disconnectFromImgur = async setImgurError => {
  * @returns {Promise<Object|null>} The Imgur API response or null if error
  */
 export const postToImgur = async (
+  title,
+  topic,
+  tags,
   caption,
   file,
   setImgurError,
+  setTitle,
+  setTopic,
+  setTags,
   setCaption,
   setFile,
   setImageResetKey,
   setButtonTextState,
 ) => {
   try {
+    if (!title) {
+      setImgurError('No title provided. Please enter a title for the post.');
+      return null;
+    }
+
+    if (!topic) {
+      setImgurError('No topic provided. Please enter a topic for the post.');
+      return null;
+    }
+
+    if (!tags) {
+      setImgurError('No tags provided. Please enter tags for the post.');
+      return null;
+    }
+
     if (!caption) {
       setImgurError('No caption provided. Please enter a caption for the post.');
       return null;
@@ -75,17 +97,14 @@ export const postToImgur = async (
       return null;
     }
 
-    setButtonTextState('Validating image...');
-    const validationResponse = await validateImgurImage(file);
-    setButtonTextState('Validation complete');
-    if (!validationResponse.isValid) {
-      setImgurError(validationResponse.message);
-      return null;
-    }
+    // change tags from arrays to strings
+    const formattedTags = tags.join(',');
 
-    const convertedFile = await convertToJPG(file);
     const imgurFormData = new FormData();
-    imgurFormData.append('image', convertedFile);
+    imgurFormData.append('title', title);
+    imgurFormData.append('image', file);
+    imgurFormData.append('description', caption);
+    
 
     // Upload image to Imgur
     setButtonTextState('Uploading image to Imgur...');
@@ -100,54 +119,30 @@ export const postToImgur = async (
     }
     setButtonTextState('Imgur upload complete');
 
-    const imageURL = imgurResponse.data.data.link;
-    const deleteHash = imgurResponse.data.data.deletehash;
+    setButtonTextState('Adding post to Imgur gallery...');
+    const imageHash = imgurResponse.data.data.data.id;
 
-    // Create Imgur container
-    setButtonTextState('Creating Imgur container...');
-    const imgurContainerCreateResponse = await axios.post(
-      ENDPOINTS.CREATE_IMGUR_CONTAINER,
-      {
-        imageUrl: imageURL,
-        caption,
-      },
-    );
-    if (imgurContainerCreateResponse.data.success !== true) {
-      setImgurError('Imgur container creation failed. Please try again.');
+    const imgurGalleryResponse = await axios.post(ENDPOINTS.POST_IMGUR_IMAGE_TO_GALLERY(imageHash), {
+      title: title,
+      topic: topic,
+      tags: formattedTags,
+    })
+
+    if (imgurGalleryResponse.data.success !== true) {
+      setImgurError('Imgur gallery post failed. Please try again.');
       return null;
     }
-    setButtonTextState('Imgur container created');
+    setButtonTextState('Imgur gallery post complete');
 
-    const containerId = imgurContainerCreateResponse.data.id;
-
-    // Upload the container to Imgur
-    setButtonTextState('Uploading Imgur container...');
-    const imgurContainerUploadResponse = await axios.post(ENDPOINTS.POST_IMGUR_CONTAINER, {
-      containerId,
-    });
-    if (imgurContainerUploadResponse.data.success !== true) {
-      setImgurError('Imgur container upload failed. Please try again.');
-      return null;
-    }
-    setButtonTextState('Imgur container uploaded');
-
-    // Delete the image from Imgur after posting to Imgur
-    setButtonTextState('Deleting image from Imgur...');
-    const deleteImgurResponse = await axios.delete(ENDPOINTS.DELETE_IMGUR_IMAGE, {
-      data: { deleteHash },
-    });
-    if (deleteImgurResponse.data.success !== true) {
-      setImgurError('Imgur image deletion failed.');
-      return null;
-    }
-    setButtonTextState('Imgur image deleted');
-
+    setTitle('');
+    setTopic('');
+    setTags(['']);
     setCaption('');
     setFile(null);
     setImageResetKey(prev => prev + 1);
     setButtonTextState('');
 
-    return imgurContainerUploadResponse.data;
+    return imgurGalleryResponse.data;
   } catch (error) {
     setImgurError('Error in postToImgur');
     return null;
