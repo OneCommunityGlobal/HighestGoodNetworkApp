@@ -38,6 +38,7 @@ function AddTaskModal(props) {
    */
   // props from store
   const { tasks, copiedTask, allMembers, allProjects, error, darkMode } = props;
+  console.log("All Members in AddTaskModal:", allMembers);
 
   const handleBestHoursChange = e => {
     setHoursBest(e.target.value);
