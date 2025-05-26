@@ -233,12 +233,12 @@ function ImgurScheduledPostsEditor({
                   </div>
                 </div>
 
-                { /* Post title */ }
+                {/* Post title */}
                 <div className="scheduled-post-title">
                   <h4>{post.title}</h4>
                 </div>
 
-                { /* Post description */ }
+                {/* Post description */}
                 <div className="scheduled-post-caption">
                   {expandedPostId === post._id ? (
                     <p>{post.description}</p>
@@ -251,7 +251,7 @@ function ImgurScheduledPostsEditor({
                   )}
                 </div>
 
-                { /* Post tags and topic */ }
+                {/* Post tags and topic */}
                 <div className="scheduled-post-footer">
                   <div className="scheduled-post-tags-left">
                     {post.tags && post.tags.length > 0 ? (

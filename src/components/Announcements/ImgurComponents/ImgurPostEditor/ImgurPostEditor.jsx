@@ -96,11 +96,7 @@ function ImgurPostEditor({ imgurConnectionStatus, setImgurConnectionStatus }) {
   // check connection status when component mounts
   useEffect(() => {
     handleImgurLoginSuccess();
-    getImgurScheduledPosts(
-      setScheduledPosts,
-      setScheduledPostsError,
-      setIsLoadingScheduledPosts,
-    );
+    getImgurScheduledPosts(setScheduledPosts, setScheduledPostsError, setIsLoadingScheduledPosts);
   }, []);
 
   /**
@@ -220,11 +216,7 @@ function ImgurPostEditor({ imgurConnectionStatus, setImgurConnectionStatus }) {
     } else {
       toast.error('Error deleting post');
     }
-    getImgurScheduledPosts(
-      setScheduledPosts,
-      setScheduledPostsError,
-      setIsLoadingScheduledPosts,
-    );
+    getImgurScheduledPosts(setScheduledPosts, setScheduledPostsError, setIsLoadingScheduledPosts);
   };
 
   /**
@@ -387,7 +379,7 @@ function ImgurPostEditor({ imgurConnectionStatus, setImgurConnectionStatus }) {
                 value={title}
               />
 
-              { /* topic input */}
+              {/* topic input */}
               <input
                 type="text"
                 className="imgur-topic-input"
@@ -396,7 +388,7 @@ function ImgurPostEditor({ imgurConnectionStatus, setImgurConnectionStatus }) {
                 value={topic}
               />
 
-              { /* tags input */}
+              {/* tags input */}
               <input
                 type="text"
                 className="imgur-tags-input"
@@ -421,10 +413,6 @@ function ImgurPostEditor({ imgurConnectionStatus, setImgurConnectionStatus }) {
                   <span className="limit-warning">Character limit exceeded!</span>
                 )}
               </div>
-              
-
-              
-
             </div>
 
             {/* post button */}
@@ -432,7 +420,9 @@ function ImgurPostEditor({ imgurConnectionStatus, setImgurConnectionStatus }) {
               <button
                 type="button"
                 className="schedule-post-imgur-button"
-                disabled={isExceedingLimit || !caption || !file || !title || !topic || !tags || isLoading}
+                disabled={
+                  isExceedingLimit || !caption || !file || !title || !topic || !tags || isLoading
+                }
                 title={getButtonTitle()}
                 onClick={() => {
                   handlePostToImgur();

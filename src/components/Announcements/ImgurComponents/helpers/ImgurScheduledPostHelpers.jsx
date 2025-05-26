@@ -87,7 +87,6 @@ export const scheduleImgurPost = async (
    * * Schedule the Imgur post with the image URL and delete hash.
    */
   try {
-
     const imgurFormData = new FormData();
     imgurFormData.append('title', title);
     imgurFormData.append('image', file);

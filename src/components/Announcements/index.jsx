@@ -1,13 +1,10 @@
-/* global tinymce */
-// import { useState, useEffect } from 'react';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import './Announcements.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react';
 import { SiImgur } from 'react-icons/si';
-import ImgurPostEditor from './ImgurComponents/ImgurPostEditor/ImgurPostEditor';
-import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
+import ImgurPostEditor from './ImgurComponents/ImgurPostEditor/ImgurPostEditor';
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
 
 function Announcements({ title, email: initialEmail }) {
@@ -19,8 +16,6 @@ function Announcements({ title, email: initialEmail }) {
   const [headerContent, setHeaderContent] = useState('');
   const [showEditor, setShowEditor] = useState(true);
   const [isFileUploaded, setIsFileUploaded] = useState(false);
-  
-  const tinymce = useRef(null);
 
   const [showImgurPostEditor, setShowImgurPostEditor] = useState(false);
   const [imgurConnectionStatus, setImgurConnectionStatus] = useState(false);
@@ -244,16 +239,12 @@ function Announcements({ title, email: initialEmail }) {
                 type="button"
                 className={`send-button ${darkMode ? 'boxStyleDark' : 'boxStyle'}`}
                 onClick={handleBroadcastEmails}
-                
               >
                 Broadcast Weekly Update
               </button>
             )}
           </div>
-          <div
-            className={`emails ${darkMode ? 'bg-yinmn-blue boxStyleDark' : 'boxStyle'}`}
-            
-          >
+          <div className={`emails ${darkMode ? 'bg-yinmn-blue boxStyleDark' : 'boxStyle'}`}>
             {title ? (
               <p>Email</p>
             ) : (
@@ -274,7 +265,6 @@ function Announcements({ title, email: initialEmail }) {
               type="button"
               className={`send-button ${darkMode ? 'boxStyleDark' : 'boxStyle'}`}
               onClick={handleSendEmails}
-              
             >
               {title ? 'Send Email' : 'Send mail to specific users'}
             </button>
@@ -296,7 +286,6 @@ function Announcements({ title, email: initialEmail }) {
               type="button"
               className={`send-button ${darkMode ? 'boxStyleDark' : 'boxStyle'}`}
               onClick={addHeaderToEmailContent}
-              
             >
               Insert
             </button>

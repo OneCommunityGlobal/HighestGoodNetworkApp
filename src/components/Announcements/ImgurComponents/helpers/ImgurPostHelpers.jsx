@@ -102,7 +102,6 @@ export const postToImgur = async (
     imgurFormData.append('title', title);
     imgurFormData.append('image', file);
     imgurFormData.append('description', caption);
-    
 
     // Upload image to Imgur
     setButtonTextState('Uploading image to Imgur...');
@@ -120,11 +119,14 @@ export const postToImgur = async (
     setButtonTextState('Adding post to Imgur gallery...');
     const imageHash = imgurResponse.data.data.data.id;
 
-    const imgurGalleryResponse = await axios.post(ENDPOINTS.POST_IMGUR_IMAGE_TO_GALLERY(imageHash), {
-      title,
-      topic,
-      tags: formattedTags,
-    })
+    const imgurGalleryResponse = await axios.post(
+      ENDPOINTS.POST_IMGUR_IMAGE_TO_GALLERY(imageHash),
+      {
+        title,
+        topic,
+        tags: formattedTags,
+      },
+    );
 
     if (imgurGalleryResponse.data.success !== true) {
       setImgurError('Imgur gallery post failed. Please try again.');
