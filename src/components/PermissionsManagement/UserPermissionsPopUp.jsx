@@ -134,19 +134,38 @@ function UserPermissionsPopUp({
   };
 
   const handleModalOpen = () => {
-    if (userPermissions?.length > 0) {
+    if (userPermissions?.length > 0 || userRemovedDefaultPermissions?.length > 0) {
+      // currently its ok, but allIndividualPermissions do not get all permissions as
+      // sections with subsections, get the subsection grabbed because its listed in subperms, but their subperms
+      // need to be grabbed, and the subsection do not have keys so they are removed from matchingPermissions
+      // need to cycle through sub subperms until no further section is found in subperms.
+      // handle this later
       const allIndividualPermissions = permissionsList
         .map(permission => permission.subperms)
         .flat();
-      const matchingPermissions = allIndividualPermissions.filter(permission =>
-        userPermissions.includes(permission.key),
-      );
+      const changedPermission = new Set();
+      const matchingPermissions = allIndividualPermissions.filter(permission => {
+        if (
+          // Removes duplicate display of See All Users in Dashboard and Leaderboard and Edit Team 4-Digit Codes
+          changedPermission.has(permission.key) ||
+          !(
+            userPermissions.includes(permission.key) ||
+            userRemovedDefaultPermissions.includes(permission.key)
+          )
+        )
+          return false;
+        changedPermission.add(permission.key);
+        return true;
+      });
       const permissionNames = matchingPermissions.map(permission => permission.label);
+      // add text modal or popup when hovering over star icon indicating the permission was added or removed, compared to default
+      // look into some permissions/groups add/delete button not updating properly when clicked despite save changes modal appearing
+      // console.log('Removed roles beyond default?: ', userRemovedDefaultPermissions);
 
       const description = `Clicking reset to default will return the user to the default permissions of this role: ${
         actualUserProfile?.role
       }.\n
-      The added permissions that will be removed(also indicated by a Star icon below) are: ${permissionNames.join(
+      The following permissions that had been changed (also indicated by a Star icon below) are: ${permissionNames.join(
         ', ',
       )}`;
       setContent(description);

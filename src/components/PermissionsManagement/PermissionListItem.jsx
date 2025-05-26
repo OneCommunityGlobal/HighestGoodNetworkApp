@@ -154,7 +154,14 @@ function PermissionListItem(props) {
     return 'success';
   };
 
-  const addedPermission = currentPermission => {
+  const changedPermission = currentPermission => {
+    return (
+      rolePermissions.includes(currentPermission) ||
+      removedDefaultPermissions.includes(currentPermission)
+    );
+  };
+
+  const checkChangePermission = currentPermission => {
     return rolePermissions.includes(currentPermission);
   };
 
@@ -239,11 +246,15 @@ function PermissionListItem(props) {
               </Button>
               <button
                 style={{
-                  color: addedPermission(permission) ? 'green' : 'white',
+                  color: changedPermission(permission)
+                    ? checkChangePermission(permission)
+                      ? 'green'
+                      : 'red'
+                    : 'white',
                   marginRight: '-23.33px',
                   fontSize: '1.75rem',
                 }}
-                aria-label={addedPermission(permission) ? 'Added Permission' : ''}
+                aria-label={changedPermission(permission) ? 'Modified Permission' : ''}
                 disabled
                 type="button"
               >

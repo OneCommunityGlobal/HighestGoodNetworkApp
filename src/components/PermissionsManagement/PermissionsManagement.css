@@ -303,7 +303,7 @@
 @media (max-width: 395px) {
   /* Styling to make cancel and save changes buttons have consistent size in screen size below 395px */
   .ReminderButton {
-    height: 60px;
+    height: 70px;
   }
   .ReminderButton button:first-child {
     height: 100%;
