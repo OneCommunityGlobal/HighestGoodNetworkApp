@@ -137,11 +137,12 @@ button.send-button:hover {
   display: flex;
   align-items: center;
   justify-content: flex-start;
+  gap: 10px;
   padding: 0 0 0 70px;
 }
 
 
-.instagram-button {
+.imgur-button {
   cursor: pointer;
   background: none;
   border: none;
@@ -150,23 +151,23 @@ button.send-button:hover {
   transition: transform 0.3s ease;
 }
 
-.instagram-button:hover {
+.imgur-button:hover {
   transform: scale(1.1);
 }
 
-.instagram-icon {
-  color: #E1306C;
-  filter: drop-shadow(0px 0px 2px rgba(193, 53, 132, 0.7));
+.imgur-icon {
+  color: #1bb76e;
+  filter: drop-shadow(0px 0px 2px rgba(27, 183, 110, 0.7));
   transition: color 0.3s ease;
 }
 
-.instagram-button:hover .instagram-icon {
-  color: #833AB4; 
+.imgur-button:hover .instagram-icon {
+  color: #85bf25;
 }
 
 /* For dark mode compatibility */
 .bg-oxford-blue .instagram-icon {
-  color: #E1306C;
+  color: #1bb76e;
 }
 
 /* Responsive design: Adjust the layout for smaller screens */

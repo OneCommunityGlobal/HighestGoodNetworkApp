@@ -5,7 +5,7 @@ import './Announcements.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react';
 import { toast } from 'react-toastify';
-import { FaInstagramSquare } from 'react-icons/fa';
+import { SiImgur } from 'react-icons/si';
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
 import ImgurPostEditor from './ImgurComponents/ImgurPostEditor/ImgurPostEditor';
 
@@ -189,7 +189,7 @@ function Announcements({ title, email: initialEmail }) {
             }}
             aria-label="imgur button"
           >
-            <FaInstagramSquare size={50} className="imgur-icon" />
+            <SiImgur size={40} className="imgur-icon" />
           </button>
         </div>
       ) : (
@@ -210,7 +210,7 @@ function Announcements({ title, email: initialEmail }) {
             }}
             aria-label="imgur button"
           >
-            <FaInstagramSquare size={50} className="imgur-icon" />
+            <SiImgur size={40} className="imgur-icon" />
           </button>
         </div>
       )}
