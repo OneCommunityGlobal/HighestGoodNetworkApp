@@ -17,6 +17,8 @@ import 'react-day-picker/lib/style.css';
 import '../../../../Header/DarkMode.css';
 import TagsSearch from '../components/TagsSearch';
 import './AddTaskModal.css';
+import { fetchAllMembers } from 'actions/projectMembers';
+
 
 const TINY_MCE_INIT_OPTIONS = {
   license_key: 'gpl',
@@ -75,7 +77,7 @@ function AddTaskModal(props) {
     const project = allProjects.projects.find(({ _id }) => _id === props.projectId);
     return project?.category || 'Unspecified';
   }
-  
+
   return 'Unspecified';
 }, [props.taskId, props.projectId, tasks, allProjects.projects]);
 
@@ -352,6 +354,12 @@ function AddTaskModal(props) {
       setEndDateError(false);
     }
   }, [modal]);
+
+  useEffect(() => {
+    if (modal && props.projectId) {
+      props.fetchAllMembers(props.projectId);
+    }
+  }, [modal, props.projectId]);
 
   const fontColor = darkMode ? 'text-light' : '';
 
@@ -821,4 +829,10 @@ const mapStateToProps = state => ({
   error: state.tasks.error,
   darkMode: state.theme.darkMode,
 });
-export default connect(mapStateToProps, { addNewTask })(AddTaskModal);
+
+const mapDispatchToProps = {
+  addNewTask,
+  fetchAllMembers, 
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(AddTaskModal);
