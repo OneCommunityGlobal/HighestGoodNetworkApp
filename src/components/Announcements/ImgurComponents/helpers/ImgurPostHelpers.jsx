@@ -1,8 +1,6 @@
 import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
 import { toast } from 'react-toastify';
-import { convertToJPG, validateImgurImage } from './ImgurHelpers';
-import { format } from 'date-fns';
 
 /**
  * Checks the authentication status of the Imgur connection
@@ -123,8 +121,8 @@ export const postToImgur = async (
     const imageHash = imgurResponse.data.data.data.id;
 
     const imgurGalleryResponse = await axios.post(ENDPOINTS.POST_IMGUR_IMAGE_TO_GALLERY(imageHash), {
-      title: title,
-      topic: topic,
+      title,
+      topic,
       tags: formattedTags,
     })
 

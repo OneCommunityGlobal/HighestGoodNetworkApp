@@ -1,8 +1,6 @@
 import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
 
-import { convertToJPG, validateImgurImage } from './ImgurHelpers';
-
 /**
  * Fetches the scheduled posts from the server and updates the state
  *
@@ -106,17 +104,16 @@ export const scheduleImgurPost = async (
       return null;
     }
     setScheduledButtonTextState('Imgur upload complete');
-    console.log('Imgur upload response:', imgurResponse.data);
     const deleteHash = imgurResponse.data.data.data.deletehash;
     const imageHash = imgurResponse.data.data.data.id;
     const formattedTags = tags.join(',');
 
     setScheduledButtonTextState('Scheduling post...');
     const response = await axios.post(ENDPOINTS.POST_IMGUR_SCHEDULED_POST, {
-      imageHash: imageHash,
+      imageHash,
       tags: formattedTags,
-      topic: topic,
-      deleteHash: deleteHash,
+      topic,
+      deleteHash,
       scheduledTime: formattedDate,
     });
     if (response.data.success !== true) {
@@ -124,7 +121,6 @@ export const scheduleImgurPost = async (
       if (deleteResponse.data.success !== true) {
         setScheduledPostsError('Error deleting image from Imgur. Please try again.');
       }
-      console.log('imgur delete response:', deleteResponse.data);
       setScheduledPostsError('Error scheduling Imgur post. Please try again.');
       return null;
     }

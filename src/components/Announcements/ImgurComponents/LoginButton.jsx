@@ -6,7 +6,6 @@ class LoginButton extends Component {
   buildCodeRequestURL = async () => {
     try {
       const response = await axios.get(`${ENDPOINTS.GET_IMGUR_AUTH_URL}`);
-      console.log('Imgur auth URL response:', response);
       if (response.success === false) {
         throw new Error('Failed to fetch auth URL');
       }

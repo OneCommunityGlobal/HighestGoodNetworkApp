@@ -25,6 +25,7 @@ src/components/TeamMemberTasks/**
 src/components/Teams/**
 src/components/UserManagement/**
 src/components/UserProfile/**
-src/components/Announcements/**
+src/components/Announcements/index.jsx
+src/components/Announcements/tinyMCE.js
 src/components/EmailSubscribeForm/**
 src/components/Dashboard/**

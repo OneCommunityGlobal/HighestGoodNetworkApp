@@ -8,7 +8,6 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import DatePicker from 'react-datepicker';
-// import { ENDPOINTS } from 'utils/URL';
 import LoginButton from '../LoginButton';
 import './ImgurPostEditor.css';
 import {
@@ -64,7 +63,6 @@ function ImgurPostEditor({ imgurConnectionStatus, setImgurConnectionStatus }) {
 
   const [title, setTitle] = useState('');
   const [topic, setTopic] = useState('');
-  const [description, setDescription] = useState('');
   const [tags, setTags] = useState(['']);
 
   const [startDate, setStartDate] = useState(null);
@@ -77,7 +75,6 @@ function ImgurPostEditor({ imgurConnectionStatus, setImgurConnectionStatus }) {
    */
   const handleImgurLoginSuccess = async () => {
     const status = await checkImgurAuthStatus(setImgurError);
-    console.log('Imgur status:', status);
 
     if (status && status.success === true) {
       setImgurConnectionStatus(true);

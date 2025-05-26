@@ -1,16 +1,12 @@
 .scheduled-posts-editor {
   width: 100%;
-  /* margin-top: 30px; */
-  /* max-height: 600px;  */
   height: auto;
   overflow-y: auto;
   overflow-x: hidden;
-  /* padding: 0 5px;  */
   padding: 20px;
   box-sizing: border-box;
   border: 1px solid #dbdbdb;
   border-radius: 5px;
-  /* background-color: blue; */
 }
 
 .scheduled-posts-editor::-webkit-scrollbar {
