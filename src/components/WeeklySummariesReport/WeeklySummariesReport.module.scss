@@ -12,9 +12,9 @@
 
 .totalValidWrapper {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   flex-direction: row;
-  white-space: nowrap;
 }
 
 .badgeTr {
@@ -83,6 +83,9 @@
   }
   .slideToggle {
     margin-left: -6px;
+  }
+  .totalValidText {
+    width: 100%;
   }
 }
 
