@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import './Announcements.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { Editor } from '@tinymce/tinymce-react'; // Import Editor from TinyMCE
+import { Editor } from '@tinymce/tinymce-react';
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
@@ -15,7 +15,6 @@ function Announcements({ title, email }) {
   const [headerContent, setHeaderContent] = useState('');
   const [showEditor, setShowEditor] = useState(true); // State to control rendering of the editor
   const [isFileUploaded, setIsFileUploaded] = useState(false);
-  const tinymce = useRef(null);
 
   useEffect(() => {
     // Toggle the showEditor state to force re-render when dark mode changes
@@ -124,7 +123,6 @@ function Announcements({ title, email }) {
   const addImageToEmailContent = e => {
     const imageFile = document.querySelector('input[type="file"]').files[0];
     setIsFileUploaded(true);
-
     convertImageToBase64(imageFile, base64Image => {
       const imageTag = `<img src="${base64Image}" alt="Header Image" style="width: 100%; max-width: 100%; height: auto;">`;
       setHeaderContent(prevContent => `${imageTag}${prevContent}`);
@@ -152,6 +150,11 @@ function Announcements({ title, email }) {
       return;
     }
 
+    if (!isFileUploaded) {
+      toast.error('Error: Please upload a file.');
+      return;
+    }
+    
     if (!isFileUploaded) {
       toast.error('Error: Please upload a file.');
       return;
