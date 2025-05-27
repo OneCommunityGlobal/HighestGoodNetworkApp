@@ -3,7 +3,7 @@ import '@testing-library/jest-dom/extend-expect';
 import moment from 'moment';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
-import SetUpFinalDayPopUp from '../SetUpFinalDayPopUp.jsx'; // ✅ Fixed import extension
+import SetUpFinalDayPopUp from '../SetUpFinalDayPopUp';
 
 const mockStore = configureStore([]);
 const onSaveMock = jest.fn();
@@ -31,7 +31,7 @@ describe('SetUpFinalDayPopUp Component', () => {
       open: true,
       onClose: onCloseMock,
       onSave: onSaveMock,
-    }); // ✅ Added trailing comma
+    });
 
     expect(screen.getByText('Set Your Final Day')).toBeInTheDocument();
     expect(screen.getByText('Save')).toBeInTheDocument();
@@ -43,7 +43,7 @@ describe('SetUpFinalDayPopUp Component', () => {
       open: true,
       onClose: onCloseMock,
       onSave: onSaveMock,
-    }); // ✅ Added trailing comma
+    });
 
     fireEvent.click(screen.getByText('Close'));
     expect(onCloseMock).toHaveBeenCalledTimes(1);
@@ -54,27 +54,33 @@ describe('SetUpFinalDayPopUp Component', () => {
       open: true,
       onClose: onCloseMock,
       onSave: onSaveMock,
-    }); // ✅ Added trailing comma
+    });
 
-    const pastDate = moment().subtract(1, 'days').format('YYYY-MM-DD');
+    const pastDate = moment()
+      .subtract(1, 'days')
+      .format('YYYY-MM-DD');
 
     fireEvent.change(screen.getByTestId('date-input'), {
       target: { value: pastDate },
     });
     fireEvent.click(screen.getByText('Save'));
 
-    expect(screen.getByText('Please choose a future date.')).toBeInTheDocument();
+    expect(
+      screen.getByText('Please choose a future date.')
+    ).toBeInTheDocument();
     expect(onSaveMock).not.toHaveBeenCalled();
   });
 
   it('calls onSave with valid future date', () => {
-    const futureDate = moment().add(1, 'days').format('YYYY-MM-DD');
+    const futureDate = moment()
+      .add(1, 'days')
+      .format('YYYY-MM-DD');
 
     renderComponent(store, {
       open: true,
       onClose: onCloseMock,
       onSave: onSaveMock,
-    }); // ✅ Added trailing comma
+    });
 
     fireEvent.change(screen.getByTestId('date-input'), {
       target: { value: futureDate },
@@ -82,7 +88,9 @@ describe('SetUpFinalDayPopUp Component', () => {
     fireEvent.click(screen.getByText('Save'));
 
     expect(onSaveMock).toHaveBeenCalledWith(futureDate);
-    expect(screen.queryByText('Please choose a future date.')).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('Please choose a future date.')
+    ).not.toBeInTheDocument();
   });
 
   it('applies dark mode styles when darkMode is true', () => {
@@ -91,4 +99,17 @@ describe('SetUpFinalDayPopUp Component', () => {
       open: true,
       onClose: onCloseMock,
       onSave: onSaveMock,
-    }); // ✅ Added trailing
+    });
+
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+  });
+
+  it('auto-focuses on date input field', () => {
+    renderComponent(store, {
+      open: true,
+      onClose: onCloseMock,
+      onSave: onSaveMock,
+    });
+
+    const dateInput = screen.getByTestId('date-input');
+    expect(dateInput).toHa
