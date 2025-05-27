@@ -1,99 +1,87 @@
-import { useState, useEffect } from 'react';
-import fetchJobAnalyticsData1 from './dataSample'; // Importing the sample data
-import ConvertedApplicationsGraph from './ConvertedApplicationGraph';
+// eslint-disable-next-line no-unused-vars
+import React, { useState, useEffect } from 'react';
+import { ENDPOINTS } from 'utils/URL';
+import httpService from 'services/httpService';
+import { getDateRange, dateOptions } from './filters';
+import ConvertedApplicationGraph from './ConvertedApplicationGraph';
 import NonConvertedApplicationsGraph from './NonConvertedApplicationsGraph';
 
-export default function JobAnalyticsPage() {
-  const [viewMode, setViewMode] = useState('percentage'); // 'percentage' or 'actual'
-  const [dateRange, setDateRange] = useState('all'); // 'weekly', 'monthly', 'yearly', 'all'
-  const [jobAnalyticsData, setJobAnalyticsData] = useState([]);
+function JobAnalyticsPage() {
+  const [convertedData, setConvertedData] = useState([]);
+  const [nonConvertedData, setNonConvertedData] = useState([]);
+  const [usePercentage, setUsePercentage] = useState(true);
+  const [dateRange, setDateRange] = useState('All');
+  const [loading, setLoading] = useState(false);
 
-  // Fetch the sample data and avoid infinite loop
   useEffect(() => {
-    const initialData = fetchJobAnalyticsData1();
-    setJobAnalyticsData(initialData);
-  }, []); // Empty array means this effect runs only once when the component mounts
+    const { startDate, endDate } = getDateRange(dateRange);
+// eslint-disable-next-line no-console
+console.log(`Fetching data for range: startDate=${startDate}, endDate=${endDate}`);
+    const fetchData = async () => {
+      setLoading(true);
+      // eslint-disable-next-line no-console
+      console.log('Fetching top converted URL:', ENDPOINTS.TOP_CONVERTED(10, startDate, endDate));
+// eslint-disable-next-line no-console
+console.log('Fetching least converted URL:', ENDPOINTS.LEAST_CONVERTED(10, startDate, endDate));
 
-  // Handle the date range filter
-  const filterDataByDateRange = (data) => {
-    const today = new Date();
-    return data.filter(item => {
-      const itemDate = new Date(item.date);
-      
-      if (dateRange === 'weekly') {
-        const startOfWeek = new Date(today.setDate(today.getDate() - today.getDay()));
-        const endOfWeek = new Date(today.setDate(today.getDate() - today.getDay() + 6));
-        return itemDate >= startOfWeek && itemDate <= endOfWeek;
+      try {
+        const [topRes, leastRes] = await Promise.all([
+          httpService.get(ENDPOINTS.TOP_CONVERTED(10, startDate, endDate)),
+          httpService.get(ENDPOINTS.LEAST_CONVERTED(10, startDate, endDate)),
+          
+        ]);
+        setConvertedData(topRes.data);
+        setNonConvertedData(leastRes.data);
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error('Error fetching job analytics:', err);
+        setConvertedData([]);
+        setNonConvertedData([]);
+      } finally {
+        setLoading(false);
       }
-      if (dateRange === 'monthly') {
-        const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-        const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-        return itemDate >= startOfMonth && itemDate <= endOfMonth;
-      }
-      if (dateRange === 'yearly') {
-        const startOfYear = new Date(today.getFullYear(), 0, 1);
-        const endOfYear = new Date(today.getFullYear(), 11, 31);
-        return itemDate >= startOfYear && itemDate <= endOfYear;
-      }
-      return true;
-    });
-  };
+    };
 
-  // Handle the date range change
-  const handleDateChange = (e) => {
-    setDateRange(e.target.value);
-  };
-
-  // Handle toggle between percentage and actual
-  const handleToggleView = () => {
-    setViewMode(viewMode === 'percentage' ? 'actual' : 'percentage');
-  };
-
-  // Only update filtered data if the dateRange changes
-  const filteredData = filterDataByDateRange(jobAnalyticsData);
+    fetchData();
+  }, [dateRange]);
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Job Posting Analytics</h1>
+    <div className="p-6 space-y-6">
+      <div className="flex items-center gap-4 flex-wrap">
+        <div className="flex items-center gap-2">
+          <span className="font-semibold">Date Range:</span>
+          <select
+            value={dateRange}
+            onChange={(e) => setDateRange(e.target.value)}
+            className="border rounded px-2 py-1"
+          >
+            {dateOptions.map((option) => (
+              <option key={option} value={option}>{option}</option>
+            ))}
+          </select>
+        </div>
 
-      <div className="flex gap-4 mb-6">
-        <select
-          value={dateRange}
-          onChange={handleDateChange}
-          className="border rounded p-2"
-        >
-          <option value="weekly">Weekly</option>
-          <option value="monthly">Monthly</option>
-          <option value="yearly">Yearly</option>
-          <option value="all">All</option>
-        </select>
-
-        <button
-          type="button"
-          onClick={handleToggleView}
-          className="bg-blue-500 text-white rounded px-4 py-2"
-        >
-          Toggle to {viewMode === 'percentage' ? 'Actual Numbers' : 'Percentage'}
-        </button>
+        <div className="ml-auto flex items-center gap-2">
+          <input
+            type="checkbox"
+            id="toggle-percentage"
+            checked={usePercentage}
+            onChange={() => setUsePercentage(!usePercentage)}
+          />
+          <label htmlFor="toggle-percentage" className="cursor-pointer">Show %</label>
+        </div>
       </div>
 
-      {/* Converted Applications Graph */}
-      <div className="mb-12">
-        <h2 className="text-xl font-semibold mb-2">Top 10 Job Postings by Conversion Rate</h2>
-        <ConvertedApplicationsGraph
-          data={filteredData}
-          viewType={viewMode}
-        />
-      </div>
-
-      {/* Non-Converted Applications Graph */}
-      <div>
-        <h2 className="text-xl font-semibold mb-2">Top 10 Job Postings with Lowest Conversion Rate</h2>
-        <NonConvertedApplicationsGraph
-          data={filteredData}
-          viewType={viewMode}
-        />
-      </div>
+      {loading ? (
+        <p>Loading analytics...</p>
+      ) : (
+        <>
+          <ConvertedApplicationGraph data={convertedData} usePercentage={usePercentage} />
+          <NonConvertedApplicationsGraph data={nonConvertedData} usePercentage={usePercentage} />
+        </>
+      )}
     </div>
   );
 }
+
+export default JobAnalyticsPage;
