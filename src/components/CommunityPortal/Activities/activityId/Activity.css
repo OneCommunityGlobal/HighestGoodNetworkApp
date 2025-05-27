@@ -131,20 +131,6 @@
   gap: 20px;
 }
 
-.activity-comments-section {
-  margin-top: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.activity-comment {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-}
-
-.activity-comment-user,
 .activity-participant {
   display: flex;
   gap: 5px;
@@ -154,12 +140,12 @@
   margin-top: 20px;
 }
 
-.activity-faq p{
-  color:#555;
+.activity-faq p {
+  color: #555;
 }
 
-.activity-faq h3{
-  color:#000;
+.activity-faq h3 {
+  color: #000;
 }
 
 .activity-icon {
@@ -180,15 +166,94 @@
   background-color: #3366ff;
 }
 
-.activity-comment-text {
-  flex: 1;
-  background-color: #f4f4f4;
-  padding: 10px;
-  border-radius: 6px;
+@media (max-width: 800px) {
+  .activity-event-card {
+    max-width: 98vw;
+    padding: 8px;
+  }
+
+  .activity-event-header {
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+  }
+
+  .activity-event-image {
+    width: 100%;
+    height: 120px;
+    line-height: 120px;
+    font-size: 18px;
+  }
+
+  .activity-calendar-box {
+    min-width: unset;
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .activity-event-details {
+    width: 100%;
+  }
+
+  .activity-event-info {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .activity-event-tabs {
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    font-size: 15px;
+  }
+
+  .activity-participates-section {
+    flex-direction: column;
+    gap: 10px;
+  }
 }
 
-.activity-comment-footer {
-  font-size: 12px;
-  color: gray;
-  margin-top: 5px;
+@media (max-width: 500px) {
+  .activity-event-card {
+    padding: 4px;
+    font-size: 14px;
+  }
+
+  .activity-event-title {
+    font-size: 18px;
+  }
+
+  .activity-event-image {
+    height: 80px;
+    line-height: 80px;
+    font-size: 15px;
+  }
+
+  .activity-calendar-header {
+    font-size: 14px;
+  }
+
+  .activity-calendar-table th,
+  .activity-calendar-table td {
+    padding: 2px;
+    font-size: 12px;
+  }
+
+  .activity-icon {
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+    font-size: 13px;
+  }
+
+  .activity-event-tabs {
+    font-size: 13px;
+    justify-content: space-evenly;
+    gap: 0;
+  }
+
+  .activity-tab {
+    padding: 6px 6px;
+  }
 }
+
