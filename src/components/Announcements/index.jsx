@@ -15,6 +15,7 @@ function Announcements({ title, email }) {
   const [headerContent, setHeaderContent] = useState('');
   const [showEditor, setShowEditor] = useState(true); // State to control rendering of the editor
   const [isFileUploaded, setIsFileUploaded] = useState(false);
+  const tinymce = useRef(null);
 
   useEffect(() => {
     // Toggle the showEditor state to force re-render when dark mode changes
@@ -154,12 +155,13 @@ function Announcements({ title, email }) {
       toast.error('Error: Please upload a file.');
       return;
     }
-    
+
     if (!isFileUploaded) {
       toast.error('Error: Please upload a file.');
       return;
     }
 
+    // eslint-disable-next-line no-shadow
     const invalidEmails = emailList.filter(email => !validateEmail(email.trim()));
 
     if (invalidEmails.length > 0) {
@@ -197,6 +199,7 @@ function Announcements({ title, email }) {
               onEditorChange={content => {
                 setEmailContent(content);
               }}
+              // eslint-disable-next-line no-return-assign
               onInit={(_evt, editor) => (tinymce.current = editor)}
             />
           )}
