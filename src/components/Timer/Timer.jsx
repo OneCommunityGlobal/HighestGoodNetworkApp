@@ -24,8 +24,8 @@ import Countdown from './Countdown';
 import TimerStatus from './TimerStatus';
 import TimerPopout from './TimerPopout';
 
-function Timer({ authUser, darkMode }) {
-  const isPopout = !!window.opener;
+function Timer({ authUser, darkMode, isPopout }) {
+  const realIsPopout = typeof isPopout === 'boolean' ? isPopout : !!window.opener;
   /**
    *  Because the websocket can not be closed when internet is cut off (lost server connection),
    *  the readyState will be stuck at OPEN, so here we need to use a custom readyState to
@@ -555,18 +555,16 @@ function Timer({ authUser, darkMode }) {
               <FaUndoAlt className={css.btn} fontSize="1.3rem" />
             </div>
           </button>
-          {!isPopout && (
-            <button type="button" aria-label="Open Timer Popout" className="popout">
-              <TimerPopout authUser={authUser} darkMode={darkMode} TimerComponent={Timer} />
-            </button>
+          {!realIsPopout && (
+            <TimerPopout authUser={authUser} darkMode={darkMode} TimerComponent={Timer} />
           )}
         </div>
       )}
 
       {showTimer && (
-        <div className={css.timer}>
+        <div className={`${css.timer} ${css.smallTimer}`}>
           <div className={css.timerContent}>
-            {customReadyState === ReadyState.OPEN && !isPopout && (
+            {customReadyState === ReadyState.OPEN && (
               <Countdown
                 message={message}
                 timerRange={{ MAX_HOURS, MIN_MINS }}

@@ -3,8 +3,15 @@ import ReactDOM from 'react-dom';
 import { useRef, useEffect } from 'react';
 import cs from 'classnames';
 import styles from './Timer.module.css';
+import './Countdown.module.css';
+import { Provider } from 'react-redux';
+import createStore from '../../store';
 
 function TimerPopout({ authUser, darkMode, TimerComponent }) {
+  if (typeof window !== 'undefined' && window.opener) {
+    return null;
+  }
+
   const popupRef = useRef(null);
 
   const openPopoutWindow = () => {
@@ -14,10 +21,10 @@ function TimerPopout({ authUser, darkMode, TimerComponent }) {
     }
 
     const features = {
-      width: 300,
+      width: 200,
       height: 200,
-      right: window.screen.width - 350,
-      top: 30,
+      left: window.screen.width / 2 - 200,
+      top: window.screen.height / 2 - 220,
       menubar: 'no',
       toolbar: 'no',
       location: 'no',
@@ -41,7 +48,7 @@ function TimerPopout({ authUser, darkMode, TimerComponent }) {
           <link rel="stylesheet" href="${window.location.origin}/Timer.module.css">
           ${darkMode ? '<style>body { background-color: #1a1a2e; color: white; }</style>' : ''}
         </head>
-        <body>
+        <body class="timer-popout-body">
           <h1 style="text-align: center;">Timer</h1>
           <div id="timer-root"></div>
         </body>
@@ -49,7 +56,13 @@ function TimerPopout({ authUser, darkMode, TimerComponent }) {
     `);
 
     const root = popup.document.getElementById('timer-root');
-    ReactDOM.render(<TimerComponent authUser={authUser} darkMode={darkMode} />, root);
+    const { store } = createStore();
+    ReactDOM.render(
+      <Provider store={store}>
+        <TimerComponent authUser={authUser} darkMode={darkMode} isPopout={true} />
+      </Provider>,
+      root
+    );
 
     popup.onbeforeunload = () => {
       ReactDOM.unmountComponentAtNode(root);
