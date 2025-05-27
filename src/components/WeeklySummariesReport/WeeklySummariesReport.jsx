@@ -908,8 +908,13 @@ const WeeklySummariesReport = props => {
       </Row>
 
       {state.chartShow && (
-        <Row>
-          <Col lg={{ size: 6, offset: 1 }} md={{ size: 12 }} xs={{ size: 11 }}>
+        <Row className="mx-max-sm-0">
+          <Col
+            lg={{ size: 6, offset: 1 }}
+            md={{ size: 12 }}
+            xs={{ size: 12 }}
+            className="px-max-sm-0"
+          >
             <SelectTeamPieChart
               chartData={state.chartData}
               COLORS={state.COLORS}
@@ -917,15 +922,15 @@ const WeeklySummariesReport = props => {
               style={{ width: '100%' }}
             />
           </Col>
-          <Col lg={{ size: 4 }} md={{ size: 12 }} xs={{ size: 11 }} style={{ width: '100%' }}>
+          <Col lg={{ size: 4 }} md={{ size: 12 }} xs={{ size: 12 }} className="px-max-sm-0">
             <TeamChart teamData={state.structuredTableData} darkMode={darkMode} />
           </Col>
         </Row>
       )}
 
       {permissionState.codeEditPermission && state.selectedCodes.length > 0 && (
-        <Row style={{ marginBottom: '10px' }}>
-          <Col lg={{ size: 5, offset: 1 }} xs={{ size: 5, offset: 1 }}>
+        <Row className="mx-max-sm-0" style={{ marginBottom: '10px' }}>
+          <Col lg={{ size: 5, offset: 1 }} xs={{ size: 12 }} className="px-max-sm-0">
             Replace With
             <Input
               type="string"

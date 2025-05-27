@@ -69,23 +69,13 @@ export default function SelectTeamPieChart(props) {
   const [fontSize, setFontSize] = useState(12);
   const updateRadiusSize = () => {
     const width = window.innerWidth;
-    if (width <= 400) {
-      setRadiusSize(30);
+    if (width <= 634) {
       setFontSize(10);
-    } else if (width <= 500) {
-      setRadiusSize(60);
-      setFontSize(10);
-    } else if (width <= 634) {
       setRadiusSize(80);
-      setFontSize(10);
     } else if (width <= 992) {
       setRadiusSize(120);
-    } else if (width <= 1180) {
-      setRadiusSize(60);
     } else if (width <= 1230) {
-      setRadiusSize(80);
-    } else if (width <= 1560) {
-      setRadiusSize(110);
+      setRadiusSize(100);
     } else {
       setRadiusSize(150);
       setFontSize(15);
@@ -114,7 +104,7 @@ export default function SelectTeamPieChart(props) {
     );
   }
   return (
-    <ResponsiveContainer minWidth={400} height={600}>
+    <ResponsiveContainer minHeight={600}>
       <PieChart>
         <Pie
           data={processedData}
