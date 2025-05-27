@@ -959,8 +959,8 @@ const WeeklySummariesReport = props => {
           </Col>
         </Row>
       )}
-      <Row>
-        <Col lg={{ size: 10, offset: 1 }}>
+      <Row className="mx-max-sm-0">
+        <Col lg={{ size: 10, offset: 1 }} xs={{ size: 12 }} className="px-max-sm-0">
           <Nav tabs>
             {navItems.map(item => (
               <NavItem key={item}>
@@ -1011,29 +1011,21 @@ const WeeklySummariesReport = props => {
                     </Button>
                   </Col>
                 </Row>
-                <Row>
-                  <Col>
-                    <b>Total Team Members:</b> {state.filteredSummaries.length}
-                  </Col>
-                </Row>
-                <Row>
-                  <Col>
-                    <FormattedReport
-                      summaries={state.filteredSummaries}
-                      weekIndex={index}
-                      bioCanEdit={permissionState.bioEditPermission}
-                      canEditSummaryCount={permissionState.canEditSummaryCount}
-                      allRoleInfo={state.allRoleInfo}
-                      badges={state.badges}
-                      loadBadges={state.loadBadges}
-                      canEditTeamCode={permissionState.codeEditPermission}
-                      auth={state.auth}
-                      canSeeBioHighlight={permissionState.canSeeBioHighlight}
-                      darkMode={darkMode}
-                      handleTeamCodeChange={handleTeamCodeChange}
-                    />
-                  </Col>
-                </Row>
+                <b>Total Team Members:</b> {state.filteredSummaries.length}
+                <FormattedReport
+                  summaries={state.filteredSummaries}
+                  weekIndex={index}
+                  bioCanEdit={permissionState.bioEditPermission}
+                  canEditSummaryCount={permissionState.canEditSummaryCount}
+                  allRoleInfo={state.allRoleInfo}
+                  badges={state.badges}
+                  loadBadges={state.loadBadges}
+                  canEditTeamCode={permissionState.codeEditPermission}
+                  auth={state.auth}
+                  canSeeBioHighlight={permissionState.canSeeBioHighlight}
+                  darkMode={darkMode}
+                  handleTeamCodeChange={handleTeamCodeChange}
+                />
               </WeeklySummariesReportTab>
             ))}
           </TabContent>

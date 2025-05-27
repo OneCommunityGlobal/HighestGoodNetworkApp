@@ -238,8 +238,8 @@ function ReportDetails({
             handleSpecialColorDotClick={handleSpecialColorDotClick}
           />
         </ListGroupItem>
-        <Row className="flex-nowrap">
-          <Col xs="6" className="flex-grow-0">
+        <Row>
+          <Col md="6" xs="12" className="flex-grow-0">
             <ListGroupItem darkMode={darkMode}>
               <TeamCodeRow
                 canEditTeamCode={canEditTeamCode && !cantEditJaeRelatedRecord}
@@ -282,7 +282,7 @@ function ReportDetails({
               <WeeklySummaryMessage summary={summary} weekIndex={weekIndex} />
             </ListGroupItem>
           </Col>
-          <Col xs="6">
+          <Col md="6" xs="12">
             {loadBadges && summary.badgeCollection?.length > 0 && (
               <WeeklyBadge summary={summary} weekIndex={weekIndex} badges={filteredBadges} />
             )}
