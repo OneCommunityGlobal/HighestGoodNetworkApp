@@ -5,6 +5,8 @@ import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import SetUpFinalDayPopUp from '../SetUpFinalDayPopUp';
 
+
+
 const mockStore = configureStore([]);
 const onSaveMock = jest.fn();
 const onCloseMock = jest.fn();
@@ -112,4 +114,89 @@ describe('SetUpFinalDayPopUp Component', () => {
     });
 
     const dateInput = screen.getByTestId('date-input');
-    expect(dateInput).toHa
+    expect(dateInput).toHaveFocus();
+  });
+
+  it('does not render modal content when open is false', () => {
+    renderComponent(store, {
+      open: false,
+      onClose: onCloseMock,
+      onSave: onSaveMock,
+    });
+
+    expect(
+      screen.queryByText('Set Your Final Day')
+    ).not.toBeInTheDocument();
+  });
+
+  it('shows error and does not call onSave on invalid past date', () => {
+    const pastDate = moment()
+      .subtract(5, 'days')
+      .format('YYYY-MM-DD');
+
+    renderComponent(store, {
+      open: true,
+      onClose: onCloseMock,
+      onSave: onSaveMock,
+    });
+
+    fireEvent.change(screen.getByTestId('date-input'), {
+      target: { value: pastDate },
+    });
+    fireEvent.click(screen.getByText('Save'));
+
+    expect(
+      screen.getByText('Please choose a future date.')
+    ).toBeInTheDocument();
+    expect(onSaveMock).not.toHaveBeenCalled();
+  });
+
+  it('calls onSave on valid future date', () => {
+    const futureDate = moment()
+      .add(10, 'days')
+      .format('YYYY-MM-DD');
+
+    renderComponent(store, {
+      open: true,
+      onClose: onCloseMock,
+      onSave: onSaveMock,
+    });
+
+    fireEvent.change(screen.getByTestId('date-input'), {
+      target: { value: futureDate },
+    });
+    fireEvent.click(screen.getByText('Save'));
+
+    expect(onSaveMock).toHaveBeenCalledWith(futureDate);
+  });
+
+  it('closes modal without calling onSave when Close is clicked', () => {
+    renderComponent(store, {
+      open: true,
+      onClose: onCloseMock,
+      onSave: onSaveMock,
+    });
+
+    fireEvent.click(screen.getByText('Close'));
+
+    expect(onCloseMock).toHaveBeenCalledTimes(1);
+    expect(onSaveMock).not.toHaveBeenCalled();
+  });
+
+  it('updates date value on change', () => {
+    const newDate = moment()
+      .add(5, 'days')
+      .format('YYYY-MM-DD');
+
+    renderComponent(store, {
+      open: true,
+      onClose: onCloseMock,
+      onSave: onSaveMock,
+    });
+
+    const dateInput = screen.getByTestId('date-input');
+    fireEvent.change(dateInput, { target: { value: newDate } });
+
+    expect(dateInput).toHaveValue(newDate);
+  });
+});
