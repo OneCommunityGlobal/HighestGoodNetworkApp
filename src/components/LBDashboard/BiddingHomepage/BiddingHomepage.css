@@ -356,3 +356,200 @@ body, .bidding-bg {
     max-width: 95%;
   }
 } 
+
+/* Date display styling */
+.property-date {
+  margin-top: 4px;
+  margin-bottom: 8px;
+  color: #666;
+}
+
+/* Property stats styling */
+.property-stats {
+  margin-top: 6px;
+  margin-bottom: 4px;
+  color: #555;
+  font-weight: 500;
+}
+
+/* Filter active indicator */
+.filter-active-indicator {
+  color: #a2d729;
+  margin-left: 5px;
+  font-size: 0.8rem;
+}
+
+/* Pagination styling */
+.custom-pagination .page-link {
+  color: #333;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  margin: 0 2px;
+  border-radius: 4px;
+}
+
+.custom-pagination .page-link:hover {
+  color: #333;
+  background-color: #f8f9fa;
+  border-color: #ddd;
+}
+
+.custom-pagination .page-item.active .page-link {
+  background-color: #a2d729;
+  border-color: #a2d729;
+  color: #fff;
+}
+
+.custom-pagination .page-item.disabled .page-link {
+  color: #6c757d;
+  background-color: #fff;
+  border-color: #ddd;
+}
+
+/* Filter by date styling */
+.filter-by-date {
+  display: flex;
+  align-items: center;
+  padding-top: 1%;
+  font-weight: 700;
+  color: #222;
+  font-size: 1.1rem;
+}
+
+.sort-filter .sort-dropdown-toggle {
+  background: #fff !important;
+  color: #222 !important;
+  border: 1px solid #bbb !important;
+  font-weight: 500 !important;
+  padding: 8px 15px !important;
+  font-size: 1rem !important;
+  border-radius: 4px !important;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sort-filter .sort-dropdown-toggle:hover {
+  background: #f8f9fa !important;
+  border-color: #a2d729 !important;
+  color: #a2d729 !important;
+}
+
+.sort-filter .sort-dropdown-toggle:focus {
+  box-shadow: none !important;
+  border-color: #a2d729 !important;
+}
+
+.sort-filter .dropdown-menu {
+  border: 1px solid #bbb !important;
+  border-radius: 4px !important;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important;
+  min-width: 160px;
+}
+
+.sort-filter .dropdown-item:hover {
+  background-color: #f8f9fa;
+  color: #a2d729;
+}
+
+.filter-icon-inline {
+  color: #a2d729;
+  font-size: 0.9rem;
+}
+
+/* Date filter styling */
+.date-filter .date-dropdown-toggle {
+  background: #fff !important;
+  color: #222 !important;
+  border: 1px solid #bbb !important;
+  font-weight: 600 !important;
+  padding: 8px 15px !important;
+  font-size: 1rem !important;
+  border-radius: 4px !important;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.date-filter .date-dropdown-toggle:hover {
+  background: #f8f9fa !important;
+  border-color: #a2d729 !important;
+  color: #a2d729 !important;
+}
+
+.date-filter .date-dropdown-toggle:focus {
+  box-shadow: none !important;
+  border-color: #a2d729 !important;
+}
+
+.date-filter .dropdown-menu {
+  border: 1px solid #bbb !important;
+  border-radius: 4px !important;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important;
+  min-width: 280px !important;
+  padding: 15px !important;
+}
+
+.date-filter .dropdown-item:hover {
+  background-color: #f8f9fa;
+}
+
+/* Date inputs container */
+.date-inputs-container {
+  padding: 0;
+}
+
+/* Date Range Filter Styles */
+.date-input-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  margin-bottom: 15px;
+}
+
+.date-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #222;
+  margin-bottom: 0;
+}
+
+.date-input {
+  border: 1px solid #bbb !important;
+  border-radius: 4px !important;
+  padding: 6px 10px !important;
+  font-size: 0.9rem !important;
+  background: #fff !important;
+  width: 100% !important;
+}
+
+.date-input:focus {
+  border-color: #a2d729 !important;
+  box-shadow: 0 0 0 0.2rem rgba(162, 215, 41, 0.25) !important;
+}
+
+.reset-btn-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 5px;
+}
+
+.reset-date-btn {
+  background: #e53935 !important;
+  border: 1px solid #e53935 !important;
+  color: #fff !important;
+  font-size: 0.85rem !important;
+  padding: 6px 12px !important;
+  border-radius: 4px !important;
+}
+
+.reset-date-btn:hover {
+  background: #d32f2f !important;
+  border-color: #d32f2f !important;
+}
+
+.filter-by-date.d-flex {
+  padding-top: 0;
+  align-items: flex-end;
+}
