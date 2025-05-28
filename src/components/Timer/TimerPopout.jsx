@@ -8,11 +8,19 @@ import { Provider } from 'react-redux';
 import createStore from '../../store';
 
 function TimerPopout({ authUser, darkMode, TimerComponent }) {
+  const popupRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (popupRef.current && !popupRef.current.closed) {
+        popupRef.current.close();
+      }
+    };
+  }, []);
+
   if (typeof window !== 'undefined' && window.opener) {
     return null;
   }
-
-  const popupRef = useRef(null);
 
   const openPopoutWindow = () => {
     if (popupRef.current && !popupRef.current.closed) {
@@ -78,14 +86,6 @@ function TimerPopout({ authUser, darkMode, TimerComponent }) {
       ReactDOM.unmountComponentAtNode(root);
     };
   };
-
-  useEffect(() => {
-    return () => {
-      if (popupRef.current && !popupRef.current.closed) {
-        popupRef.current.close();
-      }
-    };
-  }, []);
 
   return (
     <button
