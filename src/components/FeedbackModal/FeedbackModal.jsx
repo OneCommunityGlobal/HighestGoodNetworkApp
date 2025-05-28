@@ -39,9 +39,7 @@ function FeedbackModal() {
   useEffect(() => {
     const fetchUserNames = async () => {
       try {
-        const response = await axios.get(
-          `${ENDPOINTS.APIEndpoint()}/dashboard/questionaire/userNamesList`,
-        );
+        const response = await axios.get(ENDPOINTS.QUESTIONNAIRE_USER_NAMES_LIST());
         if (response.data && response.data.users) {
           const users = response.data.users;
           setAllUsers(users);
@@ -114,10 +112,7 @@ function FeedbackModal() {
       };
 
       // Make the API call
-      await axios.post(
-        `${ENDPOINTS.APIEndpoint()}/dashboard/questionaire/feedbackrequest`,
-        payload,
-      );
+      await axios.post(ENDPOINTS.QUESTIONNAIRE_FEEDBACK_REQUEST(), payload);
 
       // Mark feedback as completed
       localStorage.setItem('feedbackCompleted', 'true');
@@ -145,10 +140,7 @@ function FeedbackModal() {
       };
 
       // Make the API call
-      await axios.post(
-        `${ENDPOINTS.APIEndpoint()}/dashboard/questionaire/checkUserFoundHelpSomewhere`,
-        payload,
-      );
+      await axios.post(ENDPOINTS.QUESTIONNAIRE_CLOSE_PERMANENTLY(), payload);
 
       // Mark feedback as completed and prevent it from showing again
       localStorage.setItem('feedbackCompleted', 'true');
