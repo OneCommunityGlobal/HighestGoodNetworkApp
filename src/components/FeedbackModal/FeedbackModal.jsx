@@ -184,11 +184,16 @@ function FeedbackModal() {
   };
 
   const openFeedbackSuggestions = () => {
-    // This would navigate to the existing feedback modal in the dashboard
-    // This is a placeholder since we don't know the actual implementation
-    // console.log('Opening feedback suggestions');
-    // Placeholder for navigating to a feedback form
-    // history.push('/dashboard/feedback');
+    // Set a flag in localStorage that the SummaryBar will check
+    localStorage.setItem('openSuggestionsModal', 'true');
+
+    // Close the current feedback modal
+    setIsOpen(false);
+
+    // If we're not on the dashboard, redirect there
+    if (!window.location.hash.includes('/dashboard')) {
+      window.location.href = '/#/dashboard';
+    }
   };
 
   if (!isOpen) return null;
