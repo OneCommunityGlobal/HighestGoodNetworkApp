@@ -79,7 +79,7 @@ function TimerPopout({ authUser, darkMode, TimerComponent }) {
       <Provider store={store}>
         <TimerComponent authUser={authUser} darkMode={darkMode} isPopout />
       </Provider>,
-      root
+      root,
     );
 
     popup.onbeforeunload = () => {
