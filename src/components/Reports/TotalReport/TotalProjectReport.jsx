@@ -19,6 +19,7 @@ function TotalProjectReport(props) {
   const [projectInYear, setProjectInYear] = useState([]);
   const [showMonthly, setShowMonthly] = useState(false);
   const [showYearly, setShowYearly] = useState(false);
+  const [showWarning, setShowWarning] = useState(false);
 
   const fromDate = useMemo(() => startDate.toLocaleDateString('en-CA'), [startDate]);
   const toDate = useMemo(() => endDate.toLocaleDateString('en-CA'), [endDate]);
@@ -37,7 +38,7 @@ function TotalProjectReport(props) {
           isTangible: entry.isTangible,
           date: entry.dateOfWork,
         })));
-  
+
       const projUrl = ENDPOINTS.TIME_ENTRIES_LOST_PROJ_LIST;
       const projTimeEntries = await axios.post(projUrl, { projects: projectList, fromDate, toDate }, { signal: controller.signal })
         .then(res => res.data.map(entry => ({
@@ -48,7 +49,7 @@ function TotalProjectReport(props) {
           isTangible: entry.isTangible,
           date: entry.dateOfWork,
         })));
-  
+
       if (!controller.signal.aborted) {
         setAllTimeEntries([...timeEntries, ...projTimeEntries]);
       }
@@ -137,8 +138,11 @@ function TotalProjectReport(props) {
     if (diffDate > oneMonth) {
       setProjectInMonth(generateBarData(summaryOfTimeRange('month')));
       setProjectInYear(generateBarData(summaryOfTimeRange('year'), true));
-      if (diffDate <= oneMonth * 12) setShowMonthly(true);
-      if (startDate.getFullYear() !== endDate.getFullYear()) setShowYearly(true);
+      if (diffDate <= oneMonth * 12){ setShowMonthly(true);  setShowWarning(false);}
+      if (startDate.getFullYear() !== endDate.getFullYear()){ setShowYearly(true);setShowWarning(false);}
+    }
+    if (diffDate <= oneMonth) {
+      setShowWarning(true);
     }
   }, [endDate, startDate, generateBarData, summaryOfTimeRange]);
 
@@ -146,7 +150,7 @@ function TotalProjectReport(props) {
   useEffect(() => {
     setTotalProjectReportDataReady(false);
     const controller = new AbortController();
-    
+
     loadTimeEntriesForPeriod(controller)
       .then(() => {
         if (!controller.signal.aborted) {
@@ -154,7 +158,7 @@ function TotalProjectReport(props) {
           setTotalProjectReportDataReady(true);
         }
       })
-    
+
     return () => {
       controller.abort();
     };
@@ -226,6 +230,7 @@ function TotalProjectReport(props) {
           {showYearly && projectInYear.length > 0 ? (
             <TotalReportBarGraph barData={projectInYear} range="year" />
           ) : null}
+          {showWarning && <div className='total-warning'>Graphs are shown only if the selected date range is greater than one month.</div>}
         </div>
         {allProject.length ? (
           <div className="total-detail">

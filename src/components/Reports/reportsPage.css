@@ -48,7 +48,7 @@
 .category-container {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: center;
   flex-wrap: wrap;
   margin: 0 -8px;
 }
@@ -312,7 +312,7 @@
     width: 100%;
     max-width: none;
   }
-  
+
   .card-category-item img {
     width: 72px;
     height: 72px;
