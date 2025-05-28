@@ -1,4 +1,6 @@
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
+// eslint-disable-next-line no-unused-vars
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import TimeEntriesViz from '../TimeEntriesViz';
@@ -17,7 +19,8 @@ const timeEntries = {
       personId: 'person123',
       lastModifiedDateTime: '2023-12-05T06:14:07.465+00:00',
       isTangible: true,
-      dateOfWork: '2018-01-27',
+      // use this or the one above
+      // dateOfWork: '2018-01-27',
     },
   ],
 };

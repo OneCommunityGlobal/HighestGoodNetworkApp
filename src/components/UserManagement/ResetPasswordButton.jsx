@@ -67,7 +67,7 @@ class ResetPasswordButton extends React.PureComponent {
           onReset={this.resetPassword}
         />
         <>
-          {!this.props.canResetPassword ? (
+          {!this.props.canUpdatePassword ? (
             <Tooltip
               placement="bottom"
               isOpen={this.state.resetPasswordTooltipOpen}
@@ -90,7 +90,7 @@ class ResetPasswordButton extends React.PureComponent {
             }
             onClick={this.onResetClick}
             id={`btn-reset-password-${this.props.user._id}`}
-            disabled={!this.props.canResetPassword}
+            disabled={!this.props.canUpdatePassword}
           >
             Reset Password
           </Button>
