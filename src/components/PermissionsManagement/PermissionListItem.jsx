@@ -77,8 +77,14 @@ function PermissionListItem(props) {
   const setSubpermissions = (recursiveSubperms, adding) => {
     recursiveSubperms.forEach(subperm => {
       if (subperm.subperms) {
+        // checks if section has a subsection
         setSubpermissions(subperm.subperms, adding);
-      } else if (adding !== rolePermissions.includes(subperm.key)) {
+      } else if (
+        adding !==
+        (rolePermissions.includes(subperm.key) ||
+          (immutablePermissions.includes(subperm.key) &&
+            !removedDefaultPermissions?.includes(subperm.key)))
+      ) {
         togglePermission(subperm.key);
       }
     });
@@ -117,7 +123,11 @@ function PermissionListItem(props) {
     // eslint-disable-next-line consistent-return
     return 'Some';
   };
-
+  // need to update this, as it defines the inital button view of categories to green all, gray all, or delete
+  // and changing the permissions of categories do not change the button view of category as their button color
+  // is based off the howManySubpermsInRole defined here, which is decided non-default and default permissions
+  // so even if deleteing defaults may not change anything as it goes off of immutable defaults which is role dependent
+  // so even if a user loses a permission, if they're an admin and admin has it by default, it'd still be read as had
   const howManySubpermsInRole = checkSubperms(subperms);
 
   let color;
@@ -244,23 +254,30 @@ function PermissionListItem(props) {
               >
                 {hasThisPermission ? 'Delete' : 'Add'}
               </Button>
-              <button
-                style={{
-                  color: changedPermission(permission)
-                    ? checkChangePermission(permission)
-                      ? 'green'
-                      : 'red'
-                    : 'white',
-                  marginRight: '-23.33px',
-                  fontSize: '1.75rem',
-                }}
-                aria-label={changedPermission(permission) ? 'Modified Permission' : ''}
-                disabled
-                type="button"
+              <div
+                className={`permission-tooltip-wrapper ${
+                  changedPermission(permission) ? 'show-tooltip' : ''
+                }`}
               >
-                {' '}
-                ★{' '}
-              </button>
+                <button
+                  className={`changed-permission ${
+                    changedPermission(permission)
+                      ? checkChangePermission(permission)
+                        ? 'green'
+                        : 'red'
+                      : 'white'
+                  }`}
+                  aria-label={changedPermission(permission) ? 'Modified Permission' : ''}
+                  disabled
+                  type="button"
+                >
+                  {' '}
+                  ★{' '}
+                </button>
+                <p className="permission-tooltip-text">
+                  Permission {checkChangePermission(permission) ? 'added' : 'removed'}
+                </p>
+              </div>
             </>
           )}
         </div>
