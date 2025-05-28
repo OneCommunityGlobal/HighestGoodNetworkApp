@@ -56,6 +56,7 @@ function UserPermissionsPopUp({
 
   const setToDefault = () => {
     setUserPermissions([]);
+    setUserRemovedDefaultPermissions([]); // Added this so reset to default also undoes removed default permissions
   };
 
   useEffect(() => {

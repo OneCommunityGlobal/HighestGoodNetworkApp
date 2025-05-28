@@ -36,7 +36,15 @@ function PermissionListItem(props) {
   const { updateModalStatus } = useContext(ModalContext);
 
   const darkMode = useSelector(state => state.theme.darkMode);
-
+  if (permission === 'getWeeklySummaries') {
+    // console.log(
+    //   'hasThisPermission getWeeklySummary: ',
+    //   permission,
+    //   hasThisPermission,
+    //   rolePermissions.includes(permission),
+    //   immutablePermissions.includes(permission) && !removedDefaultPermissions?.includes(permission),
+    // );
+  }
   const handleResize = () => {
     setIsMobile(window.innerWidth <= 768);
   };
@@ -65,6 +73,8 @@ function PermissionListItem(props) {
         setRemovedDefaultPermissions(previous => previous.filter(perm => perm !== permissionKey));
       }
     } else if (rolePermissions.includes(permissionKey)) {
+      // need to include changes to default permissions as only changes made to the
+      // permissions listed in setPermissions/permissions are saved to the change logs table
       setPermissions(previous => previous.filter(perm => perm !== permissionKey));
     } else if (rolePermissions.includes('showModal')) {
       setPermissions(previous => [...previous, permissionKey]);
@@ -105,7 +115,13 @@ function PermissionListItem(props) {
       const perm = list.pop();
       if (perm.subperms) {
         list = list.concat(perm.subperms);
-      } else if (rolePermissions.includes(perm.key) || immutablePermissions.includes(perm.key)) {
+        // below line sees if subpermissions are either added or default permissions to user of a role
+        // add condition to immutable to see if it was removed
+      } else if (
+        rolePermissions.includes(perm.key) ||
+        // immutablePermissions.includes(perm.key)
+        (immutablePermissions.includes(perm.key) && !removedDefaultPermissions.includes(perm.key))
+      ) {
         none = false;
       } else {
         all = false;
