@@ -212,12 +212,12 @@ function TotalProjectReport(props) {
           In the period from {startDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })} to {endDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })}:
         </div>
         <div className="total-item">
-          <div className="total-number">{allProject.length}</div>
-          <div className="total-text">projects have been worked on more than 1 hours.</div>
+          <span className="total-number">{allProject.length}</span>
+          <span className="total-text">projects have been worked on more than 1 hours.</span>
         </div>
         <div className="total-item">
-          <div className="total-number">{totalTangibleTime.toFixed(2)}</div>
-          <div className="total-text">hours of tangible time have been logged.</div>
+          <span className="total-number">{totalTangibleTime.toFixed(2)}</span>
+          <span className="total-text">hours of tangible time have been logged.</span>
         </div>
         <div>
           {showMonthly && projectInMonth.length > 0 ? (

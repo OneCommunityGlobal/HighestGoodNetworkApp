@@ -24,16 +24,13 @@
 .total-number {
   font-size: 32px;
   font-weight: 700;
-  margin-right: 30px;
-}
-
-.total-text {
-  padding-top: 15px;
+  margin-right: 5px;
 }
 
 .total-item {
   display: flex;
   flex-direction: row;
+  align-items: center;
 }
 
 .total-period {
@@ -77,7 +74,7 @@
   }
 
   .total-text {
-    font-size: 17px;
+    font-size: 14px;
   }
 }
 
