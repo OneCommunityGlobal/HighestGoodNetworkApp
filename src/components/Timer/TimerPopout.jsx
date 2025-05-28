@@ -2,9 +2,9 @@ import { FaExternalLinkAlt } from 'react-icons/fa';
 import ReactDOM from 'react-dom';
 import { useRef, useEffect } from 'react';
 import cs from 'classnames';
+import { Provider } from 'react-redux';
 import styles from './Timer.module.css';
 import './Countdown.module.css';
-import { Provider } from 'react-redux';
 import createStore from '../../store';
 
 function TimerPopout({ authUser, darkMode, TimerComponent }) {
@@ -77,7 +77,7 @@ function TimerPopout({ authUser, darkMode, TimerComponent }) {
     const { store } = createStore();
     ReactDOM.render(
       <Provider store={store}>
-        <TimerComponent authUser={authUser} darkMode={darkMode} isPopout={true} />
+        <TimerComponent authUser={authUser} darkMode={darkMode} isPopout />
       </Provider>,
       root
     );
