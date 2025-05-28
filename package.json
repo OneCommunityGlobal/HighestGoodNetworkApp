@@ -88,10 +88,6 @@
     "uuid": "^9.0.1"
   },
   "scripts": {
-<<<<<<< HEAD
- 
-=======
->>>>>>> 453ba84789dd9de96ebb4c694c260d95b6e9bacf
     "postinstall": "node ./postinstall.js",
     "start": "react-scripts start",
     "build": "export NODE_OPTIONS=--max_old_space_size=12288 && npm run postinstall && CI=false GENERATE_SOURCEMAP=false react-scripts build",

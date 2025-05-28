@@ -79,6 +79,7 @@ import AddTool from './components/BMDashboard/Tools/AddTool';
 import AddTeamMember from './components/BMDashboard/AddTeamMember/AddTeamMember';
 import BMTimeLogger from './components/BMDashboard/BMTimeLogger/BMTimeLogger';
 import Issue from './components/BMDashboard/Issue/Issue';
+import InjuryDashboard from './components/BMDashboard/InjuriesDashboard/InjuriesDashboard';
 
 // Community Portal
 import CPProtectedRoute from './components/common/CPDashboard/CPProtectedRoute';
@@ -424,6 +425,7 @@ export default (
         <BMProtectedRoute path="/bmdashboard/materials" fallback component={MaterialListView} />
         <BMProtectedRoute path="/bmdashboard/consumables/add" fallback component={AddConsumable} />
         <BMProtectedRoute path="/bmdashboard/reusables" fallback component={ReusableListView} />
+
         <BMProtectedRoute
           path="/bmdashboard/equipment/:equipmentId"
           fallback
@@ -443,6 +445,8 @@ export default (
         <BMProtectedRoute path="/bmdashboard/tools/:toolId" component={ToolDetailPage} />
         <BMProtectedRoute path="/bmdashboard/lessonform/:projectId" component={LessonForm} />
         <BMProtectedRoute path="/bmdashboard/lessonform/" component={LessonForm} />
+        <BMProtectedRoute path="/bmdashboard/InjuryDashboard/" component={InjuryDashboard} />
+
         <BMProtectedRoute
           path="/bmdashboard/inventorytypes"
           fallback
@@ -509,7 +513,7 @@ export default (
         <Route path="/Logout" component={Logout} />
         <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
 
-         {/* ----- HGN Help Community Skills Dashboard Routes ----- */}
+        {/* ----- HGN Help Community Skills Dashboard Routes ----- */}
         <ProtectedRoute path="/hgnhelp" exact component={LandingPage} />
         <ProtectedRoute path="/hgnhelp/skills-overview" exact component={SkillsOverviewPage} />
         <ProtectedRoute path="/hgnhelp/community" exact component={CommunityMembersPage} />
