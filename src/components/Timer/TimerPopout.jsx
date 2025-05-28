@@ -47,6 +47,16 @@ function TimerPopout({ authUser, darkMode, TimerComponent }) {
           <title>Timer</title>
           <link rel="stylesheet" href="${window.location.origin}/Timer.module.css">
           ${darkMode ? '<style>body { background-color: #1a1a2e; color: white; }</style>' : ''}
+          <style>
+            [class^="Countdown_countdown__"], [class*=" Countdown_countdown__"] {
+              width: 90vw !important;
+              height: 90vw !important;
+              max-width: 480px !important;
+              max-height: 600px !important;
+              min-width: 180px !important;
+              min-height: 180px !important;
+            }
+          </style>
         </head>
         <body class="timer-popout-body">
           <h1 style="text-align: center;">Timer</h1>
