@@ -5,12 +5,12 @@ import Loading from '../../common/Loading';
 export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
   const initialCardSize = () => {
     if (window.innerWidth <= 680) {
-      return { height: '300px' };
+      return { height: '240px' };
     }
     if (window.innerWidth <= 1418) {
-      return { height: '548px' };
+      return { height: '320px' };
     }
-    return { height: '347px' };
+    return { height: '320px' };
   };
 
   const [cardSize, setCardSize] = useState(initialCardSize);
@@ -44,6 +44,7 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
   }
 
   const { taskHours, projectHours } = data;
+
   const taskPercentage = taskHours.submittedToCommittedHoursPercentage;
   const projectPercentage = projectHours.submittedToCommittedHoursPercentage;
   const taskChangePercentage = taskHours.comparisonPercentage;
@@ -63,9 +64,8 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
     },
   ];
 
-  const maxY =
-    Math.ceil(Math.max(data.taskHours, data.projectHours)) +
-    Math.floor(Math.max(data.taskHours, data.projectHours) / 10);
+  const maxY = Math.ceil(Math.max(taskHours.count, projectHours.count) * 1.2) + 1;
+
   const tickInterval = Math.floor(maxY / 10);
   const greenColor = darkMode ? 'lightgreen' : 'green';
   const chartData = stats.map(item => ({
@@ -79,6 +79,15 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
     fontcolor: item.change >= 0 ? greenColor : 'red',
     color: ['rgba(76,75,245,255)', 'rgba(0,175,244,255)'],
   }));
+  const projectBarInfo = {
+    amount: projectHours.count,
+    percentage: `${(projectPercentage * 100).toFixed(2)}%`,
+    change:
+      projectChangePercentage > 0
+        ? `+${(projectChangePercentage * 100).toFixed(0)}%`
+        : `${(projectChangePercentage * 100).toFixed(0)}%`,
+    fontcolor: projectChangePercentage >= 0 ? greenColor : 'red',
+  };
   const renderCustomizedLabel = props => {
     const { x, y, width, value, index } = props;
     const { percentage } = chartData[index];
@@ -122,14 +131,53 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
   };
 
   return (
-    <div style={{ height: cardSize.height }}>
-      <TinyBarChart
-        chartData={chartData}
-        maxY={maxY}
-        tickInterval={tickInterval}
-        renderCustomizedLabel={renderCustomizedLabel}
-        darkMode={darkMode}
-      />
+    <div
+      style={{
+        height: '548px',
+        minHeight: '548px',
+        maxHeight: '548px',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
+      <div style={{ textAlign: 'center', marginBottom: 0 }}>
+        <div
+          style={{
+            fontSize: '13px',
+            fontWeight: 500,
+            color: darkMode ? 'white' : '#222',
+            marginTop: 4,
+            marginBottom: 8,
+          }}
+        >
+          {`${(taskHours.totalTangibleHoursPercentage * 100).toFixed(
+            2,
+          )}% of Total Tangible Hours Submitted to Tasks`}
+          {(() => {
+            const isPositive = taskHours.totalTangibleHoursChange >= 0;
+            let color;
+            if (isPositive) {
+              color = darkMode ? 'lightgreen' : 'green';
+            } else {
+              color = 'red';
+            }
+            const value = isPositive
+              ? `+${(taskHours.totalTangibleHoursChange * 100).toFixed(0)}%`
+              : `${(taskHours.totalTangibleHoursChange * 100).toFixed(0)}%`;
+            return <span style={{ color, marginLeft: 8, fontSize: '12px' }}>{value}</span>;
+          })()}
+        </div>
+      </div>
+      <div style={{ flex: 1, minHeight: 0 }}>
+        <TinyBarChart
+          chartData={chartData.filter(item => item.name === 'Task')}
+          maxY={maxY}
+          tickInterval={tickInterval}
+          renderCustomizedLabel={renderCustomizedLabel}
+          darkMode={darkMode}
+          projectBarInfo={projectBarInfo}
+        />
+      </div>
     </div>
   );
 }
