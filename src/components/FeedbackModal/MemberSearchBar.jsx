@@ -1,11 +1,9 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Input, ListGroup, ListGroupItem } from 'reactstrap';
-import axios from 'axios';
-import { ENDPOINTS } from '../../utils/URL';
 import './MemberSearchBar.css';
 
-function MemberSearchBar({ id, value, onChange, inactive }) {
+function MemberSearchBar({ id, value, onChange, inactive, usersList = [] }) {
   const [searchTerm, setSearchTerm] = useState(value);
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -16,41 +14,32 @@ function MemberSearchBar({ id, value, onChange, inactive }) {
     setSearchTerm(value);
   }, [value]);
 
-  // Fetch users based on search term
-  const fetchUsers = async searchText => {
-    if (!searchText.trim()) {
+  // Filter users based on search term
+  const filterUsers = searchText => {
+    if (!searchText.trim() || !usersList || usersList.length === 0) {
       setSuggestions([]);
       return;
     }
 
+    setLoading(true);
+
     try {
-      setLoading(true);
-      // Use the user autocomplete endpoint
-      const response = await axios.get(ENDPOINTS.USER_AUTOCOMPLETE(searchText));
-      // console.log(response.data);
-      // For demonstration purposes, simulate filtering based on active/inactive status
-      // In a real implementation, the API would filter this server-side
-      let filteredUsers = response.data.map(user => ({
+      const lowerSearchText = searchText.toLowerCase();
+
+      // Filter users based on first name or last name containing the search text
+      const filteredUsers = usersList.filter(user =>
+        `${user.firstName} ${user.lastName}`.toLowerCase().includes(lowerSearchText),
+      );
+
+      // Format users for display
+      const formattedUsers = filteredUsers.map(user => ({
         ...user,
         fullName: `${user.firstName} ${user.lastName}`,
-        // Simulate active/inactive status based on arbitrary criteria
-        // This is just for demonstration - in a real implementation,
-        // this would come from the API
-        isActive: user._id.toString().length % 2 === 0, // Arbitrary logic for demo
       }));
 
-      // Filter based on the inactive prop
-      if (inactive) {
-        // Show only inactive members
-        filteredUsers = filteredUsers.filter(user => !user.isActive);
-      } else {
-        // Show only active members
-        filteredUsers = filteredUsers.filter(user => user.isActive);
-      }
-
-      setSuggestions(filteredUsers);
+      setSuggestions(formattedUsers);
     } catch (error) {
-      // Silently handle error
+      console.error('Error filtering users:', error);
       setSuggestions([]);
     } finally {
       setLoading(false);
@@ -62,9 +51,9 @@ function MemberSearchBar({ id, value, onChange, inactive }) {
     setSearchTerm(inputValue);
     onChange(inputValue);
 
-    // Debounce the API call
+    // Debounce the filtering
     const timeoutId = setTimeout(() => {
-      fetchUsers(inputValue);
+      filterUsers(inputValue);
       setShowSuggestions(true);
     }, 300);
 
@@ -72,7 +61,7 @@ function MemberSearchBar({ id, value, onChange, inactive }) {
   };
 
   const handleSuggestionClick = suggestion => {
-    const fullName = `${suggestion.firstName} ${suggestion.lastName}`;
+    const fullName = suggestion.fullName;
     setSearchTerm(fullName);
     onChange(fullName);
     setShowSuggestions(false);
@@ -85,7 +74,12 @@ function MemberSearchBar({ id, value, onChange, inactive }) {
         placeholder="Full Name"
         value={searchTerm}
         onChange={handleInputChange}
-        onFocus={() => searchTerm.trim() && fetchUsers(searchTerm) && setShowSuggestions(true)}
+        onFocus={() => {
+          if (searchTerm.trim()) {
+            filterUsers(searchTerm);
+            setShowSuggestions(true);
+          }
+        }}
         onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
         className="simplified-input"
       />
@@ -94,11 +88,11 @@ function MemberSearchBar({ id, value, onChange, inactive }) {
         <ListGroup className="suggestions-list">
           {suggestions.map(suggestion => (
             <ListGroupItem
-              key={`suggestion-${id}-${suggestion._id}`}
+              key={`suggestion-${id}-${suggestion.firstName}-${suggestion.lastName}`}
               onClick={() => handleSuggestionClick(suggestion)}
               action
             >
-              {`${suggestion.firstName} ${suggestion.lastName}`}
+              {suggestion.fullName}
             </ListGroupItem>
           ))}
         </ListGroup>
@@ -114,14 +108,22 @@ function MemberSearchBar({ id, value, onChange, inactive }) {
 }
 
 MemberSearchBar.propTypes = {
-  id: PropTypes.number.isRequired,
+  id: PropTypes.string.isRequired,
   value: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
   inactive: PropTypes.bool,
+  usersList: PropTypes.arrayOf(
+    PropTypes.shape({
+      firstName: PropTypes.string.isRequired,
+      lastName: PropTypes.string.isRequired,
+      isActive: PropTypes.bool,
+    }),
+  ),
 };
 
 MemberSearchBar.defaultProps = {
   inactive: false,
+  usersList: [],
 };
 
 export default MemberSearchBar;

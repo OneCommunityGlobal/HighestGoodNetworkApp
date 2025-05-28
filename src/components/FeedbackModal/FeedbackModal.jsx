@@ -27,10 +27,39 @@ function FeedbackModal() {
   ]);
   const [comments, setComments] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [allUsers, setAllUsers] = useState([]);
+  const [activeUsers, setActiveUsers] = useState([]);
+  const [inactiveUsers, setInactiveUsers] = useState([]);
 
   // Use refs to maintain counters for unique IDs
   const nextActiveIdRef = useRef(2);
   const nextInactiveIdRef = useRef(2);
+
+  // Fetch user names from API
+  useEffect(() => {
+    const fetchUserNames = async () => {
+      try {
+        const response = await axios.get(
+          `${ENDPOINTS.APIEndpoint()}/dashboard/questionaire/userNamesList`,
+        );
+        if (response.data && response.data.users) {
+          const users = response.data.users;
+          setAllUsers(users);
+
+          // Separate active and inactive users
+          const active = users.filter(user => user.isActive);
+          const inactive = users.filter(user => !user.isActive);
+
+          setActiveUsers(active);
+          setInactiveUsers(inactive);
+        }
+      } catch (error) {
+        console.error('Error fetching user names:', error);
+      }
+    };
+
+    fetchUserNames();
+  }, []);
 
   // Placeholder for getting help request status
   useEffect(() => {
@@ -184,8 +213,9 @@ function FeedbackModal() {
   };
 
   const openFeedbackSuggestions = () => {
-    // Set a flag in localStorage that the SummaryBar will check
-    localStorage.setItem('openSuggestionsModal', 'true');
+    // Set a flag in localStorage with a timestamp to ensure it's recognized as a new request
+    // This ensures repeated clicks will work and helps prevent unexpected popups
+    localStorage.setItem('openSuggestionsModal', Date.now().toString());
 
     // Close the current feedback modal
     setIsOpen(false);
@@ -193,6 +223,10 @@ function FeedbackModal() {
     // If we're not on the dashboard, redirect there
     if (!window.location.hash.includes('/dashboard')) {
       window.location.href = '/#/dashboard';
+    } else {
+      // If we're already on the dashboard, force a refresh of the SummaryBar
+      // by dispatching a custom event that it can listen for
+      window.dispatchEvent(new CustomEvent('openSuggestionModal'));
     }
   };
 
@@ -248,6 +282,7 @@ function FeedbackModal() {
                     id={member.id}
                     value={member.name}
                     onChange={value => handleMemberChange(member.id, value)}
+                    usersList={activeUsers}
                   />
                 </div>
                 <div className="rating-container">
@@ -293,6 +328,7 @@ function FeedbackModal() {
                     value={member.name}
                     onChange={value => handleMemberChange(member.id, value, true)}
                     inactive
+                    usersList={inactiveUsers}
                   />
                 </div>
                 <div className="rating-container">
@@ -346,7 +382,12 @@ function FeedbackModal() {
       </ModalBody>
 
       <ModalFooter className={darkMode ? 'bg-yinmn-blue text-light' : ''}>
-        <Button color="danger" className="mr-auto" onClick={handleCloseForever}>
+        <Button
+          color="danger"
+          className="mr-auto"
+          onClick={handleCloseForever}
+          disabled={isSubmitting}
+        >
           Found help another way. Close Permanently
         </Button>
         <Button color="primary" onClick={handleSubmit} disabled={!receivedHelp || isSubmitting}>
