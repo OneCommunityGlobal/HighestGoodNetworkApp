@@ -39,6 +39,7 @@ function MemberSearchBar({ id, value, onChange, inactive, usersList = [] }) {
 
       setSuggestions(formattedUsers);
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Error filtering users:', error);
       setSuggestions([]);
     } finally {
@@ -61,7 +62,7 @@ function MemberSearchBar({ id, value, onChange, inactive, usersList = [] }) {
   };
 
   const handleSuggestionClick = suggestion => {
-    const fullName = suggestion.fullName;
+    const { fullName } = suggestion;
     setSearchTerm(fullName);
     onChange(fullName);
     setShowSuggestions(false);

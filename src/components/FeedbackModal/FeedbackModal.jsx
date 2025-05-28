@@ -27,7 +27,6 @@ function FeedbackModal() {
   ]);
   const [comments, setComments] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [allUsers, setAllUsers] = useState([]);
   const [activeUsers, setActiveUsers] = useState([]);
   const [inactiveUsers, setInactiveUsers] = useState([]);
 
@@ -41,8 +40,7 @@ function FeedbackModal() {
       try {
         const response = await axios.get(ENDPOINTS.QUESTIONNAIRE_USER_NAMES_LIST());
         if (response.data && response.data.users) {
-          const users = response.data.users;
-          setAllUsers(users);
+          const { users } = response.data;
 
           // Separate active and inactive users
           const active = users.filter(user => user.isActive);
@@ -52,6 +50,7 @@ function FeedbackModal() {
           setInactiveUsers(inactive);
         }
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.error('Error fetching user names:', error);
       }
     };
@@ -85,6 +84,7 @@ function FeedbackModal() {
 
   const handleSubmit = async () => {
     if (!userProfile || !userProfile._id) {
+      // eslint-disable-next-line no-console
       console.error('User ID not available');
       return;
     }
@@ -118,6 +118,7 @@ function FeedbackModal() {
       localStorage.setItem('feedbackCompleted', 'true');
       setIsOpen(false);
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Error submitting feedback:', error);
     } finally {
       setIsSubmitting(false);
@@ -126,6 +127,7 @@ function FeedbackModal() {
 
   const handleCloseForever = async () => {
     if (!userProfile || !userProfile._id) {
+      // eslint-disable-next-line no-console
       console.error('User ID not available');
       return;
     }
@@ -146,6 +148,7 @@ function FeedbackModal() {
       localStorage.setItem('feedbackCompleted', 'true');
       setIsOpen(false);
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Error closing feedback permanently:', error);
     } finally {
       setIsSubmitting(false);
