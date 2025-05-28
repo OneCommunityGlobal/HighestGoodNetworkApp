@@ -289,7 +289,6 @@ const WeeklySummariesReport = props => {
 
         const filterColor = summary.filterColor || null;
 
-
         return { ...summary, promisedHoursByWeek, filterColor };
       });
 
@@ -1456,4 +1455,3 @@ function WeeklySummariesReportTab({ tabId, hidden, children }) {
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(WeeklySummariesReport);
-

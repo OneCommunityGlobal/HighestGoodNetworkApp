@@ -88,7 +88,6 @@ function LeaderBoard({
 }) {
   const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
   const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon'); // ??? this permission doesn't exist?
-  const isOwner = ['Owner'].includes(loggedInUser.role);
   const todaysDate = moment()
     .tz('America/Los_Angeles')
     .endOf('week')
@@ -329,7 +328,7 @@ function LeaderBoard({
     setModalOpen(false);
     await postLeaderboardData(item.personId, trophyFollowedUp);
     // Update leaderboard data after posting
-    await getLeaderboardData(userId);
+    await getLeaderboardData(displayUserId);
   };
 
   const handleIconContent = durationSinceStarted => {

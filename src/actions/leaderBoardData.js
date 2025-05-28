@@ -31,12 +31,13 @@ export const postLeaderboardData = (userId, trophyFollowedUp, userProfile) => {
       const url = ENDPOINTS.TROPHY_ICON(userId, trophyFollowedUp);
       
       // Attempt to post the data
-      const res = await httpService.post(url, userProfile);
+      await httpService.post(url, userProfile);
 
       // Dispatch the action with the user profile
       await dispatch(postLeaderboardDataActionCreator(userProfile));
     } catch (error) {
       // Handle any errors that occur
+      // eslint-disable-next-line no-console
       console.error('Error posting leaderboard data:', error);
 
     }
