@@ -40,11 +40,8 @@ function BadgeReport(props) {
   const [badgeToDelete, setBadgeToDelete] = useState([]);
   const [savingChanges, setSavingChanges] = useState(false);
 
-
-
   const canDeleteBadges = props.hasPermission('deleteBadges');
   const canUpdateBadges = props.hasPermission('updateBadges');
-
   const darkMode = props.darkMode;
 
   async function imageToUri(url, callback) {
