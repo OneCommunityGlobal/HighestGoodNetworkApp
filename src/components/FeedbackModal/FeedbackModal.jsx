@@ -10,12 +10,15 @@ import {
   Input,
 } from 'reactstrap';
 import { useSelector } from 'react-redux';
+import axios from 'axios';
+import { ENDPOINTS } from '../../utils/URL';
 import './FeedbackModal.css';
 import StarRating from './StarRating';
 import MemberSearchBar from './MemberSearchBar';
 
 function FeedbackModal() {
   const darkMode = useSelector(state => state.theme.darkMode);
+  const userProfile = useSelector(state => state.userProfile);
   const [isOpen, setIsOpen] = useState(true);
   const [receivedHelp, setReceivedHelp] = useState('');
   const [ratedMembers, setRatedMembers] = useState([{ id: 'active-1', name: '', rating: 0 }]);
@@ -23,6 +26,7 @@ function FeedbackModal() {
     { id: 'inactive-1', name: '', rating: 0 },
   ]);
   const [comments, setComments] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Use refs to maintain counters for unique IDs
   const nextActiveIdRef = useRef(2);
@@ -52,19 +56,48 @@ function FeedbackModal() {
     checkHelpRequest();
   }, []);
 
-  const handleSubmit = () => {
-    // This would send the feedback data to an API endpoint
-    // Log feedback submission (commented out to avoid linting error)
-    // console.log('Feedback submitted:', {
-    //   receivedHelp,
-    //   ratedMembers,
-    //   inactiveRatedMembers,
-    //   comments,
-    // });
+  const handleSubmit = async () => {
+    if (!userProfile || !userProfile._id) {
+      console.error('User ID not available');
+      return;
+    }
 
-    // Mark feedback as completed
-    localStorage.setItem('feedbackCompleted', 'true');
-    setIsOpen(false);
+    setIsSubmitting(true);
+
+    try {
+      // Format the rated members data for the API
+      const peopleYouContacted = [...ratedMembers, ...inactiveRatedMembers]
+        .filter(member => member.name.trim() !== '')
+        .map(member => ({
+          fullName: member.name,
+          rating: member.rating,
+          isActive: !member.id.includes('inactive'),
+        }));
+
+      // Prepare the request payload
+      const payload = {
+        userId: userProfile._id,
+        haveYouRecievedHelpLastWeek: receivedHelp,
+        peopleYouContacted,
+        additionalComments: comments,
+        foundHelpSomeWhereClosePermanently: false,
+        daterequestedFeedback: new Date().toISOString(),
+      };
+
+      // Make the API call
+      await axios.post(
+        `${ENDPOINTS.APIEndpoint()}/dashboard/questionaire/feedbackrequest`,
+        payload,
+      );
+
+      // Mark feedback as completed
+      localStorage.setItem('feedbackCompleted', 'true');
+      setIsOpen(false);
+    } catch (error) {
+      console.error('Error submitting feedback:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleCloseForever = () => {
@@ -286,8 +319,8 @@ function FeedbackModal() {
         <Button color="danger" className="mr-auto" onClick={handleCloseForever}>
           Found help another way. Close Permanently
         </Button>
-        <Button color="primary" onClick={handleSubmit} disabled={!receivedHelp}>
-          Submit
+        <Button color="primary" onClick={handleSubmit} disabled={!receivedHelp || isSubmitting}>
+          {isSubmitting ? 'Submitting...' : 'Submit'}
         </Button>
       </ModalFooter>
     </Modal>
