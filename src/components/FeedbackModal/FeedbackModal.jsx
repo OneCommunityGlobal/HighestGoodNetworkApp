@@ -100,10 +100,35 @@ function FeedbackModal() {
     }
   };
 
-  const handleCloseForever = () => {
-    // Mark feedback as completed and prevent it from showing again
-    localStorage.setItem('feedbackCompleted', 'true');
-    setIsOpen(false);
+  const handleCloseForever = async () => {
+    if (!userProfile || !userProfile._id) {
+      console.error('User ID not available');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      // Prepare the request payload
+      const payload = {
+        userId: userProfile._id,
+        foundHelpSomeWhereClosePermanently: true,
+      };
+
+      // Make the API call
+      await axios.post(
+        `${ENDPOINTS.APIEndpoint()}/dashboard/questionaire/checkUserFoundHelpSomewhere`,
+        payload,
+      );
+
+      // Mark feedback as completed and prevent it from showing again
+      localStorage.setItem('feedbackCompleted', 'true');
+      setIsOpen(false);
+    } catch (error) {
+      console.error('Error closing feedback permanently:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const addNewMember = (isInactive = false) => {
