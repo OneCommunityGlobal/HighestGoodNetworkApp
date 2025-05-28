@@ -44,6 +44,9 @@ const renderCustomizedLabel = ({
     endX = startX + outerRadius * -cos * 2;
     textAnchor = 'start';
   }
+
+  const isMobile = window.innerWidth <= 634;
+
   return (
     <g>
       <path
@@ -58,7 +61,21 @@ const renderCustomizedLabel = ({
         textAnchor={textAnchor}
         fontSize={fontSize}
         fill={fill}
-      >{`${name || ''} ${percent}%`}</text>
+      >
+        {isMobile ? (
+          <>
+            <tspan x={endX + (cos >= 0 || mirrorNeeded ? 1 : -1) * 5} dy="0">
+              {`${name || ''}`}
+            </tspan>
+            <tspan
+              x={endX + (cos >= 0 || mirrorNeeded ? 1 : -1) * 5}
+              dy="1.2em"
+            >{`${percent}%`}</tspan>
+          </>
+        ) : (
+          <tspan>{`${name || ''} ${percent}%`}</tspan>
+        )}
+      </text>
     </g>
   );
 };
@@ -70,8 +87,8 @@ export default function SelectTeamPieChart(props) {
   const updateRadiusSize = () => {
     const width = window.innerWidth;
     if (width <= 634) {
-      setFontSize(10);
-      setRadiusSize(80);
+      setFontSize(8.5);
+      setRadiusSize(75);
     } else if (width <= 992) {
       setRadiusSize(120);
     } else if (width <= 1230) {
