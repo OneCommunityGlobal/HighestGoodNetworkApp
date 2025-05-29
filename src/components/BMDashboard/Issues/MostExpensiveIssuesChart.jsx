@@ -24,11 +24,9 @@ export default function MostExpensiveOpenIssuesChart() {
   const [dates, setDates] = useState({ start: '', end: '' });
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  const [issues, setIssues] = useState([]);
-
   const dispatch = useDispatch();
 
-  const { issues: rawIssues } = useSelector(state => state.bmIssues);
+  const { issues } = useSelector(state => state.bmIssues);
   const projects = useSelector(state => state.bmProjects);
   const projectMap = Object.fromEntries(projects.map(p => [p._id, p.name]));
 
@@ -45,29 +43,24 @@ export default function MostExpensiveOpenIssuesChart() {
     return diffDays;
   };
 
-  useEffect(() => {
-    if (Array.isArray(rawIssues) && rawIssues.length > 0) {
-      const processed = rawIssues.map(issue => ({
-        id: issue._id,
-        name: issue.issueTitle?.[0] || 'Untitled',
-        tag: issue.tag || '',
-        date: new Date(issue.createdDate.split('T')[0]) || null,
-        project: projectMap[issue.projectId] || 'Unknown Project',
-        openSince: getDaysSinceCreated(issue.createdDate.split('T')[0]),
-        cost: issue.cost,
-        person: issue.person,
-      }));
-      setIssues(processed);
-    }
-  }, [rawIssues]);
+  const processedIssues = useMemo(
+    () => issues.map(issue => ({
+      id: issue._id,
+      name: issue.issueTitle?.[0] || 'Untitled',
+      tag: issue.tag || '',
+      date: new Date(issue.createdDate.split('T')[0]),
+      project: projectMap[issue.projectId] || 'Unknown Project',
+      openSince: getDaysSinceCreated(issue.createdDate.split('T')[0]),
+      cost: issue.cost,
+      person: issue.person,
+    })),
+    [issues, projectMap]
+  );
 
-  const uniqueProjects = [...new Set(issues.map(issue => issue.project))];
-  const projectOptions = uniqueProjects.map(project => ({
-    label: project,
-    value: project,
-  }));
-
-  const projectNames = projectOptions.map(opt => opt.value);
+  const projectNames = useMemo(
+    () => [...new Set(processedIssues.map(issue => issue.project))],
+    [processedIssues]
+  );
 
   const dropdownRef = useRef(null);
 
@@ -81,9 +74,10 @@ export default function MostExpensiveOpenIssuesChart() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const allProjects = useMemo(() => {
-    return ['all', ...projectNames];
-  }, []);
+  const allProjects = useMemo(
+    () => ['all', ...projectNames],
+    [projectNames]
+  );
 
   const handleProjectCheckboxChange = useCallback(e => {
     const { value, checked } = e.target;
@@ -117,18 +111,18 @@ export default function MostExpensiveOpenIssuesChart() {
     if (value) setDates(d => ({ ...d, end: value }));
   }, []);
 
-  const filteredData = useMemo(() => {
-    return issues.filter(issue => {
-      const inProject =
-        selectedProjects.includes('all') || selectedProjects.includes(issue.project);
+  const filteredData = useMemo(() => processedIssues
+    .filter(issue => {
+      const inProject = selectedProjects.includes('all') || selectedProjects.includes(issue.project);
       let inDate = true;
       if (dateMode === 'CUSTOM' && dates.start && dates.end) {
-        const today = issue.date.toISOString().split('T')[0];
-        inDate = today >= dates.start && today <= dates.end;
+        const iso = issue.date.toISOString().split('T')[0];
+        inDate = iso >= dates.start && iso <= dates.end;
       }
       return inProject && inDate;
-    }).sort((a, b) => b.cost - a.cost);
-  }, [selectedProjects, dateMode, dates]);
+    })
+    .sort((a, b) => b.cost - a.cost),
+    [processedIssues, selectedProjects, dateMode, dates]);
 
   const chartData = useMemo(() => ({
     labels: filteredData.map(d => d.name),
@@ -227,7 +221,7 @@ export default function MostExpensiveOpenIssuesChart() {
         </div>
 
         <div className="filter-group">
-          <label>Date Mode</label>
+          <label>Date</label>
           <select className="filter-select" value={dateMode} onChange={handleDateModeChange}>
             <option value="ALL">All</option>
             <option value="CUSTOM">Custom</option>
