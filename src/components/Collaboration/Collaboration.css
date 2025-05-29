@@ -1,9 +1,4 @@
-.collaboration-container,
-.job-landing .header img {
-  width: 60%;
-  max-width: 1000px;
-  display: flex;
-}
+
 .headings,
 .job-ad {
   text-align: center;
@@ -15,11 +10,12 @@
   align-items: center;
   background-color: #fff;
 }
-
 .job-landing .header img {
+  width: 95% !important; 
+  max-width: 1000px !important;
   height: auto;
   margin: 0 auto;
-  flex-direction: column;
+  display: block;
 }
 .collaboration-navbar {
   width: 100%;
@@ -32,6 +28,26 @@
   flex-flow: row nowrap;
   box-sizing: border-box;
   flex-wrap: wrap;
+}
+
+.header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 20px 0;
+  padding: 20px 0;
+}
+
+.logo-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .navbar-left input,
@@ -104,10 +120,21 @@ select {
 .pagination {
   margin-top: 20px;
   margin-bottom: 20px;
+  display:flex;
+  justify-content: center;
+  gap: 5px;
 }
+
 .pagination button {
-  margin: 0 5px;
+  margin: 0; 
+  padding: 8px 12px;
+  cursor: pointer;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  border-radius: 4px;
+  transition: all 0.3s ease;
 }
+
 .pagination button:disabled {
   background-color: #ccc;
   color: #333;
@@ -227,11 +254,141 @@ select {
     width: auto;
   }
 }
+
+.summaries-list {
+  width: 100%;
+  max-width: none;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.summary-item {
+  padding: 20px;
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: visible;
+}
+
+.summary-item h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.summary-item p {
+  margin-bottom: 10px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  line-height: 1.5;
+}
+
+.summary-item a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.summary-item a:hover {
+  text-decoration: underline;
+}
+
 .responsive-img {
-  max-width: 100%;
+  width: 95% !important; 
+  max-width: 1000px !important; 
   height: auto;
   display: block;
   margin: 0 auto;
+}
+
+.volunteer-button {
+  display: inline-block;
+  padding: 8px 16px;
+  background-color: #007bff;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: 400;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+}
+
+.volunteer-button:hover {
+  background-color: #0056b3;
+  text-decoration: none;
+  color: white;
+}
+.job-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  width: 100%;
+}
+
+.job-ad {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  background: linear-gradient(135deg, #fff, #f9f9f9);
+  transition: transform 0.3s, box-shadow 0.3s;
+  display: flex;
+  flex-direction: column;
+}
+
+.job-ad img {
+  max-width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-bottom: 1px solid #ddd;
+}
+
+.job-content {
+  padding: 15px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.job-ad h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #333;
+  margin: 0 0 10px 0;
+  transition: color 0.3s;
+}
+
+.job-description {
+  flex-grow: 1;
+  margin-bottom: 10px;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: #666;
+}
+
+.job-date {
+  font-size: 0.8rem;
+  color: #888;
+  margin: 0;
+  margin-top: auto;
+}
+
+.job-ad a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.job-ad a:hover h3 {
+  color: #007acc;
+}
+
+.job-ad:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 @media screen and (max-width: 1024px) {
   .job-list {
