@@ -1,0 +1,36 @@
+.total-material-cost-per-project{
+  height: 300px;
+}
+
+.total-material-cost-per-project-chart-title {
+  font-size: medium;
+  font-weight: bold;
+  color: var(--text-color);
+  margin-bottom: 10px;
+}
+
+.total-material-cost-per-project .select__value-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  overflow-x: auto;
+  white-space: nowrap;
+  flex-wrap: nowrap;
+  max-width: 100%;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  position: relative;
+}
+
+.total-material-cost-per-project .select__multi-value {
+  max-width: none;
+  flex-shrink: 0;
+}
+
+.total-material-cost-per-project .select__multi-value__label {
+  font-size: 12px;
+}
+
+.total-material-cost-per-project .select__menu {
+  font-size: 12px;
+}

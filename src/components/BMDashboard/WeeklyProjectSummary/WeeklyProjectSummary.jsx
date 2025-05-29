@@ -9,6 +9,7 @@ import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
 import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
 import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
+import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
 
 const projectStatusButtons = [
   {
@@ -175,14 +176,18 @@ export default function WeeklyProjectSummary() {
         key: 'Material Consumption',
         className: 'large',
         content: [1, 2, 3].map((_, index) => {
+          let content;
+          if (index === 1) {
+            content = <QuantityOfMaterialsUsed data={quantityOfMaterialsUsedData} />;
+          } else if (index === 2) {
+            content = <TotalMaterialCostPerProject />;
+          } else {
+            content = <p>📊 Card</p>;
+          }
           const uniqueId = uuidv4();
           return (
             <div key={uniqueId} className="weekly-project-summary-card normal-card">
-              {index === 1 ? (
-                <QuantityOfMaterialsUsed data={quantityOfMaterialsUsedData} />
-              ) : (
-                '📊 Card'
-              )}
+              {content}
             </div>
           );
         }),
