@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -13,39 +13,56 @@ import Select from 'react-select';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import './LessonsLearntChart.css';
-import { useQuery } from '@tanstack/react-query';
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Title);
 
 const useLessonsData = (selectedProjects, startDate, endDate) => {
-  const { data: allProjects } = useQuery({
-    queryKey: ['projects'],
-    queryFn: async () => (await axios.get('/api/projects')).data,
-  });
+  const [allProjects, setAllProjects] = useState([]);
+  const [lessonsData, setLessonsData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const { data: lessonsData, isLoading } = useQuery({
-    queryKey: ['lessons', selectedProjects, startDate, endDate],
-    queryFn: async () => {
-      const params = {
-        projects: selectedProjects.map(p => p.value).join(','),
-        from: startDate?.toISOString(),
-        to: endDate?.toISOString(),
-      };
-      const response = await axios.get('/api/lessons-learnt', { params });
-      return response.data;
-    },
-    keepPreviousData: true,
-  });
+  // Fetch all projects once on mount
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const response = await axios.get('/api/projects');
+        setAllProjects(response.data);
+      } catch (error) {
+        console.error('Error fetching projects:', error);
+      }
+    };
+    fetchProjects();
+  }, []);
+
+  // Fetch lessons data whenever filters change
+  useEffect(() => {
+    const fetchLessons = async () => {
+      setIsLoading(true);
+      try {
+        const params = {
+          projects: selectedProjects.map(p => p.value).join(','),
+          from: startDate?.toISOString(),
+          to: endDate?.toISOString(),
+        };
+        const response = await axios.get('/api/lessons-learnt', { params });
+        setLessonsData(response.data);
+      } catch (error) {
+        console.error('Error fetching lessons data:', error);
+        setLessonsData([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchLessons();
+  }, [selectedProjects, startDate, endDate]);
 
   return { allProjects, lessonsData, isLoading };
 };
 
-
 const ChartTitle = ({ title }) => (
   <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>{title}</h2>
 );
-
-
 
 const Filters = ({
   allProjects,
@@ -90,7 +107,6 @@ const Filters = ({
     </div>
   </div>
 );
-
 
 const PercentageLabels = ({ data }) => {
   return (
