@@ -11,29 +11,12 @@ import {
   CartesianGrid,
 } from 'recharts';
 import { useHistory } from 'react-router-dom';
+import axios from 'axios';
+import { ENDPOINTS } from '../../../../utils/URL';
 import './ToolsHorizontalBarChart.css';
 
-// Sample data - replace with API data
-const dummyData = [
-  {
-    name: 'Pipe Wrench',
-    inUse: 80,
-    needsReplacement: 90,
-    yetToReceive: 30,
-  },
-  {
-    name: 'Hammer',
-    inUse: 150,
-    needsReplacement: 10,
-    yetToReceive: 15,
-  },
-  {
-    name: 'Wedge',
-    inUse: 100,
-    needsReplacement: 20,
-    yetToReceive: 25,
-  },
-];
+// Empty state data (only used if API fails)
+const emptyData = [];
 
 const CustomTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
@@ -73,65 +56,84 @@ const CustomLabel = props => {
   );
 };
 
-function ToolsHorizontalBarChart({
-  darkMode,
-  isFullPage = false,
-  projectId = 'all',
-  startDate = null,
-  endDate = null,
-}) {
-  const [data, setData] = useState(dummyData);
+function ToolsHorizontalBarChart({ darkMode, isFullPage = false, projectId, startDate, endDate }) {
+  const [data, setData] = useState(emptyData);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [defaultProjectId, setDefaultProjectId] = useState(null);
   const history = useHistory();
 
+  // First, fetch available projects if no projectId is provided for the widget view
+  useEffect(() => {
+    const fetchDefaultProject = async () => {
+      if (!isFullPage && !projectId && !defaultProjectId) {
+        try {
+          const response = await axios.get(ENDPOINTS.TOOLS_AVAILABILITY_PROJECTS);
+          if (response.data && response.data.length > 0) {
+            // Use the first project as default
+            setDefaultProjectId(response.data[0].projectId);
+          }
+        } catch (err) {
+          console.error('Error fetching default project:', err);
+        }
+      }
+    };
+
+    fetchDefaultProject();
+  }, [isFullPage, projectId, defaultProjectId]);
+
+  // Then fetch the tools data based on project
   useEffect(() => {
     const fetchToolsData = async () => {
+      // Use provided projectId or the default one for widget view
+      const activeProjectId = projectId || (!isFullPage && defaultProjectId);
+
+      // If no project ID is available yet, don't fetch
+      if (!activeProjectId) {
+        if (isFullPage) {
+          // For full page, show empty state if no project selected
+          setData(emptyData);
+        }
+        return;
+      }
+
+      setLoading(true);
+      setError(null);
+
       try {
-        setLoading(true);
-        // In a real implementation, you would send these parameters to the API
-        // Example API call with filters
-        // const queryParams = new URLSearchParams();
-        // if (projectId !== 'all') queryParams.append('projectId', projectId);
-        // if (startDate) queryParams.append('startDate', startDate.toISOString());
-        // if (endDate) queryParams.append('endDate', endDate.toISOString());
-        // const response = await fetch(`/api/tools/availability?${queryParams}`);
-        // const data = await response.json();
-        // setData(data);
+        // Fetch data from API directly
+        const url = ENDPOINTS.TOOLS_AVAILABILITY_BY_PROJECT(activeProjectId, startDate, endDate);
+        const response = await axios.get(url);
+        const responseData = response.data;
 
-        // For now, simulate filtering with dummy data
-        setTimeout(() => {
-          // This is a placeholder for actual API integration
-          // In reality, the server would filter the data based on the parameters
-
-          // Simple client-side filtering for demonstration:
-          let filteredData = [...dummyData];
-
-          // If we had real project-specific data, we'd filter like this:
-          // if (projectId !== 'all') {
-          //   filteredData = filteredData.filter(item => item.projectId === projectId);
-          // }
-
-          // Mock different data based on projectId to demonstrate the effect
-          if (projectId !== 'all') {
-            filteredData = filteredData.map(item => ({
-              ...item,
-              inUse: Math.floor(item.inUse * 0.7),
-              needsReplacement: Math.floor(item.needsReplacement * 0.5),
-              yetToReceive: Math.floor(item.yetToReceive * 0.8),
-            }));
+        if (responseData && responseData.length > 0) {
+          // Sort by total quantity
+          const sortedData = [...responseData].sort((a, b) => {
+            const totalA = a.inUse + a.needsReplacement + a.yetToReceive;
+            const totalB = b.inUse + b.needsReplacement + b.yetToReceive;
+            return totalB - totalA;
+          });
+          setData(sortedData);
+        } else {
+          // If no data returned, use empty array
+          setData(emptyData);
+          if (isFullPage) {
+            setError('No tool availability data found for this project.');
           }
-
-          setData(filteredData);
-          setLoading(false);
-        }, 500);
-      } catch (error) {
-        console.error('Error fetching tools data:', error);
+        }
+      } catch (err) {
+        console.error('Error fetching tools data:', err);
+        setData(emptyData);
+        if (isFullPage) {
+          setError('Failed to load tools availability data. Please try again.');
+        }
+      } finally {
         setLoading(false);
       }
     };
 
     fetchToolsData();
-  }, [projectId, startDate, endDate]);
+  }, [projectId, startDate, endDate, isFullPage, defaultProjectId]);
 
   const handleCardClick = () => {
     if (!isFullPage) {
@@ -143,26 +145,17 @@ function ToolsHorizontalBarChart({
     <div
       className={`tools-horizontal-chart-container ${darkMode ? 'dark-mode' : ''} ${
         isFullPage ? 'full-page' : ''
-      } ${loading ? 'loading' : ''}`}
+      }`}
       onClick={handleCardClick}
       style={{ cursor: isFullPage ? 'default' : 'pointer' }}
     >
-      <h3 className="tools-chart-title">
-        Tools by Availability
-        {isFullPage && (
-          <div className="tools-chart-filter-info">
-            {projectId !== 'all' && <span className="filter-tag">Filtered by Project</span>}
-            {startDate && (
-              <span className="filter-tag">From: {startDate.toLocaleDateString()}</span>
-            )}
-            {endDate && <span className="filter-tag">To: {endDate.toLocaleDateString()}</span>}
-          </div>
-        )}
-      </h3>
+      <h3 className="tools-chart-title">Tools by Availability</h3>
+
+      {error && <div className="tools-chart-error">{error}</div>}
 
       {loading ? (
-        <div className="tools-chart-loading">Loading...</div>
-      ) : (
+        <div className="tools-chart-loading">Loading tool availability data...</div>
+      ) : data.length > 0 ? (
         <ResponsiveContainer width="100%" height={isFullPage ? 500 : 300}>
           <BarChart
             layout="vertical"
@@ -195,6 +188,13 @@ function ToolsHorizontalBarChart({
             </Bar>
           </BarChart>
         </ResponsiveContainer>
+      ) : (
+        !error &&
+        !loading && (
+          <div className="tools-chart-empty">
+            <p>No data available for the selected filters.</p>
+          </div>
+        )
       )}
     </div>
   );

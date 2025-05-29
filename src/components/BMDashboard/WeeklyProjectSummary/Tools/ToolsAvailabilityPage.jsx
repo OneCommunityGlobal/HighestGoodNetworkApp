@@ -1,94 +1,112 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { FormGroup, Label, Input, Row, Col } from 'reactstrap';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
+import { useSelector } from 'react-redux';
+import Select from 'react-select';
+import axios from 'axios';
 import ToolsHorizontalBarChart from './ToolsHorizontalBarChart';
+import { ENDPOINTS } from '../../../../utils/URL';
 import './ToolsAvailabilityPage.css';
-import { fetchBMProjects } from '../../../../actions/bmdashboard/projectActions';
 
 function ToolsAvailabilityPage() {
   const darkMode = useSelector(state => state.theme.darkMode);
-  const projects = useSelector(state => state.bmProjects || []);
-  const dispatch = useDispatch();
+  const [projects, setProjects] = useState([]);
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const [selectedProjectId, setSelectedProjectId] = useState('all');
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
-
-  // Fetch projects on component mount
   useEffect(() => {
-    dispatch(fetchBMProjects());
-  }, [dispatch]);
+    const fetchProjects = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await axios.get(ENDPOINTS.TOOLS_AVAILABILITY_PROJECTS);
+        setProjects(response.data);
+      } catch (err) {
+        console.error('Error fetching projects:', err);
+        setError('Failed to load projects. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, []);
+
+  const projectOptions = projects.map(project => ({
+    value: project.projectId,
+    label: project.projectId,
+  }));
+
+  const handleProjectChange = selectedOption => {
+    setSelectedProject(selectedOption);
+  };
+
+  const handleStartDateChange = e => {
+    setStartDate(e.target.value);
+  };
+
+  const handleEndDateChange = e => {
+    setEndDate(e.target.value);
+  };
 
   return (
     <div className={`tools-availability-page ${darkMode ? 'dark-mode' : ''}`}>
       <div className="tools-availability-content">
-        <div className="tools-filter-container">
-          <Row>
-            <Col md={4}>
-              <FormGroup>
-                <Label for="select-project">Project:</Label>
-                <Input
-                  id="select-project"
-                  type="select"
-                  value={selectedProjectId}
-                  onChange={e => setSelectedProjectId(e.target.value)}
-                  className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
-                >
-                  <option value="all">All Projects</option>
-                  {projects.map(project => (
-                    <option key={project._id} value={project._id}>
-                      {project.name}
-                    </option>
-                  ))}
-                </Input>
-              </FormGroup>
-            </Col>
-            <Col md={4}>
-              <FormGroup>
-                <Label>Start Date:</Label>
-                <DatePicker
-                  selected={startDate}
-                  onChange={date => setStartDate(date)}
-                  selectsStart
-                  startDate={startDate}
-                  endDate={endDate}
-                  maxDate={endDate || new Date()}
-                  placeholderText="Select start date"
-                  className={`form-control ${
-                    darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
-                  }`}
-                />
-              </FormGroup>
-            </Col>
-            <Col md={4}>
-              <FormGroup>
-                <Label>End Date:</Label>
-                <DatePicker
-                  selected={endDate}
-                  onChange={date => setEndDate(date)}
-                  selectsEnd
-                  startDate={startDate}
-                  endDate={endDate}
-                  minDate={startDate}
-                  maxDate={new Date()}
-                  placeholderText="Select end date"
-                  className={`form-control ${
-                    darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
-                  }`}
-                />
-              </FormGroup>
-            </Col>
-          </Row>
+        <div className="tools-chart-filters">
+          <div className="filter-group">
+            <label htmlFor="project-select">Project</label>
+            {loading ? (
+              <div className="select-loading">Loading projects...</div>
+            ) : error ? (
+              <div className="select-error">{error}</div>
+            ) : (
+              <Select
+                id="project-select"
+                className="project-select"
+                classNamePrefix="select"
+                value={selectedProject}
+                onChange={handleProjectChange}
+                options={projectOptions}
+                placeholder="Select a project ID"
+                isDisabled={projects.length === 0}
+                isClearable
+              />
+            )}
+          </div>
+          <div className="filter-group">
+            <label>Date Range</label>
+            <div className="date-picker-group">
+              <input
+                type="date"
+                className="date-picker"
+                value={startDate}
+                onChange={handleStartDateChange}
+              />
+              <span>to</span>
+              <input
+                type="date"
+                className="date-picker"
+                value={endDate}
+                onChange={handleEndDateChange}
+              />
+            </div>
+          </div>
         </div>
-        <ToolsHorizontalBarChart
-          darkMode={darkMode}
-          isFullPage={true}
-          projectId={selectedProjectId}
-          startDate={startDate}
-          endDate={endDate}
-        />
+
+        {selectedProject ? (
+          <ToolsHorizontalBarChart
+            darkMode={darkMode}
+            isFullPage={true}
+            projectId={selectedProject.value}
+            startDate={startDate}
+            endDate={endDate}
+          />
+        ) : (
+          <div className="tools-chart-placeholder">
+            <p>Please select a project to view tool availability data</p>
+          </div>
+        )}
       </div>
     </div>
   );

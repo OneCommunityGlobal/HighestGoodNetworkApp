@@ -19,39 +19,4 @@
 
 .tools-availability-page.dark-mode .tools-availability-content {
   background-color: var(--section-bg);
-}
-
-.tools-filter-container {
-  margin-bottom: 20px;
-  padding: 15px;
-  background-color: rgba(0, 0, 0, 0.02);
-  border-radius: 8px;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-.tools-availability-page.dark-mode .tools-filter-container {
-  background-color: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.tools-filter-container label {
-  font-weight: 500;
-  margin-bottom: 8px;
-}
-
-.react-datepicker-wrapper {
-  width: 100%;
-}
-
-.react-datepicker__input-container input {
-  width: 100%;
-  padding: 6px 12px;
-  border-radius: 4px;
-  border: 1px solid #ced4da;
-}
-
-.tools-availability-page.dark-mode .react-datepicker__input-container input {
-  background-color: var(--dark-input-bg);
-  color: var(--light-text);
-  border-color: var(--dark-border);
 } 
