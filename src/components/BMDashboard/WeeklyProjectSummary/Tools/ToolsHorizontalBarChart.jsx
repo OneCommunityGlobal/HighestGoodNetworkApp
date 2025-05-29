@@ -60,66 +60,81 @@ function ToolsHorizontalBarChart({ darkMode, isFullPage = false, projectId, star
   const [data, setData] = useState(emptyData);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [defaultProjectId, setDefaultProjectId] = useState(null);
+  const [allProjects, setAllProjects] = useState([]);
   const history = useHistory();
 
-  // First, fetch available projects if no projectId is provided for the widget view
+  // Fetch all projects for potential aggregate view
   useEffect(() => {
-    const fetchDefaultProject = async () => {
-      if (!isFullPage && !projectId && !defaultProjectId) {
+    const fetchProjects = async () => {
+      if (!isFullPage || (isFullPage && !projectId)) {
         try {
           const response = await axios.get(ENDPOINTS.TOOLS_AVAILABILITY_PROJECTS);
-          if (response.data && response.data.length > 0) {
-            // Use the first project as default
-            setDefaultProjectId(response.data[0].projectId);
-          }
+          setAllProjects(response.data);
         } catch (err) {
-          console.error('Error fetching default project:', err);
+          console.error('Error fetching projects:', err);
         }
       }
     };
 
-    fetchDefaultProject();
-  }, [isFullPage, projectId, defaultProjectId]);
+    fetchProjects();
+  }, [isFullPage, projectId]);
 
-  // Then fetch the tools data based on project
+  // Fetch tools data for a specific project or for all projects
   useEffect(() => {
     const fetchToolsData = async () => {
-      // Use provided projectId or the default one for widget view
-      const activeProjectId = projectId || (!isFullPage && defaultProjectId);
-
-      // If no project ID is available yet, don't fetch
-      if (!activeProjectId) {
-        if (isFullPage) {
-          // For full page, show empty state if no project selected
-          setData(emptyData);
-        }
-        return;
-      }
-
       setLoading(true);
       setError(null);
 
       try {
-        // Fetch data from API directly
-        const url = ENDPOINTS.TOOLS_AVAILABILITY_BY_PROJECT(activeProjectId, startDate, endDate);
-        const response = await axios.get(url);
-        const responseData = response.data;
-
-        if (responseData && responseData.length > 0) {
-          // Sort by total quantity
-          const sortedData = [...responseData].sort((a, b) => {
-            const totalA = a.inUse + a.needsReplacement + a.yetToReceive;
-            const totalB = b.inUse + b.needsReplacement + b.yetToReceive;
-            return totalB - totalA;
-          });
-          setData(sortedData);
-        } else {
-          // If no data returned, use empty array
+        // In full page mode with no project selected, don't fetch anything
+        if (isFullPage && !projectId) {
           setData(emptyData);
-          if (isFullPage) {
-            setError('No tool availability data found for this project.');
+          setLoading(false);
+          return;
+        }
+
+        // If we have a specific project ID, fetch data for that project
+        if (projectId) {
+          const url = ENDPOINTS.TOOLS_AVAILABILITY_BY_PROJECT(projectId, startDate, endDate);
+          const response = await axios.get(url);
+          const responseData = response.data;
+
+          if (responseData && responseData.length > 0) {
+            // Sort by total quantity
+            const sortedData = [...responseData].sort((a, b) => {
+              const totalA = a.inUse + a.needsReplacement + a.yetToReceive;
+              const totalB = b.inUse + b.needsReplacement + b.yetToReceive;
+              return totalB - totalA;
+            });
+            setData(sortedData);
+          } else {
+            setData(emptyData);
+            if (isFullPage) {
+              setError('No tool availability data found for this project.');
+            }
           }
+        }
+        // For widget view or when no specific project is selected, fetch first project as sample
+        else if (!isFullPage && allProjects.length > 0) {
+          // Use first project for the widget view
+          const firstProject = allProjects[0];
+          const url = ENDPOINTS.TOOLS_AVAILABILITY_BY_PROJECT(firstProject.projectId, null, null);
+          const response = await axios.get(url);
+          const responseData = response.data;
+
+          if (responseData && responseData.length > 0) {
+            // Sort by total quantity
+            const sortedData = [...responseData].sort((a, b) => {
+              const totalA = a.inUse + a.needsReplacement + a.yetToReceive;
+              const totalB = b.inUse + b.needsReplacement + b.yetToReceive;
+              return totalB - totalA;
+            });
+            setData(sortedData);
+          } else {
+            setData(emptyData);
+          }
+        } else {
+          setData(emptyData);
         }
       } catch (err) {
         console.error('Error fetching tools data:', err);
@@ -133,7 +148,7 @@ function ToolsHorizontalBarChart({ darkMode, isFullPage = false, projectId, star
     };
 
     fetchToolsData();
-  }, [projectId, startDate, endDate, isFullPage, defaultProjectId]);
+  }, [projectId, startDate, endDate, isFullPage, allProjects]);
 
   const handleCardClick = () => {
     if (!isFullPage) {
@@ -149,7 +164,11 @@ function ToolsHorizontalBarChart({ darkMode, isFullPage = false, projectId, star
       onClick={handleCardClick}
       style={{ cursor: isFullPage ? 'default' : 'pointer' }}
     >
-      <h3 className="tools-chart-title">Tools by Availability</h3>
+      <h3 className="tools-chart-title">
+        {isFullPage && projectId
+          ? `Tools by Availability - Project ${projectId}`
+          : 'Tools by Availability'}
+      </h3>
 
       {error && <div className="tools-chart-error">{error}</div>}
 

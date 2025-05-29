@@ -247,4 +247,32 @@
 
 .dark-mode .select-loading {
   background-color: rgba(255, 255, 255, 0.05);
+}
+
+.clear-dates-btn {
+  background-color: rgba(0, 0, 0, 0.1);
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  color: var(--text-color);
+  transition: background-color 0.2s;
+}
+
+.clear-dates-btn:hover {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.dark-mode .clear-dates-btn {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #e0e0e0;
+}
+
+.dark-mode .clear-dates-btn:hover {
+  background-color: rgba(255, 255, 255, 0.2);
 } 

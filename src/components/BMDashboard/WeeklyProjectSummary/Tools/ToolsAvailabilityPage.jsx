@@ -33,13 +33,20 @@ function ToolsAvailabilityPage() {
     fetchProjects();
   }, []);
 
-  const projectOptions = projects.map(project => ({
-    value: project.projectId,
-    label: project.projectId,
-  }));
+  const projectOptions = [
+    { value: 'all', label: 'All Projects' },
+    ...projects.map(project => ({
+      value: project.projectId,
+      label: project.projectId,
+    })),
+  ];
 
   const handleProjectChange = selectedOption => {
-    setSelectedProject(selectedOption);
+    if (selectedOption && selectedOption.value === 'all') {
+      setSelectedProject(null);
+    } else {
+      setSelectedProject(selectedOption);
+    }
   };
 
   const handleStartDateChange = e => {
@@ -48,6 +55,11 @@ function ToolsAvailabilityPage() {
 
   const handleEndDateChange = e => {
     setEndDate(e.target.value);
+  };
+
+  const handleClearDates = () => {
+    setStartDate('');
+    setEndDate('');
   };
 
   return (
@@ -65,17 +77,16 @@ function ToolsAvailabilityPage() {
                 id="project-select"
                 className="project-select"
                 classNamePrefix="select"
-                value={selectedProject}
+                value={selectedProject || projectOptions[0]}
                 onChange={handleProjectChange}
                 options={projectOptions}
                 placeholder="Select a project ID"
                 isDisabled={projects.length === 0}
-                isClearable
               />
             )}
           </div>
           <div className="filter-group">
-            <label>Date Range</label>
+            <label>Date Range (Optional)</label>
             <div className="date-picker-group">
               <input
                 type="date"
@@ -90,23 +101,26 @@ function ToolsAvailabilityPage() {
                 value={endDate}
                 onChange={handleEndDateChange}
               />
+              {(startDate || endDate) && (
+                <button
+                  className="clear-dates-btn"
+                  onClick={handleClearDates}
+                  aria-label="Clear date filters"
+                >
+                  ×
+                </button>
+              )}
             </div>
           </div>
         </div>
 
-        {selectedProject ? (
-          <ToolsHorizontalBarChart
-            darkMode={darkMode}
-            isFullPage={true}
-            projectId={selectedProject.value}
-            startDate={startDate}
-            endDate={endDate}
-          />
-        ) : (
-          <div className="tools-chart-placeholder">
-            <p>Please select a project to view tool availability data</p>
-          </div>
-        )}
+        <ToolsHorizontalBarChart
+          darkMode={darkMode}
+          isFullPage={true}
+          projectId={selectedProject?.value}
+          startDate={startDate}
+          endDate={endDate}
+        />
       </div>
     </div>
   );
