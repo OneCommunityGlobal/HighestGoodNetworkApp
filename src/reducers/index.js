@@ -56,6 +56,7 @@ import { timeOffRequestsReducer } from './timeOffRequestReducer';
 import { totalOrgSummaryReducer } from './totalOrgSummaryReducer';
 import { allUsersTimeEntriesReducer } from './allUsersTimeEntriesReducer';
 import HGNFormReducer from './hgnFormReducers';
+import issueReducer from './bmdashboard/issueReducer';
 
 const localReducers = {
   auth: authReducer,
@@ -105,6 +106,7 @@ const localReducers = {
   bmConsumables: consumablesReducer,
   bmReusables: reusablesReducer,
   dashboard: dashboardReducer,
+  bmIssues: issueReducer,
 };
 
 const sessionReducers = {

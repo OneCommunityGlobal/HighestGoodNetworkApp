@@ -37,7 +37,6 @@ const issueReducer = (state = initialState, action) => {
       };
     case FETCH_ISSUE_TYPES_YEARS_FAILURE:
       return { ...state, loading: false, error: action.payload };
-
     default:
       return state;
   }

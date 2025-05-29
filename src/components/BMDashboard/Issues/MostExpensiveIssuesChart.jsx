@@ -1,165 +1,266 @@
-import { useState } from 'react';
-// import { useDispatch } from 'react-redux';
-import Select from 'react-select';
+import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Bar } from 'react-chartjs-2';
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, LabelList
-} from 'recharts';
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
 import './MostExpensiveIssuesChart.css';
-// import { fetchOpenIssues } from 'actions/bmdashboard/issueChartActions';
+import { fetchOpenIssues } from 'actions/bmdashboard/issueChartActions';
+import { fetchBMProjects } from 'actions/bmdashboard/projectActions';
 
-// const dispatch = useDispatch();
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-// const { loading, issues, error, issueTypes, years } = useSelector(state => state.bmissuechart);
+export default function MostExpensiveOpenIssuesChart() {
+  const darkMode = useSelector(state => state.theme.darkMode);
 
-// useEffect(() => {
-//   dispatch(fetchOpenIssues());
-// }, [dispatch]);
+  const [selectedProjects, setSelectedProjects] = useState(['all']);
+  const [dateMode, setDateMode] = useState('ALL');
+  const [dates, setDates] = useState({ start: '', end: '' });
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-// issues.forEach(issue => issue.createdDate = issue.createdDate.split('T')[0]);
+  const [issues, setIssues] = useState([]);
 
-// const dateOptions =  [...new Set(issues.map(issue=>issue.createdDate))];
-// const projects = 
+  const dispatch = useDispatch();
 
-const allData = [
-  { name: 'Issue 1', cost: 50, project: 'Project A', startDate: '2022-01-01', endDate: '2023-12-31' },
-  { name: 'Issue 2', cost: 45, project: 'Project B', startDate: '2022-06-01', endDate: '2023-06-30' },
-  { name: 'Issue 3', cost: 40, project: 'Project A', startDate: '2023-01-01', endDate: '2024-01-01' },
-  { name: 'Issue 4', cost: 38, project: 'Project C', startDate: '2022-03-01', endDate: '2023-09-30' },
-  { name: 'Issue 5', cost: 32, project: 'Project B', startDate: '2023-02-01', endDate: '2023-11-30' },
-  { name: 'Issue 6', cost: 30, project: 'Project A', startDate: '2022-07-01', endDate: '2023-07-31' },
-  { name: 'Issue 7', cost: 25, project: 'Project D', startDate: '2023-04-01', endDate: '2024-04-01' },
-];
+  const { issues: rawIssues } = useSelector(state => state.bmIssues);
+  const projects = useSelector(state => state.bmProjects);
+  const projectMap = Object.fromEntries(projects.map(p => [p._id, p.name]));
 
-const projects = ['Project A', 'Project B', 'Project C', 'Project D'];
-const dateOptions = ['2022-01-01', '2022-06-01', '2023-01-01', '2023-06-01', '2024-01-01'];
+  useEffect(() => {
+    dispatch(fetchOpenIssues());
+    dispatch(fetchBMProjects());
+  }, [dispatch]);
 
-function MultiSelectDropdown({ label, options, selectedValues, setSelectedValues }){
-  const mappedOptions = options.map(opt => ({ label: opt, value: opt }));
-
-  const handleChange = (selectedOptions) => {
-    setSelectedValues(selectedOptions ? selectedOptions.map(o => o.value) : []);
+  const getDaysSinceCreated = createdDateStr => {
+    const created = new Date(createdDateStr);
+    const now = new Date();
+    const diffTime = now - created; // difference in milliseconds
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)); // convert to days
+    return diffDays;
   };
 
-  const selected = mappedOptions.filter(opt => selectedValues.includes(opt.value));
+  useEffect(() => {
+    if (Array.isArray(rawIssues) && rawIssues.length > 0) {
+      const processed = rawIssues.map(issue => ({
+        id: issue._id,
+        name: issue.issueTitle?.[0] || 'Untitled',
+        tag: issue.tag || '',
+        date: new Date(issue.createdDate.split('T')[0]) || null,
+        project: projectMap[issue.projectId] || 'Unknown Project',
+        openSince: getDaysSinceCreated(issue.createdDate.split('T')[0]),
+        cost: issue.cost,
+        person: issue.person,
+      }));
+      setIssues(processed);
+    }
+  }, [rawIssues]);
+
+  const uniqueProjects = [...new Set(issues.map(issue => issue.project))];
+  const projectOptions = uniqueProjects.map(project => ({
+    label: project,
+    value: project,
+  }));
+
+  const projectNames = projectOptions.map(opt => opt.value);
+
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = e => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const allProjects = useMemo(() => {
+    return ['all', ...projectNames];
+  }, []);
+
+  const handleProjectCheckboxChange = useCallback(e => {
+    const { value, checked } = e.target;
+
+    if (value === 'all') {
+      setSelectedProjects(['all']);
+    } else {
+      let updated = [...selectedProjects.filter(p => p !== 'all')];
+      if (checked) {
+        updated.push(value);
+      } else {
+        updated = updated.filter(p => p !== value);
+      }
+      setSelectedProjects(updated.length > 0 ? updated : ['all']);
+    }
+  }, [selectedProjects]);
+
+  const handleDateModeChange = useCallback(e => {
+    const mode = e.target.value;
+    setDateMode(mode);
+    if (mode === 'ALL') setDates({ start: '', end: '' });
+  }, []);
+
+  const handleStartDateChange = useCallback(e => {
+    const value = e?.target?.value;
+    if (value) setDates(d => ({ ...d, start: value }));
+  }, []);
+
+  const handleEndDateChange = useCallback(e => {
+    const value = e?.target?.value;
+    if (value) setDates(d => ({ ...d, end: value }));
+  }, []);
+
+  const filteredData = useMemo(() => {
+    return issues.filter(issue => {
+      const inProject =
+        selectedProjects.includes('all') || selectedProjects.includes(issue.project);
+      let inDate = true;
+      if (dateMode === 'CUSTOM' && dates.start && dates.end) {
+        const today = issue.date.toISOString().split('T')[0];
+        inDate = today >= dates.start && today <= dates.end;
+      }
+      return inProject && inDate;
+    }).sort((a, b) => b.cost - a.cost);
+  }, [selectedProjects, dateMode, dates]);
+
+  const chartData = useMemo(() => ({
+    labels: filteredData.map(d => d.name),
+    datasets: [
+      {
+        label: 'Cost ($)',
+        data: filteredData.map(d => d.cost),
+        backgroundColor: '#007bff',
+        borderRadius: 4,
+        barThickness: 24,
+        maxBarThickness: 28,
+        barPercentage: 0.1,
+        categoryPercentage: 0.1,
+      },
+    ],
+  }), [filteredData]);
+
+  const chartOptions = useMemo(() => ({
+    indexAxis: 'y',
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: ctx => `$${ctx.parsed.x.toLocaleString()}`,
+        },
+      },
+    },
+    scales: {
+      x: {
+        beginAtZero: true,
+        title: {
+          display: true,
+          text: 'Cost ($)',
+          font: { size: 12 },
+          color: darkMode ? '#fff' : '#666',
+        },
+        ticks: {
+          callback: val => `$${val}`,
+          color: darkMode ? '#fff' : '#666',
+          font: { size: 11 },
+        },
+        grid: { display: false },
+      },
+      y: {
+        offset: true,
+        title: {
+          display: true,
+          text: 'Issue Name',
+          font: { size: 12 },
+          color: darkMode ? '#fff' : '#666',
+        },
+        ticks: {
+          color: darkMode ? '#fff' : '#666',
+          font: { size: 11 },
+          maxRotation: 0,
+          autoSkip: false,
+        },
+        grid: { display: false },
+      },
+    },
+    layout: { padding: 0 },
+  }), [darkMode]);
 
   return (
-    <div className="dropdown-group">
-      <span className="label">{label}</span>
-      <Select
-        isMulti
-        value={selected}
-        onChange={handleChange}
-        options={mappedOptions}
-        closeMenuOnSelect={false}
-        hideSelectedOptions={false}
-        classNamePrefix="custom"
-        placeholder={`Select ${label}`}
-        styles={{
-          control: (base) => ({
-            ...base,
-            minHeight: '34px',
-          }),
-          valueContainer: (base) => ({
-            ...base,
-            display: 'flex',
-            flexWrap: 'wrap',
-            alignItems: 'center',
-            gap: '4px',
-            padding: '4px',
-            maxHeight: '60px',
-            overflowY: 'auto',
-          }),
-          multiValue: (base) => ({
-            ...base,
-            fontSize: '12px',
-            padding: '2px 6px',
-            minHeight: '22px',
-          }),
-          multiValueLabel: (base) => ({
-            ...base,
-            fontSize: '12px',
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-          }),
-          multiValueRemove: (base) => ({
-            ...base,
-            padding: '0 4px',
-            fontSize: '12px',
-          }),
-          input: (base) => ({
-            ...base,
-            margin: 0,
-            padding: 0,
-            minHeight: '20px',
-          }),
-        }}
-      />
-    </div>
-  );
-};
+    <div className="chart-container">
+      <h2 className="chart-title">Most Expensive Open Issues</h2>
 
-export default function MostExpensiveIssuesChart(){
-  const [selectedProjects, setSelectedProjects] = useState([]);
-  const [selectedDates, setSelectedDates] = useState([]);
-
-  const filterData = () => {
-    return allData.filter(issue => {
-      const projectMatch = selectedProjects.length === 0 || selectedProjects.includes(issue.project);
-      const dateMatch = selectedDates.length === 0 || selectedDates.some(date => issue.startDate <= date && issue.endDate >= date);
-      return projectMatch && dateMatch;
-    });
-  };
-
-  const data = filterData();
-  const xTicks = Array.from({ length: 6 }, (_, i) => i * 10);
-
-  return (
-    <div className="container">
-      <div className="top-bar">
-        <h5 className="title">Most Expensive or Loss-making Issues</h5>
-        <div className="dropdown-wrapper">
-          <MultiSelectDropdown
-            label="Project"
-            options={projects}
-            selectedValues={selectedProjects}
-            setSelectedValues={setSelectedProjects}
-          />
-          <MultiSelectDropdown
-            label="Date"
-            options={dateOptions}
-            selectedValues={selectedDates}
-            setSelectedValues={setSelectedDates}
-          />
+      <div className="filters-container">
+        <div className="filter-group" ref={dropdownRef}>
+          <label>Projects</label>
+          <div
+            className="project-dropdown-toggle"
+            onClick={() => setIsDropdownOpen(prev => !prev)}
+          >
+            {selectedProjects.length === allProjects.length || selectedProjects.includes('all')
+              ? 'All'
+              : selectedProjects.join(', ')}
+          </div>
+          {isDropdownOpen && (
+            <div className="project-dropdown-popup">
+              {allProjects.map(opt => (
+                <label key={opt}>
+                  <input
+                    type="checkbox"
+                    value={opt}
+                    checked={selectedProjects.includes(opt)}
+                    onChange={handleProjectCheckboxChange}
+                  />
+                  {opt === 'all' ? 'All' : opt}
+                </label>
+              ))}
+            </div>
+          )}
         </div>
+
+        <div className="filter-group">
+          <label>Date Mode</label>
+          <select className="filter-select" value={dateMode} onChange={handleDateModeChange}>
+            <option value="ALL">All</option>
+            <option value="CUSTOM">Custom</option>
+          </select>
+        </div>
+
+        {dateMode === 'CUSTOM' && (
+          <>
+            <div className="filter-group">
+              <label>Start Date</label>
+              <input
+                type="date"
+                className="filter-input"
+                value={dates.start}
+                onChange={handleStartDateChange}
+              />
+            </div>
+            <div className="filter-group">
+              <label>End Date</label>
+              <input
+                type="date"
+                className="filter-input"
+                value={dates.end}
+                onChange={handleEndDateChange}
+              />
+            </div>
+          </>
+        )}
       </div>
 
       <div className="chart-wrapper">
-        <BarChart
-          width={1000}
-          height={400}
-          data={data}
-          layout="vertical"
-          margin={{ top: 10, right: 30, left: 100, bottom: 5 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis
-            type="number"
-            domain={[0, 50]}
-            ticks={xTicks}
-            label={{ value: 'Cost due to issue', position: 'insideBottomRight', offset: -5 }}
-          />
-          <YAxis
-            type="category"
-            dataKey="name"
-            label={{ value: 'Issue Name', angle: -90, position: 'insideLeft', offset: -30 }}
-          />
-          <Tooltip />
-          <Bar dataKey="cost" fill="#1f77b4">
-            <LabelList dataKey="cost" position="right" />
-          </Bar>
-        </BarChart>
+        <Bar data={chartData} options={chartOptions} />
       </div>
     </div>
   );
-};
+}

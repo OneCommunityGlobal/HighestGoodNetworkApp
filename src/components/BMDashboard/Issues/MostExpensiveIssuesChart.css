@@ -1,83 +1,181 @@
-.container {
-    padding: 20px;
-    box-sizing: border-box;
-    max-width: 100%;
-  }
-  
-  .top-bar {
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 16px;
-    margin-bottom: 12px;
-  }
-  
-  .title {
-    margin: 0;
-    white-space: nowrap;
-    text-align: left;
-  }
-  
-  .dropdown-wrapper {
-    display: flex;
-    gap: 12px;
-    align-items: flex-end;
-    flex-wrap: wrap;
-    margin: 0;
-  }
-  
-  .dropdown-group {
-    display: flex;
+.chart-container {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  padding: 10px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  width: 250%;
+  margin: 0 auto;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.chart-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.filters-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.filter-group {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 auto;
+  min-width: 140px;
+}
+
+.filter-group label {
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.filter-select,
+.filter-input {
+  font-size: 0.9rem;
+  padding: 6px 8px;
+  height: 32px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  transition: border-color 0.2s;
+  appearance: none;
+  box-sizing: border-box;
+}
+
+.filter-select:focus,
+.filter-input:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+.chart-wrapper {
+  width: 100%;
+  max-height: 400px;
+  overflow-y: auto;
+  overflow-x: auto;
+  box-sizing: border-box;
+}
+
+.chart-wrapper canvas {
+  width: 100% !important;
+  height: auto !important;
+  min-height: 200px;
+  display: block;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .filters-container {
     flex-direction: column;
-    gap: 4px;
-    min-width: 160px;
-    max-width: 220px;
-    color: rgb(100, 96, 96);
   }
-  
-  .label {
-    font-size: 14px;
-    font-weight: 500;
+  .filter-group {
+    width: 100%;
   }
-  
   .chart-wrapper {
-    display: flex;
-    justify-content: center;
-    overflow-x: auto;
-    margin-top: 0; /* remove vertical gap */
+    max-height: 300px;
   }
-  
-  /* Mobile Responsiveness */
-  @media (max-width: 768px) {
-    .top-bar {
-      justify-content: center;
-      flex-direction: row; /* Keep same row layout */
-      align-items: center;
-      gap: 12px;
-    }
-  
-    .dropdown-wrapper {
-      flex-direction: row;
-      justify-content: center;
-    }
-  
-    .title {
-      text-align: left;
-      font-size: 18px;
-    }
-  
-    .chart-wrapper {
-      justify-content: center;
-    }
+}
+
+@media (max-width: 480px) {
+  .chart-container {
+    padding: 8px;
   }
-  
-  /* Optional Scroll Styling */
-  .custom__value-container::-webkit-scrollbar {
-    width: 6px;
+  .chart-title {
+    font-size: 1rem;
+    margin-bottom: 8px;
   }
-  .custom__value-container::-webkit-scrollbar-thumb {
-    background-color: #ccc;
-    border-radius: 3px;
+  .filter-group label,
+  .filter-select,
+  .filter-input {
+    font-size: 0.8rem;
   }
-  
+  .chart-wrapper {
+    max-height: 250px;
+  }
+}
+
+/* Dark mode support */
+.dark-mode .chart-container {
+  background-color: var(--card-bg);
+  box-shadow: 0 1px 3px var(--card-shadow);
+}
+
+.dark-mode .chart-title,
+.dark-mode .filter-group label {
+  color: var(--text-color);
+}
+
+.dark-mode .filter-select,
+.dark-mode .filter-input {
+  background-color: var(--section-bg);
+  border-color: var(--section-title-bg);
+  color: var(--text-color);
+}
+
+/* ✅ Custom Dropdown: Project Checkbox Popup */
+.project-dropdown-toggle {
+  font-size: 0.9rem;
+  padding: 6px 8px;          /* Match .filter-select */
+  height: 32px;              /* Match .filter-select */
+  line-height: 1.2;          /* Added for consistency */
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  box-sizing: border-box;
+  appearance: none;
+  color: #333;
+  cursor: pointer;
+  display: flex;
+  align-items: center;       /* Align text vertically */
+}
+
+.project-dropdown-popup {
+  position: absolute;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-top: 4px;
+  padding: 6px 8px;
+  max-height: 160px;
+  overflow-y: auto;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 999;
+  width: 100%;
+}
+
+/* Hide scrollbar but allow scroll */
+.project-dropdown-popup::-webkit-scrollbar {
+  width: 0;
+  background: transparent;
+}
+
+.project-dropdown-popup label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  margin-bottom: 4px;
+  cursor: pointer;
+}
+
+/* Optional dark mode for dropdown */
+.dark-mode .project-dropdown-popup {
+  background-color: var(--section-bg);
+  border-color: var(--section-title-bg);
+}
+
+.dark-mode .project-dropdown-popup label {
+  color: var(--text-color);
+}
