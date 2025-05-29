@@ -21,7 +21,6 @@ const useLessonsData = (selectedProjects, startDate, endDate) => {
   const [lessonsData, setLessonsData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Fetch all projects once on mount
   useEffect(() => {
     const fetchProjects = async () => {
       try {
@@ -34,7 +33,6 @@ const useLessonsData = (selectedProjects, startDate, endDate) => {
     fetchProjects();
   }, []);
 
-  // Fetch lessons data whenever filters change
   useEffect(() => {
     const fetchLessons = async () => {
       setIsLoading(true);
