@@ -15,6 +15,7 @@ function TagsSearch(props) {
     darkMode,
     members, 
   } = props;
+  console.log('members prop received by TagsSearch:', members); 
   const [searchWord, setSearchWord] = useState('');
   const [isFocused, setIsFocused] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -49,13 +50,14 @@ function TagsSearch(props) {
 
   const filteredMembers = useMemo(() => {
     console.log('Filtering members:', { searchWord, membersCount: members?.length, isFocused });
-    
+    console.log('members inside useMemo:', members);
+
     const resourceNames = new Set(resourceItems.map(item => item.name.toLowerCase()));
 
     if (members && members.length > 0) {
       return members.filter(member => {
         const fullName = `${member.firstName} ${member.lastName}`.toLowerCase();
-        
+
         if (resourceNames.has(fullName)) return false;
         
         if (searchWord.trim().length > 0) {

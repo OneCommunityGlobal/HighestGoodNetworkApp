@@ -80,6 +80,8 @@ export const fetchAllMembers = projectId => {
     dispatch(foundUsers([])); // Clear found users
     try {
       const response = await axios.get(ENDPOINTS.PROJECT_MEMBER(projectId));
+      // eslint-disable-next-line no-console
+      console.log('API response data (fetchAllMembers):', response.data); 
       dispatch(setMembers(response.data));
     } catch (err) {
       dispatch(setMembersError(err));
@@ -204,6 +206,8 @@ export const setMemberStart = () => {
  * @param payload : Members []
  */
 export const setMembers = members => {
+  // eslint-disable-next-line no-console
+  console.log('members data received by setMembers:', members);
   return {
     type: types.RECEIVE_MEMBERS,
     members,
