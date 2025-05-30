@@ -3,7 +3,7 @@ import googleDocIconPng from '../../../assets/images/google_doc_icon.png';
 import './style.css';
 
 export default function GoogleDocIcon({ link }) {
-  const handleGoogleDocClick = e => {
+  const handleGoogleDocClick = (e) => {
     const toastGoogleLinkDoesNotExist = 'toast-on-click';
     if (!link) {
       e.preventDefault();
@@ -22,9 +22,10 @@ export default function GoogleDocIcon({ link }) {
     <a
       href={link || '#'}
       onClick={handleGoogleDocClick}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="team-member-tasks-user-report-link"
+      onAuxClick={handleGoogleDocClick}
+      target='_blank'
+      rel='noopener noreferrer'
+      className='team-member-tasks-user-report-link'
     >
       <img
         className={`google-doc-icon ${link ? '' : 'inactive'}`}
