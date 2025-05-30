@@ -55,7 +55,6 @@ export const fetchBMLessons = () => {
             try {
               return await dispatch(getUserProfile(authorId));
             } catch (error) {
-              console.error('Error fetching user profile:', authorId, error);
               return null;
             }
           })
@@ -65,7 +64,6 @@ export const fetchBMLessons = () => {
             try {
               return await dispatch(fetchProjectById(projectId));
             } catch (error) {
-              console.error('Error fetching project:', projectId, error);
               return null;
             }
           })
@@ -112,7 +110,6 @@ export const fetchBMLessons = () => {
       }));
       dispatch(setLessons(updatedLessons));
     } catch (error) {
-      console.error('Error fetching lessons:', error);
       // Add toast notification from development branch
       toast.error('Error fetching lessons:', error);
       dispatch(setErrors(error));
@@ -151,7 +148,6 @@ export const fetchSingleBMLesson = lessonId => {
       };
       dispatch(setLesson(updatedLesson));
     } catch (error) {
-      console.error('Error fetching lesson:', error);
       toast.error('Error fetching lesson:', error);
       dispatch(setErrors(error));
     }
@@ -164,7 +160,6 @@ export const updateBMLesson = (lessonId, content) => {
     try {
       await axios.put(url, { content });
     } catch (err) {
-      console.error('Error updating lesson:', err);
       toast.error('Error updating lesson');
     }
     dispatch(updateLesson(lessonId, content));
@@ -179,7 +174,6 @@ export const deleteBMLesson = lessonId => {
       dispatch(deleteLesson(lessonId));
       return Promise.resolve();
     } catch (err) {
-      console.error('Error deleting lesson:', err);
       toast.error('Error deleting lesson');
       return Promise.reject(err);
     }

@@ -18,11 +18,6 @@ export const fetchProjectById = (projectId) => {
       return projectData; 
 
     } catch (error) {
-      console.error('Error fetching project:', {
-        projectId,
-        error: error.message,
-        response: error.response?.data
-      });
       dispatch(setErrors(error));
       return null; 
     }
