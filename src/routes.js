@@ -87,9 +87,12 @@ import CPProtectedRoute from './components/common/CPDashboard/CPProtectedRoute';
 import CPLogin from './components/CommunityPortal/Login';
 import CPDashboard from './components/CommunityPortal';
 import ActivityList from './components/CommunityPortal/Activities/ActivityList';
+
+import ActivitiesPage from './components/CommunityPortal/Activities/ActivitiesPage'; 
+
 import EventStats from './components/CommunityPortal/EventPersonalization/EventStats';
-// import AddActivities from './components/CommunityPortal/Activities/AddActivities';
-// import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
+
+
 import Resources from './components/CommunityPortal/Activities/activityId/Resources';
 
 import EventParticipation from './components/CommunityPortal/Reports/Participation/EventParticipation';
@@ -477,6 +480,7 @@ export default (
           path="/communityportal/Activities/:activityid/Resources"
           exact component={Resources}
         />
+        <CPProtectedRoute path="/communityportal/Activities/ActivitiesPage" exact component={ActivitiesPage}/>
 
 
         {/* Listing and Bidding Routes */}

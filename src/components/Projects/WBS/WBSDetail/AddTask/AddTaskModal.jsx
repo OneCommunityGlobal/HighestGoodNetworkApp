@@ -17,6 +17,8 @@ import 'react-day-picker/lib/style.css';
 import '../../../../Header/DarkMode.css';
 import TagsSearch from '../components/TagsSearch';
 import './AddTaskModal.css';
+import { fetchAllMembers } from 'actions/projectMembers';
+
 
 const TINY_MCE_INIT_OPTIONS = {
   license_key: 'gpl',
@@ -75,7 +77,7 @@ function AddTaskModal(props) {
     const project = allProjects.projects.find(({ _id }) => _id === props.projectId);
     return project?.category || 'Unspecified';
   }
-  
+
   return 'Unspecified';
 }, [props.taskId, props.projectId, tasks, allProjects.projects]);
 
@@ -90,6 +92,7 @@ function AddTaskModal(props) {
   const [hoursMost, setHoursMost] = useState(0);
   const [hoursWorst, setHoursWorst] = useState(0);
   const [hoursEstimate, setHoursEstimate] = useState(0);
+  const [hasNegativeHours, setHasNegativeHours] = useState(false);
   const [link, setLink] = useState('');
   const [links, setLinks] = useState([]);
   const [category, setCategory] = useState(defaultCategory);
@@ -203,6 +206,14 @@ function AddTaskModal(props) {
     }
   };
 
+  useEffect(() => {
+    if (hoursBest < 0 || hoursWorst < 0 || hoursMost < 0 || hoursEstimate < 0) {
+      setHasNegativeHours(true);
+    } else {
+      setHasNegativeHours(false);
+    }
+  }, [hoursBest, hoursWorst, hoursMost, hoursEstimate]);
+
   const changeDateStart = startDate => {
     setStartedDate(startDate);
   };
@@ -253,6 +264,7 @@ function AddTaskModal(props) {
     setCategory(defaultCategory);
     setStartDateError(false);
     setEndDateError(false);
+    setHasNegativeHours(false);
   };
 
   const paste = () => {
@@ -343,6 +355,12 @@ function AddTaskModal(props) {
     }
   }, [modal]);
 
+  useEffect(() => {
+    if (modal && props.projectId) {
+      props.fetchAllMembers(props.projectId);
+    }
+  }, [modal, props.projectId]);
+
   const fontColor = darkMode ? 'text-light' : '';
 
   return (
@@ -429,6 +447,7 @@ function AddTaskModal(props) {
                     resourceItems={resourceItems}
                     disableInput={false}
                     inputTestId="resource-input"
+                    projectId={props.projectId}
                   />
                 </div>
               </div>
@@ -625,6 +644,9 @@ function AddTaskModal(props) {
                       aria-label="Estimated hours"
                     />
                   </div>
+                  <div className="warning">
+                    {hasNegativeHours ? 'Negative hours are not allowed.' : ''}
+                  </div>
                 </div>
               </div>
 
@@ -779,7 +801,7 @@ function AddTaskModal(props) {
             color="primary"
             onClick={addNewTask}
             disabled={
-              taskName === '' || hoursWarning || isLoading || startDateError || endDateError
+              taskName === '' || hoursWarning || isLoading || startDateError || endDateError || hasNegativeHours
             }
             style={darkMode ? boxStyleDark : boxStyle}
           >
@@ -808,4 +830,10 @@ const mapStateToProps = state => ({
   error: state.tasks.error,
   darkMode: state.theme.darkMode,
 });
-export default connect(mapStateToProps, { addNewTask })(AddTaskModal);
+
+const mapDispatchToProps = {
+  addNewTask,
+  fetchAllMembers, 
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(AddTaskModal);
