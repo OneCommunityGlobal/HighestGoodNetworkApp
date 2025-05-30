@@ -7,11 +7,12 @@ import './input.css';
 import { useSelector } from 'react-redux';
 
 // eslint-disable-next-line react/function-component-definition
-const Input = ({ label, name, error, className, type, invalid, ...rest }) => {
+const Input = ({ label, name, error, className, type, invalid, textColor, ...rest }) => {
   const [eye, setEye] = useState(true);
   const [password, setPassword] = useState('password');
 
   const darkMode = useSelector(state => state.theme.darkMode);
+  const darkModeText = textColor || 'text-azure';
 
   const toggleEye = () => {
     if (password === 'password') {
@@ -25,7 +26,7 @@ const Input = ({ label, name, error, className, type, invalid, ...rest }) => {
 
   return (
     <div className={`form-group ${className || ''}`}>
-      <label htmlFor={name} className={darkMode ? 'text-azure' : ''}>
+      <label htmlFor={name} className={darkMode ? darkModeText : ''}>
         {label}
       </label>
       {type === 'password' ? (

@@ -410,11 +410,9 @@ function Timer({ authUser, darkMode }) {
         className={css.btnDiv}
         aria-label="Open timer dropdown"
       >
-        <BsAlarmFill
-          className={cs(css.transitionColor, isButtonDisabled ? css.btnDisabled : css.btn)}
-          fontSize="2rem"
-          title="Open timer dropdown"
-        />
+        <div className={cs(css.iconWrapper, isButtonDisabled ? css.btnDisabled : css.btn)}>
+          <BsAlarmFill fontSize="2rem" title="Open timer dropdown" />
+        </div>
       </button>
       <div className={css.previewContainer} title="Open timer dropdown">
         <Progress multi style={{ height: '6px' }}>
@@ -426,7 +424,7 @@ function Timer({ authUser, darkMode }) {
           <button
             type="button"
             disabled={isButtonDisabled}
-            className={cs(css.preview, isButtonDisabled && css.btnDisabled)}
+            className={css.preview}
             onClick={toggleTimer}
           >
             {moment.utc(remaining).format('HH:mm:ss')}
@@ -447,13 +445,17 @@ function Timer({ authUser, darkMode }) {
             aria-label="Add 15min"
             style={{ background: 'none', border: 'none' }}
           >
-            <FaPlusCircle
+            <div
               className={cs(
+                css.iconWrapper,
                 isButtonDisabled ? css.btnDisabled : css.transitionColor,
-                checkBtnAvail(15) ? css.btn : css.btnDisabled,
               )}
-              fontSize="1.5rem"
-            />
+            >
+              <FaPlusCircle
+                className={checkBtnAvail(15) ? css.btn : css.btnDisabled}
+                fontSize="1.5rem"
+              />
+            </div>
           </button>
           <button
             type="button"
@@ -463,13 +465,17 @@ function Timer({ authUser, darkMode }) {
             aria-label="Subtract 15min"
             style={{ background: 'none', border: 'none' }}
           >
-            <FaMinusCircle
+            <div
               className={cs(
+                css.iconWrapper,
                 isButtonDisabled ? css.btnDisabled : css.transitionColor,
-                checkBtnAvail(-15) ? css.btn : css.btnDisabled,
               )}
-              fontSize="1.5rem"
-            />
+            >
+              <FaMinusCircle
+                className={checkBtnAvail(-15) ? css.btn : css.btnDisabled}
+                fontSize="1.5rem"
+              />
+            </div>
           </button>
           {!started || paused ? (
             <button
@@ -479,14 +485,18 @@ function Timer({ authUser, darkMode }) {
               aria-label="Start timer"
               style={{ background: 'none', border: 'none' }}
             >
-              <FaPlayCircle
+              <div
                 className={cs(
+                  css.iconWrapper,
                   isButtonDisabled ? css.btnDisabled : css.transitionColor,
-                  remaining !== 0 ? css.btn : css.btnDisabled,
                 )}
-                fontSize="1.5rem"
-                title="Start timer"
-              />
+              >
+                <FaPlayCircle
+                  className={remaining !== 0 ? css.btn : css.btnDisabled}
+                  fontSize="1.5rem"
+                  title="Start timer"
+                />
+              </div>
             </button>
           ) : (
             <button
@@ -496,11 +506,14 @@ function Timer({ authUser, darkMode }) {
               aria-label="Pause timer"
               style={{ background: 'none', border: 'none' }}
             >
-              <FaPauseCircle
-                className={cs(css.btn, isButtonDisabled ? css.btnDisabled : css.transitionColor)}
-                fontSize="1.5rem"
-                title="Pause timer"
-              />
+              <div
+                className={cs(
+                  css.iconWrapper,
+                  isButtonDisabled ? css.btnDisabled : css.transitionColor,
+                )}
+              >
+                <FaPauseCircle className={css.btn} fontSize="1.5rem" title="Pause timer" />
+              </div>
             </button>
           )}
           <button
@@ -511,14 +524,17 @@ function Timer({ authUser, darkMode }) {
             aria-label="Stop timer and log time"
             style={{ background: 'none', border: 'none' }}
           >
-            <FaStopCircle
+            <div
               className={cs(
-                css.transitionColor,
-                isButtonDisabled && css.btnDisabled,
-                started && goal - remaining >= 60000 ? css.btn : css.btnDisabled,
+                css.iconWrapper,
+                isButtonDisabled ? css.btnDisabled : css.transitionColor,
               )}
-              fontSize="1.5rem"
-            />
+            >
+              <FaStopCircle
+                className={started && goal - remaining >= 60000 ? css.btn : css.btnDisabled}
+                fontSize="1.5rem"
+              />
+            </div>
           </button>
           <button
             type="button"
@@ -528,10 +544,14 @@ function Timer({ authUser, darkMode }) {
             aria-label="Reset timer"
             style={{ background: 'none', border: 'none' }}
           >
-            <FaUndoAlt
-              className={cs(css.transitionColor, isButtonDisabled && css.btnDisabled, css.btn)}
-              fontSize="1.3rem"
-            />
+            <div
+              className={cs(
+                css.iconWrapper,
+                isButtonDisabled ? css.btnDisabled : css.transitionColor,
+              )}
+            >
+              <FaUndoAlt className={css.btn} fontSize="1.3rem" />
+            </div>
           </button>
         </div>
       )}
@@ -656,7 +676,7 @@ function Timer({ authUser, darkMode }) {
         </ModalHeader>
         <ModalBody className={bodyBg}>{`You have worked for ${logHours ? `${logHours} hours` : ''}${
           logMinutes ? ` ${logMinutes} minutes` : ''
-        }. Click below if you’d like to add time or Log Time.`}</ModalBody>
+        }. Click below if you'd like to add time or Log Time.`}</ModalBody>
         <ModalFooter className={bodyBg}>
           <Button
             color="primary"
