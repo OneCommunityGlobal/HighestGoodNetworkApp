@@ -1,3 +1,4 @@
+/* eslint-disable import/prefer-default-export */
 export const projectReportViewData = state => ({
   wbs: state.wbs,
   projectMembers: state.projectMembers,
