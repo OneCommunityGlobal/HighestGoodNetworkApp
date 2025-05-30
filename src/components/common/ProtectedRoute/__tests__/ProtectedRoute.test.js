@@ -1,23 +1,26 @@
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
-import ProtectedRoute from '../ProtectedRoute';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { createMemoryHistory } from 'history';
 import { Router } from 'react-router-dom';
+import ProtectedRoute from '../ProtectedRoute';
 
 // Custom render function that includes access to the history object
 const renderWithRouter = (
   ui,
   { route = '/', history = createMemoryHistory({ initialEntries: [route] }), store } = {},
 ) => {
-  const Wrapper = ({ children }) => (
-    <Provider store={store}>
-      <Router history={history}>{children}</Router>
-    </Provider>
-  );
+  function Wrapper({ children }) {
+    return (
+      <Provider store={store}>
+        <Router history={history}>{children}</Router>
+      </Provider>
+    );
+  }
   return {
     ...render(ui, { wrapper: Wrapper }),
     history,
@@ -27,9 +30,17 @@ const renderWithRouter = (
 const mockStore = configureStore([thunk]);
 
 // Mock components for testing
-const LoginComponent = () => <div>Login Page</div>;
-const DashboardComponent = () => <div>Dashboard Page</div>;
-const TargetComponent = () => <div>Target Page</div>;
+// eslint-disable-next-line no-unused-vars
+function LoginComponent() {
+  return <div>Login Page</div>;
+}
+// eslint-disable-next-line no-unused-vars
+function DashboardComponent() {
+  return <div>Dashboard Page</div>;
+}
+function TargetComponent() {
+  return <div>Target Page</div>;
+}
 
 describe('ProtectedRoute Component', () => {
   let store;

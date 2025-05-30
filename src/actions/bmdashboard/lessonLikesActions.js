@@ -1,7 +1,8 @@
-import axios from "axios";
-import { ENDPOINTS } from "utils/URL";
-import { fetchBMLessons} from "./lessonsAction";
-import {BM_LESSON_LIKES} from '../../constants/bmdashboard/lessonConstants'
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import { ENDPOINTS } from '../../utils/URL';
+import { fetchBMLessons } from './lessonsAction';
+import { BM_LESSON_LIKES } from '../../constants/bmdashboard/lessonConstants';
 
 export const likeLessonAction = (lessonId, userId) => {
   const url = ENDPOINTS.BM_LESSON_LIKES(lessonId);
@@ -44,10 +45,9 @@ export const likeLessonAction = (lessonId, userId) => {
   };
 };
 
-
 export const setLikes = payload => {
   return {
     type: BM_LESSON_LIKES,
-    payload
-  }
-}
+    payload,
+  };
+};

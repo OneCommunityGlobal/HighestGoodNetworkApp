@@ -70,33 +70,48 @@ function FormattedReport({
   handleTeamCodeChange,
   handleSpecialColorDotClick,
 }) {
-  const loggedInUserEmail = auth?.user?.email ? auth.user.email : '';
-
   const dispatch = useDispatch();
   const isEditCount = dispatch(hasPermission('totalValidWeeklySummaries'));
+
+  // Only proceed if summaries is valid
+  if (!summaries || !Array.isArray(summaries) || summaries.length === 0) {
+    return (
+      <div className="text-center py-4">
+        <p>No data available to display</p>
+      </div>
+    );
+  }
+
+  const loggedInUserEmail = auth?.user?.email ? auth.user.email : '';
 
   return (
     <>
       <ListGroup flush>
-        {summaries.map(summary => (
-          <ReportDetails
-            loggedInUserEmail={loggedInUserEmail}
-            key={summary._id}
-            summary={summary}
-            weekIndex={weekIndex}
-            bioCanEdit={bioCanEdit}
-            canEditSummaryCount={isEditCount}
-            allRoleInfo={allRoleInfo}
-            canEditTeamCode={canEditTeamCode}
-            badges={badges}
-            loadBzadges={loadBadges}
-            canSeeBioHighlight={canSeeBioHighlight}
-            darkMode={darkMode}
-            handleTeamCodeChange={handleTeamCodeChange}
-            auth={auth}
-            handleSpecialColorDotClick={handleSpecialColorDotClick}
-          />
-        ))}
+        {summaries.map(summary => {
+          // Add safety check for each summary
+          if (!summary || !summary.totalSeconds) {
+            return null;
+          }
+          return (
+            <ReportDetails
+              loggedInUserEmail={loggedInUserEmail}
+              key={summary._id}
+              summary={summary}
+              weekIndex={weekIndex}
+              bioCanEdit={bioCanEdit}
+              canEditSummaryCount={isEditCount}
+              allRoleInfo={allRoleInfo}
+              canEditTeamCode={canEditTeamCode}
+              badges={badges}
+              loadBadges={loadBadges}
+              canSeeBioHighlight={canSeeBioHighlight}
+              darkMode={darkMode}
+              handleTeamCodeChange={handleTeamCodeChange}
+              auth={auth}
+              handleSpecialColorDotClick={handleSpecialColorDotClick}
+            />
+          );
+        })}
       </ListGroup>
       <EmailsList summaries={summaries} auth={auth} />
     </>
@@ -245,6 +260,7 @@ function ReportDetails({
                 canEditTeamCode={canEditTeamCode && !cantEditJaeRelatedRecord}
                 summary={summary}
                 handleTeamCodeChange={handleTeamCodeChange}
+                darkMode={darkMode}
               />
             </ListGroupItem>
             <ListGroupItem darkMode={darkMode}>
@@ -261,6 +277,7 @@ function ReportDetails({
               <TotalValidWeeklySummaries
                 summary={summary}
                 canEditSummaryCount={canEditSummaryCount && !cantEditJaeRelatedRecord}
+                darkMode={darkMode}
               />
             </ListGroupItem>
             <ListGroupItem darkMode={darkMode}>
@@ -352,7 +369,7 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
   );
 }
 
-function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange }) {
+function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange, darkMode }) {
   const [teamCode, setTeamCode] = useState(summary.teamCode);
   const [hasError, setHasError] = useState(false);
   const fullCodeRegex = /^.{5,7}$/;
@@ -405,6 +422,7 @@ function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange }) {
                 }
               }}
               placeholder="X-XXX"
+              className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
             />
           </div>
         ) : (
@@ -456,7 +474,7 @@ function MediaUrlLink({ summary }) {
   return <div style={{ paddingLeft: '5px' }}>Not provided!</div>;
 }
 
-function TotalValidWeeklySummaries({ summary, canEditSummaryCount }) {
+function TotalValidWeeklySummaries({ summary, canEditSummaryCount, darkMode }) {
   const style = {
     color: textColors[summary?.weeklySummaryOption] || textColors.Default,
   };
@@ -502,6 +520,7 @@ function TotalValidWeeklySummaries({ summary, canEditSummaryCount }) {
             step="1"
             value={weeklySummariesCount}
             onChange={e => handleWeeklySummaryCountChange(e)}
+            className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
             min="0"
           />
         </div>
