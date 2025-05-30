@@ -1,13 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Bar } from 'react-chartjs-2';
-import {
-  Chart as ChartJS,
-  BarElement,
-  CategoryScale,
-  LinearScale,
-  Tooltip,
-  Title,
-} from 'chart.js';
+import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Title} from 'chart.js';
 import axios from 'axios';
 import Select from 'react-select';
 import DatePicker from 'react-datepicker';
@@ -27,7 +20,6 @@ const useLessonsData = (selectedProjects, startDate, endDate) => {
         const response = await axios.get('/api/projects');
         setAllProjects(response.data);
       } catch (error) {
-        console.error('Error fetching projects:', error);
       }
     };
     fetchProjects();
@@ -45,7 +37,6 @@ const useLessonsData = (selectedProjects, startDate, endDate) => {
         const response = await axios.get('/api/lessons-learnt', { params });
         setLessonsData(response.data);
       } catch (error) {
-        console.error('Error fetching lessons data:', error);
         setLessonsData([]);
       } finally {
         setIsLoading(false);
@@ -58,11 +49,11 @@ const useLessonsData = (selectedProjects, startDate, endDate) => {
   return { allProjects, lessonsData, isLoading };
 };
 
-const ChartTitle = ({ title }) => (
-  <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>{title}</h2>
-);
+function ChartTitle({ title }) {
+  return <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>{title}</h2>;
+};
 
-const Filters = ({
+function Filters({
   allProjects,
   selectedProjects,
   setSelectedProjects,
@@ -70,50 +61,52 @@ const Filters = ({
   setStartDate,
   endDate,
   setEndDate,
-}) => (
-  <div className="filter-row">
-    <div className="filter">
-      <label>Project:</label>
-      <Select
-        options={allProjects?.map(p => ({ label: p.name, value: p.id })) || []}
-        isMulti
-        placeholder="All"
-        onChange={setSelectedProjects}
-      />
+}) {
+  return (
+    <div className="filter-row">
+      <div className="filter">
+        <label>Project:</label>
+        <Select
+          options={allProjects?.map(p => ({ label: p.name, value: p.id })) || []}
+          isMulti
+          placeholder="All"
+          onChange={setSelectedProjects}
+        />
+      </div>
+      <div className="filter">
+        <label>From:</label>
+        <DatePicker
+          selected={startDate}
+          onChange={setStartDate}
+          selectsStart
+          startDate={startDate}
+          endDate={endDate}
+          placeholderText="Start Date"
+        />
+      </div>
+      <div className="filter">
+        <label>To:</label>
+        <DatePicker
+          selected={endDate}
+          onChange={setEndDate}
+          selectsEnd
+          startDate={startDate}
+          endDate={endDate}
+          placeholderText="End Date"
+        />
+      </div>
     </div>
-    <div className="filter">
-      <label>From:</label>
-      <DatePicker
-        selected={startDate}
-        onChange={setStartDate}
-        selectsStart
-        startDate={startDate}
-        endDate={endDate}
-        placeholderText="Start Date"
-      />
-    </div>
-    <div className="filter">
-      <label>To:</label>
-      <DatePicker
-        selected={endDate}
-        onChange={setEndDate}
-        selectsEnd
-        startDate={startDate}
-        endDate={endDate}
-        placeholderText="End Date"
-      />
-    </div>
-  </div>
-);
+  );
+}
 
 const PercentageLabels = ({ data }) => {
   return (
     <div className="percentage-labels">
-      {data?.map((item, i) => (
+      {data?.map((item) => (
         <div
-          key={i}
+          key={item.id || item.name} // use a stable, unique identifier
           className="percentage-label"
-          style={{ left: `${(i + 0.5) * (100 / data.length)}%` }}
+          style={{ left: `${(data.indexOf(item) + 0.5) * (100 / data.length)}%` }}
         >
           {item.trend > 0 ? `+${item.trend}%` : `${item.trend}%`}
         </div>
