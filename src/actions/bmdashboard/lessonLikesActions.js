@@ -24,12 +24,14 @@ export const likeLessonAction = (lessonId, userId) => {
           type: BM_LESSON_LIKES,
           payload: response.data
         });
+        dispatch(fetchBMLessons());
       } else {
         // Revert optimistic update on failure
         dispatch({
           type: 'REVERT_LIKE_UPDATE',
           payload: { lessonId, userId }
         });
+        toast.error('Unexpected response status:', response.status);
       }
     } catch (error) {
       // Revert optimistic update on error
@@ -37,6 +39,7 @@ export const likeLessonAction = (lessonId, userId) => {
         type: 'REVERT_LIKE_UPDATE',
         payload: { lessonId, userId }
       });
+      toast.error('Error liking lesson:', error);
     }
   };
 };
