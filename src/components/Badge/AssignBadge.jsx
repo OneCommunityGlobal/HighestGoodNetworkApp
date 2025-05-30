@@ -114,7 +114,7 @@ function AssignBadge(props) {
     <Form
       className={`container-fluid ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
       style={{ padding: 20 }}
-      onSubmit={(e) => e.preventDefault()}
+      onSubmit={e => e.preventDefault()}
     >
       <div className="row align-items-center mb-3">
         <Label
@@ -122,12 +122,14 @@ function AssignBadge(props) {
           style={{ fontWeight: 'bold', marginBottom: 10 }}
         >
           Search by Full Name
+          <span className="red-asterisk">* </span>
           <i
             className="fa fa-info-circle ml-2"
             id="NameInfo"
             data-testid="NameInfo"
             style={{ cursor: 'pointer' }}
           />
+          
           <UncontrolledTooltip
             placement="right"
             target="NameInfo"
@@ -153,7 +155,7 @@ function AssignBadge(props) {
             placeholder="Full Name"
             value={fullName}
             onChange={handleFullNameChange}
-            className="form-control"
+            className={`form-control ${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
           />
         </div>
       </div>
@@ -214,12 +216,7 @@ function AssignBadge(props) {
         >
           Assign Badge
         </Button>
-        <Modal
-          isOpen={isOpen}
-          toggle={toggle}
-          backdrop="static"
-          className={darkMode ? 'text-light dark-mode' : ''}
-        >
+        <Modal isOpen={isOpen} toggle={toggle} className={darkMode ? 'text-light dark-mode' : ''}>
           <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={toggle}>
             Assign Badge
           </ModalHeader>
