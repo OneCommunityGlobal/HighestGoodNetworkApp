@@ -6,7 +6,7 @@ export default function GoogleDocIcon({ link }) {
   const handleGoogleDocClick = (e) => {
     const toastGoogleLinkDoesNotExist = 'toast-on-click';
     if (!link) {
-      e.preventDefault();
+      e.preventDefault(); //prevent browser default behavior
       toast.error(
         'Uh oh, no Google Doc is present for this user! Please contact an Admin to find out why.',
         {
@@ -22,7 +22,7 @@ export default function GoogleDocIcon({ link }) {
     <a
       href={link || '#'}
       onClick={handleGoogleDocClick}
-      onAuxClick={handleGoogleDocClick}
+      onAuxClick={handleGoogleDocClick} //add onAuxClick to handle middle click(mouse wheel)
       target='_blank'
       rel='noopener noreferrer'
       className='team-member-tasks-user-report-link'
