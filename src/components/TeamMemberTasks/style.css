@@ -50,15 +50,17 @@
 }
 
 .committed-hours-circle {
-  padding: 0.75rem;
+  padding: 0.45rem;
 }
 
 .team-member-tasks .team-member-tasks-headers {
   vertical-align: middle;
+  justify-content: left;
+  margin-left: -10px;
 }
 
 .team-member-tasks .team-member-tasks-subtable {
-  margin: 0;
+  margin: 0 0 0 -10px;
   text-align: center;
 }
 
@@ -92,12 +94,15 @@
   display: flex;
   flex-direction: column;
   /* Stack children vertically */
-  gap: 8px;
+  gap: 1px;
   /* Space between children */
 }
 
 .team-member-tasks-user-name {
   width: 50%;
+  text-align: center;
+  justify-content: left;
+  vertical-align: middle;
 }
 
 .team-member-tasks-user-report-link .team-member-tasks-user-report-link-image {
@@ -145,6 +150,8 @@
 .team-clocks-header {
   height: 73.5px;
   align-items: center;
+  display: flex;
+  gap: 4px;
 }
 
 .hours-btn-container {
@@ -390,7 +397,7 @@
   display: grid;
   grid-template-columns: 1fr repeat(2, auto);
   grid-template-rows: repeat(2, auto);
-  column-gap: 3px;
+  column-gap: 10px;
 }
 
 .team-task-progress-time {
@@ -414,7 +421,7 @@
 .team-task-progress-bar {
   grid-column: 1 / span 3;
   grid-row: 2 / span 1;
-  margin-top: 5px;
+  margin-top: 2px;
 }
 
 .task_table-container {
@@ -440,10 +447,9 @@
 
 .name {
   margin-bottom: 4px;
-  margin-right: 4px;
   width: 2.5rem;
   display: flex;
-  justify-content: center;
+  justify-content: left;
 }
 
 .name-initial {
