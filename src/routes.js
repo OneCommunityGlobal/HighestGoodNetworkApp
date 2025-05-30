@@ -481,7 +481,7 @@ export default (
         <CPProtectedRoute path="/communityportal/activities/:activityid" exact component={Activity} />
         <CPProtectedRoute path="/communityportal/reports/participation" exact component={EventParticipation} />
         <CPProtectedRoute path="/communityportal/reports/event/personalization" exact component={EventStats} />
-        <CPProtectedRoute path="/communityportal/Activities/ActivitiesPage" exact component={ActivitiesPage}/>
+        <CPProtectedRoute path="/communityportal/ActivitiesPage" exact component={ActivitiesPage}/>
 
 
 
