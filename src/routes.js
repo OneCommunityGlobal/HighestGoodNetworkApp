@@ -87,6 +87,7 @@ import CPProtectedRoute from './components/common/CPDashboard/CPProtectedRoute';
 import CPLogin from './components/CommunityPortal/Login';
 import CPDashboard from './components/CommunityPortal';
 import ActivityList from './components/CommunityPortal/Activities/ActivityList';
+import Activity from './components/CommunityPortal/Activities/activityId/Activity'
 
 import ActivitiesPage from './components/CommunityPortal/Activities/ActivitiesPage'; 
 
@@ -475,12 +476,13 @@ export default (
         {/* Community Portal Routes */}
         <CPProtectedRoute path="/communityportal" exact component={CPDashboard} />
         <Route path="/communityportal/login" component={CPLogin} />
-        <CPProtectedRoute path="/communityportal/Activities" exact component={ActivityList} />
-        <CPProtectedRoute
-          path="/communityportal/Activities/:activityid/Resources"
-          exact component={Resources}
-        />
-        <CPProtectedRoute path="/communityportal/Activities/ActivitiesPage" exact component={ActivitiesPage}/>
+        <CPProtectedRoute path="/communityportal/activities" exact component={ActivityList} />
+        <CPProtectedRoute path="/communityportal/activities/:activityid/resources" exact component={Resources}/>
+        <CPProtectedRoute path="/communityportal/activities/:activityid" exact component={Activity} />
+        <CPProtectedRoute path="/communityportal/reports/participation" exact component={EventParticipation} />
+        <CPProtectedRoute path="/communityportal/reports/event/personalization" exact component={EventStats} />
+        <CPProtectedRoute path="/communityportal/ActivitiesPage" exact component={ActivitiesPage}/>
+
 
 
         {/* Listing and Bidding Routes */}
@@ -499,14 +501,12 @@ export default (
         />
         <Route path="/lbdashboard/bidoverview" exact component={LBBidOverview} />
 
-        <CPProtectedRoute path="/communityportal/reports/participation" exact component={EventParticipation} />
 
 
         {/* Good Education  Portal Routes */}
         <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />
         <Route path="/educationportal/login" component={EPLogin} />
 
-        <CPProtectedRoute path="/communityportal/reports/event/personalization" exact component={EventStats} />
         {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
 
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
