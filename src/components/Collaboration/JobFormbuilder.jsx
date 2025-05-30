@@ -69,13 +69,6 @@ const [editModalOpen, setEditModalOpen] = useState(false);
 const [editingQuestion, setEditingQuestion] = useState(null);
 const [editingIndex, setEditingIndex] = useState(null);
 
-  // Within your JobFormBuilder function, add these new functions:
-
-// Clone a single question field
-// const cloneField = (field, index) => {
-//   const clonedField = JSON.parse(JSON.stringify(field)); // Deep clone
-//   setFormFields([...formFields.slice(0, index + 1), clonedField, ...formFields.slice(index + 1)]);
-// };
 
 const cloneField = async (field, index) => {
   const clonedField = JSON.parse(JSON.stringify(field)); // Deep clone
@@ -87,7 +80,7 @@ const cloneField = async (field, index) => {
   // Sync with backend
   try {
     const formId = '6753982566fcf3275f129eb4';
-    await axios.post(`${ENDPOINTS.BASE_URL}/api/jobforms/${formId}/questions`, {
+    await axios.post(ENDPOINTS.ADD_QUESTION(formId), {
       question: clonedField,
       position: index + 1 // Position right after the original
     });
@@ -95,20 +88,8 @@ const cloneField = async (field, index) => {
     console.error('Error cloning question on server:', error);
   }
 };
-//pallavi
+//..
 
-// Move a field up or down in the list
-// const moveField = (index, direction) => {
-//   if (direction === 'up' && index > 0) {
-//     const newFields = [...formFields];
-//     [newFields[index], newFields[index - 1]] = [newFields[index - 1], newFields[index]];
-//     setFormFields(newFields);
-//   } else if (direction === 'down' && index < formFields.length - 1) {
-//     const newFields = [...formFields];
-//     [newFields[index], newFields[index + 1]] = [newFields[index + 1], newFields[index]];
-//     setFormFields(newFields);
-//   }
-// };
 const moveField = async (index, direction) => {
   // Calculate new index
   const newIndex = direction === 'up' ? index - 1 : index + 1;
@@ -125,7 +106,7 @@ const moveField = async (index, direction) => {
     // Sync with backend
     try {
       const formId = '6753982566fcf3275f129eb4';
-      await axios.put(`${ENDPOINTS.BASE_URL}/api/jobforms/${formId}/questions/reorder`, {
+      await axios.put(ENDPOINTS.REORDER_QUESTIONS(formId), {
         fromIndex: index,
         toIndex: newIndex
       });
@@ -134,15 +115,8 @@ const moveField = async (index, direction) => {
     }
   }
 };
-//pallavi
+//..
 
-// Delete a field
-// const deleteField = (index) => {
-//   const newFields = [...formFields];
-//   newFields.splice(index, 1);
-//   setFormFields(newFields);
-// };
-// Update deleteField to sync with backend
 const deleteField = async (index) => {
   // Update local state
   const newFields = [...formFields];
@@ -152,13 +126,13 @@ const deleteField = async (index) => {
   // Sync with backend
   try {
     const formId = '6753982566fcf3275f129eb4';
-    await axios.delete(`${ENDPOINTS.BASE_URL}/api/jobforms/${formId}/questions/${index}`);
+    await axios.delete(ENDPOINTS.DELETE_QUESTION(formId, index));
   } catch (error) {
     console.error('Error deleting question on server:', error);
   }
 };
-//pallavi
-// Add this function for editing questions
+//..
+
 const editField = (field, index) => {
   // Transform the field structure to match what QuestionEditModal expects
   const questionForEdit = {
@@ -191,24 +165,21 @@ const handleSaveEditedQuestion = async(editedQuestion) => {
   setFormFields(updatedFields);
 
 
-  //Pallavi
+  //..
    
    try {
     
     const formId = '6753982566fcf3275f129eb4';  
-  
-  await axios.patch(
-      `${ENDPOINTS.BASE_URL}/api/jobforms/${formId}/questions/${editingIndex}`, 
-      updatedField
-    );
-    
+
+    await axios.put(ENDPOINTS.UPDATE_QUESTION(formId, editingIndex), updatedField);
+
     console.log('Question updated successfully on server');
   } catch (error) {
 
     console.error('Error updating question on server:', error);
   
   }
-    //Pallavi
+    //..
 
   // Close the modal
   setEditModalOpen(false);

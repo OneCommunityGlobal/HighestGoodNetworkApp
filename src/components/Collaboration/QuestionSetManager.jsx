@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
+import { ENDPOINTS } from '../../utils/URL';
 import './QuestionSetManager.css';
 import QuestionEditModal from './QuestionEditModal';
 
@@ -20,37 +21,36 @@ function QuestionSetManager({
   const [previewQuestions, setPreviewQuestions] = useState([]);
   const [editingMode, setEditingMode] = useState('');
 
-  const apiEndpoint = process.env.REACT_APP_APIENDPOINT;
-
   // API service functions without auth headers
   const api = {
     // Get all templates
     getTemplates: async () => {
-      const response = await axios.get(`${apiEndpoint}/templates`);
+      // const response = await axios.get(`${apiEndpoint}/templates`);
+      const response = await axios.get(ENDPOINTS.GET_ALL_TEMPLATES);
       return response.data.templates;
     },
     
     // Create a new template
     createTemplate: async (data) => {
-      const response = await axios.post(`${apiEndpoint}/templates`, data);
+      const response = await axios.post(ENDPOINTS.CREATE_TEMPLATE, data);
       return response.data.template;
     },
     
     // Update an existing template
     updateTemplate: async (id, data) => {
-      const response = await axios.put(`${apiEndpoint}/templates/${id}`, data);
+      const response = await axios.put(ENDPOINTS.UPDATE_TEMPLATE(id), data);
       return response.data.template;
     },
     
     // Delete a template
     deleteTemplate: async (id) => {
-      const response = await axios.delete(`${apiEndpoint}/templates/${id}`);
+      const response = await axios.delete(ENDPOINTS.DELETE_TEMPLATE(id));
       return response.data;
     },
 
     // Get template by ID
     getTemplateById: async (id) => {
-      const response = await axios.get(`${apiEndpoint}/templates/${id}`);
+      const response = await axios.get(ENDPOINTS.GET_TEMPLATE_BY_ID(id));
       return response.data.template;
     }
   };
@@ -84,7 +84,7 @@ function QuestionSetManager({
     };
     
     fetchTemplates();
-  }, [apiEndpoint]);
+  }, []);
 
   // Save current form fields as a template
   const saveTemplate = async () => {
@@ -118,11 +118,12 @@ function QuestionSetManager({
         const updatedTemplate = await api.updateTemplate(existingTemplate._id, {
           name: templateName,
           fields: formFields.map(field => ({
-            questionText: field.questionText || field.label,
-            questionType: field.questionType || field.type,
+            questionText: field.questionText,
+            questionType: field.questionType,
             visible: field.visible !== undefined ? field.visible : true,
-            isRequired: field.required || field.isRequired || false,
-            options: field.options || []
+            isRequired: field.required || false,
+            options: field.options || [],
+            placeholder: field.placeholder || ''
           }))
         });
         
@@ -144,17 +145,23 @@ function QuestionSetManager({
         });
 
         // Update local state
-        setTemplates([...templates, newTemplate]);
+        // setTemplates([...templates, newTemplate]);
       }
       
-      // Also save to localStorage as backup
-      localStorage.setItem('jobFormTemplates', JSON.stringify(templates));
+      // localStorage.setItem('jobFormTemplates', JSON.stringify(templates));
+      // localStorage.setItem('jobFormTemplates', JSON.stringify([...templates, newTemplate]));
+
+      // Update local state
+    const updatedTemplates = [...templates, newTemplate];
+    setTemplates(updatedTemplates);
+
+// Also save to localStorage as backup
+    localStorage.setItem('jobFormTemplates', JSON.stringify(updatedTemplates));
       
       setTemplateName('');
       alert(`Template "${templateName}" saved successfully!`);
     } catch (err) {
       console.error('Failed to save template:', err);
-      //setError('Failed to save template. Please try again later.');
 
       // Save to localStorage as fallback
       try {

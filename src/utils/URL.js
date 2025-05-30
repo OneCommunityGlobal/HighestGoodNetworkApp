@@ -236,6 +236,17 @@ export const ENDPOINTS = {
   GET_ALL_JOB_FORMS: `${APIEndpoint}/jobforms/all`,
   GET_FORM_RESPONSES: formID => `${APIEndpoint}/jobforms/${formID}/responses`,
 
+  ADD_QUESTION: formId => `${APIEndpoint}/jobforms/${formId}/questions`,
+  UPDATE_QUESTION: (formId, questionIndex) => `${APIEndpoint}/jobforms/${formId}/questions/${questionIndex}`,
+  DELETE_QUESTION: (formId, questionIndex) => `${APIEndpoint}/jobforms/${formId}/questions/${questionIndex}`,
+  REORDER_QUESTIONS: formId => `${APIEndpoint}/jobforms/${formId}/questions/reorder`,
+
+  GET_ALL_TEMPLATES: `${APIEndpoint}/templates`,
+  CREATE_TEMPLATE: `${APIEndpoint}/templates`,
+  GET_TEMPLATE_BY_ID: id => `${APIEndpoint}/templates/${id}`,
+  UPDATE_TEMPLATE: id => `${APIEndpoint}/templates/${id}`,
+  DELETE_TEMPLATE: id => `${APIEndpoint}/templates/${id}`,
+
   JOB_NOTIFICATION_LIST: `${APIEndpoint}/job-notification-list/`,
   // lb dashboard endpoints
   LB_REGISTER: `${APIEndpoint}/lbdashboard/register`,
