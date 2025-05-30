@@ -1,9 +1,44 @@
-import axios from "axios";
-import { ENDPOINTS } from "utils/URL";
-import { GET_BM_LESSONS, UPDATE_LESSON, DELETE_LESSON, SET_LESSON } from "constants/bmdashboard/lessonConstants";
-import { getUserProfile } from "actions/userProfile";
-import { fetchProjectById } from "actions/bmdashboard/projectByIdAction";
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import { ENDPOINTS } from '../../utils/URL';
+import { GET_BM_LESSONS, UPDATE_LESSON, DELETE_LESSON, SET_LESSON } from '../../constants/bmdashboard/lessonConstants';
+import { getUserProfile } from '../userProfile';
+import { fetchProjectById } from './projectByIdAction';
+import { GET_ERRORS } from '../../constants/errors';
 
+export const deleteLesson = lessonId => {
+  return {
+    type: DELETE_LESSON,
+    lessonId,
+  };
+};
+
+export const setErrors = payload => {
+  return {
+    type: GET_ERRORS,
+    payload,
+  };
+};
+
+export const updateLesson = (lessonId, content) => {
+  return {
+    type: UPDATE_LESSON,
+    lessonId,
+    content,
+  };
+};
+
+export const setLesson = updatedLesson => ({
+  type: SET_LESSON,
+  payload: updatedLesson,
+});
+
+export const setLessons = payload => {
+  return {
+    type: GET_BM_LESSONS,
+    payload,
+  };
+};
 
 export const fetchBMLessons = () => {
   return async dispatch => {
@@ -13,6 +48,7 @@ export const fetchBMLessons = () => {
       const authorIds = [...new Set(lessons.map(lesson => lesson.author))];
       const projectIds = [...new Set(lessons.map(lesson => lesson.relatedProject))];
 
+      // Keep the more robust approach from honglin-lesson-list-buttons branch
       const [authorProfiles, projectDetails] = await Promise.all([
         Promise.all(
           authorIds.map(async authorId => {
@@ -77,20 +113,16 @@ export const fetchBMLessons = () => {
       dispatch(setLessons(updatedLessons));
     } catch (error) {
       console.error('Error fetching lessons:', error);
+      // Add toast notification from development branch
+      toast.error('Error fetching lessons:', error);
+      dispatch(setErrors(error));
     }
   };
 };
 
-export const setLessons = payload => {
-  // console.log('Setting lessons in Redux:', payload);
-  return {
-    type: GET_BM_LESSONS,
-    payload
-  }
-}
-export const fetchSingleBMLesson = (lessonId) => {
+export const fetchSingleBMLesson = lessonId => {
   const url = ENDPOINTS.BM_LESSON + lessonId;
-  return async (dispatch) => {
+  return async dispatch => {
     try {
       const response = await axios.get(url);
       const lesson = response.data;
@@ -119,16 +151,12 @@ export const fetchSingleBMLesson = (lessonId) => {
       };
       dispatch(setLesson(updatedLesson));
     } catch (error) {
-      // console.error('Error fetching lesson:', error);
+      console.error('Error fetching lesson:', error);
+      toast.error('Error fetching lesson:', error);
       dispatch(setErrors(error));
     }
   };
 };
-
-export const setLesson = (updatedLesson) => ({
-  type: SET_LESSON,
-  payload: updatedLesson,
-});
 
 export const updateBMLesson = (lessonId, content) => {
   return async dispatch => {
@@ -136,23 +164,14 @@ export const updateBMLesson = (lessonId, content) => {
     try {
       await axios.put(url, { content });
     } catch (err) {
-     // console.log('err')
+      console.error('Error updating lesson:', err);
+      toast.error('Error updating lesson');
     }
-    dispatch(updateLesson());
-  };
-}
-
-export const updateLesson = (lessonId, content) => {
-  return {
-    type: UPDATE_LESSON,
-    lessonId,
-    content,
+    dispatch(updateLesson(lessonId, content));
   };
 };
-  
 
-
-export const deleteBMLesson = (lessonId) => {
+export const deleteBMLesson = lessonId => {
   return async dispatch => {
     const url = ENDPOINTS.BM_LESSON + lessonId;
     try {
@@ -160,13 +179,9 @@ export const deleteBMLesson = (lessonId) => {
       dispatch(deleteLesson(lessonId));
       return Promise.resolve();
     } catch (err) {
-      // console.error('Error deleting lesson:', err);
+      console.error('Error deleting lesson:', err);
+      toast.error('Error deleting lesson');
       return Promise.reject(err);
     }
   };
 };
-
-export const deleteLesson = (lessonId) => ({
-  type: DELETE_LESSON,
-  lessonId
-});
