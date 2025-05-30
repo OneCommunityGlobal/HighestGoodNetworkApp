@@ -1,302 +1,298 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-nested-ternary */
-/* eslint-disable react/no-unstable-nested-components */
-/* eslint-disable no-console */
 import React, { useState, useEffect } from 'react';
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  Label,
-} from 'recharts';
-import DatePicker from 'react-datepicker';
-import Select from 'react-select';
-import 'react-datepicker/dist/react-datepicker.css';
-import './InjuriesDashboard.css';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LabelList } from 'recharts';
+import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
+import './InjuriesDashboard.css';
 
-function InjuriesDashboard() {
-  // State for chart data
-  const [chartData, setChartData] = useState([]);
-
-  // State for filter options
-  const [projects, setProjects] = useState([]);
+function InjuriesOverTimeChart() {
+  const [uniqueProjectIds, setUniqueProjectIds] = useState([]);
+  const [selectedProject, setSelectedProject] = useState('');
+  const [fromDate, setFromDate] = useState('');
+  const [toDate, setToDate] = useState('');
   const [injuryTypes, setInjuryTypes] = useState([]);
+  const [selectedInjuryTypes, setSelectedInjuryTypes] = useState([]);
   const [departments, setDepartments] = useState([]);
-  const [severityLevels, setSeverityLevels] = useState([]);
-
-  // State for selected filters
-  const [selectedProject, setSelectedProject] = useState(null);
-  const [dateRange, setDateRange] = useState({
-    startDate: new Date(new Date().setMonth(new Date().getMonth() - 1)),
-    endDate: new Date(),
-  });
-  const [selectedTypes, setSelectedTypes] = useState([]);
   const [selectedDepartments, setSelectedDepartments] = useState([]);
-  const [selectedSeverities, setSelectedSeverities] = useState([]);
-
-  // State for loading
+  const [severityLevels, setSeverityLevels] = useState([]);
+  const [selectedSeverityLevels, setSelectedSeverityLevels] = useState([]);
+  const [chartData, setChartData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  // Fetch filter options on component mount
+  // Fetch initial data on component mount
   useEffect(() => {
-    const fetchFilterOptions = async () => {
+    const fetchInitialData = async () => {
       try {
+        setLoading(true);
+        
         // Fetch projects
-        const projectsResponse = await fetch('/api/projects');
-        const projectsData = await projectsResponse.json();
-        setProjects(
-          projectsData.map(project => ({
-            value: project._id,
-            label: project.name,
-          })),
-        );
+        const projectsResponse = await axios.get(ENDPOINTS.BM_PROJECTS);
+        if (projectsResponse.data && Array.isArray(projectsResponse.data)) {
+          const projectIds = projectsResponse.data.map(project => project._id);
+          setUniqueProjectIds(projectIds);
+        }
 
-        // Fetch injury types
-        const typesResponse = await fetch('/api/injury-types');
-        const typesData = await typesResponse.json();
-        setInjuryTypes(
-          typesData.map(type => ({
-            value: type,
-            label: type,
-          })),
-        );
-
-        // Fetch departments
-        const deptsResponse = await fetch('/api/departments');
-        const deptsData = await deptsResponse.json();
-        setDepartments(
-          deptsData.map(dept => ({
-            value: dept,
-            label: dept,
-          })),
-        );
-
-        // Fetch severity levels
-        const sevResponse = await fetch('/api/severity-levels');
-        const sevData = await sevResponse.json();
-        setSeverityLevels(
-          sevData.map(sev => ({
-            value: sev,
-            label: sev,
-          })),
-        );
+        // Fetch filter options
+        const filterOptionsResponse = await axios.get(ENDPOINTS.INJURIES_FILTER_OPTIONS);
+        if (filterOptionsResponse.data) {
+          setInjuryTypes(filterOptionsResponse.data.injuryTypes || []);
+          setDepartments(filterOptionsResponse.data.departments || []);
+          setSeverityLevels(filterOptionsResponse.data.severityLevels || []);
+        }
       } catch (error) {
-        console.error('Error fetching filter options:', error);
-      }
-    };
-
-    fetchFilterOptions();
-  }, []);
-
-  // Fetch chart data based on selected filters
-  useEffect(() => {
-    const fetchChartData = async () => {
-      setLoading(true);
-
-      try {
-        // Construct query params
-        const params = new URLSearchParams();
-
-        if (selectedProject) {
-          params.append('projectId', selectedProject.value);
-        }
-
-        params.append('startDate', dateRange.startDate.toISOString().split('T')[0]);
-        params.append('endDate', dateRange.endDate.toISOString().split('T')[0]);
-
-        if (selectedTypes.length > 0) {
-          params.append('types', selectedTypes.map(type => type.value).join(','));
-        }
-
-        if (selectedDepartments.length > 0) {
-          params.append('departments', selectedDepartments.map(dept => dept.value).join(','));
-        }
-
-        if (selectedSeverities.length > 0) {
-          params.append('severities', selectedSeverities.map(sev => sev.value).join(','));
-        }
-
-        // Fetch data
-        const response = await fetch(`${ENDPOINTS.INJURIES_OVER_TIME}?${params.toString()}`);
-
-        const data = await response.json();
-
-        // Format data for chart
-        const formattedData = data.map(item => ({
-          date: new Date(item.date).toLocaleDateString(),
-          totalInjuries: item.totalInjuries,
-        }));
-
-        setChartData(formattedData);
-      } catch (error) {
-        console.error('Error fetching chart data:', error);
+        console.error('Error fetching initial data:', error);
+        setError('Failed to load initial data. Please try again later.');
       } finally {
         setLoading(false);
       }
     };
 
-    // Only fetch if we have at least a date range
-    if (dateRange.startDate && dateRange.endDate) {
-      fetchChartData();
+    fetchInitialData();
+  }, []);
+
+  // Fetch injuries data when filters change
+  useEffect(() => {
+    if (selectedProject && fromDate && toDate) {
+      fetchInjuriesData();
     }
-  }, [selectedProject, dateRange, selectedTypes, selectedDepartments, selectedSeverities]);
+  }, [selectedProject, fromDate, toDate, selectedInjuryTypes, selectedDepartments, selectedSeverityLevels]);
+
+  const fetchInjuriesData = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const params = new URLSearchParams({
+        projectId: selectedProject,
+        startDate: fromDate,
+        endDate: toDate,
+      });
+
+      if (selectedInjuryTypes.length > 0) {
+        params.append('types', selectedInjuryTypes.join(','));
+      }
+      if (selectedDepartments.length > 0) {
+        params.append('departments', selectedDepartments.join(','));
+      }
+      if (selectedSeverityLevels.length > 0) {
+        params.append('severities', selectedSeverityLevels.join(','));
+      }
+
+      const url = `${ENDPOINTS.INJURIES_OVER_TIME}?${params.toString()}`;
+      const response = await axios.get(url);
+      
+      if (response.data && Array.isArray(response.data)) {
+        // Format dates for display
+        const formattedData = response.data.map(item => ({
+          ...item,
+          displayDate: new Date(item.date).toLocaleDateString('en-US', { 
+            month: 'short', 
+            day: 'numeric',
+            year: 'numeric'
+          })
+        }));
+        setChartData(formattedData);
+      }
+    } catch (error) {
+      console.error('Error fetching injuries data:', error);
+      setError('Failed to load injuries data. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle filter changes
+  const handleProjectChange = (e) => {
+    setSelectedProject(e.target.value);
+  };
+
+  const handleFromDateChange = (e) => {
+    setFromDate(e.target.value);
+  };
+
+  const handleToDateChange = (e) => {
+    setToDate(e.target.value);
+  };
+
+  const handleMultiSelectChange = (value, selectedArray, setSelectedArray) => {
+    if (selectedArray.includes(value)) {
+      setSelectedArray(selectedArray.filter(item => item !== value));
+    } else {
+      setSelectedArray([...selectedArray, value]);
+    }
+  };
 
   // Custom tooltip component
-  function CustomTooltip({ active, payload, label }) {
+  const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       return (
-        <div className="custom-tooltip">
-          <p className="label">{`Date: ${label}`}</p>
-          <p className="info">{`Total Injuries: ${payload[0].value}`}</p>
+        <div className="injuries-custom-tooltip">
+          <p className="label">{label}</p>
+          <p className="value">Total Injuries: {payload[0].value}</p>
         </div>
       );
     }
     return null;
-  }
-
-  // Format Y-axis ticks to show integers only
-  const formatYAxis = tickItem => {
-    return Math.floor(tickItem);
   };
 
+  // Display error message if there's an error
+  if (error) {
+    return (
+      <div className="injuries-chart-container">
+        <h2 className="chart-title">Total Injuries Over Time</h2>
+        <div className="error-message">{error}</div>
+      </div>
+    );
+  }
+
   return (
-    <div className="injuries-dashboard">
-      <h1>Total Injuries Over Time</h1>
+    <div className="injuries-chart-container">
+      <h2 className="chart-title">Total Injuries Over Time</h2>
 
-      <div className="filters-container">
-        <div className="filter">
-          <label>Project</label>
-          <Select
-            value={selectedProject}
-            onChange={setSelectedProject}
-            options={projects}
-            isClearable
-            placeholder="Select Project"
-            className="filter-select"
-          />
-        </div>
+      {/* Filters Section */}
+      <div className="filters-section">
+        <div className="filter-row">
+          <div className="filter-group">
+            <label htmlFor="project-select">Project:</label>
+            <select 
+              id="project-select" 
+              value={selectedProject} 
+              onChange={handleProjectChange}
+              className="filter-select"
+            >
+              <option value="">Select a project</option>
+              {uniqueProjectIds.map(projectId => (
+                <option key={projectId} value={projectId}>
+                  {projectId}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        <div className="filter">
-          <label>Date Range</label>
-          <div className="date-picker-container">
-            <DatePicker
-              selected={dateRange.startDate}
-              onChange={date => setDateRange({ ...dateRange, startDate: date })}
-              selectsStart
-              startDate={dateRange.startDate}
-              endDate={dateRange.endDate}
-              className="date-picker"
-              placeholderText="Start Date"
+          <div className="filter-group">
+            <label htmlFor="from-date">From:</label>
+            <input 
+              id="from-date" 
+              type="date" 
+              value={fromDate} 
+              onChange={handleFromDateChange}
+              className="filter-input"
             />
-            <span>to</span>
-            <DatePicker
-              selected={dateRange.endDate}
-              onChange={date => setDateRange({ ...dateRange, endDate: date })}
-              selectsEnd
-              startDate={dateRange.startDate}
-              endDate={dateRange.endDate}
-              minDate={dateRange.startDate}
-              className="date-picker"
-              placeholderText="End Date"
+          </div>
+
+          <div className="filter-group">
+            <label htmlFor="to-date">To:</label>
+            <input 
+              id="to-date" 
+              type="date" 
+              value={toDate} 
+              onChange={handleToDateChange}
+              className="filter-input"
             />
           </div>
         </div>
 
-        <div className="filter">
-          <label>Injury Type</label>
-          <Select
-            value={selectedTypes}
-            onChange={setSelectedTypes}
-            options={injuryTypes}
-            isMulti
-            placeholder="Select Types"
-            className="filter-select"
-          />
-        </div>
+        <div className="filter-row">
+          <div className="filter-group multi-select">
+            <label>Injury Types:</label>
+            <div className="checkbox-group">
+              {injuryTypes.map(type => (
+                <label key={type} className="checkbox-label">
+                  <input
+                    type="checkbox"
+                    checked={selectedInjuryTypes.includes(type)}
+                    onChange={() => handleMultiSelectChange(type, selectedInjuryTypes, setSelectedInjuryTypes)}
+                  />
+                  {type}
+                </label>
+              ))}
+            </div>
+          </div>
 
-        <div className="filter">
-          <label>Department</label>
-          <Select
-            value={selectedDepartments}
-            onChange={setSelectedDepartments}
-            options={departments}
-            isMulti
-            placeholder="Select Departments"
-            className="filter-select"
-          />
-        </div>
+          <div className="filter-group multi-select">
+            <label>Departments:</label>
+            <div className="checkbox-group">
+              {departments.map(dept => (
+                <label key={dept} className="checkbox-label">
+                  <input
+                    type="checkbox"
+                    checked={selectedDepartments.includes(dept)}
+                    onChange={() => handleMultiSelectChange(dept, selectedDepartments, setSelectedDepartments)}
+                  />
+                  {dept}
+                </label>
+              ))}
+            </div>
+          </div>
 
-        <div className="filter">
-          <label>Severity Level</label>
-          <Select
-            value={selectedSeverities}
-            onChange={setSelectedSeverities}
-            options={severityLevels}
-            isMulti
-            placeholder="Select Severity Levels"
-            className="filter-select"
-          />
+          <div className="filter-group multi-select">
+            <label>Severity Levels:</label>
+            <div className="checkbox-group">
+              {severityLevels.map(level => (
+                <label key={level} className="checkbox-label">
+                  <input
+                    type="checkbox"
+                    checked={selectedSeverityLevels.includes(level)}
+                    onChange={() => handleMultiSelectChange(level, selectedSeverityLevels, setSelectedSeverityLevels)}
+                  />
+                  {level}
+                </label>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
+      {/* Chart Section */}
       <div className="chart-container">
         {loading ? (
-          <div className="loading">Loading chart data...</div>
-        ) : chartData.length > 0 ? (
+          <div className="loading">Loading injuries data...</div>
+        ) : !selectedProject || !fromDate || !toDate ? (
+          <div className="select-filters-message">
+            Please select a project and date range to view injuries data.
+          </div>
+        ) : chartData.length === 0 ? (
+          <div className="no-data-message">
+            No injuries data available for the selected criteria.
+          </div>
+        ) : (
           <ResponsiveContainer width="100%" height={400}>
-            <LineChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 50 }}>
+            <LineChart
+              data={chartData}
+              margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
+            >
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis
-                dataKey="date"
+              <XAxis 
+                dataKey="displayDate" 
                 angle={-45}
                 textAnchor="end"
-                height={70}
-                tick={{ fontSize: 12 }}
-              >
-                <Label
-                  value="Date"
-                  position="bottom"
-                  style={{ textAnchor: 'middle', fontSize: 14 }}
-                />
-              </XAxis>
-              <YAxis tickFormatter={formatYAxis} tick={{ fontSize: 12 }}>
-                <Label
-                  value="Total Injuries"
-                  angle={-90}
-                  position="left"
-                  style={{ textAnchor: 'middle', fontSize: 14 }}
-                />
-              </YAxis>
+                height={80}
+              />
+              <YAxis 
+                label={{ value: 'Total Injuries', angle: -90, position: 'insideLeft' }}
+              />
               <Tooltip content={<CustomTooltip />} />
               <Legend />
-              <Line
-                type="monotone"
-                dataKey="totalInjuries"
-                stroke="#8884d8"
-                activeDot={{ r: 8 }}
+              <Line 
+                type="monotone" 
+                dataKey="totalInjuries" 
+                stroke="#ff7300"
                 strokeWidth={2}
-                dot={{ stroke: '#8884d8', strokeWidth: 2, r: 4 }}
-                label={{
-                  position: 'top',
-                  formatter: value => `${value}`,
-                  fontSize: 11,
-                  fill: '#666',
-                }}
-              />
+                dot={{ fill: '#ff7300', r: 4 }}
+                activeDot={{ r: 6 }}
+                name="Total Injuries"
+              >
+                <LabelList 
+                  dataKey="totalInjuries" 
+                  position="top" 
+                  style={{ fontSize: '12px', fill: '#333' }}
+                />
+              </Line>
             </LineChart>
           </ResponsiveContainer>
-        ) : (
-          <div className="no-data">No data available for the selected filters.</div>
         )}
       </div>
     </div>
   );
 }
 
-export default InjuriesDashboard;
+export default InjuriesOverTimeChart;

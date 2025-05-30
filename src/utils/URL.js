@@ -3,13 +3,9 @@ const APIEndpoint =
 
 export const ENDPOINTS = {
   APIEndpoint: () => APIEndpoint,
+  // Injuries endpoints
   INJURIES_OVER_TIME: `${APIEndpoint}/injuries/over-time`,
-
-  // Filter endpoints
-  GET_ALL_PROJECTS: `${APIEndpoint}/projects`,
-  GET_INJURY_TYPES: `${APIEndpoint}/injury-types`,
-  GET_DEPARTMENTS: `${APIEndpoint}/departments`,
-  GET_SEVERITY_LEVELS: `${APIEndpoint}/severity-levels`,
+  INJURIES_FILTER_OPTIONS: `${APIEndpoint}/injuries/filter-options`,
   USER_PROFILE: userId => `${APIEndpoint}/userprofile/${userId}`,
   USER_PROFILE_PROPERTY: userId => `${APIEndpoint}/userprofile/${userId}/property`,
   USER_PROFILES: `${APIEndpoint}/userprofile/`,
