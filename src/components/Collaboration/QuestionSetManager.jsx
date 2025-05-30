@@ -144,8 +144,6 @@ function QuestionSetManager({
           }))
         });
 
-        // Update local state
-        // setTemplates([...templates, newTemplate]);
       }
       
       // localStorage.setItem('jobFormTemplates', JSON.stringify(templates));
