@@ -30,25 +30,25 @@ class Collaboration extends Component {
     this.fetchCategories();
   }
 
-  // Helper function to sort jobs alphabetically by title
+  // sort jobs alphabetically by title
   sortJobsAlphabetically = jobs => {
     return jobs.sort((a, b) => {
       return a.title.localeCompare(b.title);
     });
   };
 
-  // Frontend search filter function
+  // frontend filter
   filterJobs = (jobs, searchTerm, selectedCategory) => {
     let filtered = jobs;
 
-    // Filter by category if selected
+    // filter by category
     if (selectedCategory) {
       filtered = filtered.filter(
         job => job.category && job.category.toLowerCase() === selectedCategory.toLowerCase(),
       );
     }
 
-    // Filter by search term if provided
+    // filter by search term
     if (searchTerm.trim()) {
       const searchLower = searchTerm.toLowerCase();
       filtered = filtered.filter(job => {
@@ -80,7 +80,7 @@ class Collaboration extends Component {
     const adsPerPage = 18;
 
     try {
-      // Fetch all jobs without pagination for frontend filtering
+      // fetch all jobs, no pagination
       const response = await fetch(
         `${ApiEndpoint}/jobs?limit=1000&search=&searchBoth=true&category=`,
         {
@@ -92,13 +92,13 @@ class Collaboration extends Component {
       }
       const data = await response.json();
 
-      // Sort all jobs alphabetically
+      // sort jobs alphabetically
       const sortedJobs = this.sortJobsAlphabetically(data.jobs);
 
-      // Filter jobs based on search term and category
+      // filter jobs based on category and search term
       const filteredJobs = this.filterJobs(sortedJobs, searchTerm, selectedCategory);
 
-      // Paginate the filtered results
+      // paginate the filtered results
       const paginatedResults = this.paginateResults(filteredJobs, currentPage, adsPerPage);
 
       this.setState({
@@ -133,13 +133,13 @@ class Collaboration extends Component {
 
   handleSubmit = event => {
     event.preventDefault();
-    // Reset to page 1 and re-filter results
+    // reset to page one after submit
     this.setState(
       {
         summaries: null,
         currentPage: 1,
         summariesCurrentPage: 1,
-        lastJobAdsPage: 1, // Reset lastJobAdsPage when searching
+        lastJobAdsPage: 1,
       },
       () => {
         this.updateFilteredResults();
@@ -154,7 +154,7 @@ class Collaboration extends Component {
         selectedCategory: selectedValue === '' ? '' : selectedValue,
         currentPage: 1,
         summariesCurrentPage: 1,
-        lastJobAdsPage: 1, // Reset lastJobAdsPage when filtering
+        lastJobAdsPage: 1,
       },
       () => {
         this.updateFilteredResults();
@@ -162,12 +162,11 @@ class Collaboration extends Component {
     );
   };
 
-  // Update filtered results without refetching from API
+  // update filtered results
   updateFilteredResults = () => {
     const { allJobAds, searchTerm, selectedCategory, currentPage } = this.state;
     const adsPerPage = 18;
 
-    // Filter jobs based on current search term and category
     const filteredJobs = this.filterJobs(allJobAds, searchTerm, selectedCategory);
 
     // Paginate the filtered results
@@ -177,7 +176,7 @@ class Collaboration extends Component {
       jobAds: paginatedResults.items,
       totalPages: paginatedResults.totalPages,
       hasSearched: true,
-      lastJobAdsPage: currentPage, // Update lastJobAdsPage here too
+      lastJobAdsPage: currentPage,
     });
   };
 
@@ -191,7 +190,7 @@ class Collaboration extends Component {
       }
       const data = await response.json();
 
-      // Sort the reset data alphabetically by title
+      // sort reset data by title
       const sortedJobs = this.sortJobsAlphabetically(data.jobs);
       const paginatedResults = this.paginateResults(sortedJobs, 1, 18);
 
@@ -216,7 +215,7 @@ class Collaboration extends Component {
     this.setState(
       {
         currentPage: pageNumber,
-        lastJobAdsPage: pageNumber, // Update lastJobAdsPage when user changes pages
+        lastJobAdsPage: pageNumber,
       },
       () => {
         this.updateFilteredResults();
@@ -233,7 +232,6 @@ class Collaboration extends Component {
     const summariesPerPage = 18;
 
     try {
-      // Fetch all summaries without pagination for frontend filtering
       const response = await fetch(
         `${ApiEndpoint}/jobs/summaries?limit=1000&search=&searchBoth=true&category=`,
         {
@@ -245,16 +243,15 @@ class Collaboration extends Component {
       }
       const data = await response.json();
 
-      // Sort all summaries alphabetically
       let sortedSummaries = [];
       if (data.jobs && data.jobs.length > 0) {
         sortedSummaries = this.sortJobsAlphabetically(data.jobs);
       }
 
-      // Filter summaries based on search term and category
+      // filter summaries
       const filteredSummaries = this.filterJobs(sortedSummaries, searchTerm, selectedCategory);
 
-      // Paginate the filtered results
+      // paginate summary results
       const paginatedResults = this.paginateResults(
         filteredSummaries,
         summariesCurrentPage,
@@ -274,14 +271,13 @@ class Collaboration extends Component {
   };
 
   handleShowSummaries = async () => {
-    const { currentPage } = this.state; // Use currentPage instead of lastJobAdsPage
-    // Set summaries page to the same page user was on in job ads
+    const { currentPage } = this.state;
     this.setState({ summariesCurrentPage: currentPage }, this.fetchSummaries);
   };
 
   handleBackToJobAds = () => {
     const { lastJobAdsPage } = this.state;
-    // Return to job ads view and restore the last page
+    // restore the last page on job ads
     this.setState({
       summaries: null,
       currentPage: lastJobAdsPage,
@@ -305,7 +301,6 @@ class Collaboration extends Component {
     const hasActiveFilters = searchTerm.trim() !== '' || selectedCategory !== '';
     const showNoResults = hasSearched && jobAds.length === 0 && hasActiveFilters;
 
-    // Single search form that searches both title and description
     const searchForm = (
       <form className="search-form" onSubmit={this.handleSubmit}>
         <input
