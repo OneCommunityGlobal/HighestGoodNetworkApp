@@ -229,6 +229,7 @@ export class EditableInfoModal extends Component {
                     disabled={!this.state.editing}
                     value={infoContent}
                     onEditorChange={this.handleInputChange}
+                    darkMode={darkMode}
                   />
                   : <div
                     style={{ paddingLeft: '20px' }}
@@ -280,7 +281,7 @@ EditableInfoModal.propTypes = {
   addInfoCollection: PropTypes.func.isRequired,
   updateInfoCollection: PropTypes.func.isRequired,
   deleteInfoCollectionById: PropTypes.func.isRequired,
-  loading: PropTypes.bool.isRequired,
+  loading: PropTypes.bool,//made loading prop optional to avoid warnings if not provided
 };
 
 

@@ -1,66 +1,103 @@
-/* General container */
+/* ========== CONTAINER ========== */
 .dashboard-container {
+  max-width: 1200px;
+  margin: 0 auto;
   min-height: 100vh;
   padding: 20px;
-  box-sizing: border-box;
-  background-color: #f9f9f9;
+  background-color: #f4f6f8;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
 }
 
-/* Main Dashboard */
-.dashboard-main {
-  margin-top: 20px;
-}
-
+/* ========== TITLE & SEARCH BAR ========== */
 .dashboard-title {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  background-color: white;
-  padding: 15px;
+  background-color: #ffffff;
+  padding: 20px;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin-bottom: 15px;
-  width: 100%;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  flex: 0 0 auto;                   /* Do not shrink below content */
+}
+
+.title-text h2 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #222;
+}
+
+.title-text p {
+  margin-top: 4px;
+  font-size: 0.95rem;
+  color: #666;
 }
 
 .search-container {
-  flex: 1; 
+  flex: 1 1 260px;                  /* Grow/shrink but start at 260px */
   display: flex;
-  justify-content: flex-end; 
+  justify-content: flex-end;
+  margin-top: 15px;
+}
+
+@media (min-width: 600px) {
+  .search-container {
+    margin-top: 0;
+  }
 }
 
 .search-bar {
-  padding: 10px;
-  width: 250px;
-  border-radius: 5px;
-  border: 1px solid red;
-  font-size: 14px;
-  outline: none;
-  color: black;
-  background-color: white;
+  width: 100%;
+  max-width: 260px;
+  padding: 10px 14px;
+  border-radius: 6px;
+  border: 1px solid #ccc;           /* Neutral gray border */
+  font-size: 0.95rem;
+  background-color: #fafafa;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Stats and Chart Container */
-.stats-chart-container {
+.search-bar:focus {
+  border-color: #4caf50;            /* Green accent on focus */
+  box-shadow: 0 0 4px rgba(76, 175, 80, 0.3);
+  outline: none;
+}
+
+/* ========== MAIN DASHBOARD LAYOUT ========== */
+.dashboard-main {
+  margin-top: 25px;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   flex-wrap: wrap;
   gap: 20px;
+  flex: 1 1 auto;                   /* Let this area grow/shrink under the title */
+  overflow: visible;                /* Do not cut off children */
 }
 
-/* Chart Styling */
+/* ========== STATS + CHART PANEL ========== */
+.stats-chart-container {
+  flex: 1 1 380px;                  /* Grow/shrink; base 380px */
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  gap: 20px;
+  min-height: 260px;                /* Ensure some minimum height */
+  overflow: visible;                /* Prevent inner clipping */
+}
+
 .chart-container {
   position: relative;
-  width: 150px;
-  height: 150px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 180px;
+  height: 180px;
+  flex: 0 0 180px;                  /* Never shrink below 180px */
+  margin: 0 auto;
 }
 
 .chart-label {
@@ -68,138 +105,232 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 20px;
-  font-weight: bold;
-  color: #333;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #222;
 }
 
-/* Stats Grid */
 .stats-grid {
-  margin-left: 3rem;
+  flex: 1 1 200px;                  /* Grow/shrink; base 200px */
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 30px;
-  flex-grow: 1;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 20px;
+  align-content: start;
+  overflow: visible;                /* Let cards flow naturally */
 }
 
-/* Individual Stats Card */
+/* ========== STATS CARD ========== */
 .stats-card {
-  background: white;
-  padding: 15px;
+  background-color: #fafafa;
+  padding: 18px;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e0e0e0;
   text-align: center;
-  min-width: 150px;
-  border: 1px solid #eee;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  cursor: default;
+  flex: 1 1 auto;
+  min-height: 80px;
+}
+
+.stats-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
 }
 
 .stats-card h3 {
-  margin: 0 0 10px;
-  font-size: 16px;
+  margin-bottom: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #555;
 }
 
 .stats-value {
-  font-size: 18px;
-  font-weight: bold;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #333;
 }
 
-/* Live Updates Section */
+/* ========== LIVE UPDATES PANEL ========== */
 .live-updates {
-  background-color: white;
+  flex: 1 1 400px;                  /* Grow/shrink; base 400px */
+  background-color: #ffffff;
   padding: 20px;
-  margin-top: 20px;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+  min-height: 260px;                /* Provide some minimum height */
 }
 
-/* Live Updates Header */
+/* ========== HEADER (TITLE + EXPORT BUTTON) ========== */
 .updates-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
   flex-wrap: wrap;
-  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  flex: 0 0 auto;
 }
 
-/* Export Button */
+.updates-header h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #222;
+}
+
 .export-btn {
   background-color: #4caf50;
-  color: white;
-  padding: 10px 15px;
+  color: #fff;
+  padding: 10px 18px;
   border: none;
-  border-radius: 5px;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 500;
   cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  margin-top: 10px;
+}
+
+@media (min-width: 500px) {
+  .export-btn {
+    margin-top: 0;
+  }
 }
 
 .export-btn:hover {
-  background-color: #388e3c;
+  background-color: #45a047;
+  transform: translateY(-1px);
 }
 
-/* Students List */
+/* ========== STUDENT LIST WRAPPER ========== */
 .updates-list {
   margin-top: 20px;
+  flex: 1 1 auto;                  /* Let the list area expand/scroll */
+  overflow-y: auto;                /* Vertical scroll if too many rows */
 }
 
-/* Student Row */
+/* ========== “NO RESULTS” MESSAGE ========== */
+.no-results {
+  text-align: center;
+  font-size: 0.95rem;
+  color: #777;
+  font-style: italic;
+  margin-top: 15px;
+}
+
+/* ========== STUDENT ROW ========== */
 .student-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 15px 10px;
+  padding: 14px 12px;
   border-bottom: 1px solid #e0e0e0;
+  transition: background-color 0.15s ease;
+  flex: 0 0 auto;                  /* Maintain natural height */
 }
 
-/* Left - Image & Name */
+.student-row:nth-child(even) {
+  background-color: #f9f9f9;        /* Alternating row color */
+}
+
+.student-row:hover {
+  background-color: #f0f2f5;
+}
+
 .student-left {
   display: flex;
   align-items: center;
-  gap: 10px;
-  width: 30%; /* Ensures consistent spacing */
+  gap: 12px;
+  flex: 0 0 35%;                   /* Takes up 35% of row width */
 }
 
-/* Center - Time (Aligned Below Each Other) */
-.student-center {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 40%;
-}
-
-/* Right - IDs (Aligned Below Each Other) */
-.student-right {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  width: 20%;
-}
-
-/* Student Image */
 .student-img {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   object-fit: cover;
+  border: 1px solid #ddd;
 }
 
-/* Student Name */
 .student-name {
-  font-weight: bold;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #222;
 }
 
-/* Time and ID */
-.student-time,
+.student-center {
+  flex: 0 0 30%;                   /* Takes 30% of row width */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.student-time {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.student-icon {
+  font-size: 1rem;
+  color: #888;
+}
+
+.student-right {
+  flex: 0 0 25%;                   /* Takes 25% of row width */
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
 .student-id {
   display: flex;
   align-items: center;
-  gap: 5px;
-  font-size: 14px;
-  color: black;
+  gap: 6px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #333;
 }
 
-/* Icons */
-.student-icon {
-  font-size: 14px;
-  color: gray;
+/* ========== RESPONSIVE ADJUSTMENTS ========== */
+@media (max-width: 750px) {
+  /* Stack chart + stats vertically on narrow screens */
+  .stats-chart-container {
+    flex-direction: column;
+    align-items: center;
+  }
+  .chart-container {
+    margin-bottom: 20px;
+  }
+  /* Make stats cards full width */
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Stack student-row sections vertically */
+  .student-row {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px 8px;
+  }
+
+  .student-left,
+  .student-center,
+  .student-right {
+    flex: 1 1 100%;
+    margin-top: 8px;
+    justify-content: flex-start;
+  }
+
+  /* Ensure search + export buttons fill width */
+  .search-container {
+    width: 100%;
+  }
+  .export-btn {
+    width: 100%;
+    text-align: center;
+  }
 }
-
-
