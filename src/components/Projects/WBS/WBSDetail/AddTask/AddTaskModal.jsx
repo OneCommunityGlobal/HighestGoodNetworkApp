@@ -14,9 +14,11 @@ import {
   END_DATE_ERROR_MESSAGE,
 } from '../../../../../languages/en/messages.js';
 import 'react-day-picker/lib/style.css';
-import '../../../../Header/DarkMode.css'
+import '../../../../Header/DarkMode.css';
 import TagsSearch from '../components/TagsSearch';
 import './AddTaskModal.css';
+import { fetchAllMembers } from 'actions/projectMembers';
+
 
 const TINY_MCE_INIT_OPTIONS = {
   license_key: 'gpl',
@@ -34,21 +36,21 @@ const TINY_MCE_INIT_OPTIONS = {
 
 function AddTaskModal(props) {
   /*
-  * -------------------------------- variable declarations -------------------------------- 
-  */
-  // props from store 
+   * -------------------------------- variable declarations --------------------------------
+   */
+  // props from store
   const { tasks, copiedTask, allMembers, allProjects, error, darkMode } = props;
 
-  const handleBestHoursChange = (e) => {
+  const handleBestHoursChange = e => {
     setHoursBest(e.target.value);
   };
-  const handleWorstHoursChange = (e) => {
+  const handleWorstHoursChange = e => {
     setHoursWorst(e.target.value);
   };
-  const handleMostHoursChange = (e) => {
+  const handleMostHoursChange = e => {
     setHoursMost(e.target.value);
   };
-  const handleEstimateHoursChange = (e) => {
+  const handleEstimateHoursChange = e => {
     setHoursEstimate(e.target.value);
   };
 
@@ -65,20 +67,21 @@ function AddTaskModal(props) {
   };
 
   // states from hooks
+
   const defaultCategory = useMemo(() => {
-    if (props.taskId) {
-      const task = tasks.find(({ _id }) => _id === props.taskId);
-      return task?.category || 'Unspecified';
-    }
-    
-    if (props.projectId) {
-      const project = allProjects.projects.find(({ _id }) => _id === props.projectId);
-      return project?.category || 'Unspecified';
-    }
-  
-    return 'Unspecified';
-  }, [props.taskId, props.projectId, tasks, allProjects.projects]);
-  
+  if (props.taskId) {
+    const task = tasks.find(({ _id }) => _id === props.taskId);
+    return task?.category || 'Unspecified';
+  } 
+  if (props.projectId) {
+    const project = allProjects.projects.find(({ _id }) => _id === props.projectId);
+    return project?.category || 'Unspecified';
+  }
+
+  return 'Unspecified';
+}, [props.taskId, props.projectId, tasks, allProjects.projects]);
+
+
 
   const [taskName, setTaskName] = useState('');
   const [priority, setPriority] = useState('Primary');
@@ -89,6 +92,7 @@ function AddTaskModal(props) {
   const [hoursMost, setHoursMost] = useState(0);
   const [hoursWorst, setHoursWorst] = useState(0);
   const [hoursEstimate, setHoursEstimate] = useState(0);
+  const [hasNegativeHours, setHasNegativeHours] = useState(false);
   const [link, setLink] = useState('');
   const [links, setLinks] = useState([]);
   const [category, setCategory] = useState(defaultCategory);
@@ -120,8 +124,8 @@ function AddTaskModal(props) {
   const FORMAT = 'MM/dd/yy';
 
   /*
-  * -------------------------------- functions -------------------------------- 
-  */
+   * -------------------------------- functions --------------------------------
+   */
   const toggle = () => setModal(!modal);
 
   const openModal = () => {
@@ -131,7 +135,7 @@ function AddTaskModal(props) {
 
   const getNewNum = () => {
     let newNum;
-    if (props.taskId) { 
+    if (props.taskId) {
       const numOfLastInnerLevelTask = tasks.reduce((num, task) => {
         if (task.mother === props.taskId) {
           const numIndexArray = task.num.split('.');
@@ -151,7 +155,7 @@ function AddTaskModal(props) {
           num = +indexOfFirstNum > num ? +indexOfFirstNum : num;
         }
         return num;
-      }, 0)
+      }, 0);
       newNum = `${numOfLastLevelOneTask + 1}`;
     }
     return newNum;
@@ -171,7 +175,7 @@ function AddTaskModal(props) {
         profilePic,
       },
       ...resourceItems,
-    ]
+    ];
     setResourceItems(newResource);
     setAssigned(true);
   };
@@ -201,6 +205,14 @@ function AddTaskModal(props) {
       setHoursWarning(false);
     }
   };
+
+  useEffect(() => {
+    if (hoursBest < 0 || hoursWorst < 0 || hoursMost < 0 || hoursEstimate < 0) {
+      setHasNegativeHours(true);
+    } else {
+      setHasNegativeHours(false);
+    }
+  }, [hoursBest, hoursWorst, hoursMost, hoursEstimate]);
 
   const changeDateStart = startDate => {
     setStartedDate(startDate);
@@ -252,10 +264,11 @@ function AddTaskModal(props) {
     setCategory(defaultCategory);
     setStartDateError(false);
     setEndDateError(false);
+    setHasNegativeHours(false);
   };
 
   const paste = () => {
-    setTaskName(copiedTask.taskName)
+    setTaskName(copiedTask.taskName);
 
     setPriority(copiedTask.priority);
     priorityRef.current.value = copiedTask.priority;
@@ -297,7 +310,7 @@ function AddTaskModal(props) {
       dueDatetime: dueDate,
       links,
       category,
-      parentId1: props.level === 1 ? props.taskId : props.parentId1, 
+      parentId1: props.level === 1 ? props.taskId : props.parentId1,
       parentId2: props.level === 2 ? props.taskId : props.parentId2,
       parentId3: props.level === 3 ? props.taskId : props.parentId3,
       mother: props.taskId,
@@ -314,8 +327,8 @@ function AddTaskModal(props) {
   };
 
   /*
-  * -------------------------------- useEffects -------------------------------- 
-  */
+   * -------------------------------- useEffects --------------------------------
+   */
   useEffect(() => {
     setNewTaskNum(getNewNum());
   }, [modal]);
@@ -331,7 +344,7 @@ function AddTaskModal(props) {
     } else {
       clear();
     }
-  }, [error, tasks])
+  }, [error, tasks]);
 
   useEffect(() => {
     if (!modal) {
@@ -342,13 +355,22 @@ function AddTaskModal(props) {
     }
   }, [modal]);
 
+  useEffect(() => {
+    if (modal && props.projectId) {
+      props.fetchAllMembers(props.projectId);
+    }
+  }, [modal, props.projectId]);
+
   const fontColor = darkMode ? 'text-light' : '';
 
   return (
     <>
       <Modal isOpen={modal} toggle={toggle} className={darkMode ? 'text-light dark-mode' : ''}>
-        <ModalHeader toggle={toggle} className={`w-100 align-items-center ${darkMode ? 'bg-space-cadet' : ''}`}>
-          <ReactTooltip delayShow={300}/>
+        <ModalHeader
+          toggle={toggle}
+          className={`w-100 align-items-center ${darkMode ? 'bg-space-cadet' : ''}`}
+        >
+          <ReactTooltip delayShow={300} />
           <p className="fs-2 d-inline mr-3">Add New Task</p>
           <button
             type="button"
@@ -380,59 +402,71 @@ function AddTaskModal(props) {
 
                 <span className={`add_new_task_form-input_area ${fontColor}`}>{newTaskNum}</span>
               </div>
-              <div className="add_new_task_form-group" >
-                <span className={`add_new_task_form-label ${fontColor}`}>Task Name</span>
+              <div className="add_new_task_form-group">
+                <label htmlFor="taskNameInput" className={`add_new_task_form-label ${fontColor}`}>
+                  Task Name
+                </label>
                 <span className="add_new_task_form-input_area">
-                  {/* Fix Task-name formatting - by Sucheta */}
                   <textarea
-                    type="text"
+                    id="taskNameInput"
                     rows="2"
                     className="task-name border border-dark rounded"
                     onChange={e => setTaskName(e.target.value)}
-                    onKeyPress={e => setTaskName(e.target.value)}
                     value={taskName}
                   />
                 </span>
-              </div >
-              <div className='add_new_task_form-group'>
-                <span className={`add_new_task_form-label ${fontColor}`} >Priority</span>
-                <span className='add_new_task_form-input_area'>
-                  <select id="priority" onChange={e => setPriority(e.target.value)} ref={priorityRef}>
+              </div>
+
+              <div className="add_new_task_form-group">
+                <label htmlFor="priority" className={`add_new_task_form-label ${fontColor}`}>
+                  Priority
+                </label>
+                <span className="add_new_task_form-input_area">
+                  <select
+                    id="priority"
+                    onChange={e => setPriority(e.target.value)}
+                    ref={priorityRef}
+                  >
                     <option value="Primary">Primary</option>
                     <option value="Secondary">Secondary</option>
                     <option value="Tertiary">Tertiary</option>
                   </select>
                 </span>
               </div>
+
               <div className="add_new_task_form-group">
-                <span className={`add_new_task_form-label ${fontColor}`}>Resources</span>
-                <span className="add_new_task_form-input_area">
-                    <TagsSearch
-                      placeholder="Add resources"
-                      members={allMembers.filter(user=>user.isActive)}
-                      addResources={addResources}
-                      removeResource={removeResource}
-                      resourceItems={resourceItems}
-                      disableInput={false}
-                    />
-                  
-                </span>
+                <label htmlFor="resource-input" className={`add_new_task_form-label ${fontColor}`}>
+                  Resources
+                </label>
+                <div className="add_new_task_form-input_area">
+                  <TagsSearch
+                    placeholder="Add resources"
+                    members={allMembers?.filter(user => user.isActive)}
+                    addResources={addResources}
+                    removeResource={removeResource}
+                    resourceItems={resourceItems}
+                    disableInput={false}
+                    inputTestId="resource-input"
+                    projectId={props.projectId}
+                  />
+                </div>
               </div>
+
               <div className="add_new_task_form-group">
-                <span className={`add_new_task_form-label ${fontColor}`} >Assigned</span>
-                <span className="add_new_task_form-input_area">
-                  <div className="flex-row d-inline align-items-center" >
+                <label className={`add_new_task_form-label ${fontColor}`}>Assigned</label>
+                <div className="add_new_task_form-input_area">
+                  <div className="flex-row d-inline align-items-center">
                     <div className="form-check form-check-inline">
                       <input
                         className="form-check-input"
                         type="radio"
-                        id="true"
+                        id="assigned-yes"
                         name="Assigned"
-                        value={true}
-                        checked={assigned}
+                        value="true"
+                        checked={assigned === true}
                         onChange={() => setAssigned(true)}
                       />
-                      <label className={`form-check-label ${fontColor}`} htmlFor="true">
+                      <label className={`form-check-label ${fontColor}`} htmlFor="assigned-yes">
                         Yes
                       </label>
                     </div>
@@ -440,24 +474,25 @@ function AddTaskModal(props) {
                       <input
                         className="form-check-input"
                         type="radio"
-                        id="false"
+                        id="assigned-no"
                         name="Assigned"
-                        value={false}
-                        checked={!assigned}
+                        value="false"
+                        checked={assigned === false}
                         onChange={() => setAssigned(false)}
                       />
-                      <label className={`form-check-label ${fontColor}`} htmlFor="false">
+                      <label className={`form-check-label ${fontColor}`} htmlFor="assigned-no">
                         No
                       </label>
                     </div>
                   </div>
-                </span>
+                </div>
               </div>
+
               <div className="add_new_task_form-group">
-                <span className= {`add_new_task_form-label ${fontColor}`}>Status</span>
+                <span className={`add_new_task_form-label ${fontColor}`}>Status</span>
                 <span className="add_new_task_form-input_area">
-                 <div className="d-flex align-items-center flex-wrap"> 
-                  <span className="form-check form-check-inline mr-5">
+                  <div className="d-flex align-items-center flex-wrap">
+                    <span className="form-check form-check-inline mr-5">
                       <input
                         className="form-check-input"
                         type="radio"
@@ -465,13 +500,13 @@ function AddTaskModal(props) {
                         name="status"
                         value="Active"
                         checked={status === 'Active' || status === 'Started'}
-                        onChange={(e) => setStatus(e.target.value)}
+                        onChange={e => setStatus(e.target.value)}
                       />
                       <label className={`form-check-label ${fontColor}`} htmlFor="active">
                         Active
                       </label>
                     </span>
-                  <span className="form-check">
+                    <span className="form-check">
                       <input
                         className="form-check-input"
                         type="radio"
@@ -479,30 +514,29 @@ function AddTaskModal(props) {
                         name="status"
                         value="Not Started"
                         checked={status === 'Not Started'}
-                        onChange={(e) => setStatus(e.target.value)}
+                        onChange={e => setStatus(e.target.value)}
                       />
                       <label className={`form-check-label ${fontColor}`} htmlFor="notStarted">
                         Not Started
                       </label>
-                  </span>
-                 </div>
-                 <div className="d-flex align-items-center flex-wrap">
-                  <span className="form-check form-check-inline mr-5">
-                        <input
-                          className="form-check-input"
-                          type="radio"
-                          id="paused"
-                          name="status"
-                          value="Paused"
-                          checked={status === 'Paused'}
-                          onChange={(e) => setStatus(e.target.value)}
-                        />
-                        <label className={`form-check-label ${fontColor}`} htmlFor="paused">
-                          Paused
-                        </label>
-                    
-                  </span>
-                  <span className="form-check form-check-inline">
+                    </span>
+                  </div>
+                  <div className="d-flex align-items-center flex-wrap">
+                    <span className="form-check form-check-inline mr-5">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        id="paused"
+                        name="status"
+                        value="Paused"
+                        checked={status === 'Paused'}
+                        onChange={e => setStatus(e.target.value)}
+                      />
+                      <label className={`form-check-label ${fontColor}`} htmlFor="paused">
+                        Paused
+                      </label>
+                    </span>
+                    <span className="form-check form-check-inline">
                       <input
                         className="form-check-input"
                         type="radio"
@@ -510,23 +544,23 @@ function AddTaskModal(props) {
                         name="status"
                         value="Complete"
                         checked={status === 'Complete'}
-                        onChange={(e) => setStatus(e.target.value)}
+                        onChange={e => setStatus(e.target.value)}
                       />
                       <label className={`form-check-label ${fontColor}`} htmlFor="complete">
                         Complete
                       </label>
-                   
-                  </span>
-                 </div>
+                    </span>
+                  </div>
                 </span>
               </div>
               <div className="add_new_task_form-group">
-                <span className={`add_new_task_form-label ${fontColor}`}>
-                  Hours
-                </span>
-                <span className="add_new_task_form-input_area">
+                <label className={`add_new_task_form-label ${fontColor}`}>Hours</label>
+                <div className="add_new_task_form-input_area">
                   <div className="py-2 d-flex align-items-center justify-content-sm-around">
-                    <label htmlFor="bestCaseInput" className={`hours-label text-nowrap align-self-center ${fontColor}`}>
+                    <label
+                      htmlFor="bestCaseInput"
+                      className={`hours-label text-nowrap align-self-center ${fontColor}`}
+                    >
                       Best-case
                     </label>
                     <input
@@ -537,17 +571,18 @@ function AddTaskModal(props) {
                       onChange={handleBestHoursChange}
                       onBlur={handleBestHoursBlur}
                       id="bestCaseInput"
-                      className='hours-input'
+                      className="hours-input"
+                      aria-label="Best-case hours"
                     />
-                    
                   </div>
-                  <div className="warning">
-                      {hoursWarning
-                        ? 'The number of hours must be less than other cases'
-                        : ''}
-                  </div>
+                  {hoursWarning && (
+                    <div className="warning">The number of hours must be less than other cases</div>
+                  )}
                   <div className="py-2 d-flex align-items-center justify-content-sm-around">
-                    <label htmlFor="worstCaseInput" className={`hours-label text-nowrap align-self-center ${fontColor}`}>
+                    <label
+                      htmlFor="worstCaseInput"
+                      className={`hours-label text-nowrap align-self-center ${fontColor}`}
+                    >
                       Worst-case
                     </label>
                     <input
@@ -557,19 +592,21 @@ function AddTaskModal(props) {
                       value={hoursWorst}
                       onChange={handleWorstHoursChange}
                       onBlur={handleWorstHoursBlur}
-                      id='worstCaseInput'
-                      className='hours-input'
+                      id="worstCaseInput"
+                      className="hours-input"
+                      aria-label="Worst-case hours"
                     />
-                    
                   </div>
-                        {/* Moved warning outside of the parent div so that the input field does not get affected , now the warnings should appear in a new line - Sucheta*/}
-                  <div className="warning">
-                      {hoursWarning
-                        ? 'The number of hours must be higher than other cases'
-                        : ''}
+                  {hoursWarning && (
+                    <div className="warning">
+                      The number of hours must be higher than other cases
                     </div>
+                  )}
                   <div className="py-2 d-flex align-items-center justify-content-sm-around">
-                    <label htmlFor="mostCaseInput" className={`hours-label text-nowrap align-self-center ${fontColor}`}>
+                    <label
+                      htmlFor="mostCaseInput"
+                      className={`hours-label text-nowrap align-self-center ${fontColor}`}
+                    >
                       Most-case
                     </label>
                     <input
@@ -579,18 +616,21 @@ function AddTaskModal(props) {
                       value={hoursMost}
                       onChange={handleMostHoursChange}
                       onBlur={handleMostHoursBlur}
-                      id='mostCaseInput'
-                      className='hours-input'
+                      id="mostCaseInput"
+                      className="hours-input"
+                      aria-label="Most-case hours"
                     />
-                    
                   </div>
-                  <div className="warning">
-                      {hoursWarning
-                        ? 'The number of hours must range between best and worst cases'
-                        : ''}
+                  {hoursWarning && (
+                    <div className="warning">
+                      The number of hours must range between best and worst cases
                     </div>
+                  )}
                   <div className="py-2 d-flex align-items-center justify-content-sm-around">
-                    <label htmlFor="estimatedInput" className={`hours-label text-nowrap align-self-center ${fontColor}`}>
+                    <label
+                      htmlFor="estimatedInput"
+                      className={`hours-label text-nowrap align-self-center ${fontColor}`}
+                    >
                       Estimated
                     </label>
                     <input
@@ -599,52 +639,71 @@ function AddTaskModal(props) {
                       max="500"
                       value={hoursEstimate}
                       onChange={handleEstimateHoursChange}
-                      id='estimatedInput'
-                      className='hours-input'
+                      id="estimatedInput"
+                      className="hours-input"
+                      aria-label="Estimated hours"
                     />
                   </div>
-                </span>
+                  <div className="warning">
+                    {hasNegativeHours ? 'Negative hours are not allowed.' : ''}
+                  </div>
+                </div>
               </div>
-              <div className="d-flex border align-items-center" >
-                <span className={`add_new_task_form-label ${fontColor}`}>Links</span>
+
+              <div className="add_new_task_form-group">
+                <label htmlFor="linkInput" className={`add_new_task_form-label ${fontColor}`}>
+                  Links
+                </label>
                 <span className="add_new_task_form-input_area">
                   <div className="d-flex flex-row">
                     <input
                       type="text"
-                      aria-label="Search user"
+                      id="linkInput"
+                      aria-label="Link Input"
                       placeholder="Link"
                       className="task-resouces-input"
-                      data-tip="Add a link"
                       onChange={e => setLink(e.target.value)}
                       value={link}
                     />
                     <button
-                      className="task-resouces-btn"
                       type="button"
-                      data-tip="Add Link"
+                      className="task-resouces-btn"
+                      aria-label="Add Link"
                       onClick={addLink}
                     >
-                      <i className={`fa fa-plus ${fontColor}`} aria-hidden="true" />
-                    </button> 
+                      Add Link
+                    </button>
                   </div>
                   <div>
-                    {links.map((link, i) =>
-                      link.length > 1 ? (
-                        <div key={i}>
-                          <i className="fa fa-trash-o remove-link" aria-hidden="true" data-tip='delete' onClick={() => removeLink(i)}  />
-                          <a href={link} className="task-link" target="_blank" rel="noreferrer">
-                            {link}
-                          </a>
-                        </div>
-                      ) : null,
-                    )}
+                    {links.map((link, i) => (
+                      <div key={i} className="link-item">
+                        <a href={link} className="task-link" target="_blank" rel="noreferrer">
+                          {link}
+                        </a>
+                        <button
+                          type="button"
+                          aria-label={`Delete link ${link}`}
+                          onClick={() => removeLink(i)}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    ))}
                   </div>
                 </span>
               </div>
+
               <div className="d-flex border align-items-center">
-                <span  className= {`add_new_task_form-label ${fontColor}`}>Category</span>
-                <span  className="add_new_task_form-input_area">
-                  <select value={category} onChange={e => setCategory(e.target.value)}>
+                <label htmlFor="category-select" className={`add_new_task_form-label ${fontColor}`}>
+                  Category
+                </label>
+                <span className="add_new_task_form-input_area">
+                  <select
+                    id="category-select"
+                    value={category}
+                    onChange={e => setCategory(e.target.value)}
+                    aria-label="Category"
+                  >
                     {categoryOptions.map(cla => (
                       <option value={cla.value} key={cla.value}>
                         {cla.label}
@@ -653,9 +712,9 @@ function AddTaskModal(props) {
                   </select>
                 </span>
               </div>
-              <div >
-                <div scope="col" colSpan="2" className={`border p-1 ${fontColor}`} >
-                  Why this Task is Important
+              <div>
+                <div className={`border p-1 ${fontColor}`} aria-labelledby="why-task-label">
+                  <h4 id="why-task-label">Why this Task is Important</h4>
                   <Editor
                     tinymceScriptSrc="/tinymce/tinymce.min.js"
                     licenseKey="gpl"
@@ -668,8 +727,8 @@ function AddTaskModal(props) {
                 </div>
               </div>
               <div>
-                <div scope="col" colSpan="2" className={`border p-1 ${fontColor}`}>
-                  Design Intent
+                <div className={`border p-1 ${fontColor}`} aria-labelledby="design-intent-label">
+                  <h4 id="design-intent-label">Design Intent</h4>
                   <Editor
                     tinymceScriptSrc="/tinymce/tinymce.min.js"
                     licenseKey="gpl"
@@ -682,8 +741,8 @@ function AddTaskModal(props) {
                 </div>
               </div>
               <div>
-                <div scope="col" colSpan="2" className={`border p-1 ${fontColor}`}> 
-                  Endstate
+                <div className={`border p-1 ${fontColor}`} aria-labelledby="endstate-label">
+                  <h4 id="endstate-label">Endstate</h4>
                   <Editor
                     tinymceScriptSrc="/tinymce/tinymce.min.js"
                     licenseKey="gpl"
@@ -695,8 +754,11 @@ function AddTaskModal(props) {
                   />
                 </div>
               </div>
+
               <div className="d-flex border">
-                <span scope="col" className={`form-date p-1 ${fontColor}`}>Start Date</span>
+                <span scope="col" className={`form-date p-1 ${fontColor}`}>
+                  Start Date
+                </span>
                 <span scope="col" className="border-left p-1">
                   <div>
                     <DayPickerInput
@@ -706,49 +768,72 @@ function AddTaskModal(props) {
                       onDayChange={(day, mod, input) => changeDateStart(input.state.value)}
                       value={startedDate}
                     />
-                    <div className="warning">
-                      {startDateError ? START_DATE_ERROR_MESSAGE : ''}
-                    </div>
+                    <div className="warning">{startDateError ? START_DATE_ERROR_MESSAGE : ''}</div>
                   </div>
                 </span>
               </div>
               <div className="d-flex border align-items-center">
-                <span scope="col" className={`form-date p-1 ${fontColor}`}>End Date</span>
-                <span scope="col" className='border-left p-1'>
+                <label
+                  htmlFor="end-date-input"
+                  className={`form-date p-1 ${fontColor}`}
+                  scope="col"
+                >
+                  End Date
+                </label>
+                <span scope="col" className="border-left p-1">
                   <DayPickerInput
+                    id="end-date-input" // Add id to associate the label
                     format={FORMAT}
                     formatDate={formatDate}
                     placeholder={`${dateFnsFormat(new Date(), FORMAT)}`}
                     onDayChange={(day, mod, input) => changeDateEnd(input.state.value)}
                     value={dueDate}
+                    inputProps={{ 'aria-label': 'End Date' }} // Add aria-label for accessibility
                   />
-                  <div className="warning">
-                    {endDateError ? END_DATE_ERROR_MESSAGE : ''}
-                  </div>
+                  <div className="warning">{endDateError ? END_DATE_ERROR_MESSAGE : ''}</div>
                 </span>
               </div>
             </div>
           </div>
         </ModalBody>
         <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-          <Button color="primary" onClick={addNewTask} disabled={taskName === '' || hoursWarning || isLoading || startDateError || endDateError} style={darkMode ? boxStyleDark : boxStyle}>
-            {isLoading ? "Adding Task..." : "Save"}
+          <Button
+            color="primary"
+            onClick={addNewTask}
+            disabled={
+              taskName === '' || hoursWarning || isLoading || startDateError || endDateError || hasNegativeHours
+            }
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
+            {isLoading ? 'Adding Task...' : 'Save'}
           </Button>
         </ModalFooter>
       </Modal>
-      <Button color="primary" className="controlBtn" size="sm" onClick={openModal} style={darkMode ? boxStyleDark : boxStyle}>
+      <Button
+        color="primary"
+        className="controlBtn"
+        size="sm"
+        onClick={openModal}
+        style={darkMode ? boxStyleDark : boxStyle}
+      >
         Add Task
       </Button>
     </>
   );
 }
 
-const mapStateToProps = state => ({ 
+const mapStateToProps = state => ({
   tasks: state.tasks.taskItems,
   copiedTask: state.tasks.copiedTask,
   allMembers: state.projectMembers.members,
   allProjects: state.allProjects,
   error: state.tasks.error,
   darkMode: state.theme.darkMode,
- });
-export default connect(mapStateToProps, { addNewTask })(AddTaskModal);
+});
+
+const mapDispatchToProps = {
+  addNewTask,
+  fetchAllMembers, 
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(AddTaskModal);
