@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import TeamMemberTask from 'components/TeamMemberTasks/TeamMemberTask';
-import { authMock, rolesMock, userProfileMock } from '../../../__tests__/mockStates.js';
+import { authMock, rolesMock, userProfileMock, themeMock } from '../../../__tests__/mockStates.js';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
 import { MemoryRouter } from 'react-router-dom';
@@ -47,6 +47,7 @@ const store = mockStore({
   auth: authMock,
   userProfile: userProfileMock,
   role: rolesMock.role,
+  theme: themeMock,
 });
 
 const handleOpenTaskNotificationModal = jest.fn();

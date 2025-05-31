@@ -1,20 +1,11 @@
 //  Necessary permission(s) to access a route. Only one in the list is required.
 // Route : Permissions
-export const RoutePermissions = {
-  reports: 'getReports',
-  weeklySummariesReport: 'getWeeklySummaries',
-  userManagement: [
-    'getUserProfiles',
-    'postUserProfile',
-    'deleteUserProfile',
-    'changeUserStatus'
-  ],
-  badgeManagement: [
-    'seeBadges',
-    'createBadges',
-    'updateBadges',
-    'deleteBadges'
-  ],
+const RoutePermissions = {
+  reports: ['getReports'],
+  weeklySummariesReport: ['getWeeklySummaries'],
+  weeklyVolunteerSummary: ['getWeeklyVolunteerSummary'],
+  userManagement: ['getUserProfiles', 'postUserProfile', 'deleteUserProfile', 'changeUserStatus'],
+  badgeManagement: ['seeBadges', 'createBadges', 'updateBadges', 'deleteBadges', 'assignBadges'],
   projects: [
     'postProject',
     'deleteProject',
@@ -25,20 +16,25 @@ export const RoutePermissions = {
     'deleteWbs',
     'postTask',
     'updateTask',
-    'deleteTask'
+    'deleteTask',
   ],
-  teams: [
-    'postTeam',
-    'putTeam',
-    'deleteTeam',
-    'assignTeamToUsers'
+  teams: ['postTeam', 'putTeam', 'deleteTeam', 'assignTeamToUsers'],
+  permissionsManagement: ['postRole', 'putRole', 'deleteRole'],
+  userPermissionsManagement: ['putUserProfilePermissions'],
+  inventoryProject: [''],
+  inventoryProjectWbs: [''],
+  workBreakdownStructure: [
+    'postWbs',
+    'deleteWbs',
+    'postTask',
+    'updateTask',
+    'deleteTask',
+    'resolveTask',
+    'putReviewStatus',
+    'suggestTask',
   ],
-  permissionsManagement: [
-    'postRole',
-    'putRole',
-    'deleteRole'
-  ],
-  userPermissionsManagement: 'putUserProfilePermissions',
-  inventoryProject: '',
-  inventoryProjectWbs: '',
+  announcements: ['sendEmails'],
+  faq: [''],
+  faqManagement: ['manageFAQs'],
 };
+export default RoutePermissions;

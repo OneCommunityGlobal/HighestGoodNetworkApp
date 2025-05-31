@@ -1,9 +1,9 @@
 import React from 'react';
 import * as d3 from 'd3/dist/d3.min';
 import { Button } from 'react-bootstrap';
-import { boxStyle } from '../../styles';
+import { boxStyle, boxStyleDark } from '../../styles';
 
-function TimeEntriesViz({ timeEntries, fromDate, toDate }) {
+function TimeEntriesViz({ timeEntries, fromDate, toDate, darkMode }) {
   const [show, setShow] = React.useState(false);
 
   React.useEffect(() => {
@@ -257,10 +257,10 @@ function TimeEntriesViz({ timeEntries, fromDate, toDate }) {
 
   return (
     <div>
-      <Button onClick={() => setShow(!show)} aria-expanded={show} style={boxStyle}>
+      <Button onClick={() => setShow(!show)} aria-expanded={show} style={darkMode ? boxStyleDark : boxStyle}>
         {show ? 'Hide Time Entries Graph' : 'Show Time Entries Graph'}
       </Button>
-      <div id="tlplot" />
+      <div id="tlplot" className={`${darkMode ? 'bg-light mt-2' : ''}`}/>
     </div>
   );
 }

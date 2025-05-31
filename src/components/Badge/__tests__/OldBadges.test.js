@@ -39,7 +39,9 @@ describe('Old Badges component', () => {
     render(<OldBadges personalBestMaxHrs={25} badges={badges} />);
   });
   it('check tool tip of Badges Earned Before Last Week', async () => {
-    const { container } = render(<OldBadges personalBestMaxHrs={25} badges={badges} />);
+    const { container } = render(
+      <OldBadges personalBestMaxHrs={25} badges={badges} darkMode={true} />,
+    );
     const toolTipElement = container.querySelector('.fa.fa-info-circle');
     fireEvent.mouseEnter(toolTipElement);
     await waitFor(() => {
@@ -89,8 +91,7 @@ describe('Old Badges component', () => {
     });
   });
   it('check Badges Earned Before Last Week heading', () => {
-    render(<OldBadges personalBestMaxHrs={10} badges={badges} />);
+    render(<OldBadges personalBestMaxHrs={10} badges={badges} darkMode={true} />);
     expect(screen.queryByText('Badges Earned Before Last Week')).toBeInTheDocument();
   });
-  
 });

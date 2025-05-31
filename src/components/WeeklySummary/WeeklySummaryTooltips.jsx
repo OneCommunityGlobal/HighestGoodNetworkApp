@@ -10,6 +10,7 @@ function WeeklySummaryContentTooltip({ tabId }) {
   return (
     <>
       <span id="summaryContentTooltip" data-testid="summary-content-tooltip-icon">
+        &nbsp;
         <FontAwesomeIcon icon={faInfoCircle} data-testid={`summary-content-tooltip-${tabId}`} />
       </span>
       <Tooltip
@@ -32,10 +33,10 @@ function WeeklySummaryContentTooltip({ tabId }) {
         <a href="https://www.onecommunityglobal.org/one-community-blog/">
           weekly progress updates blog.
         </a>
-        &nbsp; When writing your weekly summary, you should
-        <u>write it in 3rd person</u>
-        and include as much detail as possible about what you did for the week. Minimum length for a
-        weekly summary is 50 words and the app won’t allow you to submit one shorter than this.
+        &nbsp; When writing your weekly summary, you should&nbsp;
+        <u>write it in 3rd person</u>&nbsp; and include the specifics of what you did for the week.
+        Please be detailed. Minimum length for a weekly summary is 50 words and the app won’t allow
+        you to submit one shorter than this.
         <br />
         <br />
         Here’s an example of how to write your weekly summary in 3rd person:
@@ -56,6 +57,7 @@ function MediaURLTooltip() {
   return (
     <>
       <span id="mediaURLTooltip" data-testid="mediaurl-tooltip-icon">
+        &nbsp;
         <FontAwesomeIcon icon={faInfoCircle} data-testid="mediaurl-tooltip" />
       </span>
       <Tooltip
@@ -69,31 +71,22 @@ function MediaURLTooltip() {
         data-testid="mediaurl-tooltip-comp"
       >
         You are required to submit screenshots of your work completed each week. You need to submit
-        a minimum of 4 pictures (6-10 are better) either at the bottom of your Google Doc or in your
-        shared DropBox (if you’ve been added to one). If adding to DropBox, put them in a folder
-        with your name on it and in a new folder within that folder with the week labeled as “Week
-        1, 2, etc.”
-        <br />
-        <br />
-        Add the link to whichever you are using in the Link field. The app will remember whatever
-        you put there and once saved, it can only be changed on the profile.
+        a minimum of 4 pictures (6-10 are better) in your shared DropBox (the link you were invited
+        to by email). When adding to DropBox, they should be in a folder with your name on it and in
+        a new folder within that folder with the week labeled as “Week 1, 2, etc.”
         <br />
         <br />
         Pictures should cover the details of your work completed for the week: written content,
         mockups, designs, materials researched, etc. They are used for reviewing your work and
-        crediting you in the&nbsp;
+        crediting you in the{' '}
         <a href="https://www.onecommunityglobal.org/one-community-blog/">weekly progress updates</a>
-        . We’ll remove each previous week’s pictures (or folder and archive it) when your summary
-        and pictures have been reviewed and passed along to the team that creates the progress
-        updates.
+        .
         <br />
         <br />
         Each Sunday/Monday after your manager reviews everything, they’ll add any questions or
-        feedback they have at the bottom of your Google Doc or using DropBox comments. If this is
-        done on your Google Doc, we’ll always be sure to also comment on them so you know to read
-        and reply to what has been written.
-        <br />
-        <br />
+        feedback they have to your Google Doc, using DropBox comments, on Slack, etc. If anything is
+        written on your Google Doc, we’ll always be sure to also comment on the text so you know to
+        read and reply to what has been written.
       </Tooltip>
     </>
   );

@@ -1,4 +1,4 @@
-export const badgeTypes = [
+const badgeTypes = [
   'No Infringement Streak',
   'Minimum Hours Multiple',
   'Personal Max',
@@ -7,3 +7,5 @@ export const badgeTypes = [
   'Lead a team of X+',
   'Total Hrs in Category',
 ];
+
+export default badgeTypes;

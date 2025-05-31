@@ -1,3 +1,7 @@
 .scrollbar::-webkit-scrollbar {
   display: none;
 }
+.scrollable-menu {
+  max-height: 200px;
+  overflow-y: auto;
+}

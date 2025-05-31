@@ -16,6 +16,8 @@ function UserLoginPrivileges({
   selectedTeams,
   selectedTeamsWeeklyEffort,
   allTeamsMembers,
+  darkMode,
+  teamDataLoading
 }) {
   // team
   let teamWeeklyCommittedHours = 0;
@@ -99,6 +101,8 @@ function UserLoginPrivileges({
         teamWeeklyCommittedHours={teamWeeklyCommittedHours}
         totalTeamWeeklyWorkedHours={totalTeamWeeklyWorkedHours}
         teamTotalBlueSquares={teamTotalBlueSquares}
+        darkMode={darkMode}
+        teamDataLoading ={teamDataLoading}
       />
       {/* Two cards with pie charts with data */}
       <div
@@ -108,12 +112,13 @@ function UserLoginPrivileges({
           gap: '16px',
         }}
       >
-        <ReportPage.ReportBlock className="team-chart-container">
+        <ReportPage.ReportBlock className="team-chart-container" darkMode={darkMode}>
           <TeamReportCharts
             title="Breakdown of Weekly Hours So Far This Week"
             pieChartId="chart1"
             teamWeeklyCommittedHours={teamWeeklyCommittedHours}
             totalTeamWeeklyWorkedHours={totalTeamWeeklyWorkedHours}
+            darkMode={darkMode}
           />
         </ReportPage.ReportBlock>
       </div>
@@ -121,6 +126,8 @@ function UserLoginPrivileges({
         title="Selected Teams"
         selectedTeamsTotalValues={selectedTeamsTotalValues}
         selectedTeamsWeeklyEffort={selectedTeamsWeeklyEffort}
+        darkMode={darkMode}
+        teamDataLoading ={teamDataLoading}
       />
       {/* Two cards with pie charts with data */}
       <div
@@ -130,19 +137,21 @@ function UserLoginPrivileges({
           gap: '16px',
         }}
       >
-        <ReportPage.ReportBlock className="team-chart-container">
+        <ReportPage.ReportBlock className="team-chart-container" darkMode={darkMode}>
           <TeamsReportCharts
             title="Weekly Commited Hours"
             pieChartId="chart2"
             selectedTeamsData={selectedTeamsData}
+            darkMode={darkMode}
           />
         </ReportPage.ReportBlock>
-        <ReportPage.ReportBlock className="team-chart-container">
+        <ReportPage.ReportBlock className="team-chart-container" darkMode={darkMode}>
           <TeamsReportCharts
             title="Hours Worked In Current Week"
             pieChartId="chart3"
             selectedTeamsData={selectedTeamsData}
             selectedTeamsWeeklyEffort={selectedTeamsWeeklyEffort}
+            darkMode={darkMode}
           />
         </ReportPage.ReportBlock>
       </div>

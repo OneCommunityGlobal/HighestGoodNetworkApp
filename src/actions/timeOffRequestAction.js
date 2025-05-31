@@ -1,5 +1,7 @@
+// eslint-disable-next-line import/no-unresolved
 import httpService from 'services/httpService';
-
+import { toast } from 'react-toastify';
+import moment from 'moment';
 import {
   FETCH_TIME_OFF_REQUESTS_SUCCESS,
   FETCH_TIME_OFF_REQUESTS_FAILURE,
@@ -12,7 +14,6 @@ import {
   TIME_OFF_REQUEST_DETAIL_MODAL_CLOSE,
 } from '../constants/timeOffRequestConstants';
 import { ENDPOINTS } from '../utils/URL';
-import moment from 'moment';
 import 'moment-timezone';
 
 /**
@@ -63,63 +64,6 @@ export const hideTimeOffRequestModal = () => ({
   type: TIME_OFF_REQUEST_DETAIL_MODAL_CLOSE,
 });
 
-// Thunk Function
-export const getAllTimeOffRequests = () => async dispatch => {
-  try {
-    const response = await httpService.get(ENDPOINTS.GET_TIME_OFF_REQUESTS());
-    const requests = response.data;
-    dispatch(fetchTimeOffRequestsSuccess(requests));
-    const keys = Object.keys(requests);
-    let onVacation = {};
-    let goingOnVacation = {};
-    for (const key of keys) {
-      const arrayOfRequests = requests[key];
-      const isUserOff = isUserOnVacation(arrayOfRequests);
-      const isUserGoingOff = isUserGoingOnVacation(arrayOfRequests);
-      if (isUserOff) {
-        onVacation = { ...onVacation, [key]: { ...isUserOff } };
-      } else if (isUserGoingOff) {
-        goingOnVacation = { ...goingOnVacation, [key]: { ...isUserGoingOff } };
-      }
-    }
-    dispatch(addIsOnTimeOffRequests(onVacation));
-    dispatch(addGoingOnTimeOffRequests(goingOnVacation));
-  } catch (error) {
-    dispatch(fetchTimeOffRequestsFailure(error.message));
-  }
-};
-
-export const addTimeOffRequestThunk = request => async dispatch => {
-  try {
-    const response = await httpService.post(ENDPOINTS.ADD_TIME_OFF_REQUEST(), request);
-    const AddedRequest = response.data;
-    dispatch(addTimeOffRequest(AddedRequest));
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-export const updateTimeOffRequestThunk = (id, data) => async dispatch => {
-  // data Should include duration, startingDate and reason
-  try {
-    const response = await httpService.post(ENDPOINTS.UPDATE_TIME_OFF_REQUEST(id), data);
-    const updatedRequest = response.data;
-    dispatch(updateTimeOffRequest(updatedRequest));
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-export const deleteTimeOffRequestThunk = id => async dispatch => {
-  try {
-    const response = await httpService.delete(ENDPOINTS.DELETE_TIME_OFF_REQUEST(id));
-    const deletedRequest = response.data;
-    dispatch(deleteTimeOffRequest(deletedRequest));
-  } catch (error) {
-    console.log(error);
-  }
-};
-
 const isTimeOffRequestIncludeCurrentWeek = request => {
   const { startingDate, endingDate } = request;
 
@@ -128,8 +72,13 @@ const isTimeOffRequestIncludeCurrentWeek = request => {
   const requestStartingDate = moment(startingDate);
   const requestEndingDate = moment(endingDate);
 
-  const currentWeekStart = moment().startOf('week').add(1, 'second');
-  const currentWeekEnd = moment().endOf('week').subtract(1, 'second');
+  const currentWeekStart = moment()
+    .startOf('week')
+    .add(1, 'second');
+  const currentWeekEnd = moment()
+    .endOf('week')
+    .subtract(1, 'day')
+    .subtract(1, 'second');
 
   // Check if the current week falls within the date range of the request
   if (
@@ -144,13 +93,7 @@ const isTimeOffRequestIncludeCurrentWeek = request => {
 
 const isUserOnVacation = requests => {
   moment.tz.setDefault('America/Los_Angeles');
-
-  for (const request of requests) {
-    if (isTimeOffRequestIncludeCurrentWeek(request)) {
-      return request;
-    }
-  }
-  return null;
+  return requests.find(request => isTimeOffRequestIncludeCurrentWeek(request)) || null;
 };
 
 const isUserGoingOnVacation = requests => {
@@ -167,4 +110,61 @@ const isUserGoingOnVacation = requests => {
   });
 
   return userGoingOnVacation || null;
+};
+
+// Thunk Function
+export const getAllTimeOffRequests = () => async dispatch => {
+  try {
+    const response = await httpService.get(ENDPOINTS.GET_TIME_OFF_REQUESTS());
+    const requests = response.data;
+    dispatch(fetchTimeOffRequestsSuccess(requests));
+    const keys = Object.keys(requests);
+    let onVacation = {};
+    let goingOnVacation = {};
+    keys.forEach(key => {
+      const arrayOfRequests = requests[key];
+      const isUserOff = isUserOnVacation(arrayOfRequests);
+      const isUserGoingOff = isUserGoingOnVacation(arrayOfRequests);
+      if (isUserOff) {
+        onVacation = { ...onVacation, [key]: { ...isUserOff } };
+      } else if (isUserGoingOff) {
+        goingOnVacation = { ...goingOnVacation, [key]: { ...isUserGoingOff } };
+      }
+    });
+    dispatch(addIsOnTimeOffRequests(onVacation));
+    dispatch(addGoingOnTimeOffRequests(goingOnVacation));
+  } catch (error) {
+    dispatch(fetchTimeOffRequestsFailure(error.message));
+  }
+};
+
+export const addTimeOffRequestThunk = request => async dispatch => {
+  try {
+    const response = await httpService.post(ENDPOINTS.ADD_TIME_OFF_REQUEST(), request);
+    const AddedRequest = response.data;
+    dispatch(addTimeOffRequest(AddedRequest));
+  } catch (error) {
+    toast.info(error);
+  }
+};
+
+export const updateTimeOffRequestThunk = (id, data) => async dispatch => {
+  // data Should include duration, startingDate and reason
+  try {
+    const response = await httpService.post(ENDPOINTS.UPDATE_TIME_OFF_REQUEST(id), data);
+    const updatedRequest = response.data;
+    dispatch(updateTimeOffRequest(updatedRequest));
+  } catch (error) {
+    toast.info(error);
+  }
+};
+
+export const deleteTimeOffRequestThunk = id => async dispatch => {
+  try {
+    const response = await httpService.delete(ENDPOINTS.DELETE_TIME_OFF_REQUEST(id));
+    const deletedRequest = response.data;
+    dispatch(deleteTimeOffRequest(deletedRequest));
+  } catch (error) {
+    toast.info(error);
+  }
 };

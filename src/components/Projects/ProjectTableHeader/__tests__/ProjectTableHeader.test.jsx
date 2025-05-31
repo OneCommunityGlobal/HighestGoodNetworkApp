@@ -60,7 +60,7 @@ describe('ProjectTableHeader Component', () => {
   });
 
   // Test case to check if the delete column is shown for users with delete permission
-  it('shows delete column for users with delete permission', () => {
+  it('shows archive column for users with delete permission', () => {
     const stateWithDeletePermission = {
       ...sampleProps,
       userProfile: {
@@ -75,7 +75,7 @@ describe('ProjectTableHeader Component', () => {
     const hasPermission = jest.fn((a) => true)
     stateWithDeletePermission.hasPermission = hasPermission;
     const { getByText } = renderProjectTableHeader(stateWithDeletePermission);
-    expect(getByText('Delete')).toBeInTheDocument();
+    expect(getByText('Archive')).toBeInTheDocument();
   });
 
   // Test case to check if the delete column is not shown for users without delete permission
