@@ -1,8 +1,10 @@
 import './ActivityAgenda.css';
+import { useSelector } from 'react-redux';
 import ActivityImg from '../../../assets/images/yoga-img.png';
 
 function ActivityAgenda() {
-  // Data
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   const eventData = {
     activityName: 'Yoga Session',
     description:
@@ -16,19 +18,21 @@ function ActivityAgenda() {
   };
 
   return (
-    <div className="container">
-      <div className="image">
-        <img src={eventData.image} alt="Activity" />
-      </div>
-      <div className="content">
-        <h1>{eventData.activityName}</h1>
-        <p>{eventData.description}</p>
-        <h1>Schedule of the day</h1>
-        {eventData.schedule.map(item => (
-          <p key={`${item.time}-${item.activity}`}>
-            {item.time} - {item.activity}
-          </p>
-        ))}
+    <div className={`activity-agenda-page ${darkMode ? 'activity-agenda-dark-mode' : ''}`}>
+      <div className="activity-agenda-container">
+        <div className="activity-agenda-image">
+          <img src={eventData.image} alt="Activity" />
+        </div>
+        <div className="activity-agenda-content">
+          <h1>{eventData.activityName}</h1>
+          <p>{eventData.description}</p>
+          <h1>Schedule of the day</h1>
+          {eventData.schedule.map(item => (
+            <p key={`${item.time}-${item.activity}`}>
+              {item.time} - {item.activity}
+            </p>
+          ))}
+        </div>
       </div>
     </div>
   );
