@@ -33,20 +33,13 @@ function ToolsAvailabilityPage() {
     fetchProjects();
   }, []);
 
-  const projectOptions = [
-    { value: 'all', label: 'All Projects' },
-    ...projects.map(project => ({
-      value: project.projectId,
-      label: project.projectId,
-    })),
-  ];
+  const projectOptions = projects.map(project => ({
+    value: project.projectId,
+    label: project.projectId,
+  }));
 
   const handleProjectChange = selectedOption => {
-    if (selectedOption && selectedOption.value === 'all') {
-      setSelectedProject(null);
-    } else {
-      setSelectedProject(selectedOption);
-    }
+    setSelectedProject(selectedOption);
   };
 
   const handleStartDateChange = e => {
@@ -77,10 +70,11 @@ function ToolsAvailabilityPage() {
                 id="project-select"
                 className="project-select"
                 classNamePrefix="select"
-                value={selectedProject || projectOptions[0]}
+                value={selectedProject}
                 onChange={handleProjectChange}
                 options={projectOptions}
-                placeholder="Select a project ID"
+                placeholder="Select a project ID to view data"
+                isClearable={false}
                 isDisabled={projects.length === 0}
               />
             )}

@@ -363,6 +363,30 @@ function ToolsHorizontalBarChart({ darkMode, isFullPage = false, projectId, star
 
       {loading ? (
         <div className="tools-chart-loading">Loading tool availability data...</div>
+      ) : !projectId ? (
+        // Show message when no project is selected in full page view
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: '200px',
+            width: '100%',
+            textAlign: 'center',
+            color: darkMode ? '#e0e0e0' : '#555',
+            backgroundColor: darkMode ? '#2c2c2c' : '#f8f8f8',
+            borderRadius: '8px',
+            padding: '20px',
+            marginTop: '40px',
+          }}
+        >
+          <div style={{ fontSize: '36px', marginBottom: '15px' }}>📊</div>
+          <h4 style={{ margin: '0 0 10px 0' }}>Please Select a Project ID</h4>
+          <p style={{ margin: '0', fontSize: '14px' }}>
+            Tools availability data will be displayed once you select a specific project.
+          </p>
+        </div>
       ) : data.length > 0 ? (
         <div style={{ width: '100%', height: 'calc(100% - 70px)', position: 'relative' }}>
           <ResponsiveContainer width="100%" height={600}>
