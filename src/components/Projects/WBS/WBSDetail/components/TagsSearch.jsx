@@ -48,7 +48,7 @@ function TagsSearch(props) {
   };
 
   const filteredMembers = useMemo(() => {
-    console.log('Filtering members:', { searchWord, membersCount: members?.length, isFocused });
+    // console.log('Filtering members:', { searchWord, membersCount: members?.length, isFocused });
     
     const resourceNames = new Set(resourceItems.map(item => item.name.toLowerCase()));
 
