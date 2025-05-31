@@ -31,6 +31,9 @@ import NotFoundPage from './components/NotFound/NotFoundPage';
 import { EmailSender } from './components/common/EmailSender/EmailSender';
 import Collaboration from './components/Collaboration';
 
+import WeeklySummaryPage from './components/VolunteerweeklysummaryBBC/WeeklySummaryPage'; // 测试用 后续要删除
+
+
 // LB Dashboard
 import LBRegister from './components/LBDashboard/Auth/Register';
 import LBLogin from './components/LBDashboard/Auth/Login';
@@ -153,6 +156,9 @@ export default (
       <AutoUpdate />
       <ToastContainer />
       <Switch>
+        {/* 测试用，后续要删除 */}
+        <ProtectedRoute path="/weekly-summary" exact component={WeeklySummaryPage} />
+
         <ProtectedRoute path="/dashboard" exact component={Dashboard} />
         <ProtectedRoute path="/dashboard/:userId" exact component={Dashboard} />
         <ProtectedRoute path="/project/members/:projectId" fallback component={Members} />
