@@ -14,7 +14,8 @@ function JobCategoryCCModal({ categories, onClose, darkMode, onRefresh }) {
     if (!email) {
       toast.error('Please enter an email.');
       return;
-    } else if (filter === '') {
+    }
+    if (filter === '') {
       toast.error('Please select a category.');
       return;
     }
@@ -36,7 +37,6 @@ function JobCategoryCCModal({ categories, onClose, darkMode, onRefresh }) {
         setEmail('');
         onRefresh(); // Refresh parent data
       } catch (error) {
-        console.log(error.message);
         toast.error('Failed to add email. Please try again.');
       } finally {
         setLoading(false);
@@ -70,8 +70,14 @@ function JobCategoryCCModal({ categories, onClose, darkMode, onRefresh }) {
           <FormGroup>
             <Label for="filter">Filter by Category</Label>
             <Input type="select" id="filter" value={filter} onChange={handleFilterChange}>
-              <option key="" value=""> Select Category </option>
-              <option key="all" value="all"> All </option>
+              <option key="" value="">
+                {' '}
+                Select Category{' '}
+              </option>
+              <option key="all" value="all">
+                {' '}
+                All{' '}
+              </option>
               {categories.map(category => (
                 <option key={category} value={category}>
                   {category}
