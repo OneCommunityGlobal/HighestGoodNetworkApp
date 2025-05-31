@@ -1,183 +1,136 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import DatePicker from 'react-datepicker';
 import Select from 'react-select';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Table, Button, Dropdown, Form, Row, Col, Container } from 'react-bootstrap';
 import './IssuesList.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchBMProjects } from 'actions/bmdashboard/projectActions';
-import { deleteIssue, fetchOpenIssues, updateIssue } from 'actions/bmdashboard/issueChartActions';
+import {
+  fetchOpenIssues,
+  deleteIssue,
+  updateIssue,
+} from '../../../actions/bmdashboard/issueChartActions';
+import { fetchBMProjects } from '../../../actions/bmdashboard/projectActions';
 
-export default function IssueList() {
+export default function IssuesList() {
+  const dispatch = useDispatch();
+  const darkMode = useSelector(state => state.theme.darkMode);
+
+  // Fetch issues and projects from the Redux store
+  const { issues: rawIssues } = useSelector(state => state.bmIssues);
+  const projects = useSelector(state => state.bmProjects);
+
+  // State hooks for filters and edits
   const [tagFilter, setTagFilter] = useState(null);
   const [selectedProjects, setSelectedProjects] = useState([]);
   const [dateRange, setDateRange] = useState([null, null]);
-  const [startDate, endDate] = dateRange;
-  const [issues, setIssues] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [editedName, setEditedName] = useState('');
-  const darkMode = useSelector(state => state.theme.darkMode);
-
   const [dropdownOpenId, setDropdownOpenId] = useState(null);
-  const closeDropdown = () => setDropdownOpenId(null);
 
-  const handleTagClick = tag => {
-    if (tagFilter === tag) {
-      setTagFilter(null);
-      return;
-    }
-    setTagFilter(tag);
-  };
-  const dispatch = useDispatch();
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageGroupStart, setPageGroupStart] = useState(1);
 
-  const { issues: rawIssues } = useSelector(state => state.bmIssues);
-  const projects = useSelector(state => state.bmProjects);
-  const projectMap = Object.fromEntries(projects.map(p => [p._id, p.name]));
+  const [startDate, endDate] = dateRange;
+  const itemsPerPage = 5;
 
+  // Build a map of projectId -> projectName
+  const projectMap = useMemo(() => Object.fromEntries(projects.map(p => [p._id, p.name])), [
+    projects,
+  ]);
+
+  // Format and enrich issue data from the store
+  const mappedIssues = useMemo(() => {
+    if (!rawIssues?.length) return [];
+    return rawIssues.map(issue => {
+      const created = new Date(issue.createdDate);
+      const diffDays = Math.floor((new Date() - created) / (1000 * 60 * 60 * 24));
+      return {
+        id: issue._id,
+        name: issue.issueTitle?.[0] || 'Untitled',
+        tag: issue.tag || '',
+        date: created,
+        project: projectMap[issue.projectId] || 'Unknown Project',
+        openSince: diffDays,
+        cost: issue.cost,
+        person: issue.person,
+      };
+    });
+  }, [rawIssues, projectMap]);
+
+  // Fetch issues and projects when component mounts
   useEffect(() => {
     dispatch(fetchOpenIssues());
     dispatch(fetchBMProjects());
   }, [dispatch]);
 
-  const getDaysSinceCreated = createdDateStr => {
-    const created = new Date(createdDateStr);
-    const now = new Date();
-    const diffTime = now - created; // difference in milliseconds
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)); // convert to days
-    return diffDays;
-  };
-
-  useEffect(() => {
-    if (Array.isArray(rawIssues) && rawIssues.length > 0) {
-      const processed = rawIssues.map(issue => ({
-        id: issue._id,
-        name: issue.issueTitle?.[0] || 'Untitled',
-        tag: issue.tag || '',
-        date: new Date(issue.createdDate.split('T')[0]) || null,
-        project: projectMap[issue.projectId] || 'Unknown Project',
-        openSince: getDaysSinceCreated(issue.createdDate.split('T')[0]),
-        cost: issue.cost,
-        person: issue.person,
-      }));
-      setIssues(processed);
-    }
-  }, [rawIssues]);
-
-  const uniqueProjects = [...new Set(issues.map(issue => issue.project))];
-  const projectOptions = uniqueProjects.map(project => ({
-    label: project,
-    value: project,
-  }));
-
-  const handleRename = issueId => {
-    const issue = issues.find(i => i.id === issueId);
+  // Handler to rename an issue
+  const handleRename = id => {
+    const issue = mappedIssues.find(i => i.id === id);
     if (issue) {
-      setEditingId(issueId);
+      setEditingId(id);
       setEditedName(issue.name);
     }
-    closeDropdown();
+    setDropdownOpenId(null);
   };
 
-  const handleDelete = issueId => {
-    dispatch(deleteIssue(issueId));
-    closeDropdown();
-  };
-
-  const handleCloseIssue = issueId => {
-    dispatch(updateIssue(issueId, { status: 'close' }));
-    closeDropdown();
-  };
-
-  const handleNameChange = e => {
-    setEditedName(e.target.value);
-  };
-
-  const handleReset = () => {
-    setTagFilter(null);
-    setSelectedProjects([]);
-    setDateRange([null, null]);
-  };
-
-  const handleNameSubmit = issueId => {
-    dispatch(updateIssue(issueId, { 'issueTitle.0': editedName }));
+  // Handler to submit the edited issue name
+  const handleNameSubmit = id => {
+    dispatch(updateIssue(id, { 'issueTitle.0': editedName })).then(() =>
+      dispatch(fetchOpenIssues()),
+    );
     setEditingId(null);
     setEditedName('');
   };
 
-  const filteredIssues = issues.filter(issue => {
-    const inDateRange =
-      !startDate || !endDate || (issue.date >= startDate && issue.date <= endDate);
-    return (
-      (!tagFilter || issue.tag === tagFilter) &&
-      (selectedProjects.length === 0 || selectedProjects.includes(issue.project)) &&
-      inDateRange
-    );
-  });
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageGroupStart, setPageGroupStart] = useState(1);
-  const itemsPerPage = 5;
-
-  const totalPages = Math.ceil(filteredIssues.length / itemsPerPage);
-
-  // Slice data for current page
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredIssues.slice(indexOfFirstItem, indexOfLastItem);
-  const handlePageClick = page => {
-    setCurrentPage(page);
-
-    // Shift page group if needed
-    if (page >= pageGroupStart + 5) {
-      setPageGroupStart(pageGroupStart + 5);
-    } else if (page < pageGroupStart) {
-      setPageGroupStart(pageGroupStart - 5);
-    }
+  // Handler to delete an issue
+  const handleDelete = id => {
+    dispatch(deleteIssue(id)).then(() => dispatch(fetchOpenIssues()));
+    setDropdownOpenId(null);
   };
 
-  const renderPageNumbers = () => {
-    const pageNumbers = [];
-    const end = Math.min(pageGroupStart + 4, totalPages);
-    // eslint-disable-next-line no-plusplus
-    for (let i = pageGroupStart; i <= end; i++) {
-      pageNumbers.push(
-        <Button
-          key={i}
-          onClick={() => handlePageClick(i)}
-          variant={currentPage === i ? 'primary' : 'outline-secondary'}
-          className="mx-1"
-        >
-          {i}
-        </Button>,
-      );
-    }
-    return pageNumbers;
+  // Handler to close an issue
+  const handleCloseIssue = id => {
+    dispatch(updateIssue(id, { status: 'close' })).then(() => dispatch(fetchOpenIssues()));
+    setDropdownOpenId(null);
   };
 
-  const formatDate = date => {
-    return date.toISOString().slice(0, 10); // YYYY-MM-DD
-  };
+  // Filter issues based on selected tag, projects, and date range
+  const filtered = useMemo(() => {
+    return mappedIssues.filter(issue => {
+      const inTag = !tagFilter || issue.tag === tagFilter;
+      const inProject = selectedProjects.length === 0 || selectedProjects.includes(issue.project);
+      const inDateRange =
+        !startDate || !endDate || (issue.date >= startDate && issue.date <= endDate);
+      return inTag && inProject && inDateRange;
+    });
+  }, [mappedIssues, tagFilter, selectedProjects, startDate, endDate]);
 
-  const formattedRange =
+  // Calculate the current items for pagination
+  const currentItems = useMemo(() => {
+    const indexOfLast = currentPage * itemsPerPage;
+    return filtered.slice(indexOfLast - itemsPerPage, indexOfLast);
+  }, [filtered, currentPage]);
+
+  const formatDate = date => date?.toISOString().split('T')[0];
+  const dateRangeLabel =
     startDate && endDate ? `${formatDate(startDate)} - ${formatDate(endDate)}` : '';
 
   return (
-    <Container className={`${darkMode ? 'dark-theme' : ''}`} style={{ padding: '20px' }}>
+    <Container className={darkMode ? 'dark-theme' : ''}>
       <h4 className="mb-4">A List of Issues</h4>
-
       <Row className="mb-3 align-items-center">
-        {/* Date Filter */}
         <Col md={4}>
-          <div className="d-flex align-items-center">
+          <div className="datepicker-wrapper">
             <DatePicker
               selectsRange
               startDate={startDate}
               endDate={endDate}
-              onChange={update => setDateRange(update)}
-              isClearable={false} // we'll use our own clear button
+              onChange={setDateRange}
               placeholderText="Filter by Date Range"
-              className="form-control"
-              value={startDate && endDate ? formattedRange : ''}
+              className={`form-control ${darkMode ? 'datepicker-dark' : ''}`}
+              value={dateRangeLabel}
             />
             <Button
               variant="outline-danger"
@@ -189,25 +142,29 @@ export default function IssueList() {
             </Button>
           </div>
         </Col>
-
-        {/* Project Filter */}
         <Col md={4}>
-          <div className="d-flex align-items-center">
-            <Select
-              isMulti
-              options={projectOptions}
-              value={projectOptions.filter(opt => selectedProjects.includes(opt.value))}
-              onChange={selectedOptions =>
-                setSelectedProjects(selectedOptions.map(opt => opt.value))
-              }
-              placeholder="Filter by Projects"
-            />
-          </div>
+          <Select
+            isMulti
+            classNamePrefix="custom-select"
+            className="w-100"
+            options={[...new Set(mappedIssues.map(i => i.project))].map(p => ({
+              label: p,
+              value: p,
+            }))}
+            value={selectedProjects.map(p => ({ label: p, value: p }))}
+            onChange={opts => setSelectedProjects(opts.map(o => o.value))}
+            placeholder="Filter by Projects"
+          />
         </Col>
-
-        {/* Reset All Filters */}
         <Col md={2}>
-          <Button variant="danger" onClick={handleReset}>
+          <Button
+            variant="danger"
+            onClick={() => {
+              setTagFilter(null);
+              setSelectedProjects([]);
+              setDateRange([null, null]);
+            }}
+          >
             Reset All
           </Button>
         </Col>
@@ -218,8 +175,8 @@ export default function IssueList() {
           <tr>
             <th>Issue Name</th>
             <th>Tag</th>
-            <th>Open Since(days)</th>
-            <th>Cost(usd)</th>
+            <th>Open Since (days)</th>
+            <th>Cost (USD)</th>
             <th>Person</th>
             <th>Action</th>
           </tr>
@@ -228,27 +185,26 @@ export default function IssueList() {
           {currentItems.map(issue => (
             <tr key={issue.id}>
               <td>
-                {editingId === issue.id ? (
-                  <div style={{ display: 'flex', gap: '8px' }}>
+                {editingId === issue.id && (
+                  <div className="d-flex gap-2">
                     <Form.Control
                       type="text"
                       value={editedName}
-                      onChange={handleNameChange}
+                      onChange={e => setEditedName(e.target.value)}
                       autoFocus
                     />
                     <Button size="sm" variant="success" onClick={() => handleNameSubmit(issue.id)}>
                       Submit
                     </Button>
                   </div>
-                ) : (
-                  issue.name || 'Unnamed'
                 )}
+                {editingId !== issue.id && issue.name}
               </td>
               <td>
                 <Button
                   variant="outline-primary"
                   size="sm"
-                  onClick={() => handleTagClick(issue.tag)}
+                  onClick={() => setTagFilter(tagFilter === issue.tag ? null : issue.tag)}
                 >
                   {issue.tag}
                 </Button>
@@ -265,27 +221,11 @@ export default function IssueList() {
                     Options
                   </Dropdown.Toggle>
                   <Dropdown.Menu className="dropdown-menu-custom">
-                    <Button
-                      variant="link"
-                      className="dropdown-item"
-                      onClick={() => handleRename(issue.id)}
-                    >
-                      Rename
-                    </Button>
-                    <Button
-                      variant="link"
-                      className="dropdown-item"
-                      onClick={() => handleDelete(issue.id)}
-                    >
-                      Delete
-                    </Button>
-                    <Button
-                      variant="link"
-                      className="dropdown-item"
-                      onClick={() => handleCloseIssue(issue.id)}
-                    >
+                    <Dropdown.Item onClick={() => handleRename(issue.id)}>Rename</Dropdown.Item>
+                    <Dropdown.Item onClick={() => handleDelete(issue.id)}>Delete</Dropdown.Item>
+                    <Dropdown.Item onClick={() => handleCloseIssue(issue.id)}>
                       Close Issue
-                    </Button>
+                    </Dropdown.Item>
                   </Dropdown.Menu>
                 </Dropdown>
               </td>
@@ -293,10 +233,10 @@ export default function IssueList() {
           ))}
         </tbody>
       </Table>
-      <div className="d-flex justify-content-center mt-3">
+
+      <div className="pagination-container">
         <Button
           variant="outline-secondary"
-          className="mx-1"
           onClick={() => {
             if (pageGroupStart > 1) {
               setPageGroupStart(pageGroupStart - 5);
@@ -308,18 +248,29 @@ export default function IssueList() {
           &laquo;
         </Button>
 
-        {renderPageNumbers()}
+        {Array.from(
+          { length: Math.min(5, Math.ceil(filtered.length / itemsPerPage) - pageGroupStart + 1) },
+          (_, i) => (
+            <Button
+              key={i}
+              onClick={() => setCurrentPage(pageGroupStart + i)}
+              variant={currentPage === pageGroupStart + i ? 'primary' : 'outline-secondary'}
+              className="mx-1"
+            >
+              {pageGroupStart + i}
+            </Button>
+          ),
+        )}
 
         <Button
           variant="outline-secondary"
-          className="mx-1"
           onClick={() => {
-            if (pageGroupStart + 5 <= totalPages) {
+            if (pageGroupStart + 5 <= Math.ceil(filtered.length / itemsPerPage)) {
               setPageGroupStart(pageGroupStart + 5);
               setCurrentPage(pageGroupStart + 5);
             }
           }}
-          disabled={pageGroupStart + 5 > totalPages}
+          disabled={pageGroupStart + 5 > Math.ceil(filtered.length / itemsPerPage)}
         >
           &raquo;
         </Button>

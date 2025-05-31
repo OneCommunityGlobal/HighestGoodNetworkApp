@@ -139,3 +139,77 @@
   color: #e0e0e0 !important;
   border: 1px solid #666 !important;
 }
+
+/* Dark background for react-datepicker input */
+.dark-theme .datepicker-dark {
+  background-color: #2b3e59 !important;
+  color: #fff !important;
+  border-color: #6b6767 !important;
+}
+
+.dark-theme .form-control {
+  background-color: #1c2541 !important;
+  color: #e0e0e0 !important;
+  border: 1px solid #666 !important;
+}
+
+/* Light mode for multi select*/
+.custom-select__control {
+  background-color: #fff;
+  color: #000;
+  border-color: #ccc;
+}
+
+.custom-select__multi-value {
+  background-color: #e2e6ea;
+}
+
+.custom-select__multi-value__label {
+  color: #000;
+}
+
+.custom-select__multi-value__remove {
+  color: #000;
+}
+
+.custom-select__multi-value__remove:hover {
+  background-color: #ced4da;
+  color: #fff;
+}
+
+/* Dark mode for multi select*/
+.dark-theme .custom-select__control, .dark-theme .custom-select__menu {
+  background-color: #2b3e59!important;
+  border-color: #666!important;
+  color: #fff!important;
+}
+
+.dark-theme .custom-select__multi-value {
+  background-color: #1c2541!important;
+}
+
+.dark-theme .custom-select__multi-value__label {
+  color: #fff!important;
+}
+
+.dark-theme .custom-select__multi-value__remove {
+  color: #fff!important;
+}
+
+.dark-theme .custom-select__multi-value__remove:hover {
+  background-color: #ff6b6b!important;
+  color: #fff!important;
+}
+
+.dark-theme .custom-select__option {
+  background-color: #2b3e59!important;
+  color: #fff!important;
+}
+
+.dark-theme .custom-select__option--is-focused {
+  background-color: #6c757d!important;
+}
+
+.dark-theme .custom-select__option--is-selected {
+  background-color: #007bff!important;
+}
