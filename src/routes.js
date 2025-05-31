@@ -62,6 +62,7 @@ import UserSkillsProfile from './components/HGNSkillsDashboard/SkillsProfilePage
 import LBProtectedRoute from './components/common/LBDashboard/LBProtectedRoute/LBProtectedRoute';
 import LBHome from './components/LBDashboard/Home/Home';
 import LBLogin from './components/LBDashboard/Login';
+import LBRegister from './components/LBDashboard/Register/LBRegister';
 import LBDashboard from './components/LBDashboard';
 import MasterPlan from './components/LBDashboard/Map/MasterPlan/MasterPlan';
 import ListOveriew from './components/LBDashboard/ListingOverview/ListOverview';
@@ -484,6 +485,7 @@ export default (
         <LBProtectedRoute path="/lbdashboard/listOverview" exact component={ListOveriew} />
         <LBProtectedRoute path="/lbdashboard/masterplan" exact component={MasterPlan} />
         <Route path="/lbdashboard/login" component={LBLogin} />
+        <Route path="/lbdashboard/register" component={LBRegister} />
         <Route // Should be LBProtectedRoute
           path="/lbdashboard/listingshome"
           render={() => (
