@@ -6,7 +6,12 @@ import ReactTooltip from 'react-tooltip';
 import hasPermission from 'utils/permissions';
 import { boxStyle, boxStyleDark } from 'styles';
 import { getProjectDetail } from 'actions/project';
-import { fetchAllTasks, emptyTaskItems, updateNumList, deleteTask } from '../../../../actions/task';
+import {
+  fetchAllTasks,
+  emptyTaskItems,
+  updateNumList,
+  deleteTask,
+} from '../../../../actions/task';
 import { fetchAllMembers } from '../../../../actions/projectMembers.js';
 import Task from './Task';
 import AddTaskModal from './AddTask/AddTaskModal';
@@ -18,7 +23,7 @@ import { FilterBar } from './FilterBar';
 
 function WBSTasks(props) {
   // const { tasks, fetched, darkMode } = props;
-  const { tasks, fetched, darkMode } = props;
+  const { fetched, darkMode } = props;
 
   const { wbsId } = props.match.params;
   const { projectId } = props.match.params;
@@ -29,7 +34,7 @@ function WBSTasks(props) {
   const [showImport, setShowImport] = useState(false);
   const [filterState, setFilterState] = useState('all');
   const [openAll, setOpenAll] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  // const [isLoading, setIsLoading] = useState(true);
   const [isDeleted, setIsDeleted] = useState(false);
   const [levelOneTasks, setLevelOneTasks] = useState([]);
   const [controllerId, setControllerId] = useState(null);
@@ -37,7 +42,7 @@ function WBSTasks(props) {
   const [copiedTask, setCopiedTask] = useState(null);
   const myRef = useRef(null);
 
-  // const { tasks, isLoading, error, refresh } = useFetchWbsTasks(wbsId);
+  const { tasks, isLoading, error, refresh } = useFetchWbsTasks(wbsId);
 
   useEffect(() => {
     setLevelOneTasks(
@@ -69,21 +74,7 @@ function WBSTasks(props) {
     }
   };
 
-  const load = async () => {
-    setIsLoading(true);
-    const levelList = [0, 1, 2, 3, 4];
-    await Promise.all(levelList.map(level => props.fetchAllTasks(wbsId, level)));
-    setPageLoadTime(Date.now());
-    setIsLoading(false);
-  };
-
-  const refresh = async () => {
-    setIsLoading(true);
-    props.emptyTaskItems();
-    await load();
-    setOpenAll(false);
-    setIsLoading(false);
-  };
+  
 
   const deleteWBSTask = (taskId, mother) => {
     props.deleteTask(taskId, mother);
@@ -91,8 +82,8 @@ function WBSTasks(props) {
   };
 
   /*
-   * -------------------------------- useEffects --------------------------------
-   */
+  * -------------------------------- useEffects -------------------------------- 
+  */
   useEffect(() => {
     const observer = new MutationObserver(ReactTooltip.rebuild);
     const observerOptions = {
@@ -105,31 +96,6 @@ function WBSTasks(props) {
       props.emptyTaskItems();
     };
   }, []);
-
-  useEffect(() => {
-    const initialLoad = async () => {
-      await load();
-      // props.fetchAllMembers(projectId);
-      setShowImport(tasks.length === 0);
-      setIsLoading(false);
-    };
-    initialLoad();
-    props.getProjectDetail(projectId);
-  }, [wbsId, projectId]);
-
-  useEffect(() => {
-    const newLevelOneTasks = tasks.filter(task => task.level === 1);
-    const filteredTasks = filterTasks(newLevelOneTasks, filterState);
-    setShowImport(tasks.length === 0);
-    setLevelOneTasks(filteredTasks);
-  }, [tasks, filterState]);
-
-  useEffect(() => {
-    if (isDeleted) {
-      refresh();
-    }
-    setIsDeleted(false);
-  }, [isDeleted]);
 
   return (
     <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: '100%' }}>
