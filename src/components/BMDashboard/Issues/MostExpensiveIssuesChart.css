@@ -1,3 +1,4 @@
+/* Container for the entire chart */
 .chart-container {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   padding: 10px;
@@ -11,6 +12,7 @@
   flex-direction: column;
 }
 
+/* Chart title styling */
 .chart-title {
   font-size: 1.25rem;
   font-weight: bold;
@@ -19,6 +21,7 @@
   color: #333;
 }
 
+/* Layout for filter controls */
 .filters-container {
   display: flex;
   flex-wrap: wrap;
@@ -27,6 +30,7 @@
   margin-bottom: 1rem;
 }
 
+/* Individual filter group */
 .filter-group {
   position: relative;
   display: flex;
@@ -35,12 +39,14 @@
   min-width: 140px;
 }
 
+/* Label above each filter */
 .filter-group label {
   font-size: 0.85rem;
   color: #666;
   margin-bottom: 4px;
 }
 
+/* Shared styles for select and date input */
 .filter-select,
 .filter-input {
   font-size: 0.9rem;
@@ -54,20 +60,22 @@
   box-sizing: border-box;
 }
 
+/* Focus state for inputs */
 .filter-select:focus,
 .filter-input:focus {
   outline: none;
   border-color: #007bff;
 }
 
+/* Wrapper for the chart canvas */
 .chart-wrapper {
   width: 100%;
   max-height: 400px;
-  overflow-y: auto;
-  overflow-x: auto;
+  overflow: auto;
   box-sizing: border-box;
 }
 
+/* Ensure canvas scales responsively */
 .chart-wrapper canvas {
   width: 100% !important;
   height: auto !important;
@@ -75,7 +83,7 @@
   display: block;
 }
 
-/* Responsive tweaks */
+/* Stack filters on narrow screens */
 @media (max-width: 768px) {
   .filters-container {
     flex-direction: column;
@@ -88,6 +96,7 @@
   }
 }
 
+/* Further adjustments on small phones */
 @media (max-width: 480px) {
   .chart-container {
     padding: 8px;
@@ -106,17 +115,21 @@
   }
 }
 
-/* Dark mode support */
+/* ===== Dark mode ===== */
+
+/* Change card background & shadow */
 .dark-mode .chart-container {
   background-color: var(--card-bg);
   box-shadow: 0 1px 3px var(--card-shadow);
 }
 
+/* Text color in dark mode */
 .dark-mode .chart-title,
 .dark-mode .filter-group label {
   color: var(--text-color);
 }
 
+/* Inputs in dark mode */
 .dark-mode .filter-select,
 .dark-mode .filter-input {
   background-color: var(--section-bg);
@@ -124,12 +137,19 @@
   color: var(--text-color);
 }
 
-/* ✅ Custom Dropdown: Project Checkbox Popup */
+/* Match project-toggle to other inputs */
+.dark-mode .project-dropdown-toggle {
+  background-color: var(--section-bg);
+  border-color: var(--section-title-bg);
+  color: var(--text-color);
+}
+
+/* ===== Project dropdown toggle ===== */
 .project-dropdown-toggle {
   font-size: 0.9rem;
-  padding: 6px 8px;          /* Match .filter-select */
-  height: 32px;              /* Match .filter-select */
-  line-height: 1.2;          /* Added for consistency */
+  padding: 6px 8px;
+  height: 32px;
+  line-height: 1.2;
   border: 1px solid #ccc;
   border-radius: 4px;
   background-color: #fff;
@@ -138,9 +158,10 @@
   color: #333;
   cursor: pointer;
   display: flex;
-  align-items: center;       /* Align text vertically */
+  align-items: center;
 }
 
+/* Popup list styling */
 .project-dropdown-popup {
   position: absolute;
   background-color: #fff;
@@ -155,12 +176,13 @@
   width: 100%;
 }
 
-/* Hide scrollbar but allow scroll */
+/* Hide native scrollbar */
 .project-dropdown-popup::-webkit-scrollbar {
   width: 0;
   background: transparent;
 }
 
+/* Each option in popup */
 .project-dropdown-popup label {
   display: flex;
   align-items: center;
@@ -170,7 +192,7 @@
   cursor: pointer;
 }
 
-/* Optional dark mode for dropdown */
+/* Dark mode for popup items */
 .dark-mode .project-dropdown-popup {
   background-color: var(--section-bg);
   border-color: var(--section-title-bg);
