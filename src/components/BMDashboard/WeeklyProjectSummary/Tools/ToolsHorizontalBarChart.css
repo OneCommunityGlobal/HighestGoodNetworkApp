@@ -275,4 +275,16 @@
 
 .dark-mode .clear-dates-btn:hover {
   background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Tool name label styling */
+.recharts-yAxis .recharts-cartesian-axis-tick-value {
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dark-mode .recharts-yAxis .recharts-cartesian-axis-tick-value {
+  fill: #e0e0e0;
 } 

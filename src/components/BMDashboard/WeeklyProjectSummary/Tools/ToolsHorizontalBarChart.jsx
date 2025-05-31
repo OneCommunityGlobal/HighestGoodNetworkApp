@@ -18,19 +18,79 @@ import './ToolsHorizontalBarChart.css';
 // Empty state data (only used if API fails)
 const emptyData = [];
 
-const CustomTooltip = ({ active, payload }) => {
+// Separate tooltip for card view and full page view
+const CustomTooltip = ({ active, payload, isCardView }) => {
   if (active && payload && payload.length) {
+    if (isCardView) {
+      // Simple, compact tooltip for card view
+      return (
+        <div
+          style={{
+            backgroundColor: 'white',
+            border: '1px solid #ccc',
+            padding: '4px 6px',
+            borderRadius: '2px',
+            fontSize: '10px',
+            boxShadow: '0 1px 2px rgba(0,0,0,0.15)',
+            maxWidth: '120px',
+          }}
+        >
+          <p style={{ margin: '0 0 2px 0', fontWeight: 'bold', fontSize: '10px' }}>
+            {payload[0].payload.name}
+          </p>
+          {payload.map(entry => (
+            <div
+              key={entry.dataKey}
+              style={{ display: 'flex', justifyContent: 'space-between', margin: '1px 0' }}
+            >
+              <span style={{ color: entry.color, fontSize: '9px' }}>
+                {entry.dataKey === 'inUse'
+                  ? 'In Use:'
+                  : entry.dataKey === 'needsReplacement'
+                  ? 'Needs Replace:'
+                  : 'To Receive:'}
+              </span>
+              <span style={{ marginLeft: '4px', fontSize: '9px' }}>{entry.value}</span>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    // Full detailed tooltip for full page view
     return (
-      <div className="tools-chart-tooltip">
-        <p className="tool-name">{payload[0].payload.name}</p>
+      <div
+        className="tools-chart-tooltip"
+        style={{
+          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+          border: '1px solid #ccc',
+          padding: '8px 10px',
+          borderRadius: '4px',
+          fontSize: '12px',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+          maxWidth: '200px',
+        }}
+      >
+        <p style={{ margin: '0 0 5px 0', fontWeight: 'bold' }}>{payload[0].payload.name}</p>
         {payload.map(entry => (
-          <p key={entry.dataKey} className="tool-usage" style={{ color: entry.color }}>
-            {entry.dataKey === 'inUse'
-              ? 'In Use'
-              : entry.dataKey === 'needsReplacement'
-              ? 'Needs to be replaced'
-              : 'Yet to receive'}
-            : {entry.value}
+          <p
+            key={entry.dataKey}
+            style={{
+              color: entry.color,
+              margin: '3px 0',
+              fontSize: '11px',
+              display: 'flex',
+              justifyContent: 'space-between',
+            }}
+          >
+            <span>
+              {entry.dataKey === 'inUse'
+                ? 'In Use'
+                : entry.dataKey === 'needsReplacement'
+                ? 'Needs replacement'
+                : 'Yet to receive'}
+            </span>
+            <span style={{ marginLeft: '10px' }}>{entry.value}</span>
           </p>
         ))}
       </div>
@@ -40,8 +100,14 @@ const CustomTooltip = ({ active, payload }) => {
 };
 
 const CustomLabel = props => {
-  const { x, y, width, value } = props;
+  const { x, y, width, value, isCardView } = props;
+
+  // Don't show any labels in card view
+  if (isCardView) return null;
+
+  // Don't show zero values
   if (value === 0) return null;
+
   return (
     <text
       x={x + width / 2}
@@ -100,12 +166,18 @@ function ToolsHorizontalBarChart({ darkMode, isFullPage = false, projectId, star
           const responseData = response.data;
 
           if (responseData && responseData.length > 0) {
-            // Sort by total quantity
-            const sortedData = [...responseData].sort((a, b) => {
-              const totalA = a.inUse + a.needsReplacement + a.yetToReceive;
-              const totalB = b.inUse + b.needsReplacement + b.yetToReceive;
-              return totalB - totalA;
-            });
+            // Sort by total quantity and ensure tool names are properly formatted
+            const sortedData = [...responseData]
+              .map(item => ({
+                ...item,
+                // Ensure the name property is properly formatted and capitalized
+                name: item.toolName || item.name,
+              }))
+              .sort((a, b) => {
+                const totalA = a.inUse + a.needsReplacement + a.yetToReceive;
+                const totalB = b.inUse + b.needsReplacement + b.yetToReceive;
+                return totalB - totalA;
+              });
             setData(sortedData);
           } else {
             setData(emptyData);
@@ -123,12 +195,20 @@ function ToolsHorizontalBarChart({ darkMode, isFullPage = false, projectId, star
           const responseData = response.data;
 
           if (responseData && responseData.length > 0) {
-            // Sort by total quantity
-            const sortedData = [...responseData].sort((a, b) => {
-              const totalA = a.inUse + a.needsReplacement + a.yetToReceive;
-              const totalB = b.inUse + b.needsReplacement + b.yetToReceive;
-              return totalB - totalA;
-            });
+            // Sort by total quantity and ensure tool names are properly formatted
+            const sortedData = [...responseData]
+              .map(item => ({
+                ...item,
+                // Ensure the name property is properly formatted and capitalized
+                name: item.toolName || item.name,
+              }))
+              .sort((a, b) => {
+                const totalA = a.inUse + a.needsReplacement + a.yetToReceive;
+                const totalB = b.inUse + b.needsReplacement + b.yetToReceive;
+                return totalB - totalA;
+              })
+              // For card view, limit to top 2 tools only
+              .slice(0, 2);
             setData(sortedData);
           } else {
             setData(emptyData);
@@ -156,18 +236,127 @@ function ToolsHorizontalBarChart({ darkMode, isFullPage = false, projectId, star
     }
   };
 
+  // Render a completely simplified chart for card view
+  if (!isFullPage) {
+    return (
+      <div
+        className={`tools-horizontal-chart-container ${darkMode ? 'dark-mode' : ''}`}
+        onClick={handleCardClick}
+        style={{
+          cursor: 'pointer',
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          padding: '0',
+        }}
+      >
+        <h3
+          className="tools-chart-title"
+          style={{
+            margin: '10px 0',
+            textAlign: 'center',
+            width: '100%',
+          }}
+        >
+          Tools by Availability
+        </h3>
+
+        {error && <div className="tools-chart-error">{error}</div>}
+
+        {loading ? (
+          <div className="tools-chart-loading">Loading...</div>
+        ) : data.length > 0 ? (
+          <div
+            style={{
+              height: 'calc(100% - 70px)',
+              width: '100%',
+              position: 'relative',
+            }}
+          >
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                layout="vertical"
+                data={data}
+                margin={{ top: 10, right: 40, left: 40, bottom: 30 }}
+                barSize={16}
+              >
+                <YAxis
+                  type="category"
+                  dataKey="name"
+                  tick={{
+                    fill: darkMode ? '#e0e0e0' : '#333',
+                    fontSize: 11,
+                    textAnchor: 'end',
+                  }}
+                  width={40}
+                  tickMargin={5}
+                  tickFormatter={value => {
+                    return value.length > 12 ? value.substring(0, 10) + '...' : value;
+                  }}
+                  axisLine={false}
+                />
+                <XAxis type="number" hide />
+                <Tooltip content={props => <CustomTooltip {...props} isCardView={true} />} />
+                <Legend
+                  verticalAlign="bottom"
+                  height={25}
+                  iconSize={8}
+                  wrapperStyle={{
+                    fontSize: 10,
+                    paddingTop: 5,
+                    paddingBottom: 0,
+                    margin: '0 auto',
+                    width: '100%',
+                    textAlign: 'center',
+                  }}
+                  align="center"
+                />
+                <Bar dataKey="inUse" stackId="a" fill="#4589FF" name="In Use" />
+                <Bar
+                  dataKey="needsReplacement"
+                  stackId="a"
+                  fill="#FF0000"
+                  name="Needs to be replaced"
+                />
+                <Bar dataKey="yetToReceive" stackId="a" fill="#FFB800" name="Yet to receive" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        ) : (
+          !error &&
+          !loading && (
+            <div className="tools-chart-empty">
+              <p>No data available</p>
+            </div>
+          )
+        )}
+      </div>
+    );
+  }
+
+  // Full page view remains unchanged
   return (
     <div
-      className={`tools-horizontal-chart-container ${darkMode ? 'dark-mode' : ''} ${
-        isFullPage ? 'full-page' : ''
-      }`}
-      onClick={handleCardClick}
-      style={{ cursor: isFullPage ? 'default' : 'pointer' }}
+      className="tools-horizontal-chart-container full-page"
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        width: '100%',
+        height: '100%',
+        padding: '15px',
+      }}
     >
-      <h3 className="tools-chart-title">
-        {isFullPage && projectId
-          ? `Tools by Availability - Project ${projectId}`
-          : 'Tools by Availability'}
+      <h3
+        className="tools-chart-title"
+        style={{
+          margin: '10px 0 20px 0',
+          textAlign: 'center',
+          width: '100%',
+        }}
+      >
+        {projectId ? `Tools by Availability - Project ${projectId}` : 'Tools by Availability'}
       </h3>
 
       {error && <div className="tools-chart-error">{error}</div>}
@@ -175,38 +364,67 @@ function ToolsHorizontalBarChart({ darkMode, isFullPage = false, projectId, star
       {loading ? (
         <div className="tools-chart-loading">Loading tool availability data...</div>
       ) : data.length > 0 ? (
-        <ResponsiveContainer width="100%" height={isFullPage ? 500 : 300}>
-          <BarChart
-            layout="vertical"
-            data={data}
-            margin={
-              isFullPage
-                ? { top: 20, right: 30, left: 100, bottom: 5 }
-                : { top: 20, right: 20, left: 60, bottom: 5 }
-            }
-          >
-            <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-            <XAxis type="number" domain={[0, 'dataMax + 20']} tickCount={6} />
-            <YAxis
-              type="category"
-              dataKey="name"
-              tick={{ fill: darkMode ? '#e0e0e0' : '#333' }}
-              width={isFullPage ? 90 : 60}
-              tickMargin={5}
-            />
-            <Tooltip content={<CustomTooltip />} />
-            <Legend verticalAlign={isFullPage ? 'bottom' : 'top'} height={36} />
-            <Bar dataKey="inUse" stackId="a" fill="#4589FF" name="In Use">
-              <LabelList content={<CustomLabel />} />
-            </Bar>
-            <Bar dataKey="needsReplacement" stackId="a" fill="#FF0000" name="Needs to be replaced">
-              <LabelList content={<CustomLabel />} />
-            </Bar>
-            <Bar dataKey="yetToReceive" stackId="a" fill="#FFB800" name="Yet to receive">
-              <LabelList content={<CustomLabel />} />
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
+        <div style={{ width: '100%', height: 'calc(100% - 70px)', position: 'relative' }}>
+          <ResponsiveContainer width="100%" height={600}>
+            <BarChart
+              layout="vertical"
+              data={data}
+              margin={{ top: 20, right: 60, left: 60, bottom: 40 }}
+              barSize={20}
+            >
+              <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+              <XAxis
+                type="number"
+                domain={[0, dataMax => Math.max(dataMax + 5, 15)]}
+                tickCount={6}
+                padding={{ left: 0, right: 10 }}
+              />
+              <YAxis
+                type="category"
+                dataKey="name"
+                tick={{
+                  fill: darkMode ? '#e0e0e0' : '#333',
+                  fontSize: 12,
+                  textAnchor: 'end',
+                }}
+                width={60}
+                tickMargin={10}
+                tickFormatter={value => {
+                  return value.length > 20 ? value.substring(0, 18) + '...' : value;
+                }}
+              />
+              <Tooltip
+                content={props => <CustomTooltip {...props} isCardView={false} />}
+                cursor={{ fill: 'rgba(200, 200, 200, 0.1)' }}
+              />
+              <Legend
+                verticalAlign="bottom"
+                height={36}
+                align="center"
+                wrapperStyle={{
+                  paddingTop: 15,
+                  margin: '0 auto',
+                  width: '100%',
+                  textAlign: 'center',
+                }}
+              />
+              <Bar dataKey="inUse" stackId="a" fill="#4589FF" name="In Use">
+                <LabelList content={props => <CustomLabel {...props} isCardView={false} />} />
+              </Bar>
+              <Bar
+                dataKey="needsReplacement"
+                stackId="a"
+                fill="#FF0000"
+                name="Needs to be replaced"
+              >
+                <LabelList content={props => <CustomLabel {...props} isCardView={false} />} />
+              </Bar>
+              <Bar dataKey="yetToReceive" stackId="a" fill="#FFB800" name="Yet to receive">
+                <LabelList content={props => <CustomLabel {...props} isCardView={false} />} />
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
       ) : (
         !error &&
         !loading && (
