@@ -335,10 +335,10 @@ function ToolsHorizontalBarChart({ darkMode, isFullPage = false, projectId, star
     );
   }
 
-  // Full page view remains unchanged
+  // Full page view with improved dark mode styling
   return (
     <div
-      className="tools-horizontal-chart-container full-page"
+      className={`tools-horizontal-chart-container full-page ${darkMode ? 'dark-mode' : ''}`}
       style={{
         display: 'flex',
         flexDirection: 'column',
@@ -346,6 +346,8 @@ function ToolsHorizontalBarChart({ darkMode, isFullPage = false, projectId, star
         width: '100%',
         height: '100%',
         padding: '15px',
+        backgroundColor: darkMode ? '#1e2736' : 'white',
+        color: darkMode ? '#e0e0e0' : 'inherit',
       }}
     >
       <h3
@@ -354,6 +356,7 @@ function ToolsHorizontalBarChart({ darkMode, isFullPage = false, projectId, star
           margin: '10px 0 20px 0',
           textAlign: 'center',
           width: '100%',
+          color: darkMode ? '#ffffff' : 'inherit',
         }}
       >
         {projectId ? `Tools by Availability - Project ${projectId}` : 'Tools by Availability'}
@@ -388,20 +391,60 @@ function ToolsHorizontalBarChart({ darkMode, isFullPage = false, projectId, star
           </p>
         </div>
       ) : data.length > 0 ? (
-        <div style={{ width: '100%', height: 'calc(100% - 70px)', position: 'relative' }}>
-          <ResponsiveContainer width="100%" height={600}>
+        <div
+          style={{
+            width: '100%',
+            height: 'calc(100% - 70px)',
+            position: 'relative',
+            backgroundColor: darkMode ? '#1e2736' : 'transparent',
+          }}
+        >
+          <style>
+            {darkMode &&
+              `
+              .recharts-wrapper, .recharts-surface {
+                background-color: #1e2736 !important;
+              }
+              .recharts-cartesian-grid-horizontal line,
+              .recharts-cartesian-grid-vertical line {
+                stroke: #364156 !important;
+              }
+              .recharts-text {
+                fill: #e0e0e0 !important;
+              }
+              .recharts-default-legend {
+                background-color: #1e2736 !important;
+              }
+              .recharts-tooltip-wrapper {
+                background-color: transparent !important;
+              }
+            `}
+          </style>
+          <ResponsiveContainer
+            width="100%"
+            height={600}
+            style={{ backgroundColor: darkMode ? '#1e2736' : 'transparent' }}
+          >
             <BarChart
               layout="vertical"
               data={data}
               margin={{ top: 20, right: 60, left: 60, bottom: 40 }}
-              barSize={20}
+              barSize={32}
+              maxBarSize={40}
+              style={{ backgroundColor: darkMode ? '#1e2736' : 'transparent' }}
             >
-              <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+              <CartesianGrid
+                strokeDasharray="3 3"
+                horizontal={false}
+                stroke={darkMode ? '#364156' : '#ccc'}
+              />
               <XAxis
                 type="number"
                 domain={[0, dataMax => Math.max(dataMax + 5, 15)]}
                 tickCount={6}
                 padding={{ left: 0, right: 10 }}
+                tick={{ fill: darkMode ? '#e0e0e0' : '#333' }}
+                axisLine={{ stroke: darkMode ? '#364156' : '#ccc' }}
               />
               <YAxis
                 type="category"
@@ -416,10 +459,17 @@ function ToolsHorizontalBarChart({ darkMode, isFullPage = false, projectId, star
                 tickFormatter={value => {
                   return value.length > 20 ? value.substring(0, 18) + '...' : value;
                 }}
+                axisLine={{ stroke: darkMode ? '#364156' : '#ccc' }}
               />
               <Tooltip
                 content={props => <CustomTooltip {...props} isCardView={false} />}
-                cursor={{ fill: 'rgba(200, 200, 200, 0.1)' }}
+                cursor={{
+                  fill: darkMode ? 'rgba(100, 120, 160, 0.1)' : 'rgba(200, 200, 200, 0.1)',
+                }}
+                wrapperStyle={{
+                  backgroundColor: darkMode ? '#1e2736' : 'transparent',
+                  zIndex: 1000,
+                }}
               />
               <Legend
                 verticalAlign="bottom"
@@ -430,6 +480,8 @@ function ToolsHorizontalBarChart({ darkMode, isFullPage = false, projectId, star
                   margin: '0 auto',
                   width: '100%',
                   textAlign: 'center',
+                  color: darkMode ? '#e0e0e0' : 'inherit',
+                  backgroundColor: darkMode ? '#1e2736' : 'transparent',
                 }}
               />
               <Bar dataKey="inUse" stackId="a" fill="#4589FF" name="In Use">
@@ -452,7 +504,7 @@ function ToolsHorizontalBarChart({ darkMode, isFullPage = false, projectId, star
       ) : (
         !error &&
         !loading && (
-          <div className="tools-chart-empty">
+          <div className="tools-chart-empty" style={{ color: darkMode ? '#e0e0e0' : 'inherit' }}>
             <p>No data available for the selected filters.</p>
           </div>
         )

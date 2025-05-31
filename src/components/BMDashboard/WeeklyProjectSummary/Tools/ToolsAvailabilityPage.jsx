@@ -55,12 +55,62 @@ function ToolsAvailabilityPage() {
     setEndDate('');
   };
 
+  // Apply dark mode styles to document body when in dark mode
+  useEffect(() => {
+    if (darkMode) {
+      document.body.classList.add('dark-mode-body');
+    } else {
+      document.body.classList.remove('dark-mode-body');
+    }
+
+    // Add dark mode CSS
+    if (!document.getElementById('dark-mode-styles')) {
+      const styleElement = document.createElement('style');
+      styleElement.id = 'dark-mode-styles';
+      styleElement.innerHTML = `
+        .dark-mode-body .tools-availability-page {
+          background-color: #1e2736 !important;
+          color: #e0e0e0 !important;
+        }
+        .dark-mode-body .tools-availability-content {
+          background-color: #1e2736 !important;
+          color: #e0e0e0 !important;
+        }
+        .dark-mode-body .recharts-wrapper,
+        .dark-mode-body .recharts-surface {
+          background-color: #1e2736 !important;
+        }
+        .dark-mode-body .recharts-layer {
+          background-color: #1e2736 !important;
+        }
+      `;
+      document.head.appendChild(styleElement);
+    }
+
+    return () => {
+      // Cleanup
+      document.body.classList.remove('dark-mode-body');
+    };
+  }, [darkMode]);
+
+  const darkModeStyles = darkMode
+    ? {
+        backgroundColor: '#1e2736',
+        color: '#e0e0e0',
+      }
+    : {};
+
   return (
-    <div className={`tools-availability-page ${darkMode ? 'dark-mode' : ''}`}>
-      <div className="tools-availability-content">
+    <div
+      className={`tools-availability-page ${darkMode ? 'dark-mode' : ''}`}
+      style={darkModeStyles}
+    >
+      <div className="tools-availability-content" style={darkModeStyles}>
         <div className="tools-chart-filters">
           <div className="filter-group">
-            <label htmlFor="project-select">Project</label>
+            <label htmlFor="project-select" style={darkMode ? { color: '#e0e0e0' } : {}}>
+              Project
+            </label>
             {loading ? (
               <div className="select-loading">Loading projects...</div>
             ) : error ? (
@@ -76,30 +126,84 @@ function ToolsAvailabilityPage() {
                 placeholder="Select a project ID to view data"
                 isClearable={false}
                 isDisabled={projects.length === 0}
+                styles={
+                  darkMode
+                    ? {
+                        control: baseStyles => ({
+                          ...baseStyles,
+                          backgroundColor: '#2c3344',
+                          borderColor: '#364156',
+                        }),
+                        menu: baseStyles => ({
+                          ...baseStyles,
+                          backgroundColor: '#2c3344',
+                        }),
+                        option: (baseStyles, state) => ({
+                          ...baseStyles,
+                          backgroundColor: state.isFocused ? '#364156' : '#2c3344',
+                          color: '#e0e0e0',
+                        }),
+                        singleValue: baseStyles => ({
+                          ...baseStyles,
+                          color: '#e0e0e0',
+                        }),
+                        placeholder: baseStyles => ({
+                          ...baseStyles,
+                          color: '#aaaaaa',
+                        }),
+                      }
+                    : {}
+                }
               />
             )}
           </div>
           <div className="filter-group">
-            <label>Date Range (Optional)</label>
+            <label style={darkMode ? { color: '#e0e0e0' } : {}}>Date Range (Optional)</label>
             <div className="date-picker-group">
               <input
                 type="date"
                 className="date-picker"
                 value={startDate}
                 onChange={handleStartDateChange}
+                style={
+                  darkMode
+                    ? {
+                        backgroundColor: '#2c3344',
+                        color: '#e0e0e0',
+                        borderColor: '#364156',
+                      }
+                    : {}
+                }
               />
-              <span>to</span>
+              <span style={darkMode ? { color: '#e0e0e0' } : {}}>to</span>
               <input
                 type="date"
                 className="date-picker"
                 value={endDate}
                 onChange={handleEndDateChange}
+                style={
+                  darkMode
+                    ? {
+                        backgroundColor: '#2c3344',
+                        color: '#e0e0e0',
+                        borderColor: '#364156',
+                      }
+                    : {}
+                }
               />
               {(startDate || endDate) && (
                 <button
                   className="clear-dates-btn"
                   onClick={handleClearDates}
                   aria-label="Clear date filters"
+                  style={
+                    darkMode
+                      ? {
+                          backgroundColor: '#364156',
+                          color: '#e0e0e0',
+                        }
+                      : {}
+                  }
                 >
                   ×
                 </button>
