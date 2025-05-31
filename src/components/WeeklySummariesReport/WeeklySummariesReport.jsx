@@ -1194,21 +1194,37 @@ const WeeklySummariesReport = props => {
             {hasPermissionToFilter && (
               <div className="filter-style margin-right">
                 <span>Filter by Special Colors</span>
-                {['purple', 'green', 'navy'].map(color => (
-                  <div key={`${color}-toggle`} className="switch-toggle-control">
-                    <input
-                      type="checkbox"
-                      className="switch-toggle"
-                      id={`${color}-toggle`}
-                      onChange={e => handleSpecialColorToggleChange(color, e.target.checked)}
-                    />
-                    <label className="switch-toggle-label" htmlFor={`${color}-toggle`}>
-                      <span className="switch-toggle-inner" />
-                      <span className="switch-toggle-switch" />
-                    </label>
-                    <span style={{ marginLeft: '5px', textTransform: 'capitalize' }}>{color}</span>
-                  </div>
-                ))}
+                <div
+                  style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '2px' }}
+                >
+                  {['purple', 'green', 'navy'].map(color => (
+                    <div key={`${color}-toggle`} style={{ display: 'flex', alignItems: 'center' }}>
+                      <div className="switch-toggle-control">
+                        <input
+                          type="checkbox"
+                          className="switch-toggle"
+                          id={`${color}-toggle`}
+                          onChange={e => handleSpecialColorToggleChange(color, e.target.checked)}
+                        />
+                        <label className="switch-toggle-label" htmlFor={`${color}-toggle`}>
+                          <span className="switch-toggle-inner" />
+                          <span className="switch-toggle-switch" />
+                        </label>
+                      </div>
+                      <span
+                        style={{
+                          marginLeft: '3px',
+                          fontSize: 'inherit',
+                          textTransform: 'capitalize',
+                          whiteSpace: 'nowrap',
+                          fontWeight: 'normal',
+                        }}
+                      >
+                        {color}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
             {(hasPermissionToFilter || props.hasPermission('highlightEligibleBios')) && (
@@ -1348,7 +1364,7 @@ const WeeklySummariesReport = props => {
                           weekDates={weekDates[index]}
                           darkMode={darkMode}
                         />
-                        {permissionState.hasSeeBadgePermission && (
+                        {state.hasSeeBadgePermission && (
                           <Button
                             className="btn--dark-sea-green"
                             style={darkMode ? boxStyleDark : boxStyle}
@@ -1359,12 +1375,6 @@ const WeeklySummariesReport = props => {
                             {state.loadTrophies ? 'Hide Trophies' : 'Load Trophies'}
                           </Button>
                         )}
-                        <Button
-                          className="btn--dark-sea-green"
-                          style={darkMode ? boxStyleDark : boxStyle}
-                        >
-                          Load Trophies
-                        </Button>
                         <Button
                           className="btn--dark-sea-green mr-2"
                           style={darkMode ? boxStyleDark : boxStyle}
