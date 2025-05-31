@@ -23,13 +23,16 @@ function PermissionListItem(props) {
     editable,
     depth,
     setPermissions,
+    setRemovedDefaultPermissions,
+    removedDefaultPermissions,
   } = props;
   const isCategory = !!subperms;
   const [infoRoleModal, setinfoRoleModal] = useState(false);
   const [modalContent, setContent] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
   const hasThisPermission =
-    rolePermissions.includes(permission) || immutablePermissions.includes(permission);
+    rolePermissions.includes(permission) ||
+    (immutablePermissions.includes(permission) && !removedDefaultPermissions?.includes(permission));
   const { updateModalStatus } = useContext(ModalContext);
 
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -51,16 +54,23 @@ function PermissionListItem(props) {
   const toggleInfoRoleModal = () => {
     setinfoRoleModal(!infoRoleModal);
   };
-
   const togglePermission = permissionKey => {
-    if (rolePermissions.includes(permissionKey) || immutablePermissions.includes(permissionKey)) {
+    // Default perms can only be managed (Add/Delete) by users with "putUserProfilePermissions" perm.
+    if (immutablePermissions.includes(permissionKey)) {
+      if (!removedDefaultPermissions?.includes(permissionKey)) {
+        // deleteing default perm
+        setRemovedDefaultPermissions(previous => [...previous, permissionKey]);
+      } else {
+        // adding the default perm back
+        setRemovedDefaultPermissions(previous => previous.filter(perm => perm !== permissionKey));
+      }
+    } else if (rolePermissions.includes(permissionKey)) {
       setPermissions(previous => previous.filter(perm => perm !== permissionKey));
     } else if (rolePermissions.includes('showModal')) {
       setPermissions(previous => [...previous, permissionKey]);
     } else {
       setPermissions(previous => [...previous, permissionKey]);
     }
-
     props.onChange();
   };
 
@@ -214,7 +224,9 @@ function PermissionListItem(props) {
                 updateModalStatus(true);
               }}
               disabled={
-                !props.hasPermission('putRole') || immutablePermissions.includes(permission)
+                !props.hasPermission('putRole') ||
+                (immutablePermissions.includes(permission) &&
+                  !props.hasPermission('putUserProfilePermissions'))
               }
               style={darkMode ? boxStyleDark : boxStyle}
             >
@@ -241,6 +253,8 @@ function PermissionListItem(props) {
             onChange={props.onChange}
             depth={isMobile ? depth : depth + 1}
             darkMode={darkMode}
+            removedDefaultPermissions={removedDefaultPermissions}
+            setRemovedDefaultPermissions={setRemovedDefaultPermissions}
           />
         </li>
       ) : null}

@@ -64,14 +64,15 @@ const ResetPasswordPopup = React.memo(props => {
       </ModalHeader>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <Form>
-          <div className="flex justify-between items-center">
+          {/* <div className="flex justify-between items-center">
             <Label className={`mr-2 ${darkMode ? 'text-light' : ''}`} for="newpassword">
               New Password
             </Label>
-          </div>
+          </div> */}
           <Input
             darkMode={darkMode}
             label="New Password"
+            textColor={darkMode ? 'text-light' : ''}
             autoFocus
             type={showPassword.newPassword ? 'text' : 'password'}
             name="newpassword"
@@ -93,14 +94,16 @@ const ResetPasswordPopup = React.memo(props => {
             }}
           />
 
-          <div className="flex justify-between items-center mt-4">
+          {/* <div className="flex justify-between items-center mt-4">
             <Label className={`mr-2 ${darkMode ? 'text-light' : ''}`} for="confirmpassword">
               Confirm Password
             </Label>
-          </div>
+          </div> */}
           <Input
             darkMode={darkMode}
+            className={darkMode ? 'text-light' : ''}
             label="Confirm Password"
+            textColor={darkMode ? 'text-light' : ''}
             type={showPassword.confirmPassword ? 'text' : 'password'}
             name="confirmpassword"
             id="confirmpassword"
