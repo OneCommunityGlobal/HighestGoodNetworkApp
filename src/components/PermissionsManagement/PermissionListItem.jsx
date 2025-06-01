@@ -36,15 +36,7 @@ function PermissionListItem(props) {
   const { updateModalStatus } = useContext(ModalContext);
 
   const darkMode = useSelector(state => state.theme.darkMode);
-  if (permission === 'getWeeklySummaries') {
-    // console.log(
-    //   'hasThisPermission getWeeklySummary: ',
-    //   permission,
-    //   hasThisPermission,
-    //   rolePermissions.includes(permission),
-    //   immutablePermissions.includes(permission) && !removedDefaultPermissions?.includes(permission),
-    // );
-  }
+
   const handleResize = () => {
     setIsMobile(window.innerWidth <= 768);
   };
@@ -73,8 +65,6 @@ function PermissionListItem(props) {
         setRemovedDefaultPermissions(previous => previous.filter(perm => perm !== permissionKey));
       }
     } else if (rolePermissions.includes(permissionKey)) {
-      // need to include changes to default permissions as only changes made to the
-      // permissions listed in setPermissions/permissions are saved to the change logs table
       setPermissions(previous => previous.filter(perm => perm !== permissionKey));
     } else if (rolePermissions.includes('showModal')) {
       setPermissions(previous => [...previous, permissionKey]);
@@ -115,11 +105,10 @@ function PermissionListItem(props) {
       const perm = list.pop();
       if (perm.subperms) {
         list = list.concat(perm.subperms);
-        // below line sees if subpermissions are either added or default permissions to user of a role
-        // add condition to immutable to see if it was removed
+
+        // Updated below so category add/delete button is properly updated based off of all their subpermissions
       } else if (
         rolePermissions.includes(perm.key) ||
-        // immutablePermissions.includes(perm.key)
         (immutablePermissions.includes(perm.key) && !removedDefaultPermissions.includes(perm.key))
       ) {
         none = false;
@@ -139,11 +128,6 @@ function PermissionListItem(props) {
     // eslint-disable-next-line consistent-return
     return 'Some';
   };
-  // need to update this, as it defines the inital button view of categories to green all, gray all, or delete
-  // and changing the permissions of categories do not change the button view of category as their button color
-  // is based off the howManySubpermsInRole defined here, which is decided non-default and default permissions
-  // so even if deleteing defaults may not change anything as it goes off of immutable defaults which is role dependent
-  // so even if a user loses a permission, if they're an admin and admin has it by default, it'd still be read as had
   const howManySubpermsInRole = checkSubperms(subperms);
 
   let color;

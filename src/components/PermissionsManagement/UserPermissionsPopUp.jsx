@@ -171,7 +171,6 @@ function UserPermissionsPopUp({
         return true;
       });
       const permissionNames = matchingPermissions.map(permission => permission.label);
-      // look into some permissions/groups add/delete button not updating properly when clicked despite save changes modal appearing
 
       const description = `Clicking reset to default will return the user to the default permissions of this role: ${
         actualUserProfile?.role
