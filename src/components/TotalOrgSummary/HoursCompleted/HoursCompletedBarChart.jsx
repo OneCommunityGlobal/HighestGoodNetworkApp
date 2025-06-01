@@ -151,11 +151,10 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
             display: 'grid',
           }}
         >
-          {`${((taskHours.count / projectHours.count) * 100).toFixed(
-            2,
-          )}% of Total Tangible Hours Submitted to Tasks`}
+          {`${data.hoursSubmittedToTasksPercentage *
+            100}% of Total Tangible Hours Submitted to Tasks`}
           {(() => {
-            const isPositive = taskHours.totalTangibleHoursChange >= 0;
+            const isPositive = data.hoursSubmittedToTasksComparisonPercentage >= 0;
             let color;
             if (isPositive) {
               color = darkMode ? 'lightgreen' : 'green';
@@ -163,8 +162,8 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
               color = 'red';
             }
             const value = isPositive
-              ? `+${(taskHours.totalTangibleHoursChange * 100).toFixed(0)}%`
-              : `${(taskHours.totalTangibleHoursChange * 100).toFixed(0)}%`;
+              ? `+${(data.hoursSubmittedToTasksComparisonPercentage * 100).toFixed(0)}%`
+              : `${(data.hoursSubmittedToTasksComparisonPercentage * 100).toFixed(0)}%`;
             return <span style={{ color, marginLeft: 8, fontSize: '12px' }}>{value}</span>;
           })()}
         </div>
