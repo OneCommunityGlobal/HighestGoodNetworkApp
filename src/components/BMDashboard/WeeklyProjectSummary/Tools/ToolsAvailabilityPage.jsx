@@ -1,3 +1,5 @@
+// React is needed for JSX transformation
+// eslint-disable-next-line no-unused-vars
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import Select from 'react-select';
@@ -57,87 +59,6 @@ function ToolsAvailabilityPage() {
     setEndDate('');
   };
 
-  // Get styles for dark mode
-  const getControlStyles = baseStyles => {
-    if (darkMode) {
-      return {
-        ...baseStyles,
-        backgroundColor: '#2c3344',
-        borderColor: '#364156',
-      };
-    }
-    return baseStyles;
-  };
-
-  const getMenuStyles = baseStyles => {
-    if (darkMode) {
-      return {
-        ...baseStyles,
-        backgroundColor: '#2c3344',
-      };
-    }
-    return baseStyles;
-  };
-
-  const getOptionStyles = (baseStyles, state) => {
-    if (darkMode) {
-      return {
-        ...baseStyles,
-        backgroundColor: state.isFocused ? '#364156' : '#2c3344',
-        color: '#e0e0e0',
-      };
-    }
-    return baseStyles;
-  };
-
-  const getSingleValueStyles = baseStyles => {
-    if (darkMode) {
-      return {
-        ...baseStyles,
-        color: '#e0e0e0',
-      };
-    }
-    return baseStyles;
-  };
-
-  const getPlaceholderStyles = baseStyles => {
-    if (darkMode) {
-      return {
-        ...baseStyles,
-        color: '#aaaaaa',
-      };
-    }
-    return baseStyles;
-  };
-
-  const getDarkModeStyles = () => {
-    if (darkMode) {
-      return {
-        backgroundColor: '#2c3344',
-        color: '#e0e0e0',
-        borderColor: '#364156',
-      };
-    }
-    return {};
-  };
-
-  const getLabelStyles = () => {
-    if (darkMode) {
-      return { color: '#e0e0e0' };
-    }
-    return {};
-  };
-
-  const getButtonStyles = () => {
-    if (darkMode) {
-      return {
-        backgroundColor: '#364156',
-        color: '#e0e0e0',
-      };
-    }
-    return {};
-  };
-
   // Apply dark mode styles to document body when in dark mode
   useEffect(() => {
     if (darkMode) {
@@ -176,56 +97,112 @@ function ToolsAvailabilityPage() {
     };
   }, [darkMode]);
 
+  const darkModeStyles = darkMode
+    ? {
+        backgroundColor: '#1e2736',
+        color: '#e0e0e0',
+      }
+    : {};
+
+  // Render project selection based on loading and error states
+  const renderProjectSelection = () => {
+    if (loading) {
+      return <div className="select-loading">Loading projects...</div>;
+    }
+
+    if (error) {
+      return <div className="select-error">{error}</div>;
+    }
+
+    return (
+      <Select
+        id="project-select"
+        className="project-select"
+        classNamePrefix="select"
+        value={selectedProject}
+        onChange={handleProjectChange}
+        options={projectOptions}
+        placeholder="Select a project ID to view data"
+        isClearable={false}
+        isDisabled={projects.length === 0}
+        styles={
+          darkMode
+            ? {
+                control: baseStyles => ({
+                  ...baseStyles,
+                  backgroundColor: '#2c3344',
+                  borderColor: '#364156',
+                }),
+                menu: baseStyles => ({
+                  ...baseStyles,
+                  backgroundColor: '#2c3344',
+                }),
+                option: (baseStyles, state) => ({
+                  ...baseStyles,
+                  backgroundColor: state.isFocused ? '#364156' : '#2c3344',
+                  color: '#e0e0e0',
+                }),
+                singleValue: baseStyles => ({
+                  ...baseStyles,
+                  color: '#e0e0e0',
+                }),
+                placeholder: baseStyles => ({
+                  ...baseStyles,
+                  color: '#aaaaaa',
+                }),
+              }
+            : {}
+        }
+      />
+    );
+  };
+
   return (
-    <div className={`tools-availability-page ${darkMode ? 'dark-mode' : ''}`}>
-      <div className="tools-availability-content">
+    <div
+      className={`tools-availability-page ${darkMode ? 'dark-mode' : ''}`}
+      style={darkModeStyles}
+    >
+      <div className="tools-availability-content" style={darkModeStyles}>
         <div className="tools-chart-filters">
           <div className="filter-group">
-            <label htmlFor="project-select" style={getLabelStyles()}>
+            <label htmlFor="project-select" style={darkMode ? { color: '#e0e0e0' } : {}}>
               Project
             </label>
-            {loading ? (
-              <div className="select-loading">Loading projects...</div>
-            ) : error ? (
-              <div className="select-error">{error}</div>
-            ) : (
-              <Select
-                id="project-select"
-                className="project-select"
-                classNamePrefix="select"
-                value={selectedProject}
-                onChange={handleProjectChange}
-                options={projectOptions}
-                placeholder="Select a project ID to view data"
-                isClearable={false}
-                isDisabled={projects.length === 0}
-                styles={{
-                  control: getControlStyles,
-                  menu: getMenuStyles,
-                  option: getOptionStyles,
-                  singleValue: getSingleValueStyles,
-                  placeholder: getPlaceholderStyles,
-                }}
-              />
-            )}
+            {renderProjectSelection()}
           </div>
           <div className="filter-group">
-            <label style={getLabelStyles()}>Date Range (Optional)</label>
+            <label style={darkMode ? { color: '#e0e0e0' } : {}}>Date Range (Optional)</label>
             <div className="date-picker-group">
               <input
                 type="date"
                 className="date-picker"
                 value={startDate}
                 onChange={handleStartDateChange}
-                style={getDarkModeStyles()}
+                style={
+                  darkMode
+                    ? {
+                        backgroundColor: '#2c3344',
+                        color: '#e0e0e0',
+                        borderColor: '#364156',
+                      }
+                    : {}
+                }
               />
-              <span style={getLabelStyles()}>to</span>
+              <span style={darkMode ? { color: '#e0e0e0' } : {}}>to</span>
               <input
                 type="date"
                 className="date-picker"
                 value={endDate}
                 onChange={handleEndDateChange}
-                style={getDarkModeStyles()}
+                style={
+                  darkMode
+                    ? {
+                        backgroundColor: '#2c3344',
+                        color: '#e0e0e0',
+                        borderColor: '#364156',
+                      }
+                    : {}
+                }
               />
               {(startDate || endDate) && (
                 <button
@@ -233,7 +210,14 @@ function ToolsAvailabilityPage() {
                   className="clear-dates-btn"
                   onClick={handleClearDates}
                   aria-label="Clear date filters"
-                  style={getButtonStyles()}
+                  style={
+                    darkMode
+                      ? {
+                          backgroundColor: '#364156',
+                          color: '#e0e0e0',
+                        }
+                      : {}
+                  }
                 >
                   ×
                 </button>

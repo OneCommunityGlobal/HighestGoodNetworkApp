@@ -41,21 +41,26 @@ function CustomTooltip({ active, payload, isCardView }) {
         <p style={{ margin: '0 0 2px 0', fontWeight: 'bold', fontSize: '10px' }}>
           {payload[0].payload.name}
         </p>
-        {payload.map(entry => (
-          <div
-            key={entry.dataKey}
-            style={{ display: 'flex', justifyContent: 'space-between', margin: '1px 0' }}
-          >
-            <span style={{ color: entry.color, fontSize: '9px' }}>
-              {entry.dataKey === 'inUse'
-                ? 'In Use:'
-                : entry.dataKey === 'needsReplacement'
-                ? 'Needs Replace:'
-                : 'To Receive:'}
-            </span>
-            <span style={{ marginLeft: '4px', fontSize: '9px' }}>{entry.value}</span>
-          </div>
-        ))}
+        {payload.map(entry => {
+          let statusLabel = 'Unknown:';
+          if (entry.dataKey === 'inUse') {
+            statusLabel = 'In Use:';
+          } else if (entry.dataKey === 'needsReplacement') {
+            statusLabel = 'Needs Replace:';
+          } else if (entry.dataKey === 'yetToReceive') {
+            statusLabel = 'To Receive:';
+          }
+
+          return (
+            <div
+              key={entry.dataKey}
+              style={{ display: 'flex', justifyContent: 'space-between', margin: '1px 0' }}
+            >
+              <span style={{ color: entry.color, fontSize: '9px' }}>{statusLabel}</span>
+              <span style={{ marginLeft: '4px', fontSize: '9px' }}>{entry.value}</span>
+            </div>
+          );
+        })}
       </div>
     );
   }
@@ -75,27 +80,32 @@ function CustomTooltip({ active, payload, isCardView }) {
       }}
     >
       <p style={{ margin: '0 0 5px 0', fontWeight: 'bold' }}>{payload[0].payload.name}</p>
-      {payload.map(entry => (
-        <p
-          key={entry.dataKey}
-          style={{
-            color: entry.color,
-            margin: '3px 0',
-            fontSize: '11px',
-            display: 'flex',
-            justifyContent: 'space-between',
-          }}
-        >
-          <span>
-            {entry.dataKey === 'inUse'
-              ? 'In Use'
-              : entry.dataKey === 'needsReplacement'
-              ? 'Needs replacement'
-              : 'Yet to receive'}
-          </span>
-          <span style={{ marginLeft: '10px' }}>{entry.value}</span>
-        </p>
-      ))}
+      {payload.map(entry => {
+        let statusLabel = 'Unknown';
+        if (entry.dataKey === 'inUse') {
+          statusLabel = 'In Use';
+        } else if (entry.dataKey === 'needsReplacement') {
+          statusLabel = 'Needs replacement';
+        } else if (entry.dataKey === 'yetToReceive') {
+          statusLabel = 'Yet to receive';
+        }
+
+        return (
+          <p
+            key={entry.dataKey}
+            style={{
+              color: entry.color,
+              margin: '3px 0',
+              fontSize: '11px',
+              display: 'flex',
+              justifyContent: 'space-between',
+            }}
+          >
+            <span>{statusLabel}</span>
+            <span style={{ marginLeft: '10px' }}>{entry.value}</span>
+          </p>
+        );
+      })}
     </div>
   );
 }
@@ -121,6 +131,15 @@ function CustomLabel({ x, y, width, value, isCardView }) {
     </text>
   );
 }
+
+// Pre-defined tooltip for card view to avoid inline function in render
+const CardViewTooltip = <CustomTooltip isCardView />;
+
+// Pre-defined tooltip for full page view to avoid inline function in render
+const FullPageTooltip = <CustomTooltip isCardView={false} />;
+
+// Pre-defined label for full page view to avoid inline function in render
+const FullPageLabel = <CustomLabel isCardView={false} />;
 
 function ToolsHorizontalBarChart({ darkMode, isFullPage = false, projectId, startDate, endDate }) {
   const [data, setData] = useState(emptyData);
@@ -238,6 +257,19 @@ function ToolsHorizontalBarChart({ darkMode, isFullPage = false, projectId, star
     }
   };
 
+  // Function to render the empty state when no data
+  const renderEmptyState = () => {
+    if (error || loading) {
+      return null;
+    }
+
+    return (
+      <div className="tools-chart-empty" style={{ color: darkMode ? '#e0e0e0' : 'inherit' }}>
+        <p>No data available</p>
+      </div>
+    );
+  };
+
   // Render a completely simplified chart for card view
   if (!isFullPage) {
     return (
@@ -266,9 +298,9 @@ function ToolsHorizontalBarChart({ darkMode, isFullPage = false, projectId, star
 
         {error && <div className="tools-chart-error">{error}</div>}
 
-        {loading ? (
-          <div className="tools-chart-loading">Loading...</div>
-        ) : data.length > 0 ? (
+        {loading && <div className="tools-chart-loading">Loading...</div>}
+
+        {!loading && data.length > 0 && (
           <div
             style={{
               height: 'calc(100% - 70px)',
@@ -299,7 +331,7 @@ function ToolsHorizontalBarChart({ darkMode, isFullPage = false, projectId, star
                   axisLine={false}
                 />
                 <XAxis type="number" hide />
-                <Tooltip content={props => <CustomTooltip isCardView {...props} />} />
+                <Tooltip content={CardViewTooltip} />
                 <Legend
                   verticalAlign="bottom"
                   height={25}
@@ -325,17 +357,44 @@ function ToolsHorizontalBarChart({ darkMode, isFullPage = false, projectId, star
               </BarChart>
             </ResponsiveContainer>
           </div>
-        ) : (
-          !error &&
-          !loading && (
-            <div className="tools-chart-empty">
-              <p>No data available</p>
-            </div>
-          )
         )}
+
+        {!loading && data.length === 0 && renderEmptyState()}
       </div>
     );
   }
+
+  // Helper function to render the "no project selected" message
+  const renderNoProjectMessage = () => {
+    if (projectId) {
+      return null;
+    }
+
+    return (
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '200px',
+          width: '100%',
+          textAlign: 'center',
+          color: darkMode ? '#e0e0e0' : '#555',
+          backgroundColor: darkMode ? '#2c2c2c' : '#f8f8f8',
+          borderRadius: '8px',
+          padding: '20px',
+          marginTop: '40px',
+        }}
+      >
+        <div style={{ fontSize: '36px', marginBottom: '15px' }}>📊</div>
+        <h4 style={{ margin: '0 0 10px 0' }}>Please Select a Project ID</h4>
+        <p style={{ margin: '0', fontSize: '14px' }}>
+          Tools availability data will be displayed once you select a specific project.
+        </p>
+      </div>
+    );
+  };
 
   // Full page view with improved dark mode styling
   return (
@@ -366,33 +425,11 @@ function ToolsHorizontalBarChart({ darkMode, isFullPage = false, projectId, star
 
       {error && <div className="tools-chart-error">{error}</div>}
 
-      {loading ? (
-        <div className="tools-chart-loading">Loading tool availability data...</div>
-      ) : !projectId ? (
-        // Show message when no project is selected in full page view
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            height: '200px',
-            width: '100%',
-            textAlign: 'center',
-            color: darkMode ? '#e0e0e0' : '#555',
-            backgroundColor: darkMode ? '#2c2c2c' : '#f8f8f8',
-            borderRadius: '8px',
-            padding: '20px',
-            marginTop: '40px',
-          }}
-        >
-          <div style={{ fontSize: '36px', marginBottom: '15px' }}>📊</div>
-          <h4 style={{ margin: '0 0 10px 0' }}>Please Select a Project ID</h4>
-          <p style={{ margin: '0', fontSize: '14px' }}>
-            Tools availability data will be displayed once you select a specific project.
-          </p>
-        </div>
-      ) : data.length > 0 ? (
+      {loading && <div className="tools-chart-loading">Loading tool availability data...</div>}
+
+      {!loading && !projectId && renderNoProjectMessage()}
+
+      {!loading && projectId && data.length > 0 && (
         <div
           style={{
             width: '100%',
@@ -464,7 +501,7 @@ function ToolsHorizontalBarChart({ darkMode, isFullPage = false, projectId, star
                 axisLine={{ stroke: darkMode ? '#364156' : '#ccc' }}
               />
               <Tooltip
-                content={props => <CustomTooltip isCardView={false} {...props} />}
+                content={FullPageTooltip}
                 cursor={{
                   fill: darkMode ? 'rgba(100, 120, 160, 0.1)' : 'rgba(200, 200, 200, 0.1)',
                 }}
@@ -487,7 +524,7 @@ function ToolsHorizontalBarChart({ darkMode, isFullPage = false, projectId, star
                 }}
               />
               <Bar dataKey="inUse" stackId="a" fill="#4589FF" name="In Use">
-                <LabelList content={props => <CustomLabel isCardView={false} {...props} />} />
+                <LabelList content={FullPageLabel} />
               </Bar>
               <Bar
                 dataKey="needsReplacement"
@@ -495,21 +532,20 @@ function ToolsHorizontalBarChart({ darkMode, isFullPage = false, projectId, star
                 fill="#FF0000"
                 name="Needs to be replaced"
               >
-                <LabelList content={props => <CustomLabel isCardView={false} {...props} />} />
+                <LabelList content={FullPageLabel} />
               </Bar>
               <Bar dataKey="yetToReceive" stackId="a" fill="#FFB800" name="Yet to receive">
-                <LabelList content={props => <CustomLabel isCardView={false} {...props} />} />
+                <LabelList content={FullPageLabel} />
               </Bar>
             </BarChart>
           </ResponsiveContainer>
         </div>
-      ) : (
-        !error &&
-        !loading && (
-          <div className="tools-chart-empty" style={{ color: darkMode ? '#e0e0e0' : 'inherit' }}>
-            <p>No data available for the selected filters.</p>
-          </div>
-        )
+      )}
+
+      {!loading && projectId && data.length === 0 && (
+        <div className="tools-chart-empty" style={{ color: darkMode ? '#e0e0e0' : 'inherit' }}>
+          <p>No data available for the selected filters.</p>
+        </div>
       )}
     </div>
   );
