@@ -89,7 +89,7 @@ export default function TaskCompletedBarChart({ isLoading, data, darkMode }) {
         ) : (
           <TinyBarChart
             chartData={chartData}
-            maxY={maxY}
+            maxY={maxY + 1}
             tickInterval={tickInterval}
             renderCustomizedLabel={renderCustomizedLabel}
             darkMode={darkMode}
