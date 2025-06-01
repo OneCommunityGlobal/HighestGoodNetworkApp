@@ -12,8 +12,14 @@ jobs:
       with:
           fetch-depth: 0
     - uses: actions/setup-node@v4
+      if: github.ref != 'refs/heads/sundar_update_node_version'
       with:
         node-version: 14
+        cache: 'npm'
+    - uses: actions/setup-node@v4
+      if: github.ref == 'refs/heads/sundar_update_node_version'
+      with:
+        node-version: 20
         cache: 'npm'
     - name: Install Dependencies
       run: npm ci
