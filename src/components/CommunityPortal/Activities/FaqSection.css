@@ -93,3 +93,58 @@
 .contact-link:hover {
   color: darkblue;
 }
+
+.faq-category.active {
+  background-color: black;
+  color: white;
+}
+
+.faq-answer {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: #333;
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+  opacity: 0;
+}
+
+.faq-answer.open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.faq-answer > div {
+  overflow: hidden;
+  padding-top: 0.5rem;
+}
+
+.faq-arrow {
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.faq-arrow.open {
+  transform: rotate(180deg);
+}
+
+.faq-category {
+  padding: 0.6rem 1.2rem;
+  border-radius: 20px;
+  border: none;
+  background-color: #f0f0f0;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateY(0);
+}
+
+.faq-category:hover {
+  background-color: black;
+  color: white;
+  transform: translateY(-1px);
+}
+
+.faq-category.active {
+  background-color: black;
+  color: white;
+  transform: translateY(-1px);
+}
