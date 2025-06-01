@@ -148,9 +148,10 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
             color: darkMode ? 'white' : '#222',
             marginTop: 4,
             marginBottom: 8,
+            display: 'grid',
           }}
         >
-          {`${(taskHours.totalTangibleHoursPercentage * 100).toFixed(
+          {`${((taskHours.count / projectHours.count) * 100).toFixed(
             2,
           )}% of Total Tangible Hours Submitted to Tasks`}
           {(() => {
