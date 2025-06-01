@@ -51,7 +51,7 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
   const projectChangePercentage = projectHours.comparisonPercentage;
   const stats = [
     {
-      name: 'Task',
+      name: 'Tasks',
       amount: taskHours.count,
       percentage: taskPercentage,
       change: taskChangePercentage,
@@ -171,7 +171,7 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
       </div>
       <div style={{ flex: 1, minHeight: 0 }}>
         <TinyBarChart
-          chartData={chartData.filter(item => item.name === 'Task')}
+          chartData={chartData.filter(item => item.name === 'Tasks')}
           maxY={maxY}
           tickInterval={tickInterval}
           renderCustomizedLabel={renderCustomizedLabel}
