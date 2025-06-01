@@ -93,7 +93,7 @@ export default function TaskCompletedBarChart({ isLoading, data, darkMode }) {
             tickInterval={tickInterval}
             renderCustomizedLabel={renderCustomizedLabel}
             darkMode={darkMode}
-            showYAxisLabel={false}
+            yAxisLabel="Total Tasks"
           />
         )}
       </div>

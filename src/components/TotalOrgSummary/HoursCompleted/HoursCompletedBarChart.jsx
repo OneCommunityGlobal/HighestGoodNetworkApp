@@ -177,6 +177,7 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
           renderCustomizedLabel={renderCustomizedLabel}
           darkMode={darkMode}
           projectBarInfo={projectBarInfo}
+          yAxisLabel="Hours"
         />
       </div>
     </div>

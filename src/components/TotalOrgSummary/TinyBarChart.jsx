@@ -52,7 +52,7 @@ export default function TinyBarChart(props) {
     renderCustomizedLabel,
     darkMode,
     projectBarInfo,
-    showYAxisLabel = true,
+    yAxisLabel,
   } = props;
 
   return (
@@ -62,6 +62,7 @@ export default function TinyBarChart(props) {
         margin={{
           top: 50,
           bottom: 40,
+          right: 20,
         }}
       >
         <XAxis dataKey="name" stroke={darkMode ? 'white' : 'gray'} />
@@ -72,19 +73,15 @@ export default function TinyBarChart(props) {
           tickLine
           tickCount={Math.floor(maxY / tickInterval) + 1}
           interval={0}
-          label={
-            showYAxisLabel
-              ? {
-                  value: 'Hours',
-                  angle: -90,
-                  position: 'insideLeft',
-                  offset: 20,
-                  fill: darkMode ? 'white' : '#444',
-                  fontSize: 14,
-                  fontWeight: 'bold',
-                }
-              : undefined
-          }
+          label={{
+            value: yAxisLabel,
+            angle: -90,
+            position: 'insideLeft',
+            offset: 20,
+            fill: darkMode ? 'white' : '#444',
+            fontSize: 14,
+            fontWeight: 'bold',
+          }}
         />
         <Tooltip cursor={{ fill: 'transparent' }} />
         <Bar dataKey="amount" fill="#8884d8">
