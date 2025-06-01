@@ -1,45 +1,59 @@
 import { useState, useEffect } from 'react';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-} from 'chart.js';
+import { useSelector, useDispatch } from 'react-redux';
 import { Bar } from 'react-chartjs-2';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import styles from './IssueCharts.module.css';
 
-// Register required Chart.js components
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ChartDataLabels);
-
-function IssuesCharts({
-  bmProjects = [],
-  longestOpenIssues = [],
-  mostExpensiveIssues = [],
-  loading = false,
-  error = null,
+// Import Redux actions
+import {
   fetchLongestOpenIssues,
   fetchMostExpensiveIssues,
-}) {
+} from '../../../actions/bmdashboard/issueChartActions';
+
+function IssuesCharts({ bmProjects = [] }) {
+  const dispatch = useDispatch();
+
   const [graphType, setGraphType] = useState('Longest Open');
   const [selectedProject, setSelectedProject] = useState('all');
+  const [dateRange, setDateRange] = useState({ start: '', end: '' });
 
-  // Fetch data on mount and when graph type or selected project changes
-  useEffect(() => {
-    if (graphType === 'Longest Open') {
-      fetchLongestOpenIssues(selectedProject === 'all' ? null : selectedProject);
-    } else {
-      fetchMostExpensiveIssues(selectedProject === 'all' ? null : selectedProject);
+  const { longestOpenIssues = [], mostExpensiveIssues = [], loading, error } = useSelector(
+    state => state.issue || {},
+  );
+
+  const formatFilters = ({ projectIds, startDate, endDate }) => {
+    const formatted = {};
+    if (
+      (typeof projectIds === 'string' && projectIds.trim() !== '') ||
+      (Array.isArray(projectIds) && projectIds.length > 0)
+    ) {
+      formatted.projectIds = Array.isArray(projectIds) ? projectIds.join(',') : projectIds.trim();
     }
-  }, [graphType, selectedProject, fetchLongestOpenIssues, fetchMostExpensiveIssues]);
+    if (startDate !== undefined && startDate !== '') {
+      formatted.startDate = startDate;
+    }
+    if (endDate !== undefined && endDate !== '') {
+      formatted.endDate = endDate;
+    }
+    return formatted;
+  };
 
-  // Determine which data to use based on graph type
+  useEffect(() => {
+    const params = formatFilters({
+      projectIds: selectedProject === 'all' ? undefined : selectedProject,
+      startDate: dateRange.start,
+      endDate: dateRange.end,
+    });
+
+    if (graphType === 'Longest Open') {
+      dispatch(fetchLongestOpenIssues(params));
+    } else {
+      dispatch(fetchMostExpensiveIssues(params));
+    }
+  }, [graphType, selectedProject, dateRange.start, dateRange.end, dispatch]);
+
   const chartData = graphType === 'Longest Open' ? longestOpenIssues : mostExpensiveIssues;
 
-  // Prepare chart data
   const data = {
     labels: chartData.map(issue => issue.title || issue.IssueId),
     datasets: [
@@ -61,6 +75,14 @@ function IssuesCharts({
     indexAxis: 'y',
     responsive: true,
     plugins: {
+      legend: { display: false },
+      datalabels: {
+        anchor: 'end',
+        align: 'right',
+        formatter: value => (graphType === 'Longest Open' ? `${value} days` : `$${value}`),
+        color: '#000',
+        font: { weight: 'bold' },
+      },
       title: {
         display: true,
         text:
@@ -76,14 +98,6 @@ function IssuesCharts({
                   : ''
               }`,
         font: { size: 12 },
-      },
-      legend: { display: false },
-      datalabels: {
-        anchor: 'end',
-        align: 'right',
-        formatter: value => (graphType === 'Longest Open' ? `${value} days` : `$${value}`),
-        color: '#000',
-        font: { weight: 'bold' },
       },
     },
     scales: {
@@ -116,14 +130,14 @@ function IssuesCharts({
   return (
     <div>
       <div className={styles.container}>
-        {/* <div className={styles.dateInputs}>
+        <div className={styles.dateInputs}>
           <div className={styles.inputGroup}>
             <label htmlFor="startDate">Start:</label>
             <input
               id="startDate"
               type="date"
               value={dateRange.start}
-              onChange={e => setDateRange({ ...dateRange, start: e.target.value })}
+              onChange={e => setDateRange(prev => ({ ...prev, start: e.target.value }))}
               className={styles.input}
             />
           </div>
@@ -133,11 +147,11 @@ function IssuesCharts({
               id="endDate"
               type="date"
               value={dateRange.end}
-              onChange={e => setDateRange({ ...dateRange, end: e.target.value })}
+              onChange={e => setDateRange(prev => ({ ...prev, end: e.target.value }))}
               className={styles.input}
             />
           </div>
-        </div> */}
+        </div>
         <div className={styles.inputGroup}>
           <label htmlFor="project">Project:</label>
           <select
@@ -162,14 +176,20 @@ function IssuesCharts({
             onChange={e => setGraphType(e.target.value)}
             className={styles.select}
           >
-            <option>Longest Open</option>
-            <option>Most Expensive</option>
+            <option value="Longest Open">Longest Open</option>
+            <option value="Most Expensive">Most Expensive</option>
           </select>
         </div>
       </div>
+
       <div className={styles.chartContainer}>
         {chartData.length > 0 ? (
-          <Bar data={data} options={options} plugins={[ChartDataLabels]} />
+          <Bar
+            key={`${graphType}-${selectedProject}-${dateRange.start}-${dateRange.end}`}
+            data={data}
+            options={options}
+            plugins={[ChartDataLabels]}
+          />
         ) : (
           <p className={styles.noData}>No issues found.</p>
         )}

@@ -59,14 +59,40 @@ export const fetchIssueTypesAndYears = () => async dispatch => {
   }
 };
 
-// GET / issues / longest - open ? projectIds = proj1, proj2 & startDate=xxx & endDate=xxx
+const formatFilters = (filters) => {
+  const { projectIds, startDate, endDate } = filters;
+  const formatted = {};
+
+  // Only add projectIds if it's a non-empty string or non-empty array
+  if (
+    (typeof projectIds === 'string' && projectIds.trim() !== '') ||
+    (Array.isArray(projectIds) && projectIds.length > 0)
+  ) {
+    formatted.projectIds = Array.isArray(projectIds)
+      ? projectIds.join(',')
+      : projectIds.trim();
+  }
+
+  if (startDate !== undefined) {
+    formatted.startDate = startDate;
+  }
+
+  if (endDate !== undefined) {
+    formatted.endDate = endDate;
+  }
+  return formatted;
+};
+
 export const fetchLongestOpenIssues = (filters) => async (dispatch) => {
   try {
     dispatch({ type: FETCH_LONGEST_OPEN_ISSUES_REQUEST });
 
-    const response = await axios.get(ENDPOINTS.BM_LONGEST_OPEN_ISSUES, { params: filters });
+    const formattedFilters = formatFilters(filters);
 
-    // Add validation
+    const response = await axios.get(ENDPOINTS.BM_LONGEST_OPEN_ISSUES, { params: formattedFilters });
+//     console.log(
+//   "DEBUG - filters --> ",formattedFilters
+// )
     if (!response.data) {
       throw new Error('Empty response from server');
     }
@@ -76,31 +102,30 @@ export const fetchLongestOpenIssues = (filters) => async (dispatch) => {
       payload: response.data
     });
   } catch (error) {
-
     dispatch({
       type: FETCH_LONGEST_OPEN_ISSUES_FAILURE,
-      payload: error.message || 'Failed to parse server response'
+      payload: error.message || 'Failed to fetch longest open issues'
     });
   }
 };
 
-// GET /issues/most-expensive?projectIds=proj1,proj2&startDate=xxx&endDate=xxx
-export const fetchMostExpensiveIssues = (filters) => async dispatch => {
+export const fetchMostExpensiveIssues = (filters) => async (dispatch) => {
   try {
     dispatch({ type: FETCH_MOST_EXPENSIVE_ISSUES_REQUEST });
 
-    const response = await axios.get(ENDPOINTS.BM_MOST_EXPENSIVE_ISSUES, { params: filters });
+    const formattedFilters = formatFilters(filters);
 
-     if (!response.data) {
+    const response = await axios.get(ENDPOINTS.BM_MOST_EXPENSIVE_ISSUES, { params: formattedFilters });
+
+    if (!response.data) {
       throw new Error('Empty response from server');
-     }
+    }
 
     dispatch({
       type: FETCH_MOST_EXPENSIVE_ISSUES_SUCCESS,
       payload: response.data
     });
   } catch (error) {
-
     dispatch({
       type: FETCH_MOST_EXPENSIVE_ISSUES_FAILURE,
       payload: error.message || 'Failed to fetch most expensive issues',

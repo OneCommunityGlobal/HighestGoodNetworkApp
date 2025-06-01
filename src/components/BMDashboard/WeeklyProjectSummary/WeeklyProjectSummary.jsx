@@ -4,10 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
-import {
-  fetchLongestOpenIssues,
-  fetchMostExpensiveIssues,
-} from '../../../actions/bmdashboard/issueChartActions';
+
 import { fetchBMProjects } from '../../../actions/bmdashboard/projectActions';
 import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
 import IssuesCharts from '../Issues/LongestOpenIssuesChart';
@@ -138,9 +135,7 @@ export default function WeeklyProjectSummary() {
   };
 
   const bmProjects = useSelector(state => state.bmProjects || []);
-  const { longestOpenIssues, mostExpensiveIssues, loading, error } = useSelector(
-    state => state.issue || [],
-  );
+
   // Fetch initial data
   useEffect(() => {
     if (materials.length === 0) {
@@ -150,9 +145,6 @@ export default function WeeklyProjectSummary() {
     if (bmProjects.length === 0) {
       dispatch(fetchBMProjects());
     }
-
-    dispatch(fetchLongestOpenIssues());
-    dispatch(fetchMostExpensiveIssues());
   }, [dispatch, materials.length, bmProjects.length]);
 
   const sections = useMemo(
@@ -211,17 +203,7 @@ export default function WeeklyProjectSummary() {
         title: 'Issue Tracking',
         key: 'Issue Tracking',
         className: 'small',
-        content: (
-          <IssuesCharts
-            bmProjects={bmProjects}
-            longestOpenIssues={longestOpenIssues}
-            mostExpensiveIssues={mostExpensiveIssues}
-            loading={loading}
-            error={error}
-            fetchLongestOpenIssues={() => dispatch(fetchLongestOpenIssues())}
-            fetchMostExpensiveIssues={() => dispatch(fetchMostExpensiveIssues())}
-          />
-        ),
+        content: <IssuesCharts bmProjects={bmProjects} />,
       },
       {
         title: 'Tools and Equipment Tracking',
