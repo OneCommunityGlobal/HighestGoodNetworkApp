@@ -7,8 +7,8 @@ import Loading from '../../common/Loading';
 export default function VolunteerHoursDistribution({
   isLoading,
   darkMode,
-  usersTimeEntries = [],
-  usersOverTimeEntries = [],
+  usersTimeEntries,
+  usersOverTimeEntries,
 }) {
   const [userData, setUserData] = useState([]);
 

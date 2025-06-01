@@ -305,12 +305,12 @@ export function Header(props) {
           setModalVisible(true);
           // Assistant Manager or Volunteer message
           setModalContent(
-            `If you are seeing this, it’s because you are on a team! As a member of a team, you need to turn in your work 24 hours earlier, i.e. FRIDAY night at midnight Pacific Time. This is so your manager has time to review it and submit and report on your entire team’s work by the usual Saturday night deadline. For any work you plan on completing Saturday, please take pictures as best you can and include it in your summary as if it were already done.\n\nBy dismissing this notice, you acknowledge you understand and will do this.`,
+            `If you are seeing this, it's because you are on a team! As a member of a team, you need to turn in your work 24 hours earlier, i.e. FRIDAY night at midnight Pacific Time. This is so your manager has time to review it and submit and report on your entire team's work by the usual Saturday night deadline. For any work you plan on completing Saturday, please take pictures as best you can and include it in your summary as if it were already done.\n\nBy dismissing this notice, you acknowledge you understand and will do this.`,
           );
         } else if (user.role === 'Manager') {
           setModalVisible(true);
           // Manager message
-          setModalContent(`If you are seeing this, it’s because you are a Manager of a team! Remember to turn in your team’s work by the Saturday night at midnight (Pacific Time) deadline. Every member of your team gets a notice like this too. Theirs tells them to get you their work 24 hours early so you have time to review it and submit it. If you have to remind them repeatedly (4+ times, track it on their Google Doc), they should receive a blue square.
+          setModalContent(`If you are seeing this, it's because you are a Manager of a team! Remember to turn in your team's work by the Saturday night at midnight (Pacific Time) deadline. Every member of your team gets a notice like this too. Theirs tells them to get you their work 24 hours early so you have time to review it and submit it. If you have to remind them repeatedly (4+ times, track it on their Google Doc), they should receive a blue square.
           `);
         }
       }
@@ -346,7 +346,7 @@ export function Header(props) {
         <NavbarToggler onClick={toggle} />
         {isAuthenticated && (
           <Collapse isOpen={isOpen} navbar>
-            <Nav className="ml-auto nav-links" navbar>
+            <Nav className="ml-auto nav-links d-flex" navbar>
               <div
                 className="d-flex justify-content-center align-items-center"
                 style={{ width: '100%' }}
@@ -522,10 +522,17 @@ export function Header(props) {
                 )}
                 <NavItem className="responsive-spacing">
                   <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
-                    <img
-                      src={`${profilePic || '/pfp-default-header.png'}`}
-                      alt=""
-                      style={{ maxWidth: '60px', maxHeight: '60px' }}
+                    <div
+                      style={{
+                        width: '60px',
+                        height: '60px',
+                        minWidth: '60px',
+                        minHeight: '60px',
+                        backgroundImage: `url(${profilePic || '/pfp-default-header.png'})`,
+                        backgroundSize: 'contain',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat'
+                      }}
                       className="dashboardimg"
                     />
                   </NavLink>
