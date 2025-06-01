@@ -2,7 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import styles from './SubscribePage.module.css'; // Import the CSS module
+import confetti from 'canvas-confetti'; // Import canvas-confetti
+import styles from './SubscribePage.module.css';
 import {
   addNonHgnUserEmailSubscription,
   confirmNonHgnUserEmailSubscription,
@@ -16,22 +17,33 @@ function SubscribePage() {
   const [error, setError] = useState('');
   const [confirmationMessage, setConfirmationMessage] = useState('');
   const [confirmationStatus, setConfirmationStatus] = useState(false);
+  const [showThanksPage, setShowThanksPage] = useState(false); // State to control the body content
+
   useEffect(() => {
     const token = query.get('token');
     if (token) {
       confirmNonHgnUserEmailSubscription(token).then(result => {
         if (result.success) {
-          // Handle success
           setConfirmationStatus(true);
-          setConfirmationMessage('Successfully confirmed email subscription');
+          setShowThanksPage(true); // Show the "Thanks for subscribing!" page
         } else {
-          // Handle failure
           setConfirmationStatus(false);
-          setConfirmationMessage('Comfirmation expired, please try again');
+          setConfirmationMessage('Confirmation expired, please try again');
         }
       });
     }
   }, [query]);
+
+  // Trigger confetti when the "Thanks for subscribing!" page is shown
+  useEffect(() => {
+    if (showThanksPage) {
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 },
+      });
+    }
+  }, [showThanksPage]); // Run only when `showThanksPage` changes to `true`
 
   const validateEmail = emailval => {
     return /\S+@\S+\.\S+/.test(emailval);
@@ -44,8 +56,7 @@ function SubscribePage() {
   const handleSubmit = event => {
     event.preventDefault();
     if (validateEmail(email)) {
-      dispatch(addNonHgnUserEmailSubscription(email));
-      // console.log('Email valid, submit to the server:', email);
+      dispatch(addNonHgnUserEmailSubscription(email, () => setShowThanksPage(true))); // Pass callback to change body
       setEmail('');
       setError('');
     } else {
@@ -63,15 +74,24 @@ function SubscribePage() {
     );
   }
 
+  // If the "Thanks for subscribing!" page should be shown
+  if (showThanksPage) {
+    return (
+      <div className={styles.thanksContainer}>
+        <div className={styles.oneCommunityIcon} />
+        <div className={styles.thanksMessage}>Thanks for subscribing!</div>
+      </div>
+    );
+  }
+
+  // Default subscription form (if email is not confirmed)
   return (
     <div className={styles.subscribeContainer}>
       <div className={styles.oneCommunityIcon} />
       <h1 className={styles.header}>Subscribe for Weekly Updates</h1>
-      {/* ... */}
       <p className={styles.description}>
         Join our mailing list for updates. We&apos;ll send a confirmation to ensure you&apos;re the
         owner of the email provided. Once confirmed, we promise only a single email per week.
-        Don&apos;t forget to check your spam folder if you didn&apos;t receive the confirmation!
       </p>
       <p className={styles.note}>
         Want to opt out later? No problem, every email has an unsubscribe link at the bottom.
@@ -88,7 +108,6 @@ function SubscribePage() {
         </button>
         {error && <div className={styles.errorMessage}>{error}</div>}
       </form>
-      {/* ... */}
     </div>
   );
 }
