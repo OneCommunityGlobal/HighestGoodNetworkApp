@@ -66,7 +66,7 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
 
   const maxY = Math.ceil(Math.max(taskHours.count, projectHours.count) * 1.2) + 1;
 
-  const tickInterval = Math.floor(maxY / 10);
+  const tickInterval = Math.floor(maxY / 10) === 0 ? 1 : Math.floor(maxY / 10);
   const greenColor = darkMode ? 'lightgreen' : 'green';
   const chartData = stats.map(item => ({
     name: item.name,
