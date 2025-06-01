@@ -22,7 +22,6 @@ import FaqManagement from 'components/Faq/FaqManagement';
 import FaqHistory from 'components/Faq/FaqHistory';
 import UnansweredFaqs from 'components/Faq/UnansweredFaqs';
 import HeaderRenderer from 'components/Header/HeaderRenderer';
-import IssueDashboard from 'components/BMDashboard/Issues/IssueDashboard';
 import Page1 from './components/HGNForm/pages/Page1';
 import Page2 from './components/HGNForm/pages/Page2';
 import Page3 from './components/HGNForm/pages/Page3';
@@ -80,7 +79,6 @@ import AddTool from './components/BMDashboard/Tools/AddTool';
 import AddTeamMember from './components/BMDashboard/AddTeamMember/AddTeamMember';
 import BMTimeLogger from './components/BMDashboard/BMTimeLogger/BMTimeLogger';
 import Issue from './components/BMDashboard/Issue/Issue';
-
 
 // Community Portal
 import CPProtectedRoute from './components/common/CPDashboard/CPProtectedRoute';
@@ -450,7 +448,6 @@ export default (
           component={WeeklyProjectSummary}
         />
         <BMProtectedRoute path="/bmdashboard/timelog/" component={BMTimeLogger} />
-        <BMProtectedRoute path="/bmdashboard/issues/" component={IssueDashboard} />
 
         <BMProtectedRoute
           path="/bmdashboard/timelog/:projectId"

@@ -5,7 +5,6 @@ import {
   FETCH_ISSUE_TYPES_YEARS_REQUEST,
   FETCH_ISSUE_TYPES_YEARS_SUCCESS,
   FETCH_ISSUE_TYPES_YEARS_FAILURE,
-  SET_ISSUES,
 } from '../../constants/bmdashboard/issueConstants';
 
 const initialState = {
@@ -38,8 +37,7 @@ const issueReducer = (state = initialState, action) => {
       };
     case FETCH_ISSUE_TYPES_YEARS_FAILURE:
       return { ...state, loading: false, error: action.payload };
-    case SET_ISSUES:
-      return { ...state, loading: false, issues: action.payload };
+
     default:
       return state;
   }
