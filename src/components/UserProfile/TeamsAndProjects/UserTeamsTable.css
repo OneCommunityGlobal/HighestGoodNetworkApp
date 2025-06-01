@@ -25,3 +25,7 @@
 .div-addteam .btn-addteam[disabled] {
   pointer-events: none;
 }
+tbody tr td,
+thead tr th {
+  text-align: center;
+}
