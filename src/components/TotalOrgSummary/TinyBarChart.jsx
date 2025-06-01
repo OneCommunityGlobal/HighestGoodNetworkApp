@@ -33,12 +33,15 @@ function ProjectLabel({ viewBox, info }) {
           minWidth: 120,
           minHeight: 60,
           pointerEvents: 'none',
+          display: 'grid',
+          justifyItems: 'center',
+          gap: 1,
         }}
       >
         <div style={{ color: '#444', fontWeight: 'bold', fontSize: 15 }}>Projects</div>
-        <div style={{ color: '#222', fontWeight: 'bold', fontSize: 15 }}>{info.amount}</div>
-        <div style={{ color: '#666', fontSize: 13 }}>{info.percentage}</div>
-        <div style={{ color: info.fontcolor, fontSize: 13 }}>{info.change}</div>
+        <div style={{ color: '#222', fontWeight: 'bold', fontSize: 14 }}>{info.amount}</div>
+        <div style={{ color: '#666', fontSize: 10 }}>({info.percentage})</div>
+        <div style={{ color: info.fontcolor, fontSize: 10, fontWeight: 'bold' }}>{info.change}</div>
       </div>
     </foreignObject>
   );
