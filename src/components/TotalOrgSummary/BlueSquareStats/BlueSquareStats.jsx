@@ -14,6 +14,16 @@ function BlueSquareStats({ isLoading, blueSquareStats, comparisonType }) {
     );
   }
 
+  // Uncomment and remove blueSquareStats prop to test data with values
+  // const blueSquareStats = {
+  //   totalBlueSquares: { count: 260, comparisonPercentage: 0 },
+  //   missingHours: { count: 12, percentageOutOfTotal: 5 },
+  //   missingSummary: { count: 10, percentageOutOfTotal: 4 },
+  //   missingHoursAndSummary: { count: 96, percentageOutOfTotal: 37 },
+  //   vacationTime: { count: 100, percentageOutOfTotal: 38 },
+  //   other: { count: 42, percentageOutOfTotal: 16 },
+  // };
+
   const {
     totalBlueSquares,
     missingHours,
@@ -31,6 +41,8 @@ function BlueSquareStats({ isLoading, blueSquareStats, comparisonType }) {
     { label: 'Other', value: other.count },
   ];
 
+  const hasData = data.every(item => item.value !== 0);
+
   return (
     <section className="blue-square-stats">
       <div className="blue-square-stats-pie-chart">
@@ -41,6 +53,7 @@ function BlueSquareStats({ isLoading, blueSquareStats, comparisonType }) {
           data={data}
           colors={BLUE_SQUARE_STATS_COLORS}
           comparisonType={comparisonType}
+          hasData={hasData}
         />
       </div>
     </section>
