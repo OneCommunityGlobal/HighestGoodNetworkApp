@@ -9,6 +9,9 @@ import SummaryBar from '../SummaryBar/SummaryBar';
 import './Dashboard.css';
 import '../../App.css';
 import TimeOffRequestDetailModal from './TimeOffRequestDetailModal';
+
+import FeedbackModal from '../FeedbackModal/FeedbackModal';
+
 import { cantUpdateDevAdminDetails } from 'utils/permissions';
 import {
   DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
@@ -17,6 +20,7 @@ import {
 } from 'utils/constants';
 import { useDispatch } from 'react-redux';
 import { updateSummaryBarData } from 'actions/dashboardActions';
+
 
 export function Dashboard(props) {
   const [popup, setPopup] = useState(false);
@@ -73,6 +77,7 @@ export function Dashboard(props) {
 
   return (
     <Container fluid className={darkMode ? 'bg-oxford-blue' : ''}>
+      <FeedbackModal />
       <SummaryBar
         displayUserId={displayUserId}
         toggleSubmitForm={toggle}
