@@ -8,7 +8,6 @@ import { boxStyle, boxStyleDark } from '~/styles';
 
 function GeneratePdfReport({ summaries, weekIndex, weekDates, darkMode }) {
   const generateFormattedReport = () => {
-    pdfMake.vfs = pdfFonts.pdfMake.vfs;
     // Replace any style copied into the weekly summary message.
     const styleRegex = /<style([\S\s]*?)>([\S\s]*?)<\/style>/gim;
     const styleInlineRegex = /style="([\S\s]*?)"/gim;
