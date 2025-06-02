@@ -2,7 +2,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import * as actions from '../followUpActions';
 import * as types from '../../constants/followUpConstants';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 
 jest.mock('axios');
 jest.mock('react-toastify', () => ({

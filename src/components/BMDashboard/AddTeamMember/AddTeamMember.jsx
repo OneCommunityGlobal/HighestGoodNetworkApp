@@ -4,7 +4,7 @@ import { MdOutlinePersonAddAlt1 } from 'react-icons/md';
 import './AddTeamMember.css';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-import { ENDPOINTS } from '../../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 
 function AddTeamMember() {
   const initialState = {

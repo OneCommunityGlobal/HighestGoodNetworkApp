@@ -4,9 +4,9 @@
 import { Component } from 'react';
 import { connect } from 'react-redux';
 import { Container, Button } from 'reactstrap';
-import { boxStyle, boxStyleDark } from 'styles';
-import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
-import { searchWithAccent } from 'utils/search';
+import { boxStyle, boxStyleDark } from '~/styles';
+import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
+import { searchWithAccent } from '~/utils/search';
 import moment from 'moment-timezone';
 import { fetchAllProjects } from '../../actions/projects';
 import { getAllUserTeams } from '../../actions/allTeamsAction';

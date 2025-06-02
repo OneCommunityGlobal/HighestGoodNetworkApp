@@ -11,7 +11,7 @@ import readXlsxFile from 'read-excel-file';
 import { getPopupById } from './../../../../../actions/popupEditorAction';
 import { TASK_IMPORT_POPUP_ID } from './../../../../../constants/popupId';
 import ReactHtmlParser from 'react-html-parser';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import '../../../../Header/DarkMode.css'
 
 const ImportTask = props => {

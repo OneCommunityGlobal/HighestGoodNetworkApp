@@ -14,7 +14,7 @@ import {
   ModalHeader,
 } from 'reactstrap';
 import './Badge.css';
-import BadgeSummaryViz from 'components/Reports/BadgeSummaryViz';
+import BadgeSummaryViz from '~/components/Reports/BadgeSummaryViz';
 import NewBadges from './NewBadges';
 import OldBadges from './OldBadges';
 import { WEEK_DIFF } from '../../constants/badge';

@@ -6,7 +6,7 @@ import {
   updateOwnerMessageAction,
 } from '../ownerMessageAction';
 import * as types from '../../constants/ownerMessageConstants';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 
 jest.mock('axios');
 

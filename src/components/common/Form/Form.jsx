@@ -4,7 +4,7 @@ import { Component } from 'react';
 import Joi from 'joi-browser';
 import { cloneDeep, isEqual, groupBy } from 'lodash';
 import { Link } from 'react-router-dom';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import Input from '../Input';
 import Dropdown from '../Dropdown';
 import Radio from '../Radio';

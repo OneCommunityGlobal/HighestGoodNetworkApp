@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart } from '@fortawesome/free-regular-svg-icons';
 import './LessonCard.css';
 import ReactHtmlParser from 'react-html-parser';
-import { formatDateAndTime } from 'utils/formatDate';
+import { formatDateAndTime } from '~/utils/formatDate';
 import DeleteLessonCardPopUp from './DeleteLessonCardPopUp';
 
 function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, handleLike }) {

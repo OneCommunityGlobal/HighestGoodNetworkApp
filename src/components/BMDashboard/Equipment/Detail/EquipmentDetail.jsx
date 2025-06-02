@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Container, Button } from 'reactstrap';
 import { useHistory, useParams } from 'react-router-dom';
-import { fetchEquipmentById } from 'actions/bmdashboard/equipmentActions';
+import { fetchEquipmentById } from '~/actions/bmdashboard/equipmentActions';
 import { v4 as uuidv4 } from 'uuid';
 import EquipmentModal from '../EquipmentModal';
 import '../EquipmentDetailPage.css';

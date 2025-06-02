@@ -3,7 +3,7 @@ import thunk from 'redux-thunk';
 import axios from 'axios';
 import * as actions from '../../constants/allUsersTimeEntries';
 import { getAllUsersTimeEntries } from '../allUsersTimeEntries';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 
 jest.mock('axios');
 

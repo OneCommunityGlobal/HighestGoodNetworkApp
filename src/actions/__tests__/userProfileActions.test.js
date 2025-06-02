@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import * as actions from '../userProfile';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import {
   GET_USER_PROFILE,
   GET_USER_TASKS,
@@ -23,7 +23,7 @@ jest.mock('react-toastify', () => ({
   },
 }));
 
-jest.mock('../../utils/URL', () => ({
+jest.mock('~/utils/URL', () => ({
   ENDPOINTS: {
     USER_PROFILE: jest.fn(id => `/api/users/${id}`),
     TASKS_BY_USERID: jest.fn(id => `/api/tasks/${id}`),
@@ -39,7 +39,7 @@ describe('User Profile Actions', () => {
   beforeEach(() => {
     dispatch = jest.fn(action => action);
     jest.clearAllMocks();
-    jest.spyOn(console, 'log').mockImplementation(() => {});
+    jest.spyOn(console, 'log').mockImplementation(() => { });
   });
 
   afterEach(() => {

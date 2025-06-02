@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
-import { normalizeVolunteerStats } from 'utils/totalOrgSummary';
-import Loading from 'components/common/Loading';
+import { normalizeVolunteerStats } from '~/utils/totalOrgSummary';
+import Loading from '~/components/common/Loading';
 import StatisticsTab from '../StatisticsTab/StatisticsTab';
 
 function VolunteerStatus({ isLoading, volunteerNumberStats, totalHoursWorked }) {

@@ -6,11 +6,11 @@ import MarkerClusterGroup from 'react-leaflet-cluster';
 import { Button, Container, Spinner } from 'reactstrap';
 import './TeamLocations.css';
 
-import { SEARCH } from 'languages/en/ui';
+import { SEARCH } from '~/languages/en/ui';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import { boxStyle, boxStyleDark } from 'styles';
-import { ApiEndpoint, ENDPOINTS } from '../../utils/URL';
+import { boxStyle, boxStyleDark } from '~/styles';
+import { ApiEndpoint, ENDPOINTS } from '~/utils/URL';
 import AddOrEditPopup from './AddOrEditPopup';
 import ListUsersPopUp from './ListUsersPopUp';
 import MarkerPopup from './MarkerPopup';

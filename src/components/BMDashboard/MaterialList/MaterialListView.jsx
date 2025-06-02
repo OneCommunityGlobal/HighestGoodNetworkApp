@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAllMaterials } from 'actions/bmdashboard/materialsActions';
+import { fetchAllMaterials } from '~/actions/bmdashboard/materialsActions';
 import ItemListView from '../ItemList/ItemListView';
 import UpdateMaterialModal from '../UpdateMaterials/UpdateMaterialModal';
 

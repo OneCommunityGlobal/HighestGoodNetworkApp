@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import {
   GET_BM_LESSONS,
   UPDATE_LESSON,
@@ -64,15 +64,15 @@ export const fetchBMLessons = () => {
           ...lesson,
           author: userProfiles[index]
             ? {
-                id: userProfiles[index]._id,
-                name: `${userProfiles[index].firstName} ${userProfiles[index].lastName}`,
-              }
+              id: userProfiles[index]._id,
+              name: `${userProfiles[index].firstName} ${userProfiles[index].lastName}`,
+            }
             : lesson.author,
           relatedProject: projectDetails[index]
             ? {
-                id: projectDetails[index]._id,
-                name: projectDetails[index].projectName,
-              }
+              id: projectDetails[index]._id,
+              name: projectDetails[index].projectName,
+            }
             : lesson.relatedProject,
         };
       });
@@ -103,15 +103,15 @@ export const fetchSingleBMLesson = lessonId => {
         ...lesson,
         author: userProfile
           ? {
-              id: userProfile._id,
-              name: `${userProfile.firstName} ${userProfile.lastName}`,
-            }
+            id: userProfile._id,
+            name: `${userProfile.firstName} ${userProfile.lastName}`,
+          }
           : lesson.author,
         relatedProject: projectDetails
           ? {
-              id: projectDetails._id,
-              name: projectDetails.projectName,
-            }
+            id: projectDetails._id,
+            name: projectDetails.projectName,
+          }
           : lesson.relatedProject,
       };
       dispatch(setLesson(updatedLesson));

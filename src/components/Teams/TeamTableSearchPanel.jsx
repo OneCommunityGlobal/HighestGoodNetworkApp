@@ -1,5 +1,5 @@
-import hasPermission from 'utils/permissions';
-import { boxStyle, boxStyleDark } from 'styles';
+import hasPermission from '~/utils/permissions';
+import { boxStyle, boxStyleDark } from '~/styles';
 import { connect } from 'react-redux';
 import { useEffect } from 'react';
 import { useRef } from 'react';

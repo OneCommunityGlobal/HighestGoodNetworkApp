@@ -2,8 +2,8 @@
 /* eslint-disable no-use-before-define */
 import { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import SearchProjectByPerson from 'components/SearchProjectByPerson/SearchProjectByPerson';
-import ProjectsList from 'components/BMDashboard/Projects/ProjectsList';
+import SearchProjectByPerson from '~/components/SearchProjectByPerson/SearchProjectByPerson';
+import ProjectsList from '~/components/BMDashboard/Projects/ProjectsList';
 import { fetchAllProjects, modifyProject, clearError } from '../../actions/projects';
 import { fetchProjectsWithActiveUsers } from '../../actions/projectMembers';
 import { getProjectsByUsersName } from '../../actions/userProfile';

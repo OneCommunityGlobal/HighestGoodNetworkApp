@@ -14,7 +14,7 @@ import {
 // Import the constants
 import { GET_TIME_ENTRIES_PERIOD, GET_TIME_ENTRIES_WEEK } from '../../constants/timeEntries';
 // Import ENDPOINTS
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 // Import moment for date manipulation
 // Mock axios for HTTP requests
 
@@ -24,7 +24,7 @@ jest.mock('axios');
 describe('timeEntries action creators', () => {
   // Mock console.error to suppress error output during tests
   beforeAll(() => {
-    jest.spyOn(console, 'error').mockImplementation(() => {});
+    jest.spyOn(console, 'error').mockImplementation(() => { });
   });
 
   afterAll(() => {

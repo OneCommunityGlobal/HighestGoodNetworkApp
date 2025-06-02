@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import { Form, FormGroup, Input, Label, Button, FormFeedback } from 'reactstrap';
 import Joi from 'joi-browser';
-import { loginBMUser } from 'actions/authActions';
+import { loginBMUser } from '~/actions/authActions';
 import './Login.css';
 import logo from '../../../assets/images/logo2.png';
 

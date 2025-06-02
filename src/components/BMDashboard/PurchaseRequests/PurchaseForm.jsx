@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import Joi from 'joi-browser';
 import { Form, FormGroup, Label, Input, Button } from 'reactstrap';
-import { boxStyle } from 'styles';
+import { boxStyle } from '~/styles';
 import BMError from '../shared/BMError';
 import './PurchaseForm.css';
 

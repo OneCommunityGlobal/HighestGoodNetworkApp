@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Button, Table } from 'reactstrap';
 import { toast } from 'react-toastify';
 import moment from 'moment';
-import { fetchAllReusables, postReusableUpdateBulk } from 'actions/bmdashboard/reusableActions';
+import { fetchAllReusables, postReusableUpdateBulk } from '~/actions/bmdashboard/reusableActions';
 import UpdateReusable from '../UpdateReusable';
 
 function UpdateReusablesBulkTable({ date, setDate, project, setProject }) {

@@ -36,8 +36,8 @@ import 'moment-timezone';
 import Joi from 'joi-browser';
 import { toast } from 'react-toastify';
 import classnames from 'classnames';
-import { getUserProfile } from 'actions/userProfile';
-import { boxStyle, boxStyleDark } from 'styles';
+import { getUserProfile } from '~/actions/userProfile';
+import { boxStyle, boxStyleDark } from '~/styles';
 import {
   DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
   DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,

@@ -34,7 +34,7 @@ import {
   postNewTeam,
   deleteTeam,
 } from '../allTeamsAction';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);

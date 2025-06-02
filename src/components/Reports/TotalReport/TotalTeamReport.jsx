@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo, Suspense } from 'react';
-import { ENDPOINTS } from 'utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import axios from 'axios';
 import './TotalReport.css';
 import { Button } from 'reactstrap';

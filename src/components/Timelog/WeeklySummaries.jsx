@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import parse from 'html-react-parser';
 import './Timelog.css';
-import { getUserProfile, updateUserProfile } from 'actions/userProfile';
-import hasPermission from 'utils/permissions';
+import { getUserProfile, updateUserProfile } from '~/actions/userProfile';
+import hasPermission from '~/utils/permissions';
 import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react';
 import Spinner from 'react-bootstrap/Spinner';

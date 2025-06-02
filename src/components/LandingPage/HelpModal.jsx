@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { Modal, Button } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import axios from 'axios';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import './HelpModal.css';
 
 function HelpModal({ show, onHide, auth }) {

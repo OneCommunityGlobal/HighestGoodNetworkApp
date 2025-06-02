@@ -5,10 +5,10 @@ import { FormGroup, Input, Label, Form, Col, Button } from 'reactstrap';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
-import { postMaterialUpdate } from 'actions/bmdashboard/materialsActions';
+import { postMaterialUpdate } from '~/actions/bmdashboard/materialsActions';
 import { toast } from 'react-toastify';
-import { resetMaterialUpdate } from 'actions/bmdashboard/materialsActions';
-import { fetchAllMaterials } from 'actions/bmdashboard/materialsActions';
+import { resetMaterialUpdate } from '~/actions/bmdashboard/materialsActions';
+import { fetchAllMaterials } from '~/actions/bmdashboard/materialsActions';
 
 function UpdateMaterial({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
   const dispatch = useDispatch();

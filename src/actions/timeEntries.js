@@ -9,7 +9,7 @@ import {
   GET_TIME_ENTRIES_PERIOD,
   GET_TIME_ENTRIES_PERIOD_BULK,
 } from '../constants/timeEntries';
-import { ENDPOINTS } from '../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 
 export const setTimeEntriesForWeek = (data, offset) => ({
   type: GET_TIME_ENTRIES_WEEK,

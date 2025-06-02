@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Button, Table } from 'reactstrap';
 import { toast } from 'react-toastify';
 import moment from 'moment';
-import { fetchAllMaterials, postMaterialUpdateBulk } from 'actions/bmdashboard/materialsActions';
+import { fetchAllMaterials, postMaterialUpdateBulk } from '~/actions/bmdashboard/materialsActions';
 import UpdateMaterial from '../UpdateMaterial';
 
 function UpdateMaterialsBulkTable({ date, setDate, project, setProject }) {

@@ -1,5 +1,5 @@
 import { getLeaderboardData, getOrgData } from '../leaderBoardData';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import httpService from '../../services/httpService';
 import {
   getOrgData as getOrgDataActionCreator,

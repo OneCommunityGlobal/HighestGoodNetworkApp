@@ -5,10 +5,10 @@ import { FormGroup, Input, Label, Form, Col, Button } from 'reactstrap';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
-import { postReusableUpdate } from 'actions/bmdashboard/reusableActions';
+import { postReusableUpdate } from '~/actions/bmdashboard/reusableActions';
 import { toast } from 'react-toastify';
-import { resetReusableUpdate } from 'actions/bmdashboard/reusableActions';
-import { fetchAllReusables } from 'actions/bmdashboard/reusableActions';
+import { resetReusableUpdate } from '~/actions/bmdashboard/reusableActions';
+import { fetchAllReusables } from '~/actions/bmdashboard/reusableActions';
 
 function UpdateReusable({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
   const dispatch = useDispatch();

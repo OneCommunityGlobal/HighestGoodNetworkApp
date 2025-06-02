@@ -19,8 +19,8 @@ import {
   UncontrolledTooltip,
 } from 'reactstrap';
 import PhoneInput from 'react-phone-input-2';
-import { ENDPOINTS } from 'utils/URL';
-import httpService from 'services/httpService';
+import { ENDPOINTS } from '~/utils/URL';
+import httpService from '~/services/httpService';
 import { useHistory } from 'react-router-dom';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';

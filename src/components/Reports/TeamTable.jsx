@@ -4,9 +4,9 @@ import { Link } from 'react-router-dom';
 import './TeamTable.css';
 import { Input, FormGroup, FormFeedback } from 'reactstrap';
 import { connect } from 'react-redux';
-import hasPermission from 'utils/permissions';
-import { updateTeam } from 'actions/allTeamsAction';
-import { boxStyle, boxStyleDark } from 'styles';
+import hasPermission from '~/utils/permissions';
+import { updateTeam } from '~/actions/allTeamsAction';
+import { boxStyle, boxStyleDark } from '~/styles';
 
 function TeamTable({ allTeams, auth, darkMode }) {
   // Display project lists

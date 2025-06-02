@@ -8,7 +8,7 @@ import {
 } from '../team'; // Import fetchAllManagingTeams
 import { GET_TEAM_BY_ID } from '../../constants/team';
 import httpService from '../../services/httpService';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 
 jest.mock('../../services/httpService');
 jest.mock('axios'); // Mock axios

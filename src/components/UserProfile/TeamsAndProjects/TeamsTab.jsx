@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { addTeamMember, deleteTeamMember } from 'actions/allTeamsAction';
+import { addTeamMember, deleteTeamMember } from '~/actions/allTeamsAction';
 import { toast } from 'react-toastify';
 import AddTeamPopup from './AddTeamPopup';
 import UserTeamsTable from './UserTeamsTable';

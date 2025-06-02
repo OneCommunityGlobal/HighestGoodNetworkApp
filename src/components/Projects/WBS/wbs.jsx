@@ -10,8 +10,8 @@ import { Link } from 'react-router-dom';
 import { NavItem } from 'reactstrap';
 import AddWBS from './AddWBS';
 import WBSItem from './WBSItem/WBSItem';
-import { boxStyle, boxStyleDark } from 'styles';
-import { getProjectDetail } from 'actions/project';
+import { boxStyle, boxStyleDark } from '~/styles';
+import { getProjectDetail } from '~/actions/project';
 
 const WBS = props => {
   const darkMode = props.state.theme.darkMode;

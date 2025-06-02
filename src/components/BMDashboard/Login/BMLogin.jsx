@@ -4,7 +4,7 @@ import { Redirect } from 'react-router-dom';
 import { Form, FormGroup, FormText, Input, Label, Button, FormFeedback } from 'reactstrap';
 import Joi from 'joi-browser';
 
-import { loginBMUser } from 'actions/authActions';
+import { loginBMUser } from '~/actions/authActions';
 
 function BMLogin(props) {
   const { dispatch, auth, history, location } = props;

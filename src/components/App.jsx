@@ -3,7 +3,7 @@ import jwtDecode from 'jwt-decode';
 import { Provider, useSelector } from 'react-redux';
 import { BrowserRouter as Router, useLocation } from 'react-router-dom';
 import { PersistGate } from 'redux-persist/integration/react';
-import { ModalProvider } from 'context/ModalContext';
+import { ModalProvider } from '../context/ModalContext';
 import routes from '../routes';
 import logger from '../services/logService';
 

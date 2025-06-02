@@ -12,7 +12,7 @@ import {
   updateTeamMembersTimeEntrySuccess,
   deleteTaskNotificationSuccess,
 } from '../../components/TeamMemberTasks/actions';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 
 jest.mock('axios');
 

@@ -12,7 +12,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Popover from 'react-bootstrap/Popover';
-import hasPermission from 'utils/permissions';
+import hasPermission from '~/utils/permissions';
 import {
   postNewWarning,
   getWarningDescriptions,

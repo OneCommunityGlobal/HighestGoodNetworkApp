@@ -6,7 +6,7 @@ import { Button, Input } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
 import Joi from 'joi-browser';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import forgotPassword from '../../services/authorizationService';
 
 const ForgotPassword = React.memo(() => {

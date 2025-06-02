@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { getProjectDetail, setProjectDetail } from '../project';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import { GET_PROJECT_BY_ID } from '../../constants/project';
 
 jest.mock('axios');

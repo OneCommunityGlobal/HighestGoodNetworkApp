@@ -12,7 +12,7 @@ import ReactTooltip from 'react-tooltip'; // Importing react-tooltip for tooltip
 import { updateUserProfile, getUserProfile } from '../../actions/userProfile';
 import { boxStyle, boxStyleDark } from '../../styles';
 import '../Header/DarkMode.css';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import { ModalContext } from '../../context/ModalContext';
 import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
 import UserPermissionsPopUp from './UserPermissionsPopUp';

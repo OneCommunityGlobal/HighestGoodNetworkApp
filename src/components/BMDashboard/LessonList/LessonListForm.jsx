@@ -5,7 +5,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './LessonListForm.css';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-import { ENDPOINTS } from 'utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import Lessons from './Lessons';
 import ConfirmationModal from './ConfirmationModal';
 

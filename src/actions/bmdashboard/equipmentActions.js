@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { SET_EQUIPMENTS } from '../../constants/bmdashboard/equipmentConstants';
 import { GET_ERRORS } from '../../constants/errors';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 
 export const setEquipment = payload => {
   return {

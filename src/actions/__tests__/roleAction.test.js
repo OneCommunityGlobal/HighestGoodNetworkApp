@@ -1,7 +1,7 @@
 import axios from 'axios';
 import * as actions from '../role';
 import * as types from '../../constants/role';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 
 jest.mock('axios');
 

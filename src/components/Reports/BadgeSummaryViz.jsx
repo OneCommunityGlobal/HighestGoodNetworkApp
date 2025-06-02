@@ -14,7 +14,7 @@ import {
   UncontrolledTooltip,
 } from 'reactstrap';
 import { useSelector } from 'react-redux';
-import BadgeImage from 'components/Badge/BadgeImage';
+import BadgeImage from '~/components/Badge/BadgeImage';
 import { boxStyle, boxStyleDark } from '../../styles';
 import '../Badge/BadgeReport.css';
 import './BadgeSummaryViz.css';

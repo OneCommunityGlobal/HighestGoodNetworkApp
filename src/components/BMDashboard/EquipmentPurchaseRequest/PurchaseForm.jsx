@@ -5,8 +5,8 @@ import { toast } from 'react-toastify';
 import { Form, FormGroup, FormText, Label, Input, Button } from 'reactstrap';
 import Joi from 'joi-browser';
 
-import { boxStyle } from 'styles';
-import { purchaseEquipment } from 'actions/bmdashboard/equipmentActions';
+import { boxStyle } from '~/styles';
+import { purchaseEquipment } from '~/actions/bmdashboard/equipmentActions';
 
 import './PurchaseForm.css';
 

@@ -8,14 +8,14 @@ import {
   faExpandArrowsAlt,
   faCompressArrowsAlt,
 } from '@fortawesome/free-solid-svg-icons';
-import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
+import CopyToClipboard from '~/components/common/Clipboard/CopyToClipboard';
 import { Table, Progress } from 'reactstrap';
 
 import { Link, useHistory } from 'react-router-dom';
-import hasPermission from 'utils/permissions';
+import hasPermission from '~/utils/permissions';
 import './style.css';
 
-import Warning from 'components/Warnings/Warnings';
+import Warning from '~/components/Warnings/Warnings';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment-timezone';
 

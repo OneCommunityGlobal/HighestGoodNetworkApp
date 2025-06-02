@@ -1,7 +1,7 @@
 import axios from 'axios'; // Import axios for mocking
 import { toast } from 'react-toastify';
 import { createOrUpdateTaskNotificationHTTP } from '../taskNotification'; // Import the function to be tested
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 // Import the endpoints
 jest.mock('axios'); // Mock axios
 describe('createOrUpdateTaskNotificationHTTP', () => {

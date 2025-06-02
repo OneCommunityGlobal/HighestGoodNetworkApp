@@ -1,6 +1,6 @@
-import { Stub } from "components/common/Stub";
+import { Stub } from "~/components/common/Stub";
 import "./WbsTable.css";
-import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
+import CopyToClipboard from '~/components/common/Clipboard/CopyToClipboard';
 
 // eslint-disable-next-line import/prefer-default-export
 export function WbsTable({ wbs, skip, take, match, canViewWBS, darkMode }) {

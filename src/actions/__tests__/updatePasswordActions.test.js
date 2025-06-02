@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { updatePassword, forcePasswordUpdate } from '../updatePassword';
 import { GET_ERRORS } from '../../constants/errors';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 
 jest.mock('axios');
 

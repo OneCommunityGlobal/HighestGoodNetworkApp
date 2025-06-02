@@ -1,7 +1,7 @@
 import { Component } from 'react';
 import './Collaboration.css';
 import { toast } from 'react-toastify';
-import { ApiEndpoint } from 'utils/URL';
+import { ApiEndpoint } from '~/utils/URL';
 import OneCommunityImage from './One-Community-Horizontal-Homepage-Header-980x140px-2.png';
 
 import 'leaflet/dist/leaflet.css';

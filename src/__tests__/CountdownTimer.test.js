@@ -2,7 +2,7 @@ import moment from 'moment';
 import { render, screen, waitFor } from '@testing-library/react';
 import { unmountComponentAtNode } from 'react-dom';
 import '@testing-library/jest-dom/extend-expect';
-import CountdownTimer from 'components/WeeklySummary/CountdownTimer';
+import CountdownTimer from '~/components/WeeklySummary/CountdownTimer';
 
 // Mock react-toastify
 jest.mock('react-toastify', () => ({

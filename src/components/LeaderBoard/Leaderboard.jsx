@@ -24,20 +24,20 @@ import {
   assignStarDotColors,
   showStar,
   viewZeroHouraMembers,
-} from 'utils/leaderboardPermissions';
-import hasPermission from 'utils/permissions';
-// import MouseoverTextTotalTimeEditButton from 'components/mouseoverText/MouseoverTextTotalTimeEditButton';
+} from '~/utils/leaderboardPermissions';
+import hasPermission from '~/utils/permissions';
+// import MouseoverTextTotalTimeEditButton from '~/components/mouseoverText/MouseoverTextTotalTimeEditButton';
 import { toast } from 'react-toastify';
-import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
 import moment from 'moment-timezone';
-import { boxStyle } from 'styles';
+import { boxStyle } from '~/styles';
 import axios from 'axios';
-import { getUserProfile } from 'actions/userProfile';
+import { getUserProfile } from '~/actions/userProfile';
 import { useDispatch, useSelector } from 'react-redux';
 import { boxStyleDark } from '../../styles';
 import '../Header/DarkMode.css';
 import '../UserProfile/TeamsAndProjects/autoComplete.css';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
