@@ -11,7 +11,7 @@ import {
 import thunk from 'redux-thunk';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
-import { ModalProvider } from 'context/ModalContext';
+import { ModalProvider } from '~/context/ModalContext';
 import axios from 'axios';
 import CreateNewRolePopup from '../NewRolePopUp';
 

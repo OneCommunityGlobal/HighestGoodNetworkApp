@@ -9,7 +9,7 @@ import { Provider } from 'react-redux';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { themeMock } from '__tests__/mockStates';
-import { ModalContext } from 'context/ModalContext';
+import { ModalContext } from '~/context/ModalContext';
 import UserPermissionsPopUp from '../UserPermissionsPopUp';
 
 const mockStore = configureStore([thunk]);

@@ -11,7 +11,7 @@ import axios from 'axios';
 import { Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
 import { themeMock } from '__tests__/mockStates';
-import { ModalProvider } from 'context/ModalContext';
+import { ModalProvider } from '~/context/ModalContext';
 import UserRoleTab from '../UserRoleTab';
 
 const mockStore = configureStore([thunk]);

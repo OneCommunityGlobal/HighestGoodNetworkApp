@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { useSelector } from 'react-redux';
 // eslint-disable-next-line import/no-cycle
-import { ModalContext } from 'context/ModalContext';
+import { ModalContext } from '~/context/ModalContext';
 // eslint-disable-next-line import/no-cycle
 import PermissionList from './PermissionList';
 import hasPermission from '../../utils/permissions';

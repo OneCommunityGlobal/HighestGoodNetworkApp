@@ -10,7 +10,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
-import { ModalContext } from 'context/ModalContext';
+import { ModalContext } from '~/context/ModalContext';
 import RolePermissions from '../RolePermissions';
 
 const mockModalContext = {

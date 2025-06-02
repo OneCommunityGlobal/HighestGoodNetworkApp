@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-import { ENDPOINTS } from '../../~/utils/URL'; // adjust path
+import { ENDPOINTS } from '~/utils/URL'; // adjust path
 
 /**
  * Custom hook to search users by query string with debounce.

@@ -6,7 +6,7 @@ import { GET_ERRORS } from '../../../../constants/errors.js';
 import { createMemoryHistory } from 'history';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { ENDPOINTS } from '../~/utils/URL.js';
+import { ENDPOINTS } from '~/utils/URL.js';
 import * as Message from '../../../../languages/en/messages.js';
 import { render, fireEvent, waitFor, screen, within } from '@testing-library/react';
 import routes from '../../../../routes.js';

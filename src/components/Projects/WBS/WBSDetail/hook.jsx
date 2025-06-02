@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 // import { useDispatch, useSelector } from 'react-redux'
 import axios from 'axios'
 
-import { ENDPOINTS } from '../~/utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 
 const filterAndSort = (tasks, level) => {
   return tasks.sort((a, b) => {

@@ -5,7 +5,7 @@ import { Route } from 'react-router-dom';
 import { screen, act } from '@testing-library/react';
 import configureMockStore from 'redux-mock-store';
 import userEvent from '@testing-library/user-event';
-import { ModalProvider } from 'context/ModalContext';
+import { ModalProvider } from '~/context/ModalContext';
 import axios from 'axios';
 import { renderWithRouterMatch } from '../../__tests__/utils';
 import PermissionsManagement from './PermissionsManagement';
