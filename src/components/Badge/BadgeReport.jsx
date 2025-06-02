@@ -16,7 +16,7 @@ import {
   UncontrolledTooltip,
 } from 'reactstrap';
 import pdfMake from "pdfmake/build/pdfmake";
-import pdfFonts from "pdfmake/build/vfs_fonts";
+import "pdfmake/build/vfs_fonts";
 import htmlToPdfmake from 'html-to-pdfmake';
 import moment from 'moment';
 import 'moment-timezone';
@@ -31,12 +31,6 @@ import './BadgeReport.css';
 import { getUserProfile } from '../../actions/userProfile';
 import { PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE } from '~/utils/constants';
 import BadgeImage from './BadgeImage';
-
-if (pdfMake && pdfFonts && pdfFonts.pdfMake && pdfFonts.pdfMake.vfs) {
-  pdfMake.vfs = pdfFonts.pdfMake.vfs;
-} else {
-  console.error('pdfMake or pdfMake.vfs is not available');
-}
 
 function BadgeReport(props) {
   const [sortBadges, setSortBadges] = useState(JSON.parse(JSON.stringify(props.badges)) || []);
