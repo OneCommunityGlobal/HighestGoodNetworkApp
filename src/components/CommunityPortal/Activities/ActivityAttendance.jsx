@@ -1,20 +1,17 @@
-import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { v4 as uuidv4 } from 'uuid';
-import { FaRegClock, FaIdCard } from 'react-icons/fa'; // Import icons
+import { FaRegClock, FaIdCard } from 'react-icons/fa';
 import './ActivityAttendance.css';
+import { useState } from 'react';
 import profileImg from '../../../assets/images/profile.png';
 
-// Register Chart.js components
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-// StatsChart Component (Donut Chart)
 function StatsChart({ stats }) {
   const totalMembers = stats.find(stat => stat.title === 'Total Community Members')?.value || 1;
   const registered = stats.find(stat => stat.title === 'Registered')?.value || 0;
-
-  // Calculate Percentage of Registered Users
   const percentage = ((registered / totalMembers) * 100).toFixed(1);
 
   const data = {
@@ -45,29 +42,20 @@ function StatsChart({ stats }) {
   );
 }
 
-// Function to Convert Data & Download as CSV
 const exportToCSV = students => {
-  // Define CSV Header
   let csvContent = 'data:text/csv;charset=utf-8,Name,Time In,ID\n';
-
-  // Add Student Data
   students.forEach(({ name, time, id }) => {
     csvContent += `${name},${time},${id}\n`;
   });
-
-  // Create Blob URL for CSV File
   const encodedUri = encodeURI(csvContent);
   const link = document.createElement('a');
   link.setAttribute('href', encodedUri);
   link.setAttribute('download', 'student_data.csv');
-
-  // Trigger Download
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
 };
 
-// StatsCard Component
 function StatsCard({ title, value, color }) {
   return (
     <div className="stats-card">
@@ -79,24 +67,18 @@ function StatsCard({ title, value, color }) {
   );
 }
 
-// StudentRow Component
 function StudentRow({ img, name, time, id }) {
   return (
     <div className="student-row">
-      {/* Left - Image & Name */}
       <div className="student-left">
         <img src={img} alt={name} className="student-img" />
         <div className="student-name">{name}</div>
       </div>
-
-      {/* Center - Time (Stacked) */}
       <div className="student-center">
         <div className="student-time">
           <FaRegClock className="student-icon" /> {time}
         </div>
       </div>
-
-      {/* Right - ID (Stacked) */}
       <div className="student-right">
         <div className="student-id">
           <FaIdCard className="student-icon" /> {id}
@@ -106,7 +88,6 @@ function StudentRow({ img, name, time, id }) {
   );
 }
 
-// LiveUpdates Component with Search
 function LiveUpdates({ students, searchTerm }) {
   const filteredStudents = students.filter(student =>
     student.name.toLowerCase().includes(searchTerm.toLowerCase()),
@@ -139,8 +120,8 @@ function LiveUpdates({ students, searchTerm }) {
   );
 }
 
-// Main ActivityAttendance Component
 function ActivityAttendance() {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [searchTerm, setSearchTerm] = useState('');
 
   const statsData = [
@@ -158,38 +139,38 @@ function ActivityAttendance() {
   ];
 
   return (
-    <div className="dashboard-container">
-      {/* Title and Search Bar */}
-      <div className="dashboard-title">
-        <div className="title-text">
-          <h2>Welcome Admin</h2>
-          <p>Senior Admin - One Community</p>
-        </div>
-
-        {/* Search Bar */}
-        <div className="search-container">
-          <input
-            type="text"
-            placeholder="Search Students..."
-            className="search-bar"
-            value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
-          />
-        </div>
-      </div>
-
-      <div className="dashboard-main">
-        <div className="stats-chart-container">
-          <StatsChart stats={statsData} />
-          <div className="stats-grid">
-            {statsData.map(stat => (
-              <StatsCard key={stat.id} title={stat.title} value={stat.value} color={stat.color} />
-            ))}
+    <div className={`activity-attendance-page ${darkMode ? 'activity-attendance-dark-mode' : ''}`}>
+      <div className="dashboard-container">
+        {/* Title and Search Bar */}
+        <div className="dashboard-title">
+          <div className="title-text">
+            <h2>Welcome Admin</h2>
+            <p>Senior Admin - One Community</p>
+          </div>
+          <div className="search-container">
+            <input
+              type="text"
+              placeholder="Search Students..."
+              className="search-bar"
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+            />
           </div>
         </div>
 
-        {/* Live Student Updates */}
-        <LiveUpdates students={students} searchTerm={searchTerm} />
+        <div className="dashboard-main">
+          <div className="stats-chart-container">
+            <StatsChart stats={statsData} />
+            <div className="stats-grid">
+              {statsData.map(stat => (
+                <StatsCard key={stat.id} title={stat.title} value={stat.value} color={stat.color} />
+              ))}
+            </div>
+          </div>
+
+          {/* Live Student Updates */}
+          <LiveUpdates students={students} searchTerm={searchTerm} />
+        </div>
       </div>
     </div>
   );
