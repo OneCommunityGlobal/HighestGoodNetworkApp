@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { connect } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
-import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from 'languages/en/messages';
+import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from '~/languages/en/messages';
 import DayPickerInput from 'react-day-picker/DayPickerInput';
 import 'react-day-picker/lib/style.css';
 import dateFnsFormat from 'date-fns/format';
