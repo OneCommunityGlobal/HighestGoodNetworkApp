@@ -75,7 +75,7 @@ const store = mockStore({
   role: rolesMock
 })
 
-jest.mock('axios');
+vi.mock('axios');
 
 describe("TeamMemberTasks component",()=>{
 

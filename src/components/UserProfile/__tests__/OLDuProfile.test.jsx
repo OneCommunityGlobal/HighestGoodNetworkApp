@@ -10,7 +10,7 @@ test.skip('it skips tests because redux', () => {
 
 // describe("UserPage", () => {
 //   it("should call componentDidMount onload", () => {
-//     const spy = jest.spyOn(UserProfile.prototype, "componentDidMount");
+//     const spy = vi.spyOn(UserProfile.prototype, "componentDidMount");
 //     let userProfile = render(<UserProfile />);
 //     expect(spy).toHaveBeenCalled();
 //   });
@@ -19,7 +19,7 @@ test.skip('it skips tests because redux', () => {
 //     let userId = 1234;
 //     let props = { match: { params: { userId } } };
 //     let userProfileService = require("../services/userProfileService");
-//     const spy = jest.spyOn(userProfileService, "getUserProfile");
+//     const spy = vi.spyOn(userProfileService, "getUserProfile");
 //     let userProfile = render(<UserProfile {...props} />);
 //     userProfile.instance().componentDidMount();
 //     expect(spy).toHaveBeenCalledWith(userId);
@@ -30,10 +30,10 @@ test.skip('it skips tests because redux', () => {
 //     let props = { match: { params: { userId } } };
 //     let userProfileService = require("../services/userProfileService");
 //     let response = { status: 400 };
-//     userProfileService.getUserProfile = jest.fn(() => {
+//     userProfileService.getUserProfile = vi.fn(() => {
 //       throw { response };
 //     });
-//     toast.error = jest.fn();
+//     toast.error = vi.fn();
 //     let userProfile = render(<UserProfile {...props} />);
 //     userProfile.instance().componentDidMount();
 //     let params = [
@@ -48,10 +48,10 @@ test.skip('it skips tests because redux', () => {
 //     let props = { match: { params: { userId } } };
 //     let userProfileService = require("../services/userProfileService");
 //     let response = { status: 400 };
-//     userProfileService.getUserProfile = jest.fn(() => {
+//     userProfileService.getUserProfile = vi.fn(() => {
 //       return { response };
 //     });
-//     const spy = jest.spyOn(UserProfile.prototype, "setState");
+//     const spy = vi.spyOn(UserProfile.prototype, "setState");
 //     let userProfile = render(<UserProfile {...props} />);
 //     await userProfile.instance().componentDidMount();
 //     expect(spy).toHaveBeenCalled();
@@ -62,10 +62,10 @@ test.skip('it skips tests because redux', () => {
 //     let props = { match: { params: { userId } } };
 //     let userProfileService = require("../services/userProfileService");
 //     let response = { status: 400 };
-//     userProfileService.putUserProfileData = jest.fn(() => {
+//     userProfileService.putUserProfileData = vi.fn(() => {
 //       throw { response };
 //     });
-//     toast.error = jest.fn();
+//     toast.error = vi.fn();
 //     let userProfile = render(<UserProfile {...props} />);
 //     userProfile.instance().handleSubmit();
 //     expect(toast.error).toHaveBeenCalled();
@@ -76,10 +76,10 @@ test.skip('it skips tests because redux', () => {
 //     let props = { match: { params: { userId } } };
 //     let userProfileService = require("../services/userProfileService");
 //     let response = { status: 200 };
-//     userProfileService.putUserProfileData = jest.fn(() => {
+//     userProfileService.putUserProfileData = vi.fn(() => {
 //       return { response };
 //     });
-//     toast.success = jest.fn();
+//     toast.success = vi.fn();
 //     let userProfile = render(<UserProfile {...props} />);
 //     await userProfile.instance().handleSubmit();
 //     expect(toast.success).toHaveBeenCalledWith("Edits were successfully saved");

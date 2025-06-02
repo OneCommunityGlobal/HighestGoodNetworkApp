@@ -9,10 +9,10 @@ import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
 import { renderWithProvider } from '../../../../__tests__/utils.js';
 
-jest.mock('axios');
+vi.mock('axios');
 
 beforeAll(() => {
-  jest.spyOn(console, 'log').mockImplementation(() => {});
+  vi.spyOn(console, 'log').mockImplementation(() => {});
 });
 
 afterAll(() => {
@@ -34,14 +34,14 @@ describe('VolunteeringTimeTab Component', () => {
 
     props = {
       userProfile: userProfileMock,
-      setUserProfile: jest.fn(),
+      setUserProfile: vi.fn(),
       role: rolesMock,
       canEdit: true,
       canUpdateSummaryRequirements: true,
       darkMode: false,
-      onStartDate: jest.fn(),
-      onEndDate: jest.fn(),
-      loadUserProfile: jest.fn(),
+      onStartDate: vi.fn(),
+      onEndDate: vi.fn(),
+      loadUserProfile: vi.fn(),
     };
 
     axios.get.mockResolvedValue({

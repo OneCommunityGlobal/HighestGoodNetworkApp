@@ -13,7 +13,7 @@ const initialState = {
 const store = mockStore(initialState);
 
 describe('HistoryModal Component', () => {
-  const mockToggle = jest.fn();
+  const mockToggle = vi.fn();
   const userName = 'John Doe';
   const userHistory = [
     { _id: '1', hours: 10, dateChanged: new Date(2021, 0, 1) },

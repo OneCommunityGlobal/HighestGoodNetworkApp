@@ -20,7 +20,7 @@ describe('<TimelogNavbar/>', () => {
       userProfile: userProfileMock,
       timeEntries: timeEntryMock,
     });
-    store.dispatch = jest.fn();
+    store.dispatch = vi.fn();
     renderWithRouterMatch(
       <Route>
         <TimelogNavbar userId={userId} />

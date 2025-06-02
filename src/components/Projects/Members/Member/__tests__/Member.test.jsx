@@ -5,14 +5,14 @@ import thunk from 'redux-thunk';
 import Member from '../Member';
 import * as projectMembersActions from '../../../../../actions/projectMembers';
 
-jest.mock('utils/permissions', () => ({
-  // ...jest.requireActual('utils/permissions'), // Use the actual implementation for other functions
-  hasPermission: jest.fn(() => true), //
+vi.mock('utils/permissions', () => ({
+  // ...vi.requireActual('utils/permissions'), // Use the actual implementation for other functions
+  hasPermission: vi.fn(() => true), //
 }));
 
 // Mock the action module
-jest.mock('../../../../../actions/projectMembers', () => ({
-  assignProject: jest.fn(),
+vi.mock('../../../../../actions/projectMembers', () => ({
+  assignProject: vi.fn(),
 }));
 
 const mockStore = configureMockStore([thunk]);
@@ -63,7 +63,7 @@ describe('Member Component', () => {
 
   beforeEach(() => {
     // Clear all mocks before each test
-    jest.clearAllMocks();
+    vi.clearAllMocks();
 
     // Mock the assignProject action to return a thunk function that returns a resolved promise
     projectMembersActions.assignProject.mockImplementation(() => {
@@ -75,7 +75,7 @@ describe('Member Component', () => {
   });
 
   it('renders member data correctly', () => {
-    const hasPermission = jest.fn(() => true);
+    const hasPermission = vi.fn(() => true);
     sampleMember.hasPermission = hasPermission;
     const { getByText } = renderMemberRow(sampleMember);
 
@@ -86,7 +86,7 @@ describe('Member Component', () => {
   });
 
   it('generates the correct user profile link', () => {
-    const hasPermission = jest.fn(() => true);
+    const hasPermission = vi.fn(() => true);
     sampleMember.hasPermission = hasPermission;
     const { getByRole } = renderMemberRow(sampleMember);
     // Fetch the anchor element with the name 'Jane Doe'
@@ -95,7 +95,7 @@ describe('Member Component', () => {
   });
 
   it('renders the unassign button if the user has the correct permissions', () => {
-    const hasPermission = jest.fn(() => true);
+    const hasPermission = vi.fn(() => true);
     sampleMember.hasPermission = hasPermission;
     const { container } = renderMemberRow(sampleMember);
     // Verify that the unassign button is there
@@ -104,7 +104,7 @@ describe('Member Component', () => {
   });
 
   it('calls assignProject function with "unAssign" when the unassign button is clicked', async () => {
-    const hasPermission = jest.fn(() => true);
+    const hasPermission = vi.fn(() => true);
     sampleMember.hasPermission = hasPermission;
     const { getByRole } = renderMemberRow(sampleMember);
 
@@ -131,7 +131,7 @@ describe('Member Component', () => {
   });
 
   it('does not render the unassign button without the correct permissions', () => {
-    const hasPermission = jest.fn(() => false);
+    const hasPermission = vi.fn(() => false);
     const nonOwnerProps = {
       ...sampleMember,
       auth: {

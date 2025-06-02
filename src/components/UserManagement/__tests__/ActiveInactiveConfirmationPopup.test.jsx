@@ -10,8 +10,8 @@ import { themeMock } from '../../../__tests__/mockStates';
 const mockStore = configureStore([thunk]);
 
 describe('Active Inactive confirmation popup', () => {
-  const onClose = jest.fn();
-  const setActiveInactive = jest.fn();
+  const onClose = vi.fn();
+  const setActiveInactive = vi.fn();
   const isActive = true;
 
   let store;
@@ -83,8 +83,8 @@ describe('Active Inactive confirmation popup', () => {
 });
 
 describe('Active Inactive confirmation popup More unit tests', () => {
-  const onClose = jest.fn();
-  const setActiveInactive = jest.fn();
+  const onClose = vi.fn();
+  const setActiveInactive = vi.fn();
   const isActive = true;
   const fullname = 'Test User';
   let store;

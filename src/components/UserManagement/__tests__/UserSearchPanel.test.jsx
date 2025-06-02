@@ -51,9 +51,9 @@ describe('user search panel', () => {
       userProfile: nonJaeAccountMock,
       role: nonJaeAccountMock.role,
     });
-    onNewUserClick = jest.fn();
-    onSearch = jest.fn();
-    onActiveFilter = jest.fn();
+    onNewUserClick = vi.fn();
+    onSearch = vi.fn();
+    onActiveFilter = vi.fn();
     renderWithProvider(
       <UserSearchPanel
         onSearch={onSearch}

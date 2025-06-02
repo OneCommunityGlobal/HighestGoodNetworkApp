@@ -3,6 +3,7 @@ import { screen, render, cleanup } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import UserTableFooter from '../UserTableFooter';
 
+
 // function sleep(ms) {
 //   return new Promise((resolve) => setTimeout(resolve, ms));
 // }
@@ -10,8 +11,8 @@ describe('user table footer', () => {
   let onSelectPageSize;
   let onPageSelect;
   beforeEach(() => {
-    onSelectPageSize = jest.fn();
-    onPageSelect = jest.fn();
+    onSelectPageSize = vi.fn();
+    onPageSelect = vi.fn();
     const pageSize = 10;
     const selectedPage = 1;
     const datacount = 60;
@@ -111,8 +112,8 @@ describe('user table footer tests', () => {
   let onSelectPageSize;
   let onPageSelect;
   beforeEach(() => {
-    onSelectPageSize = jest.fn();
-    onPageSelect = jest.fn();
+    onSelectPageSize = vi.fn();
+    onPageSelect = vi.fn();
     const pageSize = 10;
     const selectedPage = 4;
     const datacount = 60;

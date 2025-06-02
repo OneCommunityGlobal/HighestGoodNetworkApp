@@ -11,9 +11,9 @@ import { authMock, userProfileMock, rolesMock } from '../../../__tests__/mockSta
 const mockStore = configureStore([thunk]);
 
 const initialProps = {
-  onCreateNewTeamClick: jest.fn(),
-  onSearch: jest.fn(),
-  hasPermission: jest.fn(),
+  onCreateNewTeamClick: vi.fn(),
+  onSearch: vi.fn(),
+  hasPermission: vi.fn(),
   darkMode: false,
 };
 
@@ -43,7 +43,7 @@ describe('TeamTableSearchPanelBase', () => {
 
   it('renders the "Create New Team" button when user has permission', () => {
     // Explicitly mock hasPermission to return true for 'postTeam'
-    const mockHasPermission = jest.fn(permission => permission === 'postTeam');
+    const mockHasPermission = vi.fn(permission => permission === 'postTeam');
 
     render(
       <Provider store={store}>

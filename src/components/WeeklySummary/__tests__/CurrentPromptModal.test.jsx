@@ -20,9 +20,9 @@ beforeEach(() => {
   });
 });
 
-const mockWriteText = jest.fn();
-const mockToastSuccess = jest.fn();
-jest.mock('axios');
+const mockWriteText = vi.fn();
+const mockToastSuccess = vi.fn();
+vi.mock('axios');
 
 beforeAll(() => {
   Object.defineProperty(navigator, 'clipboard', {
@@ -30,13 +30,13 @@ beforeAll(() => {
     writable: true,
   });
 
-  jest.mock('react-toastify', () => ({
+  vi.mock('react-toastify', () => ({
     toast: { success: mockToastSuccess },
   }));
 });
 
 afterEach(() => {
-  jest.clearAllMocks();
+  vi.clearAllMocks();
 });
 
 describe('CurrentPromptModal component', () => {

@@ -1,13 +1,13 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
+
 import BadgeTableFilter from '~/components/Badge/BadgeTableFilter';
 
-const resetFilters = jest.fn();
-const onBadgeNameSearch = jest.fn();
-const onBadgeDescriptionSearch = jest.fn();
-const onBadgeTypeSearch = jest.fn();
-const onBadgeRankingSort = jest.fn();
+const resetFilters = vi.fn();
+const onBadgeNameSearch = vi.fn();
+const onBadgeDescriptionSearch = vi.fn();
+const onBadgeTypeSearch = vi.fn();
+const onBadgeRankingSort = vi.fn();
 
 const renderComponent = mockData => {
   return render(

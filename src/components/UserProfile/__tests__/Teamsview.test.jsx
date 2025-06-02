@@ -35,7 +35,7 @@ const mockallTeams = [
   },
 ];
 
-const mockhandleTeam = jest.fn();
+const mockhandleTeam = vi.fn();
 
 describe('Team Table Data component', () => {
   it('check team name displaying properly when the user is assigned to teams', () => {

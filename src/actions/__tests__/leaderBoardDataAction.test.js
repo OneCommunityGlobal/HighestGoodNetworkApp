@@ -1,3 +1,5 @@
+
+
 import { getLeaderboardData, getOrgData } from '../leaderBoardData';
 import { ENDPOINTS } from '~/utils/URL';
 import httpService from '../../services/httpService';
@@ -6,14 +8,14 @@ import {
   getLeaderBoardData as getLeaderBoardDataActionCreator,
 } from '../../constants/leaderBoardData';
 
-jest.mock('../../services/httpService');
+vi.mock('../../services/httpService');
 
 describe('leaderBoardActions', () => {
   let dispatch;
 
   beforeEach(() => {
-    dispatch = jest.fn(); // Mock the dispatch function
-    jest.clearAllMocks(); // Clear mocks before each test
+    dispatch = vi.fn(); // Mock the dispatch function
+    vi.clearAllMocks(); // Clear mocks before each test
   });
 
   describe('getLeaderboardData', () => {

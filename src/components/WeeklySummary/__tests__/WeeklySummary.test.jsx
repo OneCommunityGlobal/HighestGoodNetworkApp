@@ -13,10 +13,10 @@ import CountdownTimer from '../CountdownTimer';
 
 import CurrentPromptModal from '../CurrentPromptModal';
 
-jest.mock('../CurrentPromptModal', () => 'current-Prompt-Modal');
+vi.mock('../CurrentPromptModal', () => 'current-Prompt-Modal');
 const wrapper = props => render(<CurrentPromptModal {...props} />);
-jest.mock('react-toastify', () => ({
-  toast: jest.fn(),
+vi.mock('react-toastify', () => ({
+  toast: vi.fn(),
   ToastContainer: () => <div data-testid="toast-container" />,
 }));
 const mockStore = configureStore([]);
@@ -26,8 +26,8 @@ describe('WeeklySummary page', () => {
     it('displays loading indicator', () => {
       const props = {
         currentUser: { userid: '1' },
-        getWeeklySummaries: jest.fn(),
-        updateWeeklySummaries: jest.fn(),
+        getWeeklySummaries: vi.fn(),
+        updateWeeklySummaries: vi.fn(),
         loading: true,
         summaries: weeklySummaryMockData1,
         authUser: { role: '' },
@@ -58,8 +58,8 @@ describe('WeeklySummary page', () => {
     it('displays an error message if there is an error on data fetch', async () => {
       const props = {
         currentUser: { userid: '1' },
-        getWeeklySummaries: jest.fn().mockResolvedValue(), // don't reject
-        updateWeeklySummaries: jest.fn(),
+        getWeeklySummaries: vi.fn().mockResolvedValue(), // don't reject
+        updateWeeklySummaries: vi.fn(),
         summaries: {}, // required to prevent crash
         authUser: { role: '' },
         roles: [],
@@ -93,8 +93,8 @@ describe('WeeklySummary page', () => {
   describe('Tabs display', () => {
     let props = {
       currentUser: { userid: '1' },
-      getWeeklySummaries: jest.fn(),
-      updateWeeklySummaries: jest.fn(),
+      getWeeklySummaries: vi.fn(),
+      updateWeeklySummaries: vi.fn(),
       loading: false,
       summaries: weeklySummaryMockData1,
       authUser: { role: '' },
@@ -124,8 +124,8 @@ describe('WeeklySummary page', () => {
     it('should display 4 tabs even when the user summaries related fields have not been initialized in the database', () => {
       props = {
         currentUser: { userid: '1' },
-        getWeeklySummaries: jest.fn(),
-        updateWeeklySummaries: jest.fn(),
+        getWeeklySummaries: vi.fn(),
+        updateWeeklySummaries: vi.fn(),
         loading: false,
         summaries: {},
         authUser: { role: '' },
@@ -201,8 +201,8 @@ describe('WeeklySummary page', () => {
   describe('Tooltips', () => {
     const props = {
       currentUser: { userid: '1' },
-      getWeeklySummaries: jest.fn(),
-      updateWeeklySummaries: jest.fn(),
+      getWeeklySummaries: vi.fn(),
+      updateWeeklySummaries: vi.fn(),
       loading: false,
       summaries: weeklySummaryMockData1,
       authUser: { role: '' },
@@ -253,8 +253,8 @@ describe('WeeklySummary page', () => {
   describe('Form Elements', () => {
     let props = {
       currentUser: { userid: '1' },
-      getWeeklySummaries: jest.fn(),
-      updateWeeklySummaries: jest.fn(),
+      getWeeklySummaries: vi.fn(),
+      updateWeeklySummaries: vi.fn(),
       loading: false,
       summaries: {},
       authUser: { role: '' },
@@ -405,7 +405,7 @@ describe('WeeklySummary page', () => {
     describe('Handle save', () => {
       props = {
         ...props,
-        updateWeeklySummaries: jest.fn().mockReturnValueOnce(200),
+        updateWeeklySummaries: vi.fn().mockReturnValueOnce(200),
       };
       it('should save the form data when "Save" button is pressed', async () => {
         const saveButton = screen.getByRole('button', { name: /save/i });

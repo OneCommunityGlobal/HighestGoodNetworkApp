@@ -29,12 +29,12 @@ beforeEach(() => {
   });
 });
 
-jest.mock('axios');
+vi.mock('axios');
 
-jest.mock('jwt-decode', () => jest.fn(() => ({ decodedPayload: 'mocked_decoded_payload' })));
+vi.mock('jwt-decode', () => vi.fn(() => ({ decodedPayload: 'mocked_decoded_payload' })));
 
 const history = {
-  push: jest.fn(),
+  push: vi.fn(),
   location: { pathname: '/' },
 };
 

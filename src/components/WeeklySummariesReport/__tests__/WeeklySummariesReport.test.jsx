@@ -15,9 +15,9 @@ import {
 import * as constants from '../../../constants/weeklySummariesReport';
 import { ENDPOINTS } from '~/utils/URL';
 
-jest.mock('axios');
-jest.mock('react-toastify', () => ({
-  toast: { success: jest.fn(), error: jest.fn() },
+vi.mock('axios');
+vi.mock('react-toastify', () => ({
+  toast: { success: vi.fn(), error: vi.fn() },
 }));
 
 const mockStore = configureMockStore([thunk]);
@@ -58,7 +58,7 @@ describe('weeklySummariesReport thunks', () => {
   let store;
   beforeEach(() => {
     store = mockStore({});
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('getWeeklySummariesReport()', () => {

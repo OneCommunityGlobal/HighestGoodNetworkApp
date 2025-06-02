@@ -17,7 +17,7 @@ let store;
 
 const mockModalContext = {
   modalStatus: false,
-  updateModalStatus: jest.fn(),
+  updateModalStatus: vi.fn(),
 };
 
 beforeEach(() => {
@@ -75,12 +75,12 @@ afterEach(() => {
   store.clearActions();
 });
 
-jest.mock('axios');
-jest.mock('react-toastify', () => ({
-  ...jest.requireActual('react-toastify'),
+vi.mock('axios');
+vi.mock('react-toastify', () => ({
+  ...vi.requireActual('react-toastify'),
   toast: {
-    success: jest.fn(),
-    error: jest.fn(),
+    success: vi.fn(),
+    error: vi.fn(),
   },
 }));
 const flushAllPromises = () =>

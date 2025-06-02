@@ -50,11 +50,11 @@ const store = mockStore({
   theme: themeMock,
 });
 
-const handleOpenTaskNotificationModal = jest.fn();
-const handleMarkAsDoneModal = jest.fn();
-const handleRemoveFromTaskModal = jest.fn();
-const handleTaskModalOption = jest.fn();
-const updateTaskStatus = jest.fn();
+const handleOpenTaskNotificationModal = vi.fn();
+const handleMarkAsDoneModal = vi.fn();
+const handleRemoveFromTaskModal = vi.fn();
+const handleTaskModalOption = vi.fn();
+const updateTaskStatus = vi.fn();
 
 const renderComponent = mockProps => {
   return render(

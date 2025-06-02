@@ -36,10 +36,12 @@ import {
 } from '../allTeamsAction';
 import { ENDPOINTS } from '~/utils/URL';
 
+
+
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 const mock = new MockAdapter(axios);
-jest.mock('axios');
+vi.mock('axios');
 
 // Describe block for the teamMembersFectchACtion tests
 describe('teamMembersFectchACtion', () => {
@@ -236,7 +238,7 @@ describe('fetchAllTeamCodeSucess', () => {
 
 // Add this before your describe blocks
 beforeEach(() => {
-  jest.clearAllMocks();
+  vi.clearAllMocks();
 });
 
 // Describe block for the getAllUserTeams tests

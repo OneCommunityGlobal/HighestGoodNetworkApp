@@ -24,14 +24,14 @@ test('setup mock store and provider', () => {
 describe('ProjectsTab', () => {
   const projectsData = [];
   const userProjects = [];
-  const onDeleteProject = jest.fn();
-  const onAssignProject = jest.fn();
+  const onDeleteProject = vi.fn();
+  const onAssignProject = vi.fn();
   const edit = true;
   const role = 'admin';
   const userTasks = [];
   const userId = '123';
-  const updateTask = jest.fn();
-  const handleSubmit = jest.fn();
+  const updateTask = vi.fn();
+  const handleSubmit = vi.fn();
   const disabled = false;
 
   it('should render AddProjectPopup and UserProjectsTable components', () => {
@@ -136,7 +136,7 @@ describe('ProjectsTab', () => {
   });
 });
 
-jest.mock(
+vi.mock(
   '../AddProjectPopup',
   () =>
     function(props) {
@@ -169,7 +169,7 @@ jest.mock(
     },
 );
 
-jest.mock(
+vi.mock(
   '../UserProjectsTable',
   () =>
     function(props) {

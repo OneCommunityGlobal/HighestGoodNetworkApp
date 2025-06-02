@@ -51,7 +51,7 @@ beforeEach(() => {
   });
 });
 
-jest.mock('axios');
+vi.mock('axios');
 
 describe("Projects component",()=>{
 

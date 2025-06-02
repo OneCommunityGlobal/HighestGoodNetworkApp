@@ -7,8 +7,8 @@ import configureStore from 'redux-mock-store';
 import SetUpFinalDayPopUp from '../SetUpFinalDayPopUp';
 
 const mockStore = configureStore([]);
-const onSaveMock = jest.fn();
-const onCloseMock = jest.fn();
+const onSaveMock = vi.fn();
+const onCloseMock = vi.fn();
 
 const renderComponent = (store, props) => {
   return render(

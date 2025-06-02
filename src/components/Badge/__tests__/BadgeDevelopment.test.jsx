@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
+
 import BadgeDevelopment from '../BadgeDevelopment';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
@@ -8,8 +8,8 @@ import configureStore from 'redux-mock-store';
 import { themeMock } from '__tests__/mockStates';
 
 // Mock the BadgeDevelopmentTable and CreateNewBadgePopup components
-jest.mock('components/Badge/BadgeDevelopmentTable', () => () => <div>BadgeDevelopmentTable</div>);
-jest.mock('components/Badge/CreateNewBadgePopup', () => () => <div>CreateNewBadgePopup</div>);
+vi.mock('components/Badge/BadgeDevelopmentTable', () => () => <div>BadgeDevelopmentTable</div>);
+vi.mock('components/Badge/CreateNewBadgePopup', () => () => <div>CreateNewBadgePopup</div>);
 
 describe('BadgeDevelopment Component', () => {
   const mockStore = configureStore([thunk]);

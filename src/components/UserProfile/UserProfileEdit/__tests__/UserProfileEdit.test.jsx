@@ -17,7 +17,7 @@ import {
   themeMock,
 } from "../../../../__tests__/mockStates";
 
-jest.mock("axios");
+vi.mock("axios");
 
 describe("<UserProfileEdit />", () => {
   let store;
@@ -26,10 +26,10 @@ describe("<UserProfileEdit />", () => {
     auth: { user: { id: "testUser", role: "admin" }, ...authMock },
     userProfile: userProfileMock,
     role: rolesMock.role,
-    getUserProfile: jest.fn().mockResolvedValue(userProfileMock),
-    updateUserProfile: jest.fn(),
-    getAllUserTeams: jest.fn(),
-    hasPermission: jest.fn().mockReturnValue(true),
+    getUserProfile: vi.fn().mockResolvedValue(userProfileMock),
+    updateUserProfile: vi.fn(),
+    getAllUserTeams: vi.fn(),
+    hasPermission: vi.fn().mockReturnValue(true),
     match: { params: { userId: "12345" } },
     timeEntries: timeEntryMock,
     allTeams: allTeamsMock,

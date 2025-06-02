@@ -6,7 +6,7 @@ import '@testing-library/jest-dom/extend-expect';
 import AboutModal from '../TimeEntryForm/AboutModal'; // Adjust the path as necessary
 
 describe('AboutModal Component', () => {
-  const mockSetVisible = jest.fn();
+  const mockSetVisible = vi.fn();
 
   const baseProps = {
     visible: true,

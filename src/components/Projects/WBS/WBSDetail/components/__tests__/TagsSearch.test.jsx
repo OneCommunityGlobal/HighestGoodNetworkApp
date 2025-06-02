@@ -21,11 +21,11 @@ const mockStore = configureMockStore(middlewares);
 
 // Mock functions for resource management
 const mockFunctions = mockResourceItems => {
-  const addResources = jest.fn((userID, firstName, lastName) => {
+  const addResources = vi.fn((userID, firstName, lastName) => {
     mockResourceItems.push({ userID, name: `${firstName} ${lastName}` });
   });
 
-  const removeResources = jest.fn(userID => {
+  const removeResources = vi.fn(userID => {
     const index = mockResourceItems.findIndex(item => item.userID === userID);
     if (index !== -1) mockResourceItems.splice(index, 1);
   });
@@ -55,12 +55,12 @@ const renderTagsSearchComponent = props => {
 
 describe('TagsSearch Component', () => {
   beforeEach(() => {
-    jest.useFakeTimers();
-    jest.clearAllMocks();
+    vi.useFakeTimers();
+    vi.clearAllMocks();
   });
 
   afterEach(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   const { addResources, removeResources } = mockFunctions([]);
@@ -84,7 +84,7 @@ describe('TagsSearch Component', () => {
     fireEvent.change(searchInputElement, { target: { value: 'aaa' } });
 
     act(() => {
-      jest.advanceTimersByTime(400);
+      vi.advanceTimersByTime(400);
     });
 
     await waitFor(() => {
@@ -103,7 +103,7 @@ describe('TagsSearch Component', () => {
     fireEvent.change(searchInputElement, { target: { value: 'aaa' } });
 
     act(() => {
-      jest.advanceTimersByTime(400);
+      vi.advanceTimersByTime(400);
     });
 
     // Wait for the dropdown to display filtered options

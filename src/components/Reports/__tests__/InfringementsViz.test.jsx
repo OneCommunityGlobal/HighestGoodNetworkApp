@@ -2,57 +2,57 @@ import { render, fireEvent } from '@testing-library/react';
 import InfringementsViz from '../InfringementsViz';
 
 // Mock D3 module
-jest.mock('d3', () => {
+vi.mock('d3', () => {
   return {
-    select: jest.fn().mockReturnValue({
-      append: jest.fn().mockReturnThis(),
-      attr: jest.fn().mockReturnThis(),
-      style: jest.fn().mockReturnThis(),
-      datum: jest.fn().mockReturnThis(),
-      data: jest.fn().mockReturnThis(),
-      join: jest.fn().mockReturnThis(),
-      html: jest.fn().mockReturnThis(),
-      on: jest.fn().mockReturnThis(),
-      call: jest.fn().mockReturnThis(),
-      empty: jest.fn().mockReturnValue(true),
-      selectAll: jest.fn().mockReturnThis(),
-      text: jest.fn().mockReturnThis(),
-      remove: jest.fn(),
+    select: vi.fn().mockReturnValue({
+      append: vi.fn().mockReturnThis(),
+      attr: vi.fn().mockReturnThis(),
+      style: vi.fn().mockReturnThis(),
+      datum: vi.fn().mockReturnThis(),
+      data: vi.fn().mockReturnThis(),
+      join: vi.fn().mockReturnThis(),
+      html: vi.fn().mockReturnThis(),
+      on: vi.fn().mockReturnThis(),
+      call: vi.fn().mockReturnThis(),
+      empty: vi.fn().mockReturnValue(true),
+      selectAll: vi.fn().mockReturnThis(),
+      text: vi.fn().mockReturnThis(),
+      remove: vi.fn(),
     }),
-    selectAll: jest.fn().mockReturnValue({
-      remove: jest.fn(),
-      style: jest.fn().mockReturnThis(),
+    selectAll: vi.fn().mockReturnValue({
+      remove: vi.fn(),
+      style: vi.fn().mockReturnThis(),
     }),
-    timeParse: jest.fn().mockImplementation(() => str => new Date(str)),
-    timeFormat: jest.fn().mockImplementation(() => () => 'Jan 1, 2022'),
-    scaleTime: jest.fn().mockReturnValue({
-      domain: jest.fn().mockReturnThis(),
-      range: jest.fn().mockReturnThis(),
+    timeParse: vi.fn().mockImplementation(() => str => new Date(str)),
+    timeFormat: vi.fn().mockImplementation(() => () => 'Jan 1, 2022'),
+    scaleTime: vi.fn().mockReturnValue({
+      domain: vi.fn().mockReturnThis(),
+      range: vi.fn().mockReturnThis(),
     }),
-    scaleLinear: jest.fn().mockReturnValue({
-      domain: jest.fn().mockReturnThis(),
-      range: jest.fn().mockReturnThis(),
+    scaleLinear: vi.fn().mockReturnValue({
+      domain: vi.fn().mockReturnThis(),
+      range: vi.fn().mockReturnThis(),
     }),
-    axisBottom: jest.fn(),
-    axisLeft: jest.fn().mockReturnValue({
-      ticks: jest.fn().mockReturnThis(),
-      tickFormat: jest.fn().mockReturnThis(),
+    axisBottom: vi.fn(),
+    axisLeft: vi.fn().mockReturnValue({
+      ticks: vi.fn().mockReturnThis(),
+      tickFormat: vi.fn().mockReturnThis(),
     }),
-    line: jest.fn().mockReturnValue({
-      x: jest.fn().mockReturnThis(),
-      y: jest.fn().mockReturnThis(),
+    line: vi.fn().mockReturnValue({
+      x: vi.fn().mockReturnThis(),
+      y: vi.fn().mockReturnThis(),
     }),
-    extent: jest.fn().mockReturnValue([new Date(), new Date()]),
-    format: jest.fn().mockReturnValue(() => '0'),
+    extent: vi.fn().mockReturnValue([new Date(), new Date()]),
+    format: vi.fn().mockReturnValue(() => '0'),
   };
 });
 
 // We're disabling the useEffect for testing
-jest.mock('react', () => {
-  const originalReact = jest.requireActual('react');
+vi.mock('react', () => {
+  const originalReact = vi.requireActual('react');
   return {
     ...originalReact,
-    useEffect: jest.fn().mockImplementation(f => f()),
+    useEffect: vi.fn().mockImplementation(f => f()),
   };
 });
 
@@ -73,7 +73,7 @@ describe('InfringementsViz component', () => {
 
   beforeEach(() => {
     // Reset mocks before each test
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('renders without crashing', () => {

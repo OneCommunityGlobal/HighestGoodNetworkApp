@@ -5,7 +5,7 @@ import ScheduleExplanationModal from '../ScheduleExplanationModal.jsx'
 import moment from 'moment-timezone';
 
 
-const mockHandleClose = jest.fn();
+const mockHandleClose = vi.fn();
 const mockInfringements = [
   { _id: '1', date: '2023-12-01', description: 'Missed deadline' },
   { _id: '2', date: '2024-01-15', description: 'Unapproved absence' },
@@ -17,7 +17,7 @@ const mockTimeOffRequests = [
 
 describe('SchedulerExplanationModal', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('renders modal with correct title and content', () => {

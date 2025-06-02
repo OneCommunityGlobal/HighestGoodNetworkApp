@@ -18,8 +18,8 @@ import {
 } from '../../../languages/en/messages';
 
 const mockStore = configureStore([thunk]);
-const onClose = jest.fn();
-const onDelete = jest.fn();
+const onClose = vi.fn();
+const onDelete = vi.fn();
 let store;
 
 const defaultProps = {

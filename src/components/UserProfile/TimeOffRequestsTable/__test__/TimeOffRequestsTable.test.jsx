@@ -20,7 +20,7 @@ describe('TimeOffRequestsTable Component', () => {
     },
   ];
 
-  const mockOpenModal = jest.fn();
+  const mockOpenModal = vi.fn();
 
   it('should display "No time off scheduled" when no requests are provided', () => {
     render(<TimeOffRequestsTable requests={[]} openModal={mockOpenModal} darkMode={false} />);

@@ -6,10 +6,11 @@ import thunk from 'redux-thunk';
 import configureMockStore from 'redux-mock-store';
 import { createNewBadge } from '../../../actions/badgeManagement';
 
+
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
-jest.mock('../../../actions/badgeManagement', () => ({
-  createNewBadge: jest.fn().mockResolvedValue(),
+vi.mock('../../../actions/badgeManagement', () => ({
+  createNewBadge: vi.fn().mockResolvedValue(),
 }));
 
 describe('CreateNewBadgePopup component', () => {
@@ -23,8 +24,8 @@ describe('CreateNewBadgePopup component', () => {
       theme: { darkMode: false },
     });
 
-    toggleMock = jest.fn();
-    store.dispatch = jest.fn().mockResolvedValue();
+    toggleMock = vi.fn();
+    store.dispatch = vi.fn().mockResolvedValue();
   });
 
   it('renders all key elements correctly', () => {

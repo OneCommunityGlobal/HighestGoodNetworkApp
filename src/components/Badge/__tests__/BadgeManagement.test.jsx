@@ -1,7 +1,9 @@
 const { ENDPOINTS } = require('~/utils/URL');
 const { returnUpdatedBadgesCollection } = require('../../../actions/badgeManagement');
 const axios = require('axios');
-jest.mock('axios');
+
+
+vi.mock('axios');
 import { assignBadges, validateBadges } from '../../../actions/badgeManagement';
 import { getMessage, closeAlert } from '../../../actions/badgeManagement';
 import configureMockStore from 'redux-mock-store';
@@ -57,14 +59,14 @@ describe('BadgeManagement returnUpdatedBadgesCollection unit test', () => {
   });
 });
 
-jest.useFakeTimers();
+vi.useFakeTimers();
 
 describe('BadgeManagement validateBadges action unit test', () => {
   let store;
 
   beforeEach(() => {
     store = mockStore({});
-    jest.useFakeTimers();
+    vi.useFakeTimers();
   });
 
   test('should dispatch getMessage and closeAlert when firstName or lastName is missing', async () => {
@@ -78,7 +80,7 @@ describe('BadgeManagement validateBadges action unit test', () => {
       color: 'danger',
     });
 
-    jest.advanceTimersByTime(6000);
+    vi.advanceTimersByTime(6000);
 
     const nextActions = store.getActions();
     expect(nextActions).toContainEqual({ type: CLOSE_ALERT });
@@ -98,12 +100,12 @@ describe('BadgeManagement assignBadges action unit test', () => {
 
   beforeEach(() => {
     store = mockStore({});
-    jest.useFakeTimers();
+    vi.useFakeTimers();
   });
 
   afterEach(() => {
-    jest.clearAllTimers();
-    jest.resetAllMocks();
+    vi.clearAllTimers();
+    vi.resetAllMocks();
   });
 
   test('should dispatch getMessage and closeAlert when no badges are selected', async () => {
@@ -117,7 +119,7 @@ describe('BadgeManagement assignBadges action unit test', () => {
       color: 'danger',
     });
 
-    jest.advanceTimersByTime(6000);
+    vi.advanceTimersByTime(6000);
     expect(store.getActions()).toContainEqual({ type: CLOSE_ALERT });
   });
 
@@ -134,7 +136,7 @@ describe('BadgeManagement assignBadges action unit test', () => {
       color: 'danger',
     });
 
-    jest.advanceTimersByTime(6000);
+    vi.advanceTimersByTime(6000);
     expect(store.getActions()).toContainEqual({ type: CLOSE_ALERT });
   });
 
@@ -152,7 +154,7 @@ describe('BadgeManagement assignBadges action unit test', () => {
       color: 'success',
     });
 
-    jest.advanceTimersByTime(6000);
+    vi.advanceTimersByTime(6000);
     expect(store.getActions()).toContainEqual({ type: CLOSE_ALERT });
   });
 
@@ -169,7 +171,7 @@ describe('BadgeManagement assignBadges action unit test', () => {
       color: 'danger',
     });
 
-    jest.advanceTimersByTime(6000);
+    vi.advanceTimersByTime(6000);
     expect(store.getActions()).toContainEqual({ type: CLOSE_ALERT });
   });
 });

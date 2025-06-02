@@ -1,8 +1,9 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
+
+
 import AssignBadgePopup from '~/components/Badge/AssignBadgePopup';
 import { Provider } from 'react-redux';
 import { themeMock } from '../../../__tests__/mockStates';
@@ -18,7 +19,7 @@ const mockallBadgeData = [
   { _id: '6', badgeName: 'Most Hours in A Week' },
 ];
 
-const mockSubmit = jest.fn();
+const mockSubmit = vi.fn();
 
 const renderComponent = (initialSelectedBadges = []) => {
   const store = mockStore({

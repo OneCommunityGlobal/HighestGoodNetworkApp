@@ -1,6 +1,8 @@
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import axios from 'axios';
+
+
 import httpService from '../../services/httpService';
 import {
   clearUserProfile,
@@ -26,12 +28,12 @@ import {
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 
-jest.mock('../../services/httpService');
-jest.mock('axios');
+vi.mock('../../services/httpService');
+vi.mock('axios');
 
 // Add this to fix "setImmediate is not defined" error
-// Jest runs in JSDom environment by default which doesn't have setImmediate
-global.setImmediate = jest.fn(callback => callback());
+// vi runs in JSDom environment by default which doesn't have setImmediate
+global.setImmediate = vi.fn(callback => callback());
 
 describe('clearUserProfile action', () => {
   it('should create an action to clear user profile', () => {

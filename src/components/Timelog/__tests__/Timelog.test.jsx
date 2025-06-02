@@ -20,7 +20,7 @@ import Timelog from '../Timelog';
 import * as actions from '../../../actions/timeEntries';
 
 /* const mockStore = configureStore([thunk]);
-jest.mock('../../actions/timeEntries.js');
+vi.mock('../../actions/timeEntries.js');
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -34,7 +34,7 @@ describe('<Timelog/>', () => {
       timeEntries: timeEntryMock,
       userProjects: userProjectMock,
     });
-    store.dispatch = jest.fn();
+    store.dispatch = vi.fn();
     renderWithRouterMatch(
       <Route path="/timelog/:userId">{(props) => <Timelog {...props} />}</Route>,
       {

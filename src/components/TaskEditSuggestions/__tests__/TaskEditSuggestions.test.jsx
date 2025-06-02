@@ -48,15 +48,15 @@ describe('TaskEditSuggestions', () => {
 
   beforeEach(() => {
     store = mockStore(initialState);
-    mockDispatch = jest.fn();
-    jest.spyOn(reduxHooks, 'useDispatch').mockReturnValue(mockDispatch);
+    mockDispatch = vi.fn();
+    vi.spyOn(reduxHooks, 'useDispatch').mockReturnValue(mockDispatch);
     jest
       .spyOn(reduxHooks, 'useSelector')
       .mockImplementation(selector => selector(store.getState()));
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('renders correctly with initial state', () => {
@@ -132,15 +132,15 @@ describe('TaskEditSuggestions loading', () => {
 
   beforeEach(() => {
     store = mockStore(initialState);
-    mockDispatch = jest.fn();
-    jest.spyOn(reduxHooks, 'useDispatch').mockReturnValue(mockDispatch);
+    mockDispatch = vi.fn();
+    vi.spyOn(reduxHooks, 'useDispatch').mockReturnValue(mockDispatch);
     jest
       .spyOn(reduxHooks, 'useSelector')
       .mockImplementation(selector => selector(store.getState()));
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should render Loading when isLoading is true', async () => {

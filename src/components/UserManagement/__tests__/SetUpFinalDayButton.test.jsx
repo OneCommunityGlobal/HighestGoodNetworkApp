@@ -8,12 +8,12 @@ import SetUpFinalDayButton from '../SetUpFinalDayButton';
 import { SET_FINAL_DAY, CANCEL } from '../../../languages/en/ui';
 // import { updateUserFinalDayStatus } from '../../../actions/userManagement.js';
 
-jest.mock('axios');
+vi.mock('axios');
 
-const mockToastSuccess = jest.fn();
+const mockToastSuccess = vi.fn();
 
 beforeAll(() => {
-  jest.mock('react-toastify', () => ({
+  vi.mock('react-toastify', () => ({
     toast: { success: mockToastSuccess },
   }));
 });
@@ -57,7 +57,7 @@ describe('SetUpFinalDayButton', () => {
         userProfile: {
           endDate: 'mockEndDate',
         },
-        loadUserProfile: jest.fn(),
+        loadUserProfile: vi.fn(),
         isBigBtn: true,
         darkMode: themeMock.darkMode,
       };
@@ -136,7 +136,7 @@ describe('SetUpFinalDayButton', () => {
           endDate: '20210311',
           _id: '1',
         },
-        loadUserProfile: jest.fn().mockReturnValueOnce(200),
+        loadUserProfile: vi.fn().mockReturnValueOnce(200),
         isBigBtn: true,
         darkMode: themeMock.darkMode,
       };

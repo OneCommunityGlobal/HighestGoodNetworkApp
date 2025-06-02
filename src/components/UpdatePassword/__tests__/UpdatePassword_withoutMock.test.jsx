@@ -52,11 +52,11 @@ beforeAll(() => server.listen());
 afterAll(() => server.close());
 afterEach(() => {
   server.resetHandlers();
-  jest.clearAllMocks();
+  vi.clearAllMocks();
 });
 
 beforeEach(() => {
-  jest.clearAllMocks();
+  vi.clearAllMocks();
 
   axios.patch.mockImplementation((_, data) => {
     if (data.newpassword === correctPassword) {
@@ -77,8 +77,8 @@ beforeEach(() => {
 
 describe("<UpdatePassword/>' behavior", () => {
   beforeEach(() => {
-    toast.success = jest.fn();
-    toast.error = jest.fn();
+    toast.success = vi.fn();
+    toast.error = vi.fn();
     renderWithRouterMatch(
       <Route path="/updatepassword/:userId">
         {({ match, history, location }) => (

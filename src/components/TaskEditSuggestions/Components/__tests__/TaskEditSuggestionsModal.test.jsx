@@ -3,15 +3,15 @@ import * as reduxHooks from 'react-redux';
 import { render, screen } from '@testing-library/react';
 import { TaskEditSuggestionsModal } from '../TaskEditSuggestionsModal';
 
-jest.mock('react-redux', () => ({
-  useDispatch: jest.fn(),
-  useSelector: jest.fn(),
-  useStore: jest.fn(),
+vi.mock('react-redux', () => ({
+  useDispatch: vi.fn(),
+  useSelector: vi.fn(),
+  useStore: vi.fn(),
 }));
 
-const mockDispatch = jest.fn();
-const mockGetState = jest.fn();
-const mockToggleModal = jest.fn();
+const mockDispatch = vi.fn();
+const mockGetState = vi.fn();
+const mockToggleModal = vi.fn();
 const defaultProps = {
   isTaskEditSuggestionsModalOpen: false,
   taskEditSuggestion: null,
@@ -19,7 +19,7 @@ const defaultProps = {
 };
 
 beforeEach(() => {
-  jest.clearAllMocks();
+  vi.clearAllMocks();
   reduxHooks.useDispatch.mockReturnValue(mockDispatch);
   reduxHooks.useStore.mockReturnValue({ getState: mockGetState });
 });

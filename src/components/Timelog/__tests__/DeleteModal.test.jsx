@@ -14,7 +14,7 @@ import { renderWithProvider } from '../../../__tests__/utils';
 import DeleteModal from '../DeleteModal';
 
 // Mock axios HTTP requests
-jest.mock('axios');
+vi.mock('axios');
 
 // Initialize the mock store with thunk middleware
 const mockStore = configureStore([thunk]);

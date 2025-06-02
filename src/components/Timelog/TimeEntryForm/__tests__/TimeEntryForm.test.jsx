@@ -16,11 +16,11 @@ import TimeEntryForm from '../TimeEntryForm';
 
 import { postTimeEntry, editTimeEntry } from '../../../../actions/timeEntries';
 
-jest.mock('../../../../actions/timeEntries', () => ({
+vi.mock('../../../../actions/timeEntries', () => ({
   __esModule: true,
-  ...jest.requireActual('../../../../actions/timeEntries'),
-  postTimeEntry: jest.fn(() => ({ type: 'MOCK_POST_TIME_ENTRY' })),
-  editTimeEntry: jest.fn(() => ({ type: 'MOCK_EDIT_TIME_ENTRY' })),
+  ...vi.requireActual('../../../../actions/timeEntries'),
+  postTimeEntry: vi.fn(() => ({ type: 'MOCK_POST_TIME_ENTRY' })),
+  editTimeEntry: vi.fn(() => ({ type: 'MOCK_EDIT_TIME_ENTRY' })),
 }));
 
 const mockStore = configureStore([thunk]);
@@ -47,10 +47,10 @@ xdescribe('<TimeEntryForm />', () => {
       role: rolesMock.role,
       theme: themeMock,
     });
-    userProfile = jest.fn();
-    role = jest.fn();
+    userProfile = vi.fn();
+    role = vi.fn();
 
-    toggle = jest.fn();
+    toggle = vi.fn();
     renderWithProvider(
       <TimeEntryForm
         userId={data.personId}
@@ -77,7 +77,7 @@ xdescribe('<TimeEntryForm />', () => {
       projectId: userProjectMock.projects[0].projectId,
       timeSpent: '01:0:00',
     };
-    // actions.postTimeEntry = jest.fn();
+    // actions.postTimeEntry = vi.fn();
     expect(postTimeEntry).toHaveBeenCalled();
     expect(screen.getByLabelText(/date/i)).toBeInTheDocument();
     expect(screen.getAllByRole('spinbutton')).toHaveLength(2);
@@ -153,9 +153,9 @@ xdescribe('<TimeEntryFormEdit />', () => {
       userProfile: userProfileMock,
       role: rolesMock
     });
-    userProfile = jest.fn();
-    toggle = jest.fn();
-    store.dispatch = jest.fn();
+    userProfile = vi.fn();
+    toggle = vi.fn();
+    store.dispatch = vi.fn();
     renderWithProvider(
       <TimeEntryForm
         userId={data.personId}
@@ -183,7 +183,7 @@ xdescribe('<TimeEntryFormEdit />', () => {
       timeSpent: '06:43:00',
     };
     expect(editTimeEntry).toHaveBeenCalled();
-    // actions.editTimeEntry = jest.fn();
+    // actions.editTimeEntry = vi.fn();
     const dateField = screen.getByLabelText(/date/i);
     const hours = screen.getAllByRole('spinbutton')[0];
     const minutes = screen.getAllByRole('spinbutton')[1];

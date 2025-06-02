@@ -52,7 +52,7 @@ beforeEach(() => {
   })
 });
 
-jest.mock('axios');
+vi.mock('axios');
 
 describe("Team Report component",()=>{
 

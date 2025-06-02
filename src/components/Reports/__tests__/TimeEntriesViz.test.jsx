@@ -3,7 +3,7 @@ import '@testing-library/jest-dom/extend-expect';
 import TimeEntriesViz from '../TimeEntriesViz';
 
 // Mock d3 and DOM methods to prevent errors during testing
-jest.mock('d3', () => {
+vi.mock('d3', () => {
   // Create a chainable mock for d3 selections
   const createChainableMock = () => {
     const mock = {};
@@ -29,7 +29,7 @@ jest.mock('d3', () => {
     ];
 
     methods.forEach(method => {
-      mock[method] = jest.fn(() => mock);
+      mock[method] = vi.fn(() => mock);
     });
 
     return mock;
@@ -37,16 +37,16 @@ jest.mock('d3', () => {
 
   // Main mock object
   return {
-    select: jest.fn(() => createChainableMock()),
-    selectAll: jest.fn(() => createChainableMock()),
-    scaleTime: jest.fn(() => createChainableMock()),
-    scaleLinear: jest.fn(() => createChainableMock()),
-    axisBottom: jest.fn(() => jest.fn()),
-    axisLeft: jest.fn(() => jest.fn()),
-    extent: jest.fn(() => [new Date(), new Date()]),
-    line: jest.fn(() => createChainableMock()),
-    timeParse: jest.fn(() => () => new Date()),
-    timeFormat: jest.fn(() => () => '01/01/2023'),
+    select: vi.fn(() => createChainableMock()),
+    selectAll: vi.fn(() => createChainableMock()),
+    scaleTime: vi.fn(() => createChainableMock()),
+    scaleLinear: vi.fn(() => createChainableMock()),
+    axisBottom: vi.fn(() => vi.fn()),
+    axisLeft: vi.fn(() => vi.fn()),
+    extent: vi.fn(() => [new Date(), new Date()]),
+    line: vi.fn(() => createChainableMock()),
+    timeParse: vi.fn(() => () => new Date()),
+    timeFormat: vi.fn(() => () => '01/01/2023'),
   };
 });
 

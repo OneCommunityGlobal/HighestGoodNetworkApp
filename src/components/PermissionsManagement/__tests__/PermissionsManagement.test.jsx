@@ -7,11 +7,11 @@ import thunk from 'redux-thunk';
 import { Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
 import axios from 'axios';
-import { ModalContext } from '../../../context/ModalContext';
+import { ModalContext } from '~/context/ModalContext';
 import PermissionsManagement from '../PermissionsManagement';
 import { ENDPOINTS } from '~/utils/URL';
 
-jest.mock('axios');
+vi.mock('axios');
 const mockStore = configureStore([thunk]);
 
 describe('PermissionsManagement', () => {
@@ -19,13 +19,13 @@ describe('PermissionsManagement', () => {
   let store;
 
   const mockFunctions = {
-    getInfoCollections: jest.fn(),
-    getAllRoles: jest.fn(),
-    updateUserProfile: jest.fn(),
-    getAllUsers: jest.fn(),
-    addNewRole: jest.fn(),
-    getUserRole: jest.fn(),
-    hasPermission: jest.fn(() => true),
+    getInfoCollections: vi.fn(),
+    getAllRoles: vi.fn(),
+    updateUserProfile: vi.fn(),
+    getAllUsers: vi.fn(),
+    addNewRole: vi.fn(),
+    getUserRole: vi.fn(),
+    hasPermission: vi.fn(() => true),
   };
 
   const modalContextValue = {
@@ -58,7 +58,7 @@ describe('PermissionsManagement', () => {
       },
     });
 
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     axios.get.mockImplementation(url => {
       if (url.includes('/permission-change-logs')) {
         return Promise.resolve({ data: [] });

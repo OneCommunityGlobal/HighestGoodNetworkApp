@@ -1,7 +1,6 @@
 // eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect'; // for the "toBeInTheDocument" matcher
 import Dropdown from '../Dropdown'; // adjust the path as needed
 
 describe('Dropdown Component', () => {

@@ -10,7 +10,7 @@ const defaultProps = {
   isEdit: false,
 };
 
-const mock = jest.fn();
+const mock = vi.fn();
 
 describe('CreateNewTeamPopUp', () => {
   it('should call closePopup function', () => {

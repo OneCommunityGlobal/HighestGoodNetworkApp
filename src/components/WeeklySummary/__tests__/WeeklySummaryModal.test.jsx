@@ -7,7 +7,7 @@ import mockState from '../../../__tests__/mockAdminState';
 import WeeklySummaryModal from '../WeeklySummaryModal';
 
 // Mock the WeeklySummary component entirely
-jest.mock('../WeeklySummary', () => {
+vi.mock('../WeeklySummary', () => {
   return {
     __esModule: true,
     default: () => <div data-testid="mocked-weekly-summary">Mocked Weekly Summary</div>,
@@ -15,17 +15,17 @@ jest.mock('../WeeklySummary', () => {
 });
 
 // Mock the weeklySummaries actions with a fixed implementation
-jest.mock('../../../actions/weeklySummaries', () => {
+vi.mock('../../../actions/weeklySummaries', () => {
   return {
-    fetchWeeklySummaries: jest.fn(() => dispatch => {
+    fetchWeeklySummaries: vi.fn(() => dispatch => {
       dispatch({ type: 'FETCH_WEEKLY_SUMMARIES_SUCCESS', payload: [] });
       return Promise.resolve(200); // Return success status
     }),
-    fetchWeeklySummariesSuccess: jest.fn(data => ({
+    fetchWeeklySummariesSuccess: vi.fn(data => ({
       type: 'FETCH_WEEKLY_SUMMARIES_SUCCESS',
       payload: data,
     })),
-    fetchWeeklySummariesError: jest.fn(error => ({
+    fetchWeeklySummariesError: vi.fn(error => ({
       type: 'FETCH_WEEKLY_SUMMARIES_ERROR',
       payload: error,
     })),
@@ -53,7 +53,7 @@ const renderWithProvider = (ui, options = {}) => {
 
 describe('WeeklySummaryModal Component', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     // Add a modal root element if it's using React portals
     if (!document.getElementById('modal-root')) {
       const modalRoot = document.createElement('div');

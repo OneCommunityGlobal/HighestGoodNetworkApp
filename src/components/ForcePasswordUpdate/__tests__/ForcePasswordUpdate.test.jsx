@@ -17,20 +17,20 @@ import * as updatePasswordActions from '../../../actions/updatePassword';
 import * as errorsActions from '../../../actions/errorsActions';
 
 // Create mock functions for required actions
-jest.mock('../../../actions/updatePassword.js', () => ({
-  forcePasswordUpdate: jest.fn().mockImplementation(data => {
+vi.mock('../../../actions/updatePassword.js', () => ({
+  forcePasswordUpdate: vi.fn().mockImplementation(data => {
     return () => Promise.resolve(200);
   }),
 }));
 
-jest.mock('../../../actions/errorsActions.js', () => ({
-  clearErrors: jest.fn().mockImplementation(() => {
+vi.mock('../../../actions/errorsActions.js', () => ({
+  clearErrors: vi.fn().mockImplementation(() => {
     return { type: 'CLEAR_ERRORS' };
   }),
 }));
 
 // Mock any other imports that cause errors (without using the file path)
-jest.mock('../../../components/OwnerMessage/OwnerMessage.jsx', () => ({
+vi.mock('../../../components/OwnerMessage/OwnerMessage.jsx', () => ({
   __esModule: true,
   default: () => <div data-testid="owner-message">Mock Owner Message</div>,
 }));
@@ -56,9 +56,9 @@ const initialState = {
 const store = mockStore(initialState);
 
 // Mock functions for component props
-const mockGetHeaderData = jest.fn();
-const mockForcePasswordUpdate = jest.fn().mockResolvedValue(200);
-const mockClearErrors = jest.fn();
+const mockGetHeaderData = vi.fn();
+const mockForcePasswordUpdate = vi.fn().mockResolvedValue(200);
+const mockClearErrors = vi.fn();
 
 // Helper function to render component with necessary providers
 const renderComponent = (customProps = {}) => {
@@ -69,7 +69,7 @@ const renderComponent = (customProps = {}) => {
     clearErrors: mockClearErrors,
     forcePasswordUpdate: mockForcePasswordUpdate,
     getHeaderData: mockGetHeaderData,
-    history: { replace: jest.fn() },
+    history: { replace: vi.fn() },
   };
 
   const mergedProps = { ...defaultProps, ...customProps };
@@ -133,7 +133,7 @@ beforeAll(() => server.listen({ onUnhandledRequest: 'bypass' }));
 afterAll(() => server.close());
 afterEach(() => {
   server.resetHandlers();
-  jest.clearAllMocks();
+  vi.clearAllMocks();
   passwordUpdated = false;
   store.clearActions();
 });
@@ -261,7 +261,7 @@ describe('Force Password Update behaviour', () => {
 
   it('should submit successfully with valid password', async () => {
     // Create a special mock for forcePasswordUpdate that sets passwordUpdated to true
-    const successfulUpdate = jest.fn().mockImplementation(() => {
+    const successfulUpdate = vi.fn().mockImplementation(() => {
       passwordUpdated = true;
       return Promise.resolve(200);
     });

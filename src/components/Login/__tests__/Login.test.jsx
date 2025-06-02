@@ -8,11 +8,11 @@ import thunk from 'redux-thunk';
 import { Login } from '../Login';
 
 // Mock required modules and actions
-jest.mock('../../../actions/authActions', () => ({
-  loginUser: jest.fn(),
+vi.mock('../../../actions/authActions', () => ({
+  loginUser: vi.fn(),
 }));
-jest.mock('../../../actions/errorsActions', () => ({
-  clearErrors: jest.fn(),
+vi.mock('../../../actions/errorsActions', () => ({
+  clearErrors: vi.fn(),
 }));
 
 // Create mock store
@@ -66,8 +66,8 @@ describe('Login page structure', () => {
       <Login
         auth={{ isAuthenticated: false, user: {} }}
         errors={{}}
-        loginUser={jest.fn()}
-        clearErrors={jest.fn()}
+        loginUser={vi.fn()}
+        clearErrors={vi.fn()}
         history={history}
         location={{}}
       />,
@@ -107,10 +107,10 @@ describe('When user tries to input data', () => {
 
   beforeEach(() => {
     // Reset all mocks
-    jest.clearAllMocks();
+    vi.clearAllMocks();
 
     // Create fresh mocks for each test
-    loginUserMock = jest.fn();
+    loginUserMock = vi.fn();
     const initialState = {
       auth: { isAuthenticated: false, user: {} },
       errors: {},
@@ -125,7 +125,7 @@ describe('When user tries to input data', () => {
         auth={{ isAuthenticated: false, user: {} }}
         errors={{}}
         loginUser={loginUserMock}
-        clearErrors={jest.fn()}
+        clearErrors={vi.fn()}
         history={history}
         location={{}}
       />,
@@ -195,14 +195,14 @@ describe('When user tries to input data', () => {
 describe('Login behavior', () => {
   it('should redirect to homepage if user is authenticated', () => {
     const history = createMemoryHistory();
-    const pushSpy = jest.spyOn(history, 'push');
+    const pushSpy = vi.spyOn(history, 'push');
 
     renderWithProviders(
       <Login
         auth={{ isAuthenticated: true, user: {} }}
         errors={{}}
-        loginUser={jest.fn()}
-        clearErrors={jest.fn()}
+        loginUser={vi.fn()}
+        clearErrors={vi.fn()}
         history={history}
         location={{}}
       />,
@@ -222,7 +222,7 @@ describe('Login behavior', () => {
 
   it('should redirect to /forcePasswordUpdate if user is new', () => {
     const history = createMemoryHistory();
-    const pushSpy = jest.spyOn(history, 'push');
+    const pushSpy = vi.spyOn(history, 'push');
 
     // First render with isAuthenticated: false
     const { rerender } = renderWithProviders(
@@ -232,8 +232,8 @@ describe('Login behavior', () => {
           user: {},
         }}
         errors={{}}
-        loginUser={jest.fn()}
-        clearErrors={jest.fn()}
+        loginUser={vi.fn()}
+        clearErrors={vi.fn()}
         history={history}
         location={{}}
       />,
@@ -261,8 +261,8 @@ describe('Login behavior', () => {
           user: { new: true, userId: '123' },
         }}
         errors={{}}
-        loginUser={jest.fn()}
-        clearErrors={jest.fn()}
+        loginUser={vi.fn()}
+        clearErrors={vi.fn()}
         history={history}
         location={{}}
       />,
@@ -273,7 +273,7 @@ describe('Login behavior', () => {
   });
   it('should redirect to /dashboard when user becomes authenticated and is not new', () => {
     const history = createMemoryHistory();
-    const pushSpy = jest.spyOn(history, 'push');
+    const pushSpy = vi.spyOn(history, 'push');
 
     // First render with isAuthenticated: false
     const { rerender } = renderWithProviders(
@@ -283,8 +283,8 @@ describe('Login behavior', () => {
           user: {},
         }}
         errors={{}}
-        loginUser={jest.fn()}
-        clearErrors={jest.fn()}
+        loginUser={vi.fn()}
+        clearErrors={vi.fn()}
         history={history}
         location={{}}
       />,
@@ -312,8 +312,8 @@ describe('Login behavior', () => {
           user: { new: false },
         }}
         errors={{}}
-        loginUser={jest.fn()}
-        clearErrors={jest.fn()}
+        loginUser={vi.fn()}
+        clearErrors={vi.fn()}
         history={history}
         location={{}}
       />,

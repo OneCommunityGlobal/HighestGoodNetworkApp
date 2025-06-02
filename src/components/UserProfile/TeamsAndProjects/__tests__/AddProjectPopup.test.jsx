@@ -5,9 +5,9 @@ import AddProjectPopup from '../AddProjectPopup';
 
 /** TEST DATA **/
 
-const onCloseMock = jest.fn();
-const onSelectAssignProjectMock = jest.fn();
-const handleSubmitMock = jest.fn();
+const onCloseMock = vi.fn();
+const onSelectAssignProjectMock = vi.fn();
+const handleSubmitMock = vi.fn();
 
 
 const projectsMock = [{ _id: 'proj1', projectName: 'Project 1' }];

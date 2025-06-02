@@ -6,11 +6,11 @@ import '@testing-library/jest-dom/extend-expect';
 import AddTaskModal from '../AddTask/AddTaskModal';
 
 // Mock Redux actions
-jest.mock('../../../../../actions/task', () => ({
-  addNewTask: jest.fn(),
+vi.mock('../../../../../actions/task', () => ({
+  addNewTask: vi.fn(),
 }));
 
-jest.mock('@tinymce/tinymce-react', () => ({
+vi.mock('@tinymce/tinymce-react', () => ({
   Editor: ({ value, onEditorChange }) => (
     <textarea
       aria-label="Mock Editor"

@@ -2,6 +2,7 @@
 import React from 'react';
 import Form from '../Form';
 
+
 describe('Form ', () => {
   let form;
 
@@ -16,9 +17,9 @@ describe('Form ', () => {
       form.componentDidMount();
     }
 
-    form.dosubmit = jest.fn();
+    form.dosubmit = vi.fn();
 
-    global.FileReader = jest.fn().mockImplementation(() => {
+    global.FileReader = vi.fn().mockImplementation(() => {
       return {
         readAsDataURL(file) {
           // Simulate calling onload immediately with mock base64 content
@@ -127,7 +128,7 @@ describe('Form ', () => {
   describe('Form Validation', () => {
     test('validates form fields correctly', () => {
       // Simulate form submission and verify error messages
-      form.handleSubmit({ preventDefault: jest.fn(), stopPropagation: jest.fn() });
+      form.handleSubmit({ preventDefault: vi.fn(), stopPropagation: vi.fn() });
       expect(form.state.errors).toEqual(expect.any(Object));
       // Add assertions to check for specific error messages
     });
@@ -151,8 +152,8 @@ describe('Form ', () => {
         },
         errors: {}, // Assume no errors initially
       });
-      const preventDefault = jest.fn();
-      const stopPropagation = jest.fn();
+      const preventDefault = vi.fn();
+      const stopPropagation = vi.fn();
       form.handleSubmit({ preventDefault, stopPropagation });
       // Assert
       expect(preventDefault).toHaveBeenCalled();
@@ -169,8 +170,8 @@ describe('Form ', () => {
         },
       });
       // Act: Mock doSubmit, simulate form submission
-      const preventDefault = jest.fn();
-      const stopPropagation = jest.fn();
+      const preventDefault = vi.fn();
+      const stopPropagation = vi.fn();
       form.handleSubmit({ preventDefault, stopPropagation });
       expect(preventDefault).toHaveBeenCalled();
       expect(stopPropagation).toHaveBeenCalled();
@@ -192,7 +193,7 @@ describe('Form ', () => {
       // Simulate input change with invalid data
       form.handleInput({ currentTarget: { name: 'email', value: 'invalidEmail' } });
       // Trigger validation
-      form.handleSubmit({ preventDefault: jest.fn(), stopPropagation: jest.fn() });
+      form.handleSubmit({ preventDefault: vi.fn(), stopPropagation: vi.fn() });
       // Expect to see an error message for the email field
       expect(form.state.errors.email).toBeDefined();
       expect(form.state.errors.email).not.toBe('');
@@ -208,9 +209,9 @@ describe('Form ', () => {
       };
       // Act: Simulate input and submission
       form.handleInput(invalidData);
-      const preventDefault = jest.fn();
-      const stopPropagation = jest.fn();
-      // form.doSubmit = jest.fn();
+      const preventDefault = vi.fn();
+      const stopPropagation = vi.fn();
+      // form.doSubmit = vi.fn();
       form.handleSubmit({ preventDefault, stopPropagation });
       expect(preventDefault).toHaveBeenCalled();
       expect(stopPropagation).toHaveBeenCalled();

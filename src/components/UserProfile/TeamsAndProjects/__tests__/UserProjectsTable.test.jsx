@@ -5,12 +5,12 @@ import configureStore from 'redux-mock-store';
 import { render, screen, within } from '@testing-library/react';
 import { userProfileMock } from '../../../../__tests__/mockStates.js';
 
-jest.mock('utils/permissions', () => ({
-  hasPermission: jest.fn((a) => true),
+vi.mock('utils/permissions', () => ({
+  hasPermission: vi.fn((a) => true),
 }));
 
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
+vi.mock("react-router-dom", () => ({
+  ...vi.requireActual("react-router-dom"),
   useLocation: () => ({
     pathname: "localhost:3000/userprofile/1"
   })
@@ -99,7 +99,7 @@ const renderComponent = mockProps => {
       userProfile: {
        ...mockProps.userProfile,
       },
-      hasPermission: jest.fn((a) => true),
+      hasPermission: vi.fn((a) => true),
       userTasks: []
   });
 
@@ -112,7 +112,7 @@ const renderComponent = mockProps => {
         role={mockProps.role}
         disabled={mockProps.disabled}
         userId={mockProps.userProfile._id}
-        hasPermission={jest.fn((a) => true)}
+        hasPermission={vi.fn((a) => true)}
         userTasks={mockProps.userTasks}
       />
     </Provider>,

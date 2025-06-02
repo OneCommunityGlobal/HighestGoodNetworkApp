@@ -9,10 +9,10 @@ import mockAdminState from '__tests__/mockAdminState';
 import EditableInfoModal from "~/components/UserProfile/EditableModal/EditableInfoModal";
 import axios from "axios";
 
-jest.mock('axios');
+vi.mock('axios');
 
-const mockHandleUserProfile = jest.fn();
-const mockHandleBlueSquare = jest.fn();
+const mockHandleUserProfile = vi.fn();
+const mockHandleBlueSquare = vi.fn();
 const mockStore = configureStore([thunk]);
 
 const initialState = {
@@ -41,7 +41,7 @@ beforeEach(() => {
 });
 afterEach(() => {
   store.clearActions();
-  jest.clearAllMocks();
+  vi.clearAllMocks();
 });
 
 describe("BlueSquaresTable component unit tests", () => {

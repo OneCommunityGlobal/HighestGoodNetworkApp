@@ -32,13 +32,13 @@ const task = {
   mother: 'MotherTask',
 };
 
-jest.mock('../../../actions/task');
-jest.mock('../../../actions/userManagement');
-jest.mock('react-redux', () => ({
-  ...jest.requireActual('react-redux'),
-  useDispatch: jest.fn(),
+vi.mock('../../../actions/task');
+vi.mock('../../../actions/userManagement');
+vi.mock('react-redux', () => ({
+  ...vi.requireActual('react-redux'),
+  useDispatch: vi.fn(),
 }));
-jest.mock('../reducer');
+vi.mock('../reducer');
 
 describe('TaskButton', () => {
   let store;
@@ -47,7 +47,7 @@ describe('TaskButton', () => {
 
   beforeEach(() => {
     store = mockStore({});
-    dispatch = jest.fn();
+    dispatch = vi.fn();
     useDispatch.mockReturnValue(dispatch);
 
     mock = new MockAdapter(axios);
@@ -73,12 +73,12 @@ describe('TaskButton', () => {
   });
 
   test.skip('calls markAsDone when button is clicked', async () => {
-    const updateTaskSpy = jest.spyOn(taskActions, 'updateTask').mockResolvedValue();
+    const updateTaskSpy = vi.spyOn(taskActions, 'updateTask').mockResolvedValue();
     const deleteSelectedTaskSpy = jest
       .spyOn(require('../reducer'), 'deleteSelectedTask')
       .mockResolvedValue();
-    const getAllUserProfileSpy = jest.spyOn(userActions, 'getAllUserProfile').mockResolvedValue();
-    const fetchAllTasksSpy = jest.spyOn(taskActions, 'fetchAllTasks').mockResolvedValue();
+    const getAllUserProfileSpy = vi.spyOn(userActions, 'getAllUserProfile').mockResolvedValue();
+    const fetchAllTasksSpy = vi.spyOn(taskActions, 'fetchAllTasks').mockResolvedValue();
 
     render(
       <Provider store={store}>

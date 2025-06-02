@@ -16,8 +16,8 @@ const invalidPasswordError =
   'Please choose a strong password which is at least 8 characters long and should contains a digit , a capital letter and a special character.';
 
 describe('reset password popup', () => {
-  const onClose = jest.fn();
-  const onReset = jest.fn();
+  const onClose = vi.fn();
+  const onReset = vi.fn();
   beforeEach(() => {
     render(
       <Provider store={store}>

@@ -11,11 +11,11 @@ import {
 } from '../../../actions/userManagement';
 
 // Mock the actions
-jest.mock('../../../actions/userManagement', () => ({
-  getAllUserProfile: jest.fn(),
-  updateUserStatus: jest.fn(),
-  updateUserFinalDayStatusIsSet: jest.fn(),
-  deleteUser: jest.fn(),
+vi.mock('../../../actions/userManagement', () => ({
+  getAllUserProfile: vi.fn(),
+  updateUserStatus: vi.fn(),
+  updateUserFinalDayStatusIsSet: vi.fn(),
+  deleteUser: vi.fn(),
 }));
 
 // Define mock constants here to avoid scope issues
@@ -25,7 +25,7 @@ const MOCK_ACTIVE = 'Active';
 const MOCK_INACTIVE = 'Inactive';
 
 // Mock child components to avoid rendering them
-jest.mock(
+vi.mock(
   '../UserTableHeader',
   () =>
     function() {
@@ -34,7 +34,7 @@ jest.mock(
 );
 
 // Add index to test IDs to make them unique
-jest.mock(
+vi.mock(
   '../UserTableData',
   () =>
     function({ onPauseResumeClick, onFinalDayClick, onActiveInactiveClick, user, index }) {
@@ -80,7 +80,7 @@ jest.mock(
     },
 );
 
-jest.mock(
+vi.mock(
   '../UserTableSearchHeader',
   () =>
     function({ onFirstNameSearch }) {
@@ -94,14 +94,14 @@ jest.mock(
       );
     },
 );
-jest.mock(
+vi.mock(
   '../UserTableFooter',
   () =>
     function() {
       return <div data-testid="user-table-footer">UserTableFooter</div>;
     },
 );
-jest.mock(
+vi.mock(
   '../UserSearchPanel',
   () =>
     function({ onActiveFiter, onNewUserClick }) {
@@ -121,35 +121,35 @@ jest.mock(
       );
     },
 );
-jest.mock(
+vi.mock(
   '../NewUserPopup',
   () =>
     function({ open }) {
       return open ? <div data-testid="new-user-popup">NewUserPopup</div> : null;
     },
 );
-jest.mock(
+vi.mock(
   '../ActivationDatePopup',
   () =>
     function({ open }) {
       return open ? <div data-testid="activation-date-popup">ActivationDatePopup</div> : null;
     },
 );
-jest.mock(
+vi.mock(
   '../SetupHistoryPopup',
   () =>
     function() {
       return <div data-testid="setup-history-popup">SetupHistoryPopup</div>;
     },
 );
-jest.mock(
+vi.mock(
   '../DeleteUserPopup',
   () =>
     function() {
       return <div data-testid="delete-user-popup">DeleteUserPopup</div>;
     },
 );
-jest.mock(
+vi.mock(
   '../ActiveInactiveConfirmationPopup',
   () =>
     function({ open }) {
@@ -158,21 +158,21 @@ jest.mock(
       ) : null;
     },
 );
-jest.mock(
+vi.mock(
   '../SetUpFinalDayPopUp',
   () =>
     function({ open }) {
       return open ? <div data-testid="setup-final-day-popup">SetUpFinalDayPopUp</div> : null;
     },
 );
-jest.mock(
+vi.mock(
   '../logTimeOffPopUp',
   () =>
     function() {
       return <div data-testid="log-time-off-popup">LogTimeOffPopUp</div>;
     },
 );
-jest.mock(
+vi.mock(
   '../setupNewUserPopup',
   () =>
     function() {
@@ -184,15 +184,15 @@ describe('UserManagement Component', () => {
   let props;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
 
     props = {
       getAllUserProfile,
       updateUserStatus,
       updateUserFinalDayStatusIsSet,
       deleteUser,
-      hasPermission: jest.fn().mockReturnValue(true),
-      getAllTimeOffRequests: jest.fn(),
+      hasPermission: vi.fn().mockReturnValue(true),
+      getAllTimeOffRequests: vi.fn(),
       state: {
         theme: { darkMode: false },
         allUserProfiles: {

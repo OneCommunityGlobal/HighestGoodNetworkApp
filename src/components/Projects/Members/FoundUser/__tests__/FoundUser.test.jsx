@@ -6,8 +6,8 @@ import FoundUser from '../FoundUser';
 import * as projectMembersActions from '../../../../../actions/projectMembers';
 
 // Mock the action module
-jest.mock('../../../../../actions/projectMembers', () => ({
-  assignProject: jest.fn(),
+vi.mock('../../../../../actions/projectMembers', () => ({
+  assignProject: vi.fn(),
 }));
 
 const mockStore = configureMockStore([thunk]);
@@ -40,7 +40,7 @@ describe('FoundUser Component', () => {
 
   beforeEach(() => {
     // Clear all mocks before each test
-    jest.clearAllMocks();
+    vi.clearAllMocks();
 
     // Mock the assignProject action to return a thunk function that returns a resolved promise
     projectMembersActions.assignProject.mockImplementation(() => {

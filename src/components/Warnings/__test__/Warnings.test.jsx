@@ -7,10 +7,10 @@ import thunk from 'redux-thunk';
 import Warning from '../Warnings';
 import * as warningActions from '../../../actions/warnings';
 
-jest.mock('../../../actions/warnings', () => ({
-  getWarningsByUserId: jest.fn(() => () => Promise.resolve([])),
-  postWarningByUserId: jest.fn(() => () => Promise.resolve([])),
-  deleteWarningsById: jest.fn(() => () => Promise.resolve([])),
+vi.mock('../../../actions/warnings', () => ({
+  getWarningsByUserId: vi.fn(() => () => Promise.resolve([])),
+  postWarningByUserId: vi.fn(() => () => Promise.resolve([])),
+  deleteWarningsById: vi.fn(() => () => Promise.resolve([])),
 }));
 
 const mockStore = configureStore([thunk]);
@@ -32,7 +32,7 @@ describe('Warning Component', () => {
 
   beforeEach(() => {
     store = mockStore(initialState);
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   test('renders nothing for non-admin users', () => {

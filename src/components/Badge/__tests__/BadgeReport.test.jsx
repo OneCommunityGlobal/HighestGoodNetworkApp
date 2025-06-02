@@ -1,11 +1,11 @@
 import React from 'react';
 import { render, fireEvent, waitFor, screen } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
 import BadgeReport from '../BadgeReport';
 import { UncontrolledTooltip } from 'reactstrap';
 import { formatDate } from '~/utils/formatDate';
 
-jest.mock('react-redux', () => ({
+
+vi.mock('react-redux', () => ({
   connect: () => component => component,
 }));
 
@@ -29,7 +29,7 @@ let mockBadges = [
   },
 ];
 const mockRole = 'Owner';
-const mockHasPermission = jest.fn();
+const mockHasPermission = vi.fn();
 
 describe('BadgeReport Component', () => {
   test('renders component without any errors', () => {

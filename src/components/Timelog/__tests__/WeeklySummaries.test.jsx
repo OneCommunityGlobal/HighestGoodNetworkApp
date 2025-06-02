@@ -9,10 +9,10 @@ import { BrowserRouter } from 'react-router-dom';
 import WeeklySummaries from '../WeeklySummaries';
 
 // Mock dependencies
-jest.mock('html-react-parser', () => function mockParser(content) {
+vi.mock('html-react-parser', () => function mockParser(content) {
   return <div data-testid="parsed-html">{content}</div>
 });
-jest.mock('@tinymce/tinymce-react', () => ({
+vi.mock('@tinymce/tinymce-react', () => ({
   Editor: () => <div data-testid="mock-editor" />,
 }));
 

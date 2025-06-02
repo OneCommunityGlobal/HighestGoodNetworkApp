@@ -23,7 +23,7 @@ describe('TriStateToggleSwitch Component', () => {
   });
 
   it('calls onChange and updates state and bgColor on click for all states', () => {
-    const handleChange = jest.fn();
+    const handleChange = vi.fn();
     const { container } = render(<TriStateToggleSwitch pos="default" onChange={handleChange} />);
     const wrapper = container.querySelector('.toggle-switch');
     const options = container.querySelectorAll('.knob-area div');
@@ -60,7 +60,7 @@ describe('TriStateToggleSwitch Component', () => {
   });
 
   it('does not call onChange on mount or prop change', () => {
-    const handleChange = jest.fn();
+    const handleChange = vi.fn();
     const { rerender } = render(<TriStateToggleSwitch pos="posted" onChange={handleChange} />);
     
     expect(handleChange).not.toHaveBeenCalled();
@@ -102,7 +102,7 @@ describe('TriStateToggleSwitch Component', () => {
   });
 
   it('allows sequential clicking through all states', () => {
-    const handleChange = jest.fn();
+    const handleChange = vi.fn();
     const { container } = render(<TriStateToggleSwitch pos="default" onChange={handleChange} />);
     const options = container.querySelectorAll('.knob-area div');
 

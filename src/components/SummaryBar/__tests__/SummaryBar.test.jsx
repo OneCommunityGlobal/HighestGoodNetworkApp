@@ -13,13 +13,13 @@ const mock = new MockAdapter(axios);
 
 // Create a mock for the hasPermission function
 // This is crucial since the actual implementation accesses state.role.roles
-jest.mock('utils/permissions', () => ({
+vi.mock('utils/permissions', () => ({
   __esModule: true,
-  default: () => jest.fn(() => true),
+  default: () => vi.fn(() => true),
 }));
 
 // Mock the HashLink component from react-router-hash-link
-jest.mock('react-router-hash-link', () => ({
+vi.mock('react-router-hash-link', () => ({
   HashLink: props => <a {...props}>{props.children}</a>,
 }));
 
@@ -102,8 +102,8 @@ describe('SummaryBar Component', () => {
   const defaultProps = {
     displayUserId: '123',
     summaryBarData: { tangibletime: 30 },
-    hasPermission: jest.fn(() => true), // Mock the hasPermission prop directly
-    toggleSubmitForm: jest.fn(),
+    hasPermission: vi.fn(() => true), // Mock the hasPermission prop directly
+    toggleSubmitForm: vi.fn(),
     submittedSummary: false,
   };
 

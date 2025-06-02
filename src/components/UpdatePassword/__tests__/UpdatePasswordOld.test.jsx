@@ -159,7 +159,7 @@ describe('Structure', () => {
 //   describe('Behavior', () => {
 //     it('should call updatePassword on submit', () => {
 //       const userProfileService = require('../services/userProfileService');
-//       const spy = jest.spyOn(userProfileService, 'updatePassword');
+//       const spy = vi.spyOn(userProfileService, 'updatePassword');
 //       const value = 'ABCdef@123';
 //       setField(mountedPage, 'currentpassword', 'pop');
 //       setField(mountedPage, 'newpassword', value);
@@ -173,7 +173,7 @@ describe('Structure', () => {
 //     });
 
 //     it('should show error if api returned error', () => {
-//       userProfileService.updatePassword = jest.fn(() => {
+//       userProfileService.updatePassword = vi.fn(() => {
 //         const response = {
 //           status: 400,
 //           data: {
@@ -199,8 +199,8 @@ describe('Structure', () => {
 //     });
 
 //     it('should show a toastor error if API response was other than 200 and 400', async () => {
-//       toast.error = jest.fn();
-//       userProfileService.updatePassword = jest.fn(() => {
+//       toast.error = vi.fn();
+//       userProfileService.updatePassword = vi.fn(() => {
 //         const response = {
 //           status: 433,
 //           data: {
@@ -227,13 +227,13 @@ describe('Structure', () => {
 //     });
 
 //     it('should show call toastr success with correct message and onClose param on success', async () => {
-//       toast.success = jest.fn();
+//       toast.success = vi.fn();
 //       const response = {
 //         status: 200,
 //         data: { message: 'updated' },
 //       };
 
-//       userProfileService.updatePassword = jest.fn(() => response);
+//       userProfileService.updatePassword = vi.fn(() => response);
 
 //       const value = 'ABCdef@123';
 //       setField(mountedPage, 'currentpassword', 'pop');

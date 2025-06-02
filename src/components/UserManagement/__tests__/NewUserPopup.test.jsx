@@ -7,7 +7,7 @@ import { renderWithProvider } from '../../../__tests__/utils';
 import NewUserPopup from '../NewUserPopup';
 import { themeMock } from '../../../__tests__/mockStates';
 
-jest.mock('../../UserProfile/AddNewUserProfile', () => {
+vi.mock('../../UserProfile/AddNewUserProfile', () => {
   const userprofile = () => (
     <div>
       <h4>User Profile</h4>
@@ -16,11 +16,11 @@ jest.mock('../../UserProfile/AddNewUserProfile', () => {
   return userprofile;
 });
 
-jest.mock('axios');
+vi.mock('axios');
 const mockStore = configureStore([thunk]);
 
 describe('new user popup', () => {
-  const onUserPopupClose = jest.fn();
+  const onUserPopupClose = vi.fn();
   let store;
   beforeEach(() => {
     store = mockStore({
@@ -61,7 +61,7 @@ describe('new user popup', () => {
 });
 
 describe('new user popup close test', () => {
-  const onUserPopupClose = jest.fn();
+  const onUserPopupClose = vi.fn();
   let store;
   it('should not render new user popup when closed', () => {
     store = mockStore({

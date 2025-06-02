@@ -13,7 +13,7 @@ describe('SkeletonLoading Component', () => {
 
   beforeEach(() => {
     // Mock console.error before each test
-    consoleErrorMock = jest.spyOn(console, 'error').mockImplementation(() => {});
+    consoleErrorMock = vi.spyOn(console, 'error').mockImplementation(() => {});
   });
 
   afterEach(() => {

@@ -3,6 +3,7 @@ import mockState from '../../../__tests__/mockAdminState.js';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
 
+
 const mockStore = configureStore([thunk]);
 describe('Dashboard ', () => {
   let store;
@@ -15,7 +16,7 @@ describe('Dashboard ', () => {
       weeklySummaries: mockState.weeklySummaries,
       role: mockState.role,
     });
-    store.dispatch = jest.fn();
+    store.dispatch = vi.fn();
     //check what props should be being passed seems the getUserProfile isnt there see if your using renderWithRouterMatch correctly
     //What props are you sending in?  I dont see them looks like you will need to create props with any props that are being mapped from the actions do that and this should work.
     // renderWithRouterMatch(

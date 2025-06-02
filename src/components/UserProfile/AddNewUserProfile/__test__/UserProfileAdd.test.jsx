@@ -13,8 +13,8 @@ import {
 } from '../../../../__tests__/mockStates.js';
 
 // Define mock functions at the top level
-const mockHandleUserProfile = jest.fn();
-const mockCreateUserProfile = jest.fn();
+const mockHandleUserProfile = vi.fn();
+const mockCreateUserProfile = vi.fn();
 
 // Create a mock component
 function MockAddUserProfile() {
@@ -64,7 +64,7 @@ function MockAddUserProfile() {
 }
 
 // Mock the UserProfileAdd module
-jest.mock('../UserProfileAdd', () => {
+vi.mock('../UserProfileAdd', () => {
   return {
     __esModule: true,
     default: props => MockAddUserProfile(props),
@@ -72,7 +72,7 @@ jest.mock('../UserProfileAdd', () => {
 });
 
 // Mock axios
-jest.mock('axios');
+vi.mock('axios');
 
 // Set up a mock state that we can update in our tests
 const mockState = {
@@ -87,7 +87,7 @@ const mockState = {
 describe('AddUserProfile page structure', () => {
   beforeEach(() => {
     // Reset mocks and state
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     mockState.userProfile.email = '';
     mockState.formErrors.firstName = '';
 

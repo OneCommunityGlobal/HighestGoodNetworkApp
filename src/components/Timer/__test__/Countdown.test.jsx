@@ -17,17 +17,17 @@ describe('Countdown Component', () => {
     },
     running: false,
     wsMessageHandler: {
-      sendPause: jest.fn(),
-      sendSetGoal: jest.fn(),
+      sendPause: vi.fn(),
+      sendSetGoal: vi.fn(),
     },
     remaining: 1800000, // 30 minutes in milliseconds
-    setConfirmationResetModal: jest.fn(),
-    checkBtnAvail: jest.fn(() => true),
-    handleStartButton: jest.fn(),
-    handleAddButton: jest.fn(),
-    handleSubtractButton: jest.fn(),
-    handleStopButton: jest.fn(),
-    toggleTimer: jest.fn(),
+    setConfirmationResetModal: vi.fn(),
+    checkBtnAvail: vi.fn(() => true),
+    handleStartButton: vi.fn(),
+    handleAddButton: vi.fn(),
+    handleSubtractButton: vi.fn(),
+    handleStopButton: vi.fn(),
+    toggleTimer: vi.fn(),
   };
 
   it('renders the countdown component with the correct initial values', () => {

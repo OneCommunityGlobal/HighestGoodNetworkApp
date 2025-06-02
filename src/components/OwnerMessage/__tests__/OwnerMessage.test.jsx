@@ -5,8 +5,8 @@ import thunk from 'redux-thunk';
 import OwnerMessage from '../OwnerMessage';
 
 // Create mock for the hasPermission utility
-jest.mock('utils/permissions', () => {
-  return jest.fn().mockImplementation(() => () => true);
+vi.mock('utils/permissions', () => {
+  return vi.fn().mockImplementation(() => () => true);
 });
 
 describe('OwnerMessage Component', () => {
@@ -33,7 +33,7 @@ describe('OwnerMessage Component', () => {
     const store = mockStore(initialState);
 
     // Mock the action creators
-    store.dispatch = jest.fn();
+    store.dispatch = vi.fn();
 
     // Render with Provider
     render(
@@ -63,7 +63,7 @@ describe('OwnerMessage Component', () => {
     };
 
     const store = mockStore(initialState);
-    store.dispatch = jest.fn();
+    store.dispatch = vi.fn();
 
     render(
       <Provider store={store}>
@@ -91,7 +91,7 @@ describe('OwnerMessage Component', () => {
     };
 
     const store = mockStore(initialState);
-    store.dispatch = jest.fn();
+    store.dispatch = vi.fn();
 
     render(
       <Provider store={store}>

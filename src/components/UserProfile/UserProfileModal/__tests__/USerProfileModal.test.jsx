@@ -37,10 +37,10 @@ beforeEach(() => {
   })
 });
 
-jest.mock('axios');
-const modifyBlueSquares=jest.fn()
-const closeModal=jest.fn()
-const updateLink=jest.fn()
+vi.mock('axios');
+const modifyBlueSquares=vi.fn()
+const closeModal=vi.fn()
+const updateLink=vi.fn()
 
 const renderComponent = (testStore,type,isOpen) =>{
   return render(<Provider store={testStore}><UserProfileModal 
@@ -91,7 +91,7 @@ describe('UserProfileModal component', () => {
   })
   it('check if Resize button works as expected when type is image',()=>{
     renderComponent(store,'image',true)
-    const windowOpenSpy = jest.spyOn(window, 'open').mockImplementation(() => {});
+    const windowOpenSpy = vi.spyOn(window, 'open').mockImplementation(() => {});
     const resizeButton=screen.getByText('Resize')
     fireEvent.click(resizeButton)
     expect(windowOpenSpy).toHaveBeenCalledWith('https://picresize.com/');

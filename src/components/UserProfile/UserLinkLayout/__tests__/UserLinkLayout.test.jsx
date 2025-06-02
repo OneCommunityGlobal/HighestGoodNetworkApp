@@ -4,8 +4,8 @@ import '@testing-library/jest-dom/extend-expect';
 import UserLinkLayout from '../UserLinkLayout';
 
 
-jest.mock('../../UserLinks', () => () => <div data-testid="mock-user-links"></div>);
-jest.mock('../../UserProfileEdit/LinkModButton', () => () => <div data-testid="mock-link-mod-button"></div>);
+vi.mock('../../UserLinks', () => () => <div data-testid="mock-user-links"></div>);
+vi.mock('../../UserProfileEdit/LinkModButton', () => () => <div data-testid="mock-link-mod-button"></div>);
 
 
 describe('UserLinkLayout Component', () => {
@@ -14,9 +14,9 @@ describe('UserLinkLayout Component', () => {
       adminLinks: ['admin link 1', 'admin link 2'],
       personalLinks: ['personal link 1', 'personal link 2'],
     },
-    updateLink: jest.fn(),
-    handleLinkModel: jest.fn(),
-    handleSubmit: jest.fn(),
+    updateLink: vi.fn(),
+    handleLinkModel: vi.fn(),
+    handleSubmit: vi.fn(),
     canEdit: false,
     role: 'user',
   };

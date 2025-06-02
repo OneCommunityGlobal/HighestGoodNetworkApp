@@ -35,7 +35,7 @@ const store = mockStore({
   },
 });
 
-jest.mock('axios');
+vi.mock('axios');
 afterEach(() => {
   store.clearActions();
 });

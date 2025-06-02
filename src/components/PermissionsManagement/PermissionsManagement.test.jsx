@@ -11,12 +11,12 @@ import { renderWithRouterMatch } from '../../__tests__/utils';
 import PermissionsManagement from './PermissionsManagement';
 import { rolesMock, themeMock } from '../../__tests__/mockStates';
 
-jest.mock('axios');
+vi.mock('axios');
 // Mock API call to prevent real network requests during tests, avoiding ECONNREFUSED errors
 // and ensuring consistent, fast, and reliable test execution.
 axios.get.mockResolvedValue({ data: [] });
 
-jest.mock('~/actions/role.js');
+vi.mock('~/actions/role.js');
 
 const mockStore = configureMockStore([thunk]);
 
@@ -34,7 +34,7 @@ describe('permissions management page structure', () => {
       roleInfo: { roleInfo: {} },
       theme: themeMock,
     });
-    store.dispatch = jest.fn();
+    store.dispatch = vi.fn();
 
     await act(async () => {
       renderWithRouterMatch(

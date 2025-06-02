@@ -25,7 +25,7 @@ describe('ModalExample Component', () => {
   });
 
   it('closes when close button is clicked', () => {
-    const closeModalMock = jest.fn();
+    const closeModalMock = vi.fn();
     render(
       <Provider store={store}>
         <ModalExample isOpen closeModal={closeModalMock} modalTitle="Test Modal" />
@@ -75,7 +75,7 @@ describe('ModalExample Component', () => {
   });
 
   it('calls setInactiveModal when "Set inactive" button is clicked', () => {
-    const setInactiveModalMock = jest.fn();
+    const setInactiveModalMock = vi.fn();
     render(
       <Provider store={store}>
         <ModalExample
@@ -92,7 +92,7 @@ describe('ModalExample Component', () => {
   });
 
   it('calls confirmModal when confirm button is clicked', () => {
-    const confirmModalMock = jest.fn();
+    const confirmModalMock = vi.fn();
     render(
       <Provider store={store}>
         <ModalExample

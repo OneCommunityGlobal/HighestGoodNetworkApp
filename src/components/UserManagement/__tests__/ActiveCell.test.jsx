@@ -31,7 +31,7 @@ describe('ActiveCell', () => {
   });
 
   it('calls onClick when canChange is true and the cell is clicked', () => {
-    const mockOnClick = jest.fn();
+    const mockOnClick = vi.fn();
     const { container } = render(<ActiveCell canChange onClick={mockOnClick} />);
 
     fireEvent.click(container.firstChild);
@@ -39,7 +39,7 @@ describe('ActiveCell', () => {
   });
 
   it('does not call onClick when canChange is false', () => {
-    const mockOnClick = jest.fn();
+    const mockOnClick = vi.fn();
     const { container } = render(<ActiveCell canChange={false} onClick={mockOnClick} />);
 
     fireEvent.click(container.firstChild);

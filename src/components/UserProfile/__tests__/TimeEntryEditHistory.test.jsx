@@ -12,16 +12,16 @@ import moment from 'moment-timezone';
 const middlewares = [thunk]
 const mockStore = configureMockStore(middlewares)
 
-jest.mock('react-redux', () => ({
-  ...jest.requireActual('react-redux'),
-  useDispatch: jest.fn(),
-  useSelector: jest.fn(),
-  useStore: jest.fn(),
+vi.mock('react-redux', () => ({
+  ...vi.requireActual('react-redux'),
+  useDispatch: vi.fn(),
+  useSelector: vi.fn(),
+  useStore: vi.fn(),
 }));
 
 
-const mockDispatch = jest.fn();
-const mockGetState = jest.fn();
+const mockDispatch = vi.fn();
+const mockGetState = vi.fn();
 
 const mockEditDate = moment();
 userProfileMock.timeEntryEditHistory =[{
@@ -33,7 +33,7 @@ userProfileMock.timeEntryEditHistory =[{
 
 const props = {
   userProfile:userProfileMock,
-  setUserProfile:jest.fn(),  
+  setUserProfile:vi.fn(),  
 }
 
 const store = mockStore({
@@ -52,7 +52,7 @@ const store = mockStore({
 
 
 beforeEach(() => {
-  jest.clearAllMocks();
+  vi.clearAllMocks();
   reduxHooks.useDispatch.mockReturnValue(mockDispatch);
   reduxHooks.useStore.mockReturnValue({ getState: mockGetState });
 

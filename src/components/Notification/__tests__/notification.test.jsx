@@ -9,7 +9,7 @@ import * as actions from '../../../actions/notificationAction';
 
 const mockStore = configureStore([thunk]);
 
-jest.mock('../../../actions/notificationAction');
+vi.mock('../../../actions/notificationAction');
 
 describe('NotificationCard', () => {
   let store;
@@ -17,7 +17,7 @@ describe('NotificationCard', () => {
   beforeEach(() => {
     store = mockStore({});
 
-    store.dispatch = jest.fn();
+    store.dispatch = vi.fn();
   });
 
   const notification = {

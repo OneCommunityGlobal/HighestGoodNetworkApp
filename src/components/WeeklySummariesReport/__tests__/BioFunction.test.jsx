@@ -2,7 +2,7 @@ import { render } from '@testing-library/react';
 import BioFunction from '../BioFunction';
 
 // mock data
-const mockHandleProfileChange = jest.fn();
+const mockHandleProfileChange = vi.fn();
 const colors = {
   Default: 'black',
 };

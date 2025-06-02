@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
 // Completely mock the TeamsReportCharts component
-jest.mock('../TeamsReportCharts', () => ({
+vi.mock('../TeamsReportCharts', () => ({
   __esModule: true,
   default: ({ title, pieChartId, selectedTeamsData, selectedTeamsWeeklyEffort, darkMode }) => {
     // Calculate the chart values

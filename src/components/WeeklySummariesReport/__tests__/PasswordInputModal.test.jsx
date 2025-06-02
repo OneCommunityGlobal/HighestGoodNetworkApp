@@ -9,18 +9,18 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import PasswordInputModal from '../PasswordInputModal';
 
-jest.mock('axios');
-jest.mock('react-toastify', () => ({
+vi.mock('axios');
+vi.mock('react-toastify', () => ({
   toast: {
-    success: jest.fn(),
+    success: vi.fn(),
   },
 }));
 
 const mockStore = configureStore([]);
-const mockOnClose = jest.fn();
-const mockCheckForValidPwd = jest.fn();
-const mockSetSummaryRecepientsPopup = jest.fn();
-const mockSetAuthpassword = jest.fn();
+const mockOnClose = vi.fn();
+const mockCheckForValidPwd = vi.fn();
+const mockSetSummaryRecepientsPopup = vi.fn();
+const mockSetAuthpassword = vi.fn();
 
 describe('PasswordInputModal', () => {
   let store;

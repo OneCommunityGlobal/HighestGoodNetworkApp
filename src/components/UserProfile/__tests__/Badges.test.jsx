@@ -7,14 +7,14 @@ import Badges from '../Badges';
 import { authMock, userProfileMock, rolesMock } from '../../../__tests__/mockStates';
 
 // Mock useLayoutEffect to useEffect to avoid SSR warnings in test environment
-jest.mock('react', () => ({
-  ...jest.requireActual('react'),
-  useLayoutEffect: jest.requireActual('react').useEffect,
+vi.mock('react', () => ({
+  ...vi.requireActual('react'),
+  useLayoutEffect: vi.requireActual('react').useEffect,
 }));
 
 // Mock the axios request that's failing
-jest.mock('axios', () => ({
-  get: jest.fn().mockResolvedValue({ data: [] }),
+vi.mock('axios', () => ({
+  get: vi.fn().mockResolvedValue({ data: [] }),
   defaults: {
     headers: {
       common: {},
@@ -59,11 +59,11 @@ describe('Badges Component', () => {
       lastName: 'Last Name',
       personalBestMaxHrs: 40, // Add this property required by FeaturedBadges component
     },
-    setUserProfile: jest.fn(),
-    setOriginalUserProfile: jest.fn(),
+    setUserProfile: vi.fn(),
+    setOriginalUserProfile: vi.fn(),
     role: null,
     canEdit: true,
-    handleSubmit: jest.fn(),
+    handleSubmit: vi.fn(),
     userPermissions: [],
     darkMode: false, // Add darkMode prop
     displayUserId: 'fakeid', // Add displayUserId to match _id

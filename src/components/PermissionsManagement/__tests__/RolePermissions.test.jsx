@@ -15,7 +15,7 @@ import RolePermissions from '../RolePermissions';
 
 const mockModalContext = {
   modalStatus: false,
-  updateModalStatus: jest.fn(),
+  updateModalStatus: vi.fn(),
 };
 
 const mockStore = configureStore([thunk]);
@@ -59,12 +59,12 @@ afterEach(() => {
 const roleName = 'Owner';
 const roleId = 'abc123';
 
-jest.mock('axios');
-jest.mock('react-toastify', () => ({
-  ...jest.requireActual('react-toastify'),
+vi.mock('axios');
+vi.mock('react-toastify', () => ({
+  ...vi.requireActual('react-toastify'),
   toast: {
-    success: jest.fn(),
-    error: jest.fn(),
+    success: vi.fn(),
+    error: vi.fn(),
   },
 }));
 // eslint-disable-next-line no-unused-vars

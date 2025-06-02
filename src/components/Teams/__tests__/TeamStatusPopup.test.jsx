@@ -4,7 +4,7 @@ import TeamStatusPopup from '~/components/Teams/TeamStatusPopup';
 import { renderWithProvider } from '__tests__/utils';
 import { screen, fireEvent } from '@testing-library/react';
 
-const mock = jest.fn();
+const mock = vi.fn();
 
 const defaultProps = {
   open: true,

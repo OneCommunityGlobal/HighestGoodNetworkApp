@@ -6,7 +6,7 @@ import { ApiEndpoint, ENDPOINTS } from '~/utils/URL';
 
 const userProjectsUrl = ENDPOINTS.USER_PROJECTS(mockState.auth.user.userid);
 
-window.confirm = jest.fn(() => true);
+window.confirm = vi.fn(() => true);
 
 const server = setupServer(
   rest.get(`${ApiEndpoint}/userprofile/*`, (req, res, ctx) => {

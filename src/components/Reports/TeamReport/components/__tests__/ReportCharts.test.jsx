@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
 // Completely mock the ReportCharts component
-jest.mock('../ReportCharts', () => ({
+vi.mock('../ReportCharts', () => ({
   __esModule: true,
   default: ({ title, pieChartId }) => (
     <section className="team-report-chart-wrapper">

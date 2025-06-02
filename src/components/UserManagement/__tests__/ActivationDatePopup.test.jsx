@@ -10,8 +10,8 @@ import { renderWithProvider } from '../../../__tests__/utils';
 const mockStore = configureStore([thunk]);
 
 describe('<ActivationDatePopup />', () => {
-  const onClose = jest.fn();
-  const onPause = jest.fn();
+  const onClose = vi.fn();
+  const onPause = vi.fn();
   let store;
   beforeEach(() => {
     store = mockStore({

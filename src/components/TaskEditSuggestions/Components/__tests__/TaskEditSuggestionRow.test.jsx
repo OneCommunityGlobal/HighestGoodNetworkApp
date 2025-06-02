@@ -4,12 +4,12 @@ import userEvent from '@testing-library/user-event';
 import { TaskEditSuggestionRow } from '../TaskEditSuggestionRow';
 
 // Mock the `datetimeToDate` function
-jest.mock('components/TeamMemberTasks/components/TaskDifferenceModal', () => ({
+vi.mock('components/TeamMemberTasks/components/TaskDifferenceModal', () => ({
   datetimeToDate: () => 'Mocked Date',
 }));
 
 describe('TaskEditSuggestionRow', () => {
-  const mockHandleToggle = jest.fn();
+  const mockHandleToggle = vi.fn();
   const taskEditSuggestionMock = {
     dateSuggested: new Date().toString(),
     user: 'test-user',
@@ -17,7 +17,7 @@ describe('TaskEditSuggestionRow', () => {
   };
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('renders the task edit suggestion information', () => {
@@ -60,7 +60,7 @@ describe('TaskEditSuggestionRow', () => {
   });
 
   it('prevents event propagation when the button is clicked', () => {
-    const mockParentHandler = jest.fn();
+    const mockParentHandler = vi.fn();
 
     render(
       <div onClick={mockParentHandler}>

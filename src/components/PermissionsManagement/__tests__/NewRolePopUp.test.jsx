@@ -15,10 +15,10 @@ import { ModalProvider } from '~/context/ModalContext';
 import axios from 'axios';
 import CreateNewRolePopup from '../NewRolePopUp';
 
-jest.mock('axios');
+vi.mock('axios');
 
-const mockTogglePopUpNewRole = jest.fn();
-const mockAddNewRole = jest.fn();
+const mockTogglePopUpNewRole = vi.fn();
+const mockAddNewRole = vi.fn();
 const mockRoleNames = ['Owner', 'Administrator'];
 const mockAuth = {
   isAuthenticated: true,

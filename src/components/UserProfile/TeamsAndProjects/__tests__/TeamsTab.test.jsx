@@ -2,7 +2,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import TeamsTab from '../TeamsTab';
 
 // Stub out the two heavy child modules
-jest.mock(
+vi.mock(
   '../AddTeamPopup',
   () =>
     function (props) {
@@ -20,7 +20,7 @@ jest.mock(
       );
     },
 );
-jest.mock(
+vi.mock(
   '../UserTeamsTable',
   () =>
     function (props) {
@@ -37,14 +37,14 @@ jest.mock(
 );
 
 // Stub your action creators and toast
-jest.mock('~/actions/allTeamsAction', () => ({
-  addTeamMember: jest.fn(),
-  deleteTeamMember: jest.fn(),
+vi.mock('~/actions/allTeamsAction', () => ({
+  addTeamMember: vi.fn(),
+  deleteTeamMember: vi.fn(),
 }));
-jest.mock('react-toastify', () => ({
+vi.mock('react-toastify', () => ({
   toast: {
-    success: jest.fn(),
-    error: jest.fn(),
+    success: vi.fn(),
+    error: vi.fn(),
   },
 }));
 
@@ -52,26 +52,26 @@ describe('TeamsTab (unit)', () => {
   const baseProps = {
     teamsData: [],
     userTeams: {},
-    onDeleteTeam: jest.fn(),
-    onAssignTeam: jest.fn(),
-    onAssignTeamCode: jest.fn(),
+    onDeleteTeam: vi.fn(),
+    onAssignTeam: vi.fn(),
+    onAssignTeamCode: vi.fn(),
     edit: true,
     role: 'admin',
-    onUserVisibilitySwitch: jest.fn(),
+    onUserVisibilitySwitch: vi.fn(),
     isVisible: true,
     canEditVisibility: true,
-    handleSubmit: jest.fn(),
+    handleSubmit: vi.fn(),
     disabled: false,
     canEditTeamCode: true,
-    setUserProfile: jest.fn(),
+    setUserProfile: vi.fn(),
     userProfile: { _id: 'userId', firstName: 'John', lastName: 'Doe' },
     codeValid: true,
-    setCodeValid: jest.fn(),
+    setCodeValid: vi.fn(),
     saved: false,
     inputAutoComplete: '',
     inputAutoStatus: '',
     isLoading: false,
-    fetchTeamCodeAllUsers: jest.fn(),
+    fetchTeamCodeAllUsers: vi.fn(),
     darkMode: false,
   };
 

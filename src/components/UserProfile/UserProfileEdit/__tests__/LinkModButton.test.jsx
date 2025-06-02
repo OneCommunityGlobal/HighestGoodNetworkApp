@@ -4,7 +4,7 @@ import { authMock, userProfileMock } from '__tests__/mockStates';
 import LinkModButton from '../LinkModButton';
 
 // Mock child component
-jest.mock('components/UserProfile/UserProfileModal/EditLinkModal', () => {
+vi.mock('components/UserProfile/UserProfileModal/EditLinkModal', () => {
   return function(props) {
     return (
       <div data-testid="edit-modal">
@@ -16,10 +16,10 @@ jest.mock('components/UserProfile/UserProfileModal/EditLinkModal', () => {
 
 describe('LinkModButton Component', () => {
   const mockProps = {
-    updateLink: jest.fn(),
+    updateLink: vi.fn(),
     userProfile: userProfileMock,
-    setChanged: jest.fn(),
-    handleSubmit: jest.fn(),
+    setChanged: vi.fn(),
+    handleSubmit: vi.fn(),
     role: authMock.user.role,
   };
 

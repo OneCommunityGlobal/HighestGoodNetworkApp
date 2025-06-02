@@ -25,7 +25,7 @@ describe('ReportPage component', () => {
   });
 
   it('passes props correctly', () => {
-    const renderProfile = jest.fn();
+    const renderProfile = vi.fn();
     const contentClassName = 'custom-content-class';
 
     render(

@@ -11,7 +11,7 @@ const mockStore = configureStore([thunk]);
 
 let store;
 
-const mockDefault = jest.fn();
+const mockDefault = vi.fn();
 
 const teamProps = {
   name: 'Team Name',

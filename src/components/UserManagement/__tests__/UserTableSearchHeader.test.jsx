@@ -11,12 +11,12 @@ describe('user table search header row', () => {
   let onEmailSearch;
   let onWeeklyHrsSearch;
   beforeEach(() => {
-    onFirstNameSearch = jest.fn();
-    onLastNameSearch = jest.fn();
-    onRoleSearch = jest.fn();
-    onTitleSearch = jest.fn();
-    onEmailSearch = jest.fn();
-    onWeeklyHrsSearch = jest.fn();
+    onFirstNameSearch = vi.fn();
+    onLastNameSearch = vi.fn();
+    onRoleSearch = vi.fn();
+    onTitleSearch = vi.fn();
+    onEmailSearch = vi.fn();
+    onWeeklyHrsSearch = vi.fn();
     render(
       <table>
         <tbody>

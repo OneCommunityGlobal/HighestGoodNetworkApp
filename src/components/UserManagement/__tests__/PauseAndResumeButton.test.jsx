@@ -6,11 +6,11 @@ import { PAUSE, RESUME, PROCESSING } from '../../../languages/en/ui';
 import { userProfileMock } from '../../../__tests__/mockStates';
 import { renderWithProvider } from '../../../__tests__/utils';
 
-jest.mock('react-toastify');
+vi.mock('react-toastify');
 
 // Provide a default for loadUserProfile so the component doesn't error
 PauseAndResumeButton.defaultProps = {
-  loadUserProfile: jest.fn(),
+  loadUserProfile: vi.fn(),
 };
 
 describe('PauseAndResumeButton', () => {

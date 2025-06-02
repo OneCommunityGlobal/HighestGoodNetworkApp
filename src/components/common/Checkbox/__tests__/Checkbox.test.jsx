@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect'; // for the "toBeInTheDocument" matcher
+import { vi } from 'vitest'
 import { Checkbox } from '../Checkbox';
 
 describe('Checkbox Component', () => {
@@ -16,7 +16,7 @@ describe('Checkbox Component', () => {
   });
 
   test('handles onChange and changes checked state', () => {
-    const handleChange = jest.fn();
+    const handleChange = vi.fn();
     const { getByRole } = render(
       <Checkbox label="Test Label" id="test-checkbox" onChange={handleChange} />,
     );

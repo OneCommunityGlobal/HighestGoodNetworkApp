@@ -57,7 +57,7 @@ describe('Input Component', () => {
 
   // 5. Event Handling Test
   it('calls onChange handler when changed', () => {
-    const handleChange = jest.fn();
+    const handleChange = vi.fn();
     render(
       <Provider store={store}>
         <Input label="Test Label" name="testName" onChange={handleChange} />

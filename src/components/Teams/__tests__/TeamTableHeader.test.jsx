@@ -8,8 +8,8 @@ const defaultProps = {
   darkMode: false,
   sortTeamNameState: '',
   sortTeamActiveState: '',
-  onTeamNameSort: jest.fn(),
-  onTeamActiveSort: jest.fn(),
+  onTeamNameSort: vi.fn(),
+  onTeamActiveSort: vi.fn(),
 };
 
 describe('TeamTableHeader (pure)', () => {

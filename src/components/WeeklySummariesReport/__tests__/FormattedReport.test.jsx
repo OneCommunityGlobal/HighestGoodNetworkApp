@@ -9,17 +9,17 @@ import moment from 'moment';
 import FormattedReport from '../FormattedReport';
 import '@testing-library/jest-dom/extend-expect';
 
-jest.mock('../../../utils/permissions', () => ({
+vi.mock('../../../utils/permissions', () => ({
   __esModule: true,
   default: () => () => true,
   cantUpdateDevAdminDetails: () => false,
 }));
 
-jest.mock('~/actions/weeklySummariesReport', () => ({
+vi.mock('~/actions/weeklySummariesReport', () => ({
   updateOneSummaryReport: () => () => Promise.resolve({ status: 200 }),
 }));
 
-jest.mock(
+vi.mock(
   'components/UserProfile/EditableModal/RoleInfoModal',
   () =>
     // eslint-disable-next-line func-names
@@ -28,13 +28,13 @@ jest.mock(
     },
 );
 
-jest.mock('axios', () => ({
-  patch: jest.fn(() => Promise.resolve({ status: 200 })),
+vi.mock('axios', () => ({
+  patch: vi.fn(() => Promise.resolve({ status: 200 })),
 }));
 
-jest.mock('react-toastify', () => ({
+vi.mock('react-toastify', () => ({
   toast: {
-    success: jest.fn(),
+    success: vi.fn(),
   },
 }));
 
@@ -88,8 +88,8 @@ const defaultProps = {
   canEditTeamCode: true,
   auth: dummyAuthAdmin,
   canSeeBioHighlight: true,
-  handleTeamCodeChange: jest.fn(),
-  handleSpecialColorDotClick: jest.fn(),
+  handleTeamCodeChange: vi.fn(),
+  handleSpecialColorDotClick: vi.fn(),
 };
 
 describe('FormattedReport minimal test', () => {

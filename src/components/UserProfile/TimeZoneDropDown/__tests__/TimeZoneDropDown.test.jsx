@@ -12,7 +12,7 @@ describe('TimeZoneDropDown Component', () => {
   };
   const store = mockStore(initialState);
 
-  const mockOnChange = jest.fn();
+  const mockOnChange = vi.fn();
   const timeZones = {
     'America/New_York': { utcOffset: '-05:00' },
     'Europe/London': { utcOffset: '+00:00' },

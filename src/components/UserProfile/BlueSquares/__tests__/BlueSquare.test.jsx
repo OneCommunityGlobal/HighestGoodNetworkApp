@@ -8,7 +8,7 @@ import configureStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import hasPermission from '~/utils/permissions';
 
-const handleBlueSquare = jest.fn();
+const handleBlueSquare = vi.fn();
 
 const mockStore = configureStore([thunk]);
 const initialState = {

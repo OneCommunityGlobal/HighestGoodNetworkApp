@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import DropDownSearchBox from '../DropDownSearchBox';
 
 describe('DropDownSearchBox', () => {
-  const mockSearchCallback = jest.fn();
+  const mockSearchCallback = vi.fn();
   const mockItems = ['Option 1', 'Option 2', 'Option 3'];
   const mockProps = {
     id: 'testDropdown',

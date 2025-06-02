@@ -7,12 +7,12 @@ import QuickSetupModal from '../QuickSetupModal';
 import { getAllTitle } from '../../../../actions/title';
 import { mockTeamsData, mockUserProfile, mockTitles, mockUserPermissions } from '../__mock__/mockData';
 
-jest.mock('../../../../actions/title', () => ({
-  getAllTitle: jest.fn()
+vi.mock('../../../../actions/title', () => ({
+  getAllTitle: vi.fn()
 }));
 
-jest.mock('../../../../utils/permissions', () => ({
-  hasPermission: jest.fn(permission => mockUserPermissions[permission])
+vi.mock('../../../../utils/permissions', () => ({
+  hasPermission: vi.fn(permission => mockUserPermissions[permission])
 }));
 
 const mockStore = configureStore([]);

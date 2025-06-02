@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
 // Completely mock the TeamReportCharts component
-jest.mock('../TeamReportCharts', () => ({
+vi.mock('../TeamReportCharts', () => ({
   __esModule: true,
   default: ({
     title,
@@ -61,7 +61,7 @@ describe('TeamReportCharts', () => {
   const TeamReportCharts = require('../TeamReportCharts').default;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('renders without crashing', () => {

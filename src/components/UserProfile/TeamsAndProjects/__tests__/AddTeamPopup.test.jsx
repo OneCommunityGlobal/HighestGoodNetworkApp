@@ -48,11 +48,11 @@ const store = mockStore({
   theme: { darkMode: false },
 });
 
-const onAddTeamPopupClose = jest.fn();
-const onSelectAssignTeam = jest.fn();
-const handleSubmit = jest.fn();
-jest.mock('react-toastify');
-jest.mock('axios');
+const onAddTeamPopupClose = vi.fn();
+const onSelectAssignTeam = vi.fn();
+const handleSubmit = vi.fn();
+vi.mock('react-toastify');
+vi.mock('axios');
 const renderComponent = (mockOpen, mockTeamsData, mockUserTeams) => {
   return render(
     <Provider store={store}>
@@ -109,7 +109,7 @@ describe('AddTeamPopup component', () => {
     const teamsData = {
       allTeams: store.getState().allTeams,
     };
-    toast.success = jest.fn();
+    toast.success = vi.fn();
     renderComponent(true, teamsData, userTeams);
     const modalFadeElement = screen.getByRole('document');
     const modalContentElement = modalFadeElement.querySelector('.modal-content');

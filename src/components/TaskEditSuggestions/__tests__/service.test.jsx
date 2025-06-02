@@ -7,11 +7,11 @@ import {
 } from '../service';
 
 // mock out axios completely
-jest.mock('axios');
+vi.mock('axios');
 
 describe('TaskEditSuggestions HTTP Service', () => {
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('fetches task edit suggestions successfully', async () => {

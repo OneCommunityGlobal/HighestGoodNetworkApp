@@ -13,8 +13,8 @@ import { clearErrors } from '../../actions/errorsActions';
 import { loginUser } from '../../actions/authActions';
 
 // Mock dependencies
-jest.mock('jwt-decode', () =>
-  jest.fn(() => ({
+vi.mock('jwt-decode', () =>
+  vi.fn(() => ({
     userid: '5edf141c78f1380017b829a6',
     role: 'Administrator',
   })),
@@ -24,14 +24,14 @@ jest.mock('jwt-decode', () =>
 const localStorageMock = (() => {
   let store = {};
   return {
-    getItem: jest.fn(key => store[key]),
-    setItem: jest.fn((key, value) => {
+    getItem: vi.fn(key => store[key]),
+    setItem: vi.fn((key, value) => {
       store[key] = value;
     }),
-    removeItem: jest.fn(key => {
+    removeItem: vi.fn(key => {
       delete store[key];
     }),
-    clear: jest.fn(() => {
+    clear: vi.fn(() => {
       store = {};
     }),
   };
@@ -39,9 +39,9 @@ const localStorageMock = (() => {
 Object.defineProperty(window, 'localStorage', { value: localStorageMock });
 
 // Mock httpService
-jest.mock('../../services/httpService', () => ({
-  post: jest.fn(),
-  setjwt: jest.fn(),
+vi.mock('../../services/httpService', () => ({
+  post: vi.fn(),
+  setjwt: vi.fn(),
 }));
 
 const url = ENDPOINTS.LOGIN;
@@ -109,7 +109,7 @@ beforeAll(() => server.listen());
 afterAll(() => server.close());
 afterEach(() => {
   server.resetHandlers();
-  jest.clearAllMocks();
+  vi.clearAllMocks();
 });
 
 function sleep(ms) {
@@ -122,7 +122,7 @@ describe('Login behavior', () => {
   let loginMountedPage;
 
   it('should perform correct redirection if user tries to access a proctected route from some other location', async () => {
-    // jest.setTimeout(10000);
+    // vi.setTimeout(10000);
     // const rt = '/updatepassword/5edf141c78f1380017b829a6';
     // const hist = createMemoryHistory({ initialEntries: [rt] });
     // loginMountedPage = renderWithRouterMatch(routes, {
@@ -238,7 +238,7 @@ describe('Login behavior', () => {
 
     expect(typeof anAction).toEqual('function');
 
-    const dispatch = jest.fn();
+    const dispatch = vi.fn();
     await anAction(dispatch);
 
     expect(dispatch).toHaveBeenCalledWith(expectedAction);

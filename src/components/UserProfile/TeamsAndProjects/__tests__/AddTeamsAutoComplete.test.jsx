@@ -6,16 +6,16 @@ import configureStore from 'redux-mock-store';
 import AddTeamsAutoComplete from '../AddTeamsAutoComplete';
 import { toast } from 'react-toastify';
 
-jest.mock('react-toastify', () => ({
+vi.mock('react-toastify', () => ({
   toast: {
-    error: jest.fn(),
+    error: vi.fn(),
   },
 }));
 
 describe('AddTeamsAutoComplete Component', () => {
-  const mockSetSearchText = jest.fn();
-  const mockOnCreateNewTeam = jest.fn();
-  const mockSetInputs = jest.fn();
+  const mockSetSearchText = vi.fn();
+  const mockOnCreateNewTeam = vi.fn();
+  const mockSetInputs = vi.fn();
   const teamsData = {
     allTeams: [
       { _id: '1', teamName: 'Engineering' },
@@ -31,7 +31,7 @@ describe('AddTeamsAutoComplete Component', () => {
   const store = mockStore(initialState);
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   test('renders without crashing', () => {

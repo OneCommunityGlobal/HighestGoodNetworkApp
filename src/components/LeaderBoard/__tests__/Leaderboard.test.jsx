@@ -33,11 +33,11 @@ const mockState = {
 };
 
 // Mock getMouseoverText function globally
-global.getMouseoverText = jest.fn();
+global.getMouseoverText = vi.fn();
 
 // Mock any component hooks that might be causing issues
 const originalUseEffect = React.useEffect;
-jest.spyOn(React, 'useEffect').mockImplementation((callback, deps) => {
+vi.spyOn(React, 'useEffect').mockImplementation((callback, deps) => {
   if (callback.toString().includes('getMouseoverText')) {
     return; // Skip this particular useEffect
   }
@@ -53,13 +53,13 @@ describe('Leaderboard page structure', () => {
     store = mockStore(mockState);
 
     // Mock store dispatch
-    store.dispatch = jest.fn().mockImplementation(() => ({ type: 'MOCKED_ACTION' }));
+    store.dispatch = vi.fn().mockImplementation(() => ({ type: 'MOCKED_ACTION' }));
 
     // Set up props
     props = {
       ...mockAdminState,
       organizationData: { weeklyCommittedHours: 0, tangibletime: 0, totaltime: 0 },
-      getLeaderboardData: jest.fn(),
+      getLeaderboardData: vi.fn(),
       loggedInUser: { role: 'Admin' },
       loading: false,
       darkMode: true,
@@ -72,7 +72,7 @@ describe('Leaderboard page structure', () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   const renderWithProvider = (ui, options) => {

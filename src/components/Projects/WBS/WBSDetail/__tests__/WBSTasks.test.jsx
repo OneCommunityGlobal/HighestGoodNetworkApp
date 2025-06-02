@@ -45,16 +45,16 @@ beforeEach(() => {
       ],
     },
   });
-  jest.resetModules();
+  vi.resetModules();
 });
 
 afterEach(() => {
   store.clearActions();
 });
 
-const setState = jest.fn();
+const setState = vi.fn();
 
-const originalUseState = jest.requireActual('react').useState;
+const originalUseState = vi.requireActual('react').useState;
 
 const useStateMock = initial => {
   if (
@@ -71,12 +71,12 @@ const useStateMock = initial => {
   }
 };
 
-jest.mock('react', () => ({
-  ...jest.requireActual('react'),
+vi.mock('react', () => ({
+  ...vi.requireActual('react'),
   useState: useStateMock,
 }));
 
-jest.mock('axios');
+vi.mock('axios');
 const wbsId = 'wbs123';
 const projectId = 'project123';
 const wbsName = 'wbs name 1';

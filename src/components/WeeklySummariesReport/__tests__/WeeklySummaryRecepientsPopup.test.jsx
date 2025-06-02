@@ -12,8 +12,8 @@ import {
 import mockSummaries from '../__mocks__/weeklySummariesReportData';
 import WeeklySummaryRecipientsPopup from '../WeeklySummaryRecepientsPopup';
 
-jest.mock('~/actions/weeklySummariesReportRecepients');
-jest.mock(
+vi.mock('~/actions/weeklySummariesReportRecepients');
+vi.mock(
   'components/Teams/MembersAutoComplete',
   () =>
     function mockfn({ searchText, setSearchText, onAddUser }) {
@@ -29,22 +29,22 @@ jest.mock(
       );
     },
 );
-jest.mock('react-toastify', () => ({
+vi.mock('react-toastify', () => ({
   toast: {
-    success: jest.fn(),
-    error: jest.fn(),
+    success: vi.fn(),
+    error: vi.fn(),
   },
 }));
-jest.mock('react-redux', () => ({
-  ...jest.requireActual('react-redux'),
-  useSelector: jest.fn(),
-  useDispatch: jest.fn(),
+vi.mock('react-redux', () => ({
+  ...vi.requireActual('react-redux'),
+  useSelector: vi.fn(),
+  useDispatch: vi.fn(),
 }));
 
-jest.mock('~/actions/weeklySummariesReportRecepients', () => ({
-  getSummaryRecipients: jest.fn().mockResolvedValue([]),
-  addSummaryRecipient: jest.fn().mockResolvedValue(200),
-  deleteSummaryRecipient: jest.fn().mockResolvedValue(200),
+vi.mock('~/actions/weeklySummariesReportRecepients', () => ({
+  getSummaryRecipients: vi.fn().mockResolvedValue([]),
+  addSummaryRecipient: vi.fn().mockResolvedValue(200),
+  deleteSummaryRecipient: vi.fn().mockResolvedValue(200),
 }));
 
 describe('WeeklySummaryRecipientsPopup Component', () => {
@@ -59,7 +59,7 @@ describe('WeeklySummaryRecipientsPopup Component', () => {
 
     props = {
       open: true,
-      onClose: jest.fn(),
+      onClose: vi.fn(),
       summaries: mockSummaries,
       password: 'password123',
       authEmailWeeklySummaryRecipient: 'test@example.com',
@@ -71,7 +71,7 @@ describe('WeeklySummaryRecipientsPopup Component', () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('renders the modal correctly when open', () => {

@@ -7,12 +7,12 @@ import { rest } from 'msw';
 import ReportsPage from '../Reports';
 
 // Mock axios BEFORE it gets imported by other modules
-jest.mock('axios', () => {
+vi.mock('axios', () => {
   const mockAxios = {
-    get: jest.fn(() => Promise.resolve({ data: {} })),
-    post: jest.fn(() => Promise.resolve({ data: {} })),
-    put: jest.fn(() => Promise.resolve({ data: {} })),
-    delete: jest.fn(() => Promise.resolve({ data: {} })),
+    get: vi.fn(() => Promise.resolve({ data: {} })),
+    post: vi.fn(() => Promise.resolve({ data: {} })),
+    put: vi.fn(() => Promise.resolve({ data: {} })),
+    delete: vi.fn(() => Promise.resolve({ data: {} })),
     defaults: {
       headers: {
         common: {},
@@ -24,12 +24,12 @@ jest.mock('axios', () => {
     },
     interceptors: {
       request: {
-        use: jest.fn(),
-        eject: jest.fn(),
+        use: vi.fn(),
+        eject: vi.fn(),
       },
       response: {
-        use: jest.fn(),
-        eject: jest.fn(),
+        use: vi.fn(),
+        eject: vi.fn(),
       },
     },
   };
@@ -80,7 +80,7 @@ describe('<ReportsPage/>', () => {
     const store = mockStore(initialState);
 
     // Mock the store dispatch to return plain objects for async actions
-    store.dispatch = jest.fn().mockImplementation(() => ({ type: 'MOCKED_ACTION' }));
+    store.dispatch = vi.fn().mockImplementation(() => ({ type: 'MOCKED_ACTION' }));
 
     const { container } = render(
       <Provider store={store}>

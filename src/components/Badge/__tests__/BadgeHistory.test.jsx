@@ -1,10 +1,12 @@
 import React from 'react';
 import { render } from '@testing-library/react';
+
+
 import BadgeHistory from '../BadgeHistory';
 import { WEEK_DIFF } from '../../../constants/badge';
 
 // Mocking the BadgeImage component
-jest.mock('../BadgeImage', () => ({
+vi.mock('../BadgeImage', () => ({
   __esModule: true,
   // Mocking the BadgeImage component to return a div with the data-testid attribute
   default: () => <div data-testid="badge-image">Mocked BadgeImage Component</div>,

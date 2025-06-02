@@ -4,7 +4,7 @@ import MockNavLink from '../MockData/MockNavLink'; // mock component
 import BasicTabTips from '../BasicTabTips';
 
 // Mock reactstrap Tooltip component to avoid issues in test environment
-jest.mock('reactstrap', () => ({
+vi.mock('reactstrap', () => ({
   Tooltip: ({ children, isOpen, target, toggle, ...props }) =>
     isOpen ? (
       <div data-testid={`tooltip-${target}`} className="tooltip" {...props}>
@@ -53,7 +53,7 @@ const tooltipTitle = 'Your Preferred Title';
 describe('TabToolTip Component Tests', () => {
   beforeEach(() => {
     clickedLinkId = null;
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('Test case 1: Renders without crashing', () => {

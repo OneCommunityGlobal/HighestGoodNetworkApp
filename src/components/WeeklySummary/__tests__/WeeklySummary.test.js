@@ -2,16 +2,18 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
+
+
 import { ENDPOINTS } from '~/utils/URL';
 
 // Mock the action creators
-jest.fn().mockImplementation(() => ({ type: 'GET_WEEKLY_SUMMARIES' }));
-jest.fn().mockImplementation(() => ({ type: 'UPDATE_WEEKLY_SUMMARIES' }));
+vi.fn().mockImplementation(() => ({ type: 'GET_WEEKLY_SUMMARIES' }));
+vi.fn().mockImplementation(() => ({ type: 'UPDATE_WEEKLY_SUMMARIES' }));
 
 // Replace the import with our mocked actions
-jest.mock('../../../actions/weeklySummaries', () => ({
-  getWeeklySummaries: jest.fn().mockImplementation(() => ({ type: 'GET_WEEKLY_SUMMARIES' })),
-  updateWeeklySummaries: jest.fn().mockImplementation(() => ({ type: 'UPDATE_WEEKLY_SUMMARIES' })),
+vi.mock('../../../actions/weeklySummaries', () => ({
+  getWeeklySummaries: vi.fn().mockImplementation(() => ({ type: 'GET_WEEKLY_SUMMARIES' })),
+  updateWeeklySummaries: vi.fn().mockImplementation(() => ({ type: 'UPDATE_WEEKLY_SUMMARIES' })),
 }));
 
 // Create mock store
@@ -49,7 +51,7 @@ afterAll(() => server.close());
 afterEach(() => {
   server.resetHandlers();
   store.clearActions();
-  jest.clearAllMocks();
+  vi.clearAllMocks();
 });
 
 const wSummariesSlice = () => store.getState().weeklySummaries;

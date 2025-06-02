@@ -23,10 +23,10 @@ beforeEach(() => {
   });
 });
 
-jest.mock('axios');
+vi.mock('axios');
 
 const history = {
-  push: jest.fn(),
+  push: vi.fn(),
   location: { pathname: '/' },
 };
 

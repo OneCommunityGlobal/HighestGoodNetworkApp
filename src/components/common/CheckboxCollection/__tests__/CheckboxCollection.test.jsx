@@ -1,10 +1,11 @@
 // eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
+import { vi } from 'vitest'
 import CheckboxCollection from '../CheckboxCollection'; // Adjust the import path accordingly.
 
 describe('CheckboxCollection', () => {
-  const mockOnChange = jest.fn();
+  const mockOnChange = vi.fn();
 
   const sampleItems = [
     { _id: '1', name: 'Item 1' },

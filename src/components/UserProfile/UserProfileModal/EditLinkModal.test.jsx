@@ -34,8 +34,8 @@ describe('EditLinkModal permission checks', () => {
   let component;
   const props = {
     isOpen: true,
-    closeModal: jest.fn(),
-    updateLink: jest.fn(),
+    closeModal: vi.fn(),
+    updateLink: vi.fn(),
     userProfile: filledUserProfile,
   };
 
@@ -64,8 +64,8 @@ describe('EditLinkModal with admin links and personal links', () => {
   let component;
   const props = {
     isOpen: true,
-    closeModal: jest.fn(),
-    updateLink: jest.fn(),
+    closeModal: vi.fn(),
+    updateLink: vi.fn(),
     userProfile: filledUserProfile,
   };
 
@@ -151,8 +151,8 @@ describe('Edit Link Modal with empty links', () => {
   let component;
   const props = {
     isOpen: true,
-    closeModal: jest.fn(),
-    updateLink: jest.fn(),
+    closeModal: vi.fn(),
+    updateLink: vi.fn(),
     userProfile: EmptyLinkUserProfile,
   };
 

@@ -11,7 +11,7 @@ import TableFilter from '../TableFilter';
 describe('TableFilter component', () => {
 
   it('calls onTaskNameSearch callback with correct value when Task Name input is changed', () => {
-    const mockOnTaskNameSearch = jest.fn();
+    const mockOnTaskNameSearch = vi.fn();
     const { getByPlaceholderText } = render(<TableFilter onTaskNameSearch={mockOnTaskNameSearch} />);
     const taskNameInput = getByPlaceholderText('Task name');
     fireEvent.change(taskNameInput, { target: { value: 'New Task' } });
@@ -19,7 +19,7 @@ describe('TableFilter component', () => {
   });
 
   it('calls searchEstimatedHours callback with correct value when Estimated Hours input is changed', () => {
-    const mockSearchEstimatedHours = jest.fn();
+    const mockSearchEstimatedHours = vi.fn();
     const { getByPlaceholderText } = render(<TableFilter searchEstimatedHours={mockSearchEstimatedHours} />);
     const estimatedHoursInput = getByPlaceholderText('Estimated Hours');
     fireEvent.change(estimatedHoursInput, { target: { value: '5' } });
@@ -27,10 +27,10 @@ describe('TableFilter component', () => {
   });
 
   it('input and change of Start Date and End Date (Fixed)', () => {
-    const mockSearchActive = jest.fn();
-    const mockSearchEstimatedHours = jest.fn();
-    const mockSearchName = jest.fn();
-    const mockSearchHours = jest.fn();
+    const mockSearchActive = vi.fn();
+    const mockSearchEstimatedHours = vi.fn();
+    const mockSearchName = vi.fn();
+    const mockSearchHours = vi.fn();
     const { getByPlaceholderText } = render(
       <TableFilter
         searchActive={mockSearchActive}
@@ -50,17 +50,17 @@ describe('TableFilter component', () => {
 
 
   it('calls searchActive callback when Active checkbox is already checked', () => {
-    const mockSearchActive = jest.fn();
-    const mockSearchAssign = jest.fn();
+    const mockSearchActive = vi.fn();
+    const mockSearchAssign = vi.fn();
     const { getByLabelText } = render(<TableFilter searchActive={mockSearchActive} searchAssign={mockSearchAssign} />);
     const activeCheckbox = getByLabelText('Active');
     fireEvent.click(activeCheckbox);
   });
 
   it('should toggle active state on checkbox click', () => {
-    const mockSearchActive = jest.fn();
-    const mockSearchEstimatedHours = jest.fn();
-    const mockSearchAssign = jest.fn();
+    const mockSearchActive = vi.fn();
+    const mockSearchEstimatedHours = vi.fn();
+    const mockSearchAssign = vi.fn();
     const { getByLabelText } = render(
       <TableFilter
         searchActive={mockSearchActive}
@@ -76,7 +76,7 @@ describe('TableFilter component', () => {
 
 
   it('should call onTaskNameSearch callback with correct value when Task Name input is changed', () => {
-    const mockOnTaskNameSearch = jest.fn();
+    const mockOnTaskNameSearch = vi.fn();
     const { getByPlaceholderText } = render(<TableFilter onTaskNameSearch={mockOnTaskNameSearch} />);
     const taskNameInput = getByPlaceholderText('Task name');
     fireEvent.change(taskNameInput, { target: { value: 'New Task' } });
@@ -84,7 +84,7 @@ describe('TableFilter component', () => {
   });
 
   it('should call searchEstimatedHours callback with correct value when Estimated Hours input is changed', () => {
-    const mockSearchEstimatedHours = jest.fn();
+    const mockSearchEstimatedHours = vi.fn();
     const { getByPlaceholderText } = render(<TableFilter searchEstimatedHours={mockSearchEstimatedHours} />);
     const estimatedHoursInput = getByPlaceholderText('Estimated Hours');
     fireEvent.change(estimatedHoursInput, { target: { value: '5' } });
@@ -93,7 +93,7 @@ describe('TableFilter component', () => {
 
 
   it('calls searchResources callback when Resources input is changed to empty string', () => {
-    const mockSearchResources = jest.fn();
+    const mockSearchResources = vi.fn();
     const { getByPlaceholderText } = render(<TableFilter searchResources={mockSearchResources} />);
     const resourcesInput = getByPlaceholderText('Resources');
     fireEvent.change(resourcesInput, { target: { value: 'non-empty string' } });
@@ -102,8 +102,8 @@ describe('TableFilter component', () => {
   });
 
   it('should toggle active state on checkbox click', () => {
-    const mockSearchActive = jest.fn();
-    const mockSearchAssign = jest.fn();
+    const mockSearchActive = vi.fn();
+    const mockSearchAssign = vi.fn();
     const { getByLabelText } = render(<TableFilter searchActive={mockSearchActive} searchAssign={mockSearchAssign} />);
     const activeCheckbox = getByLabelText('Active');
     expect(activeCheckbox.checked).toBe(true);
@@ -115,7 +115,7 @@ describe('TableFilter component', () => {
 
 
   it('should toggle assign state on checkbox click 2', () => {
-    const mockSearchAssign = jest.fn();
+    const mockSearchAssign = vi.fn();
     const { getByLabelText } = render(<TableFilter searchAssign={mockSearchAssign} />);
     const assignCheckbox = getByLabelText('Assign');
     fireEvent.click(assignCheckbox);
@@ -123,10 +123,10 @@ describe('TableFilter component', () => {
   });
 
   it('should update start date and call searchActive callback on date selection', () => {
-    const mockSearchActive = jest.fn();
-    const mockSearchEstimatedHours = jest.fn();
-    const mockSearchName = jest.fn();
-    const mockSearchHours = jest.fn();
+    const mockSearchActive = vi.fn();
+    const mockSearchEstimatedHours = vi.fn();
+    const mockSearchName = vi.fn();
+    const mockSearchHours = vi.fn();
     const { getByPlaceholderText } = render(
       <TableFilter
         searchActive={mockSearchActive}
@@ -143,10 +143,10 @@ describe('TableFilter component', () => {
 
 
   it('should throw an error when selecting an end date before the start date', () => {
-    const mockSearchActive = jest.fn();
-    const mockSearchEstimatedHours = jest.fn();
-    const mockSearchName = jest.fn();
-    const mockSearchHours = jest.fn();
+    const mockSearchActive = vi.fn();
+    const mockSearchEstimatedHours = vi.fn();
+    const mockSearchName = vi.fn();
+    const mockSearchHours = vi.fn();
     const { getByPlaceholderText } = render(
       <TableFilter
         searchActive={mockSearchActive}
@@ -164,10 +164,10 @@ describe('TableFilter component', () => {
 
 
   it('should update start date and call searchActive callback on date selection', () => {
-    const mockSearchActive = jest.fn();
-    const mockSearchEstimatedHours = jest.fn();
-    const mockSearchName = jest.fn();
-    const mockSearchHours = jest.fn();
+    const mockSearchActive = vi.fn();
+    const mockSearchEstimatedHours = vi.fn();
+    const mockSearchName = vi.fn();
+    const mockSearchHours = vi.fn();
     const { getByPlaceholderText } = render(
       <TableFilter
         searchActive={mockSearchActive}
@@ -184,7 +184,7 @@ describe('TableFilter component', () => {
 
 
   it('should filter tasks by name when a non-empty value is entered', () => {
-    const onTaskNameSearch = jest.fn();
+    const onTaskNameSearch = vi.fn();
     const { getByPlaceholderText } = render(<TableFilter onTaskNameSearch={onTaskNameSearch} />);
     const nameInput = getByPlaceholderText('Task name');
     fireEvent.change(nameInput, { target: { value: 'Task 1' } });
@@ -193,7 +193,7 @@ describe('TableFilter component', () => {
 
 
   it('should not filter tasks by name when an empty value is entered', () => {
-    const onTaskNameSearch = jest.fn();
+    const onTaskNameSearch = vi.fn();
     const { getByPlaceholderText } = render(<TableFilter onTaskNameSearch={onTaskNameSearch} />);
     const nameInput = getByPlaceholderText('Task name');
     fireEvent.change(nameInput, { target: { value: '' } });
@@ -201,13 +201,13 @@ describe('TableFilter component', () => {
 
 
   it('should not filter tasks by name when an empty value is entered', () => {
-    const onTaskNameSearch = jest.fn();
+    const onTaskNameSearch = vi.fn();
     const { getByPlaceholderText } = render(<TableFilter onTaskNameSearch={onTaskNameSearch} />);
     const nameInput = getByPlaceholderText('Task name');
     fireEvent.change(nameInput, { target: { value: '' } });
   });
   it('should call searchCallback with correct value when searching estimated hours', () => {
-    const mockSearchCallback = jest.fn();
+    const mockSearchCallback = vi.fn();
     const { getByPlaceholderText } = render(
       <TableFilter searchEstimatedHours={mockSearchCallback} />
     );
@@ -217,7 +217,7 @@ describe('TableFilter component', () => {
   });
 
   it('should call searchCallback with correct value when searching estimated hours', () => {
-    const mockSearchCallback = jest.fn();
+    const mockSearchCallback = vi.fn();
     const { getByPlaceholderText } = render(
       <TableFilter searchEstimatedHours={mockSearchCallback} />
     );

@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import ToggleSwitch from '../ToggleSwitch/ToggleSwitch';
 
 describe('ToggleSwitch Component', () => {
-  const mockHandleUserProfile = jest.fn();
+  const mockHandleUserProfile = vi.fn();
   
   beforeEach(() => {
     // Clear mock calls between tests

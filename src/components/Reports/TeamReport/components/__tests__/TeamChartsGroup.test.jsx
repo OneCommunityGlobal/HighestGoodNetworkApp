@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import TeamChartsGroup from '../TeamChartsGroup';
 
 // Mock the ReportCharts component since it's causing errors
-jest.mock('../ReportCharts', () => {
+vi.mock('../ReportCharts', () => {
   return function MockReportCharts(props) {
     return <div data-testid="report-chart" data-props={JSON.stringify(props)} />;
   };

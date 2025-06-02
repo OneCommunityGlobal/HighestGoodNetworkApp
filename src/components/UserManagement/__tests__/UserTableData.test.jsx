@@ -9,7 +9,7 @@ import UserTableData from '../UserTableData';
 import { authMock, themeMock } from '../../../__tests__/mockStates';
 import { renderWithProvider } from '../../../__tests__/utils';
 // Mock Axios requests
-jest.mock('axios');
+vi.mock('axios');
 const mockStore = configureStore([thunk]);
 const jaeAccountMock = {
   _id: '1',
@@ -91,9 +91,9 @@ describe('User Table Data: Non-Jae related Account', () => {
       },
       theme: themeMock,
     });
-    onPauseResumeClick = jest.fn();
-    onDeleteClick = jest.fn();
-    onActiveInactiveClick = jest.fn();
+    onPauseResumeClick = vi.fn();
+    onDeleteClick = vi.fn();
+    onActiveInactiveClick = vi.fn();
     axios.get.mockResolvedValue({
       data: [
         { id: 1, name: 'Administrator' },
@@ -225,9 +225,9 @@ describe('User Table Data: Jae protected account record and login as Jae related
         ],
       },
     });
-    onPauseResumeClick = jest.fn();
-    onDeleteClick = jest.fn();
-    onActiveInactiveClick = jest.fn();
+    onPauseResumeClick = vi.fn();
+    onDeleteClick = vi.fn();
+    onActiveInactiveClick = vi.fn();
     // Mock Axios GET request in beforeEach()
     axios.get.mockResolvedValue({
       data: {
@@ -349,12 +349,12 @@ describe('User Table Data: Jae protected account record and login as Jae related
       expect(lastNameInput).toHaveAttribute('value', jaeAccountMock.lastName);
     });
     it('should fire alert() once the user clicks the pause button', () => {
-      const alertMock = jest.spyOn(window, 'alert').mockImplementation();
+      const alertMock = vi.spyOn(window, 'alert').mockImplementation();
       userEvent.click(screen.getByRole('button', { name: /pause/i }));
       expect(alertMock).toHaveBeenCalledTimes(1);
     });
     it('should fire alert() once the user clicks the active/inactive button', () => {
-      const alertMock = jest.spyOn(window, 'alert').mockImplementation();
+      const alertMock = vi.spyOn(window, 'alert').mockImplementation();
       userEvent.click(screen.getByRole('button', { name: /Set Final Day/i }));
       expect(alertMock).toHaveBeenCalledTimes(0);
     });

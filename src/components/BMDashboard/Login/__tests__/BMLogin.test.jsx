@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
+import { vi } from 'vitest'
 import { useDispatch, Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
@@ -29,12 +29,12 @@ beforeEach(() => {
   });
 });
 
-jest.mock('axios');
+vi.mock('axios');
 
-jest.mock('jwt-decode', () => jest.fn(() => ({ decodedPayload: 'mocked_decoded_payload' })));
+vi.mock('jwt-decode', () => vi.fn(() => ({ decodedPayload: 'mocked_decoded_payload' })));
 
 const history = {
-  push: jest.fn(),
+  push: vi.fn(),
   location: { pathname: '/' },
 };
 

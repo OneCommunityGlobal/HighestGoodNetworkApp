@@ -39,7 +39,7 @@ afterEach(() => {
   store.clearActions();
 });
 
-jest.mock('axios');
+vi.mock('axios');
 
 describe('UserRoleTab component when the role does not exist', () => {
   it('renders without crashing', () => {

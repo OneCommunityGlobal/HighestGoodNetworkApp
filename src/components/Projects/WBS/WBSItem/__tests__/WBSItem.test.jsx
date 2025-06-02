@@ -40,7 +40,7 @@ afterEach(() => {
   store.clearActions();
 });
 
-jest.mock('axios');
+vi.mock('axios');
 
 const renderComponent = (index, key, wbsId, projectId, name) => {
   return render(

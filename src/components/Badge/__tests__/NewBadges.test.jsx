@@ -2,6 +2,7 @@ import NewBadges from '~/components/Badge/NewBadges';
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 
+
 // modifications and changes based on last pr #1783
 const mockBadges = [
   {
@@ -121,7 +122,7 @@ describe('NewBadges component', () => {
   it('handles invalid badge data gracefully', () => {
     const invalidMockBadges = [{ lastModified: 'invalid-date', count: 1 }];
 
-    const errorSpy = jest.spyOn(console, 'error');
+    const errorSpy = vi.spyOn(console, 'error');
     errorSpy.mockImplementation(() => { });
 
     render(

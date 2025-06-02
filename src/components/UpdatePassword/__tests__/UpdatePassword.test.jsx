@@ -16,9 +16,9 @@ import { ENDPOINTS } from '~/utils/URL';
 const url = ENDPOINTS.UPDATE_PASSWORD('5f31dcb9a1a909eadee0eecb');
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
-// jest.mock('react-toastify');
+// vi.mock('react-toastify');
 
-jest.mock('../../../actions/updatePassword.js');
+vi.mock('../../../actions/updatePassword.js');
 const server = setupServer(
   // request for a forced password update.
   rest.patch(url, (req, res, ctx) => {
@@ -37,7 +37,7 @@ const server = setupServer(
 beforeAll(() => server.listen());
 afterAll(() => server.close());
 afterEach(() => {
-  // jest.clearAllMocks();
+  // vi.clearAllMocks();
   server.resetHandlers();
 });
 
@@ -59,7 +59,7 @@ describe('Update Password Page', () => {
       errors: '',
       theme: { darkMode: true },
     });
-    store.dispatch = jest.fn();
+    store.dispatch = vi.fn();
     renderWithRouterMatch(
       <Route path="/updatepassword/:userId">
         {({ match, history, location }) => (

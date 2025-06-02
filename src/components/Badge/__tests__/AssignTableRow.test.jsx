@@ -1,15 +1,16 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
+
+
 import AssignTableRow from '~/components/Badge/AssignTableRow';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 
 // Mock the redux hooks
-jest.mock('react-redux', () => ({
-  ...jest.requireActual('react-redux'),
-  useDispatch: jest.fn(),
-  useSelector: jest.fn(),
+vi.mock('react-redux', () => ({
+  ...vi.requireActual('react-redux'),
+  useDispatch: vi.fn(),
+  useSelector: vi.fn(),
 }));
 
 const mockStore = configureStore([thunk]);
@@ -39,7 +40,7 @@ describe('AssignTableRow component', () => {
   };
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     require('react-redux').useSelector.mockReturnValue([]);
   });
 
@@ -50,7 +51,7 @@ describe('AssignTableRow component', () => {
   });
 
   it('handles checkbox change correctly when initially unchecked', () => {
-    const mockDispatch = jest.fn();
+    const mockDispatch = vi.fn();
     require('react-redux').useDispatch.mockReturnValue(mockDispatch);
 
     renderComponent(mockData);
@@ -66,7 +67,7 @@ describe('AssignTableRow component', () => {
   });
 
   it('handles checkbox change correctly when initially checked', () => {
-    const mockDispatch = jest.fn();
+    const mockDispatch = vi.fn();
     require('react-redux').useDispatch.mockReturnValue(mockDispatch);
 
     const mockData = {

@@ -11,13 +11,14 @@ import configureMockStore from 'redux-mock-store';
 // eslint-disable-next-line no-unused-vars
 import thunk from 'redux-thunk';
 
-jest.mock('popper.js', () => ({}));
-jest.mock('react-leaflet', () => ({}));
-jest.mock('react-leaflet-cluster', () => ({}));
+
+vi.mock('popper.js', () => ({}));
+vi.mock('react-leaflet', () => ({}));
+vi.mock('react-leaflet-cluster', () => ({}));
 
 // Mock the PersistGate component from redux-persist so that it simply renders its children,
 // avoiding issues with persistence bootstrapping.
-jest.mock('redux-persist/integration/react', () => ({
+vi.mock('redux-persist/integration/react', () => ({
   PersistGate: ({ children }) => children,
 }));
 
@@ -25,14 +26,14 @@ jest.mock('redux-persist/integration/react', () => ({
 // Reset modules and clear localStorage after each test to avoid interference.
 afterEach(() => {
   cleanup();
-  jest.resetModules();
+  vi.resetModules();
   localStorage.clear();
 });
 
 /**
  * Part 1: Token-Check Tests
  * These tests validate the token-check logic executed when the App module is loaded.
- * We set up mocks (using jest.doMock) for the store, httpService, and authActions before requiring App.
+ * We set up mocks (using vi.doMock) for the store, httpService, and authActions before requiring App.
  */
 describe('App Initialization Token Checks', () => {
   let dispatchSpy;
@@ -44,19 +45,19 @@ describe('App Initialization Token Checks', () => {
   beforeEach(() => {
     // Clear localStorage and create a dispatch spy.
     localStorage.clear();
-    dispatchSpy = jest.fn();
+    dispatchSpy = vi.fn();
 
     // --- Mock the store ---
     // Override the store so that we can inspect dispatch calls.
-    jest.doMock('../../store', () => ({
+    vi.doMock('../../store', () => ({
       __esModule: true,
       default: () => ({
         persistor: {
-          subscribe: jest.fn(),
-          dispatch: jest.fn(),
-          getState: jest.fn(() => ({ bootstrapped: true })), // Ensure bootstrapping state is true.
-          persist: jest.fn(),
-          flush: jest.fn(),
+          subscribe: vi.fn(),
+          dispatch: vi.fn(),
+          getState: vi.fn(() => ({ bootstrapped: true })), // Ensure bootstrapping state is true.
+          persist: vi.fn(),
+          flush: vi.fn(),
         },
         store: { dispatch: dispatchSpy },
       }),
@@ -64,8 +65,8 @@ describe('App Initialization Token Checks', () => {
 
     // --- Mock httpService ---
     // We want to check that setjwt is called when a token is valid.
-    setjwtMock = jest.fn();
-    jest.doMock('../../services/httpService', () => ({
+    setjwtMock = vi.fn();
+    vi.doMock('../../services/httpService', () => ({
       __esModule: true,
       default: { setjwt: setjwtMock },
     }));
@@ -73,10 +74,10 @@ describe('App Initialization Token Checks', () => {
     // --- Mock authActions ---
     // We mock the logoutUser and setCurrentUser action creators.
     const actions = {
-      logoutUser: jest.fn(() => ({ type: 'LOGOUT_USER' })),
-      setCurrentUser: jest.fn(user => ({ type: 'SET_CURRENT_USER', payload: user })),
+      logoutUser: vi.fn(() => ({ type: 'LOGOUT_USER' })),
+      setCurrentUser: vi.fn(user => ({ type: 'SET_CURRENT_USER', payload: user })),
     };
-    jest.doMock('../../actions/authActions', () => actions);
+    vi.doMock('../../actions/authActions', () => actions);
     logoutUser = actions.logoutUser;
     setCurrentUser = actions.setCurrentUser;
 
@@ -94,7 +95,7 @@ describe('App Initialization Token Checks', () => {
 
     // Simulate jwt-decode returning a token expiry that is nearly immediate.
     const expiredExpiry = Date.now() + 100;
-    jest.doMock('jwt-decode', () => jest.fn(() => ({ expiryTimestamp: expiredExpiry })));
+    vi.doMock('jwt-decode', () => vi.fn(() => ({ expiryTimestamp: expiredExpiry })));
 
     // Dynamically require App to trigger the module-level token-check logic.
     // eslint-disable-next-line global-require
@@ -115,7 +116,7 @@ describe('App Initialization Token Checks', () => {
     // Simulate jwt-decode returning a far-future expiry (valid token).
     const validExpiry = Date.now() + 86400 * 3 * 1000; // 3 days in the future
     const decodedPayload = { expiryTimestamp: validExpiry, name: 'Test User' };
-    jest.doMock('jwt-decode', () => jest.fn(() => decodedPayload));
+    vi.doMock('jwt-decode', () => vi.fn(() => decodedPayload));
 
     // Dynamically require App to trigger token-check logic.
     // eslint-disable-next-line global-require
@@ -134,8 +135,8 @@ describe('App Initialization Token Checks', () => {
     localStorage.removeItem(tokenKey);
 
     // Optionally, simulate jwt-decode throwing an error if called.
-    jest.doMock('jwt-decode', () =>
-      jest.fn(() => {
+    vi.doMock('jwt-decode', () =>
+      vi.fn(() => {
         throw new Error('jwt-decode should not be called');
       }),
     );
@@ -161,11 +162,11 @@ describe('App Component Rendering', () => {
 
   beforeAll(() => {
     // Reset modules and unmock modules we want to use in their real form.
-    jest.resetModules();
-    jest.unmock('../../store');
-    jest.unmock('../../services/httpService');
-    jest.unmock('../../actions/authActions');
-    jest.unmock('jwt-decode');
+    vi.resetModules();
+    vi.unmock('../../store');
+    vi.unmock('../../services/httpService');
+    vi.unmock('../../actions/authActions');
+    vi.unmock('jwt-decode');
     localStorage.clear(); // Clear token so module-level logic does not run.
     // eslint-disable-next-line global-require
     App = require('../App').default;
@@ -174,7 +175,7 @@ describe('App Component Rendering', () => {
   // Temporarily suppress error boundary warnings during UI rendering tests.
   let consoleErrorSpy;
   beforeEach(() => {
-    consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
   });
   afterEach(() => {
     consoleErrorSpy.mockRestore();

@@ -3,6 +3,7 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
+import { vi } from 'vitest'
 import CopyToClipboard from '../CopyToClipboard';
 import { themeMock } from '../../../../__tests__/mockStates';
 
@@ -10,10 +11,10 @@ import { themeMock } from '../../../../__tests__/mockStates';
 const mockStore = configureMockStore();
 
 // Mock the navigator.clipboard.writeText method
-const mockWriteText = jest.fn();
+const mockWriteText = vi.fn();
 
 // Mock the toast.success method
-const mockToastSuccess = jest.fn();
+const mockToastSuccess = vi.fn();
 
 beforeAll(() => {
   Object.defineProperty(navigator, 'clipboard', {
@@ -21,13 +22,13 @@ beforeAll(() => {
     writable: true,
   });
 
-  jest.mock('react-toastify', () => ({
+  vi.mock('react-toastify', () => ({
     toast: { success: mockToastSuccess },
   }));
 });
 
 afterEach(() => {
-  jest.clearAllMocks();
+  vi.clearAllMocks();
 });
 
 describe('CopyToClipboard', () => {

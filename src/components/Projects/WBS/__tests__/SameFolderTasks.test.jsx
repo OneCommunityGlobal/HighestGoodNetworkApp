@@ -9,7 +9,7 @@ import MockAdapter from 'axios-mock-adapter';
 import SameFolderTasks from '../SameFolderTasks';
 import EditTaskModal from '../WBSDetail/EditTask/EditTaskModal';
 
-jest.mock('../WBSDetail/EditTask/EditTaskModal');
+vi.mock('../WBSDetail/EditTask/EditTaskModal');
 EditTaskModal.mockImplementation = () => <div />;
 
 const mock = new MockAdapter(axios);

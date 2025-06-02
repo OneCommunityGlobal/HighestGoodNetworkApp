@@ -5,19 +5,19 @@ import TaskCompletedModal from '../components/TaskCompletedModal';
 
 import { toast } from 'react-toastify';
 
-jest.mock('react-toastify', () => ({
+vi.mock('react-toastify', () => ({
   toast: {
-    success: jest.fn(),
+    success: vi.fn(),
   },
 }));
 
 describe('TaskCompletedModal Component', () => {
-  const mockCloseFunction = jest.fn();
-  const mockUpdateTask = jest.fn();
+  const mockCloseFunction = vi.fn();
+  const mockUpdateTask = vi.fn();
   const mockProps = {
     isOpen: true,
-    setClickedToShowModal: jest.fn(),
-    setCurrentUserId: jest.fn(),
+    setClickedToShowModal: vi.fn(),
+    setCurrentUserId: vi.fn(),
     popupClose: mockCloseFunction,
     updateTask: mockUpdateTask,
     task: { _id: '1', resources: [] },

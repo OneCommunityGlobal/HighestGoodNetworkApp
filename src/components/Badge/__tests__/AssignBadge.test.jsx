@@ -1,7 +1,8 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
+
+
 import AssignBadge from '~/components/Badge/AssignBadge';
 import { Provider } from 'react-redux';
 import { themeMock } from '__tests__/mockStates';
@@ -42,20 +43,20 @@ const mockUserProfilesData = [
   },
 ];
 
-jest.mock('../../../actions/userManagement', () => ({
-  getAllUserProfile: jest.fn(),
+vi.mock('../../../actions/userManagement', () => ({
+  getAllUserProfile: vi.fn(),
 }));
 
-jest.mock('../../../actions/badgeManagement', () => ({
-  getFirstName: jest.fn(),
-  getLastName: jest.fn(),
-  getUserId: jest.fn(),
-  clearNameAndSelected: jest.fn(),
-  assignBadgesByUserID: jest.fn(),
-  assignBadges: jest.fn(),
-  getBadgesByUserId: jest.fn(),
-  validateBadges: jest.fn(),
-  closeAlert: jest.fn(),
+vi.mock('../../../actions/badgeManagement', () => ({
+  getFirstName: vi.fn(),
+  getLastName: vi.fn(),
+  getUserId: vi.fn(),
+  clearNameAndSelected: vi.fn(),
+  assignBadgesByUserID: vi.fn(),
+  assignBadges: vi.fn(),
+  getBadgesByUserId: vi.fn(),
+  validateBadges: vi.fn(),
+  closeAlert: vi.fn(),
 }));
 
 describe('AssignBadge component', () => {
@@ -63,7 +64,7 @@ describe('AssignBadge component', () => {
 
   beforeEach(() => {
     // Reset the mocks
-    jest.clearAllMocks();
+    vi.clearAllMocks();
 
     // Set up our mock implementations
     const userManagement = require('../../../actions/userManagement');
@@ -111,7 +112,7 @@ describe('AssignBadge component', () => {
 
     // Override dispatch to handle thunks
     const originalDispatch = store.dispatch;
-    store.dispatch = jest.fn(action => {
+    store.dispatch = vi.fn(action => {
       if (typeof action === 'function') {
         return action(originalDispatch);
       }

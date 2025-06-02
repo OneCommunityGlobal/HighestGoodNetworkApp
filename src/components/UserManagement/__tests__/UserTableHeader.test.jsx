@@ -23,7 +23,7 @@ import {
 const store = createStore(rootReducers);
 
 // Mock userTableDataPermissions function
-jest.mock('utils/userTableDataPermissions', () => jest.fn());
+vi.mock('utils/userTableDataPermissions', () => vi.fn());
 
 describe('UserTableHeader', () => {
   const authRole = 'admin'; // example role, change as necessary for tests

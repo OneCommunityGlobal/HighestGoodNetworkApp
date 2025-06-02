@@ -19,8 +19,8 @@ beforeEach(() => {
 });
 
 
-const onApproveMock = jest.fn();
-const toggleMock = jest.fn();
+const onApproveMock = vi.fn();
+const toggleMock = vi.fn();
 const taskNotifications = [
   {
     userId: 'abc123',

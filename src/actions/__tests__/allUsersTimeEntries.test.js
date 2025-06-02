@@ -5,7 +5,8 @@ import * as actions from '../../constants/allUsersTimeEntries';
 import { getAllUsersTimeEntries } from '../allUsersTimeEntries';
 import { ENDPOINTS } from '~/utils/URL';
 
-jest.mock('axios');
+
+vi.mock('axios');
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
@@ -19,7 +20,7 @@ describe('getAllUsersTimeEntries actions', () => {
 
   beforeEach(() => {
     store = mockStore({});
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('dispatches FETCH_ALL_USERS_TIME_ENTRIES_SUCCESS on successful API call', async () => {

@@ -34,11 +34,11 @@ const renderComponent = props => {
 const initialState = {
   open: true,
   selectedTeamName: 'Test Team',
-  hasPermission: jest.fn(),
+  hasPermission: vi.fn(),
   members: {
     teamMembers: {
-      toSorted: jest.fn(() => []),
-      reduce: jest.fn(() => { }),
+      toSorted: vi.fn(() => []),
+      reduce: vi.fn(() => { }),
     },
   },
   roles: [{}],
@@ -53,8 +53,8 @@ const initialState = {
   userProfile: { userProfiles: [] },
   requestorRole: '',
   userPermissions: [],
-  onClose: jest.fn(),
-  onDeleteClick: jest.fn(),
+  onClose: vi.fn(),
+  onDeleteClick: vi.fn(),
 };
 
 // eslint-disable-next-line no-unused-vars

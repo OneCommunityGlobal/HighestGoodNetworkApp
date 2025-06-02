@@ -3,8 +3,8 @@ import '@testing-library/jest-dom';
 import moment from 'moment-timezone';
 import DueDateTime from '../DueDateTime';
 
-jest.mock('react-toastify', () => ({
-  toast: jest.fn(),
+vi.mock('react-toastify', () => ({
+  toast: vi.fn(),
   ToastContainer: () => null,
 }));
 

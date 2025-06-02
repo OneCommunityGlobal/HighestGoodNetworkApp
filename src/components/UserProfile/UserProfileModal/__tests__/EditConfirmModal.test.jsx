@@ -5,7 +5,7 @@ import configureStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import EditConfirmModal from '../EditConfirmModal';
 
-const closeModalMock = jest.fn();
+const closeModalMock = vi.fn();
 describe('UserProfileModal', () => {
   const mockStore = configureStore([]);
   const initialState = {

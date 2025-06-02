@@ -18,10 +18,10 @@ import { renderWithProvider, renderWithRouterMatch } from '../../../../__tests__
 import TimeEntryForm from '../TimeEntryForm';
 import { editTimeEntry } from '../../../../actions/timeEntries';
 // import * as actions from '../../../../actions/timeEntries';
-jest.mock('../../../../actions/timeEntries', () => ({
+vi.mock('../../../../actions/timeEntries', () => ({
   __esModule: true,
-  ...jest.requireActual('../../../../actions/timeEntries'),
-  editTimeEntry: jest.fn(() => ({ type: 'MOCK_EDIT_TIME_ENTRY' })),
+  ...vi.requireActual('../../../../actions/timeEntries'),
+  editTimeEntry: vi.fn(() => ({ type: 'MOCK_EDIT_TIME_ENTRY' })),
 }));
 
 const mockStore = configureStore([thunk]);
@@ -41,9 +41,9 @@ xdescribe('<TimeEntryForm edit/>', () => {
       userProfile: userProfileMock,
       role: rolesMock,
     });
-    toggle = jest.fn();
-    store.dispatch = jest.fn();
-    // useDispatch.mockReturnValue(jest.fn());
+    toggle = vi.fn();
+    store.dispatch = vi.fn();
+    // useDispatch.mockReturnValue(vi.fn());
     renderWithProvider(
       <TimeEntryForm userId={data.personId} data={data} edit toggle={toggle} isOpen />,
       {
@@ -111,7 +111,7 @@ xdescribe('<TimeEntryForm edit/>', () => {
 
   it('should dispatch action when click Save', async () => {
     const save = screen.getByRole('button', { name: /save/i });
-    // actions.editTimeEntry = jest.fn();
+    // actions.editTimeEntry = vi.fn();
     expect(editTimeEntry).toHaveBeenCalled();
     const timeEntry = {};
     timeEntry.personId = data.personId;

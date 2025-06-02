@@ -35,8 +35,8 @@ const remainedTeams = [
   },
 ];
 
-const toggle = jest.fn();
-const submitHandler = jest.fn();
+const toggle = vi.fn();
+const submitHandler = vi.fn();
 
 describe('AddNewTeamModal component', () => {
   it('renders modal when isOpen is true', () => {

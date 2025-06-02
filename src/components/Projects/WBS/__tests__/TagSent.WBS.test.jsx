@@ -3,7 +3,7 @@ import TagSent from '../WBSDetail/components/TagSent';
 import '@testing-library/jest-dom/extend-expect';
 
 // Mock FontAwesomeIcon
-jest.mock('@fortawesome/react-fontawesome', () => ({
+vi.mock('@fortawesome/react-fontawesome', () => ({
   FontAwesomeIcon: () => <span data-testid="mock-icon" />,
 }));
 
@@ -11,7 +11,7 @@ describe('TagSent component', () => {
   // expected functioning
   it('should render a <li> element with the correct className', () => {
     const elm = { userID: 1, name: 'John' };
-    const removeResource = jest.fn();
+    const removeResource = vi.fn();
     render(<TagSent elm={elm} removeResource={removeResource} />);
 
     const liElement = screen.getByRole('listitem');
@@ -20,7 +20,7 @@ describe('TagSent component', () => {
 
   it('should call removeResource function with correct argument when onClick event is triggered', () => {
     const elm = { userID: 1, name: 'John' };
-    const removeResource = jest.fn();
+    const removeResource = vi.fn();
     render(<TagSent elm={elm} removeResource={removeResource} />);
 
     const liElement = screen.getByRole('listitem');
@@ -31,7 +31,7 @@ describe('TagSent component', () => {
 
   it('should render a FontAwesomeIcon', () => {
     const elm = { userID: 1, name: 'John' };
-    const removeResource = jest.fn();
+    const removeResource = vi.fn();
     render(<TagSent elm={elm} removeResource={removeResource} />);
 
     const iconElement = screen.getByTestId('mock-icon');
@@ -41,7 +41,7 @@ describe('TagSent component', () => {
   // edge cases
   it('should render elm name correctly', () => {
     const elm = { userID: 1, name: 'John' };
-    const removeResource = jest.fn();
+    const removeResource = vi.fn();
     render(<TagSent elm={elm} removeResource={removeResource} />);
 
     const smallElement = screen.getByText('John');
@@ -51,7 +51,7 @@ describe('TagSent component', () => {
 
   it('should handle when userID and name properties have incorrect types', () => {
     const elm = { userID: 'abc', name: 123 };
-    const removeResource = jest.fn();
+    const removeResource = vi.fn();
     render(<TagSent elm={elm} removeResource={removeResource} />);
 
     // It should convert the name to a string
@@ -66,7 +66,7 @@ describe('TagSent component', () => {
 
   it('should render text correctly in the small element', () => {
     const elm = { userID: 1, name: 'John' };
-    const removeResource = jest.fn();
+    const removeResource = vi.fn();
     render(<TagSent elm={elm} removeResource={removeResource} />);
 
     const smallElement = screen.getByText('John');

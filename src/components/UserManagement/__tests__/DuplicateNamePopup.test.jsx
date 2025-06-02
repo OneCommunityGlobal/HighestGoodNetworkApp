@@ -3,9 +3,9 @@ import { render, fireEvent } from '@testing-library/react';
 import DuplicateNamePopup from '../DuplicateNamePopup';
 
 describe('DuplicateNamePopup', () => {
-  const mockCreateUserProfile = jest.fn();
-  const mockOnClose = jest.fn();
-  const mockPopupClose = jest.fn();
+  const mockCreateUserProfile = vi.fn();
+  const mockOnClose = vi.fn();
+  const mockPopupClose = vi.fn();
 
   it('renders and displays modal content correctly', () => {
     const { getByText } = render(

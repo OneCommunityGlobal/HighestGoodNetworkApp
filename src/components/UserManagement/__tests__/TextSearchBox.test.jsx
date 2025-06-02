@@ -7,7 +7,7 @@ describe('text search box', () => {
   let searchCallback;
   const id = 'test_search';
   beforeEach(() => {
-    searchCallback = jest.fn();
+    searchCallback = vi.fn();
     render(<TextSearchBox id={id} searchCallback={searchCallback} />);
   });
   it('should render a textbox', () => {
@@ -35,7 +35,7 @@ describe('text search box', () => {
   const value = 'initial search';
   const id = 'function test';
   beforeEach(() => {
-    searchCallbacktest = jest.fn();
+    searchCallbacktest = vi.fn();
     render(<TextSearchBox props={(id, value)} searchCallback={searchCallbacktest} />);
   });
   it('should not call searchCallback when no user input', () => {

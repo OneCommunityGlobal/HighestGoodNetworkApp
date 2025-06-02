@@ -7,7 +7,7 @@ import thunk from 'redux-thunk';
 import { renderWithProvider } from '../../../__tests__/utils';
 import { authMock, userProfileMock, rolesMock, themeMock } from '../../../__tests__/mockStates';
 
-const mock = jest.fn();
+const mock = vi.fn();
 const mockStore = configureStore([thunk]);
 let store;
 

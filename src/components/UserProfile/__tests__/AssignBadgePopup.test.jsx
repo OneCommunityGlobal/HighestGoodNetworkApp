@@ -36,7 +36,7 @@ const renderComponent = () => {
   );
 };
 
-// jest.mock('axios');
+// vi.mock('axios');
 
 /** **************************************TEST CASES******************************************** */
 describe('Userprofile/AssignBadgePopup Test Suite', () => {

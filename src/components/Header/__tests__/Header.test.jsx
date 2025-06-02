@@ -6,14 +6,14 @@ import { MemoryRouter as Router } from 'react-router-dom';
 import { Header } from '../Header';
 
 // Mock the components that cause issues
-jest.mock('../../OwnerMessage/OwnerMessage', () => {
+vi.mock('../../OwnerMessage/OwnerMessage', () => {
   return {
     __esModule: true,
     default: () => <div data-testid="mock-owner-message">Mock Owner Message</div>,
   };
 });
 
-jest.mock('../../Timer/Timer', () => {
+vi.mock('../../Timer/Timer', () => {
   return {
     __esModule: true,
     default: () => <div data-testid="mock-timer">Mock Timer</div>,
@@ -21,11 +21,11 @@ jest.mock('../../Timer/Timer', () => {
 });
 
 // Mock the useEffect hook to prevent issues with role.length
-jest.mock('react', () => {
-  const originalReact = jest.requireActual('react');
+vi.mock('react', () => {
+  const originalReact = vi.requireActual('react');
   return {
     ...originalReact,
-    useEffect: jest.fn().mockImplementation((callback, deps) => {
+    useEffect: vi.fn().mockImplementation((callback, deps) => {
       // Skip the problematic useEffect that checks roles.length
       if (deps && deps.length === 0) {
         return originalReact.useEffect(() => {}, []);
@@ -36,20 +36,20 @@ jest.mock('react', () => {
 });
 
 // Mock axios
-jest.mock('axios');
+vi.mock('axios');
 
 // Create a mock for useDispatch
-const mockDispatch = jest.fn();
-jest.mock('react-redux', () => ({
-  ...jest.requireActual('react-redux'),
+const mockDispatch = vi.fn();
+vi.mock('react-redux', () => ({
+  ...vi.requireActual('react-redux'),
   useDispatch: () => mockDispatch,
 }));
 
 // Mock the useHistory hook
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+vi.mock('react-router-dom', () => ({
+  ...vi.requireActual('react-router-dom'),
   useHistory: () => ({
-    push: jest.fn(),
+    push: vi.fn(),
   }),
   useLocation: () => ({
     pathname: '/',
@@ -70,9 +70,9 @@ const renderHeader = (store, props = {}) =>
           userProfile={store.getState().userProfile || {}}
           taskEditSuggestionCount={store.getState().taskEditSuggestionCount || 0}
           hasPermission={props.hasPermission || defaultMockHasPermission}
-          getHeaderData={props.getHeaderData || jest.fn()}
-          getAllRoles={props.getAllRoles || jest.fn()}
-          getWeeklySummaries={props.getWeeklySummaries || jest.fn()}
+          getHeaderData={props.getHeaderData || vi.fn()}
+          getAllRoles={props.getAllRoles || vi.fn()}
+          getWeeklySummaries={props.getWeeklySummaries || vi.fn()}
           role={store.getState().role} // Make sure to pass the role prop explicitly
           {...props}
         />
@@ -116,7 +116,7 @@ describe('Header Component', () => {
 
   beforeEach(() => {
     store = mockStore(initialState);
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('renders without crashing', () => {
@@ -162,7 +162,7 @@ describe('Header Component with Mocked Axios', () => {
     axios.get.mockResolvedValue({
       data: { name: 'Test User', role: 'Volunteer', profilePic: '/path/to/img' },
     });
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('loads and displays the user dashboard profile', () => {
@@ -250,7 +250,7 @@ describe('Header Component - Owner, Administrator, Mentor', () => {
         standardMessage: 'Standard message',
       },
     });
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('renders correctly for a Owner', () => {
@@ -327,7 +327,7 @@ describe('Header Component Functionality', () => {
   beforeEach(() => {
     store = mockStore(initialState);
     axios.get.mockResolvedValue({ data: { name: 'Test User', role: 'User' } });
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('modal is visible based on conditions', () => {
