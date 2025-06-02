@@ -77,7 +77,6 @@ function AddTaskModal(props) {
     const project = allProjects.projects.find(({ _id }) => _id === props.projectId);
     return project?.category || 'Unspecified';
   }
-
   return 'Unspecified';
 }, [props.taskId, props.projectId, tasks, allProjects.projects]);
 
@@ -358,6 +357,7 @@ function AddTaskModal(props) {
   useEffect(() => {
     if (modal && props.projectId) {
       props.fetchAllMembers(props.projectId);
+      console.log('allMembers:', props.allMembers); 
     }
   }, [modal, props.projectId]);
 
@@ -441,7 +441,7 @@ function AddTaskModal(props) {
                 <div className="add_new_task_form-input_area">
                   <TagsSearch
                     placeholder="Add resources"
-                    members={allMembers?.filter(user => user.isActive)}
+                    members={allMembers}
                     addResources={addResources}
                     removeResource={removeResource}
                     resourceItems={resourceItems}
@@ -449,6 +449,7 @@ function AddTaskModal(props) {
                     inputTestId="resource-input"
                     projectId={props.projectId}
                   />
+                  {console.log('members prop being passed to TagsSearch:', allMembers)} 
                 </div>
               </div>
 
