@@ -77,7 +77,6 @@ const startOfWeek = offset => {
 const endOfWeek = offset => {
   return moment()
     .tz('America/Los_Angeles')
-    .endOf('week')
     .subtract(offset, 'weeks')
     .format('YYYY-MM-DD');
 };
@@ -989,7 +988,10 @@ useEffect(() => {
                       />
                     )}
                     <TabPane tabId={0}>
-                      <TeamMemberTasks filteredUserTeamIds={props.filteredUserTeamIds} />
+                      <TeamMemberTasks 
+                      filteredUserTeamIds={props.filteredUserTeamIds} 
+                      hasPermission={props.hasPermission}
+                      />
                     </TabPane>
                     <TabPane tabId={1}>{currentWeekEntries}</TabPane>
                     <TabPane tabId={2}>{lastWeekEntries}</TabPane>
