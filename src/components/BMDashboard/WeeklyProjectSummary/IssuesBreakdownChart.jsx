@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import {
   BarChart,
   Bar,
@@ -8,6 +9,7 @@ import {
   ResponsiveContainer,
   LabelList,
 } from 'recharts';
+import httpService from '../../../services/httpService';
 
 const COLORS = {
   equipmentIssues: '#4F81BD', // blue
@@ -15,14 +17,41 @@ const COLORS = {
   materialIssues: '#F3C13A', // yellow
 };
 
-const mockData = [
-  { projectName: 'Project 1', equipmentIssues: 10, laborIssues: 12, materialIssues: 14 },
-  { projectName: 'Project 2', equipmentIssues: 14, laborIssues: 15, materialIssues: 20 },
-  { projectName: 'Project 3', equipmentIssues: 4, laborIssues: 5, materialIssues: 7 },
-];
+export default function IssuesBreakdownChart() {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-export default function IssuesBreakdownChart({ data }) {
-  const chartData = data && data.length ? data : mockData;
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await httpService.get(
+          `${process.env.REACT_APP_APIENDPOINT}/issues/breakdown`,
+        );
+        setData(response.data);
+        setError(null);
+      } catch (err) {
+        setError(err.message || 'Failed to fetch issue statistics');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
+  if (!data || data.length === 0) {
+    return <div>No data available</div>;
+  }
+
   return (
     <div
       style={{
@@ -113,7 +142,7 @@ export default function IssuesBreakdownChart({ data }) {
       </div>
       <div style={{ width: '100%', height: '500px', marginTop: '20px' }}>
         <ResponsiveContainer>
-          <BarChart data={chartData} margin={{ top: 30, right: 30, left: 0, bottom: 30 }} barGap={8}>
+          <BarChart data={data} margin={{ top: 30, right: 30, left: 0, bottom: 30 }} barGap={8}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="projectName" />
             <YAxis allowDecimals={false} />
