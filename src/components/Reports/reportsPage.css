@@ -384,3 +384,16 @@
     margin: 8px 0;
   }
 }
+
+.bg-yinmn-blue .info-modal-content {
+  color: #fff !important;
+}
+
+.force-white-text, .bg-yinmn-blue .force-white-text, .bg-yinmn-blue .info-modal-content.force-white-text {
+  color: #fff !important;
+}
+
+.bg-yinmn-blue .info-modal-content.force-white-text,
+.bg-yinmn-blue .info-modal-content.force-white-text * {
+  color: #fff !important;
+}
