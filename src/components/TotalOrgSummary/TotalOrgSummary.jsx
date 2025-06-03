@@ -446,15 +446,10 @@ function TotalOrgSummary(props) {
       }`}
     >
       <Row className="report-header-row">
-        <Col lg={{ size: 6 }} className="report-header-title">
+        <div className="report-header-title">
           <h3 className="my-0">Total Org Summary</h3>
-        </Col>
-        <Col lg={{ size: 6 }} className="report-header-actions">
-          <Button className="share-pdf-btn" onClick={handleSaveAsPDF} disabled={isGeneratingPDF}>
-            {isGeneratingPDF ? 'Generating PDF...' : 'Save as PDF'}
-          </Button>
-        </Col>
-        <Col lg={{ size: 6 }} className="d-flex justify-content-end">
+        </div>
+        <div className="report-header-actions">
           <Dropdown
             isOpen={dateRangeDropdownOpen}
             toggle={() => setDateRangeDropdownOpen(!dateRangeDropdownOpen)}
@@ -472,7 +467,6 @@ function TotalOrgSummary(props) {
               </DropdownItem>
             </DropdownMenu>
           </Dropdown>
-          <div style={{ width: '25px' }} />
           <Dropdown
             isOpen={comparisonDropdownOpen}
             toggle={() => setComparisonDropdownOpen(!comparisonDropdownOpen)}
@@ -493,7 +487,10 @@ function TotalOrgSummary(props) {
               </DropdownItem>
             </DropdownMenu>
           </Dropdown>
-        </Col>
+          <Button className="share-pdf-btn" onClick={handleSaveAsPDF} disabled={isGeneratingPDF}>
+            {isGeneratingPDF ? 'Generating PDF...' : 'Save as PDF'}
+          </Button>
+        </div>
       </Row>
 
       <Modal isOpen={showDatePicker} toggle={() => setShowDatePicker(!showDatePicker)}>
