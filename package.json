@@ -12,8 +12,6 @@
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
     "@fortawesome/react-fontawesome": "^0.1.19",
     "@react-leaflet/core": ">=1.0.0 <1.1.0",
-
-
     "@react-pdf/renderer": "^4.3.0",
     "@reduxjs/toolkit": "^2.4.0",
     "@sentry/browser": "^4.6.6",
