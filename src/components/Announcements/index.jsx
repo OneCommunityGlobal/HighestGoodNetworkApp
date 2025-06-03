@@ -21,9 +21,13 @@ function Announcements({ title, email }) {
   const [youtubeAccounts, setYoutubeAccounts] = useState([]);
   const [selectedYoutubeAccountId, setSelectedYoutubeAccountId] = useState('');
   const [showYoutubeDropdown, setShowYoutubeDropdown] = useState(false);
+  const [videoTitle, setVideoTitle] = useState('');
+  const [videoDescription, setVideoDescription] = useState('');
+  const [videoTags, setVideoTags] = useState('');
+  const [privacyStatus, setPrivacyStatus] = useState('private');
 
   useEffect(() => {
-    // Toggle the showEditor state to force re-render when dark mode changes
+    // Toggle the showEditor state to force re-render when dark mode changes·
     setShowEditor(false);
     setTimeout(() => setShowEditor(true), 0);
   }, [darkMode]);
@@ -176,7 +180,7 @@ function Announcements({ title, email }) {
     dispatch(broadcastEmailsToAll('Weekly Update', htmlContent));
   };
 
-  const handleVideoChange = (e) => {
+  const handleVideoChange = e => {
     const file = e.target.files[0];
 
     if (file && file.type.startsWith('video/')) {
@@ -235,7 +239,7 @@ function Announcements({ title, email }) {
       },
       status: {
         privacyStatus: 'private', // or 'public' or 'unlisted'
-      }
+      },
     };
 
     const form = new FormData();
@@ -254,7 +258,7 @@ function Announcements({ title, email }) {
         },
         withCredentials: true,
         body: JSON.stringify(metadata),
-      }
+      },
     );
 
     const uploadUrl = response.headers.get('location');
@@ -287,15 +291,21 @@ function Announcements({ title, email }) {
     const formData = new FormData();
     formData.append('video', videoFile);
     formData.append('youtubeAccountId', selectedYoutubeAccountId);
+    formData.append('title', videoTitle);
+    formData.append('description', videoDescription);
+    formData.append('tags', videoTags);
+    formData.append('privacyStatus', privacyStatus);
     const token = localStorage.getItem('token');
     console.log('Token from localStorage:', token);
     console.log('Authorization header:', `Bearer ${token}`);
     const headers = {
-      'Authorization': `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
     };
     console.log('Request headers:', headers);
     try {
-      const res = await axios.post('http://localhost:4500/api/uploadYtVideo', formData, { headers });
+      const res = await axios.post('http://localhost:4500/api/uploadYtVideo', formData, {
+        headers,
+      });
       if (res.status === 200) {
         toast.success('Video uploaded successfully!');
         setShowYoutubeDropdown(false);
@@ -412,7 +422,10 @@ function Announcements({ title, email }) {
           )}
 
           {title ? null : (
-            <div className="social-buttons-container" style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+            <div
+              className="social-buttons-container"
+              style={{ display: 'flex', gap: '16px', alignItems: 'center' }}
+            >
               <button
                 type="button"
                 className="send-button"
@@ -466,11 +479,40 @@ function Announcements({ title, email }) {
               )}
             </div>
           )}
-
         </div>
 
         <div className="video-preview-container">
           <input type="file" accept="video/*" onChange={handleVideoChange} />
+          <input
+            type="text"
+            placeholder="Video Title"
+            value={videoTitle}
+            onChange={e => setVideoTitle(e.target.value)}
+            style={{ marginTop: 10, width: '100%', padding: 8 }}
+          />
+          <input
+            type="text"
+            placeholder="Video Description"
+            value={videoDescription}
+            onChange={e => setVideoDescription(e.target.value)}
+            style={{ marginTop: 10, width: '100%', padding: 8 }}
+          />
+          <input
+            type="text"
+            placeholder="Tags (comma separated)"
+            value={videoTags}
+            onChange={e => setVideoTags(e.target.value)}
+            style={{ marginTop: 10, width: '100%', padding: 8 }}
+          />
+          <select
+            value={privacyStatus}
+            onChange={e => setPrivacyStatus(e.target.value)}
+            style={{ marginTop: 10, width: '100%', padding: 8 }}
+          >
+            <option value="private">Private</option>
+            <option value="unlisted">Unlisted</option>
+            <option value="public">Public</option>
+          </select>
           {videoURL && (
             <div>
               <video width="480" controls>
