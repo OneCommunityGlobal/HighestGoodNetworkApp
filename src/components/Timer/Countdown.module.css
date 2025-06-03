@@ -204,6 +204,7 @@ input[type='number'] {
   -moz-appearance: textfield;
   appearance: textfield;
 }
+
 /* Hide spin buttons in number input for Firefox */
 input[type='number']::-moz-inner-spin-button {
   display: none;
