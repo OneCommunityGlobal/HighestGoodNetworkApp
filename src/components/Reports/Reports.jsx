@@ -1,9 +1,13 @@
+/* eslint-disable react/sort-comp */
+/* eslint-disable react/no-unused-class-component-methods */
+/* eslint-disable react/no-unused-state */
 import { Component } from 'react';
 import { connect } from 'react-redux';
 import { Container, Button } from 'reactstrap';
 import { boxStyle, boxStyleDark } from 'styles';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import { searchWithAccent } from 'utils/search';
+import moment from 'moment-timezone';
 import { fetchAllProjects } from '../../actions/projects';
 import { getAllUserTeams } from '../../actions/allTeamsAction';
 import TeamTable from './TeamTable';
@@ -22,10 +26,11 @@ import TotalProjectReport from './TotalReport/TotalProjectReport';
 import TotalContributorsReport from './TotalReport/TotalContributorsReport';
 import AddLostTime from './LostTime/AddLostTime';
 import LostTimeHistory from './LostTime/LostTimeHistory';
-import '../Header/DarkMode.css'
+import '../Header/DarkMode.css';
 import ViewReportByDate from './ViewReportsByDate/ViewReportsByDate';
 import ReportFilter from './ReportFilter/ReportFilter';
 import Loading from '../common/Loading';
+import { getUsersTotalHoursForSpecifiedPeriod } from '../../actions/timeEntries';
 
 const DATE_PICKER_MIN_DATE = '01/01/2010';
 
@@ -46,14 +51,45 @@ class ReportsPage extends Component {
       showContributorsReport: false,
       teamNameSearchText: '',
       wildCardSearchText: '',
+      selectedTeamId: 0,
+      selectedTeam: '',
+      filterStatus: 'all',
+      formElements: {
+        summary: '',
+        summaryLastWeek: '',
+        summaryBeforeLast: '',
+        mediaUrl: '',
+        weeklySummariesCount: 0,
+        mediaConfirm: false,
+      },
+      dueDate: moment()
+        .tz('America/Los_Angeles')
+        .endOf('week')
+        .toISOString(),
+      dueDateLastWeek: moment()
+        .tz('America/Los_Angeles')
+        .endOf('week')
+        .subtract(1, 'week')
+        .toISOString(),
+      dueDateBeforeLast: moment()
+        .tz('America/Los_Angeles')
+        .endOf('week')
+        .subtract(2, 'week')
+        .toISOString(),
+      activeTab: '1',
+      errors: {},
+      fetchError: null,
       checkActive: '',
       loading: false,
       teamSearchData: {},
       peopleSearchData: [],
       projectSearchData: {},
+      users: {},
       startDate: new Date(DATE_PICKER_MIN_DATE),
       endDate: new Date(),
       teamMemberList: {},
+      remainedTeams: [],
+      userProfilesWithHours: [],
     };
     this.showProjectTable = this.showProjectTable.bind(this);
     this.showPeopleTable = this.showPeopleTable.bind(this);
@@ -64,21 +100,39 @@ class ReportsPage extends Component {
     this.showAddPersonHistory = this.showAddPersonHistory.bind(this);
     this.showAddTeamHistory = this.showAddTeamHistory.bind(this);
     this.showAddProjHistory = this.showAddProjHistory.bind(this);
-    this.setActive = this.setActive.bind(this);
-    this.setInActive = this.setInActive.bind(this);
-    this.setAll = this.setAll.bind(this);
     this.setTeamMemberList = this.setTeamMemberList.bind(this);
     this.setAddTime = this.setAddTime.bind(this);
     this.setFilterStatus = this.setFilterStatus.bind(this);
     this.onWildCardSearch = this.onWildCardSearch.bind(this);
     this.onDateChange = this.onDateChange.bind(this);
+    this.handleClearFilters = this.handleClearFilters.bind(this);
     this.showContributorsReport = this.showContributorsReport.bind(this);
   }
 
   async componentDidMount() {
-    this.props.fetchAllProjects(); // Fetch to get all projects
-    this.props.getAllUserTeams();
-    this.props.getUserProfileBasicInfo();
+    const fetchProjects = this.props.fetchAllProjects();
+    const fetchTeams = this.props.getAllUserTeams();
+    const fetchUserProfile = this.props.getUserProfileBasicInfo();
+
+    // parallel api calls
+    await Promise.all([fetchProjects, fetchTeams, fetchUserProfile]);
+
+    const userIds = this.props.state.allUserProfilesBasicInfo.userProfilesBasicInfo.map(
+      userProfile => userProfile._id,
+    );
+
+    const timeEntriesHours = await this.props.getUsersTotalHoursForSpecifiedPeriod(
+      userIds,
+      new Date(DATE_PICKER_MIN_DATE),
+      new Date(),
+    );
+
+    const userProfilesMappedWithHours = timeEntriesHours.map(entry => ({
+      id: entry.userId,
+      totalHours: Math.round(entry.totalHours * 10) / 10,
+    }));
+
+    this.setState({ userProfilesWithHours: userProfilesMappedWithHours, loading: false });
   }
 
   onWildCardSearch(searchText) {
@@ -93,9 +147,17 @@ class ReportsPage extends Component {
   }
 
   setFilterStatus(status) {
-    this.setState({ checkActive: status });
+    this.setState({ filterStatus: status });
   }
 
+  handleClearFilters() {
+    this.setState({
+      startDate: new Date(DATE_PICKER_MIN_DATE),
+      endDate: new Date(),
+      wildCardSearchText: '',
+      filterStatus: 'all',
+    });
+  }
 
   setActive() {
     this.setState(() => ({
@@ -135,7 +197,6 @@ class ReportsPage extends Component {
       showAddTeamHistory: false,
     }));
   }
-
 
   filteredProjectList = projects => {
     const filteredList = projects.filter(project => {
@@ -177,7 +238,7 @@ class ReportsPage extends Component {
 
   filteredPeopleList = userProfiles => {
     const filteredList = userProfiles.filter(userProfile => {
-      // Applying the search filters before creating each team table data element 
+      // Applying the search filters before creating each team table data element
       if (
         (userProfile.firstName &&
           searchWithAccent(userProfile.firstName, this.state.teamNameSearchText) &&
@@ -199,6 +260,12 @@ class ReportsPage extends Component {
 
     return filteredList;
   };
+
+  setRemainedTeams(teams) {
+    this.setState(() => ({
+      remainedTeams: teams,
+    }));
+  }
 
   showProjectTable() {
     this.setState(prevState => ({
@@ -289,27 +356,30 @@ class ReportsPage extends Component {
       return;
     }
 
-    this.setState({
-      loading: true,
-      showProjects: false,
-      showPeople: false,
-      showTeams: false,
-      showTotalTeam: false,
-      showTotalPeople: false,
-      showTotalProject: false,
-      showAddTimeForm: false,
-      showAddProjHistory: false,
-      showAddPersonHistory: false,
-      showAddTeamHistory: false,
-      showContributorsReport: false
-    }, () => {
-      setTimeout(() => {
-        this.setState({
-          loading: false,
-          showTotalProject: true,
-        });
-      }, 2000);
-    });
+    this.setState(
+      {
+        loading: true,
+        showProjects: false,
+        showPeople: false,
+        showTeams: false,
+        showTotalTeam: false,
+        showTotalPeople: false,
+        showTotalProject: false,
+        showAddTimeForm: false,
+        showAddProjHistory: false,
+        showAddPersonHistory: false,
+        showAddTeamHistory: false,
+        showContributorsReport: false
+      },
+      () => {
+        setTimeout(() => {
+          this.setState({
+            loading: false,
+            showTotalProject: true,
+          });
+        }, 2000);
+      },
+    );
   }
 
   showAddProjHistory() {
@@ -386,14 +456,14 @@ class ReportsPage extends Component {
     this.state.teamSearchData = this.filteredTeamList(allTeams);
     this.state.peopleSearchData = this.filteredPeopleList(userProfilesBasicInfo);
     this.state.projectSearchData = this.filteredProjectList(projects);
-    if (this.state.checkActive === 'true') {
+    if (this.state.filterStatus === 'active') {
       this.state.teamSearchData = allTeams.filter(team => team.isActive === true);
       this.state.projectSearchData = projects.filter(project => project.isActive === true);
       this.state.peopleSearchData = userProfilesBasicInfo.filter(user => user.isActive === true);
       this.state.teamSearchData = this.filteredTeamList(this.state.teamSearchData);
       this.state.peopleSearchData = this.filteredPeopleList(this.state.peopleSearchData);
       this.state.projectSearchData = this.filteredProjectList(this.state.projectSearchData);
-    } else if (this.state.checkActive === 'false') {
+    } else if (this.state.filterStatus === 'inactive') {
       this.state.teamSearchData = allTeams.filter(team => team.isActive === false);
       this.state.projectSearchData = projects.filter(project => project.isActive === false);
       this.state.peopleSearchData = userProfilesBasicInfo.filter(user => user.isActive === false);
@@ -401,6 +471,16 @@ class ReportsPage extends Component {
       this.state.peopleSearchData = this.filteredPeopleList(this.state.peopleSearchData);
       this.state.projectSearchData = this.filteredProjectList(this.state.projectSearchData);
     }
+    if (this.state.filterStatus === 'tenHour') {
+      const filteredIds = this.state.userProfilesWithHours
+        .filter(user => user.totalHours > 10)
+        .map(user => user.id);
+
+      this.state.peopleSearchData = this.props.state.allUserProfilesBasicInfo.userProfilesBasicInfo.filter(
+        userProfile => filteredIds.includes(userProfile._id),
+      );
+    }
+
     if (this.state.startDate != null && this.state.endDate != null) {
       this.state.peopleSearchData = this.filteredPeopleList(this.state.peopleSearchData);
     }
@@ -428,7 +508,8 @@ class ReportsPage extends Component {
               ? ''
               : 'no-active-selection'
           }`}
-          type="button">
+          type="button"
+        >
           <div className="container-component-category">
             <h2 className="mt-3 mb-5">
               {/* Loading spinner at the top */}
@@ -458,8 +539,8 @@ class ReportsPage extends Component {
                 <button
                   type="button"
                   className={`card-category-item ${
-                      this.state.showProjects ? 'selected' : ''
-                    } ${isYinmnBlue}`}
+                    this.state.showProjects ? 'selected' : ''
+                  } ${isYinmnBlue}`}
                   style={boxStyling}
                   onClick={this.showProjectTable}
                 >
@@ -472,8 +553,8 @@ class ReportsPage extends Component {
                 <button
                   type="button"
                   className={`card-category-item ${
-                      this.state.showPeople ? 'selected' : ''
-                    } ${isYinmnBlue}`}
+                    this.state.showPeople ? 'selected' : ''
+                  } ${isYinmnBlue}`}
                   style={boxStyling}
                   onClick={this.showPeopleTable}
                 >
@@ -486,8 +567,8 @@ class ReportsPage extends Component {
                 <button
                   type="button"
                   className={`card-category-item ${
-                      this.state.showTeams ? 'selected' : ''
-                    } ${isYinmnBlue}`}
+                    this.state.showTeams ? 'selected' : ''
+                  } ${isYinmnBlue}`}
                   style={boxStyling}
                   onClick={this.showTeamsTable}
                 >
@@ -499,13 +580,15 @@ class ReportsPage extends Component {
               <div
                 className={`mt-3 p-3 rounded-lg ${
                   darkMode ? 'bg-yinmn-blue text-light' : 'bg-white'
-                  }`}
+                }`}
                 style={darkMode ? boxStyleDark : boxStyle}
               >
                 <ReportFilter
                   setFilterStatus={this.setFilterStatus}
+                  filterStatus={this.state.filterStatus}
                   onWildCardSearch={this.onWildCardSearch}
                   onCreateNewTeamShow={this.onCreateNewTeamShow}
+                  wildCardSearchText={this.state.wildCardSearchText}
                 />
                 <ViewReportByDate
                   minDate={new Date(DATE_PICKER_MIN_DATE)}
@@ -513,6 +596,7 @@ class ReportsPage extends Component {
                   textColor={textColor}
                   onDateChange={this.onDateChange}
                   darkMode={darkMode}
+                  onClearFilters={this.handleClearFilters}
                 />
                 <div className="total-report-container">
                   <div className="total-report-item">
@@ -559,7 +643,7 @@ class ReportsPage extends Component {
                       <EditableInfoModal
                         areaName="totalTeamReportInfoPoint"
                         areaTitle="Total Team Report"
-                        role={myRole}
+                        role={userRole}
                         fontSize={15}
                         isPermissionPage
                         darkMode={darkMode}
@@ -589,7 +673,6 @@ class ReportsPage extends Component {
                     </div>
                   </div>
                 </div>
-
                 {myRole !== 'Owner' && (
                   <div className="lost-time-container">
                     <div className="lost-time-item">
@@ -825,5 +908,6 @@ export default connect(mapStateToProps, {
   fetchAllProjects,
   getAllUserTeams,
   getUserProfileBasicInfo,
+  getUsersTotalHoursForSpecifiedPeriod,
   fetchAllTasks,
 })(ReportsPage);
