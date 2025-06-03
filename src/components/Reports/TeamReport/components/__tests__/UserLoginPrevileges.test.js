@@ -195,15 +195,15 @@ describe('UserLoginPrivileges Component', () => {
 
     render(
       <UserLoginPrivileges
-        role={mockProps.role}
-        teamName={mockProps.teamName}
-        teamMembers={mockProps.teamMembers}
-        totalTeamWeeklyWorkedHours={mockProps.totalTeamWeeklyWorkedHours}
-        selectedTeams={mockProps.selectedTeams}
-        selectedTeamsWeeklyEffort={mockProps.selectedTeamsWeeklyEffort}
-        allTeamsMembers={mockProps.allTeamsMembers}
-        darkMode={mockProps.darkMode}
-        teamDataLoading={mockProps.teamDataLoading}
+        role={customProps.role}
+        teamName={customProps.teamName}
+        teamMembers={customProps.teamMembers}
+        totalTeamWeeklyWorkedHours={customProps.totalTeamWeeklyWorkedHours}
+        selectedTeams={customProps.selectedTeams}
+        selectedTeamsWeeklyEffort={customProps.selectedTeamsWeeklyEffort}
+        allTeamsMembers={customProps.allTeamsMembers}
+        darkMode={customProps.darkMode}
+        teamDataLoading={customProps.teamDataLoading}
       />
     );
 
