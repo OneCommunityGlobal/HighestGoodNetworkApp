@@ -1,17 +1,14 @@
-// eslint-disable-next-line no-unused-vars
 import React from 'react';
-// eslint-disable-next-line no-unused-vars
 import { shallow, mount } from 'enzyme';
 import { MonthlyEffort } from '../MonthlyEffort';
 
 describe('Monthly Effort component structure', () => {
-  let mountedMonthlyEffort;
-  let props;
+  let mountedMonthlyEffort, props;
   beforeEach(() => {
     props = {
       auth: { isAuthenticated: true, user: { userid: 'abcdef' } },
     };
-    mountedMonthlyEffort = shallow(<MonthlyEffort auth={props.auth} />);
+    mountedMonthlyEffort = shallow(<MonthlyEffort {...props} />);
   });
 
   it('should be rendered with one h5 labeled Please Sign In', () => {

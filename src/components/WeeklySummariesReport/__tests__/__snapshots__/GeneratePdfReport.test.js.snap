@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FormattedReport Component Snapshot with mocked data 1`] = `
+<DocumentFragment>
+  <button
+    class="btn--dark-sea-green btn btn-secondary"
+    style="box-shadow: 2px 2px 4px 1px lightgray;"
+    type="button"
+  >
+    Open PDF
+  </button>
+</DocumentFragment>
+`;

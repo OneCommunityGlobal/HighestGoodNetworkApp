@@ -57,7 +57,7 @@ describe('followUpActions', () => {
 
       expect(axios.post).toHaveBeenCalledWith(
         ENDPOINTS.SET_USER_FOLLOWUP(userId, taskId),
-        updateData,
+        updateData
       );
       expect(dispatch).toHaveBeenCalledWith({
         type: types.SET_FOLLOWUP,

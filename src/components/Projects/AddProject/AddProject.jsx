@@ -188,8 +188,7 @@ const AddProject = (props) => {
         </ModalHeader>
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           <div className="form-group">
-            <label htmlFor="projectName" className={darkMode ? "text-light":" "}>Project Name</label>
-            <span className="red-asterisk">* </span>
+            <label htmlFor="projectName" className={darkMode ? "text-light":" "}>Project Name (required)</label>
             <input
               type="text"
               className={`form-control ${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
@@ -271,7 +270,7 @@ const AddProject = (props) => {
                 />
               </div>
 
-              {showFoundUserList && props.state.projectMembers?.foundUsers?.length > 0 && (
+              {showFoundUserList && props.state.projectMembers.foundUsers.length > 0 && (
                 <ul className="list-group mt-2" style={{ maxHeight: '15vh', overflowY: 'auto' }}>
                   {props.state.projectMembers.foundUsers.map((member) => (
                     <li key={member._id} className="list-group-item d-flex justify-content-between align-items-center" style={{color: darkMode ? '#fff' : '#403e3e'}}>

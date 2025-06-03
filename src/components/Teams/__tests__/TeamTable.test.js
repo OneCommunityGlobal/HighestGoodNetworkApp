@@ -2,8 +2,8 @@ import { mount } from 'enzyme';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
 import configureMockStore from 'redux-mock-store';
+import TeamTable from '../../Reports/TeamTable.jsx';
 import thunk from 'redux-thunk';
-import TeamTable from '../../Reports/TeamTable';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
@@ -15,7 +15,9 @@ describe('<TeamTable />', () => {
   beforeEach(() => {
     store = mockStore({
       role: {
-        roles: [{ roleName: 'User', permissions: ['somePermission'] }],
+        roles: [
+          { roleName: 'User', permissions: ['somePermission'] },
+        ],
       },
       auth: {
         user: {
@@ -32,12 +34,10 @@ describe('<TeamTable />', () => {
 
     component = mount(
       <Provider store={store}>
-        <MemoryRouter>
-          {' '}
-          {/* Use MemoryRouter for testing */}
+        <MemoryRouter> {/* Use MemoryRouter for testing */}
           <TeamTable allTeams={mockTeamsData} />
         </MemoryRouter>
-      </Provider>,
+      </Provider>
     );
   });
 
@@ -80,4 +80,6 @@ describe('<TeamTable />', () => {
     // Verify the input value change
     expect(firstTeamInput.prop('value')).toBe('A-123');
   });
+
+
 });

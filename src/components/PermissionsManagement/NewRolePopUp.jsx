@@ -83,9 +83,7 @@ function CreateNewRolePopup({ toggle, roleNames, darkMode, addRole }) {
   return (
     <Form id="createRole" onSubmit={handleSubmit}>
       <FormGroup>
-        <Label className={darkMode ? 'text-light' : ''}>
-          Role Name<span className="red-asterisk">* </span>:
-        </Label>
+        <Label className={darkMode ? 'text-light' : ''}>Role Name:</Label>
         <Input
           placeholder="Please enter a new role name"
           value={newRoleName}
@@ -100,9 +98,7 @@ function CreateNewRolePopup({ toggle, roleNames, darkMode, addRole }) {
       </FormGroup>
 
       <FormGroup>
-        <Label className={darkMode ? 'text-light' : ''}>
-          Permissions<span className="red-asterisk">* </span>:
-        </Label>
+        <Label className={darkMode ? 'text-light' : ''}>Permissions:</Label>
         <PermissionList
           rolePermissions={permissionsChecked}
           editable

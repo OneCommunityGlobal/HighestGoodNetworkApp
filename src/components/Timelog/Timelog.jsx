@@ -513,19 +513,11 @@ function Timelog(props) {
     }
   }, [urlId]);
 
-/**
-   * made a change here to reset the user viewing to current user and not the displayed user id we were testing
-   * component reloads when we click the x icon to close the current viewing
-  */
-
-useEffect(() => {
-  // Reset displayUserId when switching btw users
-  const newUserId = getUserId();
-  if (displayUserId !== newUserId) {
-    setDisplayUserId(newUserId);
-    loadAsyncData(newUserId); // Reload data for the prev viewing user
-  }
-}, [userprofileId, viewingUser]);
+  useEffect(() => {
+    if (userprofileId) {
+      setDisplayUserId(userprofileId);
+    }
+  }, [userprofileId]);
 
   useEffect(() => {
     props.getBadgeCount(displayUserId);

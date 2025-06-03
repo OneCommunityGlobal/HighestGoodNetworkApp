@@ -12,7 +12,7 @@ import TextSearchBox from 'components/UserManagement/TextSearchBox';
 import { boxStyle, boxStyleDark } from 'styles';
 import { TasksDetail } from '../TasksDetail';
 
-export function TasksTable({ darkMode, tasks, projectId }) {
+export function TasksTable({ darkMode, tasks }) {
   const [isActive, setActive] = useState(true);
   const [isAssigned, setAssigned] = useState(true);
   const [toggleEditTasks, setToggleEditTasks] = useState(false);
@@ -149,7 +149,6 @@ export function TasksTable({ darkMode, tasks, projectId }) {
         status={filters.status}
         classification={filters.classification}
         users={filters.users}
-        projectId={projectId}
       />
     </div>
   );

@@ -21,34 +21,12 @@ const props = {
 // Test Suite
 describe('BioFunction component', () => {
   it('Test case 1 : Renders as expected ', () => {
-    const { getByText } = render(
-      <BioFunction
-        bioPosted={props.bioPosted}
-        totalTangibleHrs={props.totalTangibleHrs}
-        daysInTeam={props.daysInTeam}
-        textColors={props.textColors}
-        summary={props.summary}
-        bioCanEdit={props.bioCanEdit}
-        handleProfileChange={props.handleProfileChange}
-        userId={props.userId}
-      />,
-    );
+    const { getByText } = render(<BioFunction {...props} />);
     expect(getByText('Bio announcement:')).toBeInTheDocument();
   });
 
   it('Test case 2 : Renders as expected when  bioCanEdit is true', () => {
-    const { getByText, container } = render(
-      <BioFunction
-        bioPosted={props.bioPosted}
-        totalTangibleHrs={props.totalTangibleHrs}
-        daysInTeam={props.daysInTeam}
-        textColors={props.textColors}
-        summary={props.summary}
-        bioCanEdit={props.bioCanEdit}
-        handleProfileChange={props.handleProfileChange}
-        userId={props.userId}
-      />,
-    );
+    const { getByText, container } = render(<BioFunction {...props} />);
 
     expect(getByText('Bio announcement:')).toBeInTheDocument();
 
@@ -58,18 +36,7 @@ describe('BioFunction component', () => {
 
   it('Test case 3 : Renders as expected when  bioCanEdit is false', () => {
     props.bioCanEdit = false;
-    const { getByText, container } = render(
-      <BioFunction
-        bioPosted={props.bioPosted}
-        totalTangibleHrs={props.totalTangibleHrs}
-        daysInTeam={props.daysInTeam}
-        textColors={props.textColors}
-        summary={props.summary}
-        bioCanEdit={props.bioCanEdit}
-        handleProfileChange={props.handleProfileChange}
-        userId={props.userId}
-      />,
-    );
+    const { getByText, container } = render(<BioFunction {...props} />);
 
     expect(getByText('Bio announcement:')).toBeInTheDocument();
     const divElements = container.querySelectorAll('.bio-toggle');
@@ -78,18 +45,7 @@ describe('BioFunction component', () => {
 
   it('Test case 4 : Renders as expected when  bioCanEdit is false and bioPosted is default ', () => {
     props.bioCanEdit = false;
-    const { getByText } = render(
-      <BioFunction
-        bioPosted={props.bioPosted}
-        totalTangibleHrs={props.totalTangibleHrs}
-        daysInTeam={props.daysInTeam}
-        textColors={props.textColors}
-        summary={props.summary}
-        bioCanEdit={props.bioCanEdit}
-        handleProfileChange={props.handleProfileChange}
-        userId={props.userId}
-      />,
-    );
+    const { getByText } = render(<BioFunction {...props} />);
 
     expect(getByText('Bio announcement:')).toBeInTheDocument();
     expect(getByText('Not requested/posted')).toBeInTheDocument();
@@ -98,18 +54,7 @@ describe('BioFunction component', () => {
   it('Test case 5 : Renders as expected when  bioCanEdit is false and bioPosted is posted', () => {
     props.bioCanEdit = false;
     props.bioPosted = 'posted';
-    const { getByText } = render(
-      <BioFunction
-        bioPosted={props.bioPosted}
-        totalTangibleHrs={props.totalTangibleHrs}
-        daysInTeam={props.daysInTeam}
-        textColors={props.textColors}
-        summary={props.summary}
-        bioCanEdit={props.bioCanEdit}
-        handleProfileChange={props.handleProfileChange}
-        userId={props.userId}
-      />,
-    );
+    const { getByText } = render(<BioFunction {...props} />);
     expect(getByText('Bio announcement:')).toBeInTheDocument();
 
     expect(getByText('Posted')).toBeInTheDocument();
@@ -118,18 +63,7 @@ describe('BioFunction component', () => {
   it('Test case 6 : Renders as expected when  bioCanEdit is false and bioPosted is neither posted nor default', () => {
     props.bioCanEdit = false;
     props.bioPosted = '';
-    const { getByText } = render(
-      <BioFunction
-        bioPosted={props.bioPosted}
-        totalTangibleHrs={props.totalTangibleHrs}
-        daysInTeam={props.daysInTeam}
-        textColors={props.textColors}
-        summary={props.summary}
-        bioCanEdit={props.bioCanEdit}
-        handleProfileChange={props.handleProfileChange}
-        userId={props.userId}
-      />,
-    );
+    const { getByText } = render(<BioFunction {...props} />);
     expect(getByText('Bio announcement:')).toBeInTheDocument();
 
     expect(getByText('Requested')).toBeInTheDocument();

@@ -1,21 +1,19 @@
+import { renderWithProvider, renderWithRouterMatch } from '../../../__tests__/utils.js';
 import '@testing-library/jest-dom/extend-expect';
-// eslint-disable-next-line no-unused-vars
 import React from 'react';
+import mockState from '../../../__tests__/mockAdminState.js';
 import { createMemoryHistory } from 'history';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
+import { ENDPOINTS } from '../../../utils/URL.js';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
+import routes from '../../../routes.js';
+import { ForcePasswordUpdate } from '../ForcePasswordUpdate.jsx';
+import { forcePasswordUpdate as fPU } from '../../../actions/updatePassword.js';
+import { clearErrors } from '../../../actions/errorsActions.js';
 import { shallow } from 'enzyme';
-// eslint-disable-next-line no-unused-vars
-import { renderWithProvider, renderWithRouterMatch } from '../../../__tests__/utils';
-import { clearErrors } from '../../../actions/errorsActions';
-import { forcePasswordUpdate as fPU } from '../../../actions/updatePassword';
-import { ForcePasswordUpdate } from '../ForcePasswordUpdate';
-import routes from '../../../routes';
-import { ENDPOINTS } from '../../../utils/URL';
-import mockState from '../../../__tests__/mockAdminState';
 
 const mockStore = configureStore([]);
 const initialState = {
@@ -24,23 +22,15 @@ const initialState = {
 const store = mockStore(initialState);
 
 describe('Force Password Update page structure', () => {
-  let mountedFPUpdate;
-  let props;
+  let mountedFPUpdate, props;
   beforeEach(() => {
     props = {
       auth: { isAuthenticated: true },
       errors: {},
-      clearErrors,
+      clearErrors: clearErrors,
       forcePasswordUpdate: ForcePasswordUpdate,
     };
-    mountedFPUpdate = shallow(
-      <ForcePasswordUpdate
-        auth={props.auth}
-        errors={props.errors}
-        clearErrors={props.clearErrors}
-        forcePasswordUpdate={props.forcePasswordUpdate}
-      />,
-    );
+    mountedFPUpdate = shallow(<ForcePasswordUpdate {...props} />);
   });
 
   it('should be rendered with two input fields', () => {
@@ -61,28 +51,18 @@ describe('Force Password Update page structure', () => {
 });
 
 describe('When user tries to input data', () => {
-  let mountedFPUpdate;
-  let props;
-  let mockfPU;
+  let mountedFPUpdate, props, fPU;
 
   beforeEach(() => {
-    mockfPU = jest.fn();
+    fPU = jest.fn();
     props = {
       match: { params: { userId: '5edf141c78f1380017b829a6' } },
       auth: { isAuthenticated: true },
       errors: {},
-      clearErrors,
-      forcePasswordUpdate: mockfPU,
+      clearErrors: clearErrors,
+      forcePasswordUpdate: fPU,
     };
-    mountedFPUpdate = shallow(
-      <ForcePasswordUpdate
-        match={props.match}
-        auth={props.auth}
-        errors={props.errors}
-        clearErrors={props.clearErrors}
-        forcePasswordUpdate={props.forcePasswordUpdate}
-      />,
-    );
+    mountedFPUpdate = shallow(<ForcePasswordUpdate {...props} />);
   });
 
   it('should call handleInput when input is changed', () => {
@@ -118,44 +98,37 @@ describe('When user tries to input data', () => {
 
   it('onSubmit forcePasswordUpdate method is called with credentials', async () => {
     await mountedFPUpdate.instance().doSubmit();
-    expect(mockfPU).toHaveBeenCalledWith({
-      userId: '5edf141c78f1380017b829a6',
-      newpassword: '',
-    });
+    expect(fPU).toHaveBeenCalledWith({ userId: '5edf141c78f1380017b829a6', newpassword: '' });
   });
 });
 
 const url = ENDPOINTS.FORCE_PASSWORD;
 const userProjectsUrl = ENDPOINTS.USER_PROJECTS(mockState.auth.user.userid);
 let passwordUpdated = false;
-// When user is sent to forced Password Update they are not
-// authenticated yet and will be sent to login afterwards
+//When user is sent to forced Password Update they are not
+//authenticated yet and will be sent to login afterwards
 mockState.auth.isAuthenticated = false;
 
-// eslint-disable-next-line no-promise-executor-return, no-unused-vars
 function sleep(ms) {
-  return new Promise(resolve => {
-    setTimeout(resolve, ms);
-  });
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 const server = setupServer(
-  // request for a forced password update.
+  //request for a forced password update.
   rest.patch(url, (req, res, ctx) => {
     passwordUpdated = true;
     if (req.body.newpassword === 'newPassword8') {
       return res(ctx.status(200));
     }
-    return res(ctx.status(400), ctx.json({ error: 'Invalid password format' }));
   }),
-  // prevents errors when loading header
+  //prevents errors when loading header
   rest.get('http*/api/userprofile/*', (req, res, ctx) => {
     return res(ctx.status(200), ctx.json({}));
   }),
   rest.get('http://*/hash.txt', (req, res, ctx) => {
     return res(ctx.status(200), ctx.json({}));
   }),
-  // Leaderboard Data in case user gets to dashboard.
+  //Leaderboard Data in case user gets to dashboard.
   rest.get('http://localhost:4500/api/dashboard/*', (req, res, ctx) => {
     return res(
       ctx.status(200),
@@ -192,13 +165,12 @@ const server = setupServer(
       ]),
     );
   }),
-  // Any other requests error out
-  // eslint-disable-next-line no-unused-vars
+  //Any other requests error out
   rest.get('*', (req, res, ctx) => {
-    throw new Error(
-      `\n    Please add request handler for ${req.url.toString()} in your MSW server requests.\n    `,
+    console.error(
+      `Please add request handler for ${req.url.toString()} in your MSW server requests.`,
     );
-    // return res(ctx.status(500), ctx.json({ error: 'You must add request handler.' }));
+    return res(ctx.status(500), ctx.json({ error: 'You must add request handler.' }));
   }),
 );
 
@@ -207,10 +179,7 @@ afterAll(() => server.close());
 afterEach(() => server.resetHandlers());
 
 describe('Force Password Update behaviour', () => {
-  // eslint-disable-next-line no-unused-vars
-  let fPUMountedPage;
-  let rt;
-  let hist;
+  let fPUMountedPage, rt, hist;
   beforeEach(() => {
     rt = '/forcePasswordUpdate/5edf141c78f1380017b829a6';
     hist = createMemoryHistory({ initialEntries: [rt] });
@@ -222,9 +191,9 @@ describe('Force Password Update behaviour', () => {
   });
 
   it('should pop up an error if password doesnt meet requirements', async () => {
-    const reqError =
+    let reqError =
       '"New Password" should be at least 8 characters long and must include at least one uppercase letter, one lowercase letter, and one number or special character';
-    // No number or special char
+    //No number or special char
     fireEvent.change(screen.getByLabelText('New Password:'), {
       target: { value: 'newPassword' },
     });
@@ -234,7 +203,7 @@ describe('Force Password Update behaviour', () => {
       expect(screen.getByText(reqError)).toBeTruthy();
     });
 
-    // No capatalized char
+    //No capatalized char
     fireEvent.change(screen.getByLabelText('New Password:'), {
       target: { value: 'newpassword8' },
     });
@@ -244,7 +213,7 @@ describe('Force Password Update behaviour', () => {
       expect(screen.getByText(reqError)).toBeTruthy();
     });
 
-    // Not long enough
+    //Not long enough
     fireEvent.change(screen.getByLabelText('New Password:'), {
       target: { value: 'word8' },
     });
@@ -272,8 +241,7 @@ describe('Force Password Update behaviour', () => {
     });
   });
   it('should update password after submit is clicked', async () => {
-    // const pushSpy = jest.spyOn(history, 'replace');
-    // eslint-disable-next-line no-unused-vars
+    //const pushSpy = jest.spyOn(history, 'replace');
     const history = { replace: jest.fn() };
     fireEvent.change(screen.getByLabelText('New Password:'), {
       target: { value: 'newPassword8' },
@@ -303,22 +271,16 @@ describe('Force Password Update behaviour', () => {
 
 describe('Force Password Update page structure', () => {
   it('should match the snapshot', () => {
-    const props = {
+    let props = {
       match: { params: { userId: '5edf141c78f1380017b829a6' } },
       auth: { isAuthenticated: true },
       errors: {},
-      clearErrors,
+      clearErrors: clearErrors,
       forcePasswordUpdate: fPU,
     };
     const { asFragment } = render(
       <Provider store={store}>
-        <ForcePasswordUpdate
-          match={props.match}
-          auth={props.auth}
-          errors={props.errors}
-          clearErrors={props.clearErrors}
-          forcePasswordUpdate={props.forcePasswordUpdate}
-        />
+        <ForcePasswordUpdate {...props} />
       </Provider>,
     );
     expect(asFragment()).toMatchSnapshot();

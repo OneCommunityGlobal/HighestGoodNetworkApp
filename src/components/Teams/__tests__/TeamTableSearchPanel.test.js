@@ -1,9 +1,7 @@
-// eslint-disable-next-line no-unused-vars
 import React from 'react';
-import { TeamTableSearchPanelBase } from 'components/Teams/TeamTableSearchPanel';
+import TeamTableSearchPanel from 'components/Teams/TeamTableSearchPanel';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
-// eslint-disable-next-line no-unused-vars
 import { render, fireEvent, screen } from '@testing-library/react';
 import thunk from 'redux-thunk';
 import { authMock, userProfileMock, rolesMock } from '../../../__tests__/mockStates';
@@ -13,8 +11,6 @@ const mockStore = configureStore([thunk]);
 const initialProps = {
   onCreateNewTeamClick: jest.fn(),
   onSearch: jest.fn(),
-  hasPermission: jest.fn(),
-  darkMode: false,
 };
 
 let store;
@@ -27,69 +23,53 @@ beforeEach(() => {
   });
 });
 
-describe('TeamTableSearchPanelBase', () => {
+describe('TeamTableSearchPanel', () => {
   it('should render without crashing', () => {
     render(
       <Provider store={store}>
-        <TeamTableSearchPanelBase
-          onCreateNewTeamClick={initialProps.onCreateNewTeamClick}
-          onSearch={initialProps.onSearch}
-          hasPermission={initialProps.hasPermission}
-          darkMode={initialProps.darkMode}
-        />
+        <TeamTableSearchPanel />;
       </Provider>,
     );
   });
 
   it('renders the "Create New Team" button when user has permission', () => {
-    // Explicitly mock hasPermission to return true for 'postTeam'
-    const mockHasPermission = jest.fn(permission => permission === 'postTeam');
-
-    render(
+    const { getByRole } = render(
       <Provider store={store}>
-        <TeamTableSearchPanelBase
-          onCreateNewTeamClick={initialProps.onCreateNewTeamClick}
-          onSearch={initialProps.onSearch}
-          hasPermission={mockHasPermission}
-          darkMode={initialProps.darkMode}
-        />
+        <TeamTableSearchPanel hasPermission={() => true} />;
       </Provider>,
     );
 
-    // Using screen.debug() to see what's being rendered
-    screen.debug();
-
-    const createNewTeamButton = screen.getByText('Create New Team');
+    const createNewTeamButton = getByRole('button', { name: 'Create New Team' });
     expect(createNewTeamButton).toBeInTheDocument();
+  });
+
+  it('does not render the "Create New Team" button when user does not have permission', () => {
+    render(
+      <Provider store={store}>
+        <TeamTableSearchPanel hasPermission={() => false} />;
+      </Provider>,
+    );
+
+    const createNewTeamButton = screen.queryByText('Create New Team');
+    expect(createNewTeamButton).toBeNull;
   });
 
   it('calls onCreateNewTeamClick when the "Create New Team" button is clicked', () => {
     const { getByRole } = render(
       <Provider store={store}>
-        <TeamTableSearchPanelBase
-          onCreateNewTeamClick={initialProps.onCreateNewTeamClick}
-          onSearch={initialProps.onSearch}
-          hasPermission={() => true}
-          darkMode={initialProps.darkMode}
-        />
+        <TeamTableSearchPanel {...initialProps} />;
       </Provider>,
     );
 
     const createNewTeamButton = getByRole('button', { name: 'Create New Team' });
-    // fireEvent.click(createNewTeamButton);
-    // expect(initialProps.onCreateNewTeamClick).toHaveBeenCalled();
-    expect(createNewTeamButton).toBeInTheDocument();
+    fireEvent.click(createNewTeamButton);
+    expect(initialProps.onCreateNewTeamClick).toHaveBeenCalled();
   });
 
   it('calls onSearch when the input value changes', () => {
     const { getByPlaceholderText } = render(
       <Provider store={store}>
-        <TeamTableSearchPanelBase
-          onCreateNewTeamClick={initialProps.onCreateNewTeamClick}
-          onSearch={initialProps.onSearch}
-          hasPermission={() => true}
-          darkMode={initialProps.darkMode}
-        />
+        <TeamTableSearchPanel {...initialProps} />;
       </Provider>,
     );
 

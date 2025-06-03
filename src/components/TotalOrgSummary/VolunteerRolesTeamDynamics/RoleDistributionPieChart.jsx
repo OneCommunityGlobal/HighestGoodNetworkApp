@@ -18,7 +18,7 @@ const COLORS = [
   '#46d130',
 ];
 
-export default function RoleDistributionPieChart({ isLoading, roleDistributionStats, darkMode }) {
+export default function RoleDistributionPieChart({ isLoading, roleDistributionStats }) {
   if (isLoading) {
     return (
       <div className="d-flex justify-content-center align-items-center">
@@ -65,10 +65,10 @@ export default function RoleDistributionPieChart({ isLoading, roleDistributionSt
           )}
         </text>
         <text fill="blue" textAnchor="middle" dominantBaseline="central">
-          <tspan x={cx} y={cy - 15} fontSize="1.2em" fill={darkMode ? 'white ' : 'grey'}>
+          <tspan x={cx} y={cy - 15} fontSize="1.2em" fill="grey">
             TOTAL ROLES
           </tspan>
-          <tspan x={cx} y={cy + 15} fontSize="1.5em" fill={darkMode ? 'white ' : 'grey'}>
+          <tspan x={cx} y={cy + 15} fontSize="1.5em" fill="grey">
             {data.length}
           </tspan>
         </text>
@@ -79,7 +79,7 @@ export default function RoleDistributionPieChart({ isLoading, roleDistributionSt
   const renderCustomLegend = props => {
     const { payload } = props;
     return (
-      <ul style={{ marginLeft: 20 }}>
+      <ul>
         {payload.map(entry => (
           <li
             key={`item-${entry.value}`}
@@ -93,9 +93,7 @@ export default function RoleDistributionPieChart({ isLoading, roleDistributionSt
                 marginRight: '3px',
               }}
             />
-            <span style={{ color: darkMode ? 'white ' : 'grey', fontSize: '12px' }}>
-              {entry.value}
-            </span>
+            <span style={{ color: 'grey', fontSize: '12px' }}>{entry.value}</span>
           </li>
         ))}
       </ul>
@@ -103,7 +101,7 @@ export default function RoleDistributionPieChart({ isLoading, roleDistributionSt
   };
 
   return (
-    <div style={{ margin: '15px 10px 10px 10px' }}>
+    <div>
       <ResponsiveContainer width="100%" height="100%" minWidth={400} minHeight={430}>
         <PieChart className="test2">
           <Pie

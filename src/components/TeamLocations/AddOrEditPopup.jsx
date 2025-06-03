@@ -236,12 +236,7 @@ function AddOrEditPopup({
             type="text"
             name="firstName"
             value={locationData.firstName}
-            label={
-              <>
-                First Name
-                <span className="red-asterisk">* </span>
-              </>
-            }
+            label="First Name"
             placeholder="Please enter a first name"
             onChange={locationDataHandler}
             required
@@ -253,12 +248,7 @@ function AddOrEditPopup({
             type="text"
             name="lastName"
             value={locationData.lastName}
-            label={
-              <>
-                Last Name
-                <span className="red-asterisk">* </span>
-              </>
-            }
+            label="Last Name"
             placeholder="Please enter a last name"
             onChange={locationDataHandler}
             required
@@ -270,12 +260,7 @@ function AddOrEditPopup({
             type="text"
             name="jobTitle"
             value={locationData.jobTitle}
-            label={
-              <>
-                Job Title
-                <span className="red-asterisk">* </span>
-              </>
-            }
+            label="Job Title"
             placeholder="Please enter user job title"
             onChange={locationDataHandler}
             required
@@ -283,10 +268,7 @@ function AddOrEditPopup({
             darkMode={darkMode}
           />
           <div>
-            <span className={`mb-2  font-weight-bold ${darkMode ? 'text-azure' : ''}`}>
-              Location
-            </span>
-            <span className="red-asterisk">* </span>
+            <p className={`mb-2 ${darkMode ? 'text-azure font-weight-bold' : ''}`}>Location</p>
             <div id="location" className="d-flex justify-content-stretch gap-1">
               <div className="w-50 mr-1 position-relative">
                 <input

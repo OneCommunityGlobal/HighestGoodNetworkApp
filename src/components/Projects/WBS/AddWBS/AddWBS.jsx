@@ -8,19 +8,19 @@ import { connect } from 'react-redux';
 import { addNewWBS } from './../../../../actions/wbs';
 import hasPermission from 'utils/permissions';
 
-const AddWBS = (props) => {
-  const darkMode = props.state.theme.darkMode;
-  const [taskTitle, setTaskTitle] = useState('');
+const AddWBS = props => {
+  const [showAddButton, setShowAddButton] = useState(false);
+  const [newName, setNewName] = useState('');
   const canPostWBS = props.hasPermission('postWbs');
+  const { darkMode } = props.state.theme;
 
-  const handleSubmit = () => {
-    if (!taskTitle.trim()) return;
-
-    const confirmed = window.confirm(`Add task "${taskTitle}" to the database?`);
-    if (confirmed) {
-      props.addNewWBS(taskTitle, props.projectId);
-      setTaskTitle('');
+  const changeNewName = newName => {
+    if (newName.length !== 0) {
+      setShowAddButton(true);
+    } else {
+      setShowAddButton(false);
     }
+    setNewName(newName);
   };
 
   return (
@@ -28,7 +28,7 @@ const AddWBS = (props) => {
       {canPostWBS ? (
         <div className="input-group" id="new_project">
           <div className="input-group-prepend">
-            <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue border-0 text-light' : ''}`}>Add new WBS</span>
+          <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue border-0 text-light' : ''}`}>Add new WBS</span>
           </div>
 
           <input
@@ -37,26 +37,18 @@ const AddWBS = (props) => {
             className={`form-control ${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
             aria-label="WBS WBS"
             placeholder="WBS Name"
-            value={taskTitle}
-            onChange={(e) => setTaskTitle(e.target.value)}
+            onChange={e => changeNewName(e.target.value)}
           />
           <div className="input-group-append">
-            {taskTitle.length >= 3 ? (
+            {showAddButton ? (
               <button
                 className="btn btn-outline-primary"
                 type="button"
-                onClick={handleSubmit}
-                data-testid="add-wbs-button"
+                onClick={e => props.addNewWBS(newName, props.projectId)}
               >
                 <i className="fa fa-plus" aria-hidden="true"></i>
               </button>
             ) : null}
-            <button className="btn btn-primary" type="button" onClick={props.onSortAscending}>
-              A ↓
-            </button>
-            <button className="btn btn-primary" type="button" onClick={props.onSortDescending}>
-              D ↑
-            </button>
           </div>
         </div>
       ) : null}

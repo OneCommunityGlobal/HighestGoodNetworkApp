@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import CurrentPromptModal from 'components/WeeklySummary/CurrentPromptModal';
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
@@ -16,7 +15,7 @@ let store;
 
 beforeEach(() => {
   store = mockStore({
-    theme,
+    theme: theme,
   });
 });
 
@@ -48,7 +47,7 @@ describe('CurrentPromptModal component', () => {
     await act(async () => {
       render(
         <Provider store={store}>
-          <CurrentPromptModal userId="abc123" userRole="Manager" darkMode={theme} />
+          <CurrentPromptModal userId={'abc123'} userRole={'Manager'} darkMode={theme} />
         </Provider>,
       );
     });
@@ -61,7 +60,7 @@ describe('CurrentPromptModal component', () => {
     await act(async () => {
       const { container } = render(
         <Provider store={store}>
-          <CurrentPromptModal userId="abc123" userRole="Manager" darkMode={theme} />
+          <CurrentPromptModal userId={'abc123'} userRole={'Manager'} darkMode={theme} />
         </Provider>,
       );
       await waitFor(() => {
@@ -83,7 +82,7 @@ describe('CurrentPromptModal component', () => {
     await act(async () => {
       const { container } = render(
         <Provider store={store}>
-          <CurrentPromptModal userId="abc123" userRole="Manager" darkMode={theme} />
+          <CurrentPromptModal userId={'abc123'} userRole={'Manager'} darkMode={theme} />
         </Provider>,
       );
       await waitFor(async () => {
@@ -110,7 +109,7 @@ describe('CurrentPromptModal component', () => {
     await act(async () => {
       const { container } = render(
         <Provider store={store}>
-          <CurrentPromptModal userId="abc123" userRole="Manager" darkMode={theme} />
+          <CurrentPromptModal userId={'abc123'} userRole={'Manager'} darkMode={theme} />
         </Provider>,
       );
       await waitFor(() => {
@@ -148,7 +147,7 @@ describe('CurrentPromptModal component', () => {
     await act(async () => {
       const { container } = render(
         <Provider store={store}>
-          <CurrentPromptModal userId="abc123" userRole="Manager" darkMode={theme} />
+          <CurrentPromptModal userId={'abc123'} userRole={'Manager'} darkMode={theme} />
         </Provider>,
       );
 
@@ -179,7 +178,7 @@ describe('CurrentPromptModal component', () => {
     await act(async () => {
       const { container } = render(
         <Provider store={store}>
-          <CurrentPromptModal userId="abc123" userRole="Manager" darkMode={theme} />
+          <CurrentPromptModal userId={'abc123'} userRole={'Manager'} darkMode={theme} />
         </Provider>,
       );
       const currentPrompt = `Please edit the following summary of my week's work. Make sure it is professionally written in 3rd person format.

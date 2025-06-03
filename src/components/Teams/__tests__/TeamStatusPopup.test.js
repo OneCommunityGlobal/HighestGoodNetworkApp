@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import TeamStatusPopup from 'components/Teams/TeamStatusPopup';
 import { renderWithProvider } from '__tests__/utils';
@@ -16,15 +15,7 @@ const defaultProps = {
 
 describe('TeamStatusPopup', () => {
   it('should render correctly', () => {
-    const { getByText, getByRole } = renderWithProvider(
-      <TeamStatusPopup
-        open={defaultProps.open}
-        selectedTeamName={defaultProps.selectedTeamName}
-        selectedStatus={defaultProps.selectedStatus}
-        onClose={defaultProps.onClose}
-        onConfirmClick={defaultProps.onConfirmClick}
-      />,
-    );
+    const { getByText, getByRole } = renderWithProvider(<TeamStatusPopup {...defaultProps} />);
 
     expect(getByText('Status Popup')).toBeInTheDocument();
 
@@ -39,15 +30,7 @@ describe('TeamStatusPopup', () => {
   });
 
   it('should call closePopup function', () => {
-    renderWithProvider(
-      <TeamStatusPopup
-        open={defaultProps.open}
-        selectedTeamName={defaultProps.selectedTeamName}
-        selectedStatus={defaultProps.selectedStatus}
-        onClose={defaultProps.onClose}
-        onConfirmClick={defaultProps.onConfirmClick}
-      />,
-    );
+    renderWithProvider(<TeamStatusPopup {...defaultProps} />);
 
     const closeButtons = screen.getAllByRole('button', { name: 'Close' });
     fireEvent.click(closeButtons[1]);
@@ -56,15 +39,7 @@ describe('TeamStatusPopup', () => {
   });
 
   it('should call onConfirmClick when "Confirm" button is clicked', () => {
-    renderWithProvider(
-      <TeamStatusPopup
-        open={defaultProps.open}
-        selectedTeamName={defaultProps.selectedTeamName}
-        selectedStatus={defaultProps.selectedStatus}
-        onClose={defaultProps.onClose}
-        onConfirmClick={defaultProps.onConfirmClick}
-      />,
-    );
+    renderWithProvider(<TeamStatusPopup {...defaultProps} />);
 
     const confirmButton = screen.getByRole('button', { name: 'Confirm' });
     fireEvent.click(confirmButton);
@@ -73,39 +48,17 @@ describe('TeamStatusPopup', () => {
   });
 
   it('should not re-render with the same props', () => {
-    const { rerender } = renderWithProvider(
-      <TeamStatusPopup
-        open={defaultProps.open}
-        selectedTeamName={defaultProps.selectedTeamName}
-        selectedStatus={defaultProps.selectedStatus}
-        onClose={defaultProps.onClose}
-        onConfirmClick={defaultProps.onConfirmClick}
-      />,
-    );
+    const { rerender } = renderWithProvider(<TeamStatusPopup {...defaultProps} />);
     const originalRenderCount = TeamStatusPopup.renderCount;
 
-    rerender(
-      <TeamStatusPopup
-        open={defaultProps.open}
-        selectedTeamName={defaultProps.selectedTeamName}
-        selectedStatus={defaultProps.selectedStatus}
-        onClose={defaultProps.onClose}
-        onConfirmClick={defaultProps.onConfirmClick}
-      />,
-    );
+    rerender(<TeamStatusPopup {...defaultProps} />);
 
     expect(TeamStatusPopup.renderCount).toBe(originalRenderCount);
   });
 
   it('should render dynamic content', () => {
     const { getByText } = renderWithProvider(
-      <TeamStatusPopup
-        open={defaultProps.open}
-        selectedTeamName="Team 2"
-        selectedStatus={false}
-        onClose={defaultProps.onClose}
-        onConfirmClick={defaultProps.onConfirmClick}
-      />,
+      <TeamStatusPopup {...defaultProps} selectedTeamName="Team 2" selectedStatus={false} />,
     );
 
     expect(

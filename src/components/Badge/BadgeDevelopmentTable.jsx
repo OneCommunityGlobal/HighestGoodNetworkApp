@@ -162,8 +162,9 @@ function BadgeDevelopmentTable(props) {
     return filteredList;
   };
 
+  
   const handleSortName = () => {
-    console.log('here sort name');
+    console.log("here sort name");
     setSortRankState('default');
     setSortNameState(prevState => {
       // change the icon
@@ -173,10 +174,8 @@ function BadgeDevelopmentTable(props) {
 
       // Sort the badges by name
       const sorted = [...sortedBadges].sort((a, b) => {
-        if (newState === 'ascending')
-          return a.badgeName.toLowerCase() > b.badgeName.toLowerCase() ? 1 : -1;
-        if (newState === 'descending')
-          return a.badgeName.toLowerCase() < b.badgeName.toLowerCase() ? 1 : -1;
+        if (newState === 'ascending') return a.badgeName.toLowerCase() > b.badgeName.toLowerCase() ? 1 : -1;
+        if (newState === 'descending') return a.badgeName.toLowerCase() < b.badgeName.toLowerCase() ? 1 : -1;
         return 0;
       });
 
@@ -187,7 +186,7 @@ function BadgeDevelopmentTable(props) {
 
   const handleSortRank = () => {
     setSortNameState('default');
-    console.log('sort rank');
+    console.log("sort rank");
     setSortRankState(prevState => {
       // Change the icon state
       let newState = 'ascending';
@@ -204,14 +203,10 @@ function BadgeDevelopmentTable(props) {
       setSortedBadges(sorted);
       return newState;
     });
+    
   };
 
   const filteredBadges = sortedBadges;
-
-  const toggleCheckbox = id => {
-    // prettier-ignore
-    setSortedBadges(prev => prev.map(item => (item._id === id ? { ...item, showReport: !item.showReport } : item)));
-  };
 
   const reportBadge = badgeValue => {
     // Returns true for all checked badges and false for all unchecked
@@ -225,7 +220,6 @@ function BadgeDevelopmentTable(props) {
           checked={badgeValue.showReport || false}
           onChange={() => {
             const updatedValue = { ...badgeValue, showReport: !checkValue };
-            toggleCheckbox(badgeValue._id);
             props.updateBadge(badgeValue._id, updatedValue);
           }}
           style={{
@@ -242,13 +236,14 @@ function BadgeDevelopmentTable(props) {
     );
   };
 
+
   const onNameSort = () => {
-    setSortNameState(prevState => {
+    setSortNameState((prevState) => {
       if (prevState === 'ascending') return 'descending';
       if (prevState === 'descending') return 'default';
       return 'ascending';
     });
-
+  
     const sortedBadges = [...props.allBadgeData].sort((a, b) => {
       if (sortNameState === 'ascending') {
         return a.badgeName.toLowerCase() > b.badgeName.toLowerCase() ? 1 : -1;
@@ -257,16 +252,18 @@ function BadgeDevelopmentTable(props) {
       }
       return 0;
     });
-
+  
     return sortedBadges;
   };
-
-  const onRankSort = () => {
-    setSortRankState(prevState => {
+  
+const onRankSort = () => {
+    setSortRankState((prevState) => {
       if (prevState === 'ascending') return 'descending';
       if (prevState === 'descending') return 'default';
       return 'ascending';
     });
+  
+  
   };
 
   return (
@@ -275,13 +272,14 @@ function BadgeDevelopmentTable(props) {
         className={`table table-bordered ${darkMode ? 'bg-yinmn-blue text-light dark-mode' : ''}`}
       >
         <thead>
-          <BadgeTableHeader
+        <BadgeTableHeader
             darkMode={darkMode}
             sortNameState={sortNameState}
             sortRankState={sortRankState}
             onNameSort={handleSortName}
             onRankSort={handleSortRank}
           />
+
         </thead>
         <tbody>
           {filteredBadges.map(value => (
@@ -318,7 +316,7 @@ function BadgeDevelopmentTable(props) {
                   <Button
                     outline
                     color="info"
-                    disabled={!canUpdateBadges}
+                    disabled = {!canUpdateBadges}
                     onClick={() => onEditButtonClick(value)}
                     style={darkMode ? {} : boxStyle}
                   >
@@ -329,7 +327,7 @@ function BadgeDevelopmentTable(props) {
                   <Button
                     outline
                     color="danger"
-                    disabled={!canDeleteBadges}
+                    disabled = {!canDeleteBadges}
                     onClick={() => onDeleteButtonClick(value._id, value.badgeName)}
                     style={darkMode ? {} : boxStyle}
                   >

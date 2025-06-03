@@ -1,10 +1,11 @@
 import { useHistory } from 'react-router-dom';
+import { IoPersonOutline } from 'react-icons/io5';
 import { SiGmail } from 'react-icons/si';
 import Loading from 'components/common/Loading';
 import sixMonthsAward from '../images/sixMonthsAward.svg';
 import oneYearAward from '../images/oneYearAward.svg';
 
-export default function AnniversaryCelebrated({ isLoading, data, darkMode }) {
+export default function AnniversaryCelebrated({ isLoading, data }) {
   const history = useHistory();
   const sixMonthsData = data?.['6Months'] || { comparisonPercentage: 0 };
   const oneYearData = data?.['1Year'] || { comparisonPercentage: 0 };
@@ -16,6 +17,7 @@ export default function AnniversaryCelebrated({ isLoading, data, darkMode }) {
   const handleEmailClick = email => {
     history.push('/sendemail', { state: { email } });
   };
+
   const getAnniversaryListItem = (userData = [], anniversaryMonths = 6) => {
     const { _id, profilePic, email, firstName, lastName } = userData;
     return (
@@ -29,28 +31,24 @@ export default function AnniversaryCelebrated({ isLoading, data, darkMode }) {
             margin: '10px 15px',
           }}
         >
-          <img
-            src={profilePic || '/profilepic.webp'}
-            alt="profile"
-            onError={e => {
-              e.currentTarget.onerror = null;
-              e.currentTarget.src = '/profilepic.webp';
-            }}
-            className="rounded-circle ms-5"
-            style={{ width: '30px', height: '30px' }}
-          />
-
+          {profilePic ? (
+            <img
+              src={profilePic}
+              alt="profile"
+              className="rounded-circle ms-5"
+              style={{ width: '30px', height: '30px' }}
+            />
+          ) : (
+            <IoPersonOutline size={30} className="" />
+          )}
           <SiGmail
             size={30}
             color="red"
-            style={{ cursor: 'pointer', display: 'block' }}
+            className=""
+            style={{ cursor: 'pointer' }}
             onClick={() => handleEmailClick(email)}
           />
-
-          <p
-            className="m-0 align-self-center"
-            style={{ color: darkMode ? '#fff' : '#000' }}
-          >{`${firstName} ${lastName}`}</p>
+          <p className="m-0 align-self-center">{`${firstName} ${lastName}`}</p>
           <img
             src={anniversaryMonths === 6 ? sixMonthsAward : oneYearAward}
             alt="six months award"
@@ -83,13 +81,13 @@ export default function AnniversaryCelebrated({ isLoading, data, darkMode }) {
             }}
           >
             <p style={{ display: 'flex', gap: '5px', marginBottom: '5px' }}>
-              <span style={{ color: darkMode ? '#fff' : 'gray' }}>6 months: </span>
+              <span style={{ color: 'gray' }}>6 months: </span>
               <span className={`text-center ${is6MonthsPositive ? 'text-success' : 'text-danger'}`}>
                 {`${is6MonthsPositive ? '+' : ''}${sixMonthsPercent}%`}
               </span>
             </p>
             <p style={{ display: 'flex', gap: '5px' }}>
-              <span style={{ color: darkMode ? '#fff' : 'gray' }}>1 year: </span>
+              <span style={{ color: 'gray' }}>1 year: </span>
               <span className={`text-center ${isOneYearPositive ? 'text-success' : 'text-danger'}`}>
                 {`${isOneYearPositive ? '+' : ''}${oneYearPercent}%`}
               </span>

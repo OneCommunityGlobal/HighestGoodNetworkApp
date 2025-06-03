@@ -1,9 +1,8 @@
-// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { shallow } from 'enzyme';
 import configureStore from 'redux-mock-store';
-import { themeMock } from '__tests__/mockStates';
 import OwnerMessage from '../OwnerMessage';
+import { themeMock } from '__tests__/mockStates';
 
 describe('OwnerMessage Component', () => {
   const mockStore = configureStore();

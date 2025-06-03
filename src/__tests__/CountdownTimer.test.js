@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import moment from 'moment';
 import { render, screen, waitFor } from '@testing-library/react';

@@ -1,60 +1,21 @@
-import { useState, useEffect } from 'react';
+import { useState ,useEffect} from 'react';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useDispatch, useSelector } from 'react-redux';
 import { setUserFollowUp } from '../../actions/followUpActions';
+import { useDispatch, useSelector } from 'react-redux';
 import './FollowUpCheckButton.css';
 
-function FollowupCheckButton({ moseoverText, user, task }) {
+const FollowupCheckButton = ({ moseoverText, user, task }) => {
   const dispatch = useDispatch();
   const userFollowUps = useSelector(state => state.userFollowUp?.followUps[user.personId] || []);
   const userFollowUpTask = userFollowUps.filter(ele => ele.taskId === task._id);
   const isChecked = userFollowUpTask[0]?.followUpCheck || false;
   const followUpPercentageDeadline = userFollowUpTask[0]?.followUpPercentageDeadline || 0;
-  const [needFollowUp, setNeedFollowUp] = useState(false);
+  const [needFollowUp, setNeedFollowUp] = useState(false)
 
-  const checkNeedFollowUp = () => {
-    const taskProgressPercentage =
-      Number(((task.hoursLogged / task.estimatedHours) * 100).toFixed(2)) || 0;
-
-    if (userFollowUpTask.length > 0) {
-      const followUp = userFollowUpTask[0];
-      const followUpPercentageDeadlineNumber = Number(followUp.followUpPercentageDeadline) || 0;
-
-      if (followUpPercentageDeadlineNumber < 50 && taskProgressPercentage > 50) {
-        setNeedFollowUp(true);
-        return;
-      }
-      if (
-        followUpPercentageDeadlineNumber >= 50 &&
-        followUpPercentageDeadlineNumber < 75 &&
-        taskProgressPercentage > 75
-      ) {
-        setNeedFollowUp(true);
-        return;
-      }
-      if (
-        followUpPercentageDeadlineNumber >= 75 &&
-        followUpPercentageDeadlineNumber < 90 &&
-        taskProgressPercentage > 90
-      ) {
-        setNeedFollowUp(true);
-        return;
-      }
-      if (followUpPercentageDeadlineNumber < 90 && taskProgressPercentage > 90) {
-        setNeedFollowUp(true);
-        return;
-      }
-    } else if (taskProgressPercentage > 50) {
-      setNeedFollowUp(true);
-      return;
-    }
-    setNeedFollowUp(false);
-  };
-
-  useEffect(() => {
-    checkNeedFollowUp();
-  }, [followUpPercentageDeadline]);
+  useEffect(()=>{
+    checkNeedFollowUp()
+  },[followUpPercentageDeadline])
 
   const handleCheckboxFollowUp = () => {
     const progressPersantage =
@@ -62,9 +23,49 @@ function FollowupCheckButton({ moseoverText, user, task }) {
 
     const data = {
       followUpCheck: needFollowUp ? true : !isChecked,
-      followUpPercentageDeadlineNumber: progressPersantage,
+      followUpPercentageDeadline: progressPersantage,
     };
+    console.log(data)
     dispatch(setUserFollowUp(user.personId, task._id, data));
+  };
+
+  const checkNeedFollowUp = () => {
+    const taskProgressPercentage =
+      Number(((task.hoursLogged / task.estimatedHours) * 100).toFixed(2)) || 0;
+    
+    if (userFollowUpTask.length > 0) {
+      const followUp = userFollowUpTask[0];
+      const followUpPercentageDeadline = Number(followUp.followUpPercentageDeadline) || 0;
+
+      if (followUpPercentageDeadline < 50 && taskProgressPercentage > 50) {
+        setNeedFollowUp(true)
+        return;
+      } else if (
+        followUpPercentageDeadline >= 50 &&
+        followUpPercentageDeadline < 75 &&
+        taskProgressPercentage > 75
+      ) {
+        setNeedFollowUp(true)
+        return;
+      } else if (
+        followUpPercentageDeadline >= 75 &&
+        followUpPercentageDeadline < 90 &&
+        taskProgressPercentage > 90
+      ) {
+        setNeedFollowUp(true)
+        return;
+      } else if (followUpPercentageDeadline < 90 && taskProgressPercentage > 90) {
+        setNeedFollowUp(true)
+        return;
+      }
+    } else {
+      if (taskProgressPercentage > 50) {
+        setNeedFollowUp(true)
+        return;
+      }
+    }
+    setNeedFollowUp(false)
+    return;
   };
 
   return (
@@ -88,6 +89,6 @@ function FollowupCheckButton({ moseoverText, user, task }) {
       )}
     </>
   );
-}
+};
 
 export default FollowupCheckButton;

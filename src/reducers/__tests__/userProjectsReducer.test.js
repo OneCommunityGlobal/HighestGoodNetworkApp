@@ -52,4 +52,5 @@ describe('userProjectsReducer', () => {
     const result = userProjectsReducer(initialState, action);
     expect(result).toEqual(expectedState);
   });
+
 });

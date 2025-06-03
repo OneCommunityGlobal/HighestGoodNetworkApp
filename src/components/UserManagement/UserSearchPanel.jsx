@@ -76,9 +76,8 @@ function UserSearchPanel({
         {CREATE_NEW_USER}
       </button>
 
-      <div className="input-group-prepend">
+      <div className="input-group-prepend" style={{marginRight: "5px"}}>
         <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>{SEARCH}</span>
-      </div>
       <input
         // autoFocus
         type="text"
@@ -90,8 +89,8 @@ function UserSearchPanel({
         onChange={e => {
           onSearch(e.target.value);
         }}
-        style={{marginRight: "5px"}}
       />
+      </div>
       <div className="input-group-prepend">
         <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>{SHOW}</span>
         <select

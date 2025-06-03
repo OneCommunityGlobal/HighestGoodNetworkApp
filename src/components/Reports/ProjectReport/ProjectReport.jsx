@@ -161,7 +161,7 @@ export function ProjectReport({ match }) {
         </ReportPage.ReportBlock>
       </div>
         <ReportPage.ReportBlock darkMode={darkMode}>
-          <TasksTable darkMode={darkMode} tasks={tasks} projectId={projectId} />
+          <TasksTable darkMode={darkMode} tasks={tasks}/>
         </ReportPage.ReportBlock>
         <ReportPage.ReportBlock darkMode={darkMode}>
           <PieChartByProject mergedProjectUsersArray={mergedProjectUsersArray} projectName={projectName} darkMode={darkMode}/>

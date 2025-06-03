@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+// import { getUserProfile } from '../../actions/userProfile'
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import { getWeeklySummaries } from 'actions/weeklySummaries';
@@ -51,7 +52,6 @@ import {
   TOTAL_CONSTRUCTION_SUMMARY,
 } from '../../languages/en/ui';
 import Logout from '../Logout/Logout';
-import '../../App.css';
 import './Header.css';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import {
@@ -61,7 +61,6 @@ import {
 import NotificationCard from '../Notification/notificationCard';
 import DarkModeButton from './DarkModeButton';
 import BellNotification from './BellNotification';
-import { getUserProfile } from '../../actions/userProfile';
 
 export function Header(props) {
   const location = useLocation();
@@ -153,7 +152,6 @@ export function Header(props) {
   const history = useHistory();
 
   const [showProjectDropdown, setShowProjectDropdown] = useState(false);
-  const [isAckLoading, setIsAckLoading] = useState(false);
 
   useEffect(() => {
     const handleStorageEvent = () => {
@@ -217,28 +215,6 @@ export function Header(props) {
   const openModal = () => {
     setLogoutPopup(true);
   };
-  
-  const handlePermissionChangeAck = async () => {
-    // handle setting the ack true
-    try {
-      setIsAckLoading(true)
-      const {firstName: name, lastName, personalLinks, adminLinks, _id} = props.userProfile
-      axios.put(ENDPOINTS.USER_PROFILE(_id), {
-        // req fields for updation
-        firstName: name, 
-        lastName, 
-        personalLinks,
-        adminLinks,
-        
-        isAcknowledged: true,
-      }).then(()=>{
-        setIsAckLoading(false);
-        dispatch(getUserProfile(_id));
-      });
-    } catch (e) {
-      // console.log('update ack', e);
-    }
-  }
 
   const removeViewingUser = () => {
     setPopup(false);
@@ -305,12 +281,12 @@ export function Header(props) {
           setModalVisible(true);
           // Assistant Manager or Volunteer message
           setModalContent(
-            `If you are seeing this, it's because you are on a team! As a member of a team, you need to turn in your work 24 hours earlier, i.e. FRIDAY night at midnight Pacific Time. This is so your manager has time to review it and submit and report on your entire team's work by the usual Saturday night deadline. For any work you plan on completing Saturday, please take pictures as best you can and include it in your summary as if it were already done.\n\nBy dismissing this notice, you acknowledge you understand and will do this.`,
+            `If you are seeing this, it’s because you are on a team! As a member of a team, you need to turn in your work 24 hours earlier, i.e. FRIDAY night at midnight Pacific Time. This is so your manager has time to review it and submit and report on your entire team’s work by the usual Saturday night deadline. For any work you plan on completing Saturday, please take pictures as best you can and include it in your summary as if it were already done.\n\nBy dismissing this notice, you acknowledge you understand and will do this.`,
           );
         } else if (user.role === 'Manager') {
           setModalVisible(true);
           // Manager message
-          setModalContent(`If you are seeing this, it's because you are a Manager of a team! Remember to turn in your team's work by the Saturday night at midnight (Pacific Time) deadline. Every member of your team gets a notice like this too. Theirs tells them to get you their work 24 hours early so you have time to review it and submit it. If you have to remind them repeatedly (4+ times, track it on their Google Doc), they should receive a blue square.
+          setModalContent(`If you are seeing this, it’s because you are a Manager of a team! Remember to turn in your team’s work by the Saturday night at midnight (Pacific Time) deadline. Every member of your team gets a notice like this too. Theirs tells them to get you their work 24 hours early so you have time to review it and submit it. If you have to remind them repeatedly (4+ times, track it on their Google Doc), they should receive a blue square.
           `);
         }
       }
@@ -327,7 +303,6 @@ export function Header(props) {
 
   if (location.pathname === '/login') return null;
 
-  const viewingUser = JSON.parse(window.sessionStorage.getItem('viewingUser'))
   return (
     <div className="header-wrapper">
       <Navbar className="py-3 navbar" color="dark" dark expand="md">
@@ -346,7 +321,7 @@ export function Header(props) {
         <NavbarToggler onClick={toggle} />
         {isAuthenticated && (
           <Collapse isOpen={isOpen} navbar>
-            <Nav className="ml-auto nav-links d-flex" navbar>
+            <Nav className="ml-auto nav-links" navbar>
               <div
                 className="d-flex justify-content-center align-items-center"
                 style={{ width: '100%' }}
@@ -466,7 +441,7 @@ export function Header(props) {
                   </NavItem>
                 )}
                 <NavItem className="responsive-spacing">
-                  <BellNotification userId={displayUserId}/>
+                  <BellNotification />
                 </NavItem>
                 {(canAccessUserManagement ||
                   canAccessBadgeManagement ||
@@ -480,15 +455,19 @@ export function Header(props) {
                       <span className="dashboard-text-link">{OTHER_LINKS}</span>
                     </DropdownToggle>
                     <DropdownMenu className={darkMode ? 'bg-yinmn-blue' : ''}>
-                      {canAccessUserManagement && (
+                      {canAccessUserManagement ? (
                         <DropdownItem tag={Link} to="/usermanagement" className={fontColor}>
                           {USER_MANAGEMENT}
                         </DropdownItem>
+                      ) : (
+                        `null`
                       )}
-                      {canAccessBadgeManagement && (
+                      {canAccessBadgeManagement ? (
                         <DropdownItem tag={Link} to="/badgemanagement" className={fontColor}>
                           {BADGE_MANAGEMENT}
                         </DropdownItem>
+                      ) : (
+                        `null`
                       )}
                       {canAccessProjects && (
                         <DropdownItem tag={Link} to="/projects" className={fontColor}>
@@ -522,17 +501,10 @@ export function Header(props) {
                 )}
                 <NavItem className="responsive-spacing">
                   <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
-                    <div
-                      style={{
-                        width: '60px',
-                        height: '60px',
-                        minWidth: '60px',
-                        minHeight: '60px',
-                        backgroundImage: `url(${profilePic || '/pfp-default-header.png'})`,
-                        backgroundSize: 'contain',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                      }}
+                    <img
+                      src={`${profilePic || '/pfp-default-header.png'}`}
+                      alt=""
+                      style={{ maxWidth: '60px', maxHeight: '60px' }}
                       className="dashboardimg"
                     />
                   </NavLink>
@@ -583,16 +555,8 @@ export function Header(props) {
       </Navbar>
       {!isAuthUser && (
         <PopUpBar
-          message={`You are currently viewing the header for ${viewingUser.firstName} ${viewingUser.lastName}`}
           onClickClose={() => setPopup(prevPopup => !prevPopup)}
-          />
-      )}
-      {props.auth.isAuthenticated && props.userProfile?.permissions?.isAcknowledged===false && (
-        <PopUpBar
-          message="Heads Up, there were permission changes made to this account"
-          onClickClose={handlePermissionChangeAck}
-          textColor="black_text"
-          isLoading={isAckLoading}
+          viewingUser={JSON.parse(window.sessionStorage.getItem('viewingUser'))}
         />
       )}
       <div>
@@ -614,14 +578,12 @@ export function Header(props) {
         </Modal>
       </div>
       {props.auth.isAuthenticated && isModalVisible && (
-        <div className={`${darkMode ? 'bg-oxford-blue' : ''} card-wrapper`}>
-          <Card color="primary" className='headerCard'>
-            <div className="close-button">
-              <Button close onClick={closeModal} />
-            </div>
-            <div className="card-content">{modalContent}</div>
-          </Card>
-        </div>
+        <Card color="primary">
+          <div className="close-button">
+            <Button close onClick={closeModal} />
+          </div>
+          <div className="card-content">{modalContent}</div>
+        </Card>
       )}
       {/* Only render one unread message at a time */}
       {props.auth.isAuthenticated && unreadNotifications?.length > 0 ? (
@@ -646,5 +608,4 @@ export default connect(mapStateToProps, {
   getAllRoles,
   hasPermission,
   getWeeklySummaries,
-  getUserProfile,
 })(Header);

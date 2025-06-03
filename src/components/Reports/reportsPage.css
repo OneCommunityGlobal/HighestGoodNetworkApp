@@ -3,10 +3,6 @@
   margin: 0;
 }
 
-.red-asterisk {
-  color: #e00000;
-}
-
 .container-component-wrapper {
   min-height: 100%;
   width: 100%;
@@ -125,18 +121,16 @@
 
 .date-picker-container {
   display: flex;
-  flex-direction: row;
   justify-content: flex-start;
-  padding: 8px 0px 8px 0px;
-  gap: 4%;
+  padding: 16px 0;
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
 .date-picker-item {
   display: flex;
-  width: 30%;
   flex-direction: column;
-  flex-wrap: nowrap;
-  justify-content: space-between;
+  margin: 8px 0;
 }
 
 .date-picker-label {

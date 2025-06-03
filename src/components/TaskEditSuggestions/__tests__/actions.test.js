@@ -1,3 +1,5 @@
+import configureMockStore from 'redux-mock-store';
+import thunk from 'redux-thunk'; 
 import {
   fetchTaskEditSuggestionsBegin,
   fetchTaskEditSuggestionsSuccess,
@@ -6,7 +8,10 @@ import {
   toggleDateSuggestedSortDirection,
   toggleUserSortDirection,
   fetchTaskEditSuggestionCountSuccess,
-} from '../actions';
+} from '../actions'; 
+
+const middlewares = [thunk];
+const mockStore = configureMockStore(middlewares);
 
 describe('Redux Actions', () => {
   it('should create an action to begin fetching task edit suggestions', () => {
@@ -15,9 +20,7 @@ describe('Redux Actions', () => {
   });
 
   it('should create an action for successful task edit suggestions fetching', () => {
-    const data = {
-      /* your data here */
-    };
+    const data = { /* your data here */ };
     const expectedAction = { type: 'FETCH_TASK_EDIT_SUGGESTIONS_SUCESS', payload: data };
     expect(fetchTaskEditSuggestionsSuccess(data)).toEqual(expectedAction);
   });

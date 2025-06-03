@@ -1,7 +1,5 @@
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-// eslint-disable-next-line no-unused-vars
-import { toast } from 'react-toastify';
 import { getWeeklySummaries, updateWeeklySummaries } from '../../../actions/weeklySummaries';
 import configureStore from '../../../store';
 import { ENDPOINTS } from '../../../utils/URL';
@@ -17,12 +15,11 @@ const weeklySummariesMockData = {
 
 const server = setupServer(
   rest.get(url, (req, res, ctx) => res(ctx.json(weeklySummariesMockData), ctx.status(200))),
-  // eslint-disable-next-line no-unused-vars
   rest.get('*', (req, res, ctx) => {
-    throw new Error(
+    console.error(
       `Please add request handler for ${req.url.toString()} in your MSW server requests.`,
     );
-    //    return res(ctx.status(500), ctx.json({ error: 'You must add request handler.' }));
+    return res(ctx.status(500), ctx.json({ error: 'You must add request handler.' }));
   }),
 );
 

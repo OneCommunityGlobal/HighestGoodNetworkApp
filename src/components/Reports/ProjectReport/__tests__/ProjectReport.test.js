@@ -1,19 +1,16 @@
-// eslint-disable-next-line no-unused-vars
 import React from 'react';
-// eslint-disable-next-line no-unused-vars
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
+import ProjectReport from '..';
 import axios from 'axios';
 import { getProjectDetail } from 'actions/project';
-// eslint-disable-next-line no-unused-vars
 import { fetchAllMembers, foundUsers, getProjectActiveUser } from 'actions/projectMembers';
 import { fetchAllWBS } from 'actions/wbs';
 import viewWBSpermissionsRequired from 'utils/viewWBSpermissionsRequired';
 import { themeMock } from '__tests__/mockStates';
-import ProjectReport from '..';
 
 const mockStore = configureStore([thunk]);
 const store = mockStore({
@@ -71,20 +68,20 @@ describe('ProjectReport component', () => {
     axios.get.mockResolvedValue({
       data: mockProjectDetail,
     });
-    const storeOne = mockStore({});
+    const store = mockStore({});
 
     const expectedActions = [{ type: 'GET_PROJECT_BY_ID', payload: mockProjectDetail }];
-    await storeOne.dispatch(getProjectDetail('abc456'));
-    expect(storeOne.getActions()).toEqual(expectedActions);
+    await store.dispatch(getProjectDetail('abc456'));
+    expect(store.getActions()).toEqual(expectedActions);
   });
   it('check if getProjectDetail puts out an error message when get request fails', async () => {
     const errorResponse = { status: 401 };
 
     axios.get.mockRejectedValue(errorResponse);
-    const storeTwo = mockStore({});
+    const store = mockStore({});
 
-    await storeTwo.dispatch(getProjectDetail('abc456'));
-    expect(storeTwo.getActions()).toEqual([]);
+    await store.dispatch(getProjectDetail('abc456'));
+    expect(store.getActions()).toEqual([]);
   });
   it('check if fetchAllMembers works as expected', async () => {
     const mockMembers = [
@@ -94,21 +91,21 @@ describe('ProjectReport component', () => {
     axios.get.mockResolvedValue({
       data: mockMembers,
     });
-    const storeThree = mockStore({});
+    const store = mockStore({});
 
     const expectedActions = [
       { type: 'FETCH_MEMBERS_START' },
       { type: 'FOUND_USERS', users: [] },
       { type: 'RECIVES_MEMBERS', members: mockMembers },
     ];
-    await storeThree.dispatch(fetchAllMembers('abc456'));
-    expect(storeThree.getActions()).toEqual(expectedActions);
+    await store.dispatch(fetchAllMembers('abc456'));
+    expect(store.getActions()).toEqual(expectedActions);
   });
   it('check if fetchAllMembers puts out an error message when get request fails', async () => {
     const errorResponse = { status: 500, message: 'server error' };
 
     axios.get.mockRejectedValue(errorResponse);
-    const storeFour = mockStore({});
+    const store = mockStore({});
 
     const expectedErrorAction = [
       { type: 'FETCH_MEMBERS_START' },
@@ -119,9 +116,9 @@ describe('ProjectReport component', () => {
       },
     ];
 
-    await storeFour.dispatch(fetchAllMembers('abc456'));
+    await store.dispatch(fetchAllMembers('abc456'));
     await flushAllPromises();
-    expect(storeFour.getActions()).toEqual(expectedErrorAction);
+    expect(store.getActions()).toEqual(expectedErrorAction);
   });
   it('check if getProjectActiveUser works as expected', async () => {
     const mockUser = [
@@ -133,7 +130,7 @@ describe('ProjectReport component', () => {
       data: mockUser,
     });
 
-    const storeFive = mockStore({
+    const store = mockStore({
       wbs: { WBSItems: [] },
       projectMembers: {
         members: [
@@ -171,23 +168,23 @@ describe('ProjectReport component', () => {
       { type: 'FIND_USERS_START' },
       { type: 'FOUND_USERS', users: userFilter },
     ];
-    await storeFive.dispatch(getProjectActiveUser());
-    expect(storeFive.getActions()).toEqual(expectedActions);
+    await store.dispatch(getProjectActiveUser());
+    expect(store.getActions()).toEqual(expectedActions);
   });
   it('check if getProjectActiveUser puts out an error message when get request fails', async () => {
     const errorResponse = { status: 500, message: 'server error' };
 
     axios.get.mockRejectedValue(errorResponse);
-    const storeSix = mockStore({});
+    const store = mockStore({});
 
     const expectedErrorAction = [
       { type: 'FIND_USERS_START' },
       { type: 'FIND_USERS_ERROR', err: errorResponse },
     ];
 
-    await storeSix.dispatch(getProjectActiveUser());
+    await store.dispatch(getProjectActiveUser());
     await flushAllPromises();
-    expect(storeSix.getActions()).toEqual(expectedErrorAction);
+    expect(store.getActions()).toEqual(expectedErrorAction);
   });
   it('check if fetchAllWBS works as expected', async () => {
     const mockWBS = [
@@ -197,20 +194,20 @@ describe('ProjectReport component', () => {
     axios.get.mockResolvedValue({
       data: mockWBS,
     });
-    const storeSeven = mockStore({});
+    const store = mockStore({});
 
     const expectedActions = [
       { type: 'FETCH_WBS_START' },
       { type: 'RECIVES_WBS', WBSItems: mockWBS },
     ];
-    await storeSeven.dispatch(fetchAllWBS('abc456'));
-    expect(storeSeven.getActions()).toEqual(expectedActions);
+    await store.dispatch(fetchAllWBS('abc456'));
+    expect(store.getActions()).toEqual(expectedActions);
   });
   it('check if fetchAllWBS puts out an error message when get request fails', async () => {
     const errorResponse = { status: 500, message: 'server error' };
 
     axios.get.mockRejectedValue(errorResponse);
-    const storeEight = mockStore({});
+    const store = mockStore({});
 
     const expectedErrorAction = [
       { type: 'FETCH_WBS_START' },
@@ -220,9 +217,9 @@ describe('ProjectReport component', () => {
       },
     ];
 
-    await storeEight.dispatch(fetchAllWBS('abc456'));
+    await store.dispatch(fetchAllWBS('abc456'));
     await flushAllPromises();
-    expect(storeEight.getActions()).toEqual(expectedErrorAction);
+    expect(store.getActions()).toEqual(expectedErrorAction);
   });
 });
 
@@ -233,7 +230,7 @@ describe('ProjectReport WBS link visibility', () => {
     const hasPermission = mockPermissions.some(permission =>
       viewWBSpermissionsRequired.includes(permission),
     );
-    // eslint-disable-next-line no-unused-vars
+
     const canViewWBS = hasPermission;
 
     axios.get.mockResolvedValue({ status: 200, data: {} });
@@ -243,9 +240,8 @@ describe('ProjectReport WBS link visibility', () => {
         <ProjectReport />
       </Provider>,
     );
-    // eslint-disable-next-line no-unused-vars
+
     const mockWBS = { _id: 'wbs123', wbsName: 'wbs name1' };
-    // eslint-disable-next-line no-unused-vars
     const projectId = '123';
     /** 
     if (canViewWBS) {

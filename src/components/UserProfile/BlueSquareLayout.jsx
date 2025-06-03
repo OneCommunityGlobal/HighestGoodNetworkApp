@@ -10,7 +10,6 @@ import BlueSquaresTable from './BlueSquaresTable/BlueSquaresTable';
 import BluequareEmailAssignmentPopUp from './BluequareEmailBBCPopUp';
 import './UserProfile.scss';
 import './UserProfileEdit/UserProfileEdit.scss';
-import {useHistory } from 'react-router-dom';
 
 
 const BlueSquareLayout = ({
@@ -21,7 +20,6 @@ const BlueSquareLayout = ({
   user,
   darkMode,
 }) => {
-    const history = useHistory();
   const dispatch = useDispatch();
   const allRequests = useSelector(state => state.timeOffRequests.requests);
   const canManageTimeOffRequests = dispatch(hasPermission('manageTimeOffRequests'));
@@ -145,7 +143,7 @@ const BlueSquareLayout = ({
                 <div className="Job-Email-CC-div">
                   <Button
                     variant="primary"
-                    onClick={() => {history.push("/job-notification-dashboard")}}
+                    onClick={() => {window.open("/job-notification-dashboard")}}
                     className="mt-3 w-100 Job-Email-CC-button"
                     size="md"
                     style={darkMode ? boxStyleDark : boxStyle}

@@ -80,14 +80,5 @@ export const LOG_TIME = 'Log Time';
 export const LOG_ISSUE = 'Log Issue';
 export const ADD_MEMBER = 'Add Member';
 export const REQUESTED_TIME_OFF = 'Requested Time Off';
-export const ACTIVITY = 'Activity';
-export const ACTIVITIES = 'Activities';
-export const RESOURCE_USAGE = "Resource Usage";
-export const PARTICIPATION = "Participation";
-export const CALENDAR = "Calendar";
-export const EVENT_PERSONALIZATION = "Event Personalization";
-export const REGISTRATION = "Registration";
-
-
 
 export const SEND_EMAILS = 'Send Emails';

@@ -8,16 +8,6 @@ import { SET_CURRENT_USER, SET_HEADER_DATA } from '../constants/auth';
 
 const { tokenKey } = config;
 
-export const setCurrentUser = decoded => ({
-  type: SET_CURRENT_USER,
-  payload: decoded,
-});
-
-export const setHeaderData = data => ({
-  type: SET_HEADER_DATA,
-  payload: data,
-});
-
 export const loginUser = credentials => dispatch => {
   return httpService
     .post(ENDPOINTS.LOGIN, credentials)
@@ -49,20 +39,20 @@ export const loginUser = credentials => dispatch => {
     });
 };
 
-export const loginBMUser = credentials => async dispatch => {
+export const loginBMUser = (credentials) => async dispatch => {
   return httpService
     .post(ENDPOINTS.BM_LOGIN, credentials)
-    .then(res => {
+    .then((res) => {
       localStorage.setItem(tokenKey, res.data.token);
       httpService.setjwt(res.data.token);
-      const decoded = jwtDecode(res.data.token);
+      const decoded = jwtDecode(res.data.token)
       dispatch(setCurrentUser(decoded));
-      return res;
+      return res
     })
-    .catch(err => err.response);
-};
+    .catch(err => err.response)
+}
 
-// end points needed for community Portal
+// end points needed for community Portal 
 
 // export const loginBMUser = (credentials) => async dispatch => {
 //   return httpService
@@ -109,3 +99,13 @@ export const refreshToken = userId => {
     return res.status;
   };
 };
+
+export const setCurrentUser = decoded => ({
+  type: SET_CURRENT_USER,
+  payload: decoded,
+});
+
+export const setHeaderData = data => ({
+  type: SET_HEADER_DATA,
+  payload: data,
+});

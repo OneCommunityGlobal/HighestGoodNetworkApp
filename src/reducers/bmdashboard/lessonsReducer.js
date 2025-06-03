@@ -8,114 +8,65 @@ import {
 
 const initialState = {
   lessons: [],
-  pendingLikes: {}, // Track optimistic updates
 };
 
 // eslint-disable-next-line default-param-last
 export const lessonsReducer = (state = initialState, action) => {
-  // console.log('Reducer received action:', action.type, action.payload);
   switch (action.type) {
-    case GET_BM_LESSONS:
+    case GET_BM_LESSONS: {
       return {
-        ...state,
-        lessons: action.payload || [],
+        lessons: action.payload,
       };
+    }
 
     case UPDATE_LESSON: {
-      const index = state.lessons.findIndex(lesson => lesson._id === action.lessonId);
-
-      if (index !== -1) {
-        const updatedLesson = {
-          ...state.lessons[index],
-          content: action.content,
-        };
-
-        return {
-          ...state,
-          lessons: [
-            ...state.lessons.slice(0, index),
-            updatedLesson,
-            ...state.lessons.slice(index + 1),
-          ],
-        };
-      }
-
-      return state;
-    }
-
-    case DELETE_LESSON:
-      return {
-        ...state,
-        lessons: state.lessons.filter(lesson => lesson._id !== action.lessonId),
-      };
-
-    case SET_LESSON:
-      return {
-        ...state,
-        lessons: state.lessons.map(lesson =>
-          lesson._id === action.payload._id ? action.payload : lesson,
-        ),
-      };
-
-    case 'OPTIMISTIC_LIKE_UPDATE': {
-      const { lessonId, userId } = action.payload;
-      const lesson = state.lessons.find(l => l._id === lessonId);
-
-      if (!lesson) return state;
-
-      const isLiked = lesson.likes?.includes(userId);
-      const updatedLesson = {
-        ...lesson,
-        totalLikes: isLiked ? lesson.totalLikes - 1 : lesson.totalLikes + 1,
-        likes: isLiked
-          ? lesson.likes.filter(id => id !== userId)
-          : [...(lesson.likes || []), userId],
-      };
+      const { lessonId, content } = action;
+      const updatedLessons = state.lessons.map(lesson =>
+        lesson._id === lessonId ? { ...lesson, content } : lesson,
+      );
 
       return {
         ...state,
-        pendingLikes: {
-          ...state.pendingLikes,
-          [lessonId]: { previousState: lesson, timestamp: Date.now() },
-        },
-        lessons: state.lessons.map(l => (l._id === lessonId ? updatedLesson : l)),
+        lessons: updatedLessons,
       };
     }
 
-    case 'REVERT_LIKE_UPDATE': {
-      const { lessonId } = action.payload;
-      const pendingUpdate = state.pendingLikes[lessonId];
-
-      if (!pendingUpdate) return state;
-
-      const { previousState } = pendingUpdate;
+    case DELETE_LESSON: {
+      const lessonIdToDelete = action.payload;
+      const updatedLessons = state.lessons.filter(lesson => lesson._id !== lessonIdToDelete);
 
       return {
         ...state,
-        pendingLikes: {
-          ...state.pendingLikes,
-          [lessonId]: undefined,
-        },
-        lessons: state.lessons.map(l => (l._id === lessonId ? previousState : l)),
+        lessons: updatedLessons,
+      };
+    }
+
+    case SET_LESSON: {
+      const updatedLessons = state.lessons.map(lesson =>
+        lesson._id === action.payload._id ? action.payload : lesson,
+      );
+
+      return {
+        ...state,
+        lessons: updatedLessons,
       };
     }
 
     case BM_LESSON_LIKES: {
       const updatedLesson = action.payload;
+      const updatedLessons = state.lessons.map(lesson =>
+        lesson._id === updatedLesson._id ? updatedLesson : lesson,
+      );
+
       return {
         ...state,
-        pendingLikes: {
-          ...state.pendingLikes,
-          [updatedLesson._id]: undefined,
-        },
-        lessons: state.lessons.map(lesson =>
-          lesson._id === updatedLesson._id ? updatedLesson : lesson,
-        ),
+        lessons: updatedLessons,
       };
     }
 
-    default:
+    default: {
       return state;
+    }
   }
 };
 

@@ -1,12 +1,9 @@
-// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react';
 import Paging from '../Paging';
 
 // Dummy child component for tests
-function DummyChild() {
-  return <div>Dummy Child</div>;
-}
+const DummyChild = () => <div>Dummy Child</div>;
 
 describe('Paging Component', () => {
   // Test for initial render and default state
@@ -79,7 +76,7 @@ describe('Paging Component', () => {
       </Paging>,
     );
     // Expect first 5 pages to be rendered
-    for (let i = 1; i <= 5; i += 1) {
+    for (let i = 1; i <= 5; i++) {
       expect(getByText(i.toString())).toBeInTheDocument();
     }
   });
@@ -111,7 +108,7 @@ describe('Paging Component', () => {
       // Now we should have the last page selected, and "50" should be rendered.
       expect(getByText('50')).toHaveClass('active-button');
     });
-    for (let i = 46; i <= 50; i += 1) {
+    for (let i = 46; i <= 50; i++) {
       expect(getByText(i.toString())).toBeInTheDocument();
     }
   });

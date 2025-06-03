@@ -1,8 +1,7 @@
 import { shallow } from 'enzyme';
-// eslint-disable-next-line no-unused-vars
 import React from 'react';
-import configureStore from 'redux-mock-store'; // Import the mock store creator
 import ReportsPage from '../Reports';
+import configureStore from 'redux-mock-store'; // Import the mock store creator
 
 describe('<ReportsPage/>', () => {
   const mockStore = configureStore(); // Create a mock store

@@ -1,3 +1,1 @@
-import TeamMemberTasks from './TeamMemberTasks';
-
-export default TeamMemberTasks;
+export { default } from './TeamMemberTasks';

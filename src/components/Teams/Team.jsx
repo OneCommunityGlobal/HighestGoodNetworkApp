@@ -57,7 +57,6 @@ export function Team(props) {
                 props.onEditTeam(props.name, props.teamId, props.active, props.teamCode);
               }}
               style={darkMode ? {} : boxStyle}
-              disabled={!canPutTeam}
             >
               Edit
             </Button>
@@ -70,7 +69,6 @@ export function Team(props) {
                 props.onDeleteClick(props.name, props.teamId, props.active, props.teamCode);
               }}
               style={darkMode ? boxStyleDark : boxStyle}
-              disabled={!canDeleteTeam}
             >
               {DELETE}
             </Button>

@@ -21,10 +21,6 @@ function PermissionList(props) {
     setPermissions = () => {},
     // runs when permission is added or removed
     onChange = () => {},
-
-    removedDefaultPermissions = [],
-
-    setRemovedDefaultPermissions = () => {},
   } = props;
   return (
     <ul className="user-role-tab__permissionList">
@@ -33,8 +29,6 @@ function PermissionList(props) {
           key={permission.label}
           rolePermissions={rolePermissions}
           immutablePermissions={immutablePermissions}
-          removedDefaultPermissions={removedDefaultPermissions}
-          setRemovedDefaultPermissions={setRemovedDefaultPermissions}
           label={permission.label}
           permission={permission.key}
           subperms={permission.subperms}

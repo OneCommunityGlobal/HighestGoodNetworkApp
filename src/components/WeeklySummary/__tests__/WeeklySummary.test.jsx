@@ -1,20 +1,19 @@
-// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import moment from 'moment';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import userEvent from '@testing-library/user-event';
-// import { shallow } from 'enzyme';
-import configureStore from 'redux-mock-store';
-import { themeMock } from '__tests__/mockStates';
-import { Provider } from 'react-redux';
 import { weeklySummaryMockData1 } from '../__mocks__/weeklySummaryMockData'; // Located in the tested component's __mocks__ folder
 import { WeeklySummary } from '../WeeklySummary';
 import CountdownTimer from '../CountdownTimer';
-// import CurrentPromptModal from '../CurrentPromptModal';
+import { shallow } from 'enzyme';
+import CurrentPromptModal from '../CurrentPromptModal';
+import configureStore from 'redux-mock-store';
+import { themeMock } from '__tests__/mockStates';
+import { Provider } from 'react-redux';
 
 jest.mock('../CurrentPromptModal', () => 'current-Prompt-Modal');
-// const wrapper = props => shallow(<CurrentPromptModal {...props} />);
+const wrapper = props => shallow(<CurrentPromptModal {...props} />);
 
 const mockStore = configureStore([]);
 
@@ -37,53 +36,36 @@ describe('WeeklySummary page', () => {
 
       render(
         <Provider store={store}>
-          <WeeklySummary
-            currentUser={props.currentUser}
-            getWeeklySummaries={props.getWeeklySummaries}
-            updateWeeklySummaries={props.updateWeeklySummaries}
-            loading={props.loading}
-            summaries={props.summaries}
-            authUser={props.authUser}
-            roles={props.roles}
-          />
+          <WeeklySummary {...props} />
         </Provider>,
       );
 
       expect(screen.getByTestId('loading')).toBeInTheDocument();
     });
-
     it('displays an error message if there is an error on data fetch', async () => {
       const props = {
         currentUser: { userid: '1' },
-        getWeeklySummaries: jest.fn().mockResolvedValue(), // don't reject
+        getWeeklySummaries: jest.fn(),
         updateWeeklySummaries: jest.fn(),
-        summaries: {}, // required to prevent crash
-        authUser: { role: '' },
-        roles: [],
         fetchError: { message: 'SOME ERROR CONNECTING!!!' },
         loading: false,
+        summaries: weeklySummaryMockData1,
+        authUser: { role: '' },
+        roles: [],
       };
-
-      const store = mockStore({ theme: themeMock });
+      const store = mockStore({
+        theme: themeMock,
+      });
 
       render(
         <Provider store={store}>
-          <WeeklySummary
-            currentUser={props.currentUser}
-            getWeeklySummaries={props.getWeeklySummaries}
-            updateWeeklySummaries={props.updateWeeklySummaries}
-            loading={props.loading}
-            summaries={props.summaries}
-            authUser={props.authUser}
-            roles={props.roles}
-            fetchError={props.fetchError}
-          />
+          <WeeklySummary {...props} />
         </Provider>,
       );
 
-      const errorNode = await screen.findByTestId('error');
-      expect(errorNode).toBeInTheDocument();
-      expect(errorNode).toHaveTextContent('SOME ERROR CONNECTING');
+      await waitFor(() => screen.getByTestId('loading'));
+
+      expect(screen.getByTestId('error')).toBeInTheDocument();
     });
   });
 
@@ -105,15 +87,7 @@ describe('WeeklySummary page', () => {
     beforeEach(() => {
       render(
         <Provider store={store}>
-          <WeeklySummary
-            currentUser={props.currentUser}
-            getWeeklySummaries={props.getWeeklySummaries}
-            updateWeeklySummaries={props.updateWeeklySummaries}
-            loading={props.loading}
-            summaries={props.summaries}
-            authUser={props.authUser}
-            roles={props.roles}
-          />
+          <WeeklySummary {...props} />
         </Provider>,
       );
     });
@@ -129,21 +103,13 @@ describe('WeeklySummary page', () => {
         roles: [],
       };
 
-      const thisstore = mockStore({
+      const store = mockStore({
         theme: themeMock,
       });
 
       render(
-        <Provider store={thisstore}>
-          <WeeklySummary
-            currentUser={props.currentUser}
-            getWeeklySummaries={props.getWeeklySummaries}
-            updateWeeklySummaries={props.updateWeeklySummaries}
-            loading={props.loading}
-            summaries={props.summaries}
-            authUser={props.authUser}
-            roles={props.roles}
-          />
+        <Provider store={store}>
+          <WeeklySummary {...props} />
         </Provider>,
       );
 
@@ -213,15 +179,7 @@ describe('WeeklySummary page', () => {
     beforeEach(() => {
       render(
         <Provider store={store}>
-          <WeeklySummary
-            currentUser={props.currentUser}
-            getWeeklySummaries={props.getWeeklySummaries}
-            updateWeeklySummaries={props.updateWeeklySummaries}
-            loading={props.loading}
-            summaries={props.summaries}
-            authUser={props.authUser}
-            roles={props.roles}
-          />
+          <WeeklySummary {...props} />
         </Provider>,
       );
     });
@@ -264,15 +222,7 @@ describe('WeeklySummary page', () => {
     beforeEach(() => {
       render(
         <Provider store={store}>
-          <WeeklySummary
-            currentUser={props.currentUser}
-            getWeeklySummaries={props.getWeeklySummaries}
-            updateWeeklySummaries={props.updateWeeklySummaries}
-            loading={props.loading}
-            summaries={props.summaries}
-            authUser={props.authUser}
-            roles={props.roles}
-          />
+          <WeeklySummary {...props} />
         </Provider>,
       );
     });
@@ -287,9 +237,9 @@ describe('WeeklySummary page', () => {
         // expect(labelText).toHaveAttribute('value', 'h');
         const input = screen.getByTestId('media-input');
         fireEvent.change(input, { target: { value: 'u' } });
-        // will pop up one modal ->click confirm
+        //will pop up one modal ->click confirm
         fireEvent.click(screen.getByText('Confirm'));
-        // then type the content
+        //then type the content
         fireEvent.change(input, { target: { value: 'u' } });
         expect(input.value).toBe('u');
       });
@@ -309,9 +259,9 @@ describe('WeeklySummary page', () => {
         const input = screen.getByTestId('media-input');
         // const { queryByText } = render(<Modal/>);
         fireEvent.change(input, { target: { value: 'h' } });
-        // will pop up one modal ->click confirm
+        //will pop up one modal ->click confirm
         fireEvent.click(screen.getByText('Confirm'));
-        // then type the content
+        //then type the content
         fireEvent.change(input, { target: { value: 'h' } });
         expect(input.value).toBe('h');
         const mediaUrlError = screen.getByText(/"Media URL" must be a valid uri/i);
@@ -408,7 +358,7 @@ describe('WeeklySummary page', () => {
         const input = screen.getByTestId('media-input');
         // const { queryByText } = render(<Modal/>);
         fireEvent.change(input, { target: { value: 'u' } });
-        // will pop up one modal ->click confirm
+        //will pop up one modal ->click confirm
         fireEvent.click(screen.getByText('Confirm'));
         fireEvent.change(input, { target: { value: 'https://www.example.com/' } });
         // const labelText = screen.getByLabelText(/Link to your media files/i);

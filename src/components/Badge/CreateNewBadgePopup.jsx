@@ -170,7 +170,6 @@ function CreateNewBadgePopup(props) {
         <Label for="badgeName" className={fontColor}>
           Name
         </Label>
-        <span className="red-asterisk">* </span>
         <Input
           type="name"
           name="name"
@@ -187,7 +186,6 @@ function CreateNewBadgePopup(props) {
         <Label for="imageUrl" className={fontColor}>
           Image URL
         </Label>
-        <span className="red-asterisk">* </span>
         <Input
           type="url"
           name="url"
@@ -206,7 +204,6 @@ function CreateNewBadgePopup(props) {
         <Label for="badgeDescription" className={fontColor}>
           Description
         </Label>
-        <span className="red-asterisk">* </span>
         <Input
           type="textarea"
           name="text"

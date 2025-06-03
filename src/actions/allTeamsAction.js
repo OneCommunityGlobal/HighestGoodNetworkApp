@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { toast } from 'react-toastify';
 import { ENDPOINTS } from '../utils/URL';
 
 import {
@@ -17,6 +16,7 @@ import {
   FETCH_ALL_TEAM_CODE_SUCCESS,
   FETCH_ALL_TEAM_CODE_FAILURE,
 } from '../constants/allTeamsConstants';
+
 /**
  * set allteams in store
  * @param payload : allteams []
@@ -112,6 +112,7 @@ export const updateVisibilityAction = (visibility, userId, teamId) => ({
   teamId,
 });
 
+
 /**
  * fetching all user teams
  */
@@ -148,11 +149,11 @@ export const postNewTeam = (name, status, source) => {
       .catch(error => {
         if (error.response) {
           return error.response; // return the server response
-        }
-        if (error.request) {
+        } else if (error.request) {
           return { status: 500, message: 'No response received from the server' };
+        } else {
+          return { status: 500, message: error.message };
         }
-        return { status: 500, message: error.message };
       });
   };
 };
@@ -226,7 +227,7 @@ export const deleteTeamMember = (teamId, userId) => {
 /**
  * Adding an existing user to team
  */
-export const addTeamMember = (teamId, userId) => {
+export const addTeamMember = (teamId, userId, firstName, lastName, role, addDateTime) => {
   const requestData = { userId, operation: 'Assign' };
   const teamMemberAddPromise = axios.post(ENDPOINTS.TEAM_USERS(teamId), requestData);
   return async dispatch => {
@@ -242,19 +243,19 @@ export const updateTeamMemeberVisibility = (teamId, userId, visibility) => {
 
   return async dispatch => {
     updateVisibilityPromise
-      .then(() => {
+      .then(res => {
         dispatch(updateVisibilityAction(visibility, userId, teamId));
       })
       .catch(error => {
         if (error.response) {
           // The request was made and the server responded with a status code
-          toast.error('Error updating visibility:', error.response.data);
+          console.error('Error updating visibility:', error.response.data);
         } else if (error.request) {
           // The request was made but no response was received
-          toast.error('Error updating visibility: No response received');
+          console.error('Error updating visibility: No response received');
         } else {
           // Something happened in setting up the request that triggered an error
-          toast.error('Error updating visibility:', error.message);
+          console.error('Error updating visibility:', error.message);
         }
       });
   };

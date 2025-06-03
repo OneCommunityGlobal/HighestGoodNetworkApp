@@ -34,7 +34,6 @@ function UserPermissionsPopUp({
   const [searchText, onInputChange] = useState('');
   const [actualUserProfile, setActualUserProfile] = useState();
   const [userPermissions, setUserPermissions] = useState();
-  const [userRemovedDefaultPermissions, setUserRemovedDefaultPermissions] = useState(); // defulat perms taht were deleted
   const [isOpen, setIsOpen] = useState(false);
   const [isInputFocus, setIsInputFocus] = useState(false);
   const [actualUserRolePermission, setActualUserRolePermission] = useState();
@@ -47,9 +46,6 @@ function UserPermissionsPopUp({
 
   useEffect(() => {
     setUserPermissions(actualUserProfile?.permissions?.frontPermissions);
-    setUserRemovedDefaultPermissions(
-      actualUserProfile?.permissions?.removedDefaultPermissions || [],
-    );
   }, [actualUserProfile]);
 
   const refInput = useRef();
@@ -86,13 +82,7 @@ function UserPermissionsPopUp({
 
     const url = ENDPOINTS.USER_PROFILE(userId);
     const allUserInfo = await axios.get(url).then(res => res.data);
-    const newUserInfo = {
-      ...allUserInfo,
-      permissions: {
-        frontPermissions: userPermissions,
-        removedDefaultPermissions: userRemovedDefaultPermissions,
-      },
-    };
+    const newUserInfo = { ...allUserInfo, permissions: { frontPermissions: userPermissions } };
 
     axios
       .put(url, newUserInfo)
@@ -149,9 +139,7 @@ function UserPermissionsPopUp({
           className={darkMode ? 'text-space-cadet' : ''}
           style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '5px' }}
         >
-          <h4 className="user-permissions-pop-up__title">
-            User name<span className="red-asterisk">* </span>:
-          </h4>
+          <h4 className="user-permissions-pop-up__title">User name:</h4>
           <Button
             type="button"
             color="success"
@@ -243,8 +231,6 @@ function UserPermissionsPopUp({
               immutablePermissions={actualUserRolePermission}
               editable={!!actualUserProfile}
               setPermissions={setUserPermissions}
-              removedDefaultPermissions={userRemovedDefaultPermissions}
-              setRemovedDefaultPermissions={setUserRemovedDefaultPermissions}
             />
           </ul>
         </div>

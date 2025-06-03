@@ -126,7 +126,6 @@ function AddLostTime(props) {
       return (
         <FormGroup>
           <Label className={fontColor}>Project Name</Label>
-          <span className="red-asterisk">* </span>
           <AddProjectsAutoComplete
             projectsData={props.projects}
             onDropDownSelect={selectProject}
@@ -143,7 +142,6 @@ function AddLostTime(props) {
       return (
         <FormGroup>
             <Label className={fontColor}>Name</Label>
-            <span className="red-asterisk">* </span>
             <MemberAutoComplete
               userProfileData={{userProfiles: props.users}}
               onAddUser={selectUser}
@@ -161,7 +159,6 @@ function AddLostTime(props) {
       return (
         <FormGroup>
           <Label className={fontColor}>Team Name</Label> 
-          <span className="red-asterisk">* </span>
           <AddTeamsAutoComplete
             teamsData={{allTeams: props.teams}}
             onDropDownSelect={selectTeam}
@@ -243,9 +240,7 @@ function AddLostTime(props) {
         result.time = 'Time should be greater than 0';
       }
     }
-    if (entryType === '') {
-      result.events = 'Type is required';
-    }
+
     if (entryType === 'project' && inputs.projectId === undefined) {
       result.projectId = 'Project is required';
     }
@@ -303,9 +298,7 @@ function AddLostTime(props) {
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <Form>
           <FormGroup>
-            <Label for="entryType" className={fontColor} >Type</Label>
-            <span className="red-asterisk">* </span>
-            <br/>
+            <Label for="entryType" className={fontColor} >Type</Label><br/>
             <div className={`type-container ${fontColor}`}>
               <div className='type-item' style={{paddingLeft: '20px'}} >
                 <Input
@@ -336,13 +329,8 @@ function AddLostTime(props) {
                   onChange={handleTypeChange}
                 />
                 <Label htmlFor="team" className={fontColor}>Team</Label>
-              </div>              
+              </div>
             </div>
-            {'events' in errors && (
-                  <div className="text-danger">
-                    <small>{errors.events}</small>
-                  </div>
-                )}
           </FormGroup>
           {entryType !== '' && (
             <>
@@ -365,7 +353,6 @@ function AddLostTime(props) {
               </FormGroup>
               <FormGroup>
               <Label for="timeSpent" className={fontColor}>Time (HH:MM)</Label>
-              <span className="red-asterisk">* </span>
               <Row form>
                 <Col>
                   <Input

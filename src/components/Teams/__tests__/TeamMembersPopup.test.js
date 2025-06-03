@@ -1,10 +1,9 @@
 import configureStore from 'redux-mock-store';
 import TeamMembersPopup from 'components/Teams/TeamMembersPopup';
 import thunk from 'redux-thunk';
-// eslint-disable-next-line no-unused-vars
+import { authMock, userProfileMock, rolesMock, themeMock } from '../../../__tests__/mockStates';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { authMock, userProfileMock, rolesMock, themeMock } from '../../../__tests__/mockStates';
 
 const mockStore = configureStore([thunk]);
 
@@ -24,13 +23,11 @@ const renderComponent = props => {
 
   render(
     <Provider store={store}>
-      {/* eslint-disable-next-line react/jsx-props-no-spreading */}
       <TeamMembersPopup {...props} />
     </Provider>,
   );
 };
 
-// eslint-disable-next-line no-unused-vars
 const initialState = {
   open: true,
   selectedTeamName: 'Test Team',
@@ -57,7 +54,6 @@ const initialState = {
   onDeleteClick: jest.fn(),
 };
 
-// eslint-disable-next-line no-unused-vars
 const usersdata = { userProfiles: [] };
 
 describe('TeamMembersPopup', () => {

@@ -1,118 +1,119 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
+import { render, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { MemoryRouter } from 'react-router-dom';
-import axios from 'axios';
+import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
-import WBS from './wbs';
-import { setWBSStart, setWBS } from '../../../actions/wbs';
+import mockAdminState from '__tests__/mockAdminState';
+import WBSItem from './WBSItem';
+import { themeMock } from '__tests__/mockStates';
 
-
-
-jest.mock('../../../actions/wbs', () => ({
-  addNewWBS: jest.fn(),
-  fetchAllWBS: jest.fn(),
-  setWBSStart: jest.fn(() => ({ type: 'SET_WBS_START' })),
-  setWBS: jest.fn(data => ({ type: 'SET_WBS', payload: data })),
-  setWBSError: jest.fn(err => ({ type: 'SET_WBS_ERROR', payload: err })),
+jest.mock('react-router-dom', () => ({
+  Link: ({ 
+    children, 
+    to, 
+    ...rest 
+  }) => 
+  <a href={to} {...rest}>{children}</a>,
 }));
 
-jest.mock('axios');
-jest.mock('./AddWBS', () => () => <div data-testid="add-wbs">AddWBS Mock</div>);
 
-jest.mock('./WBSItem/WBSItem', () => ({ index, name }) => (
-  <tr data-testid={`wbs-item-${index}`}><td>{index}</td><td>{name}</td><td></td></tr>
-));
+const mockStore = configureStore([thunk]);
 
-const mockStore = configureStore([]);
-
-describe('WBS Component', () => {
-  let store;
-  const projectId = 'project123';
-
-  const initialState = {
-    theme: { darkMode: false },
-    wbs: {
-      WBSItems: [
-        { _id: 'wbs1', wbsName: 'WBS 1' },
-        { _id: 'wbs2', wbsName: 'WBS 2' },
-      ],
-    },
+let store;
+beforeEach(() => {
+  store = mockStore({
     auth: {
       user: {
         permissions: {
-          frontPermissions: ['deleteWbs', 'addWbs', 'fetchAllWBS'],
+          frontPermissions: ['deleteWbs'],
           backPermissions: [],
         },
-        role: "Manager",
+        role: 'Manager',
       },
     },
-    role: { roles: [] },
-    popupEditor: { currPopup: { popupContent: 'wbs content 1' } },
-    infoCollections: { loading: false },
-  };
-
-  beforeEach(() => {
-    store = mockStore(initialState);
-    store.dispatch = jest.fn();
+    role: mockAdminState.role,
+    theme: themeMock,
   });
+});
 
-  const renderComponent = () => {
+afterEach(() => {
+  store.clearActions();
+});
+
+const renderComponent = (index, key, wbsId, projectId, name) => {
     return render(
       <Provider store={store}>
-        <MemoryRouter>
-          <WBS match={{ params: { projectId } }} />
-        </MemoryRouter>
+            <table>
+            <tbody>
+            <WBSItem
+              index={index}
+              key={key}
+              wbsId={wbsId}
+              projectId={projectId}
+              name={name}
+              popupEditor={{ currPopup: { popupContent: 'Are you sure you want to delete?' } }}
+            />
+         </tbody>
+         </table>
       </Provider>
     );
   };
+  
 
-  it('renders the WBS component without crashing', () => {
-    renderComponent();
-    expect(screen.getByText(/Return to Project List/i)).toBeInTheDocument();
-  });
+describe('WBSItem Component', () => {
+    
+    let props;
 
-  it('dispatches setWBSStart and setWBS when fetchAllWBS is called on mount', async () => {
-    const mockWBSData = [{ _id: 'wbs1', wbsName: 'WBS 1' }];
-    axios.get.mockResolvedValueOnce({ data: mockWBSData });
+    beforeEach(() => {
+        props = {
+            index: 1,
+            wbsId: 'wbsId1',
+            projectId: 'projectId1',
+            name: 'WBS 1',
+            popupEditor: {
+                currPopup: { popupContent: 'Are you sure you want to delete?' },
+            },
+            getPopupById: jest.fn(),  // Mock function
+            deleteWbs: jest.fn(),  // Mock function
+            hasPermission: jest.fn().mockReturnValue(true),  // Example mock
+        };
+    })
 
-    renderComponent();
-
-    expect(store.dispatch).toHaveBeenCalledWith(setWBSStart());
-
-    await waitFor(() => {
-      expect(store.dispatch).toHaveBeenCalledWith(setWBS(mockWBSData));
+    it('should render WBSItem correctly', () => {
+      
+      const { getByText } = renderComponent(
+        <Provider store={store}>
+          <table>
+          <tbody>
+          <WBSItem {...props} />
+          </tbody>
+      </table>
+        </Provider>
+      );
+    
+      
+      expect(getByText('WBS 1')).toBeInTheDocument();
     });
-  });
-
-
-  it('renders AddWBS component', () => {
-    renderComponent();
-    expect(screen.getByTestId('add-wbs')).toBeInTheDocument();
-  });
-
-  it('renders WBS items', () => {
-    renderComponent();
-    expect(screen.getByTestId('wbs-item-1')).toBeInTheDocument();
-    expect(screen.getByText('WBS 1')).toBeInTheDocument();
-    expect(screen.getByTestId('wbs-item-2')).toBeInTheDocument();
-    expect(screen.getByText('WBS 2')).toBeInTheDocument();
-  });
-
-  it('renders breadcrumb with correct link', () => {
-    renderComponent();
-    const backLink = screen.getByRole('link', { name: /Return to Project List/i });
-    expect(backLink).toHaveAttribute('href', '/projects/');
-    const backButton = screen.getByRole('button');
-    expect(backButton).toBeInTheDocument();
-    expect(backButton).toHaveClass('btn-secondary');
-  });
-
-  it('renders table headers correctly', () => {
-    renderComponent();
-    expect(screen.getByText('#')).toBeInTheDocument();
-    expect(screen.getByText('Name')).toBeInTheDocument();
+  
+    it('should open modal when delete button is clicked', async () => {
+     
+        const { container, findByText } = renderComponent(
+            <Provider store={store}>
+                <table>
+                <tbody>
+                <WBSItem {...props} />
+                </tbody>
+      </table>
+            </Provider>
+          );
+        
+          const button = container.querySelector('.btn.btn-outline-danger.btn-sm');
+          fireEvent.click(button);
+        
+        
+          const modalText = await findByText('Are you sure you want to delete?');
+          expect(modalText).toBeInTheDocument();
+    });
+  
   });
   
-});

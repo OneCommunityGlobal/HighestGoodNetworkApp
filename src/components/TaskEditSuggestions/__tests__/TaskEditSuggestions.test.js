@@ -1,18 +1,20 @@
+import React from 'react';
+import { TaskEditSuggestions } from '../TaskEditSuggestions';  
 import { render, fireEvent, screen } from '@testing-library/react';
 import * as reduxHooks from 'react-redux';
 import configureStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
-import { waitFor } from '@testing-library/react';
-import { themeMock } from '../../../__tests__/mockStates';
 import { toggleDateSuggestedSortDirection, toggleUserSortDirection } from '../actions';
-import TaskEditSuggestions from '../TaskEditSuggestions';
+import { waitFor } from '@testing-library/react';
+import { themeMock } from '__tests__/mockStates';
+
 
 describe('TaskEditSuggestions', () => {
+
   const initialState = {
-    auth: {
-      // Make sure this structure matches your actual Redux state
+    auth: { // Make sure this structure matches your actual Redux state
       user: {
-        role: 'admin',
+        role: 'admin', 
       },
     },
     taskEditSuggestions: {
@@ -24,7 +26,7 @@ describe('TaskEditSuggestions', () => {
           user: 'User1',
           task: 'Task1',
           oldTask: {
-            taskName: 'Old Task 1',
+            taskName: 'Old Task 1'  
           },
         },
         {
@@ -33,7 +35,7 @@ describe('TaskEditSuggestions', () => {
           user: 'User2',
           task: 'Task2',
           oldTask: {
-            taskName: 'Old Task 2', // Add this object with the taskName property
+            taskName: 'Old Task 2'  // Add this object with the taskName property
           },
         },
       ],
@@ -43,18 +45,15 @@ describe('TaskEditSuggestions', () => {
     theme: themeMock,
   };
   const mockStore = configureStore();
-  let store;
-  let mockDispatch;
-
+  let store, mockDispatch;
+  
   beforeEach(() => {
     store = mockStore(initialState);
     mockDispatch = jest.fn();
     jest.spyOn(reduxHooks, 'useDispatch').mockReturnValue(mockDispatch);
-    jest
-      .spyOn(reduxHooks, 'useSelector')
-      .mockImplementation(selector => selector(store.getState()));
+    jest.spyOn(reduxHooks, 'useSelector').mockImplementation(selector => selector(store.getState()));
   });
-
+  
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -63,18 +62,22 @@ describe('TaskEditSuggestions', () => {
     render(
       <Provider store={store}>
         <TaskEditSuggestions />
-      </Provider>,
+      </Provider>
     );
 
     expect(screen.getByText(/Task Edit Suggestions/i)).toBeInTheDocument();
     expect(screen.queryByTestId('loading')).not.toBeInTheDocument();
+    
   });
+
+  
+
 
   it('dispatches toggleDateSuggestedSortDirection on date header click', () => {
     render(
       <Provider store={store}>
         <TaskEditSuggestions />
-      </Provider>,
+      </Provider>
     );
     fireEvent.click(screen.getByText(/Date Suggested/i));
     expect(mockDispatch).toHaveBeenCalledWith(toggleDateSuggestedSortDirection());
@@ -84,19 +87,22 @@ describe('TaskEditSuggestions', () => {
     render(
       <Provider store={store}>
         <TaskEditSuggestions />
-      </Provider>,
+      </Provider>
     );
     const userHeader = screen.getByRole('columnheader', { name: /User/i });
     fireEvent.click(userHeader);
     expect(mockDispatch).toHaveBeenCalledWith(toggleUserSortDirection());
   });
+
+
 });
+
 
 describe('TaskEditSuggestions loading', () => {
   const initialState = {
-    auth: {
+    auth: { 
       user: {
-        role: 'admin',
+        role: 'admin', 
       },
     },
     taskEditSuggestions: {
@@ -108,7 +114,7 @@ describe('TaskEditSuggestions loading', () => {
           user: 'User1',
           task: 'Task1',
           oldTask: {
-            taskName: 'Old Task 1',
+            taskName: 'Old Task 1'  
           },
         },
         {
@@ -117,7 +123,7 @@ describe('TaskEditSuggestions loading', () => {
           user: 'User2',
           task: 'Task2',
           oldTask: {
-            taskName: 'Old Task 2', // Add this object with the taskName property
+            taskName: 'Old Task 2'  // Add this object with the taskName property
           },
         },
       ],
@@ -127,40 +133,34 @@ describe('TaskEditSuggestions loading', () => {
     theme: themeMock,
   };
   const mockStore = configureStore();
-  let store;
-  let mockDispatch;
-
+  let store, mockDispatch;
+  
   beforeEach(() => {
     store = mockStore(initialState);
     mockDispatch = jest.fn();
     jest.spyOn(reduxHooks, 'useDispatch').mockReturnValue(mockDispatch);
-    jest
-      .spyOn(reduxHooks, 'useSelector')
-      .mockImplementation(selector => selector(store.getState()));
+    jest.spyOn(reduxHooks, 'useSelector').mockImplementation(selector => selector(store.getState()));
   });
-
+  
   afterEach(() => {
     jest.clearAllMocks();
   });
 
   it('should render Loading when isLoading is true', async () => {
-    const testStore = mockStore({
-      ...initialState,
-      taskEditSuggestions: { ...initialState.taskEditSuggestions, isLoading: true },
-    });
+    const testStore = mockStore({ ...initialState, taskEditSuggestions: { ...initialState.taskEditSuggestions, isLoading: true}  });
     testStore.dispatch({ type: 'FETCH_TASK_EDIT_SUGGESTIONS_BEGIN' });
-
+    
+    const state = testStore.getState()
+    
     render(
       <Provider store={testStore}>
         <TaskEditSuggestions />
-      </Provider>,
+      </Provider>
     );
-
-    await waitFor(
-      () => {
-        expect(screen.getByTestId('loading')).toBeInTheDocument();
-      },
-      { timeout: 1000 },
-    );
+    
+    await waitFor(() => {
+      expect(screen.getByTestId('loading')).toBeInTheDocument();
+    }, { timeout: 1000 });
   });
+
 });

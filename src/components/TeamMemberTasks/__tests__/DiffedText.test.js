@@ -1,8 +1,9 @@
+import React from 'react';
 import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
-import { themeMock } from '../../../__tests__/mockStates';
 import DiffedText from '../components/DiffedText';
+import { themeMock } from '__tests__/mockStates';
 
 const mockStore = configureStore([]);
 
@@ -15,7 +16,7 @@ describe('DiffedText Component', () => {
     render(
       <Provider store={store}>
         <DiffedText oldText="" newText="" />
-      </Provider>,
+      </Provider>
     );
   });
 
@@ -27,7 +28,7 @@ describe('DiffedText Component', () => {
     const { getByText } = render(
       <Provider store={store}>
         <DiffedText oldText="Hello world" newText="Hello React world" />
-      </Provider>,
+      </Provider>
     );
     expect(getByText('Hello')).toHaveStyle('color: white');
     expect(getByText('world')).toHaveStyle('color: white');
@@ -42,8 +43,9 @@ describe('DiffedText Component', () => {
     const { getByText } = render(
       <Provider store={store}>
         <DiffedText oldText="Hello world" newText="Hello" />
-      </Provider>,
+      </Provider>
     );
     expect(getByText('world')).toHaveStyle('textDecorationLine: line-through; color: red');
   });
+
 });

@@ -1,9 +1,8 @@
-// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { BrowserRouter } from 'react-router-dom';
 import ProjectTable from '../ProjectTable';
+import { BrowserRouter } from 'react-router-dom';
 
 describe('ProjectTable component', () => {
   const mockProjects = [
@@ -78,9 +77,8 @@ describe('ProjectTable component', () => {
     expect(table).toHaveClass('table-bordered'); // Assumes default is light mode
   });
   it('renders the table with dark mode styles when darkMode is true', () => {
-    renderWithRouter(<ProjectTable projects={mockProjects} darkMode />);
+    renderWithRouter(<ProjectTable projects={mockProjects} darkMode={true} />);
     const table = screen.getByRole('table');
-    // eslint-disable-next-line no-unused-vars
     const thead = table.querySelector('thead');
   
     expect(table).toHaveClass('bg-yinmn-blue');  

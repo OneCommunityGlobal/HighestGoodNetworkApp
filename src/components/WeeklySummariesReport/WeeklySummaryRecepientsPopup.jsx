@@ -34,28 +34,16 @@ const WeeklySummaryRecipientsPopup = React.memo(props => {
   const [updatedRecipients, setUpdatedRecipients] = useState(false);
 
   useEffect(() => {
-    let isMounted = true; // Track if component is mounted
-
+    // eslint-disable-next-line consistent-return
     const getRecipients = async () => {
       try {
         const data = await dispatch(getSummaryRecipients());
-        if (isMounted) {
-          setRecipients([...data]); // Only update state if still mounted
-        }
-        return data;
+        setRecipients([...data]);
       } catch (err) {
-        if (isMounted) {
-          return null;
-        }
-        return null;
+        return err;
       }
     };
-
     getRecipients();
-
-    return () => {
-      isMounted = false; // Set to false on unmount
-    };
   }, [open, updatedRecipients]);
 
   const closePopup = () => {

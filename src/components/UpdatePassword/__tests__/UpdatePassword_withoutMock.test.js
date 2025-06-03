@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { Route } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -43,8 +42,9 @@ const server = setupServer(
   }),
   // Any other requests error out
   rest.get('*', (req, res, ctx) => {
-    // eslint-disable-next-line no-unused-vars
-    const unused = `Unhandled request: ${req.url.toString()}`;
+    console.error(
+      `Please add request handler for ${req.url.toString()} in your MSW server requests.`,
+    );
     return res(ctx.status(500), ctx.json({ error: 'You must add request handler.' }));
   }),
 );
@@ -59,11 +59,7 @@ describe("<UpdatePassword/>' behavior", () => {
   const userID = '5f31dcb9a1a909eadee0eecb';
   beforeEach(() => {
     renderWithRouterMatch(
-      <Route path="/updatepassword/:userId">
-        {({ match, history, location }) => (
-          <UpdatePassword match={match} history={history} location={location} />
-        )}
-      </Route>,
+      <Route path="/updatepassword/:userId">{props => <UpdatePassword {...props} />}</Route>,
       {
         route: `/updatepassword/${userID}`,
       },

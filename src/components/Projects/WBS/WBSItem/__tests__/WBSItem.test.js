@@ -78,12 +78,12 @@ describe('WBSItem component', () => {
   it('check if deleteWBS html elements get displayed in virtual DOM when the permission is not present', () => {
     store.getState().auth.user.permissions.frontPermissions = [];
     const { container } = renderComponent(index, key, wbsId, projectId, name);
-    expect(screen.queryByRole('button', { class: 'btn btn-outline-danger btn-sm' })).not.toBeInTheDocument();
+    expect(container.querySelector('.members__assign')).not.toBeInTheDocument();
   });
 
   it('check if deleteWBS html elements get displayed in virtual DOM when the permission is present', () => {
     const { container } = renderComponent(index, key, wbsId, projectId, name);
-    expect(screen.queryByRole('button', { class: 'btn btn-outline-danger btn-sm' })).toBeInTheDocument();
+    expect(container.querySelector('.members__assign')).toBeInTheDocument();
   });
   it('check if modal opens when button is clicked', async () => {
     axios.get.mockResolvedValue({

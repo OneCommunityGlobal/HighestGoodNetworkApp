@@ -1,7 +1,5 @@
 import { leaderboardDataReducer } from '../leaderboardDataReducer';
 
-import { orgDataReducer } from '../leaderboardDataReducer';
-
 describe('leaderboardDataReducer', () => {
   it('should return default state when no action is passed', () => {
     const initialState = [];
@@ -12,10 +10,7 @@ describe('leaderboardDataReducer', () => {
   it('should return updated state when GET_LEADERBOARD_DATA action is passed', () => {
     const action = {
       type: 'GET_LEADERBOARD_DATA',
-      payload: [
-        { name: 'John', score: 100 },
-        { name: 'Doe', score: 90 },
-      ],
+      payload: [{ name: 'John', score: 100 }, { name: 'Doe', score: 90 }],
     };
     const newState = leaderboardDataReducer([], action);
     expect(newState).toEqual(action.payload);
@@ -28,6 +23,10 @@ describe('leaderboardDataReducer', () => {
     expect(newState).toEqual(initialState);
   });
 });
+
+
+
+import { orgDataReducer } from '../leaderboardDataReducer';
 
 describe('orgDataReducer', () => {
   it('should return default state when no action is passed', () => {

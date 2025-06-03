@@ -1,9 +1,13 @@
 import {
   userProfileByIdReducer,
   userTaskByIdReducer,
-  updateObject,
+  updateObject
 } from '../userProfileByIdReducer';
-import { GET_USER_PROFILE, EDIT_USER_PROFILE, GET_USER_TASKS } from '../../constants/userProfile';
+import {
+  GET_USER_PROFILE,
+  EDIT_USER_PROFILE,
+  GET_USER_TASKS
+} from '../../constants/userProfile';
 
 describe('userProfileByIdReducer', () => {
   const initialState = {
@@ -33,7 +37,7 @@ describe('userProfileByIdReducer', () => {
   });
 
   it('should handle EDIT_USER_PROFILE', () => {
-    const initialUserState = {
+    const initialState = {
       firstName: 'John',
       lastName: 'Doe',
       jobTitle: 'Developer',
@@ -46,10 +50,10 @@ describe('userProfileByIdReducer', () => {
       },
     };
     const expectedState = {
-      ...initialUserState,
+      ...initialState,
       jobTitle: 'Senior Developer',
     };
-    const result = userProfileByIdReducer(initialUserState, action);
+    const result = userProfileByIdReducer(initialState, action);
     expect(result).toEqual(expectedState);
   });
 

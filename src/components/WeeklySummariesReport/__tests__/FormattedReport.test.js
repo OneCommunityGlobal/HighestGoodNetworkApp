@@ -1,12 +1,11 @@
-// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import { MemoryRouter } from 'react-router-dom';
-import moment from 'moment';
 import FormattedReport from '../FormattedReport';
+import moment from 'moment';
 import '@testing-library/jest-dom/extend-expect';
 
 jest.mock('../../../utils/permissions', () => ({
@@ -19,14 +18,9 @@ jest.mock('actions/weeklySummariesReport', () => ({
   updateOneSummaryReport: () => () => Promise.resolve({ status: 200 }),
 }));
 
-jest.mock(
-  'components/UserProfile/EditableModal/RoleInfoModal',
-  () =>
-    // eslint-disable-next-line func-names
-    function() {
-      return <div data-testid="role-info-modal">RoleInfoModal</div>;
-    },
-);
+jest.mock('components/UserProfile/EditableModal/RoleInfoModal', () => () => (
+  <div data-testid="role-info-modal">RoleInfoModal</div>
+));
 
 jest.mock('axios', () => ({
   patch: jest.fn(() => Promise.resolve({ status: 200 })),
@@ -97,19 +91,7 @@ describe('FormattedReport minimal test', () => {
     render(
       <Provider store={store}>
         <MemoryRouter>
-          <FormattedReport
-            summaries={defaultProps.summaries}
-            weekIndex={defaultProps.weekIndex}
-            bioCanEdit={defaultProps.bioCanEdit}
-            allRoleInfo={defaultProps.allRoleInfo}
-            badges={defaultProps.badges}
-            loadBadges={defaultProps.loadBadges}
-            canEditTeamCode={defaultProps.canEditTeamCode}
-            auth={defaultProps.auth}
-            canSeeBioHighlight={defaultProps.canSeeBioHighlight}
-            handleTeamCodeChange={defaultProps.handleTeamCodeChange}
-            handleSpecialColorDotClick={defaultProps.handleSpecialColorDotClick}
-          />
+          <FormattedReport {...defaultProps} />
         </MemoryRouter>
       </Provider>,
     );
@@ -123,19 +105,7 @@ describe('FormattedReport minimal test', () => {
     render(
       <Provider store={store}>
         <MemoryRouter>
-          <FormattedReport
-            summaries={props.summaries}
-            weekIndex={props.weekIndex}
-            bioCanEdit={props.bioCanEdit}
-            allRoleInfo={props.allRoleInfo}
-            badges={props.badges}
-            loadBadges={props.loadBadges}
-            canEditTeamCode={props.canEditTeamCode}
-            auth={props.auth}
-            canSeeBioHighlight={props.canSeeBioHighlight}
-            handleTeamCodeChange={props.handleTeamCodeChange}
-            handleSpecialColorDotClick={props.handleSpecialColorDotClick}
-          />
+          <FormattedReport {...props} />
         </MemoryRouter>
       </Provider>,
     );
@@ -152,19 +122,7 @@ describe('FormattedReport minimal test', () => {
     render(
       <Provider store={store}>
         <MemoryRouter>
-          <FormattedReport
-            summaries={props.summaries}
-            weekIndex={props.weekIndex}
-            bioCanEdit={props.bioCanEdit}
-            allRoleInfo={props.allRoleInfo}
-            badges={props.badges}
-            loadBadges={props.loadBadges}
-            canEditTeamCode={props.canEditTeamCode}
-            auth={props.auth}
-            canSeeBioHighlight={props.canSeeBioHighlight}
-            handleTeamCodeChange={props.handleTeamCodeChange}
-            handleSpecialColorDotClick={props.handleSpecialColorDotClick}
-          />
+          <FormattedReport {...props} />
         </MemoryRouter>
       </Provider>,
     );
@@ -180,19 +138,7 @@ describe('FormattedReport minimal test', () => {
     render(
       <Provider store={store}>
         <MemoryRouter>
-          <FormattedReport
-            summaries={props.summaries}
-            weekIndex={props.weekIndex}
-            bioCanEdit={props.bioCanEdit}
-            allRoleInfo={props.allRoleInfo}
-            badges={props.badges}
-            loadBadges={props.loadBadges}
-            canEditTeamCode={props.canEditTeamCode}
-            auth={props.auth}
-            canSeeBioHighlight={props.canSeeBioHighlight}
-            handleTeamCodeChange={props.handleTeamCodeChange}
-            handleSpecialColorDotClick={props.handleSpecialColorDotClick}
-          />
+          <FormattedReport {...props} />
         </MemoryRouter>
       </Provider>,
     );
@@ -206,19 +152,7 @@ describe('FormattedReport minimal test', () => {
     render(
       <Provider store={store}>
         <MemoryRouter>
-          <FormattedReport
-            summaries={props.summaries}
-            weekIndex={props.weekIndex}
-            bioCanEdit={props.bioCanEdit}
-            allRoleInfo={props.allRoleInfo}
-            badges={props.badges}
-            loadBadges={props.loadBadges}
-            canEditTeamCode={props.canEditTeamCode}
-            auth={props.auth}
-            canSeeBioHighlight={props.canSeeBioHighlight}
-            handleTeamCodeChange={props.handleTeamCodeChange}
-            handleSpecialColorDotClick={props.handleSpecialColorDotClick}
-          />
+          <FormattedReport {...props} />
         </MemoryRouter>
       </Provider>,
     );

@@ -139,25 +139,8 @@ function OwnerMessage({
 
       {(user.role === 'Owner' || canEditHeaderMessage) && (
         <div className="icon-wrapper">
-          <button
-            type="submit"
-            className="owner-message-button"
-            onClick={toggle}
-            aria-label="Edit header message"
-          >
-            <div
-              style={{
-                width: '24px',
-                height: '24px',
-                backgroundImage: `url(${editIcon})`,
-                backgroundSize: 'contain',
-                backgroundPosition: 'center',
-                backgroundRepeat: 'no-repeat',
-              }}
-              title="Edit this header"
-              role="img"
-              aria-label="Edit icon"
-            />
+          <button type="submit" className="owner-message-button" onClick={toggle}>
+            <img src={editIcon} alt="edit icon" title="Edit this header" />
           </button>
 
           {ownerMessage && (
@@ -166,20 +149,11 @@ function OwnerMessage({
               className="owner-message-button"
               onClick={toggleDeleteWarning}
               style={{ marginLeft: '0.25rem' }}
-              aria-label="Delete header message"
             >
-              <div
-                style={{
-                  width: '24px',
-                  height: '24px',
-                  backgroundImage: `url(${deleteIcon})`,
-                  backgroundSize: 'contain',
-                  backgroundPosition: 'center',
-                  backgroundRepeat: 'no-repeat',
-                }}
+              <img
+                src={deleteIcon}
+                alt="edit icon"
                 title="Click to restore header to standard message"
-                role="img"
-                aria-label="Delete icon"
               />
             </button>
           )}

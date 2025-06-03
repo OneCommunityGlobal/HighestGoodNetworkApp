@@ -18,23 +18,12 @@ function Lessons({ filteredLessons, setFilteredLessons, dispatch }) {
     setFilteredLessons(updatedData);
   };
 
-  const onDeliteLessonCard = async lessonId => {
-    try {
-      await dispatch(deleteBMLesson(lessonId));
-
-      // Update filtered lessons
-      setFilteredLessons(prevLessons => prevLessons.filter(lesson => lesson._id !== lessonId));
-    } catch (error) {
-      // console.error('Error deleting lesson:', error);
-    }
+  const onDeliteLessonCard = lessonId => {
+    dispatch(deleteBMLesson(lessonId));
   };
 
   const handleLike = async (lessonId, userId) => {
-    try {
-      await dispatch(likeLessonAction(lessonId, userId));
-    } catch (error) {
-      // console.error('Error updating like:', error);
-    }
+    await dispatch(likeLessonAction(lessonId, userId));
   };
 
   return (

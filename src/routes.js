@@ -28,6 +28,7 @@ import Page3 from './components/HGNForm/pages/Page3';
 import Page4 from './components/HGNForm/pages/Page4';
 import Page5 from './components/HGNForm/pages/Page5';
 import Page6 from './components/HGNForm/pages/Page6';
+import DisplayTeamMemberDetails from './components/HGNForm/TopCommunityMembers/TopCommunityMembers';
 import TSAFormPage1 from './components/TSAForm/pages/TSAFormPage1';
 import TSAFormPage2 from './components/TSAForm/pages/TSAFormPage2';
 import TSAFormPage3 from './components/TSAForm/pages/TSAFormPage3';
@@ -548,6 +549,8 @@ export default (
         <ProtectedRoute path="/tsaformpage7" exact component={TSAFormPage7} /> 
         <ProtectedRoute path="/tsaformpage8" exact component={TSAFormPage8} /> 
         <ProtectedRoute path="/" exact component={Dashboard} />
+        {/* <Route path="/display-team-member-details" element={<DisplayTeamMemberDetails />} /> */}
+        <Route path="/topcommunitymembers" component={DisplayTeamMemberDetails} />
         <Route path="*" component={NotFoundPage} />
       </Switch>
     </>
