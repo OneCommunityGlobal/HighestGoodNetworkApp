@@ -24,9 +24,10 @@ label {
 textarea {
   margin-top: 5px; /* Space above input fields */
   width: 100%;
-  padding: 10px;
+  padding: 12px; /* Increased padding */
   border: 1px solid #ccc;
   border-radius: 4px;
+  box-sizing: border-box; /* Ensures padding is included in width */
 }
 
 .input-file-upload {
@@ -52,9 +53,10 @@ button.send-button {
   color: white;
   border: none;
   border-radius: 4px;
-  padding: 10px 20px;
+  padding: 12px 24px; /* Increased padding */
   cursor: pointer;
   margin-top: 20px;
+  box-sizing: border-box; /* Ensures padding is included in width */
 }
 
 button.send-button:hover {
@@ -70,6 +72,7 @@ button.send-button:hover {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  box-sizing: border-box; /* Ensures padding is included in width */
 }
 
 .social-media-container {
@@ -125,10 +128,11 @@ button.send-button:hover {
 
 .emails {
   margin-top: 65px;
-  padding: 20px;
+  padding: 24px; /* Increased padding */
   border: solid 1px #cacaca;
   border-radius: 20px;
   width: 300px;
+  box-sizing: border-box; /* Ensures padding is included in width */
   /* Set a fixed width for the email inputs container */
 }
 
@@ -162,5 +166,38 @@ button.send-button:hover {
   .email-content-preview {
     margin-top: 10px;
     /* Reduce margin top on smaller screens */
+  }
+}
+
+/* Responsive design: Adjust the layout for smaller screens */
+@media (max-width: 800px) {
+  .email-update-container {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    box-sizing: border-box; /* Ensures padding is included in width */
+  }
+  .editor {
+    width: 100%;
+    margin-right: 0;
+    margin-bottom: 20px;
+  }
+  .emails {
+    width: 100%;
+    margin-top: 20px;
+    padding: 20px 12px; /* Adjust padding for smaller screens */
+    box-sizing: border-box; /* Ensures padding is included in width */
+  }
+  .send-button {
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 12px; /* Ensures padding is consistent */
+    box-sizing: border-box; /* Ensures padding is included in width */
+  }
+  .input-text-for-announcement,
+  textarea {
+    width: 100%;
+    padding: 12px; /* Ensures padding is consistent */
+    box-sizing: border-box; /* Ensures padding is included in width */
   }
 }

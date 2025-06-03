@@ -1,21 +1,20 @@
-import { useState, useEffect, useRef } from 'react';
+import axios from 'axios';
+import { useState, useEffect } from 'react';
 import './Announcements.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { Editor } from '@tinymce/tinymce-react'; // Import Editor from TinyMCE
+import { Editor } from '@tinymce/tinymce-react';
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
-import axios from 'axios';
 
-function Announcements({ title, email }) {
+function Announcements({ title, email: initialEmail }) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const dispatch = useDispatch();
   const [emailTo, setEmailTo] = useState('');
   const [emailList, setEmailList] = useState([]);
   const [emailContent, setEmailContent] = useState('');
   const [headerContent, setHeaderContent] = useState('');
-  const [showEditor, setShowEditor] = useState(true); // State to control rendering of the editor
-  const tinymce = useRef(null);
+  const [showEditor, setShowEditor] = useState(true);
   const [videoFile, setVideoFile] = useState(null);
   const [videoURL, setVideoURL] = useState('');
   const [youtubeAccounts, setYoutubeAccounts] = useState([]);
@@ -25,9 +24,9 @@ function Announcements({ title, email }) {
   const [videoDescription, setVideoDescription] = useState('');
   const [videoTags, setVideoTags] = useState('');
   const [privacyStatus, setPrivacyStatus] = useState('private');
+  const [isFileUploaded, setIsFileUploaded] = useState(false);
 
   useEffect(() => {
-    // Toggle the showEditor state to force re-render when dark mode changes·
     setShowEditor(false);
     setTimeout(() => setShowEditor(true), 0);
   }, [darkMode]);
@@ -50,77 +49,55 @@ function Announcements({ title, email }) {
       const input = document.createElement('input');
       input.setAttribute('type', 'file');
       input.setAttribute('accept', 'image/*');
-
-      /*
-        Note: In modern browsers input[type="file"] is functional without
-        even adding it to the DOM, but that might not be the case in some older
-        or quirky browsers like IE, so you might want to add it to the DOM
-        just in case, and visually hide it. And do not forget do remove it
-        once you do not need it anymore.
-      */
-
       input.onchange = () => {
         const file = input.files[0];
-
         const reader = new FileReader();
         reader.onload = () => {
-          /*
-            Note: Now we need to register the blob in TinyMCEs image blob
-            registry. In the next release this part hopefully won't be
-            necessary, as we are looking to handle it internally.
-          */
           const id = `blobid${new Date().getTime()}`;
-          const { blobCache } = tinymce.current.activeEditor.editorUpload;
+          const { blobCache } = window.tinymce.activeEditor.editorUpload;
           const base64 = reader.result.split(',')[1];
           const blobInfo = blobCache.create(id, file, base64);
           blobCache.add(blobInfo);
-
-          /* call the callback and populate the Title field with the file name */
           cb(blobInfo.blobUri(), { title: file.name });
         };
         reader.readAsDataURL(file);
       };
-
       input.click();
     },
     a11y_advanced_options: true,
     toolbar:
-      // eslint-disable-next-line no-multi-str
-      'undo redo | bold italic | blocks fontfamily fontsize | image \
-      alignleft aligncenter alignright | \
-      bullist numlist outdent indent | removeformat | help',
+      'undo redo | bold italic | blocks fontfamily fontsize | image alignleft aligncenter alignright | bullist numlist outdent indent | removeformat | help',
     skin: darkMode ? 'oxide-dark' : 'oxide',
     content_css: darkMode ? 'dark' : 'default',
   };
 
   useEffect(() => {
-    if (email) {
-      const trimmedEmail = email.trim();
-      setEmailTo(email);
+    if (initialEmail) {
+      const trimmedEmail = initialEmail.trim();
+      setEmailTo(initialEmail);
       setEmailList(trimmedEmail.split(','));
     }
-  }, [email]);
+  }, [initialEmail]);
 
   const handleEmailListChange = e => {
     const { value } = e.target;
-    setEmailTo(value); // Update emailTo for the input field
-    setEmailList(value.split(',')); // Update emailList for the email list
+    setEmailTo(value);
+    setEmailList(value.split(','));
   };
 
   const handleHeaderContentChange = e => {
     setHeaderContent(e.target.value);
   };
 
-  // const htmlContent = `<html><head><title>Weekly Update</title></head><body>${emailContent}</body></html>`;
   const addHeaderToEmailContent = () => {
     if (!headerContent) return;
     const imageTag = `<img src="${headerContent}" alt="Header Image" style="width: 100%; max-width: 100%; height: auto;">`;
-    const editor = tinymce.get('email-editor');
+    const editor = window.tinymce.get('email-editor');
     if (editor) {
       editor.insertContent(imageTag);
       setEmailContent(editor.getContent());
     }
-    setHeaderContent(''); // Clear the input field after inserting the header
+    setHeaderContent('');
   };
 
   const convertImageToBase64 = (file, callback) => {
@@ -133,10 +110,11 @@ function Announcements({ title, email }) {
 
   const addImageToEmailContent = e => {
     const imageFile = document.querySelector('input[type="file"]').files[0];
+    setIsFileUploaded(true);
     convertImageToBase64(imageFile, base64Image => {
       const imageTag = `<img src="${base64Image}" alt="Header Image" style="width: 100%; max-width: 100%; height: auto;">`;
       setHeaderContent(prevContent => `${imageTag}${prevContent}`);
-      const editor = tinymce.current.get('email-editor');
+      const editor = window.tinymce.get('email-editor');
       if (editor) {
         editor.insertContent(imageTag);
         setEmailContent(editor.getContent());
@@ -145,27 +123,26 @@ function Announcements({ title, email }) {
     e.target.value = '';
   };
 
-  const validateEmail = e => {
-    /* Add a regex pattern for email validation */
+  const validateEmail = email => {
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    return emailPattern.test(e);
+    return emailPattern.test(email);
   };
 
   const handleSendEmails = () => {
     const htmlContent = emailContent;
-
     if (emailList.length === 0 || emailList.every(e => !e.trim())) {
       toast.error('Error: Empty Email List. Please enter AT LEAST One email.');
       return;
     }
-
-    const invalidEmails = emailList.filter(e => !validateEmail(e.trim()));
-
+    if (!isFileUploaded) {
+      toast.error('Error: Please upload a file.');
+      return;
+    }
+    const invalidEmails = emailList.filter(email => !validateEmail(email.trim()));
     if (invalidEmails.length > 0) {
       toast.error(`Error: Invalid email addresses: ${invalidEmails.join(', ')}`);
       return;
     }
-
     dispatch(
       sendEmail(emailList.join(','), title ? 'Anniversary congrats' : 'Weekly update', htmlContent),
     );
@@ -182,7 +159,6 @@ function Announcements({ title, email }) {
 
   const handleVideoChange = e => {
     const file = e.target.files[0];
-
     if (file && file.type.startsWith('video/')) {
       const url = URL.createObjectURL(file);
       setVideoFile(file);
@@ -190,7 +166,7 @@ function Announcements({ title, email }) {
     } else {
       setVideoFile(null);
       setVideoURL('');
-      alert('Please select a valid video file');
+      toast.error('Please select a valid video file');
     }
   };
 
@@ -204,83 +180,25 @@ function Announcements({ title, email }) {
       include_granted_scopes: 'true',
       state: 'pass-through value',
     };
-
     const form = document.createElement('form');
     form.setAttribute('method', 'GET');
     form.setAttribute('action', oauth2Endpoint);
-
-    for (let p in params) {
+    Object.keys(params).forEach(p => {
       const input = document.createElement('input');
       input.setAttribute('type', 'hidden');
       input.setAttribute('name', p);
       input.setAttribute('value', params[p]);
       form.appendChild(input);
-    }
-
+    });
     document.body.appendChild(form);
     form.submit();
-  };
-
-  useEffect(() => {
-    const hashParams = new URLSearchParams(window.location.hash.substring(1));
-    const token = hashParams.get('access_token');
-    if (token) {
-      setAccessToken(token);
-      console.log('Access Token:', token);
-    }
-  }, []);
-
-  const uploadVideoToYouTube = async (accessToken, videoFile, title, description, tags) => {
-    const metadata = {
-      snippet: {
-        title: title,
-        description: description,
-        tags: tags,
-      },
-      status: {
-        privacyStatus: 'private', // or 'public' or 'unlisted'
-      },
-    };
-
-    const form = new FormData();
-    form.append('snippet', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
-    form.append('video', videoFile);
-
-    const response = await fetch(
-      'https://www.googleapis.com/upload/youtube/v3/videos?uploadType=resumable&part=snippet,status',
-      {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json; charset=UTF-8',
-          'X-Upload-Content-Type': videoFile.type,
-          'X-Upload-Content-Length': videoFile.size,
-        },
-        withCredentials: true,
-        body: JSON.stringify(metadata),
-      },
-    );
-
-    const uploadUrl = response.headers.get('location');
-
-    const uploadResponse = await fetch(uploadUrl, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': videoFile.type,
-        'Content-Length': videoFile.size,
-      },
-      body: videoFile,
-    });
-
-    const uploadedVideo = await uploadResponse.json();
-    return uploadedVideo;
   };
 
   useEffect(() => {
     fetch('/api/youtubeAccounts')
       .then(res => res.json())
       .then(data => setYoutubeAccounts(data))
-      .catch(err => console.error('Failed to fetch YouTube accounts:', err));
+      .catch(() => {});
   }, []);
 
   const handlePostVideoToYouTube = async () => {
@@ -296,12 +214,9 @@ function Announcements({ title, email }) {
     formData.append('tags', videoTags);
     formData.append('privacyStatus', privacyStatus);
     const token = localStorage.getItem('token');
-    console.log('Token from localStorage:', token);
-    console.log('Authorization header:', `Bearer ${token}`);
     const headers = {
       Authorization: `Bearer ${token}`,
     };
-    console.log('Request headers:', headers);
     try {
       const res = await axios.post('http://localhost:4500/api/uploadYtVideo', formData, {
         headers,
@@ -315,7 +230,6 @@ function Announcements({ title, email }) {
       }
     } catch (err) {
       toast.error('Upload error');
-      console.error('Upload error:', err);
     }
   };
 
@@ -340,14 +254,40 @@ function Announcements({ title, email }) {
           {title ? (
             ''
           ) : (
-            <button
-              type="button"
-              className="send-button"
-              onClick={handleBroadcastEmails}
-              style={darkMode ? boxStyleDark : boxStyle}
-            >
-              Broadcast Weekly Update
-            </button>
+            <div className="email-update-container">
+              <div className="editor">
+                <div className="email-list">
+                  <input
+                    type="text"
+                    value={emailTo}
+                    onChange={handleEmailListChange}
+                    placeholder="Enter email addresses (comma-separated)"
+                  />
+                </div>
+                <div className="header-image">
+                  <input
+                    type="text"
+                    value={headerContent}
+                    onChange={handleHeaderContentChange}
+                    placeholder="Enter header image URL"
+                  />
+                  <button type="button" onClick={addHeaderToEmailContent}>
+                    Add Header
+                  </button>
+                </div>
+                <div className="file-upload">
+                  <input type="file" onChange={addImageToEmailContent} />
+                </div>
+                <div className="send-buttons">
+                  <button type="button" onClick={handleSendEmails}>
+                    Send Emails
+                  </button>
+                  <button type="button" onClick={handleBroadcastEmails}>
+                    Broadcast to All
+                  </button>
+                </div>
+              </div>
+            </div>
           )}
         </div>
         <div
@@ -358,7 +298,7 @@ function Announcements({ title, email }) {
             <p>Email</p>
           ) : (
             <label htmlFor="email-list-input" className={darkMode ? 'text-light' : 'text-dark'}>
-              Email List (comma-separated):
+              Email List (comma-separated)<span className="red-asterisk">* </span>:
             </label>
           )}
           <input
@@ -515,8 +455,9 @@ function Announcements({ title, email }) {
           </select>
           {videoURL && (
             <div>
-              <video width="480" controls>
+              <video width="480" controls aria-label="Video Preview">
                 <source src={videoURL} type={videoFile.type} />
+                <track kind="captions" />
                 Your browser does not support the video tag.
               </video>
             </div>

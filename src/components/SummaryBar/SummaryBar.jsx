@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Container,
   Row,
@@ -30,7 +30,7 @@ import httpService from '../../services/httpService';
 
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 
-function SummaryBar(props) {
+const SummaryBar = React.forwardRef((props, ref) => {
   // from parent
   const { displayUserId, summaryBarData } = props;
   // from store
@@ -406,6 +406,15 @@ function SummaryBar(props) {
     }
   }, [displayUserProfile, summaryBarData]);
 
+  useEffect(() => {
+    // Check if we should open the suggestions modal
+    const shouldOpenSuggestions = localStorage.getItem('openSuggestionsModal');
+    if (shouldOpenSuggestions === 'true') {
+      localStorage.removeItem('openSuggestionsModal'); // Clear the flag
+      openSuggestionModal(); // Open the suggestions modal
+    }
+  }, []); // Run once when component mounts
+
   const getContainerClass = () => {
     if (isAuthUser || canEditData()) {
       return darkMode
@@ -488,7 +497,7 @@ function SummaryBar(props) {
     }
 
     const message = weeklySummaryNotReq
-      ? 'You don’t need to complete a weekly summary, but you still can. Click here to submit it.'
+      ? "You don't need to complete a weekly summary, but you still can. Click here to submit it."
       : 'You still need to complete the weekly summary. Click here to submit it.';
 
     if (isAuthUser) {
@@ -527,6 +536,11 @@ function SummaryBar(props) {
   const headerBg = darkMode ? 'bg-space-cadet' : '';
   const bodyBg = darkMode ? 'bg-yinmn-blue' : '';
 
+  // Expose the openSuggestionModal function through the ref
+  React.useImperativeHandle(ref, () => ({
+    openSuggestionModal,
+  }));
+
   return displayUserProfile !== undefined && summaryBarData !== undefined ? (
     <Container fluid className={`px-lg-0 rounded ${getContainerClass()}`} style={{ width: '97%' }}>
       <Row className="no-gutters row-eq-height">
@@ -541,8 +555,27 @@ function SummaryBar(props) {
             </font>
             <CardTitle className={`align-middle ${darkMode ? 'text-light' : 'text-dark'}`} tag="h3">
               <div className="font-weight-bold">
-                {userProfile?.firstName || displayUserProfile.firstName}{' '}
-                {userProfile?.lastName || displayUserProfile.lastName}
+                <span
+                  className="name-segment"
+                  title={userProfile?.firstName || displayUserProfile.firstName}
+                >
+                  {(userProfile?.firstName || displayUserProfile.firstName).split(' ')[0]}
+                </span>
+                <span
+                  className="name-segment"
+                  title={userProfile?.firstName || displayUserProfile.firstName}
+                >
+                  {(userProfile?.firstName || displayUserProfile.firstName)
+                    .split(' ')
+                    .slice(1)
+                    .join(' ')}
+                </span>
+                <span
+                  className="name-segment"
+                  title={userProfile?.lastName || displayUserProfile.lastName}
+                >
+                  {userProfile?.lastName || displayUserProfile.lastName}
+                </span>
               </div>
             </CardTitle>
           </div>
@@ -861,14 +894,16 @@ function SummaryBar(props) {
                   required
                 >
                   <option disabled value="" hidden>
-                    {' '}
-                    -- select an option --{' '}
+                    -- select an option --
                   </option>
-                  {suggestionCategory.map(item => {
-                    return <option key={item.id} value={item}>{`${item.id + 1}. ${item}`}</option>;
-                  })}
+                  {suggestionCategory.map((item, index) => (
+                    <option key={item} value={item}>
+                      {`${index + 1}. ${item}`}
+                    </option>
+                  ))}
                 </Input>
               </FormGroup>
+
               {takeInput && (
                 <FormGroup>
                   <Label for="suggestion" className={fontColor}>
@@ -1033,7 +1068,7 @@ function SummaryBar(props) {
   ) : (
     <div>Loading</div>
   );
-}
+});
 
 const mapStateToProps = state => ({
   authUser: state.auth.user,
@@ -1042,4 +1077,4 @@ const mapStateToProps = state => ({
   darkMode: state.theme.darkMode,
 });
 
-export default connect(mapStateToProps, { hasPermission })(SummaryBar);
+export default connect(mapStateToProps, { hasPermission })(React.memo(SummaryBar));
