@@ -1,6 +1,5 @@
 /* EmailUpdateComponent.css */
 
-
 h2,
 h3 {
   color: #4285f4;
@@ -23,7 +22,7 @@ label {
 
 .input-text-for-announcement,
 textarea {
-  margin-top: 5px;   /* Space above input fields */
+  margin-top: 5px; /* Space above input fields */
   width: 100%;
   padding: 10px;
   border: 1px solid #ccc;
@@ -38,7 +37,7 @@ textarea {
   margin-top: 5px;
 }
 
-.video-preview-container{
+.video-preview-container {
   margin-top: 80px;
   padding: 10px;
   display: inline;
@@ -46,7 +45,6 @@ textarea {
   flex-wrap: wrap;
   border: 1px solid #ccc;
   border-radius: 4px;
-
 }
 
 button.send-button {
@@ -93,7 +91,6 @@ button.send-button:hover {
   display: flex;
   gap: 10px;
   justify-content: flex-start;
-
 }
 
 .social-buttons-container button:hover {
