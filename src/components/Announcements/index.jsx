@@ -5,6 +5,7 @@ import { Editor } from '@tinymce/tinymce-react'; // Import Editor from TinyMCE
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
+import axios from 'axios';
 
 function Announcements({ title, email }) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -17,6 +18,9 @@ function Announcements({ title, email }) {
   const tinymce = useRef(null);
   const [videoFile, setVideoFile] = useState(null);
   const [videoURL, setVideoURL] = useState('');
+  const [youtubeAccounts, setYoutubeAccounts] = useState([]);
+  const [selectedYoutubeAccountId, setSelectedYoutubeAccountId] = useState('');
+  const [showYoutubeDropdown, setShowYoutubeDropdown] = useState(false);
 
   useEffect(() => {
     // Toggle the showEditor state to force re-render when dark mode changes
@@ -248,6 +252,7 @@ function Announcements({ title, email }) {
           'X-Upload-Content-Type': videoFile.type,
           'X-Upload-Content-Length': videoFile.size,
         },
+        withCredentials: true,
         body: JSON.stringify(metadata),
       }
     );
@@ -267,6 +272,42 @@ function Announcements({ title, email }) {
     return uploadedVideo;
   };
 
+  useEffect(() => {
+    fetch('/api/youtubeAccounts')
+      .then(res => res.json())
+      .then(data => setYoutubeAccounts(data))
+      .catch(err => console.error('Failed to fetch YouTube accounts:', err));
+  }, []);
+
+  const handlePostVideoToYouTube = async () => {
+    if (!videoFile || !selectedYoutubeAccountId) {
+      toast.error('Please select a video and YouTube account');
+      return;
+    }
+    const formData = new FormData();
+    formData.append('video', videoFile);
+    formData.append('youtubeAccountId', selectedYoutubeAccountId);
+    const token = localStorage.getItem('token');
+    console.log('Token from localStorage:', token);
+    console.log('Authorization header:', `Bearer ${token}`);
+    const headers = {
+      'Authorization': `Bearer ${token}`
+    };
+    console.log('Request headers:', headers);
+    try {
+      const res = await axios.post('http://localhost:4500/api/uploadYtVideo', formData, { headers });
+      if (res.status === 200) {
+        toast.success('Video uploaded successfully!');
+        setShowYoutubeDropdown(false);
+        setSelectedYoutubeAccountId('');
+      } else {
+        toast.error('Video upload failed');
+      }
+    } catch (err) {
+      toast.error('Upload error');
+      console.error('Upload error:', err);
+    }
+  };
 
   return (
     <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: '100%' }}>
@@ -371,17 +412,58 @@ function Announcements({ title, email }) {
           )}
 
           {title ? null : (
-
-              <div className="social-buttons-container">
-                <button
-                  type="button"
-                  className="send-button"
-                  onClick={oauthSignIn}
-                  style={darkMode ? boxStyleDark : boxStyle}
-                >
-                  Sign in with Google
-                </button>
-
+            <div className="social-buttons-container" style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+              <button
+                type="button"
+                className="send-button"
+                onClick={oauthSignIn}
+                style={darkMode ? boxStyleDark : boxStyle}
+              >
+                Sign in with Google
+              </button>
+              <button
+                type="button"
+                className="send-button"
+                onClick={() => setShowYoutubeDropdown(true)}
+                style={darkMode ? boxStyleDark : boxStyle}
+              >
+                Post video to YouTube channel
+              </button>
+              {showYoutubeDropdown && (
+                <>
+                  <select
+                    className="select-youtube-account"
+                    value={selectedYoutubeAccountId}
+                    onChange={e => setSelectedYoutubeAccountId(e.target.value)}
+                  >
+                    <option value="">Select YouTube Account</option>
+                    <option value="test1">Test Channel 1</option>
+                    <option value="test2">Test Channel 2</option>
+                    {youtubeAccounts.map(acc => (
+                      <option key={acc.id} value={acc.id}>
+                        {acc.displayName || acc.name || acc.clientId}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    type="button"
+                    className="send-button"
+                    disabled={!videoFile || !selectedYoutubeAccountId}
+                    onClick={handlePostVideoToYouTube}
+                    style={darkMode ? boxStyleDark : boxStyle}
+                  >
+                    Submit
+                  </button>
+                  <button
+                    type="button"
+                    className="send-button"
+                    onClick={() => setShowYoutubeDropdown(false)}
+                    style={darkMode ? boxStyleDark : boxStyle}
+                  >
+                    Cancel
+                  </button>
+                </>
+              )}
             </div>
           )}
 
