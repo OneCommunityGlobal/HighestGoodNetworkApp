@@ -1,5 +1,5 @@
-import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+// import React from 'react';
+import { render, screen} from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import UserLoginPrivileges from '../UserLoginPrivileges';
 
@@ -24,12 +24,36 @@ describe('UserLoginPrivileges Component', () => {
 
   // Test if the component renders without crashing
   test('renders without crashing', () => {
-    render(<UserLoginPrivileges {...mockProps} />);
+    render(
+      <UserLoginPrivileges
+        role={mockProps.role}
+        teamName={mockProps.teamName}
+        teamMembers={mockProps.teamMembers}
+        totalTeamWeeklyWorkedHours={mockProps.totalTeamWeeklyWorkedHours}
+        selectedTeams={mockProps.selectedTeams}
+        selectedTeamsWeeklyEffort={mockProps.selectedTeamsWeeklyEffort}
+        allTeamsMembers={mockProps.allTeamsMembers}
+        darkMode={mockProps.darkMode}
+        teamDataLoading={mockProps.teamDataLoading}
+      />
+    );
   });
 
   // Test if the component renders the correct team name and team logs
   test('renders team name and team report logs', () => {
-    render(<UserLoginPrivileges {...mockProps} />);
+    render(
+      <UserLoginPrivileges
+        role={mockProps.role}
+        teamName={mockProps.teamName}
+        teamMembers={mockProps.teamMembers}
+        totalTeamWeeklyWorkedHours={mockProps.totalTeamWeeklyWorkedHours}
+        selectedTeams={mockProps.selectedTeams}
+        selectedTeamsWeeklyEffort={mockProps.selectedTeamsWeeklyEffort}
+        allTeamsMembers={mockProps.allTeamsMembers}
+        darkMode={mockProps.darkMode}
+        teamDataLoading={mockProps.teamDataLoading}
+      />
+    );
     
     // Verify team name
     expect(screen.getByText(/Team A/)).toBeInTheDocument();
@@ -40,7 +64,19 @@ describe('UserLoginPrivileges Component', () => {
 
   // Test if the component renders selected teams and corresponding charts
   test('renders selected teams and corresponding charts', () => {
-    render(<UserLoginPrivileges {...mockProps} />);
+    render(
+      <UserLoginPrivileges
+        role={mockProps.role}
+        teamName={mockProps.teamName}
+        teamMembers={mockProps.teamMembers}
+        totalTeamWeeklyWorkedHours={mockProps.totalTeamWeeklyWorkedHours}
+        selectedTeams={mockProps.selectedTeams}
+        selectedTeamsWeeklyEffort={mockProps.selectedTeamsWeeklyEffort}
+        allTeamsMembers={mockProps.allTeamsMembers}
+        darkMode={mockProps.darkMode}
+        teamDataLoading={mockProps.teamDataLoading}
+      />
+    );
   
     // Verify selected teams title
     expect(screen.getByText('Selected Teams')).toBeInTheDocument();
@@ -51,7 +87,19 @@ describe('UserLoginPrivileges Component', () => {
 
   // Test if the component displays correct data in team report logs
   test('displays correct data in team report logs', () => {
-    render(<UserLoginPrivileges {...mockProps} />);
+    render(
+      <UserLoginPrivileges
+        role={mockProps.role}
+        teamName={mockProps.teamName}
+        teamMembers={mockProps.teamMembers}
+        totalTeamWeeklyWorkedHours={mockProps.totalTeamWeeklyWorkedHours}
+        selectedTeams={mockProps.selectedTeams}
+        selectedTeamsWeeklyEffort={mockProps.selectedTeamsWeeklyEffort}
+        allTeamsMembers={mockProps.allTeamsMembers}
+        darkMode={mockProps.darkMode}
+        teamDataLoading={mockProps.teamDataLoading}
+      />
+    );
   
     // Find all elements that might contain the expected text
     const elements = screen.getAllByRole('heading', {
@@ -67,7 +115,19 @@ describe('UserLoginPrivileges Component', () => {
 
   // Test if the component displays correct data in selected teams report logs
   test('displays correct data in second teams report logs', () => {
-    render(<UserLoginPrivileges {...mockProps} />);
+    render(
+      <UserLoginPrivileges
+        role={mockProps.role}
+        teamName={mockProps.teamName}
+        teamMembers={mockProps.teamMembers}
+        totalTeamWeeklyWorkedHours={mockProps.totalTeamWeeklyWorkedHours}
+        selectedTeams={mockProps.selectedTeams}
+        selectedTeamsWeeklyEffort={mockProps.selectedTeamsWeeklyEffort}
+        allTeamsMembers={mockProps.allTeamsMembers}
+        darkMode={mockProps.darkMode}
+        teamDataLoading={mockProps.teamDataLoading}
+      />
+    );
 
     // Check if the team report charts weekly commit is rendered
     expect(screen.getByText('Weekly Commited Hours')).toBeInTheDocument();
@@ -109,7 +169,19 @@ describe('UserLoginPrivileges Component', () => {
       ]]
     };
 
-    render(<UserLoginPrivileges {...customProps} />);
+    render(
+      <UserLoginPrivileges
+        role={mockProps.role}
+        teamName={mockProps.teamName}
+        teamMembers={mockProps.teamMembers}
+        totalTeamWeeklyWorkedHours={mockProps.totalTeamWeeklyWorkedHours}
+        selectedTeams={mockProps.selectedTeams}
+        selectedTeamsWeeklyEffort={mockProps.selectedTeamsWeeklyEffort}
+        allTeamsMembers={mockProps.allTeamsMembers}
+        darkMode={mockProps.darkMode}
+        teamDataLoading={mockProps.teamDataLoading}
+      />
+    );
 
     const weeklyCommittedHeading = screen.getByText('Weekly Commited Hours');
     const hoursWorkedHeading = screen.getByText('Hours Worked In Current Week');
