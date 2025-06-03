@@ -121,7 +121,7 @@ export default function SelectTeamPieChart(props) {
     );
   }
   return (
-    <ResponsiveContainer minHeight={600}>
+    <ResponsiveContainer minHeight={600} maxHeight={800}>
       <PieChart>
         <Pie
           data={processedData}
