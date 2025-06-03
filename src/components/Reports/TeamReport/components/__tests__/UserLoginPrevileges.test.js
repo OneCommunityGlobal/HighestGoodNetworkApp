@@ -137,7 +137,19 @@ describe('UserLoginPrivileges Component', () => {
 
   // Test if the component applied certain styles correctly
   test('Check if certain styles are applied correctly for chart container', () => {
-    const { container } = render(<UserLoginPrivileges {...mockProps} />);
+    const { container } = render(
+      <UserLoginPrivileges
+        role={mockProps.role}
+        teamName={mockProps.teamName}
+        teamMembers={mockProps.teamMembers}
+        totalTeamWeeklyWorkedHours={mockProps.totalTeamWeeklyWorkedHours}
+        selectedTeams={mockProps.selectedTeams}
+        selectedTeamsWeeklyEffort={mockProps.selectedTeamsWeeklyEffort}
+        allTeamsMembers={mockProps.allTeamsMembers}
+        darkMode={mockProps.darkMode}
+        teamDataLoading={mockProps.teamDataLoading}
+      />
+    );
   
     // Check styles applied directly using inline styles
     const teamChartContainers = container.querySelectorAll('.team-chart-container');
@@ -148,7 +160,19 @@ describe('UserLoginPrivileges Component', () => {
 
   // Test if the component applied certain styles correctly for pie charts
   test('Check if certain styles are applied correctly for pie charts with data', () => {
-    const { container } = render(<UserLoginPrivileges {...mockProps} />);
+    const { container } = render(
+      <UserLoginPrivileges
+        role={mockProps.role}
+        teamName={mockProps.teamName}
+        teamMembers={mockProps.teamMembers}
+        totalTeamWeeklyWorkedHours={mockProps.totalTeamWeeklyWorkedHours}
+        selectedTeams={mockProps.selectedTeams}
+        selectedTeamsWeeklyEffort={mockProps.selectedTeamsWeeklyEffort}
+        allTeamsMembers={mockProps.allTeamsMembers}
+        darkMode={mockProps.darkMode}
+        teamDataLoading={mockProps.teamDataLoading}
+      />
+    );
   
     const mobileChart = container.querySelector('.mobile-chart');
     
