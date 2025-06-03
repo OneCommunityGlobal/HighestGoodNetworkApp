@@ -114,6 +114,9 @@ import FeedbackModal from './components/HGNHelpSkillsDashboard/FeedbackModal';
 import LogTools from './components/BMDashboard/LogTools/LogTools';
 import EquipmentUpdate from './components/BMDashboard/Tools/EquipmentUpdate';
 
+// Social Architecture
+const RequestResources = lazy(() => import('./components/SocialArchitecture/RequestResources'));
+const ResourceManagement = lazy(() => import('./components/ResourceManagement/ResourceManagement'));
 
 const ReusableListView = lazy(() => import('./components/BMDashboard/ReusableList'));
 const ConsumableListView = lazy(() => import('./components/BMDashboard/ConsumableList'));
@@ -282,6 +285,22 @@ export default (
           component={SameFolderTasks}
           fallback
           routePermissions={RoutePermissions.workBreakdownStructure}
+        />
+
+        <ProtectedRoute
+          path="/communityportal/resources/add"
+          exact
+          component={RequestResources}
+          fallback
+          routePermissions={RoutePermissions.resourcesAdd}
+        />
+
+        <ProtectedRoute
+          path="/communityportal/activity/:activityId/resources"
+          exact
+          component={ResourceManagement}
+          fallback
+          routePermissions={RoutePermissions.resourceManagement}
         />
         <ProtectedRoute
           path="/usermanagement"
