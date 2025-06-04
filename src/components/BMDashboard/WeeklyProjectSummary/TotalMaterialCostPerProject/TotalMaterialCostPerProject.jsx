@@ -54,6 +54,10 @@ const options = {
         font: {
           size: 11,
         },
+        callback(val) {
+          const label = this.getLabelForValue(val);
+          return label.length > 20 ? `${label.slice(0, 20)}…` : label;
+        },
       },
     },
   },
