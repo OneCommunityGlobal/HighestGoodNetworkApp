@@ -18,8 +18,12 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 const allProjects = [
   { label: 'Website Redesign', value: '1' },
   { label: 'Mobile App', value: '2' },
-  { label: 'API Development', value: '3' },
+  { label: 'API Development Marketing Campaign Marketing Campaign', value: '3' },
   { label: 'Marketing Campaign', value: '4' },
+  { label: 'Website', value: '5' },
+  { label: 'Mobile', value: '6' },
+  { label: 'API', value: '7' },
+  { label: 'Marketing', value: '8' },
 ];
 
 const projectCosts = {
@@ -27,6 +31,10 @@ const projectCosts = {
   '2': 2500,
   '3': 1800,
   '4': 900,
+  '5': 3424,
+  '6': 5433,
+  '7': 454,
+  '8': 876,
 };
 
 const options = {
@@ -38,6 +46,15 @@ const options = {
     },
     title: {
       display: false,
+    },
+  },
+  scales: {
+    x: {
+      ticks: {
+        font: {
+          size: 11,
+        },
+      },
     },
   },
 };
@@ -75,7 +92,11 @@ function TotalMaterialCostPerProject() {
         closeMenuOnSelect={false}
         hideSelectedOptions={false}
       />
-      <Bar data={data} options={options} />
+      <div style={{ overflowX: 'auto' }}>
+        <div style={{ minWidth: `${selectedProjects.length * 20}px`, minHeight: '300px' }}>
+          <Bar data={data} options={options} />
+        </div>
+      </div>
     </div>
   );
 }
