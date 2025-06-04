@@ -1,10 +1,10 @@
+/* eslint-disable no-shadow */
+/* eslint-disable no-use-before-define */
 import { useState, useEffect } from 'react';
 import { connect, useSelector } from 'react-redux';
-import {
-  fetchAllProjects,
-  modifyProject,
-  clearError,
-} from '../../actions/projects';
+import SearchProjectByPerson from 'components/SearchProjectByPerson/SearchProjectByPerson';
+import ProjectsList from 'components/BMDashboard/Projects/ProjectsList';
+import { fetchAllProjects, modifyProject, clearError } from '../../actions/projects';
 import { fetchProjectsWithActiveUsers } from '../../actions/projectMembers';
 import { getProjectsByUsersName } from '../../actions/userProfile';
 import { getPopupById } from '../../actions/popupEditorAction';
@@ -18,31 +18,30 @@ import './projects.css';
 import Loading from '../common/Loading';
 import hasPermission from '../../utils/permissions';
 import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
-import SearchProjectByPerson from 'components/SearchProjectByPerson/SearchProjectByPerson';
-import ProjectsList from 'components/BMDashboard/Projects/ProjectsList';
 
 const Projects = function(props) {
-  const role = props.state.userProfile.role;
+  const { role } = props.state.userProfile;
   const { darkMode } = props.state.theme;
   
 const allReduxProjects = useSelector(state => state.allProjects.projects);
 const projectFetchStatus = useSelector(state => state.allProjects.status);
   const numberOfProjects = props.state.allProjects.projects.length;
-  const numberOfActive = props.state.allProjects.projects.filter(project => project.isActive).length;
+  const numberOfActive = props.state.allProjects.projects.filter(project => project.isActive)
+    .length;
   const { fetching, fetched, status, error } = props.state.allProjects;
   const initialModalData = {
     showModal: false,
-    modalMessage: "",
-    modalTitle: "",
+    modalMessage: '',
+    modalTitle: '',
     hasConfirmBtn: false,
     hasInactiveBtn: false,
     hasActiveBtn: false,
   };
 
   const [modalData, setModalData] = useState(initialModalData);
-  const [categorySelectedForSort, setCategorySelectedForSort] = useState("");
-  const [showStatus, setShowStatus] = useState("");
-  const [sortedByName, setSortedByName] = useState("");
+  const [categorySelectedForSort, setCategorySelectedForSort] = useState('');
+  const [showStatus, setShowStatus] = useState('');
+  const [sortedByName, setSortedByName] = useState('');
   const [projectTarget, setProjectTarget] = useState({
     projectName: '',
     projectId: -1,
@@ -50,24 +49,24 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
     category: '',
   });
   const [projectList, setProjectList] = useState(null);
-  const [searchName, setSearchName] = useState("");
+  const [searchName, setSearchName] = useState('');
   const [allProjects, setAllProjects] = useState(null);
   const [isChangingStatus, setIsChangingStatus] = useState(false);
   const [isArchiving, setIsArchiving] = useState(false);
 
   const useDebounce = (value, delay) => {
     const [debouncedValue, setDebouncedValue] = useState(value);
-  
+
     useEffect(() => {
       const handler = setTimeout(() => {
         setDebouncedValue(value);
       }, delay);
-  
+
       return () => {
         clearTimeout(handler);
       };
     }, [value, delay]);
-  
+
     return debouncedValue;
   };
 
@@ -75,7 +74,7 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
 
   const canPostProject = props.hasPermission('postProject');
 
-  const onClickArchiveBtn = (projectData) => {
+  const onClickArchiveBtn = projectData => {
     setProjectTarget(projectData);
     setModalData({
       showModal: true,
@@ -117,21 +116,35 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
     props.clearError();
   };
 
-  const onChangeCategory = (value) => {
+  const onChangeCategory = value => {
     setCategorySelectedForSort(value);
   };
 
-  const onSelectStatus = (value) => {
+  const onSelectStatus = value => {
     setShowStatus(value);
-  }
+  };
 
-  const handleSort = (e) => {
+  // const handleSort = (e) => {
+  //   const clickedId = e.target.id;
+  //   setSortedByName(prevState => prevState === clickedId ? "" : clickedId);
+  // }
+  const handleSort = e => {
     const clickedId = e.target.id;
-    setSortedByName(prevState => prevState === clickedId ? "" : clickedId);
-  }
-
-  const onUpdateProject = async (updatedProject) => {
+    if (clickedId === 'SortingByRecentEditedInventory') {
+      setSortedByName(prevState =>
+        prevState === 'SortingByRecentEditedInventory' ? '' : 'SortingByRecentEditedInventory',
+      );
+    } else {
+      setSortedByName(prevState => (prevState === clickedId ? '' : clickedId));
+    }
+  };
+  const onUpdateProject = async updatedProject => {
     await props.modifyProject(updatedProject);
+    // Optimistically update the state
+    const updatedProjectsList = projectList.map(project =>
+      project._id === updatedProject._id ? updatedProject : project,
+    );
+    setProjectList(updatedProjectsList);
     /* refresh the page after updating the project */
     await props.fetchAllProjects();
   };
@@ -174,21 +187,28 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
       } else {
         return true;
       }
-    }).sort((a, b) => {
-      if (sortedByName === "Ascending") {
-        return a.projectName[0].toLowerCase() < b.projectName[0].toLowerCase() ? -1 : 1;
-      } else if (sortedByName === "Descending") {
-        return a.projectName[0].toLowerCase() < b.projectName[0].toLowerCase() ? 1 : -1;
-      } else if (sortedByName === "SortingByRecentEditedMembers") {
-        return a.membersModifiedDatetime < b.membersModifiedDatetime ? 1 : -1;
-      } else if (sortedByName === "SortingByMostActiveMembers") {
-        const lenA = activeMemberCounts[a._id] || 0;
-        const lenB = activeMemberCounts[b._id] || 0;
-        return lenB - lenA; // Most active first
-      } else {
+      })
+      .sort((a, b) => {
+        if (sortedByName === 'Ascending') {
+          return a.projectName[0].toLowerCase() < b.projectName[0].toLowerCase() ? -1 : 1;
+        }
+        if (sortedByName === 'Descending') {
+          return a.projectName[0].toLowerCase() < b.projectName[0].toLowerCase() ? 1 : -1;
+        }
+        if (sortedByName === 'SortingByRecentEditedMembers') {
+          return a.membersModifiedDatetime < b.membersModifiedDatetime ? 1 : -1;
+        }
+        if (sortedByName === 'SortingByRecentEditedInventory') {
+          return a.inventoryModifiedDatetime < b.inventoryModifiedDatetime ? 1 : -1;
+        }
+        if (sortedByName === 'SortingByMostActiveMembers') {
+          const lenA = activeMemberCounts[a._id] || 0;
+          const lenB = activeMemberCounts[b._id] || 0;
+          return lenB - lenA; // Most active first
+        }
         return 0;
-      }
-    }).map((project, index) => (
+      })
+      .map((project, index) => (
         <Project
           // key={project._id}
           key={`${project._id}-${project.isActive}`} 
@@ -199,10 +219,10 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
           onClickProjectStatusBtn={onClickProjectStatusBtn}
           darkMode={darkMode}
         />
-    ));
+      ));
     setProjectList(filteredProjects);
     setAllProjects(filteredProjects);
-  }
+  };
 
   const refreshProjects = async () => {
     await props.fetchAllProjects();
@@ -249,70 +269,66 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
     fetchProjects();
   }, [debouncedSearchName, allReduxProjects]);
 
-  const handleSearchName = (searchNameInput) => {
+  const handleSearchName = searchNameInput => {
     setSearchName(searchNameInput);
   };
 
   return (
-    <>
-      <div className={darkMode ? 'bg-oxford-blue text-light' : ''}>
-        <div className={`container py-3 ${darkMode ? 'bg-yinmn-blue-light text-light' : ''}`}>
-          {fetching || !fetched ? <Loading align="center" /> : null}
-          <div className="d-flex align-items-center">
-            <h3 style={{ display: 'inline-block', marginRight: 10 }}>Projects</h3>
-            <EditableInfoModal
-              areaName="projectsInfoModal"
-              areaTitle="Projects"
-              fontSize={30}
-              isPermissionPage={true}
-              role={role}
-              darkMode={darkMode}
-            />
-            <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
+    <div className={darkMode ? 'bg-oxford-blue text-light' : ''}>
+      <div className={`container py-3 ${darkMode ? 'bg-yinmn-blue-light text-light' : ''}`}>
+        {fetching || !fetched ? <Loading align="center" /> : null}
+        <div className="d-flex align-items-center">
+          <h3 style={{ display: 'inline-block', marginRight: 10 }}>Projects</h3>
+          <EditableInfoModal
+            areaName="projectsInfoModal"
+            areaTitle="Projects"
+            fontSize={30}
+            isPermissionPage
+            role={role}
+            darkMode={darkMode}
+          />
+          <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
 
-            {canPostProject ? <AddProject hasPermission={hasPermission} /> : null}
-          </div>
-
-          <SearchProjectByPerson onSearch={handleSearchName} />
-
-          <table className="table table-bordered table-responsive-sm">
-            <thead>
-              <ProjectTableHeader 
-                onChange={onChangeCategory} 
-                selectedValue={categorySelectedForSort} 
-                showStatus={showStatus} 
-                selectStatus={onSelectStatus}
-                sorted={sortedByName}
-                handleSort={handleSort}
-                darkMode={darkMode}
-              />
-            </thead>
-            <tbody className={darkMode ? 'bg-yinmn-blue dark-mode' : ''}>
-              {projectList}
-            </tbody>
-          </table>
+          {canPostProject ? <AddProject hasPermission={hasPermission} /> : null}
         </div>
 
-        <ModalTemplate
-          isOpen={modalData.showModal}
-          closeModal={onCloseModal}
-          confirmModal={modalData.hasConfirmBtn ? confirmArchive : null}
-          setInactiveModal={modalData.hasInactiveBtn ? setProjectStatus : null}
-          setActiveModal={modalData.hasActiveBtn ? setProjectStatus : null}
-          modalMessage={modalData.modalMessage}
-          modalTitle={modalData.modalTitle}
-          darkMode={darkMode}
-          confirmButtonText={isArchiving ? 'Archiving...' : 'Confirm'}
-          isConfirmDisabled={isArchiving}
-          setInactiveButton={isChangingStatus ? 'Setting Inactive' : 'Yes, hide it all'}
-          isSetInactiveDisabled={isChangingStatus}
-          setActiveButton={isChangingStatus ? 'Setting Active' : 'Yes, revive the monster'}
-          isSetActiveDisabled={isChangingStatus}
-        />
+        <SearchProjectByPerson onSearch={handleSearchName} />
+
+        <table className="table table-bordered table-responsive-sm">
+          <thead>
+            <ProjectTableHeader
+              onChange={onChangeCategory}
+              selectedValue={categorySelectedForSort}
+              showStatus={showStatus}
+              selectStatus={onSelectStatus}
+              sorted={sortedByName}
+              handleSort={handleSort}
+              darkMode={darkMode}
+            />
+          </thead>
+          <tbody className={darkMode ? 'bg-yinmn-blue dark-mode' : ''}>{projectList}</tbody>
+        </table>
       </div>
-    </>
+
+      <ModalTemplate
+        isOpen={modalData.showModal}
+        closeModal={onCloseModal}
+        confirmModal={modalData.hasConfirmBtn ? confirmArchive : null}
+        setInactiveModal={modalData.hasInactiveBtn ? setProjectStatus : null}
+        setActiveModal={modalData.hasActiveBtn ? setProjectStatus : null}
+        modalMessage={modalData.modalMessage}
+        modalTitle={modalData.modalTitle}
+        darkMode={darkMode}
+        confirmButtonText={isArchiving ? 'Archiving...' : 'Confirm'}
+        isConfirmDisabled={isArchiving}
+        setInactiveButton={isChangingStatus ? 'Setting Inactive' : 'Yes, hide it all'}
+        isSetInactiveDisabled={isChangingStatus}
+        setActiveButton={isChangingStatus ? 'Setting Active' : 'Yes, revive the monster'}
+        isSetActiveDisabled={isChangingStatus}
+      />
+    </div>
   );
-}
+};
 
 const mapStateToProps = state => {
   return { state };
@@ -325,5 +341,5 @@ export default connect(mapStateToProps, {
   getPopupById,
   hasPermission,
   getProjectsByUsersName,
-  fetchProjectsWithActiveUsers
+  fetchProjectsWithActiveUsers,
 })(Projects);
