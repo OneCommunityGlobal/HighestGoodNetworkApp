@@ -1,12 +1,13 @@
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
-import PasswordInputModal from '../PasswordInputModal';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import PasswordInputModal from '../PasswordInputModal';
 
 jest.mock('axios');
 jest.mock('react-toastify', () => ({
@@ -35,7 +36,7 @@ describe('PasswordInputModal', () => {
       <Provider store={store}>
         <PasswordInputModal
           onClose={mockOnClose}
-          open={true}
+          open
           checkForValidPwd={mockCheckForValidPwd}
           isValidPwd={false}
           setSummaryRecepientsPopup={mockSetSummaryRecepientsPopup}

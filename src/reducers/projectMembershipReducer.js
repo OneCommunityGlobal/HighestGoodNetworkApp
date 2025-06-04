@@ -6,6 +6,8 @@ const allMembershipInital = {
   fetched: false,
   members: [],
   foundUsers: [],
+  foundProjectMembers: [],
+  activeMemberCounts: {},
   error: '',
 };
 
@@ -47,7 +49,19 @@ export const projectMembershipReducer = (allMembership = allMembershipInital, ac
         error: 'none',
       };
     }
-
+    case types.FIND_PROJECT_MEMBERS_START: {
+      return { ...allMembership, fetched: false, fetching: true, error: 'none' };
+    }
+    case types.FIND_PROJECT_MEMBERS_ERROR:
+      return { ...allMembership, fetched: true, fetching: false, error: action.err };
+    case types.FOUND_PROJECT_MEMBERS:
+      return {
+        ...allMembership,
+        foundProjectMembers: action.members,
+        fetched: true,
+        fetching: false,
+        error: 'none',
+      };
     case types.ADD_NEW_MEMBER: {
       return { ...allMembership, members: [action.member, ...allMembership.members] };
     }
@@ -65,6 +79,15 @@ export const projectMembershipReducer = (allMembership = allMembershipInital, ac
       const foundUsers = allMembership.foundUsers.filter(user => user._id !== action.userId);
       return { ...allMembership, foundUsers };
     }
+
+    case types.FETCH_PROJECTS_ACTIVE_USERS_SUCCESS:
+      return {
+        activeMemberCounts: action.payload,
+      };
+    case types.FETCH_PROJECTS_ACTIVE_USERS_ERROR:
+      return {
+        error: action.payload,
+      };
 
     default:
       return allMembership;
