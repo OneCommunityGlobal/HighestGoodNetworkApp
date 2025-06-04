@@ -138,15 +138,29 @@ thead {
 #usermanagement_role,
 #user_role,
 td#usermanagement_role {
-  width: 100px;
-  max-width: 180px;
+  width: 125px !important; 
+  max-width: 125px !important;
+  min-width:125px !important;
   overflow: hidden;
-  text-overflow: ellipsis;
+  text-align: center;
   white-space: nowrap;
+}
+
+td#usermanagement_role svg {
+  font-size: 14px; /* Ensures icon fits within 20px */
 }
 
 #user_role{
   max-width: initial;
+}
+
+.time_difference{
+  cursor: pointer;
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 0.7rem;
+  margin: 2px 4px;
 }
 
 .copy_icon {
@@ -244,7 +258,7 @@ tr:hover {
 
 .setup-invitation-popup-section {
   display: grid;
-  width: 90%;
+  width: 95%;
   margin: 0 auto;
   gap: 10px;
 }
