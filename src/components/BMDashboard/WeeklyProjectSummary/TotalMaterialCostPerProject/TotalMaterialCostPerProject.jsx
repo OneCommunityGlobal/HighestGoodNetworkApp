@@ -11,11 +11,13 @@ import {
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 import './TotalMaterialCostPerProject.css';
+import { useEffect } from 'react';
+import { useMemo } from 'react';
 
 // Register required components
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-const allProjects = [
+const allDemoProjects = [
   { label: 'Website Redesign', value: '1' },
   { label: 'Mobile App', value: '2' },
   { label: 'API Development Marketing Campaign Marketing Campaign', value: '3' },
@@ -64,43 +66,66 @@ const options = {
 };
 
 function TotalMaterialCostPerProject() {
-  const [selectedProjects, setSelectedProjects] = useState(allProjects);
+  const [dataLoaded, setDataLoaded] = useState(false);
+  const [allProjects, setAllProjects] = useState([]);
+  const [selectedProjects, setSelectedProjects] = useState([]);
 
-  const data = {
-    labels: selectedProjects.map(p => p.label),
-    datasets: [
-      {
-        label: 'Total Material Cost (*1000$)',
-        data: selectedProjects.map(p => projectCosts[p.value]),
-        backgroundColor: 'rgba(20, 137, 175, 1)',
-        borderRadius: 10,
-      },
-    ],
-  };
+  // eslint-disable-next-line no-promise-executor-return
+  const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+  useEffect(() => {
+    const run = async () => {
+      await sleep(3000);
+      setSelectedProjects(allDemoProjects);
+      setAllProjects(allDemoProjects);
+      setDataLoaded(true);
+    };
+    run();
+  }, []);
+
+  const data = useMemo(() => {
+    return {
+      labels: selectedProjects.map(p => p.label),
+      datasets: [
+        {
+          label: 'Total Material Cost (*1000$)',
+          data: selectedProjects.map(p => projectCosts[p.value]),
+          backgroundColor: 'rgba(20, 137, 175, 1)',
+          borderRadius: 10,
+        },
+      ],
+    };
+  }, [selectedProjects]);
 
   return (
     <div className="total-material-cost-per-project">
       <h2 className="total-material-cost-per-project-chart-title">
         Total Material Cost Per Project
       </h2>
-      <Select
-        isMulti
-        isSearchable
-        options={allProjects}
-        value={selectedProjects}
-        onChange={setSelectedProjects}
-        className="basic-multi-select"
-        classNamePrefix="select"
-        defaultValue={allProjects}
-        placeholder="All Projects"
-        closeMenuOnSelect={false}
-        hideSelectedOptions={false}
-      />
-      <div style={{ overflowX: 'auto' }}>
-        <div style={{ minWidth: `${selectedProjects.length * 20}px`, minHeight: '300px' }}>
-          <Bar data={data} options={options} />
-        </div>
-      </div>
+      {dataLoaded ? (
+        <>
+          <Select
+            isMulti
+            isSearchable
+            options={allProjects}
+            value={selectedProjects}
+            onChange={setSelectedProjects}
+            className="basic-multi-select"
+            classNamePrefix="select"
+            defaultValue={allProjects}
+            placeholder="Select Projects"
+            closeMenuOnSelect={false}
+            hideSelectedOptions={false}
+          />
+          <div style={{ overflowX: 'auto' }}>
+            <div style={{ minWidth: `${selectedProjects.length * 20}px`, minHeight: '300px' }}>
+              <Bar data={data} options={options} />
+            </div>
+          </div>
+        </>
+      ) : (
+        <p>Loading data...</p>
+      )}
     </div>
   );
 }
