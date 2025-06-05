@@ -185,6 +185,7 @@ select {
   margin-top: -14px;
 }
 
+
 @media screen and (max-width: 480px) {
   .job-list {
     grid-template-columns: 1fr;
@@ -280,3 +281,4 @@ select {
     font-size: 14px;
   }
 }
+
