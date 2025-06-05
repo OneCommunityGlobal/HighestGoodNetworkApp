@@ -81,6 +81,7 @@ import AddTool from './components/BMDashboard/Tools/AddTool';
 import AddTeamMember from './components/BMDashboard/AddTeamMember/AddTeamMember';
 import BMTimeLogger from './components/BMDashboard/BMTimeLogger/BMTimeLogger';
 import Issue from './components/BMDashboard/Issue/Issue';
+import LessonsLearntChart from 'components/BMDashboard/LessonsLearnt/LessonsLearntChart';
 
 // Community Portal
 import CPProtectedRoute from './components/common/CPDashboard/CPProtectedRoute';
@@ -386,6 +387,7 @@ export default (
         {/* ----- BEGIN BM Dashboard Routing ----- */}
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
         <Route path="/bmdashboard/login" component={BMLogin} />
+        <Route path="/LessonsLearntChart" component={LessonsLearntChart} />
 
         <BMProtectedRoute
           path="/bmdashboard/materials/purchase"
