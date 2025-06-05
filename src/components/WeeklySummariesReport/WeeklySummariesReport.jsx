@@ -88,6 +88,7 @@ const initialState = {
   replaceCodeError: null,
   replaceCodeLoading: false,
   allRoleInfo: [],
+  teamCodeWarningUsers: [],
   loadedTabs: [navItems[1]], // Initialize with default tab
   summariesByTab: {}, // Store tab-specific data
   tabsLoading: { [navItems[1]]: false }, // Track loading state per tab
@@ -366,6 +367,7 @@ const WeeklySummariesReport = props => {
         COLORS,
         colorOptions,
         teamCodes,
+        teamCodeWarningUsers: summariesCopy.filter(s => s.teamCodeWarning),
         auth,
         tabsLoading: {
           [activeTab]: false,
@@ -832,57 +834,109 @@ const WeeklySummariesReport = props => {
 
   const handleAllTeamCodeReplace = async () => {
     try {
-      const { replaceCode } = state;
-      setState(prevState => ({
-        ...prevState,
+      const { replaceCode, selectedCodes, summaries, teamCodes, teamCodeWarningUsers } = state;
+
+      setState(prev => ({
+        ...prev,
         replaceCodeLoading: true,
       }));
-      const boolean = fullCodeRegex.test(replaceCode);
-      if (boolean) {
-        const userIds = state.selectedCodes.flatMap(item => item._ids);
-        const url = ENDPOINTS.USERS_ALLTEAMCODE_CHANGE;
-        const payload = {
-          userIds,
-          replaceCode,
-        };
-        try {
-          const data = await axios.patch(url, payload);
-          const userObjs = userIds.reduce((acc, curr) => {
-            acc[curr] = true;
-            return acc;
-          }, {});
-          if (data?.data?.isUpdated) {
-            handleTeamCodeChange('', replaceCode, userObjs);
-            setState(prev => ({
-              ...prev,
-              replaceCode: '',
-              replaceCodeError: null,
-            }));
-          } else {
-            setState(prev => ({
-              ...prev,
-              replaceCode: '',
-              replaceCodeError: 'Update failed Please try again with another code!',
-            }));
-          }
-        } catch (err) {
-          setState(prev => ({
-            ...prev,
-            replaceCode: '',
-            replaceCodeError: err.toJSON().message,
-          }));
-        }
-      } else {
+
+      const isValidCode = fullCodeRegex.test(replaceCode);
+      if (!isValidCode) {
         setState(prev => ({
           ...prev,
           replaceCodeError: 'NOT SAVED! The code must be between 5 and 7 characters long.',
+        }));
+        return;
+      }
+
+      const oldTeamCodes = selectedCodes.map(code => code.value);
+
+      const warningUsersToSend = teamCodeWarningUsers
+        .filter(user => oldTeamCodes.includes(user.teamCode))
+        .map(user => user._id);
+
+      const response = await axios.post(ENDPOINTS.REPLACE_TEAM_CODE, {
+        oldTeamCodes,
+        newTeamCode: replaceCode,
+        warningUsers: warningUsersToSend,
+      });
+
+      if (response.data?.updatedUsers?.length > 0) {
+        const { updatedUsers } = response.data;
+
+        const updatedSummaries = summaries.map(summary => {
+          const updateInfo = updatedUsers.find(user => user.userId === summary._id);
+          if (updateInfo) {
+            return {
+              ...summary,
+              teamCode: replaceCode,
+              teamCodeWarning: updateInfo.teamCodeWarning,
+            };
+          }
+          return summary;
+        });
+
+        const updatedTeamCodes = teamCodes
+          .filter(teamCode => !oldTeamCodes.includes(teamCode.value))
+          .concat({
+            value: replaceCode,
+            label: `${replaceCode} (${
+              updatedSummaries.filter(s => s.teamCode === replaceCode).length
+            })`,
+            _ids: updatedSummaries.filter(s => s.teamCode === replaceCode).map(s => s._id),
+          });
+
+        const updatedSelectedCodes = selectedCodes
+          .filter(code => !oldTeamCodes.includes(code.value))
+          .concat({
+            value: replaceCode,
+            label: `${replaceCode} (${
+              updatedSummaries.filter(s => s.teamCode === replaceCode).length
+            })`,
+            _ids: updatedSummaries.filter(s => s.teamCode === replaceCode).map(s => s._id),
+          });
+
+        const updatedWarningUsers = [...teamCodeWarningUsers];
+        updatedUsers.forEach(({ userId, teamCodeWarning }) => {
+          const existingIndex = updatedWarningUsers.findIndex(user => user._id === userId);
+
+          if (teamCodeWarning) {
+            if (existingIndex !== -1) {
+              updatedWarningUsers[existingIndex].teamCodeWarning = true;
+            } else {
+              const userProfile = summaries.find(summary => summary._id === userId);
+              if (userProfile) {
+                userProfile.teamCodeWarning = true;
+                updatedWarningUsers.push({ ...userProfile });
+              }
+            }
+          } else if (existingIndex !== -1) {
+            updatedWarningUsers.splice(existingIndex, 1);
+          }
+        });
+
+        setState(prev => ({
+          ...prev,
+          summaries: updatedSummaries,
+          teamCodes: updatedTeamCodes,
+          selectedCodes: updatedSelectedCodes,
+          replaceCode: '',
+          replaceCodeError: null,
+          teamCodeWarningUsers: updatedWarningUsers,
+        }));
+
+        filterWeeklySummaries();
+      } else {
+        setState(prev => ({
+          ...prev,
+          replaceCodeError: 'No users found with the selected team codes.',
         }));
       }
     } catch (error) {
       setState(prev => ({
         ...prev,
-        replaceCode: '',
-        replaceCodeError: 'Something went wrong please try again!',
+        replaceCodeError: 'Something went wrong. Please try again!',
       }));
     } finally {
       setState(prev => ({
@@ -1066,28 +1120,60 @@ const WeeklySummariesReport = props => {
         </Col>
       </Row>
       <Row>
-        <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }} xs={{ size: 6 }}>
+        <Col
+          lg={{ size: 5, offset: 1 }}
+          md={{ size: 6 }}
+          xs={{ size: 6 }}
+          style={{ position: 'relative' }}
+        >
+          {state.teamCodeWarningUsers.length > 0 && (
+            <>
+              <i
+                className="fa fa-info-circle text-danger"
+                data-tip
+                data-placement="top"
+                data-for="teamCodeWarningTooltip"
+                style={{
+                  position: 'absolute',
+                  left: '-25px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  fontSize: '20px',
+                  cursor: 'pointer',
+                }}
+              />
+              <ReactTooltip id="teamCodeWarningTooltip" place="top" effect="solid">
+                {state.teamCodeWarningUsers.length} users have mismatched team codes!
+              </ReactTooltip>
+            </>
+          )}
           <MultiSelect
-            className="multi-select-filter text-dark"
-            options={state.teamCodes}
+            className={`multi-select-filter text-dark ${darkMode ? 'dark-mode' : ''} ${
+              state.teamCodeWarningUsers.length > 0 ? 'warning-border' : ''
+            }`}
+            options={state.teamCodes.map(item => {
+              const [code, count] = item.label.split(' (');
+              return {
+                ...item,
+                label: `${code.padEnd(10, ' ')} (${count}`,
+              };
+            })}
             value={state.selectedCodes}
-            onChange={e => {
-              handleSelectCodeChange(e);
-            }}
+            onChange={handleSelectCodeChange}
             labelledBy="Select"
           />
         </Col>
+
         <Col lg={{ size: 5 }} md={{ size: 6, offset: -1 }} xs={{ size: 6, offset: -1 }}>
           <MultiSelect
-            className="multi-select-filter text-dark"
+            className={`multi-select-filter text-dark ${darkMode ? 'dark-mode' : ''}`}
             options={state.colorOptions}
             value={state.selectedColors}
-            onChange={e => {
-              handleSelectColorChange(e);
-            }}
+            onChange={handleSelectColorChange}
           />
         </Col>
       </Row>
+
       {state.chartShow && (
         <Row>
           <Col lg={{ size: 6, offset: 1 }} md={{ size: 12 }} xs={{ size: 11 }}>
