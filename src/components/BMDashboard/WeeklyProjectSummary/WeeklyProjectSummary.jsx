@@ -9,6 +9,7 @@ import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
 import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
 import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
+import ToolsHorizontalBarChart from './Tools/ToolsHorizontalBarChart';
 
 const projectStatusButtons = [
   {
@@ -197,14 +198,14 @@ export default function WeeklyProjectSummary() {
         title: 'Tools and Equipment Tracking',
         key: 'Tools and Equipment Tracking',
         className: 'half',
-        content: [1, 2].map(() => {
-          const uniqueId = uuidv4();
-          return (
-            <div key={uniqueId} className="weekly-project-summary-card normal-card">
-              📊 Card
+        content: (
+          <>
+            <div className="weekly-project-summary-card normal-card">
+              <ToolsHorizontalBarChart darkMode={darkMode} />
             </div>
-          );
-        }),
+            <div className="weekly-project-summary-card normal-card">📊 Card</div>
+          </>
+        ),
       },
       {
         title: 'Lessons Learned',
@@ -269,7 +270,7 @@ export default function WeeklyProjectSummary() {
         }),
       },
     ],
-    [quantityOfMaterialsUsedData],
+    [quantityOfMaterialsUsedData, darkMode],
   );
 
   const handleSaveAsPDF = async () => {
