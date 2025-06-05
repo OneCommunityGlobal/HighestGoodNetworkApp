@@ -380,7 +380,7 @@ export const createNewBadge = newBadge => async dispatch => {
 export const updateBadge = (badgeId, badgeData) => async dispatch => {
   try {
     await axios.put(ENDPOINTS.BADGE_BY_ID(badgeId), badgeData);
-    // dispatch(fetchAllBadges());
+    dispatch(fetchAllBadges());
   } catch (e) {
     if (e.response.status === 403 || e.response.status === 400) {
       dispatch(getMessage(e.response.data.error, 'danger'));
