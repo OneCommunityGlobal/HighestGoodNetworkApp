@@ -59,7 +59,7 @@ import { timeOffRequestsReducer } from './timeOffRequestReducer';
 import { totalOrgSummaryReducer } from './totalOrgSummaryReducer';
 import { allUsersTimeEntriesReducer } from './allUsersTimeEntriesReducer';
 import HGNFormReducer from './hgnFormReducers';
-import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
+// import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
 
 // community portal
 import noShowVizReducer from './communityPortal/noShowVizReducer';
@@ -118,7 +118,6 @@ const localReducers = {
 
   bmProjectMembers: bmProjectMemberReducer,
   bmTimeLogger: bmTimeLoggerReducer,
-
 };
 
 const sessionReducers = {
