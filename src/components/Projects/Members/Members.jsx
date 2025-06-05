@@ -68,7 +68,7 @@ const Members = props => {
 
   // avoid re-filtering the netire list on every render
   const displayedMembers = useMemo(
-    () => (showActiveMembersOnly ? membersList.filter(member => member.isActive) : membersList),
+    () => (showActiveMembersOnly ? membersList?.filter(member => member.isActive) : membersList),
     [membersList, showActiveMembersOnly]
   );
 

@@ -17,6 +17,7 @@ import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import { isString } from 'lodash';
 import { toast } from 'react-toastify';
+import { useDispatch } from 'react-redux';
 
 const Name = props => {
   const {
@@ -356,6 +357,14 @@ const BasicInformationTab = props => {
   const [timeZoneFilter, setTimeZoneFilter] = useState('');
   const [desktopDisplay, setDesktopDisplay] = useState(window.innerWidth > 1024);
   const [errorOccurred, setErrorOccurred] = useState(false);
+  const dispatch = useDispatch();
+  const rolesAllowedToEditStatusFinalDay = ['Administrator', 'Owner'];
+  const canEditStatus =
+  rolesAllowedToEditStatusFinalDay.includes(role) || dispatch(hasPermission('pauseUserActivity'));
+
+  const canEditEndDate =
+  rolesAllowedToEditStatusFinalDay.includes(role) || dispatch(hasPermission('setUserFinalDay'));
+
 
   let topMargin = '6px';
   if (isUserSelf) {
@@ -722,77 +731,32 @@ const BasicInformationTab = props => {
 
   const endDateComponent = (
     <>
-      {desktopDisplay ? (
-        <Row
-          style={{
-            display: 'flex',
-            alignItems: 'center', // Ensures vertical alignment of the label and button
-            justifyContent: 'space-between', // Adds spacing between label and button
-          }}
-        >
-          <Col
-            md="7"
-            className="mr-5"
-            style={{
-              display: 'flex',
-              alignItems: 'center', // Align items vertically
-            }}
-          >
-            <Label style={{ margin: '0' }} className={`mr-1 ${darkMode ? 'text-light' : ''}`}>
-              {userProfile.endDate
-                ? 'End Date ' + formatDateLocal(userProfile.endDate)
-                : 'End Date ' + 'N/A'}
-            </Label>
-          </Col>
-          {canEdit && (
-            <Col
-              style={{
-                display: 'flex',
-                justifyContent: 'flex-end', // Align button to the far right
-                alignItems: 'center', // Align button vertically
-              }}
-            >
-              <SetUpFinalDayButton
-                loadUserProfile={loadUserProfile}
-                setUserProfile={setUserProfile}
-                isBigBtn={true}
-                userProfile={userProfile}
-                darkMode={darkMode}
-              />
-            </Col>
-          )}
-        </Row>
-      ) : (
-        // Non-desktop view logic (unchanged for now)
-        <>
-          <Col md={desktopDisplay ? '8' : ''} className={desktopDisplay ? 'mr-5' : ''}>
-            <Label className={`mr-1 ${darkMode ? 'text-light' : ''}`}>
-              {userProfile.endDate
-                ? 'End Date ' + formatDateLocal(userProfile.endDate)
-                : 'End Date ' + 'N/A'}
-            </Label>
-            {canEdit && !desktopDisplay && (
-              <SetUpFinalDayButton
-                loadUserProfile={loadUserProfile}
-                setUserProfile={setUserProfile}
-                isBigBtn={true}
-                userProfile={userProfile}
-                darkMode={darkMode}
-              />
-            )}
-          </Col>
-          {desktopDisplay && canEdit && (
-            <Col>
-              <SetUpFinalDayButton
-                loadUserProfile={loadUserProfile}
-                setUserProfile={setUserProfile}
-                isBigBtn={true}
-                userProfile={userProfile}
-                darkMode={darkMode}
-              />
-            </Col>
-          )}
-        </>
+      <Col md={desktopDisplay ? '8' : ''} className={desktopDisplay ? 'mr-5' : ''}>
+        <Label className={`mr-1 ${darkMode ? 'text-light' : ''}`}>
+          {userProfile.endDate
+            ? 'End Date ' + formatDateLocal(userProfile.endDate)
+            : 'End Date ' + 'N/A'}
+        </Label>
+        {canEdit && canEditEndDate &&!desktopDisplay && (
+          <SetUpFinalDayButton
+            loadUserProfile={loadUserProfile}
+            setUserProfile={setUserProfile}
+            isBigBtn={true}
+            userProfile={userProfile}
+            darkMode={darkMode}
+          />
+        )}
+      </Col>
+      {desktopDisplay && canEdit && canEditEndDate && (
+        <Col>
+          <SetUpFinalDayButton
+            loadUserProfile={loadUserProfile}
+            setUserProfile={setUserProfile}
+            isBigBtn={true}
+            userProfile={userProfile}
+            darkMode={darkMode}
+          />
+        </Col>
       )}
     </>
   );
@@ -837,8 +801,8 @@ const BasicInformationTab = props => {
                 ? 'Paused until ' + formatDateLocal(userProfile.reactivationDate)
                 : 'Inactive'}
             </Label>
-            &nbsp; &nbsp;
-            {canEdit && (
+            &nbsp;
+            {canEdit && canEditStatus && (
               <PauseAndResumeButton
                 setUserProfile={setUserProfile}
                 loadUserProfile={loadUserProfile}
@@ -863,7 +827,7 @@ const BasicInformationTab = props => {
                   : 'Inactive'}
               </Label>
               &nbsp;
-              {canEdit && (
+              {canEdit && canEditStatus && (
                 <PauseAndResumeButton
                   setUserProfile={setUserProfile}
                   loadUserProfile={loadUserProfile}
