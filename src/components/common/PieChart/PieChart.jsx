@@ -194,31 +194,69 @@ export function PieChart({
       <div id={`pie-chart-container-${pieChartId}`} className="pie-chart" />
       <div className="pie-chart-legend-container">
         <div className="pie-chart-legend-table-wrapper">
-          <table className={darkMode ? 'pie-chart-legend-table-dark' : 'pie-chart-legend-table'}>
-            <thead>
-              <tr>
-                <th>Color</th>
-                <th>Project Name</th>
-                <th>Hours</th>
-              </tr>
-            </thead>
-            <tbody>
-              {tasksData?.map(project => (
-                <tr key={project.projectId}>
-                  <td>
-                    <div
-                      id="project-chart-legend"
-                      style={{ backgroundColor: `${color(project.projectId)}` }}
-                    />
-                  </td>
-                  <td>{project.projectName}</td>
-                  <td>{project.totalTime.toFixed(2)} </td>
-                </tr>
+          {tasksData.length > 10 ? (
+            <div style={{ display: 'flex', gap: '24px' }}>
+              {[0, 1].map(col => (
+                <table
+                  key={col}
+                  className={darkMode ? 'pie-chart-legend-table-dark' : 'pie-chart-legend-table'}
+                  style={{ width: 'auto' }}
+                >
+                  <thead>
+                    <tr>
+                      <th>Color</th>
+                      <th>Task Name</th>
+                      <th>Hours</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {tasksData
+                      .slice(
+                        col === 0 ? 0 : Math.ceil(tasksData.length / 2),
+                        col === 0 ? Math.ceil(tasksData.length / 2) : tasksData.length
+                      )
+                      .map(task => (
+                        <tr key={task.taskId || task.projectId}>
+                          <td>
+                            <div
+                              id="project-chart-legend"
+                              style={{ backgroundColor: `${color(task.taskId || task.projectId)}` }}
+                            />
+                          </td>
+                          <td>{task.taskName || task.projectName}</td>
+                          <td>{task.totalTime.toFixed(2)}</td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
               ))}
-            </tbody>
-          </table>
+            </div>
+          ) : (
+            <table className={darkMode ? 'pie-chart-legend-table-dark' : 'pie-chart-legend-table'}>
+              <thead>
+                <tr>
+                  <th>Color</th>
+                  <th>Task Name</th>
+                  <th>Hours</th>
+                </tr>
+              </thead>
+              <tbody>
+                {tasksData?.map(task => (
+                  <tr key={task.taskId || task.projectId}>
+                    <td>
+                      <div
+                        id="project-chart-legend"
+                        style={{ backgroundColor: `${color(task.taskId || task.projectId)}` }}
+                      />
+                    </td>
+                    <td>{task.taskName || task.projectName}</td>
+                    <td>{task.totalTime.toFixed(2)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
-
         <div className="data-total-value">
           <strong>Total Hours:</strong> {totalHours.toFixed(2)}
         </div>
