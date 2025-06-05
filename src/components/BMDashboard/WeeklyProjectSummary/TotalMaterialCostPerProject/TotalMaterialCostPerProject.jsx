@@ -10,9 +10,12 @@ import {
   Legend,
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
+import { toast } from 'react-toastify';
+import axios from 'axios';
 import './TotalMaterialCostPerProject.css';
 import { useEffect } from 'react';
 import { useMemo } from 'react';
+import { ENDPOINTS } from 'utils/URL';
 
 // Register required components
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
@@ -28,7 +31,7 @@ const allDemoProjects = [
   { label: 'Marketing', value: '8' },
 ];
 
-const projectCosts = {
+const projectDemoCosts = {
   '1': 1200,
   '2': 2500,
   '3': 1800,
@@ -68,19 +71,46 @@ const options = {
 function TotalMaterialCostPerProject() {
   const [dataLoaded, setDataLoaded] = useState(false);
   const [allProjects, setAllProjects] = useState([]);
+  const [projectCosts, setProjectCosts] = useState({});
   const [selectedProjects, setSelectedProjects] = useState([]);
 
-  // eslint-disable-next-line no-promise-executor-return
-  const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
-
   useEffect(() => {
-    const run = async () => {
-      await sleep(3000);
-      setSelectedProjects(allDemoProjects);
-      setAllProjects(allDemoProjects);
-      setDataLoaded(true);
+    const fetchData = async () => {
+      setDataLoaded(false);
+      try {
+        axios.get(ENDPOINTS.BM_PROJECTS_LIST_FOR_MATERIALS_COST).then(res => {
+          // eslint-disable-next-line no-console
+          console.log(res.data);
+          const projectsFilteredData = res.data.map(project => ({
+            value: project.projectId,
+            label: project.projectName,
+          }));
+          // eslint-disable-next-line no-console
+          console.log(projectsFilteredData);
+          setSelectedProjects(projectsFilteredData);
+          setAllProjects(projectsFilteredData);
+        });
+        axios.get(ENDPOINTS.BM_PROJECT_MATERIALS_COST).then(res => {
+          const projectCostsData = res.data.reduce((acc, item) => {
+            acc[item.projectId] = item.totalCostK;
+            return acc;
+          }, {});
+          // eslint-disable-next-line no-console
+          console.log(projectCostsData);
+          setProjectCosts(projectCostsData);
+        });
+      } catch (error) {
+        toast.info('Error fetching data:', error);
+        // Fall back to mock data if API is unavailable
+        toast.info('Using mock data as fallback');
+        setSelectedProjects(allDemoProjects);
+        setAllProjects(allDemoProjects);
+        setProjectCosts(projectDemoCosts);
+      } finally {
+        setDataLoaded(true);
+      }
     };
-    run();
+    fetchData();
   }, []);
 
   const data = useMemo(() => {
@@ -95,7 +125,7 @@ function TotalMaterialCostPerProject() {
         },
       ],
     };
-  }, [selectedProjects]);
+  }, [selectedProjects, projectCosts]);
 
   return (
     <div className="total-material-cost-per-project">
