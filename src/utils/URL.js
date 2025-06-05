@@ -292,6 +292,8 @@ export const ENDPOINTS = {
   LB_LISTINGS: `${APIEndpoint}/lb/getListings`,
   LB_LISTINGS_BASE: `${APIEndpoint}/lb`,
   HELP_CATEGORIES: `${APIEndpoint}/help-categories`,
+  POST_WEEKLY_SUMMARIES_REPORT_FILTERS: () => `${APIEndpoint}/reports/weeklysummaries/userfilters`,
+  GET_USER_WEEKLY_SUMMARY_FILTER: () => `${APIEndpoint}/reports/weeklysummaries/getuserfilters`
 };
 
 export const ApiEndpoint = APIEndpoint;

@@ -32,7 +32,11 @@ import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfo
 import { getAllUserTeams, getAllTeamCode } from '../../actions/allTeamsAction';
 import TeamChart from './TeamChart';
 import SkeletonLoading from '../common/SkeletonLoading';
-import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
+import {
+  getWeeklySummariesReport,
+  postWeeklySummaryFilters,
+  getUserWeeklySummaryFilters,
+} from '../../actions/weeklySummariesReport';
 import WeeklySummaryRecipientsPopup from './WeeklySummaryRecepientsPopup';
 import FormattedReport from './FormattedReport';
 import GeneratePdfReport from './GeneratePdfReport';
@@ -42,6 +46,11 @@ import { fetchAllBadges } from '../../actions/badgeManagement';
 import PasswordInputModal from './PasswordInputModal';
 import SelectTeamPieChart from './SelectTeamPieChart';
 import { setTeamCodes } from '../../actions/teamCodes';
+import {
+  WeeklySummaryFilterActionButtons,
+  WeeklySummaryFilterModal,
+  WeeklySummaryFilterLinksList,
+} from './WeeklySummaryFiltersComp';
 import './WeeklySummariesReport.css';
 
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
@@ -965,8 +974,8 @@ const WeeklySummariesReport = props => {
     state.activeTab,
   ]);
   const { role, darkMode } = props;
-  const { error } = props;
-  const hasPermissionToFilter = role === 'Owner' || role === 'Administrator';
+  const { error, savedWeeklySummaryFilters } = props;
+  const hasPermissionToFilter = hasPermission('editTeamCode');
   const { authEmailWeeklySummaryRecipient } = props;
   const authorizedUser1 = 'jae@onecommunityglobal.org';
   const authorizedUser2 = 'sucheta_mu@test.com';
@@ -998,6 +1007,26 @@ const WeeklySummariesReport = props => {
       </Container>
     );
   }
+
+  const onClickFilterHandler = (index, data) => {
+    const savedFilters = props.savedWeeklySummaryFilters?.getFilters?.records || [];
+    for (let i = 0; i < savedFilters.length; i += 1) {
+      if (index === i) {
+        document.querySelector(`.filter-link_${index}`).classList.add('selected');
+      } else {
+        document.querySelector(`.filter-link_${i}`).classList.remove('selected');
+      }
+    }
+    setState(prev => ({
+      ...prev,
+      selectedCodes: data.codes,
+      selectedColors: data.colors,
+      selectedBioStatus: data.filterByBioStatus,
+      selectedOverTime: data.filterByOverHours,
+      selectedFilterId: data._id,
+      filterNameForSummary: data.filterName,
+    }));
+  };
 
   return (
     <Container
@@ -1040,6 +1069,16 @@ const WeeklySummariesReport = props => {
           </Button>
         </Row>
       )}
+      <Row>
+        <Col lg={{ size: 10, offset: 1 }}>
+          <WeeklySummaryFilterLinksList
+            availableFilters={savedWeeklySummaryFilters?.getFilters?.records || []}
+            onClickHandler={(index, data) => {
+              onClickFilterHandler(index, data);
+            }}
+          />
+        </Col>
+      </Row>
       <Row>
         <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }} xs={{ size: 6 }}>
           <div className="filter-container-teamcode">
@@ -1106,6 +1145,39 @@ const WeeklySummariesReport = props => {
       <Row style={{ marginBottom: '10px' }}>
         <Col lg={{ size: 10, offset: 1 }} xs={{ size: 8, offset: 4 }}>
           <div className="filter-container">
+            {hasPermissionToFilter && (
+              <WeeklySummaryFilterActionButtons
+                selectedFilterId={state.selectedFilterId}
+                selectedCodes={state.selectedCodes}
+                onClickActionHandler={flow => {
+                  if (flow === 'update') {
+                    const obj = {
+                      codes: state.selectedCodes,
+                      colors: state.selectedColors,
+                      filterName: state.filterNameForSummary,
+                      filterByBioStatus: state.selectedBioStatus,
+                      filterByOverHours: state.selectedOverTime,
+                    };
+                    const req = {
+                      flow: 'Update',
+                      recordId: state.selectedFilterId,
+                      filters: obj,
+                    };
+                    props.postWeeklySummaryFilters(req);
+                  } else if (flow === 'Save') {
+                    setState(prev => ({ ...prev, showFilterModal: true }));
+                  } else {
+                    const req = {
+                      flow: 'Delete',
+                      recordId: state.selectedFilterId,
+                      filters: {},
+                    };
+                    setState(prev => ({ ...prev, selectedCodes: [] }));
+                    props.postWeeklySummaryFilters(req);
+                  }
+                }}
+              />
+            )}
             {(hasPermissionToFilter || props.hasPermission('highlightEligibleBios')) && (
               <div className="filter-style margin-right">
                 <span>Filter by Bio Status</span>
@@ -1290,6 +1362,26 @@ const WeeklySummariesReport = props => {
                 )}
               </WeeklySummariesReportTab>
             ))}
+            <WeeklySummaryFilterModal
+              showFilterModal={state.showFilterModal}
+              darkMode={darkMode}
+              inputChange={val => setState(prev => ({ ...prev, filterNameForSummary: val }))}
+              modalClose={() => setState(prev => ({ ...prev, showFilterModal: false }))}
+              boxStyleDark={boxStyleDark}
+              boxStyle={boxStyle}
+              onSaveFilter={() => {
+                const obj = {
+                  codes: state.selectedCodes,
+                  colors: state.selectedColors,
+                  filterName: state.filterNameForSummary,
+                  filterByBioStatus: state.selectedBioStatus,
+                  filterByOverHours: state.selectedOverTime,
+                };
+                const req = { flow: 'Save', recordId: null, filters: obj };
+                setState(prev => ({ ...prev, showFilterModal: false }));
+                props.postWeeklySummaryFilters(req);
+              }}
+            />
           </TabContent>
         </Col>
       </Row>
@@ -1314,6 +1406,8 @@ const mapStateToProps = state => ({
   auth: state?.auth || {},
   darkMode: state?.theme?.darkMode || false,
   authEmailWeeklySummaryRecipient: state?.auth?.user?.email || '',
+  weeklySummaryFiltersSaved: state.weeklySummaries.weeklySummaryFiltersSaved,
+  savedWeeklySummaryFilters: state.weeklySummaries.savedWeeklySummaryFilters,
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -1324,6 +1418,8 @@ const mapDispatchToProps = dispatch => ({
   getAllUserTeams: () => dispatch(getAllUserTeams()),
   getAllTeamCode: () => dispatch(getAllTeamCode()),
   setTeamCodes: teamCodes => dispatch(setTeamCodes(teamCodes)),
+  postWeeklySummaryFilters: request => dispatch(postWeeklySummaryFilters(request)),
+  getUserWeeklySummaryFilters: () => dispatch(getUserWeeklySummaryFilters()),
 });
 
 function WeeklySummariesReportTab({ tabId, hidden, children }) {
