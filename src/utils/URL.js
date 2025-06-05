@@ -51,6 +51,13 @@ export const ENDPOINTS = {
   FORCE_PASSWORD: `${APIEndpoint}/forcepassword`,
   LEADER_BOARD: userId => `${APIEndpoint}/dashboard/leaderboard/${userId}`,
   ORG_DATA: `${APIEndpoint}/dashboard/leaderboard/org/data`,
+
+  // Questionnaire endpoints
+  QUESTIONNAIRE_FEEDBACK_REQUEST: () => `${APIEndpoint}/dashboard/questionaire/feedbackrequest`,
+  QUESTIONNAIRE_CLOSE_PERMANENTLY: () =>
+    `${APIEndpoint}/dashboard/questionaire/checkUserFoundHelpSomewhere`,
+  QUESTIONNAIRE_USER_NAMES_LIST: () => `${APIEndpoint}/dashboard/questionaire/userNamesList`,
+
   TIME_ENTRIES_PERIOD: (userId, fromDate, toDate) =>
     `${APIEndpoint}/TimeEntry/user/${userId}/${fromDate}/${toDate}`,
   TIME_ENTRIES_USERS_HOURS_PERIOD: `${APIEndpoint}/TimeEntry/users/totalHours`,
@@ -99,8 +106,9 @@ export const ENDPOINTS = {
   TOTAL_ORG_SUMMARY: (startDate, endDate, comparisonStartDate, comparisonEndDate) =>
     `${APIEndpoint}/reports/volunteerstats?startDate=${startDate}&endDate=${endDate}&comparisonStartDate=${comparisonStartDate}&comparisonEndDate=${comparisonEndDate}`,
   VOLUNTEER_TRENDS: (timeFrame, offset, customStartDate, customEndDate) =>
-    `${APIEndpoint}/reports/volunteertrends?timeFrame=${timeFrame}&offset=${offset}${customStartDate ? `&customStartDate=${customStartDate}` : ''}${customEndDate ? `&customEndDate=${customEndDate}` : ''}`
-  ,
+    `${APIEndpoint}/reports/volunteertrends?timeFrame=${timeFrame}&offset=${offset}${
+      customStartDate ? `&customStartDate=${customStartDate}` : ''
+    }${customEndDate ? `&customEndDate=${customEndDate}` : ''}`,
   HOURS_TOTAL_ORG_SUMMARY: (startDate, endDate) =>
     `${APIEndpoint}/reports/overviewsummaries/taskandprojectstats?startDate=${startDate}&endDate=${endDate}`,
   VOLUNTEER_ROLES_TEAM_STATS: (endDate, activeMembersMinimum) =>
@@ -281,7 +289,8 @@ export const ENDPOINTS = {
   // lb dashboard endpoints
   LB_REGISTER: `${APIEndpoint}/lbdashboard/register`,
   LB_LOGIN: `${APIEndpoint}/lbdashboard/login`,
-
+  LB_LISTINGS: `${APIEndpoint}/lb/getListings`,
+  LB_LISTINGS_BASE: `${APIEndpoint}/lb`,
   HELP_CATEGORIES: `${APIEndpoint}/help-categories`,
 };
 
