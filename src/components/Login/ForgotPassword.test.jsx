@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { mount, shallow } from 'enzyme';
 import { Provider } from 'react-redux';
@@ -78,8 +79,11 @@ describe('ForgotPassword', () => {
     firstNameInput.simulate('change', { target: { name: 'firstName', value: '' } });
     lastNameInput.simulate('change', { target: { name: 'lastName', value: '' } });
 
+    // eslint-disable-next-line no-unused-vars
     const emailErrorMessage = forgotPassword.find('.alert.alert-danger').at(0);
+    // eslint-disable-next-line no-unused-vars
     const firstNameErrorMessage = forgotPassword.find('.alert.alert-danger').at(1);
+    // eslint-disable-next-line no-unused-vars
     const lastNameErrorMessage = forgotPassword.find('.alert.alert-danger').at(2);
   });
 });

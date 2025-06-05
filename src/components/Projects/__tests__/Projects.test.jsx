@@ -40,15 +40,15 @@ beforeEach(() => {
   store = mockStore({
     auth: auth,
     theme: theme,
-    projectTarget:{projectId:"project123",projectName:"project name 1"},
+    projectTarget: { projectId: "project123", projectName: "project name 1" },
     projectInfoModal: false,
-    allProjects:{projects:[], status: 'Active', fetching: false, fetched: true},
-    userProfile:{role:'Manager'},
-    popupEditor:{currPopup:{popupContent:'project content 1'}},
-    infoCollections:infoCollections,
-    role: {roles: rolesMock.role.roles}
-
-  })
+    allProjects: { projects: [], status: 'Active', fetching: false, fetched: true },
+    userProfile: { role: 'Manager' },
+    popupEditor: { currPopup: { popupContent: 'project content 1' } },
+    infoCollections: infoCollections,
+    role: { roles: rolesMock.role.roles },
+    projectMembers: { activeMemberCounts: {} }
+  });
 });
 
 jest.mock('axios');
