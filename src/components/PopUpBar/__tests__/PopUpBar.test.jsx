@@ -17,7 +17,8 @@ describe('Test Suite for PopUpBar', () => {
 
   it('Test Case 2: Renders with correct text', () => {
     renderComponent();
-    const expectedText = `PopUpBar text message`;
+    const expectedText = `You are currently functioning as ${viewingUser.firstName} ${viewingUser.lastName}, you only have the permissions of ${viewingUser.firstName}`;
+
     const actualText = screen.getByText(expectedText);
     expect(actualText).toBeInTheDocument();
   });
