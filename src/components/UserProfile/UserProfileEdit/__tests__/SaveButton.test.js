@@ -1,5 +1,5 @@
 import React from 'react';
-import { screen, render} from '@testing-library/react';
+import { screen, render, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { userProfileMock } from '../../../../__tests__/mockStates';
 import SaveButton from '../SaveButton';
@@ -41,13 +41,18 @@ describe('<SaveButton />', () => {
         handleSubmit: jest.fn(),
         disabled: false,
         userProfile: userProfileMock,
-        setSaved:jest.fn(),
+        setSaved: jest.fn(),
         darkMode: true,
-        } 
+      } 
       render(<SaveButton {...props} />);
       const button = screen.getByRole('button', { name: /save changes/i });
       expect(button).not.toBeDisabled(); 
-      userEvent.click(button);
+      
+      // Wrap the click event in act()
+      await act(async () => {
+        await userEvent.click(button);
+      });
+      
       expect(screen.getByRole('dialog')).toBeInTheDocument();
     });
   });
