@@ -138,9 +138,9 @@ function Announcements({ title, email }) {
     e.target.value = '';
   };
 
-  const validateEmail = email => {
+  const validateEmail = emailAddress => {
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    return emailPattern.test(email);
+    return emailPattern.test(emailAddress);
   };
 
   const handleSendEmails = () => {
