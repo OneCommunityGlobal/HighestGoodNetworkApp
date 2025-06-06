@@ -1,39 +1,51 @@
+// Helper function to generate dates relative to now
+const generateTimestamp = (daysAgo, hoursAgo = 0) => {
+  const date = new Date();
+  date.setDate(date.getDate() - daysAgo);
+  date.setHours(date.getHours() - hoursAgo);
+  return date.toISOString();
+};
+
 export const sampleData = [
-  // Recent applications (last 7 days) with realistic timing data
-  { role: 'Software Developer', timeToApply: 8, timestamp: '2025-05-29T10:20:00Z' },
-  { role: 'Software Developer', timeToApply: 12, timestamp: '2025-05-29T14:30:00Z' },
-  { role: 'Software Developer', timeToApply: 9, timestamp: '2025-05-28T16:45:00Z' },
-  { role: 'Architect', timeToApply: 15, timestamp: '2025-05-28T09:15:00Z' },
-  { role: 'Architect', timeToApply: 18, timestamp: '2025-05-27T11:20:00Z' },
-  { role: 'Master Electrician', timeToApply: 25, timestamp: '2025-05-27T08:00:00Z' },
-  { role: 'Master Electrician', timeToApply: 22, timestamp: '2025-05-26T15:30:00Z' },
-  { role: 'Product Manager', timeToApply: 6, timestamp: '2025-05-26T10:00:00Z' },
-  { role: 'Product Manager', timeToApply: 9, timestamp: '2025-05-25T11:30:00Z' },
-  { role: 'Data Scientist', timeToApply: 13, timestamp: '2025-05-25T14:45:00Z' },
-  { role: 'Data Scientist', timeToApply: 11, timestamp: '2025-05-24T16:20:00Z' },
-  { role: 'UX Designer', timeToApply: 14, timestamp: '2025-05-24T12:30:00Z' },
-  { role: 'UX Designer', timeToApply: 16, timestamp: '2025-05-23T10:15:00Z' },
+  // Recent applications (last 7 days) - Always fresh dates
+  { role: 'Software Developer', timeToApply: 8, timestamp: generateTimestamp(0, 2) },   // 2 hours ago
+  { role: 'Software Developer', timeToApply: 12, timestamp: generateTimestamp(1, 1) },  // 1 day, 1 hour ago
+  { role: 'Software Developer', timeToApply: 9, timestamp: generateTimestamp(2, 3) },   // 2 days, 3 hours ago
+  { role: 'Architect', timeToApply: 15, timestamp: generateTimestamp(1, 5) },           // 1 day, 5 hours ago
+  { role: 'Architect', timeToApply: 18, timestamp: generateTimestamp(3, 2) },           // 3 days, 2 hours ago
+  { role: 'Master Electrician', timeToApply: 25, timestamp: generateTimestamp(2, 8) },  // 2 days, 8 hours ago
+  { role: 'Master Electrician', timeToApply: 22, timestamp: generateTimestamp(4, 1) },  // 4 days, 1 hour ago
+  { role: 'Product Manager', timeToApply: 6, timestamp: generateTimestamp(3, 4) },      // 3 days, 4 hours ago
+  { role: 'Product Manager', timeToApply: 9, timestamp: generateTimestamp(5, 2) },      // 5 days, 2 hours ago
+  { role: 'Data Scientist', timeToApply: 13, timestamp: generateTimestamp(4, 6) },      // 4 days, 6 hours ago
+  { role: 'Data Scientist', timeToApply: 11, timestamp: generateTimestamp(6, 3) },      // 6 days, 3 hours ago
+  { role: 'UX Designer', timeToApply: 14, timestamp: generateTimestamp(5, 7) },         // 5 days, 7 hours ago
+  { role: 'UX Designer', timeToApply: 16, timestamp: generateTimestamp(6, 4) },         // 6 days, 4 hours ago
 
-  // Monthly data (last 30 days)
-  { role: 'Project Manager', timeToApply: 7, timestamp: '2025-05-15T09:30:00Z' },
-  { role: 'Project Manager', timeToApply: 11, timestamp: '2025-05-12T14:20:00Z' },
-  { role: 'Plumber', timeToApply: 20, timestamp: '2025-05-10T08:15:00Z' },
-  { role: 'Plumber', timeToApply: 24, timestamp: '2025-05-08T13:45:00Z' },
-  { role: 'Software Developer', timeToApply: 10, timestamp: '2025-05-05T16:30:00Z' },
-  { role: 'Architect', timeToApply: 16, timestamp: '2025-05-03T11:20:00Z' },
-  { role: 'Master Electrician', timeToApply: 28, timestamp: '2025-05-01T07:45:00Z' },
-  { role: 'Data Scientist', timeToApply: 15, timestamp: '2025-04-28T12:00:00Z' },
+  // Monthly data (8-30 days ago)
+  { role: 'Project Manager', timeToApply: 7, timestamp: generateTimestamp(8) },         // 8 days ago
+  { role: 'Project Manager', timeToApply: 11, timestamp: generateTimestamp(11) },       // 11 days ago
+  { role: 'Plumber', timeToApply: 20, timestamp: generateTimestamp(12) },               // 12 days ago
+  { role: 'Plumber', timeToApply: 24, timestamp: generateTimestamp(16) },               // 16 days ago
+  { role: 'Software Developer', timeToApply: 10, timestamp: generateTimestamp(18) },    // 18 days ago
+  { role: 'Architect', timeToApply: 16, timestamp: generateTimestamp(21) },             // 21 days ago
+  { role: 'Master Electrician', timeToApply: 28, timestamp: generateTimestamp(24) },    // 24 days ago
+  { role: 'Data Scientist', timeToApply: 15, timestamp: generateTimestamp(26) },        // 26 days ago
+  { role: 'UX Designer', timeToApply: 12, timestamp: generateTimestamp(28) },           // 28 days ago
+  { role: 'Product Manager', timeToApply: 8, timestamp: generateTimestamp(30) },        // 30 days ago
 
-  // Older data (yearly)
-  { role: 'UX Designer', timeToApply: 12, timestamp: '2024-12-15T14:20:00Z' },
-  { role: 'Product Manager', timeToApply: 8, timestamp: '2024-11-20T11:45:00Z' },
-  { role: 'Plumber', timeToApply: 26, timestamp: '2024-10-10T09:15:00Z' },
-  { role: 'Software Developer', timeToApply: 7, timestamp: '2024-09-05T16:30:00Z' },
-  { role: 'Architect', timeToApply: 14, timestamp: '2024-08-12T08:45:00Z' },
-  { role: 'Master Electrician', timeToApply: 24, timestamp: '2024-07-18T13:20:00Z' },
+  // Older data (31-365 days ago)
+  { role: 'UX Designer', timeToApply: 12, timestamp: generateTimestamp(50) },           // ~50 days ago
+  { role: 'Product Manager', timeToApply: 8, timestamp: generateTimestamp(75) },        // ~75 days ago  
+  { role: 'Plumber', timeToApply: 26, timestamp: generateTimestamp(115) },              // ~115 days ago
+  { role: 'Software Developer', timeToApply: 7, timestamp: generateTimestamp(180) },    // ~180 days ago
+  { role: 'Architect', timeToApply: 14, timestamp: generateTimestamp(205) },            // ~205 days ago
+  { role: 'Master Electrician', timeToApply: 24, timestamp: generateTimestamp(230) },   // ~230 days ago
+  { role: 'Data Scientist', timeToApply: 16, timestamp: generateTimestamp(255) },       // ~255 days ago
+  { role: 'Project Manager', timeToApply: 9, timestamp: generateTimestamp(295) },       // ~295 days ago
 
   // Outliers (these will be filtered out as they're > 30 minutes)
-  { role: 'Software Developer', timeToApply: 45, timestamp: '2025-05-20T10:00:00Z' }, // Tab left open
-  { role: 'Product Manager', timeToApply: 120, timestamp: '2025-05-18T14:30:00Z' }, // 2 hours - clearly an outlier
-  { role: 'UX Designer', timeToApply: 90, timestamp: '2025-05-16T12:15:00Z' }, // 1.5 hours - outlier
+  { role: 'Software Developer', timeToApply: 45, timestamp: generateTimestamp(3) },     // Tab left open
+  { role: 'Product Manager', timeToApply: 120, timestamp: generateTimestamp(8) },       // 2 hours - outlier  
+  { role: 'UX Designer', timeToApply: 90, timestamp: generateTimestamp(11) },           // 1.5 hours - outlier
 ];
