@@ -880,8 +880,8 @@ function UserProfile(props) {
   const { firstName, lastName, profilePic, jobTitle = '' } = userProfile;
   const { userId: targetUserId } = props.match ? props.match.params : { userId: undefined };
 
-  /**  Login User's email */
-  const authEmail = props.auth?.user?.email;
+  const {role: userRole} = userProfile;
+  const authEmail = props.userProfile?.email;
   const isUserSelf = targetUserId === requestorId;
 
   const canChangeUserStatus = props.hasPermission('changeUserStatus');
@@ -895,6 +895,8 @@ function UserProfile(props) {
   const canSeeQSC = props.hasPermission('seeQSC');
   const canEditVisibility = props.hasPermission('toggleInvisibility');
   const canSeeReports = props.hasPermission('getReports');
+  const canResetPassword = props.hasPermission('resetPassword') && !(userRole === "Administrator" || userRole === "Owner") ;
+ 
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
 
   const canEditUserProfile = targetIsDevAdminUneditable
