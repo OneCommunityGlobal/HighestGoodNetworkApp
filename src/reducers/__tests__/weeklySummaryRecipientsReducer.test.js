@@ -1,5 +1,5 @@
 import * as actions from '../../constants/weeklySummariesReport';
-import { weeklySummaryRecipientsReducer } from '../weeklySummaryRecipientsReducer';
+import weeklySummaryRecipientsReducer from '../weeklySummaryRecipientsReducer';
 
 describe('weeklySummaryRecipientsReducer', () => {
   const initialState = {

@@ -21,7 +21,7 @@ function QuickSetupModal(props) {
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [titles, setTitles] = useState([]);
   const [curtitle, setTitleOnClick] = useState({});
-  const [titleOnSet, setTitleOnSet] = useState(true);
+  // const [titleOnSet, setTitleOnSet] = useState(true);
   const [editMode, setEditMode] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
   const [warningMessage, setWarningMessage] = useState({});
@@ -52,15 +52,21 @@ function QuickSetupModal(props) {
     }
   };
 
-  useEffect(() => {
-    if (props.teamsData && props.teamsData.allTeamCode) {
-      const teamCodes = props.teamsData.allTeamCode.distinctTeamCodes.map(value => ({ value }));
-      setQSTTeamCodes(teamCodes);
+  useEffect(()=>{
+    let teamCodes = [];
+    if(stateTeamCodes.length) {
+      teamCodes = [...stateTeamCodes];
+    }else if (props.teamsData?.allTeams) {
+      if( props.teamsData?.allTeamCode?.distinctTeamCodes ) {
+        teamCodes = props.teamsData.allTeamCode.distinctTeamCodes.map(value => ({ value }));
+      }
     }
-  }, [stateTeamCodes, props.teamsData]);
+    setQSTTeamCodes(teamCodes);
+  },[stateTeamCodes.length])
+
 
   return (
-    <div>
+    <div className={`container pt-3 ${darkMode ? 'bg-yinmn-blue text-light border-0' : ''}`}>
       {canAssignTitle || canEditTitle || canAddTitle ? (
         <QuickSetupCodes
           setSaved={props.setSaved}
@@ -161,8 +167,9 @@ function QuickSetupModal(props) {
           setIsOpen={setShowAssignModal}
           toggle={setShowAssignModal}
           title={curtitle}
-          setTitleOnSet={setTitleOnSet}
+          setTitleOnSet={props.setTitleOnSet}
           refreshModalTitles={refreshModalTitles}
+          updateUserProfile={props.updateUserProfile}
         />
       ) : (
         ''
