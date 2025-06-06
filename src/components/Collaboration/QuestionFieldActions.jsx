@@ -84,7 +84,6 @@ QuestionFieldActions.propTypes = {
   onMove: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
   onEdit: PropTypes.func.isRequired,
-  onEdit: PropTypes.func.isRequired,
   visible: PropTypes.bool.isRequired,
   onVisibilityChange: PropTypes.func.isRequired,
 };

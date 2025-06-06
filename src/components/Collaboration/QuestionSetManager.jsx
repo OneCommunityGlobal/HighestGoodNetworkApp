@@ -21,11 +21,10 @@ function QuestionSetManager({
   const [previewQuestions, setPreviewQuestions] = useState([]);
   const [editingMode, setEditingMode] = useState('');
 
-  // API service functions without auth headers
   const api = {
     // Get all templates
     getTemplates: async () => {
-      // const response = await axios.get(`${apiEndpoint}/templates`);
+    
       const response = await axios.get(ENDPOINTS.GET_ALL_TEMPLATES);
       return response.data.templates;
     },
@@ -66,7 +65,6 @@ function QuestionSetManager({
         setTemplates(data);
       } catch (err) {
         console.error('Failed to fetch templates:', err);
-        //setError('Failed to load templates. Please try again later.');
         
         // Fallback to localStorage if API fails
         try {
@@ -86,111 +84,111 @@ function QuestionSetManager({
     fetchTemplates();
   }, []);
 
-  // Save current form fields as a template
-  const saveTemplate = async () => {
-    if (templateName.trim() === '') {
-      alert('Please enter a template name');
-      return;
-    }
+const saveTemplate = async () => {
+  if (templateName.trim() === '') {
+    alert('Please enter a template name');
+    return;
+  }
+  
+  if (formFields.length === 0) {
+    alert('Your form is empty. Please add questions before saving as a template.');
+    return;
+  }
+  
+  setIsLoading(true);
+  setError(null);
+  
+  try {
+    const templateExists = templates.some(t => t.name === templateName);
     
-    if (formFields.length === 0) {
-      alert('Your form is empty. Please add questions before saving as a template.');
-      return;
-    }
-    
-    setIsLoading(true);
-    setError(null);
-    
-    try {
-      const templateExists = templates.some(t => t.name === templateName);
-      
-      if (templateExists) {
-        const confirmOverwrite = window.confirm(`Template "${templateName}" already exists. Do you want to overwrite it?`);
-        if (!confirmOverwrite) {
-          setIsLoading(false);
-          return;
-        }
-        
-        // Find the existing template to get its ID
-        const existingTemplate = templates.find(t => t.name === templateName);
-        
-        // Update the template
-        const updatedTemplate = await api.updateTemplate(existingTemplate._id, {
-          name: templateName,
-          fields: formFields.map(field => ({
-            questionText: field.questionText,
-            questionType: field.questionType,
-            visible: field.visible !== undefined ? field.visible : true,
-            isRequired: field.required || false,
-            options: field.options || [],
-            placeholder: field.placeholder || ''
-          }))
-        });
-        
-        // Update local state
-        setTemplates(templates.map(t => 
-          t._id === updatedTemplate._id ? updatedTemplate : t
-        ));
-      } else {
-        // Create a new template
-        const newTemplate = await api.createTemplate({
-          name: templateName,
-          fields: formFields.map(field => ({
-            questionText: field.questionText || field.label,
-            questionType: field.questionType || field.type,
-            visible: field.visible !== undefined ? field.visible : true,
-            isRequired: field.required || field.isRequired || false,
-            options: field.options || []
-          }))
-        });
-
+    if (templateExists) {
+      const confirmOverwrite = window.confirm(`Template "${templateName}" already exists. Do you want to overwrite it?`);
+      if (!confirmOverwrite) {
+        setIsLoading(false);
+        return;
       }
       
-      // localStorage.setItem('jobFormTemplates', JSON.stringify(templates));
-      // localStorage.setItem('jobFormTemplates', JSON.stringify([...templates, newTemplate]));
+      // Find the existing template to get its ID
+      const existingTemplate = templates.find(t => t.name === templateName);
+      
+      // Update the template
+      const updatedTemplate = await api.updateTemplate(existingTemplate._id, {
+        name: templateName,
+        fields: formFields.map(field => ({
+          questionText: field.questionText,
+          questionType: field.questionType,
+          visible: field.visible !== undefined ? field.visible : true,
+          isRequired: field.required || false,
+          options: field.options || [],
+          placeholder: field.placeholder || ''
+        }))
+      });
+      
+      // Update local state
+      setTemplates(templates.map(t => 
+        t._id === updatedTemplate._id ? updatedTemplate : t
+      ));
+      
+      alert(`Template "${templateName}" updated successfully!`);
+    } else {
+  
+      const newTemplate = await api.createTemplate({
+        name: templateName,
+        fields: formFields.map(field => ({
+          questionText: field.questionText || field.label,
+          questionType: field.questionType || field.type,
+          visible: field.visible !== undefined ? field.visible : true,
+          isRequired: field.required || field.isRequired || false,
+          options: field.options || [],
+          placeholder: field.placeholder || ''
+        }))
+      });
 
       // Update local state
-    const updatedTemplates = [...templates, newTemplate];
-    setTemplates(updatedTemplates);
+      const updatedTemplates = [...templates, newTemplate];
+      setTemplates(updatedTemplates);
 
-// Also save to localStorage as backup
-    localStorage.setItem('jobFormTemplates', JSON.stringify(updatedTemplates));
+      // Also saved to localStorage as backup
+      localStorage.setItem('jobFormTemplates', JSON.stringify(updatedTemplates));
       
-      setTemplateName('');
-      alert(`Template "${templateName}" saved successfully!`);
-    } catch (err) {
-      console.error('Failed to save template:', err);
-
-      // Save to localStorage as fallback
-      try {
-        const templateExists = templates.some(t => t.name === templateName);
-        if (templateExists) {
-          const newTemplates = templates.map(t => 
-            t.name === templateName ? { ...t, fields: formFields } : t
-          );
-          setTemplates(newTemplates);
-          localStorage.setItem('jobFormTemplates', JSON.stringify(newTemplates));
-        } else {
-          const newTemplates = [
-            ...templates,
-            {
-              name: templateName,
-              fields: formFields,
-            }
-          ];
-          
-          setTemplates(newTemplates);
-          localStorage.setItem('jobFormTemplates', JSON.stringify(newTemplates));
-        }
-        alert(`Template "${templateName}" saved locally.`);
-      } catch (localError) {
-        console.error('Failed to save local template:', localError);
-        alert('Failed to save template. Please try again.');
-      }
-    } finally {
-      setIsLoading(false);
+      alert(`Template "${templateName}" created successfully!`);
     }
-  };
+    
+    setTemplateName('');
+  } catch (err) {
+    console.error('Failed to save template:', err);
+    
+    // Save to localStorage as fallback
+    try {
+      const templateExists = templates.some(t => t.name === templateName);
+      if (templateExists) {
+        const newTemplates = templates.map(t => 
+          t.name === templateName ? { ...t, fields: formFields } : t
+        );
+        setTemplates(newTemplates);
+        localStorage.setItem('jobFormTemplates', JSON.stringify(newTemplates));
+      } else {
+        const newTemplates = [
+          ...templates,
+          {
+            id: Date.now(), // Add a temporary ID for local templates
+            name: templateName,
+            fields: formFields,
+          }
+        ];
+        
+        setTemplates(newTemplates);
+        localStorage.setItem('jobFormTemplates', JSON.stringify(newTemplates));
+      }
+      alert(`Template "${templateName}" saved locally.`);
+    } catch (localError) {
+      console.error('Failed to save local template:', localError);
+      alert('Failed to save template. Please try again.');
+    }
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   // Load template
   const loadTemplate = async () => {
