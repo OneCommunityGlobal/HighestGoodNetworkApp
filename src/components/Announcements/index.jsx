@@ -4,8 +4,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react'; // Import Editor from TinyMCE
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
-import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
 import tinymce from 'tinymce';
+import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
 
 function Announcements({ title, email }) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -138,10 +138,9 @@ function Announcements({ title, email }) {
     e.target.value = '';
   };
 
-  const validateEmail = e => {
-    /* Add a regex pattern for email validation */
+  const validateEmail = email => {
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    return emailPattern.test(e);
+    return emailPattern.test(email);
   };
 
   const handleSendEmails = () => {
@@ -158,7 +157,6 @@ function Announcements({ title, email }) {
     }
 
     const invalidEmails = emailList.filter(email => !validateEmail(email.trim()));
-
 
     if (invalidEmails.length > 0) {
       toast.error(`Error: Invalid email addresses: ${invalidEmails.join(', ')}`);
