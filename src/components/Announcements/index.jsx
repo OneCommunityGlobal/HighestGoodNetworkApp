@@ -1,10 +1,11 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import './Announcements.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react'; // Import Editor from TinyMCE
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
+import tinymce from 'tinymce';
 
 function Announcements({ title, email }) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -171,10 +172,9 @@ function Announcements({ title, email }) {
 
   const handleBroadcastEmails = () => {
     const htmlContent = `
-    <div style="max-width: 900px; width: 100%; margin: auto;">
-      ${emailContent}
-    </div>
-  `;
+      <div style="max-width: 900px; width: 100%; margin: auto;">
+        ${emailContent}
+      </div>`;
     dispatch(broadcastEmailsToAll('Weekly Update', htmlContent));
   };
 
