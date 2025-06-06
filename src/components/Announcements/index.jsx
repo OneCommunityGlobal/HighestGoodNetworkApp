@@ -156,7 +156,7 @@ function Announcements({ title, email }) {
       return;
     }
 
-    const invalidEmails = emailList.filter(email => !validateEmail(email.trim()));
+    const invalidEmails = emailList.filter(emailAddress => !validateEmail(emailAddress.trim()));
 
     if (invalidEmails.length > 0) {
       toast.error(`Error: Invalid email addresses: ${invalidEmails.join(', ')}`);
