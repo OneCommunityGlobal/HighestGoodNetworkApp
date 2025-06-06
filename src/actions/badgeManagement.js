@@ -200,7 +200,7 @@ export const assignBadges = (firstName, lastName, selectedBadges) => {
     const { badgeCollection } = res.data[0];
     const userToBeAssignedBadge = res.data[0]._id;
     const newBadgeCollection = returnUpdatedBadgesCollection(badgeCollection, selectedBadges);
-
+    console.log('assignBadges ----- newBadgeCollection\n-----------------', newBadgeCollection);
     const url = ENDPOINTS.BADGE_ASSIGN(userToBeAssignedBadge);
     try {
       await axios.put(url, {
@@ -256,6 +256,7 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
       }
 
       const userData = Array.isArray(res.data) ? res.data[0] : res.data;
+
 
       if (!userData || !userData._id || !userData.badgeCollection) {
         dispatch(getMessage('User data is incomplete. Cannot assign badges.', 'danger'));
