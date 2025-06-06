@@ -126,8 +126,12 @@ function UserProfile(props) {
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
   const toggleRemoveModal = () => setIsRemoveModalOpen(!isRemoveModalOpen);
   const [loadingSummaries, setLoadingSummaries] = useState(false);
+  const [accessRemoved, setAccessRemoved] = useState(false);
   const [showRemoveAccessModal, setShowRemoveAccessModal] = useState(false);
-  const [removalInProgress, setRemovalInProgress] = useState(false);
+  const [showRemovedNoticeModal, setShowRemovedNoticeModal] = useState(false);
+  const [showAddAccessModal, setShowAddAccessModal] = useState(false);
+  const [showAddedNoticeModal, setShowAddedNoticeModal] = useState(false);
+
 
   const updateRemovedImage = async () => {
     try {
@@ -212,60 +216,81 @@ function UserProfile(props) {
     });
   };
 
-  const confirmRemoveAccess = async () => {
-  const email = userProfile?.email;
-  const username = userProfile?.githubUsername; // or however GitHub usernames are stored
-  const folderPath = `/${userProfile.firstName}${userProfile.lastName}`; // or however your folder naming works
-  const requestorId = props.auth.user.userid;
-  const role = props.auth.user.role;
+  const handleRemoveClick = () => setShowConfirmRemove(true);
 
-  setRemovalInProgress(true);
+  const confirmRemove = async () => {
+    setShowConfirmRemove(false);
+    setShowRemovedPopup(true);
+    setAccessRemoved(true);
+  // const email = userProfile?.email;
+  // const username = userProfile?.githubUsername; // or however GitHub usernames are stored
+  // const folderPath = `/${userProfile.firstName}${userProfile.lastName}`; // or however your folder naming works
+  // const requestorId = props.auth.user.userid;
+  // const role = props.auth.user.role;
 
-  try {
-    const results = await Promise.allSettled([
-      // axios.post('/api/slack/remove', {
-      //   email,
-      //   requestor: { requestorId, role },
-      // }),
-      axios.delete('/api/sentry/remove', {
-        data: {
-          email,
-          requestor: { requestorId, role },
-        },
-      }),
-      axios.delete('/api/github/remove', {
-        data: {
-          username,
-          requestor: { requestorId, role },
-        },
-      }),
-      axios.post('/api/dropbox/delete-folder', {
-        folderPath,
-        requestor: { requestorId, role },
-      }),
-    ]);
+  // setRemovalInProgress(true);
 
-    const services = [
-      //'Slack',
-      'Sentry',
-      'GitHub',
-      'Dropbox'
-    ];
+  // try {
+  //   const results = await Promise.allSettled([
+  //     // axios.post('/api/slack/remove', {
+  //     //   email,
+  //     //   requestor: { requestorId, role },
+  //     // }),
+  //     axios.delete('/api/sentry/remove', {
+  //       data: {
+  //         email,
+  //         requestor: { requestorId, role },
+  //       },
+  //     }),
+  //     axios.delete('/api/github/remove', {
+  //       data: {
+  //         username,
+  //         requestor: { requestorId, role },
+  //       },
+  //     }),
+  //     axios.post('/api/dropbox/delete-folder', {
+  //       folderPath,
+  //       requestor: { requestorId, role },
+  //     }),
+  //   ]);
 
-    results.forEach((res, i) => {
-      if (res.status === 'fulfilled') {
-        toast.success(`${services[i]} access removed`);
-      } else {
-        toast.error(`Failed to remove access from ${services[i]}`);
-      }
-    });
+  //   const services = [
+  //     //'Slack',
+  //     'Sentry',
+  //     'GitHub',
+  //     'Dropbox'
+  //   ];
 
-    setShowRemoveAccessModal(false);
-  } catch (error) {
-    toast.error('Unexpected error during access removal.');
-  } finally {
-    setRemovalInProgress(false);
-  }
+  //   results.forEach((res, i) => {
+  //     if (res.status === 'fulfilled') {
+  //       toast.success(`${services[i]} access removed`);
+  //     } else {
+  //       toast.error(`Failed to remove access from ${services[i]}`);
+  //     }
+  //   });
+
+  //   setShowRemoveAccessModal(false);
+  // } catch (error) {
+  //   toast.error('Unexpected error during access removal.');
+  // } finally {
+  //   setRemovalInProgress(false);
+  // }
+};
+
+const closeRemovedPopup = () => {
+  setShowRemovedPopup(false);
+};
+
+const handleAddClick = () => setShowConfirmAdd(true);
+
+const confirmAdd = () => {
+  setShowConfirmAdd(false);
+  setShowAddedPopup(true);
+  setAccessRemoved(false);
+};
+
+const closeAddedPopup = () => {
+  setShowAddedPopup(false);
 };
 
   const checkIsProjectsEqual = () => {
@@ -1040,10 +1065,17 @@ function UserProfile(props) {
           Whoa Tiger!
         </ModalHeader>
         <ModalBody>
-          Are you sure you want to do this? This action is not reversible.
+          Are you sure you want to remove access for this user? This action is not reversible.
         </ModalBody>
         <ModalFooter>
-          <Button color="danger" onClick={confirmRemoveAccess} disabled={removalInProgress}>
+          <Button
+            color="danger"
+            onClick={() => {
+              setShowRemoveAccessModal(false);
+              setShowRemovedNoticeModal(true);
+              setAccessRemoved(true);
+            }}
+          >
             Yes, I’m sure
           </Button>
           <Button color="secondary" onClick={() => setShowRemoveAccessModal(false)}>
@@ -1052,6 +1084,61 @@ function UserProfile(props) {
         </ModalFooter>
       </Modal>
 
+      <Modal isOpen={showRemovedNoticeModal} toggle={() => setShowRemovedNoticeModal(false)}>
+        <ModalHeader toggle={() => setShowRemovedNoticeModal(false)}>
+          Access Removed
+        </ModalHeader>
+        <ModalBody>
+          Access for this user has been removed.<br />
+          <strong>Remember to remove user for Slack manually.</strong>
+        </ModalBody>
+        <ModalFooter>
+          <Button color="primary" onClick={() => setShowRemovedNoticeModal(false)}>
+            OK
+          </Button>
+
+        </ModalFooter>
+      </Modal>
+
+      <Modal isOpen={showAddAccessModal} toggle={() => setShowAddAccessModal(false)}>
+        <ModalHeader toggle={() => setShowAddAccessModal(false)}>
+          Confirm Add Access
+        </ModalHeader>
+        <ModalBody>
+          You are about to add access for GitHub, Dropbox, Slack and Sentry to the user's profile.
+          Are you sure you want to continue?
+        </ModalBody>
+        <ModalFooter>
+          <Button
+            color="success"
+            onClick={() => {
+              setShowAddAccessModal(false);
+              setShowAddedNoticeModal(true);
+              setAccessRemoved(false);
+            }}
+          >
+            Yes, continue
+          </Button>
+          <Button color="secondary" onClick={() => setShowAddAccessModal(false)}>
+            Cancel
+          </Button>
+        </ModalFooter>
+      </Modal>
+
+      <Modal isOpen={showAddedNoticeModal} toggle={() => setShowAddedNoticeModal(false)}>
+        <ModalHeader toggle={() => setShowAddedNoticeModal(false)}>
+          Access Granted
+        </ModalHeader>
+        <ModalBody>
+          User has been given access to: GitHub, Dropbox and Sentry.<br />
+          <strong>Invite email for Slack has been sent.</strong>
+        </ModalBody>
+        <ModalFooter>
+          <Button color="primary" onClick={() => setShowAddedNoticeModal(false)}>
+            OK
+          </Button>
+        </ModalFooter>
+      </Modal>
       <Container
         className={`py-5 ${darkMode ? 'bg-yinmn-blue text-light border-0' : ''}`}
         id="containerProfile"
@@ -1212,12 +1299,20 @@ function UserProfile(props) {
                   color="link"
                   style={{ padding: '0', border: 'none', background: 'none' }}
                   size="sm"
-                  onClick={() => setShowRemoveAccessModal(true)}
-                  title="CAREFUL: Clicking this button removes a person’s access to Sentry, Slack, and Github. Then it deletes their Dropbox and all files in it."
+                  onClick={
+                    accessRemoved
+                      ? () => setShowAddAccessModal(true)
+                      : () => setShowRemoveAccessModal(true)
+                  }
+                  title={
+                    accessRemoved
+                      ? 'Click to add user access to GitHub, Dropbox, Slack, and Sentry.'
+                      : 'CAREFUL: Clicking this button removes access to GitHub, Dropbox, Sentry, and Slack.'
+                  }
                 >
                   <img
-                    src="/HGN_closeout_icon.png"
-                    alt="Remove Access"
+                    src={accessRemoved ? '/HGN_Add_Access.png' : '/HGN_closeout_icon.png'}
+                    alt={accessRemoved ? 'Add Access' : 'Remove Access'}
                     style={{ width: '20px', height: '20px' }}
                   />
                 </Button>
