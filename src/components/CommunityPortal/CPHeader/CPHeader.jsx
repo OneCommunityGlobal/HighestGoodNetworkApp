@@ -47,7 +47,7 @@ import {
   SEND_EMAILS,
 } from '../../../languages/en/ui';
 import Logout from '../../Logout/Logout';
-import './CPHeader.css';
+import styles from './CPHeader.module.css';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../../utils/permissions';
 
 export function Header(props) {
@@ -174,17 +174,17 @@ export function Header(props) {
   const fontColor = darkMode ? 'text-white dropdown-item-hover' : '';
 
   return (
-    <div className="header-wrapper">
-      <Navbar className="py-3 navbar" color="dark" dark expand="xl">
+    <div className={`${styles.headerWrapper}`}>
+      <Navbar className={`py-3 ${styles.navbar}`} color="dark" dark expand="xl">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
 
         <div
-          className="timer-message-section"
+          className={`${styles.timerMessageSection}`}
           style={user.role === 'Owner' ? { marginRight: '0.5rem' } : { marginRight: '1rem' }}
         >
           {isAuthenticated && <Timer />}
           {isAuthenticated && (
-            <div className="owner-message">
+            <div className={`${styles.ownerMessage}`}>
               <OwnerMessage />
             </div>
           )}
@@ -192,11 +192,11 @@ export function Header(props) {
         <NavbarToggler onClick={toggle} />
         {isAuthenticated && (
           <Collapse isOpen={isOpen} navbar>
-            <Nav className="ml-auto nav-links" navbar>
+            <Nav className={`ml-auto ${styles.navLinks}`} navbar>
               {canUpdateTask && (
                 <NavItem>
                   <NavLink tag={Link} to="/taskeditsuggestions">
-                    <div className="redBackGroupHeader">
+                    <div className={`${styles.redBackGroupHeader}`}>
                       <span>{props.taskEditSuggestionCount}</span>
                     </div>
                   </NavLink>
@@ -204,12 +204,12 @@ export function Header(props) {
               )}
               <NavItem>
                 <NavLink tag={Link} to="/communityportal">
-                  <span className="dashboard-text-link">{DASHBOARD}</span>
+                  <span className={`${styles.dashboardTextLink}`}>{DASHBOARD}</span>
                 </NavLink>
               </NavItem>
               <UncontrolledDropdown nav inNavbar>
                 <DropdownToggle nav caret>
-                  <span className="dashboard-text-link">{ACTIVITY}</span>
+                  <span className={`${styles.dashboardTextLink}`}>{ACTIVITY}</span>
                 </DropdownToggle>
                 <DropdownMenu>
                   <DropdownItem tag={Link} to="/communityportal/activities">
@@ -222,12 +222,12 @@ export function Header(props) {
               </UncontrolledDropdown>
               <NavItem>
                 <NavLink tag={Link} to="/communityportal/calendar">
-                  <span className="dashboard-text-link">{CALENDAR}</span>
+                  <span className={`${styles.dashboardTextLink}`}>{CALENDAR}</span>
                 </NavLink>
               </NavItem>
               <UncontrolledDropdown nav inNavbar>
                 <DropdownToggle nav caret>
-                  <span className="dashboard-text-link">{REPORTS}</span>
+                  <span className={`${styles.dashboardTextLink}`}>{REPORTS}</span>
                 </DropdownToggle>
                 <DropdownMenu>
                   <DropdownItem tag={Link} to="/communityportal/reports/participation">
@@ -253,7 +253,7 @@ export function Header(props) {
                 canAccessPermissionsManagement) && (
                 <UncontrolledDropdown nav inNavbar className="responsive-spacing">
                   <DropdownToggle nav caret>
-                    <span className="dashboard-text-link">{OTHER_LINKS}</span>
+                    <span className={`${styles.dashboardTextLink}`}>{OTHER_LINKS}</span>
                   </DropdownToggle>
                   <DropdownMenu className={darkMode ? 'bg-yinmn-blue' : ''}>
                     {canAccessUserManagement ? (
@@ -304,7 +304,7 @@ export function Header(props) {
               </NavItem>
               <UncontrolledDropdown nav>
                 <DropdownToggle nav caret>
-                  <span className="dashboard-text-link">
+                  <span className={`${styles.dashboardTextLink}`}>
                     {WELCOME}, {firstName}
                   </span>
                 </DropdownToggle>

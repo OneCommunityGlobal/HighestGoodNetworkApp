@@ -1,4 +1,4 @@
-import './Resources.css';
+import styles from './Resources.module.css';
 
 function Resources() {
   const data = [
@@ -37,39 +37,39 @@ function Resources() {
   ];
 
   return (
-    <div className="resources-usage">
+    <div className={`${styles.resourcesUsage}`}>
       <h2 className="resource-title">Resource Usage Monitoring</h2>
 
       {/* header for column */}
-      <div className="resource-row header">
-        <div className="column">S.No</div>
-        <div className="column">Name</div>
-        <div className="column">Materials</div>
-        <div className="column">Facilities</div>
-        <div className="column">Status</div>
-        <div className="column">Due Date</div>
-        <div className="column">Actions</div>
+      <div className={`${styles.resourceRow} ${styles.header}`}>
+        <div className={`${styles.column}`}>S.No</div>
+        <div className={`${styles.column}`}>Name</div>
+        <div className={`${styles.column}`}>Materials</div>
+        <div className={`${styles.column}`}>Facilities</div>
+        <div className={`${styles.column}`}>Status</div>
+        <div className={`${styles.column}`}>Due Date</div>
+        <div className={`${styles.column}`}>Actions</div>
       </div>
 
       {/* data for each row */}
       {data.map(row => (
-        <div key={row.sNo} className="resource-row">
-          <div className="column">{row.sNo}</div>
-          <div className="column">{row.name}</div>
-          <div className="column">{row.materials}</div>
-          <div className="column">{row.facilities}</div>
+        <div key={row.sNo} className={`${styles.resourceRow}`}>
+          <div className={`${styles.column}`}>{row.sNo}</div>
+          <div className={`${styles.column}`}>{row.name}</div>
+          <div className={`${styles.column}`}>{row.materials}</div>
+          <div className={`${styles.column}`}>{row.facilities}</div>
           <div className={`column status-${row.status.color}`}>{row.status.text}</div>
-          <div className="column">{row.dueDate}</div>
-          <div className="column action-column">
-            <button type="button" className="view-details">
+          <div className={`${styles.column}`}>{row.dueDate}</div>
+          <div className={`${styles.column} ${styles.actionColumn}`}>
+            <button type="button" className={`${styles.viewDetails}`}>
               View Details
             </button>
           </div>
         </div>
       ))}
 
-      <div className="tick-box">
-        <label className="tick-label">
+      <div className={`${styles.tickBox}`}>
+        <label className={`${styles.tickLabel}`}>
           <input type="checkbox" id="tickAll" />
           Tick off All Selected Items
         </label>

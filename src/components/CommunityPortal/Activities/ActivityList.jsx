@@ -1,6 +1,6 @@
 // Activity List Component
 import { useState, useEffect } from 'react';
-import './ActivityList.css';
+import styles from './ActivityList.module.css';
 
 function ActivityList() {
   const [activities, setActivities] = useState([]);
@@ -49,7 +49,7 @@ function ActivityList() {
     <div>
       <h1>Activity List</h1>
 
-      <div className="filters">
+      <div className={`${styles.filters}`}>
         <label>
           Type:
           <input
@@ -78,7 +78,7 @@ function ActivityList() {
         </label>
       </div>
 
-      <div className="activity-list">
+      <div className={`${styles.activityList}`}>
         {filteredActivities.length > 0 ? (
           <ul>
             {filteredActivities.map(activity => (

@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import './EventStats.css';
 import { useSelector } from 'react-redux';
+import styles from './EventStats.module.css';
 
 const dummyData = [
   {
@@ -113,9 +113,9 @@ export default function PopularEvents() {
 
       <div className={`stats ${darkMode ? 'stats-dark' : ''}`}>
         {filteredData.map(event => (
-          <div key={event.id} className="stat-item">
+          <div key={event.id} className={`${styles.statItem}`}>
             <div className={`stat-label ${darkMode ? 'stat-label-dark' : ''}`}>{event.type}</div>
-            <div className="stat-bar">
+            <div className={`${styles.statBar}`}>
               <div
                 className={`bar ${getBarColor(
                   calculatePercentage(event.attended, event.enrolled),
@@ -131,7 +131,7 @@ export default function PopularEvents() {
           </div>
         ))}
       </div>
-      <div className="event-summary">
+      <div className={`${styles.eventSummary}`}>
         <div className={`summary-item ${darkMode ? 'summary-item-dark' : ''}`}>
           <div className={`summary-title ${darkMode ? 'summary-title-dark' : ''}`}>
             Total Number of Events

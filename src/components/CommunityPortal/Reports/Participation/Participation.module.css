@@ -6,12 +6,12 @@ body {
   background-color: #f5f5f5;
 }
 
-.participation-landing-page {
+.participationLandingPage {
   max-width: 90%;
   margin: 0 auto;
 }
 
-.participation-landing-page-dark{
+.participationLandingPageDark{
   min-width:  100%;
   margin: 0 auto;
   background-color: #1B2A41;
@@ -29,27 +29,27 @@ header {
   margin-bottom: 30px;
 }
 
-.landing-page-header-dark{
+.landingPageHeaderDark{
   color: #ffffff;
 }
 
 /* My Cases Section */
-.my-cases {
+.myCases {
   margin-bottom: 40px;
 }
 
-.my-cases-header {
+.myCasesHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.my-cases-header h2 {
+.myCasesHeader h2 {
   font-size: 20px;
   color: #333;
 }
 
-.my-cases-header button {
+.myCasesHeader button {
   padding: 8px 15px;
   background-color: #007bff;
   color: white;
@@ -58,17 +58,17 @@ header {
   cursor: pointer;
 }
 
-.my-cases-header button:hover {
+.myCasesHeader button:hover {
   background-color: #0056b3;
 }
 
-.my-cases-list {
+.myCasesList {
   display: flex;
   flex-direction: column;
   gap: 15px;
 }
 
-.my-case-item {
+.myCaseItem {
   padding: 15px;
   background: white;
   border: 1px solid #ddd;
@@ -77,7 +77,7 @@ header {
 }
 
 /* Analytics Section */
-.analytics-section {
+.analyticsSection {
   display: flex;
   flex-wrap: nowrap;
   gap: 20px;
@@ -88,7 +88,7 @@ header {
 
 
 
-.tracking-container,
+.trackingContainer,
 .insights {
   flex: 1;
   min-width: 48%;
@@ -99,8 +99,8 @@ header {
   box-sizing: border-box;
 }
 
-.tracking-container-dark,
-.insights-dark {
+.trackingContainerDark,
+.insightsDark {
   flex: 1;
   min-width: 48%;
   background-color: #1C2541;
@@ -114,18 +114,18 @@ header {
 }
 
 @media (max-width: 768px) {
-  .analytics-section {
+  .analyticsSection {
     flex-wrap: wrap;
   }
 
-  .tracking-container,
+  .trackingContainer,
   .insights {
     width: 100%;
   }
 }
 
 /* Tracking Section */
-.tracking-header {
+.trackingHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -140,19 +140,19 @@ tracking-header-dark {
   color: #ffffff;
 }
 
-.tracking-header h3 {
+.trackingHeader h3 {
   font-size: 1.3rem;
   color: #333;
   margin: 0;
 }
 
-.tracking-header-dark h3 {
+.trackingHeaderDark h3 {
   color: #ffffff;
   font-size: 1.3rem;
   margin: 0;
 }
 
-.tracking-filters select {
+.trackingFilters select {
   margin-left: 10px;
   padding: 8px;
   font-size: 0.8rem;
@@ -160,7 +160,7 @@ tracking-header-dark {
   border-radius: 5px;
 }
 
-.tracking-summary {
+.trackingSummary {
   display: flex;
   justify-content: space-between;
   margin-bottom: 20px;
@@ -168,32 +168,32 @@ tracking-header-dark {
 
 
 
-.tracking-rate {
+.trackingRate {
   background: #f8f9fa;
   border-radius: 10px;
   width: 48%;
   padding: 10px;
 }
 
-.tracking-rate-dark {
+.trackingRateDark {
   background: #3A506B;
   border-radius: 10px;
   width: 48%;
   padding: 10px;
   color: #ffffff;
 }
-.tracking-rate-dark .span-dark {
+.trackingRateDark .spanDark {
   color: #ffffff;
   display: inline-block;
   padding-left: 5px;
 }
-.tracking-rate-value {
+.trackingRateValue {
   font-size: 0.9rem;
   color: #f44336;
   display: inline-block;
 }
 
-.tracking-rate-value span {
+.trackingRateValue span {
   font-size: 0.9rem;
   color: #777;
   display: inline-block;
@@ -201,7 +201,7 @@ tracking-header-dark {
 
 
 
-.tracking-list-container {
+.trackingListContainer {
   max-height: 600px;
   overflow-y: auto;
   border: 1px solid #ccc;
@@ -209,7 +209,7 @@ tracking-header-dark {
   padding: 10px;
   background: #fff;
 }
-.tracking-list-container-dark {
+.trackingListContainerDark {
   max-height: 600px;
   overflow-y: auto;
   border: 1px solid #ccc;
@@ -219,45 +219,45 @@ tracking-header-dark {
   color: #ffffff;
 }
 
-.tracking-table {
+.trackingTable {
   width: 100%;
   border-collapse: collapse;
 }
 
 
-.tracking-table thead th {
+.trackingTable thead th {
   text-align: left;
   padding: 10px;
   background: #f4f4f4;
 }
-.tracking-table-dark thead th{
+.trackingTableDark thead th{
   background: #1C2541;
   color: #ffffff;
 }
 
-.tracking-table tbody td {
+.trackingTable tbody td {
   padding: 5px;
   border-bottom: 1px solid #eee;
 }
 
-.tracking-rate-green {
+.trackingRateGreen {
   color: green;
   font-weight: bold;
 }
 
-.tracking-rate-red {
+.trackingRateRed {
   color: red;
 }
 
 /* Insights Section */
-.insights-header {
+.insightsHeader {
   font-weight: bold;
   color: #444;
   margin-bottom: 15px;
   display: flex;
   justify-content: space-between;
 }
-.insights-header-dark {
+.insightsHeaderDark {
   color: #ffffff;
   font-weight: bold;
   margin-bottom: 15px;
@@ -265,18 +265,18 @@ tracking-header-dark {
   justify-content: space-between;
 }
 
-.insights-header h3 {
+.insightsHeader h3 {
   font-size: 1.3rem;
   color: #333;
   margin: 0;
 }
-.insights-header-dark h3 {
+.insightsHeaderDark h3 {
   color: #ffffff;
   font-size: 1.3rem;
   margin: 0;
 }
 
-.insights-filters select {
+.insightsFilters select {
   margin-left: 10px;
   padding: 8px;
   font-size: 0.8rem;
@@ -284,7 +284,7 @@ tracking-header-dark {
   border-radius: 5px;
 }
 
-.insights-tabs {
+.insightsTabs {
   display: flex;
   border: 1px solid #ccc;
   border-radius: 5px;
@@ -292,7 +292,7 @@ tracking-header-dark {
   max-width: 60%;
 }
 
-.insights-tab {
+.insightsTab {
   flex: 1;
   text-align: center;
   padding: 10px 0;
@@ -304,47 +304,47 @@ tracking-header-dark {
   transition: background-color 0.3s, color 0.3s;
 }
 
-.insights-tab:not(:last-child) {
+.insightsTab:not(:last-child) {
   border-right: 1px solid #ccc;
 }
 
-.insights-tab.active-tab {
+.insightsTab.activeTab {
   border-radius: 4px;
   background-color: #007bff;
   color: #fff;
   font-weight: bold;
 }
 
-.insights-tab:hover {
+.insightsTab:hover {
   background-color: #e0e0e0;
 }
 
-.insights-content {
+.insightsContent {
   display: flex;
   flex-direction: column;
   padding-top: 20px;
   gap: 15px;
 }
 
-.insight-item {
+.insightItem {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.insight-label {
+.insightLabel {
   flex: 1;
   font-size: 0.9rem;
   color: #555;
   margin-right: 10px;
 }
-.insight-label-dark {
+.insightLabelDark {
   color: #ffffff;
   font-size: 0.9rem;
   flex: 1;
   margin-right: 10px;
 }
-.insight-bar {
+.insightBar {
   flex: 2;
   height: 8px;
   background: #e9ecef;
@@ -355,14 +355,14 @@ tracking-header-dark {
   margin-left: 10px;
 }
 
-.insight-fill {
+.insightFill {
   height: 100%;
   background: #007bff;
   border-radius: 4px;
   transition: width 0.3s ease-in-out;
 }
 
-.insight-percentage {
+.insightPercentage {
   font-size: 0.9rem;
   font-weight: bold;
   color: #333;
