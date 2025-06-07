@@ -18,6 +18,7 @@ import JobFormBuilder from 'components/Collaboration/JobFormbuilder';
 import JobCCDashboard from 'components/JobCCDashboard/JobCCDashboard';
 import WeeklyProjectSummary from 'components/BMDashboard/WeeklyProjectSummary/WeeklyProjectSummary';
 import ToolsAvailabilityPage from 'components/BMDashboard/WeeklyProjectSummary/Tools/ToolsAvailabilityPage';
+import { CostPredictionPage } from 'components/BMDashboard/WeeklyProjectSummary/Financials';
 import FaqSearch from 'components/Faq/FaqSearch';
 import FaqManagement from 'components/Faq/FaqManagement';
 import FaqHistory from 'components/Faq/FaqHistory';
@@ -480,6 +481,13 @@ export default (
           fallback
           exact
           component={ToolsAvailabilityPage}
+        />
+
+        <BMProtectedRoute
+          path="/bmdashboard/cost-prediction"
+          fallback
+          exact
+          component={CostPredictionPage}
         />
 
         {/* Community Portal Routes */}
