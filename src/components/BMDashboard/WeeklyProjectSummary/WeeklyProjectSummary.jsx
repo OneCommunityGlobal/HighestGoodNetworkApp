@@ -9,6 +9,7 @@ import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
 import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
 import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
+import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
 
 const projectStatusButtons = [
   {
@@ -264,6 +265,19 @@ export default function WeeklyProjectSummary() {
           return (
             <div key={uniqueId} className="weekly-project-summary-card normal-card">
               {index === 1 ? <PaidLaborCost /> : '📊 Card'}
+            </div>
+          );
+        }),
+      },
+      {
+        title: 'Financials Tracking',
+        key: 'Financials Tracking',
+        className: 'full',
+        content: [1, 2, 3, 4].map((_, index) => {
+          const uniqueId = uuidv4();
+          return (
+            <div key={uniqueId} className="weekly-project-summary-card normal-card">
+              {index === 3 ? <ActualVsPlannedCost /> : '📊 Card'}
             </div>
           );
         }),
