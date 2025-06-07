@@ -2,7 +2,7 @@ import { useSelector } from 'react-redux';
 import MyCases from './MyCases';
 import DropOffTracking from './DropOffTracking';
 import NoShowInsights from './NoShowInsights';
-import './Participation.css';
+import styles from './Participation.module.css';
 
 function LandingPage() {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -16,7 +16,7 @@ function LandingPage() {
         </h1>
       </header>
       <MyCases />
-      <div className="analytics-section">
+      <div className={`${styles.analyticsSection}`}>
         <DropOffTracking />
         <NoShowInsights />
       </div>

@@ -1,4 +1,4 @@
-.resources-usage {
+.resourcesUsage {
   background: white;
   padding: 20px;
   border-radius: 8px;
@@ -7,7 +7,7 @@
 }
 
 /* border for all the row data */
-.resource-row {
+.resourceRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -29,24 +29,24 @@
   font-weight: bold;
 }
 
-.resource-row .column:last-child {
+.resourceRow .column:last-child {
   border-right: none;
 }
 
 /* colors for text based on status  */
-.status-green {
+.statusGreen {
   color: green;
 }
 
-.status-yellow {
+.statusYellow {
   color: orange;
 }
 
-.status-red {
+.statusRed {
   color: red;
 }
 
-.view-details {
+.viewDetails {
   display: block;
   width: 100%;
   background-color: #e6f9e6;
@@ -61,26 +61,26 @@
   text-align: center;
 }
 
-.view-details:hover {
+.viewDetails:hover {
   background-color: #d1f0d1;
 }
 
 /* Actions Column */
-.action-column {
+.actionColumn {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 /* Tick Box */
-.tick-box {
+.tickBox {
   display: flex;
   justify-content: center;
   align-items: center;
   margin-top: 20px;
 }
 
-.tick-label {
+.tickLabel {
   display: flex;
   align-items: center;
   justify-content: center;

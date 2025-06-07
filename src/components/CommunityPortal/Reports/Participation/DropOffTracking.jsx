@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import './Participation.css';
+import styles from './Participation.module.css';
 import mockEvents from './mockData';
 
 function DropOffTracking() {
@@ -64,7 +64,7 @@ function DropOffTracking() {
     <div className={`tracking-container ${darkMode ? 'tracking-container-dark' : ''}`}>
       <div className={`tracking-header ${darkMode ? 'tracking-header-dark' : ''}`}>
         <h3>Drop-off and no-show rate tracking</h3>
-        <div className="tracking-filters">
+        <div className={`${styles.trackingFilters}`}>
           <select value={selectedEvent} onChange={e => setSelectedEvent(e.target.value)}>
             <option value="All Events">All Events</option>
             <option value="Yoga Class">Yoga Class</option>
@@ -80,16 +80,16 @@ function DropOffTracking() {
           </select>
         </div>
       </div>
-      <div className="tracking-summary">
+      <div className={`${styles.trackingSummary}`}>
         <div className={`tracking-rate ${darkMode ? 'tracking-rate-dark' : ''}`}>
-          <p className="tracking-rate-value">
+          <p className={`${styles.trackingRateValue}`}>
             +5%
             <span className={darkMode ? 'span-dark' : ''}>Last week</span>
           </p>
           <p>Drop-off rate</p>
         </div>
         <div className={`tracking-rate ${darkMode ? 'tracking-rate-dark' : ''}`}>
-          <p className="tracking-rate-value">
+          <p className={`${styles.trackingRateValue}`}>
             +5% <span className={darkMode ? 'span-dark' : ''}>Last week</span>
           </p>
           <p>No-show rate</p>
@@ -109,8 +109,8 @@ function DropOffTracking() {
             {filteredEvents.map(event => (
               <tr key={event.id}>
                 <td>{event.eventName}</td>
-                <td className="tracking-rate-green">{event.noShowRate}</td>
-                <td className="tracking-rate-red">{event.dropOffRate}</td>
+                <td className={`${styles.trackingRateGreen}`}>{event.noShowRate}</td>
+                <td className={`${styles.trackingRateRed}`}>{event.dropOffRate}</td>
                 <td>{event.attendees}</td>
               </tr>
             ))}

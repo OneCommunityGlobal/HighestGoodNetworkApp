@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import './styles.css';
+import styles from './styles.module.css';
 
 function MyEvent() {
   const mockEvents = [
@@ -65,7 +65,7 @@ function MyEvent() {
   };
 
   const displayListView = () => (
-    <table className="myEventsTable">
+    <table className={`${styles.myEventsTable}`}>
       <thead>
         <tr>
           <th>Date</th>
@@ -82,14 +82,14 @@ function MyEvent() {
             {' '}
             {/* Use event.date as the key */}
             <td>
-              <div className="date-box">
-                <span className="day">{event.day}</span>
-                <span className="date">{event.date.split('-')[2]}</span>
+              <div className={`${styles.dateBox}`}>
+                <span className={`${styles.day}`}>{event.day}</span>
+                <span className={`${styles.date}`}>{event.date.split('-')[2]}</span>
               </div>
             </td>
             <td>
               {event.event}
-              <div className="eventTime">{event.time}</div>
+              <div className={`${styles.eventTime}`}>{event.time}</div>
             </td>
             <td className={`status ${event.status.toLowerCase()}`}>{event.status}</td>
             <td>{event.registration}</td>
@@ -109,10 +109,10 @@ function MyEvent() {
   );
 
   return (
-    <div className="my-event">
+    <div className={`${styles.myEvent}`}>
       <h2>My Event</h2>
-      <div className="event-controls">
-        <div className="view-toggle">
+      <div className={`${styles.eventControls}`}>
+        <div className={`${styles.viewToggle}`}>
           <button
             type="button"
             className={view === 'list' ? 'active-view' : 'inactive-view'}
@@ -128,7 +128,7 @@ function MyEvent() {
             Calendar
           </button>
         </div>
-        <div className="filter-controls">
+        <div className={`${styles.filterControls}`}>
           <select name="date" onChange={handleFilterChange} value={filters.date}>
             <option value="">Select Date</option>
             <option value="2024-08-08">Thu 08</option>
@@ -146,10 +146,14 @@ function MyEvent() {
             <option value="2908, HGN bld">2908, HGN bld</option>
             <option value="1234, ABC Center">1234, ABC Center</option>
           </select>
-          <button type="button" onClick={handleApplyFilters} className="apply-filters-btn">
+          <button
+            type="button"
+            onClick={handleApplyFilters}
+            className={`${styles.applyFiltersBtn}`}
+          >
             Apply Filters
           </button>
-          <button type="button" className="create-new-btn">
+          <button type="button" className={`${styles.createNewBtn}`}>
             + Create New
           </button>
         </div>
