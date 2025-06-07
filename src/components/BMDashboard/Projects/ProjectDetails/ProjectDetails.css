@@ -216,6 +216,7 @@
   padding: 1em 2em;
   width: 100%;
   font-weight: lighter;
+  white-space: nowrap;
 }
 
 .project-log thead {
