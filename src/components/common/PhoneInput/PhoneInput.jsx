@@ -1,12 +1,12 @@
 import { InputGroup, FormGroup, Input, Label, Col, Row } from 'reactstrap';
-import './PhoneInput.css';
+import styles from './PhoneInput.module.css';
 
 // eslint-disable-next-line import/prefer-default-export
 export function PhoneInput({ areaCode, setAreaCode, phoneNumber, setPhoneNumber }) {
   return (
-    <FormGroup className="phone-input-container">
+    <FormGroup className={`${styles.phoneInputContainer}`}>
       <Label>Supplier Phone Number</Label>
-      <InputGroup className="phone-input-content">
+      <InputGroup className={`${styles.phoneInputContent}`}>
         <Row>
           {/* Area code */}
           <Col xs="auto" className="pr-1">

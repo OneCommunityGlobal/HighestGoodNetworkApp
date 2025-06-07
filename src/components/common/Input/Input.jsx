@@ -3,8 +3,8 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-import './input.css';
 import { useSelector } from 'react-redux';
+import styles from './input.module.css';
 
 // eslint-disable-next-line react/function-component-definition
 const Input = ({ label, name, error, className, type, invalid, ...rest }) => {
@@ -29,7 +29,7 @@ const Input = ({ label, name, error, className, type, invalid, ...rest }) => {
         {label}
       </label>
       {type === 'password' ? (
-        <div className="input-text w-100">
+        <div className={`${styles.inputText} w-100`}>
           <input
             {...rest}
             type={password}

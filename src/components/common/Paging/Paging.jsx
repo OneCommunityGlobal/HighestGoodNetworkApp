@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import classnames from 'classnames';
-import './Paging.css';
+import styles from './Paging.module.css';
 
 // eslint-disable-next-line react/function-component-definition
 const Paging = ({ maxElemPerPage = 6, totalElementsCount, children, darkMode }) => {
@@ -94,14 +94,14 @@ const Paging = ({ maxElemPerPage = 6, totalElementsCount, children, darkMode }) 
   };
 
   return (
-    <div className="paging-wrapper">
+    <div className={`${styles.pagingWrapper}`}>
       {React.cloneElement(children, {
         skip: maxElemPerPage * (currentPage - 1),
         take: maxElemPerPage,
       })}
 
       {totalElementsCount > maxElemPerPage && (
-        <div className="pagination-buttons-wrapper">
+        <div className={`${styles.paginationButtonsWrapper}`}>
           <FiChevronLeft
             className={classnames(`${pageIndexButton}`, {
               disabled: currentPage === 1,

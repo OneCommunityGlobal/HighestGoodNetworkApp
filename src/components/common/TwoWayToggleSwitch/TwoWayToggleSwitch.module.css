@@ -1,4 +1,4 @@
-.two-way-toggle-switch {
+.twoWayToggleSwitch {
   position: relative;
   width: 90px;
   display: inline-block;
@@ -8,11 +8,11 @@
   transform: translate(-50%, -50%);
 }
 
-.toggle-switch-checkbox {
+.toggleSwitchCheckbox {
   display: none;
 }
 
-.toggle-switch-label {
+.toggleSwitchLabel {
   display: block;
   overflow: hidden;
   cursor: pointer;
@@ -20,15 +20,15 @@
   border-radius: 20px;
 }
 
-.toggle-switch-inner {
+.toggleSwitchInner {
   display: block;
   width: 200%;
   margin-left: -100%;
   transition: margin 0.3s ease-in 0s;
 }
 
-.toggle-switch-inner:before,
-.toggle-switch-inner:after {
+.toggleSwitchInner:before,
+.toggleSwitchInner:after {
   display: block;
   float: left;
   width: 50%;
@@ -41,7 +41,7 @@
   box-sizing: border-box;
 }
 
-.toggle-switch-inner:before {
+.toggleSwitchInner:before {
   content: "All";
   padding-left: 2px;
   background-color: #2FCCFF;
@@ -49,7 +49,7 @@
   text-align: center;
 }
 
-.toggle-switch-inner:after {
+.toggleSwitchInner:after {
   content: "Select";
   padding-left: 10px;
   background-color: #FF3B3F;
@@ -57,7 +57,7 @@
   text-align: center;
 }
 
-.toggle-switch-switch {
+.toggleSwitchSwitch {
   display: block;
   width: 15px;
   top: 4px;
@@ -71,10 +71,10 @@
   transition: all 0.3s ease-in 0s;
 }
 
-.toggle-switch-checkbox:checked + .toggle-switch-label .toggle-switch-inner {
+.toggleSwitchCheckbox:checked + .toggleSwitchLabel .toggleSwitchInner {
   margin-left: 0;
 }
 
-.toggle-switch-checkbox:checked + .toggle-switch-label .toggle-switch-switch {
+.toggleSwitchCheckbox:checked + .toggleSwitchLabel .toggleSwitchSwitch {
   right: 0px;
 }

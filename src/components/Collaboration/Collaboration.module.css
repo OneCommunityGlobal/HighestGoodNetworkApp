@@ -1,11 +1,11 @@
 .container,
-.job-landing .header img {
+.jobLanding .header img {
   width: 60%;
   max-width: 1000px;
   display: flex;
 }
 .headings,
-.job-ad {
+.jobAd {
   text-align: center;
 }
 .container {
@@ -16,7 +16,7 @@
   border: 1px solid #ddd;
   border-radius: 10px;
 }
-.job-landing .header img {
+.jobLanding .header img {
   height: auto;
   margin: 0 auto;
   flex-direction: column;
@@ -31,20 +31,20 @@
   padding: 10px;
   flex-flow: row nowrap;
 }
-.navbar-left input,
-.navbar-left select {
+.navbarLeft input,
+.navbarLeft select {
   display: flex;
   padding: 8px;
   margin-right: 10px;
   align-items: center;
 }
-.navbar-left,
-.navbar-right,
-.search-form {
+.navbarLeft,
+.navbarRight,
+.searchForm {
   display: flex;
   align-items: center;
 }
-.search-form input {
+.searchForm input {
   margin-right: 10px;
   padding: 5px;
   border: 1px solid #ccc;
@@ -60,13 +60,13 @@ select {
   border: 1px solid #ccc;
   border-radius: 4px;
 }
-.job-list {
+.jobList {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   gap: 20px;
   width: 100%;
 }
-.job-ad {
+.jobAd {
   border: 1px solid #ddd;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
@@ -74,26 +74,26 @@ select {
   background: linear-gradient(135deg, #fff, #f9f9f9);
   transition: transform 0.3s, box-shadow 0.3s;
 }
-.job-ad img {
+.jobAd img {
   max-width: 100%;
   height: auto;
   border-bottom: 1px solid #ddd;
 }
-.job-ad h3 {
+.jobAd h3 {
   font-size: 1.1rem;
   font-weight: 700;
   color: #333;
   margin: 10px 0;
   transition: color 0.3s;
 }
-.job-ad a {
+.jobAd a {
   text-decoration: none;
   color: inherit;
 }
-.job-ad a:hover h3 {
+.jobAd a:hover h3 {
   color: #007acc;
 }
-.job-ad:hover {
+.jobAd:hover {
   transform: translateY(-5px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }

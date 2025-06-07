@@ -4,7 +4,7 @@ import './ReportCharts.css';
 import * as d3 from 'd3/dist/d3.min';
 import { CHART_RADIUS, CHART_SIZE } from '../../../common/PieChart/constants';
 import { generateArrayOfUniqColors } from '../../../common/PieChart/colorsGenerator';
-import '../../../common/PieChart/PieChart.css';
+import '../../../common/PieChart/PieChart.module.css';
 import PieChartInfoDetail from './PieChartInfoDetail';
 
 function ReportCharts({ title, pieChartId }) {

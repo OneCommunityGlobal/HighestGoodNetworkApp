@@ -3,7 +3,7 @@ import { React, useEffect, useState } from 'react';
 import './ReportCharts.css';
 import * as d3 from 'd3/dist/d3.min';
 import { CHART_RADIUS, CHART_SIZE } from '../../../common/PieChart/constants';
-import '../../../common/PieChart/PieChart.css';
+import '../../../common/PieChart/PieChart.module.css';
 import PieChartInfoDetail from './PieChartInfoDetail';
 
 function TeamsReportCharts({ title, pieChartId, selectedTeamsData, selectedTeamsWeeklyEffort, darkMode }) {

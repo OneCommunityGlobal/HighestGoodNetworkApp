@@ -1,8 +1,8 @@
 import { Component } from 'react';
-import './Collaboration.module.css';
 import { toast } from 'react-toastify';
 import { ApiEndpoint } from 'utils/URL';
 import OneCommunityImage from './One-Community-Horizontal-Homepage-Header-980x140px-2.png';
+import styles from './Collaboration.module.css';
 
 class Collaboration extends Component {
   constructor(props) {
@@ -96,8 +96,8 @@ class Collaboration extends Component {
     } = this.state;
 
     return (
-      <div className="job-landing">
-        <div className="header">
+      <div className={`${styles.jobLanding}`}>
+        <div className={`${styles.header}`}>
           <a
             href="https://www.onecommunityglobal.org/collaboration/"
             target="_blank"
@@ -106,23 +106,23 @@ class Collaboration extends Component {
             <img src={OneCommunityImage} alt="One Community Logo" />
           </a>
         </div>
-        <div className="container">
-          <nav className="navbar">
-            <div className="navbar-left">
-              <form className="search-form">
+        <div className={`${styles.container}`}>
+          <nav className={`${styles.navbar}`}>
+            <div className={`${styles.navbarLeft}`}>
+              <form className={`${styles.searchForm}`}>
                 <input
                   type="text"
                   placeholder="Search by title..."
                   value={searchTerm}
                   onChange={this.handleSearch}
                 />
-                <button className="search" type="submit" onClick={this.handleSubmit}>
+                <button className={`${styles.search}`} type="submit" onClick={this.handleSubmit}>
                   Go
                 </button>
               </form>
             </div>
 
-            <div className="navbar-right">
+            <div className={`${styles.navbarRight}`}>
               <select value={selectedCategory} onChange={event => this.handleCategoryChange(event)}>
                 <option value="">Select from Categories</option>
                 {categories.map(category => (
@@ -134,14 +134,14 @@ class Collaboration extends Component {
             </div>
           </nav>
 
-          <div className="headings">
+          <div className={`${styles.headings}`}>
             <h1>Like to Work With Us? Apply Now!</h1>
             <p>Learn about who we are and who we want to work with!</p>
           </div>
 
-          <div className="job-list">
+          <div className={`${styles.jobList}`}>
             {jobAds.map(ad => (
-              <div key={ad._id} className="job-ad">
+              <div key={ad._id} className={`${styles.jobAd}`}>
                 <img
                   src={`/api/placeholder/640/480?text=${encodeURIComponent(
                     ad.category || 'Job Opening',
@@ -161,7 +161,7 @@ class Collaboration extends Component {
             ))}
           </div>
 
-          <div className="pagination">
+          <div className={`${styles.pagination}`}>
             {Array.from({ length: totalPages }, (_, i) => (
               <button
                 type="button"

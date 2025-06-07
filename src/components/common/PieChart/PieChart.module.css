@@ -1,20 +1,20 @@
-.pie-chart-wrapper {
+.pieChartWrapper {
   display: flex;
   align-items: center;
 }
 
-.pie-chart {
+.pieChart {
   margin-right: 32px;
 }
 
-.pie-chart-legend-header {
+.pieChartLegendHeader {
   display: flex;
   justify-content: space-between;
   margin-bottom: 24px;
   font-weight: 500;
 }
 
-.pie-chart-legend-item {
+.pieChartLegendItem {
   position: relative;
   margin: 12px 0;
   display: flex;
@@ -23,7 +23,7 @@
   font-size: 14px;
 }
 
-.data-legend-color {
+.dataLegendColor {
   position: absolute;
   top: 2px;
   left: -28px;
@@ -36,7 +36,7 @@
   border-radius: 50%;
 }
 
-.data-legend-info {
+.dataLegendInfo {
   width: 240px;
   display: flex;
   justify-content: space-between;
@@ -44,17 +44,17 @@
   color: rgba(0, 0, 0, 0.5);
 }
 
-.data-legend-info-part:not(:last-child) {
+.dataLegendInfoPart:not(:last-child) {
   margin-right: 24px;
 }
 
 @media (max-width: 670px) {
-  .pie-chart-wrapper {
+  .pieChartWrapper {
     flex-direction: column;
   }
 }
 
-div.tooltip-donut {
+div.tooltipDonut {
   position: absolute;
   text-align: center;
   padding: 0.5rem;
@@ -67,7 +67,7 @@ div.tooltip-donut {
   white-space: normal;
 }
 
-div.pie-chart-legend-container {
+div.pieChartLegendContainer {
   min-width: 150px;
 }
 
@@ -118,10 +118,10 @@ input:checked + .slider:before {
 }
 
 /* Optional: Dark mode adjustments */
-.text-light .slider {
+.textLight .slider {
   background-color: #ffffff;
 }
 
-.text-light input:checked + .slider {
+.textLight input:checked + .slider {
   background-color: #4CAF50;
 }

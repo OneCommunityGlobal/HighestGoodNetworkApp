@@ -1,8 +1,8 @@
 /* eslint-disable no-plusplus */
 
 import { useSelector } from 'react-redux';
-import './SkeletonLoading.css';
 import { Container } from 'reactstrap';
+import styles from './SkeletonLoading.module.css';
 
 const SkeletonLoading = ({ template, className }) => {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -15,10 +15,10 @@ const SkeletonLoading = ({ template, className }) => {
         return (
           <Container fluid="sm">
             <div className={`skeleton-loading-timelog ${darkMode ? 'bg-space-cadet' : ''}`}>
-              <div className="skeleton-loading-item-timelog" />
-              <div className="skeleton-loading-item-timelog" />
+              <div className={`${styles.skeletonLoadingItemTimelog}`} />
+              <div className={`${styles.skeletonLoadingItemTimelog}`} />
               <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <div className="skeleton-loading-item-add-intangible" />
+                <div className={`${styles.skeletonLoadingItemAddIntangible}`} />
               </div>
             </div>
           </Container>
@@ -26,17 +26,17 @@ const SkeletonLoading = ({ template, className }) => {
       case 'TimelogFilter':
         return (
           <div className={`skeleton-loading-timelog-filter ${darkMode ? 'bg-space-cadet' : ''}`}>
-            <div className="skeleton-loading-timelog-filter-item" />
-            <div className="skeleton-loading-timelog-filter-item" />
-            <div className="skeleton-loading-timelog-filter-item" />
-            <div className="skeleton-loading-timelog-filter-item" />
+            <div className={`${styles.skeletonLoadingTimelogFilterItem}`} />
+            <div className={`${styles.skeletonLoadingTimelogFilterItem}`} />
+            <div className={`${styles.skeletonLoadingTimelogFilterItem}`} />
+            <div className={`${styles.skeletonLoadingTimelogFilterItem}`} />
           </div>
         );
       case 'TeamMemberTasks':
         for (let i = 0; i < 15; i++) {
           rows.push(
             <tr key={i}>
-              <td colSpan={6} className="skeleton-loading-team-member-tasks-row" />
+              <td colSpan={6} className={`${styles.skeletonLoadingTeamMemberTasksRow}`} />
             </tr>,
           );
         }
@@ -44,21 +44,21 @@ const SkeletonLoading = ({ template, className }) => {
       case 'WeeklySummary':
         return (
           <Container fluid="sm" className={darkMode ? 'bg-space-cadet' : ''}>
-            <div className="skeleton-loading-weekly-summary" />
+            <div className={`${styles.skeletonLoadingWeeklySummary}`} />
           </Container>
         );
       case 'WeeklySummariesReport':
         for (let i = 0; i < 10; i++) {
           reportItems.push(
             <div key={i} className={darkMode ? 'bg-yinmn-blue' : ''}>
-              <div className="skeleton-loading-weekly-summaries-report-item" />
-              <div className="skeleton-loading-weekly-summaries-report-item mt-5" />
-              <div className="skeleton-loading-weekly-summaries-report-item" />
-              <div className="skeleton-loading-weekly-summaries-report-item" />
-              <div className="skeleton-loading-weekly-summaries-report-item" />
-              <div className="skeleton-loading-weekly-summaries-report-item" />
-              <div className="skeleton-loading-weekly-summaries-report-item" />
-              <div className="skeleton-loading-weekly-summaries-report-item" />
+              <div className={`${styles.skeletonLoadingWeeklySummariesReportItem}`} />
+              <div className={`${styles.skeletonLoadingWeeklySummariesReportItem} mt-5`} />
+              <div className={`${styles.skeletonLoadingWeeklySummariesReportItem}`} />
+              <div className={`${styles.skeletonLoadingWeeklySummariesReportItem}`} />
+              <div className={`${styles.skeletonLoadingWeeklySummariesReportItem}`} />
+              <div className={`${styles.skeletonLoadingWeeklySummariesReportItem}`} />
+              <div className={`${styles.skeletonLoadingWeeklySummariesReportItem}`} />
+              <div className={`${styles.skeletonLoadingWeeklySummariesReportItem}`} />
               <hr />
             </div>,
           );
@@ -80,14 +80,14 @@ const SkeletonLoading = ({ template, className }) => {
         for (let i = 0; i < 10; i++) {
           reportItems.push(
             <div key={i} className={darkMode ? 'bg-yinmn-blue' : ''}>
-              <div className="skeleton-loading-weekly-summaries-report-item" />
-              <div className="skeleton-loading-weekly-summaries-report-item mt-5" />
-              <div className="skeleton-loading-weekly-summaries-report-item" />
-              <div className="skeleton-loading-weekly-summaries-report-item" />
-              <div className="skeleton-loading-weekly-summaries-report-item" />
-              <div className="skeleton-loading-weekly-summaries-report-item" />
-              <div className="skeleton-loading-weekly-summaries-report-item" />
-              <div className="skeleton-loading-weekly-summaries-report-item" />
+              <div className={`${styles.skeletonLoadingWeeklySummariesReportItem}`} />
+              <div className={`${styles.skeletonLoadingWeeklySummariesReportItem} mt-5`} />
+              <div className={`${styles.skeletonLoadingWeeklySummariesReportItem}`} />
+              <div className={`${styles.skeletonLoadingWeeklySummariesReportItem}`} />
+              <div className={`${styles.skeletonLoadingWeeklySummariesReportItem}`} />
+              <div className={`${styles.skeletonLoadingWeeklySummariesReportItem}`} />
+              <div className={`${styles.skeletonLoadingWeeklySummariesReportItem}`} />
+              <div className={`${styles.skeletonLoadingWeeklySummariesReportItem}`} />
               <hr />
             </div>,
           );
@@ -118,41 +118,47 @@ const SkeletonLoading = ({ template, className }) => {
           >
             <div style={{ margin: '3rem 3rem 0 16rem' }}>
               <div
-                className="skeleton-loading-user-profile-picture"
+                className={`${styles.skeletonLoadingUserProfilePicture}`}
                 style={{ marginBottom: '16rem' }}
               />
-              <div className="skeleton-loading-user-profile-picture" />
+              <div className={`${styles.skeletonLoadingUserProfilePicture}`} />
             </div>
             <div className="mx-5" style={{ marginTop: '6rem' }}>
-              <div className="skeleton-loading-user-profile-item" />
-              <div className="skeleton-loading-user-profile-item mt-5" />
-              <div className="skeleton-loading-user-profile-item" style={{ height: '16rem' }} />
-              <div className="skeleton-loading-user-profile-item" style={{ marginTop: '4rem' }} />
-              <div className="skeleton-loading-user-profile-item mt-3" />
-              <div className="skeleton-loading-user-profile-item mt-3" />
-              <div className="skeleton-loading-user-profile-item mt-3" />
-              <div className="skeleton-loading-user-profile-item mt-3" />
-              <div className="skeleton-loading-user-profile-item mt-3" />
-              <div className="skeleton-loading-user-profile-item mt-3" />
-              <div className="skeleton-loading-user-profile-item mt-3" />
-              <div className="skeleton-loading-user-profile-item mt-3" />
-              <div className="skeleton-loading-user-profile-item mt-3" />
-              <div className="skeleton-loading-user-profile-item mt-3" />
-              <div className="skeleton-loading-user-profile-item mt-3" />
+              <div className={`${styles.skeletonLoadingUserProfileItem}`} />
+              <div className={`${styles.skeletonLoadingUserProfileItem} mt-5`} />
+              <div
+                className={`${styles.skeletonLoadingUserProfileItem}`}
+                style={{ height: '16rem' }}
+              />
+              <div
+                className={`${styles.skeletonLoadingUserProfileItem}`}
+                style={{ marginTop: '4rem' }}
+              />
+              <div className={`${styles.skeletonLoadingUserProfileItem} mt-3`} />
+              <div className={`${styles.skeletonLoadingUserProfileItem} mt-3`} />
+              <div className={`${styles.skeletonLoadingUserProfileItem} mt-3`} />
+              <div className={`${styles.skeletonLoadingUserProfileItem} mt-3`} />
+              <div className={`${styles.skeletonLoadingUserProfileItem} mt-3`} />
+              <div className={`${styles.skeletonLoadingUserProfileItem} mt-3`} />
+              <div className={`${styles.skeletonLoadingUserProfileItem} mt-3`} />
+              <div className={`${styles.skeletonLoadingUserProfileItem} mt-3`} />
+              <div className={`${styles.skeletonLoadingUserProfileItem} mt-3`} />
+              <div className={`${styles.skeletonLoadingUserProfileItem} mt-3`} />
+              <div className={`${styles.skeletonLoadingUserProfileItem} mt-3`} />
             </div>
           </Container>
         );
       case 'UserManagement':
         for (let i = 0; i < 17; i++) {
           userManagementItems.push(
-            <div key={i} className="skeleton-loading-user-management-item" />,
+            <div key={i} className={`${styles.skeletonLoadingUserManagementItem}`} />,
           );
         }
         return <div>{userManagementItems}</div>;
       case 'WeeklyVolunteerSummary':
         return (
           <Container fluid="sm" className={darkMode ? 'bg-space-cadet' : ''}>
-            <div className="skeleton-loading-weekly-summary" />
+            <div className={`${styles.skeletonLoadingWeeklySummary}`} />
           </Container>
         );
       default:
