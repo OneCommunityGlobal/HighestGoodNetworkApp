@@ -15,12 +15,22 @@ describe('Test Suite for PopUpBar', () => {
     expect(actualText).toBeInTheDocument();
   });
 
-  it('Test Case 2: Renders with correct text', () => {
+  it('Test Case 2: Renders with correct custom message', () => {
     renderComponent();
-    const expectedText = `You are currently functioning as ${viewingUser.firstName} ${viewingUser.lastName}, you only have the permissions of ${viewingUser.firstName}`;
-
-    const actualText = screen.getByText(expectedText);
+    const actualText = screen.getByText('PopUpBar text message');
     expect(actualText).toBeInTheDocument();
+  });
+
+  it('Test Case 2b: Renders with default template when no message is provided', () => {
+    window.viewingUser = { firstName: 'Jane', lastName: 'Smith' };
+    render(<PopUpBar message={undefined} />);
+
+    const expectedText =
+      'You are currently functioning as Jane Smith, you only have the permissions of Jane';
+    const messageElement = screen.getByText(expectedText);
+    expect(messageElement).toBeInTheDocument();
+
+    delete window.viewingUser;
   });
 
   it('Test Case 3: Closes on button click', () => {
@@ -30,7 +40,6 @@ describe('Test Suite for PopUpBar', () => {
     const closeButton = screen.getByText('X');
     fireEvent.click(closeButton);
 
-    // Ensure the onClickClose function is called
     expect(onClickClose).toHaveBeenCalled();
   });
 });
