@@ -53,6 +53,7 @@ import { toolReducer } from './bmdashboard/toolReducer';
 import { equipmentReducer } from './bmdashboard/equipmentReducer';
 import { bmProjectMemberReducer } from './bmdashboard/projectMemberReducer';
 import { bmTimeLoggerReducer } from './bmdashboard/timeLoggerReducer';
+import { costBreakdownReducer } from './bmdashboard/costBreakdownReducer';
 
 import dashboardReducer from './dashboardReducer';
 import { timeOffRequestsReducer } from './timeOffRequestReducer';
@@ -112,6 +113,7 @@ const localReducers = {
   bmProjectMembers: bmProjectMemberReducer,
   bmTimeLogger: bmTimeLoggerReducer,
   weeklyProjectSummary: weeklyProjectSummaryReducer,
+  costBreakdown: costBreakdownReducer,
 };
 
 const sessionReducers = {
