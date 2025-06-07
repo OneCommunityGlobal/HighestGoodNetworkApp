@@ -1,7 +1,9 @@
-import { useState, useEffect, useRef } from 'react';
+/* eslint-disable no-undef */
+import { useState, useEffect } from 'react';
 import './Announcements.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react';
+import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
 
@@ -14,7 +16,6 @@ function Announcements({ title, email: initialEmail }) {
   const [headerContent, setHeaderContent] = useState('');
   const [showEditor, setShowEditor] = useState(true);
   const [isFileUploaded, setIsFileUploaded] = useState(false);
-  const tinymce = useRef(null);
 
   useEffect(() => {
     setShowEditor(false);
@@ -102,6 +103,7 @@ function Announcements({ title, email: initialEmail }) {
 
   const addImageToEmailContent = e => {
     const imageFile = document.querySelector('input[type="file"]').files[0];
+    setIsFileUploaded(true);
     convertImageToBase64(imageFile, base64Image => {
       const imageTag = `<img src="${base64Image}" alt="Header Image" style="width: 100%; max-width: 100%; height: auto;">`;
       setHeaderContent(prevContent => `${imageTag}${prevContent}`);
@@ -124,6 +126,11 @@ function Announcements({ title, email: initialEmail }) {
 
     if (emailList.length === 0 || emailList.every(e => !e.trim())) {
       toast.error('Error: Empty Email List. Please enter AT LEAST One email.');
+      return;
+    }
+
+    if (!isFileUploaded) {
+      toast.error('Error: Please upload a file.');
       return;
     }
 

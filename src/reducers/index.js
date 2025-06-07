@@ -60,7 +60,10 @@ import { timeOffRequestsReducer } from './timeOffRequestReducer';
 import { totalOrgSummaryReducer } from './totalOrgSummaryReducer';
 import { allUsersTimeEntriesReducer } from './allUsersTimeEntriesReducer';
 import HGNFormReducer from './hgnFormReducers';
-import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
+// import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
+
+// community portal
+import noShowVizReducer from './communityPortal/noShowVizReducer';
 
 const localReducers = {
   auth: authReducer,
@@ -110,6 +113,10 @@ const localReducers = {
   bmConsumables: consumablesReducer,
   bmReusables: reusablesReducer,
   dashboard: dashboardReducer,
+
+  // community portal
+  noShowViz: noShowVizReducer,
+
   bmProjectMembers: bmProjectMemberReducer,
   bmTimeLogger: bmTimeLoggerReducer,
   bmInjury: bmInjuryReducer,

@@ -39,6 +39,8 @@ export const ENDPOINTS = {
   USER_PROJECTS: userId => `${APIEndpoint}/projects/user/${userId}`,
   PROJECT: `${APIEndpoint}/project/`,
   PROJECT_BY_ID: projectId => `${APIEndpoint}/project/${projectId}`,
+  PROJECT_MEMBER_SEARCH: (projectId, query) =>
+    `${APIEndpoint}/projects/${projectId}/users/search/${encodeURIComponent(query)}`,
   BADGE_COUNT: userId => `${APIEndpoint}/badge/badgecount/${userId}`,
   BADGE_COUNT_RESET: userId => `${APIEndpoint}/badge/badgecount/reset/${userId}`,
   PROJECT_MEMBER: projectId => `${APIEndpoint}/project/${projectId}/users`,
@@ -49,6 +51,13 @@ export const ENDPOINTS = {
   FORCE_PASSWORD: `${APIEndpoint}/forcepassword`,
   LEADER_BOARD: userId => `${APIEndpoint}/dashboard/leaderboard/${userId}`,
   ORG_DATA: `${APIEndpoint}/dashboard/leaderboard/org/data`,
+
+  // Questionnaire endpoints
+  QUESTIONNAIRE_FEEDBACK_REQUEST: () => `${APIEndpoint}/dashboard/questionaire/feedbackrequest`,
+  QUESTIONNAIRE_CLOSE_PERMANENTLY: () =>
+    `${APIEndpoint}/dashboard/questionaire/checkUserFoundHelpSomewhere`,
+  QUESTIONNAIRE_USER_NAMES_LIST: () => `${APIEndpoint}/dashboard/questionaire/userNamesList`,
+
   TIME_ENTRIES_PERIOD: (userId, fromDate, toDate) =>
     `${APIEndpoint}/TimeEntry/user/${userId}/${fromDate}/${toDate}`,
   TIME_ENTRIES_USERS_HOURS_PERIOD: `${APIEndpoint}/TimeEntry/users/totalHours`,
@@ -97,8 +106,9 @@ export const ENDPOINTS = {
   TOTAL_ORG_SUMMARY: (startDate, endDate, comparisonStartDate, comparisonEndDate) =>
     `${APIEndpoint}/reports/volunteerstats?startDate=${startDate}&endDate=${endDate}&comparisonStartDate=${comparisonStartDate}&comparisonEndDate=${comparisonEndDate}`,
   VOLUNTEER_TRENDS: (timeFrame, offset, customStartDate, customEndDate) =>
-    `${APIEndpoint}/reports/volunteertrends?timeFrame=${timeFrame}&offset=${offset}${customStartDate ? `&customStartDate=${customStartDate}` : ''}${customEndDate ? `&customEndDate=${customEndDate}` : ''}`
-  ,
+    `${APIEndpoint}/reports/volunteertrends?timeFrame=${timeFrame}&offset=${offset}${
+      customStartDate ? `&customStartDate=${customStartDate}` : ''
+    }${customEndDate ? `&customEndDate=${customEndDate}` : ''}`,
   HOURS_TOTAL_ORG_SUMMARY: (startDate, endDate) =>
     `${APIEndpoint}/reports/overviewsummaries/taskandprojectstats?startDate=${startDate}&endDate=${endDate}`,
   VOLUNTEER_ROLES_TEAM_STATS: (endDate, activeMembersMinimum) =>
@@ -282,6 +292,20 @@ export const ENDPOINTS = {
   // lb dashboard endpoints
   LB_REGISTER: `${APIEndpoint}/lbdashboard/register`,
   LB_LOGIN: `${APIEndpoint}/lbdashboard/login`,
+
+
+  // community portal
+  CP_NOSHOW_VIZ_LOCATION: `${APIEndpoint}/communityportal/reports/participation/location`,
+  CP_NOSHOW_VIZ_AGEGROUP: `${APIEndpoint}/communityportal/reports/participation/age-group`,
+  CP_NOSHOW_VIZ_PROPORTION: `${APIEndpoint}/communityportal/reports/participation/proportions`,
+  CP_NOSHOW_VIZ_PERIOD: `${APIEndpoint}/communityportal/reports/participation/data`,
+  CP_ATTENDENCE_VIZ_DAY: `${APIEndpoint}/communityportal/reports/participation/by-day`,
+  CP_NOSHOW_VIZ_UNIQUE_EVENTTYPES: `${APIEndpoint}/communityportal/reports/participation/unique-eventTypes`,
+
+  LB_LISTINGS: `${APIEndpoint}/lb/getListings`,
+  LB_LISTINGS_BASE: `${APIEndpoint}/lb`,
+  HELP_CATEGORIES: `${APIEndpoint}/help-categories`,
+
 };
 
 export const ApiEndpoint = APIEndpoint;

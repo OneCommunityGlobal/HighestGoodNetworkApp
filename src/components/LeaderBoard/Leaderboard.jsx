@@ -26,7 +26,7 @@ import {
   viewZeroHouraMembers,
 } from 'utils/leaderboardPermissions';
 import hasPermission from 'utils/permissions';
-import MouseoverTextTotalTimeEditButton from 'components/mouseoverText/MouseoverTextTotalTimeEditButton';
+// import MouseoverTextTotalTimeEditButton from 'components/mouseoverText/MouseoverTextTotalTimeEditButton';
 import { toast } from 'react-toastify';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import moment from 'moment-timezone';
@@ -38,6 +38,7 @@ import { boxStyleDark } from '../../styles';
 import '../Header/DarkMode.css';
 import '../UserProfile/TeamsAndProjects/autoComplete.css';
 import { ENDPOINTS } from '../../utils/URL';
+import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
@@ -70,9 +71,9 @@ function displayDaysLeft(lastDay) {
 function LeaderBoard({
   getLeaderboardData,
   getOrgData,
-  getMouseoverText,
+  // getMouseoverText,
   leaderBoardData,
-  displayUserRole,
+  loggedInUser,
   organizationData,
   timeEntries,
   isVisible,
@@ -84,15 +85,17 @@ function LeaderBoard({
   getWeeklySummaries,
   setFilteredUserTeamIds,
 }) {
+  const userId = displayUserId;
   const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
   const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon'); // ??? this permission doesn't exist?
-  const isOwner = ['Owner'].includes(displayUserRole);
+
+  // const isOwner = ['Owner'].includes(loggedInUser.role);
 
   const [mouseoverTextValue, setMouseoverTextValue] = useState(totalTimeMouseoverText);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    getMouseoverText();
+    // getMouseoverText();
     setMouseoverTextValue(totalTimeMouseoverText);
   }, [totalTimeMouseoverText]);
   const [teams, setTeams] = useState([]);
@@ -110,7 +113,7 @@ function LeaderBoard({
   const refTeam = useRef([]);
   const refInput = useRef('');
 
-  const hasTimeOffIndicatorPermission = hasLeaderboardPermissions(displayUserRole);
+  const hasTimeOffIndicatorPermission = hasLeaderboardPermissions(loggedInUser.role);
 
   const [searchInput, setSearchInput] = useState('');
   const [filteredUsers, setFilteredUsers] = useState(teamsUsers);
@@ -131,7 +134,7 @@ function LeaderBoard({
     };
 
     fetchInitial();
-  }, [displayUserId]);
+  }, []);
 
   useEffect(() => {
     if (usersSelectedTeam === 'Show all') setStateOrganizationData(organizationData);
@@ -223,21 +226,20 @@ function LeaderBoard({
     } else renderTeamsList(usersSelectedTeam);
   };
 
-  const handleMouseoverTextUpdate = text => {
-    setMouseoverTextValue(text);
-  };
+  // const handleMouseoverTextUpdate = text => {
+  //   setMouseoverTextValue(text);
+  // };
   useDeepEffect(() => {
-    getLeaderboardData(displayUserId);
+    getLeaderboardData(userId);
     getOrgData();
-  }, [timeEntries, displayUserId]);
+  }, [timeEntries, userId]);
 
   useDeepEffect(() => {
     try {
       if (window.screen.width < 540) {
         const scrollWindow = document.getElementById('leaderboard');
         if (scrollWindow) {
-          const elem = document.getElementById(`id${displayUserId}`);
-
+          const elem = document.getElementById(`id${userId}`);
           if (elem) {
             const topPos = elem.offsetTop;
             scrollWindow.scrollTo(0, topPos - 100 < 100 ? 0 : topPos - 100);
@@ -256,11 +258,6 @@ function LeaderBoard({
   const dashboardClose = () => setIsDashboardOpen(false);
 
   const showDashboard = item => {
-    if (displayUserRole !== 'Owner' && displayUserRole !== 'Administrator') {
-      dashboardClose();
-      toast.error("You do not have permission to view other's dashboard.");
-      return;
-    }
     getWeeklySummaries(item.personId);
     dispatch(getUserProfile(item.personId)).then(user => {
       const { _id, role, firstName, lastName, profilePic, email } = user;
@@ -281,10 +278,11 @@ function LeaderBoard({
   const updateLeaderboardHandler = async () => {
     setIsLoading(true);
     if (isEqual(leaderBoardData, teamsUsers)) {
-      await getLeaderboardData(displayUserId);
+      await dispatch(getAllTimeOffRequests());
+      await getLeaderboardData(userId);
       setTeamsUsers(leaderBoardData);
     } else {
-      await getLeaderboardData(displayUserId);
+      await getLeaderboardData(userId);
       renderTeamsList(usersSelectedTeam);
     }
     setIsLoading(false);
@@ -411,7 +409,7 @@ function LeaderBoard({
           <EditableInfoModal
             areaName="LeaderboardOrigin"
             areaTitle="Leaderboard"
-            role={displayUserRole}
+            role={loggedInUser.role}
             fontSize={24}
             darkMode={darkMode}
             isPermissionPage
@@ -525,7 +523,7 @@ function LeaderBoard({
                 <EditableInfoModal
                   areaName="LeaderboardInvisibleInfoPoint"
                   areaTitle="Leaderboard settings"
-                  role={displayUserRole}
+                  role={loggedInUser.role}
                   fontSize={24}
                   darkMode={darkMode}
                   isPermissionPage
@@ -561,7 +559,7 @@ function LeaderBoard({
                       <EditableInfoModal
                         areaName="Leaderboard"
                         areaTitle="Team Members Navigation"
-                        role={displayUserRole}
+                        role={loggedInUser.role}
                         fontSize={18}
                         isPermissionPage
                         darkMode={darkMode}
@@ -593,26 +591,44 @@ function LeaderBoard({
                       <div style={{ textAlign: 'left' }}>
                         <span>{isAbbreviatedView ? 'Tot. Time' : 'Total Time'}</span>
                       </div>
-                      {isOwner && (
+                      {/*    {isOwner && (
                         <MouseoverTextTotalTimeEditButton onUpdate={handleMouseoverTextUpdate} />
-                      )}
+                      )} */}
                     </div>
                   </th>
                 </tr>
               </thead>
               <tbody className="my-custome-scrollbar responsive-font-size">
                 <tr className={darkMode ? 'dark-leaderboard-row' : 'light-leaderboard-row'}>
-                  <td aria-label="Placeholder" />
-                  <td className={`leaderboard-totals-container `}>
-                    <span>{stateOrganizationData.name}</span>
-                    {viewZeroHouraMembers(displayUserRole) && (
-                      <span className="leaderboard-totals-title">
-                        0 hrs Totals:{' '}
-                        {filteredUsers.filter(user => user.weeklycommittedHours === 0).length}{' '}
-                        Members
-                      </span>
-                    )}
-                  </td>
+                  {isAbbreviatedView ? (
+                    <td colSpan={2}>
+                      <div className="leaderboard-totals-container text-center">
+                        <span>{stateOrganizationData.name}</span>
+                        {viewZeroHouraMembers(loggedInUser.role) && (
+                          <span className="leaderboard-totals-title">
+                            0 hrs Totals:{' '}
+                            {filteredUsers.filter(user => user.weeklycommittedHours === 0).length}{' '}
+                            Members
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                  ) : (
+                    <>
+                      <td aria-label="Placeholder" />
+                      <td className="leaderboard-totals-container">
+                        <span>{stateOrganizationData.name}</span>
+                        {viewZeroHouraMembers(loggedInUser.role) && (
+                          <span className="leaderboard-totals-title">
+                            0 hrs Totals:{' '}
+                            {filteredUsers.filter(user => user.weeklycommittedHours === 0).length}{' '}
+                            Members
+                          </span>
+                        )}
+                      </td>
+                    </>
+                  )}
+
                   <td className="align-middle" aria-label="Description" />
                   <td className="align-middle">
                     <span title="Tangible time">
