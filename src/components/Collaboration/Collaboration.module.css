@@ -1,4 +1,4 @@
-.container,
+.collaborationContainer,
 .jobLanding .header img {
   width: 60%;
   max-width: 1000px;
@@ -8,29 +8,32 @@
 .jobAd {
   text-align: center;
 }
-.container {
-  margin: 0 auto 50px;
+.collaborationContainer {
+  width: 90%;
+  margin: 0 auto;
   flex-direction: column;
   align-items: center;
   background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 10px;
 }
+
 .jobLanding .header img {
   height: auto;
   margin: 0 auto;
   flex-direction: column;
 }
-.navbar {
+.collaborationNavbar {
   width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
   background-color: #9c0;
-  padding: 10px;
+  padding: 20px;
   flex-flow: row nowrap;
+  box-sizing: border-box;
+  flex-wrap: wrap;
 }
+
 .navbarLeft input,
 .navbarLeft select {
   display: flex;
@@ -43,6 +46,7 @@
 .searchForm {
   display: flex;
   align-items: center;
+  padding: 4px;
 }
 .searchForm input {
   margin-right: 10px;
@@ -62,7 +66,7 @@ select {
 }
 .jobList {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 20px;
   width: 100%;
 }
@@ -106,6 +110,7 @@ select {
 }
 .pagination button:disabled {
   background-color: #ccc;
+  color: #333;
   cursor: default;
 }
 .headings {
@@ -113,6 +118,165 @@ select {
 }
 .search {
   background-color: #fff;
-  border: 1px solid #fff;
+  border: 10px solid #fff;
   border-radius: 5px;
+}
+
+.pagination button:hover {
+  background-color: #4a99ee;
+}
+.searchForm button,
+.navbarRight select {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.searchForm button {
+  background-color: #007bff;
+  color: white;
+  margin-right: 15px;
+  margin-top: -7px;
+  position: relative;
+}
+
+.searchForm button:hover {
+  background-color: #0056b3;
+}
+
+.collaborationNavbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  width: 100%;
+  padding: 10px;
+  background-color: #9c0;
+}
+
+.searchForm {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.searchForm input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 1px;
+}
+
+.searchForm button {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  top: -3px;
+  position: relative;
+}
+
+.navbarRight select {
+  padding: 12px 18px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-top: -14px;
+}
+
+@media screen and (max-width: 480px) {
+  .jobList {
+    grid-template-columns: 1fr;
+  }
+
+  .collaborationNavbar {
+    flex-direction: column;
+    padding: 5px;
+    text-align: center;
+  }
+
+  .navbarLeft,
+  .navbarRight {
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .searchForm {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+  }
+
+  .searchForm input {
+    width: 90%;
+    margin-bottom: 10px;
+  }
+
+  .searchForm button {
+    width: 90%;
+    padding: 8px;
+    font-size: 14px;
+  }
+
+  .pagination button {
+    padding: 8px;
+    width: auto;
+  }
+}
+.responsiveImg {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+@media screen and (max-width: 1024px) {
+  .jobList {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .jobList {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media screen and (max-width: 800px) {
+  .collaborationNavbar {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .navbarLeft,
+  .navbarRight {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .searchForm {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .searchForm input,
+  .searchForm button {
+    width: 90%;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+
+  .searchForm button {
+    padding: 10px;
+    font-size: 14px;
+  }
 }

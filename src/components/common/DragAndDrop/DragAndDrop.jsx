@@ -2,7 +2,6 @@
 import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faImage } from '@fortawesome/free-solid-svg-icons';
-import styles from './DragAndDrop.module.css';
 
 const DragAndDrop = ({ updateUploadedFiles }) => {
   const [dragActive, setDragActive] = useState(false);

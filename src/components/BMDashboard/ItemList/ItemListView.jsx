@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import BMError from '../shared/BMError';
 import SelectForm from './SelectForm';
 import SelectItem from './SelectItem';
@@ -12,6 +13,7 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
   const [selectedProject, setSelectedProject] = useState('all');
   const [selectedItem, setSelectedItem] = useState('all');
   const [isError, setIsError] = useState(false);
+  const [selectedTime, setSelectedTime] = useState(new Date());
 
   useEffect(() => {
     if (items) setFilteredItems([...items]);
@@ -53,9 +55,19 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
     <main className="items_list_container">
       <h3>{itemType}</h3>
       <section>
-        <span style={{ display: 'flex', margin: '5px' }}>
+        <span>
           {items && (
-            <>
+            <div className="select_input">
+              <label>Time:</label>
+              <DatePicker
+                selected={selectedTime}
+                onChange={date => setSelectedTime(date)}
+                showTimeSelect
+                timeFormat="HH:mm"
+                timeIntervals={15}
+                dateFormat="yyyy-MM-dd HH:mm:ss"
+                placeholderText="Select date and time"
+              />
               <SelectForm
                 items={items}
                 setSelectedProject={setSelectedProject}
@@ -67,8 +79,19 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
                 selectedItem={selectedItem}
                 setSelectedItem={setSelectedItem}
               />
-            </>
+            </div>
           )}
+          <div className="buttons-row">
+            <button type="button" className="btn-primary">
+              Add Material
+            </button>
+            <button type="button" className="btn-primary">
+              Edit Name/Measurement
+            </button>
+            <button type="button" className="btn-primary">
+              View Update History
+            </button>
+          </div>
         </span>
         {filteredItems && (
           <ItemsTable
@@ -87,13 +110,32 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
 ItemListView.propTypes = {
   items: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.number.isRequired,
-      name: PropTypes.string,
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      itemType: PropTypes.shape({
+        name: PropTypes.string,
+        unit: PropTypes.string,
+      }),
+      project: PropTypes.shape({
+        _id: PropTypes.string,
+        name: PropTypes.string,
+      }),
+      stockAvailable: PropTypes.number,
+      stockBought: PropTypes.number,
+      stockUsed: PropTypes.number,
+      stockWasted: PropTypes.number,
     }),
   ).isRequired,
   errors: PropTypes.shape({
     message: PropTypes.string,
   }),
+  itemType: PropTypes.string.isRequired,
+  UpdateItemModal: PropTypes.elementType.isRequired,
+  dynamicColumns: PropTypes.arrayOf(
+    PropTypes.shape({
+      label: PropTypes.string.isRequired,
+      key: PropTypes.string.isRequired,
+    }),
+  ).isRequired,
 };
 
 ItemListView.defaultProps = {

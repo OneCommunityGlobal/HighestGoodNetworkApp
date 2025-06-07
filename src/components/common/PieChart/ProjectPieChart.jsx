@@ -13,8 +13,14 @@ function UserProjectPieChart({
 }) {
   const [totalHours, setTotalHours] = useState(0);
   const colors = useMemo(() => generateArrayOfUniqColors(projectsData.length), [projectsData]);
-  const color = useMemo(() => d3.scaleOrdinal().range(colors), [colors]);
-
+  const color = useMemo(
+    () =>
+      d3
+        .scaleOrdinal()
+        .domain(projectsData)
+        .range(colors),
+    [colors],
+  );
   const [togglePercentage, setTogglePercentage] = useState(false);
   const [selectedProjects, setSelectedProjects] = useState(
     projectsData.map(project => project.projectId),
