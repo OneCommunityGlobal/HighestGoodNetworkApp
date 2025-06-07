@@ -94,6 +94,7 @@ import ActivityList from './components/CommunityPortal/Activities/ActivityList';
 import NoshowViz from './components/CommunityPortal/Attendence/NoshowViz';
 // import AddActivities from './components/CommunityPortal/Activities/AddActivities';
 // import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
+import RegistrationPopup from './components/CommunityPortal/RegistrationConfirmation/Registration';
 
 import ActivitiesPage from './components/CommunityPortal/Activities/ActivitiesPage'; 
 
@@ -485,6 +486,7 @@ export default (
         <CPProtectedRoute path="/communityportal" exact component={CPDashboard} />
         <Route path="/communityportal/login" component={CPLogin} />
         <CPProtectedRoute path="/communityportal/Activities" exact component={ActivityList} />
+        <CPProtectedRoute path="/communityportal/activities/registration" exact component={RegistrationPopup} />
 
         <CPProtectedRoute path="/communityportal/reports/participation" component={NoshowViz} />
 
