@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { boxStyle, boxStyleDark } from '~/styles';
 import '../../Header/DarkMode.css'
 import { toast } from 'react-toastify';
-import { boxStyle, boxStyleDark } from '../../../styles';
 import '../../Header/DarkMode.css';
 
 const TaskCompletedModal = React.memo(props => {

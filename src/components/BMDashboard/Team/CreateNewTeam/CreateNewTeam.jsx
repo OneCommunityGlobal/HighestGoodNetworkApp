@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Form, FormGroup, Label, Input, Button, Badge } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import Joi from 'joi';
+import Joi from 'joi-browser';
 import { boxStyle } from '../../../../styles';
 import './CreateNewTeam.css';
 import { getUserProfileBasicInfo } from '../../../../actions/userManagement';

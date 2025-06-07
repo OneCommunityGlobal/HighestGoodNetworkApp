@@ -40,6 +40,11 @@ describe('BadgeDevelopment Component', () => {
         roles: ['Owner'],
       },
       theme: themeMock,
+            badge: {
+        message: '',
+        alertVisible: false,
+        color: '',
+      },
     });
   
     return render(

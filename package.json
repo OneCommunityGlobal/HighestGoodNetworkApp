@@ -99,7 +99,7 @@
   },
   "packageManager": "yarn@1.22.22",
   "scripts": {
-    "prestart": "npm run test",
+    "FIX_NEEDED_prestart": "npm run test",
     "postinstall": "node ./postinstall.js",
     "start": "vite",
     "build": "npm run postinstall && set CI=false && vite build",

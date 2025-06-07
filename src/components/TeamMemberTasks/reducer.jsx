@@ -32,6 +32,7 @@ export const teamMemberTasksReducer = (state = initialState, action) => {
         return timeentry
       })
       return { ...state, usersWithTimeEntries: updatedTimeEntries }
+    }
     case 'UPDATE_TEAM_MEMBERS_TASK_TIME':
       const { usersWithTasks } = state;
       const { newTime, taskId, personId } = action.payload;

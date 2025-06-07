@@ -1,14 +1,30 @@
-const { ENDPOINTS } = require('~/utils/URL');
-const { returnUpdatedBadgesCollection } = require('../../../actions/badgeManagement');
-const axios = require('axios');
-
-
-vi.mock('axios');
-import { assignBadges, validateBadges } from '../../../actions/badgeManagement';
-import { getMessage, closeAlert } from '../../../actions/badgeManagement';
+import axios from 'axios';
+import { vi, describe, test, expect, beforeEach, afterEach } from 'vitest';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { GET_MESSAGE, CLOSE_ALERT } from '../../../constants/badge';
+
+vi.mock('axios');
+vi.mock('~/utils/URL', () => ({
+  ENDPOINTS: {
+    BADGE: () => '/badge',
+    BADGE_COUNT: userId => `/badgeCount/${userId}`,
+    BADGE_COUNT_RESET: userId => `/badgeCountReset/${userId}`,
+    USER_PROFILE_BY_NAME: name => `/userByName/${name}`,
+    USER_PROFILE: id => `/user/${id}`,
+    BADGE_ASSIGN: id => `/assignBadge/${id}`,
+  },
+}));
+
+vi.mock('~/utils/formatDate', () => ({
+  formatDate: () => 'MOCK_DATE',
+}));
+import {
+  returnUpdatedBadgesCollection,
+  validateBadges,
+  assignBadges,
+} from '../../../actions/badgeManagement';
+
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 

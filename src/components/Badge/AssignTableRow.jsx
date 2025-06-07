@@ -6,7 +6,7 @@ import { addSelectBadge, removeSelectBadge } from '../../actions/badgeManagement
 
 function AssignTableRow({ badge, index, existBadges: propExistBadges }) {
   // Pull selected badges from Redux if prop is not passed
-  const storeBadges = useSelector(state => state.badgeManagement.selectedBadges);
+  const storeBadges = useSelector(state => state.badge.selectedBadges);
   const existBadges = propExistBadges ?? storeBadges;
 
   const [isOpen, setOpen] = useState(false);
