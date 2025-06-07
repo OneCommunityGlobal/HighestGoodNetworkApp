@@ -91,6 +91,10 @@ import CPLogin from './components/CommunityPortal/Login';
 import CPDashboard from './components/CommunityPortal';
 import ActivityList from './components/CommunityPortal/Activities/ActivityList';
 
+import NoshowViz from './components/CommunityPortal/Attendence/NoshowViz';
+// import AddActivities from './components/CommunityPortal/Activities/AddActivities';
+// import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
+
 import ActivitiesPage from './components/CommunityPortal/Activities/ActivitiesPage'; 
 
 import EventStats from './components/CommunityPortal/EventPersonalization/EventStats';
@@ -99,6 +103,7 @@ import EventStats from './components/CommunityPortal/EventPersonalization/EventS
 import Resources from './components/CommunityPortal/Activities/activityId/Resources';
 
 import EventParticipation from './components/CommunityPortal/Reports/Participation/EventParticipation';
+
 
 import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
@@ -480,6 +485,9 @@ export default (
         <CPProtectedRoute path="/communityportal" exact component={CPDashboard} />
         <Route path="/communityportal/login" component={CPLogin} />
         <CPProtectedRoute path="/communityportal/Activities" exact component={ActivityList} />
+
+        <CPProtectedRoute path="/communityportal/reports/participation" component={NoshowViz} />
+
         <CPProtectedRoute
           path="/communityportal/Activities/:activityid/Resources"
           exact component={Resources}
@@ -504,6 +512,7 @@ export default (
         <Route path="/lbdashboard/bidoverview" exact component={LBBidOverview} />
 
         <CPProtectedRoute path="/communityportal/reports/participation" exact component={EventParticipation} />
+
 
 
         {/* Good Education  Portal Routes */}
