@@ -131,7 +131,9 @@ function UserProfile(props) {
   const [showRemovedNoticeModal, setShowRemovedNoticeModal] = useState(false);
   const [showAddAccessModal, setShowAddAccessModal] = useState(false);
   const [showAddedNoticeModal, setShowAddedNoticeModal] = useState(false);
-
+  const [showConfirmRemove, setShowConfirmRemove] = useState(false);
+  const [showConfirmAdd, setShowConfirmAdd] = useState(false);
+  const [removalInProgress, setRemovalInProgress] = useState(false);
 
   const updateRemovedImage = async () => {
     try {
@@ -220,62 +222,53 @@ function UserProfile(props) {
 
   const confirmRemove = async () => {
     setShowConfirmRemove(false);
-    setShowRemovedPopup(true);
-    setAccessRemoved(true);
-  // const email = userProfile?.email;
-  // const username = userProfile?.githubUsername; // or however GitHub usernames are stored
-  // const folderPath = `/${userProfile.firstName}${userProfile.lastName}`; // or however your folder naming works
-  // const requestorId = props.auth.user.userid;
-  // const role = props.auth.user.role;
+    setRemovalInProgress(true);
 
-  // setRemovalInProgress(true);
+    const email = userProfile?.email;
+    const username = userProfile?.githubUsername;
+    const folderPath = `/${userProfile.firstName}${userProfile.lastName}`;
+    const requestorId = props.auth.user.userid;
+    const role = props.auth.user.role;
 
-  // try {
-  //   const results = await Promise.allSettled([
-  //     // axios.post('/api/slack/remove', {
-  //     //   email,
-  //     //   requestor: { requestorId, role },
-  //     // }),
-  //     axios.delete('/api/sentry/remove', {
-  //       data: {
-  //         email,
-  //         requestor: { requestorId, role },
-  //       },
-  //     }),
-  //     axios.delete('/api/github/remove', {
-  //       data: {
-  //         username,
-  //         requestor: { requestorId, role },
-  //       },
-  //     }),
-  //     axios.post('/api/dropbox/delete-folder', {
-  //       folderPath,
-  //       requestor: { requestorId, role },
-  //     }),
-  //   ]);
+    try {
+      const results = await Promise.allSettled([
+        axios.delete('/api/sentry/remove', {
+          data: {
+            email,
+            requestor: { requestorId, role },
+          },
+        }),
+        axios.delete('/api/github/remove', {
+          data: {
+            username,
+            requestor: { requestorId, role },
+          },
+        }),
+        axios.post('/api/dropbox/delete-folder', {
+          folderPath,
+          requestor: { requestorId, role },
+        }),
+        // Slack is skipped as per your comment
+      ]);
+      console.log('Dropbox remove response:', response.data);
+      const services = ['Sentry', 'GitHub', 'Dropbox'];
 
-  //   const services = [
-  //     //'Slack',
-  //     'Sentry',
-  //     'GitHub',
-  //     'Dropbox'
-  //   ];
+      results.forEach((res, i) => {
+        if (res.status === 'fulfilled') {
+          toast.success(`${services[i]} access removed`);
+        } else {
+          toast.error(`Failed to remove access from ${services[i]}`);
+        }
+      });
 
-  //   results.forEach((res, i) => {
-  //     if (res.status === 'fulfilled') {
-  //       toast.success(`${services[i]} access removed`);
-  //     } else {
-  //       toast.error(`Failed to remove access from ${services[i]}`);
-  //     }
-  //   });
-
-  //   setShowRemoveAccessModal(false);
-  // } catch (error) {
-  //   toast.error('Unexpected error during access removal.');
-  // } finally {
-  //   setRemovalInProgress(false);
-  // }
-};
+      setShowRemovedNoticeModal(true);
+      setAccessRemoved(true);
+    } catch (error) {
+      toast.error('Unexpected error during access removal.');
+    } finally {
+      setRemovalInProgress(false);
+    }
+  };
 
 const closeRemovedPopup = () => {
   setShowRemovedPopup(false);
@@ -283,10 +276,56 @@ const closeRemovedPopup = () => {
 
 const handleAddClick = () => setShowConfirmAdd(true);
 
-const confirmAdd = () => {
+const confirmAdd = async () => {
   setShowConfirmAdd(false);
-  setShowAddedPopup(true);
-  setAccessRemoved(false);
+  setRemovalInProgress(true);
+
+  const email = userProfile?.email;
+  const username = userProfile?.githubUsername;
+  const folderName = `${userProfile.firstName}${userProfile.lastName}`;
+  const requestorId = props.auth.user.userid;
+  const role = props.auth.user.role;
+
+  try {
+    const results = await Promise.allSettled([
+      axios.post('/api/sentry/invite', {
+        email,
+        requestor: { requestorId, role },
+      }),
+      axios.post('/api/github/invite', {
+        username,
+        requestor: { requestorId, role },
+      }),
+      axios.post('/api/dropbox/invite', {
+        folderPath: `/${folderName}`,
+        email,
+        requestor: { requestorId, role },
+      }),
+      axios.post('/api/slack/invite', {
+        email,
+        requestor: { requestorId, role },
+      }),
+    ]);
+
+    console.log('Dropbox add response:', response.data);
+
+    const services = ['Sentry', 'GitHub', 'Dropbox', 'Slack'];
+
+    results.forEach((res, i) => {
+      if (res.status === 'fulfilled') {
+        toast.success(`${services[i]} access granted`);
+      } else {
+        toast.error(`Failed to grant access to ${services[i]}`);
+      }
+    });
+
+    setShowAddedNoticeModal(true);
+    setAccessRemoved(false);
+  } catch (error) {
+    toast.error('Unexpected error during access addition.');
+  } finally {
+    setRemovalInProgress(false);
+  }
 };
 
 const closeAddedPopup = () => {
@@ -1065,16 +1104,19 @@ const closeAddedPopup = () => {
           Whoa Tiger!
         </ModalHeader>
         <ModalBody>
-          Are you sure you want to remove access for this user? This action is not reversible.
+          <p>Are you sure you want to remove the following access for this user:</p>
+          <div style={{ paddingLeft: '1rem' }}>
+            <ul style={{ paddingLeft: '1rem', marginBottom: '1rem' }}>
+              <li>GitHub</li>
+              <li>Dropbox</li>
+              <li>Sentry</li>
+            </ul>
+          </div>
+          <p>This action is not reversible.</p>
         </ModalBody>
         <ModalFooter>
           <Button
-            color="danger"
-            onClick={() => {
-              setShowRemoveAccessModal(false);
-              setShowRemovedNoticeModal(true);
-              setAccessRemoved(true);
-            }}
+            color="danger" onClick={confirmRemove}
           >
             Yes, I’m sure
           </Button>
@@ -1105,17 +1147,18 @@ const closeAddedPopup = () => {
           Confirm Add Access
         </ModalHeader>
         <ModalBody>
-          You are about to add access for GitHub, Dropbox, Slack and Sentry to the user's profile.
-          Are you sure you want to continue?
+          <p>You are about to add access for:</p>
+          <ul style={{ paddingLeft: '1.25rem', marginBottom: '1rem' }}>
+            <li>GitHub</li>
+            <li>Dropbox</li>
+            <li>Slack</li>
+            <li>Sentry</li>
+          </ul>
+          <p>Are you sure you want to continue?</p>
         </ModalBody>
         <ModalFooter>
           <Button
-            color="success"
-            onClick={() => {
-              setShowAddAccessModal(false);
-              setShowAddedNoticeModal(true);
-              setAccessRemoved(false);
-            }}
+            color="success" onClick={confirmAdd}
           >
             Yes, continue
           </Button>
