@@ -101,17 +101,19 @@ function Announcements({ title, email: initialEmail }) {
   };
 
   const addImageToEmailContent = e => {
-    const imageFile = document.querySelector('input[type="file"]').files[0];
+    const file = e.target.files[0];
+    if (!file) return;
     setIsFileUploaded(true);
-    convertImageToBase64(imageFile, base64Image => {
-      const imageTag = `<img src="${base64Image}" alt="Header Image" style="width: 100%; max-width: 100%; height: auto;">`;
-      setHeaderContent(prevContent => `${imageTag}${prevContent}`);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const imageTag = `<img src="${reader.result}" alt="Header Image" style="width: 100%; max-width: 100%; height: auto;">`;
       const editor = window.tinymce.get('email-editor');
       if (editor) {
         editor.insertContent(imageTag);
-        setEmailContent(editor.getContent());
       }
-    });
+      setEmailContent(editor ? editor.getContent() : '');
+    };
+    reader.readAsDataURL(file);
     e.target.value = '';
   };
 
@@ -121,20 +123,16 @@ function Announcements({ title, email: initialEmail }) {
   };
 
   const handleSendEmails = () => {
-    const htmlContent = emailContent;
+    const editor = window.tinymce.get('email-editor');
+    const htmlContent = editor ? editor.getContent() : emailContent;
 
     if (emailList.length === 0 || emailList.every(e => !e.trim())) {
       toast.error('Error: Empty Email List. Please enter AT LEAST One email.');
       return;
     }
 
-    if (!isFileUploaded) {
-      toast.error('Error: Please upload a file.');
-      return;
-    }
-
-    if (!isFileUploaded) {
-      toast.error('Error: Please upload a file.');
+    if (!htmlContent || htmlContent.trim() === '') {
+      toast.error('Error: Email content cannot be empty.');
       return;
     }
 
