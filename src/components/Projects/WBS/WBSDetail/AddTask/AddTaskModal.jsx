@@ -447,6 +447,7 @@ function AddTaskModal(props) {
                     resourceItems={resourceItems}
                     disableInput={false}
                     inputTestId="resource-input"
+                    projectId={props.projectId}
                   />
                 </div>
               </div>

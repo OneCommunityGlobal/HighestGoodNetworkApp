@@ -19,6 +19,15 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
   const [validationError, setValidationError] = useState('');
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [lessonToDeleteId, setLessonToDeleteId] = useState(null);
+  const lessons = useSelector(state => state.lessons.lessons);
+
+  const getLikeStatus = lessonId => {
+    const lesson = lessons.find(l => l._id === lessonId);
+    return {
+      isLiked: lesson?.likes?.includes(currentUserId),
+      totalLikes: lesson?.totalLikes || 0,
+    };
+  };
 
   const handleEdit = (lessonId, lessonSummary) => {
     setEditableLessonId(lessonId);
@@ -68,6 +77,7 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
   };
 
   const lessonCards = filteredLessons.map(lesson => {
+    const { isLiked, totalLikes } = getLikeStatus(lesson._id);
     return (
       <Card key={`${lesson._id} + ${lesson.title} `} className="lesson-card">
         <Card.Header
@@ -144,13 +154,15 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
             </Card.Body>
             <Card.Footer className=" lesson-card-footer text-muted">
               <div>
-                <span className="footer-items-author-and-from">Author: {lesson.author.name}</span>
                 <span className="footer-items-author-and-from">
-                  From: {lesson.relatedProject.name}
+                  Author: {lesson.author?.name || 'Unknown'}
+                </span>
+                <span className="footer-items-author-and-from">
+                  From: {lesson.relatedProject?.name || 'Unknown Project'}
                 </span>
               </div>
               <div className="lesson-card-footer-items">
-                {currentUserId === lesson.author.id && (
+                {currentUserId === lesson.author?.id && (
                   <div>
                     <button
                       className="text-muted"
@@ -184,9 +196,13 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
                       className="ml-2"
                       icon={faHeart}
                       size="sm"
-                      style={{ color: '##7A7D81', cursor: 'pointer' }}
+                      style={{
+                        color: isLiked ? '#ff4d4d' : '#7A7D81',
+                        cursor: 'pointer',
+                        fill: isLiked ? '#ff4d4d' : 'none',
+                      }}
                     />
-                    Like:{lesson.totalLikes}
+                    Like: {totalLikes}
                   </span>
                 </div>
               </div>
