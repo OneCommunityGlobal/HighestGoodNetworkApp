@@ -1,3 +1,7 @@
+.dark {
+  background: #2b3e59;
+  color: white;
+}
 .container {
   display: flex;
   gap: 0.5rem;
@@ -44,4 +48,14 @@
 .chartContainer {
   width: 100%;
   margin:  0;
+}
+
+.dateDark {
+  background: #2b3e59;
+  color: white;
+}
+
+.selectDark{
+  background: #2b3e59;
+  color: white;
 }

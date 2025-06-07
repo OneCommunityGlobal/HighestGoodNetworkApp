@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Bar } from 'react-chartjs-2';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
@@ -21,7 +21,7 @@ function IssuesCharts({ bmProjects = [] }) {
   const { longestOpenIssues = [], mostExpensiveIssues = [] } = useSelector(
     state => state.issue || {},
   );
-  // loading, error
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const formatFilters = ({ projectIds, startDate, endDate }) => {
     const formatted = {};
@@ -39,7 +39,6 @@ function IssuesCharts({ bmProjects = [] }) {
     }
     return formatted;
   };
-
   useEffect(() => {
     const params = formatFilters({
       projectIds: selectedProject === 'all' ? undefined : selectedProject,
@@ -52,7 +51,7 @@ function IssuesCharts({ bmProjects = [] }) {
     } else {
       dispatch(fetchMostExpensiveIssues(params));
     }
-  }, [graphType, selectedProject, dateRange.start, dateRange.end, dispatch]);
+  }, [graphType, selectedProject, dateRange.start, dateRange.end, dispatch, darkMode]);
 
   const chartData = graphType === 'Longest Open' ? longestOpenIssues : mostExpensiveIssues;
 
@@ -73,107 +72,106 @@ function IssuesCharts({ bmProjects = [] }) {
     ],
   };
 
-  const options = {
-    indexAxis: 'y',
-    responsive: true,
-    plugins: {
-      legend: { display: false },
-      datalabels: {
-        anchor: 'end',
-        align: 'right',
-        formatter: value => (graphType === 'Longest Open' ? `${value} days` : `$${value}`),
-        color: '#000',
-        font: { weight: 'bold' },
-      },
-      title: {
-        display: true,
-        text:
-          graphType === 'Longest Open'
-            ? `Longest Open Issues${
-                selectedProject !== 'all'
-                  ? ` (${bmProjects.find(p => p._id === selectedProject)?.name || ''})`
-                  : ''
-              }`
-            : `Most Expensive Issues${
-                selectedProject !== 'all'
-                  ? ` (${bmProjects.find(p => p._id === selectedProject)?.name || ''})`
-                  : ''
-              }`,
-        font: { size: 12 },
-      },
-    },
-    scales: {
-      x: {
+  const options = useMemo(
+    () => ({
+      indexAxis: 'y',
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        datalabels: {
+          anchor: 'end',
+          align: 'right',
+          formatter: value => (graphType === 'Longest Open' ? `${value} days` : `$${value}`),
+          color: darkMode ? '#fff' : '#000',
+          font: { weight: 'bold' },
+        },
         title: {
           display: true,
-          text: graphType === 'Longest Open' ? 'Days Open' : 'Total Cost ($)',
+          text:
+            graphType === 'Longest Open'
+              ? `Longest Open Issues${
+                  selectedProject !== 'all'
+                    ? ` (${bmProjects.find(p => p._id === selectedProject)?.name || ''})`
+                    : ''
+                }`
+              : `Most Expensive Issues${
+                  selectedProject !== 'all'
+                    ? ` (${bmProjects.find(p => p._id === selectedProject)?.name || ''})`
+                    : ''
+                }`,
           font: { size: 12 },
+          color: darkMode ? '#fff' : '#000',
         },
       },
-      y: {
-        title: {
-          display: true,
-          text: 'Issue Title',
-          font: { size: 12 },
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: graphType === 'Longest Open' ? 'Days Open' : 'Total Cost ($)',
+            font: { size: 12 },
+            color: darkMode ? '#fff' : '#000',
+          },
+          ticks: {
+            color: darkMode ? '#ccc' : '#333',
+          },
+        },
+        y: {
+          title: {
+            display: true,
+            text: 'Issue Title',
+            font: { size: 12 },
+            color: darkMode ? '#fff' : '#000',
+          },
+          ticks: {
+            color: darkMode ? '#ccc' : '#333',
+          },
         },
       },
-    },
-    elements: {
-      bar: {
-        borderRadius: 4,
-        borderSkipped: false,
+      elements: {
+        bar: {
+          borderRadius: 4,
+          borderSkipped: false,
+        },
       },
-    },
-  };
-
-  // if (loading) return <div className={styles.loading}>Loading...</div>;
-  // if (error) return <div className={styles.error}>Error: {error}</div>;
+    }),
+    [graphType, selectedProject, darkMode, bmProjects],
+  );
 
   const handleDateChange = (dateName, dateValue) => {
     setDateRange({ ...dateRange, [dateName]: dateValue });
   };
 
   return (
-    <div>
+    <div className={darkMode ? styles.dark : ''}>
       <div className={styles.container}>
         <div className={styles.dateInputs}>
           <div className={styles.inputGroup}>
-            <label htmlFor="startDate">Start:</label>
-            {/* <input
-              id="startDate"
-              type="date"
-              value={dateRange.start}
-              onChange={value => handleDateChange('start', value)}
-              className={styles.input}
-            /> */}
+            {/* <label htmlFor="startDate">Start:</label> */}
+
             <DatePicker
               selected={dateRange.start}
               onChange={value => handleDateChange('start', value)}
+              className={darkMode ? styles.dateDark : ''}
             />
           </div>
+          to
           <div className={styles.inputGroup}>
-            <label htmlFor="endDate">End:</label>
-            {/* <input
-              id="endDate"
-              type="date"
-              value={dateRange.end}
-              // onChange={e => setDateRange(prev => ({ ...prev, end: e.target.value }))}
-              onChange={value => handleDateChange('end', value)}
-              className={styles.input}
-            /> */}
+            {/* <label htmlFor="endDate">End:</label> */}
+
             <DatePicker
               selected={dateRange.end}
               onChange={value => handleDateChange('end', value)}
+              className={darkMode ? styles.dateDark : ''}
             />
           </div>
         </div>
         <div className={styles.inputGroup}>
-          <label htmlFor="project">Project:</label>
+          {/* <label htmlFor="project">Project:</label> */}
           <select
             id="project"
             value={selectedProject}
             onChange={e => setSelectedProject(e.target.value)}
-            className={styles.select}
+            className={darkMode ? styles.selectDark : styles.select}
           >
             <option value="all">All Projects</option>
             {bmProjects.map(project => (
@@ -184,12 +182,12 @@ function IssuesCharts({ bmProjects = [] }) {
           </select>
         </div>
         <div className={styles.inputGroup}>
-          <label htmlFor="type">Type:</label>
+          {/* <label htmlFor="type">Type:</label> */}
           <select
             id="type"
             value={graphType}
             onChange={e => setGraphType(e.target.value)}
-            className={styles.select}
+            className={darkMode ? styles.selectDark : styles.select}
           >
             <option value="Longest Open">Longest Open</option>
             <option value="Most Expensive">Most Expensive</option>
