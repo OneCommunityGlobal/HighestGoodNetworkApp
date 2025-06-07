@@ -1,4 +1,4 @@
-import { fetchTeamMembersTaskSuccess } from 'components/TeamMemberTasks/actions';
+import { fetchTeamMembersTaskSuccess } from '~/components/TeamMemberTasks/actions';
 import * as types from '../constants/task';
 
 const allTasksInital = {

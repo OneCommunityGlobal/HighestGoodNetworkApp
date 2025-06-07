@@ -23,12 +23,12 @@ import {
 import ReactTooltip from 'react-tooltip';
 import { MultiSelect } from 'react-multi-select-component';
 import moment from 'moment';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import 'moment-timezone';
 import axios from 'axios';
 
-import { ENDPOINTS } from 'utils/URL';
-import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+import { ENDPOINTS } from '~/utils/URL';
+import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
 import { getAllUserTeams, getAllTeamCode } from '../../actions/allTeamsAction';
 import TeamChart from './TeamChart';
 import SkeletonLoading from '../common/SkeletonLoading';

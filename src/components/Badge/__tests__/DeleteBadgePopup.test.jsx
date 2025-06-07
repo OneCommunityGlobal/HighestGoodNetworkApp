@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import '@testing-library/jest-dom';
+
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import DeleteBadgePopup from '../DeleteBadgePopup';
@@ -18,8 +18,8 @@ describe('DeleteBadgePopup Component', () => {
         darkMode: false,
       },
     });
-    mockSetDeletePopup = jest.fn();
-    mockDeleteBadge = jest.fn();
+    mockSetDeletePopup = vi.fn();
+    mockDeleteBadge = vi.fn();
   });
 
   const renderComponent = (darkMode = false, open = true) => {

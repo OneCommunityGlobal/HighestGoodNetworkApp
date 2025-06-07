@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons';
 import './Equipments.css';
 import ReactTooltip from 'react-tooltip';
-import { fetchAllEquipments } from 'actions/bmdashboard/equipmentActions';
+import { fetchAllEquipments } from '~/actions/bmdashboard/equipmentActions';
 import EquipmentListModal from './EquipmentListModal';
 
 function EquipmentsTable({ equipment, project }) {

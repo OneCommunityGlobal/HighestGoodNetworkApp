@@ -17,9 +17,9 @@ import {
 import { connect } from 'react-redux';
 import { HashLink as Link } from 'react-router-hash-link';
 import './SummaryBar.css';
-import { ENDPOINTS, ApiEndpoint } from 'utils/URL';
+import { ENDPOINTS, ApiEndpoint } from '~/utils/URL';
 import axios from 'axios';
-import hasPermission from 'utils/permissions';
+import hasPermission from '~/utils/permissions';
 import { toast } from 'react-toastify';
 import TaskIcon from './task_icon.png';
 import BadgesIcon from './badges_icon.png';

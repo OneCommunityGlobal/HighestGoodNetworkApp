@@ -5,7 +5,7 @@ import { useHistory } from 'react-router-dom';
 import './Issue.css';
 import { useEffect } from 'react';
 import axios from 'axios';
-import { ENDPOINTS } from '../../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 
 function Issue() {
   const ISSUE_FORM_HEADER = 'ISSUE LOG';

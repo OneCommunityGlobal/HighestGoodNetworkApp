@@ -142,8 +142,4 @@ ItemListView.defaultProps = {
   errors: {},
 };
 
-ItemListView.defaultProps = {
-  errors: {},
-};
-
 export default ItemListView;

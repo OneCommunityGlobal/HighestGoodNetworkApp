@@ -1,5 +1,5 @@
 // import React from 'react';
-import Loading from 'components/common/Loading';
+import Loading from '~/components/common/Loading';
 import './PopUpBar.css';
 
 function PopUpBar(props) {

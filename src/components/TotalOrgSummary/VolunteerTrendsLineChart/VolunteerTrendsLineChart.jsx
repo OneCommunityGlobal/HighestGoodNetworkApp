@@ -1,9 +1,9 @@
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
 import './styles.css';
 import { useEffect, useState } from 'react';
-import { ENDPOINTS } from 'utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import axios from 'axios';
-import Loading from 'components/common/Loading';
+import Loading from '~/components/common/Loading';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 

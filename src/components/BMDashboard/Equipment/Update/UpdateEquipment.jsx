@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchEquipmentById } from 'actions/bmdashboard/equipmentActions';
+import { fetchEquipmentById } from '~/actions/bmdashboard/equipmentActions';
 import { Button, Form, FormGroup, Label, Container, Row, Col, Input } from 'reactstrap';
 import './UpdateEquipment.css';
 import '../../BMDashboard.css';
-import CheckTypesModal from 'components/BMDashboard/shared/CheckTypesModal';
+import CheckTypesModal from '~/components/BMDashboard/shared/CheckTypesModal';
 import { useHistory, useParams } from 'react-router-dom';
-import Radio from 'components/common/Radio';
-import DragAndDrop from 'components/common/DragAndDrop/DragAndDrop';
-import Image from 'components/common/Image/Image';
+import Radio from '~/components/common/Radio';
+import DragAndDrop from '~/components/common/DragAndDrop/DragAndDrop';
+import Image from '~/components/common/Image/Image';
 
 export default function UpdateEquipment() {
   const history = useHistory();

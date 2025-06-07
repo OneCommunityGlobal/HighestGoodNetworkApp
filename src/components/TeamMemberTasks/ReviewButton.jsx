@@ -16,6 +16,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import './style.css';
 import './reviewButton.css';
+import { boxStyle, boxStyleDark } from '~/styles';
 import '../Header/DarkMode.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
@@ -24,6 +25,8 @@ import { boxStyle, boxStyleDark } from '../../styles';
 import { ApiEndpoint } from '../../utils/URL';
 import hasPermission from '../../utils/permissions';
 import httpService from '../../services/httpService';
+import { ApiEndpoint } from '~/utils/URL';
+import hasPermission from '~/utils/permissions';
 
 function ReviewButton({ user, task, updateTask }) {
   const dispatch = useDispatch();

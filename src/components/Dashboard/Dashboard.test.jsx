@@ -14,13 +14,13 @@ import '@testing-library/jest-dom/extend-expect';
 
 //mock the child components to test that they are indeed there
 
-jest.mock('../LeaderBoard', () => () => <div data-testid="leaderboard"></div>);
+vi.mock('../LeaderBoard', () => () => <div data-testid="leaderboard"></div>);
 
-jest.mock('../WeeklySummary/WeeklySummaryModal', () => () => (
+vi.mock('../WeeklySummary/WeeklySummaryModal', () => () => (
   <div data-testid="weeklysummary"></div>
 ));
 
-// jest.mock('../MonthlyEffort', () => () =>
+// vi.mock('../MonthlyEffort', () => () =>
 //             <div data-testid="monthlyeffort">
 //             </div>
 //     );

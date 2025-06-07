@@ -7,7 +7,7 @@ import {
   FETCH_ISSUE_TYPES_YEARS_SUCCESS,
   FETCH_ISSUE_TYPES_YEARS_FAILURE,
 } from '../../constants/bmdashboard/issueConstants';
-import { ENDPOINTS } from '../../utils/URL'; // Import the endpoints
+import { ENDPOINTS } from '~/utils/URL'; // Import the endpoints
 
 // Action to fetch issues for the bar chart
 export const fetchIssues = filters => async dispatch => {

@@ -1,4 +1,4 @@
-import { updateQuestion, deleteQuestion } from 'actions/formActions';
+import { updateQuestion, deleteQuestion } from '~/actions/formActions';
 import { useDispatch } from 'react-redux';
 import OptionMaker from './OptionMaker';
 import RichTextEditor from './RichTextEditor';

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Form, FormControl, Button } from 'react-bootstrap';
 import './LessonForm.css';
 import axios from 'axios';
-import { ENDPOINTS } from 'utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';

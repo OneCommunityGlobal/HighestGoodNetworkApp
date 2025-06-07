@@ -2,7 +2,7 @@
 import axios from 'axios';
 import { toast } from 'react-toastify'; // Import the toast library
 import 'react-toastify/dist/ReactToastify.css'; // Import the toast styles
-import { ENDPOINTS } from '../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 
 export const sendEmail = (to, subject, html) => {
   const url = ENDPOINTS.POST_EMAILS;
