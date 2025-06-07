@@ -3,6 +3,7 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect'; // for the "toBeInTheDocument" matcher
 import { Checkbox } from '../Checkbox';
+import styles from '../Checkbox.module.css';
 
 describe('Checkbox Component', () => {
   test('renders correctly with label', () => {
@@ -35,6 +36,7 @@ describe('Checkbox Component', () => {
     );
 
     const wrapper = container.firstChild;
-    expect(wrapper).toHaveClass('checkbox-wrapper', wrapperClassName);
+    // expect(wrapper).toHaveClass('checkbox-wrapper', wrapperClassName);
+    expect(wrapper).toHaveClass(styles.checkboxWrapper, styles[wrapperClassName]);
   });
 });

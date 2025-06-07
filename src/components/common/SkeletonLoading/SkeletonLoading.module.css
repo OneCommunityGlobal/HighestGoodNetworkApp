@@ -1,6 +1,6 @@
 /* Skeleton Loading for Timelog */
 
-.skeleton-loading-timelog {
+.skeletonLoadingTimelog {
   display: flex;
   flex-direction: column;
   border: 1px solid rgba(0, 0, 0, 0.125);
@@ -8,7 +8,7 @@
   background-color: #f3f4f6;
 }
 
-.skeleton-loading-item-timelog {
+.skeletonLoadingItemTimelog {
   background: linear-gradient(90deg, #a0a0a0 0%, #c0c0c0 50%, #a0a0a0 100%);
   background-size: 200% 100%;
   animation: skeleton-loading-animation 1.5s ease-in-out infinite;
@@ -17,7 +17,7 @@
   margin: 0.625rem 18.75rem 0.125rem 2.5rem;
 }
 
-.skeleton-loading-item-add-intangible {
+.skeletonLoadingItemAddIntangible {
   background: linear-gradient(90deg, #a0a0a0 0%, #c0c0c0 50%, #a0a0a0 100%);
   background-size: 200% 100%;
   animation: skeleton-loading-animation 3s ease-in-out infinite;
@@ -29,13 +29,13 @@
 
 /* Skeleton Loading for Timelog Filter */
 
-.skeleton-loading-timelog-filter {
+.skeletonLoadingTimelogFilter {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.skeleton-loading-timelog-filter-item {
+.skeletonLoadingTimelogFilterItem {
   background: linear-gradient(90deg, #a0a0a0 0%, #c0c0c0 50%, #a0a0a0 100%);
   background-size: 200% 100%;
   animation: skeleton-loading-animation 1.5s ease-in-out infinite;
@@ -48,7 +48,7 @@
 
 /* Skeleton Loading for Team Member Tasks */
 
-.skeleton-loading-team-member-tasks-row {
+.skeletonLoadingTeamMemberTasksRow {
   background: linear-gradient(90deg, #a0a0a0 0%, #c0c0c0 50%, #a0a0a0 100%);
   background-size: 200% 100%;
   height: 60px;
@@ -57,7 +57,7 @@
 
 /* Skeleton Loading for Weekly Summary Due Date (click to add) */
 
-.skeleton-loading-weekly-summary {
+.skeletonLoadingWeeklySummary {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -74,7 +74,7 @@
 
 /* Skeleton Loading for Weekly Summaries Report Page */
 
-.skeleton-loading-weekly-summaries-report {
+.skeletonLoadingWeeklySummariesReport {
   display: flex;
   flex-direction: column;
   border: 1px solid rgba(0, 0, 0, 0.125);
@@ -83,7 +83,7 @@
   padding-top: 1rem;
 }
 
-.skeleton-loading-weekly-summaries-report-item {
+.skeletonLoadingWeeklySummariesReportItem {
   border: 1px solid rgba(0, 0, 0, 0.125);
   background-color: #f3f4f6;
   width: 35rem;
@@ -97,7 +97,7 @@
 
 /* Skeleton Loading for User Profile Page */
 
-.skeleton-loading-user-profile-picture {
+.skeletonLoadingUserProfilePicture {
   display: flex;
   flex-direction: column;
   border: 1px solid rgba(0, 0, 0, 0.125);
@@ -111,7 +111,7 @@
   border-radius: 5px;
 }
 
-.skeleton-loading-user-profile-item {
+.skeletonLoadingUserProfileItem {
   background: linear-gradient(90deg, #a0a0a0 0%, #c0c0c0 50%, #a0a0a0 100%);
   background-size: 200% 100%;
   animation: skeleton-loading-animation 1.5s ease-in-out infinite;
@@ -123,7 +123,7 @@
 
 /* Skeleton Loading for User Management */
 
-.skeleton-loading-user-management-item {
+.skeletonLoadingUserManagementItem {
   background: linear-gradient(90deg, #a0a0a0 0%, #c0c0c0 50%, #a0a0a0 100%);
   background-size: 200% 100%;
   animation: skeleton-loading-animation 1.5s ease-in-out infinite;

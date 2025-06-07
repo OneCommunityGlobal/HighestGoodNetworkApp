@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import './JobFormBuilder.css';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { ENDPOINTS } from '../../utils/URL';
 import OneCommunityImage from './One-Community-Horizontal-Homepage-Header-980x140px-2.png';
+import styles from './JobFormBuilder.module.css';
 
 function JobFormBuilder() {
   const { role } = useSelector(state => state.auth.user);
@@ -141,9 +141,9 @@ function JobFormBuilder() {
   };
 
   return (
-    <div className="form-builder-container">
+    <div className={`${styles.formBuilderContainer}`}>
       <img src={OneCommunityImage} alt="One Community Logo" id="onecommunity-image" />
-      <div className="jobform-navbar">
+      <div className={`${styles.jobformNavbar}`}>
         <div>
           <input placeholder="Enter Job Title" />
           <button type="button" className="go-button">
@@ -168,7 +168,7 @@ function JobFormBuilder() {
       <h1>FORM CREATION</h1>
 
       {role === 'Owner' ? (
-        <div className="custom-form">
+        <div className={`${styles.customForm}`}>
           <p>
             Fill the form with questions about a specific position you want to create an ad for. The
             default questions will automatically appear and are alredy selected. You can pick and
@@ -177,7 +177,7 @@ function JobFormBuilder() {
           <form>
             {formFields.map((field, index) => (
               <div
-                className="form-div"
+                className={`${styles.formDiv}`}
                 /* eslint-disable-next-line react/no-array-index-key */
                 key={index + 1}
               >
@@ -190,10 +190,12 @@ function JobFormBuilder() {
                 <div
                   /* eslint-disable-next-line react/no-array-index-key */
                   key={index + 1}
-                  className="form-field"
+                  className={`${styles.formField}`}
                 >
-                  <label className="field-label jbform-label">{field.questionText}</label>
-                  <div className="field-options">
+                  <label className={`${styles.fieldLabel} ${styles.jbformLabel}`}>
+                    {field.questionText}
+                  </label>
+                  <div className={`${styles.fieldOptions}`}>
                     {field.questionType === 'textbox' && (
                       <input type="text" placeholder="Enter Text here" />
                     )}
@@ -206,10 +208,10 @@ function JobFormBuilder() {
                         <div
                           /* eslint-disable-next-line react/no-array-index-key */
                           key={idx + 1}
-                          className="option-item"
+                          className={`${styles.optionItem}`}
                         >
                           <input type={field.questionType} name={`field-${index}`} />
-                          <label className="jbform-label">{option}</label>
+                          <label className={`${styles.jbformLabel}`}>{option}</label>
                         </div>
                       ))}
                     {field.questionType === 'dropdown' && (
@@ -230,9 +232,9 @@ function JobFormBuilder() {
               </div>
             ))}
           </form>
-          <div className="new-field-section">
+          <div className={`${styles.newFieldSection}`}>
             <div>
-              <label className="jbform-label">
+              <label className={`${styles.jbformLabel}`}>
                 Field Label:
                 <input
                   type="text"
@@ -246,7 +248,7 @@ function JobFormBuilder() {
               </label>
             </div>
             <div>
-              <label className="jbform-label">
+              <label className={`${styles.jbformLabel}`}>
                 Input Type:
                 <select
                   value={newField.questionType}
@@ -271,8 +273,8 @@ function JobFormBuilder() {
 
             {/* Options Section */}
             {['checkbox', 'radio', 'dropdown'].includes(newField.questionType) && (
-              <div className="options-section">
-                <label className="jbform-label">
+              <div className={`${styles.optionsSection}`}>
+                <label className={`${styles.jbformLabel}`}>
                   Add Option:
                   <input
                     type="text"
@@ -281,7 +283,11 @@ function JobFormBuilder() {
                     placeholder="Enter an option"
                   />
                 </label>
-                <button type="button" onClick={handleAddOption} className="add-option-button">
+                <button
+                  type="button"
+                  onClick={handleAddOption}
+                  className={`${styles.addOptionButton}`}
+                >
                   Add Option
                 </button>
                 <div className="options-list">
@@ -290,7 +296,7 @@ function JobFormBuilder() {
                     <div
                       /* eslint-disable-next-line react/no-array-index-key */
                       key={index + 1}
-                      className="option-item"
+                      className={`${styles.optionItem}`}
                     >
                       {option}
                     </div>
@@ -299,11 +305,11 @@ function JobFormBuilder() {
               </div>
             )}
 
-            <button type="button" onClick={handleAddField} className="add-field-button">
+            <button type="button" onClick={handleAddField} className={`${styles.addFieldButton}`}>
               Add Field
             </button>
           </div>
-          <button type="submit" className="job-submit-button" onClick={handleSubmit}>
+          <button type="submit" className={`${styles.jobSubmitButton}`} onClick={handleSubmit}>
             Proceed to Submit with Details
           </button>
         </div>

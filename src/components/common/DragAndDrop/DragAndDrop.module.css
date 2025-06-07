@@ -22,7 +22,7 @@
   background-color: #ffffff;
 }
 
-#file-upload-label.drag-active{
+#file-upload-label.dragActive{
   background-color: #f8fafc;
 }
 
@@ -38,7 +38,7 @@
 }
 
 
-.upload-button {
+.uploadButton {
   cursor: pointer;
   padding: 0.25rem;
   font-size: 1rem;
@@ -47,7 +47,7 @@
   background-color: transparent;
 }
 
-.upload-button:hover {
+.uploadButton:hover {
   text-decoration-line: underline;
 }
 

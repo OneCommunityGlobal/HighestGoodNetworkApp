@@ -61,7 +61,7 @@ describe('SkeletonLoading Component', () => {
         <SkeletonLoading template="TeamMemberTasks" />
       </Provider>,
     );
-    const rows = document.querySelectorAll('.skeleton-loading-team-member-tasks-row');
+    const rows = document.querySelectorAll('.skeletonLoadingTeamMemberTasksRow');
     expect(rows).toHaveLength(15);
   });
 
@@ -76,7 +76,7 @@ describe('SkeletonLoading Component', () => {
         <SkeletonLoading template="WeeklySummary" />
       </Provider>,
     );
-    expect(document.querySelector('.skeleton-loading-weekly-summary')).toBeInTheDocument();
+    expect(document.querySelector('.skeletonLoadingWeeklySummary')).toBeInTheDocument();
   });
 
   it('renders WeeklySummariesReport template', () => {
@@ -90,7 +90,7 @@ describe('SkeletonLoading Component', () => {
         <SkeletonLoading template="WeeklySummariesReport" />
       </Provider>,
     );
-    const items = document.querySelectorAll('.skeleton-loading-weekly-summaries-report-item');
+    const items = document.querySelectorAll('.skeletonLoadingWeeklySummariesReportItem');
     expect(items.length).toBeGreaterThan(0);
   });
 
@@ -105,7 +105,7 @@ describe('SkeletonLoading Component', () => {
         <SkeletonLoading template="UserProfile" />
       </Provider>,
     );
-    const userProfileItems = document.querySelectorAll('.skeleton-loading-user-profile-item');
+    const userProfileItems = document.querySelectorAll('.skeletonLoadingUserProfileItem');
     expect(userProfileItems.length).toBeGreaterThan(0); // Or check for a specific number if applicable
   });
 
@@ -120,7 +120,7 @@ describe('SkeletonLoading Component', () => {
         <SkeletonLoading template="UserManagement" />
       </Provider>,
     );
-    const items = document.querySelectorAll('.skeleton-loading-user-management-item');
+    const items = document.querySelectorAll('.skeletonLoadingUserManagementItem');
     expect(items).toHaveLength(17);
   });
 
