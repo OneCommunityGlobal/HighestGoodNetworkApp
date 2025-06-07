@@ -242,6 +242,8 @@ export const ENDPOINTS = {
   BM_INVTYPE_TYPE: type => `${APIEndpoint}/bm/invtypes/${type}`,
   BM_ISSUE_FORM: `${APIEndpoint}/bm/issue/add`,
   BM_INJURY_CATEGORY_BREAKDOWN: `${APIEndpoint}/bm/injuries/category-breakdown`,
+  BM_INJURY_SEVERITIES: `${APIEndpoint}/bm/injuries/injury-severities`,
+  BM_INJURY_TYPES: `${APIEndpoint}/bm/injuries/injury-types`,
 
   BM_TAGS: `${APIEndpoint}/bm/tags`,
   BM_TAG_ADD: `${APIEndpoint}/bm/tags`,
