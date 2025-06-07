@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Bar } from 'react-chartjs-2';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import DatePicker from 'react-datepicker';
 import styles from './IssueCharts.module.css';
 
 // Import Redux actions
@@ -17,9 +18,10 @@ function IssuesCharts({ bmProjects = [] }) {
   const [selectedProject, setSelectedProject] = useState('all');
   const [dateRange, setDateRange] = useState({ start: '', end: '' });
 
-  const { longestOpenIssues = [], mostExpensiveIssues = [], loading, error } = useSelector(
+  const { longestOpenIssues = [], mostExpensiveIssues = [] } = useSelector(
     state => state.issue || {},
   );
+  // loading, error
 
   const formatFilters = ({ projectIds, startDate, endDate }) => {
     const formatted = {};
@@ -124,8 +126,12 @@ function IssuesCharts({ bmProjects = [] }) {
     },
   };
 
-  if (loading) return <div className={styles.loading}>Loading...</div>;
-  if (error) return <div className={styles.error}>Error: {error}</div>;
+  // if (loading) return <div className={styles.loading}>Loading...</div>;
+  // if (error) return <div className={styles.error}>Error: {error}</div>;
+
+  const handleDateChange = (dateName, dateValue) => {
+    setDateRange({ ...dateRange, [dateName]: dateValue });
+  };
 
   return (
     <div>
@@ -133,22 +139,31 @@ function IssuesCharts({ bmProjects = [] }) {
         <div className={styles.dateInputs}>
           <div className={styles.inputGroup}>
             <label htmlFor="startDate">Start:</label>
-            <input
+            {/* <input
               id="startDate"
               type="date"
               value={dateRange.start}
-              onChange={e => setDateRange(prev => ({ ...prev, start: e.target.value }))}
+              onChange={value => handleDateChange('start', value)}
               className={styles.input}
+            /> */}
+            <DatePicker
+              selected={dateRange.start}
+              onChange={value => handleDateChange('start', value)}
             />
           </div>
           <div className={styles.inputGroup}>
             <label htmlFor="endDate">End:</label>
-            <input
+            {/* <input
               id="endDate"
               type="date"
               value={dateRange.end}
-              onChange={e => setDateRange(prev => ({ ...prev, end: e.target.value }))}
+              // onChange={e => setDateRange(prev => ({ ...prev, end: e.target.value }))}
+              onChange={value => handleDateChange('end', value)}
               className={styles.input}
+            /> */}
+            <DatePicker
+              selected={dateRange.end}
+              onChange={value => handleDateChange('end', value)}
             />
           </div>
         </div>
@@ -181,7 +196,6 @@ function IssuesCharts({ bmProjects = [] }) {
           </select>
         </div>
       </div>
-
       <div className={styles.chartContainer}>
         {chartData.length > 0 ? (
           <Bar
@@ -189,6 +203,7 @@ function IssuesCharts({ bmProjects = [] }) {
             data={data}
             options={options}
             plugins={[ChartDataLabels]}
+            height={300}
           />
         ) : (
           <p className={styles.noData}>No issues found.</p>
