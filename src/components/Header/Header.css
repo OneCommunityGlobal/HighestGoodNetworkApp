@@ -71,7 +71,6 @@
 
 .navbar {
   z-index: 100;
-  flex-wrap: wrap;
   overflow: visible;
 }
 
@@ -124,12 +123,13 @@
     text-align: center;
     width: 100%;
   }
-.nav-links {
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.5rem;
-  overflow: visible;
-  flex-wrap: wrap;
+  .nav-links {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    overflow: visible;
+    flex-wrap: wrap;
+  }
 }
 
 @media screen and (max-width: 768px) {
@@ -208,4 +208,4 @@
     transform: scale(1) !important;
     vertical-align: middle !important;
   }
-}}
+}

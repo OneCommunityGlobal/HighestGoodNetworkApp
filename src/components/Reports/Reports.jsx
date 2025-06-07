@@ -23,6 +23,7 @@ import teamsImage from './images/Teams.svg';
 import TotalPeopleReport from './TotalReport/TotalPeopleReport';
 import TotalTeamReport from './TotalReport/TotalTeamReport';
 import TotalProjectReport from './TotalReport/TotalProjectReport';
+import TotalContributorsReport from './TotalReport/TotalContributorsReport';
 import AddLostTime from './LostTime/AddLostTime';
 import LostTimeHistory from './LostTime/LostTimeHistory';
 import '../Header/DarkMode.css';
@@ -47,6 +48,7 @@ class ReportsPage extends Component {
       showAddPersonHistory: false,
       showAddTeamHistory: false,
       showAddProjHistory: false,
+      showContributorsReport: false,
       teamNameSearchText: '',
       wildCardSearchText: '',
       selectedTeamId: 0,
@@ -100,11 +102,11 @@ class ReportsPage extends Component {
     this.showAddProjHistory = this.showAddProjHistory.bind(this);
     this.setTeamMemberList = this.setTeamMemberList.bind(this);
     this.setAddTime = this.setAddTime.bind(this);
-    // this.setRemainedTeams = this.setRemainedTeams.bind(this);
     this.setFilterStatus = this.setFilterStatus.bind(this);
     this.onWildCardSearch = this.onWildCardSearch.bind(this);
     this.onDateChange = this.onDateChange.bind(this);
     this.handleClearFilters = this.handleClearFilters.bind(this);
+    this.showContributorsReport = this.showContributorsReport.bind(this);
   }
 
   async componentDidMount() {
@@ -279,6 +281,7 @@ class ReportsPage extends Component {
       showAddProjHistory: false,
       showAddPersonHistory: false,
       showAddTeamHistory: false,
+      showContributorsReport: false
     }));
   }
 
@@ -294,6 +297,7 @@ class ReportsPage extends Component {
       showAddProjHistory: false,
       showAddPersonHistory: false,
       showAddTeamHistory: false,
+      showContributorsReport: false
     }));
   }
 
@@ -309,6 +313,7 @@ class ReportsPage extends Component {
       showAddProjHistory: false,
       showAddPersonHistory: false,
       showAddTeamHistory: false,
+      showContributorsReport: false
     }));
   }
 
@@ -324,6 +329,7 @@ class ReportsPage extends Component {
       showAddProjHistory: false,
       showAddPersonHistory: false,
       showAddTeamHistory: false,
+      showContributorsReport: false
     }));
   }
 
@@ -339,6 +345,7 @@ class ReportsPage extends Component {
       showAddProjHistory: false,
       showAddPersonHistory: false,
       showAddTeamHistory: false,
+      showContributorsReport: false
     }));
   }
 
@@ -359,37 +366,23 @@ class ReportsPage extends Component {
         showTeams: false,
         showTotalTeam: false,
         showTotalPeople: false,
-        showTotalProject: false, // Initially hide the report
+        showTotalProject: false,
         showAddTimeForm: false,
         showAddProjHistory: false,
         showAddPersonHistory: false,
         showAddTeamHistory: false,
+        showContributorsReport: false
       },
       () => {
         setTimeout(() => {
           this.setState({
             loading: false,
-            showTotalProject: true, // Show the report after loading completes
+            showTotalProject: true,
           });
-        }, 2000); // Adjust the delay as needed
+        }, 2000);
       },
     );
   }
-
-  // showTotalProject() {
-  //   this.setState(prevState => ({
-  //     showProjects: false,
-  //     showPeople: false,
-  //     showTeams: false,
-  //     showTotalProject: !prevState.showTotalProject,
-  //     showTotalTeam: false,
-  //     showTotalPeople: false,
-  //     showAddTimeForm: false,
-  //     showAddProjHistory: false,
-  //     showAddPersonHistory: false,
-  //     showAddTeamHistory: false,
-  //   }));
-  // }
 
   showAddProjHistory() {
     this.setState(prevState => ({
@@ -403,6 +396,7 @@ class ReportsPage extends Component {
       showAddProjHistory: !prevState.showAddProjHistory,
       showAddPersonHistory: false,
       showAddTeamHistory: false,
+      showContributorsReport: false
     }));
   }
 
@@ -418,6 +412,7 @@ class ReportsPage extends Component {
       showAddProjHistory: false,
       showAddPersonHistory: !prevState.showAddPersonHistory,
       showAddTeamHistory: false,
+      showContributorsReport: false
     }));
   }
 
@@ -433,6 +428,23 @@ class ReportsPage extends Component {
       showAddProjHistory: false,
       showAddPersonHistory: false,
       showAddTeamHistory: !prevState.showAddTeamHistory,
+      showContributorsReport: false
+    }));
+  }
+
+  showContributorsReport() {
+    this.setState(prevState => ({
+      showContributorsReport: !prevState.showContributorsReport,
+      showProjects: false,
+      showPeople: false,
+      showTeams: false,
+      showTotalProject: false,
+      showTotalPeople: false,
+      showTotalTeam: false,
+      showAddTimeForm: false,
+      showAddProjHistory: false,
+      showAddPersonHistory: false,
+      showAddTeamHistory: false
     }));
   }
 
@@ -483,7 +495,7 @@ class ReportsPage extends Component {
     return (
       <Container fluid className={`mb-5 container-component-wrapper ${isOxfordBlue}`}>
         <div
-          className={`category-data-container ${isOxfordBlue} ${
+          className={`category-data-container ${
             this.state.showPeople ||
             this.state.showProjects ||
             this.state.showTeams ||
@@ -493,7 +505,8 @@ class ReportsPage extends Component {
             this.state.showAddTimeForm ||
             this.state.showAddPersonHistory ||
             this.state.showAddTeamHistory ||
-            this.state.showAddProjHistory
+            this.state.showAddProjHistory ||
+            this.state.showContributorsReport
               ? ''
               : 'no-active-selection'
           }`}
@@ -567,7 +580,7 @@ class ReportsPage extends Component {
                 </button>
               </div>
               <div
-                className={`mt-4 p-3 rounded-lg ${
+                className={`mt-3 p-3 rounded-lg ${
                   darkMode ? 'bg-yinmn-blue text-light' : 'bg-white'
                 }`}
                 style={darkMode ? boxStyleDark : boxStyle}
@@ -598,7 +611,7 @@ class ReportsPage extends Component {
                       <EditableInfoModal
                         areaName="totalProjectReportInfoPoint"
                         areaTitle="Total Project Report"
-                        role={userRole}
+                        role={myRole}
                         fontSize={15}
                         isPermissionPage
                         darkMode={darkMode}
@@ -615,6 +628,23 @@ class ReportsPage extends Component {
                       <EditableInfoModal
                         areaName="totalPeopleReportInfoPoint"
                         areaTitle="Total People Report"
+                        role={myRole}
+                        fontSize={15}
+                        isPermissionPage
+                        darkMode={darkMode}
+                      />
+                    </div>
+                  </div>
+                  <div className="total-report-item">
+                    <Button color="info" onClick={this.showTotalTeam}>
+                      {this.state.showTotalTeam
+                        ? 'Hide Total Team Report'
+                        : 'Show Total Team Report'}
+                    </Button>
+                    <div style={{ display: 'inline-block', marginLeft: 10 }}>
+                      <EditableInfoModal
+                        areaName="totalTeamReportInfoPoint"
+                        areaTitle="Total Team Report"
                         role={userRole}
                         fontSize={15}
                         isPermissionPage
@@ -622,23 +652,26 @@ class ReportsPage extends Component {
                       />
                     </div>
                   </div>
-                  <div>
-                    <div className="total-report-item">
-                      <Button color="info" onClick={this.showTotalTeam}>
-                        {this.state.showTotalTeam
-                          ? 'Hide Total Team Report'
-                          : 'Show Total Team Report'}
-                      </Button>
-                      <div style={{ display: 'inline-block', marginLeft: 10 }}>
-                        <EditableInfoModal
-                          areaName="totalTeamReportInfoPoint"
-                          areaTitle="Total Team Report"
-                          role={userRole}
-                          fontSize={15}
-                          isPermissionPage
-                          darkMode={darkMode}
-                        />
-                      </div>
+                  <div className="total-report-item">
+                    <Button 
+                      type="button" 
+                      color="info" 
+                      onClick={this.showContributorsReport}
+                    >
+                      {this.state.showContributorsReport
+                        ? 'Hide Contributors Report'
+                        : 'Show Contributors Report'}
+                    </Button>
+                    <div style={{ display: 'inline-block', marginLeft: 10 }}>
+                      <EditableInfoModal
+                        areaName="contributorsReportInfoPoint"
+                        areaTitle="Contributors Report"
+                        role={myRole}
+                        fontSize={15}
+                        isPermissionPage
+                        darkMode={darkMode}
+                        defaultText="Click this to see only people who logged/contributed a minimum of 10 tangible hours. This is used for identifying actual contributors vs. people who never started, were immediately terminated, etc."
+                      />
                     </div>
                   </div>
                 </div>
@@ -814,6 +847,15 @@ class ReportsPage extends Component {
                 userProfiles={userProfilesBasicInfo}
                 projects={projects}
                 darkMode={darkMode}
+              />
+            )}
+            {this.state.showContributorsReport && (
+              <TotalContributorsReport
+                startDate={this.state.startDate}
+                endDate={this.state.endDate}
+                userProfiles={userProfilesBasicInfo}
+                darkMode={darkMode}
+                userRole={userRole}
               />
             )}
             {this.state.showAddTimeForm && myRole === 'Owner' && (

@@ -1,14 +1,12 @@
-import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
-import TaskButton from '../TaskButton';
-import * as taskActions from '../../../actions/task';
-import * as userActions from '../../../actions/userManagement';
-import { deleteSelectedTask } from '../reducer';
 import { useDispatch } from 'react-redux';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
+import TaskButton from '../TaskButton';
+import * as taskActions from '../../../actions/task';
+import * as userActions from '../../../actions/userManagement';
 
 const mockStore = configureStore([]);
 const task = {

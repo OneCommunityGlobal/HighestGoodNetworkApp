@@ -49,6 +49,11 @@ const Project = props => {
     } 
   };
 
+  const onProjectStatusChange = () => {
+    // Trigger the modal from Projects component via props
+    props.onClickProjectStatusBtn(projectData); // This will open the modal
+  };
+
   const onUpdateProjectActive = () => {
     updateProject('isActive', !isActive);
   }
@@ -140,7 +145,7 @@ const Project = props => {
       </td>
       {/* <td className="projects__active--input" data-testid="project-active" onClick={canPutProject ? updateActive : null}>
         {props.active ? ( */}
-          <td className="projects__active--input" data-testid="project-active" onClick={canEditCategoryAndStatus || canPutProject ? onUpdateProjectActive : null}>
+          <td className="projects__active--input" data-testid="project-active" onClick={canEditCategoryAndStatus || canPutProject ? onProjectStatusChange : null}>
               {isActive ? (
           <div className="isActive">
             <i className="fa fa-circle" aria-hidden="true"></i>

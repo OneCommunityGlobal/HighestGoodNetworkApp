@@ -99,8 +99,8 @@ describe('Weekly Summary Report', () => {
 
 
   describe('Update One Summary Report', () => {
-
-    let mockUserProfile; let updatedField;
+    let mockUserProfile;
+    let updatedField;
 
     beforeEach(() => {
 

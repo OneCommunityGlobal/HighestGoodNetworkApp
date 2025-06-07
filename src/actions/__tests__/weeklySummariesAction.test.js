@@ -6,7 +6,6 @@ import { ENDPOINTS } from '~/utils/URL';
 import { fetchWeeklySummariesBegin, fetchWeeklySummariesSuccess, fetchWeeklySummariesError, getWeeklySummaries, updateWeeklySummaries } from '../weeklySummaries'
 import { getUserProfileActionCreator } from "../userProfile";
 
-
 vi.mock('axios');
 
 
@@ -14,13 +13,17 @@ describe('Weekly Summaries Action', () => {
 
   it('Should return action FETCH_WEEKLY_SUMMARIES_BEGIN', () => {
 
+
     const data = fetchWeeklySummariesBegin();
+
+    expect(data).toEqual({ type: actions.FETCH_WEEKLY_SUMMARIES_BEGIN });
 
     expect(data).toEqual({ type: actions.FETCH_WEEKLY_SUMMARIES_BEGIN });
 
   });
 
   it('Should fetch weekly summaries success', () => {
+
 
     const weeklySummariesData = {
       id: 1,

@@ -23,7 +23,7 @@ import 'leaflet/dist/leaflet.css';
 import './Home.css';
 import L from 'leaflet';
 import logo from '../../../assets/images/logo2.png';
-import api, { FIXED_VILLAGES } from './data';
+import { fetchVillages, fetchListings, fetchBiddings, FIXED_VILLAGES } from './data';
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -74,7 +74,7 @@ function Home() {
   useEffect(() => {
     const fetchVillagesData = async () => {
       try {
-        const villages = await api.fetchVillages();
+        const villages = await fetchVillages();
         setAllVillages(villages);
       } catch (error) {
         console.error('Error fetching villages:', error);
@@ -113,7 +113,7 @@ function Home() {
 
         if (activeTab === 'listings') {
           try {
-            const listingsData = await api.fetchListings(
+            const listingsData = await fetchListings(
               pagination.currentPage,
               pagination.pageSize,
               filters,
@@ -133,7 +133,7 @@ function Home() {
           }
         } else {
           try {
-            const biddingsData = await api.fetchBiddings(
+            const biddingsData = await fetchBiddings(
               pagination.currentPage,
               pagination.pageSize,
               filters,
@@ -262,17 +262,17 @@ function Home() {
   }, []);
 
   return (
-    <div className="outside-container">
+    <div className="lb-outside-container">
       {/* Logo Section */}
-      <div className="logo">
+      <div className="lb-logo">
         <img src={logo} alt="Logo" />
       </div>
 
       {/* Navigation Bar */}
       <nav className="lb-navbar">
-        <div className="nav-left">
+        <div className="lb-nav-left">
           <select
-            className="village-filter"
+            className="lb-village-filter"
             value={selectedVillage}
             onChange={e => setSelectedVillage(e.target.value)}
           >
@@ -283,28 +283,28 @@ function Home() {
               </option>
             ))}
           </select>
-          <button className="go-button" onClick={handleGoButtonClick}>
+          <button className="lb-go-button" onClick={handleGoButtonClick}>
             Go
           </button>
         </div>
-        <div className="nav-right">
-          <span className="welcome-text">WELCOME {userName}</span>
+        <div className="lb-nav-right">
+          <span className="lb-welcome-text">WELCOME {userName}</span>
           <FaRegCommentDots
-            className="nav-icon"
+            className="lb-nav-icon"
             title="Messages"
             // eslint-disable-next-line no-return-assign
             onClick={() => (window.location.href = '/chat')}
           />
-          <div className="notification-badge">
+          <div className="lb-notification-badge">
             <FaRegBell
-              className="nav-icon"
+              className="lb-nav-icon"
               title="Notifications"
               onClick={() => setShowNotifications(true)}
             />
-            <span className="badge">3</span>
+            <span className="lb-badge">3</span>
           </div>
           <FaUser
-            className="nav-icon user-icon"
+            className="lb-nav-icon lb-user-icon"
             title="Profile"
             // eslint-disable-next-line no-return-assign
             onClick={() => (window.location.href = '/profile')}
@@ -313,39 +313,43 @@ function Home() {
       </nav>
 
       {/* Main Content Container */}
-      <div className="inside-container">
+      <div className="lb-inside-container">
         {/* Content Header with Map Link */}
-        <div className="content-header">
+        <div className="lb-content-header">
           <div
-            className="property-map"
+            className="lb-property-map"
             onClick={() => setShowPropertyMap(true)}
             title="View Property Map"
           >
-            <FaMapMarkerAlt className="map-icon" />
-            <span className="map-text">Property Map</span>
+            <FaMapMarkerAlt className="lb-map-icon" />
+            <span className="lb-map-text">Property Map</span>
           </div>
 
-          <div className="header-content">
+          <div className="lb-header-content">
             {/* Filter Section */}
             <div
-              className="filter-section"
+              className="lb-filter-section"
               onClick={() => setShowDatePicker(true)}
               title="Filter by Date Range"
             >
-              <BsSliders className="filter-icon" />
-              <span className="filter-text">Filter by date</span>
+              <BsSliders className="lb-filter-icon" />
+              <span className="lb-filter-text">Filter by date</span>
             </div>
 
             {/* Tabs Section */}
-            <div className="tabs-section">
+            <div className="lb-tabs-section">
               <span
-                className={`tab ${activeTab === 'listings' ? 'active-tab' : 'inactive-tab'}`}
+                className={`lb-tab ${
+                  activeTab === 'listings' ? 'lb-active-tab' : 'lb-inactive-tab'
+                }`}
                 onClick={() => setActiveTab('listings')}
               >
                 Listings
               </span>
               <span
-                className={`tab ${activeTab === 'bidding' ? 'active-tab' : 'inactive-tab'}`}
+                className={`lb-tab ${
+                  activeTab === 'bidding' ? 'lb-active-tab' : 'lb-inactive-tab'
+                }`}
                 onClick={() => setActiveTab('bidding')}
               >
                 Biddings
@@ -353,16 +357,16 @@ function Home() {
             </div>
 
             {/* View Toggle */}
-            <div className="view-toggle">
+            <div className="lb-view-toggle">
               <button
-                className={`view-btn ${viewMode === 'grid' ? 'active' : ''}`}
+                className={`lb-view-btn ${viewMode === 'grid' ? 'active' : ''}`}
                 onClick={() => setViewMode('grid')}
                 title="Grid View"
               >
                 <FaTh />
               </button>
               <button
-                className={`view-btn ${viewMode === 'list' ? 'active' : ''}`}
+                className={`lb-view-btn ${viewMode === 'list' ? 'active' : ''}`}
                 onClick={() => setViewMode('list')}
                 title="List View"
               >
@@ -373,38 +377,38 @@ function Home() {
         </div>
 
         {/* Loading State */}
-        {isLoading && <div className="loading-indicator">Loading properties...</div>}
+        {isLoading && <div className="lb-loading-indicator">Loading properties...</div>}
 
         {/* Error State */}
-        {error && <div className="error-message">{error}</div>}
+        {error && <div className="lb-error-message">{error}</div>}
 
         {/* No Results State */}
         {!isLoading && !error && currentItems.length === 0 && (
-          <div className="no-results">
+          <div className="lb-no-results">
             No properties found matching your criteria. Try adjusting your filters.
           </div>
         )}
 
         {/* Properties Container */}
         {!isLoading && !error && (
-          <div className={`properties-container ${viewMode}-view`}>
+          <div className={`lb-properties-container lb-${viewMode}-view`}>
             {currentItems.map(unit => (
               <div
                 key={unit.id}
-                className="property-card"
+                className="lb-property-card"
                 onClick={() => handlePropertySelect(unit)}
               >
-                <div className="property-image">
+                <div className="lb-property-image">
                   <img src={unit.images[0]} alt={unit.title} />
                 </div>
-                <div className="property-details">
+                <div className="lb-property-details">
                   <div>
                     <h3>{unit.title}</h3>
                     <p>
                       {unit.village} {unit.village !== 'City Center' ? 'Village' : ''}
                     </p>
                   </div>
-                  <div className={`price ${unit.isBidding ? 'bidding-price' : ''}`}>
+                  <div className={`lb-price ${unit.isBidding ? 'lb-bidding-price' : ''}`}>
                     ${unit.price}/{unit.perUnit}
                   </div>
                 </div>
@@ -415,25 +419,25 @@ function Home() {
 
         {/* Pagination Controls */}
         {!isLoading && !error && currentItems.length > 0 && (
-          <div className="pagination-controls">
+          <div className="lb-pagination-controls">
             <button
               onClick={() => handlePageChange(pagination.currentPage - 1)}
               disabled={pagination.currentPage === 1}
-              className="pagination-button"
+              className="lb-pagination-button"
             >
               Prev
             </button>
-            <span className="pagination-info">
+            <span className="lb-pagination-info">
               Page {pagination.currentPage} of {pagination.totalPages}
             </span>
             <button
               onClick={() => handlePageChange(pagination.currentPage + 1)}
               disabled={pagination.currentPage === pagination.totalPages}
-              className="pagination-button"
+              className="lb-pagination-button"
             >
               Next
             </button>
-            <div className="page-size-selector">
+            <div className="lb-page-size-selector">
               <span>Show:</span>
               <select
                 value={pagination.pageSize}
@@ -459,17 +463,17 @@ function Home() {
 
       {/* Date Picker Modal */}
       {showDatePicker && (
-        <div className="modal-overlay" onClick={() => setShowDatePicker(false)}>
-          <div className="date-picker-container" onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
+        <div className="lb-modal-overlay" onClick={() => setShowDatePicker(false)}>
+          <div className="lb-date-picker-container" onClick={e => e.stopPropagation()}>
+            <div className="lb-modal-header">
               <h3>Select Date Range</h3>
-              <div className="close-button-wrapper">
-                <FaTimes className="close-button" onClick={() => setShowDatePicker(false)} />
+              <div className="lb-close-button-wrapper">
+                <FaTimes className="lb-close-button" onClick={() => setShowDatePicker(false)} />
               </div>
             </div>
-            <div className="date-picker-content">
-              <div className="date-inputs">
-                <div className="date-input-group">
+            <div className="lb-date-picker-content">
+              <div className="lb-date-inputs">
+                <div className="lb-date-input-group">
                   <label>Start Date</label>
                   <input
                     type="date"
@@ -477,7 +481,7 @@ function Home() {
                     onChange={e => setDateRange({ ...dateRange, startDate: e.target.value })}
                   />
                 </div>
-                <div className="date-input-group">
+                <div className="lb-date-input-group">
                   <label>End Date</label>
                   <input
                     type="date"
@@ -490,21 +494,27 @@ function Home() {
 
               {/* Date Navigation (week forward/backward) - Airbnb-like feature */}
               {dateRange.startDate && dateRange.endDate && (
-                <div className="date-navigation">
-                  <button className="date-nav-button" onClick={() => adjustDatesByWeek('backward')}>
+                <div className="lb-date-navigation">
+                  <button
+                    className="lb-date-nav-button"
+                    onClick={() => adjustDatesByWeek('backward')}
+                  >
                     <FaChevronLeft /> Previous Week
                   </button>
-                  <button className="date-nav-button" onClick={() => adjustDatesByWeek('forward')}>
+                  <button
+                    className="lb-date-nav-button"
+                    onClick={() => adjustDatesByWeek('forward')}
+                  >
                     Next Week <FaChevronRight />
                   </button>
                 </div>
               )}
 
-              <div className="date-picker-actions">
-                <button className="apply-button" onClick={applyFilters}>
+              <div className="lb-date-picker-actions">
+                <button className="lb-apply-button" onClick={applyFilters}>
                   Apply
                 </button>
-                <button className="clear-button" onClick={clearFilters}>
+                <button className="lb-clear-button" onClick={clearFilters}>
                   Clear All Filters
                 </button>
               </div>
@@ -515,19 +525,19 @@ function Home() {
 
       {/* Property Map Modal */}
       {showPropertyMap && (
-        <div className="modal-overlay" onClick={() => setShowPropertyMap(false)}>
-          <div className="property-map-modal" onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
+        <div className="lb-modal-overlay" onClick={() => setShowPropertyMap(false)}>
+          <div className="lb-property-map-modal" onClick={e => e.stopPropagation()}>
+            <div className="lb-modal-header">
               <h3>
                 Property Map
                 {selectedVillage &&
                   ` - ${selectedVillage} ${selectedVillage !== 'City Center' ? 'Village' : ''}`}
               </h3>
-              <div className="close-button-wrapper">
-                <FaTimes className="close-button" onClick={() => setShowPropertyMap(false)} />
+              <div className="lb-close-button-wrapper">
+                <FaTimes className="lb-close-button" onClick={() => setShowPropertyMap(false)} />
               </div>
             </div>
-            <div className="modal-content">
+            <div className="lb-modal-content">
               <MapContainer
                 center={[37.7749, -122.4194]}
                 zoom={13}
@@ -549,7 +559,7 @@ function Home() {
                     }}
                   >
                     <Popup>
-                      <div className="map-popup">
+                      <div className="lb-map-popup">
                         <h4>{unit.title}</h4>
                         <p>
                           {unit.village} {unit.village !== 'City Center' ? 'Village' : ''}
@@ -558,7 +568,7 @@ function Home() {
                           ${unit.price}/{unit.perUnit}
                         </p>
                         <button
-                          className="view-details-button"
+                          className="lb-view-details-button"
                           onClick={e => {
                             e.stopPropagation();
                             viewPropertyDetailsFromMap(unit);
@@ -572,12 +582,12 @@ function Home() {
                 ))}
               </MapContainer>
 
-              <div className="map-legend">
+              <div className="lb-map-legend">
                 <h4>Villages</h4>
-                <div className="village-search">
+                <div className="lb-village-search">
                   <input
                     type="text"
-                    className="village-search-input"
+                    className="lb-village-search-input"
                     placeholder="Search villages..."
                     value={villageSearchTerm}
                     onChange={e => {
@@ -586,11 +596,11 @@ function Home() {
                     }}
                   />
                 </div>
-                <div className="village-chips">
+                <div className="lb-village-chips">
                   {paginatedVillages.map(village => (
                     <div
                       key={village}
-                      className={`village-chip ${selectedVillage === village ? 'active' : ''}`}
+                      className={`lb-village-chip ${selectedVillage === village ? 'active' : ''}`}
                       onClick={() => {
                         setSelectedVillage(village === selectedVillage ? '' : village);
                       }}
@@ -600,9 +610,9 @@ function Home() {
                   ))}
                 </div>
                 {filteredVillages.length > villagePagination.pageSize && (
-                  <div className="village-pagination">
+                  <div className="lb-village-pagination">
                     <button
-                      className="pagination-button"
+                      className="lb-pagination-button"
                       disabled={villagePagination.currentPage === 1}
                       onClick={() =>
                         setVillagePagination(prev => ({
@@ -613,11 +623,11 @@ function Home() {
                     >
                       Previous
                     </button>
-                    <span className="pagination-info">
+                    <span className="lb-pagination-info">
                       Page {villagePagination.currentPage} of {totalVillagePages}
                     </span>
                     <button
-                      className="pagination-button"
+                      className="lb-pagination-button"
                       disabled={villagePagination.currentPage === totalVillagePages}
                       onClick={() =>
                         setVillagePagination(prev => ({
@@ -638,29 +648,29 @@ function Home() {
 
       {/* Notifications Modal */}
       {showNotifications && (
-        <div className="modal-overlay" onClick={() => setShowNotifications(false)}>
-          <div className="notification-modal" onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
+        <div className="lb-modal-overlay" onClick={() => setShowNotifications(false)}>
+          <div className="lb-notification-modal" onClick={e => e.stopPropagation()}>
+            <div className="lb-modal-header">
               <h3>Notifications</h3>
-              <div className="close-button-wrapper">
-                <FaTimes className="close-button" onClick={() => setShowNotifications(false)} />
+              <div className="lb-close-button-wrapper">
+                <FaTimes className="lb-close-button" onClick={() => setShowNotifications(false)} />
               </div>
             </div>
-            <div className="modal-content notification-content">
-              <div className="notification-item unread">
+            <div className="lb-modal-content lb-notification-content">
+              <div className="lb-notification-item unread">
                 <h4>New booking request</h4>
                 <p>Someone is interested in Unit 5</p>
-                <span className="notification-time">2 hours ago</span>
+                <span className="lb-notification-time">2 hours ago</span>
               </div>
-              <div className="notification-item unread">
+              <div className="lb-notification-item unread">
                 <h4>Price update</h4>
                 <p>Unit 12 price has been reduced</p>
-                <span className="notification-time">Yesterday</span>
+                <span className="lb-notification-time">Yesterday</span>
               </div>
-              <div className="notification-item unread">
+              <div className="lb-notification-item unread">
                 <h4>Village announcement</h4>
                 <p>Community meeting this weekend</p>
-                <span className="notification-time">3 days ago</span>
+                <span className="lb-notification-time">3 days ago</span>
               </div>
             </div>
           </div>
@@ -669,38 +679,41 @@ function Home() {
 
       {/* Property Details Modal */}
       {showPropertyDetails && selectedProperty && (
-        <div className="modal-overlay" onClick={() => setShowPropertyDetails(false)}>
-          <div className="property-details-modal" onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
+        <div className="lb-modal-overlay" onClick={() => setShowPropertyDetails(false)}>
+          <div className="lb-property-details-modal" onClick={e => e.stopPropagation()}>
+            <div className="lb-modal-header">
               <h3>{selectedProperty.title}</h3>
-              <div className="close-button-wrapper">
-                <FaTimes className="close-button" onClick={() => setShowPropertyDetails(false)} />
+              <div className="lb-close-button-wrapper">
+                <FaTimes
+                  className="lb-close-button"
+                  onClick={() => setShowPropertyDetails(false)}
+                />
               </div>
             </div>
-            <div className="modal-content property-details-content">
-              <div className="property-details-image">
+            <div className="lb-modal-content lb-property-details-content">
+              <div className="lb-property-details-image">
                 <img src={selectedProperty.images[0]} alt={selectedProperty.title} />
               </div>
-              <div className="property-details-info">
-                <div className="property-info-item">
+              <div className="lb-property-details-info">
+                <div className="lb-property-info-item">
                   <strong>Village:</strong> {selectedProperty.village}
                   {selectedProperty.village !== 'City Center' ? 'Village' : ''}
                 </div>
-                <div className="property-info-item">
+                <div className="lb-property-info-item">
                   <strong>Price:</strong> ${selectedProperty.price}/{selectedProperty.perUnit}
                 </div>
-                <div className="property-info-item">
+                <div className="lb-property-info-item">
                   <strong>Available From:</strong>{' '}
                   {selectedProperty.availableFrom.toLocaleDateString()}
                 </div>
-                <div className="property-info-item">
+                <div className="lb-property-info-item">
                   <strong>Available To:</strong> {selectedProperty.availableTo.toLocaleDateString()}
                 </div>
-                <div className="property-description">
+                <div className="lb-property-description">
                   <strong>Description:</strong> {selectedProperty.description}
                 </div>
                 {selectedProperty.amenities && selectedProperty.amenities.length > 0 && (
-                  <div className="property-amenities">
+                  <div className="lb-property-amenities">
                     <strong>Amenities:</strong>
                     <ul>
                       {selectedProperty.amenities.map((amenity, index) => (
@@ -710,9 +723,9 @@ function Home() {
                   </div>
                 )}
               </div>
-              <div className="property-details-actions">
-                <button className="action-button contact-button">Contact Owner</button>
-                <button className="action-button book-button">
+              <div className="lb-property-details-actions">
+                <button className="lb-action-button lb-contact-button">Contact Owner</button>
+                <button className="lb-action-button lb-book-button">
                   {activeTab === 'listings' ? 'Book Now' : 'Accept Bid'}
                 </button>
               </div>

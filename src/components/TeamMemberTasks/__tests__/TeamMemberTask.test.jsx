@@ -1,5 +1,4 @@
-import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import TeamMemberTask from '~/components/TeamMemberTasks/TeamMemberTask';
 import { authMock, rolesMock, userProfileMock, themeMock } from '../../../__tests__/mockStates.js';
@@ -7,6 +6,8 @@ import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
 import { MemoryRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
+import TeamMemberTask from '../TeamMemberTask';
+import { authMock, rolesMock, userProfileMock, themeMock } from '../../../__tests__/mockStates';
 
 // sample props used for testing purpose. You can change the props according to your test.
 // currently used admin props to conduct the test
@@ -119,15 +120,16 @@ describe('Team Member Task Component', () => {
 
     if (props.tasks) {
       totalHoursRemaining = props.tasks.reduce((total, task) => {
-        task.hoursLogged = task.hoursLogged || 0;
-        task.estimatedHours = task.estimatedHours || 0;
+        const hoursLogged = task.hoursLogged || 0;
+        const estimatedHours = task.estimatedHours || 0;
 
         if (task.status !== 'Complete' && task.isAssigned !== 'false') {
-          return total + (task.estimatedHours - task.hoursLogged);
+          return total + (estimatedHours - hoursLogged);
         }
         return total;
       }, 0);
     }
+
     const tangibleHrs = props.totaltangibletime_hrs ? props.totaltangibletime_hrs.toFixed(1) : 0;
     const remainHours = totalHoursRemaining ? totalHoursRemaining.toFixed(1) : 0;
     const remainingHrs = parseFloat(screen.getByText(remainHours).textContent);
@@ -175,9 +177,9 @@ describe('Team Member Task Component', () => {
 
     modifiedProps.tasks.forEach(task => {
       // this is for checking task name
-      const taskName = task.taskName;
-      const taskElement = screen.getByText(task.num + ' ' + taskName);
-      expect(taskElement.textContent).toContain(task.num + ' ' + taskName);
+      const { taskName } = task;
+      const taskElement = screen.getByText(`${task.num} ${taskName}`);
+      expect(taskElement.textContent).toContain(`${task.num} ${taskName}`);
 
       // this is for checking link associated with the name
       const linkElement = screen.getByTestId(taskName);
@@ -197,6 +199,7 @@ describe('Team Member Task Component', () => {
           if (taskNotification.userId === props.personId) {
             return taskNotification;
           }
+          return null;
         });
         expect(handleOpenTaskNotificationModal).toHaveBeenCalledWith(
           modifiedProps.personId,
@@ -229,10 +232,10 @@ describe('Team Member Task Component', () => {
       // check deadline count
       const deadlineElement = screen.queryByTestId(`deadline-${task.taskName}`);
       if (deadlineElement != null) {
-        if (task.deadlineCount == undefined) {
-          expect(parseInt(deadlineElement.textContent)).toBe(0);
+        if (task.deadlineCount === undefined) {
+          expect(parseInt(deadlineElement.textContent, 10)).toBe(0);
         } else {
-          expect(parseInt(deadlineElement.textContent)).toBe(task.deadlineCount);
+          expect(parseInt(deadlineElement.textContent, 10)).toBe(task.deadlineCount);
         }
       } else {
         expect(deadlineElement).toBeNull();
@@ -276,9 +279,7 @@ describe('Team Member Task Component', () => {
 
     modifiedProps.tasks.forEach(task => {
       const timeElement = screen.getAllByTestId(`times-${task.taskName}`);
-      expect(timeElement[0].textContent).toBe(
-        `${task.hoursLogged} of ${task.estimatedHours}`,
-      );
+      expect(timeElement[0].textContent).toBe(`${task.hoursLogged} of ${task.estimatedHours}`);
     });
   });
 });
