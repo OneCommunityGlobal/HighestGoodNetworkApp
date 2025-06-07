@@ -1,6 +1,4 @@
 import axios from 'axios';
-
-
 import {
   fetchTeamMembersTask,
   fetchTeamMembersTimeEntries,
@@ -18,10 +16,16 @@ import { ENDPOINTS } from '~/utils/URL';
 
 vi.mock('axios');
 
-vi.mock('moment', () => {
-  const actualMoment = vi.requireActual('moment');
+let actualMoment;
+
+beforeAll(async () => {
+actualMoment = await vi.importActual('moment');
+});
+
+vi.mock('moment', async () => {
+  const moment = await vi.importActual('moment');
   return {
-    ...actualMoment,
+    ...moment,
     tz: vi.fn(() => ({
       subtract: vi.fn().mockReturnValue({
         format: vi.fn().mockReturnValue('2023-01-01'),

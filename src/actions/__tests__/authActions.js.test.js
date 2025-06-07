@@ -19,7 +19,9 @@ import { SET_CURRENT_USER, SET_HEADER_DATA } from '../../constants/auth'; // Imp
 const middlewares = [thunk]; // Define middlewares
 const mockStore = configureMockStore(middlewares); // Create mock store with middlewares
 
-vi.mock('jwt-decode', () => vi.fn()); // Mock jwtDecode
+vi.mock('jwt-decode', () => ({
+  default: vi.fn(),
+}));
 
 vi.mock('../../services/httpService'); // Mock httpService
 vi.mock('axios'); // Mock axios

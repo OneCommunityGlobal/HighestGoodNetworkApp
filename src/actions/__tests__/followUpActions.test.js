@@ -12,7 +12,10 @@ vi.mock('react-toastify', () => ({
     error: vi.fn(),
   },
 }));
-
+beforeEach(() => {
+  vi.clearAllMocks();
+  toast.error.mockClear();
+});
 describe('followUpActions', () => {
   describe('fetchAllFollowUps', () => {
     it('should dispatch FETCH_ALL_FOLLOWUPS on successful API call', async () => {

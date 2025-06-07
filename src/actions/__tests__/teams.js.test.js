@@ -1,6 +1,4 @@
 import axios from 'axios'; // Import axios
-
-
 import {
   setTeamDetail,
   getUserTeamMembers,
@@ -133,7 +131,9 @@ describe('fetchAllManagingTeams', () => {
     const dispatch = vi.fn(); // Create a mock dispatch function
 
     await fetchAllManagingTeams(userId, managingTeams)(dispatch); // Call the fetchAllManagingTeams action creator with the user ID, managing teams, and dispatch function
-
-    expect(httpService.get).toHaveBeenCalledTimes(4); // Assert that the HTTP GET request was called 6 times
+    expect(httpService.get).toHaveBeenCalledWith(expect.stringContaining('/team/team1/users'));
+    expect(httpService.get).toHaveBeenCalledWith(expect.stringContaining('/team/team2/users'));
+    expect(httpService.get).toHaveBeenCalledWith(expect.stringContaining('/TimeEntry/user/member1'));
+    expect(httpService.get).toHaveBeenCalledWith(expect.stringContaining('/TimeEntry/user/member2'));
   });
 });

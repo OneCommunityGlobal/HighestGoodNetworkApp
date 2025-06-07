@@ -44,6 +44,10 @@ vi.spyOn(React, 'useEffect').mockImplementation((callback, deps) => {
   return originalUseEffect(callback, deps);
 });
 
+vi.mock('src/actions/orgActions', () => ({
+  getOrgData: vi.fn(),
+}));
+
 describe('Leaderboard page structure', () => {
   let store;
   let props;

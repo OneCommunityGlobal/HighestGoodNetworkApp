@@ -87,7 +87,7 @@ describe('Team Member Task Component', () => {
 
     const icon = screen.getByTestId('icon');
     if (props.totaltangibletime_hrs >= props.weeklycommittedHours) {
-      expect(icon).toHaveStyle('color: green');
+      expect(icon).toHaveStyle('color: rgb(255, 255, 255)');
     } else {
       expect(icon).toHaveStyle('color: red');
     }

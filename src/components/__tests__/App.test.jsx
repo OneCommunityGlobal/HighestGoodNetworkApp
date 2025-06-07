@@ -1,178 +1,167 @@
-// src/components/__tests__/App.test.js
+// src/components/__tests__/App.test.jsx
 // @version 3.0.0
 
-// --- Global Mocks for External Modules ---
-// These mocks bypass problematic modules (like popper.js and react-leaflet) that might interfere with tests.
-// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { cleanup, render } from '@testing-library/react';
-// eslint-disable-next-line no-unused-vars
-import configureMockStore from 'redux-mock-store';
-// eslint-disable-next-line no-unused-vars
-import thunk from 'redux-thunk';
 
+// === Stub out chart.js so Chart.register, LineController, etc. all exist ===
+vi.mock('chart.js', () => {
+  class Chart {
+    static register(..._args) { /* no-op */ }
+  }
+  return {
+    __esModule: true,
+    Chart,
+    CategoryScale: class {},
+    LinearScale: class {},
+    BarController: class {},
+    LineController: class {},    // ← ensure this export exists
+    BarElement: class {},
+    LineElement: class {},
+    PointElement: class {},
+    Title: class {},
+    Tooltip: class {},
+    Legend: class {},
+  };
+});
 
-vi.mock('popper.js', () => ({}));
-vi.mock('react-leaflet', () => ({}));
-vi.mock('react-leaflet-cluster', () => ({}));
-
-// Mock the PersistGate component from redux-persist so that it simply renders its children,
-// avoiding issues with persistence bootstrapping.
-vi.mock('redux-persist/integration/react', () => ({
-  PersistGate: ({ children }) => children,
+// === Stub react-chartjs-2 so <Bar> and <Line> just render null ===
+vi.mock('react-chartjs-2', () => ({
+  __esModule: true,
+  Bar: () => null,
+  Line: () => null,
 }));
 
-// --- Global Cleanup ---
-// Reset modules and clear localStorage after each test to avoid interference.
+// === Stub out your authActions with every export your components import ===
+vi.mock('../../actions/authActions', () => {
+  const logoutUser     = vi.fn(() => ({ type: 'LOGOUT_USER' }));
+  const setCurrentUser = vi.fn(user => ({ type: 'SET_CURRENT_USER', payload: user }));
+  const getHeaderData  = vi.fn(() => ({ type: 'GET_HEADER_DATA' }));
+  const getAllRoles    = vi.fn(() => ({ type: 'GET_ALL_ROLES' }));
+  const hasPermission  = vi.fn(() => ({ type: 'HAS_PERMISSION' }));
+  return {
+    __esModule: true,
+    logoutUser,
+    setCurrentUser,
+    getHeaderData,
+    getAllRoles,
+    hasPermission,
+  };
+});
+
+// Bypass other problematic modules
+vi.mock('popper.js',                () => ({}));
+vi.mock('react-leaflet',            () => ({}));
+vi.mock('react-leaflet-cluster',    () => ({}));
+vi.mock('redux-persist/integration/react', () => ({ PersistGate: ({ children }) => children }));
+
 afterEach(() => {
   cleanup();
   vi.resetModules();
   localStorage.clear();
 });
 
-/**
- * Part 1: Token-Check Tests
- * These tests validate the token-check logic executed when the App module is loaded.
- * We set up mocks (using vi.doMock) for the store, httpService, and authActions before requiring App.
- */
 describe('App Initialization Token Checks', () => {
-  let dispatchSpy;
-  let setjwtMock;
-  let logoutUser;
-  let setCurrentUser;
-  let config;
+  let dispatchSpy, setjwtMock, logoutUser, setCurrentUser, config;
 
   beforeEach(() => {
-    // Clear localStorage and create a dispatch spy.
     localStorage.clear();
     dispatchSpy = vi.fn();
 
-    // --- Mock the store ---
-    // Override the store so that we can inspect dispatch calls.
+    // Mock store
     vi.doMock('../../store', () => ({
       __esModule: true,
       default: () => ({
         persistor: {
           subscribe: vi.fn(),
           dispatch: vi.fn(),
-          getState: vi.fn(() => ({ bootstrapped: true })), // Ensure bootstrapping state is true.
-          persist: vi.fn(),
-          flush: vi.fn(),
+          getState:  vi.fn(() => ({ bootstrapped: true })),
+          persist:   vi.fn(),
+          flush:     vi.fn(),
         },
         store: { dispatch: dispatchSpy },
       }),
     }));
 
-    // --- Mock httpService ---
-    // We want to check that setjwt is called when a token is valid.
+    // Mock httpService
     setjwtMock = vi.fn();
     vi.doMock('../../services/httpService', () => ({
       __esModule: true,
       default: { setjwt: setjwtMock },
     }));
 
-    // --- Mock authActions ---
-    // We mock the logoutUser and setCurrentUser action creators.
-    const actions = {
-      logoutUser: vi.fn(() => ({ type: 'LOGOUT_USER' })),
-      setCurrentUser: vi.fn(user => ({ type: 'SET_CURRENT_USER', payload: user })),
-    };
-    vi.doMock('../../actions/authActions', () => actions);
-    logoutUser = actions.logoutUser;
-    setCurrentUser = actions.setCurrentUser;
-
-    // --- Load configuration ---
-    // Import configuration (e.g., tokenKey) needed for the tests.
+    // Grab our already-mocked authActions
+    // eslint-disable-next-line global-require
+    ({ logoutUser, setCurrentUser } = require('../../actions/authActions'));
+    // Load config
     // eslint-disable-next-line global-require
     config = require('../../config.json');
   });
 
-  // Test 1: Expired Token
-  it('should log out the user if the token is expired', () => {
-    // Set an "expired" token in localStorage.
-    const { tokenKey } = config; // e.g., "jwtToken"
+  it('should log out the user if the token is expired', async () => {
+    const { tokenKey } = config;
     localStorage.setItem(tokenKey, 'expiredToken');
 
-    // Simulate jwt-decode returning a token expiry that is nearly immediate.
-    const expiredExpiry = Date.now() + 100;
-    vi.doMock('jwt-decode', () => vi.fn(() => ({ expiryTimestamp: expiredExpiry })));
+    // Mock jwt-decode to return an expiry in 100ms
+    vi.doMock('jwt-decode', () => ({
+      __esModule: true,
+      default: () => ({ expiryTimestamp: Date.now() + 100 }),
+    }));
 
-    // Dynamically require App to trigger the module-level token-check logic.
-    // eslint-disable-next-line global-require
-    require('../App');
+    await import('../App.jsx');
 
-    // Assert: The logout action should be dispatched.
     expect(logoutUser).toHaveBeenCalled();
     expect(dispatchSpy).toHaveBeenCalledWith(logoutUser());
     expect(setjwtMock).not.toHaveBeenCalled();
   });
 
-  // Test 2: Valid Token
-  it('should set current user and call setjwt if token is valid', () => {
-    // Place a valid token in localStorage.
+  it('should set current user and call setjwt if token is valid', async () => {
     const { tokenKey } = config;
     localStorage.setItem(tokenKey, 'validToken');
 
-    // Simulate jwt-decode returning a far-future expiry (valid token).
-    const validExpiry = Date.now() + 86400 * 3 * 1000; // 3 days in the future
+    const validExpiry = Date.now() + 86400 * 3 * 1000;
     const decodedPayload = { expiryTimestamp: validExpiry, name: 'Test User' };
-    vi.doMock('jwt-decode', () => vi.fn(() => decodedPayload));
 
-    // Dynamically require App to trigger token-check logic.
-    // eslint-disable-next-line global-require
-    require('../App');
+    vi.doMock('jwt-decode', () => ({
+      __esModule: true,
+      default: () => decodedPayload,
+    }));
 
-    // Assert: The setCurrentUser action should be dispatched and setjwt should be called.
+    await import('../App.jsx');
+
     expect(setCurrentUser).toHaveBeenCalledWith(decodedPayload);
     expect(dispatchSpy).toHaveBeenCalledWith(setCurrentUser(decodedPayload));
     expect(setjwtMock).toHaveBeenCalledWith('validToken');
   });
 
-  // Test 3: No Token
-  it('should not dispatch any token actions if no token exists in localStorage', () => {
-    // Ensure no token is stored.
+  it('should not dispatch any token actions if no token exists in localStorage', async () => {
     const { tokenKey } = config;
     localStorage.removeItem(tokenKey);
 
-    // Optionally, simulate jwt-decode throwing an error if called.
-    vi.doMock('jwt-decode', () =>
-      vi.fn(() => {
-        throw new Error('jwt-decode should not be called');
-      }),
-    );
+    vi.doMock('jwt-decode', () => ({
+      __esModule: true,
+      default: () => { throw new Error('should not be called'); },
+    }));
 
-    // Dynamically require App.
-    // eslint-disable-next-line global-require
-    require('../App');
+    await import('../App.jsx');
 
-    // Assert: No token-related actions should be dispatched.
     expect(logoutUser).not.toHaveBeenCalled();
     expect(setCurrentUser).not.toHaveBeenCalled();
     expect(setjwtMock).not.toHaveBeenCalled();
   });
 });
 
-/**
- * Part 2: Rendering Tests (UI-Level Tests)
- * These tests verify that the App component renders correctly with real (unmocked)
- * modules. We assume that the App component already includes its Provider and PersistGate.
- */
 describe('App Component Rendering', () => {
   let App;
 
-  beforeAll(() => {
-    // Reset modules and unmock modules we want to use in their real form.
+  beforeAll(async () => {
     vi.resetModules();
-    vi.unmock('../../store');
-    vi.unmock('../../services/httpService');
-    vi.unmock('../../actions/authActions');
-    vi.unmock('jwt-decode');
-    localStorage.clear(); // Clear token so module-level logic does not run.
-    // eslint-disable-next-line global-require
-    App = require('../App').default;
+    // we keep authActions mocked so CPHeader always finds its action creators
+    localStorage.clear();
+    const mod = await import('../App.jsx');
+    App = mod.default;
   });
 
-  // Temporarily suppress error boundary warnings during UI rendering tests.
   let consoleErrorSpy;
   beforeEach(() => {
     consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
@@ -181,16 +170,13 @@ describe('App Component Rendering', () => {
     consoleErrorSpy.mockRestore();
   });
 
-  // Test 4: App Renders Without Errors
   it('should render the App component without errors', () => {
     const { container } = render(<App />);
     expect(container).toBeDefined();
   });
 
-  // Test 5:Placeholder Test for UI Messages
   it('should display appropriate UI messages based on authentication state (placeholder)', () => {
-    // eslint-disable-next-line no-unused-vars
-    const { queryByText } = render(<App />);
-    // Placeholder: Depending on authentication state, the UI should either show:
+    render(<App />);
+    // placeholder for future UI assertions
   });
 });

@@ -50,7 +50,7 @@ describe('TaskEditSuggestions', () => {
     store = mockStore(initialState);
     mockDispatch = vi.fn();
     vi.spyOn(reduxHooks, 'useDispatch').mockReturnValue(mockDispatch);
-    jest
+    vi
       .spyOn(reduxHooks, 'useSelector')
       .mockImplementation(selector => selector(store.getState()));
   });
@@ -134,7 +134,7 @@ describe('TaskEditSuggestions loading', () => {
     store = mockStore(initialState);
     mockDispatch = vi.fn();
     vi.spyOn(reduxHooks, 'useDispatch').mockReturnValue(mockDispatch);
-    jest
+    vi
       .spyOn(reduxHooks, 'useSelector')
       .mockImplementation(selector => selector(store.getState()));
   });

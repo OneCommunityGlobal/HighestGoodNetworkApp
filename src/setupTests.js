@@ -1,95 +1,97 @@
-/** Used in jest.config.js */
+// Used in vitest.config.js or test setup
 import '@testing-library/jest-dom';
+import { vi } from 'vitest';
 
 // Mock axios with proper error handling
-jest.mock('axios', () => {
-  // Create a mock implementation for axios
+vi.mock('axios', () => {
   const mockAxios = {
     defaults: {
       headers: {
         common: {},
-        post: { 'Content-Type': 'application/json' }
-      }
+        post: { 'Content-Type': 'application/json' },
+      },
     },
     interceptors: {
-      request: { use: jest.fn(), eject: jest.fn() },
-      response: { use: jest.fn(), eject: jest.fn() }
+      request: { use: vi.fn(), eject: vi.fn() },
+      response: { use: vi.fn(), eject: vi.fn() },
     },
-    create: jest.fn().mockReturnThis()
+    create: vi.fn().mockReturnThis(),
   };
-  
-  // Create enhanced methods with error handling
-  ['get', 'post', 'put', 'delete', 'patch'].forEach(method => {
-    mockAxios[method] = jest.fn().mockImplementation(() => {
+
+  ['get', 'post', 'put', 'delete', 'patch'].forEach((method) => {
+    mockAxios[method] = vi.fn().mockImplementation(() => {
       return Promise.resolve({
         data: {},
-        status: 200
-      }).catch(err => {
+        status: 200,
+      }).catch((err) => {
         if (!err.response) {
-          err.response = { 
-            status: 500, 
-            data: { message: err.message || 'Network Error' } 
+          err.response = {
+            status: 500,
+            data: { message: err.message || 'Network Error' },
           };
         }
         return Promise.reject(err);
       });
     });
   });
-  
-  return mockAxios;
+
+  return { default: mockAxios };
 });
 
 // Mock react-toastify
-jest.mock('react-toastify', () => {
+vi.mock('react-toastify', () => {
   return {
     toast: {
-      success: jest.fn(),
-      error: jest.fn(),
-      info: jest.fn(),
-      warn: jest.fn(),
-      dark: jest.fn(),
-      configure: jest.fn(),
+      success: vi.fn(),
+      error: vi.fn(),
+      info: vi.fn(),
+      warn: vi.fn(),
+      dark: vi.fn(),
+      configure: vi.fn(),
     },
-    ToastContainer: jest.fn(() => null),
+    ToastContainer: vi.fn(() => null),
   };
 });
 
-jest.mock('html2canvas', () => ({
+// Mock html2canvas
+vi.mock('html2canvas', () => ({
   default: () => Promise.resolve({}),
 }));
-jest.mock('jspdf', () => ({
-  jsPDF: jest.fn().mockImplementation(() => ({
-    addPage: jest.fn(),
-    save: jest.fn(),
+
+// Mock jspdf
+vi.mock('jspdf', () => ({
+  jsPDF: vi.fn().mockImplementation(() => ({
+    addPage: vi.fn(),
+    save: vi.fn(),
   })),
 }));
 
 // Mock d3
-jest.mock('d3', () => ({
-  select: jest.fn().mockReturnThis(),
-  scaleOrdinal: jest.fn().mockReturnValue({
-    range: jest.fn(),
+vi.mock('d3', () => ({
+  select: vi.fn().mockReturnThis(),
+  scaleOrdinal: vi.fn().mockReturnValue({
+    range: vi.fn(),
   }),
-  pie: jest.fn().mockReturnValue({
-    value: jest.fn(),
+  pie: vi.fn().mockReturnValue({
+    value: vi.fn(),
   }),
-  arc: jest.fn().mockReturnThis(),
-  axisBottom: jest.fn(),
-  axisLeft: jest.fn(),
-  scaleTime: jest.fn().mockReturnValue({
-    domain: jest.fn().mockReturnThis(),
-    range: jest.fn(),
+  arc: vi.fn().mockReturnThis(),
+  axisBottom: vi.fn(),
+  axisLeft: vi.fn(),
+  scaleTime: vi.fn().mockReturnValue({
+    domain: vi.fn().mockReturnThis(),
+    range: vi.fn(),
   }),
-  line: jest.fn().mockReturnThis(),
-  timeFormat: jest.fn().mockReturnValue('Formatted Date'),
-  format: jest.fn(),
+  line: vi.fn().mockReturnThis(),
+  timeFormat: vi.fn().mockReturnValue('Formatted Date'),
+  format: vi.fn(),
 }));
 
 // Suppress React warnings
 let originalConsoleError;
 beforeAll(() => {
   originalConsoleError = console.error;
-  jest.spyOn(console, 'error').mockImplementation((msg, ...args) => {
+  vi.spyOn(console, 'error').mockImplementation((msg, ...args) => {
     if (
       typeof msg === 'string' &&
       (msg.includes('ReactDOM.render') ||
