@@ -14,7 +14,6 @@ function Announcements({ title, email: initialEmail }) {
   const [emailContent, setEmailContent] = useState('');
   const [headerContent, setHeaderContent] = useState('');
   const [showEditor, setShowEditor] = useState(true);
-  const [isFileUploaded, setIsFileUploaded] = useState(false);
 
   useEffect(() => {
     setShowEditor(false);
@@ -92,18 +91,17 @@ function Announcements({ title, email: initialEmail }) {
     setHeaderContent('');
   };
 
-  const convertImageToBase64 = (file, callback) => {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      callback(reader.result);
-    };
-    reader.readAsDataURL(file);
-  };
+  // const convertImageToBase64 = (file, callback) => {
+  //   const reader = new FileReader();
+  //   reader.onloadend = () => {
+  //     callback(reader.result);
+  //   };
+  //   reader.readAsDataURL(file);
+  // };
 
   const addImageToEmailContent = e => {
     const file = e.target.files[0];
     if (!file) return;
-    setIsFileUploaded(true);
     const reader = new FileReader();
     reader.onloadend = () => {
       const imageTag = `<img src="${reader.result}" alt="Header Image" style="width: 100%; max-width: 100%; height: auto;">`;
