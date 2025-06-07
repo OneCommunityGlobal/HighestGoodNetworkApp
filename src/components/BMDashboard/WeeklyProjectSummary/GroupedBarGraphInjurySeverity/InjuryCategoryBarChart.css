@@ -1,0 +1,17 @@
+.injury-chart-container {
+  padding: 1rem;
+}
+
+.injury-chart-title {
+  color: #666666;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.injury-chart-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
