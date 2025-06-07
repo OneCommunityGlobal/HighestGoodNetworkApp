@@ -10,7 +10,13 @@ import { findProjectMembers } from 'actions/projectMembers';
 
 // Mock member data - Added profilePic property
 const allMembers = [
-  { firstName: 'aaa', isActive: true, lastName: 'volunteer', _id: 'aaa123', profilePic: 'pic1.jpg' },
+  {
+    firstName: 'aaa',
+    isActive: true,
+    lastName: 'volunteer',
+    _id: 'aaa123',
+    profilePic: 'pic1.jpg',
+  },
   { firstName: 'bbb', isActive: true, lastName: 'test', _id: 'bbb456', profilePic: 'pic2.jpg' },
   { firstName: 'ccc', isActive: false, lastName: 'manager', _id: 'ccc789', profilePic: 'pic3.jpg' },
   { firstName: 'aaa', isActive: true, lastName: 'owner', _id: 'aaa067', profilePic: 'pic4.jpg' },
@@ -41,9 +47,9 @@ const mockFoundProjectMembers = searchQuery => {
 
 const renderTagsSearchComponent = props => {
   const store = mockStore({
-    projectMembers: { 
+    projectMembers: {
       foundProjectMembers: mockFoundProjectMembers(''),
-      members: allMembers // Add members to the store state
+      members: allMembers, // Add members to the store state
     },
   });
 
@@ -123,8 +129,8 @@ describe('TagsSearch Component', () => {
     });
 
     await waitFor(() => {
-      expect(addResources).toHaveBeenCalledWith('aaa123', 'aaa', 'volunteer', 'pic1.jpg');
-      expect(addResources).toHaveBeenCalledWith('aaa067', 'aaa', 'owner', 'pic4.jpg');
+      expect(addResources).toHaveBeenCalledWith('aaa123', 'aaa', 'volunteer');
+      expect(addResources).toHaveBeenCalledWith('aaa067', 'aaa', 'owner');
     });
   });
 
