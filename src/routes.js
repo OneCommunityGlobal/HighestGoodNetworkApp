@@ -83,6 +83,8 @@ import CreateNewTeam from './components/BMDashboard/Team/CreateNewTeam/CreateNew
 
 import BMTimeLogger from './components/BMDashboard/BMTimeLogger/BMTimeLogger';
 import Issue from './components/BMDashboard/Issue/Issue';
+import InjurySeverityChart from './components/BMDashboard/Injuries/InjurySeverityChart';
+
 
 
 // Community Portal
@@ -467,6 +469,12 @@ export default (
           fallback
           exact
           component={WeeklyProjectSummary}
+        />
+         <BMProtectedRoute
+          path="/bmdashboard/injuries-severity"
+          fallback
+          exact
+          component={InjurySeverityChart}
         />
         <BMProtectedRoute path="/bmdashboard/timelog/" component={BMTimeLogger} />
 
