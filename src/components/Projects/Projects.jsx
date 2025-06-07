@@ -248,6 +248,7 @@ const Projects = function(props) {
   };
 
   return (
+
     <div className={darkMode ? 'bg-oxford-blue text-light' : ''}>
       <div className={`container py-3 ${darkMode ? 'bg-yinmn-blue-light text-light' : ''}`}>
         {fetching || !fetched ? <Loading align="center" /> : null}
