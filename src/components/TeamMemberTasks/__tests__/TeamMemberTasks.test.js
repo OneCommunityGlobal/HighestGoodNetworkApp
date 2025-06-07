@@ -221,9 +221,7 @@ describe('TeamMemberTasks component', () => {
         </MemoryRouter>
       </Provider>,
     );
-    const skeletonLoadingElement = container.querySelector(
-      '.skeleton-loading-team-member-tasks-row',
-    );
+    const skeletonLoadingElement = container.querySelector('.skeletonLoadingTeamMemberTasksRow');
     expect(skeletonLoadingElement).toBeInTheDocument();
   });
   it('check if the skeleton loading html elements are not shown when isLoading is false', () => {

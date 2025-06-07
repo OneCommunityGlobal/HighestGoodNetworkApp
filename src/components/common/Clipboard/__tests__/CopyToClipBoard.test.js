@@ -46,7 +46,7 @@ describe('CopyToClipboard', () => {
     );
 
     // Select the element using its class
-    const copyIcon = document.querySelector('.copy-to-clipboard');
+    const copyIcon = document.querySelector('.copyToClipboard');
 
     // Simulate a click event on the icon
     fireEvent.click(copyIcon);
