@@ -8,7 +8,7 @@ import thunk from 'redux-thunk';
 import TagsSearch from '../TagsSearch';
 import { findProjectMembers } from 'actions/projectMembers';
 
-// Mock member data - Added profilePic property
+// Mock member data
 const allMembers = [
   {
     firstName: 'aaa',
@@ -27,8 +27,8 @@ const mockStore = configureMockStore(middlewares);
 
 // Mock functions for resource management
 const mockFunctions = mockResourceItems => {
-  const addResources = jest.fn((userID, firstName, lastName, profilePic) => {
-    mockResourceItems.push({ userID, name: `${firstName} ${lastName}`, profilePic });
+  const addResources = jest.fn((userID, firstName, lastName) => {
+    mockResourceItems.push({ userID, name: `${firstName} ${lastName}` });
   });
 
   const removeResources = jest.fn(userID => {
@@ -79,9 +79,8 @@ describe('TagsSearch Component', () => {
     resourceItems: [],
     addResources,
     removeResource: removeResources,
-    findProjectMembers: jest.fn(), // Mock the Redux action
+    findProjectMembers: mockFoundProjectMembers,
   };
-
   it('renders without crashing', () => {
     renderTagsSearchComponent(sampleProps);
   });
@@ -128,6 +127,7 @@ describe('TagsSearch Component', () => {
       fireEvent.mouseDown(ownerOption);
     });
 
+    // Check if addResources was called with the correct arguments
     await waitFor(() => {
       expect(addResources).toHaveBeenCalledWith('aaa123', 'aaa', 'volunteer');
       expect(addResources).toHaveBeenCalledWith('aaa067', 'aaa', 'owner');
