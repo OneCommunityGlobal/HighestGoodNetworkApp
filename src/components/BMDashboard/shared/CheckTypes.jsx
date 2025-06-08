@@ -1,4 +1,4 @@
-import { fetchInvTypeByType } from 'actions/bmdashboard/invTypeActions';
+import { fetchInvTypeByType } from '~/actions/bmdashboard/invTypeActions';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Card, CardBody, Input, Label, Table, Col, FormGroup } from 'reactstrap';

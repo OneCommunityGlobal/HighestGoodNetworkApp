@@ -1,6 +1,6 @@
 import './Team.css';
-import hasPermission from 'utils/permissions';
-import { boxStyle, boxStyleDark } from 'styles';
+import hasPermission from '~/utils/permissions';
+import { boxStyle, boxStyleDark } from '~/styles';
 import { connect, useSelector } from 'react-redux';
 import { Button } from 'reactstrap';
 import { DELETE } from '../../languages/en/ui';

@@ -9,15 +9,15 @@ import {
   INVENTORY,
   ARCHIVE,
 } from './../../../languages/en/ui';
-import hasPermission from 'utils/permissions';
+import hasPermission from '~/utils/permissions';
 import { connect } from 'react-redux';
-import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faArrowUp, faArrowDown, faSortDown} from '@fortawesome/free-solid-svg-icons';
 import { Dropdown,DropdownButton, Divider } from 'react-bootstrap';
 
 // import DropdownButton from 'react-bootstrap/DropdownButton';
-import { boxStyle } from 'styles';
+import { boxStyle } from '~/styles';
 import { Button } from 'reactstrap';
 
 

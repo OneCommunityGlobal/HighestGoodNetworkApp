@@ -2,7 +2,7 @@ import 'leaflet/dist/leaflet.css';
 import { useEffect, useRef } from 'react';
 import { CircleMarker, Popup } from 'react-leaflet';
 import { Button } from 'reactstrap';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import './TeamLocations.css';
 
 function MarkerPopup({

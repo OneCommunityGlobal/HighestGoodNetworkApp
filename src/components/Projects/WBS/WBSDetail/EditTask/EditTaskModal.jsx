@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { connect } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
-import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from 'languages/en/messages';
+import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from '~/languages/en/messages';
 import DayPickerInput from 'react-day-picker/DayPickerInput';
 import 'react-day-picker/lib/style.css';
 import dateFnsFormat from 'date-fns/format';
@@ -10,12 +10,12 @@ import dateFnsParse from 'date-fns/parse';
 import parseISO from 'date-fns/parseISO';
 import { isValid } from 'date-fns';
 import { utcToZonedTime } from 'date-fns-tz';
-import { updateTask } from 'actions/task';
+import { updateTask } from '~/actions/task';
 import { Editor } from '@tinymce/tinymce-react';
-import hasPermission from 'utils/permissions';
+import hasPermission from '~/utils/permissions';
 import axios from 'axios';
-import { ENDPOINTS } from 'utils/URL';
-import { boxStyle, boxStyleDark } from 'styles';
+import { ENDPOINTS } from '~/utils/URL';
+import { boxStyle, boxStyleDark } from '~/styles';
 import { toast } from 'react-toastify';
 import UserSearch from './UserSearch';
 import UserTag from './UserTag';
@@ -79,7 +79,7 @@ function EditTaskModal(props) {
   const EditorInit = {
     license_key: 'gpl',
     menubar: false,
-    plugins: 'advlist autolink autoresize lists link charmap table paste help',
+    plugins: 'advlist autolink autoresize lists link charmap table help',
     toolbar:
       'bold italic  underline numlist   |  removeformat link bullist  outdent indent |\
                         styleselect fontsizeselect | table| strikethrough forecolor backcolor |\

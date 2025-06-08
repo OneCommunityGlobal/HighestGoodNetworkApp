@@ -11,9 +11,9 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
 
-import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
-import { toggleUserBio } from 'actions/weeklySummariesReport';
-import RoleInfoModal from 'components/UserProfile/EditableModal/RoleInfoModal';
+import { assignStarDotColors, showStar } from '~/utils/leaderboardPermissions';
+import { toggleUserBio } from '~/actions/weeklySummariesReport';
+import RoleInfoModal from '~/components/UserProfile/EditableModal/RoleInfoModal';
 import {
   Input,
   ListGroup,
@@ -31,10 +31,10 @@ import {
 } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMailBulk } from '@fortawesome/free-solid-svg-icons';
-import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
+import CopyToClipboard from '~/components/common/Clipboard/CopyToClipboard';
 import styles from './WeeklySummariesReport.module.scss';
 import hasPermission from '../../utils/permissions';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 import GoogleDocIcon from '../common/GoogleDocIcon';
 import { cantUpdateDevAdminDetails } from '../../utils/permissions';

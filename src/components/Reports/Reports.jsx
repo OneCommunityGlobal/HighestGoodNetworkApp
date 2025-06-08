@@ -4,9 +4,9 @@
 import { Component } from 'react';
 import { connect } from 'react-redux';
 import { Container, Button } from 'reactstrap';
-import { boxStyle, boxStyleDark } from 'styles';
-import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
-import { searchWithAccent } from 'utils/search';
+import { boxStyle, boxStyleDark } from '~/styles';
+import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
+import { searchWithAccent } from '~/utils/search';
 import moment from 'moment-timezone';
 import { fetchAllProjects } from '../../actions/projects';
 import { getAllUserTeams } from '../../actions/allTeamsAction';
@@ -121,12 +121,14 @@ class ReportsPage extends Component {
       userProfile => userProfile._id,
     );
 
-    const timeEntriesHours = await this.props.getUsersTotalHoursForSpecifiedPeriod(
+    let timeEntriesHours = await this.props.getUsersTotalHoursForSpecifiedPeriod(
       userIds,
       new Date(DATE_PICKER_MIN_DATE),
       new Date(),
     );
-
+    if (!Array.isArray(timeEntriesHours)) {
+      timeEntriesHours = [];
+    }
     const userProfilesMappedWithHours = timeEntriesHours.map(entry => ({
       id: entry.userId,
       totalHours: Math.round(entry.totalHours * 10) / 10,

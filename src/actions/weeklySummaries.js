@@ -1,6 +1,6 @@
 import axios from 'axios';
 import * as actions from '../constants/weeklySummaries';
-import { ENDPOINTS } from '../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import { getUserProfileActionCreator } from './userProfile';
 
 /**

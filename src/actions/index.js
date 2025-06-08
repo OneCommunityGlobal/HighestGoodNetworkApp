@@ -1,7 +1,7 @@
 import axios from 'axios';
 import httpService from '../services/httpService';
-import { ApiEndpoint } from '../utils/URL';
-import { ENDPOINTS } from '../utils/URL';
+import { ApiEndpoint } from '~/utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 
 const APIEndpoint = ApiEndpoint;
 

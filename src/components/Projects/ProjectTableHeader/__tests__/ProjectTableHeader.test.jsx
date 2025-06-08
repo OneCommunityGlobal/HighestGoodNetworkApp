@@ -9,12 +9,12 @@ import { userProfileMock } from '../../../../__tests__/mockStates'
 const mockStore = configureMockStore([thunk])
 
 // Mock the hasPermission function
-jest.mock('utils/permissions', () => ({
-  hasPermission: jest.fn((a) => true),
+vi.mock('utils/permissions', () => ({
+  hasPermission: vi.fn((a) => true),
 }));
 
 // Mock the EditableInfoModal component
-jest.mock('components/UserProfile/EditableModal/EditableInfoModal', () => () => (
+vi.mock('components/UserProfile/EditableModal/EditableInfoModal', () => () => (
   <div>Mock EditableInfoModal</div>
 ));
 
@@ -51,7 +51,7 @@ describe('ProjectTableHeader Component', () => {
   const sampleProps = {
     role: 'Owner',
   };
-  const hasPermission = jest.fn((a) => true)
+  const hasPermission = vi.fn((a) => true)
   sampleProps.hasPermission = hasPermission;
 
   // Test case to check if component renders without crashing
@@ -72,7 +72,7 @@ describe('ProjectTableHeader Component', () => {
         }
       }
     };
-    const hasPermission = jest.fn((a) => true)
+    const hasPermission = vi.fn((a) => true)
     stateWithDeletePermission.hasPermission = hasPermission;
     const { getByText } = renderProjectTableHeader(stateWithDeletePermission);
     expect(getByText('Archive')).toBeInTheDocument();
@@ -87,7 +87,7 @@ describe('ProjectTableHeader Component', () => {
         role: 'Volunteer',
       }
     };
-    const hasPermission = jest.fn((a) => false)
+    const hasPermission = vi.fn((a) => false)
     stateWithoutDeletePermission.hasPermission = hasPermission;
     const { queryByText } = renderProjectTableHeader(stateWithoutDeletePermission);
     expect(queryByText('Delete')).not.toBeInTheDocument();

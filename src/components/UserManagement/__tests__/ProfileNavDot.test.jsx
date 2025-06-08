@@ -24,7 +24,7 @@ describe('ProfileNavDot Component Tests', () => {
   });
 
   test('opens user profile in a new tab when Command/Control key is pressed', () => {
-    const openSpy = jest.spyOn(window, 'open').mockImplementation(() => null);
+    const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
     const history = createMemoryHistory();
     const userId = '123';
 
@@ -56,7 +56,7 @@ describe('ProfileNavDot Component Tests', () => {
   });
   test('clicking on non-interactive parts does not trigger navigation', () => {
     const history = createMemoryHistory();
-    const openSpy = jest.spyOn(window, 'open').mockImplementation(() => null);
+    const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
 
     const { container } = render(
       <Router history={history}>
@@ -76,7 +76,7 @@ describe('ProfileNavDot Component Tests', () => {
   });
 
   test('handles left and right mouse button clicks', () => {
-    const openSpy = jest.spyOn(window, 'open').mockImplementation(() => null);
+    const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
     const history = createMemoryHistory();
     const userId = '123';
 
@@ -100,7 +100,7 @@ describe('ProfileNavDot Component Tests', () => {
 
   test('does not navigate or open tab if userId is undefined', () => {
     const history = createMemoryHistory();
-    const openSpy = jest.spyOn(window, 'open').mockImplementation(() => null);
+    const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
   
     const { getByTitle } = render(
       <Router history={history}>
@@ -120,7 +120,7 @@ describe('ProfileNavDot Component Tests', () => {
 
   test('does not navigate or open a new tab if userId is an empty string', () => {
     const history = createMemoryHistory();
-    const openSpy = jest.spyOn(window, 'open').mockImplementation(() => null);
+    const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
   
     const { getByTitle } = render(
       <Router history={history}>

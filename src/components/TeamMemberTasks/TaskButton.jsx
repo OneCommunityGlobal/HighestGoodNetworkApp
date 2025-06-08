@@ -1,7 +1,7 @@
-import { useDispatch } from 'react-redux';
-import { fetchAllTasks, updateTask } from '../../actions/task';
-import { getAllUserProfile } from '../../actions/userManagement';
+import React from 'react';
+import { getAllUserProfile } from '~/actions/userManagement';
 import { deleteSelectedTask } from './reducer';
+import { fetchAllTasks, updateTask } from '~/actions/task';
 
 import './style.css';
 

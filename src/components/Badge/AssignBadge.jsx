@@ -13,7 +13,7 @@ import {
   Table,
 } from 'reactstrap';
 import { connect, useSelector } from 'react-redux';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import AssignBadgePopup from './AssignBadgePopup';
 import {
   getFirstName,

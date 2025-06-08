@@ -12,7 +12,7 @@ import {
   Input,
 } from 'reactstrap';
 import ReactHtmlParser from 'react-html-parser';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import '../../Header/DarkMode.css';
 
 // eslint-disable-next-line react/function-component-definition

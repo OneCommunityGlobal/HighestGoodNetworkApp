@@ -10,18 +10,18 @@ import { setWBSStart, setWBS } from '../../../actions/wbs';
 
 
 
-jest.mock('../../../actions/wbs', () => ({
-  addNewWBS: jest.fn(),
-  fetchAllWBS: jest.fn(),
-  setWBSStart: jest.fn(() => ({ type: 'SET_WBS_START' })),
-  setWBS: jest.fn(data => ({ type: 'SET_WBS', payload: data })),
-  setWBSError: jest.fn(err => ({ type: 'SET_WBS_ERROR', payload: err })),
+vi.mock('../../../actions/wbs', () => ({
+  addNewWBS: vi.fn(),
+  fetchAllWBS: vi.fn(),
+  setWBSStart: vi.fn(() => ({ type: 'SET_WBS_START' })),
+  setWBS: vi.fn(data => ({ type: 'SET_WBS', payload: data })),
+  setWBSError: vi.fn(err => ({ type: 'SET_WBS_ERROR', payload: err })),
 }));
 
-jest.mock('axios');
-jest.mock('./AddWBS', () => () => <div data-testid="add-wbs">AddWBS Mock</div>);
+vi.mock('axios');
+vi.mock('./AddWBS', () => () => <div data-testid="add-wbs">AddWBS Mock</div>);
 
-jest.mock('./WBSItem/WBSItem', () => ({ index, name }) => (
+vi.mock('./WBSItem/WBSItem', () => ({ index, name }) => (
   <tr data-testid={`wbs-item-${index}`}><td>{index}</td><td>{name}</td><td></td></tr>
 ));
 
@@ -55,7 +55,7 @@ describe('WBS Component', () => {
 
   beforeEach(() => {
     store = mockStore(initialState);
-    store.dispatch = jest.fn();
+    store.dispatch = vi.fn();
   });
 
   const renderComponent = () => {

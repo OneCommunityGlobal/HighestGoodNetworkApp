@@ -5,7 +5,7 @@ import ReactTooltip from 'react-tooltip';
 import DayPickerInput from 'react-day-picker/DayPickerInput';
 import { Editor } from '@tinymce/tinymce-react';
 import dateFnsFormat from 'date-fns/format';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import { useMemo } from 'react';
 import { addNewTask } from '../../../../../actions/task';
 import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from '../../../../../languages/en/messages';
@@ -23,7 +23,7 @@ import { fetchAllMembers } from 'actions/projectMembers';
 const TINY_MCE_INIT_OPTIONS = {
   license_key: 'gpl',
   menubar: false,
-  plugins: 'advlist autolink autoresize lists link charmap table paste help',
+  plugins: 'advlist autolink autoresize lists link charmap table help',
   toolbar:
     'bold italic  underline numlist   |  removeformat link bullist  outdent indent |\
                     styleselect fontsizeselect | table| strikethrough forecolor backcolor |\

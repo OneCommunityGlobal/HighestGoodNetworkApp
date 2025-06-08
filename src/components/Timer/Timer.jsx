@@ -17,7 +17,7 @@ import cs from 'classnames';
 import { connect } from 'react-redux';
 import css from './Timer.module.css';
 import '../Header/DarkMode.css';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import config from '../../config.json';
 import TimeEntryForm from '../Timelog/TimeEntryForm';
 import Countdown from './Countdown';

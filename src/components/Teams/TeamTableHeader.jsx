@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React from 'react';
-import hasPermission from 'utils/permissions';
+import hasPermission from '~/utils/permissions';
 import { connect } from 'react-redux';
 import { TEAM_NAME, ACTIVE, MEMBERS } from '../../languages/en/ui';
 
@@ -28,7 +28,7 @@ export const TeamTableHeader = React.memo(
         case 'descending':
           return '↓';
         default:
-          return '⇵'; // Default icon or whatever you prefer
+          return '⇵';
       }
     };
 
@@ -53,7 +53,9 @@ export const TeamTableHeader = React.memo(
         <th scope="col" id="teams__members">
           {MEMBERS}
         </th>
-        {(canDeleteTeam || canPutTeam) && <th scope="col" id="teams__delete" />}
+        {(canDeleteTeam || canPutTeam) && (
+          <th scope="col" id="teams__delete" data-testid="teams__delete" />
+        )}
       </tr>
     );
   },

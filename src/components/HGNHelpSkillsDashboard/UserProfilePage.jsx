@@ -24,7 +24,7 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from 'recharts';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 
 // Sample data for skills
 const mockSkillsData = {

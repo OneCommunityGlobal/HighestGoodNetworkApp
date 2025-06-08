@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { getAllUserProfile } from '../../actions/userManagement';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import userTableDataPermissions from '../../utils/userTableDataPermissions';
 import {
   ACTIVE,

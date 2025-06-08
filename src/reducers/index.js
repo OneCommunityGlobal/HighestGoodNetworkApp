@@ -1,5 +1,5 @@
-import { teamMemberTasksReducer } from 'components/TeamMemberTasks/reducer';
-import { taskEditSuggestionsReducer } from 'components/TaskEditSuggestions/reducer';
+import { teamMemberTasksReducer } from '~/components/TeamMemberTasks/reducer';
+import { taskEditSuggestionsReducer } from '~/components/TaskEditSuggestions/reducer';
 import { userProfileByIdReducer, userTaskByIdReducer } from './userProfileByIdReducer';
 import { authReducer } from './authReducer';
 import { allUserProfilesBasicInfoReducer } from './allUserProfilesBasicInfoReducer';

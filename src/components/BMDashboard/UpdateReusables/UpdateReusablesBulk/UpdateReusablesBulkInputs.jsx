@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import Select from 'react-select';
-import { fetchBMProjects } from 'actions/bmdashboard/projectActions';
+import { fetchBMProjects } from '~/actions/bmdashboard/projectActions';
 
 function UpdateReusablesBulkInputs({ date, setDate, project, setProject }) {
   const dispatch = useDispatch();

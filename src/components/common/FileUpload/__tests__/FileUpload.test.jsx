@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
+import { vi } from 'vitest'
 import FileUpload from '../FileUpload';
 
 describe('FileUpload Component', () => {
@@ -17,7 +17,7 @@ describe('FileUpload Component', () => {
   });
 
   it('calls onUpload with error if uploaded file type is invalid', () => {
-    const onUploadMock = jest.fn();
+    const onUploadMock = vi.fn();
     const file = new File(['dummy content'], 'dummy.jpeg', { type: 'image/jpeg' });
 
     const { container } = render(
@@ -31,7 +31,7 @@ describe('FileUpload Component', () => {
   });
 
   it('calls onUpload with error if file exceeds max size', () => {
-    const onUploadMock = jest.fn();
+    const onUploadMock = vi.fn();
     const file = new File(['a'.repeat(1025)], 'dummy.png', { type: 'image/png' });
 
     const { container } = render(
@@ -49,7 +49,7 @@ describe('FileUpload Component', () => {
   });
 
   it('calls onUpload prop with correct arguments', () => {
-    const onUploadMock = jest.fn();
+    const onUploadMock = vi.fn();
     const file = new File(['dummy content'], 'dummy.png', { type: 'image/png' });
 
     const { container } = render(
@@ -63,7 +63,7 @@ describe('FileUpload Component', () => {
   });
 
   it('calls onUpload with error when no file is selected', () => {
-    const onUploadMock = jest.fn();
+    const onUploadMock = vi.fn();
 
     const { container } = render(<FileUpload name="test-upload" onUpload={onUploadMock} />);
 

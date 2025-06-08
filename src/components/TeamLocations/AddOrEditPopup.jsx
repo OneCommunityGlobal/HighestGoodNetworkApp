@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form } from 'reactstrap';
-import Input from 'components/common/Input';
-import { createLocation, editLocation } from 'services/mapLocationsService';
+import Input from '~/components/common/Input';
+import { createLocation, editLocation } from '~/services/mapLocationsService';
 import axios from 'axios';
-import { ENDPOINTS } from 'utils/URL';
-import { boxStyle, boxStyleDark } from 'styles';
+import { ENDPOINTS } from '~/utils/URL';
+import { boxStyle, boxStyleDark } from '~/styles';
 import '../Header/DarkMode.css';
 import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';

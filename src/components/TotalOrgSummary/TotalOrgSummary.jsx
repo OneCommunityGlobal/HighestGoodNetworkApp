@@ -7,10 +7,10 @@ import 'moment-timezone';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 
-import hasPermission from 'utils/permissions';
+import hasPermission from '~/utils/permissions';
 
 // actions
-import { getTotalOrgSummary } from 'actions/totalOrgSummary';
+import { getTotalOrgSummary } from '~/actions/totalOrgSummary';
 
 import '../Header/DarkMode.css';
 import './TotalOrgSummary.css';

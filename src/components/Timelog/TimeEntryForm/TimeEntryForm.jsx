@@ -23,17 +23,17 @@ import { isEmpty, isEqual } from 'lodash';
 import { Editor } from '@tinymce/tinymce-react';
 import { toast } from 'react-toastify';
 import ReactTooltip from 'react-tooltip';
-import { getUserProfile } from 'actions/userProfile';
+import { getUserProfile } from '~/actions/userProfile';
 import axios from 'axios';
-import hasPermission from 'utils/permissions';
-import { boxStyle, boxStyleDark } from 'styles';
+import hasPermission from '~/utils/permissions';
+import { boxStyle, boxStyleDark } from '~/styles';
 import { useDispatch } from 'react-redux';
 import { postTimeEntry, editTimeEntry, getTimeEntriesForWeek } from '../../../actions/timeEntries';
 import AboutModal from './AboutModal';
 import TangibleInfoModal from './TangibleInfoModal';
 import ReminderModal from './ReminderModal';
 import TimeLogConfirmationModal from './TimeLogConfirmationModal';
-import { ENDPOINTS } from '../../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import '../../Header/DarkMode.css';
 import { updateIndividualTaskTime } from '../../TeamMemberTasks/actions';
 
@@ -93,7 +93,7 @@ function TimeEntryForm(props) {
     license_key: 'gpl',
     menubar: false,
     placeholder: 'Description (10-word minimum) and reference link',
-    plugins: 'advlist autolink autoresize lists link charmap table paste help wordcount',
+    plugins: 'advlist autolink autoresize lists link charmap table help wordcount',
     toolbar:
       // eslint-disable-next-line no-multi-str
       'bold italic underline link removeformat | bullist numlist outdent indent |\
