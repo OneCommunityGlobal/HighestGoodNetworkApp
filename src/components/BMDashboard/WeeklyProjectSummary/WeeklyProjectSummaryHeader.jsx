@@ -9,7 +9,7 @@ import {
 } from '../../../actions/bmdashboard/weeklyProjectSummaryActions';
 import styles from './WeeklyProjectSummary.module.css';
 
-export default function WeeklyProjectSummaryHeader() {
+export default function WeeklyProjectSummaryHeader({ handleSaveAsPDF }) {
   const dispatch = useDispatch();
   const projectFilter = useSelector(state => state.weeklyProjectSummary.projectFilter);
   const dateRangeFilter = useSelector(state => state.weeklyProjectSummary.dateRangeFilter);
@@ -100,7 +100,9 @@ export default function WeeklyProjectSummaryHeader() {
             ))}
           </Input>
 
-          <Button className={`${styles.weeklySummaryShareBtn}`}>Share PDF</Button>
+          <Button className={`${styles.weeklySummaryShareBtn}`} onClick={handleSaveAsPDF}>
+            Share PDF
+          </Button>
         </div>
       </header>
     </div>

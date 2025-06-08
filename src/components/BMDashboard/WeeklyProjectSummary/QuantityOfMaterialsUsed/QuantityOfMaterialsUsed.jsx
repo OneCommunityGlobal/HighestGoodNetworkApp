@@ -14,6 +14,7 @@ import {
   Legend,
   LineElement,
   PointElement,
+  LineController,
 } from 'chart.js';
 import { useSelector } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
@@ -30,6 +31,7 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
+  LineController,
 );
 
 const colorPalette = [

@@ -9,6 +9,9 @@ import SummaryBar from '../SummaryBar/SummaryBar';
 import './Dashboard.css';
 import '../../App.css';
 import TimeOffRequestDetailModal from './TimeOffRequestDetailModal';
+
+import FeedbackModal from '../FeedbackModal/FeedbackModal';
+
 import { cantUpdateDevAdminDetails } from 'utils/permissions';
 import {
   DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
@@ -18,14 +21,17 @@ import {
 import { useDispatch } from 'react-redux';
 import { updateSummaryBarData } from 'actions/dashboardActions';
 
+
 export function Dashboard(props) {
   const [popup, setPopup] = useState(false);
   const [filteredUserTeamIds, setFilteredUserTeamIds] = useState([]);
   const [summaryBarData, setSummaryBarData] = useState(null);
-  const {match, authUser} = props;
+  const { match, authUser } = props;
   const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
   const [viewingUser, setViewingUser] = useState(checkSessionStorage);
-  const [displayUserId, setDisplayUserId] = useState(match.params.userId || viewingUser?.userId || authUser.userid);
+  const [displayUserId, setDisplayUserId] = useState(
+    match.params.userId || viewingUser?.userId || authUser.userid,
+  );
   const isNotAllowedToEdit = cantUpdateDevAdminDetails(viewingUser?.email, authUser.email);
   const darkMode = useSelector(state => state.theme.darkMode);
 
@@ -64,13 +70,14 @@ export function Dashboard(props) {
     };
   }, []);
 
-  useEffect(()=>{
-    console.log(summaryBarData)
-    dispatch(updateSummaryBarData({summaryBarData}));
-  },[summaryBarData])
+  useEffect(() => {
+    console.log(summaryBarData);
+    dispatch(updateSummaryBarData({ summaryBarData }));
+  }, [summaryBarData]);
 
   return (
     <Container fluid className={darkMode ? 'bg-oxford-blue' : ''}>
+      <FeedbackModal />
       <SummaryBar
         displayUserId={displayUserId}
         toggleSubmitForm={toggle}

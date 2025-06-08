@@ -118,6 +118,7 @@ export default function ItemsTable({
               {dynamicColumns.map(({ label }) => (
                 <th key={label}>{label}</th>
               ))}
+              <th>Usage Record</th>
               <th>Updates</th>
               <th>Purchases</th>
             </tr>
@@ -133,6 +134,23 @@ export default function ItemsTable({
                     {dynamicColumns.map(({ label, key }) => (
                       <td key={label}>{getNestedValue(el, key)}</td>
                     ))}
+                    <td className={`${styles.itemsCell}`}>
+                      <button
+                        type="button"
+                        onClick={() => handleEditRecordsClick(el, 'UsageRecord')}
+                        aria-label="Edit Record"
+                      >
+                        <BiPencil />
+                      </button>
+                      <Button
+                        color="primary"
+                        outline
+                        size="sm"
+                        onClick={() => handleViewRecordsClick(el, 'UsageRecord')}
+                      >
+                        View
+                      </Button>
+                    </td>
                     <td className={`${styles.itemsCell}`}>
                       <button
                         type="button"
