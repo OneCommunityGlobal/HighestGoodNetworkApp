@@ -34,7 +34,7 @@ describe('Popup Editor Actions', () => {
     await store.dispatch(actions.fetchAllPopupEditor());
   
     // Wait a tick to allow the .catch to run
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise(resolve => { setImmediate(resolve); });
   
     expect(store.getActions()).toEqual([
       { type: types.FETCH_POPUP_ERROR, err: undefined },
