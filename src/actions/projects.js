@@ -1,7 +1,6 @@
 import axios from 'axios';
 import * as types from '../constants/projects';
 import { ENDPOINTS } from '../utils/URL';
-
 /** *****************************************
  * PLAIN OBJECT ACTIONS
  ****************************************** */

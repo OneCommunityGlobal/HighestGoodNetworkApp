@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Button,
   Modal,
@@ -13,17 +13,19 @@ import {
   Spinner,
 } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 import './style.css';
 import './reviewButton.css';
-import { boxStyle, boxStyleDark } from 'styles';
 import '../Header/DarkMode.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck, faPencilAlt, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
+import { faCheck } from '@fortawesome/free-solid-svg-icons';
+import { faPencilAlt, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
+import { boxStyle, boxStyleDark } from '../../styles';
+import { ApiEndpoint } from '../../utils/URL';
+import hasPermission from '../../utils/permissions';
 import httpService from '../../services/httpService';
-import { ApiEndpoint } from 'utils/URL';
-import hasPermission from 'utils/permissions';
 
-const ReviewButton = ({ user, task, updateTask }) => {
+function ReviewButton({ user, task, updateTask }) {
   const dispatch = useDispatch();
   const darkMode = useSelector(state => state.theme.darkMode);
   const myUserId = useSelector(state => state.auth.user.userid);
@@ -84,7 +86,7 @@ const ReviewButton = ({ user, task, updateTask }) => {
   const toggleInvalidDomainModal = (errorType = null) => {
     if (!invalidDomainModal.isOpen && errorType) {
       let errorMessage =
-        'Nice try, but that link is about as useful as a chocolate teapot! We need a GitHub PR link, Google Doc, Dropbox folder, or One Community webpage.';
+        'Nice try, but that link is about as useful as a chocolate teapot! We need a GitHub PR link, Google Doc, Dropbox folder, Figma design, or One Community webpage.';
 
       if (errorType === 'invalid_dropbox_link') {
         errorMessage =
@@ -105,6 +107,38 @@ const ReviewButton = ({ user, task, updateTask }) => {
     }
   };
 
+  // helper right above the return (or inline if you prefer)
+  const renderUpdateButtonContent = () => {
+    if (editLinkState.isEditing) {
+      return (
+        <>
+          <Spinner size="sm" className="mr-2" /> Updating…
+        </>
+      );
+    }
+
+    if (editLinkState.isSuccess) {
+      return (
+        <>
+          <FontAwesomeIcon icon={faCheck} className="mr-2" /> Updated!
+        </>
+      );
+    }
+
+    return 'Update Link';
+  };
+
+  const validURL = url => {
+    try {
+      if (url === '') return false;
+
+      const pattern = /^(?=.{20,})(?:https?:\/\/)?[\w.-]+\.[a-zA-Z]{2,}(?:\/\S*)?$/;
+      return pattern.test(url);
+    } catch (err) {
+      return false;
+    }
+  };
+
   const handleLink = e => {
     const url = e.target.value;
     setLink(url);
@@ -117,18 +151,6 @@ const ReviewButton = ({ user, task, updateTask }) => {
       }));
     } else {
       setEditLinkState(prev => ({ ...prev, error: null }));
-    }
-  };
-
-  const validURL = url => {
-    try {
-      if (url === '') return false;
-
-      const pattern = /^(?=.{20,})(?:https?:\/\/)?[\w.-]+\.[a-zA-Z]{2,}(?:\/\S*)?$/;
-      return pattern.test(url);
-    } catch (err) {
-      console.log(err);
-      return false;
     }
   };
 
@@ -190,20 +212,14 @@ const ReviewButton = ({ user, task, updateTask }) => {
       }
       return { isValid: false, errorType: 'general_invalid' };
     }
-    
+
     // Generic invalid domain
     return { isValid: false, errorType: 'general_invalid' };
   };
 
   const reviewStatus = useMemo(() => {
-    let status = 'Unsubmitted';
-    for (let resource of task.resources) {
-      if (resource.userID === user.personId) {
-        status = resource.reviewStatus ? resource.reviewStatus : 'Unsubmitted';
-        break;
-      }
-    }
-    return status;
+    const resource = task.resources.find(r => r.userID === user.personId);
+    return resource ? resource.reviewStatus || 'Unsubmitted' : 'Unsubmitted';
   }, [task, user]);
 
   const updReviewStat = newStatus => {
@@ -214,17 +230,17 @@ const ReviewButton = ({ user, task, updateTask }) => {
       return newResource;
     });
     let updatedTask = { ...task, resources: newResources };
-    //Add relatedWorkLinks to existing tasks
+    let taskRelatedWorkLinks = task.relatedWorkLinks;
+    // Add relatedWorkLinks to existing tasks
     if (!Array.isArray(task.relatedWorkLinks)) {
-      task.relatedWorkLinks = [];
+      taskRelatedWorkLinks = [];
     }
 
     if (newStatus === 'Submitted' && link) {
       if (validURL(link)) {
-        updatedTask = { ...updatedTask, relatedWorkLinks: [...task.relatedWorkLinks, link] };
+        updatedTask = { ...updatedTask, relatedWorkLinks: [...taskRelatedWorkLinks, link] };
         setLink('');
       } else {
-        alert('Invalid URL. Please enter a valid URL of at least 20 characters');
         setIsSubmitting(false);
         return;
       }
@@ -254,6 +270,14 @@ const ReviewButton = ({ user, task, updateTask }) => {
     toggleConfirmSubmitModal();
   };
 
+  const sendReviewReq = () => {
+    const data = {};
+    data.myUserId = myUserId;
+    data.name = user.name;
+    data.taskName = task.taskName;
+    httpService.post(`${ApiEndpoint}/tasks/reviewreq/${myUserId}`, data);
+  };
+
   const handleFinalSubmit = () => {
     // Submit the review and link after confirming in the second modal
     updReviewStat('Submitted');
@@ -261,11 +285,12 @@ const ReviewButton = ({ user, task, updateTask }) => {
     sendReviewReq();
   };
 
-  const sendReviewReq = () => {
-    var data = {};
-    data['myUserId'] = myUserId;
-    data['name'] = user.name;
-    data['taskName'] = task.taskName;
+  const sendEditLinkNotification = () => {
+    const data = {};
+    data.myUserId = myUserId;
+    data.name = user.name;
+    data.taskName = task.taskName;
+    data.isLinkUpdate = true;
     httpService.post(`${ApiEndpoint}/tasks/reviewreq/${myUserId}`, data);
   };
 
@@ -320,7 +345,7 @@ const ReviewButton = ({ user, task, updateTask }) => {
           }, 1500);
         })
         .catch(error => {
-          console.error('Error updating link:', error);
+          toast.error('Error updating link:', error);
           setEditLinkState(prev => ({
             ...prev,
             error: 'Failed to update link. Please try again.',
@@ -347,15 +372,6 @@ const ReviewButton = ({ user, task, updateTask }) => {
     }
   };
 
-  const sendEditLinkNotification = () => {
-    var data = {};
-    data['myUserId'] = myUserId;
-    data['name'] = user.name;
-    data['taskName'] = task.taskName;
-    data['isLinkUpdate'] = true;
-    httpService.post(`${ApiEndpoint}/tasks/reviewreq/${myUserId}`, data);
-  };
-
   const handleEditLinkChange = e => {
     // Safely extract the value first
     const newValue = e && e.target && e.target.value !== undefined ? e.target.value : '';
@@ -376,12 +392,47 @@ const ReviewButton = ({ user, task, updateTask }) => {
           Submit for Review
         </Button>
       );
-    } else if (reviewStatus === 'Submitted') {
+    }
+    if (reviewStatus === 'Submitted') {
+      // First check if it's the user's own task
+      if (user.personId === myUserId) {
+        return (
+          <UncontrolledDropdown>
+            <DropdownToggle
+              className="btn--dark-sea-green reviewBtn"
+              caret
+              style={darkMode ? boxStyleDark : boxStyle}
+            >
+              Work Submitted and Awaiting Review
+            </DropdownToggle>
+            <DropdownMenu className={darkMode ? 'bg-space-cadet' : ''}>
+              {task.relatedWorkLinks &&
+                // eslint-disable-next-line no-shadow
+                task.relatedWorkLinks.map(link => (
+                  <DropdownItem
+                    key={link}
+                    href={link}
+                    target="_blank"
+                    className={darkMode ? 'text-light dark-mode-btn' : ''}
+                  >
+                    <FontAwesomeIcon icon={faExternalLinkAlt} /> View Link
+                  </DropdownItem>
+                ))}
+              <DropdownItem
+                onClick={toggleEditLinkModal}
+                className={darkMode ? 'text-light dark-mode-btn' : ''}
+              >
+                <FontAwesomeIcon icon={faPencilAlt} /> Edit Link
+              </DropdownItem>
+            </DropdownMenu>
+          </UncontrolledDropdown>
+        );
+      }
       if (
-        myRole == 'Owner' ||
-        myRole == 'Administrator' ||
-        myRole == 'Mentor' ||
-        myRole == 'Manager' ||
+        myRole === 'Owner' ||
+        myRole === 'Administrator' ||
+        myRole === 'Mentor' ||
+        myRole === 'Manager' ||
         canReview
       ) {
         return (
@@ -395,10 +446,10 @@ const ReviewButton = ({ user, task, updateTask }) => {
             </DropdownToggle>
             <DropdownMenu className={darkMode ? 'bg-space-cadet' : ''}>
               {task.relatedWorkLinks &&
-                task.relatedWorkLinks.map((link, index) => (
+                task.relatedWorkLinks.map(dropLink => (
                   <DropdownItem
-                    key={index}
-                    href={link}
+                    key={dropLink}
+                    href={dropLink}
                     target="_blank"
                     className={darkMode ? 'text-light dark-mode-btn' : ''}
                   >
@@ -433,47 +484,14 @@ const ReviewButton = ({ user, task, updateTask }) => {
             </DropdownMenu>
           </UncontrolledDropdown>
         );
-      } else if (user.personId === myUserId) {
-        return (
-          <UncontrolledDropdown>
-            <DropdownToggle
-              className="btn--dark-sea-green reviewBtn"
-              caret
-              style={darkMode ? boxStyleDark : boxStyle}
-            >
-              Work Submitted and Awaiting Review
-            </DropdownToggle>
-            <DropdownMenu className={darkMode ? 'bg-space-cadet' : ''}>
-              {task.relatedWorkLinks &&
-                task.relatedWorkLinks.map((link, index) => (
-                  <DropdownItem
-                    key={index}
-                    href={link}
-                    target="_blank"
-                    className={darkMode ? 'text-light dark-mode-btn' : ''}
-                  >
-                    <FontAwesomeIcon icon={faExternalLinkAlt} /> View Link
-                  </DropdownItem>
-                ))}
-              <DropdownItem
-                onClick={toggleEditLinkModal}
-                className={darkMode ? 'text-light dark-mode-btn' : ''}
-              >
-                <FontAwesomeIcon icon={faPencilAlt} /> Edit Link
-              </DropdownItem>
-            </DropdownMenu>
-          </UncontrolledDropdown>
-        );
-      } else {
-        return (
-          <Button className="reviewBtn" color="success" disabled>
-            Ready for Review
-          </Button>
-        );
       }
-    } else {
-      return <></>;
+      return (
+        <Button className="reviewBtn" color="success" disabled>
+          Ready for Review
+        </Button>
+      );
     }
+    return null;
   };
 
   return (
@@ -618,18 +636,9 @@ const ReviewButton = ({ user, task, updateTask }) => {
             style={darkMode ? boxStyleDark : boxStyle}
             disabled={editLinkState.isEditing}
           >
-            {editLinkState.isEditing ? (
-              <>
-                <Spinner size="sm" className="mr-2" /> Updating...
-              </>
-            ) : editLinkState.isSuccess ? (
-              <>
-                <FontAwesomeIcon icon={faCheck} className="mr-2" /> Updated!
-              </>
-            ) : (
-              'Update Link'
-            )}
+            {renderUpdateButtonContent()}
           </Button>
+
           <Button
             onClick={toggleEditLinkModal}
             style={darkMode ? boxStyleDark : boxStyle}
@@ -674,6 +683,7 @@ const ReviewButton = ({ user, task, updateTask }) => {
               <li style={{ paddingLeft: '8px', marginBottom: '4px' }}>
                 One Community webpage (onecommunityglobal.org)
               </li>
+              <li style={{ paddingLeft: '8px', marginBottom: '4px' }}>Figma design (figma.com)</li>
             </ul>
           </div>
         </ModalBody>
@@ -691,5 +701,5 @@ const ReviewButton = ({ user, task, updateTask }) => {
       {buttonFormat()}
     </>
   );
-};
+}
 export default ReviewButton;
