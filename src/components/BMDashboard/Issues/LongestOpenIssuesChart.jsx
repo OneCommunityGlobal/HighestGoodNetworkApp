@@ -143,6 +143,7 @@ function IssuesCharts({ bmProjects = [] }) {
 
   return (
     <div className={darkMode ? styles.dark : ''}>
+      <h2>Issue Chart</h2>
       <div className={styles.container}>
         <div className={styles.dateInputs}>
           <div className={styles.inputGroup}>
@@ -201,7 +202,7 @@ function IssuesCharts({ bmProjects = [] }) {
             data={data}
             options={options}
             plugins={[ChartDataLabels]}
-            height={300}
+            height={200}
           />
         ) : (
           <p className={styles.noData}>No issues found.</p>

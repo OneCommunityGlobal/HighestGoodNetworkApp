@@ -2,12 +2,16 @@
   background: #2b3e59;
   color: white;
 }
+.dark h2 {
+  color: white
+}
 .container {
   display: flex;
   gap: 0.5rem;
   margin-bottom: 1rem;
   flex-wrap: wrap;
   align-items: center;
+  padding:1rem;
 }
 
 .inputGroup {
