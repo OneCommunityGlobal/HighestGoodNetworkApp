@@ -202,7 +202,7 @@ function IssuesCharts({ bmProjects = [] }) {
             data={data}
             options={options}
             plugins={[ChartDataLabels]}
-            height={200}
+            height={300}
           />
         ) : (
           <p className={styles.noData}>No issues found.</p>
