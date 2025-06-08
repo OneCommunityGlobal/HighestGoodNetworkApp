@@ -228,6 +228,8 @@ export const ENDPOINTS = {
   BM_TAGS: `${APIEndpoint}/bm/tags`,
   BM_TAG_ADD: `${APIEndpoint}/bm/tags`,
   BM_TAGS_DELETE: `${APIEndpoint}/bm/tags`,
+  BM_COST_BREAKDOWN_BY_PROJECT: projectId =>
+    `${APIEndpoint}/bm/projects/${projectId}/planned-cost-breakdown`,
 
   GET_TIME_OFF_REQUESTS: () => `${APIEndpoint}/getTimeOffRequests`,
   ADD_TIME_OFF_REQUEST: () => `${APIEndpoint}/setTimeOffRequest`,

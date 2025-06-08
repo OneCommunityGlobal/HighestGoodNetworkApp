@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
 import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
+import CostBreakdownByExpenditure from './CostBreakdownByExpenditure/CostBreakdownByExpenditure';
 
 const projectStatusButtons = [
   {
@@ -230,7 +231,24 @@ export default function WeeklyProjectSummary() {
               );
             })}
 
-            <div className="weekly-project-summary-card financial-big">📊 Big Card</div>
+            <div className="weekly-project-summary-card financial-big">
+              <CostBreakdownByExpenditure
+                rawData={[
+                  { name: 'Plumbing', value: 500 },
+                  { name: 'Electrical', value: 650 },
+                  { name: 'Structural', value: 250 },
+                  { name: 'Mechanical', value: 500 },
+                ]}
+                projectOptions={[
+                  { value: 'all', label: 'ALL' },
+                  { value: 'projA', label: 'Project A' },
+                ]}
+                dateOptions={[
+                  { value: 'all', label: 'ALL' },
+                  { value: 'lastMonth', label: 'Last Month' },
+                ]}
+              />
+            </div>
           </>
         ),
       },

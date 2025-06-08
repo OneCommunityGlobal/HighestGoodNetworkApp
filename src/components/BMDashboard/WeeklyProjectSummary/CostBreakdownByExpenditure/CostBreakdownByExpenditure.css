@@ -1,0 +1,93 @@
+.cost-breakdown-wrapper {
+  width: 100%;
+  height: 100%;
+}
+
+.cost-breakdown-chart {
+  width: 100%;
+  height: 350px; 
+  position: relative;
+  
+}
+
+/* .cost-breakdown-center-total {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 16px;
+  font-weight: bold;
+} */
+
+.cost-breakdown-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0;
+}
+
+.cost-breakdown-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.cost-breakdown-dropdowns {
+  display: flex;
+  gap: 1rem;
+}
+
+.planned-cost-dropdown {
+  font-size: 12px;
+}
+
+.planned-cost-dropdown .react-select__control {
+  min-height: 26px !important;
+  height: 26px !important;
+  font-size: 12px !important;
+  padding: 0 4px !important;
+}
+
+.planned-cost-dropdown .react-select__value-container {
+  padding: 0 4px !important;
+}
+
+.planned-cost-dropdown .react-select__single-value {
+  font-size: 12px !important;
+  line-height: 24px !important;
+}
+
+.planned-cost-dropdown .react-select__dropdown-indicator {
+  padding: 2px !important;
+}
+
+.planned-cost-dropdown .react-select__menu {
+  font-size: 12px !important;
+}
+
+.planned-cost-dropdown .react-select__option {
+  padding: 4px 6px !important;
+  font-size: 12px !important;
+  line-height: 1.2 !important;
+}
+
+.planned-cost-dropdown .custom-select__control {
+  min-height: 30px;
+  font-size: 12px;
+}
+
+.dark-mode .planned-cost-dropdown .custom-select__control {
+  background-color: #333;
+  color: #fff;
+  border-color: #666;
+}
+
+.dark-mode .custom-tooltip {
+  background-color: #1e1e1e;
+  color: #eee;
+  border-color: #555;
+}
+
+.cost-breakdown-wrapper.dark-mode .cost-breakdown-title {
+  color: #eee;
+}

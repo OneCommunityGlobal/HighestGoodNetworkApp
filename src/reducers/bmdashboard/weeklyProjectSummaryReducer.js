@@ -2,12 +2,14 @@ import {
   SET_PROJECT_FILTER,
   SET_DATE_RANGE_FILTER,
   SET_COMPARISON_PERIOD_FILTER,
+  GET_COST_BREAKDOWN,
 } from '../../constants/bmdashboard/weeklyProjectSummaryConstants';
 
 const initialState = {
   projectFilter: 'One Community',
   dateRangeFilter: '',
   comparisonPeriodFilter: '',
+  costBreakdown: '',
 };
 
 // eslint-disable-next-line default-param-last, import/prefer-default-export
@@ -30,6 +32,9 @@ export const weeklyProjectSummaryReducer = (state = initialState, action) => {
         ...state,
         comparisonPeriodFilter: action.payload,
       };
+
+    case GET_COST_BREAKDOWN:
+      return { ...state, costBreakdown: action.payload };
 
     default:
       return state;
