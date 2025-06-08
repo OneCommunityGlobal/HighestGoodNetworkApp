@@ -1,181 +1,108 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  PieChart,
-  Pie,
-  Cell,
-  Tooltip,
-  ResponsiveContainer,
-  Text,
-} from 'recharts';
+import PropTypes from 'prop-types';
+import { Doughnut } from 'react-chartjs-2';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+import { Chart, ArcElement } from 'chart.js';
 import {
   getAllProjectsCostBreakdown,
   getProjectCostBreakdown,
   getCostBreakdownByDateRange,
 } from '../../../../../actions/bmdashboard/costBreakdownActions';
+import { fetchBMProjects } from '../../../../../actions/bmdashboard/projectActions';
+import './CostBreakdownChart.css';
 
+Chart.register(ArcElement);
 
-// --- Helper Components ---
-const CustomTooltip = ({ active, payload }) => {
-  if (active && payload && payload.length) {
-    const data = payload[0].payload;
-    return (
-      <div
-        style={{
-          backgroundColor: "white",
-          padding: "8px",
-          border: "1px solid #ccc",
-          borderRadius: "4px",
-          boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-          fontSize: "12px",
-        }}
-      >
-        <p style={{ color: data.fill, fontWeight: "bold", margin: "0 0 4px 0" }}>
-          {data.label}
-        </p>
-        <p style={{ margin: 0 }}>{`Cost: $${data.value.toLocaleString()}`}</p>
-      </div>
-    );
+function CostBreakdownChart({ data, darkMode }) {
+  if (!data || !data.breakdown || data.breakdown.length === 0) {
+    return <div>No breakdown data available</div>;
   }
-  return null;
-};
 
-const CenteredMetric = ({ cx, cy, projectData }) => {
-  if (!projectData) return null;
+  const { projectName, totalCost, breakdown } = data;
 
-  const { projectName, totalCost, percentageChange } = projectData;
+  const colors = ['#8884d8', '#82ca9d', '#ffc658', '#ff7c7c', '#8dd1e1', '#d084d0'];
 
-  return (
-    <>
-      <Text
-        x={cx}
-        y={cy - 15}
-        textAnchor="middle"
-        dominantBaseline="central"
-        fontSize="14"
-        fontWeight="bold"
-        fill="#333"
-      >
-        {projectName}
-      </Text>
-      <Text
-        x={cx}
-        y={cy}
-        textAnchor="middle"
-        dominantBaseline="central"
-        fontSize="12"
-        fontWeight="bold"
-        fill="#333"
-      >
-        Total Cost:
-      </Text>
-      <Text
-        x={cx}
-        y={cy + 15}
-        textAnchor="middle"
-        dominantBaseline="central"
-        fontSize="16"
-        fontWeight="bold"
-        fill="#333"
-      >
-        ${totalCost.toLocaleString()}
-      </Text>
-      {percentageChange && (
-        <Text
-          x={cx}
-          y={cy + 30}
-          textAnchor="middle"
-          dominantBaseline="central"
-          fontSize="10"
-          fill="#666"
-        >
-          {percentageChange}
-        </Text>
-      )}
-    </>
-  );
-};
+  const chartData = {
+    labels: breakdown.map(item => item.category),
+    datasets: [
+      {
+        data: breakdown.map(item => item.amount),
+        backgroundColor: colors.slice(0, breakdown.length),
+        borderWidth: 2,
+        borderColor: '#ffffff',
+      },
+    ],
+  };
 
-const CostBreakdownPieChart = ({ data }) => {
-  if (!data) return null;
+  const options = {
+    plugins: {
+      datalabels: {
+        color: '#fff',
+        font: {
+          size: 10,
+          weight: 'bold',
+        },
+        formatter: value => {
+          return `$${(value / 1000).toFixed(0)}k`;
+        },
+        align: 'center',
+        anchor: 'center',
+      },
+      legend: {
+        display: false,
+      },
+      tooltip: {
+        enabled: false,
+      },
+    },
+    maintainAspectRatio: false,
+    cutout: '60%',
+  };
 
   return (
-    <div style={{ display: "flex", height: "240px", alignItems: "center" }}>
-      {/* Chart Container - Left (20% bigger) */}
-      <div style={{ width: "290px", height: "100%" }}>
-        <ResponsiveContainer width="100%" height="100%">
-          <PieChart>
-            <Pie
-              data={data.breakdown}
-              cx="50%"
-              cy="50%"
-              innerRadius="35%"
-              outerRadius="75%"
-              paddingAngle={2}
-              dataKey="value"
-              nameKey="label"
-            >
-              {data.breakdown.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.fill} />
-              ))}
-            </Pie>
-            <Tooltip content={<CustomTooltip />} />
-            {/* Centered Text */}
-            <CenteredMetric cx="50%" cy="50%" projectData={data} />
-          </PieChart>
-        </ResponsiveContainer>
+    <section className="cost-breakdown-container" aria-label="Cost Breakdown Overview">
+      <div className="cost-breakdown-chart" role="img" aria-label="Cost Breakdown Donut Chart">
+        <Doughnut data={chartData} options={options} plugins={[ChartDataLabels]} />
+        <div className="cost-breakdown-center">
+          <h3 className="cost-breakdown-project" style={{ color: darkMode ? '#fff' : '#000' }}>
+            {projectName}
+          </h3>
+          <p className="cost-breakdown-total" style={{ color: darkMode ? '#fff' : '#000' }}>
+            ${(totalCost / 1000).toFixed(0)}k
+          </p>
+          <p className="cost-breakdown-label" style={{ color: darkMode ? '#fff' : '#000' }}>
+            TOTAL COST
+          </p>
+        </div>
       </div>
-
-      {/* Legend Container - Right */}
-      <div
-        style={{
-          width: "110px",
-          paddingLeft: "20px",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-        }}
-      >
-        {data.breakdown.map((entry, index) => (
-          <div
-            key={index}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              marginBottom: "12px",
-            }}
-          >
-            <div
-              style={{
-                width: "12px",
-                height: "12px",
-                backgroundColor: entry.fill,
-                marginRight: "8px",
-                borderRadius: "2px",
-              }}
-            ></div>
+      <div className="cost-breakdown-labels">
+        {breakdown.map((item, index) => (
+          <div key={item.category} className="cost-breakdown-label-item">
             <span
-              style={{
-                fontSize: "11px",
-                color: "#333",
-                lineHeight: "1.2",
-              }}
-            >
-              {entry.label}
+              className="cost-breakdown-color"
+              style={{ backgroundColor: colors[index] }}
+              aria-hidden="true"
+            />
+            <span className="cost-breakdown-text" style={{ color: darkMode ? '#fff' : '#000' }}>
+              {item.category}
             </span>
           </div>
         ))}
       </div>
-    </div>
+    </section>
   );
-};
+}
 
-const CostDonutChartComponent = () => {
+function CostDonutChartComponent() {
   const dispatch = useDispatch();
-  const { data: costBreakdownData, fetching, error } = useSelector(
-    state => state.costBreakdown
-  );
-  
+
+  const costBreakdownState = useSelector(state => state.costBreakdown || {});
+  const { data: costBreakdownData, fetching, error } = costBreakdownState;
+
+  const bmProjects = useSelector(state => state.bmProjects || []);
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   const [selectedProjectId, setSelectedProjectId] = useState('all');
   const [dateRange, setDateRange] = useState('ALL');
   const [customDateRange, setCustomDateRange] = useState({
@@ -183,34 +110,37 @@ const CostDonutChartComponent = () => {
     endDate: '',
   });
 
-  // Fetch initial data
   useEffect(() => {
     dispatch(getAllProjectsCostBreakdown());
+    dispatch(fetchBMProjects());
   }, [dispatch]);
 
-  // Transform API data to match your component's expected format
   const chartData = useMemo(() => {
     if (!costBreakdownData) return null;
 
     return {
-      projectName: costBreakdownData.projectName || 'Cost Breakdown',
+      projectName: costBreakdownData.project || 'Cost Breakdown',
       totalCost: costBreakdownData.totalCost || 0,
       percentageChange: costBreakdownData.percentageChange || '',
       breakdown: costBreakdownData.breakdown || [],
     };
   }, [costBreakdownData]);
 
-  // Handle project change
   const handleProjectChange = event => {
     const projectId = event.target.value;
     setSelectedProjectId(projectId);
 
-    if (dateRange === 'CUSTOM' && customDateRange.startDate && customDateRange.endDate) {
-      dispatch(getCostBreakdownByDateRange(
-        customDateRange.startDate,
-        customDateRange.endDate,
-        projectId === 'all' ? null : projectId
-      ));
+    const isCustomDateRangeSelected =
+      dateRange === 'CUSTOM' && customDateRange.startDate && customDateRange.endDate;
+
+    if (isCustomDateRangeSelected) {
+      dispatch(
+        getCostBreakdownByDateRange(
+          customDateRange.startDate,
+          customDateRange.endDate,
+          projectId === 'all' ? null : projectId,
+        ),
+      );
     } else if (projectId === 'all') {
       dispatch(getAllProjectsCostBreakdown());
     } else {
@@ -218,56 +148,101 @@ const CostDonutChartComponent = () => {
     }
   };
 
-  // Handle date range change
   const handleDateChange = event => {
     const range = event.target.value;
     setDateRange(range);
 
-    if (range === 'ALL') {
-      if (selectedProjectId === 'all') {
-        dispatch(getAllProjectsCostBreakdown());
-      } else {
-        dispatch(getProjectCostBreakdown(selectedProjectId));
-      }
+    let startDate;
+    let endDate;
+
+    switch (range) {
+      case '30_DAYS':
+        [endDate] = new Date().toISOString().split('T');
+        [startDate] = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T');
+        dispatch(
+          getCostBreakdownByDateRange(
+            startDate,
+            endDate,
+            selectedProjectId === 'all' ? null : selectedProjectId,
+          ),
+        );
+        break;
+
+      case '90_DAYS':
+        [endDate] = new Date().toISOString().split('T');
+        [startDate] = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString().split('T');
+        dispatch(
+          getCostBreakdownByDateRange(
+            startDate,
+            endDate,
+            selectedProjectId === 'all' ? null : selectedProjectId,
+          ),
+        );
+        break;
+
+      case '1_YEAR':
+        [endDate] = new Date().toISOString().split('T');
+        [startDate] = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString().split('T');
+        dispatch(
+          getCostBreakdownByDateRange(
+            startDate,
+            endDate,
+            selectedProjectId === 'all' ? null : selectedProjectId,
+          ),
+        );
+        break;
+
+      case 'ALL':
+      default:
+        if (selectedProjectId === 'all') {
+          dispatch(getAllProjectsCostBreakdown());
+        } else {
+          dispatch(getProjectCostBreakdown(selectedProjectId));
+        }
+        break;
     }
-    // Handle other date ranges as needed
   };
 
-  // Handle custom date range
   const handleCustomDateSubmit = () => {
     if (customDateRange.startDate && customDateRange.endDate) {
-      dispatch(getCostBreakdownByDateRange(
-        customDateRange.startDate,
-        customDateRange.endDate,
-        selectedProjectId === 'all' ? null : selectedProjectId
-      ));
+      dispatch(
+        getCostBreakdownByDateRange(
+          customDateRange.startDate,
+          customDateRange.endDate,
+          selectedProjectId === 'all' ? null : selectedProjectId,
+        ),
+      );
     }
   };
 
   if (fetching) {
     return (
-      <div style={{ 
-        width: '400px', 
-        height: '400px', 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'center' 
-      }}>
-        Loading...
+      <div
+        style={{
+          width: '400px',
+          height: '350px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        Loading chart data...
       </div>
     );
   }
 
   if (error) {
     return (
-      <div style={{ 
-        width: '400px', 
-        height: '400px', 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'center',
-        color: 'red'
-      }}>
+      <div
+        style={{
+          width: '400px',
+          height: '350px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'red',
+        }}
+      >
         Error: {error}
       </div>
     );
@@ -276,114 +251,163 @@ const CostDonutChartComponent = () => {
   return (
     <div
       style={{
-        width: '400px',
-        height: '400px',
-        padding: '15px',
-        backgroundColor: '#f8f9fa',
-        border: '1px solid #e0e0e0',
-        borderRadius: '8px',
-        fontFamily: 'Arial, sans-serif',
+        width: '100%',
+        maxWidth: '400px',
+        minWidth: '300px',
+        height: 'auto',
+        minHeight: '350px',
+        padding: '12px',
+        backgroundColor: darkMode ? '#2B3E5A' : '#fff',
+        borderRadius: '6px',
         boxSizing: 'border-box',
+        boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
       }}
     >
-      {/* Title */}
       <h2
         style={{
           textAlign: 'center',
-          marginBottom: '15px',
-          fontSize: '18px',
+          marginBottom: '12px',
+          fontSize: '16px',
           fontWeight: 'bold',
-          color: '#333',
-          margin: '0 0 15px 0',
+          color: darkMode ? '#fff' : '#333',
+          margin: '0 0 12px 0',
         }}
       >
         Cost Breakdown by Category
       </h2>
 
-      {/* Controls */}
       <div
+        className="cost-breakdown-controls"
         style={{
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'flex-start',
-          marginBottom: '15px',
-          paddingBottom: '8px',
+          marginBottom: '12px',
+          paddingBottom: '6px',
         }}
       >
-        {/* Project Filter */}
         <div>
-          <label htmlFor="project-filter" style={{ fontWeight: 'bold', fontSize: '12px' }}>
-            Project
+          <label
+            htmlFor="project-filter"
+            style={{
+              fontWeight: 'bold',
+              fontSize: '11px',
+              color: darkMode ? '#fff' : '#000',
+            }}
+          >
+            Project:
           </label>
           <select
             id="project-filter"
             value={selectedProjectId}
             onChange={handleProjectChange}
             style={{
-              padding: '6px 8px',
+              padding: '4px 6px',
               borderRadius: '4px',
               border: '1px solid #ccc',
-              fontSize: '12px',
-              width: '100px',
+              fontSize: '11px',
+              width: '110px',
               backgroundColor: 'white',
-              marginTop: '6px',
+              marginTop: '4px',
             }}
           >
             <option value="all">All Projects</option>
-            {/* Add your project options here */}
+            {bmProjects &&
+              bmProjects.length > 0 &&
+              bmProjects.map(project => (
+                <option key={project._id || project.id} value={project._id || project.id}>
+                  {project.projectName || project.name || project.title || 'Unnamed Project'}
+                </option>
+              ))}
           </select>
         </div>
 
-        {/* Date Filter */}
         <div style={{ textAlign: 'right' }}>
-          <label htmlFor="date-filter" style={{ fontWeight: 'bold', fontSize: '12px' }}>
-            Dates
+          <label
+            htmlFor="date-filter"
+            style={{
+              fontWeight: 'bold',
+              fontSize: '11px',
+              color: darkMode ? '#fff' : '#000',
+            }}
+          >
+            Dates:
           </label>
           <select
             id="date-filter"
             value={dateRange}
             onChange={handleDateChange}
             style={{
-              padding: '6px 8px',
+              padding: '4px 6px',
               borderRadius: '4px',
               border: '1px solid #ccc',
-              fontSize: '12px',
-              width: '60px',
+              fontSize: '11px',
+              width: '85px',
               backgroundColor: 'white',
-              marginTop: '6px',
+              marginTop: '4px',
             }}
           >
-            <option value="ALL">ALL</option>
+            <option value="ALL">All Time</option>
+            <option value="30_DAYS">Last 30 Days</option>
+            <option value="90_DAYS">Last 3 Months</option>
+            <option value="1_YEAR">Last Year</option>
             <option value="CUSTOM">Custom</option>
           </select>
         </div>
       </div>
 
-      {/* Custom Date Range Inputs */}
       {dateRange === 'CUSTOM' && (
-        <div style={{ marginBottom: '15px', fontSize: '12px' }}>
+        <div style={{ marginBottom: '12px', fontSize: '11px' }}>
+          {' '}
+          {}
           <input
             type="date"
             value={customDateRange.startDate}
-            onChange={e => setCustomDateRange(prev => ({ ...prev, startDate: e.target.value }))}
-            style={{ marginRight: '8px', padding: '4px' }}
+            onChange={({ target: { value } }) =>
+              setCustomDateRange(prev => ({ ...prev, startDate: value }))
+            }
+            style={{ marginRight: '6px', padding: '3px' }}
           />
           <input
             type="date"
             value={customDateRange.endDate}
-            onChange={e => setCustomDateRange(prev => ({ ...prev, endDate: e.target.value }))}
-            style={{ marginRight: '8px', padding: '4px' }}
+            onChange={({ target: { value } }) =>
+              setCustomDateRange(prev => ({ ...prev, endDate: value }))
+            }
+            style={{ marginRight: '6px', padding: '3px' }}
           />
-          <button onClick={handleCustomDateSubmit} style={{ padding: '4px 8px', fontSize: '10px' }}>
+          <button
+            type="button"
+            onClick={handleCustomDateSubmit}
+            style={{ padding: '3px 6px', fontSize: '10px' }}
+          >
             Apply
           </button>
         </div>
       )}
 
-      {/* Chart */}
-      <CostBreakdownPieChart data={chartData} />
+      <CostBreakdownChart data={chartData} darkMode={darkMode} />
     </div>
   );
+}
+
+CostBreakdownChart.propTypes = {
+  data: PropTypes.shape({
+    projectName: PropTypes.string.isRequired,
+    totalCost: PropTypes.number.isRequired,
+    breakdown: PropTypes.arrayOf(
+      PropTypes.shape({
+        category: PropTypes.string.isRequired,
+        amount: PropTypes.number.isRequired,
+      }),
+    ).isRequired,
+  }),
+  darkMode: PropTypes.bool,
+};
+
+CostBreakdownChart.defaultProps = {
+  data: null,
+  darkMode: false,
 };
 
 export default CostDonutChartComponent;
