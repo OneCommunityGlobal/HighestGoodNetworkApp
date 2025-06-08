@@ -97,7 +97,7 @@ function AddTeamMember() {
         errors.email = 'Please enter a valid email address';
       }
     }
-    if (formData.phone === '' && !/^\d{10}$/.test(formData.phone.replace(/\D/g, ''))) {
+    if (formData.phone === '' || !/^\d{10}$/.test(formData.phone.replace(/\D/g, ''))) {
       errors.phone = 'Please enter a valid 10-digit phone number';
     }
     return errors;
