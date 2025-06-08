@@ -40,8 +40,21 @@ function AddTeamMember() {
     { value: '+44', label: '+44 (UK)' },
   ];
 
+    const clearFieldError = (fieldName) => {
+    if(formData.errors[fieldName]) {
+      setFormData(prev => ({
+        ...prev, 
+        errors: {
+          ...prev.errors, 
+          [fieldName]: undefined
+        }
+      }));
+    }
+  }
+  
   const handleInputChange = e => {
     const { name, value } = e.target;
+    clearFieldError(name);
     setFormData(prev => ({
       ...prev,
       [name]: value,
@@ -49,6 +62,7 @@ function AddTeamMember() {
   };
 
   const handleSelectChange = (option, field) => {
+    clearFieldError(field);
     setFormData(prev => ({
       ...prev,
       [field]: option,

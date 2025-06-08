@@ -1,32 +1,45 @@
 .icon-add-person {
-    padding: 50px;
+    padding: 50px 20px;
     justify-content: center;
     text-align: center;
 }
 
 .title-member {
     color: #f49441;
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    margin: 10px 0;
 }
 
 .container-add {
     background-color: white;
     border-radius: 10%;
     padding-bottom: 50px;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0 20px 50px;
 }
 
-/* Name Section */
 .name-container {
     display: flex;
-    gap: 40px;
+    gap: 20px;
     justify-content: center;
     margin: 20px auto;
-    width: 500px;
+    width: 100%;
+    max-width: 500px;
+}
+
+@media (max-width: 768px) {
+    .name-container {
+        flex-direction: column;
+        gap: 15px;
+    }
 }
 
 .input-name {
     display: flex;
     flex-direction: column;
-    width: 230px;
+    flex: 1;
+    min-width: 0;
 }
 
 .input-name input {
@@ -41,19 +54,27 @@
     text-align: left;
 }
 
-/* Role Section */
 .role-container {
     display: flex;
-    gap: 40px;
+    gap: 20px;
     justify-content: center;
-    width: 500px;
+    width: 100%;
+    max-width: 500px;
     margin: 20px auto;
+}
+
+@media (max-width: 768px) {
+    .role-container {
+        flex-direction: column;
+        gap: 15px;
+    }
 }
 
 .role-input {
     display: flex;
     flex-direction: column;
-    width: 230px;
+    flex: 1;
+    min-width: 0;
 }
 
 .role-input label {
@@ -67,19 +88,27 @@
     box-sizing: border-box;
 }
 
-/* Team Section */
 .team-container {
     display: flex;
-    gap: 40px;
+    gap: 20px;
     justify-content: center;
-    width: 500px;
+    width: 100%;
+    max-width: 500px;
     margin: 20px auto;
+}
+
+@media (max-width: 768px) {
+    .team-container {
+        flex-direction: column;
+        gap: 15px;
+    }
 }
 
 .team-input {
     display: flex;
     flex-direction: column;
-    width: 230px;
+    flex: 1;
+    min-width: 0;
 }
 
 .team-input label {
@@ -93,13 +122,13 @@
     box-sizing: border-box;
 }
 
-/* Contact Info Section */
 .contact-info {
     display: flex;
     flex-direction: column;
     gap: 15px;
     padding-top: 20px;
-    width: 500px;
+    width: 100%;
+    max-width: 500px;
     margin: 0 auto;
 }
 
@@ -120,25 +149,64 @@
     gap: 10px;
 }
 
-.country-code-select {
-    width: 150px;
+@media (max-width: 480px) {
+    .phone-input-group {
+        flex-direction: column;
+        gap: 10px;
+    }
 }
 
-/* Button Section */
+.country-code-select {
+    width: 150px;
+    flex-shrink: 0;
+}
+
+@media (max-width: 480px) {
+    .country-code-select {
+        width: 100%;
+    }
+}
+
+.phone-input-group input {
+    flex: 1;
+    min-width: 0;
+}
+
 .submit-cancel {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  padding-top: 60px;
+    display: flex;
+    justify-content: center;
+    padding-top: 60px;
+    margin: 0 auto;
+    gap: 20px;
+    width: 100%;
+    max-width: 500px;
+}
+
+@media (max-width: 480px) {
+    .submit-cancel {
+        flex-direction: column;
+        gap: 15px;
+        padding-top: 40px;
+    }
 }
 
 .submit-button,
 .cancel-button {
-    padding: 15px 40px;
+    padding: 15px 30px;
     border-radius: 5px;
     font-size: 16px;
     cursor: pointer;
-    margin: 0px 50px;
+    min-width: 120px;
+    flex: 1;
+    max-width: 200px;
+}
+
+@media (max-width: 480px) {
+    .submit-button,
+    .cancel-button {
+        max-width: none;
+        width: 100%;
+    }
 }
 
 .submit-button {
@@ -153,7 +221,6 @@
     color: black;
 }
 
-/* Error Styles */
 .error {
     border-color: red;
 }
@@ -162,4 +229,15 @@
     color: red;
     font-size: 12px;
     margin-top: 5px;
+}
+
+@media (max-width: 480px) {
+    .icon-add-person {
+        padding: 30px 10px;
+    }
+    
+    .container-add {
+        padding: 0 15px 30px;
+        border-radius: 5%;
+    }
 }
