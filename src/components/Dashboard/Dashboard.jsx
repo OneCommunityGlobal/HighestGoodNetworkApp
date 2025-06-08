@@ -76,7 +76,7 @@ export function Dashboard(props) {
 
   return (
     <Container fluid className={darkMode ? 'bg-oxford-blue' : ''}>
-      {/* <FeedbackModal /> */} // Temporary disabled until fixed
+      {/* <FeedbackModal /> */}
       <SummaryBar
         displayUserId={displayUserId}
         toggleSubmitForm={toggle}
