@@ -79,12 +79,11 @@ import CheckTypes from './components/BMDashboard/shared/CheckTypes';
 import Toolslist from './components/BMDashboard/Tools/ToolsList';
 import AddTool from './components/BMDashboard/Tools/AddTool';
 import AddTeamMember from './components/BMDashboard/AddTeamMember/AddTeamMember';
-import CreateNewTeam from './components/BMDashboard/Team/CreateNewTeam/CreateNewTeam';
-
+// eslint-disable-next-line import/order
+import IssueChart from './components/BMDashboard/Issues/issueCharts';
 import BMTimeLogger from './components/BMDashboard/BMTimeLogger/BMTimeLogger';
 import Issue from './components/BMDashboard/Issue/Issue';
-
-
+import CreateNewTeam from './components/BMDashboard/Team/CreateNewTeam/CreateNewTeam';
 // Community Portal
 import CPProtectedRoute from './components/common/CPDashboard/CPProtectedRoute';
 import CPLogin from './components/CommunityPortal/Login';
@@ -473,6 +472,9 @@ export default (
           exact
           component={WeeklyProjectSummary}
         />
+
+        <BMProtectedRoute path="/bmdashboard/issuechart" component={IssueChart} />
+
         <BMProtectedRoute path="/bmdashboard/timelog/" component={BMTimeLogger} />
 
         <BMProtectedRoute
@@ -480,6 +482,7 @@ export default (
           fallback
           component={BMTimeLogCard}
         />
+
 
         {/* Community Portal Routes */}
         <CPProtectedRoute path="/communityportal" exact component={CPDashboard} />
