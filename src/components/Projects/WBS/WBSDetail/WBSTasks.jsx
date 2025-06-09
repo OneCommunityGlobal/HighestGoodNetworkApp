@@ -20,6 +20,7 @@ import './wbs.css';
 
 import { useFetchWbsTasks } from './hook';
 import { FilterBar } from './FilterBar';
+import { use } from 'react';
 
 function WBSTasks(props) {
   // const { tasks, fetched, darkMode } = props;
@@ -43,6 +44,12 @@ function WBSTasks(props) {
   const myRef = useRef(null);
 
   const { tasks, isLoading, error, refresh } = useFetchWbsTasks(wbsId);
+
+  useEffect(() => {
+    if(!isLoading){
+      setPageLoadTime(Date.now());
+    }
+  },[tasks, isLoading]);
 
   useEffect(() => {
     setLevelOneTasks(
