@@ -105,6 +105,7 @@ function UserPermissionsPopUp({
       permissions: {
         frontPermissions: userPermissions,
         removedDefaultPermissions: userRemovedDefaultPermissions,
+        defaultPermissions: actualUserRolePermission,
       },
     };
 
