@@ -990,7 +990,6 @@ useEffect(() => {
                     <TabPane tabId={0}>
                       <TeamMemberTasks 
                       filteredUserTeamIds={props.filteredUserTeamIds} 
-                      hasPermission={props.hasPermission}
                       />
                     </TabPane>
                     <TabPane tabId={1}>{currentWeekEntries}</TabPane>
