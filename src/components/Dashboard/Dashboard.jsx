@@ -17,7 +17,6 @@ import SummaryBar from '../SummaryBar/SummaryBar';
 import './Dashboard.css';
 import '../../App.css';
 import TimeOffRequestDetailModal from './TimeOffRequestDetailModal';
-
 import FeedbackModal from '../FeedbackModal/FeedbackModal';
 
 export function Dashboard(props) {
@@ -75,7 +74,7 @@ export function Dashboard(props) {
 
   return (
     <Container fluid className={darkMode ? 'bg-oxford-blue' : ''}>
-      <FeedbackModal />
+      {/* <FeedbackModal /> */} // Temporary disabled until fixed
       <SummaryBar
         displayUserId={displayUserId}
         toggleSubmitForm={toggle}
@@ -83,7 +82,6 @@ export function Dashboard(props) {
         summaryBarData={summaryBarData}
         isNotAllowedToEdit={isNotAllowedToEdit}
       />
-
       <Row className="w-100 ml-1">
         <Col lg={7}></Col>
         <Col lg={5}>
