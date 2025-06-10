@@ -393,7 +393,6 @@ function Timer({ authUser, darkMode, isPopout }) {
   }, [inacModal]);
 
   useEffect(() => {
-    // If initial json message is null, do nothing
     if (!isInitialJsonMessageReceived) return;
 
     sendGetTimer();
