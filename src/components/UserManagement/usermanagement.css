@@ -258,7 +258,7 @@ tr:hover {
 
 .setup-invitation-popup-section {
   display: grid;
-  width: 90%;
+  width: 95%;
   margin: 0 auto;
   gap: 10px;
 }
