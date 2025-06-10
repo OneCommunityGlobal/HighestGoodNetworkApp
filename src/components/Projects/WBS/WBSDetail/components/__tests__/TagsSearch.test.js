@@ -8,12 +8,12 @@ import thunk from 'redux-thunk';
 import TagsSearch from '../TagsSearch';
 import { findProjectMembers } from 'actions/projectMembers';
 
-// Mock member data - Added profilePic property
+// Mock member data
 const allMembers = [
-  { firstName: 'aaa', isActive: true, lastName: 'volunteer', _id: 'aaa123', profilePic: 'pic1.jpg' },
-  { firstName: 'bbb', isActive: true, lastName: 'test', _id: 'bbb456', profilePic: 'pic2.jpg' },
-  { firstName: 'ccc', isActive: false, lastName: 'manager', _id: 'ccc789', profilePic: 'pic3.jpg' },
-  { firstName: 'aaa', isActive: true, lastName: 'owner', _id: 'aaa067', profilePic: 'pic4.jpg' },
+  { firstName: 'aaa', isActive: true, lastName: 'volunteer', _id: 'aaa123' },
+  { firstName: 'bbb', isActive: true, lastName: 'test', _id: 'bbb456' },
+  { firstName: 'ccc', isActive: false, lastName: 'manager', _id: 'ccc789' },
+  { firstName: 'aaa', isActive: true, lastName: 'owner', _id: 'aaa067' },
 ];
 
 const middlewares = [thunk];
@@ -21,8 +21,8 @@ const mockStore = configureMockStore(middlewares);
 
 // Mock functions for resource management
 const mockFunctions = mockResourceItems => {
-  const addResources = jest.fn((userID, firstName, lastName, profilePic) => {
-    mockResourceItems.push({ userID, name: `${firstName} ${lastName}`, profilePic });
+  const addResources = jest.fn((userID, firstName, lastName) => {
+    mockResourceItems.push({ userID, name: `${firstName} ${lastName}` });
   });
 
   const removeResources = jest.fn(userID => {
@@ -41,10 +41,7 @@ const mockFoundProjectMembers = searchQuery => {
 
 const renderTagsSearchComponent = props => {
   const store = mockStore({
-    projectMembers: { 
-      foundProjectMembers: mockFoundProjectMembers(''),
-      members: allMembers // Add members to the store state
-    },
+    projectMembers: { foundProjectMembers: mockFoundProjectMembers('') }, // Initial empty search
   });
 
   return render(
@@ -73,9 +70,8 @@ describe('TagsSearch Component', () => {
     resourceItems: [],
     addResources,
     removeResource: removeResources,
-    findProjectMembers: jest.fn(), // Mock the Redux action
+    findProjectMembers: mockFoundProjectMembers,
   };
-
   it('renders without crashing', () => {
     renderTagsSearchComponent(sampleProps);
   });
@@ -122,9 +118,10 @@ describe('TagsSearch Component', () => {
       fireEvent.mouseDown(ownerOption);
     });
 
+    // Check if addResources was called with the correct arguments
     await waitFor(() => {
-      expect(addResources).toHaveBeenCalledWith('aaa123', 'aaa', 'volunteer', 'pic1.jpg');
-      expect(addResources).toHaveBeenCalledWith('aaa067', 'aaa', 'owner', 'pic4.jpg');
+      expect(addResources).toHaveBeenCalledWith('aaa123', 'aaa', 'volunteer');
+      expect(addResources).toHaveBeenCalledWith('aaa067', 'aaa', 'owner');
     });
   });
 
