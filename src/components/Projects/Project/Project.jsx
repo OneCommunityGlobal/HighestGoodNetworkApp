@@ -49,6 +49,15 @@ const Project = props => {
     } 
   };
 
+  useEffect(() => {
+    setCategory(props.projectData.category || 'Unspecified');
+  }, [props.projectData.category]);
+
+  const updateProjectField = (field, value) => {
+    const updatedProject = { ...projectData, [field]: value };
+    setProjectData(updatedProject); 
+  };
+
   const onProjectStatusChange = () => {
     // Trigger the modal from Projects component via props
     props.onClickProjectStatusBtn(projectData); // This will open the modal
@@ -59,8 +68,12 @@ const Project = props => {
   }
 
   const onUpdateProjectCategory = (e) => {
-    setCategory(e.target.value);
-    updateProject('category', e.target.value); // Update the projectData state
+    // setCategory(e.target.value);
+    // updateProject('category', e.target.value); // Update the projectData state
+
+    const newCategory = e.target.value;
+  setCategory(newCategory);
+  updateProjectField('category', newCategory); 
   };
 
   const onArchiveProject = () => {
