@@ -485,4 +485,9 @@ td {
   left: 0;
   font-size: 0.7rem;
   margin: 2px 4px;
+  color: dodgerblue;
+}
+
+.infringement-count a:hover{
+  text-decoration: none;
 }

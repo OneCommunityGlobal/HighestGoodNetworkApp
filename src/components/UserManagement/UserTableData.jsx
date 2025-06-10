@@ -153,17 +153,17 @@ const UserTableData = React.memo(props => {
         <span className='infringement-count'>
           <a
             href={`/userprofile/${props.user._id}`}
-            className={darkMode ? 'text-white' : 'text-dark'}
             id={`blue-squares-${props.user._id}`} // Unique ID for tooltip target
+            title={`This person has ${props.user.infringementCount} blue square${props.user.infringementCount !== 1 ? 's' : ''}`}
           >
             {props.user.infringementCount}
           </a>
-          <UncontrolledTooltip
+          {/* <UncontrolledTooltip
             placement="top"
             target={`blue-squares-${props.user._id}`}
           >
             This person has {props.user.infringementCount} blue square{props.user.infringementCount !== 1 ? 's' : ''}
-          </UncontrolledTooltip>
+          </UncontrolledTooltip> */}
         </span>
         {!canSeeReports ? (
           <Tooltip
