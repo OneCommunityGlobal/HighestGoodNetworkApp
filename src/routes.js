@@ -79,14 +79,20 @@ import CheckTypes from './components/BMDashboard/shared/CheckTypes';
 import Toolslist from './components/BMDashboard/Tools/ToolsList';
 import AddTool from './components/BMDashboard/Tools/AddTool';
 import AddTeamMember from './components/BMDashboard/AddTeamMember/AddTeamMember';
+// eslint-disable-next-line import/order
+import IssueChart from './components/BMDashboard/Issues/issueCharts';
 import BMTimeLogger from './components/BMDashboard/BMTimeLogger/BMTimeLogger';
 import Issue from './components/BMDashboard/Issue/Issue';
-
+import CreateNewTeam from './components/BMDashboard/Team/CreateNewTeam/CreateNewTeam';
 // Community Portal
 import CPProtectedRoute from './components/common/CPDashboard/CPProtectedRoute';
 import CPLogin from './components/CommunityPortal/Login';
 import CPDashboard from './components/CommunityPortal';
 import ActivityList from './components/CommunityPortal/Activities/ActivityList';
+
+import NoshowViz from './components/CommunityPortal/Attendence/NoshowViz';
+// import AddActivities from './components/CommunityPortal/Activities/AddActivities';
+// import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
 
 import ActivitiesPage from './components/CommunityPortal/Activities/ActivitiesPage'; 
 
@@ -96,6 +102,7 @@ import EventStats from './components/CommunityPortal/EventPersonalization/EventS
 import Resources from './components/CommunityPortal/Activities/activityId/Resources';
 
 import EventParticipation from './components/CommunityPortal/Reports/Participation/EventParticipation';
+
 
 import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
@@ -458,12 +465,16 @@ export default (
           fallback
           component={InventoryTypesList}
         />
+        <BMProtectedRoute path="/bmdashboard/AddNewTeam" fallback component={CreateNewTeam} />
         <BMProtectedRoute
           path="/bmdashboard/totalconstructionsummary"
           fallback
           exact
           component={WeeklyProjectSummary}
         />
+
+        <BMProtectedRoute path="/bmdashboard/issuechart" component={IssueChart} />
+
         <BMProtectedRoute path="/bmdashboard/timelog/" component={BMTimeLogger} />
 
         <BMProtectedRoute
@@ -472,10 +483,14 @@ export default (
           component={BMTimeLogCard}
         />
 
+
         {/* Community Portal Routes */}
         <CPProtectedRoute path="/communityportal" exact component={CPDashboard} />
         <Route path="/communityportal/login" component={CPLogin} />
         <CPProtectedRoute path="/communityportal/Activities" exact component={ActivityList} />
+
+        <CPProtectedRoute path="/communityportal/reports/participation" component={NoshowViz} />
+
         <CPProtectedRoute
           path="/communityportal/Activities/:activityid/Resources"
           exact component={Resources}
@@ -500,6 +515,7 @@ export default (
         <Route path="/lbdashboard/bidoverview" exact component={LBBidOverview} />
 
         <CPProtectedRoute path="/communityportal/reports/participation" exact component={EventParticipation} />
+
 
 
         {/* Good Education  Portal Routes */}
