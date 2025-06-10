@@ -18,6 +18,7 @@ import './projects.css';
 import Loading from '../common/Loading';
 import hasPermission from '../../utils/permissions';
 import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
+import { useSelector } from 'react-redux'
 
 const Projects = function(props) {
   const { role } = props.state.userProfile;

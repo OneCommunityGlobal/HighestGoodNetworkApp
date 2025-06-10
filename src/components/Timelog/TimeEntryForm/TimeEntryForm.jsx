@@ -663,17 +663,22 @@ function TimeEntryForm(props) {
               )}
             </FormGroup>
             <FormGroup>
-              <Label for="project" className={fontColor}>
+              <Label for="projectOrTask" className={fontColor}>
                 Project/Task
               </Label>
               <Input
                 type="select"
                 name="projectOrTask"
                 id="projectOrTask"
-                value={projectOrTaskId || 'title'}
+                value={projectOrTaskId || 'defaultProject'}
                 onChange={handleProjectOrTaskChange}
                 className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
               >
+                {/* static placeholder always in the DOM */}
+                <option value="defaultProject" disabled>
+                  Select Project/Task
+                </option>
+                {/* then any loaded project/task options */}
                 {projectsAndTasksOptions}
               </Input>
               {'projectId' in errors && (

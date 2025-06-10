@@ -1,4 +1,4 @@
-import * as d3 from 'd3/dist/d3.min';
+import * as d3 from 'd3';
 
 export const pieChartColors = [
   'rgb(255, 94, 130)',

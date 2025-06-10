@@ -1,54 +1,61 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import TeamsTab from '../TeamsTab';
+import React from 'react';
+import { vi } from 'vitest';
 
-// Stub out the two heavy child modules
-vi.mock(
-  '../AddTeamPopup',
-  () =>
-    function (props) {
-      return (
-        <div
-          data-testid="add-team-popup"
-          data-open={props.open ? 'true' : 'false'}
-          // close on click
-          onClick={() => props.onClose && props.onClose()}
-          // assign on double-click with a fixed team object
-          onDoubleClick={() =>
-            props.onSelectAssignTeam && props.onSelectAssignTeam({ _id: 'TEAM999' })
-          }
-        />
-      );
-    },
-);
-vi.mock(
-  '../UserTeamsTable',
-  () =>
-    function (props) {
-      return (
-        <div
-          data-testid="user-teams-table"
-          // simulate the “Add” button click via single click
-          onClick={() => props.onButtonClick && props.onButtonClick()}
-          // simulate delete via double-click with a fixed ID
-          onDoubleClick={() => props.onDeleteClick && props.onDeleteClick('TEAM123')}
-        />
-      );
-    },
-);
+// MUST come before you import TeamsTab!
+vi.mock('../AddTeamPopup', () => ({
+  __esModule: true,
+  default: function AddTeamPopupMock(props) {
+    return (
+      <div
+        data-testid="add-team-popup"
+        data-open={props.open ? 'true' : 'false'}
+        onClick={() => props.onClose && props.onClose()}
+        onDoubleClick={() =>
+          props.onSelectAssignTeam && props.onSelectAssignTeam({ _id: 'TEAM999' })
+        }
+      />
+    );
+  },
+}));
 
-// Stub your action creators and toast
-vi.mock('~/actions/allTeamsAction', () => ({
+vi.mock('../UserTeamsTable', () => ({
+  __esModule: true,
+  default: function UserTeamsTableMock(props) {
+    return (
+      <div
+        data-testid="user-teams-table"
+        onClick={() => props.onButtonClick && props.onButtonClick()}
+        onDoubleClick={() => props.onDeleteClick && props.onDeleteClick('TEAM123')}
+      />
+    );
+  },
+}));
+
+// Stub your action creators
+vi.mock('../../../../actions/allTeamsAction', () => ({
+  __esModule: true,
   addTeamMember: vi.fn(),
   deleteTeamMember: vi.fn(),
 }));
+
+// Stub toast
 vi.mock('react-toastify', () => ({
+  __esModule: true,
   toast: {
     success: vi.fn(),
     error: vi.fn(),
   },
 }));
 
+import { render, screen, fireEvent } from '@testing-library/react';
+import TeamsTab from '../TeamsTab';
+import { addTeamMember, deleteTeamMember } from '../../../../actions/allTeamsAction';
+import { toast } from 'react-toastify';
+
 describe('TeamsTab (unit)', () => {
+    beforeEach(() => {
+    vi.clearAllMocks();
+  });
   const baseProps = {
     teamsData: [],
     userTeams: {},
@@ -99,7 +106,7 @@ describe('TeamsTab (unit)', () => {
   it('5. closes the popup when AddTeamPopup is clicked (onClose)', () => {
     render(<TeamsTab {...baseProps} />);
     fireEvent.click(screen.getByTestId('user-teams-table')); // open
-    fireEvent.click(screen.getByTestId('add-team-popup')); // close
+    fireEvent.click(screen.getByTestId('add-team-popup'));    // close
     expect(screen.getByTestId('add-team-popup')).toHaveAttribute('data-open', 'false');
   });
 
@@ -107,7 +114,6 @@ describe('TeamsTab (unit)', () => {
     render(<TeamsTab {...baseProps} />);
     fireEvent.doubleClick(screen.getByTestId('user-teams-table'));
     expect(baseProps.onDeleteTeam).toHaveBeenCalledWith('TEAM123');
-    const { toast } = require('react-toastify');
     expect(toast.success).toHaveBeenCalledWith('Team Deleted successfully');
   });
 
@@ -119,23 +125,18 @@ describe('TeamsTab (unit)', () => {
     fireEvent.doubleClick(screen.getByTestId('add-team-popup'));
 
     expect(baseProps.onAssignTeam).toHaveBeenCalledWith({ _id: 'TEAM999' });
-
-    const { addTeamMember } = require('~/actions/allTeamsAction');
     expect(addTeamMember).toHaveBeenCalledWith(
       'TEAM999',
       baseProps.userProfile._id,
       baseProps.userProfile.firstName,
       baseProps.userProfile.lastName,
     );
-
-    const { toast } = require('react-toastify');
     expect(toast.success).toHaveBeenCalledWith('Team assigned successfully');
   });
 
   it('8. runs the saved→useEffect and clears removedTeams', () => {
     const { rerender } = render(<TeamsTab {...baseProps} saved={false} />);
     rerender(<TeamsTab {...baseProps} saved />);
-    const { deleteTeamMember } = require('~/actions/allTeamsAction');
     expect(deleteTeamMember).not.toHaveBeenCalled();
   });
 });

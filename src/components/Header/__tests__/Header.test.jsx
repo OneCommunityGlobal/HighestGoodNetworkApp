@@ -1,127 +1,129 @@
-import { render, screen } from '@testing-library/react';
+import { vi } from 'vitest'; // ← MUST be first
+import React from 'react';
+
+// 1) Mock out any child components that hit the network or DOM APIs
+vi.mock('../../OwnerMessage/OwnerMessage', () => ({
+  __esModule: true,
+  default: () => <div data-testid="mock-owner-message" />,
+}));
+vi.mock('../../Timer/Timer', () => ({
+  __esModule: true,
+  default: () => <div data-testid="mock-timer" />,
+}));
+
+// 2) Mock axios so any GET/POST in your component just resolves/rejects
+vi.mock('axios');
+
+// 3) Partially mock react-redux
+const mockDispatch = vi.fn();
+vi.mock('react-redux', async importOriginal => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    useDispatch: () => mockDispatch,
+    useSelector: selectorFn =>
+      // optionally wire up selectorFn to your fake store if you need it
+      selectorFn({
+        theme: { darkMode: false },
+        notification: { unreadNotifications: [] },
+        // …add whatever slices your Header’s useSelector reads directly…
+      }),
+  };
+});
+
+// 4) Partially mock react-router-dom
+vi.mock('react-router-dom', async importOriginal => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    useHistory: () => ({ push: vi.fn() }),
+    useLocation: () => ({ pathname: '/' }),
+  };
+});
+
+// …now import everything else…
+import { render, screen, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import axios from 'axios';
 import { MemoryRouter as Router } from 'react-router-dom';
-import { Header } from '../Header';
-
-// Mock the components that cause issues
-vi.mock('../../OwnerMessage/OwnerMessage', () => {
-  return {
-    __esModule: true,
-    default: () => <div data-testid="mock-owner-message">Mock Owner Message</div>,
-  };
-});
-
-vi.mock('../../Timer/Timer', () => {
-  return {
-    __esModule: true,
-    default: () => <div data-testid="mock-timer">Mock Timer</div>,
-  };
-});
-
-// Mock the useEffect hook to prevent issues with role.length
-vi.mock('react', () => {
-  const originalReact = vi.requireActual('react');
-  return {
-    ...originalReact,
-    useEffect: vi.fn().mockImplementation((callback, deps) => {
-      // Skip the problematic useEffect that checks roles.length
-      if (deps && deps.length === 0) {
-        return originalReact.useEffect(() => {}, []);
-      }
-      return originalReact.useEffect(callback, deps);
-    }),
-  };
-});
-
-// Mock axios
-vi.mock('axios');
-
-// Create a mock for useDispatch
-const mockDispatch = vi.fn();
-vi.mock('react-redux', () => ({
-  ...vi.requireActual('react-redux'),
-  useDispatch: () => mockDispatch,
-}));
-
-// Mock the useHistory hook
-vi.mock('react-router-dom', () => ({
-  ...vi.requireActual('react-router-dom'),
-  useHistory: () => ({
-    push: vi.fn(),
-  }),
-  useLocation: () => ({
-    pathname: '/',
-  }),
-}));
+import { Header } from '../Header'; // assume this is the named export
 
 const mockStore = configureMockStore();
-
-// Default mock for hasPermission function
 const defaultMockHasPermission = () => false;
+/**
+ * A helper that always injects a properly shaped auth & userProfile,
+ * even if tests override only bits of state.
+ */
+function renderHeader(stateOverrides = {}, propsOverrides = {}) {
+  const baseState = {
+    auth: {
+      isAuthenticated: true,
+      firstName: 'Jane',
+      profilePic: '/me.png',
+      user: { userid: 'u1', role: 'Owner' },
+    },
+    userProfile: { email: 'jane@example.com' },
+    taskEditSuggestionCount: 0,
+    taskEditSuggestions: { count: 0 },
+    role: { roles: [] },
+    notification: { unreadNotifications: [] },
+    theme: { darkMode: false },
+    ownerMessage: { message: '', standardMessage: '' },
+    ...stateOverrides,
+  };
+  const store = mockStore(baseState);
 
-const renderHeader = (store, props = {}) =>
-  render(
+  return render(
     <Provider store={store}>
       <Router>
         <Header
-          auth={store.getState().auth}
-          userProfile={store.getState().userProfile || {}}
-          taskEditSuggestionCount={store.getState().taskEditSuggestionCount || 0}
-          hasPermission={props.hasPermission || defaultMockHasPermission}
-          getHeaderData={props.getHeaderData || vi.fn()}
-          getAllRoles={props.getAllRoles || vi.fn()}
-          getWeeklySummaries={props.getWeeklySummaries || vi.fn()}
-          role={store.getState().role} // Make sure to pass the role prop explicitly
-          {...props}
+          auth={baseState.auth}
+          userProfile={baseState.userProfile}
+          taskEditSuggestionCount={baseState.taskEditSuggestionCount}
+          hasPermission={propsOverrides.hasPermission ?? (() => false)}
+          getHeaderData={vi.fn()}
+          getAllRoles={vi.fn()}
+          getWeeklySummaries={vi.fn()}
+          role={baseState.role}
         />
       </Router>
     </Provider>,
   );
+}
 
-describe('Header Component', () => {
-  let store;
-  const initialState = {
-    auth: {
-      isAuthenticated: true,
-      user: {
-        userid: '123',
-        role: 'Owner',
-        firstName: 'John',
-        profilePic: '/path/to/image.jpg',
-      },
-    },
-    userProfile: {
-      email: 'test@example.com',
-    },
-    taskEditSuggestionCount: 0,
-    taskEditSuggestions: {
-      count: 0,
-    },
-    role: {
-      roles: [],
-    },
-    notification: {
-      unreadNotifications: [],
-    },
-    theme: {
-      darkMode: false,
-    },
-    ownerMessage: {
-      message: 'Test message',
-      standardMessage: 'Standard message',
-    },
-  };
-
+describe('Header component', () => {
   beforeEach(() => {
-    store = mockStore(initialState);
     vi.clearAllMocks();
   });
 
   it('renders without crashing', () => {
-    renderHeader(store);
+    renderHeader();
     expect(screen.getByTestId('header')).toBeInTheDocument();
+  });
+
+  it('fetches user profile on mount', async () => {
+    axios.get.mockResolvedValueOnce({
+      data: { firstName: 'Jane', profilePic: '/me.png', email: 'jane@example.com' },
+    });
+    renderHeader();
+    await waitFor(() => {
+      // narrow to the H6 dropdown-header only
+      expect(screen.getByText(/Hello\s*Jane/, { selector: 'h6' })).toBeInTheDocument();
+    });
+  });
+
+  it('handles profile‐load failure gracefully', async () => {
+    axios.get.mockRejectedValueOnce(new Error('Network error'));
+    renderHeader();
+    // Should still mount, maybe show a default avatar or no crash:
+    expect(screen.getByTestId('header')).toBeInTheDocument();
+  });
+
+  it('renders the owner message & timer children', () => {
+    renderHeader();
+    expect(screen.getByTestId('mock-owner-message')).toBeInTheDocument();
+    expect(screen.getByTestId('mock-timer')).toBeInTheDocument();
   });
 });
 
@@ -165,9 +167,15 @@ describe('Header Component with Mocked Axios', () => {
     vi.clearAllMocks();
   });
 
-  it('loads and displays the user dashboard profile', () => {
-    renderHeader(store, { hasPermission: defaultMockHasPermission });
-    expect(screen.getByTestId('header')).toBeInTheDocument();
+  it('loads and displays the user dashboard profile', async () => {
+    axios.get.mockResolvedValueOnce({
+      data: { firstName: 'Jane', profilePic: '/me.png', email: 'jane@example.com' },
+    });
+
+    renderHeader({}, { hasPermission: () => false });
+    await waitFor(() => {
+      expect(screen.getByText(/Hello\s*Jane/, { selector: 'h6' })).toBeInTheDocument();
+    });
   });
 
   it('displays an error message when fetching the user dashboard profile fails', async () => {

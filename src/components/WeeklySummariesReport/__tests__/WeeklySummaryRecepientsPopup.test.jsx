@@ -1,9 +1,10 @@
-// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import '@testing-library/jest-dom/extend-expect';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
+
 import {
   getSummaryRecipients,
   addSummaryRecipient,
@@ -12,40 +13,47 @@ import {
 import mockSummaries from '../__mocks__/weeklySummariesReportData';
 import WeeklySummaryRecipientsPopup from '../WeeklySummaryRecepientsPopup';
 
-vi.mock('~/actions/weeklySummariesReportRecepients');
-vi.mock(
-  'components/Teams/MembersAutoComplete',
-  () =>
-    function mockfn({ searchText, setSearchText, onAddUser }) {
-      return (
-        <input
-          data-testid="members-autocomplete"
-          value={searchText}
-          onChange={e => {
-            setSearchText(e.target.value);
-            onAddUser({ _id: '2', firstName: 'Jane', lastName: 'Smith' });
-          }}
-        />
-      );
-    },
-);
-vi.mock('react-toastify', () => ({
-  toast: {
-    success: vi.fn(),
-    error: vi.fn(),
-  },
-}));
-vi.mock('react-redux', () => ({
-  ...vi.requireActual('react-redux'),
-  useSelector: vi.fn(),
-  useDispatch: vi.fn(),
-}));
-
+// **1)** Only mock with a factory (remove the bare vi.mock(...) above)
 vi.mock('~/actions/weeklySummariesReportRecepients', () => ({
   getSummaryRecipients: vi.fn().mockResolvedValue([]),
   addSummaryRecipient: vi.fn().mockResolvedValue(200),
   deleteSummaryRecipient: vi.fn().mockResolvedValue(200),
 }));
+
++vi.mock('~/components/Teams/MembersAutoComplete', () => ({
+  __esModule: true,
+  default: function MockMembersAutoComplete({ searchText, setSearchText, onAddUser }) {
+    return (
+      <input
+        data-testid="members-autocomplete"
+        value={searchText}
+        onChange={e => {
+          setSearchText(e.target.value);
+          onAddUser({ _id: '2', firstName: 'Jane', lastName: 'Smith' });
+        }}
+      />
+    );
+  },
+}));
+
+vi.mock('react-toastify', () => ({
+  __esModule: true,
+  toast: {
+    success: vi.fn(),
+    error: vi.fn(),
+  },
+}));
+
+// **2)** Use vi.importActual in an async factory for react-redux
+vi.mock('react-redux', async () => {
+  const actual = await vi.importActual('react-redux');
+  return {
+    __esModule: true,
+    ...actual,
+    useSelector: vi.fn(),
+    useDispatch: vi.fn(),
+  };
+});
 
 describe('WeeklySummaryRecipientsPopup Component', () => {
   const mockStore = configureStore([thunk]);

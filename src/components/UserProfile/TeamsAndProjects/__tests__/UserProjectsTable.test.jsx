@@ -6,15 +6,16 @@ import { render, screen, within } from '@testing-library/react';
 import { userProfileMock } from '../../../../__tests__/mockStates.js';
 
 vi.mock('utils/permissions', () => ({
-  hasPermission: vi.fn((a) => true),
+  hasPermission: vi.fn(() => true),
 }));
 
-vi.mock("react-router-dom", () => ({
-  ...vi.requireActual("react-router-dom"),
-  useLocation: () => ({
-    pathname: "localhost:3000/userprofile/1"
-  })
-}));
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
+  return {
+    ...actual,
+    useLocation: () => ({ pathname: 'localhost:3000/userprofile/1' }),
+  };
+});
 
 const mockStore = configureStore([thunk]);
 

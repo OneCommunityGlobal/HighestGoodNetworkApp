@@ -17,8 +17,7 @@ import 'react-day-picker/lib/style.css';
 import '../../../../Header/DarkMode.css';
 import TagsSearch from '../components/TagsSearch';
 import './AddTaskModal.css';
-import { fetchAllMembers } from 'actions/projectMembers';
-
+import { fetchAllMembers } from "../../../../../actions/projectMembers";
 
 const TINY_MCE_INIT_OPTIONS = {
   license_key: 'gpl',

@@ -7,6 +7,7 @@ import MockAdapter from 'axios-mock-adapter';
 import TaskButton from '../TaskButton';
 import * as taskActions from '../../../actions/task';
 import * as userActions from '../../../actions/userManagement';
+import * as reducer from '../reducer';
 
 const mockStore = configureStore([]);
 const task = {
@@ -32,11 +33,16 @@ const task = {
 
 vi.mock('../../../actions/task');
 vi.mock('../../../actions/userManagement');
-vi.mock('react-redux', () => ({
-  ...vi.requireActual('react-redux'),
-  useDispatch: vi.fn(),
-}));
 vi.mock('../reducer');
+
+// Mock react-redux to spy on useDispatch
+vi.mock('react-redux', async () => {
+  const actual = await vi.importActual('react-redux');
+  return {
+    ...actual,
+    useDispatch: vi.fn(),
+  };
+});
 
 describe('TaskButton', () => {
   let store;
@@ -57,6 +63,7 @@ describe('TaskButton', () => {
 
   afterEach(() => {
     mock.restore();
+    vi.clearAllMocks();
   });
 
   test('renders TaskButton correctly', () => {
@@ -70,11 +77,9 @@ describe('TaskButton', () => {
     expect(buttonElement).toBeInTheDocument();
   });
 
-  test.skip('calls markAsDone when button is clicked', async () => {
+  test('calls markAsDone when button is clicked', async () => {
     const updateTaskSpy = vi.spyOn(taskActions, 'updateTask').mockResolvedValue();
-    const deleteSelectedTaskSpy = jest
-      .spyOn(require('../reducer'), 'deleteSelectedTask')
-      .mockResolvedValue();
+    const deleteSelectedTaskSpy = vi.spyOn(reducer, 'deleteSelectedTask').mockResolvedValue();
     const getAllUserProfileSpy = vi.spyOn(userActions, 'getAllUserProfile').mockResolvedValue();
     const fetchAllTasksSpy = vi.spyOn(taskActions, 'fetchAllTasks').mockResolvedValue();
 

@@ -8,16 +8,20 @@ import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
 import moment from 'moment-timezone';
+import { vi } from 'vitest';
 
 const middlewares = [thunk]
 const mockStore = configureMockStore(middlewares)
 
-vi.mock('react-redux', () => ({
-  ...vi.requireActual('react-redux'),
-  useDispatch: vi.fn(),
-  useSelector: vi.fn(),
-  useStore: vi.fn(),
-}));
+vi.mock('react-redux', async (importOriginal) => {
+  const redux = await importOriginal();
+  return {
+    ...redux,
+    useDispatch: vi.fn(),
+    useSelector: vi.fn(),
+    useStore: vi.fn(),
+  };
+});
 
 
 const mockDispatch = vi.fn();

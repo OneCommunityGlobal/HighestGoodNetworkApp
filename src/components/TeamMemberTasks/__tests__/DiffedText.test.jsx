@@ -30,8 +30,8 @@ describe('DiffedText Component', () => {
       </Provider>,
     );
     expect(getByText('Hello')).toHaveStyle('color: rgb(255, 255, 255)');
-    expect(getByText('world')).toHaveStyle('color: white');
-    expect(getByText('React')).toHaveStyle('color: green');
+    expect(getByText('world')).toHaveStyle('color: rgb(255, 255, 255)');
+    expect(getByText('React')).toHaveStyle('color: rgb(0, 128, 0)');
   });
 
   it('handles text removal correctly', () => {
@@ -44,6 +44,6 @@ describe('DiffedText Component', () => {
         <DiffedText oldText="Hello world" newText="Hello" />
       </Provider>,
     );
-    expect(getByText('world')).toHaveStyle('textDecorationLine: line-through; color: rgb(255, 255, 255)');
+    expect(getByText('world')).toHaveStyle('textDecorationLine: line-through; color: rgb(255, 0, 0)');
   });
 });

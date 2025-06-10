@@ -10,7 +10,9 @@ import { authMock, userProfileMock, rolesMock, themeMock } from '../../../__test
 const mock = vi.fn();
 const mockStore = configureStore([thunk]);
 let store;
-
+beforeEach(() => {
+  mock.mockClear();
+});
 const defaultProps = {
   open: true,
   teamName: 'Example Team',

@@ -11,7 +11,9 @@ const defaultProps = {
 };
 
 const mock = vi.fn();
-
+beforeEach(() => {
+  mock.mockClear();
+});
 describe('CreateNewTeamPopUp', () => {
   it('should call closePopup function', () => {
     renderWithProvider(

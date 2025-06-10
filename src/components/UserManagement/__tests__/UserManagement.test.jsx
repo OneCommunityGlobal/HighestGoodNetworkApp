@@ -16,6 +16,9 @@ vi.mock('../../../actions/userManagement', () => ({
   updateUserStatus: vi.fn(),
   updateUserFinalDayStatusIsSet: vi.fn(),
   deleteUser: vi.fn(),
+  enableEditUserInfo: vi.fn(),
+  disableEditUserInfo: vi.fn(),
+  getAllRoles: vi.fn(),
 }));
 
 // Define mock constants here to avoid scope issues
@@ -24,161 +27,144 @@ const MOCK_NOT_FINAL_DAY = 'NotSetFinalDay';
 const MOCK_ACTIVE = 'Active';
 const MOCK_INACTIVE = 'Inactive';
 
-// Mock child components to avoid rendering them
-vi.mock(
-  '../UserTableHeader',
-  () =>
-    function() {
-      return <div data-testid="user-table-header">UserTableHeader</div>;
-    },
-);
+vi.mock('../UserTableHeader', () => ({
+  default: () => <div data-testid="user-table-header">UserTableHeader</div>,
+}));
 
-// Add index to test IDs to make them unique
-vi.mock(
-  '../UserTableData',
-  () =>
-    function({ onPauseResumeClick, onFinalDayClick, onActiveInactiveClick, user, index }) {
-      return (
-        <div data-testid={`user-table-data-${index}`}>
-          <button
-            type="button"
-            data-testid={`pause-resume-button-${index}`}
-            onClick={() => onPauseResumeClick(user, MOCK_ACTIVE)}
-          >
-            Pause/Resume
-          </button>
-          <button
-            type="button"
-            data-testid={`inactive-button-${index}`}
-            onClick={() => onPauseResumeClick(user, MOCK_INACTIVE)}
-          >
-            Set Inactive
-          </button>
-          <button
-            type="button"
-            data-testid={`active-inactive-button-${index}`}
-            onClick={() => onActiveInactiveClick(user)}
-          >
-            Toggle Active/Inactive
-          </button>
-          <button
-            type="button"
-            data-testid={`final-day-button-${index}`}
-            onClick={() => onFinalDayClick(user, MOCK_FINAL_DAY)}
-          >
-            Set Final Day
-          </button>
-          <button
-            type="button"
-            data-testid={`not-final-day-button-${index}`}
-            onClick={() => onFinalDayClick(user, MOCK_NOT_FINAL_DAY)}
-          >
-            Remove Final Day
-          </button>
-        </div>
-      );
-    },
-);
+vi.mock('../UserTableData', () => ({
+  default: function UserTableData({
+    onPauseResumeClick,
+    onFinalDayClick,
+    onActiveInactiveClick,
+    user,
+    index,
+  }) {
+    return (
+      <div data-testid={`user-table-data-${index}`}>
+        <button
+          type="button"
+          data-testid={`pause-resume-button-${index}`}
+          onClick={() => onPauseResumeClick(user, MOCK_ACTIVE)}
+        >
+          Pause/Resume
+        </button>
+        <button
+          type="button"
+          data-testid={`inactive-button-${index}`}
+          onClick={() => onPauseResumeClick(user, MOCK_INACTIVE)}
+        >
+          Set Inactive
+        </button>
+        <button
+          type="button"
+          data-testid={`active-inactive-button-${index}`}
+          onClick={() => onActiveInactiveClick(user)}
+        >
+          Toggle Active/Inactive
+        </button>
+        <button
+          type="button"
+          data-testid={`final-day-button-${index}`}
+          onClick={() => onFinalDayClick(user, MOCK_FINAL_DAY)}
+        >
+          Set Final Day
+        </button>
+        <button
+          type="button"
+          data-testid={`not-final-day-button-${index}`}
+          onClick={() => onFinalDayClick(user, MOCK_NOT_FINAL_DAY)}
+        >
+          Remove Final Day
+        </button>
+      </div>
+    );
+  },
+}));
 
-vi.mock(
-  '../UserTableSearchHeader',
-  () =>
-    function({ onFirstNameSearch }) {
-      return (
-        <div data-testid="user-table-search-header">
-          <input
-            data-testid="first-name-search"
-            onChange={e => onFirstNameSearch(e.target.value)}
-          />
-        </div>
-      );
-    },
-);
-vi.mock(
-  '../UserTableFooter',
-  () =>
-    function() {
-      return <div data-testid="user-table-footer">UserTableFooter</div>;
-    },
-);
-vi.mock(
-  '../UserSearchPanel',
-  () =>
-    function({ onActiveFiter, onNewUserClick }) {
-      return (
-        <div data-testid="user-search-panel">
-          <button
-            type="button"
-            data-testid="active-filter-button"
-            onClick={() => onActiveFiter('active')}
-          >
-            Filter Active
-          </button>
-          <button type="button" data-testid="new-user-button" onClick={onNewUserClick}>
-            New User
-          </button>
-        </div>
-      );
-    },
-);
-vi.mock(
-  '../NewUserPopup',
-  () =>
-    function({ open }) {
-      return open ? <div data-testid="new-user-popup">NewUserPopup</div> : null;
-    },
-);
-vi.mock(
-  '../ActivationDatePopup',
-  () =>
-    function({ open }) {
-      return open ? <div data-testid="activation-date-popup">ActivationDatePopup</div> : null;
-    },
-);
-vi.mock(
-  '../SetupHistoryPopup',
-  () =>
-    function() {
-      return <div data-testid="setup-history-popup">SetupHistoryPopup</div>;
-    },
-);
-vi.mock(
-  '../DeleteUserPopup',
-  () =>
-    function() {
-      return <div data-testid="delete-user-popup">DeleteUserPopup</div>;
-    },
-);
-vi.mock(
-  '../ActiveInactiveConfirmationPopup',
-  () =>
-    function({ open }) {
-      return open ? (
-        <div data-testid="active-inactive-popup">ActiveInactiveConfirmationPopup</div>
-      ) : null;
-    },
-);
-vi.mock(
-  '../SetUpFinalDayPopUp',
-  () =>
-    function({ open }) {
-      return open ? <div data-testid="setup-final-day-popup">SetUpFinalDayPopUp</div> : null;
-    },
-);
-vi.mock(
-  '../logTimeOffPopUp',
-  () =>
-    function() {
-      return <div data-testid="log-time-off-popup">LogTimeOffPopUp</div>;
-    },
-);
-vi.mock(
-  '../setupNewUserPopup',
-  () =>
-    function() {
-      return <div data-testid="setup-new-user-popup">SetupNewUserPopup</div>;
-    },
-);
+vi.mock('../UserTableSearchHeader', () => ({
+  default: function UserTableSearchHeader({ onFirstNameSearch }) {
+    return (
+      <div data-testid="user-table-search-header">
+        <input data-testid="first-name-search" onChange={e => onFirstNameSearch(e.target.value)} />
+      </div>
+    );
+  },
+}));
+
+vi.mock('../UserTableFooter', () => ({
+  default: function UserTableFooter() {
+    return <div data-testid="user-table-footer">UserTableFooter</div>;
+  },
+}));
+
+vi.mock('../UserSearchPanel', () => ({
+  default: function UserSearchPanel({ onActiveFiter, onNewUserClick }) {
+    return (
+      <div data-testid="user-search-panel">
+        <button
+          type="button"
+          data-testid="active-filter-button"
+          onClick={() => onActiveFiter('active')}
+        >
+          Filter Active
+        </button>
+        <button type="button" data-testid="new-user-button" onClick={onNewUserClick}>
+          New User
+        </button>
+      </div>
+    );
+  },
+}));
+
+vi.mock('../NewUserPopup', () => ({
+  default: function NewUserPopup({ open }) {
+    return open ? <div data-testid="new-user-popup">NewUserPopup</div> : null;
+  },
+}));
+
+vi.mock('../ActivationDatePopup', () => ({
+  default: function ActivationDatePopup({ open }) {
+    return open ? <div data-testid="activation-date-popup">ActivationDatePopup</div> : null;
+  },
+}));
+
+vi.mock('../SetupHistoryPopup', () => ({
+  default: function SetupHistoryPopup() {
+    return <div data-testid="setup-history-popup">SetupHistoryPopup</div>;
+  },
+}));
+
+vi.mock('../DeleteUserPopup', () => ({
+  default: function DeleteUserPopup() {
+    return <div data-testid="delete-user-popup">DeleteUserPopup</div>;
+  },
+}));
+
+vi.mock('../ActiveInactiveConfirmationPopup', () => ({
+  default: function ActiveInactiveConfirmationPopup({ open }) {
+    return open ? (
+      <div data-testid="active-inactive-popup">ActiveInactiveConfirmationPopup</div>
+    ) : null;
+  },
+}));
+
+vi.mock('../SetUpFinalDayPopUp', () => ({
+  default: function SetUpFinalDayPopUp({ open }) {
+    return open ? <div data-testid="setup-final-day-popup">SetUpFinalDayPopUp</div> : null;
+  },
+}));
+
+vi.mock('../logTimeOffPopUp', () => ({
+  default: function LogTimeOffPopUp() {
+    return <div data-testid="log-time-off-popup">LogTimeOffPopUp</div>;
+  },
+}));
+
+vi.mock('../setupNewUserPopup', () => ({
+  default: function SetupNewUserPopup() {
+    return <div data-testid="setup-new-user-popup">SetupNewUserPopup</div>;
+  },
+}));
 
 describe('UserManagement Component', () => {
   let props;

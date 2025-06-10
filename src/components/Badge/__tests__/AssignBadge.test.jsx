@@ -1,21 +1,16 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import React from 'react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
-
-
-import AssignBadge from '~/components/Badge/AssignBadge';
 import { Provider } from 'react-redux';
-import { themeMock } from '__tests__/mockStates';
+import { vi } from 'vitest';
 
-const mockStore = configureStore([thunk]);
-
-const mockallBadgeData = [
-  { _id: '1', badgeName: '30 HOURS 3-WEEK STREAK' },
-  { _id: '2', badgeName: 'LEAD A TEAM OF 40+ (Trailblazer)' },
-];
-
+// --- Mock Data ---
 const mockUserProfilesData = [
   {
+    _id: 'user1',
+    firstName: 'jerry',
+    lastName: 'volunteer1',
     permissions: {
       frontPermissions: ['getWeeklySummaries', 'seeUserManagement'],
       backPermissions: [],
@@ -23,164 +18,124 @@ const mockUserProfilesData = [
     isActive: true,
     weeklycommittedHours: 50,
     role: 'Volunteer',
-    firstName: 'jerry',
-    lastName: 'volunteer1',
     email: 'jerryvolunteer1@gmail.com',
-    _id: 'user1',
   },
   {
-    permissions: {
-      frontPermissions: ['editTimeEntry', 'toggleTangibleTime'],
-      backPermissions: [],
-    },
+    _id: 'user2',
+    firstName: 'jerry',
+    lastName: 'volunteer2',
+    permissions: { frontPermissions: ['editTimeEntry', 'toggleTangibleTime'], backPermissions: [] },
     isActive: true,
     weeklycommittedHours: 10,
     role: 'Volunteer',
-    firstName: 'jerry',
-    lastName: 'volunteer2',
     email: 'jerryvolunteer2@gmail.com',
-    _id: 'user2',
   },
 ];
 
+const mockAllBadgeData = [
+  { _id: '1', badgeName: '30 HOURS 3-WEEK STREAK' },
+  { _id: '2', badgeName: 'LEAD A TEAM OF 40+ (Trailblazer)' },
+];
+
 vi.mock('../../../actions/userManagement', () => ({
-  getAllUserProfile: vi.fn(),
+  __esModule: true,
+  getAllUserProfile: vi.fn(() => dispatch => {
+    dispatch({ type: 'USER_PROFILES_FETCH_START' });
+    dispatch({ type: 'USER_PROFILES_FETCH_COMPLETE', payload: mockUserProfilesData });
+    return Promise.resolve(mockUserProfilesData);
+  }),
 }));
 
 vi.mock('../../../actions/badgeManagement', () => ({
+  __esModule: true,
   getFirstName: vi.fn(),
   getLastName: vi.fn(),
   getUserId: vi.fn(),
-  clearNameAndSelected: vi.fn(),
-  assignBadgesByUserID: vi.fn(),
-  assignBadges: vi.fn(),
-  getBadgesByUserId: vi.fn(),
-  validateBadges: vi.fn(),
-  closeAlert: vi.fn(),
+  clearNameAndSelected: vi.fn(() => () => {}),
+  assignBadgesByUserID: vi.fn(() => () => Promise.resolve()),
+  assignBadges: vi.fn(() => () => Promise.resolve()),
+  getBadgesByUserId: vi.fn(() => () => Promise.resolve([])),
+  validateBadges: vi.fn(() => () => Promise.resolve()),
+  closeAlert: vi.fn(() => () => {}),
 }));
+
+import AssignBadge from '../AssignBadge';
+
+const mockStore = configureStore([thunk]);
 
 describe('AssignBadge component', () => {
   let store;
 
   beforeEach(() => {
-    // Reset the mocks
     vi.clearAllMocks();
 
-    // Set up our mock implementations
-    const userManagement = require('../../../actions/userManagement');
-    const badgeManagement = require('../../../actions/badgeManagement');
-
-    // Mock getAllUserProfile to return a thunk
-    userManagement.getAllUserProfile.mockImplementation(() => dispatch => {
-      dispatch({ type: 'USER_PROFILES_FETCH_START' });
-      dispatch({ type: 'USER_PROFILES_FETCH_COMPLETE', payload: mockUserProfilesData });
-      return Promise.resolve(mockUserProfilesData);
-    });
-
-    // Mock other actions to return plain objects
-    badgeManagement.getFirstName.mockImplementation(name => ({
-      type: 'GET_FIRST_NAME',
-      payload: name,
-    }));
-    badgeManagement.getLastName.mockImplementation(name => ({
-      type: 'GET_LAST_NAME',
-      payload: name,
-    }));
-    badgeManagement.getUserId.mockImplementation(id => ({ type: 'GET_USER_ID', payload: id }));
-    badgeManagement.clearNameAndSelected.mockImplementation(() => ({
-      type: 'CLEAR_NAME_AND_SELECTED',
-    }));
-    badgeManagement.assignBadgesByUserID.mockImplementation(() => () => Promise.resolve());
-    badgeManagement.assignBadges.mockImplementation(() => () => Promise.resolve());
-    badgeManagement.getBadgesByUserId.mockImplementation(() => () => Promise.resolve([]));
-    badgeManagement.closeAlert.mockImplementation(() => ({ type: 'CLOSE_ALERT' }));
-    badgeManagement.validateBadges.mockImplementation(() => () => Promise.resolve());
-
     store = mockStore({
+      auth: { user: {} },
       badge: {
+        selectedBadges: ['Badge 1', 'Badge 2'],
         firstName: '',
         lastName: '',
-        selectedBadges: ['Badge 1', 'Badge 2'],
+        userId: null,
+        message: '',
+        alertVisible: false,
+        color: '',
       },
       allUserProfiles: {
         userProfiles: mockUserProfilesData,
         fetching: false,
         fetched: true,
       },
-      theme: themeMock,
+      theme: { darkMode: false },
     });
 
-    // Override dispatch to handle thunks
-    const originalDispatch = store.dispatch;
-    store.dispatch = vi.fn(action => {
-      if (typeof action === 'function') {
-        return action(originalDispatch);
-      }
-      return originalDispatch(action);
-    });
+    const origDispatch = store.dispatch;
+    store.dispatch = vi.fn(action =>
+      typeof action === 'function' ? action(origDispatch) : origDispatch(action),
+    );
   });
 
-  const renderComponent = () => {
-    return render(
+  const renderComponent = () =>
+    render(
       <Provider store={store}>
-        <AssignBadge allBadgeData={mockallBadgeData} />
+        <AssignBadge allBadgeData={mockAllBadgeData} />
       </Provider>,
     );
-  };
 
-  it('Renders without crashing', () => {
+  it('renders without crashing', () => {
     renderComponent();
   });
 
-  it('Renders the Label element', () => {
+  it('renders label and input', () => {
     renderComponent();
-    const searchInput = screen.getByText('Search by Full Name');
-    expect(searchInput).toBeInTheDocument();
+    expect(screen.getByText('Search by Full Name')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Full Name')).toBeInTheDocument();
   });
 
-  it('Renders the full name input', async () => {
+  it('filters user list based on input', async () => {
     renderComponent();
-    const inputFullNameElement = screen.getByPlaceholderText('Full Name');
-    expect(inputFullNameElement).toBeInTheDocument();
+    fireEvent.change(screen.getByPlaceholderText('Full Name'), { target: { value: 'jerry' } });
+    const rows = await screen.findAllByRole('row', { name: /jerry/i });
+    expect(rows).toHaveLength(2);
   });
 
-  it('Renders user list based on full name search', async () => {
+  it('disables the Assign Badge button until a user is selected', () => {
     renderComponent();
-    const inputFullNameElement = screen.getByPlaceholderText('Full Name');
-
-    fireEvent.change(inputFullNameElement, { target: { value: 'jerry' } });
-
-    const userRows = await screen.findAllByRole('row', { name: /jerry/ });
-    expect(userRows.length).toBe(2);
+    expect(screen.getByText('Assign Badge')).toBeDisabled();
   });
 
-  it('Renders the Assign Badge button', () => {
+  it('shows tooltip messages on hover', async () => {
     renderComponent();
-    const buttonElement = screen.getByText('Assign Badge');
-    expect(buttonElement).toBeInTheDocument();
+    fireEvent.mouseEnter(screen.getByTestId('NameInfo'));
+    expect(
+      await screen.findByText(/Start typing a name and a list of the active members/),
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByText(/After selecting a person, click "Assign Badge"/),
+    ).toBeInTheDocument();
   });
 
-  it('Renders the tool tip hover message', async () => {
+  it('displays the count of badges selected', () => {
     renderComponent();
-
-    const tooltip = screen.getByTestId('NameInfo');
-    fireEvent.mouseEnter(tooltip);
-
-    const tip1 =
-      'Start typing a name and a list of the active members (matching what you type) will be auto-generated. Then you........ CHOOSE ONE!';
-    const tip2 =
-      'After selecting a person, click "Assign Badge" and choose one or multiple badges. Click "confirm" then "submit" and those badges will be assigned.';
-
-    const message1 = await screen.findByText(tip1);
-    const message2 = await screen.findByText(tip2);
-
-    expect(message1).toBeInTheDocument();
-    expect(message2).toBeInTheDocument();
-  });
-
-  it('2 badges selected message appears', async () => {
-    renderComponent();
-    const numOfBadges = screen.getByText('2 badges selected');
-    expect(numOfBadges).toBeInTheDocument();
+    expect(screen.getByText('2 badges selected')).toBeInTheDocument();
   });
 });

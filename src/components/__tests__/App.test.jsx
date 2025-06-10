@@ -1,13 +1,10 @@
-// src/components/__tests__/App.test.jsx
-// @version 3.0.0
-
+import { vi } from 'vitest';
 import React from 'react';
-import { cleanup, render } from '@testing-library/react';
+import { render, cleanup } from '@testing-library/react';
 
-// === Stub out chart.js so Chart.register, LineController, etc. all exist ===
 vi.mock('chart.js', () => {
   class Chart {
-    static register(..._args) { /* no-op */ }
+    static register(..._) {}
   }
   return {
     __esModule: true,
@@ -15,7 +12,9 @@ vi.mock('chart.js', () => {
     CategoryScale: class {},
     LinearScale: class {},
     BarController: class {},
-    LineController: class {},    // ← ensure this export exists
+    LineController: class {},
+    RadialLinearScale: class {},
+    Filler: class {},
     BarElement: class {},
     LineElement: class {},
     PointElement: class {},
@@ -25,149 +24,126 @@ vi.mock('chart.js', () => {
   };
 });
 
-// === Stub react-chartjs-2 so <Bar> and <Line> just render null ===
+// Stub react-chartjs-2 so <Bar> and <Line> render null
 vi.mock('react-chartjs-2', () => ({
   __esModule: true,
   Bar: () => null,
   Line: () => null,
 }));
 
-// === Stub out your authActions with every export your components import ===
+vi.mock('popper.js', () => ({}));
+vi.mock('react-leaflet', () => ({}));
+vi.mock('react-leaflet-cluster', () => ({}));
+vi.mock('redux-persist/integration/react', () => ({
+  __esModule: true,
+  PersistGate: ({ children }) => children,
+}));
+
+// Stub your authActions
 vi.mock('../../actions/authActions', () => {
-  const logoutUser     = vi.fn(() => ({ type: 'LOGOUT_USER' }));
-  const setCurrentUser = vi.fn(user => ({ type: 'SET_CURRENT_USER', payload: user }));
-  const getHeaderData  = vi.fn(() => ({ type: 'GET_HEADER_DATA' }));
-  const getAllRoles    = vi.fn(() => ({ type: 'GET_ALL_ROLES' }));
-  const hasPermission  = vi.fn(() => ({ type: 'HAS_PERMISSION' }));
+  const logoutUser = vi.fn(() => ({ type: 'LOGOUT_USER' }));
+  const setCurrentUser = vi.fn(u => ({ type: 'SET_CURRENT_USER', payload: u }));
+  const loginUser = vi.fn(() => ({ type: 'LOGIN_USER' }));
+  const clearErrors = vi.fn(() => ({ type: 'CLEAR_ERRORS' }));
   return {
     __esModule: true,
     logoutUser,
     setCurrentUser,
-    getHeaderData,
-    getAllRoles,
-    hasPermission,
+    loginUser,
+    clearErrors,
+    getHeaderData: vi.fn(() => ({ type: 'GET_HEADER_DATA' })),
+    getAllRoles: vi.fn(() => ({ type: 'GET_ALL_ROLES' })),
+    hasPermission: vi.fn(() => ({ type: 'HAS_PERMISSION' })),
   };
 });
 
-// Bypass other problematic modules
-vi.mock('popper.js',                () => ({}));
-vi.mock('react-leaflet',            () => ({}));
-vi.mock('react-leaflet-cluster',    () => ({}));
-vi.mock('redux-persist/integration/react', () => ({ PersistGate: ({ children }) => children }));
+vi.mock('../../services/httpService', () => ({
+  __esModule: true,
+  default: { setjwt: vi.fn() },
+}));
 
-afterEach(() => {
-  cleanup();
-  vi.resetModules();
-  localStorage.clear();
+vi.mock('../../store', () => {
+  const store = {
+    dispatch: vi.fn(),
+  };
+  const persistor = {
+    subscribe: vi.fn(),
+    dispatch: vi.fn(),
+    getState: vi.fn(() => ({ bootstrapped: true })),
+    persist: vi.fn(),
+    flush: vi.fn(),
+  };
+  return {
+    __esModule: true,
+    default: () => ({ persistor, store }),
+  };
 });
 
+vi.mock('jwt-decode', () => ({
+  __esModule: true,
+  default: vi.fn(() => ({})),
+}));
+
+import jwtDecode from 'jwt-decode';
+import httpService from '../../services/httpService';
+import { logoutUser, setCurrentUser } from '../../actions/authActions';
+import config from '../../config.json';
+
 describe('App Initialization Token Checks', () => {
-  let dispatchSpy, setjwtMock, logoutUser, setCurrentUser, config;
-
   beforeEach(() => {
+    vi.resetModules();
+    cleanup();
+    vi.clearAllMocks();
     localStorage.clear();
-    dispatchSpy = vi.fn();
-
-    // Mock store
-    vi.doMock('../../store', () => ({
-      __esModule: true,
-      default: () => ({
-        persistor: {
-          subscribe: vi.fn(),
-          dispatch: vi.fn(),
-          getState:  vi.fn(() => ({ bootstrapped: true })),
-          persist:   vi.fn(),
-          flush:     vi.fn(),
-        },
-        store: { dispatch: dispatchSpy },
-      }),
-    }));
-
-    // Mock httpService
-    setjwtMock = vi.fn();
-    vi.doMock('../../services/httpService', () => ({
-      __esModule: true,
-      default: { setjwt: setjwtMock },
-    }));
-
-    // Grab our already-mocked authActions
-    // eslint-disable-next-line global-require
-    ({ logoutUser, setCurrentUser } = require('../../actions/authActions'));
-    // Load config
-    // eslint-disable-next-line global-require
-    config = require('../../config.json');
   });
 
-  it('should log out the user if the token is expired', async () => {
-    const { tokenKey } = config;
-    localStorage.setItem(tokenKey, 'expiredToken');
-
-    // Mock jwt-decode to return an expiry in 100ms
-    vi.doMock('jwt-decode', () => ({
-      __esModule: true,
-      default: () => ({ expiryTimestamp: Date.now() + 100 }),
-    }));
-
+  it('logs out the user if the token is expired', async () => {
+    localStorage.setItem(config.tokenKey, 'expiredToken');
+    jwtDecode.mockReturnValue({ expiryTimestamp: Math.floor((Date.now() - 10000) / 1000) });
     await import('../App.jsx');
 
     expect(logoutUser).toHaveBeenCalled();
-    expect(dispatchSpy).toHaveBeenCalledWith(logoutUser());
-    expect(setjwtMock).not.toHaveBeenCalled();
-  });
+    expect(httpService.setjwt).not.toHaveBeenCalled();
+  }, 10_000);
 
-  it('should set current user and call setjwt if token is valid', async () => {
-    const { tokenKey } = config;
-    localStorage.setItem(tokenKey, 'validToken');
-
-    const validExpiry = Date.now() + 86400 * 3 * 1000;
-    const decodedPayload = { expiryTimestamp: validExpiry, name: 'Test User' };
-
-    vi.doMock('jwt-decode', () => ({
-      __esModule: true,
-      default: () => decodedPayload,
-    }));
+  it('sets current user and calls setjwt if token is valid', async () => {
+    const payload = { expiryTimestamp: Date.now() + 3 * 24 * 60 * 60 * 1000, name: 'Test User' };
+    localStorage.setItem(config.tokenKey, 'validToken');
+    jwtDecode.mockReturnValue(payload);
 
     await import('../App.jsx');
 
-    expect(setCurrentUser).toHaveBeenCalledWith(decodedPayload);
-    expect(dispatchSpy).toHaveBeenCalledWith(setCurrentUser(decodedPayload));
-    expect(setjwtMock).toHaveBeenCalledWith('validToken');
+    expect(setCurrentUser).toHaveBeenCalledWith(payload);
+    expect(httpService.setjwt).toHaveBeenCalledWith('validToken');
   });
 
-  it('should not dispatch any token actions if no token exists in localStorage', async () => {
-    const { tokenKey } = config;
-    localStorage.removeItem(tokenKey);
-
-    vi.doMock('jwt-decode', () => ({
-      __esModule: true,
-      default: () => { throw new Error('should not be called'); },
-    }));
+  it('does nothing if no token exists in localStorage', async () => {
+    jwtDecode.mockImplementation(() => {
+      throw new Error('should not be called');
+    });
 
     await import('../App.jsx');
 
     expect(logoutUser).not.toHaveBeenCalled();
     expect(setCurrentUser).not.toHaveBeenCalled();
-    expect(setjwtMock).not.toHaveBeenCalled();
+    expect(httpService.setjwt).not.toHaveBeenCalled();
   });
 });
 
 describe('App Component Rendering', () => {
   let App;
-
   beforeAll(async () => {
-    vi.resetModules();
-    // we keep authActions mocked so CPHeader always finds its action creators
-    localStorage.clear();
     const mod = await import('../App.jsx');
     App = mod.default;
   });
 
-  let consoleErrorSpy;
   beforeEach(() => {
-    consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'error').mockImplementation(() => {});
   });
   afterEach(() => {
-    consoleErrorSpy.mockRestore();
+    console.error.mockRestore();
+    cleanup();
+    vi.clearAllMocks();
   });
 
   it('should render the App component without errors', () => {

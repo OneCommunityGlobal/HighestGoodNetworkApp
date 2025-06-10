@@ -6,8 +6,6 @@ import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
 import { MemoryRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import TeamMemberTask from '../TeamMemberTask';
-import { authMock, rolesMock, userProfileMock, themeMock } from '../../../__tests__/mockStates';
 
 // sample props used for testing purpose. You can change the props according to your test.
 // currently used admin props to conduct the test
@@ -88,7 +86,7 @@ describe('Team Member Task Component', () => {
 
     const icon = screen.getByTestId('icon');
     if (props.totaltangibletime_hrs >= props.weeklycommittedHours) {
-      expect(icon).toHaveStyle('color: rgb(255, 255, 255)');
+      expect(icon).toHaveStyle('color: rgb(0, 128, 0)');
     } else {
       expect(icon).toHaveStyle('color: red');
     }

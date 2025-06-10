@@ -5,7 +5,9 @@ import { renderWithProvider } from '__tests__/utils';
 import { screen, fireEvent } from '@testing-library/react';
 
 const mock = vi.fn();
-
+beforeEach(() => {
+  mock.mockClear();
+});
 const defaultProps = {
   open: true,
   selectedTeamName: 'Team 1',

@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { TaskEditSuggestionRow } from '../TaskEditSuggestionRow';
 
 // Mock the `datetimeToDate` function
-vi.mock('components/TeamMemberTasks/components/TaskDifferenceModal', () => ({
+vi.mock('~/components/TeamMemberTasks/components/TaskDifferenceModal', () => ({
   datetimeToDate: () => 'Mocked Date',
 }));
 
@@ -91,7 +91,7 @@ describe('TaskEditSuggestionRow', () => {
       backgroundColor: '#007bff',
       borderRadius: '5px',
       padding: '5px 10px',
-      color: 'white',
+      color: 'rgb(255, 255, 255)',
     });
   });
 

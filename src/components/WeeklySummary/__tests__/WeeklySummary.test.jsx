@@ -13,7 +13,10 @@ import CountdownTimer from '../CountdownTimer';
 
 import CurrentPromptModal from '../CurrentPromptModal';
 
-vi.mock('../CurrentPromptModal', () => 'current-Prompt-Modal');
+vi.mock('../CurrentPromptModal', () => ({
+  __esModule: true,
+  default: () => <div data-testid="current-prompt-modal">Mocked Prompt Modal</div>,
+}));
 const wrapper = props => render(<CurrentPromptModal {...props} />);
 vi.mock('react-toastify', () => ({
   toast: vi.fn(),

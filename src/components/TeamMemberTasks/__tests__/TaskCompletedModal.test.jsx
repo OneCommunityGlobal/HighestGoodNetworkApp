@@ -27,8 +27,8 @@ describe('TaskCompletedModal Component', () => {
     render(
       <TaskCompletedModal
         isOpen
-        setClickedToShowModal={jest.fn()}
-        setCurrentUserId={jest.fn()}
+        setClickedToShowModal={vi.fn()}
+        setCurrentUserId={vi.fn()}
         popupClose={mockCloseFunction}
         updateTask={mockUpdateTask}
         task={{ _id: '1', resources: [] }}
@@ -42,8 +42,8 @@ describe('TaskCompletedModal Component', () => {
     render(
       <TaskCompletedModal
         isOpen
-        setClickedToShowModal={jest.fn()}
-        setCurrentUserId={jest.fn()}
+        setClickedToShowModal={vi.fn()}
+        setCurrentUserId={vi.fn()}
         popupClose={mockCloseFunction}
         updateTask={mockUpdateTask}
         task={{ _id: '1', resources: [] }}
@@ -59,8 +59,8 @@ describe('TaskCompletedModal Component', () => {
     render(
       <TaskCompletedModal
         isOpen
-        setClickedToShowModal={jest.fn()}
-        setCurrentUserId={jest.fn()}
+        setClickedToShowModal={vi.fn()}
+        setCurrentUserId={vi.fn()}
         popupClose={mockCloseFunction}
         updateTask={mockUpdateTask}
         task={{ _id: '1', resources: [] }}

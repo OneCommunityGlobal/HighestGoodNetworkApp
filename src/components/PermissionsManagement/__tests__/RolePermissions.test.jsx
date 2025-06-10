@@ -1,3 +1,11 @@
+vi.mock('react-toastify', () => ({
+  __esModule: true,
+  toast: {
+    success: vi.fn(),
+    error:   vi.fn(),
+  },
+  ToastContainer: () => null,
+}))
 // eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
@@ -60,13 +68,7 @@ const roleName = 'Owner';
 const roleId = 'abc123';
 
 vi.mock('axios');
-vi.mock('react-toastify', () => ({
-  ...vi.requireActual('react-toastify'),
-  toast: {
-    success: vi.fn(),
-    error: vi.fn(),
-  },
-}));
+
 // eslint-disable-next-line no-unused-vars
 const flushAllPromises = () => new Promise(setImmediate);
 

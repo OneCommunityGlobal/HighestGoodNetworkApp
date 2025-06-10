@@ -4,15 +4,15 @@ import { authMock, userProfileMock } from '__tests__/mockStates';
 import LinkModButton from '../LinkModButton';
 
 // Mock child component
-vi.mock('components/UserProfile/UserProfileModal/EditLinkModal', () => {
-  return function(props) {
-    return (
-      <div data-testid="edit-modal">
-        {props.isOpen ? <div data-testid="modal">mocked EditLinkModal</div> : null}
-      </div>
-    );
-  };
-});
+vi.mock('../../UserProfileModal/EditLinkModal', () => ({
+  __esModule: true,
+  default: (props) => (
+    <div data-testid="edit-modal">
+      {/* only render inner <div> when isOpen=true */}
+      {props.isOpen && <div data-testid="modal">mocked EditLinkModal</div>}
+    </div>
+  ),
+}));
 
 describe('LinkModButton Component', () => {
   const mockProps = {

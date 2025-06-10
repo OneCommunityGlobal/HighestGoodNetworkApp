@@ -38,6 +38,10 @@ const mockallTeams = [
 const mockhandleTeam = vi.fn();
 
 describe('Team Table Data component', () => {
+    beforeEach(() => {
+    mockhandleTeam.mockClear();
+  });
+
   it('check team name displaying properly when the user is assigned to teams', () => {
     const teamsData = [
       {

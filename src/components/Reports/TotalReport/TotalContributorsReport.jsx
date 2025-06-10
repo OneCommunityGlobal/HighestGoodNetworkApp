@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo, useCallback } from 'react';
-import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
+import { ENDPOINTS } from '~/utils/URL';
 import './TotalReport.css';
 import TotalReportBarGraph from './TotalReportBarGraph';
 import Loading from '../../common/Loading';

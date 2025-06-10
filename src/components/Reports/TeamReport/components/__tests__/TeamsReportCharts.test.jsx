@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-
+import TeamsReportCharts from '../TeamsReportCharts';
 // Completely mock the TeamsReportCharts component
 vi.mock('../TeamsReportCharts', () => ({
   __esModule: true,
@@ -114,7 +114,6 @@ describe('TeamsReportCharts Component', () => {
 
   // Import the component after mocking
   // eslint-disable-next-line global-require
-  const TeamsReportCharts = require('../TeamsReportCharts').default;
 
   it('renders without crashing', () => {
     render(

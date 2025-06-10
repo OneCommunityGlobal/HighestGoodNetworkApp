@@ -1,58 +1,53 @@
-import { render, fireEvent } from '@testing-library/react';
-import InfringementsViz from '../InfringementsViz';
+import { vi } from 'vitest';
 
-// Mock D3 module
-vi.mock('d3', () => {
+vi.mock('react', async importOriginal => {
+  const React = await importOriginal();
   return {
-    select: vi.fn().mockReturnValue({
-      append: vi.fn().mockReturnThis(),
-      attr: vi.fn().mockReturnThis(),
-      style: vi.fn().mockReturnThis(),
-      datum: vi.fn().mockReturnThis(),
-      data: vi.fn().mockReturnThis(),
-      join: vi.fn().mockReturnThis(),
-      html: vi.fn().mockReturnThis(),
-      on: vi.fn().mockReturnThis(),
-      call: vi.fn().mockReturnThis(),
-      empty: vi.fn().mockReturnValue(true),
-      selectAll: vi.fn().mockReturnThis(),
-      text: vi.fn().mockReturnThis(),
-      remove: vi.fn(),
-    }),
-    selectAll: vi.fn().mockReturnValue({
-      remove: vi.fn(),
-      style: vi.fn().mockReturnThis(),
-    }),
-    timeParse: vi.fn().mockImplementation(() => str => new Date(str)),
-    timeFormat: vi.fn().mockImplementation(() => () => 'Jan 1, 2022'),
-    scaleTime: vi.fn().mockReturnValue({
-      domain: vi.fn().mockReturnThis(),
-      range: vi.fn().mockReturnThis(),
-    }),
-    scaleLinear: vi.fn().mockReturnValue({
-      domain: vi.fn().mockReturnThis(),
-      range: vi.fn().mockReturnThis(),
-    }),
-    axisBottom: vi.fn(),
-    axisLeft: vi.fn().mockReturnValue({
-      ticks: vi.fn().mockReturnThis(),
-      tickFormat: vi.fn().mockReturnThis(),
-    }),
-    line: vi.fn().mockReturnValue({
-      x: vi.fn().mockReturnThis(),
-      y: vi.fn().mockReturnThis(),
-    }),
-    extent: vi.fn().mockReturnValue([new Date(), new Date()]),
-    format: vi.fn().mockReturnValue(() => '0'),
+    ...React,
+    useEffect: fn => fn(),
   };
 });
 
-// We're disabling the useEffect for testing
-vi.mock('react', () => {
-  const originalReact = vi.requireActual('react');
+// now import everything else
+import { render, fireEvent } from '@testing-library/react';
+import InfringementsViz from '../InfringementsViz';
+// Mock D3 module
+vi.mock('d3', () => {
+  const chain = {
+    append: vi.fn().mockReturnThis(),
+    attr: vi.fn().mockReturnThis(),
+    style: vi.fn().mockReturnThis(),
+    datum: vi.fn().mockReturnThis(),
+    data: vi.fn().mockReturnThis(),
+    join: vi.fn().mockReturnThis(),
+    html: vi.fn().mockReturnThis(),
+    on: vi.fn().mockReturnThis(),
+    call: vi.fn().mockReturnThis(),
+    empty: vi.fn().mockReturnValue(true),
+    selectAll: vi.fn().mockReturnThis(),
+    select: vi.fn().mockReturnThis(), // ← add this
+    text: vi.fn().mockReturnThis(),
+    remove: vi.fn(),
+  };
+
   return {
-    ...originalReact,
-    useEffect: vi.fn().mockImplementation(f => f()),
+    select: vi.fn().mockReturnValue(chain),
+    selectAll: vi.fn().mockReturnValue({ remove: vi.fn(), style: vi.fn().mockReturnThis() }),
+    timeParse: vi.fn().mockImplementation(() => str => new Date(str)),
+    timeFormat: vi.fn().mockImplementation(() => () => 'Jan 1, 2022'),
+    scaleTime: vi
+      .fn()
+      .mockReturnValue({ domain: vi.fn().mockReturnThis(), range: vi.fn().mockReturnThis() }),
+    scaleLinear: vi
+      .fn()
+      .mockReturnValue({ domain: vi.fn().mockReturnThis(), range: vi.fn().mockReturnThis() }),
+    axisBottom: vi.fn(),
+    axisLeft: vi
+      .fn()
+      .mockReturnValue({ ticks: vi.fn().mockReturnThis(), tickFormat: vi.fn().mockReturnThis() }),
+    line: vi.fn().mockReturnValue({ x: vi.fn().mockReturnThis(), y: vi.fn().mockReturnThis() }),
+    extent: vi.fn().mockReturnValue([new Date(), new Date()]),
+    format: vi.fn().mockReturnValue(() => '0'),
   };
 });
 

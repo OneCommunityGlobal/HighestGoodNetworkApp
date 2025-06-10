@@ -1,4 +1,7 @@
 // eslint-disable-next-line no-unused-vars
+vi.mock('../../../actions/leaderBoardData', () => ({
+  getOrgData:vi.fn(),
+}));
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
@@ -6,7 +9,7 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import mockAdminState from '../../../__tests__/mockAdminState';
 import Leaderboard from '../Leaderboard';
-
+import { MemoryRouter } from 'react-router-dom';
 // Set up mock store
 const middlewares = [thunk];
 const mockStore = configureStore(middlewares);
@@ -44,10 +47,6 @@ vi.spyOn(React, 'useEffect').mockImplementation((callback, deps) => {
   return originalUseEffect(callback, deps);
 });
 
-vi.mock('src/actions/orgActions', () => ({
-  getOrgData: vi.fn(),
-}));
-
 describe('Leaderboard page structure', () => {
   let store;
   let props;
@@ -64,6 +63,7 @@ describe('Leaderboard page structure', () => {
       ...mockAdminState,
       organizationData: { weeklyCommittedHours: 0, tangibletime: 0, totaltime: 0 },
       getLeaderboardData: vi.fn(),
+      getOrgData:            vi.fn(),
       loggedInUser: { role: 'Admin' },
       loading: false,
       darkMode: true,
@@ -79,9 +79,13 @@ describe('Leaderboard page structure', () => {
     vi.clearAllMocks();
   });
 
-  const renderWithProvider = (ui, options) => {
-    return render(<Provider store={store}>{ui}</Provider>, options);
-  };
+ const renderWithProvider = (ui, options) =>
+   render(
+     <Provider store={store}>
+       <MemoryRouter>{ui}</MemoryRouter>
+     </Provider>,
+     options
+   );
 
   it('should render without errors', () => {
     expect(() => {

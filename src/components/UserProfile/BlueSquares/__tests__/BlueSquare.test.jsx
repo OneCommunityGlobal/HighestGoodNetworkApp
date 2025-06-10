@@ -40,6 +40,10 @@ afterEach(() => {
 });
 
 describe('BlueSquare component', () => {
+    beforeEach(() => {
+    handleBlueSquare.mockClear();
+  });
+
   it('userProfile prop present', () => {
     render(
       <Provider store={store}>

@@ -1,13 +1,13 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { vi } from 'vitest';
+import { fireEvent, render, screen } from '@testing-library/react';
 import ToggleSwitch from '../ToggleSwitch/ToggleSwitch';
 
 describe('ToggleSwitch Component', () => {
   const mockHandleUserProfile = vi.fn();
-  
+
   beforeEach(() => {
-    // Clear mock calls between tests
-    mockHandleUserProfile.mockClear();
+    vi.clearAllMocks();
   });
 
   describe('bluesquares switch type', () => {
@@ -22,6 +22,7 @@ describe('ToggleSwitch Component', () => {
       
       const switchElement = screen.getByTestId('blue-switch');
       expect(switchElement).toBeInTheDocument();
+      // state=false means the checkbox is checked
       expect(switchElement).toBeChecked();
     });
 
@@ -34,8 +35,7 @@ describe('ToggleSwitch Component', () => {
         />
       );
       
-      const switchElement = screen.getByTestId('blue-switch');
-      fireEvent.click(switchElement);
+      fireEvent.click(screen.getByTestId('blue-switch'));
       expect(mockHandleUserProfile).toHaveBeenCalledTimes(1);
     });
 
@@ -49,8 +49,9 @@ describe('ToggleSwitch Component', () => {
         />
       );
       
-      const divElement = container.querySelector('.blueSqare');
-      expect(divElement).toHaveClass('custom-toggle');
+      // your component wraps the checkbox in a div.blueSqare
+      const wrapper = container.querySelector('div[class*="blueSqare"]');
+      expect(wrapper).toHaveClass('custom-toggle');
     });
 
     test('applies dark mode styling when darkMode is true', () => {
@@ -64,8 +65,10 @@ describe('ToggleSwitch Component', () => {
       );
       
       const switchElement = screen.getByTestId('blue-switch');
-      expect(switchElement).toHaveClass('toggleDark');
-      expect(switchElement).not.toHaveClass('toggle');
+
+      // since CSS modules hash the class, just assert the classname contains "toggleDark"
+      expect(switchElement.className).toContain('toggleDark');
+      expect(switchElement.className).not.toContain('toggle ');
     });
   });
 
@@ -93,8 +96,7 @@ describe('ToggleSwitch Component', () => {
         />
       );
       
-      const switchElement = screen.getByTestId('email-switch');
-      fireEvent.click(switchElement);
+      fireEvent.click(screen.getByTestId('email-switch'));
       expect(mockHandleUserProfile).toHaveBeenCalledTimes(1);
     });
   });
@@ -125,8 +127,7 @@ describe('ToggleSwitch Component', () => {
         />
       );
       
-      const switchElement = screen.getByTestId('phone-switch');
-      expect(switchElement).toBeInTheDocument();
+      expect(screen.getByTestId('phone-switch')).toBeInTheDocument();
     });
 
     test('renders correctly when state is false', () => {
@@ -172,8 +173,10 @@ describe('ToggleSwitch Component', () => {
         />
       );
       
-      const switchSection = container.querySelector('div.switchSection');
-      expect(switchSection).toHaveStyle({ fontSize: '14px', color: 'red' });
+      // match the CSS‐module class name for the outer section
+      const section = container.querySelector('div[class*="switchSection"]');
+      expect(section).not.toBeNull();
+      expect(section).toHaveStyle({ fontSize: '14px', color: 'rgb(255, 0, 0)' });
     });
   });
 

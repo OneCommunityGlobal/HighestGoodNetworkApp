@@ -11,6 +11,7 @@ const mockStore = configureStore([]);
 const initialState = {
   badge: {
     selectedBadges: [],
+    allBadges: [], 
   },
   theme: themeMock,
 };
@@ -100,16 +101,23 @@ describe('Userprofile/AssignBadgePopup Test Suite', () => {
     expect(message1).toBeNull();
     expect(message2).toBeNull();
   });
-  it('Test case 7 : Assert the tool tip message  displayed when  hover overed', async () => {
-    renderComponent();
+it('Test case 7 : Assert the tool tip message displayed when hovered', async () => {
+  renderComponent();
 
-    const tooltip = screen.getByTestId('test-selectinfo');
-    fireEvent.mouseEnter(tooltip);
-    const message1 = await screen.findByText(tip1);
-    const message2 = await screen.findByText(tip2);
-    expect(message1).toBeInTheDocument();
-    expect(message2).toBeInTheDocument();
-  });
+  const infoIcon = screen.getByTestId('test-selectinfo');
+  fireEvent.mouseOver(infoIcon);  // trigger the tooltip
+
+  // now grab the two <p> elements by their test IDs
+  const tip1El = await screen.findByTestId('test-tip1');
+  const tip2El = await screen.findByTestId('test-tip2');
+
+  expect(tip1El).toBeInTheDocument();
+  // just check the unique leading phrase
+  expect(tip1El).toHaveTextContent('Hmmm, little blank boxes');
+  
+  expect(tip2El).toBeInTheDocument();
+  expect(tip2El).toHaveTextContent('Want to assign multiple of the same badge');
+});
   it('Test case 8 : Assert if the pop up has a submit button ', async () => {
     renderComponent();
     const button = screen.getByTestId('test-button');

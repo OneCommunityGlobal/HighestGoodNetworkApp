@@ -1,12 +1,17 @@
+import React from 'react';
+import { vi } from 'vitest';                      // 1) import vi first
 import { render, screen } from '@testing-library/react';
-import TeamChartsGroup from '../TeamChartsGroup';
-
-// Mock the ReportCharts component since it's causing errors
-vi.mock('../ReportCharts', () => {
-  return function MockReportCharts(props) {
-    return <div data-testid="report-chart" data-props={JSON.stringify(props)} />;
-  };
-});
+import '@testing-library/jest-dom';
+vi.mock('../ReportCharts', () => ({
+  __esModule: true,                               // mark it as an ES module
+  default: (props) => (                           // this becomes the default export
+    <div
+      data-testid="report-chart"
+      data-props={JSON.stringify(props)}
+    />
+  ),
+}));
+import TeamChartsGroup from '../TeamChartsGroup'; 
 
 describe('Test Suite for TeamChartsGroup Component', () => {
   it('Test case 1 : Renders two ReportCharts components', () => {

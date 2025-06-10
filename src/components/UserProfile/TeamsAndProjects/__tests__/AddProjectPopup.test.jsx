@@ -39,7 +39,9 @@ const props = {
 /** TEST CASE **/
 
 describe('AddProjectPopup component Unit test case', () => {
-  
+  beforeEach(() => {
+  vi.clearAllMocks();
+});
   it('Test 1 : Expected  UI elements are present', () => {
     const { getByText }=renderComponent(props);
     const closeBtn = getByText('Close');

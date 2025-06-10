@@ -13,7 +13,7 @@ const mock = new MockAdapter(axios);
 
 // Create a mock for the hasPermission function
 // This is crucial since the actual implementation accesses state.role.roles
-vi.mock('utils/permissions', () => ({
+vi.mock('~/utils/permissions', () => ({
   __esModule: true,
   default: () => vi.fn(() => true),
 }));

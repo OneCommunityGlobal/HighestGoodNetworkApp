@@ -1,4 +1,5 @@
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import { toast } from 'react-toastify';
 import '@testing-library/jest-dom/extend-expect';
 import configureStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
@@ -13,9 +14,7 @@ vi.mock('axios');
 const mockToastSuccess = vi.fn();
 
 beforeAll(() => {
-  vi.mock('react-toastify', () => ({
-    toast: { success: mockToastSuccess },
-  }));
+  vi.spyOn(toast, 'success').mockImplementation(mockToastSuccess);
 });
 
 const mockStore = configureStore();

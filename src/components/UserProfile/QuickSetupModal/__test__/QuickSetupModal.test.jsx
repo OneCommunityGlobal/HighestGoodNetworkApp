@@ -5,14 +5,29 @@ import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import QuickSetupModal from '../QuickSetupModal';
 import { getAllTitle } from '../../../../actions/title';
-import { mockTeamsData, mockUserProfile, mockTitles, mockUserPermissions } from '../__mock__/mockData';
+import {
+  mockTeamsData,
+  mockUserProfile,
+  mockTitles,
+  mockUserPermissions,
+} from '../__mock__/mockData';
+import hasPermission from '~/utils/permissions';
+import { vi } from 'vitest';
 
+vi.mock('react-redux', async importOriginal => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    connect: () => Component => Component,
+  };
+});
 vi.mock('../../../../actions/title', () => ({
-  getAllTitle: vi.fn()
+  getAllTitle: vi.fn(),
 }));
 
 vi.mock('../../../../utils/permissions', () => ({
-  hasPermission: vi.fn(permission => mockUserPermissions[permission])
+  __esModule: true,
+  default: vi.fn(permission => mockUserPermissions[permission]),
 }));
 
 const mockStore = configureStore([]);
@@ -32,7 +47,7 @@ describe('QuickSetupModal Component', () => {
       render(
         <Provider store={store}>
           <QuickSetupModal userProfile={mockUserProfile} hasPermission={() => true} />
-        </Provider>
+        </Provider>,
       );
     });
 
@@ -45,12 +60,12 @@ describe('QuickSetupModal Component', () => {
     await act(async () => {
       render(
         <Provider store={store}>
-          <QuickSetupModal 
-            userProfile={mockUserProfile} 
-            hasPermission={() => true} 
-            teamsData={mockTeamsData} 
+          <QuickSetupModal
+            userProfile={mockUserProfile}
+            hasPermission={() => true}
+            teamsData={mockTeamsData}
           />
-        </Provider>
+        </Provider>,
       );
     });
 
@@ -66,7 +81,7 @@ describe('QuickSetupModal Component', () => {
       render(
         <Provider store={store}>
           <QuickSetupModal userProfile={mockUserProfile} hasPermission={() => true} />
-        </Provider>
+        </Provider>,
       );
     });
 

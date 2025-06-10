@@ -13,22 +13,11 @@ const mockStore = configureMockStore();
 // Mock the navigator.clipboard.writeText method
 const mockWriteText = vi.fn();
 
-// Mock the toast.success method
-const mockToastSuccess = vi.fn();
-
 beforeAll(() => {
   Object.defineProperty(navigator, 'clipboard', {
     value: { writeText: mockWriteText },
     writable: true,
   });
-
-  vi.mock('react-toastify', () => ({
-    toast: { success: mockToastSuccess },
-  }));
-});
-
-afterEach(() => {
-  vi.clearAllMocks();
 });
 
 describe('CopyToClipboard', () => {

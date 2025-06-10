@@ -1,3 +1,11 @@
+vi.mock('react-toastify', () => ({
+  __esModule: true,
+  toast: {
+    success: vi.fn(),
+    error:   vi.fn(),
+  },
+  ToastContainer: () => null,
+}))
 // eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
@@ -69,6 +77,8 @@ beforeEach(() => {
     },
     theme: themeMock,
   });
+  toast.success.mockClear()
+  toast.error.mockClear()
 });
 
 afterEach(() => {
@@ -76,13 +86,7 @@ afterEach(() => {
 });
 
 vi.mock('axios');
-vi.mock('react-toastify', () => ({
-  ...vi.requireActual('react-toastify'),
-  toast: {
-    success: vi.fn(),
-    error: vi.fn(),
-  },
-}));
+
 const flushAllPromises = () =>
   new Promise(resolve => {
     setTimeout(resolve, 0);

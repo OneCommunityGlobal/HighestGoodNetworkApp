@@ -15,6 +15,8 @@ beforeEach(() => {
   store = mockStore({
     theme,
   });
+  onApproveMock.mockClear();
+  toggleMock.mockClear();
 });
 
 
@@ -165,12 +167,12 @@ describe('TaskDifferenceModal component', () => {
     const startDateLabel = screen.getByText('Start Date');
     const startDateElement = startDateLabel.nextElementSibling;
     const startSpanElement = startDateElement.querySelector('span');
-    expect(startSpanElement).toHaveStyle('color: black; font-weight: bold;');
+    expect(startSpanElement).toHaveStyle('color: rgb(0, 0, 0); font-weight: bold;');
 
     const endDateLabel = screen.getByText('End Date');
     const endDateElement = endDateLabel.nextElementSibling;
     const endSpanElement = endDateElement.querySelector('span');
-    expect(endSpanElement).toHaveStyle('color: black; font-weight: bold;');
+    expect(endSpanElement).toHaveStyle('color: rgb(0, 0, 0); font-weight: bold;');
   });
   it('check if Start Date and End Date get displayed when Start and End Date is not set to null', () => {
     const newTaskNotifications = [
@@ -198,12 +200,12 @@ describe('TaskDifferenceModal component', () => {
     const resourceLabel = screen.getByText('Resources');
     const resourceElement = resourceLabel.nextElementSibling;
     const resourceSpanElement = resourceElement.querySelector('span');
-    expect(resourceSpanElement).toHaveStyle('color: black; font-weight: bold;');
+    expect(resourceSpanElement).toHaveStyle('color: rgb(0, 0, 0); font-weight: bold;');
 
     const linksLabel = screen.getByText('Links');
     const linksElement = linksLabel.nextElementSibling;
     const linksSpanElement = linksElement.querySelector('span');
-    expect(linksSpanElement).toHaveStyle('color: black; font-weight: bold;');
+    expect(linksSpanElement).toHaveStyle('color: rgb(0, 0, 0); font-weight: bold;');
   });
   it('check if links and resources get displayed as expected when links and resources arrays are set to entries more than 0', () => {
     const newResource = [

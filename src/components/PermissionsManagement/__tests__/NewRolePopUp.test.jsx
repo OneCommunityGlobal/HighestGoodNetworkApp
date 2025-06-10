@@ -1,13 +1,10 @@
-// eslint-disable-next-line no-unused-vars
+// src/components/PermissionsManagement/__tests__/NewRolePopUp.test.jsx
+/**
+ * @vitest-environment jsdom
+ */
 import React from 'react';
-import {
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-  // eslint-disable-next-line no-unused-vars
-  waitForElementToBeRemoved,
-} from '@testing-library/react';
+import '@testing-library/jest-dom';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import thunk from 'redux-thunk';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
@@ -31,22 +28,22 @@ const mockAuth = {
   },
   firstName: 'Jerry',
 };
-
-const themeMock = {
-  primaryColor: '#000000',
-};
+const themeMock = { primaryColor: '#000000' };
 const middlewares = [thunk];
 const mockStore = configureStore(middlewares);
-const store = mockStore({
-  auth: mockAuth,
-  role: [mockRoleNames],
-  theme: themeMock,
-});
+let store;
 
-// eslint-disable-next-line no-unused-vars
+// Helper to render the component with our mocked store & context
 const renderComponent = () => {
-  // eslint-disable-next-line no-unused-vars
-  const { container } = render(
+  store = mockStore({
+    auth: mockAuth,
+    role: [mockRoleNames],
+    theme: themeMock,
+  });
+  store.clearActions();
+  axios.get.mockResolvedValue({ data: {} });
+
+  return render(
     <Provider store={store}>
       <ModalProvider>
         <CreateNewRolePopup
@@ -57,67 +54,51 @@ const renderComponent = () => {
       </ModalProvider>
     </Provider>,
   );
+};
 
-  // eslint-disable-next-line no-shadow
-  const renderComponent = () => {
-    // eslint-disable-next-line no-shadow
-    const { container } = render(
-      <Provider store={store}>
-        <CreateNewRolePopup
-          toggle={mockTogglePopUpNewRole}
-          addNewRole={mockAddNewRole}
-          roleNames={mockRoleNames}
-        />
-      </Provider>,
-    );
-
-    return container;
-  };
-
+describe('Render NewRolePopUp component', () => {
   beforeEach(() => {
+    // reset the axios mock and store before each test
+    store = mockStore({
+      auth: mockAuth,
+      role: [mockRoleNames],
+      theme: themeMock,
+    });
     store.clearActions();
     axios.get.mockResolvedValue({ data: {} });
   });
 
-  describe('Render NewRolePopUp component', () => {
-    it('Renders without crashing', () => {
-      renderComponent();
-    });
-    it('Render PermissionList child component', () => {
-      // eslint-disable-next-line no-shadow
-      const container = renderComponent();
-      const permissionListElement = container.querySelector('.user-role-tab__permissionList');
-      expect(permissionListElement).toBeInTheDocument();
-    });
-    // it('Create button on click dispatches action to store', async () => {
-    //   renderComponent();
-    //   const createBtn = screen.getByText('Create')
+  it('renders without crashing', () => {
+    const { container } = renderComponent();
+    expect(container).toBeInTheDocument();
+  });
 
-    //   const roleInput = screen.getByPlaceholderText('Please enter a new role name')
-    //   fireEvent.change(roleInput, { target: { value: 'newRole' } });
-    //   expect(roleInput).toBeInTheDocument()
-    //   expect(roleInput.value).toBe('newRole')
-    //   expect(createBtn).toBeInTheDocument();
+  it('renders PermissionList child component', () => {
+    const { container } = renderComponent();
+    const permissionListElement = container.querySelector('.user-role-tab__permissionList');
+    expect(permissionListElement).toBeInTheDocument();
+  });
 
-    //   fireEvent.click(createBtn);
-    //   const actions = store.getActions()
+  // Uncomment and fill in if you want to test dispatching ADD_NEW_ROLE:
+  // it('Create button on click dispatches action to store', async () => {
+  //   renderComponent()
+  //   const roleInput = screen.getByPlaceholderText('Please enter a new role name')
+  //   fireEvent.change(roleInput, { target: { value: 'newRole' } })
+  //   fireEvent.click(screen.getByText('Create'))
+  //   await waitFor(() => {
+  //     const actions = store.getActions()
+  //     expect(actions).toHaveLength(1)
+  //     expect(actions[0].type).toBe('ADD_NEW_ROLE')
+  //   })
+  // })
 
-    //   await waitFor(() => {
-    //     expect(actions).toHaveLength(1)
-    //     expect(actions).toContainEqual({ type: 'ADD_NEW_ROLE', payload: {} })
-    //   })
-    // });
-    it('Error message appears when adding a duplicate role', async () => {
-      renderComponent();
-      const roleInput = screen.getByPlaceholderText('Please enter a new role name');
+  it('error message appears when adding a duplicate role', async () => {
+    renderComponent();
+    const roleInput = screen.getByPlaceholderText('Please enter a new role name');
 
-      expect(roleInput).toBeInTheDocument();
-      fireEvent.change(roleInput, { target: { value: 'Administrator' } });
-      expect(roleInput.value).toBe('Administrator');
-
-      await waitFor(() => {
-        expect(screen.getByText('Please enter a different role name')).toBeInTheDocument();
-      });
+    fireEvent.change(roleInput, { target: { value: 'Administrator' } });
+    await waitFor(() => {
+      expect(screen.getByText('Please enter a different role name')).toBeInTheDocument();
     });
   });
-};
+});

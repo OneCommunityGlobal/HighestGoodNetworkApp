@@ -1,3 +1,61 @@
+import React from 'react';
+import { vi } from 'vitest';
+
+vi.mock('../AddProjectPopup', () => ({
+  __esModule: true,
+  default: function AddProjectPopupMock(props) {
+    const { projects, userProjectsById, onSelectAssignProject, handleSubmit, darkMode } = props;
+    return (
+      <div data-testid="add-project-popup">
+        <div
+          data-testid="popup-info"
+          data-projects={JSON.stringify(projects)}
+          data-userprojectsbyid={userProjectsById ? JSON.stringify(userProjectsById) : undefined}
+          data-darkmode={darkMode ? 'true' : 'false'}
+          data-handlesubmit={handleSubmit ? 'true' : undefined}
+        />
+        <button data-testid="assign-btn" onClick={() => onSelectAssignProject({ _id: '123' })} />
+        <button
+          data-testid="assign-undefined-btn"
+          onClick={() => onSelectAssignProject(undefined)}
+        />
+      </div>
+    );
+  },
+}));
+
+vi.mock('../UserProjectsTable', () => ({
+  __esModule: true,
+  default: function UserProjectsTableMock(props) {
+    const {
+      userTasks,
+      userProjectsById,
+      onButtonClick,
+      onDeleteClicK,
+      edit,
+      role,
+      userId,
+      disabled,
+      darkMode,
+    } = props;
+    return (
+      <div data-testid="user-projects-table">
+        <div
+          data-testid="table-info"
+          data-usertasks={JSON.stringify(userTasks)}
+          data-userprojectsbyid={userProjectsById ? JSON.stringify(userProjectsById) : undefined}
+          data-edit={edit ? 'true' : 'false'}
+          data-role={role}
+          data-userid={userId}
+          data-disabled={disabled ? 'true' : 'false'}
+          data-darkmode={darkMode ? 'true' : 'false'}
+        />
+        <button data-testid="add-btn" onClick={onButtonClick} />
+        <button data-testid="delete-btn" onClick={() => onDeleteClicK('123')} />
+      </div>
+    );
+  },
+}));
 /* eslint-disable func-names */
 import { render, fireEvent } from '@testing-library/react';
 import configureMockStore from 'redux-mock-store';
@@ -135,82 +193,3 @@ describe('ProjectsTab', () => {
     expect(onAssignProject).toHaveBeenCalledWith({ _id: '123' });
   });
 });
-
-vi.mock(
-  '../AddProjectPopup',
-  () =>
-    function(props) {
-      const { projects, userProjectsById, onSelectAssignProject, handleSubmit, darkMode } = props;
-      return (
-        <div data-testid="add-project-popup">
-          <div
-            data-testid="popup-info"
-            data-projects={JSON.stringify(projects)}
-            data-userprojectsbyid={
-              userProjectsById !== undefined ? JSON.stringify(userProjectsById) : undefined
-            }
-            data-darkmode={darkMode ? 'true' : 'false'}
-            data-handlesubmit={handleSubmit ? 'true' : undefined}
-          />
-          <button
-            type="button"
-            aria-label="Assign Project"
-            data-testid="assign-btn"
-            onClick={() => onSelectAssignProject({ _id: '123' })}
-          />
-          <button
-            type="button"
-            aria-label="Assign Project"
-            data-testid="assign-undefined-btn"
-            onClick={() => onSelectAssignProject(undefined)}
-          />
-        </div>
-      );
-    },
-);
-
-vi.mock(
-  '../UserProjectsTable',
-  () =>
-    function(props) {
-      const {
-        userTasks,
-        userProjectsById,
-        onButtonClick,
-        onDeleteClicK,
-        edit,
-        role,
-        userId,
-        disabled,
-        darkMode,
-      } = props;
-      return (
-        <div data-testid="user-projects-table">
-          <div
-            data-testid="table-info"
-            data-usertasks={JSON.stringify(userTasks)}
-            data-userprojectsbyid={
-              userProjectsById !== undefined ? JSON.stringify(userProjectsById) : undefined
-            }
-            data-edit={edit ? 'true' : 'false'}
-            data-role={role}
-            data-userid={userId}
-            data-disabled={disabled ? 'true' : 'false'}
-            data-darkmode={darkMode ? 'true' : 'false'}
-          />
-          <button
-            type="button"
-            data-testid="add-btn"
-            onClick={onButtonClick}
-            aria-label="Add Project"
-          />
-          <button
-            type="button"
-            data-testid="delete-btn"
-            onClick={() => onDeleteClicK('123')}
-            aria-label="Delete Project"
-          />
-        </div>
-      );
-    },
-);

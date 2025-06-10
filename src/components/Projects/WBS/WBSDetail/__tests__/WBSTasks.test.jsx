@@ -1,5 +1,22 @@
+import { vi } from 'vitest';
+const setState = vi.fn();
+
+vi.mock('react', async importOriginal => {
+  const React = await importOriginal();
+  const origUseState = React.useState;
+  return {
+    ...React,
+    useState(initial) {
+      if (['all', 'assigned', 'unassigned', 'active', 'inactive', 'complete'].includes(initial)) {
+        return [initial, setState];
+      }
+      return origUseState(initial);
+    },
+  };
+});
+
 import React from 'react';
-import { render, screen, fireEvent, waitFor, act, wait } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import WBSTasks from '../WBSTasks';
 import thunk from 'redux-thunk';
@@ -51,30 +68,6 @@ beforeEach(() => {
 afterEach(() => {
   store.clearActions();
 });
-
-const setState = vi.fn();
-
-const originalUseState = vi.requireActual('react').useState;
-
-const useStateMock = initial => {
-  if (
-    initial === 'all' ||
-    initial === 'assigned' ||
-    initial === 'unassigned' ||
-    initial === 'active' ||
-    initial === 'inactive' ||
-    initial === 'complete'
-  ) {
-    return [initial, setState];
-  } else {
-    return originalUseState(initial);
-  }
-};
-
-vi.mock('react', () => ({
-  ...vi.requireActual('react'),
-  useState: useStateMock,
-}));
 
 vi.mock('axios');
 const wbsId = 'wbs123';
@@ -319,6 +312,9 @@ describe('WBSTasks component', () => {
 });
 
 describe('test state updates', () => {
+  beforeEach(() => {
+    setState.mockClear();
+  });
   it('check if All button works as expected', async () => {
     axios.get.mockResolvedValue({
       status: 200,
@@ -338,8 +334,7 @@ describe('test state updates', () => {
       );
     });
     expect(setState).not.toHaveBeenCalled();
-    const allButton = screen.getByText('All');
-    fireEvent.click(allButton);
+    fireEvent.click(screen.getByText('All'));
     expect(setState).toHaveBeenCalledWith('all');
   });
   it('check if assigned button works as expected', async () => {
@@ -361,8 +356,7 @@ describe('test state updates', () => {
       );
     });
     expect(setState).not.toHaveBeenCalled();
-    const assignedButton = screen.getByText('Assigned');
-    fireEvent.click(assignedButton);
+    fireEvent.click(screen.getByText('Assigned'));
     expect(setState).toHaveBeenCalledWith('assigned');
   });
   it('check if unassigned button works as expected', async () => {

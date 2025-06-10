@@ -358,29 +358,30 @@ describe('TeamMemberTasks component', () => {
     expect(newIconElement).toBeInTheDocument();
   });
   it('check if days button works as expected', () => {
-    axios.get.mockResolvedValue({
-      status: 200,
-      data: '',
-    });
-    const { container } = render(
+    axios.get.mockResolvedValue({ status: 200, data: '' });
+    render(
       <Provider store={store}>
         <MemoryRouter>
           <TeamMemberTasks />
         </MemoryRouter>
       </Provider>,
     );
-    const buttonElement = container.querySelector(
-      '[title="Timelogs submitted in the past 1 days"]',
-    );
-    const daysButton = container.querySelector(
-      '[style="color: rgb(34, 139, 34); background-color: white; border: 1px solid #228b22;"]',
-    );
+
+    // Select the 1-day button by role and accessible name
+    const daysButton = screen.getByRole('button', { name: /^1\s*day$/i });
+    // Initial style
     expect(daysButton).toBeInTheDocument();
-    fireEvent.click(buttonElement);
-    const newDaysButton = container.querySelector(
-      '[style="color: white; background-color: rgb(34, 139, 34); border: 1px solid #228b22;"]',
-    );
-    expect(newDaysButton).toBeInTheDocument();
+    expect(daysButton).toHaveStyle('color: rgb(34, 139, 34)');
+    expect(daysButton).toHaveStyle('background-color: rgb(255, 255, 255)');
+    expect(daysButton).toHaveStyle('border: 1px solid #228b22');
+
+    // Click to activate
+    fireEvent.click(daysButton);
+
+    // After click, the same button updates styles
+    expect(daysButton).toHaveStyle('color: rgb(255, 255, 255)');
+    expect(daysButton).toHaveStyle('background-color: rgb(34, 139, 34)');
+    expect(daysButton).toHaveStyle('border: 1px solid #228b22');
   });
   it('check if TeamMemberTask without time entries gets displayed when isTimeFilterActive is set to False', () => {
     axios.get.mockResolvedValue({

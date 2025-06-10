@@ -1,6 +1,6 @@
 import './UpdateMaterial.css';
 import { Container } from 'reactstrap';
-import * as moment from 'moment';
+import moment from 'moment';
 import { FormGroup, Input, Label, Form, Col, Button } from 'reactstrap';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';

@@ -6,9 +6,8 @@ import { MemoryRouter } from 'react-router-dom';
 import axios from 'axios';
 import configureStore from 'redux-mock-store';
 import WBS from './wbs';
-import { setWBSStart, setWBS } from '../../../actions/wbs';
-
-
+import { setWBSStart, setWBS, fetchAllWBS } from '../../../actions/wbs';
+import { getProjectDetail } from '../../../actions/project';
 
 vi.mock('../../../actions/wbs', () => ({
   addNewWBS: vi.fn(),
@@ -19,12 +18,25 @@ vi.mock('../../../actions/wbs', () => ({
 }));
 
 vi.mock('axios');
-vi.mock('./AddWBS', () => () => <div data-testid="add-wbs">AddWBS Mock</div>);
+vi.mock('./AddWBS', () => ({
+  __esModule: true,
+  default: () => <div data-testid="add-wbs">AddWBS Mock</div>,
+}));
 
-vi.mock('./WBSItem/WBSItem', () => ({ index, name }) => (
-  <tr data-testid={`wbs-item-${index}`}><td>{index}</td><td>{name}</td><td></td></tr>
-));
-
+vi.mock('./WBSItem/WBSItem', () => ({
+  __esModule: true,
+  default: ({ index, name }) => (
+    <tr data-testid={`wbs-item-${index}`}>
+      <td>{index}</td>
+      <td>{name}</td>
+      <td></td>
+    </tr>
+  ),
+}));
+vi.mock('../../../actions/project', () => ({
+  __esModule: true,
+  getProjectDetail: vi.fn(),
+}));
 const mockStore = configureStore([]);
 
 describe('WBS Component', () => {
@@ -45,7 +57,7 @@ describe('WBS Component', () => {
           frontPermissions: ['deleteWbs', 'addWbs', 'fetchAllWBS'],
           backPermissions: [],
         },
-        role: "Manager",
+        role: 'Manager',
       },
     },
     role: { roles: [] },
@@ -64,7 +76,7 @@ describe('WBS Component', () => {
         <MemoryRouter>
           <WBS match={{ params: { projectId } }} />
         </MemoryRouter>
-      </Provider>
+      </Provider>,
     );
   };
 
@@ -73,19 +85,12 @@ describe('WBS Component', () => {
     expect(screen.getByText(/Return to Project List/i)).toBeInTheDocument();
   });
 
-  it('dispatches setWBSStart and setWBS when fetchAllWBS is called on mount', async () => {
-    const mockWBSData = [{ _id: 'wbs1', wbsName: 'WBS 1' }];
-    axios.get.mockResolvedValueOnce({ data: mockWBSData });
-
+  it('dispatches fetchAllWBS and getProjectDetail on mount', () => {
     renderComponent();
-
-    expect(store.dispatch).toHaveBeenCalledWith(setWBSStart());
-
-    await waitFor(() => {
-      expect(store.dispatch).toHaveBeenCalledWith(setWBS(mockWBSData));
-    });
+    // the component itself calls these on mount:
+    expect(store.dispatch).toHaveBeenCalledWith(fetchAllWBS(projectId));
+    expect(store.dispatch).toHaveBeenCalledWith(getProjectDetail(projectId));
   });
-
 
   it('renders AddWBS component', () => {
     renderComponent();
@@ -114,5 +119,4 @@ describe('WBS Component', () => {
     expect(screen.getByText('#')).toBeInTheDocument();
     expect(screen.getByText('Name')).toBeInTheDocument();
   });
-  
 });

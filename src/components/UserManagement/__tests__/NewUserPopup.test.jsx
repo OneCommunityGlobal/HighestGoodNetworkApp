@@ -7,35 +7,39 @@ import { renderWithProvider } from '../../../__tests__/utils';
 import NewUserPopup from '../NewUserPopup';
 import { themeMock } from '../../../__tests__/mockStates';
 
-vi.mock('../../UserProfile/AddNewUserProfile', () => {
-  const userprofile = () => (
+// Mock the AddNewUserProfile component as default export
+vi.mock('../../UserProfile/AddNewUserProfile', () => ({
+  __esModule: true,
+  default: () => (
     <div>
       <h4>User Profile</h4>
     </div>
-  );
-  return userprofile;
-});
+  ),
+}));
 
+// Mock axios simply so imports resolve
 vi.mock('axios');
+
 const mockStore = configureStore([thunk]);
 
 describe('new user popup', () => {
   const onUserPopupClose = vi.fn();
   let store;
+
   beforeEach(() => {
+    onUserPopupClose.mockClear();
     store = mockStore({
-      userProfile: {
-        role: 'userRole', // Provide the role here in the initial state
-      },
+      userProfile: { role: 'userRole' },
       theme: themeMock,
       infoCollections: {
-        loading: false, // Ensure loading is defined
+        loading: false,
         error: null,
         infos: [{ infoName: 'example', infoContent: 'example content', visibility: '1' }],
       },
     });
-    renderWithProvider(<NewUserPopup open onUserPopupClose={onUserPopupClose} />, { store });
+    renderWithProvider(<NewUserPopup open={true} onUserPopupClose={onUserPopupClose} />, { store });
   });
+
   describe('Structure', () => {
     it('should render the modal', () => {
       expect(screen.getByRole('dialog')).toBeInTheDocument();
@@ -50,35 +54,37 @@ describe('new user popup', () => {
       expect(screen.getByText('Create New User')).toBeInTheDocument();
     });
   });
+
   describe('behavior', () => {
-    it('should fire onUserPopupClose() when the user clicks close buttons', () => {
-      screen.getAllByRole('button', { name: /close/i }).forEach(close => {
-        userEvent.click(close);
-      });
+    it('should call onUserPopupClose when close buttons clicked', () => {
+      screen.getAllByRole('button', { name: /close/i }).forEach(btn => userEvent.click(btn));
       expect(onUserPopupClose).toHaveBeenCalledTimes(2);
     });
   });
 });
 
-describe('new user popup close test', () => {
+describe('new user popup closed', () => {
   const onUserPopupClose = vi.fn();
   let store;
-  it('should not render new user popup when closed', () => {
+
+  beforeEach(() => {
+    onUserPopupClose.mockClear();
     store = mockStore({
-      userProfile: {
-        role: 'userRole', // Provide the role here in the initial state
-      },
+      userProfile: { role: 'userRole' },
       theme: themeMock,
       infoCollections: {
-        loading: false, // Ensure loading is defined
+        loading: false,
         error: null,
         infos: [{ infoName: 'example', infoContent: 'example content', visibility: '1' }],
       },
     });
-    const { testid } = renderWithProvider(
-      <NewUserPopup close onUserPopupClose={onUserPopupClose} />,
+  });
+
+  it('should not render the popup when open=false', () => {
+    const { queryByRole } = renderWithProvider(
+      <NewUserPopup open={false} onUserPopupClose={onUserPopupClose} />,
       { store },
     );
-    expect(testid).toBeFalsy();
+    expect(queryByRole('dialog')).toBeNull();
   });
 });

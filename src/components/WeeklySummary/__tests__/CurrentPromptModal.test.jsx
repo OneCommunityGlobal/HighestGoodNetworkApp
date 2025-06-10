@@ -1,6 +1,4 @@
-// eslint-disable-next-line no-unused-vars
 import React from 'react';
-import CurrentPromptModal from '~/components/WeeklySummary/CurrentPromptModal';
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import { Provider } from 'react-redux';
@@ -8,43 +6,44 @@ import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
 import axios from 'axios';
 
-const mockStore = configureStore([thunk]);
+// 1) Mock toast once, at top-level
+vi.mock('react-toastify', () => ({
+  __esModule: true,
+  toast: {
+    success: vi.fn(),
+    error: vi.fn(),
+  },
+}));
+import { toast } from 'react-toastify';
 
-const theme = { darkMode: false };
-
-let store;
-
-beforeEach(() => {
-  store = mockStore({
-    theme,
-  });
-});
-
-const mockWriteText = vi.fn();
-const mockToastSuccess = vi.fn();
 vi.mock('axios');
 
-beforeAll(() => {
-  Object.defineProperty(navigator, 'clipboard', {
-    value: { writeText: mockWriteText },
-    writable: true,
-  });
+import CurrentPromptModal from '~/components/WeeklySummary/CurrentPromptModal';
 
-  vi.mock('react-toastify', () => ({
-    toast: { success: mockToastSuccess },
-  }));
-});
-
-afterEach(() => {
-  vi.clearAllMocks();
-});
+const mockStore = configureStore([thunk]);
+const theme = { darkMode: false };
 
 describe('CurrentPromptModal component', () => {
-  it('render component without crashing', async () => {
-    axios.get.mockResolvedValue({
-      status: 200,
-      data: [],
+  let store;
+  const mockWriteText = vi.fn();
+  const mockToastSuccess = toast.success;
+
+  beforeAll(() => {
+    // stub out the clipboard
+    Object.defineProperty(navigator, 'clipboard', {
+      value: { writeText: mockWriteText },
+      writable: true,
     });
+  });
+
+  beforeEach(() => {
+    store = mockStore({ theme });
+    vi.clearAllMocks();
+  });
+
+  it('renders without crashing', async () => {
+    axios.get.mockResolvedValue({ status: 200, data: [] });
+
     await act(async () => {
       render(
         <Provider store={store}>
@@ -52,99 +51,54 @@ describe('CurrentPromptModal component', () => {
         </Provider>,
       );
     });
+
+    // no assertion needed—just verifies no errors
   });
-  it('check view and copy current AI prompt button', async () => {
-    axios.get.mockResolvedValue({
-      status: 200,
-      data: [],
-    });
+
+  it('opens the modal when "View and Copy Current AI Prompt" is clicked', async () => {
+    axios.get.mockResolvedValue({ status: 200, data: [] });
+
     await act(async () => {
       const { container } = render(
         <Provider store={store}>
           <CurrentPromptModal userId="abc123" userRole="Manager" darkMode={theme} />
         </Provider>,
       );
+
+      const btn = container.querySelector('button.p-1.mb-1.responsive-font-size.btn.btn-info');
+      expect(btn).toHaveTextContent('View and Copy Current AI Prompt');
+      fireEvent.click(btn);
+
+      expect(await screen.findByRole('dialog')).toBeInTheDocument();
+    });
+  });
+
+  it('shows tooltip on hover of info icon', async () => {
+    axios.get.mockResolvedValue({ status: 200, data: [] });
+
+    await act(async () => {
+      const { container } = render(
+        <Provider store={store}>
+          <CurrentPromptModal userId="abc123" userRole="Manager" darkMode={theme} />
+        </Provider>,
+      );
+
+      const icon = container.querySelector('.fa.fa-info-circle');
+      fireEvent.mouseEnter(icon);
       await waitFor(() => {
-        const buttonElement = container.querySelector(
-          '[class="p-1 mb-1 responsive-font-size btn btn-info"]',
-        );
-        expect(buttonElement.textContent).toBe('View and Copy Current AI Prompt');
-        fireEvent.click(buttonElement);
-        const modalElement = screen.getByRole('dialog');
-        expect(modalElement).toBeInTheDocument();
+        expect(icon).toHaveAttribute('aria-describedby');
       });
-    });
-  });
-  it('check tooltip associated with the button', async () => {
-    axios.get.mockResolvedValue({
-      status: 200,
-      data: [],
-    });
-    await act(async () => {
-      const { container } = render(
-        <Provider store={store}>
-          <CurrentPromptModal userId="abc123" userRole="Manager" darkMode={theme} />
-        </Provider>,
-      );
-      await waitFor(async () => {
-        const iconElement = container.querySelector('.fa.fa-info-circle');
-        fireEvent.mouseEnter(iconElement);
-        await waitFor(() => {
-          expect(iconElement).toHaveAttribute('aria-describedby');
-        });
-        fireEvent.mouseLeave(iconElement);
-        await waitFor(() => {
-          expect(iconElement).not.toHaveAttribute('aria-describedby');
-        });
-      });
-    });
-  });
-  it('check current AI prompt modal content', async () => {
-    axios.get.mockResolvedValue({
-      status: 200,
-      aIPromptText: `Please edit the following summary of my week's work. Make sure it is professionally written in 3rd person format.
-  Write it as only one paragraph. It must be only one paragraph. Keep it less than 500 words. Start the paragraph with 'This week'.
-  Make sure the paragraph contains no links or URLs and write it in a tone that is matter-of-fact and without embellishment.
-  Do not add flowery language, keep it simple and factual. Do not add a final summary sentence. Apply all this to the following:`,
-    });
-    await act(async () => {
-      const { container } = render(
-        <Provider store={store}>
-          <CurrentPromptModal userId="abc123" userRole="Manager" darkMode={theme} />
-        </Provider>,
-      );
+      fireEvent.mouseLeave(icon);
       await waitFor(() => {
-        const buttonElement = container.querySelector(
-          '[class="p-1 mb-1 responsive-font-size btn btn-info"]',
-        );
-        fireEvent.click(buttonElement);
-
-        const modalDialogElement = screen.getByRole('document');
-        const modalContentElement = modalDialogElement.querySelector('.modal-content');
-        const modalHeaderElement = modalContentElement.querySelector('.modal-header');
-        const modalTitleElement = modalHeaderElement.querySelector('.modal-title');
-        const modalBodyElement = modalContentElement.querySelector('.modal-body');
-        expect(modalTitleElement.textContent).toBe('Current AI Prompt');
-        expect(modalBodyElement.textContent).toContain(
-          "Please edit the following summary of my week's work. Make sure it is professionally written in 3rd person format.",
-        );
-        expect(modalBodyElement.textContent).toContain(
-          "Write it as only one paragraph. It must be only one paragraph. Keep it less than 500 words. Start the paragraph with 'This week'.",
-        );
-        expect(modalBodyElement.textContent).toContain(
-          'Make sure the paragraph contains no links or URLs and write it in a tone that is matter-of-fact and without embellishment.',
-        );
-        expect(modalBodyElement.textContent).toContain(
-          'Do not add flowery language, keep it simple and factual. Do not add a final summary sentence. Apply all this to the following:',
-        );
+        expect(icon).not.toHaveAttribute('aria-describedby');
       });
     });
   });
-  it('check close modal button', async () => {
-    axios.get.mockResolvedValue({
-      status: 200,
-      data: [],
-    });
+
+  it('renders prompt text inside the modal', async () => {
+    const promptText = `Please edit the following summary…`;
+    axios.get.mockResolvedValue({ data: { aIPromptText: promptText } });
+
     await act(async () => {
       const { container } = render(
         <Provider store={store}>
@@ -152,58 +106,60 @@ describe('CurrentPromptModal component', () => {
         </Provider>,
       );
 
-      await waitFor(async () => {
-        const buttonElement = container.querySelector(
-          '[class="p-1 mb-1 responsive-font-size btn btn-info"]',
-        );
-        fireEvent.click(buttonElement);
-        await waitFor(() => {
-          expect(screen.getByRole('document')).toBeInTheDocument();
-        });
-        const modalDialogElement = screen.getByRole('document');
-        const modalContentElement = modalDialogElement.querySelector('.modal-content');
-        const modalHeaderElement = modalContentElement.querySelector('.modal-header');
-        const closeElement = modalHeaderElement.querySelector('.close');
-        fireEvent.click(closeElement);
-        await waitFor(() => {
-          expect(screen.queryByRole('document')).not.toBeInTheDocument();
-        });
+      fireEvent.click(container.querySelector('button.p-1.mb-1.responsive-font-size.btn.btn-info'));
+
+      // now wait for the async fetch & render
+      await waitFor(() => {
+        const dialog = screen.getByRole('document');
+        const body = dialog.querySelector('.modal-body');
+        expect(body).toHaveTextContent(promptText);
       });
     });
   });
-  it('check copy button inside the modal', async () => {
-    axios.put.mockResolvedValue({
-      status: 200,
-      data: [],
-    });
+
+  it('closes the modal when the close button is clicked', async () => {
+    axios.get.mockResolvedValue({ status: 200, data: [] });
+
     await act(async () => {
       const { container } = render(
         <Provider store={store}>
           <CurrentPromptModal userId="abc123" userRole="Manager" darkMode={theme} />
         </Provider>,
       );
-      const currentPrompt = `Please edit the following summary of my week's work. Make sure it is professionally written in 3rd person format.
-  Write it as only one paragraph. It must be only one paragraph. Keep it less than 500 words. Start the paragraph with 'This week'.
-  Make sure the paragraph contains no links or URLs and write it in a tone that is matter-of-fact and without embellishment.
-  Do not add flowery language, keep it simple and factual. Do not add a final summary sentence. Apply all this to the following:`;
 
-      await waitFor(async () => {
-        const buttonElement = container.querySelector(
-          '[class="p-1 mb-1 responsive-font-size btn btn-info"]',
-        );
-        fireEvent.click(buttonElement);
-        await waitFor(() => {
-          expect(screen.getByRole('document')).toBeInTheDocument();
-        });
-        const modalDialogElement = screen.getByRole('document');
-        const modalContentElement = modalDialogElement.querySelector('.modal-content');
-        const modalFooterElement = modalContentElement.querySelector('.btn.btn-primary');
-        expect(modalFooterElement.textContent).toBe('Copy Prompt');
-        fireEvent.click(modalFooterElement);
-        expect(mockWriteText).toHaveBeenCalledWith(currentPrompt);
-        setTimeout(() => {
-          expect(mockToastSuccess).toHaveBeenCalledWith('Prompt Copied!');
-        }, 1000);
+      fireEvent.click(container.querySelector('button.p-1.mb-1.responsive-font-size.btn.btn-info'));
+
+      const dialog = await screen.findByRole('document');
+      const closeBtn = dialog.querySelector('.close');
+      fireEvent.click(closeBtn);
+
+      await waitFor(() => {
+        expect(screen.queryByRole('document')).toBeNull();
+      });
+    });
+  });
+
+  it('copies the prompt and shows a toast when "Copy Prompt" is clicked', async () => {
+    const promptText = `Prompt to copy…`;
+    axios.get.mockResolvedValue({ data: { aIPromptText: promptText } });
+    axios.put.mockResolvedValue({ status: 200 });
+
+    await act(async () => {
+      const { container } = render(
+        <Provider store={store}>
+          <CurrentPromptModal userId="abc123" userRole="Manager" darkMode={theme} />
+        </Provider>,
+      );
+
+      fireEvent.click(container.querySelector('button.p-1.mb-1.responsive-font-size.btn.btn-info'));
+      const copyBtn = await screen.findByRole('button', { name: 'Copy Prompt' });
+
+      fireEvent.click(copyBtn);
+
+      // ensure clipboard.writeText was called with exactly that text
+      await waitFor(() => {
+        expect(mockWriteText).toHaveBeenCalledWith(promptText);
+        expect(mockToastSuccess).toHaveBeenCalledWith('Prompt Copied!');
       });
     });
   });

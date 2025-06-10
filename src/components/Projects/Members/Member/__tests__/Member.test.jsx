@@ -5,10 +5,10 @@ import thunk from 'redux-thunk';
 import Member from '../Member';
 import * as projectMembersActions from '../../../../../actions/projectMembers';
 
-vi.mock('utils/permissions', () => ({
-  // ...vi.requireActual('utils/permissions'), // Use the actual implementation for other functions
-  hasPermission: vi.fn(() => true), //
-}));
+ vi.mock('~/utils/permissions', () => ({
+   __esModule: true,
+   default: vi.fn(() => true),
+ }));
 
 // Mock the action module
 vi.mock('../../../../../actions/projectMembers', () => ({

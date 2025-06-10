@@ -42,6 +42,7 @@ describe('Project Component', () => {
     hasPermission: vi.fn((permission) => true),
     onUpdateProject: vi.fn(),
     onClickArchiveBtn: vi.fn(),
+    onClickProjectStatusBtn: vi.fn(),
   };
 
   it('renders correctly with props', () => {

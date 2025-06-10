@@ -3,7 +3,7 @@ import { render } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import userTableDataPermissions from '../../../utils/userTableDataPermissions';
 import UserTableHeader from '../UserTableHeader';
-import { rootReducers } from 'store';
+import { rootReducers } from '../../../store';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 import {
@@ -23,7 +23,10 @@ import {
 const store = createStore(rootReducers);
 
 // Mock userTableDataPermissions function
-vi.mock('utils/userTableDataPermissions', () => vi.fn());
+vi.mock('../../../utils/userTableDataPermissions', () => ({
+  __esModule: true,
+  default: vi.fn(),
+}));
 
 describe('UserTableHeader', () => {
   const authRole = 'admin'; // example role, change as necessary for tests

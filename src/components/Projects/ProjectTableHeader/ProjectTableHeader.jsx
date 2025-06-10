@@ -14,7 +14,7 @@ import { connect } from 'react-redux';
 import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faArrowUp, faArrowDown, faSortDown} from '@fortawesome/free-solid-svg-icons';
-import { Dropdown,DropdownButton, Divider } from 'react-bootstrap';
+import { Dropdown,DropdownButton } from 'react-bootstrap';
 
 // import DropdownButton from 'react-bootstrap/DropdownButton';
 import { boxStyle } from '~/styles';
@@ -23,7 +23,7 @@ import { Button } from 'reactstrap';
 
 const ProjectTableHeader = props => {
   const { role, darkMode } = props;
-  const canDeleteProject = props.hasPermission('deleteProject');
+  const canDeleteProject = hasPermission('deleteProject')
 
   const categoryList = ['Unspecified', 'Food', 'Energy', 'Housing', 'Education', 'Society', 'Economics', 'Stewardship', 'Other'];
   const statusList = ['Active', 'Inactive'];
@@ -121,5 +121,5 @@ const mapStateToProps = state => ({
   role: state.userProfile.role, // Map 'role' from Redux state to 'role' prop
 });
 
-export default connect(mapStateToProps, { hasPermission })(ProjectTableHeader);
+export default connect(mapStateToProps)(ProjectTableHeader)
 

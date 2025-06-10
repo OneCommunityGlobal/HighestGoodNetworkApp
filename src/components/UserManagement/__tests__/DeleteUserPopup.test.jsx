@@ -28,7 +28,10 @@ const defaultProps = {
   onDelete,
 };
 
+// Reset spies and store before each test
 beforeEach(() => {
+  onClose.mockClear();
+  onDelete.mockClear();
   store = mockStore({
     auth: authMock,
     userProfile: userProfileMock,
@@ -42,6 +45,7 @@ describe('delete user popup', () => {
   beforeEach(() => {
     renderWithProvider(<DeleteUserPopup {...defaultProps} />, { store });
   });
+
   describe('Structure', () => {
     it('should render the modal', () => {
       expect(screen.getByRole('dialog')).toBeInTheDocument();
@@ -59,6 +63,7 @@ describe('delete user popup', () => {
       expect(screen.getByRole('button', { name: /.*archiving.*/i })).toBeInTheDocument();
     });
   });
+
   describe('behavior', () => {
     it('should fire onClose() once the user clicks close buttons', () => {
       screen.getAllByRole('button', { name: /close/i }).forEach(button => {
@@ -85,6 +90,7 @@ describe('delete user popup additional tests', () => {
   beforeEach(() => {
     renderWithProvider(<DeleteUserPopup {...defaultProps} />, { store });
   });
+
   describe('Texts display', () => {
     it('should render USER_DELETE_CONFIRMATION_FIRST_LINE', () => {
       expect(
@@ -109,8 +115,9 @@ describe('delete user popup additional tests', () => {
       expect(screen.getByText(new RegExp(USER_DELETE_OPTION_HEADING, 'i'))).toBeInTheDocument();
     });
   });
+
   describe('more behaviors', () => {
-    it('should not fire when close button is not clocked', () => {
+    it('should not fire when close button is not clicked', () => {
       expect(onClose).toHaveBeenCalledTimes(0);
     });
     it('should fire onDelete(HardDelete) one time when the user clicks the `delete` button', () => {

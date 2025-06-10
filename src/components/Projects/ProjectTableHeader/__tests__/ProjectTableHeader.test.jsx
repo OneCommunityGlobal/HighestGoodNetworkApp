@@ -8,10 +8,10 @@ import { userProfileMock } from '../../../../__tests__/mockStates'
 
 const mockStore = configureMockStore([thunk])
 
-// Mock the hasPermission function
-vi.mock('utils/permissions', () => ({
-  hasPermission: vi.fn((a) => true),
-}));
+vi.mock('~/utils/permissions', () => ({
+  __esModule: true,
+  default: vi.fn(() => true),
+}))
 
 // Mock the EditableInfoModal component
 vi.mock('components/UserProfile/EditableModal/EditableInfoModal', () => () => (
@@ -22,17 +22,19 @@ vi.mock('components/UserProfile/EditableModal/EditableInfoModal', () => () => (
 const renderProjectTableHeader = (projectTableHeaderProps) => {
 
   const initialState = {
+    auth: {
+      user: {
+        role: projectTableHeaderProps.role || 'Owner',
+        permissions: { frontPermissions: [], backPermissions: [] },
+      },
+    },
+    role: { roles: [] },
     userProfile: {
       ...userProfileMock,
-      role: 'Owner',
-      permissions: {
-        frontPermissions: ['deleteProject'],
-        backPermissions: ['deleteProject'],
-      }
-
+      role: projectTableHeaderProps.role,
+      permissions: projectTableHeaderProps.permissions || {},
     },
-    ...projectTableHeaderProps,
-  }
+  };
   const store = mockStore(initialState);
 
   return render(

@@ -1,16 +1,18 @@
 // Badges.test.jsx
+import { vi } from 'vitest';
+vi.mock('react', async importOriginal => {
+  const React = await importOriginal();
+  return {
+    ...React,
+    useLayoutEffect: React.useEffect,
+  };
+});
 import { render, screen, within } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import Badges from '../Badges';
 import { authMock, userProfileMock, rolesMock } from '../../../__tests__/mockStates';
-
-// Mock useLayoutEffect to useEffect to avoid SSR warnings in test environment
-vi.mock('react', () => ({
-  ...vi.requireActual('react'),
-  useLayoutEffect: vi.requireActual('react').useEffect,
-}));
 
 // Mock the axios request that's failing
 vi.mock('axios', () => ({

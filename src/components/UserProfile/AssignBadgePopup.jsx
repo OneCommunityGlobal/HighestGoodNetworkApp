@@ -55,14 +55,13 @@ function AssignBadgePopup(props) {
     } catch (error) {}
   };
 
-  const filterBadges = allBadges => {
-    let filteredList = allBadges.filter(badge => {
-      if (badge.badgeName.toLowerCase().indexOf(searchedName.toLowerCase()) > -1) {
-        return badge;
-      }
-    });
-    return filteredList;
-  };
+ const filterBadges = (allBadges = []) => {
+   // guard against non-array inputs
+   if (!Array.isArray(allBadges)) return [];
+   return allBadges.filter(({ badgeName }) =>
+     badgeName.toLowerCase().includes(searchedName.toLowerCase())
+   );
+ };
 
   let filteredBadges = filterBadges(badgeList);
 

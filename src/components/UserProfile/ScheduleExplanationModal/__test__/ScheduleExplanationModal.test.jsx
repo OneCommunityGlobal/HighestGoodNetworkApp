@@ -34,8 +34,8 @@ describe('SchedulerExplanationModal', () => {
     expect(
       screen.getByText(/Including your time already requested off, you have used the equivalent of/)
     ).toBeInTheDocument();
-    expect(screen.getByText('3')).toHaveStyle('color: red'); 
-    expect(screen.getByText('2')).toHaveStyle('color: red'); 
+    expect(screen.getByText('3')).toHaveStyle('color: rgb(255, 0, 0)'); 
+    expect(screen.getByText('2')).toHaveStyle('color: rgb(255, 0, 0)'); 
     expect(screen.getByText('5 weeks')).toBeInTheDocument(); 
   });
 

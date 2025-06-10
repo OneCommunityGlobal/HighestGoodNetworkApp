@@ -1,5 +1,5 @@
 import './UpdateReusablesBulk.css';
-import * as moment from 'moment';
+import moment from 'moment';
 import { Input, Label, Form, Row, Col } from 'reactstrap';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';

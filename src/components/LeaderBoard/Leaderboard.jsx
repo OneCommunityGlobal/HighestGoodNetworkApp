@@ -658,7 +658,9 @@ function LeaderBoard({
                         .reduce((total, user) => total + parseFloat(user.totaltime), 0)
                         .toFixed(2)}{' '}
                       of{' '}
-                      {filteredUsers.reduce((total, user) => total + user.weeklycommittedHours, 0)}
+                      {filteredUsers
+                        .reduce((total, user) => total + (user.weeklycommittedHours || 0), 0)
+                        .toFixed(2)}
                     </span>
                   </td>
                   <td aria-label="Placeholder" />

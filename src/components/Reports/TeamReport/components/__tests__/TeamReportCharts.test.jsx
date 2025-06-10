@@ -1,7 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-
-// Completely mock the TeamReportCharts component
+import TeamReportCharts from '../TeamReportCharts';
 vi.mock('../TeamReportCharts', () => ({
   __esModule: true,
   default: ({
@@ -56,9 +55,6 @@ describe('TeamReportCharts', () => {
     totalTeamWeeklyWorkedHours: 50,
     darkMode: false,
   };
-
-  // Import the component after mock is set up
-  const TeamReportCharts = require('../TeamReportCharts').default;
 
   beforeEach(() => {
     vi.clearAllMocks();

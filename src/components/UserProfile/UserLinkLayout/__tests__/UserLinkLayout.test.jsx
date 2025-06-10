@@ -3,10 +3,15 @@ import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import UserLinkLayout from '../UserLinkLayout';
 
+vi.mock('../../UserLinks', () => ({
+  __esModule: true,
+  default: () => <div data-testid="mock-user-links" />,
+}));
 
-vi.mock('../../UserLinks', () => () => <div data-testid="mock-user-links"></div>);
-vi.mock('../../UserProfileEdit/LinkModButton', () => () => <div data-testid="mock-link-mod-button"></div>);
-
+vi.mock('../../UserProfileEdit/LinkModButton', () => ({
+  __esModule: true,
+  default: () => <div data-testid="mock-link-mod-button" />,
+}));
 
 describe('UserLinkLayout Component', () => {
   const mockProps = {

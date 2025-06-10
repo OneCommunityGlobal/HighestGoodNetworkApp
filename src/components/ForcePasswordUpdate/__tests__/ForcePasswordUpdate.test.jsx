@@ -1,26 +1,59 @@
-import { renderWithRouterMatch } from '../../../__tests__/utils.js';
-import '@testing-library/jest-dom/extend-expect';
-// eslint-disable-next-line no-unused-vars
+import { vi } from 'vitest';
 import React from 'react';
-import { createMemoryHistory } from 'history';
-import { rest } from 'msw';
+vi.mock('react-leaflet', () => ({
+  __esModule: true,
+  MapContainer: () => null,
+  TileLayer: () => null,
+  useMapEvents: () => ({}),
+}));
+vi.mock('react-leaflet-cluster', () => ({
+  __esModule: true,
+  default: () => null,
+}));
+import '@testing-library/jest-dom/extend-expect';
 import { setupServer } from 'msw/node';
+import { rest } from 'msw';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { ENDPOINTS } from '~/utils/URL';
 import mockState from '../../../__tests__/mockAdminState';
-import routes from '../../../routes';
 import { ForcePasswordUpdate } from '../ForcePasswordUpdate';
-import * as updatePasswordActions from '../../../actions/updatePassword';
-import * as errorsActions from '../../../actions/errorsActions';
 
+vi.mock('react-chartjs-2', () => ({
+  Bar: () => <div data-testid="bar-chart" />,
+  Doughnut: () => <div data-testid="doughnut-chart" />,
+  // …mock whatever other chart types you use
+}));
+
+vi.mock('chart.js', () => {
+  class Chart {
+    static register(..._args) {
+      /* no-op */
+    }
+  }
+  return {
+    __esModule: true,
+    Chart,
+    CategoryScale: class {},
+    LinearScale: class {},
+    BarController: class {},
+    LineController: class {},
+    BarElement: class {},
+    LineElement: class {},
+    PointElement: class {},
+    Title: class {},
+    Tooltip: class {},
+    Legend: class {},
+  };
+});
 // Create mock functions for required actions
 vi.mock('../../../actions/updatePassword.js', () => ({
   forcePasswordUpdate: vi.fn().mockImplementation(data => {
     return () => Promise.resolve(200);
   }),
+  updatePassword: vi.fn().mockImplementation(data => () => Promise.resolve(200)),
 }));
 
 vi.mock('../../../actions/errorsActions.js', () => ({
