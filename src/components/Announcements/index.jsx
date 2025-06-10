@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import axios from 'axios';
 import { useState, useEffect } from 'react';
 import './Announcements.css';
