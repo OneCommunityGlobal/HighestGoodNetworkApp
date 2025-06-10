@@ -13,7 +13,7 @@ function TagsSearch(props) {
     removeResource,
     disableInput,
     darkMode,
-    members, 
+    members,
   } = props;
   const [searchWord, setSearchWord] = useState('');
   const [isFocused, setIsFocused] = useState(false);
@@ -49,19 +49,19 @@ function TagsSearch(props) {
 
   const filteredMembers = useMemo(() => {
     console.log('Filtering members:', { searchWord, membersCount: members?.length, isFocused });
-    
+
     const resourceNames = new Set(resourceItems.map(item => item.name.toLowerCase()));
 
     if (members && members.length > 0) {
       return members.filter(member => {
         const fullName = `${member.firstName} ${member.lastName}`.toLowerCase();
-        
+
         if (resourceNames.has(fullName)) return false;
-        
+
         if (searchWord.trim().length > 0) {
           return fullName.includes(searchWord.toLowerCase());
         }
-        
+
         return isFocused;
       });
     }
@@ -74,14 +74,20 @@ function TagsSearch(props) {
     }
 
     return [];
-  }, [members, resourceItems, searchWord, isFocused, props.state.projectMembers.foundProjectMembers]);
+  }, [
+    members,
+    resourceItems,
+    searchWord,
+    isFocused,
+    props.state.projectMembers.foundProjectMembers,
+  ]);
 
   const handleClick = (event, member) => {
     const userId = member._id || member.userID;
     const firstName = member.firstName || member.first;
     const lastName = member.lastName || member.last;
-    
-    addResources(userId, firstName, lastName, member.profilePic);
+
+    addResources(userId, firstName, lastName);
     setSearchWord('');
   };
 
@@ -110,11 +116,14 @@ function TagsSearch(props) {
             null,
             { componentOnly: true },
           )}
-          
+
           {shouldShowDropdown && (
             <ul className="my-element dropdown-menu d-flex flex-column align-items-start justify-content-start w-100 scrollbar shadow-lg rounded-3 position-absolute top-100 start-0 z-3 bg-light scrollable-menu">
               {filteredMembers.map((member, index) => (
-                <a key={member._id || member.userID || index} className="text-decoration-none w-100">
+                <a
+                  key={member._id || member.userID || index}
+                  className="text-decoration-none w-100"
+                >
                   <li
                     className="dropdown-item border-bottom fs-6 w-100 p-1"
                     onMouseDown={event => handleClick(event, member)}
