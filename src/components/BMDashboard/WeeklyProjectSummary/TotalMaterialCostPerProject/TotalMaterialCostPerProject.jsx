@@ -16,6 +16,7 @@ import './TotalMaterialCostPerProject.css';
 import { useEffect } from 'react';
 import { useMemo } from 'react';
 import { ENDPOINTS } from 'utils/URL';
+import Loading from 'components/common/Loading';
 
 // Register required components
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
@@ -47,7 +48,12 @@ const options = {
   maintainAspectRatio: false,
   plugins: {
     legend: {
+      // display: true,
       position: 'top',
+      // align: 'start', // Align legend to the left
+      // labels: {
+      //   padding: 10, // Padding inside legend box (around labels)
+      // },
     },
     title: {
       display: false,
@@ -78,31 +84,38 @@ function TotalMaterialCostPerProject() {
     const fetchData = async () => {
       setDataLoaded(false);
       try {
-        axios.get(ENDPOINTS.BM_PROJECTS_LIST_FOR_MATERIALS_COST).then(res => {
-          // eslint-disable-next-line no-console
-          console.log(res.data);
-          const projectsFilteredData = res.data.map(project => ({
-            value: project.projectId,
-            label: project.projectName,
-          }));
-          // eslint-disable-next-line no-console
-          console.log(projectsFilteredData);
-          setSelectedProjects(projectsFilteredData);
-          setAllProjects(projectsFilteredData);
-        });
-        axios.get(ENDPOINTS.BM_PROJECT_MATERIALS_COST).then(res => {
-          const projectCostsData = res.data.reduce((acc, item) => {
-            acc[item.projectId] = item.totalCostK;
-            return acc;
-          }, {});
-          // eslint-disable-next-line no-console
-          console.log(projectCostsData);
-          setProjectCosts(projectCostsData);
-        });
+        const projectsResponse = await axios.get(ENDPOINTS.BM_PROJECTS_LIST_FOR_MATERIALS_COST);
+        if (projectsResponse.status < 200 || projectsResponse.status >= 300) {
+          throw new Error(
+            `API request to get projects list failed with status ${projectsResponse.status}`,
+          );
+        }
+        const projectsFilteredData = projectsResponse.data.map(project => ({
+          value: project.projectId,
+          label: project.projectName,
+        }));
+        // eslint-disable-next-line no-console
+        console.log(projectsFilteredData);
+        setSelectedProjects(projectsFilteredData);
+        setAllProjects(projectsFilteredData);
+
+        const costResponse = await axios.get(ENDPOINTS.BM_PROJECT_MATERIALS_COST);
+        if (costResponse.status < 200 || costResponse.status >= 300) {
+          throw new Error(
+            `API request to get material cost failed with status ${costResponse.status}`,
+          );
+        }
+        const projectCostsData = costResponse.data.reduce((acc, item) => {
+          acc[item.projectId] = item.totalCostK;
+          return acc;
+        }, {});
+        // eslint-disable-next-line no-console
+        console.log(projectCostsData);
+        setProjectCosts(projectCostsData);
       } catch (error) {
-        toast.info('Error fetching data:', error);
+        toast.error(`Error fetching data: ${error.message}`);
         // Fall back to mock data if API is unavailable
-        toast.info('Using mock data as fallback');
+        toast.error('Using mock data as fallback');
         setSelectedProjects(allDemoProjects);
         setAllProjects(allDemoProjects);
         setProjectCosts(projectDemoCosts);
@@ -154,7 +167,11 @@ function TotalMaterialCostPerProject() {
           </div>
         </>
       ) : (
-        <p>Loading data...</p>
+        <div className="d-flex justify-content-center align-items-center">
+          <div className="w-100vh">
+            <Loading />
+          </div>
+        </div>
       )}
     </div>
   );
