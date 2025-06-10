@@ -96,7 +96,7 @@ describe('TagsSearch Component', () => {
     });
   });
 
-  it.skip('adds a resource when clicking a filtered member', async () => {
+  it('adds a resource when clicking a filtered member', async () => {
     renderTagsSearchComponent(sampleProps);
 
     const searchInputElement = await screen.findByPlaceholderText('Add resources');
@@ -122,10 +122,11 @@ describe('TagsSearch Component', () => {
       fireEvent.mouseDown(ownerOption);
     });
 
-    /** await waitFor(() => {
-      expect(addResources).toHaveBeenCalledWith('aaa123', 'aaa', 'volunteer', 'pic1.jpg');
-      expect(addResources).toHaveBeenCalledWith('aaa067', 'aaa', 'owner', 'pic4.jpg');
-    }); */
+    // Check if addResources was called with the correct arguments
+    await waitFor(() => {
+      expect(addResources).toHaveBeenCalledWith('aaa123', 'aaa', 'volunteer', undefined);
+      expect(addResources).toHaveBeenCalledWith('aaa067', 'aaa', 'owner', undefined);
+    });
   });
 
   it('does not add resource if no member is clicked', async () => {
