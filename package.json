@@ -26,7 +26,7 @@
     "date-fns": "^2.14.0",
     "date-fns-tz": "^2.0.1",
     "diff": "^5.0.0",
-    "dompurify": "^3.1.7",
+    "dompurify": "^3.2.5",
     "font-awesome": "^4.7.0",
     "fs-extra": "^11.2.0",
     "history": "^4.10.1",
@@ -140,6 +140,6 @@
     "react-error-overlay": "^6.0.9",
     "redux-mock-store": "^1.5.4",
     "sinon": "^7.3.2",
-    "surge": "^0.21.6"
+    "surge": "^0.24.6"
   }
 }
