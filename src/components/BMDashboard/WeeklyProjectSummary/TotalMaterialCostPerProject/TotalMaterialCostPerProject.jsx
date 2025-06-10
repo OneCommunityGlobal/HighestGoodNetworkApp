@@ -22,14 +22,14 @@ import Loading from 'components/common/Loading';
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const allDemoProjects = [
-  { label: 'Website Redesign', value: '1' },
-  { label: 'Mobile App', value: '2' },
-  { label: 'API Development Marketing Campaign Marketing Campaign', value: '3' },
-  { label: 'Marketing Campaign', value: '4' },
-  { label: 'Website', value: '5' },
-  { label: 'Mobile', value: '6' },
-  { label: 'API', value: '7' },
-  { label: 'Marketing', value: '8' },
+  { label: 'Project 1', value: '1' },
+  { label: 'Project 2', value: '2' },
+  { label: 'Project 3', value: '3' },
+  { label: 'Project 4', value: '4' },
+  { label: 'Project 5', value: '5' },
+  { label: 'Project 6', value: '6' },
+  { label: 'Project 7', value: '7' },
+  { label: 'Project 8', value: '8' },
 ];
 
 const projectDemoCosts = {
@@ -48,12 +48,7 @@ const options = {
   maintainAspectRatio: false,
   plugins: {
     legend: {
-      // display: true,
       position: 'top',
-      // align: 'start', // Align legend to the left
-      // labels: {
-      //   padding: 10, // Padding inside legend box (around labels)
-      // },
     },
     title: {
       display: false,
