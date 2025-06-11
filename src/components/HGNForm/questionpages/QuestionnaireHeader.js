@@ -1,10 +1,10 @@
 import { forwardRef } from 'react';
-import '../styles/QuestionnaireInfo.css';
+import styles from '../styles/QuestionnaireInfo.module.css';
 
 const QuestionnaireHeader = forwardRef((props, ref) => {
   return (
-    <div className="questionnaire-info" ref={ref}>
-      <div className="blue-strip" />
+    <div className={`${styles.questionnaireInfo}`} ref={ref}>
+      <div className={`${styles.blueStrip}`} />
       <h1 style={{ marginBottom: 0 }}>HGN Development Team Questionnaire</h1>
       <hr />
       <p style={{ marginBottom: '10px' }}>BM&apos;S Account</p>

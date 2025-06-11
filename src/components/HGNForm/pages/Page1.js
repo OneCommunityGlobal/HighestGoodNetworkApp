@@ -5,7 +5,7 @@ import Banner from '../questionpages/Banner';
 import QuestionnaireInfo from '../questionpages/QuestionnaireInfo';
 import InfoForm from '../questionpages/InfoForm';
 import Progress from '../questionpages/Progress';
-import '../styles/hgnform.css';
+import styles from '../styles/hgnform.module.css';
 
 function Page1() {
   const dispatch = useDispatch();
