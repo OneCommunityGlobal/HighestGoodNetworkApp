@@ -95,7 +95,7 @@ describe('TagsSearch Component', () => {
     });
   });
 
-  it.skip('adds a resource when clicking a filtered member', async () => {
+  it('adds a resource when clicking a filtered member', async () => {
     renderTagsSearchComponent(sampleProps);
 
     const searchInputElement = await screen.findByPlaceholderText('Add resources');
