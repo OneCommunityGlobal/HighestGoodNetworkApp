@@ -40,13 +40,12 @@ export const TeamMembersPopup = React.memo(props => {
     setDeletedPopup(!deletedPopup);
   };
 
-
   const handleDelete = id => {
     props.onDeleteClick(`${id}`);
     setDeletedPopup(true);
   };
 
-  const handleToggle = (event) => {
+  const handleToggle = event => {
     setIsChecked(parseInt(event.target.value));
     setCheckedStatus(
       parseInt(event.target.value) == 0
@@ -273,33 +272,33 @@ export const TeamMembersPopup = React.memo(props => {
           >
             <thead>
               <tr className={darkMode ? 'bg-space-cadet' : ''}>
-              <th style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                <button
-                  onClick={() => {
-                    const newStatus = (isChecked + 1) % 3;
-                    setIsChecked(newStatus);
-                    setCheckedStatus(
-                      newStatus === 0 ? 'Inactive' : newStatus === 1 ? 'Active' : 'See All'
-                    );
-                  }}
-                  style={{
-                    backgroundColor:
-                      isChecked === 0 ? '#ccc' : isChecked === 1 ? 'limegreen' : 'dodgerblue',
-                    color: isChecked === 0 ? 'black' : 'white', // 🔁 Dynamic text color
-                    border: 'none',
-                    padding: '6px 12px',
-                    borderRadius: '5px',
-                    fontWeight: 'bold',
-                    cursor: 'pointer',
-                    width: '100px',
-                    minWidth: '100px',
-                    textAlign: 'center',
-                    whiteSpace: 'nowrap',
-                  }}
-                >
-                  {checkedStatus}
-                </button>
-              </th>
+                <th style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                  <button
+                    onClick={() => {
+                      const newStatus = (isChecked + 1) % 3;
+                      setIsChecked(newStatus);
+                      setCheckedStatus(
+                        newStatus === 0 ? 'Inactive' : newStatus === 1 ? 'Active' : 'See All',
+                      );
+                    }}
+                    style={{
+                      backgroundColor:
+                        isChecked === 0 ? '#ccc' : isChecked === 1 ? 'limegreen' : 'dodgerblue',
+                      color: isChecked === 0 ? 'black' : 'white', // 🔁 Dynamic text color
+                      border: 'none',
+                      padding: '6px 12px',
+                      borderRadius: '5px',
+                      fontWeight: 'bold',
+                      cursor: 'pointer',
+                      width: '100px',
+                      minWidth: '100px',
+                      textAlign: 'center',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {checkedStatus}
+                  </button>
+                </th>
                 <th class="def-width">#</th>
                 <th class="def-width">User Name</th>
                 <th style={{ cursor: 'pointer' }} onClick={toggleOrder}>
@@ -329,66 +328,94 @@ export const TeamMembersPopup = React.memo(props => {
               </tr>
             </thead>
             <tbody>
-            {props.fetching ?
-                 <tr><td align='center' colSpan={6}><Spinner  color={`${darkMode ? 'light' : 'dark'}`} animation="border" size="sm" /></td></tr> :
-                 !memberList.length ?
-                   emptyState :
-                   ((Array.isArray(props.members.teamMembers) &&
-                     props.members.teamMembers.length > 0) ||
-                     (typeof props.members.fetching === 'boolean' &&
-                       !props.members.fetching &&
-                       props.members.teamMembers) ||
-                     (Array.isArray(props.members) && props.members.length > 0)) &&
-                   memberList.toSorted().map((user, index) => {
-                     return (
-                       <tr key={`${props.selectedTeamName}-${user.id}-${index}`}>
-                         <td style={{ verticalAlign: 'middle', textAlign: 'center' }}>
-                           <div className={user.isActive ? 'isActive' : 'isNotActive'}>
-                             <i className="fa fa-circle" aria-hidden="true" />
-                           </div>
-                         </td>
-                         <td className="def-width" style={{ verticalAlign: 'middle', textAlign: 'center' }}>{index + 1}</td>
-                         <td className="def-width" style={{ verticalAlign: 'middle', textAlign: 'center' }}>
-                           {returnUserRole(user) ? (
-                             <b>
-                               {user.firstName} {user.lastName} ({user.role})
-                             </b>
-                           ) : (
-                             <span>
-                               {user.firstName} {user.lastName} ({user.role})
-                             </span>
-                           )}{' '}
-                           {hasVisibilityIconPermission && !user.isVisible && (  // Invisibility icon from 'Cillian'
-                             <i className="fa fa-eye-slash" title="User is invisible" />
-                           )}
-                         </td>
-                         {/* <td>{user}</td> */}
-                         <td style={{ verticalAlign: 'middle', textAlign: 'center' }}>
-                          {moment(user.addDateTime).format('MMM-DD-YY')}
-                          </td>
-                         <td style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-                           <ToggleSwitch
-                             key={`${props.selectedTeamName}-${user._id}`}
-                             switchType="limit-visibility"
-                             userId={user._id}
-                             choice={memberVisibility[user._id]}
-                             UpdateTeamMembersVisibility={UpdateTeamMembersVisibility}
-                           />
-                         </td>
-                         {canAssignTeamToUsers && (
-                           <td style={{ whiteSpace: 'nowrap', minWidth: '100px', textAlign: 'center' }}>
-                             <Button
-                               color="danger"
-                               onClick={() => handleDelete(user._id)}
-                               style={darkMode ? boxStyleDark : boxStyle}
-                             >
-                               Delete
-                             </Button>
-                           </td>
-                         )}
-                       </tr>
-                     );
-                   })}
+              {props.fetching ? (
+                <tr>
+                  <td align="center" colSpan={6}>
+                    <Spinner
+                      color={`${darkMode ? 'light' : 'dark'}`}
+                      animation="border"
+                      size="sm"
+                    />
+                  </td>
+                </tr>
+              ) : !memberList.length ? (
+                emptyState
+              ) : (
+                ((Array.isArray(props.members.teamMembers) &&
+                  props.members.teamMembers.length > 0) ||
+                  (typeof props.members.fetching === 'boolean' &&
+                    !props.members.fetching &&
+                    props.members.teamMembers) ||
+                  (Array.isArray(props.members) && props.members.length > 0)) &&
+                memberList.toSorted().map((user, index) => {
+                  return (
+                    <tr key={`${props.selectedTeamName}-${user.id}-${index}`}>
+                      <td style={{ verticalAlign: 'middle', textAlign: 'center' }}>
+                        <div className={user.isActive ? 'isActive' : 'isNotActive'}>
+                          <i className="fa fa-circle" aria-hidden="true" />
+                        </div>
+                      </td>
+                      <td
+                        className="def-width"
+                        style={{ verticalAlign: 'middle', textAlign: 'center' }}
+                      >
+                        {index + 1}
+                      </td>
+                      <td
+                        className="def-width"
+                        style={{ verticalAlign: 'middle', textAlign: 'center' }}
+                      >
+                        {returnUserRole(user) ? (
+                          <b>
+                            {user.firstName} {user.lastName} ({user.role})
+                          </b>
+                        ) : (
+                          <span>
+                            {user.firstName} {user.lastName} ({user.role})
+                          </span>
+                        )}{' '}
+                        {hasVisibilityIconPermission &&
+                        !user.isVisible && ( // Invisibility icon from 'Cillian'
+                            <i className="fa fa-eye-slash" title="User is invisible" />
+                          )}
+                      </td>
+                      {/* <td>{user}</td> */}
+                      <td style={{ verticalAlign: 'middle', textAlign: 'center' }}>
+                        {moment(user.addDateTime).format('MMM-DD-YY')}
+                      </td>
+                      <td
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          height: '100%',
+                        }}
+                      >
+                        <ToggleSwitch
+                          key={`${props.selectedTeamName}-${user._id}`}
+                          switchType="limit-visibility"
+                          userId={user._id}
+                          choice={memberVisibility[user._id]}
+                          UpdateTeamMembersVisibility={UpdateTeamMembersVisibility}
+                        />
+                      </td>
+                      {canAssignTeamToUsers && (
+                        <td
+                          style={{ whiteSpace: 'nowrap', minWidth: '100px', textAlign: 'center' }}
+                        >
+                          <Button
+                            color="danger"
+                            onClick={() => handleDelete(user._id)}
+                            style={darkMode ? boxStyleDark : boxStyle}
+                          >
+                            Delete
+                          </Button>
+                        </td>
+                      )}
+                    </tr>
+                  );
+                })
+              )}
             </tbody>
           </table>
         </ModalBody>

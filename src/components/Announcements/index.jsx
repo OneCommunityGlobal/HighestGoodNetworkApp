@@ -1,13 +1,12 @@
 /* eslint-disable no-undef */
-import axios from 'axios';
 import { useState, useEffect } from 'react';
-import './Announcements.css';
 import { useDispatch, useSelector } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 import { Editor } from '@tinymce/tinymce-react';
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
-import { withRouter } from 'react-router-dom';
+import './Announcements.css';
 
 function Announcements({ title, email: initialEmail, history }) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -17,61 +16,12 @@ function Announcements({ title, email: initialEmail, history }) {
   const [emailContent, setEmailContent] = useState('');
   const [headerContent, setHeaderContent] = useState('');
   const [showEditor, setShowEditor] = useState(true);
-  const [videoFile, setVideoFile] = useState(null);
-  const [videoURL, setVideoURL] = useState('');
-  const [youtubeAccounts, setYoutubeAccounts] = useState([]);
-  const [selectedYoutubeAccountId, setSelectedYoutubeAccountId] = useState('');
-  const [showYoutubeDropdown, setShowYoutubeDropdown] = useState(false);
-  const [videoTitle, setVideoTitle] = useState('');
-  const [videoDescription, setVideoDescription] = useState('');
-  const [videoTags, setVideoTags] = useState('');
-  const [privacyStatus, setPrivacyStatus] = useState('private');
   const [isFileUploaded, setIsFileUploaded] = useState(false);
 
   useEffect(() => {
     setShowEditor(false);
     setTimeout(() => setShowEditor(true), 0);
   }, [darkMode]);
-
-  const editorInit = {
-    license_key: 'gpl',
-    selector: 'Editor#email-editor',
-    height: 500,
-    plugins: [
-      'advlist autolink lists link image paste',
-      'charmap print preview anchor help',
-      'searchreplace visualblocks code',
-      'insertdatetime media table paste wordcount',
-    ],
-    menubar: false,
-    branding: false,
-    image_title: true,
-    automatic_uploads: true,
-    file_picker_callback(cb) {
-      const input = document.createElement('input');
-      input.setAttribute('type', 'file');
-      input.setAttribute('accept', 'image/*');
-      input.onchange = () => {
-        const file = input.files[0];
-        const reader = new FileReader();
-        reader.onload = () => {
-          const id = `blobid${new Date().getTime()}`;
-          const { blobCache } = window.tinymce.activeEditor.editorUpload;
-          const base64 = reader.result.split(',')[1];
-          const blobInfo = blobCache.create(id, file, base64);
-          blobCache.add(blobInfo);
-          cb(blobInfo.blobUri(), { title: file.name });
-        };
-        reader.readAsDataURL(file);
-      };
-      input.click();
-    },
-    a11y_advanced_options: true,
-    toolbar:
-      'undo redo | bold italic | blocks fontfamily fontsize | image alignleft aligncenter alignright | bullist numlist outdent indent | removeformat | help',
-    skin: darkMode ? 'oxide-dark' : 'oxide',
-    content_css: darkMode ? 'dark' : 'default',
-  };
 
   useEffect(() => {
     if (initialEmail) {
@@ -157,82 +107,6 @@ function Announcements({ title, email: initialEmail, history }) {
     </div>
   `;
     dispatch(broadcastEmailsToAll('Weekly Update', htmlContent));
-  };
-
-  const handleVideoChange = e => {
-    const file = e.target.files[0];
-    if (file && file.type.startsWith('video/')) {
-      const url = URL.createObjectURL(file);
-      setVideoFile(file);
-      setVideoURL(url);
-    } else {
-      setVideoFile(null);
-      setVideoURL('');
-      toast.error('Please select a valid video file');
-    }
-  };
-
-  const oauthSignIn = () => {
-    const oauth2Endpoint = 'https://accounts.google.com/o/oauth2/v2/auth';
-    const params = {
-      client_id: '79576137807-b7j4fsdm0u9pgorsohcq97gqsaglf7la.apps.googleusercontent.com',
-      redirect_uri: 'http://localhost:3000/announcements',
-      response_type: 'token',
-      scope: 'https://www.googleapis.com/auth/youtube.force-ssl',
-      include_granted_scopes: 'true',
-      state: 'pass-through value',
-    };
-    const form = document.createElement('form');
-    form.setAttribute('method', 'GET');
-    form.setAttribute('action', oauth2Endpoint);
-    Object.keys(params).forEach(p => {
-      const input = document.createElement('input');
-      input.setAttribute('type', 'hidden');
-      input.setAttribute('name', p);
-      input.setAttribute('value', params[p]);
-      form.appendChild(input);
-    });
-    document.body.appendChild(form);
-    form.submit();
-  };
-
-  useEffect(() => {
-    fetch('/api/youtubeAccounts')
-      .then(res => res.json())
-      .then(data => setYoutubeAccounts(data))
-      .catch(() => {});
-  }, []);
-
-  const handlePostVideoToYouTube = async () => {
-    if (!videoFile || !selectedYoutubeAccountId) {
-      toast.error('Please select a video and YouTube account');
-      return;
-    }
-    const formData = new FormData();
-    formData.append('video', videoFile);
-    formData.append('youtubeAccountId', selectedYoutubeAccountId);
-    formData.append('title', videoTitle);
-    formData.append('description', videoDescription);
-    formData.append('tags', videoTags);
-    formData.append('privacyStatus', privacyStatus);
-    const token = localStorage.getItem('token');
-    const headers = {
-      Authorization: `Bearer ${token}`,
-    };
-    try {
-      const res = await axios.post('http://localhost:4500/api/uploadYtVideo', formData, {
-        headers,
-      });
-      if (res.status === 200) {
-        toast.success('Video uploaded successfully!');
-        setShowYoutubeDropdown(false);
-        setSelectedYoutubeAccountId('');
-      } else {
-        toast.error('Video upload failed');
-      }
-    } catch (err) {
-      toast.error('Upload error');
-    }
   };
 
   return (
@@ -356,6 +230,7 @@ function Announcements({ title, email: initialEmail, history }) {
       </div>
       <div style={{ padding: 0, marginLeft: 78 }}>
         <button
+          type="button"
           className="send-button"
           onClick={() => history.push('/announcements/youtube-posting')}
           style={darkMode ? boxStyleDark : boxStyle}

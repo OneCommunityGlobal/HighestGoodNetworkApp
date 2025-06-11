@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -16,6 +16,8 @@ function YoutubeFeatures() {
   const [videoDescription, setVideoDescription] = useState('');
   const [videoTags, setVideoTags] = useState('');
   const [privacyStatus, setPrivacyStatus] = useState('private');
+  const [isScheduled, setIsScheduled] = useState(false);
+  const [scheduledTime, setScheduledTime] = useState('');
 
   useEffect(() => {
     fetch('/api/youtubeAccounts')
@@ -37,30 +39,6 @@ function YoutubeFeatures() {
     }
   };
 
-  const oauthSignIn = () => {
-    const oauth2Endpoint = 'https://accounts.google.com/o/oauth2/v2/auth';
-    const params = {
-      client_id: '79576137807-b7j4fsdm0u9pgorsohcq97gqsaglf7la.apps.googleusercontent.com',
-      redirect_uri: 'http://localhost:3000/youtube-features',
-      response_type: 'token',
-      scope: 'https://www.googleapis.com/auth/youtube.force-ssl',
-      include_granted_scopes: 'true',
-      state: 'pass-through value',
-    };
-    const form = document.createElement('form');
-    form.setAttribute('method', 'GET');
-    form.setAttribute('action', oauth2Endpoint);
-    Object.keys(params).forEach(p => {
-      const input = document.createElement('input');
-      input.setAttribute('type', 'hidden');
-      input.setAttribute('name', p);
-      input.setAttribute('value', params[p]);
-      form.appendChild(input);
-    });
-    document.body.appendChild(form);
-    form.submit();
-  };
-
   const handlePostVideoToYouTube = async () => {
     if (!videoFile || !selectedYoutubeAccountId) {
       toast.error('Please select a video and YouTube account');
@@ -73,6 +51,9 @@ function YoutubeFeatures() {
     formData.append('description', videoDescription);
     formData.append('tags', videoTags);
     formData.append('privacyStatus', privacyStatus);
+    if (isScheduled && scheduledTime) {
+      formData.append('scheduledTime', scheduledTime);
+    }
     const token = localStorage.getItem('token');
     const headers = {
       Authorization: `Bearer ${token}`,
@@ -82,7 +63,9 @@ function YoutubeFeatures() {
         headers,
       });
       if (res.status === 200) {
-        toast.success('Video uploaded successfully!');
+        toast.success(
+          isScheduled ? 'Video scheduled successfully!' : 'Video uploaded successfully!',
+        );
         setShowYoutubeDropdown(false);
         setSelectedYoutubeAccountId('');
       } else {
@@ -104,14 +87,6 @@ function YoutubeFeatures() {
           className="social-buttons-container"
           style={{ display: 'flex', gap: '16px', alignItems: 'center' }}
         >
-          <button
-            type="button"
-            className="send-button"
-            onClick={oauthSignIn}
-            style={darkMode ? boxStyleDark : boxStyle}
-          >
-            Sign in with Google
-          </button>
           <button
             type="button"
             className="send-button"
@@ -189,6 +164,24 @@ function YoutubeFeatures() {
           <option value="unlisted">Unlisted</option>
           <option value="public">Public</option>
         </select>
+        <div style={{ marginTop: 10, display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <label>
+            <input
+              type="checkbox"
+              checked={isScheduled}
+              onChange={e => setIsScheduled(e.target.checked)}
+            />
+            Schedule Post
+          </label>
+          {isScheduled && (
+            <input
+              type="datetime-local"
+              value={scheduledTime}
+              onChange={e => setScheduledTime(e.target.value)}
+              style={{ padding: 8 }}
+            />
+          )}
+        </div>
         {videoURL && (
           <div>
             <video width="480" controls aria-label="Video Preview">
@@ -203,4 +196,4 @@ function YoutubeFeatures() {
   );
 }
 
-export default YoutubeFeatures; 
+export default YoutubeFeatures;
