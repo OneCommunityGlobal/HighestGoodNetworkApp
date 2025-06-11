@@ -737,7 +737,9 @@ function LeaderBoard({
                               Jump to personal Dashboard
                             </ModalHeader>
                             <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
-                              <p>Are you sure you wish to view this {item.name} dashboard?</p>
+                              <p className={darkMode ? 'text-light' : ''}>
+                                Are you sure you wish to view this {item.name} dashboard?
+                              </p>
                             </ModalBody>
                             <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
                               <Button variant="primary" onClick={() => showDashboard(item)}>
@@ -833,7 +835,7 @@ function LeaderBoard({
                           title="View Profile"
                           style={{
                             color: isCurrentlyOff
-                              ? 'rgba(128, 128, 128, 0.5)' // Gray out the name if on time off
+                              ? `${darkMode ? '#9499a4' : 'rgba(128, 128, 128, 0.5)'}` // Gray out the name if on time off
                               : '#007BFF', // Default color
                           }}
                         >
