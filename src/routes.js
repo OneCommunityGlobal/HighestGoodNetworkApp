@@ -50,8 +50,12 @@ import 'react-toastify/dist/ReactToastify.css';
 import { UserRole } from './utils/enums';
 import ForgotPassword from './components/Login/ForgotPassword';
 import Inventory from './components/Inventory';
+
 import EmailSubscribeForm from './components/EmailSubscribeForm';
+import UnsubscribePage from './components/EmailSubscribeForm/UnsubscribePage';
+import SubscribePage from './components/EmailSubscribeForm/SubscribePage';
 import UnsubscribeForm from './components/EmailSubscribeForm/Unsubscribe';
+
 import NotFoundPage from './components/NotFound/NotFoundPage';
 import EmailSender from './components/common/EmailSender/EmailSender';
 import Collaboration from './components/Collaboration';
@@ -530,6 +534,9 @@ export default (
         {/* ----- END BM Dashboard Routing ----- */}
         <Route path="/login" component={Login} />
         <Route path="/forgotpassword" component={ForgotPassword} />
+        <Route path="/subscribe" component={SubscribePage} />
+        <Route path="/unsubscribe" component={UnsubscribePage} />
+
         <Route path="/email-subscribe" component={EmailSubscribeForm} />
         <Route path="/email-unsubscribe" component={UnsubscribeForm} />
         <Route path="/collaboration" component={Collaboration} />
