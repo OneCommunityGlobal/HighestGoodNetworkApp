@@ -121,6 +121,7 @@ import FeedbackModal from './components/HGNHelpSkillsDashboard/FeedbackModal';
 import LogTools from './components/BMDashboard/LogTools/LogTools';
 import EquipmentUpdate from './components/BMDashboard/Tools/EquipmentUpdate';
 
+import YoutubeFeatures from './components/Announcements/YoutubeFeatures';
 
 const ReusableListView = lazy(() => import('./components/BMDashboard/ReusableList'));
 const ConsumableListView = lazy(() => import('./components/BMDashboard/ConsumableList'));
@@ -337,6 +338,10 @@ export default (
           exact
           component={Announcements}
           routePermissions={RoutePermissions.announcements}
+        />
+        <ProtectedRoute
+          path="/announcements/youtube-posting"
+          exact component={YoutubeFeatures}
         />
         <ProtectedRoute
           path="/sendemail"

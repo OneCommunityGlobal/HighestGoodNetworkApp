@@ -7,8 +7,9 @@ import { Editor } from '@tinymce/tinymce-react';
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
+import { withRouter } from 'react-router-dom';
 
-function Announcements({ title, email: initialEmail }) {
+function Announcements({ title, email: initialEmail, history }) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const dispatch = useDispatch();
   const [emailTo, setEmailTo] = useState('');
@@ -353,120 +354,17 @@ function Announcements({ title, email: initialEmail }) {
           />
         </div>
       </div>
-      <div className="social-media-container">
-        <div className="social-media">
-          {title ? <h3>{title}</h3> : <h3>Social Media Post</h3>}
-          {title ? null : (
-            <label htmlFor="social-media-list" className={darkMode ? 'text-light' : 'text-dark'}>
-              Click on below social media to post
-            </label>
-          )}
-
-          {title ? null : (
-            <div
-              className="social-buttons-container"
-              style={{ display: 'flex', gap: '16px', alignItems: 'center' }}
-            >
-              <button
-                type="button"
-                className="send-button"
-                onClick={oauthSignIn}
-                style={darkMode ? boxStyleDark : boxStyle}
-              >
-                Sign in with Google
-              </button>
-              <button
-                type="button"
-                className="send-button"
-                onClick={() => setShowYoutubeDropdown(true)}
-                style={darkMode ? boxStyleDark : boxStyle}
-              >
-                Post video to YouTube channel
-              </button>
-              {showYoutubeDropdown && (
-                <>
-                  <select
-                    className="select-youtube-account"
-                    value={selectedYoutubeAccountId}
-                    onChange={e => setSelectedYoutubeAccountId(e.target.value)}
-                  >
-                    <option value="">Select YouTube Account</option>
-                    <option value="test1">Test Channel 1</option>
-                    <option value="test2">Test Channel 2</option>
-                    {youtubeAccounts.map(acc => (
-                      <option key={acc.id} value={acc.id}>
-                        {acc.displayName || acc.name || acc.clientId}
-                      </option>
-                    ))}
-                  </select>
-                  <button
-                    type="button"
-                    className="send-button"
-                    disabled={!videoFile || !selectedYoutubeAccountId}
-                    onClick={handlePostVideoToYouTube}
-                    style={darkMode ? boxStyleDark : boxStyle}
-                  >
-                    Submit
-                  </button>
-                  <button
-                    type="button"
-                    className="send-button"
-                    onClick={() => setShowYoutubeDropdown(false)}
-                    style={darkMode ? boxStyleDark : boxStyle}
-                  >
-                    Cancel
-                  </button>
-                </>
-              )}
-            </div>
-          )}
-        </div>
-
-        <div className="video-preview-container">
-          <input type="file" accept="video/*" onChange={handleVideoChange} />
-          <input
-            type="text"
-            placeholder="Video Title"
-            value={videoTitle}
-            onChange={e => setVideoTitle(e.target.value)}
-            style={{ marginTop: 10, width: '100%', padding: 8 }}
-          />
-          <input
-            type="text"
-            placeholder="Video Description"
-            value={videoDescription}
-            onChange={e => setVideoDescription(e.target.value)}
-            style={{ marginTop: 10, width: '100%', padding: 8 }}
-          />
-          <input
-            type="text"
-            placeholder="Tags (comma separated)"
-            value={videoTags}
-            onChange={e => setVideoTags(e.target.value)}
-            style={{ marginTop: 10, width: '100%', padding: 8 }}
-          />
-          <select
-            value={privacyStatus}
-            onChange={e => setPrivacyStatus(e.target.value)}
-            style={{ marginTop: 10, width: '100%', padding: 8 }}
-          >
-            <option value="private">Private</option>
-            <option value="unlisted">Unlisted</option>
-            <option value="public">Public</option>
-          </select>
-          {videoURL && (
-            <div>
-              <video width="480" controls aria-label="Video Preview">
-                <source src={videoURL} type={videoFile.type} />
-                <track kind="captions" />
-                Your browser does not support the video tag.
-              </video>
-            </div>
-          )}
-        </div>
+      <div style={{ padding: 0, marginLeft: 78 }}>
+        <button
+          className="send-button"
+          onClick={() => history.push('/announcements/youtube-posting')}
+          style={darkMode ? boxStyleDark : boxStyle}
+        >
+          Go to YouTube Features
+        </button>
       </div>
     </div>
   );
 }
 
-export default Announcements;
+export default withRouter(Announcements);
