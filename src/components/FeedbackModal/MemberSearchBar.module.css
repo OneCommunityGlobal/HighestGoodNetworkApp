@@ -1,8 +1,8 @@
-.member-search-container {
+.memberSearchContainer {
   position: relative;
 }
 
-.simplified-input {
+.simplifiedInput {
   border: 1px solid #ccc !important;
   border-radius: 3px !important;
   height: 38px !important;
@@ -11,16 +11,16 @@
   box-shadow: none !important;
 }
 
-.simplified-input::placeholder {
+.simplifiedInput::placeholder {
   color: #999 !important;
 }
 
-.simplified-input:focus {
+.simplifiedInput:focus {
   border-color: #6c38cc !important;
   box-shadow: 0 0 0 0.2rem rgba(108, 56, 204, 0.25) !important;
 }
 
-.suggestions-list {
+.suggestionsList {
   position: absolute;
   width: 100%;
   max-height: 200px;
@@ -30,17 +30,17 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.list-group-item {
+.listGroupItem {
   cursor: pointer;
   padding: 8px 12px;
   font-size: 14px;
 }
 
-.list-group-item:hover {
+.listGroupItem:hover {
   background-color: #f8f9fa;
 }
 
-.no-results {
+.noResults {
   position: absolute;
   width: 100%;
   padding: 10px;
@@ -55,23 +55,23 @@
   color: #666;
 }
 
-.dark-mode .no-results {
+.darkMode .noResults {
   background-color: #2c3e50;
   color: #ecf0f1;
   border-color: #444;
 }
 
-.dark-mode .list-group-item {
+.darkMode .listGroupItem {
   background-color: #2c3e50;
   color: #fff;
   border-color: #444;
 }
 
-.dark-mode .list-group-item:hover {
+.darkMode .listGroupItem:hover {
   background-color: #3d5673;
 }
 
-.loading-indicator {
+.loadingIndicator {
   position: absolute;
   width: 100%;
   text-align: center;
@@ -85,18 +85,18 @@
   z-index: 1000;
 }
 
-.dark-mode .loading-indicator {
+.darkMode .loadingIndicator {
   background-color: rgba(44, 62, 80, 0.9);
   color: #fff;
   border-color: #444;
 }
 
-.dark-mode .simplified-input {
+.darkMode .simplifiedInput {
   background-color: #ffffff !important;
   border-color: #666 !important;
   color: #333 !important;
 }
 
-.dark-mode .simplified-input::placeholder {
+.darkMode .simplifiedInput::placeholder {
   color: #777 !important;
 } 
