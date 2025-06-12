@@ -208,6 +208,9 @@ export class EditableInfoModal extends Component {
     } = this.state;
 
     const { darkMode } = this.props;
+    const sanitizedContent = darkMode
+      ? infoContent.replace(/color\s*:\s*[^;"']+;?/gi, '')
+      : infoContent;
     return (
       (CanRead) && (
         <div>
@@ -229,10 +232,12 @@ export class EditableInfoModal extends Component {
                     disabled={!this.state.editing}
                     value={infoContent}
                     onEditorChange={this.handleInputChange}
+                    darkMode={darkMode}
                   />
                   : <div
+                    className={darkMode ? 'info-modal-content force-white-text' : ''}
                     style={{ paddingLeft: '20px' }}
-                    dangerouslySetInnerHTML={{ __html: infoContent }}
+                    dangerouslySetInnerHTML={{ __html: sanitizedContent }}
                     onClick={() => this.handleEdit(true)} />
                 }
               </ModalBody>
@@ -280,7 +285,7 @@ EditableInfoModal.propTypes = {
   addInfoCollection: PropTypes.func.isRequired,
   updateInfoCollection: PropTypes.func.isRequired,
   deleteInfoCollectionById: PropTypes.func.isRequired,
-  loading: PropTypes.bool.isRequired,
+  loading: PropTypes.bool,//made loading prop optional to avoid warnings if not provided
 };
 
 
