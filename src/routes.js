@@ -191,7 +191,7 @@ export default (
         <>
           <AutoUpdate />
           <ToastContainer />
-          <LBRegister />
+          {/* <LBRegister /> */}
         </>
       )}
     />
