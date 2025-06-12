@@ -59,7 +59,7 @@ describe('NotificationCard', () => {
 
     fireEvent.click(screen.getByText('Mark as Read'));
 
-    // // 打印出 dispatch 的所有调用
+    // // Print all dispatch calls
     // console.log(store.dispatch.mock.calls);
 
     expect(store.dispatch).toHaveBeenCalledWith(mockAction);

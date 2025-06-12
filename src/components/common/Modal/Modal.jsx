@@ -23,6 +23,11 @@ const ModalExample = props => {
     closeModal,
     confirmModal,
     setInactiveModal,
+    setActiveModal,
+    setInactiveButton,
+    isSetInactiveDisabled = false,
+    setActiveButton,
+    isSetActiveDisabled = false,
     modalTitle,
     modalMessage,
     type,
@@ -80,9 +85,21 @@ const ModalExample = props => {
         )}
       </ModalBody>
       <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-        <Button color="primary" onClick={closeModal} style={darkMode ? boxStyleDark : boxStyle}>
-          Close
-        </Button>
+        {setInactiveModal != null ? (
+          <Button color="danger" onClick={closeModal} style={darkMode ? boxStyleDark : boxStyle}>
+            Nope, changed my mind
+          </Button>
+        ) : null}
+        {setActiveModal != null ? (
+          <Button color="danger" onClick={closeModal} style={darkMode ? boxStyleDark : boxStyle}>
+            Nope, leave it buried
+          </Button>
+        ) : null}
+        {confirmModal != null ? (
+          <Button color="primary" onClick={closeModal} style={darkMode ? boxStyleDark : boxStyle}>
+            Close
+          </Button>
+        ) : null}
 
         {confirmModal != null ? (
           <Button
@@ -96,11 +113,24 @@ const ModalExample = props => {
         ) : null}
         {setInactiveModal != null ? (
           <Button
-            color="warning"
+            color="success"
+            disabled={isSetInactiveDisabled}
             onClick={setInactiveModal}
             style={darkMode ? boxStyleDark : boxStyle}
           >
-            Set inactive
+            {/* Yes, hide it all */}
+            {setInactiveButton}
+          </Button>
+        ) : null}
+        {setActiveModal != null ? (
+          <Button
+            color="success"
+            disabled={isSetActiveDisabled}
+            onClick={setActiveModal}
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
+            {/* Yes, revive the monster */}
+            {setActiveButton}
           </Button>
         ) : null}
 
