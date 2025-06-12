@@ -51,6 +51,7 @@ export const ENDPOINTS = {
   FORCE_PASSWORD: `${APIEndpoint}/forcepassword`,
   LEADER_BOARD: userId => `${APIEndpoint}/dashboard/leaderboard/${userId}`,
   ORG_DATA: `${APIEndpoint}/dashboard/leaderboard/org/data`,
+  TROPHY_ICON: (userId, trophyFollowedUp) => `${APIEndpoint}/dashboard/leaderboard/trophyIcon/${userId}/${trophyFollowedUp}`,
 
   // Questionnaire endpoints
   QUESTIONNAIRE_FEEDBACK_REQUEST: () => `${APIEndpoint}/dashboard/questionaire/feedbackrequest`,
@@ -250,7 +251,11 @@ export const ENDPOINTS = {
   BM_EQUIPMENT_BY_ID: singleEquipmentId => `${APIEndpoint}/bm/equipment/${singleEquipmentId}`,
   BM_EQUIPMENTS: `${APIEndpoint}/bm/equipments`,
   BM_INVTYPE_TYPE: type => `${APIEndpoint}/bm/invtypes/${type}`,
+
+  BM_ISSUE_CHART: `${APIEndpoint}/bm/issue/issue-chart`,
+
   BM_ISSUE_FORM: `${APIEndpoint}/bm/issue/add`,
+
 
   BM_TAGS: `${APIEndpoint}/bm/tags`,
   BM_TAG_ADD: `${APIEndpoint}/bm/tags`,
