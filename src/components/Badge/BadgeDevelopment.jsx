@@ -9,7 +9,6 @@ import { matches } from 'lodash';
 
 function BadgeDevelopment(props) {
   const { darkMode, allBadgeData = [] } = props;
-
   const [isCreateNewBadgePopupOpen, setCreateNewBadgePopupOpen] = useState(false);
   const [isAddFiltersOpen, setAddFiltersOpen] = useState(false);
   const [searchType, setSearchType] = useState('');
@@ -19,13 +18,6 @@ function BadgeDevelopment(props) {
 
   const toggle = () => setCreateNewBadgePopupOpen(prevIsOpen => !prevIsOpen);
   const toggleFilters = () => setAddFiltersOpen(prevState => !prevState);
-
-  const resetFilters = () => {
-    setSearchName('');
-    setSearchType('');
-    setRankFilter(300);
-    setChooseRankFilter('');
-  };
 
   // convert rank number into integer
   const chooseRankFilterNumber = chooseRankFilter ? Number(chooseRankFilter) : null;
@@ -41,7 +33,6 @@ function BadgeDevelopment(props) {
     const matchesRank = badge.ranking <= rankFilter;
     const matchesChoosenRank =
       chooseRankFilterNumber === null || badge.ranking === chooseRankFilterNumber;
-
     const matchesName =
       searchName === '' ||
       badge.badgeName
@@ -69,15 +60,6 @@ function BadgeDevelopment(props) {
         Add Filters
       </Button>
       {isAddFiltersOpen && (
-        <Button
-          className="btn--dark-sea-green"
-          onClick={resetFilters}
-          style={darkMode ? { ...boxStyleDark, margin: 20 } : { ...boxStyle, margin: 20 }}
-        >
-          Reset Filters
-        </Button>
-      )}
-      {isAddFiltersOpen && (
         <div style={{ marginTop: '20px', paddingLeft: '20px' }}>
           <div style={{ marginBottom: '10px' }}>
             <p style={{ display: 'inline', marginRight: '8px' }}>Search for a badge:</p>
@@ -86,14 +68,7 @@ function BadgeDevelopment(props) {
               placeholder="Enter name here"
               value={searchName}
               onChange={e => setSearchName(e.target.value)}
-              style={{
-                width: '200px',
-                padding: '8px',
-                border: '1px solid #ccc',
-                borderRadius: '4px',
-                boxSizing: 'border-box',
-                marginTop: '5px',
-              }}
+              className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
             />
           </div>
           <div style={{ marginBottom: '10px' }}>
@@ -101,14 +76,7 @@ function BadgeDevelopment(props) {
             <select
               value={searchType}
               onChange={e => setSearchType(e.target.value)}
-              style={{
-                width: '230px',
-                padding: '8px',
-                border: '1px solid #ccc',
-                borderRadius: '4px',
-                boxSizing: 'border-box',
-                marginTop: '5px',
-              }}
+              className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
             >
               <option value="">Select a type</option>
               {BadgeTypes.map((type, index) => (
@@ -137,14 +105,8 @@ function BadgeDevelopment(props) {
                 placeholder="Rank Number"
                 value={chooseRankFilter}
                 onChange={e => setChooseRankFilter(e.target.value)}
-                style={{
-                  width: '120px',
-                  padding: '8px',
-                  border: '1px solid #ccc',
-                  borderRadius: '4px',
-                  boxSizing: 'border-box',
-                  marginTop: '5px',
-                }}
+                style={{ width: '80px', textAlign: 'center' }}
+                className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
               />
             </div>
           </div>
@@ -153,7 +115,6 @@ function BadgeDevelopment(props) {
       <Modal
         isOpen={isCreateNewBadgePopupOpen}
         toggle={toggle}
-        backdrop="static"
         className={darkMode ? 'text-light dark-mode' : ''}
       >
         <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={toggle}>
