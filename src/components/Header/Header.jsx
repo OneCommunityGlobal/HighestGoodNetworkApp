@@ -136,7 +136,6 @@ export function Header(props) {
   const canAccessSendEmails = props.hasPermission('sendEmails', !isAuthUser);
   // Permissions
 
-  const canManageUser = props.hasPermission('putUserProfilePermissions');
   const canEditHeaderMessage = props.hasPermission('editHeaderMessage');
 
   const canAccessPermissionsManagement =

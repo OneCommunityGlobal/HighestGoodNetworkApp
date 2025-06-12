@@ -100,7 +100,7 @@ export const permissionLabels = [
         label: 'Edit Header Message',
         key: 'editHeaderMessage',
         description: 'Gives the user permission to edit the message displayed in the header.',
-      }
+      },
     ],
   },
   {

@@ -36,6 +36,7 @@ function OwnerMessage({
   const [modalDeleteWarning, setModalDeleteWarning] = useState(false);
   const [modalWrongPictureFormatWarning, setModalWrongPictureFormatWarning] = useState(false);
   const isImage = /;base64/g;
+  const canEditHeaderMessage = dispatch(hasPermission('editHeaderMessage'));
 
   function toggle() {
     setModal(!modal);
@@ -134,7 +135,7 @@ function OwnerMessage({
     <div className="message-container">
       {ownerMessage ? getContent(ownerMessage) : getContent(ownerStandardMessage)}
 
-      {((props.hasPermission('editHeaderMessage')) || user.role === 'Owner') && (
+      {(canEditHeaderMessage || user.role === 'Owner') && (
         <div className="icon-wrapper">
           <button
             type="submit"
