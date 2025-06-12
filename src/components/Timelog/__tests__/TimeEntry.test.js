@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -34,7 +35,7 @@ xdescribe('<TimeEntry />', () => {
       store,
     });
   });
-  it('should render <TimeEntry /> without crashing', () => {});
+  it('should render <TimeEntry /> without crashing', () => { });
   it('should render the correct date, year, and the day of the week', () => {
     const date = screen.getByRole('heading', { name: dateRegex });
     expect(date.textContent).toMatch(moment(timeEntryMock.weeks[0][0].dateOfWork).format('MMM D'));

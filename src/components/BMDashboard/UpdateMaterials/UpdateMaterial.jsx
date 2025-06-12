@@ -95,9 +95,9 @@ function UpdateMaterial({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
     if (bulk === true) sendUpdatedRecord(updateRecord, validations);
   };
 
-  const submitHandler = e => {
+  const submitHandler = async e => {
     e.preventDefault();
-    dispatch(postMaterialUpdate(updateRecord));
+    await dispatch(postMaterialUpdate(updateRecord));
   };
 
   const changeRecordHandler = e => {

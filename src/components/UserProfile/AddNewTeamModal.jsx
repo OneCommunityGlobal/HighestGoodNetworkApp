@@ -11,8 +11,11 @@ import {
   Label,
   Input,
 } from 'reactstrap';
+import { useSelector } from 'react-redux';
 
 const AddNewTeamModal = props => {
+  const darkMode = useSelector(state => state.theme.darkMode)
+
   const { isOpen, toggle, teams, submitHandler } = props;
   const [newTeam, setTeam] = useState('');
   const handleSelectionChange = e => {
@@ -27,12 +30,12 @@ const AddNewTeamModal = props => {
   };
   return (
     <React.Fragment>
-      <Modal isOpen={isOpen} toggle={toggle}>
-        <ModalHeader toggle={toggle}>Modal title</ModalHeader>
-        <ModalBody>
+      <Modal isOpen={isOpen} toggle={toggle} className={darkMode ? 'text-light dark-mode' : ''}>
+        <ModalHeader toggle={toggle} className={darkMode ? 'bg-space-cadet' : ''}>Modal title</ModalHeader>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           <Form>
             <FormGroup>
-              <Label>Choose a Team: </Label>
+              <Label className={darkMode ? 'text-light' : ''}>Choose a Team: </Label>
               <Input
                 type="select"
                 name="select"
@@ -49,7 +52,7 @@ const AddNewTeamModal = props => {
             </FormGroup>
           </Form>
         </ModalBody>
-        <ModalFooter>
+        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
           <Button color="primary" onClick={handleSubmit}>
             Add Team
           </Button>

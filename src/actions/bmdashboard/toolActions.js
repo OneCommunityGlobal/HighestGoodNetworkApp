@@ -1,21 +1,57 @@
 import axios from 'axios';
-import { ENDPOINTS } from 'utils/URL';
-import GET_TOOL_BY_ID from 'constants/bmdashboard/toolsConstants';
-import { GET_ERRORS } from 'constants/errors';
+import GET_TOOL_BY_ID, { GET_TOOLS } from '../../constants/bmdashboard/toolsConstants';
+import { GET_ERRORS } from '../../constants/errors';
+import { ENDPOINTS } from '../../utils/URL';
 
+export const setTools = payload => {
+  return {
+    type: GET_TOOLS,
+    payload,
+  };
+};
 
-export const fetchToolById = (toolId) => {
-  const url = ENDPOINTS.BM_TOOL_BY_ID(toolId);
+export const setTool = payload => {
+  return {
+    type: GET_TOOL_BY_ID,
+    payload,
+  };
+};
+
+export const setErrors = payload => {
+  return {
+    type: GET_ERRORS,
+    payload,
+  };
+};
+
+export const fetchTools = () => {
+  const url = ENDPOINTS.BM_TOOLS;
   return async dispatch => {
-    axios.get(url)
+    axios
+      .get(url)
       .then(res => {
-        dispatch(setTool(res.data))
+        dispatch(setTools(res.data));
       })
       .catch(error => {
-        dispatch(setErrors(error))
+        // console.log('err: ', error.response.data.message);
+        dispatch(setErrors(error));
+      });
+  };
+};
+
+export const fetchToolById = toolId => {
+  const url = ENDPOINTS.BM_TOOL_BY_ID(toolId);
+  return async dispatch => {
+    axios
+      .get(url)
+      .then(res => {
+        dispatch(setTool(res.data));
       })
-  }
-}
+      .catch(error => {
+        dispatch(setErrors(error));
+      });
+  };
+};
 
 export const purchaseTools = async body => {
   return axios
@@ -27,17 +63,3 @@ export const purchaseTools = async body => {
       return err.message;
     });
 };
-
-export const setTool = payload => {
-  return {
-    type: GET_TOOL_BY_ID,
-    payload
-  }
-}
-
-export const setErrors = payload => {
-  return {
-    type: GET_ERRORS,
-    payload
-  }
-}

@@ -1,20 +1,24 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import 'moment-timezone';
 import ReactHtmlParser from 'react-html-parser';
 import { Link } from 'react-router-dom';
-import './WeeklySummariesReport.css';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
+import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
-import { updateOneSummaryReport } from 'actions/weeklySummariesReport';
-import RoleInfoModal from 'components/UserProfile/EditableModal/roleInfoModal';
+
+import { postLeaderboardData } from 'actions/leaderBoardData';
+import { calculateDurationBetweenDates, showTrophyIcon } from 'utils/anniversaryPermissions';
+import { toggleUserBio } from 'actions/weeklySummariesReport';
+
+import RoleInfoModal from 'components/UserProfile/EditableModal/RoleInfoModal';
 import {
   Input,
   ListGroup,
@@ -33,10 +37,12 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMailBulk } from '@fortawesome/free-solid-svg-icons';
 import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
+import styles from './WeeklySummariesReport.module.scss';
+import hasPermission from '../../utils/permissions';
 import { ENDPOINTS } from '../../utils/URL';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
-import googleDocIconGray from './google_doc_icon_gray.png';
-import googleDocIconPng from './google_doc_icon.png';
+import GoogleDocIcon from '../common/GoogleDocIcon';
+import { cantUpdateDevAdminDetails } from '../../utils/permissions';
 
 const textColors = {
   Default: '#000000',
@@ -51,41 +57,68 @@ const textColors = {
   'Team Amethyst': '#9400D3',
 };
 
-function ListGroupItem({ children }) {
-  return <LGI className="px-0 border-0 py-1">{children}</LGI>;
+function ListGroupItem({ children, darkMode }) {
+  return <LGI className={`px-0 border-0 py-1 ${darkMode ? 'bg-yinmn-blue' : ''}`}>{children}</LGI>;
 }
 
 function FormattedReport({
   summaries,
   weekIndex,
   bioCanEdit,
-  canEditSummaryCount,
   allRoleInfo,
   badges,
   loadBadges,
+  loadTrophies,
   canEditTeamCode,
   auth,
   canSeeBioHighlight,
+  darkMode,
+  handleTeamCodeChange,
+  handleSpecialColorDotClick,
 }) {
-  // if (auth?.user?.role){console.log(auth.user.role)}
+  const dispatch = useDispatch();
+  const isEditCount = dispatch(hasPermission('totalValidWeeklySummaries'));
+
+  // Only proceed if summaries is valid
+  if (!summaries || !Array.isArray(summaries) || summaries.length === 0) {
+    return (
+      <div className="text-center py-4">
+        <p>No data available to display</p>
+      </div>
+    );
+  }
+
+  const loggedInUserEmail = auth?.user?.email ? auth.user.email : '';
 
   return (
     <>
       <ListGroup flush>
-        {summaries.map(summary => (
-          <ReportDetails
-            key={summary._id}
-            summary={summary}
-            weekIndex={weekIndex}
-            bioCanEdit={bioCanEdit}
-            canEditSummaryCount={canEditSummaryCount}
-            allRoleInfo={allRoleInfo}
-            canEditTeamCode={canEditTeamCode}
-            badges={badges}
-            loadBadges={loadBadges}
-            canSeeBioHighlight={canSeeBioHighlight}
-          />
-        ))}
+        {summaries.map(summary => {
+          // Add safety check for each summary
+          if (!summary || !summary.totalSeconds) {
+            return null;
+          }
+          return (
+            <ReportDetails
+              loggedInUserEmail={loggedInUserEmail}
+              key={summary._id}
+              summary={summary}
+              weekIndex={weekIndex}
+              bioCanEdit={bioCanEdit}
+              canEditSummaryCount={isEditCount}
+              allRoleInfo={allRoleInfo}
+              canEditTeamCode={canEditTeamCode}
+              badges={badges}
+              loadBadges={loadBadges}
+              loadTrophies={loadTrophies}
+              canSeeBioHighlight={canSeeBioHighlight}
+              darkMode={darkMode}
+              handleTeamCodeChange={handleTeamCodeChange}
+              auth={auth}
+              handleSpecialColorDotClick={handleSpecialColorDotClick}
+            />
+          );
+        })}
       </ListGroup>
       <EmailsList summaries={summaries} auth={auth} />
     </>
@@ -172,6 +205,18 @@ function EmailsList({ summaries, auth }) {
   return null;
 }
 
+function getTextColorForHoursLogged(hoursLogged, promisedHours) {
+  const percentage = (hoursLogged / promisedHours) * 100;
+
+  if (percentage < 50) {
+    return 'red';
+  }
+  if (percentage < 100) {
+    return '#0B6623';
+  }
+  return 'black';
+}
+
 function ReportDetails({
   summary,
   weekIndex,
@@ -180,10 +225,18 @@ function ReportDetails({
   allRoleInfo,
   badges,
   loadBadges,
+  loadTrophies,
   canEditTeamCode,
   canSeeBioHighlight,
+  loggedInUserEmail,
+  darkMode,
+  handleTeamCodeChange,
+  auth,
+  handleSpecialColorDotClick,
 }) {
+  const [filteredBadges, setFilteredBadges] = useState([]);
   const ref = useRef(null);
+  const cantEditJaeRelatedRecord = cantUpdateDevAdminDetails(summary.email, loggedInUserEmail);
 
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
   const isMeetCriteria =
@@ -192,54 +245,70 @@ function ReportDetails({
     summary.daysInTeam > 60 &&
     summary.bioPosted !== 'posted';
 
+  useEffect(() => {
+    setFilteredBadges(badges.filter(badge => badge.showReport === true));
+  }, []);
+
   return (
-    <li className="list-group-item px-0" ref={ref}>
+    <li className={`list-group-item px-0 ${darkMode ? 'bg-yinmn-blue' : ''}`} ref={ref}>
       <ListGroup className="px-0" flush>
-        <ListGroupItem>
-          <Index summary={summary} weekIndex={weekIndex} allRoleInfo={allRoleInfo} />
+        <ListGroupItem darkMode={darkMode}>
+          <Index
+            summary={summary}
+            weekIndex={weekIndex}
+            allRoleInfo={allRoleInfo}
+            auth={auth}
+            loadTrophies={loadTrophies}
+            handleSpecialColorDotClick={handleSpecialColorDotClick}
+          />
         </ListGroupItem>
         <Row className="flex-nowrap">
           <Col xs="6" className="flex-grow-0">
-            <ListGroupItem>
-              <TeamCodeRow canEditTeamCode={canEditTeamCode} summary={summary} />
+            <ListGroupItem darkMode={darkMode}>
+              <TeamCodeRow
+                canEditTeamCode={canEditTeamCode && !cantEditJaeRelatedRecord}
+                summary={summary}
+                handleTeamCodeChange={handleTeamCodeChange}
+                darkMode={darkMode}
+              />
             </ListGroupItem>
-            <ListGroupItem>
+            <ListGroupItem darkMode={darkMode}>
               <div style={{ width: '200%', backgroundColor: isMeetCriteria ? 'yellow' : 'none' }}>
                 <Bio
-                  bioCanEdit={bioCanEdit}
+                  bioCanEdit={bioCanEdit && !cantEditJaeRelatedRecord}
                   userId={summary._id}
                   bioPosted={summary.bioPosted}
                   summary={summary}
                 />
               </div>
             </ListGroupItem>
-            <ListGroupItem>
+            <ListGroupItem darkMode={darkMode}>
               <TotalValidWeeklySummaries
                 summary={summary}
-                canEditSummaryCount={canEditSummaryCount}
+                canEditSummaryCount={canEditSummaryCount && !cantEditJaeRelatedRecord}
+                darkMode={darkMode}
               />
             </ListGroupItem>
-            <ListGroupItem>
-              <b style={{ color: textColors[summary?.weeklySummaryOption] || textColors.Default }}>
-                Hours logged:
-              </b>
-              {hoursLogged >= summary.promisedHoursByWeek[weekIndex] ? (
-                <p>
-                  {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
-                </p>
-              ) : (
-                <span className="ml-2">
-                  {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
-                </span>
-              )}
+            <ListGroupItem darkMode={darkMode}>
+              <p
+                style={{
+                  color: getTextColorForHoursLogged(
+                    hoursLogged,
+                    summary.promisedHoursByWeek[weekIndex],
+                  ),
+                  fontWeight: 'bold',
+                }}
+              >
+                Hours logged: {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
+              </p>
             </ListGroupItem>
-            <ListGroupItem>
+            <ListGroupItem darkMode={darkMode}>
               <WeeklySummaryMessage summary={summary} weekIndex={weekIndex} />
             </ListGroupItem>
           </Col>
           <Col xs="6">
             {loadBadges && summary.badgeCollection?.length > 0 && (
-              <WeeklyBadge summary={summary} weekIndex={weekIndex} badges={badges} />
+              <WeeklyBadge summary={summary} weekIndex={weekIndex} badges={filteredBadges} />
             )}
           </Col>
         </Row>
@@ -276,11 +345,11 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
       summaryDateText = `Summary Submitted On (${summaryDate}):`;
 
       return (
-        <div style={style} className="weekly-summary-report-container">
-          <div className="weekly-summary-text">{ReactHtmlParser(summaryText)}</div>
+        <div style={style} className={styles.weeklySummaryReportContainer}>
+          <div className={styles.weeklySummaryText}>{ReactHtmlParser(summaryText)}</div>
           <FontAwesomeIcon
             icon={faCopy}
-            className="copy-icon "
+            className={styles.copyIcon}
             onClick={() => {
               const parsedSummary = summaryText.replace(/<\/?[^>]+>|&nbsp;/g, '');
               navigator.clipboard.writeText(parsedSummary);
@@ -309,15 +378,18 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
   );
 }
 
-function TeamCodeRow({ canEditTeamCode, summary }) {
+function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange, darkMode }) {
   const [teamCode, setTeamCode] = useState(summary.teamCode);
   const [hasError, setHasError] = useState(false);
-  const fullCodeRegex = /^([a-zA-Z]-[a-zA-Z]{3}|[a-zA-Z]{5})$/;
+  const fullCodeRegex = /^.{5,7}$/;
 
   const handleOnChange = async (userProfileSummary, newStatus) => {
-    const url = ENDPOINTS.USER_PROFILE_PROPERTY(userProfileSummary._id);
+    const url = ENDPOINTS.USERS_ALLTEAMCODE_CHANGE;
     try {
-      await axios.patch(url, { key: 'teamCode', value: newStatus });
+      await axios.patch(url, { userIds: [userProfileSummary._id], replaceCode: newStatus });
+      handleTeamCodeChange(userProfileSummary.teamCode, newStatus, {
+        [userProfileSummary._id]: true,
+      }); // Update the team code dynamically
     } catch (err) {
       // eslint-disable-next-line no-alert
       alert(
@@ -328,8 +400,7 @@ function TeamCodeRow({ canEditTeamCode, summary }) {
 
   const handleCodeChange = e => {
     const { value } = e.target;
-
-    if (value.length <= 5) {
+    if (value.length <= 7) {
       const regexTest = fullCodeRegex.test(value);
       if (regexTest) {
         setHasError(false);
@@ -342,9 +413,13 @@ function TeamCodeRow({ canEditTeamCode, summary }) {
     }
   };
 
+  useEffect(() => {
+    setTeamCode(summary?.teamCode);
+  }, [summary.teamCode]);
+
   return (
     <>
-      <div className="teamcode-wrapper">
+      <div className={styles.teamcodeWrapper}>
         {canEditTeamCode ? (
           <div style={{ width: '107px', paddingRight: '5px' }}>
             <Input
@@ -356,6 +431,7 @@ function TeamCodeRow({ canEditTeamCode, summary }) {
                 }
               }}
               placeholder="X-XXX"
+              className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
             />
           </div>
         ) : (
@@ -367,8 +443,8 @@ function TeamCodeRow({ canEditTeamCode, summary }) {
         <MediaUrlLink summary={summary} />
       </div>
       {hasError ? (
-        <Alert className="code-alert" color="danger">
-          NOT SAVED! The code format must be A-AAA or AAAAA.
+        <Alert className={styles.codeAlert} color="danger">
+          NOT SAVED! The code must be between 5 and 7 characters long.
         </Alert>
       ) : null}
     </>
@@ -382,7 +458,7 @@ function MediaUrlLink({ summary }) {
         href={summary.mediaUrl}
         target="_blank"
         rel="noopener noreferrer"
-        style={{ paddingLeft: '5px' }}
+        style={{ paddingLeft: '5px', color: '#007BFF' }}
       >
         Open link to media files
       </a>
@@ -407,14 +483,14 @@ function MediaUrlLink({ summary }) {
   return <div style={{ paddingLeft: '5px' }}>Not provided!</div>;
 }
 
-function TotalValidWeeklySummaries({ summary, canEditSummaryCount }) {
+function TotalValidWeeklySummaries({ summary, canEditSummaryCount, darkMode }) {
   const style = {
     color: textColors[summary?.weeklySummaryOption] || textColors.Default,
   };
 
   const [weeklySummariesCount, setWeeklySummariesCount] = useState(
-    // eslint-disable-next-line radix
-    parseInt(summary.weeklySummariesCount),
+    // parseInt() returns an integer or NaN, convert to 0 if it's NaM
+    parseInt(summary.weeklySummariesCount, 10) || 0,
   );
 
   const handleOnChange = async (userProfileSummary, count) => {
@@ -435,7 +511,7 @@ function TotalValidWeeklySummaries({ summary, canEditSummaryCount }) {
   };
 
   return (
-    <div className="total-valid-wrapper">
+    <div className={styles.totalValidWrapper}>
       {weeklySummariesCount === 8 ? (
         <div className="total-valid-text" style={style}>
           <b>Total Valid Weekly Summaries:</b>{' '}
@@ -453,6 +529,7 @@ function TotalValidWeeklySummaries({ summary, canEditSummaryCount }) {
             step="1"
             value={weeklySummariesCount}
             onChange={e => handleWeeklySummaryCountChange(e)}
+            className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
             min="0"
           />
         </div>
@@ -475,7 +552,7 @@ function BioSwitch({ userId, bioPosted, summary }) {
 
   // eslint-disable-next-line no-shadow
   const handleChangeBioPosted = async (userId, bioStatus) => {
-    const res = await dispatch(updateOneSummaryReport(userId, { bioPosted: bioStatus }));
+    const res = await dispatch(toggleUserBio(userId, bioStatus));
     if (res.status === 200) {
       toast.success('You have changed the bio announcement status of this user.');
     }
@@ -483,10 +560,10 @@ function BioSwitch({ userId, bioPosted, summary }) {
 
   return (
     <div>
-      <div className="bio-toggle">
+      <div className={styles.bioToggle}>
         <b style={style}>Bio announcement:</b>
       </div>
-      <div className="bio-toggle">
+      <div className={styles.bioToggle}>
         <ToggleSwitch
           switchType="bio"
           state={bioStatus}
@@ -560,27 +637,31 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
       <ListGroupItem className="row">
         {badgeThisWeek.map((value, index) => (
           // eslint-disable-next-line react/no-array-index-key
-          <div className="badge-td" key={`${weekIndex}_${summary._id}_${index}`}>
+          <div className={styles.badgeTd} key={`${weekIndex}_${summary._id}_${index}`}>
             {' '}
-            <img src={value.imageUrl} id={`popover_${value._id}`} alt='""' />
-            <UncontrolledPopover trigger="hover" target={`popover_${value._id}`}>
-              <Card className="text-center">
-                <CardImg className="badge_image_lg" src={value?.imageUrl} />
-                <CardBody>
-                  <CardTitle
-                    style={{
-                      fontWeight: 'bold',
-                      fontSize: 18,
-                      color: '#285739',
-                      marginBottom: 15,
-                    }}
-                  >
-                    {value?.badgeName}
-                  </CardTitle>
-                  <CardText>{value?.description}</CardText>
-                </CardBody>
-              </Card>
-            </UncontrolledPopover>
+            {value && value.imageUrl && value._id && (
+              <>
+                <img src={value.imageUrl} id={`popover_${value._id}`} alt="" />
+                <UncontrolledPopover trigger="hover" target={`popover_${value._id}`}>
+                  <Card className="text-center">
+                    <CardImg className="badge_image_lg" src={value.imageUrl} />
+                    <CardBody>
+                      <CardTitle
+                        style={{
+                          fontWeight: 'bold',
+                          fontSize: 18,
+                          color: '#285739',
+                          marginBottom: 15,
+                        }}
+                      >
+                        {value.badgeName}
+                      </CardTitle>
+                      <CardText>{value.description}</CardText>
+                    </CardBody>
+                  </Card>
+                </UncontrolledPopover>
+              </>
+            )}
           </div>
         ))}
       </ListGroupItem>
@@ -588,39 +669,65 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
   );
 }
 
-function Index({ summary, weekIndex, allRoleInfo }) {
-  const handleGoogleDocClick = googleDocLink => {
-    const toastGoogleLinkDoesNotExist = 'toast-on-click';
-    if (googleDocLink && googleDocLink.Link && googleDocLink.Link.trim() !== '') {
-      window.open(googleDocLink.Link);
-    } else {
-      toast.error(
-        'Uh oh, no Google Doc is present for this user! Please contact an Admin to find out why.',
-        {
-          toastId: toastGoogleLinkDoesNotExist,
-          pauseOnFocusLoss: false,
-          autoClose: 3000,
-        },
-      );
-    }
-  };
-
-  // eslint-disable-next-line no-shadow
-  const getGoogleDocLink = summary => {
-    if (!summary.adminLinks) {
-      return undefined;
-    }
-    const googleDocLink = summary.adminLinks.find(link => link.Name === 'Google Doc');
-    return googleDocLink;
-  };
-
+function Index({
+  summary,
+  weekIndex,
+  allRoleInfo,
+  auth,
+  loadTrophies,
+  handleSpecialColorDotClick,
+}) {
+  const colors = ['purple', 'green', 'navy'];
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
   const currentDate = moment.tz('America/Los_Angeles').startOf('day');
+  const [setTrophyFollowedUp] = useState(summary?.trophyFollowedUp);
+  const dispatch = useDispatch();
 
-  const googleDocLink = getGoogleDocLink(summary);
-  // Determine whether to use grayscale or color icon based on googleDocLink
-  const googleDocIcon =
-    googleDocLink && googleDocLink.Link.trim() !== '' ? googleDocIconPng : googleDocIconGray;
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const trophyIconToggle = () => {
+    if (auth?.user?.role === 'Owner' || auth?.user?.role === 'Administrator') {
+      setModalOpen(prevState => (prevState ? false : summary._id));
+    }
+  };
+
+  const handleChangingTrophyIcon = async newTrophyStatus => {
+    setModalOpen(false);
+    await dispatch(postLeaderboardData(summary._id, newTrophyStatus));
+
+    setTrophyFollowedUp(newTrophyStatus);
+
+    toast.success('Trophy status updated successfully');
+  };
+
+  const googleDocLink = summary.adminLinks?.reduce((targetLink, currentElement) => {
+    if (currentElement.Name === 'Google Doc') {
+      // eslint-disable-next-line no-param-reassign
+      targetLink = currentElement.Link;
+    }
+    return targetLink;
+  }, undefined);
+
+  const summarySubmissionDate = moment()
+    .tz('America/Los_Angeles')
+    .endOf('week')
+    .subtract(weekIndex, 'week')
+    .format('YYYY-MM-DD');
+
+  const durationSinceStarted = calculateDurationBetweenDates(
+    summarySubmissionDate,
+    summary?.startDate?.split('T')[0] || null,
+  );
+
+  const handleIconContent = duration => {
+    if (duration.months >= 5.8 && duration.months <= 6.2) {
+      return '6M';
+    }
+    if (duration.years >= 0.9) {
+      return `${Math.round(duration.years)}Y`;
+    }
+    return null;
+  };
 
   return (
     <>
@@ -633,22 +740,83 @@ function Index({ summary, weekIndex, allRoleInfo }) {
             currentDate.isSameOrAfter(moment(summary.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ')) &&
             currentDate.isBefore(moment(summary.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
               ? 'rgba(128, 128, 128, 0.5)'
-              : undefined,
+              : '#007BFF',
         }}
         title="View Profile"
       >
         {summary.firstName} {summary.lastName}
       </Link>
 
-      <span onClick={() => handleGoogleDocClick(googleDocLink)}>
-        <img className="google-doc-icon" src={googleDocIcon} alt="google_doc" />
-      </span>
-      <span>
-        <b>&nbsp;&nbsp;{summary.role !== 'Volunteer' && `(${summary.role})`}</b>
-      </span>
-      {summary.role !== 'Volunteer' && (
-        <RoleInfoModal info={allRoleInfo.find(item => item.infoName === `${summary.role}Info`)} />
-      )}
+      <div style={{ display: 'inline-block' }}>
+        <div style={{ display: 'flex' }}>
+          <GoogleDocIcon link={googleDocLink} />
+          <span>
+            <b>&nbsp;&nbsp;{summary.role !== 'Volunteer' && `(${summary.role})`}</b>
+          </span>
+          {summary.role !== 'Volunteer' && (
+            <RoleInfoModal
+              info={allRoleInfo.find(item => item.infoName === `${summary.role}Info`)}
+              auth={auth}
+            />
+          )}
+          {loadTrophies &&
+            showTrophyIcon(summarySubmissionDate, summary?.startDate?.split('T')[0] || null) && (
+              <i
+                className="fa fa-trophy"
+                style={{
+                  marginLeft: '10px',
+                  fontSize: '25px',
+                  cursor: 'pointer',
+                  color: summary?.trophyFollowedUp === true ? '#ffbb00' : '#FF0800',
+                }}
+                onClick={trophyIconToggle}
+              >
+                <p style={{ fontSize: '10px', marginLeft: '5px' }}>
+                  {handleIconContent(durationSinceStarted)}
+                </p>
+              </i>
+            )}
+          <Modal isOpen={modalOpen === summary._id} toggle={trophyIconToggle}>
+            <ModalHeader toggle={trophyIconToggle}>Followed Up?</ModalHeader>
+            <ModalBody>
+              <p>Are you sure you have followed up this icon?</p>
+            </ModalBody>
+            <ModalFooter>
+              <Button variant="secondary" onClick={trophyIconToggle}>
+                Cancel
+              </Button>{' '}
+              <Button
+                color="primary"
+                onClick={() => {
+                  handleChangingTrophyIcon(true);
+                }}
+              >
+                Confirm
+              </Button>
+            </ModalFooter>
+          </Modal>
+        </div>
+      </div>
+
+      <div style={{ display: 'inline-block', marginLeft: '10px' }}>
+        {colors.map(color => (
+          <span
+            key={color}
+            onClick={() => handleSpecialColorDotClick(summary._id, color)}
+            style={{
+              display: 'inline-block',
+              width: '15px',
+              height: '15px',
+              margin: '0 5px',
+              borderRadius: '50%',
+              backgroundColor: summary.filterColor === color ? color : 'transparent',
+              border: `3px solid ${color}`,
+              cursor: 'pointer',
+            }}
+          />
+        ))}
+      </div>
+
       {showStar(hoursLogged, summary.promisedHoursByWeek[weekIndex]) && (
         <i
           className="fa fa-star"

@@ -56,7 +56,7 @@ function ToolDetailPage() {
   const history = useHistory();
   const { toolId } = useParams();
 
-  const tool = useSelector(state => state.bmTools);
+  const tool = useSelector(state => state.tool);
 
   const dispatch = useDispatch();
 

@@ -1,0 +1,162 @@
+.subscribeContainer {
+  max-width: 700px;
+  margin: auto;
+  padding: 20px;
+  text-align: center;
+}
+
+.header {
+  font-size: 24px; /* Adjust size as needed */
+  color: #333; /* Dark text for readability */
+  margin-bottom: 16px; /* Space below the header */
+  font-weight: bold; /* Makes the header text bold */
+  text-align: center; /* Centers the header text */
+  padding: 20px; /* Padding around the text for space */
+  background-color: #f8f8f8; /* Light background for the header section */
+  border-bottom: 1px solid #e7e7e7; /* A subtle line to separate from the content below */
+}
+
+.inputField {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #333;
+  border-radius: 10px;
+  /* more styles for your input field */
+}
+
+.inputField.error {
+  border: 1px solid red;
+  /* additional styles for input field when there is an error */
+}
+
+.subscribeButton {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #333;
+  background-color: #4497a8;
+  border-radius: 10px;
+  /* styles for your subscribe button */
+}
+
+.subscribeButton:hover {
+  opacity: 0.8;
+  /* additional styles for subscribe button on hover */
+}
+
+.errorMessage {
+  color: red;
+  /* additional styles for error message */
+}
+
+.description {
+  color: #666; /* Subdued text color for body text */
+  font-size: 16px; /* Readable font size for most users */
+  margin-bottom: 12px; /* Spacing between paragraphs */
+}
+
+.note {
+  color: #999; /* Even more subdued text color for notes */
+  font-size: 14px; /* Slightly smaller font for less important text */
+  margin-bottom: 20px; /* More spacing to separate from the form */
+}
+
+.oneCommunityIcon {
+  width: 700px;
+  height: 100px;
+  border-radius: 5%;
+  background: url('./HD-Horizontal-Logo-640x188.jpg') no-repeat center center;
+  background-size: contain;
+}
+
+.thanksContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: #ffffff; /* White background */
+  color: #000000; /* Default text color */
+  text-align: center;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow for better contrast */
+}
+
+.thanksMessage {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+  background: linear-gradient(90deg, #a8e063, #56ab2f, #315336); /* Green-themed gradient text */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; /* Makes the gradient visible */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for better readability */
+}
+
+.leafIcon {
+  width: 100px;
+  height: 100px;
+  margin-bottom: 20px;
+  animation: float 3s ease-in-out infinite; /* Floating animation for the icon */
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.confettiContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.buttonContainer {
+  margin-top: 20px;
+}
+
+.returnButton {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.returnButton:hover {
+  background-color: #0056b3;
+}
+
+/* Light mode variables */
+:root {
+  --modal-bg: #ffffff;
+  --modal-text: #000000;
+}
+
+/* Dark mode variables */
+[data-theme='dark'] {
+  --modal-bg: #333333;
+  --modal-text: #ffffff;
+}
+
+/* Add responsive designs and other styles as needed */
+@media (max-width: 768px) {
+  .header {
+    font-size: 20px; /* Slightly smaller text on smaller screens */
+    padding: 15px; /* Less padding on smaller screens */
+  }
+}

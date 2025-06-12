@@ -8,7 +8,7 @@
   font-weight: bold;
 }
 
-.project-details h1{
+.project-details h1 {
   font-size: 1.5rem;
 }
 
@@ -24,20 +24,21 @@
   background-color: #eaeeef;
 }
 
-
 .log-bar__section {
   width: 100%;
   margin-top: 1em;
 }
 
-.log-bar__section h2, .card.cards-container h2, .project-log h2{
+.log-bar__section h2,
+.card.cards-container h2,
+.project-log h2 {
   font-size: 1em;
   font-weight: bold;
 }
 
-.log-bar__section ul{
-    list-style-type: none;
-  }
+.log-bar__section ul {
+  list-style-type: none;
+}
 
 .button.btn {
   border: 0;
@@ -46,8 +47,8 @@
   width: 100%;
 }
 
-.button.btn:hover{
-  outline:auto;
+.button.btn:hover {
+  outline: auto;
   filter: brightness(130%);
 }
 
@@ -75,7 +76,7 @@
     flex-direction: column;
   }
 
-   .log-bar__btn-group {
+  .log-bar__btn-group {
     margin-top: -0.5em;
     display: flex;
     justify-content: center;
@@ -90,7 +91,7 @@
   }
 }
 
-@media (min-width: 750px) {
+@media (min-width: 880px) {
   .log-bar {
     display: flex;
     flex-direction: row;
@@ -117,14 +118,18 @@
 .card.cards-container {
   align-items: center;
   margin: 1em 2em;
-  padding: 1em 2em;
+  padding: 1em;
+  width: auto;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .cards-container__content {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
   width: 100%;
+  gap: 10px;
 }
 
 /* styling for single card element */
@@ -132,8 +137,24 @@
   border: 1px solid #eaeeef;
   border-radius: 5px;
   text-align: center;
-  margin-bottom: 0.5em;
   cursor: pointer;
+  transition: box-shadow 0.3s, transform 0.3s;
+  overflow: hidden;
+}
+
+.single-card__img {
+  width: 100%;
+  height: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.single-card__img img {
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
 }
 
 .single-card:hover {
@@ -143,6 +164,7 @@
 
 .single-card__body {
   margin-top: 0.5em;
+  padding: 0.5em;
 }
 
 .single-card__body h3 {
@@ -162,25 +184,29 @@
 /* TO DO: dynamic value to be added */
 /* .single-card__info .warning{
   color: white;
-  background-color: #980101; 
+  background-color: #980101;
 } */
 
-@media (min-width: 600px) {
-  .cards-container__header {
-    height: 38px;
-  }
-
-  .cards-container__content {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    justify-content: space-around;
-  }
-
-  /* styling for single card element */
+@media (min-width: 992px) {
   .single-card {
-    margin: auto 0.2em;
-    flex: none;
+    width: calc(33.333% - 20px);
+    max-width: 180px;
+    margin-bottom: 15px;
+  }
+}
+
+@media (min-width: 576px) and (max-width: 991px) {
+  .single-card {
+    width: calc(50% - 15px);
+    max-width: 180px;
+    margin-bottom: 15px;
+  }
+}
+@media (max-width: 575px) {
+  .single-card {
+    width: 90%;
+    max-width: 180px;
+    margin-bottom: 15px;
   }
 }
 
@@ -190,15 +216,20 @@
   padding: 1em 2em;
   width: 100%;
   font-weight: lighter;
+  white-space: nowrap;
 }
 
-.project-log thead{
+.project-log thead {
   background-color: transparent;
 }
 
-@media (max-width: 768px){
-  .project-log td, .project-log th {
+@media (max-width: 768px) {
+  .project-log td,
+  .project-log th {
     font-size: 0.6em;
   }
 }
 
+ul.log-bar__btn-group {
+  padding: 0px;
+}
