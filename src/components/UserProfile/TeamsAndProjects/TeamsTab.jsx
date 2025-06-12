@@ -34,6 +34,10 @@ const TeamsTab = props => {
   const [removedTeams, setRemovedTeams] = useState([]);
 
   useEffect(() => {
+    fetchTeamCodeAllUsers(); 
+  }, []);
+  
+  useEffect(() => {
     if (saved && removedTeams.length > 0) {
       removedTeams.forEach(teamId => {
         deleteTeamMember(teamId, userProfile._id);
