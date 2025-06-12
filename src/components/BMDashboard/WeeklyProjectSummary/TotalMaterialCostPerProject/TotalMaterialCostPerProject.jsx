@@ -89,8 +89,6 @@ function TotalMaterialCostPerProject() {
           value: project.projectId,
           label: project.projectName,
         }));
-        // eslint-disable-next-line no-console
-        console.log(projectsFilteredData);
         setSelectedProjects(projectsFilteredData);
         setAllProjects(projectsFilteredData);
 
@@ -104,8 +102,6 @@ function TotalMaterialCostPerProject() {
           acc[item.projectId] = item.totalCostK;
           return acc;
         }, {});
-        // eslint-disable-next-line no-console
-        console.log(projectCostsData);
         setProjectCosts(projectCostsData);
       } catch (error) {
         toast.error(`Error fetching data: ${error.message}`);
@@ -142,19 +138,21 @@ function TotalMaterialCostPerProject() {
       </h2>
       {dataLoaded ? (
         <>
-          <Select
-            isMulti
-            isSearchable
-            options={allProjects}
-            value={selectedProjects}
-            onChange={setSelectedProjects}
-            className="basic-multi-select"
-            classNamePrefix="select"
-            defaultValue={allProjects}
-            placeholder="Select Projects"
-            closeMenuOnSelect={false}
-            hideSelectedOptions={false}
-          />
+          <div data-testid="select-projects-dropdown">
+            <Select
+              isMulti
+              isSearchable
+              options={allProjects}
+              value={selectedProjects}
+              onChange={setSelectedProjects}
+              className="basic-multi-select"
+              classNamePrefix="select"
+              defaultValue={allProjects}
+              placeholder="Select Projects"
+              closeMenuOnSelect={false}
+              hideSelectedOptions={false}
+            />
+          </div>
           <div style={{ overflowX: 'auto' }}>
             <div style={{ minWidth: `${selectedProjects.length * 20}px`, minHeight: '300px' }}>
               <Bar data={data} options={options} />
