@@ -210,51 +210,6 @@ const TeamMemberTask = React.memo(
                             }}
                             icon={faCircle}
                             data-testid="icon"
-                          >{`${user.name}`}</FontAwesomeIcon>
-
-                          {user.role !== 'Volunteer' && (
-                            <div
-                              className="user-role"
-                              style={{ fontSize: '14px', color: darkMode ? 'lightgray' : 'gray' }}
-                            >
-                              {user.role}
-                            </div>
-                          )}
-
-                          {canGetWeeklySummaries && <GoogleDocIcon link={userGoogleDocLink} />}
-
-                          {canSeeReports && (
-                            <Link
-                              className="team-member-tasks-user-report-link"
-                              to={`/peoplereport/${user?.personId}`}
-                              onClick={event => handleReportClick(event, user?.personId)}
-                            >
-                              <img
-                                src="/report_icon.png"
-                                alt="reportsicon"
-                                className="team-member-tasks-user-report-link-image"
-                              />
-                            </Link>
-                          )}
-                          {canSeeReports && (
-                            <Link
-                              to={`/peoplereport/${user?.personId}`}
-                              onClick={event => handleReportClick(event, user?.personId)}
-                            >
-                              <span className="team-member-tasks-number">
-                                {completedTasks.length}
-                              </span>
-                            </Link>
-                          )}
-                          <Warning
-                            username={user.name}
-                            // eslint-disable-next-line react/jsx-no-duplicate-props
-                            userName={user}
-                            userId={userId}
-                            user={user}
-                            userRole={userRole}
-                            personId={user.personId}
-                            displayUser={displayUser}
                           />
                         </div>
                         <Link to={`/timelog/${user.personId}`} className="timelog-info">
