@@ -30,3 +30,34 @@
 .total-material-cost-per-project .select__menu {
   font-size: 12px;
 }
+
+/* Dark mode for the Select Dropdown */
+.dark-mode .material-cost-per-project-dropdown .select__control {
+  background-color: var(--section-bg) !important;
+  border-color: var(--section-title-bg) !important;
+  color: var(--text-color) !important;
+}
+
+.dark-mode .material-cost-per-project-dropdown .select__menu {
+  background-color: var(--section-bg) !important;
+}
+
+.dark-mode .material-cost-per-project-dropdown .select__option:hover {
+  background-color: #0d55b3;
+}
+
+.dark-mode .material-cost-per-project-dropdown .select__option--is-focused{
+  background-color: #0d55b3;
+}
+
+.dark-mode .material-cost-per-project-dropdown .select__multi-value {
+  background-color: #375071;
+}
+
+.dark-mode .material-cost-per-project-dropdown .select__multi-value__label {
+  color: white;
+}
+
+.dark-mode .material-cost-per-project-dropdown .css-tj5bde-Svg:hover {
+  fill: white;
+}

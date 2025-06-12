@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import { useSelector } from 'react-redux';
 import Select from 'react-select';
 import {
   Chart as ChartJS,
@@ -13,8 +14,6 @@ import { Bar } from 'react-chartjs-2';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import './TotalMaterialCostPerProject.css';
-import { useEffect } from 'react';
-import { useMemo } from 'react';
 import { ENDPOINTS } from 'utils/URL';
 import Loading from 'components/common/Loading';
 
@@ -43,37 +42,49 @@ const projectDemoCosts = {
   '8': 876,
 };
 
-const options = {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: {
-    legend: {
-      position: 'top',
-    },
-    title: {
-      display: false,
-    },
-  },
-  scales: {
-    x: {
-      ticks: {
-        font: {
-          size: 11,
-        },
-        callback(val) {
-          const label = this.getLabelForValue(val);
-          return label.length > 20 ? `${label.slice(0, 20)}…` : label;
-        },
-      },
-    },
-  },
-};
-
 function TotalMaterialCostPerProject() {
   const [dataLoaded, setDataLoaded] = useState(false);
   const [allProjects, setAllProjects] = useState([]);
   const [projectCosts, setProjectCosts] = useState({});
   const [selectedProjects, setSelectedProjects] = useState([]);
+  const darkMode = useSelector(state => state.theme.darkMode);
+  const textColor = darkMode ? '#ffffff' : '#666';
+
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'top',
+        labels: { color: textColor },
+      },
+      title: {
+        display: false,
+      },
+    },
+    scales: {
+      x: {
+        grid: { display: false },
+        ticks: {
+          color: textColor,
+          font: {
+            size: 11,
+          },
+          callback(val) {
+            // eslint-disable-next-line react/no-this-in-sfc
+            const label = this.getLabelForValue(val);
+            return label.length > 20 ? `${label.slice(0, 20)}…` : label;
+          },
+        },
+      },
+      y: {
+        grid: { color: '#ccc' },
+        ticks: {
+          color: textColor,
+        },
+      },
+    },
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -124,7 +135,7 @@ function TotalMaterialCostPerProject() {
         {
           label: 'Total Material Cost (*1000$)',
           data: selectedProjects.map(p => projectCosts[p.value]),
-          backgroundColor: 'rgba(20, 137, 175, 1)',
+          backgroundColor: 'rgb(23, 154, 197)',
           borderRadius: 10,
         },
       ],
@@ -132,7 +143,7 @@ function TotalMaterialCostPerProject() {
   }, [selectedProjects, projectCosts]);
 
   return (
-    <div className="total-material-cost-per-project">
+    <div className={`total-material-cost-per-project ${darkMode ? 'dark-mode' : ''}`}>
       <h2 className="total-material-cost-per-project-chart-title">
         Total Material Cost Per Project
       </h2>
@@ -145,7 +156,7 @@ function TotalMaterialCostPerProject() {
               options={allProjects}
               value={selectedProjects}
               onChange={setSelectedProjects}
-              className="basic-multi-select"
+              className="material-cost-per-project-dropdown basic-multi-select"
               classNamePrefix="select"
               defaultValue={allProjects}
               placeholder="Select Projects"

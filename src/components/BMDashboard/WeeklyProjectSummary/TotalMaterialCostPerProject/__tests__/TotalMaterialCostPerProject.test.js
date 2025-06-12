@@ -2,6 +2,8 @@ import { render, screen, waitFor, within, fireEvent } from '@testing-library/rea
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import userEvent from '@testing-library/user-event';
+import { Provider } from 'react-redux';
+import configureStore from 'redux-mock-store';
 import TotalMaterialCostPerProject from '../TotalMaterialCostPerProject';
 
 // Mocks
@@ -21,6 +23,12 @@ jest.mock('react-chartjs-2', () => ({
     </div>
   ),
 }));
+
+const mockStore = configureStore([]);
+const store = mockStore({
+  theme: { darkMode: false }, // Mock dark mode value
+  // Include other necessary mock slices if needed
+});
 
 const mockProjects = [
   { projectId: 1, projectName: 'Project A' },
@@ -46,7 +54,11 @@ describe('TotalMaterialCostPerProject', () => {
   });
 
   it('shows loading spinner on initial render and hide the spinner when data loads', async () => {
-    const { getByTestId } = render(<TotalMaterialCostPerProject />);
+    const { getByTestId } = render(
+      <Provider store={store}>
+        <TotalMaterialCostPerProject />
+      </Provider>,
+    );
     const loadingSpinner = getByTestId('loading');
     expect(loadingSpinner).toBeInTheDocument();
 
@@ -54,7 +66,11 @@ describe('TotalMaterialCostPerProject', () => {
   });
 
   it('renders bar chart when data loads successfully', async () => {
-    render(<TotalMaterialCostPerProject />);
+    render(
+      <Provider store={store}>
+        <TotalMaterialCostPerProject />
+      </Provider>,
+    );
     await waitFor(() => {
       // The slash help test partial content
       expect(screen.getByText(/Project A,Project B/)).toBeInTheDocument();
@@ -62,7 +78,11 @@ describe('TotalMaterialCostPerProject', () => {
   });
 
   it('render selector when data loads successfully', async () => {
-    render(<TotalMaterialCostPerProject />);
+    render(
+      <Provider store={store}>
+        <TotalMaterialCostPerProject />
+      </Provider>,
+    );
     await waitFor(() => {
       expect(screen.getByText('Project A')).toBeInTheDocument();
     });
@@ -74,7 +94,11 @@ describe('TotalMaterialCostPerProject', () => {
   });
 
   it('when select or deselect items in selector, the bar chart updates too', async () => {
-    render(<TotalMaterialCostPerProject />);
+    render(
+      <Provider store={store}>
+        <TotalMaterialCostPerProject />
+      </Provider>,
+    );
     await waitFor(() => {
       expect(screen.getByText('Project A')).toBeInTheDocument();
     });
@@ -109,7 +133,11 @@ describe('TotalMaterialCostPerProject', () => {
       }
       return Promise.reject(new Error('not found'));
     });
-    render(<TotalMaterialCostPerProject />);
+    render(
+      <Provider store={store}>
+        <TotalMaterialCostPerProject />
+      </Provider>,
+    );
     await waitFor(() => expect(toast.error).toHaveBeenCalled());
   });
 
@@ -123,7 +151,11 @@ describe('TotalMaterialCostPerProject', () => {
       }
       return Promise.reject(new Error('not found'));
     });
-    render(<TotalMaterialCostPerProject />);
+    render(
+      <Provider store={store}>
+        <TotalMaterialCostPerProject />
+      </Provider>,
+    );
     await waitFor(() => expect(toast.error).toHaveBeenCalled());
   });
 });
