@@ -533,7 +533,9 @@ class UserManagement extends React.PureComponent {
         activeInactivePopupOpen: false,      
         selectedUser: undefined,      
         isUpdating: true    
-      });    
+      });
+      
+      console.log("setActiveInactive: ", this.state.selectedUser);
     
       this.props.updateUserStatus(      
         this.state.selectedUser, isActive ? UserStatus.Active : UserStatus.InActive,      
@@ -877,4 +879,7 @@ export default connect(mapStateToProps, {
   disableEditUserInfo,
   getAllRoles,
 })(UserManagement);
+
+// exporting without connect
+export { UserManagement as UnconnectedUserManagement };
 

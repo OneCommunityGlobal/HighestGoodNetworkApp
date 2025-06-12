@@ -27,7 +27,7 @@ function SetUpFinalDayButton(props) {
         )(dispatch);
 
         setIsSet(false);
-        onFinalDaySave({ ...userProfile, endDate: undefined });
+        onFinalDaySave && onFinalDaySave({ ...userProfile, endDate: undefined });
         toast.success("This user's final day has been deleted.");
       } catch (error) {
         console.error('Error deleting final day:', error);
@@ -56,7 +56,7 @@ function SetUpFinalDayButton(props) {
 
       setIsSet(true);
       setFinalDayDateOpen(false);
-      onFinalDaySave({ ...userProfile, endDate: finalDayDate });
+      onFinalDaySave && onFinalDaySave({ ...userProfile, endDate: finalDayDate });
       toast.success("This user's final day has been set.");
     } catch (error) {
       console.error('Error setting final day:', error);
