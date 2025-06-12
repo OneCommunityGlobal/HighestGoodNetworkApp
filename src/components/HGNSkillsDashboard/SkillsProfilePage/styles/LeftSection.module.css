@@ -1,4 +1,4 @@
-.left-section {
+.leftSection {
   width: 30%;
   padding: 20px;
   text-align: center;
@@ -8,7 +8,7 @@
   justify-content: flex-start;
 }
 
-.profile-pic {
+.profilePic {
   width: 150px;
   height: 150px;
   border-radius: 50%;
@@ -16,19 +16,19 @@
   margin-bottom: 15px;
 }
 
-.left-section h1 {
+.leftSection h1 {
   margin: 5px 0;
   color: #333;
 }
 
-.left-section h3 {
+.leftSection h3 {
   margin: 0;
   font-size: 20px;
   color: #666;
 }
 
 @media (max-width: 768px) {
-  .left-section {
+  .leftSection {
     width: 100%;
     padding: 20px 0;
   }
