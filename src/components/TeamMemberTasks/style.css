@@ -50,7 +50,7 @@
 }
 
 .committed-hours-circle {
-  padding: 0.45rem;
+  padding: 0.25rem;
 }
 
 .team-member-tasks .team-member-tasks-headers {
@@ -60,13 +60,13 @@
 }
 
 .team-member-tasks .team-member-tasks-subtable {
-  margin: 0 0 0 -10px;
-  text-align: center;
+  margin: 0 0 0 15px;
+  text-align: left;
 }
 
 .team-task-progress {
   position: relative;
-  width: 120px;
+  width: 100px;
   min-width: 120px;
   max-width: 120px;
 }
@@ -93,15 +93,14 @@
   text-align: left;
   display: flex;
   flex-direction: column;
-  /* Stack children vertically */
   gap: 1px;
-  /* Space between children */
+
 }
 
 .team-member-tasks-user-name {
   width: 50%;
   text-align: center;
-  justify-content: left;
+  justify-content: center;
   vertical-align: middle;
 }
 
@@ -398,6 +397,7 @@
   grid-template-columns: 1fr repeat(2, auto);
   grid-template-rows: repeat(2, auto);
   column-gap: 10px;
+  margin-left: -20px;
 }
 
 .team-task-progress-time {
@@ -446,10 +446,9 @@
 }
 
 .name {
-  margin-bottom: 4px;
   width: 2.5rem;
   display: flex;
-  justify-content: left;
+  justify-content: center;
 }
 
 .name-initial {
@@ -476,7 +475,7 @@
 }
 
 .timelog-info {
-  width: 2.5rem;
+  width: 1.0rem;
   display: flex;
   justify-content: center;
 }
