@@ -2,16 +2,16 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './QuestionFieldActions.css';
 
-function QuestionFieldActions({ 
-  field, 
-  index, 
-  totalFields, 
-  onClone, 
-  onMove, 
+function QuestionFieldActions({
+  field,
+  index,
+  totalFields,
+  onClone,
+  onMove,
   onDelete,
-  onEdit, 
-  visible, 
-  onVisibilityChange 
+  onEdit,
+  visible,
+  onVisibilityChange,
 }) {
   return (
     <div className="field-controls">
@@ -23,30 +23,25 @@ function QuestionFieldActions({
         className="visibility-checkbox"
       />
       <div className="field-actions">
+        <button
+          type="button"
+          onClick={() => onEdit(field, index)}
+          className="edit-button"
+          title="Edit this question"
+        >
+          Edit
+        </button>
 
-
-            <button
-        type="button"
-        onClick={() => onEdit(field, index)}
-        className="edit-button"
-        title="Edit this question"
-      >
-        Edit
-      </button>
-      
-
-
-
-        <button 
-          type="button" 
+        <button
+          type="button"
           onClick={() => onClone(field, index)}
           className="clone-button"
           title="Clone this question"
         >
           Clone
         </button>
-        <button 
-          type="button" 
+        <button
+          type="button"
           onClick={() => onMove(index, 'up')}
           className="move-button"
           disabled={index === 0}
@@ -54,8 +49,8 @@ function QuestionFieldActions({
         >
           ↑
         </button>
-        <button 
-          type="button" 
+        <button
+          type="button"
           onClick={() => onMove(index, 'down')}
           className="move-button"
           disabled={index === totalFields - 1}
@@ -63,8 +58,8 @@ function QuestionFieldActions({
         >
           ↓
         </button>
-        <button 
-          type="button" 
+        <button
+          type="button"
           onClick={() => onDelete(index)}
           className="delete-button"
           title="Delete question"
@@ -89,4 +84,3 @@ QuestionFieldActions.propTypes = {
 };
 
 export default QuestionFieldActions;
-

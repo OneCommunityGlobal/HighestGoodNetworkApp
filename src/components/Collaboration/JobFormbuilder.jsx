@@ -75,15 +75,15 @@ function JobFormBuilder() {
     const loadFirstAvailableForm = async () => {
       try {
         const response = await axios.get(ENDPOINTS.GET_ALL_JOB_FORMS);
-        
+
         if (response.data && response.data.length > 0) {
           const firstForm = response.data[0];
           const formId = firstForm._id || firstForm.id;
-          
+
           setCurrentFormId(formId);
           setFormFields(firstForm.questions || []);
           setJobTitle(firstForm.title || 'Please Choose an option');
-          
+
           console.log('Auto-loaded form:', formId);
         }
       } catch (error) {
@@ -105,17 +105,21 @@ function JobFormBuilder() {
   // CRUD Functions with Dynamic Form ID
   const cloneField = async (field, index) => {
     const clonedField = JSON.parse(JSON.stringify(field));
-    
+
     // Update local state immediately
-    const newFields = [...formFields.slice(0, index + 1), clonedField, ...formFields.slice(index + 1)];
+    const newFields = [
+      ...formFields.slice(0, index + 1),
+      clonedField,
+      ...formFields.slice(index + 1),
+    ];
     setFormFields(newFields);
-    
+
     // Sync with backend if form exists
     if (currentFormId) {
       try {
         await axios.post(ENDPOINTS.ADD_QUESTION(currentFormId), {
           question: clonedField,
-          position: index + 1
+          position: index + 1,
         });
       } catch (error) {
         console.error('Error cloning question on server:', error);
@@ -125,21 +129,22 @@ function JobFormBuilder() {
 
   const moveField = async (index, direction) => {
     const newIndex = direction === 'up' ? index - 1 : index + 1;
-    
-    if ((direction === 'up' && index > 0) || 
-        (direction === 'down' && index < formFields.length - 1)) {
-      
+
+    if (
+      (direction === 'up' && index > 0) ||
+      (direction === 'down' && index < formFields.length - 1)
+    ) {
       // Update local state immediately
       const newFields = [...formFields];
       [newFields[index], newFields[newIndex]] = [newFields[newIndex], newFields[index]];
       setFormFields(newFields);
-      
+
       // Sync with backend if form exists
       if (currentFormId) {
         try {
           await axios.put(ENDPOINTS.REORDER_QUESTIONS(currentFormId), {
             fromIndex: index,
-            toIndex: newIndex
+            toIndex: newIndex,
           });
         } catch (error) {
           console.error('Error reordering questions on server:', error);
@@ -148,12 +153,12 @@ function JobFormBuilder() {
     }
   };
 
-  const deleteField = async (index) => {
+  const deleteField = async index => {
     // Update local state immediately
     const newFields = [...formFields];
     newFields.splice(index, 1);
     setFormFields(newFields);
-    
+
     // Sync with backend if form exists
     if (currentFormId) {
       try {
@@ -172,29 +177,29 @@ function JobFormBuilder() {
       type: field.questionType,
       options: field.options,
       required: field.required || false,
-      placeholder: field.placeholder || ''
+      placeholder: field.placeholder || '',
     };
-    
+
     setEditingQuestion(questionForEdit);
     setEditingIndex(index);
     setEditModalOpen(true);
   };
 
-  const handleSaveEditedQuestion = async (editedQuestion) => {
+  const handleSaveEditedQuestion = async editedQuestion => {
     const updatedField = {
       ...formFields[editingIndex],
       questionText: editedQuestion.label,
       questionType: editedQuestion.type,
       options: editedQuestion.options || [],
       required: editedQuestion.required,
-      placeholder: editedQuestion.placeholder
+      placeholder: editedQuestion.placeholder,
     };
-    
+
     // Update local state immediately
     const updatedFields = [...formFields];
     updatedFields[editingIndex] = updatedField;
     setFormFields(updatedFields);
-    
+
     // Sync with backend if form exists
     if (currentFormId) {
       try {
@@ -204,7 +209,7 @@ function JobFormBuilder() {
         console.error('Error updating question on server:', error);
       }
     }
-    
+
     // Close the modal
     setEditModalOpen(false);
     setEditingQuestion(null);
@@ -218,13 +223,12 @@ function JobFormBuilder() {
   };
 
   // Import questions from template
-  const importQuestions = (questions) => {
+  const importQuestions = questions => {
     setFormFields(questions);
   };
 
   const handleAddOption = () => {
     if (newOption.trim() === '') {
-      
       alert('Option cannot be empty!');
       return;
     }
@@ -252,13 +256,13 @@ function JobFormBuilder() {
     // Update local state immediately
     const updatedFields = [...formFields, newField];
     setFormFields(updatedFields);
-    
+
     // Sync with backend if form exists
     if (currentFormId) {
       try {
         await axios.post(ENDPOINTS.ADD_QUESTION(currentFormId), {
           question: newField,
-          position: formFields.length
+          position: formFields.length,
         });
       } catch (error) {
         console.error('Error adding question to server:', error);
@@ -278,11 +282,11 @@ function JobFormBuilder() {
     setFormFields(updatedFields);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
-    
+
     const formIdToUse = currentFormId || '6753982566fcf3275f129eb4';
-    
+
     try {
       await axios.put(ENDPOINTS.UPDATE_JOB_FORM, {
         formId: formIdToUse,
@@ -290,7 +294,7 @@ function JobFormBuilder() {
         questions: formFields,
         description: '',
       });
-      
+
       console.log('Form updated successfully');
       alert('Form saved successfully!');
     } catch (error) {
@@ -313,31 +317,28 @@ function JobFormBuilder() {
           <select value={jobTitle} onChange={q => setJobTitle(q.target.value)}>
             <option value="Please Choose an option">Please Choose an Option</option>
             {jobPositions.map((e, i) => (
-              <option
-            
-                key={i + 1}
-                value={e}
-              >
+              <option key={i + 1} value={e}>
                 {e}
               </option>
             ))}
           </select>
         </div>
       </div>
-      
+
       <h1>FORM CREATION</h1>
 
       {role === 'Owner' ? (
         <div className="custom-form">
           <p>
-          Build your job application form by importing question templates or adding individual questions. 
-            Use the question templates to quickly populate common questions, then customize, edit, clone, or 
-            rearrange them as needed. You can control the visibility of each question with the checkbox.
+            Build your job application form by importing question templates or adding individual
+            questions. Use the question templates to quickly populate common questions, then
+            customize, edit, clone, or rearrange them as needed. You can control the visibility of
+            each question with the checkbox.
           </p>
-          <QuestionSetManager 
-            formFields={formFields} 
-            setFormFields={setFormFields} 
-            onImportQuestions={importQuestions} 
+          <QuestionSetManager
+            formFields={formFields}
+            setFormFields={setFormFields}
+            onImportQuestions={importQuestions}
           />
           <form>
             {formFields.map((field, index) => (
@@ -355,13 +356,9 @@ function JobFormBuilder() {
                   onDelete={deleteField}
                   onEdit={editField}
                   visible={field.visible}
-                  onVisibilityChange={(event) => changeVisiblity(event, field)}
+                  onVisibilityChange={event => changeVisiblity(event, field)}
                 />
-                <div
-                 
-                  key={index + 1}
-                  className="form-field"
-                >
+                <div key={index + 1} className="form-field">
                   <label className="field-label">{field.questionText}</label>
                   <div className="field-options">
                     {field.questionType === 'textbox' && (
@@ -373,11 +370,7 @@ function JobFormBuilder() {
                     {field.questionType === 'textarea' && <textarea />}
                     {['checkbox', 'radio'].includes(field.questionType) &&
                       field.options.map((option, idx) => (
-                        <div
-                      
-                          key={idx + 1}
-                          className="option-item"
-                        >
+                        <div key={idx + 1} className="option-item">
                           <input type={field.questionType} name={`field-${index}`} />
                           <label>{option}</label>
                         </div>
@@ -457,11 +450,7 @@ function JobFormBuilder() {
                 <div className="options-list">
                   <h4>Options:</h4>
                   {newField.options.map((option, index) => (
-                    <div
-
-                      key={index + 1}
-                      className="option-item"
-                    >
+                    <div key={index + 1} className="option-item">
                       {option}
                     </div>
                   ))}
