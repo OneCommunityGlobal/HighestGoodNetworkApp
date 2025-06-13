@@ -396,10 +396,10 @@ body, .bidding-bg {
   margin-bottom: 15px;
 }
 
-.date-label {
+.date-label  {
   font-size: 0.9rem;
   font-weight: 600;
-  color: var(--text-color, #222);
+  color: var(--text-color, #222) !important;
   margin-bottom: 0;
 }
 
