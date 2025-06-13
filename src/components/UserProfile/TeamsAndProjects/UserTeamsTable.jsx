@@ -259,12 +259,15 @@ const UserTeamsTable = props => {
           <thead>
             {props.role && (
               <tr>
-                <th className={darkMode ? 'bg-space-cadet' : ''}>#</th>
-                <th className={darkMode ? 'bg-space-cadet' : ''}>Team Name</th>
+                <th className={`table-header ${darkMode ? 'bg-space-cadet' : ''}`}>#</th>
+                <th className={`table-header ${darkMode ? 'bg-space-cadet' : ''}`}>Team Name</th>
                 {canAssignTeamToUsers ? (
                   <>
-                    <th className={darkMode ? 'bg-space-cadet' : ''}>Members</th>
-                    <th style={{ flex: 2 }} className={darkMode ? 'bg-space-cadet' : ''}>
+                    <th className={`table-header ${darkMode ? 'bg-space-cadet' : ''}`}>Members</th>
+                    <th
+                      style={{ flex: 2 }}
+                      className={`table-header ${darkMode ? 'bg-space-cadet' : ''}`}
+                    >
                       {}
                     </th>
                   </>
@@ -280,9 +283,7 @@ const UserTeamsTable = props => {
                   <td style={{ alignContent: 'center' }}>{`${team.teamName}`}</td>
                   {props.edit && props.role && (
                     <>
-                      <td
-                        style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-                      >
+                      <td style={{ verticalAlign: 'middle' }}>
                         <button
                           style={darkMode ? {} : boxStyle}
                           style={{ boxShadow: 'none' }}
@@ -296,24 +297,16 @@ const UserTeamsTable = props => {
                         </button>
                       </td>
 
-                      <td>
-                        <div
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
+                      <td style={{ verticalAlign: 'middle' }}>
+                        <Button
+                          disabled={!canAssignTeamToUsers}
+                          color="danger"
+                          onClick={e => {
+                            props.onDeleteClick(team._id);
                           }}
                         >
-                          <Button
-                            disabled={!canAssignTeamToUsers}
-                            color="danger"
-                            onClick={e => {
-                              props.onDeleteClick(team._id);
-                            }}
-                          >
-                            Delete
-                          </Button>
-                        </div>
+                          Delete
+                        </Button>
                       </td>
                     </>
                   )}
