@@ -1,11 +1,13 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import './Listoverview.css';
 import Carousel from 'react-bootstrap/Carousel';
 import logo from '../../../assets/images/logo2.png';
 import mapIcon from '../../../assets/images/mapIcon.png';
+import ListingAvailability from './ListingAvailability';
 
 function ListOverview() {
-  const [listing, setListing] = React.useState({});
+  const [listing, setListing] = useState({});
+  const [showAvailability, setShowAvailability] = useState(false);
 
   const data = {
     title: 'Title',
@@ -87,8 +89,15 @@ function ListOverview() {
             </div>
             <div className="error-message">
               <h6>The Dates you picked are not available</h6>
-              <a href="/">Click here to see available dates</a>
+              <a href="#" onClick={e => { e.preventDefault(); setShowAvailability(true); }}>Click here to see available dates</a>
             </div>
+            {showAvailability && (
+              <ListingAvailability
+                listingId={listing._id || 'YOUR_LISTING_ID'}
+                userId={'YOUR_USER_ID'}
+                onClose={() => setShowAvailability(false)}
+              />
+            )}
             <div className="chat-host">
               <button type="button">
                 <img

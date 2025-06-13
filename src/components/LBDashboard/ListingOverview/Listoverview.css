@@ -263,3 +263,87 @@ p {
     font-size: 12px;
   }
 }
+
+
+/* Add to Listoverview.css */
+.availability-modal {
+  position: fixed;
+  top: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fff;
+  z-index: 1000;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  min-width: 320px;
+  max-width: 95vw;
+}
+.close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: #eee;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+.calendar-nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.simple-calendar {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+}
+.simple-calendar th, .simple-calendar td {
+  width: 2.5rem;
+  height: 2.5rem;
+  text-align: center;
+  vertical-align: middle;
+  font-size: 1rem;
+}
+.calendar-available { background: #4caf50 !important; color: #fff; }
+.calendar-booked { background: #f44336 !important; color: #fff; }
+.calendar-blocked { background: #9e9e9e !important; color: #fff; }
+.calendar-legend {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.legend-dot {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  margin-right: 4px;
+}
+.contact-host-section {
+  margin-top: 2rem;
+}
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+.contact-form input,
+.contact-form textarea {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+.contact-form button {
+  margin-top: 0.5rem;
+}
+@media (max-width: 600px) {
+  .availability-modal {
+    padding: 1rem;
+    min-width: 90vw;
+  }
+}
