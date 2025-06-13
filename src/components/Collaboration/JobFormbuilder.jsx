@@ -372,7 +372,7 @@ function JobFormBuilder() {
                       field.options.map((option, idx) => (
                         <div key={idx + 1} className="option-item">
                           <input type={field.questionType} name={`field-${index}`} />
-                          <label>{option}</label>
+                          <label className="jbform-label">{option}</label>
                         </div>
                       ))}
                     {field.questionType === 'dropdown' && (
@@ -395,7 +395,7 @@ function JobFormBuilder() {
           </form>
           <div className="new-field-section">
             <div>
-              <label>
+              <label className="jbform-label">
                 Field Label:
                 <input
                   type="text"
@@ -409,7 +409,7 @@ function JobFormBuilder() {
               </label>
             </div>
             <div>
-              <label>
+              <label className="jbform-label">
                 Input Type:
                 <select
                   value={newField.questionType}
@@ -435,7 +435,7 @@ function JobFormBuilder() {
             {/* Options Section */}
             {['checkbox', 'radio', 'dropdown'].includes(newField.questionType) && (
               <div className="options-section">
-                <label>
+                <label className="jbform-label">
                   Add Option:
                   <input
                     type="text"

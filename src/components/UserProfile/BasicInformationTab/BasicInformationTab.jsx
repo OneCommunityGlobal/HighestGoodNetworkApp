@@ -17,6 +17,7 @@ import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import { isString } from 'lodash';
 import { toast } from 'react-toastify';
+import { useDispatch } from 'react-redux';
 
 const Name = props => {
   const {
@@ -40,11 +41,16 @@ const Name = props => {
               type="text"
               name="firstName"
               id="firstName"
+              className={`${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
               value={firstName}
               // className={styleProfile.profileText}
               onChange={e => {
-                setUserProfile({ ...userProfile, firstName: e.target.value.trim() });
-                setFormValid({ ...formValid, firstName: !!e.target.value });
+                setUserProfile({ ...userProfile, firstName: e.target.value });
+                setFormValid({ ...formValid, firstName: !!e.target.value.trim() });
+              }}
+              onBlur={e => {
+                const cleanedValue = e.target.value.replace(/\s+/g, ' ').trim();
+                setUserProfile(prev => ({ ...prev, firstName: cleanedValue }));
               }}
               placeholder="First Name"
               invalid={!formValid.firstName}
@@ -59,13 +65,18 @@ const Name = props => {
               name="lastName"
               id="lastName"
               value={lastName}
+              className={`${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
               // className={styleProfile.profileText}
               onChange={e => {
-                setUserProfile({ ...userProfile, lastName: e.target.value.trim() });
+                setUserProfile({ ...userProfile, lastName: e.target.value });
                 setFormValid({
                   ...formValid,
                   lastName: !!e.target.value && e.target.value.trim().length >= 2,
                 });
+              }}
+              onBlur={e => {
+                const cleanedValue = e.target.value.replace(/\s+/g, ' ').trim();
+                setUserProfile(prev => ({ ...prev, lastName: cleanedValue }));
               }}
               placeholder="Last Name"
               invalid={!formValid.lastName}
@@ -101,6 +112,7 @@ const Title = props => {
               name="title"
               id="jobTitle"
               value={jobTitle}
+              className={`${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
               onChange={e => {
                 setUserProfile({ ...userProfile, jobTitle: e.target.value });
               }}
@@ -145,6 +157,7 @@ const Email = props => {
               name="email"
               id="email"
               value={email}
+              className={`${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
               onChange={e => {
                 setUserProfile({ ...userProfile, email: e.target.value });
                 setFormValid({ ...formValid, email: emailPattern.test(e.target.value) });
@@ -230,7 +243,8 @@ const Phone = props => {
         <Col md={desktopDisplay ? '6' : ''}>
           <FormGroup>
             <PhoneInput
-              inputClass="phone-input-style"
+              buttonClass={`${darkMode ? 'bg-darkmode-liblack' : ''}`}
+              inputClass={`phone-input-style ${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
               country={'us'}
               value={phoneNumber}
               onChange={phoneNumber => {
@@ -343,6 +357,14 @@ const BasicInformationTab = props => {
   const [timeZoneFilter, setTimeZoneFilter] = useState('');
   const [desktopDisplay, setDesktopDisplay] = useState(window.innerWidth > 1024);
   const [errorOccurred, setErrorOccurred] = useState(false);
+  const dispatch = useDispatch();
+  const rolesAllowedToEditStatusFinalDay = ['Administrator', 'Owner'];
+  const canEditStatus =
+  rolesAllowedToEditStatusFinalDay.includes(role) || dispatch(hasPermission('pauseUserActivity'));
+
+  const canEditEndDate =
+  rolesAllowedToEditStatusFinalDay.includes(role) || dispatch(hasPermission('setUserFinalDay'));
+
 
   let topMargin = '6px';
   if (isUserSelf) {
@@ -542,6 +564,7 @@ const BasicInformationTab = props => {
               name="collaborationPreference"
               id="collaborationPreference"
               value={userProfile.collaborationPreference}
+              className={`${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
               onChange={e => {
                 setUserProfile({ ...userProfile, collaborationPreference: e.target.value });
               }}
@@ -574,7 +597,7 @@ const BasicInformationTab = props => {
               }}
               id="role"
               name="role"
-              className="form-control"
+              className={`form-control ${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
             >
               {roles.map(({ roleName }) => {
                 if (roleName === 'Owner') return;
@@ -597,7 +620,7 @@ const BasicInformationTab = props => {
       </Col>
       {desktopDisplay ? (
         <Col md="1">
-          <div style={{ marginTop: topMargin, marginLeft: '-20px' }}>
+          <div style={{ marginTop: topMargin, }}>
             <EditableInfoModal
               role={role}
               areaName={'roleInfo'}
@@ -627,6 +650,7 @@ const BasicInformationTab = props => {
                   <Input
                     onChange={handleLocation}
                     value={locationCheckValue(userProfile.location || '')}
+                    className={`${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
                   />
                 </Col>
                 <Col>
@@ -677,6 +701,7 @@ const BasicInformationTab = props => {
               setUserProfile({ ...userProfile, timeZone: e.target.value });
             }}
             selected={userProfile.timeZone}
+            darkMode={darkMode}
           />
         )}
       </Col>
@@ -706,78 +731,32 @@ const BasicInformationTab = props => {
 
   const endDateComponent = (
     <>
-      {desktopDisplay ? (
-        <Row
-          style={{
-            display: 'flex',
-            alignItems: 'center', // Ensures vertical alignment of the label and button
-            justifyContent: 'space-between', // Adds spacing between label and button
-            paddingLeft: '15px',
-          }}
-        >
-          <Col
-            md="7"
-            className="mr-5"
-            style={{
-              display: 'flex',
-              alignItems: 'center', // Align items vertically
-            }}
-          >
-            <Label style={{ margin: '0' }} className={`mr-1 ${darkMode ? 'text-light' : ''}`}>
-              {userProfile.endDate
-                ? 'End Date ' + formatDateLocal(userProfile.endDate)
-                : 'End Date ' + 'N/A'}
-            </Label>
-          </Col>
-          {canEdit && (
-            <Col
-              style={{
-                display: 'flex',
-                justifyContent: 'flex-end', // Align button to the far right
-                alignItems: 'center', // Align button vertically
-              }}
-            >
-              <SetUpFinalDayButton
-                loadUserProfile={loadUserProfile}
-                setUserProfile={setUserProfile}
-                isBigBtn={true}
-                userProfile={userProfile}
-                darkMode={darkMode}
-              />
-            </Col>
-          )}
-        </Row>
-      ) : (
-        // Non-desktop view logic (unchanged for now)
-        <>
-          <Col md={desktopDisplay ? '8' : ''} className={desktopDisplay ? 'mr-5' : ''}>
-            <Label className={`mr-1 ${darkMode ? 'text-light' : ''}`}>
-              {userProfile.endDate
-                ? 'End Date ' + formatDateLocal(userProfile.endDate)
-                : 'End Date ' + 'N/A'}
-            </Label>
-            {canEdit && !desktopDisplay && (
-              <SetUpFinalDayButton
-                loadUserProfile={loadUserProfile}
-                setUserProfile={setUserProfile}
-                isBigBtn={true}
-                userProfile={userProfile}
-                darkMode={darkMode}
-              />
-            )}
-          </Col>
-          {desktopDisplay && canEdit && (
-            <Col>
-              <SetUpFinalDayButton
-                loadUserProfile={loadUserProfile}
-                setUserProfile={setUserProfile}
-                isBigBtn={true}
-                userProfile={userProfile}
-                darkMode={darkMode}
-              />
-            </Col>
-          )}
-        </>
+      <Col md={desktopDisplay ? '8' : ''} className={desktopDisplay ? 'mr-5' : ''}>
+        <Label className={`mr-1 ${darkMode ? 'text-light' : ''}`}>
+          {userProfile.endDate
+            ? 'End Date ' + formatDateLocal(userProfile.endDate)
+            : 'End Date ' + 'N/A'}
+        </Label>
+        {canEdit && canEditEndDate &&!desktopDisplay && (
+          <SetUpFinalDayButton
+            loadUserProfile={loadUserProfile}
+            setUserProfile={setUserProfile}
+            isBigBtn={true}
+            userProfile={userProfile}
+            darkMode={darkMode}
+          />
+        )}
+      </Col>
+      {desktopDisplay && canEdit && canEditEndDate && (
+        <Col>
+          <SetUpFinalDayButton
+            loadUserProfile={loadUserProfile}
+            setUserProfile={setUserProfile}
+            isBigBtn={true}
+            userProfile={userProfile}
+            darkMode={darkMode}
+          />
+        </Col>
       )}
     </>
   );
@@ -790,7 +769,6 @@ const BasicInformationTab = props => {
             display: 'flex',
             alignItems: 'center', // Ensures vertical alignment of all items
             justifyContent: 'space-between', // Space between the columns
-            paddingLeft: '15px',
           }}
         >
           <Col
@@ -823,8 +801,8 @@ const BasicInformationTab = props => {
                 ? 'Paused until ' + formatDateLocal(userProfile.reactivationDate)
                 : 'Inactive'}
             </Label>
-            &nbsp; &nbsp;
-            {canEdit && (
+            &nbsp;
+            {canEdit && canEditStatus && (
               <PauseAndResumeButton
                 setUserProfile={setUserProfile}
                 loadUserProfile={loadUserProfile}
@@ -849,7 +827,7 @@ const BasicInformationTab = props => {
                   : 'Inactive'}
               </Label>
               &nbsp;
-              {canEdit && (
+              {canEdit && canEditStatus && (
                 <PauseAndResumeButton
                   setUserProfile={setUserProfile}
                   loadUserProfile={loadUserProfile}
@@ -894,8 +872,8 @@ const BasicInformationTab = props => {
               {videoCallPreferenceComponent}
               <Col md="1" lg="1"></Col>
             </Row>
-            <Row>{roleComponent}</Row>
-            <Row>
+            <Row style={{ marginBottom: '10px' }}>{roleComponent}</Row>
+            <Row style={{  marginBottom: '10px' }}>
               {locationComponent}
               <Col md="1"></Col>
             </Row>
@@ -904,8 +882,8 @@ const BasicInformationTab = props => {
               <Col md="1"></Col>
             </Row>
             <Row>{timeZoneDifferenceComponent}</Row>
-            <Row style={{ marginBottom: '10px' }}>{statusComponent}</Row>
-            <Row style={{ marginBottom: '10px' }}>{endDateComponent}</Row>
+            <Row className='custom-row' style={{ marginBottom: '10px' }}>{statusComponent}</Row>
+            <Row className='custom-row' style={{ marginBottom: '10px' }}>{endDateComponent}</Row>
           </>
         ) : (
           <>

@@ -1,6 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import { useState } from 'react';
-import './WeeklySummariesReport.css';
+import styles from './WeeklySummariesReport.module.scss';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 
 function BioFunction(props) {
@@ -23,11 +23,11 @@ function BioFunction(props) {
   };
 
   return bioCanEdit ? (
-    <div style={isMeetCriteria ? { backgroundColor: 'yellow' } : {}}>
-      <div className="bio-toggle">
+    <div id="bio-announcement" style={isMeetCriteria ? { backgroundColor: 'yellow' } : {}}>
+      <div className={styles.bioToggle}>
         <b style={style}>Bio announcement:</b>
       </div>
-      <div className="bio-toggle">
+      <div className={styles.bioToggle}>
         <ToggleSwitch
           switchType="bio"
           state={bioStatus}
