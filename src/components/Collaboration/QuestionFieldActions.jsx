@@ -1,4 +1,3 @@
-import React from 'react';
 import PropTypes from 'prop-types';
 import './QuestionFieldActions.css';
 
@@ -72,7 +71,17 @@ function QuestionFieldActions({
 }
 
 QuestionFieldActions.propTypes = {
-  field: PropTypes.object.isRequired,
+  field: PropTypes.shape({
+    questionText: PropTypes.string,
+    questionType: PropTypes.string,
+    visible: PropTypes.bool,
+    isRequired: PropTypes.bool,
+    required: PropTypes.bool,
+    options: PropTypes.arrayOf(PropTypes.string),
+    placeholder: PropTypes.string,
+    label: PropTypes.string,
+    type: PropTypes.string,
+  }).isRequired,
   index: PropTypes.number.isRequired,
   totalFields: PropTypes.number.isRequired,
   onClone: PropTypes.func.isRequired,

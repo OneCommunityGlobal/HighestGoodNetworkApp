@@ -1,6 +1,9 @@
-import React, { useState, useEffect } from 'react';
+/* eslint-disable no-alert */
+/* eslint-disable no-console */
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import './QuestionEditModal.css';
+import { v4 as uuidv4 } from 'uuid';
 
 function QuestionEditModal({ question, onSave, onCancel }) {
   const [editedQuestion, setEditedQuestion] = useState({
@@ -30,15 +33,19 @@ function QuestionEditModal({ question, onSave, onCancel }) {
       // Check if this type requires options
       const requiresOptions = ['dropdown', 'radio', 'checkbox'].includes(value);
 
+      let newOptions = [];
+
+      if (requiresOptions) {
+        newOptions =
+          editedQuestion.options && editedQuestion.options.length > 0
+            ? editedQuestion.options
+            : [''];
+      }
+
       setEditedQuestion({
         ...editedQuestion,
         [name]: value,
-        // Initialize options array if switching to a type that needs options
-        options: requiresOptions
-          ? editedQuestion.options && editedQuestion.options.length > 0
-            ? editedQuestion.options
-            : ['']
-          : [],
+        options: newOptions,
       });
     } else {
       setEditedQuestion({
@@ -163,7 +170,7 @@ function QuestionEditModal({ question, onSave, onCancel }) {
             <div className="form-group options-group">
               <label>Options:</label>
               {(editedQuestion.options || []).map((option, index) => (
-                <div key={index} className="option-row">
+                <div key={uuidv4()} className="option-row">
                   <input
                     type="text"
                     value={option}
@@ -200,7 +207,13 @@ function QuestionEditModal({ question, onSave, onCancel }) {
 }
 
 QuestionEditModal.propTypes = {
-  question: PropTypes.object.isRequired,
+  question: PropTypes.shape({
+    label: PropTypes.string,
+    type: PropTypes.string,
+    options: PropTypes.arrayOf(PropTypes.string),
+    required: PropTypes.bool,
+    placeholder: PropTypes.string,
+  }).isRequired,
   onSave: PropTypes.func.isRequired,
   onCancel: PropTypes.func.isRequired,
 };

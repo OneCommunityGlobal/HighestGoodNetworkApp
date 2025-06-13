@@ -1,7 +1,10 @@
+/* eslint-disable no-alert */
+/* eslint-disable no-console */
 import { useState, useEffect } from 'react';
 import './JobFormBuilder.css';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
+import { v4 as uuidv4 } from 'uuid';
 import { ENDPOINTS } from '../../utils/URL';
 import OneCommunityImage from './One-Community-Horizontal-Homepage-Header-980x140px-2.png';
 import QuestionSetManager from './QuestionSetManager';
@@ -94,13 +97,13 @@ function JobFormBuilder() {
     loadFirstAvailableForm();
   }, []);
 
-  const ensureFormExists = async () => {
-    if (!currentFormId) {
-      console.warn('No form ID available for this operation');
-      return false;
-    }
-    return true;
-  };
+  // const ensureFormExists = async () => {
+  //   if (!currentFormId) {
+  //     console.warn('No form ID available for this operation');
+  //     return false;
+  //   }
+  //   return true;
+  // };
 
   // CRUD Functions with Dynamic Form ID
   const cloneField = async (field, index) => {
@@ -316,8 +319,8 @@ function JobFormBuilder() {
         <div>
           <select value={jobTitle} onChange={q => setJobTitle(q.target.value)}>
             <option value="Please Choose an option">Please Choose an Option</option>
-            {jobPositions.map((e, i) => (
-              <option key={i + 1} value={e}>
+            {jobPositions.map(e => (
+              <option key={uuidv4()} value={e}>
                 {e}
               </option>
             ))}
@@ -358,7 +361,7 @@ function JobFormBuilder() {
                   visible={field.visible}
                   onVisibilityChange={event => changeVisiblity(event, field)}
                 />
-                <div key={index + 1} className="form-field">
+                <div key={uuidv4()} className="form-field">
                   <label className="field-label">{field.questionText}</label>
                   <div className="field-options">
                     {field.questionType === 'textbox' && (
@@ -369,8 +372,8 @@ function JobFormBuilder() {
                     )}
                     {field.questionType === 'textarea' && <textarea />}
                     {['checkbox', 'radio'].includes(field.questionType) &&
-                      field.options.map((option, idx) => (
-                        <div key={idx + 1} className="option-item">
+                      field.options.map(option => (
+                        <div key={uuidv4()} className="option-item">
                           <input type={field.questionType} name={`field-${index}`} />
                           <label className="jbform-label">{option}</label>
                         </div>
@@ -449,8 +452,8 @@ function JobFormBuilder() {
                 </button>
                 <div className="options-list">
                   <h4>Options:</h4>
-                  {newField.options.map((option, index) => (
-                    <div key={index + 1} className="option-item">
+                  {newField.options.map(option => (
+                    <div key={uuidv4()} className="option-item">
                       {option}
                     </div>
                   ))}

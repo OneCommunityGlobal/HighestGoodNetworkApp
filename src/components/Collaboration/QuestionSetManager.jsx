@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+/* eslint-disable no-alert */
+/* eslint-disable no-console */
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
@@ -14,8 +16,6 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions }) {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState(null);
   const [editingIndex, setEditingIndex] = useState(null);
-  const [previewQuestions, setPreviewQuestions] = useState([]);
-  const [editingMode, setEditingMode] = useState('');
 
   const api = {
     // Get all templates
@@ -311,24 +311,8 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions }) {
     }
   };
 
-  const handleEditFormQuestion = (question, index) => {
-    // Transform the question format if needed
-    const questionForEdit = {
-      label: question.questionText || question.label,
-      type: question.questionType || question.type,
-      options: question.options || [],
-      required: question.required || false,
-      placeholder: question.placeholder || '',
-    };
-
-    setEditingQuestion(questionForEdit);
-    setEditingIndex(index);
-    setEditingMode('form');
-    setEditModalOpen(true);
-  };
-
   const handleSaveEditedQuestion = editedQuestion => {
-    if (editingMode === 'form') {
+    if (editingIndex !== null) {
       const updatedQuestion = {
         ...formFields[editingIndex],
         questionText: editedQuestion.label,
@@ -341,11 +325,6 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions }) {
       const updatedFields = [...formFields];
       updatedFields[editingIndex] = updatedQuestion;
       setFormFields(updatedFields);
-    } else if (editingMode === 'template') {
-      const updatedPreviewQuestions = previewQuestions.map((q, idx) =>
-        idx === editingIndex ? editedQuestion : q,
-      );
-      setPreviewQuestions(updatedPreviewQuestions);
     }
 
     setEditModalOpen(false);
@@ -432,7 +411,19 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions }) {
 }
 
 QuestionSetManager.propTypes = {
-  formFields: PropTypes.array.isRequired,
+  formFields: PropTypes.arrayOf(
+    PropTypes.shape({
+      questionText: PropTypes.string,
+      questionType: PropTypes.string,
+      visible: PropTypes.bool,
+      isRequired: PropTypes.bool,
+      required: PropTypes.bool,
+      options: PropTypes.arrayOf(PropTypes.string),
+      placeholder: PropTypes.string,
+      label: PropTypes.string,
+      type: PropTypes.string,
+    }),
+  ).isRequired,
   setFormFields: PropTypes.func.isRequired,
   onImportQuestions: PropTypes.func.isRequired,
 };
