@@ -82,10 +82,17 @@ body, .bidding-bg {
   border: 1px solid var(--border-color, #bbb) !important;
   border-radius: 4px !important;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important;
+  min-width: 180px !important;
+  width: 180px !important;
 }
 
 .bidding-header .village-filter .dropdown-item {
   color: var(--text-color, #222) !important;
+  white-space: normal !important;
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+  padding: 10px 12px !important;
+  line-height: 1.4 !important;
 }
 
 .bidding-header .village-filter .dropdown-item:hover {
@@ -483,6 +490,27 @@ body, .bidding-bg {
   .tabs-container, .map-link {
     margin: 0;
   }
+  
+  /* Tablet responsive adjustments for village filter */
+  .bidding-header .village-filter .dropdown-toggle {
+    min-width: 200px !important;
+    width: auto !important;
+  }
+  
+  .bidding-header .village-filter .dropdown-menu {
+    min-width: 200px !important;
+    width: 200px !important;
+    left: 0 !important;
+    right: auto !important;
+  }
+  
+  .bidding-header .village-filter .dropdown-item {
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    padding: 10px 12px !important;
+    line-height: 1.4 !important;
+  }
 }
 
 @media (max-width: 768px) {
@@ -500,6 +528,36 @@ body, .bidding-bg {
   .property-card-gray {
     min-width: 90%;
     max-width: 95%;
+  }
+  
+  /* Mobile responsive adjustments for village filter */
+  .bidding-header .village-filter {
+    width: 100% !important;
+  }
+  
+  .bidding-header .village-filter .dropdown-toggle {
+    min-width: 100% !important;
+    width: 100% !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+  
+  .bidding-header .village-filter .dropdown-menu {
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 95vw !important;
+    left: 0 !important;
+    right: auto !important;
+    overflow-x: hidden !important;
+  }
+  
+  .bidding-header .village-filter .dropdown-item {
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    padding: 12px 15px !important;
+    line-height: 1.4 !important;
   }
 } 
 
