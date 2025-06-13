@@ -1051,6 +1051,23 @@ function UserProfile(props) {
             setTitleOnSet={setTitleOnSet}
             updateUserProfile={props.updateUserProfile}
           />
+          {/* 
+          Likely is the titelOnSet value, it gets set to true when saving a link in the title thing like the ceo tag
+          and so, test what happens if i comment it out, my assumption is that if i add a link and save, the save changes
+          button for basic information will be active, instead of disabled because i added a media link but made no changes to
+          the user profile info itself
+           */}
+          {/* 
+          disabled={
+                      !formValid.firstName ||
+                      !formValid.lastName ||
+                      !formValid.email ||
+                      !codeValid ||
+                      (userStartDate > userEndDate && userEndDate !== '') ||
+                      titleOnSet ||
+                      (isProfileEqual && isTasksEqual && isProjectsEqual)
+                    }
+          */}
         </div>
 
         <div className="right-column">
@@ -1442,7 +1459,7 @@ function UserProfile(props) {
                   </Button>
                 </Link>
               )}
-              {(canEdit && activeTab || canEditTeamCode) && (
+              {((canEdit && activeTab) || canEditTeamCode) && (
                 <>
                   <SaveButton
                     className="mr-1 btn-bottom"
@@ -1453,7 +1470,7 @@ function UserProfile(props) {
                       !formValid.email ||
                       !codeValid ||
                       (userStartDate > userEndDate && userEndDate !== '') ||
-                      titleOnSet ||
+                      // titleOnSet ||
                       (isProfileEqual && isTasksEqual && isProjectsEqual)
                     }
                     userProfile={userProfile}
@@ -1585,7 +1602,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
-                              titleOnSet ||
+                              // titleOnSet ||
                               (isProfileEqual && isTasksEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
@@ -1663,7 +1680,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
-                              titleOnSet ||
+                              // titleOnSet ||
                               (isProfileEqual && isTasksEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
@@ -1759,7 +1776,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
-                              titleOnSet ||
+                              // titleOnSet ||
                               (isProfileEqual && isTasksEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
@@ -1845,7 +1862,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
-                              titleOnSet ||
+                              // titleOnSet ||
                               (isProfileEqual && isTasksEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
@@ -1918,7 +1935,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
-                              titleOnSet ||
+                              // titleOnSet ||
                               (isProfileEqual && isTasksEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
