@@ -1,14 +1,14 @@
-.input-text {
+.inputText {
   position: relative;
 }
-.input-text .fa-eye-slash {
+.inputText .faEyeSlash {
   position: absolute;
   right: 10px;
   top: 12px;
   font-size: 15px;
   cursor: pointer;
 }
-.fa-eye {
+.faEye {
   position: absolute;
   right: 10px;
   top: 12px;

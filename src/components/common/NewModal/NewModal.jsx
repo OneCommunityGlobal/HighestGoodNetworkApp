@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import Popup from 'reactjs-popup';
-import './NewModal.css';
+import styles from './NewModal.module.css';
 
 // eslint-disable-next-line react/function-component-definition
 const NewModal = ({ header, children, trigger }) => {
@@ -19,8 +19,8 @@ const NewModal = ({ header, children, trigger }) => {
       ref={popupRef}
       contentStyle={{ height: '85vh', borderRadius: '8px', width: 'auto' }}
     >
-      <div className="popup-modal-wrapper">
-        <div className="popup-header">
+      <div className={`${styles.popupModalWrapper}`}>
+        <div className={`${styles.popupHeader}`}>
           <h5 style={{ margin: 0 }}>{header}</h5>
           <div
             onClick={closePopup}
@@ -30,15 +30,15 @@ const NewModal = ({ header, children, trigger }) => {
               }
             }}
             tabIndex={0}
-            className="close-icon"
+            className={`${styles.closeIcon}`}
             role="button"
           >
             &#x2715;
           </div>
         </div>
-        <div className="popup-content-wrapper">{children}</div>
-        <div className="popup-modal-footer">
-          <button type="button" className="popup-close-button" onClick={closePopup}>
+        <div className={`${styles.popupContentWrapper}`}>{children}</div>
+        <div className={`${styles.popupModalFooter}`}>
+          <button type="button" className={`${styles.popupCloseButton}`} onClick={closePopup}>
             Close
           </button>
         </div>

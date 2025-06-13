@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { Stub } from '../Stub';
+import styles from '../Stub.module.css';
 
 describe('Stub Component', () => {
   it('renders without crashing', () => {
@@ -27,7 +28,8 @@ describe('Stub Component', () => {
 
   it('has the correct class name for the wrapper', () => {
     render(<Stub />);
-    const wrapper = document.querySelector('.stub-wrapper'); // Use querySelector to check for class
+    const wrapper = document.querySelector('.stubWrapper'); // Use querySelector to check for class
     expect(wrapper).toBeInTheDocument();
+    expect(wrapper).toHaveClass(styles.stubWrapper);
   });
 });

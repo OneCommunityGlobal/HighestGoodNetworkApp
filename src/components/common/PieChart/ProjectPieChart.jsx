@@ -2,8 +2,8 @@
 import { useEffect, useState, useMemo } from 'react';
 import * as d3 from 'd3/dist/d3.min';
 import { CHART_RADIUS, CHART_SIZE } from './constants';
-import { getVisuallyDistinctColors } from './colorsGenerator';
-import './UserProjectPieChart.css';
+import { generateArrayOfUniqColors } from './colorsGenerator';
+import styles from './UserProjectPieChart.module.css';
 
 function UserProjectPieChart({
   projectsData, // New array format: [{ projectId: "123", projectName: "Project A", totalTime: 10.5 }, ...]
@@ -12,7 +12,7 @@ function UserProjectPieChart({
   darkMode,
 }) {
   const [totalHours, setTotalHours] = useState(0);
-  const colors = useMemo(() => getVisuallyDistinctColors(projectsData.length), [projectsData]);
+  const colors = useMemo(() => generateArrayOfUniqColors(projectsData.length), [projectsData]);
   const color = useMemo(
     () =>
       d3
@@ -179,9 +179,9 @@ function UserProjectPieChart({
     <div>Loading</div>
   ) : (
     <div className={`pie-chart-wrapper ${darkMode ? 'text-light' : ''}`}>
-      <div id={`pie-chart-container-${pieChartId}`} className="pie-chart" />
-      <div className="pie-chart-legend-container">
-        <div className="pie-chart-legend-table-wrapper">
+      <div id={`pie-chart-container-${pieChartId}`} className={`${styles.pieChart}`} />
+      <div className={`${styles.pieChartLegendContainer}`}>
+        <div className={`${styles.pieChartLegendTableWrapper}`}>
           <table className={darkMode ? 'pie-chart-legend-table-dark' : 'pie-chart-legend-table'}>
             <thead>
               <tr>
@@ -207,7 +207,7 @@ function UserProjectPieChart({
           </table>
         </div>
 
-        <div className="data-total-value">
+        <div className={`${styles.dataTotalValue}`}>
           <strong>Total Hours:</strong> {totalHours.toFixed(2)}
         </div>
       </div>

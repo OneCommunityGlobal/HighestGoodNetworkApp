@@ -1,14 +1,14 @@
-.collaboration-container,
-.job-landing .header img {
+.collaborationContainer,
+.jobLanding .header img {
   width: 60%;
   max-width: 1000px;
   display: flex;
 }
 .headings,
-.job-ad {
+.jobAd {
   text-align: center;
 }
-.collaboration-container {
+.collaborationContainer {
   width: 90%;
   margin: 0 auto;
   flex-direction: column;
@@ -16,12 +16,12 @@
   background-color: #fff;
 }
 
-.job-landing .header img {
+.jobLanding .header img {
   height: auto;
   margin: 0 auto;
   flex-direction: column;
 }
-.collaboration-navbar {
+.collaborationNavbar {
   width: 100%;
   display: flex;
   justify-content: space-between;
@@ -34,21 +34,21 @@
   flex-wrap: wrap;
 }
 
-.navbar-left input,
-.navbar-left select {
+.navbarLeft input,
+.navbarLeft select {
   display: flex;
   padding: 8px;
   margin-right: 10px;
   align-items: center;
 }
-.navbar-left,
-.navbar-right,
-.search-form {
+.navbarLeft,
+.navbarRight,
+.searchForm {
   display: flex;
   align-items: center;
   padding: 4px;
 }
-.search-form input {
+.searchForm input {
   margin-right: 10px;
   padding: 5px;
   border: 1px solid #ccc;
@@ -64,13 +64,13 @@ select {
   border: 1px solid #ccc;
   border-radius: 4px;
 }
-.job-list {
+.jobList {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 20px;
   width: 100%;
 }
-.job-ad {
+.jobAd {
   border: 1px solid #ddd;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
@@ -78,26 +78,26 @@ select {
   background: linear-gradient(135deg, #fff, #f9f9f9);
   transition: transform 0.3s, box-shadow 0.3s;
 }
-.job-ad img {
+.jobAd img {
   max-width: 100%;
   height: auto;
   border-bottom: 1px solid #ddd;
 }
-.job-ad h3 {
+.jobAd h3 {
   font-size: 1.1rem;
   font-weight: 700;
   color: #333;
   margin: 10px 0;
   transition: color 0.3s;
 }
-.job-ad a {
+.jobAd a {
   text-decoration: none;
   color: inherit;
 }
-.job-ad a:hover h3 {
+.jobAd a:hover h3 {
   color: #007acc;
 }
-.job-ad:hover {
+.jobAd:hover {
   transform: translateY(-5px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
@@ -125,8 +125,8 @@ select {
 .pagination button:hover {
   background-color: #4a99ee;
 }
-.search-form button,
-.navbar-right select {
+.searchForm button,
+.navbarRight select {
   padding: 10px 15px;
   border: none;
   border-radius: 2px;
@@ -134,7 +134,7 @@ select {
   font-size: 14px;
 }
 
-.search-form button {
+.searchForm button {
   background-color: #007bff;
   color: white;
   margin-right: 15px;
@@ -142,11 +142,11 @@ select {
   position: relative;
 }
 
-.search-form button:hover {
+.searchForm button:hover {
   background-color: #0056b3;
 }
 
-.collaboration-navbar {
+.collaborationNavbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -156,19 +156,19 @@ select {
   background-color: #9c0;
 }
 
-.search-form {
+.searchForm {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.search-form input {
+.searchForm input {
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 1px;
 }
 
-.search-form button {
+.searchForm button {
   padding: 6px 10px;
   border: none;
   border-radius: 2px;
@@ -177,7 +177,7 @@ select {
   position: relative;
 }
 
-.navbar-right select {
+.navbarRight select {
   padding: 12px 18px;
   font-size: 16px;
   border: 1px solid #ccc;
@@ -186,37 +186,37 @@ select {
 }
 
 @media screen and (max-width: 480px) {
-  .job-list {
+  .jobList {
     grid-template-columns: 1fr;
   }
 
-  .collaboration-navbar {
+  .collaborationNavbar {
     flex-direction: column;
     padding: 5px;
     text-align: center;
   }
 
-  .navbar-left,
-  .navbar-right {
+  .navbarLeft,
+  .navbarRight {
     width: 100%;
     flex-direction: column;
     align-items: center;
     gap: 10px;
   }
 
-  .search-form {
+  .searchForm {
     display: flex;
     flex-direction: column;
     width: 100%;
     gap: 10px;
   }
 
-  .search-form input {
+  .searchForm input {
     width: 90%;
     margin-bottom: 10px;
   }
 
-  .search-form button {
+  .searchForm button {
     width: 90%;
     padding: 8px;
     font-size: 14px;
@@ -227,32 +227,32 @@ select {
     width: auto;
   }
 }
-.responsive-img {
+.responsiveImg {
   max-width: 100%;
   height: auto;
   display: block;
   margin: 0 auto;
 }
 @media screen and (max-width: 1024px) {
-  .job-list {
+  .jobList {
     grid-template-columns: repeat(3, 1fr);
   }
 }
 
 @media screen and (max-width: 768px) {
-  .job-list {
+  .jobList {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media screen and (max-width: 800px) {
-  .collaboration-navbar {
+  .collaborationNavbar {
     flex-direction: column;
     align-items: center;
   }
 
-  .navbar-left,
-  .navbar-right {
+  .navbarLeft,
+  .navbarRight {
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -260,7 +260,7 @@ select {
     gap: 10px;
   }
 
-  .search-form {
+  .searchForm {
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -268,14 +268,14 @@ select {
     gap: 10px;
   }
 
-  .search-form input,
-  .search-form button {
+  .searchForm input,
+  .searchForm button {
     width: 90%;
     max-width: 300px;
     margin: 0 auto;
   }
 
-  .search-form button {
+  .searchForm button {
     padding: 10px;
     font-size: 14px;
   }
