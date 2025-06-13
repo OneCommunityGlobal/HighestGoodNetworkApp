@@ -1,11 +1,11 @@
-.user-profile-home {
+.userProfileHome {
   font-family: Arial, sans-serif;
   background-color: #fff;
   min-height: 100vh;
   padding: 20px;
 }
 
-.dashboard-container {
+.dashboardContainer {
   display: flex;
   max-width: 1400px;
   margin: 0 auto;
@@ -16,12 +16,12 @@
   height: 80vh;
 }
 
-.vertical-separator {
+.verticalSeparator {
   width: 1px;
   background-color: #e0e0e0;
 }
 
-.skills-loader {
+.skillsLoader {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -31,14 +31,14 @@
   text-align: center;
 }
 
-.skills-loader p {
+.skillsLoader p {
   font-size: 1.2rem;
   color: #333;
   font-weight: 500;
   margin-top: 20px;
 }
 
-.skills-error p {
+.skillsError p {
   font-size: 1.2rem;
   color: rgb(208, 75, 75);
   font-weight: 500;
@@ -46,11 +46,11 @@
 }
 
 @media (max-width: 768px) {
-  .dashboard-container {
+  .dashboardContainer {
     flex-direction: column;
     height: max-content;
   }
-  .vertical-separator {
+  .verticalSeparator {
     display: none;
   }
 }
