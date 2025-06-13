@@ -1,0 +1,261 @@
+.job-analytics-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.chart-container {
+  flex: 1;
+  border: 2px solid #4285f4;
+  border-radius: 8px;
+  background-color: #ffffff;
+  padding: 20px;
+}
+
+.chart-title {
+  font-size: 24px;
+  font-weight: 400;
+  color: #5f6368;
+  margin: 0 0 30px 0;
+}
+
+.chart-area {
+  min-height: 400px;
+  position: relative;
+  padding-left: 140px;
+  padding-right: 60px;
+  padding-top: 20px;
+  padding-bottom: 60px;
+}
+
+.grid-lines {
+  position: absolute;
+  left: 140px;
+  right: 60px;
+  top: 20px;
+  bottom: 60px;
+  background-image: 
+    linear-gradient(to right, #e0e0e0 1px, transparent 1px),
+    linear-gradient(to bottom, #e0e0e0 1px, transparent 1px);
+  background-size: 10% 25%; /* Adjusted for 4 roles with more spacing */
+  opacity: 0.5;
+}
+
+.y-axis {
+  position: absolute;
+  left: 0;
+  top: 20px;
+  bottom: 60px;
+  width: 130px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.y-axis-label {
+  height: 80px; /* Increased from 60px for more spacing */
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 10px;
+  font-size: 12px;
+  color: #5f6368;
+  border-right: 1px solid #9aa0a6;
+}
+
+.x-axis {
+  position: absolute;
+  left: 140px;
+  right: 60px;
+  bottom: 40px;
+  height: 20px;
+  border-top: 1px solid #9aa0a6;
+}
+
+.x-axis-tick {
+  position: absolute;
+  font-size: 12px;
+  color: #5f6368;
+  transform: translateX(-50%);
+  top: 5px;
+}
+
+.x-axis-label {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 12px;
+  color: #5f6368;
+  font-weight: 500;
+}
+
+.bars-container {
+  position: absolute;
+  left: 140px;
+  right: 60px;
+  top: 20px;
+  bottom: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.bar-row {
+  height: 80px; /* Increased from 60px to match y-axis labels */
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding: 20px 0; /* Add padding for more visual space */
+}
+
+.bar {
+  height: 40px; /* Increased from 36px for better visibility */
+  background-color: #4285f4;
+  border: 1px solid #1a73e8;
+  border-radius: 0 4px 4px 0;
+  position: relative;
+  min-width: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  transition: all 0.2s ease;
+}
+
+.bar:hover {
+  background-color: #1a73e8;
+  transform: scaleY(1.1);
+}
+
+.data-label {
+  position: absolute;
+  right: -25px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a73e8;
+  white-space: nowrap;
+}
+
+.tooltip {
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-left: 10px;
+  background-color: #333;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.tooltip::before {
+  content: '';
+  position: absolute;
+  left: -5px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 5px solid transparent;
+  border-right-color: #333;
+}
+
+.no-data {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+  color: #5f6368;
+  font-size: 16px;
+}
+
+.summary-info {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #5f6368;
+}
+
+.summary-info div {
+  margin-bottom: 5px;
+}
+
+.summary-info div:last-child {
+  margin-bottom: 0;
+}
+
+.filters-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 150px;
+}
+
+.filter-group {
+  border: 1px solid #dadce0;
+  border-radius: 4px;
+  padding: 12px;
+  background-color: #ffffff;
+}
+
+.filter-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #3c4043;
+  margin-bottom: 8px;
+}
+
+.filter-select {
+  width: 100%;
+  padding: 4px 8px;
+  border: 1px solid #dadce0;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: #ffffff;
+  color: #3c4043;
+  cursor: pointer;
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: #4285f4;
+}
+
+.filter-select:hover {
+  border-color: #9aa0a6;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .job-analytics-container {
+    flex-direction: column;
+    padding: 10px;
+  }
+  
+  .filters-panel {
+    flex-direction: row;
+    min-width: auto;
+  }
+  
+  .chart-area {
+    padding-left: 120px;
+    padding-right: 40px;
+  }
+  
+  .y-axis {
+    width: 110px;
+  }
+  
+  .y-axis-label {
+    font-size: 11px;
+  }
+}
