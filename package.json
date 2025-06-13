@@ -67,7 +67,7 @@
     "react-router-dom": "^5.2.0",
     "react-router-hash-link": "^2.3.1",
     "react-scripts": "^4.0.3",
-    "react-select": "^5.7.2",
+    "react-select": "^5.10.1",
     "react-spinners": "^0.15.0",
     "react-sticky": "^6.0.3",
     "react-table": "^6.10.0",

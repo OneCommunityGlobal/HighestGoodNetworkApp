@@ -1,8 +1,16 @@
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
+import Select from 'react-select';
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LabelList
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  LabelList,
 } from 'recharts';
-// If using Material-UI, you can replace these with MUI Selects
 
 const mockData = [
   {
@@ -66,115 +74,266 @@ const mockData = [
 const allDates = Array.from(new Set(mockData.flatMap(p => p.dates)));
 const allProjects = mockData.map(p => p.name);
 
-
 export default function ProjectRiskProfileOverview() {
   const [selectedDates, setSelectedDates] = useState(allDates);
   const [selectedProjects, setSelectedProjects] = useState(allProjects);
+  const [showProjectDropdown, setShowProjectDropdown] = useState(false);
+  const [showDateDropdown, setShowDateDropdown] = useState(false);
 
   // Refs for focusing dropdowns
-  const projectSelectRef = useRef(null);
-  const dateSelectRef = useRef(null);
-
-  // Helper for 'ALL' label
-  const allDatesSelected = selectedDates.length === allDates.length;
-  const allProjectsSelected = selectedProjects.length === allProjects.length;
+  const allSpanRef = useRef(null);
+  const dateSpanRef = useRef(null);
 
   // Filter projects that are ongoing on ALL selected dates and in selectedProjects
   const filteredData = mockData.filter(
-    p => selectedProjects.includes(p.name) && selectedDates.every(d => p.dates.includes(d))
+    p => selectedProjects.includes(p.name) && selectedDates.every(d => p.dates.includes(d)),
   );
 
+  const getProjectLabel = () => {
+    if (selectedProjects.length === allProjects.length) return 'ALL';
+    if (selectedProjects.length === 0) return 'Select projects';
+    return `${selectedProjects.length} selected`;
+  };
+
+  const getDateLabel = () => {
+    if (selectedDates.length === allDates.length) return 'ALL';
+    if (selectedDates.length === 0) return 'Select dates';
+    return `${selectedDates.length} selected`;
+  };
+
   return (
-    <div style={{ background: '#fff', borderRadius: 8, boxShadow: '0 2px 8px #eee', padding: 24, marginBottom: 24 }}>
+    <div
+      style={{
+        background: '#fff',
+        borderRadius: 8,
+        boxShadow: '0 2px 8px #eee',
+        padding: 24,
+        marginBottom: 24,
+      }}
+    >
       <h2 style={{ marginBottom: 24 }}>Project Risk Profile Overview</h2>
-      <div style={{ display: 'flex', gap: 40, flexWrap: 'wrap', marginBottom: 24, alignItems: 'flex-end' }}>
+      <div
+        style={{
+          display: 'flex',
+          gap: 40,
+          flexWrap: 'wrap',
+          marginBottom: 24,
+          alignItems: 'flex-end',
+        }}
+      >
         {/* Project Dropdown */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 90 }}>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            minWidth: 90,
+          }}
+        >
           <span style={{ fontWeight: 'bold', fontSize: 16, marginBottom: 0 }}>Project</span>
           <span
-            style={{ fontSize: 14, color: '#444', fontWeight: 500, marginBottom: 2, cursor: allProjectsSelected ? 'pointer' : 'default' }}
-            onClick={() => { if (allProjectsSelected && projectSelectRef.current) projectSelectRef.current.focus(); }}
-            tabIndex={allProjectsSelected ? 0 : -1}
+            ref={allSpanRef}
+            style={{
+              fontSize: 14,
+              color: '#444',
+              fontWeight: 500,
+              marginBottom: 2,
+              cursor: 'pointer',
+              position: 'relative',
+              display: 'inline-block',
+              minWidth: 60,
+              textAlign: 'center',
+            }}
+            onClick={() => setShowProjectDropdown(true)}
+            tabIndex={0}
             role="button"
             aria-label="Show project dropdown"
           >
-            {allProjectsSelected ? 'ALL' : ''}
+            {getProjectLabel()}
+            {showProjectDropdown && (
+              <div
+                style={{
+                  position: 'absolute',
+                  left: 0,
+                  top: '100%',
+                  zIndex: 2000,
+                  minWidth: 120,
+                  background: 'white',
+                  boxShadow: '0 2px 8px #eee',
+                  borderRadius: 4,
+                  marginTop: 2,
+                }}
+              >
+                <Select
+                  autoFocus
+                  menuIsOpen
+                  isMulti
+                  classNamePrefix="custom-select"
+                  options={allProjects.map(p => ({ label: p, value: p }))}
+                  value={selectedProjects.map(p => ({ label: p, value: p }))}
+                  onChange={opts => {
+                    const values = opts && opts.length ? opts.map(o => o.value) : [];
+                    setSelectedProjects(values);
+                  }}
+                  onBlur={() => setShowProjectDropdown(false)}
+                  closeMenuOnSelect={false}
+                  hideSelectedOptions={false}
+                  components={{ IndicatorSeparator: () => null, ClearIndicator: () => null }}
+                  styles={{
+                    control: base => ({
+                      ...base,
+                      fontSize: 14,
+                      minHeight: 22,
+                      width: 120,
+                      background: 'none',
+                      border: 'none',
+                      boxShadow: 'none',
+                      textAlign: 'center',
+                      alignItems: 'center',
+                      padding: 0,
+                    }),
+                    valueContainer: base => ({
+                      ...base,
+                      padding: '0 2px',
+                      justifyContent: 'center',
+                    }),
+                    multiValue: base => ({
+                      ...base,
+                      background: '#e6f7ff',
+                      fontSize: 12,
+                      margin: '0 2px',
+                    }),
+                    input: base => ({
+                      ...base,
+                      margin: 0,
+                      padding: 0,
+                      textAlign: 'center',
+                    }),
+                    placeholder: base => ({
+                      ...base,
+                      color: '#aaa',
+                      textAlign: 'center',
+                    }),
+                    dropdownIndicator: base => ({
+                      ...base,
+                      padding: 0,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }),
+                    menu: base => ({ ...base, zIndex: 9999, fontSize: 14 }),
+                  }}
+                />
+              </div>
+            )}
           </span>
-          <select
-            ref={projectSelectRef}
-            multiple
-            value={selectedProjects}
-            onChange={e => {
-              const opts = Array.from(e.target.selectedOptions, o => o.value);
-              setSelectedProjects(opts.length ? opts : allProjects);
-            }}
-            style={{
-              border: 'none',
-              background: 'none',
-              fontSize: 14,
-              color: '#444',
-              outline: 'none',
-              textAlign: 'center',
-              cursor: 'pointer',
-              width: 60,
-              minHeight: 22,
-              margin: 0,
-              padding: 0,
-              appearance: 'none',
-              WebkitAppearance: 'none',
-              MozAppearance: 'none',
-            }}
-            size={1}
-            title="Select Project(s)"
-          >
-            {allProjects.map(project => (
-              <option key={project} value={project}>{project}</option>
-            ))}
-          </select>
         </div>
         {/* Date Dropdown */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 90 }}>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            minWidth: 90,
+          }}
+        >
           <span style={{ fontWeight: 'bold', fontSize: 16, marginBottom: 0 }}>Dates</span>
           <span
-            style={{ fontSize: 14, color: '#444', fontWeight: 500, marginBottom: 2, cursor: allDatesSelected ? 'pointer' : 'default' }}
-            onClick={() => { if (allDatesSelected && dateSelectRef.current) dateSelectRef.current.focus(); }}
-            tabIndex={allDatesSelected ? 0 : -1}
+            ref={dateSpanRef}
+            style={{
+              fontSize: 14,
+              color: '#444',
+              fontWeight: 500,
+              marginBottom: 2,
+              cursor: 'pointer',
+              position: 'relative',
+              display: 'inline-block',
+              minWidth: 60,
+              textAlign: 'center',
+            }}
+            onClick={() => setShowDateDropdown(true)}
+            tabIndex={0}
             role="button"
             aria-label="Show date dropdown"
           >
-            {allDatesSelected ? 'ALL' : ''}
+            {getDateLabel()}
+            {showDateDropdown && (
+              <div
+                style={{
+                  position: 'absolute',
+                  left: 0,
+                  top: '100%',
+                  zIndex: 2000,
+                  minWidth: 120,
+                  background: 'white',
+                  boxShadow: '0 2px 8px #eee',
+                  borderRadius: 4,
+                  marginTop: 2,
+                }}
+              >
+                <Select
+                  autoFocus
+                  menuIsOpen
+                  isMulti
+                  classNamePrefix="custom-select"
+                  options={allDates.map(d => ({ label: d, value: d }))}
+                  value={selectedDates.map(d => ({ label: d, value: d }))}
+                  onChange={opts => {
+                    const values = opts && opts.length ? opts.map(o => o.value) : [];
+                    setSelectedDates(values);
+                  }}
+                  onBlur={() => setShowDateDropdown(false)}
+                  closeMenuOnSelect={false}
+                  hideSelectedOptions={false}
+                  components={{ IndicatorSeparator: () => null, ClearIndicator: () => null }}
+                  styles={{
+                    control: base => ({
+                      ...base,
+                      fontSize: 14,
+                      minHeight: 22,
+                      width: 120,
+                      background: 'none',
+                      border: 'none',
+                      boxShadow: 'none',
+                      textAlign: 'center',
+                      alignItems: 'center',
+                      padding: 0,
+                    }),
+                    valueContainer: base => ({
+                      ...base,
+                      padding: '0 2px',
+                      justifyContent: 'center',
+                    }),
+                    multiValue: base => ({
+                      ...base,
+                      background: '#e6f7ff',
+                      fontSize: 12,
+                      margin: '0 2px',
+                    }),
+                    input: base => ({
+                      ...base,
+                      margin: 0,
+                      padding: 0,
+                      textAlign: 'center',
+                    }),
+                    placeholder: base => ({
+                      ...base,
+                      color: '#aaa',
+                      textAlign: 'center',
+                    }),
+                    dropdownIndicator: base => ({
+                      ...base,
+                      padding: 0,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }),
+                    menu: base => ({ ...base, zIndex: 9999, fontSize: 14 }),
+                  }}
+                />
+              </div>
+            )}
           </span>
-          <select
-            ref={dateSelectRef}
-            multiple
-            value={selectedDates}
-            onChange={e => {
-              const opts = Array.from(e.target.selectedOptions, o => o.value);
-              setSelectedDates(opts.length ? opts : allDates);
-            }}
-            style={{
-              border: 'none',
-              background: 'none',
-              fontSize: 14,
-              color: '#444',
-              outline: 'none',
-              textAlign: 'center',
-              cursor: 'pointer',
-              width: 60,
-              minHeight: 22,
-              margin: 0,
-              padding: 0,
-              appearance: 'none',
-              WebkitAppearance: 'none',
-              MozAppearance: 'none',
-            }}
-            size={1}
-            title="Select Date(s)"
-          >
-            {allDates.map(date => (
-              <option key={date} value={date}>{date}</option>
-            ))}
-          </select>
         </div>
       </div>
       <ResponsiveContainer width="100%" height={350}>
