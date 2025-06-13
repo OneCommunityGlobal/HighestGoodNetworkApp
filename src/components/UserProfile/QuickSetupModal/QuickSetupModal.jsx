@@ -52,17 +52,18 @@ function QuickSetupModal(props) {
     }
   };
 
-  useEffect(()=>{
-    let teamCodes = [];
-    if(stateTeamCodes.length) {
-      teamCodes = [...stateTeamCodes];
-    }else if (props.teamsData?.allTeams) {
-      if( props.teamsData?.allTeamCode?.distinctTeamCodes ) {
-        teamCodes = props.teamsData.allTeamCode.distinctTeamCodes.map(value => ({ value }));
+  useEffect(() => {
+
+    props.fetchTeamCodeAllUsers()
+    .then((fetchedCodes) => {
+      if (fetchedCodes?.length) {
+        const formatted = fetchedCodes.map(code => ({ value: code }));
+        setQSTTeamCodes(formatted);
       }
-    }
-    setQSTTeamCodes(teamCodes);
-  },[stateTeamCodes.length])
+    })
+    .catch((err) => console.error('Failed to fetch team codes:', err));
+    
+  }, [stateTeamCodes.length, props.teamsData?.allTeamCode]);
 
 
   return (
