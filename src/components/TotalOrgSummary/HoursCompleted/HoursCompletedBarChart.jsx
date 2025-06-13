@@ -90,7 +90,7 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
   };
   const renderCustomizedLabel = props => {
     const { x, y, width, value, index } = props;
-    if (typeof y !== 'number' || isNaN(y)) {
+    if (typeof y !== 'number' || Number.isNaN(y)) {
       return null;
     }
     const { percentage } = chartData[index];

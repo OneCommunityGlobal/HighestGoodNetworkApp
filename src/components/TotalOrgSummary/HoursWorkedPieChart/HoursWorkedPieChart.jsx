@@ -24,7 +24,8 @@ const renderCustomizedLabel = ({
   const percentage = Math.round((totalHours / totalOverTimeHours - 1) * 100);
   const fillColor = totalHours / totalOverTimeHours > 1 ? 'green' : 'red';
 
-  const textContent = comparisonType !== 'No Comparison' ? `${percentage}% ${comparisonType.toLowerCase()}` : '';
+  const textContent =
+    comparisonType !== 'No Comparison' ? `${percentage}% ${comparisonType.toLowerCase()}` : '';
   const fontSize = 10;
   const maxTextLength = Math.floor((innerRadius / fontSize) * 4);
 
