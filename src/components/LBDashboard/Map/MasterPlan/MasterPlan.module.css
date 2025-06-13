@@ -1,4 +1,4 @@
-.main-container {
+.mainContainer {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -9,17 +9,17 @@
   overflow: hidden;
 }
 
-.logo-container {
+.logoContainer {
   text-align: center;
   margin-bottom: 20px;
 }
 
-.logo-container img {
+.logoContainer img {
   max-width: 30%;
   height: auto;
   min-width: 250px;
 }
-.content-container {
+.contentContainer {
   display: flex;
   flex-direction: column;
   background-color: white;
@@ -30,7 +30,7 @@
   height: max-content;
 }
 
-.container-top {
+.containerTop {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -39,7 +39,7 @@
   background-color: #9dd425;
 }
 
-.container-main {
+.containerMain {
   background-color: #e0e0e0;
   display: flex;
   flex-direction: column;
@@ -50,7 +50,7 @@
   height: 100%;
 }
 
-.container-map {
+.containerMap {
   display: flex;
   height: 100%;
   width: 100%;
@@ -60,12 +60,12 @@
   background-color: #839a4a;
 }
 
-.map-details {
+.mapDetails {
   width: 100%;
   height: 75%;
   display: flex;
 }
-.pin-point {
+.pinPoint {
   position: absolute;
   width: 5.5% !important;
   height: 6% !important;
@@ -83,19 +83,19 @@
   padding: 0;
 }
 
-.image-wrapper {
+.imageWrapper {
   position: relative;
   height: 100%;
   display: inline-block;
 }
 
-.image-wrapper img {
+.imageWrapper img {
   height: 100%;
   width: 100%;
   max-width: none;
 }
 
-.village-marker {
+.villageMarker {
   border-radius: 50%;
   position: absolute;
   cursor: pointer;
@@ -165,14 +165,14 @@
 
 
 @media (max-width: 990px) {
-  .main-container {
+  .mainContainer {
     padding: 0;
   }
-  .container-main {
+  .containerMain {
     flex-direction: column;
     align-items: center;
   }
-  .map-details {
+  .mapDetails {
     flex-direction: column;
     height: 100%;
   }
@@ -180,12 +180,12 @@
     width: 100%;
   }
 
-  .image-wrapper {
+  .imageWrapper {
     position: relative;
     min-height: 100%;
     display: inline-block;
   }
-  .image-wrapper img {
+  .imageWrapper img {
     width: 100%;
     height: auto;
     max-width: none;
@@ -201,7 +201,7 @@
   
 }
 
-.village-details{
+.villageDetails{
   display: flex;
   flex-direction: column;
   padding-left: 20px;
@@ -209,7 +209,7 @@
   height: 100%;
 }
 
-.village-details h3{
+.villageDetails h3{
   margin: 0;
   padding: 0;
   font-size: 1.5em;
@@ -217,7 +217,7 @@
   color:#839a4a;
 }
 
-.village-details p{
+.villageDetails p{
   margin: 0;
   padding: 0;
   font-size: 1em;
@@ -227,11 +227,11 @@
 
 
 @media (max-width: 580px) {
-  .container-main {
+  .containerMain {
     padding: 10px;
     margin: 10px;
   }
-  .village-details{
+  .villageDetails{
     padding-left: 0;
   }
 

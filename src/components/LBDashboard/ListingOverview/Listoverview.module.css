@@ -1,4 +1,4 @@
-.main-container {
+.mainContainer {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -9,17 +9,17 @@
   overflow: hidden;
 }
 
-.logo-container {
+.logoContainer {
   text-align: center;
   margin-bottom: 20px;
 }
 
-.logo-container img {
+.logoContainer img {
   max-width: 30%;
   height: auto;
   min-width: 250px;
 }
-.content-container {
+.contentContainer {
   display: flex;
   flex-direction: column;
   background-color: white;
@@ -30,7 +30,7 @@
   height: max-content;
 }
 
-.container-top {
+.containerTop {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -39,7 +39,7 @@
   background-color: #9dd425;
 }
 
-.container-main {
+.containerMain {
   background-color: #e0e0e0;
   display: flex;
   justify-content: space-evenly;
@@ -51,7 +51,7 @@
   height: auto;
 }
 
-.details-left {
+.detailsLeft {
   width: 50%;
   height: 100%;
   display: flex;
@@ -60,22 +60,22 @@
   padding: 2.5%;
 }
 
-.details-right {
+.detailsRight {
   width: 50%;
   height: 100%;
   padding: 2.5%;
 }
 
-.mobile-display {
+.mobileDisplay {
   display: none;
 }
 
-.image-carousel {
+.imageCarousel {
   width: 100%;
   margin-bottom: 2.5%;
 }
 
-.image-carousel img {
+.imageCarousel img {
   width: 100%; 
   height: auto; 
   object-fit: cover;
@@ -105,12 +105,12 @@
   padding-left: 5%;
 }
 
-.amenities-list {
+.amenitiesList {
   display: flex;
   flex-direction: column;
   list-style-position: inside;
 }
-.amenities-list li {
+.amenitiesList li {
   margin: 0;
 }
 
@@ -133,25 +133,25 @@
   cursor: pointer;
 }
 
-.listing-details h1,
+.listingDetails h1,
 p {
   color: #000;
 }
 
-.rent-form {
+.rentForm {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 10px;
 }
 
-.rent-form label {
+.rentForm label {
   display: flex;
   width: 150px;
   flex-direction: column;
 }
 
-.rent-form button {
+.rentForm button {
   background: #13ae5c;
   color: white;
   padding: 10px;
@@ -161,29 +161,29 @@ p {
   transition: background 0.3s ease, transform 0.2s ease;
 }
 
-.rent-form button:hover {
+.rentForm button:hover {
   background: #0f9a50;
   transform: scale(1.01);
 }
 
-.rent-form button:active {
+.rentForm button:active {
   transform: scale(0.99);
 }
-.rent-form input[type='date'] {
+.rentForm input[type='date'] {
   padding: 5% 10%;
   border: 1px solid #ccc;
   margin-top: 2.5%;
   width: 100%;
 }
 
-.chat-host {
+.chatHost {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   margin-top: 2.5%;
 }
 
-.chat-host button {
+.chatHost button {
   background: #d1d1d1;
   padding: 2.5%;
   border-radius: 998px;
@@ -199,27 +199,27 @@ p {
 }
 
 @media (max-width: 990px) {
-  .main-container {
+  .mainContainer {
     padding: 0;
   }
-  .container-main {
+  .containerMain {
     flex-direction: column;
     align-items: center;
   }
-  .details-left {
+  .detailsLeft {
     width: 98%;
   }
-  .details-right {
+  .detailsRight {
     width: 98%;
   }
 
-  .mobile-display {
+  .mobileDisplay {
     display: block;
   }
-  .desktop-display {
+  .desktopDisplay {
     display: none;
   }
-  .chat-host button {
+  .chatHost button {
     background: #d1d1d1;
     padding: 2.5%;
     border-radius: 998px;
@@ -232,7 +232,7 @@ p {
 
 @media (max-width: 580px) {
   
-  .container-main {
+  .containerMain {
     padding: 10px;
     margin: 10px;
   }
@@ -240,18 +240,18 @@ p {
     flex-direction: column;
     align-items: center;
   }
-  .rent-form label {
+  .rentForm label {
     display: flex;
     width: 150px;
     flex-direction: column;
   }
-  .rent-form input[type='date'] {
+  .rentForm input[type='date'] {
     padding: 3% 3%;
     border: 1px solid #ccc;
     margin-top: 2.5%;
     width: 90%;
   }
-  .chat-host button {
+  .chatHost button {
     background: #d1d1d1;
     padding: 2.5%;
     border-radius: 998px;
