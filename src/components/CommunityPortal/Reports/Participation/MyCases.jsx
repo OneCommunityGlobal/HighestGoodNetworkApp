@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import './MyCases.css';
+import styles from './MyCases.module.css';
 import mockEvents from './mockData';
 
 function MyCases() {
@@ -44,10 +44,10 @@ function MyCases() {
   const filteredEvents = filterEvents(mockEvents);
 
   const renderCardView = () => (
-    <div className="case-cards">
+    <div className={`${styles.caseCards}`}>
       {filteredEvents.map(event => (
         <div className={`case-card ${darkMode ? 'case-card-dark' : ''}`} key={event.id}>
-          <span className="event-badge">{event.eventType}</span>
+          <span className={`${styles.eventBadge}`}>{event.eventType}</span>
           <span className={`event-time ${darkMode ? 'event-time-dark' : ''}`}>
             {event.eventTime}
           </span>
@@ -55,7 +55,7 @@ function MyCases() {
             {event.eventName}
           </span>
           <div className={`attendees-info ${darkMode ? 'attendees-info-dark' : ''}`}>
-            <div className="avatars">
+            <div className={`${styles.avatars}`}>
               <img alt="profile img" />
             </div>
             <span
@@ -68,13 +68,13 @@ function MyCases() {
   );
 
   const renderListView = () => (
-    <ul className="case-list">
+    <ul className={`${styles.caseList}`}>
       {filteredEvents.map(event => (
         <li className={`case-list-item ${darkMode ? 'case-list-item-dark' : ''}`} key={event.id}>
-          <span className="event-type">{event.eventType}</span>
-          <span className="event-time">{event.eventTime}</span>
-          <span className="event-name">{event.eventName}</span>
-          <span className="attendees-count">{`+${event.attendees}`}</span>
+          <span className={`${styles.eventType}`}>{event.eventType}</span>
+          <span className={`${styles.eventTime}`}>{event.eventTime}</span>
+          <span className={`${styles.eventName}`}>{event.eventName}</span>
+          <span className={`${styles.attendeesCount}`}>{`+${event.attendees}`}</span>
         </li>
       ))}
     </ul>
@@ -88,10 +88,10 @@ function MyCases() {
 
   return (
     <div className={`my-cases-page ${darkMode ? 'my-cases-page-dark' : ''}`}>
-      <header className="header">
+      <header className={`${styles.header}`}>
         <h2 className={`section-title ${darkMode ? 'section-title-dark' : ''}`}>My Cases</h2>
-        <div className="header-actions">
-          <div className="view-switcher">
+        <div className={`${styles.headerActions}`}>
+          <div className={`${styles.viewSwitcher}`}>
             <button
               type="button"
               className={view === 'calendar' ? 'active' : ''}
@@ -114,9 +114,9 @@ function MyCases() {
               List
             </button>
           </div>
-          <div className="filter-wrapper">
+          <div className={`${styles.filterWrapper}`}>
             <select
-              className="filter-dropdown"
+              className={`${styles.filterDropdown}`}
               value={filter}
               onChange={e => setFilter(e.target.value)}
             >
@@ -126,12 +126,12 @@ function MyCases() {
               <option value="thisMonth">This Month</option>
             </select>
           </div>
-          <button type="button" className="create-new">
+          <button type="button" className={`${styles.createNew}`}>
             + Create New
           </button>
         </div>
       </header>
-      <main className="content">
+      <main className={`${styles.content}`}>
         {view === 'card' && renderCardView()}
         {view === 'list' && renderListView()}
         {view === 'calendar' && renderCalendarView()}
