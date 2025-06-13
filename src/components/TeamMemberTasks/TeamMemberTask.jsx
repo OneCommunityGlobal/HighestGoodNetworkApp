@@ -12,7 +12,7 @@ import moment from 'moment-timezone';
 import { useDispatch, useSelector } from 'react-redux';
 import { Table, Progress } from 'reactstrap';
 
-import { Link, useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import hasPermission from '../../utils/permissions';
 import CopyToClipboard from '../common/Clipboard/CopyToClipboard';
 import './style.css';
@@ -51,7 +51,6 @@ const TeamMemberTask = React.memo(
     const currentDate = moment.tz('America/Los_Angeles').startOf('day');
     const dispatch = useDispatch();
     const canSeeFollowUpCheckButton = userRole !== 'Volunteer';
-    const history = useHistory();
 
     const totalHoursRemaining = user.tasks.reduce((total, task) => {
       const userHours = task.hoursLogged || 0;
@@ -119,15 +118,6 @@ const TeamMemberTask = React.memo(
       } else {
         setIsTruncated(!isTruncated);
       }
-    };
-
-    const handleReportClick = (event, to) => {
-      if (event.metaKey || event.ctrlKey || event.button === 1) {
-        return;
-      }
-
-      event.preventDefault(); // prevent full reload
-      history.push(`/peoplereport/${to}`);
     };
 
     const openDetailModal = request => {
