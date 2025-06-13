@@ -6,6 +6,7 @@ import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import classnames from 'classnames';
 import SocialMediaComposer from './SocialMediaComposer';
 import TruthSocialAutoPoster from '../AutoPoster/TruthSocialAutoPoster';
+import BlueskyPostDetails from './BlueskyPostDetails';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faEnvelope,
@@ -171,10 +172,14 @@ function Announcements({ title, email: initialEmail }) {
             'livejournal',
             'slashdot',
             'blogger',
-            'truthsocial',
           ].map(platform => {
-            const PlatformComposer =
-              platform === 'slashdot' ? SlashdotAutoPoster : SocialMediaComposer;
+            let PlatformComposer = SocialMediaComposer;
+            if (platform === 'slashdot') {
+              PlatformComposer = SlashdotAutoPoster;
+            } else if (platform === 'bluesky') {
+              PlatformComposer = BlueskyPostDetails;
+            }
+
             return (
               <TabPane tabId={platform} key={platform}>
                 <PlatformComposer platform={platform} darkMode={darkMode} />
