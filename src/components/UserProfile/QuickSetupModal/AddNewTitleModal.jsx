@@ -320,8 +320,7 @@ function AddNewTitleModal({
               Team Code<span className="qsm-modal-required">*</span>:
             </Label>
             <AssignTeamCodeField
-              //teamCodeData={QSTTeamCodes}
-              teamCodeData = {QSTTeamCodes.filter(code => code.status === 'active')}
+              teamCodeData={QSTTeamCodes}
               onDropDownSelect={selectTeamCode}
               selectedTeamCode={selectedTeamCode}
               cleanTeamCodeAssign={cleanTeamCodeAssign}
