@@ -11,6 +11,7 @@ import {
 import { leaderboardDataReducer, orgDataReducer } from './leaderboardDataReducer';
 import weeklySummariesReducer from './weeklySummariesReducer';
 import weeklySummariesReportReducer from './weeklySummariesReportReducer';
+import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
 import { allProjectsReducer } from './allProjectsReducer';
 import { projectReportReducer } from './projectReportReducer';
 import userProjectsReducer from './userProjectsReducer';
@@ -112,6 +113,7 @@ const localReducers = {
   bmConsumables: consumablesReducer,
   bmReusables: reusablesReducer,
   dashboard: dashboardReducer,
+  weeklyProjectSummary: weeklyProjectSummaryReducer,
 
   // community portal
   noShowViz: noShowVizReducer,

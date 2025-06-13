@@ -1,0 +1,49 @@
+.chart-container {
+  min-height: 100vh;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.light-theme {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+.light-theme .select,
+.light-theme .button {
+  background-color: #f2f2f2;
+  color: #000;
+  border: 1px solid #ccc;
+}
+
+.dark-theme {
+  background-color: #1b2a41;
+  color: #f1f1f1;
+}
+
+.dark-theme .select,
+.dark-theme .button {
+  background-color: #2d4059;
+  color: #f1f1f1;
+  border: 1px solid #555;
+}
+
+.select,
+.button {
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 14px;
+  outline: none;
+  cursor: pointer;
+}
+
+.label {
+  font-weight: 500;
+}
+
+.filters {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  margin-bottom: 20px;
+}
