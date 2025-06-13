@@ -351,7 +351,9 @@ function UserProfile(props) {
         startDate: newUserProfile?.startDate ? formatDateYYYYMMDD(newUserProfile?.startDate) : '',
         createdDate: formatDateYYYYMMDD(newUserProfile?.createdDate),
         ...(newUserProfile?.endDate &&
-          newUserProfile.endDate !== '' && { endDate: formatDateYYYYMMDD(newUserProfile.endDate) }),
+          newUserProfile.endDate !== '' && { 
+            endDate: moment.utc(newUserProfile.endDate).format('YYYY-MM-DD')
+          }),
       };
 
       setUserProfile(profileWithFormattedDates);
