@@ -213,7 +213,7 @@ export function PieChart({
                     {tasksData
                       .slice(
                         col === 0 ? 0 : Math.ceil(tasksData.length / 2),
-                        col === 0 ? Math.ceil(tasksData.length / 2) : tasksData.length
+                        col === 0 ? Math.ceil(tasksData.length / 2) : tasksData.length,
                       )
                       .map(task => (
                         <tr key={task.taskId || task.projectId}>

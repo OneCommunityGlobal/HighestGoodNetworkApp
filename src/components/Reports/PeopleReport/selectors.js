@@ -40,7 +40,7 @@ export const peopleTasksPieChartViewData = ({ userProjects, timeEntries, tasks }
   timeEntries.period.forEach(entry => {
     if (entry.wbsId !== null && entry.taskId) {
       // Try to get the task name from the global tasks list if not present in entry
-      let taskName = entry.taskName;
+      let { taskName } = entry;
       let taskItems = [];
       if (tasks && Array.isArray(tasks.taskItems)) {
         ({ taskItems } = tasks);
