@@ -50,9 +50,26 @@ const TeamMemberTask = React.memo(
     const ref = useRef(null);
     const currentDate = moment.tz('America/Los_Angeles').startOf('day');
     const dispatch = useDispatch();
-    const canSeeFollowUpCheckButton = userRole !== 'Volunteer';
     const history = useHistory();
 
+    // Role-based access control flags
+    const canSeeFollowUpCheckButton = userRole !== 'Volunteer';
+    const rolesAllowedToResolveTasks = ['Administrator', 'Owner'];
+    const rolesAllowedToSeeDeadlineCount = ['Manager', 'Mentor', 'Administrator', 'Owner'];
+
+    // Permission checks
+    const isAllowedToResolveTasks =
+      rolesAllowedToResolveTasks.includes(userRole) || dispatch(hasPermission('resolveTask'));
+    const isAllowedToSeeDeadlineCount = rolesAllowedToSeeDeadlineCount.includes(userRole);
+    const canGetWeeklySummaries = dispatch(hasPermission('getWeeklySummaries'));
+    const canSeeReports =
+      rolesAllowedToResolveTasks.includes(userRole) || dispatch(hasPermission('getReports'));
+
+    // Task management permissions
+    const canUpdateTask = dispatch(hasPermission('updateTask'));
+    const canRemoveUserFromTask = dispatch(hasPermission('removeUserFromTask'));
+
+    // Task filtering and display logic
     const totalHoursRemaining = user.tasks.reduce((total, task) => {
       const userHours = task.hoursLogged || 0;
       const userEstimatedHours = task.estimatedHours || 0;
@@ -69,38 +86,27 @@ const TeamMemberTask = React.memo(
         ),
     );
 
+    const completedTasks = user.tasks.filter(task =>
+      task.resources?.some(resource => resource.userID === user.personId && resource.completedTask),
+    );
+
+    // UI state management
     const canTruncate = activeTasks.length > NUM_TASKS_SHOW_TRUNCATE;
     const [isTruncated, setIsTruncated] = useState(canTruncate);
     const [isTimeOffContentOpen, setIsTimeOffContentOpen] = useState(
       showWhoHasTimeOff && (onTimeOff || goingOnTimeOff),
     );
-
-    const completedTasks = user.tasks.filter(task =>
-      task.resources?.some(resource => resource.userID === user.personId && resource.completedTask),
-    );
+    const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
     const thisWeekHours = user.totaltangibletime_hrs;
 
-    // these need to be changed to actual permissions...
-    const rolesAllowedToResolveTasks = ['Administrator', 'Owner'];
-    const rolesAllowedToSeeDeadlineCount = ['Manager', 'Mentor', 'Administrator', 'Owner'];
-    const isAllowedToResolveTasks =
-      rolesAllowedToResolveTasks.includes(userRole) || dispatch(hasPermission('resolveTask'));
-    const isAllowedToSeeDeadlineCount = rolesAllowedToSeeDeadlineCount.includes(userRole);
-    // ^^^
-
-    const canGetWeeklySummaries = dispatch(hasPermission('getWeeklySummaries'));
-    const canSeeReports =
-      rolesAllowedToResolveTasks.includes(userRole) || dispatch(hasPermission('getReports'));
-    const canUpdateTask = dispatch(hasPermission('updateTask'));
-    const canRemoveUserFromTask = dispatch(hasPermission('removeUserFromTask'));
-    const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
-
+    // Role-based color mapping for visual hierarchy
     const colorsObjs = {
       'Assistant Manager': '#849ced', // blue
       Manager: '#90e766', // green
       Mentor: '#e9dd57', // yellow
     };
 
+    // Helper functions
     function getInitials(name) {
       const initials = name
         .split(' ')
@@ -110,6 +116,8 @@ const TeamMemberTask = React.memo(
         .toUpperCase();
       return initials;
     }
+
+    // Event handlers
     const handleTruncateTasksButtonClick = () => {
       if (!isTruncated) {
         ref.current?.scrollIntoView({ behavior: 'smooth' });
@@ -125,7 +133,6 @@ const TeamMemberTask = React.memo(
       if (event.metaKey || event.ctrlKey || event.button === 1) {
         return;
       }
-
       event.preventDefault(); // prevent full reload
       history.push(`/peoplereport/${to}`);
     };
