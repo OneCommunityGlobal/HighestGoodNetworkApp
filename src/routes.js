@@ -93,6 +93,9 @@ import CPProtectedRoute from './components/common/CPDashboard/CPProtectedRoute';
 import CPLogin from './components/CommunityPortal/Login';
 import CPDashboard from './components/CommunityPortal';
 import ActivityList from './components/CommunityPortal/Activities/ActivityList';
+// import AddActivities from './components/CommunityPortal/Activities/AddActivities';
+// import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
+import ActivityAttendance from './components/CommunityPortal/Activities/ActivityAttendance';
 
 import NoshowViz from './components/CommunityPortal/Attendence/NoshowViz';
 // import AddActivities from './components/CommunityPortal/Activities/AddActivities';
@@ -495,6 +498,12 @@ export default (
 
         <CPProtectedRoute path="/communityportal/reports/participation" component={NoshowViz} />
 
+        <CPProtectedRoute
+          path="/communityportal/ActivityAttendance"
+          exact
+          component={ActivityAttendance}
+        />
+        {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
         <CPProtectedRoute
           path="/communityportal/Activities/:activityid/Resources"
           exact component={Resources}
