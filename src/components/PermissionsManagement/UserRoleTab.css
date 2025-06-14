@@ -171,6 +171,7 @@
 
 .permission-change-log-table--cell {
   vertical-align: top;
+  width: 150px; /* Ensures columns in table besides Permission Added and Removed have a decent width  */
 }
 
 .permission-change-log-table--cell.permissions {
@@ -192,6 +193,47 @@
   cursor: pointer;
   margin-left: 10px;
   color: inherit;
+}
+
+.changed-permission {
+  margin-right: -23.33px;
+  font-size: 1.75rem;
+}
+
+.changed-permission.white {
+  color: white;
+}
+
+.changed-permission.green {
+  color: green;
+}
+
+.changed-permission.red {
+  color: red;
+}
+
+.permission-tooltip-wrapper {
+  position: absolute;
+  display: inline-block;
+  left: 94%;
+  width: 100%;
+}
+
+.permission-tooltip-text {
+  visibility: hidden;
+  background-color: rgba(211, 211, 211, 0.75);
+  position: absolute;
+  text-align: center;
+  padding: 3px;
+  width: 20%;
+  font-size: medium;
+  bottom: 40%;
+  right: 90%;
+}
+
+.permission-tooltip-wrapper.show-tooltip:hover .permission-tooltip-text {
+  visibility: visible;
+  opacity: 1;
 }
 
 @media only screen and (max-width: 683px) {
