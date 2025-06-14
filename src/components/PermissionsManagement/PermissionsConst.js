@@ -554,6 +554,12 @@ export const permissionLabels = [
         description:
           'Lets the user see all users in the dashboard as if they were on the same team. Requires "See All Users" to function',
       },
+      {
+        label: 'Access HGN Skill Dashboard',
+        key: 'accessHGNSkillDashboard',
+        description:
+          'Grants access to the HGN Skills Dashboard. Only available to Owners, Admins, Core Team, and active software developers who have completed the HGN Skills Survey. Requires "See All Users" permission to function.',
+      },
     ],
   },
 ];
