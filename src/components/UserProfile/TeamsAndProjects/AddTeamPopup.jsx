@@ -127,7 +127,7 @@ const AddTeamPopup = React.memo(props => {
       </ModalHeader>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''} style={{ textAlign: 'center' }}>
         <label className={darkMode ? 'text-light' : ''} style={{ textAlign: 'left' }}>
-          Add to Team
+          Add to Team 
         </label>
         <div className="input-group-prepend" style={{ marginBottom: '10px' }}>
           <AddTeamsAutoComplete

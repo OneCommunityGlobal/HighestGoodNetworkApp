@@ -22,10 +22,10 @@ import Team from './Team';
 import TeamOverview from './TeamsOverview';
 import TeamTableSearchPanel from './TeamTableSearchPanel';
 import TeamMembersPopup from './TeamMembersPopup';
-import CreateNewTeamPopup from './CreateNewTeamPopup';
 import DeleteTeamPopup from './DeleteTeamPopup';
 import TeamStatusPopup from './TeamStatusPopup';
 import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
+import AddTeamPopup from '../UserProfile/TeamsAndProjects/AddTeamPopup';
 
 class Teams extends React.PureComponent {
   constructor(props) {
@@ -34,7 +34,6 @@ class Teams extends React.PureComponent {
       teamNameSearchText: '',
       teamMembersPopupOpen: false,
       deleteTeamPopupOpen: false,
-      createNewTeamPopupOpen: false,
       teamStatusPopupOpen: false,
       wildCardSearchText: '',
       selectedTeamId: 0,
@@ -45,25 +44,47 @@ class Teams extends React.PureComponent {
       sortedTeams: [],
       sortTeamNameState: 'none', // 'none', 'ascending', 'descending'
       sortTeamActiveState: 'none', // 'none', 'ascending', 'descending'
+      addTeamPopupOpen: false,
     };
   }
 
   componentDidMount() {
-    // Initiating the teams fetch action.
-    this.setState({ teams: this.teamTableElements(this.props.state.allTeamsData.allTeams) });
     this.props.getAllUserTeams();
     this.props.getAllUserProfile();
   }
 
   componentDidUpdate(prevProps, prevState) {
+    // Update teams when allTeamsData changes
     if (
-      !lo.isEqual(prevProps.state.allTeamsData.allTeams, this.props.state.allTeamsData.allTeams) ||
+      !lo.isEqual(prevProps.state.allTeamsData.allTeams, this.props.state.allTeamsData.allTeams)
+    ) {
+      const newTeams = this.teamTableElements(this.props.state.allTeamsData.allTeams);
+      this.setState(
+        {
+          teams: newTeams,
+          sortedTeams: newTeams,
+          teamNameSearchText: '',
+          wildCardSearchText: '',
+        },
+        () => {
+          this.sortTeams();
+        },
+      );
+    }
+
+    // Update teams when search text changes
+    if (
       prevState.teamNameSearchText !== this.state.teamNameSearchText ||
       prevState.wildCardSearchText !== this.state.wildCardSearchText
     ) {
-      this.setState({ teams: this.teamTableElements(this.props.state.allTeamsData.allTeams) });
+      const filteredTeams = this.teamTableElements(this.props.state.allTeamsData.allTeams);
+      this.setState({
+        teams: filteredTeams,
+        sortedTeams: filteredTeams,
+      });
     }
 
+    // Sort teams when sort state changes
     if (
       prevState.teams !== this.state.teams ||
       prevState.sortTeamNameState !== this.state.sortTeamNameState ||
@@ -146,6 +167,8 @@ class Teams extends React.PureComponent {
               onSearch={this.onWildCardSearch}
               onCreateNewTeamClick={this.onCreateNewTeamShow}
               darkMode={darkMode}
+              teamsData={{ allTeams }}
+              searchText={this.state.wildCardSearchText}
             />
             <div className="overflow-container">
               <table
@@ -209,22 +232,21 @@ class Teams extends React.PureComponent {
   };
 
   filteredTeamList = allTeams => {
-    const filteredList = allTeams.filter(team => {
-      // Applying the search filters before creating each team table data element
-      if (
-        (team.teamName &&
-          searchWithAccent(team.teamName, this.state.teamNameSearchText) &&
-          this.state.wildCardSearchText === '') ||
-        // the wild card search, the search text can be match with any item
-        (this.state.wildCardSearchText !== '' &&
-          searchWithAccent(team.teamName, this.state.wildCardSearchText))
-      ) {
-        return team;
-      }
-      return false;
+    if (!allTeams || !Array.isArray(allTeams)) {
+      return [];
+    }
+
+    const searchText = this.state.teamNameSearchText.toLowerCase().trim();
+    if (!searchText) {
+      return allTeams;
+    }
+
+    return allTeams.filter(team => {
+      const teamName = (team.teamName || '').toLowerCase();
+      return teamName.includes(searchText);
     });
-    return filteredList;
   };
+
   /**
    * Returns the differenet popup components to render
    * 1. Popup to show the team members
@@ -252,16 +274,32 @@ class Teams extends React.PureComponent {
           selectedTeamName={this.state.selectedTeam}
           fetching={fetching}
         />
-        <CreateNewTeamPopup
-          open={this.state.createNewTeamPopupOpen}
-          onClose={this.onCreateNewTeamClose}
-          onOkClick={this.addNewTeam}
-          teamName={this.state.selectedTeam}
-          teamId={this.state.selectedTeamId}
-          isActive={this.state.isActive}
-          isEdit={this.state.isEdit}
-        />
+        <AddTeamPopup
+          open={this.state.addTeamPopupOpen}
+          onClose={this.onAddTeamPopupClose}
+          teamsData={{ allTeams }}
+          userTeamsById={[]}
+          onSelectAssignTeam={async newTeam => {
+            try {
+              // Close the popup first
+              this.setState({
+                addTeamPopupOpen: false,
+                wildCardSearchText: '',
+                teamNameSearchText: '',
+              });
 
+              // Refresh the data from the server
+              await this.props.getAllUserTeams();
+              await this.props.getAllUserProfile();
+            } catch (error) {
+              toast.error('Error updating team list. Please refresh the page.');
+            }
+          }}
+          handleSubmit={() => {}}
+          userProfile={{}}
+          darkMode={this.props.state.theme.darkMode}
+          isTeamManagement
+        />
         <DeleteTeamPopup
           open={this.state.deleteTeamPopupOpen}
           onClose={this.onDeleteTeamPopupClose}
@@ -272,7 +310,6 @@ class Teams extends React.PureComponent {
           onSetInactiveClick={this.onConfirmClick}
           selectedTeamCode={this.state.selectedTeamCode}
         />
-
         <TeamStatusPopup
           open={this.state.teamStatusPopupOpen}
           onClose={this.onTeamStatusClose}
@@ -357,27 +394,20 @@ class Teams extends React.PureComponent {
    */
   onCreateNewTeamShow = () => {
     this.setState({
-      createNewTeamPopupOpen: true,
+      addTeamPopupOpen: true,
       selectedTeam: '',
     });
   };
 
-  /**
-   * To hide the create new team popup upon close button click
-   */
-  onCreateNewTeamClose = () => {
+  onAddTeamPopupClose = () => {
     this.setState({
-      selectedTeamId: undefined,
+      addTeamPopupOpen: false,
       selectedTeam: '',
-      createNewTeamPopupOpen: false,
-      isEdit: false,
     });
   };
 
   onEditTeam = (teamName, teamId, status, teamCode) => {
     this.setState({
-      isEdit: true,
-      createNewTeamPopupOpen: true,
       selectedTeam: teamName,
       selectedTeamId: teamId,
       selectedTeamCode: teamCode,
@@ -405,7 +435,6 @@ class Teams extends React.PureComponent {
     this.setState({
       selectedTeamId: undefined,
       selectedTeam: '',
-      isEdit: false,
       teamStatusPopupOpen: false,
     });
   };
@@ -416,62 +445,13 @@ class Teams extends React.PureComponent {
   onWildCardSearch = searchText => {
     this.setState({
       wildCardSearchText: searchText,
+      teamNameSearchText: searchText,
     });
   };
 
   /**
-   * callback for adding new team
-   */
-  addNewTeam = async (name, isEdit) => {
-    if (isEdit) {
-      const updateTeamResponse = await this.props.updateTeam(
-        name,
-        this.state.selectedTeamId,
-        this.state.isActive,
-        this.state.selectedTeamCode,
-      );
-      if (updateTeamResponse && updateTeamResponse.status === 200) {
-        toast.success('Team updated successfully');
-      } else if (!updateTeamResponse) {
-        toast.error('You are not authorized to edit team code.');
-      } else {
-        toast.error(updateTeamResponse);
-      }
-    } else {
-      const postResponse = await this.props.postNewTeam(name, true);
-      if (postResponse.status && postResponse.status === 200) {
-        toast.success('Team added successfully');
-      } else if (!postResponse) {
-        toast.error('You are not authorized to add team code.');
-      } else {
-        toast.error(postResponse);
-      }
-    }
-
-    this.setState(prevState => ({
-      teams: prevState.teams.map(team =>
-        team.props.teamId === prevState.selectedTeamId // Use prevState here
-          ? {
-              ...team,
-              props: {
-                ...team.props,
-                name,
-                active: prevState.isActive, // Use prevState here
-                teamCode: prevState.selectedTeamCode, // Use prevState here
-              },
-            }
-          : team,
-      ),
-      selectedTeamId: undefined,
-      selectedTeam: '',
-      isEdit: false,
-      createNewTeamPopupOpen: false,
-    }));
-  };
-  /**
    * callback for deleting a team
    */
-
   onDeleteUser = async deletedId => {
     const deleteResponse = await this.props.deleteTeam(deletedId, 'delete');
     if (deleteResponse.status === 200) {
