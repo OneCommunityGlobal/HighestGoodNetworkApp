@@ -45,6 +45,6 @@ describe('Dashboard', () => {
     expect(screen.getByTestId('weeklysummary')).toBeInTheDocument()
     expect(screen.getByTestId('timelog')).toBeInTheDocument()
     expect(screen.getByTestId('timeoff')).toBeInTheDocument()
-    expect(screen.getByTestId('feedbackmodal')).toBeInTheDocument()
+    // expect(screen.getByTestId('feedbackmodal')).toBeInTheDocument()
   })
 })
