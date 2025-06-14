@@ -1,4 +1,4 @@
-.info-form-container {
+.infoFormContainer {
   width: 50%;
   margin: 0 auto;
   border: 1px solid #c0c0c0;
@@ -8,7 +8,7 @@
   padding: 10px 10px;
 }
 
-.info-form-container label {
+.infoFormContainer label {
   text-align: left;
   color:black;
   
@@ -18,11 +18,11 @@
   margin-bottom: 20px;
 }
 
-.form-inputs {
+.formInputs {
   margin-bottom: 20px;
 }
 
-.info-input {
+.infoInput {
   border: none;
   border-bottom: 2px solid #ccc;
   outline: none;
@@ -33,17 +33,17 @@
   margin: 10px 20px;
 }
 
-.info-input:focus {
+.infoInput:focus {
   border-bottom: 2px solid #2e5163;
 }
 
-.button-container {
+.buttonContainer {
   display: flex;
   justify-content: space-between;
   margin:10px;
 }
 
-.button-container button {
+.buttonContainer button {
   padding: 10px 20px;
   border-radius: 10px;
   cursor: pointer;
@@ -53,7 +53,7 @@
   font-size: medium;
 }
 
-.hgn-return-button {
+.hgnReturnButton {
   color: white;
   background-color:#2e5163 ;
   border-radius: 10px;
@@ -61,48 +61,48 @@
   margin-left:0;
 }
 
-.hgn-return-button:hover {
+.hgnReturnButton:hover {
   background-color:#4e748d;
   border-color: #4e748d ;
 }
 
-.next-button {
+.nextButton {
   background-color: #2e5163;
   border-radius: 10px;
   width: 20%;
 }
 
-.next-button:hover {
+.nextButton:hover {
   background-color: #4e748d;
   border-color: #4e748d;
 }
 
-.edit-button {
+.editButton {
   background-color: #2e5163;
   margin-left: 10px;
 }
 
-.submit-button {
+.submitButton {
   background-color: #081437;
   transition: all 0.3s ease;
   border-radius: 10px;
 }
 
-.submit-button:hover {
+.submitButton:hover {
   background-color: #21618a;
   /* color: white; */
 }
 
 @media (max-width: 768px) {
-  .info-form-container {
+  .infoFormContainer {
     width: 80%;
   }
 
-  .info-input {
+  .infoInput {
     width: 80%;
   }
 
-  .button-container button {
+  .buttonContainer button {
     padding: 8px 16px;
     font-size: small;
     width: 40%;
@@ -111,15 +111,15 @@
 }
 
 @media (max-width: 480px) {
-  .info-form-container {
+  .infoFormContainer {
     width: 90%;
   }
 
-  .info-input {
+  .infoInput {
     width: 90%;
   }
 
-  .button-container button {
+  .buttonContainer button {
     padding: 6px 12px;
     font-size: x-small;
     width: 45%;
@@ -127,7 +127,7 @@
   }
 }
 
-.info-input.error {
+.infoInput.error {
   border-color: #ff0000;
 }
 
@@ -135,7 +135,7 @@
   color: #ff0000;
 }
 
-.error-message {
+.errorMessage {
   color: #ff0000;
   font-size: 0.875rem;
   margin-top: 4px;
@@ -145,22 +145,22 @@
   width: 50%;
 }
 
-.slack-checkbox {
+.slackCheckbox {
   align-items: flex-start;
   margin-left: 20px;
 }
 
-.form-inputs-slack {
+.formInputsSlack {
   display: flex;
   align-items: center;
   padding: 0;
 }
 
-.form-inputs-slack input{
+.formInputsSlack input{
   margin-bottom: 0;
 }
 
-.error-message {
+.errorMessage {
   color: #ff0000;
   font-size: 0.875rem;
   margin: 20px;
@@ -169,7 +169,7 @@
 }
 
 @media (max-width: 768px) {
-  .error-message {
+  .errorMessage {
     font-size: 0.75rem;
     width: 80%;
     margin: 10px auto;
@@ -177,7 +177,7 @@
 }
 
 @media (max-width: 480px) {
-  .error-message {
+  .errorMessage {
     font-size: 0.7rem;
     width: 90%;
     margin: 8px auto;
