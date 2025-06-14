@@ -22,6 +22,7 @@ import FaqManagement from 'components/Faq/FaqManagement';
 import FaqHistory from 'components/Faq/FaqHistory';
 import UnansweredFaqs from 'components/Faq/UnansweredFaqs';
 import HeaderRenderer from 'components/Header/HeaderRenderer';
+import { ExperienceDonutChart } from 'components/ExperienceDonutChart';
 import Page1 from './components/HGNForm/pages/Page1';
 import Page2 from './components/HGNForm/pages/Page2';
 import Page3 from './components/HGNForm/pages/Page3';
@@ -50,6 +51,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { UserRole } from './utils/enums';
 import ForgotPassword from './components/Login/ForgotPassword';
 import Inventory from './components/Inventory';
+
 
 import EmailSubscribeForm from './components/EmailSubscribeForm';
 import UnsubscribePage from './components/EmailSubscribeForm/UnsubscribePage';
@@ -570,6 +572,7 @@ export default (
         <ProtectedRoute path="/tsaformpage6" exact component={TSAFormPage6} /> 
         <ProtectedRoute path="/tsaformpage7" exact component={TSAFormPage7} /> 
         <ProtectedRoute path="/tsaformpage8" exact component={TSAFormPage8} /> 
+        <ProtectedRoute path="/ExperienceDonutChart" component={ExperienceDonutChart} fallback />
         <ProtectedRoute path="/" exact component={Dashboard} />
         <Route path="*" component={NotFoundPage} />
       </Switch>
