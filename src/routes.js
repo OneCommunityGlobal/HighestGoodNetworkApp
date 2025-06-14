@@ -70,6 +70,7 @@ import LBDashboard from './components/LBDashboard';
 import MasterPlan from './components/LBDashboard/Map/MasterPlan/MasterPlan';
 import ListOveriew from './components/LBDashboard/ListingOverview/ListOverview';
 import LBBidOverview from './components/LBDashboard/BiddingOverview/BiddingOverview';
+import PaymentDetails from './components/LBDashboard/PaymentDetails/PaymentDetails';
 
 // BM Dashboard
 import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
@@ -182,6 +183,17 @@ const Teams = lazy(() => import('./components/Teams/Teams'));
 export default (
   <Switch>
     {/* ----- LB Dashboard Routing ----- */}
+    <Route
+          exact
+          path="/lbdashboard/paymentdetails"
+          render={() => (
+            <>
+              <AutoUpdate />
+              <ToastContainer />
+              <PaymentDetails />
+            </>
+          )}
+        />
     {/* If it's possible incorporate this route with others without the header, please do */}
     <Route path="/form" component={FormEditor} />
     <Route path="/formviewer" component={FormViewer} />
