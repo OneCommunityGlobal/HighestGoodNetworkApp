@@ -12,7 +12,7 @@ function BadgeManagement(props) {
   const { darkMode, activeTab, setActiveTab, role } = props;
 
   useEffect(() => {
-    props.fetchAllBadges(); 
+    props.fetchAllBadges();
   }, [props.fetchAllBadges]);
 
   const handleTabChange = tabId => {
