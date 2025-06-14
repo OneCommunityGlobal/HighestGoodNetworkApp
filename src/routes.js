@@ -70,6 +70,7 @@ import LBDashboard from './components/LBDashboard';
 import MasterPlan from './components/LBDashboard/Map/MasterPlan/MasterPlan';
 import ListOveriew from './components/LBDashboard/ListingOverview/ListOverview';
 import LBBidOverview from './components/LBDashboard/BiddingOverview/BiddingOverview';
+import BiddingHomepage from './components/LBDashboard/BiddingHomepage/BiddingHomepage';
 
 // BM Dashboard
 import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
@@ -517,6 +518,7 @@ export default (
           )}
         />
         <Route path="/lbdashboard/bidoverview" exact component={LBBidOverview} />
+        <LBProtectedRoute path="/lbdashboard/bidding" exact component={BiddingHomepage} />
 
         <CPProtectedRoute path="/communityportal/reports/participation" exact component={EventParticipation} />
 
