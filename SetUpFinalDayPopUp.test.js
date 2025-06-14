@@ -1,11 +1,13 @@
 import { render, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import moment from 'moment';
-import SetUpFinalDayPopUp from '../SetUpFinalDayPopUp.jsx';
+import SetUpFinalDayPopUp from '../SetUpFinalDayPopUp';
 
 describe('SetUpFinalDayPopUp', () => {
   it('renders without crashing', () => {
-    render(<SetUpFinalDayPopUp open onClose={() => { }} onSave={() => { }} />);
+    render(
+      <SetUpFinalDayPopUp open onClose={() => { }} onSave={() => { }} />,
+    );
   });
 
   it('calls onClose when close button is clicked', () => {
@@ -22,7 +24,7 @@ describe('SetUpFinalDayPopUp', () => {
   it('calls onSave with correct date when Save button is clicked with a future date', () => {
     const onSaveMock = jest.fn();
     const { getByText, getByTestId } = render(
-      <SetUpFinalDayPopUp open onClose={() => { }} onSave={onSaveMock} />
+      <SetUpFinalDayPopUp open onClose={() => { }} onSave={onSaveMock} />,
     );
 
     const futureDate = moment()
@@ -39,7 +41,7 @@ describe('SetUpFinalDayPopUp', () => {
   it('shows date error when Save button is clicked with a past date', () => {
     const onSaveMock = jest.fn();
     const { getByText, getByTestId, getByRole } = render(
-      <SetUpFinalDayPopUp open onClose={() => { }} onSave={onSaveMock} />
+      <SetUpFinalDayPopUp open onClose={() => { }} onSave={onSaveMock} />,
     );
 
     const pastDate = moment()
