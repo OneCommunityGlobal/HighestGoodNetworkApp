@@ -1,10 +1,10 @@
-.feedback-form {
+.feedbackForm {
   padding: 10px;
 }
 
-.member-rating-section,
-.inactive-members-section,
-.comments-section {
+.memberRatingSection,
+.inactiveMembersSection,
+.commentsSection {
   border: 1px solid #ddd;
   border-radius: 5px;
   padding: 15px;
@@ -12,32 +12,32 @@
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.member-rating-row {
+.memberRatingRow {
   display: flex;
   align-items: center;
   margin-bottom: 10px;
   position: relative;
 }
 
-.member-input-container {
+.memberInputContainer {
   flex: 1;
   margin-right: 20px;
 }
 
-.rating-container {
+.ratingContainer {
   width: auto;
   display: flex;
   align-items: center;
   margin-right: 10px;
 }
 
-.remove-btn-container {
+.removeBtnContainer {
   display: flex;
   align-items: center;
   margin-left: 5px;
 }
 
-.remove-entry-btn {
+.removeEntryBtn {
   width: 28px;
   height: 28px;
   border-radius: 50%;
@@ -54,19 +54,19 @@
   transition: all 0.2s ease;
 }
 
-.remove-entry-btn:hover {
+.removeEntryBtn:hover {
   background-color: #e74c3c;
   border-color: #e74c3c;
   color: white;
 }
 
-.remove-entry-btn:disabled {
+.removeEntryBtn:disabled {
   opacity: 0.3;
   cursor: not-allowed;
 }
 
 /* Link-styled button */
-.link-button {
+.linkButton {
   background: none;
   border: none;
   padding: 0;
@@ -76,12 +76,12 @@
   cursor: pointer;
 }
 
-.dark-mode .link-button {
+.darkMode .linkButton {
   color: #4da6ff;
 }
 
 /* Modal close button in header */
-.modal-header .close {
+.modalHeader .close {
   position: absolute;
   right: 15px;
   top: 15px;
@@ -95,7 +95,7 @@
   line-height: 1;
 }
 
-.add-member-btn {
+.addMemberBtn {
   background-color: #6c38cc !important;
   border-color: #6c38cc !important;
   border-radius: 25px !important;
@@ -106,91 +106,91 @@
   min-width: 150px;
 }
 
-.add-member-btn:hover {
+.addMemberBtn:hover {
   background-color: #5a2eb8 !important;
   border-color: #5a2eb8 !important;
 }
 
-.text-center {
+.textCenter {
   text-align: center;
   margin-top: 10px;
 }
 
-.suggestions-link {
+.suggestionsLink {
   margin-top: 20px;
   font-size: 0.9rem;
 }
 
-.suggestions-link a {
+.suggestionsLink a {
   color: #007bff;
   text-decoration: underline;
   cursor: pointer;
 }
 
-.dark-mode .member-rating-section,
-.dark-mode .inactive-members-section,
-.dark-mode .comments-section {
+.darkMode .memberRatingSection,
+.darkMode .inactiveMembersSection,
+.darkMode .commentsSection {
   border-color: #444;
   background-color: #2c3e50;
 }
 
-.dark-mode .comments-section textarea {
+.darkMode .commentsSection textarea {
   background-color: #ffffff !important;
   border-color: #666 !important;
   color: #333 !important;
 }
 
-.dark-mode legend,
-.dark-mode h5,
-.dark-mode label,
-.dark-mode p {
+.darkMode legend,
+.darkMode h5,
+.darkMode label,
+.darkMode p {
   color: #ecf0f1 !important;
 }
 
-.dark-mode .suggestions-link a {
+.darkMode .suggestionsLink a {
   color: #4da6ff;
 }
 
-.dark-mode .remove-entry-btn {
+.darkMode .removeEntryBtn {
   background-color: #34495e;
   border-color: #2c3e50;
   color: #ecf0f1;
 }
 
-.dark-mode .remove-entry-btn:hover {
+.darkMode .removeEntryBtn:hover {
   background-color: #e74c3c;
   border-color: #c0392b;
   color: white;
 }
 
 @media (max-width: 768px) {
-  .member-rating-row {
+  .memberRatingRow {
     flex-direction: column;
     align-items: flex-start;
     padding-right: 35px; /* Make room for the remove button */
   }
   
-  .member-input-container {
+  .memberInputContainer {
     width: 100%;
     margin-right: 0;
     margin-bottom: 8px;
   }
   
-  .rating-container {
+  .ratingContainer {
     width: 100%;
     margin-right: 0;
     margin-bottom: 8px;
   }
   
-  .remove-btn-container {
+  .removeBtnContainer {
     position: absolute;
     top: 5px;
     right: 5px;
     margin-left: 0;
   }
   
-  .member-rating-section,
-  .inactive-members-section {
+  .memberRatingSection,
+  .inactiveMembersSection {
     position: relative;
     padding-top: 15px;
   }
