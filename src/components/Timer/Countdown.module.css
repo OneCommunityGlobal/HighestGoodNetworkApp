@@ -28,6 +28,10 @@
 
 .countdownCircle {
   width: 90%;
+  max-width: 320px;
+  max-height: 320px;
+  aspect-ratio: 1 / 1;
+  margin: 0 auto;
 }
 
 .countdownCircle .content {
@@ -200,6 +204,7 @@ input[type='number'] {
   -moz-appearance: textfield;
   appearance: textfield;
 }
+
 /* Hide spin buttons in number input for Firefox */
 input[type='number']::-moz-inner-spin-button {
   display: none;
