@@ -25,6 +25,7 @@ const AddTeamsAutoComplete = React.memo(props => {
           toggle(true);
         }}
         className={darkMode ? "bg-darkmode-liblack border-0 text-light" : ""}
+        placeholder="Please enter a new team name"
       />
 
       {props.searchText !== '' && props.teamsData ? (
