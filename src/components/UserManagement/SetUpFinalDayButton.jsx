@@ -40,12 +40,6 @@ function SetUpFinalDayButton(props) {
   };
 
   const handleSaveFinalDay = async (finalDayDate) => {
-    console.log(`[SetUpFinalDay] Selected date: ${finalDayDate}`);
-  console.log(`[SetUpFinalDay] Selected date as UTC: ${moment.utc(finalDayDate).format('YYYY-MM-DD')}`);
-  console.log(`[SetUpFinalDay] Selected date as Pacific: ${moment(finalDayDate).tz('America/Los_Angeles').format('YYYY-MM-DD')}`);
-
-
-
     try {
       await updateUserFinalDayStatusIsSet(
         userProfile,
