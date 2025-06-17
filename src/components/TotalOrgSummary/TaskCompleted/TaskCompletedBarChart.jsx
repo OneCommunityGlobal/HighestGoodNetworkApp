@@ -1,34 +1,18 @@
-import { useEffect, useState } from 'react';
 import TinyBarChart from '../TinyBarChart';
 import Loading from '../../common/Loading';
 
 export default function TaskCompletedBarChart({ isLoading, data, darkMode }) {
-  const initialCardSize = () => {
-    if (window.innerWidth <= 680) return { height: '300px' };
-    if (window.innerWidth <= 1418) return { height: '548px' };
-    return { height: '347px' };
-  };
-
-  const [cardSize, setCardSize] = useState(initialCardSize);
-
-  useEffect(() => {
-    const updateCardSize = () => setCardSize(initialCardSize());
-    window.addEventListener('resize', updateCardSize);
-    updateCardSize();
-    return () => window.removeEventListener('resize', updateCardSize);
-  }, []);
-
   const active = data?.active || {};
   const complete = data?.complete || {};
 
   const stats = [
     {
-      name: 'Task Assigned',
+      name: 'Assigned',
       amount: active.current || 0,
       change: active.percentage || 0,
     },
     {
-      name: 'Task Completed',
+      name: 'Completed',
       amount: complete.current || 0,
       change: complete.percentage || 0,
     },
@@ -45,7 +29,7 @@ export default function TaskCompletedBarChart({ isLoading, data, darkMode }) {
       percentage: total > 0 ? `${((item.amount / total) * 100).toFixed(2)}%` : '0%',
       change: `${item.change >= 0 ? '+' : ''}${item.change}%`,
       fontcolor,
-      color: ['#8e44ad', '#3498db'], // Purple and Blue
+      color: ['#8e44ad', '#3498db'],
     };
   });
 
@@ -85,22 +69,34 @@ export default function TaskCompletedBarChart({ isLoading, data, darkMode }) {
   };
 
   return (
-    <div style={{ height: cardSize.height }}>
-      {isLoading ? (
-        <div className="d-flex justify-content-center align-items-center">
-          <div className="w-100vh">
+    <div
+      style={{
+        height: '548px',
+        minHeight: '548px',
+        maxHeight: '548px',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
+      <div style={{ textAlign: 'center', marginBottom: 0 }} />
+      <div style={{ height: 47 }} />
+      <div style={{ flex: 1, minHeight: 0 }}>
+        {isLoading ? (
+          <div className="d-flex justify-content-center align-items-center">
+            <div className="w-100vh" />
             <Loading />
           </div>
-        </div>
-      ) : (
-        <TinyBarChart
-          chartData={chartData}
-          maxY={maxY}
-          tickInterval={tickInterval}
-          renderCustomizedLabel={renderCustomizedLabel}
-          darkMode={darkMode}
-        />
-      )}
+        ) : (
+          <TinyBarChart
+            chartData={chartData}
+            maxY={maxY + 1}
+            tickInterval={tickInterval}
+            renderCustomizedLabel={renderCustomizedLabel}
+            darkMode={darkMode}
+            yAxisLabel="Total Tasks"
+          />
+        )}
+      </div>
     </div>
   );
 }
