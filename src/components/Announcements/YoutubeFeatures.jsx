@@ -21,27 +21,27 @@ function YoutubeFeatures() {
   const [uploadHistory, setUploadHistory] = useState([]);
   const [showHistory, setShowHistory] = useState(false);
 
-  useEffect(() => {
-    fetch('/api/youtubeAccounts')
-      .then(res => res.json())
-      .then(data => setYoutubeAccounts(data))
-      .catch(() => {});
-    
-    // Fetch upload history
-    fetchUploadHistory();
-  }, []);
-
+  // Fetch upload history function must be defined before useEffect
   const fetchUploadHistory = async () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get('http://localhost:4500/api/youtubeUploadHistory', {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
       setUploadHistory(response.data);
     } catch (error) {
       toast.error('Failed to fetch upload history');
     }
   };
+
+  useEffect(() => {
+    fetch('/api/youtubeAccounts')
+      .then(res => res.json())
+      .then(data => setYoutubeAccounts(data))
+      .catch(() => {});
+    // Fetch upload history
+    fetchUploadHistory();
+  }, []);
 
   const handleVideoChange = e => {
     const file = e.target.files[0];
@@ -108,16 +108,16 @@ function YoutubeFeatures() {
         >
           <button
             type="button"
-            className="send-button"
             onClick={() => setShowYoutubeDropdown(true)}
+            className="send-button"
             style={darkMode ? boxStyleDark : boxStyle}
           >
             Post video to YouTube channel
           </button>
           <button
             type="button"
-            className="send-button"
             onClick={() => setShowHistory(true)}
+            className="send-button"
             style={darkMode ? boxStyleDark : boxStyle}
           >
             View Upload History
@@ -162,35 +162,43 @@ function YoutubeFeatures() {
 
       {/* Upload History Modal */}
       {showHistory && (
-        <div className="modal" style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: 1000
-        }}>
-          <div style={{
-            backgroundColor: darkMode ? '#333' : 'white',
-            padding: '20px',
-            borderRadius: '8px',
-            maxWidth: '800px',
-            width: '90%',
-            maxHeight: '80vh',
-            overflowY: 'auto'
-          }}>
+        <div
+          className="modal"
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 1000,
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: darkMode ? '#333' : 'white',
+              padding: '20px',
+              borderRadius: '8px',
+              maxWidth: '800px',
+              width: '90%',
+              maxHeight: '80vh',
+              overflowY: 'auto',
+            }}
+          >
             <h3 style={{ color: darkMode ? 'white' : 'black' }}>Upload History</h3>
             <div style={{ marginTop: '20px' }}>
-              {uploadHistory.map((item, index) => (
-                <div key={index} style={{
-                  padding: '10px',
-                  borderBottom: '1px solid #ccc',
-                  color: darkMode ? 'white' : 'black'
-                }}>
+              {uploadHistory.map(item => (
+                <div
+                  key={item.id || item._id || item.title}
+                  style={{
+                    padding: '10px',
+                    borderBottom: '1px solid #ccc',
+                    color: darkMode ? 'white' : 'black',
+                  }}
+                >
                   <h4>{item.title}</h4>
                   <p>Status: {item.status}</p>
                   <p>Upload Time: {new Date(item.uploadTime).toLocaleString()}</p>
@@ -201,6 +209,7 @@ function YoutubeFeatures() {
               ))}
             </div>
             <button
+              type="button"
               onClick={() => setShowHistory(false)}
               style={{
                 marginTop: '20px',
@@ -209,7 +218,7 @@ function YoutubeFeatures() {
                 color: 'white',
                 border: 'none',
                 borderRadius: '4px',
-                cursor: 'pointer'
+                cursor: 'pointer',
               }}
             >
               Close
