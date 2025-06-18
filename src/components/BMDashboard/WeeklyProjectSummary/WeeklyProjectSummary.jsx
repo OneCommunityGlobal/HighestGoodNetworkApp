@@ -1,17 +1,11 @@
-import { useState } from 'react';
-import './WeeklyProjectSummary.css';
-import { useSelector } from 'react-redux';
 /* eslint-disable import/no-unresolved */
-import { useEffect, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
 import EmbedInteractiveMap from '../InteractiveMap/EmbedInteractiveMap';
-import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
-import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
-import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
 import styles from './WeeklyProjectSummary.module.css';
 
 const projectStatusButtons = [
