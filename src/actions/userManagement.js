@@ -285,6 +285,7 @@ export const updateUserFinalDayStatusIsSet = (user, status, finalDayDate, isSet)
 
 /**
  * fetching all user profiles basic info
+ *  Added `source` parameter to identify the calling component.
  */
 export const getUserProfileBasicInfo = (source) => {
   // API request to fetch basic user profile information

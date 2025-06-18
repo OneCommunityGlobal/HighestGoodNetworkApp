@@ -51,7 +51,7 @@
 .team_table{
     border-collapse: collapse;
 }
-
+/* Added warning style */
 .total-warning{
     font-weight: 400;
     color: #DAA520	;

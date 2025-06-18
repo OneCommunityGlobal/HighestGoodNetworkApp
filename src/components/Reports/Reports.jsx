@@ -112,6 +112,7 @@ class ReportsPage extends Component {
   async componentDidMount() {
     const fetchProjects = this.props.fetchAllProjects();
     const fetchTeams = this.props.getAllUserTeams();
+    // Added 'Report' parameter to identify the source for fetching all user basic info
     const fetchUserProfile = this.props.getUserProfileBasicInfo('Report');
 
     // parallel api calls

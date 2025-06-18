@@ -19,6 +19,7 @@ function TotalPeopleReport(props) {
   const [peopleInYear, setPeopleInYear] = useState([]);
   const [showMonthly, setShowMonthly] = useState(false);
   const [showYearly, setShowYearly] = useState(false);
+  // Added state to show warning if month gap is less than one month
   const [showWarning, setShowWarning] = useState(false);
 
   const fromDate = useMemo(() => startDate.toLocaleDateString('en-CA'), [startDate]);
