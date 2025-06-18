@@ -1,4 +1,4 @@
-function WeeklyEmailTemplate() {
+function WeeklyEmailTemplate({ headerImageUrl, videoTopicImageUrl }) {
   const cardStyle = {
     background: '#fff',
     maxWidth: 600,
@@ -26,51 +26,66 @@ function WeeklyEmailTemplate() {
   const socialIcons = [
     {
       href: 'https://onecommunityglobal.org/overview/',
-      src: '/announcements-images/link.png',
+      src:
+        'https://www.dropbox.com/scl/fi/d8qldlgs3m0fmhwynzguh/link.png?rlkey=apqucrte9pwplhvjakyfbiw1j&st=dis5ps7b&raw=1',
       alt: 'Website',
     },
     {
       href: 'https://www.facebook.com/onecommunityfans',
-      src: '/announcements-images/facebook.png',
+      src:
+        'https://www.dropbox.com/scl/fi/kigo13prmkypd9rsttvan/facebook.png?rlkey=q4r4uz6hn6bp75u48db7gju49&st=zzebhh1k&raw=1',
       alt: 'Facebook',
     },
     {
       href: 'https://x.com/onecommunityorg',
-      src: '/announcements-images/x.png',
+      src:
+        'https://www.dropbox.com/scl/fi/l2wbgkc6u0taaeguvsu5c/x.png?rlkey=btzsctxjlarmfsjakk5pfhvqu&st=0rfg3xcd&raw=1',
       alt: 'X',
     },
     {
       href: 'https://www.linkedin.com/company/one-community-global/posts/?feedView=all',
-      src: '/announcements-images/linkedin.png',
+      src:
+        'https://www.dropbox.com/scl/fi/u17ghmc38dcln4avgcvuc/linkedin.png?rlkey=v8qimmq5h648fbsnhay8kan9t&st=fm0uvrhw&raw=1',
       alt: 'LinkedIn',
     },
     {
       href: 'https://www.youtube.com/user/onecommunityorg',
-      src: '/announcements-images/youtube.png',
+      src:
+        'https://www.dropbox.com/scl/fi/88byqgoytpez4k937syou/youtube.png?rlkey=yhwkwmrpsn0eaz5yuu9h5ysce&st=jq80ocek&raw=1',
       alt: 'YouTube',
     },
     {
       href: 'https://www.instagram.com/onecommunityglobal/',
-      src: '/announcements-images/instagram.png',
+      src:
+        'https://www.dropbox.com/scl/fi/wvsr28y19ro0icv4tr5mc/ins.png?rlkey=v4fbrmoniil8jcwtiv8ew7o7s&st=04vwah63&raw=1',
       alt: 'Instagram',
     },
     {
       href: 'https://www.pinterest.com/onecommunityorg/one-community/',
-      src: '/announcements-images/pinterest.png',
+      src:
+        'https://www.dropbox.com/scl/fi/88byqgoytpez4k937syou/youtube.png?rlkey=yhwkwmrpsn0eaz5yuu9h5ysce&st=jq80ocek&raw=1',
       alt: 'Pinterest',
     },
     {
       href: 'mailto:onecommunitupdates@gmail.com',
-      src: '/announcements-images/email.png',
+      src:
+        'https://www.dropbox.com/scl/fi/7bahc1w6h6cyez8610nwi/guirong.wu.10-gmail.com.png?rlkey=1tokcqsp6dix4xjr44zytmlbl&st=qa5hly4e&raw=1',
       alt: 'Email',
     },
   ];
+
+  const dropboxImg =
+    headerImageUrl ||
+    'https://www.dropbox.com/scl/fi/60pgjcylcw15uik0wmoxj/HD-Horizontal-Logo-1275x375.jpg?rlkey=34nu3c1pav1d16dkstu5jq8g8&raw=1';
+  const videoImg =
+    videoTopicImageUrl ||
+    'https://www.dropbox.com/scl/fi/e4gv4jo2p128u2ezqva4j/topic.jpg?rlkey=10qsu8i15my3fa3bk34z4yjhq&raw=1';
 
   return (
     <div style={{ background: '#FAFAFA', minHeight: '100vh', width: '100%' }}>
       <div style={cardStyle}>
         <img
-          src="/announcements-images/header.png"
+          src={dropboxImg}
           alt="Header"
           style={{ width: '100%', maxWidth: '100%', height: 'auto' }}
         />
@@ -94,7 +109,7 @@ function WeeklyEmailTemplate() {
         </p>
         <h3>This Week&apos;s Video Topic:</h3>
         <img
-          src="/announcements-images/topic.png"
+          src={videoImg}
           alt="Video Topic"
           style={{ width: '100%', maxWidth: '100%', height: 'auto' }}
         />
