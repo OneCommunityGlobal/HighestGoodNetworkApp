@@ -56,6 +56,7 @@ import { timeOffRequestsReducer } from './timeOffRequestReducer';
 import { totalOrgSummaryReducer } from './totalOrgSummaryReducer';
 import { allUsersTimeEntriesReducer } from './allUsersTimeEntriesReducer';
 import HGNFormReducer from './hgnFormReducers';
+import injuriesReducer from './injuries';
 
 const localReducers = {
   auth: authReducer,
@@ -91,7 +92,7 @@ const localReducers = {
   allUserProfilesBasicInfo: allUserProfilesBasicInfoReducer,
   projectById: projectByIdReducer,
 
-  // bmdashboard
+  // bm dashboard
   materials: materialsReducer,
   tools: toolReducer,
   bmProjects: bmProjectReducer,
@@ -105,6 +106,7 @@ const localReducers = {
   bmConsumables: consumablesReducer,
   bmReusables: reusablesReducer,
   dashboard: dashboardReducer,
+  injuries: injuriesReducer,
 };
 
 const sessionReducers = {
