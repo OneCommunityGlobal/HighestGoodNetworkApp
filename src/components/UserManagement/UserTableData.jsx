@@ -18,6 +18,8 @@ import { boxStyle } from '../../styles';
 import { formatDateLocal } from '../../utils/formatDate';
 import { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import { formatDate, formatDateYYYYMMDD } from '../../utils/formatDate';
+import { faUser, faUsers, faShieldAlt, faBriefcase, faUserTie, faCrown, faChalkboardTeacher, faBug, faGlobe, faStar } from '@fortawesome/free-solid-svg-icons';
+import { UncontrolledTooltip } from 'reactstrap';
 import SetUpFinalDayButton from './SetUpFinalDayButton';
 /**
  * The body row of the user table
@@ -72,6 +74,18 @@ const UserTableData = React.memo(props => {
   const togglePauseTooltip = () => setTooltipPause(!tooltipPauseOpen);
   const toggleFinalDayTooltip = () => setTooltipFinalDay(!tooltipFinalDayOpen);
   const toggleReportsTooltip = () => setTooltipReports(!tooltipReportsOpen);
+  const roleIcons = {
+    Volunteer: faUser,
+    'Core Team': faUsers,
+    Administrator: faShieldAlt,
+    'Assistant Manager': faUserTie,
+    Owner: faCrown,
+    Mentor: faChalkboardTeacher,
+    Manager: faBriefcase,
+    TestRole: faBug,
+    General: faGlobe,
+    Creator: faStar,
+  };
 
   /**
    * reset the changing state upon rerender with new isActive status
@@ -136,6 +150,21 @@ const UserTableData = React.memo(props => {
           index={props.index}
           onClick={() => props.onActiveInactiveClick(props.user)}
         />
+        <span className='infringement-count'>
+          <a
+            href={`/userprofile/${props.user._id}`}
+            id={`blue-squares-${props.user._id}`} // Unique ID for tooltip target
+            title={`This person has ${props.user.infringementCount} blue square${props.user.infringementCount !== 1 ? 's' : ''}`}
+          >
+            {props.user.infringementCount}
+          </a>
+          {/* <UncontrolledTooltip
+            placement="top"
+            target={`blue-squares-${props.user._id}`}
+          >
+            This person has {props.user.infringementCount} blue square{props.user.infringementCount !== 1 ? 's' : ''}
+          </UncontrolledTooltip> */}
+        </span>
         {!canSeeReports ? (
           <Tooltip
             placement="bottom"
@@ -247,10 +276,16 @@ const UserTableData = React.memo(props => {
       </td>
       <td id="usermanagement_role">
         {editUser?.role && roles !== undefined ? (
-          formData.role
+          <>
+          <FontAwesomeIcon id={`role-icon-${props.index}`} icon={roleIcons[formData.role] || faUser} />
+          <UncontrolledTooltip placement="top" target={`role-icon-${props.index}`}>
+            {formData.role}
+          </UncontrolledTooltip>
+        </>
         ) : (
           <select
             id=""
+            style={{ width: '100px'}}
             value={formData.role}
             onChange={e => {
               updateFormData({ ...formData, role: e.target.value });
