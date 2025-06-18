@@ -30,7 +30,11 @@ function Announcements({ title, email: initialEmail }) {
   useEffect(() => {
     // Render WeeklyEmailTemplate as HTML string for the editor
     const html = ReactDOMServer.renderToStaticMarkup(
-      <WeeklyEmailTemplate headerImageUrl={headerContent || undefined} />,
+      <WeeklyEmailTemplate
+        headerImageUrl={headerContent || undefined}
+        videoTopicImageUrl={videoTopicImage || undefined}
+        darkMode={darkMode}
+      />,
     );
     setTemplateHtml(html);
   }, []);
@@ -98,7 +102,11 @@ function Announcements({ title, email: initialEmail }) {
   const addHeaderToEmailContent = () => {
     // Just refresh the template
     const html = ReactDOMServer.renderToStaticMarkup(
-      <WeeklyEmailTemplate headerImageUrl={headerContent || undefined} />,
+      <WeeklyEmailTemplate
+        headerImageUrl={headerContent || undefined}
+        videoTopicImageUrl={videoTopicImage || undefined}
+        darkMode={darkMode}
+      />,
     );
     setTemplateHtml(html);
   };
@@ -109,6 +117,7 @@ function Announcements({ title, email: initialEmail }) {
       <WeeklyEmailTemplate
         headerImageUrl={headerContent || undefined}
         videoTopicImageUrl={videoTopicImage || undefined}
+        darkMode={darkMode}
       />,
     );
     setTemplateHtml(html);

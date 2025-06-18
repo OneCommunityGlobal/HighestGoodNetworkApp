@@ -1,6 +1,7 @@
-function WeeklyEmailTemplate({ headerImageUrl, videoTopicImageUrl }) {
+function WeeklyEmailTemplate({ headerImageUrl, videoTopicImageUrl, darkMode }) {
   const cardStyle = {
-    background: '#fff',
+    background: darkMode ? '#232b3e' : '#fff',
+    color: darkMode ? '#fff' : '#333',
     maxWidth: 600,
     margin: '40px auto 0 auto',
     padding: 18,
@@ -82,7 +83,14 @@ function WeeklyEmailTemplate({ headerImageUrl, videoTopicImageUrl }) {
     'https://www.dropbox.com/scl/fi/e4gv4jo2p128u2ezqva4j/topic.jpg?rlkey=10qsu8i15my3fa3bk34z4yjhq&raw=1';
 
   return (
-    <div style={{ background: '#FAFAFA', minHeight: '100vh', width: '100%' }}>
+    <div
+      style={{
+        background: darkMode ? '#1a2233' : '#FAFAFA',
+        minHeight: '100vh',
+        width: '100%',
+        color: darkMode ? '#fff' : '#333',
+      }}
+    >
       <div style={cardStyle}>
         <img
           src={dropboxImg}
@@ -135,7 +143,8 @@ function WeeklyEmailTemplate({ headerImageUrl, videoTopicImageUrl }) {
       </div>
       <div
         style={{
-          background: '#FAFAFA',
+          background: darkMode ? '#232b3e' : '#FAFAFA',
+          color: darkMode ? '#fff' : '#333',
           maxWidth: 600,
           margin: '0 auto 40px auto',
           borderRadius: 8,
@@ -153,7 +162,7 @@ function WeeklyEmailTemplate({ headerImageUrl, videoTopicImageUrl }) {
         <hr style={dividerStyle} />
         <div
           style={{
-            color: '#888',
+            color: darkMode ? '#bbb' : '#888',
             fontSize: 14,
             textAlign: 'center',
             margin: '32px auto 0 auto',
