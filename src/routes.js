@@ -504,7 +504,7 @@ export default (
 
         {/* Listing and Bidding Routes */}
         <LBProtectedRoute path="/lbdashboard" exact component={LBDashboard} />
-        <LBProtectedRoute path="/lbdashboard/listOverview" exact component={ListOveriew} />
+        <LBProtectedRoute path="/lbdashboard/listOverview/:id" exact component={ListOveriew} />
         <LBProtectedRoute path="/lbdashboard/masterplan" exact component={MasterPlan} />
         <Route path="/lbdashboard/login" component={LBLogin} />
         <Route // Should be LBProtectedRoute
@@ -516,7 +516,7 @@ export default (
             </>
           )}
         />
-        <Route path="/lbdashboard/bidoverview" exact component={LBBidOverview} />
+        <Route path="/lbdashboard/bidoverview/:id" exact component={LBBidOverview} />
 
         <CPProtectedRoute path="/communityportal/reports/participation" exact component={EventParticipation} />
 

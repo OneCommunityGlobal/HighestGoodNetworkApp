@@ -1,30 +1,57 @@
 import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import './Listoverview.css';
 import Carousel from 'react-bootstrap/Carousel';
 import logo from '../../../assets/images/logo2.png';
 import mapIcon from '../../../assets/images/mapIcon.png';
 import ListingAvailability from './ListingAvailability';
+import {ENDPOINTS} from '../../../utils/URL';
+import httpService from '../../../services/httpService';
+
+
+function useQuery() {
+  return new URLSearchParams(useLocation().search);
+}
+
+const ensureAuthentication = () => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    httpService.setjwt(token);
+  }
+};
 
 function ListOverview() {
   const [listing, setListing] = useState({});
   const [showAvailability, setShowAvailability] = useState(false);
+  const query = useQuery();
+  const listingId = query.get('id');
 
-  const data = {
-    title: 'Title',
-    images: [
-      'https://nikonrumors.com/wp-content/uploads/2014/03/Nikon-1-V3-sample-photo.jpg',
-      'https://photographylife.com/wp-content/uploads/2023/05/Nikon-Z8-Official-Samples-00002.jpg',
-    ],
-    description:
-      'Lorem ipsum, dolor sit amet consectetur adipisicing elit. Veniam vitae, ex officiis iusto, quos eveniet consequatur minima nesciunt, doloremque cupiditate totam at quia asperiores rem reprehenderit explicabo perferendis aliquam tempora!',
-    unitAmenities: ['Amenity x', 'Amenity y'],
-    villageAmenities: ['Amenity c', 'Amenity v'],
-    location: 'Location',
-  };
 
+  const fetchListing = async () => {
+    try {
+
+      ensureAuthentication();
+      const response = await fetch(ENDPOINTS.LB_LISTING_GET_BY_ID, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id: listingId }),
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      setListing(data);
+    } catch (error) {
+      console.error('Error fetching listing:', error);
+    }
+  }
   useEffect(() => {
-    setListing(data);
-  }, []);
+    if (listing) {
+      fetchListing();
+    }
+  }, [listingId]);
 
   return (
     <div className="main-container">
