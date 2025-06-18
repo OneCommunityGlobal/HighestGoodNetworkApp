@@ -8,16 +8,15 @@ import {
   faExpandArrowsAlt,
   faCompressArrowsAlt,
 } from '@fortawesome/free-solid-svg-icons';
-import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
+import moment from 'moment-timezone';
+import { useDispatch, useSelector } from 'react-redux';
 import { Table, Progress } from 'reactstrap';
 
-import { Link, useHistory } from 'react-router-dom';
-import hasPermission from 'utils/permissions';
+import { Link } from 'react-router-dom';
+import hasPermission from '../../utils/permissions';
+import CopyToClipboard from '../common/Clipboard/CopyToClipboard';
 import './style.css';
-
-import Warning from 'components/Warnings/Warnings';
-import { useDispatch, useSelector } from 'react-redux';
-import moment from 'moment-timezone';
+import Warning from '../Warnings/Warnings';
 
 import ReviewButton from './ReviewButton';
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
@@ -52,13 +51,12 @@ const TeamMemberTask = React.memo(
     const currentDate = moment.tz('America/Los_Angeles').startOf('day');
     const dispatch = useDispatch();
     const canSeeFollowUpCheckButton = userRole !== 'Volunteer';
-    const history = useHistory();
 
     const totalHoursRemaining = user.tasks.reduce((total, task) => {
-      task.hoursLogged = task.hoursLogged || 0;
-      task.estimatedHours = task.estimatedHours || 0;
+      const userHours = task.hoursLogged || 0;
+      const userEstimatedHours = task.estimatedHours || 0;
       if (task.status !== 'Complete' && task.isAssigned !== 'false') {
-        return total + Math.max(0, task.estimatedHours - task.hoursLogged);
+        return total + Math.max(0, userEstimatedHours - userHours);
       }
       return total;
     }, 0);
@@ -96,7 +94,7 @@ const TeamMemberTask = React.memo(
     const canRemoveUserFromTask = dispatch(hasPermission('removeUserFromTask'));
     const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
 
-    const colors_objs = {
+    const colorsObjs = {
       'Assistant Manager': '#849ced', // blue
       Manager: '#90e766', // green
       Mentor: '#e9dd57', // yellow
@@ -122,37 +120,30 @@ const TeamMemberTask = React.memo(
       }
     };
 
-    const handleReportClick = (event,to) => {
-      if (event.metaKey || event.ctrlKey || event.button === 1) {
-        return;
-      }
-
-      event.preventDefault(); // prevent full reload
-      history.push(`/peoplereport/${to}`);
-    }
-
     const openDetailModal = request => {
       dispatch(showTimeOffRequestModal(request));
     };
 
     const userGoogleDocLink = user.adminLinks?.reduce((targetLink, currentElement) => {
+      let target = targetLink;
       if (currentElement.Name === 'Google Doc') {
-        targetLink = currentElement.Link;
+        target = currentElement.Link;
       }
-      return targetLink;
+      return target;
     }, undefined);
 
     const followUpMouseoverText = task => {
       const progressPersantage = ((task.hoursLogged / task.estimatedHours) * 100).toFixed(2) || 0;
       if (progressPersantage < 50) {
         return messages.MOUSE_OVER_TEXT_UNDER_50;
-      } else if (progressPersantage >= 50 && progressPersantage < 75) {
-        return messages.MOUSE_OVER_TEXT_BETWEEN_50_75;
-      } else if (progressPersantage >= 75 && progressPersantage < 90) {
-        return messages.MOUSE_OVER_TEXT_BETWEEN_75_90;
-      } else if (progressPersantage >= 90) {
-        return messages.MOUSE_OVER_TEXT_OVER_90;
       }
+      if (progressPersantage >= 50 && progressPersantage < 75) {
+        return messages.MOUSE_OVER_TEXT_BETWEEN_50_75;
+      }
+      if (progressPersantage >= 75 && progressPersantage < 90) {
+        return messages.MOUSE_OVER_TEXT_BETWEEN_75_90;
+      }
+      return messages.MOUSE_OVER_TEXT_OVER_90;
     };
 
     return (
@@ -185,6 +176,8 @@ const TeamMemberTask = React.memo(
                   onClick={() => {
                     setIsTimeOffContentOpen(false);
                   }}
+                  type="button"
+                  aria-label="Compress time off detail"
                 >
                   <FontAwesomeIcon icon={faCompressArrowsAlt} data-testid="icon" />
                 </button>
@@ -224,15 +217,15 @@ const TeamMemberTask = React.memo(
                       </div>
                       {canUpdateTask && teamRoles && (
                         <div className="name-wrapper">
-                          {['Manager', 'Assistant Manager', 'Mentor'].map((role, roleIndex) => {
-                            return teamRoles[role]?.map((elm, i) => {
-                              const name = elm.name; // Getting initials and formatting them here
+                          {['Manager', 'Assistant Manager', 'Mentor'].map(role => {
+                            return teamRoles[role]?.map(elm => {
+                              const { name } = elm; // Getting initials and formatting them here
                               const initials = getInitials(name);
                               // Getting background color dynamically based on the role
-                              const bg = colors_objs[role];
+                              const bg = colorsObjs[role];
                               return (
                                 <a
-                                  key={`res_${roleIndex}_${i}`}
+                                  key={elm.id}
                                   title={`${role} : ${name}`}
                                   className="name"
                                   href={`/userprofile/${elm.id}`}
@@ -271,9 +264,7 @@ const TeamMemberTask = React.memo(
                                     moment(user.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
                                   )
                                     ? 'rgba(128, 128, 128, 0.5)'
-                                    : darkMode
-                                    ? '#339CFF'
-                                    : undefined,
+                                    : darkMode && '#339CFF',
                                 fontSize: '20px',
                               }}
                             >{`${user.name}`}</Link>
@@ -310,7 +301,7 @@ const TeamMemberTask = React.memo(
                             )}
                             <Warning
                               username={user.name}
-                              userName={user}
+                              nameOfUser={user}
                               userId={userId}
                               user={user}
                               userRole={userRole}
@@ -341,10 +332,10 @@ const TeamMemberTask = React.memo(
                       <Table borderless className="team-member-tasks-subtable">
                         <tbody>
                           {user.tasks &&
-                            activeTasks.slice(0, numTasksToShow).map((task, index) => {
+                            activeTasks.slice(0, numTasksToShow).map(task => {
                               return (
                                 <tr
-                                  key={`${task._id}${index}`}
+                                  key={`${task._id}`}
                                   className={`task-break ${darkMode ? 'bg-yinmn-blue' : ''}`}
                                 >
                                   <td
@@ -371,31 +362,28 @@ const TeamMemberTask = React.memo(
                                       {task.taskNotifications.length > 0 &&
                                       task.taskNotifications.some(
                                         notification =>
-                                          notification.hasOwnProperty('userId') &&
-                                          notification.userId === user.personId,
+                                          Object.prototype.hasOwnProperty.call(
+                                            notification,
+                                            'userId',
+                                          ) && notification.userId === user.personId,
                                       ) ? (
-                                        <>
-                                          <FontAwesomeIcon
-                                            className="team-member-tasks-bell"
-                                            title="Task Info Changes"
-                                            icon={faBell}
-                                            onClick={() => {
-                                              const taskNotificationId = task.taskNotifications.filter(
-                                                taskNotification => {
-                                                  if (taskNotification.userId === user.personId) {
-                                                    return taskNotification;
-                                                  }
-                                                },
-                                              );
-                                              handleOpenTaskNotificationModal(
-                                                user.personId,
-                                                task,
-                                                taskNotificationId,
-                                              );
-                                            }}
-                                            data-taskid={`task-info-icon-${task.taskName}`}
-                                          />
-                                        </>
+                                        <FontAwesomeIcon
+                                          className="team-member-tasks-bell"
+                                          title="Task Info Changes"
+                                          icon={faBell}
+                                          onClick={() => {
+                                            const taskNotificationId = task.taskNotifications.filter(
+                                              taskNotification =>
+                                                taskNotification.userId === user.personId,
+                                            );
+                                            handleOpenTaskNotificationModal(
+                                              user.personId,
+                                              task,
+                                              taskNotificationId,
+                                            );
+                                          }}
+                                          data-taskid={`task-info-icon-${task.taskName}`}
+                                        />
                                       ) : null}
                                       {isAllowedToResolveTasks && (
                                         <FontAwesomeIcon
@@ -445,11 +433,7 @@ const TeamMemberTask = React.memo(
                                           title="Deadline Follow-up Count"
                                           data-testid={`deadline-${task.taskName}`}
                                         >
-                                          {taskCounts[task._id] !== undefined
-                                            ? taskCounts[task._id]
-                                            : task.deadlineCount === undefined
-                                            ? 0
-                                            : task.deadlineCount}
+                                          {taskCounts[task._id] ?? task.deadlineCount ?? 0}
                                         </span>
                                       )}
                                       <div className="team-task-progress-container">
@@ -495,7 +479,7 @@ const TeamMemberTask = React.memo(
                             })}
                           {canTruncate && (
                             <tr key="truncate-button-row" className="task-break">
-                              <td className={`task-align`}>
+                              <td className="task-align">
                                 <button
                                   type="button"
                                   onClick={handleTruncateTasksButtonClick}
@@ -517,6 +501,7 @@ const TeamMemberTask = React.memo(
                             isTimeOffContentOpen ? 'hidden' : ''
                           }`}
                           onClick={() => setIsTimeOffContentOpen(true)}
+                          aria-label="Expand time off detail"
                         >
                           <FontAwesomeIcon icon={faExpandArrowsAlt} data-testid="icon" />
                         </button>
