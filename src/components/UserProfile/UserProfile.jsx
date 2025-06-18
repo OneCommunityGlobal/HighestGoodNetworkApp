@@ -351,7 +351,9 @@ function UserProfile(props) {
         startDate: newUserProfile?.startDate ? formatDateYYYYMMDD(newUserProfile?.startDate) : '',
         createdDate: formatDateYYYYMMDD(newUserProfile?.createdDate),
         ...(newUserProfile?.endDate &&
-          newUserProfile.endDate !== '' && { endDate: formatDateYYYYMMDD(newUserProfile.endDate) }),
+          newUserProfile.endDate !== '' && { 
+            endDate: moment.utc(newUserProfile.endDate).format('YYYY-MM-DD')
+          }),
       };
 
       setUserProfile(profileWithFormattedDates);
@@ -735,7 +737,7 @@ function UserProfile(props) {
 
     if (!isActive) {
       endDate = await dispatch(
-        getTimeEndDateEntriesByPeriod(userProfile._id, userProfile.createdDate, userProfile.toDate),
+        getTimeEndDateEntriesByPeriod(userProfile._id, userProfile.createdDate, moment().format('YYYY-MM-DDTHH:mm:ss')),
       );
       if (endDate == 'N/A') {
         endDate = userProfile.createdDate;
