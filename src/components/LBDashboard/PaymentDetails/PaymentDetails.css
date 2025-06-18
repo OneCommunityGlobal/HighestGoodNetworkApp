@@ -15,11 +15,13 @@
   flex-direction: column;
   align-items: center;
   padding: 2.5% 2.5% 1.5% 2.5%;
+  width: 100%;
 }
 
 .item__basic__details {
   display: flex;
   align-items: flex-start;
+  justify-content: space-between;
 }
 
 .item__payment {
@@ -37,6 +39,47 @@
 
 .item__basic__details label {
   display: flex;
-  width: 50%;
+  width: 25%;
   flex-direction: column;
+}
+
+.item-image {
+  width: 40%;
+  height: 40%;
+  max-width: 100%;
+  flex-shrink: 0;
+  object-fit: cover;
+}
+
+.item__form {
+  margin-top: 50px;
+  width: 80%;
+}
+
+.txt-bold {
+  font-weight: bold;
+}
+
+.dates-font {
+  font-size: 0.7rem;
+}
+
+.item__payment label {
+  width: 100%;
+}
+
+/* Style for date inputs */
+.item__payment input[type="date"] {
+  width: 25%;
+  padding: 0.3rem;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  appearance: none;
+  background-color: white;
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+}
+
+.item__payment input[type="text"] {
+width: 45%;
 }

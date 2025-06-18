@@ -4,26 +4,24 @@ import { connect } from 'react-redux';
 
 import Header from '../Header';
 
-function PaymentDetails(props) {
+function PaymentDetails() {
   return (
     <div className="item">
       <div className="item__container">
         <Header />
         <div className="item__overview">
           <div className="item__details">
-            <img
-              className="carousel-image"
-              src="https://picsum.photos/700/400?random=1"
-              alt="Unit"
-            />
+            <img className="item-image" src="https://picsum.photos/700/400?random=1" alt="Unit" />
             <span>
               Unit 405, Earthbag Village - <a href="/">Click for more photos</a>
             </span>
             <div className="item__form">
-              <h1>Booking Details</h1>
+              <span className="txt-bold">Booking Details</span>
               <div className="item__details__title">
-                <span>Date: 12/17 - 12/21</span>
-                <span>Amount Due: $140</span>
+                <span className="txt-bold dates-font">Dates : 12/17 - 12/21</span>
+                <span>
+                  Amount Due - <span className="txt-bold">$140</span>
+                </span>
               </div>
               <div className="item__basic__details">
                 <label htmlFor="name">
