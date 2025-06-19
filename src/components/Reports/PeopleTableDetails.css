@@ -210,6 +210,7 @@ flex-direction: row; */
   padding: 15px;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
+  align-items: flex-start;
 }
 
 .task-status {
