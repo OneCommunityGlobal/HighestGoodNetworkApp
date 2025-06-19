@@ -26,7 +26,7 @@ import PermissionList from './PermissionList';
 import { addNewRole, getAllRoles } from '../../actions/role';
 import { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import ReminderModal from './ReminderModal';
-import permissionLabel from './PermissionsConst';
+import { permissionLabelKeyMappingObj, getAllPermissionKeys } from './PermissionsConst';
 
 function UserPermissionsPopUp({
   allUserProfiles,
@@ -52,7 +52,6 @@ function UserPermissionsPopUp({
   const [toastShown, setToastShown] = useState(false);
   const [infoRoleModal, setinfoRoleModal] = useState(false);
   const [modalContent, setContent] = useState(null);
-  const permissionsList = permissionLabel;
 
   const setToDefault = () => {
     setUserPermissions([]);
@@ -135,43 +134,17 @@ function UserPermissionsPopUp({
       });
   };
 
-  const getAllPermissions = permissions => {
-    if (!permissions) {
-      return;
-    }
-    const permissionList = [];
-
-    // eslint-disable-next-line no-restricted-syntax
-    for (const permission of permissions) {
-      if (permission?.subperms) {
-        permissionList.push(...getAllPermissions(permission.subperms));
-      } else {
-        permissionList.push(permission);
-      }
-    }
-    // eslint-disable-next-line consistent-return
-    return permissionList;
-  };
-
   const handleModalOpen = () => {
     if (userPermissions?.length > 0 || userRemovedDefaultPermissions?.length > 0) {
-      const getPermissions = permissionsList.map(permission => permission.subperms).flat();
-      const getAllSubIndividualPermissions = getAllPermissions(getPermissions);
-      const changedPermission = new Set();
-      const matchingPermissions = getAllSubIndividualPermissions.filter(permission => {
-        if (
-          // Removes duplicate display of See All Users in Dashboard and Leaderboard and Edit Team 4-Digit Codes
-          changedPermission.has(permission.key) ||
-          !(
-            userPermissions.includes(permission.key) ||
-            userRemovedDefaultPermissions.includes(permission.key)
-          )
-        )
-          return false;
-        changedPermission.add(permission.key);
-        return true;
-      });
-      const permissionNames = matchingPermissions.map(permission => permission.label);
+      const matchingPermissions = [
+        ...new Set(
+          getAllPermissionKeys().filter(
+            key => userPermissions.includes(key) || userRemovedDefaultPermissions.includes(key),
+          ),
+        ),
+      ];
+
+      const permissionNames = matchingPermissions.map(key => permissionLabelKeyMappingObj[key]);
 
       const description = `Clicking reset to default will return the user to the default permissions of this role: ${
         actualUserProfile?.role

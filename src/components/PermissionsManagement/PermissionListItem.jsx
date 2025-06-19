@@ -261,12 +261,17 @@ function PermissionListItem(props) {
               >
                 <button
                   className={`changed-permission ${
+                    darkMode ? 'dark-background' : 'light-background'
+                  } ${
                     changedPermission(permission)
                       ? checkChangePermission(permission)
                         ? 'green'
                         : 'red'
-                      : 'white'
-                  }`}
+                      : darkMode
+                      ? 'dark'
+                      : 'light'
+                  }
+                  `}
                   aria-label={changedPermission(permission) ? 'Modified Permission' : ''}
                   disabled
                   type="button"

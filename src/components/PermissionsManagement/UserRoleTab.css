@@ -198,6 +198,7 @@
 .changed-permission {
   margin-right: -23.33px;
   font-size: 1.75rem;
+  padding: 0px;
 }
 
 .changed-permission.white {
@@ -210,6 +211,22 @@
 
 .changed-permission.red {
   color: red;
+}
+
+.changed-permission.light-background {
+  background-color: white;
+}
+
+.changed-permission.light {
+  color: white;
+}
+
+.changed-permission.dark-background {
+  background-color: #2f4157;
+}
+
+.changed-permission.dark {
+  color: #2f4157;
 }
 
 .permission-tooltip-wrapper {
