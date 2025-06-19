@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
@@ -37,7 +38,7 @@ describe('NotificationCard', () => {
     expect(screen.getByText(/You have a new notification from John Doe!/)).toBeInTheDocument();
     expect(
       screen.getByText((content, node) => {
-        const hasText = node => node.textContent === 'This is a test message';
+        const hasText = thisnode => thisnode.textContent === 'This is a test message';
         const nodeHasText = hasText(node);
         const childrenDontHaveText = Array.from(node.children).every(child => !hasText(child));
         return nodeHasText && childrenDontHaveText;
@@ -58,7 +59,7 @@ describe('NotificationCard', () => {
 
     fireEvent.click(screen.getByText('Mark as Read'));
 
-    // // 打印出 dispatch 的所有调用
+    // // Print all dispatch calls
     // console.log(store.dispatch.mock.calls);
 
     expect(store.dispatch).toHaveBeenCalledWith(mockAction);

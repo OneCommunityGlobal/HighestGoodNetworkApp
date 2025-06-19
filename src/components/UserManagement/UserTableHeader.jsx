@@ -28,13 +28,16 @@ import {
  * The header row of the user table.
  */
 const UserTableHeader = React.memo(
-  ({ authRole, roleSearchText, darkMode, editUser, enableEditUserInfo, disableEditUserInfo }) => {
+  ({ authRole, roleSearchText, darkMode, editUser, enableEditUserInfo, disableEditUserInfo, isMobile, mobileFontSize }) => {
+    console.log("in UserTableHeader");
     const dispatch = useDispatch();
     const [editFlag, setEditFlag] = useState(editUser);
     const updatedUserData = useSelector(state => state.userProfileEdit.newUserData);
     const saveUserInformation = async updatedData => {
       try {
+        console.log("UserTableHeader updatedData: ", updatedData);
         const response = await axios.patch(ENDPOINTS.USER_PROFILE_UPDATE, updatedData);
+        console.log("UserTableHeader response: ", response);
         if (response.status === 200) {
           const toastId = toast.success(' Saving Data...', { autoClose: false });
           await dispatch(getAllUserProfile());
@@ -62,7 +65,9 @@ const UserTableHeader = React.memo(
     };
 
     return (
-      <tr className={darkMode ? 'bg-space-cadet' : ''}>
+      <tr className={darkMode ? 'bg-space-cadet' : ''}
+          style={{fontSize: isMobile ? mobileFontSize : 'initial'}}
+      >
         <th scope="col" id="usermanagement_active" style={darkModeStyle}>
           {ACTIVE}
         </th>

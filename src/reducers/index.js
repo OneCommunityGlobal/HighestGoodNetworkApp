@@ -51,11 +51,19 @@ import { bmInvUnitReducer } from './bmdashboard/inventoryUnitReducer';
 import { consumablesReducer } from './bmdashboard/consumablesReducer';
 import { toolReducer } from './bmdashboard/toolReducer';
 import { equipmentReducer } from './bmdashboard/equipmentReducer';
+import { bmProjectMemberReducer } from './bmdashboard/projectMemberReducer';
+import { bmTimeLoggerReducer } from './bmdashboard/timeLoggerReducer';
+
 import dashboardReducer from './dashboardReducer';
 import { timeOffRequestsReducer } from './timeOffRequestReducer';
 import { totalOrgSummaryReducer } from './totalOrgSummaryReducer';
 import { allUsersTimeEntriesReducer } from './allUsersTimeEntriesReducer';
+import issueReducer from './bmdashboard/issueReducer';
 import HGNFormReducer from './hgnFormReducers';
+// import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
+
+// community portal
+import noShowVizReducer from './communityPortal/noShowVizReducer';
 
 // lbdashboard
 import wishListReducer from './lbdashboard/wishListItemReducer';
@@ -111,6 +119,12 @@ const localReducers = {
 
   // lbdashboard
   wishlistItem: wishListReducer,
+
+  bmissuechart: issueReducer,
+  noShowViz: noShowVizReducer,
+
+  bmProjectMembers: bmProjectMemberReducer,
+  bmTimeLogger: bmTimeLoggerReducer,
 };
 
 const sessionReducers = {

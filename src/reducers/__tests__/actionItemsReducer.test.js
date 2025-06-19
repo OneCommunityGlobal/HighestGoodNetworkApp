@@ -10,10 +10,13 @@ test('should handle GET_ACTION_ITEMS action', () => {
   const initialState = null;
   const action = {
     type: 'GET_ACTION_ITEMS',
-    payload: [{ id: 1, name: 'Item 1' }, { id: 2, name: 'Item 2' }]
+    payload: [
+      { id: 1, name: 'Item 1' },
+      { id: 2, name: 'Item 2' },
+    ],
   };
   const expectedState = action.payload;
-  
+
   expect(actionItemsReducer(initialState, action)).toEqual(expectedState);
 });
 
@@ -21,6 +24,6 @@ test('should handle GET_ACTION_ITEMS action', () => {
 test('should return current state for unknown action types', () => {
   const initialState = [{ id: 1, name: 'Item 1' }];
   const action = { type: 'UNKNOWN_ACTION' };
-  
+
   expect(actionItemsReducer(initialState, action)).toEqual(initialState);
 });
