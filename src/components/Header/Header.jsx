@@ -583,17 +583,22 @@ export function Header(props) {
       </Navbar>
       {!isAuthUser && (
         <PopUpBar
+          firstName={viewingUser.firstName}
+          lastName={viewingUser.lastName}
           message={`You are currently viewing the header for ${viewingUser.firstName} ${viewingUser.lastName}`}
           onClickClose={() => setPopup(prevPopup => !prevPopup)}
           />
       )}
       {props.auth.isAuthenticated && props.userProfile?.permissions?.isAcknowledged===false && (
         <PopUpBar
+          firstName={viewingUser?.firstName || firstName}
+          lastName={viewingUser?.lastName}
           message="Heads Up, there were permission changes made to this account"
           onClickClose={handlePermissionChangeAck}
           textColor="black_text"
           isLoading={isAckLoading}
         />
+
       )}
       <div>
         <Modal isOpen={popup} className={darkMode ? 'text-light' : ''}>

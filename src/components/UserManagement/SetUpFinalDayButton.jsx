@@ -7,6 +7,7 @@ import { boxStyle, boxStyleDark } from '../../styles';
 import SetUpFinalDayPopUp from './SetUpFinalDayPopUp';
 import { SET_FINAL_DAY, CANCEL } from '../../languages/en/ui';
 import { FinalDay } from '../../utils/enums';
+import moment from 'moment';
 
 function SetUpFinalDayButton(props) {
   const { darkMode, userProfile, onFinalDaySave } = props;

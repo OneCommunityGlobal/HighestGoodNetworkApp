@@ -477,3 +477,17 @@ td {
   opacity: 0;
   transition: opacity 0.2s ease-in-out;
 }
+
+.infringement-count{
+  cursor: pointer;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  font-size: 0.7rem;
+  margin: 2px 4px;
+  color: dodgerblue;
+}
+
+.infringement-count a:hover{
+  text-decoration: none;
+}
