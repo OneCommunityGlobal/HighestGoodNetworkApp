@@ -176,6 +176,20 @@ export const ENDPOINTS = {
   CONFIRM_EMAIL_SUBSCRIPTION: `${APIEndpoint}/confirm-non-hgn-email-subscription`,
   REMOVE_EMAIL_SUBSCRIPTION: `${APIEndpoint}/remove-non-hgn-email-subscription`,
 
+  // Imgur endpoints
+  GET_IMGUR_AUTH_URL: `${APIEndpoint}/imgur/auth`,
+  GET_IMGUR_AUTH_STATUS: `${APIEndpoint}/imgur/auth-status`,
+  DISCONNECT_IMGUR: `${APIEndpoint}/imgur/disconnect`,
+  REFRESH_IMGUR_TOKEN: `${APIEndpoint}/imgur/refresh-token`,
+
+  POST_IMGUR_SCHEDULED_POST: `${APIEndpoint}/imgur/schedule-post`,
+  GET_IMGUR_SCHEDULED_POSTS: `${APIEndpoint}/imgur/scheduled-posts`,
+  DELETE_IMGUR_SCHEDULED_POST: jobId => `${APIEndpoint}/imgur/posts/${jobId}`,
+
+  POST_IMGUR_IMAGE: `${APIEndpoint}/imgur/upload`,
+  POST_IMGUR_IMAGE_TO_GALLERY: imageHash => `${APIEndpoint}/imgur/upload-to-gallery/${imageHash}`,
+  DELETE_IMGUR_IMAGE: deleteHash => `${APIEndpoint}/imgur/delete/${deleteHash}`,
+
   // reasons endpoints
   CREATEREASON: () => {
     return `${APIEndpoint}/reason/`;

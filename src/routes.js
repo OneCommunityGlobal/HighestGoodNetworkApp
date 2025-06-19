@@ -14,6 +14,7 @@ import RoleInfoCollections from 'components/UserProfile/EditableModal/RoleInfoMo
 import LessonList from 'components/BMDashboard/LessonList/LessonListForm';
 import AddEquipmentType from 'components/BMDashboard/Equipment/Add/AddEquipmentType';
 import Announcements from 'components/Announcements';
+
 import JobFormBuilder from 'components/Collaboration/JobFormbuilder';
 import JobCCDashboard from 'components/JobCCDashboard/JobCCDashboard';
 import WeeklyProjectSummary from 'components/BMDashboard/WeeklyProjectSummary/WeeklyProjectSummary';
@@ -37,6 +38,7 @@ import TSAFormPage5 from './components/TSAForm/pages/TSAFormPage5';
 import TSAFormPage6 from './components/TSAForm/pages/TSAFormPage6';
 import TSAFormPage7 from './components/TSAForm/pages/TSAFormPage7';
 import TSAFormPage8 from './components/TSAForm/pages/TSAFormPage8';
+
 import Timelog from './components/Timelog';
 import LessonForm from './components/BMDashboard/Lesson/LessonForm';
 import UserProfileEdit from './components/UserProfile/UserProfileEdit';
@@ -344,6 +346,7 @@ export default (
           component={Announcements}
           routePermissions={RoutePermissions.announcements}
         />
+        
         <ProtectedRoute
           path="/sendemail"
           exact
@@ -574,7 +577,10 @@ export default (
         <ProtectedRoute path="/tsaformpage8" exact component={TSAFormPage8} /> 
         <ProtectedRoute path="/ExperienceDonutChart" component={ExperienceDonutChart} fallback />
         <ProtectedRoute path="/" exact component={Dashboard} />
+        {/* <Route path="/auth/imgur/callback" component={ImgurCallback} /> */}
         <Route path="*" component={NotFoundPage} />
+        
+        
       </Switch>
     </>
   </Switch>
