@@ -218,13 +218,21 @@ const TeamMemberTask = React.memo(
                       {canUpdateTask && teamRoles && (
                         <div className="name-wrapper">
                           {['Manager', 'Assistant Manager', 'Mentor'].map(role => {
-                            return teamRoles[role]?.map((elm, idx) => {
+                            const seenIds = new Set();
+                            const uniqueRoleMembers = (teamRoles[role] || []).filter(elm => {
+                              const key = `${elm.id}-${elm.name}`;
+                              if (seenIds.has(key)) return false;
+                              seenIds.add(key);
+                              return true;
+                            });
+
+                            return uniqueRoleMembers.map(elm => {
                               const { name } = elm;
                               const initials = getInitials(name);
                               const bg = colorsObjs[role];
                               return (
                                 <a
-                                  key={`${role}-${elm.id}-${idx}`} // index breaks tie
+                                  key={`${role}-${elm.id}-${elm.name}`}
                                   title={`${role} : ${name}`}
                                   className="name"
                                   href={`/userprofile/${elm.id}`}
