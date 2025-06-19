@@ -576,7 +576,7 @@ const TeamMemberTasks = React.memo(props => {
                 value={selectedPeriod || ''}
                 title={`Timelogs submitted in the past ${selectedPeriod} days`}
                 style={{
-                  color: isTimeFilterActive 
+                  color: isTimeFilterActive
                     ? `${darkMode ? hrsFilterBtnColorMap[selectedPeriod] : 'white'}`
                     : `${darkMode ? 'white' : hrsFilterBtnColorMap[selectedPeriod]}`,
                   backgroundColor: isTimeFilterActive
@@ -749,8 +749,8 @@ const TeamMemberTasks = React.memo(props => {
                       <th className={`team-task-progress ${darkMode ? 'bg-space-cadet' : ''}`}>
                         Progress
                       </th>
-                      {displayUser.role === 'Administrator' ? ( 
-                       <th className={darkMode ? 'bg-space-cadet' : ''}>Status</th>
+                      {displayUser.role === 'Administrator' ? (
+                        <th className={darkMode ? 'bg-space-cadet' : ''}>Status</th>
                       ) : null}
                     </tr>
                   </thead>
