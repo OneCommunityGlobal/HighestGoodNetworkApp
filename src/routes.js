@@ -60,6 +60,7 @@ import UnsubscribeForm from './components/EmailSubscribeForm/Unsubscribe';
 import NotFoundPage from './components/NotFound/NotFoundPage';
 import EmailSender from './components/common/EmailSender/EmailSender';
 import Collaboration from './components/Collaboration';
+import EventPopularity from './components/EventPopularity/EventPopularity';
 import ApplicantsAgeChart from './components/ApplicantsChart';
 import UserSkillsProfile from './components/HGNSkillsDashboard/SkillsProfilePage/components/UserSkillsProfile';
 
@@ -85,6 +86,9 @@ import ToolDetailPage from './components/BMDashboard/Tools/ToolDetailPage';
 import CheckTypes from './components/BMDashboard/shared/CheckTypes';
 import Toolslist from './components/BMDashboard/Tools/ToolsList';
 import AddTool from './components/BMDashboard/Tools/AddTool';
+import AttendanceNoShow from './components/AttendanceSystem/AttendanceNoShowCharts';
+
+
 import AddTeamMember from './components/BMDashboard/AddTeamMember/AddTeamMember';
 // eslint-disable-next-line import/order
 import IssueChart from './components/BMDashboard/Issues/issueCharts';
@@ -189,6 +193,28 @@ export default (
   <Switch>
     {/* ----- LB Dashboard Routing ----- */}
     {/* If it's possible incorporate this route with others without the header, please do */}
+    <Route path="/EventPopularity" component={EventPopularity} />
+    <Route
+      path="/lbdashboard/register"
+      render={() => (
+        <>
+          <AutoUpdate />
+          <ToastContainer />
+          {/* <LBRegister /> */}
+        </>
+      )}
+    />
+    <Route
+      path="/lbdashboard/login"
+      render={() => (
+        <>
+          <AutoUpdate />
+          <ToastContainer />
+          <LBLogin />
+        </>
+      )}
+    />
+
     <Route
       exact
       path="/lbdashboard/wishlists"
@@ -214,6 +240,7 @@ export default (
     <Route path="/form" component={FormEditor} />
     <Route path="/formviewer" component={FormViewer} />
     <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
+    <Route path="/logattendance" component={AttendanceNoShow} />
     <>
       {/* Comment out the Header component and its import during phase 2 development. */}
       {/* Uncomment BMHeader and its import during phase 2 development. */}
