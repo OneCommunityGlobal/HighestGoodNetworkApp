@@ -546,14 +546,13 @@ function TimeEntryForm(props) {
 
   const getActualDate = async () => {
     try {
-        const actualDate = await Promise.any([
+        const fetchedActualDate = await Promise.any([
             fetch(`http://worldtimeapi.org/api/timezone/${userTimeZone}`).then((res) => res.json()),
             fetch(`https://timeapi.io/api/Time/current/zone?timeZone=${userTimeZone}`).then((res) => res.json()),
         ]);
         
-        setActualDate(actualDate.utc_datetime || actualDate.dateTime);
+        setActualDate(fetchedActualDate.utc_datetime || fetchedActualDate.dateTime);
     } catch (error) {
-        console.warn("All APIs failed. Prompting user to retry.");
         setActualDate(null);  // Clear previous date
         toast.error("Failed to fetch the actual date. Please refresh and try logging time again ");
       
