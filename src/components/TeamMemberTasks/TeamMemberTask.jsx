@@ -263,9 +263,9 @@ const TeamMemberTask = React.memo(
                                   currentDate.isSameOrAfter(
                                     moment(user.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
                                   ) &&
-                                    currentDate.isBefore(
-                                      moment(user.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
-                                    )
+                                  currentDate.isBefore(
+                                    moment(user.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
+                                  )
                                     ? 'rgba(128, 128, 128, 0.5)'
                                     : darkMode && '#339CFF',
                                 fontSize: '20px',
@@ -343,8 +343,9 @@ const TeamMemberTask = React.memo(
                                 >
                                   <td
                                     data-label="Task(s)"
-                                    className={`task-align  ${darkMode ? 'bg-yinmn-blue text-light' : ''
-                                      }`}
+                                    className={`task-align  ${
+                                      darkMode ? 'bg-yinmn-blue text-light' : ''
+                                    }`}
                                   >
                                     <div className="team-member-tasks-content">
                                       <Link
@@ -362,13 +363,13 @@ const TeamMemberTask = React.memo(
                                     </div>
                                     <div className="team-member-tasks-icons">
                                       {task.taskNotifications.length > 0 &&
-                                        task.taskNotifications.some(
-                                          notification =>
-                                            Object.prototype.hasOwnProperty.call(
-                                              notification,
-                                              'userId',
-                                            ) && notification.userId === user.personId,
-                                        ) ? (
+                                      task.taskNotifications.some(
+                                        notification =>
+                                          Object.prototype.hasOwnProperty.call(
+                                            notification,
+                                            'userId',
+                                          ) && notification.userId === user.personId,
+                                      ) ? (
                                         <FontAwesomeIcon
                                           className="team-member-tasks-bell"
                                           title="Task Info Changes"
@@ -425,8 +426,9 @@ const TeamMemberTask = React.memo(
                                   {task.hoursLogged != null && task.estimatedHours != null && (
                                     <td
                                       data-label="Progress"
-                                      className={`team-task-progress  ${darkMode ? 'bg-yinmn-blue text-light' : ''
-                                        }`}
+                                      className={`team-task-progress  ${
+                                        darkMode ? 'bg-yinmn-blue text-light' : ''
+                                      }`}
                                     >
                                       {isAllowedToSeeDeadlineCount && (
                                         <span
@@ -440,10 +442,11 @@ const TeamMemberTask = React.memo(
                                       <div className="team-task-progress-container">
                                         <span
                                           data-testid={`times-${task.taskName}`}
-                                          className={`${darkMode ? 'text-light ' : ''} ${canSeeFollowUpCheckButton
-                                            ? 'team-task-progress-time'
-                                            : 'team-task-progress-time-volunteers'
-                                            }`}
+                                          className={`${darkMode ? 'text-light ' : ''} ${
+                                            canSeeFollowUpCheckButton
+                                              ? 'team-task-progress-time'
+                                              : 'team-task-progress-time-volunteers'
+                                          }`}
                                         >
                                           {`${parseFloat(
                                             task.hoursLogged.toFixed(2),
@@ -497,8 +500,9 @@ const TeamMemberTask = React.memo(
                       {showWhoHasTimeOff && (onTimeOff || goingOnTimeOff) && (
                         <button
                           type="button"
-                          className={`expand-time-off-detail-button ${isTimeOffContentOpen ? 'hidden' : ''
-                            }`}
+                          className={`expand-time-off-detail-button ${
+                            isTimeOffContentOpen ? 'hidden' : ''
+                          }`}
                           onClick={() => setIsTimeOffContentOpen(true)}
                           aria-label="Expand time off detail"
                         >
