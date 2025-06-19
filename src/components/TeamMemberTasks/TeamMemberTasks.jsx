@@ -552,12 +552,12 @@ const TeamMemberTasks = React.memo(props => {
                   title={`Timelogs submitted in the past ${days} days`}
                   style={{
                     color:
-                      selectedPeriod === days && isTimeFilterActive 
-                        ? `${darkMode ? color : 'white'}` 
+                      selectedPeriod === days && isTimeFilterActive
+                        ? `${darkMode ? color : 'white'}`
                         : `${darkMode ? 'white' : color}`,
                     backgroundColor:
-                      selectedPeriod === days && isTimeFilterActive 
-                        ? `${darkMode ? 'white' : color}` 
+                      selectedPeriod === days && isTimeFilterActive
+                        ? `${darkMode ? 'white' : color}`
                         : `${darkMode ? color : 'white'}`,
                     border: `1px solid ${color}`,
                   }}
@@ -576,17 +576,13 @@ const TeamMemberTasks = React.memo(props => {
                 value={selectedPeriod || ''}
                 title={`Timelogs submitted in the past ${selectedPeriod} days`}
                 style={{
-                  color: (
-                    isTimeFilterActive 
-                    ? `${darkMode ? hrsFilterBtnColorMap[selectedPeriod] : 'white'}` 
-                    : `${darkMode ? 'white' : hrsFilterBtnColorMap[selectedPeriod]}`
-                  ),
-                  backgroundColor: (
-                    isTimeFilterActive
-                    ? `${darkMode ? 'white' : hrsFilterBtnColorMap[selectedPeriod]}` 
-                    : `${darkMode ? hrsFilterBtnColorMap[selectedPeriod] : '#007BFF'}`
-                  ),
-                  border: `1px solid ${hrsFilterBtnColorMap[selectedPeriod]}`
+                  color: isTimeFilterActive 
+                    ? `${darkMode ? hrsFilterBtnColorMap[selectedPeriod] : 'white'}`
+                    : `${darkMode ? 'white' : hrsFilterBtnColorMap[selectedPeriod]}`,
+                  backgroundColor: isTimeFilterActive
+                    ? `${darkMode ? 'white' : hrsFilterBtnColorMap[selectedPeriod]}`
+                    : `${darkMode ? hrsFilterBtnColorMap[selectedPeriod] : '#007BFF'}`,
+                  border: `1px solid ${hrsFilterBtnColorMap[selectedPeriod]}`,
                 }}
               >
                 {Object.entries(hrsFilterBtnColorMap).map(([days, color]) => (
