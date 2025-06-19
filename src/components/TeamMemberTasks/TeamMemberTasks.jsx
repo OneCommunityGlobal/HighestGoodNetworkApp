@@ -551,16 +551,14 @@ const TeamMemberTasks = React.memo(props => {
                   }`}
                   title={`Timelogs submitted in the past ${days} days`}
                   style={{
-                    color: (
+                    color:
                       selectedPeriod === days && isTimeFilterActive 
-                      ? `${darkMode ? color : 'white'}` 
-                      : `${darkMode ? 'white' : color}`
-                    ),
-                    backgroundColor: (
+                        ? `${darkMode ? color : 'white'}` 
+                        : `${darkMode ? 'white' : color}`,
+                    backgroundColor:
                       selectedPeriod === days && isTimeFilterActive 
-                      ? `${darkMode ? 'white' : color}` 
-                      : `${darkMode ? color : 'white'}`
-                    ),
+                        ? `${darkMode ? 'white' : color}` 
+                        : `${darkMode ? color : 'white'}`,
                     border: `1px solid ${color}`,
                   }}
                   onClick={() => selectPeriod(days)}
