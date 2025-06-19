@@ -43,6 +43,7 @@ import PasswordInputModal from './PasswordInputModal';
 import { showTrophyIcon } from '../../utils/anniversaryPermissions';
 import SelectTeamPieChart from './SelectTeamPieChart';
 import { setTeamCodes } from '../../actions/teamCodes';
+import SaveFilterModal from './SaveFilterModal';
 import './WeeklySummariesReport.css';
 
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
@@ -101,6 +102,9 @@ const initialState = {
     green: false,
     navy: false,
   },
+  // Saved filters functionality
+  saveFilterModalOpen: false,
+  savedFilters: [],
 };
 
 const intialPermissionState = {
@@ -1045,6 +1049,60 @@ const WeeklySummariesReport = props => {
     });
   };
 
+  // Saved filters functionality
+  const handleSaveFilter = filterName => {
+    const newFilter = {
+      id: Date.now().toString(),
+      name: filterName,
+      codes: [...state.selectedCodes],
+      createdAt: new Date().toISOString(),
+    };
+
+    setState(prevState => ({
+      ...prevState,
+      savedFilters: [...prevState.savedFilters, newFilter],
+      saveFilterModalOpen: false,
+    }));
+
+    // Save to localStorage
+    const existingFilters = JSON.parse(localStorage.getItem('weeklySummariesSavedFilters') || '[]');
+    const updatedFilters = [...existingFilters, newFilter];
+    localStorage.setItem('weeklySummariesSavedFilters', JSON.stringify(updatedFilters));
+  };
+
+  const handleDeleteFilter = filterId => {
+    setState(prevState => ({
+      ...prevState,
+      savedFilters: prevState.savedFilters.filter(filter => filter.id !== filterId),
+    }));
+
+    // Update localStorage
+    const existingFilters = JSON.parse(localStorage.getItem('weeklySummariesSavedFilters') || '[]');
+    const updatedFilters = existingFilters.filter(filter => filter.id !== filterId);
+    localStorage.setItem('weeklySummariesSavedFilters', JSON.stringify(updatedFilters));
+  };
+
+  const handleApplyFilter = filter => {
+    setState(prevState => ({
+      ...prevState,
+      selectedCodes: filter.codes,
+    }));
+  };
+
+  const handleOpenSaveFilterModal = () => {
+    setState(prevState => ({
+      ...prevState,
+      saveFilterModalOpen: true,
+    }));
+  };
+
+  const handleCloseSaveFilterModal = () => {
+    setState(prevState => ({
+      ...prevState,
+      saveFilterModalOpen: false,
+    }));
+  };
+
   const passwordInputModalToggle = () => {
     try {
       return (
@@ -1103,6 +1161,16 @@ const WeeklySummariesReport = props => {
     state.summaries,
     state.activeTab,
   ]);
+
+  // Load saved filters from localStorage
+  useEffect(() => {
+    const savedFilters = JSON.parse(localStorage.getItem('weeklySummariesSavedFilters') || '[]');
+    setState(prevState => ({
+      ...prevState,
+      savedFilters,
+    }));
+  }, []);
+
   const { role, darkMode } = props;
   const { error } = props;
   const hasPermissionToFilter = role === 'Owner' || role === 'Administrator';
@@ -1147,6 +1215,14 @@ const WeeklySummariesReport = props => {
     >
       {passwordInputModalToggle()}
       {popUpElements()}
+      <SaveFilterModal
+        isOpen={state.saveFilterModalOpen}
+        onClose={handleCloseSaveFilterModal}
+        onSave={handleSaveFilter}
+        selectedCodes={state.selectedCodes}
+        darkMode={darkMode}
+        existingFilterNames={state.savedFilters.map(filter => filter.name)}
+      />
       <Row>
         <Col lg={{ size: 10, offset: 1 }}>
           <h3 className="mt-3 mb-5">
@@ -1232,21 +1308,49 @@ const WeeklySummariesReport = props => {
               </ReactTooltip>
             </>
           )}
-          <MultiSelect
-            className={`multi-select-filter text-dark ${darkMode ? 'dark-mode' : ''} ${
-              state.teamCodeWarningUsers.length > 0 ? 'warning-border' : ''
-            }`}
-            options={state.teamCodes.map(item => {
-              const [code, count] = item.label.split(' (');
-              return {
-                ...item,
-                label: `${code.padEnd(10, ' ')} (${count}`,
-              };
-            })}
-            value={state.selectedCodes}
-            onChange={handleSelectCodeChange}
-            labelledBy="Select"
-          />
+
+          {/* MultiSelect with Save/Delete Buttons */}
+          <div style={{ position: 'relative' }}>
+            <MultiSelect
+              className={`multi-select-filter text-dark ${darkMode ? 'dark-mode' : ''} ${
+                state.teamCodeWarningUsers.length > 0 ? 'warning-border' : ''
+              }`}
+              options={state.teamCodes.map(item => {
+                const [code, count] = item.label.split(' (');
+                return {
+                  ...item,
+                  label: `${code.padEnd(10, ' ')} (${count}`,
+                };
+              })}
+              value={state.selectedCodes}
+              onChange={handleSelectCodeChange}
+              labelledBy="Select"
+            />
+
+            {/* Save/Delete Buttons - only visible when codes are selected */}
+            {state.selectedCodes.length > 0 && (
+              <div className="filter-save-buttons">
+                <button
+                  type="button"
+                  className="filter-save-btn save"
+                  onClick={handleOpenSaveFilterModal}
+                  title="Save current filter"
+                  aria-label="Save current filter"
+                >
+                  <i className="fa fa-save" />
+                </button>
+                <button
+                  type="button"
+                  className="filter-save-btn clear"
+                  onClick={() => handleSelectCodeChange([])}
+                  title="Clear selection"
+                  aria-label="Clear selection"
+                >
+                  <i className="fa fa-times" />
+                </button>
+              </div>
+            )}
+          </div>
         </Col>
 
         <Col lg={{ size: 5 }} md={{ size: 6, offset: -1 }} xs={{ size: 6, offset: -1 }}>
@@ -1377,6 +1481,49 @@ const WeeklySummariesReport = props => {
           </div>
         </Col>
       </Row>
+
+      {/* Saved Filter Buttons */}
+      {state.savedFilters.length > 0 && (
+        <Row style={{ marginBottom: '10px' }}>
+          <Col lg={{ size: 10, offset: 1 }} xs={{ size: 10, offset: 1 }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', alignItems: 'center' }}>
+              {state.savedFilters.map(filter => (
+                <div
+                  key={filter.id}
+                  className={`saved-filter-button ${darkMode ? 'dark-mode' : ''}`}
+                >
+                  <button
+                    type="button"
+                    className="btn btn-link p-0 mr-1"
+                    style={{
+                      color: 'inherit',
+                      textDecoration: 'none',
+                      fontSize: '0.875rem',
+                      background: 'none',
+                      border: 'none',
+                      padding: 0,
+                    }}
+                    onClick={() => handleApplyFilter(filter)}
+                    title={`Apply filter: ${filter.name}`}
+                  >
+                    {filter.name}
+                  </button>
+                  <button
+                    type="button"
+                    className="saved-filter-delete-btn"
+                    onClick={() => handleDeleteFilter(filter.id)}
+                    title="Delete filter"
+                    aria-label={`Delete filter ${filter.name}`}
+                  >
+                    <i className="fa fa-times" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </Col>
+        </Row>
+      )}
+
       {permissionState.codeEditPermission && state.selectedCodes && state.selectedCodes.length > 0 && (
         <Row style={{ marginBottom: '10px' }}>
           <Col lg={{ size: 5, offset: 1 }} xs={{ size: 5, offset: 1 }}>
