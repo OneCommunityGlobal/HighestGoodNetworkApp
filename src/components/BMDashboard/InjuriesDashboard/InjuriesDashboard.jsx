@@ -285,5 +285,4 @@ function InjuriesOverTimeChart() {
     </div>
   );
 }
-
 export default InjuriesOverTimeChart;
