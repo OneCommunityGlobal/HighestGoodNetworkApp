@@ -30,7 +30,7 @@ export default function ExpenditureLineGraph() {
       try {
         setLoading(true);
         const response = await axios.get(ENDPOINTS.BM_EXPENDITURE);
-        if (response.data.success) {
+        if (response?.data?.success) {
           const { data } = response.data;
           setExpenditureData(data);
           // extract unique IDs
@@ -83,7 +83,21 @@ export default function ExpenditureLineGraph() {
     if (chartInstance) {
       // Update existing chart
       chartInstance.data = chartData;
-      chartInstance.options.plugins.title.text = chartTitle;
+      const { options } = chartInstance;
+      const { plugins, scales } = options;
+      const { x, y } = scales;
+
+      plugins.title.text = chartTitle;
+      plugins.title.color = textColor;
+
+      x.grid.color = gridColor;
+      y.grid.color = gridColor;
+
+      x.ticks.color = textColor;
+      y.ticks.color = textColor;
+
+      x.title.color = textColor;
+      y.title.color = textColor;
       chartInstance.options.plugins.title.color = textColor;
       chartInstance.options.scales.y.grid.color = gridColor;
       chartInstance.options.scales.x.grid.color = gridColor;
