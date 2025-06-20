@@ -62,6 +62,7 @@ import NotificationCard from '../Notification/notificationCard';
 import DarkModeButton from './DarkModeButton';
 import BellNotification from './BellNotification';
 import { getUserProfile } from '../../actions/userProfile';
+import PermissionWatcher from '../Auth/PermissionWatcher';
 
 export function Header(props) {
   const location = useLocation();
@@ -153,7 +154,6 @@ export function Header(props) {
   const history = useHistory();
 
   const [showProjectDropdown, setShowProjectDropdown] = useState(false);
-  const [isAckLoading, setIsAckLoading] = useState(false);
 
   useEffect(() => {
     const handleStorageEvent = () => {
@@ -217,28 +217,6 @@ export function Header(props) {
   const openModal = () => {
     setLogoutPopup(true);
   };
-  
-  const handlePermissionChangeAck = async () => {
-    // handle setting the ack true
-    try {
-      setIsAckLoading(true)
-      const {firstName: name, lastName, personalLinks, adminLinks, _id} = props.userProfile
-      axios.put(ENDPOINTS.USER_PROFILE(_id), {
-        // req fields for updation
-        firstName: name, 
-        lastName, 
-        personalLinks,
-        adminLinks,
-        
-        isAcknowledged: true,
-      }).then(()=>{
-        setIsAckLoading(false);
-        dispatch(getUserProfile(_id));
-      });
-    } catch (e) {
-      // console.log('update ack', e);
-    }
-  }
 
   const removeViewingUser = () => {
     setPopup(false);
@@ -589,17 +567,7 @@ export function Header(props) {
           onClickClose={() => setPopup(prevPopup => !prevPopup)}
           />
       )}
-      {props.auth.isAuthenticated && props.userProfile?.permissions?.isAcknowledged===false && (
-        <PopUpBar
-          firstName={viewingUser?.firstName || firstName}
-          lastName={viewingUser?.lastName}
-          message="Heads Up, there were permission changes made to this account"
-          onClickClose={handlePermissionChangeAck}
-          textColor="black_text"
-          isLoading={isAckLoading}
-        />
-
-      )}
+      <PermissionWatcher props={props}/>
       <div>
         <Modal isOpen={popup} className={darkMode ? 'text-light' : ''}>
           <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>
