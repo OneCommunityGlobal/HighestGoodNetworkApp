@@ -4,6 +4,7 @@ import { BiPencil } from 'react-icons/bi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSortDown, faSort, faSortUp } from '@fortawesome/free-solid-svg-icons';
 import RecordsModal from './RecordsModal';
+import styles from './ItemListView.module.css';
 
 export default function ItemsTable({
   selectedProject,
@@ -96,7 +97,7 @@ export default function ItemsTable({
         recordType={recordType}
       />
       <UpdateItemModal modal={updateModal} setModal={setUpdateModal} record={updateRecord} />
-      <div className="items_table_container">
+      <div className={`${styles.itemsTableContainer}`}>
         <Table>
           <thead>
             <tr>
@@ -117,6 +118,7 @@ export default function ItemsTable({
               {dynamicColumns.map(({ label }) => (
                 <th key={label}>{label}</th>
               ))}
+              <th>Usage Record</th>
               <th>Updates</th>
               <th>Purchases</th>
             </tr>
@@ -132,7 +134,24 @@ export default function ItemsTable({
                     {dynamicColumns.map(({ label, key }) => (
                       <td key={label}>{getNestedValue(el, key)}</td>
                     ))}
-                    <td className="items_cell">
+                    <td className={`${styles.itemsCell}`}>
+                      <button
+                        type="button"
+                        onClick={() => handleEditRecordsClick(el, 'UsageRecord')}
+                        aria-label="Edit Record"
+                      >
+                        <BiPencil />
+                      </button>
+                      <Button
+                        color="primary"
+                        outline
+                        size="sm"
+                        onClick={() => handleViewRecordsClick(el, 'UsageRecord')}
+                      >
+                        View
+                      </Button>
+                    </td>
+                    <td className={`${styles.itemsCell}`}>
                       <button
                         type="button"
                         onClick={() => handleEditRecordsClick(el, 'Update')}
