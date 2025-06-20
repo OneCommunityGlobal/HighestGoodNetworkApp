@@ -74,3 +74,16 @@ export const deleteWeeklySummaryEmailAssignment = id => {
     }
   };
 };
+
+export const updateWeeklySummaryEmailAssignment = (id, email) => async dispatch => {
+  try {
+    const response = await axios.put(ENDPOINTS.UPDATE_WEEKLY_SUMMARY_EMAIL_BCC(id), { email });
+    if (response.status === 200) {
+      dispatch(getAllWeeklySummaryEmailAssignments());
+    } else {
+      dispatch(weeklySummaryEmailBccError(response.data));
+    }
+  } catch (error) {
+    dispatch(weeklySummaryEmailBccError(error));
+  }
+};
