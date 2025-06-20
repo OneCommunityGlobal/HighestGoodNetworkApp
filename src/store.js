@@ -19,7 +19,16 @@ export const rootReducers = combineReducers({
 const persistConfig = {
   key: 'root',
   storage,
+  whitelist: ['theme'], // Only persist theme settings
   blacklist: ['auth', 'errors', ...Object.keys(sessionReducers)],
+  timeout: 0, // No timeout
+  writeFailHandler: (err) => {
+    // If storage quota is exceeded, clear storage and try again
+    if (err.name === 'QuotaExceededError') {
+      storage.removeItem('persist:root');
+      window.location.reload();
+    }
+  }
 };
 
 const localPersistReducer = persistReducer(persistConfig, rootReducers);

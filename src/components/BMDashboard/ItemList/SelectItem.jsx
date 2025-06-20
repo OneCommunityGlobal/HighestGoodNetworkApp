@@ -1,4 +1,5 @@
 import { Form, FormGroup, Label, Input } from 'reactstrap';
+import styles from './ItemListView.module.css';
 
 export default function SelectItem({
   items,
@@ -8,40 +9,29 @@ export default function SelectItem({
   label,
 }) {
   let itemSet = [];
-  if (items.length) {
+  if (items?.length) {
     if (selectedProject === 'all') {
-      const uniqueNames = new Set();
-      itemSet = items
-        .filter(item => {
-          const name = item.itemType?.name;
-          if (!name || uniqueNames.has(name)) return false;
-          uniqueNames.add(name);
-          return true;
-        })
-        .map(item => ({
-          name: item.itemType?.name,
-          id: item.id || item._id, // Use existing id if available
-        }));
+      itemSet = [
+        ...new Set(
+          items
+            .filter(m => m.itemType?.name) // Filter out items with null/undefined names
+            .map(m => m.itemType.name),
+        ),
+      ];
     } else {
-      const uniqueNames = new Set();
-      itemSet = items
-        .filter(item => item.project?.name === selectedProject)
-        .filter(item => {
-          const name = item.itemType?.name;
-          if (!name || uniqueNames.has(name)) return false;
-          uniqueNames.add(name);
-          return true;
-        })
-        .map(item => ({
-          name: item.itemType?.name,
-          id: item.id || item._id,
-        }));
+      itemSet = [
+        ...new Set(
+          items
+            .filter(mat => mat.project?.name === selectedProject && mat.itemType?.name)
+            .map(m => m.itemType.name),
+        ),
+      ];
     }
   }
 
   return (
     <Form>
-      <FormGroup className="select_input">
+      <FormGroup className={`${styles.selectInput}`}>
         <Label htmlFor="select-material" style={{ marginLeft: '10px' }}>
           {label ? `${label}:` : 'Material:'}
         </Label>

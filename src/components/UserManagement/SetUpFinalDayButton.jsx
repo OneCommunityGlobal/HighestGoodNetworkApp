@@ -1,10 +1,7 @@
-// import { useEffect, useState } from 'react';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-// import { Button } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { updateUserFinalDayStatusIsSet } from '../../actions/userManagement';
-// import { boxStyle, boxStyleDark } from '../../styles';
 import { boxStyle } from '../../styles';
 import SetUpFinalDayPopUp from './SetUpFinalDayPopUp';
 import { SET_FINAL_DAY, CANCEL } from '../../languages/en/ui';

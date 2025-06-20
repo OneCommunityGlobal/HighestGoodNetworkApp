@@ -5,13 +5,6 @@ import {
   FETCH_TEAM_USERS_START,
 } from '../../constants/allTeamsConstants';
 import { teamUsersReducer, updateObject } from '../teamsTeamMembersReducer';
-// eslint-disable-next-line no-unused-vars
-const teamUsersInitial = {
-  fetching: false,
-  fetched: false,
-  teamMembers: [],
-  status: 404,
-};
 
 const teamMembers = {
   teamMembers: [
