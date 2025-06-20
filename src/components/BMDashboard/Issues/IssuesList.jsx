@@ -217,13 +217,30 @@ export default function IssuesList() {
                   show={dropdownOpenId === issue.id}
                   onToggle={isOpen => setDropdownOpenId(isOpen ? issue.id : null)}
                 >
-                  <Dropdown.Toggle variant="outline-secondary" size="sm">
+                  <Dropdown.Toggle
+                    variant="outline-secondary"
+                    size="sm"
+                    className="dropdown-toggle-custom"
+                  >
                     Options
                   </Dropdown.Toggle>
                   <Dropdown.Menu className="dropdown-menu-custom">
-                    <Dropdown.Item onClick={() => handleRename(issue.id)}>Rename</Dropdown.Item>
-                    <Dropdown.Item onClick={() => handleDelete(issue.id)}>Delete</Dropdown.Item>
-                    <Dropdown.Item onClick={() => handleCloseIssue(issue.id)}>
+                    <Dropdown.Item
+                      className="dropdown-item-custom"
+                      onClick={() => handleRename(issue.id)}
+                    >
+                      Rename
+                    </Dropdown.Item>
+                    <Dropdown.Item
+                      className="dropdown-item-custom"
+                      onClick={() => handleDelete(issue.id)}
+                    >
+                      Delete
+                    </Dropdown.Item>
+                    <Dropdown.Item
+                      className="dropdown-item-custom"
+                      onClick={() => handleCloseIssue(issue.id)}
+                    >
                       Close Issue
                     </Dropdown.Item>
                   </Dropdown.Menu>
