@@ -26,6 +26,7 @@ import {
   updateWeeklySummaryEmailAssignment,
 } from '../../actions/weeklySummaryEmailBCCAction';
 import { getAllUserProfiles } from '../../actions/projectMembers';
+import '../Reports/TeamReport/TeamReport.css'; // For css only
 
 const WeeklySummaryEmailAssignmentPopUp = React.memo(props => {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -127,6 +128,7 @@ const WeeklySummaryEmailAssignmentPopUp = React.memo(props => {
                 setSearchWord(e.target.value);
                 setDropdownOpen(true);
               }}
+              className={darkMode ? 'bg-dark text-light' : ''}
             />
             <Button color="primary" type="button" onClick={handleAddBCC}>
               Add
@@ -137,6 +139,7 @@ const WeeklySummaryEmailAssignmentPopUp = React.memo(props => {
             <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown}>
               <DropdownToggle tag="div" data-toggle="dropdown" aria-expanded={dropdownOpen} />
               <DropdownMenu
+                className={darkMode ? 'bg-dark' : ''}
                 style={{
                   position: 'absolute',
                   zIndex: 1000,
@@ -152,6 +155,7 @@ const WeeklySummaryEmailAssignmentPopUp = React.memo(props => {
                       setAddUser(user);
                       setSearchWord(`${user.firstName} ${user.lastName}`);
                     }}
+                    className={darkMode ? 'text-light table-hover-dark' : ''}
                   >
                     <div
                       style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}
@@ -170,11 +174,11 @@ const WeeklySummaryEmailAssignmentPopUp = React.memo(props => {
           <div style={{ maxHeight: '600px', overflowY: 'auto' }}>
             <table
               className={`table table-bordered table-responsive-lg mt-3 ${
-                darkMode ? 'text-light' : ''
+                darkMode ? 'text-light' : 'table-hover'
               }`}
             >
               <thead>
-                <tr>
+                <tr className={darkMode ? 'bg-space-cadet' : ''}>
                   <th>Status</th>
                   <th>Name</th>
                   <th>Email</th>
@@ -203,6 +207,7 @@ const WeeklySummaryEmailAssignmentPopUp = React.memo(props => {
                             value={editingEmail}
                             onChange={e => setEditingEmail(e.target.value)}
                             style={{ width: '100%' }}
+                            className={darkMode ? 'bg-dark text-light' : ''}
                           />
                         ) : (
                           assignment.email

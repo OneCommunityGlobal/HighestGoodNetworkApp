@@ -1,9 +1,9 @@
 // 测试用页面 后续加在weeklysummary页面
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Button, Container } from 'reactstrap';
 import WeeklySummaryEmailAssignmentPopUp from './WeeklySummaryEmailAssignmentPopUp';
 
-const WeeklySummaryPage = () => {
+function WeeklySummaryPage() {
   const [popupOpen, setPopupOpen] = useState(false);
 
   return (
@@ -13,13 +13,9 @@ const WeeklySummaryPage = () => {
         Set Weekly Summary BCC
       </Button>
 
-      <WeeklySummaryEmailAssignmentPopUp
-        isOpen={popupOpen}
-        onClose={() => setPopupOpen(false)}
-      />
+      <WeeklySummaryEmailAssignmentPopUp isOpen={popupOpen} onClose={() => setPopupOpen(false)} />
     </Container>
   );
-};
+}
 
 export default WeeklySummaryPage;
-
