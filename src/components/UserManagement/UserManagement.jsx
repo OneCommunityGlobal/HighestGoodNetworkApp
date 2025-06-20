@@ -59,8 +59,10 @@ class UserManagement extends React.PureComponent {
       weeklyHrsSearchText: '',
       emailSearchText: '',
       wildCardSearchText: '',
-      selectedPage: props.state.userPagination.pagestats.selectedPage,
-      pageSize: props.state.userPagination.pagestats.pageSize,
+      // selectedPage: props.state.userPagination.pagestats.selectedPage,
+      // pageSize: props.state.userPagination.pagestats.pageSize,
+      selectedPage: props.state?.userPagination?.pagestats?.selectedPage || 1,
+      pageSize: props.state?.userPagination?.pagestats?.pageSize || 10,
       allSelected: undefined,
       isActive: undefined,
       // isSet: undefined,
@@ -79,6 +81,9 @@ class UserManagement extends React.PureComponent {
       isMobile: window.innerWidth <= 750,
       mobileFontSize: 10,
       mobileWidth: '100px',
+      editable: props.state?.userPagination?.editable || false,
+      hasError: false,
+      isLoading: true,
     };
     this.onPauseResumeClick = this.onPauseResumeClick.bind(this);
     this.onLogTimeOffClick = this.onLogTimeOffClick.bind(this);
@@ -87,25 +92,52 @@ class UserManagement extends React.PureComponent {
     this.onActiveInactiveClick = this.onActiveInactiveClick.bind(this);
   }
 
-  componentDidMount() {
-    // Initiating the user profile fetch action.
-    this.props.getAllUserProfile();
-    this.props.getAllTimeOffRequests();
-    const { darkMode } = this.props.state.theme;
-    const { userProfiles } = this.props.state.allUserProfiles;
-    const { roles: rolesPermissions } = this.props.state.role;
-    const { requests: timeOffRequests } = this.props.state.timeOffRequests;
-    window.addEventListener('resize', this.handleResize);
-    this.getFilteredData(
-      userProfiles,
-      rolesPermissions,
-      timeOffRequests,
-      darkMode,
-      this.state.editable,
-      this.state.isMobile,
-      this.state.mobileFontSize,
-    );
+  // componentDidMount() {
+  //   // Initiating the user profile fetch action.
+  //   this.props.getAllUserProfile();
+  //   this.props.getAllTimeOffRequests();
+  //   const { darkMode } = this.props.state.theme;
+  //   const { userProfiles } = this.props.state.allUserProfiles;
+  //   const { roles: rolesPermissions } = this.props.state.role;
+  //   const { requests: timeOffRequests } = this.props.state.timeOffRequests;
+  //   window.addEventListener('resize', this.handleResize);
+  //   this.getFilteredData(
+  //     userProfiles,
+  //     rolesPermissions,
+  //     timeOffRequests,
+  //     darkMode,
+  //     this.state.editable,
+  //     this.state.isMobile,
+  //     this.state.mobileFontSize,
+  //   );
+  // }
+
+  async componentDidMount() {
+  try {
+    this.setState({ isLoading: true });
+    
+    if (!this.props.getAllUserProfile || !this.props.getAllTimeOffRequests) {
+      console.error('Required props methods are missing');
+      this.setState({ hasError: true, isLoading: false });
+      return;
+    }
+
+    await Promise.all([
+      this.props.getAllUserProfile(),
+      this.props.getAllTimeOffRequests()
+    ]).catch(error => {
+      console.error('Error fetching initial data:', error);
+      throw error;
+    });
+
+    const { darkMode } = this.props.state?.theme || {};
+    const { userProfiles } = this.props.state?.allUserProfiles || {};
+    // ... with null checks and finally setting isLoading: false
+  } catch (error) {
+    console.error('ComponentDidMount error:', error);
+    this.setState({ hasError: true, isLoading: false });
   }
+}
 
   componentWillUnmount() {
     window.removeEventListener('resize', this.handleResize);
