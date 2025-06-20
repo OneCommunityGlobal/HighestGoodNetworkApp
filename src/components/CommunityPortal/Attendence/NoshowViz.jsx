@@ -119,14 +119,14 @@ function EventNoShowChart() {
         <button
           type="button"
           onClick={() => setPeriod('month')}
-          className={`chart-button ${period === 'month' ? 'active' : ''}`}
+          className={`${styles.chartButton} ${period === 'month' ? styles.active : ''}`}
         >
           Month View
         </button>
         <button
           type="button"
           onClick={() => setPeriod('year')}
-          className={`chart-button ${period === 'year' ? 'active' : ''}`}
+          className={`${styles.chartButton} ${period === 'year' ? styles.active : ''}`}
         >
           Year View
         </button>

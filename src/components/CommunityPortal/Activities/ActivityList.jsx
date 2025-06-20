@@ -47,7 +47,7 @@ function ActivityList() {
 
   return (
     <div>
-      <h1>Activity List</h1>
+      <h1 className={styles.heading}>Activity List</h1>
 
       <div className={`${styles.filters}`}>
         <label>

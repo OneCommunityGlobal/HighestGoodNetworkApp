@@ -13,6 +13,21 @@
   margin-bottom: 20px;
 }
 
+.headerTitle {
+  color: black;
+  font-weight: 600;
+  text-align: center;
+}
+
+.resourceTitle {
+  color: rgb(12, 11, 11); 
+  font-weight: bold;
+  margin-bottom: 10px;
+  width: 100%;            
+  display: block;         
+  text-align: center; 
+}
+
 .header h2,
 .resourceMonitoring h2,
 .latestRegistration h2,
@@ -24,6 +39,7 @@
   color: rgb(12, 11, 11);
 }
 
+.header,
 .resourceMonitoring,
 .latestRegistration,
 .myEvent {
@@ -31,6 +47,7 @@
   background-color: white;
   padding: 20px;
   border-radius: 8px;
+
 }
 
 .resourceGrid {
@@ -163,12 +180,13 @@
   padding: 8px;
   text-align: left;
 }
-
-.status.active {
+.status {
+  font-weight: bold;
+}
+.active {
   color: green;
 }
-
-.status.closed {
+.closed {
   color: red;
 }
 
@@ -394,3 +412,4 @@
   margin-top: 3px;
   font-size: 0.9em;
 }
+

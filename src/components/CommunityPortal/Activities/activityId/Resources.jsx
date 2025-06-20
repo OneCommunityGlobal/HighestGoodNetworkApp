@@ -38,7 +38,7 @@ function Resources() {
 
   return (
     <div className={`${styles.resourcesUsage}`}>
-      <h2 className="resource-title">Resource Usage Monitoring</h2>
+      <h2 className={styles.resourceTitle}>Resource Usage Monitoring</h2>
 
       {/* header for column */}
       <div className={`${styles.resourceRow} ${styles.header}`}>
@@ -58,7 +58,9 @@ function Resources() {
           <div className={`${styles.column}`}>{row.name}</div>
           <div className={`${styles.column}`}>{row.materials}</div>
           <div className={`${styles.column}`}>{row.facilities}</div>
-          <div className={`column status-${row.status.color}`}>{row.status.text}</div>
+          <div className={`${styles.column} ${styles[`status${row.status.color}`]}`}>
+            {row.status.text}
+          </div>
           <div className={`${styles.column}`}>{row.dueDate}</div>
           <div className={`${styles.column} ${styles.actionColumn}`}>
             <button type="button" className={`${styles.viewDetails}`}>

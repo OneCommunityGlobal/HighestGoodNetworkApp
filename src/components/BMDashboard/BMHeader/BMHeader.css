@@ -1,4 +1,4 @@
-.header-wrapper {
+.headerWrapper {
   height: fit-content;
   width: clamp(100vw, 0.1rem + 1vw, 100%);
 }
@@ -8,7 +8,7 @@
   white-space: nowrap;
 }
 
-.timer-message-section {
+.timerMessageSection {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -16,7 +16,7 @@
   gap: 1rem;
 }
 
-.nav-links {
+.navLinks {
   align-items: center;
 }
 
@@ -37,28 +37,28 @@
   min-width: 29px;
 }
 
-.owner-message {
+.ownerMessage {
   margin-right: 3rem;
 }
 
 @media (max-width: 1500px) {
-  .dashboard-text-link {
+  .dashboardTextLink {
     font-size: 14px;
   }
 
-  .owner-message {
+  .ownerMessage {
     margin-right: 0;
   }
 }
 
 @media (max-width: 1400px) {
-  .timer-message-section {
+  .timerMessageSection {
     display: flex;
     width: 0;
     margin-right: 0;
   }
 
-  .owner-message {
+  .ownerMessage {
     display: none;
   }
 }

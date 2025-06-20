@@ -66,7 +66,7 @@ function ResourceMonitoring() {
 
   return (
     <div className={`${styles.resourceMonitoring}`}>
-      <h2>Resources Monitoring</h2>
+      <h2 className={styles.headerTitle}>Resources Monitoring</h2>
       <div className={`${styles.resourceGrid}`}>
         {resources.map((resource, index) => {
           const progress = (resource.value / resource.max) * 100;

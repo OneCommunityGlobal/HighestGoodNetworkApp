@@ -21,7 +21,6 @@ import {
 import { useDispatch } from 'react-redux';
 import { updateSummaryBarData } from 'actions/dashboardActions';
 
-
 export function Dashboard(props) {
   const [popup, setPopup] = useState(false);
   const [filteredUserTeamIds, setFilteredUserTeamIds] = useState([]);

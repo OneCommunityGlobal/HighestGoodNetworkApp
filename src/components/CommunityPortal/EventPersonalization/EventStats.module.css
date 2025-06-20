@@ -33,6 +33,7 @@
   font-size: 1.5rem;
   color: #000000;
   margin: 0;
+  font-weight: 700;
 }
 
 .popularEventsHeaderDark {
@@ -40,6 +41,7 @@
   color: #ffffff;
   margin: 0;
   background-color: #1C2541;
+  font-weight: 700;
 }
 
 .filters {

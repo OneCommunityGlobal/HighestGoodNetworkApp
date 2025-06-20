@@ -8,7 +8,7 @@ function ActivitiesPage() {
   return (
     <div className={`${styles.activitiesPage}`}>
       <header className={`${styles.header}`}>
-        <h1>Event Registrations</h1>
+        <h1 className={styles.headerTitle}>Event Registrations</h1>
       </header>
 
       <ResourceMonitoring />

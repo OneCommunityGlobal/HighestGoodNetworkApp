@@ -34,15 +34,15 @@
 }
 
 /* colors for text based on status  */
-.statusGreen {
+.statusgreen {
   color: green;
 }
 
-.statusYellow {
+.statusyellow {
   color: orange;
 }
 
-.statusRed {
+.statusred {
   color: red;
 }
 
@@ -90,4 +90,12 @@
   padding: 10px 15px;
   border-radius: 8px;
   cursor: pointer;
+}
+
+.resourceTitle {
+  text-align: left;
+  font-size: 1.2rem;
+  margin-bottom: 5px;
+  font-weight: 700;
+  color: grey;
 }

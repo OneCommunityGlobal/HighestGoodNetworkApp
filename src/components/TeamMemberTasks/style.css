@@ -110,7 +110,7 @@
   position: absolute;
   text-align: center;
   vertical-align: middle;
-  background: #FF4D4F;
+  background: #ff4d4f;
   border-radius: 50%;
   color: #fff;
   height: 25px;
@@ -129,7 +129,7 @@
   display: inline-block;
   text-align: center;
   vertical-align: middle;
-  background: #0000FF;
+  background: #0000ff;
   border-radius: 50%;
   color: #fff;
   height: 22px;
@@ -139,7 +139,7 @@
 }
 
 .dashboard-team-clocks {
-  color: #339CFF !important;
+  color: #339cff !important;
 }
 
 .team-clocks-header {
@@ -244,7 +244,7 @@
   border-radius: 6px;
   height: 42px;
   width: 42px;
-  border: 1px solid #17A2B8;
+  border: 1px solid #17a2b8;
   font-size: 12px;
   font-weight: bold;
   font-family: Arial, Helvetica, sans-serif;
@@ -260,7 +260,7 @@
 }
 
 .show-time-off-btn-selected {
-  background-color: #17A2B8;
+  background-color: #17a2b8;
 }
 
 .show-time-off-calender-svg {
@@ -290,11 +290,11 @@
 }
 
 .show-time-off-icon-selected {
-  background-color: #17A2B8;
+  background-color: #17a2b8;
 }
 
 .show-time-off-icon path {
-  fill: #17A2B8;
+  fill: #17a2b8;
 }
 
 .taking-time-off-content-btn {
@@ -324,14 +324,14 @@
 
 .time-off-detail-modal::-webkit-scrollbar-track {
   border-radius: 4px;
-  background-color: #E7E7E7;
-  border: 1px solid #CACACA;
-  box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+  background-color: #e7e7e7;
+  border: 1px solid #cacaca;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
 }
 
 .time-off-detail-modal::-webkit-scrollbar-thumb {
   border-radius: 8px;
-  background-color: #007BFF;
+  background-color: #007bff;
   box-shadow: inset 0 0 3px #e7e7e7;
 }
 
@@ -476,12 +476,12 @@
 }
 
 .dark-mode.multi-select-filter .dropdown-container {
-  background-color: #1C1C1C !important;
+  background-color: #1c1c1c !important;
 }
 
 .rmsc.dark-mode .dropdown-content,
 .rmsc.dark-mode .dropdown-content .panel-content {
-  background-color: #1C1C1C !important;
+  background-color: #1c1c1c !important;
   color: #fff !important;
 }
 
@@ -596,8 +596,8 @@
   }
 
   .table-row {
-    border: solid #E9ECEF 2px;
-    background: #FAF7FC;
+    border: solid #e9ecef 2px;
+    background: #faf7fc;
     font-size: 0.75rem !important;
   }
 

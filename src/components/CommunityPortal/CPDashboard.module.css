@@ -63,7 +63,6 @@ body {
 
 .filterItem input,
 .filterItem select {
-  padding: 12px 15px;
   margin-top: 10px;
   border: 1px solid #ddd;
   border-radius: 8px;

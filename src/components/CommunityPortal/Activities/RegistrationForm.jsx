@@ -18,7 +18,7 @@ function RegistrationForm() {
 
   return (
     <form className={`${styles.registrationForm}`} onSubmit={handleSubmit}>
-      <h3>Event Registrations</h3>
+      <h2 className={`${styles.headerTitle}`}>Event Registrations</h2>
 
       <div className={`${styles.registrationformField}`}>
         <label>Name of Registrant</label>

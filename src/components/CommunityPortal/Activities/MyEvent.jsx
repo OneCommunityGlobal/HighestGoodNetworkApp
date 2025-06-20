@@ -91,9 +91,13 @@ function MyEvent() {
               {event.event}
               <div className={`${styles.eventTime}`}>{event.time}</div>
             </td>
-            <td className={`status ${event.status.toLowerCase()}`}>{event.status}</td>
+            <td className={`${styles.status} ${styles[event.status.toLowerCase()]}`}>
+              {event.status}
+            </td>
             <td>{event.registration}</td>
-            <td className={`resource ${event.resource.toLowerCase()}`}>{event.resource}</td>
+            <td className={`${styles.resource} ${styles[event.resource.toLowerCase()]}`}>
+              {event.resource}
+            </td>
             <td>{event.location}</td>
           </tr>
         ))}
@@ -110,19 +114,19 @@ function MyEvent() {
 
   return (
     <div className={`${styles.myEvent}`}>
-      <h2>My Event</h2>
+      <h2 className={styles.headerTitle}>My Event</h2>
       <div className={`${styles.eventControls}`}>
         <div className={`${styles.viewToggle}`}>
           <button
             type="button"
-            className={view === 'list' ? 'active-view' : 'inactive-view'}
+            className={view === 'list' ? styles.activeView : styles.inactiveView}
             onClick={() => setView('list')}
           >
             List
           </button>
           <button
             type="button"
-            className={view === 'calendar' ? 'active-view' : 'inactive-view'}
+            className={view === 'calendar' ? styles.activeView : styles.inactiveView}
             onClick={() => setView('calendar')}
           >
             Calendar

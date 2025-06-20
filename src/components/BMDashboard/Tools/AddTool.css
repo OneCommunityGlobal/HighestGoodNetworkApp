@@ -1,4 +1,4 @@
-.add-tool-container{
+.addToolContainer{
   width: 100%;
   max-width: 800px;
   margin: 1rem auto;
@@ -7,14 +7,14 @@
   border-radius: 20px;
 }
 
-.add-tool-header h2{
+.addToolHeader h2{
  font-size: clamp(1.5rem, 2.5vw, 2.5rem);
  margin-left: 1rem;
 }
 
 
 @media screen and (max-width: 800px) {
-  .add-tool-container {
+  .addToolContainer {
     width: 95%;
   }
 }
