@@ -43,31 +43,28 @@ function CostBreakdownChart() {
     const fetchProjects = async () => {
       try {
         setLoading(true);
-        // console.log('Fetching expenditure data from:', ENDPOINTS.GET_ALL_EXPENDITURES);
         const response = await axios.get(ENDPOINTS.GET_ALL_EXPENDITURES);
-        // console.log('Expenditure response:', response.data);
-
         if (response.data.success && Array.isArray(response.data.data)) {
           const { data } = response.data;
-
-          // Extract unique project IDs
-          const projectIds = [...new Set(data.map(item => item.projectId))];
-          setUniqueProjectIds(projectIds);
-
-          // Don't set a default project - user must select one explicitly
+          // Extract unique project IDs and names
+          const projectMap = {};
+          data.forEach(item => {
+            if (item.projectId) {
+              projectMap[item.projectId] = item.projectName || item.projectId;
+            }
+          });
+          const projectList = Object.entries(projectMap).map(([id, name]) => ({ id, name }));
+          setUniqueProjectIds(projectList);
         } else {
           throw new Error('Invalid data format received from server');
         }
       } catch (error) {
-        // console.error('Error fetching project data:', error);
         setError('Failed to load project data. Please try again later.');
       } finally {
         setLoading(false);
       }
     };
-
     fetchProjects();
-    // Don't set default dates - user must select explicitly
   }, []);
 
   // Format date as YYYY-MM-DD
@@ -157,20 +154,30 @@ function CostBreakdownChart() {
     return null;
   }
 
+  // Today's date for max attribute
+  const today = new Date().toISOString().split('T')[0];
+
+  // Get selected project name
+  const selectedProjectObj = uniqueProjectIds.find(p => p.id === selectedProject);
+  const selectedProjectName = selectedProjectObj ? selectedProjectObj.name : '';
+
   // Display error message if there's an error
   if (error) {
     return (
       <div className="cost-breakdown-container">
-        <h2 className="chart-title">Actual Cost Breakdown by Type of Expenditure</h2>
+        <h2 className="chart-title">
+          Actual Cost Breakdown {selectedProjectName && `for ${selectedProjectName}`} by Type of
+          Expenditure
+        </h2>
         <div className="error-message">{error}</div>
         <div className="filter-container">
           <div className="filter-group">
             <label htmlFor="project-select">Project:</label>
             <select id="project-select" value={selectedProject} onChange={handleProjectChange}>
               <option value="">Select a project</option>
-              {uniqueProjectIds.map(projectId => (
-                <option key={projectId} value={projectId}>
-                  {projectId}
+              {uniqueProjectIds.map(project => (
+                <option key={project.id} value={project.id}>
+                  {project.name}
                 </option>
               ))}
             </select>
@@ -178,12 +185,24 @@ function CostBreakdownChart() {
 
           <div className="filter-group">
             <label htmlFor="from-date">From:</label>
-            <input id="from-date" type="date" value={fromDate} onChange={handleFromDateChange} />
+            <input
+              id="from-date"
+              type="date"
+              value={fromDate}
+              onChange={handleFromDateChange}
+              max={today}
+            />
           </div>
 
           <div className="filter-group">
             <label htmlFor="to-date">To:</label>
-            <input id="to-date" type="date" value={toDate} onChange={handleToDateChange} />
+            <input
+              id="to-date"
+              type="date"
+              value={toDate}
+              onChange={handleToDateChange}
+              max={today}
+            />
           </div>
         </div>
       </div>
@@ -194,15 +213,18 @@ function CostBreakdownChart() {
   if (!selectedProject || !fromDate || !toDate) {
     return (
       <div className="cost-breakdown-container">
-        <h2 className="chart-title">Actual Cost Breakdown by Type of Expenditure</h2>
+        <h2 className="chart-title">
+          Actual Cost Breakdown {selectedProjectName && `for ${selectedProjectName}`} by Type of
+          Expenditure
+        </h2>
         <div className="filter-container">
           <div className="filter-group">
             <label htmlFor="project-select">Project:</label>
             <select id="project-select" value={selectedProject} onChange={handleProjectChange}>
               <option value="">Select a project</option>
-              {uniqueProjectIds.map(projectId => (
-                <option key={projectId} value={projectId}>
-                  {projectId}
+              {uniqueProjectIds.map(project => (
+                <option key={project.id} value={project.id}>
+                  {project.name}
                 </option>
               ))}
             </select>
@@ -210,12 +232,24 @@ function CostBreakdownChart() {
 
           <div className="filter-group">
             <label htmlFor="from-date">From:</label>
-            <input id="from-date" type="date" value={fromDate} onChange={handleFromDateChange} />
+            <input
+              id="from-date"
+              type="date"
+              value={fromDate}
+              onChange={handleFromDateChange}
+              max={today}
+            />
           </div>
 
           <div className="filter-group">
             <label htmlFor="to-date">To:</label>
-            <input id="to-date" type="date" value={toDate} onChange={handleToDateChange} />
+            <input
+              id="to-date"
+              type="date"
+              value={toDate}
+              onChange={handleToDateChange}
+              max={today}
+            />
           </div>
         </div>
         <div className="select-filters-message">
@@ -229,15 +263,18 @@ function CostBreakdownChart() {
   if (!loading && chartData.length === 0 && selectedProject) {
     return (
       <div className="cost-breakdown-container">
-        <h2 className="chart-title">Actual Cost Breakdown by Type of Expenditure</h2>
+        <h2 className="chart-title">
+          Actual Cost Breakdown {selectedProjectName && `for ${selectedProjectName}`} by Type of
+          Expenditure
+        </h2>
         <div className="filter-container">
           <div className="filter-group">
             <label htmlFor="project-select">Project:</label>
             <select id="project-select" value={selectedProject} onChange={handleProjectChange}>
               <option value="">Select a project</option>
-              {uniqueProjectIds.map(projectId => (
-                <option key={projectId} value={projectId}>
-                  {projectId}
+              {uniqueProjectIds.map(project => (
+                <option key={project.id} value={project.id}>
+                  {project.name}
                 </option>
               ))}
             </select>
@@ -245,12 +282,24 @@ function CostBreakdownChart() {
 
           <div className="filter-group">
             <label htmlFor="from-date">From:</label>
-            <input id="from-date" type="date" value={fromDate} onChange={handleFromDateChange} />
+            <input
+              id="from-date"
+              type="date"
+              value={fromDate}
+              onChange={handleFromDateChange}
+              max={today}
+            />
           </div>
 
           <div className="filter-group">
             <label htmlFor="to-date">To:</label>
-            <input id="to-date" type="date" value={toDate} onChange={handleToDateChange} />
+            <input
+              id="to-date"
+              type="date"
+              value={toDate}
+              onChange={handleToDateChange}
+              max={today}
+            />
           </div>
         </div>
         <div className="no-data-message">
@@ -262,16 +311,19 @@ function CostBreakdownChart() {
 
   return (
     <div className="cost-breakdown-container">
-      <h2 className="chart-title">Actual Cost Breakdown by Type of Expenditure</h2>
+      <h2 className="chart-title">
+        Actual Cost Breakdown {selectedProjectName && `for ${selectedProjectName}`} by Type of
+        Expenditure
+      </h2>
 
       <div className="filter-container">
         <div className="filter-group">
           <label htmlFor="project-select">Project:</label>
           <select id="project-select" value={selectedProject} onChange={handleProjectChange}>
             <option value="">Select a project</option>
-            {uniqueProjectIds.map(projectId => (
-              <option key={projectId} value={projectId}>
-                {projectId}
+            {uniqueProjectIds.map(project => (
+              <option key={project.id} value={project.id}>
+                {project.name}
               </option>
             ))}
           </select>
@@ -279,12 +331,24 @@ function CostBreakdownChart() {
 
         <div className="filter-group">
           <label htmlFor="from-date">From:</label>
-          <input id="from-date" type="date" value={fromDate} onChange={handleFromDateChange} />
+          <input
+            id="from-date"
+            type="date"
+            value={fromDate}
+            onChange={handleFromDateChange}
+            max={today}
+          />
         </div>
 
         <div className="filter-group">
           <label htmlFor="to-date">To:</label>
-          <input id="to-date" type="date" value={toDate} onChange={handleToDateChange} />
+          <input
+            id="to-date"
+            type="date"
+            value={toDate}
+            onChange={handleToDateChange}
+            max={today}
+          />
         </div>
       </div>
 
