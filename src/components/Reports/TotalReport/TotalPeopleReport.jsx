@@ -157,7 +157,7 @@ function TotalPeopleReport(props) {
         setShowWarning(false);
       }
     }
-    //if timedifference is one month
+    // if timedifference is one month
      if (diffDate <= oneMonth) {
       setShowWarning(true);
       }

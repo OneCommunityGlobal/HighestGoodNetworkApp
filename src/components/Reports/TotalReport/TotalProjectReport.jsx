@@ -142,7 +142,7 @@ function TotalProjectReport(props) {
       if (diffDate <= oneMonth * 12) { setShowMonthly(true); setShowWarning(false);}
       if (startDate.getFullYear() !== endDate.getFullYear()) {setShowYearly(true);setShowWarning(false);}
     }
-     //if timedifference is one month
+     // if timedifference is one month
      if (diffDate <= oneMonth) {
         setShowWarning(true);
       }
