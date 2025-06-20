@@ -122,6 +122,7 @@ import LogTools from './components/BMDashboard/LogTools/LogTools';
 import EquipmentUpdate from './components/BMDashboard/Tools/EquipmentUpdate';
 
 import YoutubeFeatures from './components/Announcements/YoutubeFeatures';
+import YoutubeUploadHistory from './components/Announcements/YoutubeUploadHistory';
 
 const ReusableListView = lazy(() => import('./components/BMDashboard/ReusableList'));
 const ConsumableListView = lazy(() => import('./components/BMDashboard/ConsumableList'));
@@ -341,7 +342,13 @@ export default (
         />
         <ProtectedRoute
           path="/announcements/youtube-posting"
-          exact component={YoutubeFeatures}
+          exact
+          component={YoutubeFeatures}
+        />
+        <ProtectedRoute
+          path="/announcements/youtube-posting/history"
+          exact
+          component={YoutubeUploadHistory}
         />
         <ProtectedRoute
           path="/sendemail"

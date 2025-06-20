@@ -2,7 +2,9 @@
 
 h2,
 h3 {
-  color: #4285f4;
+  color: #3ea0cb;
+  font-size: 28px;
+  margin: 0 0 8px;
 }
 
 label {
