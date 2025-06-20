@@ -2,7 +2,10 @@
 /* eslint-disable no-shadow */
 /* eslint-disable react/require-default-props */
 /* eslint-disable react/forbid-prop-types */
-import { useEffect } from 'react';
+
+// import Select, { components } from 'react-select';
+// import { FixedSizeList as List } from 'react-window';
+import { useEffect, useMemo } from 'react';
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -101,6 +104,8 @@ const initialState = {
     green: false,
     navy: false,
   },
+  // membersFromUnselectedTeam: [],
+  selectedExtraMembers: [],
 };
 
 const intialPermissionState = {
@@ -109,6 +114,34 @@ const intialPermissionState = {
   codeEditPermission: false,
   canSeeBioHighlight: false,
 };
+
+// Custom option component with checkbox
+// function Option(props) {
+//   return (
+//     <components.Option {...props}>
+//       <input
+//         type="checkbox"
+//         checked={props.isSelected}
+//         onChange={() => {}}
+//         style={{ marginRight: 10 }}
+//       />
+//       {props.label}
+//     </components.Option>
+//   );
+// }
+
+// // Virtualized menu list
+// function MenuList(props) {
+//   const height = 35 * Math.min(8, props.children.length); // up to 8 visible
+//   return (
+//     <components.MenuList {...props}>
+//       <List height={height} itemCount={props.children.length} itemSize={35} width="100%">
+//         {({ index, style }) => <div style={style}>{props.children[index]}</div>}
+//       </List>
+//     </components.MenuList>
+//   );
+// }
+
 /* eslint-disable react/function-component-definition */
 const WeeklySummariesReport = props => {
   const { loading, infoCollections, getInfoCollections } = props;
@@ -358,6 +391,15 @@ const WeeklySummariesReport = props => {
           _ids: teamCodeGroup?.noCodeLabel?.map(item => item._id),
         });
 
+      // // Add members from all unselected team to membersFromUnselectedTeam
+      // const membersFromUnselectedTeam = [];
+      // summariesCopy.forEach(summary => {
+      //   membersFromUnselectedTeam.push({
+      //     label: `${summary.firstName} ${summary.lastName}`,
+      //     value: summary._id,
+      //   });
+      // });
+
       const chartData = [];
 
       // Store the data in the tab-specific state
@@ -383,6 +425,7 @@ const WeeklySummariesReport = props => {
         tabsLoading: {
           [activeTab]: false,
         },
+        // membersFromUnselectedTeam,
       }));
 
       // Now load info collections
@@ -402,6 +445,28 @@ const WeeklySummariesReport = props => {
       return null;
     }
   };
+
+  const membersFromUnselectedTeam = useMemo(() => {
+    // Add members from all unselected team to membersFromUnselectedTeam
+    const selectedMemberSet = new Set();
+    state.selectedCodes.forEach(code => {
+      if (code.value === '') return;
+      const team = state.tableData[code.value];
+      team.forEach(member => {
+        selectedMemberSet.add(member._id);
+      });
+    });
+    const membersFromUnselectedTeam = [];
+    state.summaries.forEach(summary => {
+      if (!selectedMemberSet.has(summary._id)) {
+        membersFromUnselectedTeam.push({
+          label: `${summary.firstName} ${summary.lastName}`,
+          value: summary._id,
+        });
+      }
+    });
+    return membersFromUnselectedTeam;
+  }, [state.selectedCodes, state.summaries]);
 
   const onSummaryRecepientsPopupClose = () => {
     setState(prev => ({
@@ -1063,6 +1128,13 @@ const WeeklySummariesReport = props => {
     }
   };
 
+  const handleSelectExtraMembersChange = event => {
+    setState(prev => ({
+      ...prev,
+      selectedExtraMembers: event,
+    }));
+  };
+
   // Setup effect hooks for initial data load
   useEffect(() => {
     let isMounted = true;
@@ -1233,7 +1305,7 @@ const WeeklySummariesReport = props => {
             </>
           )}
           <MultiSelect
-            className={`multi-select-filter text-dark ${darkMode ? 'dark-mode' : ''} ${
+            className={`multi-select-filter top-select text-dark ${darkMode ? 'dark-mode' : ''} ${
               state.teamCodeWarningUsers.length > 0 ? 'warning-border' : ''
             }`}
             options={state.teamCodes.map(item => {
@@ -1259,22 +1331,7 @@ const WeeklySummariesReport = props => {
         </Col>
       </Row>
 
-      {state.chartShow && (
-        <Row>
-          <Col lg={{ size: 6, offset: 1 }} md={{ size: 12 }} xs={{ size: 11 }}>
-            <SelectTeamPieChart
-              chartData={state.chartData}
-              COLORS={state.COLORS}
-              total={state.total}
-              style={{ width: '100%' }}
-            />
-          </Col>
-          <Col lg={{ size: 4 }} md={{ size: 12 }} xs={{ size: 11 }} style={{ width: '100%' }}>
-            <TeamChart teamData={state.structuredTableData} darkMode={darkMode} />
-          </Col>
-        </Row>
-      )}
-      <Row style={{ marginBottom: '10px' }}>
+      <Row>
         <Col lg={{ size: 10, offset: 1 }} xs={{ size: 8, offset: 4 }}>
           <div className="filter-container">
             {hasPermissionToFilter && (
@@ -1377,6 +1434,59 @@ const WeeklySummariesReport = props => {
           </div>
         </Col>
       </Row>
+
+      {/* Select individual members */}
+      <Row>
+        <Col
+          lg={{ size: 5, offset: 1 }}
+          md={{ size: 6 }}
+          xs={{ size: 6 }}
+          style={{ position: 'relative' }}
+        >
+          <div>Select Extra Members</div>
+          <MultiSelect
+            className={`multi-select-filter text-dark ${darkMode ? 'dark-mode' : ''}`}
+            options={membersFromUnselectedTeam}
+            value={state.selectedExtraMembers}
+            onChange={handleSelectExtraMembersChange}
+          />
+          {/* <Select
+            isMulti
+            isSearchable
+            options={membersFromUnselectedTeam}
+            value={state.selectedExtraMembers}
+            onChange={handleSelectExtraMembersChange}
+            components={{ Option, MenuList }}
+            closeMenuOnSelect={false}
+            hideSelectedOptions={false}
+            placeholder="Search extra individuals..."
+            controlShouldRenderValue={false}
+            inputValue={inputValue}
+            onInputChange={(newValue, actionMeta) => {
+              if (actionMeta.action !== 'set-value') {
+                setInputValue(newValue);
+              }
+            }}
+            blurInputOnSelect={false}
+          /> */}
+        </Col>
+      </Row>
+
+      {state.chartShow && (
+        <Row>
+          <Col lg={{ size: 6, offset: 1 }} md={{ size: 12 }} xs={{ size: 11 }}>
+            <SelectTeamPieChart
+              chartData={state.chartData}
+              COLORS={state.COLORS}
+              total={state.total}
+              style={{ width: '100%' }}
+            />
+          </Col>
+          <Col lg={{ size: 4 }} md={{ size: 12 }} xs={{ size: 11 }} style={{ width: '100%' }}>
+            <TeamChart teamData={state.structuredTableData} darkMode={darkMode} />
+          </Col>
+        </Row>
+      )}
       {permissionState.codeEditPermission && state.selectedCodes && state.selectedCodes.length > 0 && (
         <Row style={{ marginBottom: '10px' }}>
           <Col lg={{ size: 5, offset: 1 }} xs={{ size: 5, offset: 1 }}>
