@@ -247,9 +247,6 @@ class UserManagement extends React.PureComponent {
     );
   };
 
-  /**
-   * Creates the table body elements after applying the search filter and return it.
-   */
   userTableElements = (userProfiles, rolesPermissions, timeOffRequests, darkMode, isMobile, mobileFontSize) => {
     if (userProfiles && userProfiles.length > 0) {
       const usersSearchData = this.filteredUserList(userProfiles);
