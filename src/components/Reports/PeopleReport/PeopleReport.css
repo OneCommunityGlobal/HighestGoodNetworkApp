@@ -209,16 +209,21 @@ body {
 }
 
 .people-report-time-logs-wrapper {
+  display: flex;
   flex-wrap: wrap;
+  gap: 1rem;
   justify-content: space-between;
-  color: white;
+  /* align-items: stretch; */
+  margin-bottom: 1.5rem;
 }
 
+
 .people-report-time-log-block {
-  max-height: 100px;
-  width: 270px;
+  flex: 1 1 calc(25% - 1rem); 
+  min-width: 180px;
+  max-width: 100%;
+  height: auto;
   white-space: nowrap;
-  margin-bottom: 16px;
 }
 
 @media (min-width: 850px) {
@@ -279,14 +284,6 @@ body {
   padding-right: 1rem;
 }
 
-.report-stats {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  word-break: break-word;
-  max-width: 100vw;
-}
 
 
 @media (max-width: 1100px) {
@@ -310,3 +307,62 @@ body {
   }
 
 }
+
+/* .people-report-flex-layout {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: space-between;
+  width: 100%;
+  gap: 20px;
+   flex-wrap: nowrap;
+  height: 100%;
+} */
+.people-report-flex-layout {
+  display: flex;
+  align-items: flex-start; 
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  gap: 20px;
+}
+
+.people-report-wrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 24px 32px;
+}
+
+.people-report-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.people-report-right {
+  width: 270px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  margin-top: 2rem;
+}
+
+.people-report-profile-wrapper {
+  position: relative;
+  margin-top: 2.3em; 
+  width: 100%;
+}
+
+.report-stats {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 16px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.08);
+}
+

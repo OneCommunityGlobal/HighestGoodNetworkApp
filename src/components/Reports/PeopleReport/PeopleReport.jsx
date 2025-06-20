@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { FiUser } from 'react-icons/fi';
 import { toast } from 'react-toastify';
-import { Row, Col, Spinner, Alert } from 'reactstrap';
+import { Spinner, Alert } from 'reactstrap';
 import { formatDate } from '../../../utils/formatDate';
 import {
   updateUserProfileProperty,
@@ -85,6 +85,7 @@ class PeopleReport extends Component {
     this.setEndDate = this.setEndDate.bind(this);
   }
 
+
   async componentDidMount() {
     const { match } = this.props;
     const { fromDate, toDate } = this.state;
@@ -98,7 +99,6 @@ class PeopleReport extends Component {
       await this.props.getTimeEntriesForPeriod(userId, fromDate, toDate);
 
       const { userProfile, userTask, userProjects, timeEntries, auth } = this.props;
-
       this.setState({
         // eslint-disable-next-line react/no-unused-state
         userId,
@@ -122,7 +122,17 @@ class PeopleReport extends Component {
         },
       });
     }
+   
   }
+
+  async componentDidUpdate(prevProps, prevState) {
+  if (prevState.userTask !== this.state.userTask ||
+      prevState.userProjects !== this.state.userProjects ||
+      prevState.timeEntries !== this.state.timeEntries ||
+      prevState.isLoading !== this.state.isLoading) {
+    // this.syncPanelHeights();
+  }
+}
 
   setStartDate(date) {
     this.setState(() => {
@@ -274,7 +284,17 @@ class PeopleReport extends Component {
   //     .subtract(offset, 'weeks')
   //     .format('YYYY-MM-DD');
   // }
+// syncPanelHeights = () => {
+// const leftEl = this.leftContentRef?.current;
+//   const rightEl = this.rightContentRef?.current;
 
+//   if (leftEl && rightEl) {
+//     requestAnimationFrame(() => {
+//       const leftHeight = leftEl.offsetHeight;
+//       rightEl.style.height = `${leftHeight}px`;
+//     });
+//   }
+// };
 
   render() {
     const {
@@ -455,9 +475,9 @@ class PeopleReport extends Component {
 
     return (
       <div className={`container-people-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
-        <Row style={{ justifyContent: 'center' }} >
+        <div  className="people-report-flex-layout" >
 
-          <Col xs="12" md="9" lg="9" >
+          <div xs="12" md="9" lg="9"   className="people-report-left" >
             <ReportPage darkMode={darkMode}>
 
 
@@ -472,7 +492,7 @@ class PeopleReport extends Component {
                   <p>Weekly Committed Hours</p>
                 </ReportPage.ReportBlock>
 
-                {(userProfile.isActive == null || userProfile.isActive) && (
+                {(userProfile.isActive === true) && (
 
                   <ReportPage.ReportBlock
                     firstColor="#b368d2"
@@ -611,8 +631,8 @@ class PeopleReport extends Component {
             </div>
           )} */}
             </ReportPage>
-          </Col>
-          <Col style={{ paddingTop: '40px', justifyContent: 'center', minWidth: '230px' }} xs="12" md="3" lg="3" className='order-column'>
+          </div>
+          <div  className="people-report-right"  xs="12" md="3" lg="3">
             <ReportPage.ReportHeader
               src={profilePic}
               avatar={profilePic ? undefined : <FiUser />}
@@ -621,7 +641,7 @@ class PeopleReport extends Component {
             >
 
               <div
-                style={{ minHeight: '468px' }}
+                // style={{ minHeight: '200px' }}
                 className={`report-stats ${darkMode ? 'text-light' : ''}`}
               >
                 <p>
@@ -679,8 +699,8 @@ class PeopleReport extends Component {
             </ReportPage.ReportHeader>
 
 
-          </Col >
-        </Row>
+          </div >
+        </div>
       </div>
     );
   }
