@@ -223,9 +223,7 @@ function YoutubeUploadHistory() {
                       <strong>Video ID:</strong> {item.videoId || 'Not Available'}
                     </p>
                     {item.error && (
-                      <p style={{ color: 'red', fontWeight: 'bold' }}>
-                        Error: {item.error}
-                      </p>
+                      <p style={{ color: 'red', fontWeight: 'bold' }}>Error: {item.error}</p>
                     )}
                     {item.videoId && (
                       <a
