@@ -1,0 +1,126 @@
+.requestResourceContainer {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 30px;
+  background-color: #f9fbfc;
+  border: 1px solid #dfe3e8;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.formTitle {
+  text-align: left;
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: #333;
+  font-weight: bold;
+}
+
+.requestResourceForm {
+  display: flex;
+  flex-direction: column;
+  gap:4px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.formGroup label {
+  font-size: 14px;
+  font-weight: bold;
+  color: #555;
+  margin-bottom: 5px;
+}
+
+.formGroup input,
+.formGroup textarea {
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccd1d9;
+  border-radius: 5px;
+}
+
+textarea {
+  resize: none;
+}
+
+.formGroup.largeWidth input {
+  width: 450px;
+}
+
+.formGroup.Date input {
+  width: 150px;
+}
+
+.phoneInput {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 200px;
+  position: relative;
+}
+
+.phoneInput #countryCode {
+  width: 60px;
+  text-align: center;
+  position: relative;
+  padding-right: 20px;
+}
+
+.phoneInput #countryCode::after {
+  content: '';
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid #555;
+  /* Arrow color */
+  pointer-events: none;
+}
+
+.phoneInput #phoneNumber {
+  flex: 1;
+}
+
+.buttonGroup {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.cancelButton,
+.submitButton {
+  width: auto;
+  padding: 8px 30px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.cancelButton {
+  background-color: #f8f9fa;
+  border: 1px solid #dfe3e8;
+  color: #555;
+}
+
+.cancelButton:hover {
+  background-color: #e4e6e9;
+}
+
+.submitButton {
+  background-color: #183d65;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+}
+
+.submitButton:hover {
+  background-color: #0056b3;
+}
