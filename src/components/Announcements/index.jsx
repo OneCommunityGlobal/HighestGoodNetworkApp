@@ -17,6 +17,7 @@ function Announcements({ title, email: initialEmail, history }) {
   const [headerContent, setHeaderContent] = useState('');
   const [showEditor, setShowEditor] = useState(true);
   const [isFileUploaded, setIsFileUploaded] = useState(false);
+  const editorRef = useRef(null);
 
   useEffect(() => {
     setShowEditor(false);
@@ -124,6 +125,9 @@ function Announcements({ title, email: initialEmail, history }) {
               init={editorInit}
               onEditorChange={content => {
                 setEmailContent(content);
+              }}
+              onInit={(evt, editor) => {
+                editorRef.current = editor;
               }}
             />
           )}
