@@ -1,6 +1,7 @@
 // ToolsMostInNeedReplacementChartJS.jsx
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import Select from 'react-select';
 import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -11,120 +12,129 @@ import {
   Tooltip as ChartTooltip,
   Legend,
 } from 'chart.js';
+import axios from 'axios';
 import './ToolsMostInNeedReplacement.css';
+import { ENDPOINTS } from '../../../utils/URL';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, ChartTooltip, Legend);
 
 const DATE_MODES = ['ALL', 'CUSTOM'];
 
-// Mock data including project and date fields
-const SAMPLE_DATA = [
-  { project: 'Project A', date: '2025-05-01', toolName: 'Tool A', requirementSatisfiedPercentage: 30 },
-  { project: 'Project A', date: '2025-05-02', toolName: 'Tool B', requirementSatisfiedPercentage: 45 },
-  { project: 'Project B', date: '2025-05-01', toolName: 'Tool C', requirementSatisfiedPercentage: 60 },
-  { project: 'Project C', date: '2025-05-03', toolName: 'Tool D', requirementSatisfiedPercentage: 80 },
-];
-
 export default function ToolsMostInNeedReplacementChartJS() {
-  const darkMode = useSelector(state => state.theme.darkMode);
+  const darkMode = useSelector((state) => state.theme.darkMode);
 
-  const [project, setProject] = useState('all');
-  const [dateMode, setDateMode] = useState('ALL');
-  const [dates, setDates] = useState({ start: '', end: '' });
+  // State variables
+  const [projects, setProjects]         = useState([]);          // [{projectId, projectName}]
+  const [selectedProject, setSelected]  = useState(null);        // react-select option
+  const [data, setData]                 = useState([]);          // chart rows
+  const [dateMode, setDateMode]         = useState('ALL');
+  const [dates, setDates]               = useState({ startDate: '', endDate: '' });
+  const [loading, setLoading]           = useState(false);
+  const [error, setError]               = useState('');
 
-  // Build project dropdown options
-  const projectOptions = useMemo(() => {
-    const uniq = Array.from(new Set(SAMPLE_DATA.map(d => d.project)));
-    return ['all', ...uniq];
+  // Fetch projects on mount
+  useEffect(() => {
+    (async () => {
+      try {
+        const { data: list } = await axios.get(ENDPOINTS.PROJECTS_REQUIRED_TOOLS_REPLACEMENT);
+        setProjects(list);
+        if (list.length) {
+          // pre-select first project for widget mode
+          setSelected({ value: list[0].projectId, label: list[0].projectName });
+        }
+      } catch (err) {
+        setError('Unable to load projects');
+      }
+    })();
   }, []);
+
+  // Fetch chart data when selectedProject or date range changes
+  useEffect(() => {
+    if (!selectedProject) return;           // wait until a project is chosen
+
+    (async () => {
+      setLoading(true);
+      setError('');
+      try {
+        const url = ENDPOINTS.TOOLS_REPLACEMENT_BY_PROJECT(
+          selectedProject.value,
+          dates.startDate || null,
+          dates.endDate   || null,
+        );
+        const { data: rows } = await axios.get(url);
+
+        if (rows && rows.length) {
+          const sorted = [...rows].sort(
+            (a, b) => a.requirementSatisfiedPercentage - b.requirementSatisfiedPercentage,
+          );
+          setData(sorted);
+        } else {
+          setData([]);
+        }
+      } catch (err) {
+        setError('Unable to load tool data');
+        setData([]);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [selectedProject, dateMode, dates]);
 
   // Handlers
-  const onProjectChange = useCallback(e => setProject(e.target.value), []);
-  const onDateModeChange = useCallback(e => {
+  const onProjectChange = useCallback((opt) => setSelected(opt), []);
+  const onDateModeChange = useCallback((e) => {
     const mode = e.target.value;
     setDateMode(mode);
-    if (mode === 'ALL') {
-      setDates({ start: '', end: '' });
-    }
+    if (mode === 'ALL') setDates({ startDate: '', endDate: '' });
   }, []);
-  const onStartDateChange = useCallback(e => {
-    const { value } = e.target;
-    setDates(d => ({ ...d, start: value }));
+  const onStartDateChange = useCallback((e) => {
+    const val = e?.target?.value ?? '';
+    setDates((d) => ({ ...d, startDate: val }));
   }, []);
-  const onEndDateChange = useCallback(e => {
-    const { value } = e.target;
-    setDates(d => ({ ...d, end: value }));
+  const onEndDateChange   = useCallback((e) => {
+    const val = e?.target?.value ?? '';
+    setDates((d) => ({ ...d, endDate: val }));
   }, []);
 
-  // Filter & sort the data
-  const filtered = useMemo(() => {
-    return SAMPLE_DATA.filter(item => {
-      const okProj = project === 'all' || item.project === project;
-      let okDate = true;
-      if (dateMode === 'CUSTOM' && dates.start && dates.end) {
-        okDate = item.date >= dates.start && item.date <= dates.end;
-      }
-      return okProj && okDate;
-    });
-  }, [project, dateMode, dates]);
+  // Memoized values
+  const projectOptions = useMemo(
+    () => projects.map((p) => ({ value: p.projectId, label: p.projectName })),
+    [projects],
+  );
 
-  const sorted = useMemo(() => {
-    return [...filtered].sort((a, b) => a.requirementSatisfiedPercentage - b.requirementSatisfiedPercentage);
-  }, [filtered]);
-
-  // Prepare Chart.js data
+  // Chart data and options
   const chartData = useMemo(() => ({
-    labels: sorted.map(d => d.toolName),
-    datasets: [
-      {
-        label: '% of requirement satisfied',
-        data: sorted.map(d => d.requirementSatisfiedPercentage),
-        backgroundColor: '#4caf50',
-        borderRadius: 4,
-        barPercentage: 0.6,
-        categoryPercentage: 0.6,
-      },
-    ],
-  }), [sorted]);
+    labels: data.map((d) => d.toolName),
+    datasets: [{
+      label: '% of requirement satisfied',
+      data:  data.map((d) => d.requirementSatisfiedPercentage),
+      backgroundColor: '#4caf50',
+      borderRadius: 4,
+      barPercentage: 0.6,
+      categoryPercentage: 0.6,
+    }],
+  }), [data]);
 
-  // Chart.js options
   const options = useMemo(() => ({
     indexAxis: 'y',
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: { display: false },
-      tooltip: { callbacks: { label: ctx => `${ctx.parsed.x}%` } },
+      legend:  { display: false },
+      tooltip: { callbacks: { label: (ctx) => `${ctx.parsed.x}%` } },
     },
     scales: {
       x: {
         beginAtZero: true,
         max: 100,
-        title: {
-          display: true,
-          text: '% of requirement satisfied',
-          font: { size: 12 },
-          color: darkMode ? '#fff' : '#666',
-        },
-        ticks: {
-          callback: val => `${val}%`,
-          color: darkMode ? '#fff' : '#666',
-          font: { size: 11 },
-        },
-        grid: { display: false },
+        title: { display: true, text: '% of requirement satisfied', font: { size: 12 }, color: darkMode ? '#fff' : '#666' },
+        ticks: { callback: (v) => `${v}%`, color: darkMode ? '#fff' : '#666', font: { size: 11 } },
+        grid:  { display: false },
       },
       y: {
-        title: {
-          display: true,
-          text: 'Tool Name',
-          font: { size: 12 },
-          color: darkMode ? '#fff' : '#666',
-        },
-        ticks: {
-          color: darkMode ? '#fff' : '#666',
-          font: { size: 11 },
-        },
-        grid: { display: false },
+        title: { display: true, text: 'Tool Name', font: { size: 12 }, color: darkMode ? '#fff' : '#666' },
+        ticks:  { color: darkMode ? '#fff' : '#666', font: { size: 11 } },
+        grid:  { display: false },
       },
     },
     layout: { padding: { left: 0, right: 0, top: 0, bottom: 0 } },
@@ -137,21 +147,34 @@ export default function ToolsMostInNeedReplacementChartJS() {
       <div className="filters-container">
         <div className="filter-group">
           <label>Project:</label>
-          <select className="filter-select" value={project} onChange={onProjectChange}>
-            {projectOptions.map(opt => (
-              <option key={opt} value={opt}>
-                {opt === 'all' ? 'All Projects' : opt}
-              </option>
-            ))}
-          </select>
+          <Select
+            id="project-select"
+            className="project-select"
+            classNamePrefix="select"
+            value={selectedProject}
+            onChange={onProjectChange}
+            options={projectOptions}
+            placeholder="Select a project ID to view data"
+            isClearable={false}
+            isDisabled={!projects.length}
+            styles={
+              darkMode
+                ? {
+                    control:  (base) => ({ ...base, backgroundColor: '#2c3344', borderColor: '#364156' }),
+                    menu:     (base) => ({ ...base, backgroundColor: '#2c3344' }),
+                    option:   (base, st) => ({ ...base, backgroundColor: st.isFocused ? '#364156' : '#2c3344', color: '#e0e0e0' }),
+                    singleValue: (b) => ({ ...b, color: '#e0e0e0' }),
+                    placeholder: (b) => ({ ...b, color: '#aaaaaa' }),
+                  }
+                : {}
+            }
+          />
         </div>
 
         <div className="filter-group">
           <label>Date Mode:</label>
           <select className="filter-select" value={dateMode} onChange={onDateModeChange}>
-            {DATE_MODES.map(mode => (
-              <option key={mode} value={mode}>{mode}</option>
-            ))}
+            {DATE_MODES.map((m) => <option key={m} value={m}>{m}</option>)}
           </select>
         </div>
 
@@ -159,29 +182,24 @@ export default function ToolsMostInNeedReplacementChartJS() {
           <>
             <div className="filter-group">
               <label>Start Date:</label>
-              <input
-                type="date"
-                className="filter-input"
-                value={dates.start}
-                onChange={onStartDateChange}
-              />
+              <input type="date" className="filter-input" value={dates.startDate} onChange={onStartDateChange} />
             </div>
             <div className="filter-group">
               <label>End Date:</label>
-              <input
-                type="date"
-                className="filter-input"
-                value={dates.end}
-                onChange={onEndDateChange}
-              />
+              <input type="date" className="filter-input" value={dates.endDate} onChange={onEndDateChange} />
             </div>
           </>
         )}
       </div>
 
-      <div className="chart-wrapper">
-        <Bar data={chartData} options={options} />
-      </div>
+      {error && <p className="error">{error}</p>}
+      {loading ? (
+        <p>Loading…</p>
+      ) : (
+        <div className="chart-wrapper">
+          <Bar data={chartData} options={options} />
+        </div>
+      )}
     </div>
   );
 }

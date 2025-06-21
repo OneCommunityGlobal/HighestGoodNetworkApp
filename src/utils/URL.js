@@ -245,6 +245,15 @@ export const ENDPOINTS = {
   BM_ISSUE_FORM: `${APIEndpoint}/bm/issue/add`,
   BM_ISSUE_CHART: `${APIEndpoint}/bm/issues`,
   BM_ISSUE_UPDATE: issueId => `${APIEndpoint}/bm/issues/${issueId}`,
+  PROJECTS_REQUIRED_TOOLS_REPLACEMENT: `${APIEndpoint}/bm/tools-replacement/projects`,
+  TOOLS_REPLACEMENT_BY_PROJECT: (projectId, startDate, endDate) => {
+    let url = `${APIEndpoint}/bm/projects/${projectId}/tools-replacement`;
+    const params = [];
+    if (startDate) params.push(`startDate=${startDate}`);
+    if (endDate) params.push(`endDate=${endDate}`);
+    if (params.length > 0) url += `?${params.join('&')}`;
+    return url;
+  },
 
   BM_TAGS: `${APIEndpoint}/bm/tags`,
   BM_TAG_ADD: `${APIEndpoint}/bm/tags`,
