@@ -61,7 +61,7 @@ import { allUsersTimeEntriesReducer } from './allUsersTimeEntriesReducer';
 import issueReducer from './bmdashboard/issueReducer';
 import HGNFormReducer from './hgnFormReducers';
 // import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
-
+import userSkillsReducer from './userSkillsReducer';
 // community portal
 import noShowVizReducer from './communityPortal/noShowVizReducer';
 
@@ -128,6 +128,7 @@ const localReducers = {
 };
 
 const sessionReducers = {
+  userSkills: userSkillsReducer,
   hgnForm: HGNFormReducer,
   userPagination: changeUserPageStatusReducer,
   userProfileEdit: enableUserInfoEditReducer,

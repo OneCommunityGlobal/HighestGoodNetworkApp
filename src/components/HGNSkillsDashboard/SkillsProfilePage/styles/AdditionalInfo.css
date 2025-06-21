@@ -1,0 +1,17 @@
+.workBox{
+  display: flex;
+  flex-direction: column;
+}
+.custom-list {
+  list-style-type: none;
+  padding-left: 0%; 
+
+}
+.custom-list li:before {
+  content:"-";
+  margin-right: 0rem;
+}
+.outlined-box {
+  border:rgb(28, 36, 36);
+  /* background-color: rgb(185, 48, 48); */
+}
