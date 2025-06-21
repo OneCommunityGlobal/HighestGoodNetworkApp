@@ -153,7 +153,7 @@ function InjuriesOverTimeChart() {
             <LabelList
               dataKey="totalInjuries"
               position="top"
-              style={{ fontSize: '12px', fill: '#333' }}
+              style={{ fontSize: '12px', fill: 'var(--chart-label)' }}
             />
           </Line>
         </LineChart>

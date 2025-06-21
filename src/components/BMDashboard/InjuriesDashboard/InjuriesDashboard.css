@@ -4,6 +4,7 @@
   --card: #f8f9fa;
   --accent: #ff7300;
   --border: #d0d0d0;
+  --chart-label: #333;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -13,6 +14,7 @@
     --card: #23272a;
     --accent: #ffb86c;
     --border: #333;
+    --chart-label: #fff;
   }
 }
 
