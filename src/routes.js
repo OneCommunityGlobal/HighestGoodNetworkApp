@@ -91,11 +91,13 @@ import AttendanceNoShow from './components/AttendanceSystem/AttendanceNoShowChar
 
 
 import AddTeamMember from './components/BMDashboard/AddTeamMember/AddTeamMember';
+import InteractiveMap from './components/BMDashboard/InteractiveMap/InteractiveMap';
 // eslint-disable-next-line import/order
 import IssueChart from './components/BMDashboard/Issues/issueCharts';
 import BMTimeLogger from './components/BMDashboard/BMTimeLogger/BMTimeLogger';
 import Issue from './components/BMDashboard/Issue/Issue';
 import CreateNewTeam from './components/BMDashboard/Team/CreateNewTeam/CreateNewTeam';
+
 // Community Portal
 import CPProtectedRoute from './components/common/CPDashboard/CPProtectedRoute';
 import CPLogin from './components/CommunityPortal/Login';
@@ -530,6 +532,7 @@ export default (
         />
         <BMProtectedRoute path="/bmdashboard/tools" exact component={Toolslist} />
         <BMProtectedRoute path="/bmdashboard/AddTeamMember" component={AddTeamMember} />
+        <BMProtectedRoute path="/bmdashboard/InteractiveMap" component={InteractiveMap} />
         <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} />
         <BMProtectedRoute path="/bmdashboard/tools/log" exact component={LogTools} />
         <BMProtectedRoute path="/bmdashboard/tools/equipmentupdate" exact component={EquipmentUpdate} />
