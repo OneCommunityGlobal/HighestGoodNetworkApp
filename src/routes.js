@@ -13,6 +13,7 @@ import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfo
 import RoleInfoCollections from 'components/UserProfile/EditableModal/RoleInfoModal';
 import LessonList from 'components/BMDashboard/LessonList/LessonListForm';
 import AddEquipmentType from 'components/BMDashboard/Equipment/Add/AddEquipmentType';
+import EDailyActivityLog from 'components/BMDashboard/Equipment/DailyActivityLog/EDailyActivityLog';
 import Announcements from 'components/Announcements';
 import JobFormBuilder from 'components/Collaboration/JobFormbuilder';
 import JobCCDashboard from 'components/JobCCDashboard/JobCCDashboard';
@@ -432,6 +433,7 @@ export default (
         />
         <BMProtectedRoute path="/bmdashboard/materials/add" fallback component={AddMaterial} />
         <BMProtectedRoute path="/bmdashboard/equipment/add" component={AddEquipmentType} />
+        <BMProtectedRoute path="/bmdashboard/T/EDailyActivityLog" component={EDailyActivityLog} />
         <BMProtectedRoute
           path="/bmdashboard/consumables/purchase"
           fallback
