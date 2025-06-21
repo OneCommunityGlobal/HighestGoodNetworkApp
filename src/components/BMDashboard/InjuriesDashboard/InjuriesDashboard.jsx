@@ -41,6 +41,7 @@ function InjuriesOverTimeChart() {
   const [chartData, setChartData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const today = new Date().toISOString().split('T')[0];
 
   // Fetch filter options on mount
   useEffect(() => {
@@ -182,7 +183,12 @@ function InjuriesOverTimeChart() {
           </div>
           <div className="filter-group">
             <label>To:</label>
-            <input type="date" value={toDate} onChange={e => setToDate(e.target.value)} />
+            <input
+              type="date"
+              value={toDate}
+              onChange={e => setToDate(e.target.value)}
+              max={today}
+            />
           </div>
         </div>
         <div className="filter-row">
