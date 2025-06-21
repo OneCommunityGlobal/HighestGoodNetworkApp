@@ -345,6 +345,7 @@ const TeamMemberTask = React.memo(
                                         className="team-member-tasks-content-link"
                                         to={task.projectId ? `/wbs/tasks/${task._id}` : '/'}
                                         data-testid={`${task.taskName}`}
+                                        title={`Created by: ${task.creatorName}`}
                                         style={{ color: darkMode ? '#339CFF' : undefined }}
                                       >
                                         <span>{`${task.num} ${task.taskName}`} </span>
