@@ -1,4 +1,4 @@
-.questionnaire-info {
+.questionnaireInfo {
   width: 50%;
   margin: 10px auto;
   border: 1px solid #c0c0c0;
@@ -7,7 +7,7 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.questionnaire-info h1 {
+.questionnaireInfo h1 {
   text-align: left;
   margin-bottom: 20px;
   margin-left: 30px;
@@ -15,7 +15,7 @@
   font-weight: 400;
 }
 
-.questionnaire-info p {
+.questionnaireInfo p {
   line-height: 1.2;
   text-align: left;
   margin-left: 30px;
@@ -23,19 +23,19 @@
   margin-bottom: 0;
 }
 
-.questionnaire-info ol {
+.questionnaireInfo ol {
   text-align: left;
   padding-left: 20px;
   margin: 0 30px;
 }
 
-.questionnaire-info hr {
+.questionnaireInfo hr {
   border: none;
   border-top: 2px solid #ddd;
   margin: 10px 0;
 }
 
-.blue-strip {
+.blueStrip {
   height: 20px;
   background-color: #5082a7;
   width: 100%;
@@ -45,7 +45,7 @@
   border-top-right-radius: 10px;
 }
 
-.edit-link {
+.editLink {
   cursor: pointer;
   color: #2a31fc;
   text-decoration: underline;
@@ -55,54 +55,54 @@
 
 
 @media (max-width: 768px) {
-  .questionnaire-info {
+  .questionnaireInfo {
     width: 80%;
     margin: 10px auto;
   }
 
-  .questionnaire-info h1,
-  .questionnaire-info p,
-  .questionnaire-info ol {
+  .questionnaireInfo h1,
+  .questionnaireInfo p,
+  .questionnaireInfo ol {
     margin-left: 20px;
     margin-right: 20px;
   }
 
-  .blue-strip {
+  .blueStrip {
     height: 15px;
   }
 
-  .edit-link {
+  .editLink {
     margin: 20px;
   }
 }
 
 @media (max-width: 480px) {
-  .questionnaire-info {
+  .questionnaireInfo {
     width: 90%;
   }
 
-  .questionnaire-info h1 {
+  .questionnaireInfo h1 {
     font-size: 1.2rem;
     margin-left: 10px;
     margin-right: 10px;
   }
 
-  .questionnaire-info p {
+  .questionnaireInfo p {
     font-size: 0.9rem;
     margin-left: 10px;
     margin-right: 10px;
   }
 
-  .questionnaire-info ol {
+  .questionnaireInfo ol {
     margin-left: 10px;
     margin-right: 10px;
   }
 
-  .blue-strip {
+  .blueStrip {
     height: 12px;
   }
 
-  .edit-link {
+  .editLink {
     margin: 10px;
   }
 }

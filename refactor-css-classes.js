@@ -39,9 +39,10 @@ const convertCSSFile = filePath => {
 
 // Step 2: Replace import statement for CSS module in JSX
 const replaceImportStatement = code => {
-  const importRegex = /import\s+['"]\.\/([a-zA-Z0-9_-]+)\.css['"];/;
-  return code.replace(importRegex, (_, cssFileName) => {
-    return `import styles from './${cssFileName}.module.css';`;
+  const importRegex = /import\s+['"](.+\/)?([a-zA-Z0-9_-]+)\.css['"];/;
+  // eslint-disable-next-line default-param-last
+  return code.replace(importRegex, (_, pathPrefix = '', cssFileName) => {
+    return `import styles from '${pathPrefix}${cssFileName}.module.css';`;
   });
 };
 
@@ -84,11 +85,11 @@ const replaceInCodeFile = filePath => {
   }
 };
 
+const cssFiles = []; // To collect all CSS files
+const codeFiles = []; // To collect all JS/JSX files
+
 // Step 3: Walk through project and process files
 const walkDir = dir => {
-  const cssFiles = []; // To collect all CSS files
-  const codeFiles = []; // To collect all JS/JSX files
-
   // First pass: Collect files into two separate arrays
   fs.readdirSync(dir).forEach(file => {
     const fullPath = path.join(dir, file);
@@ -123,7 +124,7 @@ const walkDir = dir => {
 };
 
 // 🚀 Start here: Replace with your actual project folder path
-const rootDir = 'src/components/BMDashboard/Team/CreateNewTeam';
+const rootDir = 'src/components/HGNForm';
 walkDir(rootDir);
 
 // const mapPath = path.join(__dirname, 'class-map.json');
