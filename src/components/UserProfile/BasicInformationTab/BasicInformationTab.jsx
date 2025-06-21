@@ -729,6 +729,14 @@ const BasicInformationTab = props => {
     </>
   );
 
+  function calculateDaysLeft(lastDay) {
+    if (lastDay) return 'N/A';
+    const today = moment();
+    const end = moment(endDate);
+    const daysLeft = end.diff(today, 'days');
+    return daysLeft >= 0 ? daysLeft : 'N/A';
+  }
+
   const endDateComponent = (
   <>
     {desktopDisplay ? (
@@ -781,7 +789,7 @@ const BasicInformationTab = props => {
         <Col md={desktopDisplay ? '8' : ''} className={desktopDisplay ? 'mr-5' : ''}>
           <Label className={`mr-1 ${darkMode ? 'text-light' : ''}`}>
             {userProfile.endDate
-              ? 'End Date ' + userProfile.endDate.substring(0, 10)
+              ? 'End Date ' + formatDate(userProfile.endDate) + ' -'+calculateDaysRemaining(userProfile.endDate).toString()
               : 'End Date ' + 'N/A'}
           </Label>
           {canEdit && canEditEndDate && !desktopDisplay && (
