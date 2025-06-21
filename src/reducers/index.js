@@ -65,6 +65,9 @@ import HGNFormReducer from './hgnFormReducers';
 // community portal
 import noShowVizReducer from './communityPortal/noShowVizReducer';
 
+// lbdashboard
+import wishListReducer from './lbdashboard/wishListItemReducer';
+
 // listing and biddding dashboard
 
 import {
@@ -121,6 +124,10 @@ const localReducers = {
   bmConsumables: consumablesReducer,
   bmReusables: reusablesReducer,
   dashboard: dashboardReducer,
+
+  // lbdashboard
+  wishlistItem: wishListReducer,
+
   bmissuechart: issueReducer,
   noShowViz: noShowVizReducer,
 
