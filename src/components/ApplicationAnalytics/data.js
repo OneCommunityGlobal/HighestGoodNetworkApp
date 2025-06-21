@@ -1,3 +1,5 @@
+
+// Helper function to generate dates relative to now
 const generateTimestamp = (daysAgo, hoursAgo = 0) => {
   const date = new Date();
   date.setDate(date.getDate() - daysAgo);
@@ -26,22 +28,22 @@ export const jobAnalyticsData = [
   { role: 'Legal Team', timestamp: generateTimestamp(6, 9) },
   { role: 'Legal Team', timestamp: generateTimestamp(6, 11) },
 
-  // Administrative Assistant (15 applications)
-  { role: 'Administrative Assistant', timestamp: generateTimestamp(0, 1) },
-  { role: 'Administrative Assistant', timestamp: generateTimestamp(0, 4) },
-  { role: 'Administrative Assistant', timestamp: generateTimestamp(1, 1) },
-  { role: 'Administrative Assistant', timestamp: generateTimestamp(1, 6) },
-  { role: 'Administrative Assistant', timestamp: generateTimestamp(2, 3) },
-  { role: 'Administrative Assistant', timestamp: generateTimestamp(2, 8) },
-  { role: 'Administrative Assistant', timestamp: generateTimestamp(3, 2) },
-  { role: 'Administrative Assistant', timestamp: generateTimestamp(3, 9) },
-  { role: 'Administrative Assistant', timestamp: generateTimestamp(4, 4) },
-  { role: 'Administrative Assistant', timestamp: generateTimestamp(4, 7) },
-  { role: 'Administrative Assistant', timestamp: generateTimestamp(5, 2) },
-  { role: 'Administrative Assistant', timestamp: generateTimestamp(5, 8) },
-  { role: 'Administrative Assistant', timestamp: generateTimestamp(6, 1) },
-  { role: 'Administrative Assistant', timestamp: generateTimestamp(6, 5) },
-  { role: 'Administrative Assistant', timestamp: generateTimestamp(6, 10) },
+  // Admin Assistant (15 applications) - shortened from "Administrative Assistant"
+  { role: 'Admin Assistant', timestamp: generateTimestamp(0, 1) },
+  { role: 'Admin Assistant', timestamp: generateTimestamp(0, 4) },
+  { role: 'Admin Assistant', timestamp: generateTimestamp(1, 1) },
+  { role: 'Admin Assistant', timestamp: generateTimestamp(1, 6) },
+  { role: 'Admin Assistant', timestamp: generateTimestamp(2, 3) },
+  { role: 'Admin Assistant', timestamp: generateTimestamp(2, 8) },
+  { role: 'Admin Assistant', timestamp: generateTimestamp(3, 2) },
+  { role: 'Admin Assistant', timestamp: generateTimestamp(3, 9) },
+  { role: 'Admin Assistant', timestamp: generateTimestamp(4, 4) },
+  { role: 'Admin Assistant', timestamp: generateTimestamp(4, 7) },
+  { role: 'Admin Assistant', timestamp: generateTimestamp(5, 2) },
+  { role: 'Admin Assistant', timestamp: generateTimestamp(5, 8) },
+  { role: 'Admin Assistant', timestamp: generateTimestamp(6, 1) },
+  { role: 'Admin Assistant', timestamp: generateTimestamp(6, 5) },
+  { role: 'Admin Assistant', timestamp: generateTimestamp(6, 10) },
 
   // Software Engineer (most popular - 20 applications)
   { role: 'Software Engineer', timestamp: generateTimestamp(0, 2) },
@@ -76,12 +78,12 @@ export const jobAnalyticsData = [
   { role: 'Legal Team', timestamp: generateTimestamp(25) },
   { role: 'Legal Team', timestamp: generateTimestamp(28) },
 
-  { role: 'Administrative Assistant', timestamp: generateTimestamp(9) },
-  { role: 'Administrative Assistant', timestamp: generateTimestamp(14) },
-  { role: 'Administrative Assistant', timestamp: generateTimestamp(19) },
-  { role: 'Administrative Assistant', timestamp: generateTimestamp(23) },
-  { role: 'Administrative Assistant', timestamp: generateTimestamp(27) },
-  { role: 'Administrative Assistant', timestamp: generateTimestamp(30) },
+  { role: 'Admin Assistant', timestamp: generateTimestamp(9) },
+  { role: 'Admin Assistant', timestamp: generateTimestamp(14) },
+  { role: 'Admin Assistant', timestamp: generateTimestamp(19) },
+  { role: 'Admin Assistant', timestamp: generateTimestamp(23) },
+  { role: 'Admin Assistant', timestamp: generateTimestamp(27) },
+  { role: 'Admin Assistant', timestamp: generateTimestamp(30) },
 
   { role: 'Software Engineer', timestamp: generateTimestamp(8) },
   { role: 'Software Engineer', timestamp: generateTimestamp(11) },
@@ -95,8 +97,8 @@ export const jobAnalyticsData = [
   { role: 'Civil Engineer', timestamp: generateTimestamp(90) },
   { role: 'Legal Team', timestamp: generateTimestamp(60) },
   { role: 'Legal Team', timestamp: generateTimestamp(120) },
-  { role: 'Administrative Assistant', timestamp: generateTimestamp(75) },
-  { role: 'Administrative Assistant', timestamp: generateTimestamp(150) },
+  { role: 'Admin Assistant', timestamp: generateTimestamp(75) },
+  { role: 'Admin Assistant', timestamp: generateTimestamp(150) },
   { role: 'Software Engineer', timestamp: generateTimestamp(100) },
   { role: 'Software Engineer', timestamp: generateTimestamp(200) },
 ];
