@@ -58,6 +58,11 @@ const Project = props => {
     }
   };
 
+  const onProjectStatusChange = () => {
+    // Trigger the modal from Projects component via props
+    props.onClickProjectStatusBtn(projectData); // This will open the modal
+  };
+
   const onUpdateProjectActive = () => {
     updateProject('isActive', !props.projectData.isActive);
   }

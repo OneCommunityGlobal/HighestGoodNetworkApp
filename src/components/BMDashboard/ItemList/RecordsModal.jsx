@@ -1,7 +1,7 @@
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Table } from 'reactstrap';
 import moment from 'moment';
 import { useDispatch } from 'react-redux';
-import './RecordsModal.css';
+import styles from './RecordsModal.module.css';
 import { approvePurchase, rejectPurchase } from '../../../actions/bmdashboard/materialsActions';
 
 export default function RecordsModal({ modal, setModal, record, setRecord, recordType }) {
@@ -15,7 +15,7 @@ export default function RecordsModal({ modal, setModal, record, setRecord, recor
       <Modal isOpen={modal} size="xl">
         <ModalHeader>{recordType} Record</ModalHeader>
         <ModalBody>
-          <div className="records_modal_table_container">
+          <div className={`${styles.recordsModalTableContainer}`}>
             <Table>
               <Record record={record} recordType={recordType} setRecord={setRecord} />
             </Table>
@@ -167,7 +167,7 @@ export function Record({ record, recordType, setRecord }) {
                       <Button
                         type="button"
                         onClick={() => handleApprove(_id, quantity)}
-                        className="approve-button"
+                        className={`${styles.approveButton}`}
                         disabled={status === 'Approved' || status === 'Rejected'}
                       >
                         Approve
@@ -175,7 +175,7 @@ export function Record({ record, recordType, setRecord }) {
                       <Button
                         type="button"
                         onClick={() => handleReject(_id)}
-                        className="reject-button"
+                        className={`${styles.rejectButton}`}
                         disabled={status === 'Approved' || status === 'Rejected'}
                       >
                         Reject
