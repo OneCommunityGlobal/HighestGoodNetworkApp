@@ -1,61 +1,64 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import './Listoverview.css';
+import { useDispatch } from 'react-redux';
+import { fetchListingAvailability } from 'actions/lbDashboard/listOverviewAction';
 
 const AVAILABILITY_COLORS = {
   available: '#4caf50', // green
-  booked: '#f44336',    // red
-  blocked: '#9e9e9e',   // gray
+  booked: '#f44336', // red
+  blocked: '#9e9e9e', // gray
 };
 
 function getDateStatus(date, availability) {
   const d = date.toISOString().split('T')[0];
-  if (availability.bookedDates?.includes(d)) return 'booked';
-  if (availability.blockedDates?.includes(d)) return 'blocked';
-  if (availability.availableDates?.includes(d)) return 'available';
-  return null;
+
+  if (
+    availability.bookedDates?.some(
+      b =>
+        d >= new Date(b.from).toISOString().split('T')[0] &&
+        d <= new Date(b.to).toISOString().split('T')[0],
+    )
+  ) {
+    return 'booked';
+  }
+
+  if (
+    availability.blockedOutDates?.some(
+      b =>
+        d >= new Date(b.from).toISOString().split('T')[0] &&
+        d <= new Date(b.to).toISOString().split('T')[0],
+    )
+  ) {
+    return 'blocked';
+  }
+
+  return 'available';
 }
 
 function getMonthDays(year, month) {
-  const firstDay = new Date(year, month, 1);
   const lastDay = new Date(year, month + 1, 0);
   const days = [];
-  for (let i = 1; i <= lastDay.getDate(); i++) {
+  for (let i = 1; i <= lastDay.getDate(); i += 1) {
     days.push(new Date(year, month, i));
   }
   return days;
 }
 
-export default function ListingAvailability({ listingId, userId, onClose }) {
-  const [availability, setAvailability] = useState(null);
-  const [loading, setLoading] = useState(true);
+export default function ListingAvailability({ listingId, availability, loading, error, onClose }) {
+  const dispatch = useDispatch();
+
   const [month, setMonth] = useState(() => {
     const now = new Date();
     return { year: now.getFullYear(), month: now.getMonth() };
   });
-  const [error, setError] = useState('');
   const [contactOpen, setContactOpen] = useState(false);
   const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
 
   useEffect(() => {
-    async function fetchAvailability() {
-      setLoading(true);
-      setError('');
-      try {
-        const res = await fetch(
-          `${process.env.REACT_APP_API_URL || ''}/api/lb/availability`,
-          { headers: { listingid: listingId } }
-        );
-        if (!res.ok) throw new Error('No availability data found');
-        const data = await res.json();
-        setAvailability(data.data);
-      } catch (err) {
-        setError('Availability details are currently unavailable. Please check back later or contact the host.');
-      } finally {
-        setLoading(false);
-      }
+    if (listingId) {
+      dispatch(fetchListingAvailability(listingId));
     }
-    fetchAvailability();
-  }, [listingId]);
+  }, [listingId, dispatch]);
 
   function handlePrevMonth() {
     setMonth(m => {
@@ -90,52 +93,57 @@ export default function ListingAvailability({ listingId, userId, onClose }) {
 
   return (
     <div className="availability-modal">
-      <button className="close-btn" onClick={onClose}>×</button>
+      <button type="button" className="close-btn" onClick={onClose}>
+        ×
+      </button>
       <h2>Availability Calendar</h2>
-      {loading ? (
-        <div>Loading...</div>
-      ) : error ? (
-        <div className="error-message">{error}</div>
-      ) : (
+      {loading && <div>Loading...</div>}
+      {!loading && error && <div className="error-message">{error}</div>}
+      {!loading && !error && availability && (
         <>
           <div className="calendar-nav">
-            <button onClick={handlePrevMonth}>&lt;</button>
+            <button type="button" onClick={handlePrevMonth}>
+              &lt;
+            </button>
             <span>
-              {new Date(month.year, month.month).toLocaleString('default', { month: 'long', year: 'numeric' })}
+              {new Date(month.year, month.month).toLocaleString('default', {
+                month: 'long',
+                year: 'numeric',
+              })}
             </span>
-            <button onClick={handleNextMonth}>&gt;</button>
+            <button type="button" onClick={handleNextMonth}>
+              &gt;
+            </button>
           </div>
           <table className="simple-calendar">
             <thead>
               <tr>
-                {['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d => <th key={d}>{d}</th>)}
+                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(d => (
+                  <th key={d}>{d}</th>
+                ))}
               </tr>
             </thead>
             <tbody>
-              {weeks.map((w, i) => (
-                <tr key={i}>
-                  {w.map((date, j) => {
-                    if (!date) return <td key={j} />;
+              {weeks.map(w => (
+                <tr key={w.map(date => date && date.toISOString()).join('-')}>
+                  {w.map(date => {
+                    if (!date) return <td key={`empty-${Math.random()}`} />;
                     const status = getDateStatus(date, availability);
                     return (
                       <td
-                        key={j}
+                        key={date.toISOString()}
                         className={status ? `calendar-${status}` : ''}
                         style={{
                           background: status ? AVAILABILITY_COLORS[status] : undefined,
                           color: status ? '#fff' : undefined,
                           borderRadius: status ? '50%' : undefined,
                           cursor: status ? 'pointer' : undefined,
-                          position: 'relative'
+                          position: 'relative',
                         }}
                         title={status ? status.charAt(0).toUpperCase() + status.slice(1) : ''}
                       >
                         {date.getDate()}
-                        {status && (
-                          <span className="calendar-tooltip">
-                            {status.charAt(0).toUpperCase() + status.slice(1)}
-                          </span>
-                        )}
+                        {status && <span className="calendar-tooltip" />}
                       </td>
                     );
                   })}
@@ -144,14 +152,16 @@ export default function ListingAvailability({ listingId, userId, onClose }) {
             </tbody>
           </table>
           <div className="calendar-legend" style={{ marginTop: 16 }}>
-            <span style={{ background: AVAILABILITY_COLORS.available }} className="legend-dot" /> Available
-            <span style={{ background: AVAILABILITY_COLORS.booked }} className="legend-dot" /> Booked
-            <span style={{ background: AVAILABILITY_COLORS.blocked }} className="legend-dot" /> Blocked
+            <span style={{ background: AVAILABILITY_COLORS.available }} className="legend-dot" />
+            <span style={{ background: AVAILABILITY_COLORS.booked }} className="legend-dot" />
+            <span style={{ background: AVAILABILITY_COLORS.blocked }} className="legend-dot" />
           </div>
         </>
       )}
       <div className="contact-host-section">
-        <button onClick={() => setContactOpen(true)} className="contact-host-btn">Contact Host</button>
+        <button type="button" onClick={() => setContactOpen(true)} className="contact-host-btn">
+          Contact Host
+        </button>
         {contactOpen && (
           <form className="contact-form" onSubmit={handleContactSubmit}>
             <input
@@ -175,7 +185,9 @@ export default function ListingAvailability({ listingId, userId, onClose }) {
               required
             />
             <button type="submit">Send</button>
-            <button type="button" onClick={() => setContactOpen(false)}>Cancel</button>
+            <button type="button" onClick={() => setContactOpen(false)}>
+              Cancel
+            </button>
           </form>
         )}
       </div>

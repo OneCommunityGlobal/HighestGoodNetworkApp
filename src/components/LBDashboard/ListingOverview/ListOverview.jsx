@@ -1,57 +1,104 @@
-import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import './Listoverview.css';
 import Carousel from 'react-bootstrap/Carousel';
+import { useDispatch, useSelector } from 'react-redux';
+import { getUserProfileBasicInfo } from 'actions/userManagement';
+import ListingAvailability from './ListingAvailability';
+import {
+  bookListing,
+  fetchListingAvailability,
+  fetchListingById,
+  resetBooking,
+} from '../../../actions/lbDashboard/listOverviewAction';
 import logo from '../../../assets/images/logo2.png';
 import mapIcon from '../../../assets/images/mapIcon.png';
-import ListingAvailability from './ListingAvailability';
-import {ENDPOINTS} from '../../../utils/URL';
-import httpService from '../../../services/httpService';
 
-
-function useQuery() {
-  return new URLSearchParams(useLocation().search);
-}
-
-const ensureAuthentication = () => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    httpService.setjwt(token);
-  }
-};
+const STOCK_IMAGE = 'https://www.caspianpolicy.org/no-image.png';
+const today = new Date().toISOString().split('T')[0];
 
 function ListOverview() {
-  const [listing, setListing] = useState({});
   const [showAvailability, setShowAvailability] = useState(false);
-  const query = useQuery();
-  const listingId = query.get('id');
+  const [fromDate, setFromDate] = useState('');
+  const [toDate, setToDate] = useState('');
+  const [bookingError, setBookingError] = useState('');
+  const [showBookingConfirm, setShowBookingConfirm] = useState(false);
+  const { id: listingId } = useParams();
+  const dispatch = useDispatch();
+  const { listing, loading, error } = useSelector(state => state.listOverview);
+  const bookingState = useSelector(state => state.listingBooking);
+  const user = useSelector(state => state.auth.user);
+  const userProfiles = useSelector(state => state.allUserProfilesBasicInfo.userProfilesBasicInfo);
+  const currentUserProfile = userProfiles?.find(profile => profile._id === user?.userid);
+  const { availability, loading: availLoading, error: availError } = useSelector(
+    state => state.listingAvailability,
+  );
 
+  function isRangeAvailable(from, to, availabilityDate) {
+    if (!from || !to || !availabilityDate) return false;
+    const fromDateObj = new Date(from);
+    const toDateObj = new Date(to);
 
-  const fetchListing = async () => {
-    try {
-
-      ensureAuthentication();
-      const response = await fetch(ENDPOINTS.LB_LISTING_GET_BY_ID, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ id: listingId }),
+    const isOverlapping = arr =>
+      arr?.some(b => {
+        const bFrom = new Date(b.from);
+        const bTo = new Date(b.to);
+        return fromDateObj <= bTo && toDateObj >= bFrom;
       });
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const data = await response.json();
-      setListing(data);
-    } catch (error) {
-      console.error('Error fetching listing:', error);
+
+    if (
+      isOverlapping(availabilityDate.bookedDates) ||
+      isOverlapping(availabilityDate.blockedOutDates)
+    ) {
+      return false;
     }
+    return true;
   }
-  useEffect(() => {
-    if (listing) {
-      fetchListing();
+
+  const handleBookingCheck = () => {
+    if (!fromDate || !toDate) {
+      setBookingError('Please select both dates.');
+      return;
     }
-  }, [listingId]);
+    if (new Date(fromDate) > new Date(toDate)) {
+      setBookingError('From date cannot be after To date.');
+      return;
+    }
+    if (!isRangeAvailable(fromDate, toDate, availability)) {
+      setBookingError('The Dates you picked are not available');
+      setShowBookingConfirm(false);
+      return;
+    }
+    setBookingError('');
+    setShowBookingConfirm(true);
+  };
+
+  const handleConfirmBooking = () => {
+    if (bookingState.success) return;
+    dispatch(
+      bookListing({
+        listingId: listing._id,
+        from: fromDate,
+        to: toDate,
+        userId: currentUserProfile?._id,
+      }),
+    );
+  };
+
+  useEffect(() => {
+    if (listingId) {
+      dispatch(fetchListingById(listingId));
+      dispatch(fetchListingAvailability(listingId));
+    }
+  }, [listingId, dispatch]);
+
+  useEffect(() => {
+    dispatch(getUserProfileBasicInfo());
+  }, [dispatch]);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div className="error-message">{error}</div>;
+  if (!listing) return <div>No listing found.</div>;
 
   return (
     <div className="main-container">
@@ -60,18 +107,28 @@ function ListOverview() {
       </div>
       <div className="content-container">
         <div className="container-top" />
-        <div className="container-main">
+        <div className="container-main-overview">
           <div className="details-left">
             <div className="listing-details mobile-display">
               <h1>{listing.title}</h1>
             </div>
             <div className="image-carousel">
               <Carousel>
-                {listing.images?.map((image, index) => (
-                  <Carousel.Item key={image}>
-                    <img className="d-block w-100" src={image} alt={`Slide ${index + 1}`} />
-                  </Carousel.Item>
-                ))}
+                {(listing.images && listing.images.length > 0 ? listing.images : [STOCK_IMAGE]).map(
+                  (image, index) => (
+                    <Carousel.Item key={image}>
+                      <img
+                        className="d-block w-100"
+                        src={image}
+                        alt={`Slide ${index + 1}`}
+                        onError={e => {
+                          e.target.onerror = null;
+                          e.target.src = STOCK_IMAGE;
+                        }}
+                      />
+                    </Carousel.Item>
+                  ),
+                )}
               </Carousel>
             </div>
 
@@ -79,7 +136,7 @@ function ListOverview() {
               <div>
                 <h2>Available amenities in this unit:</h2>
                 <ol className="amenities-list">
-                  {listing.unitAmenities?.map(amenity => (
+                  {listing.amenities?.map(amenity => (
                     <li key={amenity}>{amenity}</li>
                   ))}
                 </ol>
@@ -106,22 +163,93 @@ function ListOverview() {
             <div className="rent-form">
               <label htmlFor="from">
                 Rent from
-                <input type="date" name="from" id="from" />
+                <input
+                  type="date"
+                  name="from"
+                  id="from"
+                  value={fromDate}
+                  min={today}
+                  max={toDate}
+                  onChange={e => setFromDate(e.target.value)}
+                />
               </label>
               <label htmlFor="to">
                 Rent to
-                <input type="date" name="to" id="to" />
+                <input
+                  type="date"
+                  name="to"
+                  id="to"
+                  value={toDate}
+                  min={fromDate || today}
+                  onChange={e => setToDate(e.target.value)}
+                />
               </label>
-              <button type="button">Proceed to submit with details</button>
+              <button type="button" onClick={handleBookingCheck}>
+                Check Availability
+              </button>
+              <button
+                type="button"
+                onClick={e => {
+                  e.preventDefault();
+                  setShowAvailability(true);
+                }}
+              >
+                Click here to see available dates
+              </button>
             </div>
-            <div className="error-message">
-              <h6>The Dates you picked are not available</h6>
-              <a href="#" onClick={e => { e.preventDefault(); setShowAvailability(true); }}>Click here to see available dates</a>
-            </div>
+            {bookingError && (
+              <div className="error-message">
+                <h6>{bookingError}</h6>
+              </div>
+            )}
+            {showBookingConfirm && (
+              <div className="booking-confirm">
+                <button
+                  type="button"
+                  className="close-btn"
+                  onClick={() => {
+                    setShowBookingConfirm(false);
+                    dispatch(resetBooking());
+                  }}
+                >
+                  ×
+                </button>
+                <h4>Confirm Your Booking</h4>
+                <div>
+                  <strong>From:</strong> {fromDate}
+                </div>
+                <div>
+                  <strong>To:</strong> {toDate}
+                </div>
+                <div>
+                  <strong>Name:</strong>{' '}
+                  {currentUserProfile
+                    ? `${currentUserProfile.firstName} ${currentUserProfile.lastName}`
+                    : 'N/A'}
+                </div>
+                <div>
+                  <strong>Email:</strong> {user?.email || 'N/A'}
+                </div>
+                {!bookingState.success && (
+                  <button
+                    type="button"
+                    onClick={handleConfirmBooking}
+                    disabled={bookingState.loading || bookingState.success}
+                  >
+                    {bookingState.loading ? 'Booking...' : 'Confirm Booking'}
+                  </button>
+                )}
+                {bookingState.error && <div className="error-message">{bookingState.error}</div>}
+                {bookingState.success && <div className="text-success">Booking successful!</div>}
+              </div>
+            )}
             {showAvailability && (
               <ListingAvailability
-                listingId={listing._id || 'YOUR_LISTING_ID'}
-                userId={'YOUR_USER_ID'}
+                listingId={listing._id}
+                availability={availability}
+                loading={availLoading}
+                error={availError}
+                userId={user?.userid}
                 onClose={() => setShowAvailability(false)}
               />
             )}

@@ -21,10 +21,10 @@ import { BsSliders } from 'react-icons/bs';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import './Home.css';
+import { useHistory } from 'react-router-dom';
 import L from 'leaflet';
 import logo from '../../../assets/images/logo2.png';
 import { fetchVillages, fetchListings, fetchBiddings, FIXED_VILLAGES } from './data';
-import { useHistory } from 'react-router-dom';
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -70,8 +70,8 @@ function Home() {
     totalPages: 1,
   });
 
-  const pageSizeOptions = [12, 24, 36, 48]
-  const navigate = useHistory()
+  const pageSizeOptions = [12, 24, 36, 48];
+  const navigate = useHistory();
 
   useEffect(() => {
     const fetchVillagesData = async () => {
@@ -121,7 +121,7 @@ function Home() {
               filters,
             );
             setAllListings(listingsData.items || []);
-            console.log('fetching listings', listingsData.items)
+            console.log('fetching listings', listingsData.items);
             setPagination(prev => ({
               ...prev,
               totalPages: listingsData.pagination.totalPages || 1,
@@ -133,7 +133,7 @@ function Home() {
             setAllListings([]);
           }
         } else {
-          console.log('fetching biddings')
+          console.log('fetching biddings');
           try {
             const biddingsData = await fetchBiddings(
               pagination.currentPage,
@@ -727,15 +727,16 @@ function Home() {
               </div>
               <div className="lb-property-details-actions">
                 <button className="lb-action-button lb-contact-button">Contact Owner</button>
-                <button className="lb-action-button lb-book-button" onClick={() => {
-                  if(activeTab === 'listings') {
-                    
-                    navigate.push(`/lbdashboard/listOverview/${selectedProperty.id}`); // Redirect to booking page
-                  }
-                  else {
-                    navigate.push(`/lbdashboard/bidOverview/${selectedProperty.id}`); // Redirect to bidding page
-                  }
-                }}>
+                <button
+                  className="lb-action-button lb-book-button"
+                  onClick={() => {
+                    if (activeTab === 'listings') {
+                      navigate.push(`/lbdashboard/listOverview/${selectedProperty.id}`); // Redirect to booking page
+                    } else {
+                      navigate.push(`/lbdashboard/bidOverview/${selectedProperty.id}`); // Redirect to bidding page
+                    }
+                  }}
+                >
                   View Property
                 </button>
               </div>

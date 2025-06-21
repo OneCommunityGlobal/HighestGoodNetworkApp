@@ -307,6 +307,8 @@ export const ENDPOINTS = {
   LB_LISTINGS: `${APIEndpoint}/lb/getListings`,
   LB_LISTINGS_BASE: `${APIEndpoint}/lb`,
   LB_LISTING_GET_BY_ID: `${APIEndpoint}/lb/listing/getById`,
+  LB_LISTING_AVAILABILITY: `${APIEndpoint}/lb/listing/availability`,
+  LB_LISTING_BOOK: `${APIEndpoint}/lb/listing/availability/booking`,
   HELP_CATEGORIES: `${APIEndpoint}/help-categories`,
 
 };

@@ -39,7 +39,7 @@
   background-color: #9dd425;
 }
 
-.container-main {
+.container-main-overview {
   background-color: #e0e0e0;
   display: flex;
   justify-content: space-evenly;
@@ -151,7 +151,7 @@ p {
   flex-direction: column;
 }
 
-.rent-form button {
+.rent-form button, .booking-confirm button {
   background: #13ae5c;
   color: white;
   padding: 10px;
@@ -202,7 +202,7 @@ p {
   .main-container {
     padding: 0;
   }
-  .container-main {
+  .container-main-overview {
     flex-direction: column;
     align-items: center;
   }
@@ -232,7 +232,7 @@ p {
 
 @media (max-width: 580px) {
   
-  .container-main {
+  .container-main-overview {
     padding: 10px;
     margin: 10px;
   }
@@ -265,8 +265,7 @@ p {
 }
 
 
-/* Add to Listoverview.css */
-.availability-modal {
+.availability-modal, .booking-confirm {
   position: fixed;
   top: 5%;
   left: 50%;
@@ -283,7 +282,8 @@ p {
   position: absolute;
   top: 1rem;
   right: 1rem;
-  background: #eee;
+  background: transparent !important;
+  color: #333 !important;
   border: none;
   font-size: 1.5rem;
   cursor: pointer;
@@ -342,7 +342,7 @@ p {
   margin-top: 0.5rem;
 }
 @media (max-width: 600px) {
-  .availability-modal {
+  .availability-modal, .booking-confirm {
     padding: 1rem;
     min-width: 90vw;
   }
