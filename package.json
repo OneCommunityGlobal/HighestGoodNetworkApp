@@ -16,7 +16,7 @@
     "@reduxjs/toolkit": "^2.4.0",
     "@sentry/browser": "^4.6.6",
     "@tinymce/tinymce-react": "^3.14.0",
-    "antd": "^5.25.2",
+    "antd": "^5.26.1",
     "axios": "^0.21.2",
     "axios-mock-adapter": "^1.22.0",
     "bootstrap": "^4.5.3",

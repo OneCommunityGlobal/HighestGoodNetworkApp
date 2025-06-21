@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { connect, useDispatch, useSelector } from 'react-redux';
 import {
   BarChart,
   Bar,
@@ -14,6 +14,7 @@ import {
 import { Select, DatePicker, Spin } from 'antd';
 import { fetchInjurySeverity } from 'actions/bmdashboard/injuryActions';
 import { fetchBMProjects } from 'actions/bmdashboard/projectActions';
+import './InjurySeverityChart.css';
 
 const { Option } = Select;
 const { RangePicker } = DatePicker;
@@ -26,26 +27,22 @@ const generateColors = n =>
 
 const SEVERITY_ORDER = ['Minor', 'Major', 'Critical'];
 
-export default function InjurySeverityDashboard() {
+function InjurySeverityDashboard(props) {
   const dispatch = useDispatch();
-
-  // 1) Fetch the list of projects
   const bmProjects = useSelector(state => state.bmProjects);
-
-  useEffect(() => {
-    dispatch(fetchBMProjects());
-  }, [dispatch]);
-
   const rawData = useSelector(state => state.bmInjuries);
+  const { darkMode } = props;
 
-  // filter state
   const [selProjects, setSelProjects] = useState([]);
   const [selTypes, setSelTypes] = useState([]);
   const [selDepts, setSelDepts] = useState([]);
   const [dateRange, setDateRange] = useState([null, null]);
   const [loading, setLoading] = useState(false);
 
-  // 3) Fetch severity data when filters change
+  useEffect(() => {
+    dispatch(fetchBMProjects());
+  }, [dispatch]);
+
   useEffect(() => {
     setLoading(true);
     dispatch(
@@ -59,12 +56,9 @@ export default function InjurySeverityDashboard() {
     ).finally(() => setLoading(false));
   }, [dispatch, selProjects, selTypes, selDepts, dateRange]);
 
-  // pivot rawData into chartData
   const chartData = useMemo(() => {
     const projectNames = Array.from(new Set(rawData.map(r => r.projectName)));
-    const severities = SEVERITY_ORDER;
-
-    return severities.map(sev => {
+    return SEVERITY_ORDER.map(sev => {
       const entry = { severity: sev };
       projectNames.forEach(pn => {
         const rec = rawData.find(r => r.severity === sev && r.projectName === pn);
@@ -74,21 +68,36 @@ export default function InjurySeverityDashboard() {
     });
   }, [rawData]);
 
-  const barColors = useMemo(() => generateColors(bmProjects.length), [bmProjects.length]);
+  const barColors = generateColors(bmProjects.length);
+
+  const filterStyle = {
+    minWidth: 150,
+    maxWidth: 300,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    color: 'black',
+    borderColor: '#d9d9d9',
+  };
 
   return (
-    <div style={{ padding: '0 24px' }}>
-      <h2>Injury Severity by Projects</h2>
+    <div
+      style={{ padding: '0 24px' }}
+      className={`container-fluid h-100 ${darkMode ? 'oxide-dark text-light' : ''}`}
+    >
+      <h2 className={`${darkMode && 'text-light'}`}>Injury Severity by Projects</h2>
 
       {/* Filters */}
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 20 }}>
         <Select
+          className="filter-select"
           mode="multiple"
           allowClear
           placeholder="Projects"
-          style={{ minWidth: 200 }}
+          style={filterStyle}
           value={selProjects}
           onChange={setSelProjects}
+          maxTagCount={2}
+          maxTagPlaceholder={omitted => `+${omitted.length}`}
         >
           {bmProjects.map(p => (
             <Option key={p._id} value={p._id}>
@@ -98,18 +107,22 @@ export default function InjurySeverityDashboard() {
         </Select>
 
         <RangePicker
+          className="filter-select"
           value={dateRange}
           onChange={dates => setDateRange(dates || [null, null])}
-          style={{ minWidth: 260 }}
+          style={filterStyle}
         />
 
         <Select
+          className="filter-select"
           mode="multiple"
           allowClear
           placeholder="Injury Types"
-          style={{ minWidth: 200 }}
+          style={filterStyle}
           value={selTypes}
           onChange={setSelTypes}
+          maxTagCount={2}
+          maxTagPlaceholder={omitted => `+${omitted.length}`}
         >
           {['Cut', 'Bruise', 'Fracture', 'Burn', 'Electric Shock'].map(t => (
             <Option key={t} value={t}>
@@ -119,12 +132,15 @@ export default function InjurySeverityDashboard() {
         </Select>
 
         <Select
+          className="filter-select"
           mode="multiple"
           allowClear
           placeholder="Departments"
-          style={{ minWidth: 200 }}
+          style={filterStyle}
           value={selDepts}
           onChange={setSelDepts}
+          maxTagCount={2}
+          maxTagPlaceholder={omitted => `+${omitted.length}`}
         >
           {['Plumbing', 'Electrical', 'Carpentry', 'Welding'].map(d => (
             <Option key={d} value={d}>
@@ -143,10 +159,24 @@ export default function InjurySeverityDashboard() {
         <ResponsiveContainer width="100%" height={400}>
           <BarChart data={chartData} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="severity" />
-            <YAxis />
+            <XAxis
+              dataKey="severity"
+              height={60}
+              label={{
+                value: 'Projects',
+                position: 'bottom',
+                dy: 0,
+              }}
+            />
+            <YAxis
+              label={{
+                value: 'Injury Count',
+                angle: -90,
+                position: 'insideLeft',
+              }}
+            />
             <Tooltip />
-            <Legend />
+            <Legend verticalAlign="bottom" wrapperStyle={{ paddingTop: 30 }} />
             {bmProjects.map((p, idx) => (
               <Bar key={p._id} dataKey={p.name} name={p.name} fill={barColors[idx]}>
                 <LabelList dataKey={p.name} position="top" />
@@ -158,3 +188,8 @@ export default function InjurySeverityDashboard() {
     </div>
   );
 }
+
+const mapStateToProps = state => ({
+  darkMode: state.theme.darkMode,
+});
+export default connect(mapStateToProps)(InjurySeverityDashboard);
