@@ -65,6 +65,9 @@ import HGNFormReducer from './hgnFormReducers';
 // community portal
 import noShowVizReducer from './communityPortal/noShowVizReducer';
 
+// lbdashboard
+import wishListReducer from './lbdashboard/wishListItemReducer';
+
 const localReducers = {
   auth: authReducer,
   allUserProfiles: allUserProfilesReducer,
@@ -113,6 +116,10 @@ const localReducers = {
   bmConsumables: consumablesReducer,
   bmReusables: reusablesReducer,
   dashboard: dashboardReducer,
+
+  // lbdashboard
+  wishlistItem: wishListReducer,
+
   bmissuechart: issueReducer,
   noShowViz: noShowVizReducer,
 
