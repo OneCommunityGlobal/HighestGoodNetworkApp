@@ -66,7 +66,7 @@ import HGNFormReducer from './hgnFormReducers';
 import noShowVizReducer from './communityPortal/noShowVizReducer';
 
 // lbdashboard
-import wishListReducer from './lbDashboard/wishListItemReducer';
+import wishListReducer from './lbdashboard/wishListItemReducer';
 
 // listing and biddding dashboard
 
