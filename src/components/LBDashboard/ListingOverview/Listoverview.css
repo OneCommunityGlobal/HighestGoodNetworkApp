@@ -264,6 +264,9 @@ p {
   }
 }
 
+.heading-calendar {
+  color: black;
+}
 
 .availability-modal, .booking-confirm {
   position: fixed;

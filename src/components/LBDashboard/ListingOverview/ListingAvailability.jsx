@@ -96,7 +96,7 @@ export default function ListingAvailability({ listingId, availability, loading, 
       <button type="button" className="close-btn" onClick={onClose}>
         ×
       </button>
-      <h2>Availability Calendar</h2>
+      <h2 className="heading-calendar">Availability Calendar</h2>
       {loading && <div>Loading...</div>}
       {!loading && error && <div className="error-message">{error}</div>}
       {!loading && !error && availability && (
@@ -152,9 +152,12 @@ export default function ListingAvailability({ listingId, availability, loading, 
             </tbody>
           </table>
           <div className="calendar-legend" style={{ marginTop: 16 }}>
-            <span style={{ background: AVAILABILITY_COLORS.available }} className="legend-dot" />
-            <span style={{ background: AVAILABILITY_COLORS.booked }} className="legend-dot" />
-            <span style={{ background: AVAILABILITY_COLORS.blocked }} className="legend-dot" />
+            <span style={{ background: AVAILABILITY_COLORS.available }} className="legend-dot" />{' '}
+            Available
+            <span style={{ background: AVAILABILITY_COLORS.booked }} className="legend-dot" />{' '}
+            Booked
+            <span style={{ background: AVAILABILITY_COLORS.blocked }} className="legend-dot" />{' '}
+            Blocked
           </div>
         </>
       )}
