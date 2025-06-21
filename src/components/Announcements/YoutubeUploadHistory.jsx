@@ -82,6 +82,8 @@ function YoutubeUploadHistory() {
     }
   };
 
+  const historyToDisplay = uploadHistory.filter(item => item.videoId);
+
   return (
     <div className={`social-media-container ${darkMode ? 'bg-oxford-blue text-light' : ''}`}>
       <div className="social-media">
@@ -135,7 +137,21 @@ function YoutubeUploadHistory() {
 
         {!loading && showScheduled && (
           <div className="scheduled-uploads" style={{ marginBottom: '2rem' }}>
-            <h4>Scheduled Uploads</h4>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <h4>Scheduled Uploads</h4>
+              <button
+                type="button"
+                onClick={fetchScheduledUploads}
+                className="send-button"
+                style={{
+                  ...(darkMode ? boxStyleDark : boxStyle),
+                  padding: '4px 8px',
+                  fontSize: '12px',
+                }}
+              >
+                Refresh
+              </button>
+            </div>
             {scheduledUploads.length > 0 ? (
               scheduledUploads.map(item => (
                 <div
@@ -179,8 +195,8 @@ function YoutubeUploadHistory() {
 
         {!loading && !showScheduled && (
           <div className="history-list">
-            {uploadHistory.length > 0 ? (
-              uploadHistory.map(item => (
+            {historyToDisplay.length > 0 ? (
+              historyToDisplay.map(item => (
                 <div
                   key={item._id}
                   className={`history-item ${darkMode ? 'bg-yinmn-blue' : ''}`}
@@ -206,13 +222,20 @@ function YoutubeUploadHistory() {
                     <p>
                       <strong>Video ID:</strong> {item.videoId || 'Not Available'}
                     </p>
-                    <a
-                      href={item.videoId ? `https://www.youtube.com/watch?v=${item.videoId}` : '#'}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Watch on YouTube
-                    </a>
+                    {item.error && (
+                      <p style={{ color: 'red', fontWeight: 'bold' }}>
+                        Error: {item.error}
+                      </p>
+                    )}
+                    {item.videoId && (
+                      <a
+                        href={`https://www.youtube.com/watch?v=${item.videoId}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Watch on YouTube
+                      </a>
+                    )}
                   </div>
                   {item.thumbnailUrl && (
                     <img
