@@ -1,13 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { Button } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { updateUserFinalDayStatusIsSet } from '../../actions/userManagement';
-import { boxStyle, boxStyleDark } from '../../styles';
+import { boxStyle } from '../../styles';
 import SetUpFinalDayPopUp from './SetUpFinalDayPopUp';
 import { SET_FINAL_DAY, CANCEL } from '../../languages/en/ui';
 import { FinalDay } from '../../utils/enums';
-import moment from 'moment';
 
 function SetUpFinalDayButton(props) {
   const { darkMode, userProfile, onFinalDaySave } = props;
@@ -27,9 +25,11 @@ function SetUpFinalDayButton(props) {
         )(dispatch);
 
         setIsSet(false);
+        // eslint-disable-next-line no-unused-expressions
         onFinalDaySave && onFinalDaySave({ ...userProfile, endDate: undefined });
         toast.success("This user's final day has been deleted.");
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.error('Error deleting final day:', error);
         toast.error("An error occurred while deleting the user's final day.");
       }
@@ -50,9 +50,11 @@ function SetUpFinalDayButton(props) {
 
       setIsSet(true);
       setFinalDayDateOpen(false);
+      // eslint-disable-next-line no-unused-expressions
       onFinalDaySave && onFinalDaySave({ ...userProfile, endDate: finalDayDate });
       toast.success("This user's final day has been set.");
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Error setting final day:', error);
       toast.error("An error occurred while setting the user's final day.");
     }
