@@ -42,7 +42,7 @@
   background-image: 
     linear-gradient(to right, #e0e0e0 1px, transparent 1px),
     linear-gradient(to bottom, #e0e0e0 1px, transparent 1px);
-  background-size: 10% 25%; /* Adjusted for 4 roles with more spacing */
+  background-size: 10% 25%; 
   opacity: 0.5;
 }
 
@@ -110,15 +110,15 @@
 }
 
 .bar-row {
-  height: 80px; /* Increased from 60px to match y-axis labels */
+  height: 80px; 
   display: flex;
   align-items: center;
   position: relative;
-  padding: 20px 0; /* Add padding for more visual space */
+  padding: 20px 0;
 }
 
 .bar {
-  height: 40px; /* Increased from 36px for better visibility */
+  height: 40px;
   background-color: #4285f4;
   border: 1px solid #1a73e8;
   border-radius: 0 4px 4px 0;

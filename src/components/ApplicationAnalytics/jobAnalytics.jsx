@@ -1,4 +1,4 @@
-// src/components/ApplicationAnalytics/jobAnalytics.jsx
+
 import React, { useState, useMemo } from 'react';
 import { getJobAnalyticsData } from './api';
 import './jobAnalytics.css';
