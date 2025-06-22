@@ -5,7 +5,7 @@ const initialState = {
   error: null,
 };
 
-export const WeeklySummaryEmailAssignment = (state = initialState, action) => {
+const WeeklySummaryEmailAssignment = (state = initialState, action = {}) => {
   switch (action.type) {
     case types.GET_WEEKLY_SUMMARY_EMAIL_ASSIGNMENTS:
       return {
@@ -16,10 +16,7 @@ export const WeeklySummaryEmailAssignment = (state = initialState, action) => {
     case types.SET_WEEKLY_SUMMARY_EMAIL_ASSIGNMENT:
       return {
         ...state,
-        emailAssignment: [
-          ...state.emailAssignment,
-          action.payload
-        ],
+        emailAssignment: [...state.emailAssignment, action.payload],
         error: null,
       };
     case types.DELETE_WEEKLY_SUMMARY_EMAIL_ASSIGNMENT:
@@ -37,3 +34,5 @@ export const WeeklySummaryEmailAssignment = (state = initialState, action) => {
       return state;
   }
 };
+
+export default WeeklySummaryEmailAssignment;
