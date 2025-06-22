@@ -26,8 +26,8 @@ describe('getTaskByWbsId', () => {
     };
     const WbsTasksID = ['A'];
     const result = getTaskByWbsId(WbsTasksID, mockTasks);
-    console.log("RESULT: ");
-    console.log(result)
+    // console.log("RESULT: ");
+    // console.log(result)
     expect(result).toEqual([{"id": 1, "wbsId": "A"}, {"id": 3, "wbsId": "A"}]);
   });
 

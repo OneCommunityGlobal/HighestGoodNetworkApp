@@ -1,12 +1,23 @@
 import { useMemo } from 'react';
 import { normalizeVolunteerStats } from 'utils/totalOrgSummary';
+import Loading from 'components/common/Loading';
 import StatisticsTab from '../StatisticsTab/StatisticsTab';
 
-function VolunteerStatus({ volunteerNumberStats, totalHoursWorked }) {
+function VolunteerStatus({ isLoading, volunteerNumberStats, totalHoursWorked, comparisonType }) {
   const statsTabs = useMemo(() => normalizeVolunteerStats(volunteerNumberStats, totalHoursWorked), [
     volunteerNumberStats,
     totalHoursWorked,
   ]);
+
+  if (isLoading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center">
+        <div className="w-100vh">
+          <Loading />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="volunteer-status-grid" role="region" aria-label="Volunteer Status Statistics">
@@ -20,6 +31,7 @@ function VolunteerStatus({ volunteerNumberStats, totalHoursWorked }) {
           type={tab.type}
           tabBackgroundColor={tab.tabBackgroundColor}
           shapeBackgroundColor={tab.shapeBackgroundColor}
+          comparisonType={comparisonType}
         />
       ))}
     </div>

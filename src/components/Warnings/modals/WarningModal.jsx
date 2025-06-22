@@ -9,6 +9,9 @@ function WarningModal({
   deleteWarningTriggered,
   deleteWarning,
   numberOfWarnings,
+  canIssueTrackingWarnings,
+  canIssueBlueSquare,
+  canDeleteWarning,
 }) {
   const { warningText, username } = warning || {};
 
@@ -31,6 +34,7 @@ function WarningModal({
               setToggleModal(false);
             }}
             color="primary"
+            disabled={!canDeleteWarning}
           >
             Delete Warning
           </Button>
@@ -82,6 +86,7 @@ function WarningModal({
             }}
             color="warning"
             className="warning__modal__footer__btn"
+            disabled={!canIssueTrackingWarnings}
           >
             Issue Warning
           </Button>
@@ -94,6 +99,7 @@ function WarningModal({
             }}
             color="primary"
             className="warning__modal__footer__btn"
+            disabled={!canIssueBlueSquare}
           >
             Issue Blue Square
           </Button>

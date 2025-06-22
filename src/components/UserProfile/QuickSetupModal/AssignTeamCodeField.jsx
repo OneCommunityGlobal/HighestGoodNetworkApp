@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Dropdown, Input } from 'reactstrap';
+import { useSelector } from 'react-redux';
 
 const AssignTeamCodeField = React.memo(props => {
   const {
@@ -20,6 +21,8 @@ const AssignTeamCodeField = React.memo(props => {
     return '';
   });
   const [isOpen, toggle] = useState(false);
+  const darkMode = useSelector(state => state.theme.darkMode);
+  
   useEffect(() => {
     if (selectedTeamCode && selectedTeamCode !== searchText) {
       onSelectTeamCode(undefined);
@@ -38,7 +41,7 @@ const AssignTeamCodeField = React.memo(props => {
       <Input
         type="text"
         value={searchText}
-        autoFocus
+        onFocus={() => toggle(true)}
         onChange={e => {
           onInputChange(e.target.value);
           toggle(true);
@@ -49,12 +52,14 @@ const AssignTeamCodeField = React.memo(props => {
         }}
       />
 
-      {searchText !== '' && teamCodeData?.length > 0 ? (
+      {teamCodeData?.length > 0 ? (
         <div
           tabIndex="-1"
           role="menu"
           aria-hidden="false"
-          className={`dropdown-menu${isOpen ? ' show' : ''}`}
+          className={`dropdown-menu${isOpen ? ' show' : ''} ${
+            darkMode ? 'bg-darkmode-liblack text-light' : ''
+          }`}
           style={{ marginTop: '0px', width: '100%' }}
         >
           {teamCodeData
