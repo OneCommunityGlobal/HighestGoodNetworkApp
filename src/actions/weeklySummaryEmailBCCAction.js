@@ -1,7 +1,7 @@
-import * as types from '../constants/WeeklySummaryEmailBccConstants';
 import axios from 'axios';
 import { ENDPOINTS } from '../utils/URL';
-import { toast } from 'react-toastify';
+import * as types from '../constants/WeeklySummaryEmailBccConstants';
+// import { toast } from 'react-toastify';
 
 // action creators
 const getAllWeeklySummaryEmailBccs = allAssignments => ({
