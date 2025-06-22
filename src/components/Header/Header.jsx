@@ -591,8 +591,8 @@ export function Header(props) {
       )}
       {props.auth.isAuthenticated && props.userProfile?.permissions?.isAcknowledged===false && (
         <PopUpBar
-          firstName={viewingUser.firstName}
-          lastName={viewingUser.lastName}
+          firstName={viewingUser?.firstName || firstName}
+          lastName={viewingUser?.lastName}
           message="Heads Up, there were permission changes made to this account"
           onClickClose={handlePermissionChangeAck}
           textColor="black_text"
