@@ -68,6 +68,8 @@ import UserSkillsProfile from './components/HGNSkillsDashboard/SkillsProfilePage
 // LB Dashboard
 import LBProtectedRoute from './components/common/LBDashboard/LBProtectedRoute/LBProtectedRoute';
 import LBHome from './components/LBDashboard/Home/Home';
+import LBShowReview from './components/LBDashboard/Review/ShowReviews';
+import LBLeaveReview from './components/LBDashboard/Review/ReviewForm';
 import LBLogin from './components/LBDashboard/Login';
 import LBDashboard from './components/LBDashboard';
 import MasterPlan from './components/LBDashboard/Map/MasterPlan/MasterPlan';
@@ -243,6 +245,8 @@ export default (
     <Route path="/formviewer" component={FormViewer} />
     <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
     <Route path="/logattendance" component={AttendanceNoShow} />
+
+
     <>
       {/* Comment out the Header component and its import during phase 2 development. */}
       {/* Uncomment BMHeader and its import during phase 2 development. */}
@@ -593,6 +597,9 @@ export default (
         <CPProtectedRoute path="/communityportal/reports/participation" exact component={EventParticipation} />
 
 
+        <Route path="/lbdashboard/leavereview" component={LBLeaveReview} />
+        <Route path="/lbdashboard/showreview" component={LBShowReview} />
+          
 
         {/* Good Education  Portal Routes */}
         <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />

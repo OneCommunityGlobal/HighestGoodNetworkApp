@@ -294,6 +294,8 @@ export const ENDPOINTS = {
   // lb dashboard endpoints
   LB_REGISTER: `${APIEndpoint}/lbdashboard/register`,
   LB_LOGIN: `${APIEndpoint}/lbdashboard/login`,
+  LB_REVIEWS: `${APIEndpoint}/lbdashboard/reviews`,
+  LB_REVIEW_BY_ID: reviewId => `${APIEndpoint}/lbdashboard/reviews/${reviewId}`,
 
 
   // community portal
@@ -308,6 +310,7 @@ export const ENDPOINTS = {
   LB_LISTINGS_BASE: `${APIEndpoint}/lb`,
   HELP_CATEGORIES: `${APIEndpoint}/help-categories`,
 
+  
 };
 
 export const ApiEndpoint = APIEndpoint;
