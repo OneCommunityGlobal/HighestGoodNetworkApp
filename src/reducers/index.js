@@ -37,7 +37,7 @@ import weeklySummaryRecipientsReducer from './weeklySummaryRecipientsReducer';
 import { followUpReducer } from './followUpReducer';
 import { BlueSquareEmailAssignment } from './blueSquareEmailBcc';
 
-import { WeeklySummaryEmailAssignment } from './WeeklySummaryEmailAssignment';
+import WeeklySummaryEmailAssignment from './WeeklySummaryEmailAssignment';
 
 import { userProjectsByUserNameReducer } from './userProjectsByUserNameReducer';
 import teamCodesReducer from './teamCodesReducer';
