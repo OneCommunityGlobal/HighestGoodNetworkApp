@@ -55,13 +55,44 @@ function Badge(props) {
     );
 
     const roundedHours = Math.floor(personalBestMaxHrs);
-    const personalMaxText = newBadges.find(badgeObj => badgeObj.badge.type === 'Personal Max')
-      ? ` and a personal best of ${roundedHours} ${roundedHours === 1 ? 'hour' : 'hours'} in a week`
-      : '';
+    // const personalMaxText = newBadges.find(badgeObj => badgeObj.badge.type === 'Personal Max')
+    //   ? ` and have a personal best of ${roundedHours} ${
+    //       roundedHours === 1 ? 'hour' : 'hours'
+    //     } in a week`
+    //   : '';
+    const personalMaxText = newBadges.find(badgeObj => badgeObj.badge.type === 'Personal Max') && (
+      <>
+        {' and have a personal best of '}
+        <span
+          style={{
+            backgroundColor: '#850084',
+            fontWeight: 600,
+            borderRadius: '6px',
+            padding: '2px 4px',
+          }}
+        >
+          {roundedHours}
+        </span>{' '}
+        {roundedHours === 1 ? 'hour' : 'hours'} in a week
+      </>
+    );
 
-    return `Bravo! You have earned ${totalBadges} ${
-      totalBadges === 1 ? 'badge' : 'badges'
-    }${personalMaxText}! `;
+    // return `Bravo! You have earned ${totalBadges} ${
+    //   totalBadges === 1 ? 'badge' : 'badges'
+    // } total, ${personalMaxText}! `;
+    return (
+      <>
+        <div style={{ fontWeight: 'bold' }}>{'Bravo!'}</div>
+        {'You earned '}
+        <span style={{ backgroundColor: '#2ed02b', borderRadius: '6px', padding: '2px 4px' }}>
+          {totalBadges}
+        </span>{' '}
+        {totalBadges === 1 ? 'badge' : 'badges'}
+        {' total'}
+        {personalMaxText}
+        {'!'}
+      </>
+    );
   };
 
   useEffect(() => {
@@ -94,7 +125,19 @@ function Badge(props) {
               id="badgesearned"
             >
               <CardHeader tag="h3" onClick={toggleTypes} role="button" tabIndex={0}>
-                Badges <i className="fa fa-info-circle" id="BadgeInfo" />
+                Badges <i className="fa fa-info-circle" id="BadgeInfo" />{' '}
+                <p
+                  className="fa"
+                  style={{
+                    fontWeight: 'bold',
+                    // fontSize: 18,
+                    color: darkMode ? '#007BFF' : '#285739',
+                  }}
+                >
+                  {' '}
+                </p>
+                {/* Add element here using  totalBadge for the total of earned badges for user at top of badge tab 
+                Added Total Badges Earned: {totalBadge} so remove if no longer needed*/}
               </CardHeader>
               <CardBody>
                 <NewBadges
@@ -110,7 +153,7 @@ function Badge(props) {
                 <CardText
                   style={{
                     fontWeight: 'bold',
-                    fontSize: 18,
+                    // fontSize: 18,
                     color: darkMode ? '#007BFF' : '#285739',
                   }}
                   className="responsive-font-size"

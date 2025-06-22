@@ -28,6 +28,8 @@ import ReportIcon from './report_icon.png';
 import SuggestionsIcon from './suggestions_icon.png';
 import httpService from '../../services/httpService';
 
+import { getBadgeCount, resetBadgeCount } from '../../actions/badgeManagement';
+
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 
 const SummaryBar = React.forwardRef((props, ref) => {
@@ -367,6 +369,7 @@ const SummaryBar = React.forwardRef((props, ref) => {
   };
 
   const onBadgeClick = () => {
+    // maybe do props.resetBadgeCount(displayUserId); as its used in Timelog where the tab for badges updates to 0 on view
     window.location.hash = '#badgesearned';
   };
 
@@ -399,12 +402,16 @@ const SummaryBar = React.forwardRef((props, ref) => {
   useEffect(() => {
     if (summaryBarData && displayUserProfile !== undefined) {
       setInfringements(getInfringements());
-      setBadges(getBadges());
+      // setBadges(getBadges());
       setTotalEffort(summaryBarData.tangibletime);
       setWeeklySummary(getWeeklySummary(displayUserProfile));
       setweeklySummaryNotReq(displayUserProfile?.weeklySummaryOption === 'Not Required');
     }
   }, [displayUserProfile, summaryBarData]);
+
+  useEffect(() => {
+    props.getBadgeCount(displayUserId);
+  }, [displayUserId, props]);
 
   useEffect(() => {
     // Check if we should open the suggestions modal
@@ -657,13 +664,24 @@ const SummaryBar = React.forwardRef((props, ref) => {
           <div className="d-flex justify-content-around no-gutters">
             &nbsp;&nbsp;
             <div className="image_frame">
-              <div className="redBackgroup">
+              {tasks > 0 && (
+                <div className="redBackgroup">
+                  <span>{tasks}</span>
+                </div>
+              )}
+              {/* <div className="redBackgroup">
                 <span>{tasks}</span>
-              </div>
+              </div> */}
               {isAuthUser || canEditData() ? (
                 <button
                   onClick={onTaskClick}
-                  style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+                  className="sum_img"
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    padding: 0,
+                    cursor: 'pointer',
+                  }}
                   aria-label="Task"
                   type="button"
                 >
@@ -675,13 +693,25 @@ const SummaryBar = React.forwardRef((props, ref) => {
             </div>
             &nbsp;&nbsp;
             <div className="image_frame">
-              <div className="redBackgroup">
+              {props.badgeCount > 0 && (
+                <div className="redBackgroup">
+                  <span>{props.badgeCount}</span>
+                </div>
+              )}
+              {/* <div className="redBackgroup">
                 <span>{badges}</span>
-              </div>
+                <span>{props.badgeCount}</span>
+              </div> */}
               {isAuthUser || canEditData() ? (
                 <button
                   onClick={onBadgeClick}
-                  style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+                  className="sum_img"
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    padding: 0,
+                    cursor: 'pointer',
+                  }}
                   aria-label="Badge"
                   type="button"
                 >
@@ -696,9 +726,15 @@ const SummaryBar = React.forwardRef((props, ref) => {
               {isAuthUser || canEditData() ? (
                 <Link to={`/userprofile/${displayUserProfile._id}#bluesquare`}>
                   <img className="sum_img" src={BlueScoreIcon} alt="" />
-                  <div className="redBackgroup">
+                  {infringements > 0 && (
+                    <div className="redBackgroup">
+                      <span>{infringements}</span>
+                      {/* need method to reset infringment count, unrelated to badge task though */}
+                    </div>
+                  )}
+                  {/* <div className="redBackgroup">
                     <span>{infringements}</span>
-                  </div>
+                  </div> */}
                 </Link>
               ) : (
                 <div>
@@ -714,7 +750,13 @@ const SummaryBar = React.forwardRef((props, ref) => {
               {isAuthUser || canEditData() ? (
                 <button
                   onClick={openReport}
-                  style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+                  className="sum_img"
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    padding: 0,
+                    cursor: 'pointer',
+                  }}
                   aria-label="Open Report"
                   type="button"
                 >
@@ -729,7 +771,13 @@ const SummaryBar = React.forwardRef((props, ref) => {
               {isAuthUser || canEditData() ? (
                 <button
                   onClick={openSuggestionModal}
-                  style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+                  className="sum_img"
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    padding: 0,
+                    cursor: 'pointer',
+                  }}
                   aria-label="Open Suggestions"
                   type="button"
                 >
@@ -1075,6 +1123,11 @@ const mapStateToProps = state => ({
   displayUserProfile: state.userProfile,
   displayUserTask: state.userTask,
   darkMode: state.theme.darkMode,
+  badgeCount: state.badge.badgeCount,
 });
 
-export default connect(mapStateToProps, { hasPermission })(React.memo(SummaryBar));
+export default connect(mapStateToProps, {
+  hasPermission,
+  getBadgeCount,
+  resetBadgeCount,
+})(React.memo(SummaryBar));
