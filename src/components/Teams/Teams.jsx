@@ -110,6 +110,7 @@ class Teams extends React.PureComponent {
   }
 
   render() {
+    // eslint-disable-next-line no-unused-vars
     const { allTeams, fetching } = this.props.state.allTeamsData;
     const { darkMode } = this.props.state.theme;
     const numberOfTeams = allTeams && allTeams.length;
@@ -121,8 +122,10 @@ class Teams extends React.PureComponent {
         className={`teams-container ${darkMode ? 'bg-oxford-blue text-light' : ''}`}
         style={{ minHeight: '100%' }}
       >
-        {fetching ? (
-          <Loading />
+        {allTeams.length === 0 ? (
+          <div className="text-center">
+            <Loading />
+          </div>
         ) : (
           <div className="container mt-3">
             {this.teampopupElements(allTeams)}
