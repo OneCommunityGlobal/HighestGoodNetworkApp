@@ -91,7 +91,6 @@ import AddTeamMember from './components/BMDashboard/AddTeamMember/AddTeamMember'
 import ExpenditureLineGraph from './components/BMDashboard/ExpenditureGraph/ExpenditureLineGraph';
 import AttendanceNoShow from './components/AttendanceSystem/AttendanceNoShowCharts';
 
-import AddTeamMember from './components/BMDashboard/AddTeamMember/AddTeamMember';
 // eslint-disable-next-line import/order
 import IssueChart from './components/BMDashboard/Issues/issueCharts';
 import BMTimeLogger from './components/BMDashboard/BMTimeLogger/BMTimeLogger';
