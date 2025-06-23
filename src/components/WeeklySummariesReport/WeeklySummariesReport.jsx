@@ -104,7 +104,6 @@ const initialState = {
     green: false,
     navy: false,
   },
-  // membersFromUnselectedTeam: [],
   selectedExtraMembers: [],
 };
 
@@ -446,8 +445,9 @@ const WeeklySummariesReport = props => {
     }
   };
 
+  // Update members of membersFromUnselectedTeam dropdown
   const membersFromUnselectedTeam = useMemo(() => {
-    // Add members from all unselected team to membersFromUnselectedTeam
+    // Add all selected member in a Set
     const selectedMemberSet = new Set();
     state.selectedCodes.forEach(code => {
       if (code.value === '') return;
@@ -456,12 +456,15 @@ const WeeklySummariesReport = props => {
         selectedMemberSet.add(member._id);
       });
     });
+
+    // Filter members from unselected set
     const membersFromUnselectedTeam = [];
     state.summaries.forEach(summary => {
       if (!selectedMemberSet.has(summary._id)) {
         membersFromUnselectedTeam.push({
           label: `${summary.firstName} ${summary.lastName}`,
           value: summary._id,
+          role: summary.role,
         });
       }
     });
@@ -543,6 +546,7 @@ const WeeklySummariesReport = props => {
         tableData,
         COLORS,
         selectedSpecialColors,
+        selectedExtraMembers,
       } = state;
 
       // console.log('filterWeeklySummaries state:', {
@@ -556,6 +560,9 @@ const WeeklySummariesReport = props => {
       const structuredTeamTableData = [];
       const selectedCodesArray = selectedCodes ? selectedCodes.map(e => e.value) : [];
       const selectedColorsArray = selectedColors ? selectedColors.map(e => e.value) : [];
+      const selectedExtraMembersArray = selectedExtraMembers
+        ? selectedExtraMembers.map(e => e.value)
+        : [];
       const weekIndex = navItems.indexOf(state.activeTab);
       const activeFilterColors = Object.entries(selectedSpecialColors || {})
         .filter(([, isSelected]) => isSelected)
@@ -590,8 +597,14 @@ const WeeklySummariesReport = props => {
         const matchesSpecialColor =
           activeFilterColors.length === 0 || activeFilterColors.includes(summary.filterColor);
 
+        // Filtered by Team Code and Extra Members
+        const isInSelectedCode = selectedCodesArray.includes(summary.teamCode);
+        const isInSelectedExtraMember = selectedExtraMembersArray.includes(summary._id);
+        const noFilterSelected =
+          selectedCodesArray.length === 0 && selectedExtraMembersArray.length === 0;
+
         return (
-          (selectedCodesArray.length === 0 || selectedCodesArray.includes(summary.teamCode)) &&
+          (noFilterSelected || isInSelectedCode || isInSelectedExtraMember) &&
           (selectedColorsArray.length === 0 ||
             selectedColorsArray.includes(summary.weeklySummaryOption)) &&
           matchesSpecialColor &&
@@ -664,6 +677,24 @@ const WeeklySummariesReport = props => {
             structuredTeamTableData.push({ team: code.value, color, members });
           }
         });
+      }
+
+      // Add Extra Members data to chartData and structuredTeamTableData
+      if (selectedExtraMembersArray.length > 0) {
+        chartData.push({
+          name: 'Extra Members Selected',
+          value: selectedExtraMembersArray.length,
+        });
+        const color = COLORS[selectedCodesArray.length % COLORS.length];
+        const members = [];
+        selectedExtraMembers.forEach(option => {
+          members.push({
+            name: option.label,
+            role: option.role,
+            id: option.value,
+          });
+        });
+        structuredTeamTableData.push({ team: 'Extra Members Selected', color, members });
       }
 
       chartData.sort();
@@ -1172,6 +1203,7 @@ const WeeklySummariesReport = props => {
     state.selectedColors,
     state.selectedTrophies,
     state.selectedSpecialColors,
+    state.selectedExtraMembers,
     state.summaries,
     state.activeTab,
   ]);
