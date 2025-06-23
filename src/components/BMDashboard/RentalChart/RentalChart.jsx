@@ -285,8 +285,8 @@ export default function RentalChart() {
             },
           },
           backgroundColor: darkMode ? '#1b2a41' : 'rgba(255,255,255,0.8)',
-          titleColor: darkMode ? '#ffffff' : '##1b2a41',
-          bodyColor: darkMode ? '#1b2a41' : '#333333',
+          titleColor: darkMode ? '#ffffff' : '#1b2a41',
+          bodyColor: darkMode ? '#ffffff' : '#333333',
           borderColor: darkMode ? 'rgba(255,255,255, 0.2)' : '#1b2a41',
           borderWidth: 1,
         },
@@ -313,11 +313,13 @@ export default function RentalChart() {
               chartType === 'percentage'
                 ? 'Percentage of Total Materials Cost (%)'
                 : 'Total Rental Cost ($)',
+            color: darkMode ? '#e0e0e0' : '#333333',
           },
           ticks: {
             callback(value) {
               return chartType === 'percentage' ? `${value}%` : `$${value}`;
             },
+            color: darkMode ? '#e0e0e0' : '#333333',
           },
           grid: {
             color: darkMode ? 'rgba(255,255,255,0.1)' : '#1b2a41',
@@ -494,7 +496,7 @@ export default function RentalChart() {
           padding: '20px',
           borderRadius: '8px',
           border: darkMode ? '1px solid #333' : '1px solid #ddd',
-          height: '500px',
+          minHeight: '600px',
         }}
       >
         {renderChartContent()}
