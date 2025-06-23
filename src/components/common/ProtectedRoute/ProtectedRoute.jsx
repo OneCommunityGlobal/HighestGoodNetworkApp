@@ -18,7 +18,7 @@ const ProtectedRoute = ({
   const userPermissions = auth.user?.permissions?.frontPermissions || [];
   const permissionsAllowed = new Set([...rolePermissions, ...userPermissions]);
   let hasPermissionToAccess = routePermissions?.some(perm => permissionsAllowed.has(perm));
-
+  
   if (Array.isArray(routePermissions)) {
     if (rolePermissions?.some(perm => routePermissions.includes(perm))) {
       hasPermissionToAccess = true;
@@ -38,6 +38,13 @@ const ProtectedRoute = ({
       // eslint-disable-next-line react/jsx-props-no-spreading
       {...rest}
       render={props => {
+        if (!auth || !auth.user || !roles || roles.length === 0) {
+          return (
+            <div className="d-flex justify-content-center">
+              <i className="fa fa-spinner fa-pulse" />
+            </div>
+          );
+        }
         if (!auth.isAuthenticated) {
           return <Redirect to={{ pathname: '/login', state: { from: props.location } }} />;
         }

@@ -42,6 +42,7 @@ describe('Project Component', () => {
     hasPermission: jest.fn((permission) => true),
     onUpdateProject: jest.fn(),
     onClickArchiveBtn: jest.fn(),
+    onClickProjectStatusBtn: jest.fn(),
   };
 
   it('renders correctly with props', () => {
