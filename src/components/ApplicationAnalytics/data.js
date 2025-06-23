@@ -7,7 +7,7 @@ const generateTimestamp = (daysAgo, hoursAgo = 0) => {
   return date.toISOString();
 };
 
-export const jobAnalyticsData = [
+const jobAnalyticsData = [
   // Recent applications (last 7 days) - Only 4 roles
 
   // Civil Engineer (least popular - 5 applications)
@@ -102,3 +102,5 @@ export const jobAnalyticsData = [
   { role: 'Software Engineer', timestamp: generateTimestamp(100) },
   { role: 'Software Engineer', timestamp: generateTimestamp(200) },
 ];
+
+export default jobAnalyticsData;

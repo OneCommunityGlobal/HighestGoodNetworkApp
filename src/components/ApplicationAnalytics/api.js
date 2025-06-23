@@ -1,5 +1,6 @@
-import { jobAnalyticsData } from './data';
+import jobAnalyticsData from './data';
 
-export const getJobAnalyticsData = () => {
+const getJobAnalyticsData = () => {
   return jobAnalyticsData;
 };
+export default getJobAnalyticsData;

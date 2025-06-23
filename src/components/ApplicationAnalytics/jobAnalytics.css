@@ -3,7 +3,7 @@
   align-items: flex-start;
   gap: 20px;
   width: 100%;
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 20px;
   font-family: Arial, sans-serif;
@@ -15,6 +15,7 @@
   border-radius: 8px;
   background-color: #ffffff;
   padding: 20px;
+  min-width: 800px; 
 }
 
 .chart-title {
@@ -22,21 +23,23 @@
   font-weight: 400;
   color: #5f6368;
   margin: 0 0 30px 0;
+  text-align: center;
 }
 
 .chart-area {
   min-height: 400px;
   position: relative;
   padding-left: 170px;
-  padding-right: 60px;
+  padding-right: 40px; 
   padding-top: 20px;
   padding-bottom: 60px;
+  width: 100%; 
 }
 
 .grid-lines {
   position: absolute;
   left: 170px;
-  right: 60px;
+  right: 40px; 
   top: 20px;
   bottom: 60px;
   background-image: 
@@ -74,7 +77,7 @@
 .x-axis {
   position: absolute;
   left: 170px;
-  right: 60px;
+  right: 40px; 
   bottom: 40px;
   height: 20px;
   border-top: 1px solid #9aa0a6;
@@ -101,7 +104,7 @@
 .bars-container {
   position: absolute;
   left: 170px;
-  right: 60px;
+  right: 40px; 
   top: 20px;
   bottom: 60px;
   display: flex;
@@ -201,12 +204,13 @@
   flex-direction: column;
   gap: 20px;
   min-width: 150px;
+  flex-shrink: 0; 
 }
 
 .filter-group {
   border: 1px solid #dadce0;
   border-radius: 4px;
-  padding: 12px;
+  padding: 8px;
   background-color: #ffffff;
 }
 
@@ -214,18 +218,19 @@
   font-size: 14px;
   font-weight: 500;
   color: #3c4043;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 
 .filter-select {
   width: 100%;
-  padding: 4px 8px;
+  padding: 6px 8px;
   border: 1px solid #dadce0;
   border-radius: 4px;
   font-size: 14px;
   background-color: #ffffff;
   color: #3c4043;
   cursor: pointer;
+  height: 32px;
 }
 
 .filter-select:focus {
@@ -237,7 +242,55 @@
   border-color: #9aa0a6;
 }
 
+/* Dark Mode Support */
+[data-theme="dark"] .job-analytics-container,
+.dark .job-analytics-container {
+  background-color: #1a1a1a;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .chart-container,
+.dark .chart-container {
+  background-color: #2d2d2d;
+  border-color: #444;
+}
+
+[data-theme="dark"] .y-axis-label,
+.dark .y-axis-label {
+  color: #e8eaed;
+  border-color: #5f6368;
+}
+
+[data-theme="dark"] .x-axis-tick,
+.dark .x-axis-tick {
+  color: #e8eaed;
+}
+
+[data-theme="dark"] .filters-panel select,
+.dark .filters-panel select {
+  background-color: #2d2d2d;
+  color: #ffffff;
+  border-color: #5f6368;
+}
+
+[data-theme="dark"] .chart-title,
+.dark .chart-title {
+  color: #e8eaed;
+}
+
+[data-theme="dark"] .summary-info,
+.dark .summary-info {
+  background-color: #333;
+  color: #e8eaed;
+}
+
 /* Responsive Design */
+@media (max-width: 1200px) {
+  .chart-container {
+    min-width: 700px;
+  }
+}
+
 @media (max-width: 768px) {
   .job-analytics-container {
     flex-direction: column;
@@ -247,11 +300,17 @@
   .filters-panel {
     flex-direction: row;
     min-width: auto;
+    width: 100%;
+  }
+  
+  .chart-container {
+    min-width: auto;
+    width: 100%;
   }
   
   .chart-area {
     padding-left: 120px;
-    padding-right: 40px;
+    padding-right: 20px;
   }
   
   .y-axis {
@@ -262,4 +321,44 @@
     font-size: 11px;
   }
   
+  .bars-container {
+    left: 120px;
+    right: 20px;
+  }
+  
+  .grid-lines {
+    left: 120px;
+    right: 20px;
+  }
+  
+  .x-axis {
+    left: 120px;
+    right: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .chart-area {
+    padding-left: 100px;
+    padding-right: 10px;
+  }
+  
+  .y-axis {
+    width: 90px;
+  }
+  
+  .bars-container {
+    left: 100px;
+    right: 10px;
+  }
+  
+  .grid-lines {
+    left: 100px;
+    right: 10px;
+  }
+  
+  .x-axis {
+    left: 100px;
+    right: 10px;
+  }
 }

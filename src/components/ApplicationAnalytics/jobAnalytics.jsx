@@ -1,6 +1,5 @@
-
 import React, { useState, useMemo } from 'react';
-import { getJobAnalyticsData } from './api';
+import getJobAnalyticsData from './api';
 import './jobAnalytics.css';
 
 const JobAnalytics = () => {
@@ -15,10 +14,6 @@ const JobAnalytics = () => {
   const processedData = useMemo(() => {
     let filtered = [...rawData];
 
-    console.log('=== JOB ANALYTICS FILTERING DEBUG ===');
-    console.log('Initial data count:', filtered.length);
-    console.log('Date filter:', dateFilter);
-    console.log('Role filter:', selectedRole);
 
     // Apply date filter
     if (dateFilter !== 'all') {
@@ -39,14 +34,14 @@ const JobAnalytics = () => {
           default: return true;
         }
       });
-      console.log(`After date filter (${dateFilter}): ${beforeDateFilter} -> ${filtered.length}`);
+      //console.log(`After date filter (${dateFilter}): ${beforeDateFilter} -> ${filtered.length}`);
     }
 
     // Apply role filter
     if (selectedRole !== 'all') {
       const beforeRoleFilter = filtered.length;
       filtered = filtered.filter(item => item.role === selectedRole);
-      console.log(`After role filter (${selectedRole}): ${beforeRoleFilter} -> ${filtered.length}`);
+      //console.log(`After role filter (${selectedRole}): ${beforeRoleFilter} -> ${filtered.length}`);
     }
 
     // Group by role and count applications
@@ -58,7 +53,7 @@ const JobAnalytics = () => {
       roleGroups[item.role]++;
     });
 
-    console.log('Role groups:', roleGroups);
+    //console.log('Role groups:', roleGroups);
 
     // Create chart data and sort least to most competitive (ascending)
     const chartData = Object.entries(roleGroups)
@@ -69,8 +64,8 @@ const JobAnalytics = () => {
       }))
       .sort((a, b) => a.applications - b.applications); // Sort ascending (least to most)
 
-    console.log('Final chart data:', chartData);
-    console.log('=== END DEBUG ===');
+    // console.log('Final chart data:', chartData);
+    // console.log('=== END DEBUG ===');
     return chartData;
   }, [rawData, dateFilter, selectedRole]);
 
@@ -175,7 +170,7 @@ const JobAnalytics = () => {
           <select
             value={dateFilter}
             onChange={(e) => {
-              console.log('Date filter changed to:', e.target.value);
+              //console.log('Date filter changed to:', e.target.value);
               setDateFilter(e.target.value);
             }}
             className="filter-select"
@@ -193,7 +188,7 @@ const JobAnalytics = () => {
           <select
             value={selectedRole}
             onChange={(e) => {
-              console.log('Role filter changed to:', e.target.value);
+              //console.log('Role filter changed to:', e.target.value);
               setSelectedRole(e.target.value);
             }}
             className="filter-select"
