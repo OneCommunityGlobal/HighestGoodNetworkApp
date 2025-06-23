@@ -308,6 +308,7 @@ const WeeklySummariesReport = props => {
         teamCodes,
         teamCodeWarningUsers: summariesCopy.filter(s => s.teamCodeWarning),
         tabsLoading: { ...prevState.tabsLoading, [activeTab]: false },
+        selectedCodes: [],
       }));
 
       // 🔐 Now load info collections
@@ -688,7 +689,7 @@ const WeeklySummariesReport = props => {
   const handleSelectCodeChange = event => {
     setState(prev => {
       const selectedValues = event.map(e => e.value);
-      // Move selected codes to the front of the dropdown list
+      // Move selected codes to the front of the dropdown list // newly added
       const reorderedTeamCodes = [
         ...prev.teamCodes.filter(code => selectedValues.includes(code.value)), // selected first
         ...prev.teamCodes.filter(code => !selectedValues.includes(code.value)), // then the rest
@@ -872,6 +873,11 @@ const WeeklySummariesReport = props => {
             _ids: updatedSummaries.filter(s => s.teamCode === replaceCode).map(s => s._id),
           });
 
+        const reorderedTeamCodes = [
+          updatedSelectedCodes[0], // the newly replaced code on top
+          ...updatedTeamCodes.filter(tc => tc.value !== updatedSelectedCodes[0].value),
+        ];
+
         const updatedWarningUsers = [...teamCodeWarningUsers];
         updatedUsers.forEach(({ userId, teamCodeWarning }) => {
           const existingIndex = updatedWarningUsers.findIndex(user => user._id === userId);
@@ -894,7 +900,9 @@ const WeeklySummariesReport = props => {
         setState(prev => ({
           ...prev,
           summaries: updatedSummaries,
-          teamCodes: updatedTeamCodes,
+          // teamCodes: updatedTeamCodes,
+          teamCodes: reorderedTeamCodes,
+          // selectedCodes: [],
           selectedCodes: updatedSelectedCodes,
           replaceCode: '',
           replaceCodeError: null,
