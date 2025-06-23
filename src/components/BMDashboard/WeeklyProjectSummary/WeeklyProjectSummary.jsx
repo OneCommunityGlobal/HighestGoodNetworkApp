@@ -9,6 +9,7 @@ import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
 import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
 import ExpenditureLineGraph from '../ExpenditureGraph/ExpenditureLineGraphComponent';
+import styles from './WeeklyProjectSummary.module.css';
 
 const projectStatusButtons = [
   {
