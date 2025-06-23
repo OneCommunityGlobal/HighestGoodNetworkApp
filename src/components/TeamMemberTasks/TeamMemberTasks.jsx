@@ -550,9 +550,14 @@ const TeamMemberTasks = React.memo(props => {
                   }`}
                   title={`Timelogs submitted in the past ${days} days`}
                   style={{
-                    color: selectedPeriod === days && isTimeFilterActive ? 'white' : color,
+                    color:
+                      selectedPeriod === days && isTimeFilterActive
+                        ? `${darkMode ? color : 'white'}`
+                        : `${darkMode ? 'white' : color}`,
                     backgroundColor:
-                      selectedPeriod === days && isTimeFilterActive ? color : 'white',
+                      selectedPeriod === days && isTimeFilterActive
+                        ? `${darkMode ? 'white' : color}`
+                        : `${darkMode ? color : 'white'}`,
                     border: `1px solid ${color}`,
                   }}
                   onClick={() => selectPeriod(days)}
@@ -570,10 +575,12 @@ const TeamMemberTasks = React.memo(props => {
                 value={selectedPeriod || ''}
                 title={`Timelogs submitted in the past ${selectedPeriod} days`}
                 style={{
-                  color: isTimeFilterActive ? 'white' : hrsFilterBtnColorMap[selectedPeriod],
+                  color: isTimeFilterActive
+                    ? `${darkMode ? hrsFilterBtnColorMap[selectedPeriod] : 'white'}`
+                    : `${darkMode ? 'white' : hrsFilterBtnColorMap[selectedPeriod]}`,
                   backgroundColor: isTimeFilterActive
-                    ? hrsFilterBtnColorMap[selectedPeriod]
-                    : '#007BFF',
+                    ? `${darkMode ? 'white' : hrsFilterBtnColorMap[selectedPeriod]}`
+                    : `${darkMode ? hrsFilterBtnColorMap[selectedPeriod] : '#007BFF'}`,
                   border: `1px solid ${hrsFilterBtnColorMap[selectedPeriod]}`,
                 }}
               >
@@ -741,7 +748,9 @@ const TeamMemberTasks = React.memo(props => {
                       <th className={`team-task-progress ${darkMode ? 'bg-space-cadet' : ''}`}>
                         Progress
                       </th>
-                      {displayUser.role === 'Administrator' ? <th>Status</th> : null}
+                      {displayUser.role === 'Administrator' ? (
+                        <th className={darkMode ? 'bg-space-cadet' : ''}>Status</th>
+                      ) : null}
                     </tr>
                   </thead>
                 </Table>

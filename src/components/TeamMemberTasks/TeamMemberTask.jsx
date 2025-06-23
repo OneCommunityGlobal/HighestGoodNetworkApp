@@ -264,7 +264,11 @@ const TeamMemberTask = React.memo(
                   <td colSpan={2} className={`${darkMode ? 'bg-yinmn-blue' : ''}`}>
                     <Table borderless className="team-member-tasks-subtable">
                       <tbody>
-                        <tr>
+                        <tr
+                          style={{
+                            width: '500px',
+                          }}
+                        >
                           <td className="team-member-tasks-user-name">
                             <Link
                               className="team-member-tasks-user-name-link"
