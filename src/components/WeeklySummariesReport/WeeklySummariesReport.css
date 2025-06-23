@@ -72,6 +72,7 @@
   border-radius: 10px;
   border: 1px solid #bbb;
   margin-bottom: 0.5rem;
+  width: 25px;
 }
 
 .switch-toggle-inner {

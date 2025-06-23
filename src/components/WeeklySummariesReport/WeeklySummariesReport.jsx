@@ -682,7 +682,7 @@ const WeeklySummariesReport = props => {
       // Add Extra Members data to chartData and structuredTeamTableData
       if (selectedExtraMembersArray.length > 0) {
         chartData.push({
-          name: 'Extra Members Selected',
+          name: 'Extra Members',
           value: selectedExtraMembersArray.length,
         });
         const color = COLORS[selectedCodesArray.length % COLORS.length];
@@ -694,7 +694,7 @@ const WeeklySummariesReport = props => {
             id: option.value,
           });
         });
-        structuredTeamTableData.push({ team: 'Extra Members Selected', color, members });
+        structuredTeamTableData.push({ team: 'Extra Members', color, members });
       }
 
       chartData.sort();
