@@ -45,6 +45,7 @@ function UserSearchPanel({
           className="btn btn-info mr-2"
           onClick={handleSetupHistoryPopup}
           style={darkMode ? boxStyleDark : boxStyle}
+          aria-label="Setup History"
         >
           <FontAwesomeIcon className="bell_icon" icon={faBell} />
         </button>

@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
@@ -8,7 +9,9 @@ import { BrowserRouter } from 'react-router-dom';
 import WeeklySummaries from '../WeeklySummaries';
 
 // Mock dependencies
-jest.mock('html-react-parser', () => content => <div data-testid="parsed-html">{content}</div>);
+jest.mock('html-react-parser', () => function mockParser(content) {
+  return <div data-testid="parsed-html">{content}</div>
+});
 jest.mock('@tinymce/tinymce-react', () => ({
   Editor: () => <div data-testid="mock-editor" />,
 }));
@@ -49,6 +52,7 @@ const renderWeeklySummaries = props => {
   return render(
     <Provider store={store}>
       <BrowserRouter>
+        {/* eslint-disable-next-line react/jsx-props-no-spreading */}
         <WeeklySummaries {...props} />
       </BrowserRouter>
     </Provider>,
