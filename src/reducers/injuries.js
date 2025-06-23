@@ -10,18 +10,20 @@ const initialState = {
   error: null,
 };
 
-const injuriesReducer = (state = initialState, action) => {
+const injuriesReducer = (state, action = {}) => {
+  const currentState = typeof state === 'undefined' ? initialState : state;
+
   switch (action.type) {
     case FETCH_INJURIES_REQUEST:
       return {
-        ...state,
+        ...currentState,
         loading: true,
         error: null,
       };
 
     case FETCH_INJURIES_SUCCESS:
       return {
-        ...state,
+        ...currentState,
         loading: false,
         data: action.payload,
         error: null,
@@ -29,13 +31,13 @@ const injuriesReducer = (state = initialState, action) => {
 
     case FETCH_INJURIES_FAILURE:
       return {
-        ...state,
+        ...currentState,
         loading: false,
         error: action.payload,
       };
 
     default:
-      return state;
+      return currentState;
   }
 };
 
