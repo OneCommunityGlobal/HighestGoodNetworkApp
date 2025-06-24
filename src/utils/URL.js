@@ -295,6 +295,9 @@ export const ENDPOINTS = {
   LB_REGISTER: `${APIEndpoint}/lbdashboard/register`,
   LB_LOGIN: `${APIEndpoint}/lbdashboard/login`,
 
+  // Injuries endpoints
+  INJURIES: `${APIEndpoint}/injuries`,
+
 
   // community portal
   CP_NOSHOW_VIZ_LOCATION: `${APIEndpoint}/communityportal/reports/participation/location`,
