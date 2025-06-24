@@ -2,7 +2,7 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
-export default function BellNotification() {
+export default function BellNotification({userId}) {
   // State variables to manage notifications and UI state
   const [hasNotification, setHasNotification] = useState(false);
   const [isDataReady, setIsDataReady] = useState(false);
@@ -13,7 +13,13 @@ export default function BellNotification() {
   const timeEntries = useSelector(state => state.timeEntries?.weeks?.[0] || []);
   const weeklycommittedHours = useSelector(state => state.userProfile?.weeklycommittedHours || 0);
   const darkMode = useSelector(state => state.theme.darkMode);
-  const userId = useSelector(state => state.auth.user?.userid);
+  // const userId = useSelector(state => {
+  //   console.log(state.auth)
+  //   return state.auth.user?.userid});
+  // const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
+  // const [viewingUser, setViewingUser] = useState(checkSessionStorage);
+  // const [displayUserId, setDisplayUserId] = useState( viewingUser?.userId || userId);
+  
 
   /**
    * Memoized function to calculate the total effort (hours + minutes) logged by the user
@@ -126,6 +132,10 @@ export default function BellNotification() {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
+  useEffect(() => {
+    setIsDataReady(false);
+  },[userId])
 
   /**
    * Utility function to format time values in hours and minutes

@@ -20,10 +20,12 @@ import MembersAutoComplete from './MembersAutoComplete';
 
 import ToggleSwitch from './ToggleSwitch/ToggleSwitch';
 import InfoModal from './InfoModal';
-import styles from './ToggleSwitch/ToggleSwitch.module.scss';
+// COMMENTED OUT BECAUSE OF ESLINT ERROR
+// import styles from './ToggleSwitch/ToggleSwitch.module.scss';
 
 export const TeamMembersPopup = React.memo(props => {
   const darkMode = useSelector(state => state.theme.darkMode);
+  const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon');
   const [isChecked, setIsChecked] = useState(1); // 0 = false, 1 = true, 2 = all
   const [checkedStatus, setCheckedStatus] = useState('Active'); // 0 = false, 1 = true, 2 = all
   const [selectedUser, setSelectedUser] = useState(undefined);
@@ -33,7 +35,8 @@ export const TeamMembersPopup = React.memo(props => {
   const [memberList, setMemberList] = useState([]);
   const [sortOrder, setSortOrder] = useState(0);
   const [deletedPopup, setDeletedPopup] = useState(false);
-  const trackColor = isChecked === 0 ? '#ccc' : isChecked === 1 ? 'limegreen' : 'dodgerblue';
+  // COMMENTED OUT BECAUSE OF ESLINT ERROR
+  // const trackColor = isChecked === 0 ? '#ccc' : isChecked === 1 ? 'limegreen' : 'dodgerblue';
 
   const closeDeletedPopup = () => {
     setDeletedPopup(!deletedPopup);
@@ -42,17 +45,6 @@ export const TeamMembersPopup = React.memo(props => {
   const handleDelete = id => {
     props.onDeleteClick(`${id}`);
     setDeletedPopup(true);
-  };
-
-  const handleToggle = () => {
-    setIsChecked(parseInt(event.target.value));
-    setCheckedStatus(
-      parseInt(event.target.value) == 0
-        ? 'Inactive'
-        : parseInt(event.target.value) == 1
-        ? 'Active'
-        : 'See All',
-    );
   };
 
   const [infoModal, setInfoModal] = useState(false);
@@ -65,7 +57,7 @@ export const TeamMembersPopup = React.memo(props => {
     setMemberList([]);
     props.onClose();
     setSortOrder(0);
-    setIsChecked(true);
+    setIsChecked(1);
     setCheckedStatus('Active');
   };
   const onAddUser = () => {
@@ -271,27 +263,44 @@ export const TeamMembersPopup = React.memo(props => {
           >
             <thead>
               <tr className={darkMode ? 'bg-space-cadet' : ''}>
-                <th>
-                  <div className={styles.divContainer}>
-                    <div className={styles.sliderContainer}>
-                      <input
-                        type="range"
-                        min="0"
-                        max="2"
-                        step="1"
-                        value={isChecked}
-                        onChange={handleToggle}
-                        className={styles.slider}
-                        title="Move Slider for Status change. Left: Inactive, Middle: Active, Right: See All"
-                        // Dynamic inline style for background color based on status
-                        style={{ '--track-color': trackColor, '--thumb-color': trackColor }}
-                      />
-                      <span>{checkedStatus}</span>
-                    </div>
-                  </div>
+                <th style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const newStatus = (isChecked + 1) % 3;
+                      setIsChecked(newStatus);
+
+                      let status = 'See All';
+                      if (newStatus === 0) {
+                        status = 'Inactive';
+                      } else if (newStatus === 1) {
+                        status = 'Active';
+                      }
+                      setCheckedStatus(status);
+                    }}
+                    style={{
+                      backgroundColor: (() => {
+                        if (isChecked === 0) return '#ccc';
+                        if (isChecked === 1) return 'limegreen';
+                        return 'dodgerblue';
+                      })(),
+                      color: isChecked === 0 ? 'black' : 'white',
+                      border: 'none',
+                      padding: '6px 12px',
+                      borderRadius: '5px',
+                      fontWeight: 'bold',
+                      cursor: 'pointer',
+                      width: '100px',
+                      minWidth: '100px',
+                      textAlign: 'center',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {checkedStatus}
+                  </button>
                 </th>
-                <th>#</th>
-                <th>User Name</th>
+                <th class="def-width">#</th>
+                <th class="def-width">User Name</th>
                 <th style={{ cursor: 'pointer' }} onClick={toggleOrder}>
                   Date Added{' '}
                   <FontAwesomeIcon
@@ -319,69 +328,100 @@ export const TeamMembersPopup = React.memo(props => {
               </tr>
             </thead>
             <tbody>
-              {props.fetching && (
-                <tr>
-                  <td align="center" colSpan={6}>
-                    <Spinner
-                      color={`${darkMode ? 'light' : 'dark'}`}
-                      animation="border"
-                      size="sm"
-                    />
-                  </td>
-                </tr>
-              )}
-
-              {!props.fetching && memberList.length === 0 && emptyState}
-
-              {!props.fetching &&
-                memberList.length > 0 &&
-                Array.isArray(props.members.teamMembers) &&
-                props.members.teamMembers.length > 0 &&
-                memberList.toSorted().map(user => (
-                  <tr key={`${props.selectedTeamName}-${user.id}`}>
-                    <td>
-                      <div className={user.isActive ? 'isActive' : 'isNotActive'}>
-                        <i className="fa fa-circle" aria-hidden="true" />
-                      </div>
-                    </td>
-                    <td>{memberList.indexOf(user) + 1}</td>
-                    <td>
-                      {returnUserRole(user) ? (
-                        <b>
-                          {user.firstName} {user.lastName} ({user.role})
-                        </b>
-                      ) : (
-                        <span>
-                          {user.firstName} {user.lastName} ({user.role})
-                        </span>
-                      )}
-                      {hasVisibilityIconPermission && !user.isVisible && (
-                        <i className="fa fa-eye-slash" title="User is invisible" />
-                      )}
-                    </td>
-                    <td>{moment(user.addDateTime).format('MMM-DD-YY')}</td>
-                    <td>
-                      <ToggleSwitch
-                        key={`${props.selectedTeamName}-${user._id}`}
-                        switchType="limit-visibility"
-                        userId={user._id}
-                        choice={memberVisibility[user._id]}
-                        UpdateTeamMembersVisibility={UpdateTeamMembersVisibility}
-                      />
-                    </td>
-                    {canAssignTeamToUsers && (
-                      <td>
-                        <Button
-                          color="danger"
-                          onClick={() => handleDelete(user._id)}
-                          style={darkMode ? boxStyleDark : boxStyle}
-                        >
-                          Delete
-                        </Button>
+              {(() => {
+                if (props.fetching) {
+                  return (
+                    <tr>
+                      <td align="center" colSpan={6}>
+                        <Spinner
+                          color={`${darkMode ? 'light' : 'dark'}`}
+                          animation="border"
+                          size="sm"
+                        />
                       </td>
-                    )}
-                  </tr>
-                ))}
+                    </tr>
+                  );
+                }
+                if (!memberList.length) {
+                  return emptyState;
+                }
+                return (
+                  ((Array.isArray(props.members.teamMembers) &&
+                    props.members.teamMembers.length > 0) ||
+                    (typeof props.members.fetching === 'boolean' &&
+                      !props.members.fetching &&
+                      props.members.teamMembers) ||
+                    (Array.isArray(props.members) && props.members.length > 0)) &&
+                  memberList.toSorted().map((user, index) => {
+                    return (
+                      <tr key={`${props.selectedTeamName}-${user._id}`}>
+                        <td style={{ verticalAlign: 'middle', textAlign: 'center' }}>
+                          <div className={user.isActive ? 'isActive' : 'isNotActive'}>
+                            <i className="fa fa-circle" aria-hidden="true" />
+                          </div>
+                        </td>
+                        <td
+                          className="def-width"
+                          style={{ verticalAlign: 'middle', textAlign: 'center' }}
+                        >
+                          {index + 1}
+                        </td>
+                        <td
+                          className="def-width"
+                          style={{ verticalAlign: 'middle', textAlign: 'center' }}
+                        >
+                          {returnUserRole(user) ? (
+                            <b>
+                              {user.firstName} {user.lastName} ({user.role})
+                            </b>
+                          ) : (
+                            <span>
+                              {user.firstName} {user.lastName} ({user.role})
+                            </span>
+                          )}{' '}
+                          {hasVisibilityIconPermission &&
+                          !user.isVisible && ( // Invisibility icon from 'Cillian'
+                              <i className="fa fa-eye-slash" title="User is invisible" />
+                            )}
+                        </td>
+                        {/* <td>{user}</td> */}
+                        <td style={{ verticalAlign: 'middle', textAlign: 'center' }}>
+                          {moment(user.addDateTime).format('MMM-DD-YY')}
+                        </td>
+                        <td
+                          style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            height: '100%',
+                          }}
+                        >
+                          <ToggleSwitch
+                            key={`${props.selectedTeamName}-${user._id}`}
+                            switchType="limit-visibility"
+                            userId={user._id}
+                            choice={memberVisibility[user._id]}
+                            UpdateTeamMembersVisibility={UpdateTeamMembersVisibility}
+                          />
+                        </td>
+                        {canAssignTeamToUsers && (
+                          <td
+                            style={{ whiteSpace: 'nowrap', minWidth: '100px', textAlign: 'center' }}
+                          >
+                            <Button
+                              color="danger"
+                              onClick={() => handleDelete(user._id)}
+                              style={darkMode ? boxStyleDark : boxStyle}
+                            >
+                              Delete
+                            </Button>
+                          </td>
+                        )}
+                      </tr>
+                    );
+                  })
+                );
+              })()}
             </tbody>
           </table>
         </ModalBody>
@@ -404,9 +444,9 @@ export const TeamMembersPopup = React.memo(props => {
         </ModalHeader>
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           <p>
-            Team member successfully deleted! Ryunosuke Satoro famously said, “Individually we are
-            one drop, together we are an ocean.” Through the action you just took, this ocean is now
-            one drop smaller.
+            Team member successfully deleted! Ryunosuke Satoro famously said, &ldquo;Individually we
+            are one drop, together we are an ocean.&rdquo; Through the action you just took, this
+            ocean is now one drop smaller.
           </p>
         </ModalBody>
       </Modal>
