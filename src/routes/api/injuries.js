@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 const express = require('express');
 
 const router = express.Router();
@@ -62,7 +63,6 @@ router.get('/', async (req, res) => {
 
     res.json(filteredInjuries);
   } catch (error) {
-    console.error('Error fetching injuries:', error);
     res.status(500).json({ message: 'Server error while fetching injuries' });
   }
 });
