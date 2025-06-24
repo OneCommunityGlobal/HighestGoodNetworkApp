@@ -132,11 +132,12 @@
   width: 100%;
   max-width: 100px;
   height: auto;
+  border: 3px solid transparent;
 }
 
 .sum_img:hover .sum_img {
   background-color: #225163;
-  border-radius: 10px;
+  border-radius: 50%;
 }
 
 .image_frame {

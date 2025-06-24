@@ -66,6 +66,7 @@ function Badge(props) {
         <span
           style={{
             backgroundColor: '#850084',
+            color: 'white',
             fontWeight: 600,
             borderRadius: '6px',
             padding: '2px 4px',
@@ -77,14 +78,17 @@ function Badge(props) {
       </>
     );
 
-    // return `Bravo! You have earned ${totalBadges} ${
-    //   totalBadges === 1 ? 'badge' : 'badges'
-    // } total, ${personalMaxText}! `;
     return (
       <>
-        <div style={{ fontWeight: 'bold' }}>{'Bravo!'}</div>
+        <div style={{ fontWeight: 'bold' }}>{'Bravo! '}</div>
         {'You earned '}
-        <span style={{ backgroundColor: '#2ed02b', borderRadius: '6px', padding: '2px 4px' }}>
+        <span
+          style={{
+            backgroundColor: '#2ed02b',
+            borderRadius: '6px',
+            padding: '2px 4px',
+          }}
+        >
           {totalBadges}
         </span>{' '}
         {totalBadges === 1 ? 'badge' : 'badges'}
@@ -136,8 +140,6 @@ function Badge(props) {
                 >
                   {' '}
                 </p>
-                {/* Add element here using  totalBadge for the total of earned badges for user at top of badge tab 
-                Added Total Badges Earned: {totalBadge} so remove if no longer needed*/}
               </CardHeader>
               <CardBody>
                 <NewBadges

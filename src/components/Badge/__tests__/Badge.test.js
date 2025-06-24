@@ -136,8 +136,11 @@ describe('Badge Component', () => {
         });
         const { container } = renderWithProvider(<Badge {...badgeProps} />, { store });
         const titleElement = container.querySelector('.card-text');
+        // expect(titleElement).toHaveTextContent(
+        //   'Bravo! You have earned 13 badges and a personal best of 50 hours in a week!',
+        // );
         expect(titleElement).toHaveTextContent(
-          'Bravo! You have earned 13 badges and a personal best of 50 hours in a week!',
+          'Bravo! You earned 13 badges total and have a personal best of 50 hours in a week!',
         );
       });
     });
@@ -194,7 +197,8 @@ describe('Badge Component', () => {
         );
 
         const updatedTitleElement = container.querySelector('.card-text');
-        expect(updatedTitleElement).toHaveTextContent('Bravo! You have earned 1 badge!');
+        // expect(updatedTitleElement).toHaveTextContent('Bravo! You have earned 1 badge!');
+        expect(updatedTitleElement).toHaveTextContent('Bravo! You earned 1 badge total!');
       });
     });
   });

@@ -21,6 +21,7 @@ import { ENDPOINTS, ApiEndpoint } from 'utils/URL';
 import axios from 'axios';
 import hasPermission from 'utils/permissions';
 import { toast } from 'react-toastify';
+// import { useNavigate } from 'react-router-dom';
 import TaskIcon from './task_icon.png';
 import BadgesIcon from './badges_icon.png';
 import BlueScoreIcon from './bluesquare_icon.png';
@@ -51,7 +52,6 @@ const SummaryBar = React.forwardRef((props, ref) => {
 
   const [userProfile, setUserProfile] = useState(undefined);
   const [infringements, setInfringements] = useState(0);
-  const [badges, setBadges] = useState(0);
   const [totalEffort, setTotalEffort] = useState(0);
   const [weeklySummary, setWeeklySummary] = useState(null);
   const [tasks, setTasks] = useState(undefined);
@@ -66,6 +66,7 @@ const SummaryBar = React.forwardRef((props, ref) => {
 
   const [categoryDescription, setCategoryDescription] = useState();
   const sortableContainerRef = useRef(null);
+  // const navigate = useNavigate();
 
   const editRadioButtonSelected = value => {
     // dynamic way to set description rather than using tenerary operators.
@@ -201,27 +202,11 @@ const SummaryBar = React.forwardRef((props, ref) => {
 
   // Get infringement count from userProfile
   const getInfringements = () => {
+    // listed under the state.userProfile.infringements, could reset it to 0 at somepoint in the code, unsure where
+    // and which file exactly but is a method
     return displayUserProfile && displayUserProfile.infringements
       ? displayUserProfile.infringements.length
       : 0;
-  };
-
-  // Get badges count from userProfile
-  const getBadges = () => {
-    if (!displayUserProfile || !displayUserProfile.badgeCollection) {
-      return 0;
-    }
-    let totalBadges = 0;
-    displayUserProfile.badgeCollection.forEach(badge => {
-      if (badge?.badge?.badgeName === 'Personal Max' || badge?.badge?.type === 'Personal Max') {
-        totalBadges += 1;
-      } else {
-        const badgeCount = badge?.count ? Number(badge.count) : 0;
-        totalBadges += Math.round(badgeCount);
-      }
-    });
-
-    return totalBadges;
   };
 
   // refactored for rading form values
@@ -369,9 +354,12 @@ const SummaryBar = React.forwardRef((props, ref) => {
   };
 
   const onBadgeClick = () => {
-    // maybe do props.resetBadgeCount(displayUserId); as its used in Timelog where the tab for badges updates to 0 on view
     window.location.hash = '#badgesearned';
   };
+
+  // const onBlueSquareClick = () => {
+  //   navigate(`/userprofile/${displayUserProfile._id}#bluesquare`);
+  // };
 
   const getWeeklySummary = user => {
     const latestSummary = user?.weeklySummaries?.[0];
@@ -723,20 +711,40 @@ const SummaryBar = React.forwardRef((props, ref) => {
             </div>
             &nbsp;&nbsp;
             <div className="image_frame">
+              {infringements > 0 && (
+                <div className="redBackgroup">
+                  <span>{infringements}</span>
+                  {/* need method to reset infringment count, unrelated to badge task though */}
+                </div>
+              )}
               {isAuthUser || canEditData() ? (
-                <Link to={`/userprofile/${displayUserProfile._id}#bluesquare`}>
+                <Link
+                  className="sum_img"
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    padding: 0,
+                    cursor: 'pointer',
+                  }}
+                  to={`/userprofile/${displayUserProfile._id}#bluesquare`}
+                >
                   <img className="sum_img" src={BlueScoreIcon} alt="" />
-                  {infringements > 0 && (
-                    <div className="redBackgroup">
-                      <span>{infringements}</span>
-                      {/* need method to reset infringment count, unrelated to badge task though */}
-                    </div>
-                  )}
-                  {/* <div className="redBackgroup">
-                    <span>{infringements}</span>
-                  </div> */}
                 </Link>
               ) : (
+                // <button
+                //   onClick={onBlueSquareClick}
+                //   className="sum_img"
+                //   style={{
+                //     background: 'none',
+                //     border: 'none',
+                //     padding: 0,
+                //     cursor: 'pointer',
+                //   }}
+                //   aria-label="Blue Square"
+                //   type="button"
+                // >
+                //   <img className="sum_img" src={BlueScoreIcon} alt="" />
+                // </button>
                 <div>
                   <img className="sum_img" src={BlueScoreIcon} alt="" />
                   <div className="redBackgroup">
