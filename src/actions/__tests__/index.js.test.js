@@ -1,8 +1,27 @@
-import { clearUserProfile, getUserTeamMembers, getUserProjectMembers, getDashboardData, getActionItems, getNotifications, getAllProjects, getProjectById, getProjectsByUser, getProjectMembership, getAllTeams, getTeamById, getTeamMembership, getAllTimeEntries, getTimeEntryForSpecifiedPeriod, postTimeEntry, getTimeEntryByProjectSpecifiedPeriod, getTimeEntryForOverDate } from '../index';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import httpService from '../../services/httpService';
 import axios from 'axios'; // Add this import
+import httpService from '../../services/httpService';
+import {
+  clearUserProfile,
+  getUserTeamMembers,
+  getUserProjectMembers,
+  getDashboardData,
+  getActionItems,
+  getNotifications,
+  getAllProjects,
+  getProjectById,
+  getProjectsByUser,
+  getProjectMembership,
+  getAllTeams,
+  getTeamById,
+  getTeamMembership,
+  getAllTimeEntries,
+  getTimeEntryForSpecifiedPeriod,
+  postTimeEntry,
+  getTimeEntryByProjectSpecifiedPeriod,
+  getTimeEntryForOverDate,
+} from '../index';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
@@ -25,9 +44,7 @@ describe('getUserTeamMembers action', () => {
     const mockData = { teamMembers: [] };
     httpService.get.mockResolvedValue({ data: mockData });
 
-    const expectedActions = [
-      { type: 'GET_USER_TEAM_MEMBERS', payload: mockData },
-    ];
+    const expectedActions = [{ type: 'GET_USER_TEAM_MEMBERS', payload: mockData }];
 
     const store = mockStore({});
 
@@ -44,9 +61,7 @@ describe('getUserProjectMembers action', () => {
     const mockData = { projectMembers: [] };
     httpService.get.mockResolvedValue({ data: mockData });
 
-    const expectedActions = [
-      { type: 'GET_USER_PROJECT_MEMBERS', payload: mockData },
-    ];
+    const expectedActions = [{ type: 'GET_USER_PROJECT_MEMBERS', payload: mockData }];
 
     const store = mockStore({});
 
@@ -63,9 +78,7 @@ describe('getDashboardData action', () => {
     const mockData = { dashboardData: [] };
     httpService.get.mockResolvedValue({ data: mockData });
 
-    const expectedActions = [
-      { type: 'GET_DASHBOARD_DATA', payload: mockData },
-    ];
+    const expectedActions = [{ type: 'GET_DASHBOARD_DATA', payload: mockData }];
 
     const store = mockStore({});
 
@@ -82,9 +95,7 @@ describe('getActionItems action', () => {
     const mockData = { actionItems: [] };
     httpService.get.mockResolvedValue({ data: mockData });
 
-    const expectedActions = [
-      { type: 'GET_ACTION_ITEMS', payload: mockData },
-    ];
+    const expectedActions = [{ type: 'GET_ACTION_ITEMS', payload: mockData }];
 
     const store = mockStore({});
 
@@ -101,9 +112,7 @@ describe('getNotifications action', () => {
     const mockData = { notifications: [] };
     httpService.get.mockResolvedValue({ data: mockData });
 
-    const expectedActions = [
-      { type: 'GET_NOTIFICATIONS', payload: mockData },
-    ];
+    const expectedActions = [{ type: 'GET_NOTIFICATIONS', payload: mockData }];
 
     const store = mockStore({});
 
@@ -119,9 +128,7 @@ describe('getAllProjects action', () => {
     const mockData = { projects: [] };
     httpService.get.mockResolvedValue({ data: mockData });
 
-    const expectedActions = [
-      { type: 'GET_ALL_PROJECTS', payload: mockData },
-    ];
+    const expectedActions = [{ type: 'GET_ALL_PROJECTS', payload: mockData }];
 
     const store = mockStore({});
 
@@ -138,9 +145,7 @@ describe('getProjectById action', () => {
     const mockData = { project: {} };
     httpService.get.mockResolvedValue({ data: mockData });
 
-    const expectedActions = [
-      { type: 'GET_PROJECT_BY_ID', payload: mockData },
-    ];
+    const expectedActions = [{ type: 'GET_PROJECT_BY_ID', payload: mockData }];
 
     const store = mockStore({});
 
@@ -157,9 +162,7 @@ describe('getProjectsByUser action', () => {
     const mockData = { projects: [] };
     httpService.get.mockResolvedValue({ data: mockData });
 
-    const expectedActions = [
-      { type: 'GET_PROJECTS_BY_USER', payload: mockData },
-    ];
+    const expectedActions = [{ type: 'GET_PROJECTS_BY_USER', payload: mockData }];
 
     const store = mockStore({});
 
@@ -176,9 +179,7 @@ describe('getProjectMembership action', () => {
     const mockData = { members: [] };
     httpService.get.mockResolvedValue({ data: mockData });
 
-    const expectedActions = [
-      { type: 'GET_PROJECT_MEMBERSHIP', payload: mockData },
-    ];
+    const expectedActions = [{ type: 'GET_PROJECT_MEMBERSHIP', payload: mockData }];
 
     const store = mockStore({});
 
@@ -194,9 +195,7 @@ describe('getAllTeams action', () => {
     const mockData = { teams: [] };
     httpService.get.mockResolvedValue({ data: mockData });
 
-    const expectedActions = [
-      { type: 'GET_ALL_TEAMS', payload: mockData },
-    ];
+    const expectedActions = [{ type: 'GET_ALL_TEAMS', payload: mockData }];
 
     const store = mockStore({});
 
@@ -213,9 +212,7 @@ describe('getTeamById action', () => {
     const mockData = { team: {} };
     httpService.get.mockResolvedValue({ data: mockData });
 
-    const expectedActions = [
-      { type: 'GET_TEAM_BY_ID', payload: mockData },
-    ];
+    const expectedActions = [{ type: 'GET_TEAM_BY_ID', payload: mockData }];
 
     const store = mockStore({});
 
@@ -232,9 +229,7 @@ describe('getTeamMembership action', () => {
     const mockData = { members: [] };
     httpService.get.mockResolvedValue({ data: mockData });
 
-    const expectedActions = [
-      { type: 'GET_TEAM_MEMBERSHIP', payload: mockData },
-    ];
+    const expectedActions = [{ type: 'GET_TEAM_MEMBERSHIP', payload: mockData }];
 
     const store = mockStore({});
 
@@ -250,9 +245,7 @@ describe('getAllTimeEntries action', () => {
     const mockData = { timeEntries: [] };
     httpService.get.mockResolvedValue({ data: mockData });
 
-    const expectedActions = [
-      { type: 'GET_ALL_TIME_ENTRIES', payload: mockData },
-    ];
+    const expectedActions = [{ type: 'GET_ALL_TIME_ENTRIES', payload: mockData }];
 
     const store = mockStore({});
 
@@ -271,9 +264,7 @@ describe('getTimeEntryForSpecifiedPeriod action', () => {
     const mockData = { timeEntries: [] };
     httpService.get.mockResolvedValue({ data: mockData });
 
-    const expectedActions = [
-      { type: 'GET_TIME_ENTRY_FOR_SPECIFIED_PERIOD', payload: mockData },
-    ];
+    const expectedActions = [{ type: 'GET_TIME_ENTRY_FOR_SPECIFIED_PERIOD', payload: mockData }];
 
     const store = mockStore({});
 
@@ -290,9 +281,7 @@ describe('postTimeEntry action', () => {
     const mockResponse = { data: { id: '909' } };
     httpService.post.mockResolvedValue(mockResponse);
 
-    const expectedActions = [
-      { type: 'REQUEST_SUCCEEDED', payload: mockResponse },
-    ];
+    const expectedActions = [{ type: 'REQUEST_SUCCEEDED', payload: mockResponse }];
 
     const store = mockStore({});
 
@@ -317,9 +306,11 @@ describe('getTimeEntryByProjectSpecifiedPeriod action', () => {
 
     const store = mockStore({});
 
-    return store.dispatch(getTimeEntryByProjectSpecifiedPeriod(projectId, fromDate, toDate)).then(() => {
-      expect(store.getActions()).toEqual(expectedActions);
-    });
+    return store
+      .dispatch(getTimeEntryByProjectSpecifiedPeriod(projectId, fromDate, toDate))
+      .then(() => {
+        expect(store.getActions()).toEqual(expectedActions);
+      });
   });
 });
 

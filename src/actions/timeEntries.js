@@ -1,8 +1,31 @@
+/* eslint-disable no-use-before-define */
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-param-reassign */
 import axios from 'axios';
+import { toast } from 'react-toastify';
 import moment from 'moment';
-import { GET_TIME_ENTRIES_WEEK, GET_TIME_ENTRIES_PERIOD } from '../constants/timeEntries';
+import {
+  GET_TIME_ENTRIES_WEEK,
+  GET_TIME_ENTRIES_PERIOD,
+  GET_TIME_ENTRIES_PERIOD_BULK,
+} from '../constants/timeEntries';
 import { ENDPOINTS } from '../utils/URL';
 
+export const setTimeEntriesForWeek = (data, offset) => ({
+  type: GET_TIME_ENTRIES_WEEK,
+  payload: data,
+  offset,
+});
+
+export const setTimeEntriesForPeriod = data => ({
+  type: GET_TIME_ENTRIES_PERIOD,
+  payload: data,
+});
+
+export const setUsersTotalHoursPeriod = data => ({
+  type: GET_TIME_ENTRIES_PERIOD_BULK,
+  payload: data,
+});
 /**
  * number === 0 current week
  * number === 1 last week
@@ -72,19 +95,46 @@ export const getTimeEntriesForPeriod = (userId, fromDate, toDate) => {
   };
 };
 
+export const getUsersTotalHoursForSpecifiedPeriod = (userIds, fromDate, toDate) => {
+  toDate = moment(toDate)
+    .endOf('day')
+    .format('YYYY-MM-DDTHH:mm:ss');
+  return async dispatch => {
+    let loggedOut = false;
+    try {
+      const res = await axios.post(ENDPOINTS.TIME_ENTRIES_USERS_HOURS_PERIOD, {
+        userIds,
+        fromDate,
+        toDate,
+      });
+      if (res && res.data) {
+        await dispatch(setUsersTotalHoursPeriod(res.data));
+        return res.data; // Return the data here
+      }
+    } catch (error) {
+      if (error.response?.status === 401) {
+        loggedOut = true;
+      }
+      // eslint-disable-next-line no-console
+      console.error('Error fetching total hours:', error);
+    }
+    return [];
+  };
+};
+
 export const getTimeEndDateEntriesByPeriod = (userId, fromDate, toDate) => {
-  //Find last week of work in date
+  // Find last week of work in date
   toDate = moment(toDate)
     .endOf('day')
     .format('YYYY-MM-DDTHH:mm:ss');
 
   const url = ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate, toDate);
-  return async dispatch => {
+  return async () => {
     let loggedOut = false;
     try {
       const res = await axios.get(url);
       if (!res || !res.data) {
-        console.log('Request failed or no data');
+        toast.info('Request failed or no data');
         return 'N/A';
       }
       const filteredEntries = res.data.filter(entry => {
@@ -101,7 +151,7 @@ export const getTimeEndDateEntriesByPeriod = (userId, fromDate, toDate) => {
       const lastEntryDate = lastEntry.createdDateTime;
       return lastEntryDate;
     } catch (error) {
-      console.error('Error fetching time entries:', error);
+      toast.error('Error fetching time entries:', error);
       if (error.response && error.response.status === 401) {
         loggedOut = true;
       }
@@ -122,7 +172,7 @@ export const getTimeStartDateEntriesByPeriod = (userId, fromDate, toDate) => {
     try {
       const res = await axios.get(url);
       if (!res || !res.data) {
-        console.log('Request failed or no data');
+        toast.info('Request failed or no data');
         return 'N/A';
       }
       const filteredEntries = res.data.filter(entry => {
@@ -139,7 +189,7 @@ export const getTimeStartDateEntriesByPeriod = (userId, fromDate, toDate) => {
       const firstEntryDate = firstEntry.dateOfWork;
       return firstEntryDate;
     } catch (error) {
-      console.error('Error fetching time entries:', error);
+      toast.error('Error fetching time entries:', error);
       if (error.response && error.response.status === 401) {
         loggedOut = true;
       }
@@ -152,7 +202,7 @@ export const postTimeEntry = timeEntry => {
   return async dispatch => {
     try {
       const res = await axios.post(url, timeEntry);
-      if (timeEntry.entryType == 'default') {
+      if (timeEntry.entryType === 'default') {
         dispatch(updateTimeEntries(timeEntry));
       }
       return res.status;
@@ -167,7 +217,7 @@ export const editTimeEntry = (timeEntryId, timeEntry, oldDateOfWork) => {
   return async dispatch => {
     try {
       const res = await axios.put(url, timeEntry);
-      if (timeEntry.entryType == 'default') {
+      if (timeEntry.entryType === 'default') {
         dispatch(updateTimeEntries(timeEntry, oldDateOfWork));
       }
       return res.status;
@@ -209,13 +259,13 @@ const updateTimeEntries = (timeEntry, oldDateOfWork) => {
   };
 };
 
-export const setTimeEntriesForWeek = (data, offset) => ({
-  type: GET_TIME_ENTRIES_WEEK,
-  payload: data,
-  offset,
-});
+// export const setTimeEntriesForWeek = (data, offset) => ({
+//   type: GET_TIME_ENTRIES_WEEK,
+//   payload: data,
+//   offset,
+// });
 
-export const setTimeEntriesForPeriod = data => ({
-  type: GET_TIME_ENTRIES_PERIOD,
-  payload: data,
-});
+// export const setTimeEntriesForPeriod = data => ({
+//   type: GET_TIME_ENTRIES_PERIOD,
+//   payload: data,
+// });

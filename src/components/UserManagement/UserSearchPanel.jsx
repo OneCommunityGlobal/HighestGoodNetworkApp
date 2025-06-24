@@ -45,6 +45,7 @@ function UserSearchPanel({
           className="btn btn-info mr-2"
           onClick={handleSetupHistoryPopup}
           style={darkMode ? boxStyleDark : boxStyle}
+          aria-label="Setup History"
         >
           <FontAwesomeIcon className="bell_icon" icon={faBell} />
         </button>
@@ -77,12 +78,12 @@ function UserSearchPanel({
       </button>
 
       <div className="input-group-prepend">
-        <span className="input-group-text">{SEARCH}</span>
+        <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>{SEARCH}</span>
       </div>
       <input
         // autoFocus
         type="text"
-        className="form-control"
+        className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
         aria-label="Search"
         placeholder="Search Text"
         id="user-profiles-wild-card-search"
@@ -90,14 +91,16 @@ function UserSearchPanel({
         onChange={e => {
           onSearch(e.target.value);
         }}
+        style={{marginRight: "5px"}}
       />
-      <div className="input-group-prepend ml-2">
-        <span className="input-group-text">{SHOW}</span>
+      <div className="input-group-prepend">
+        <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>{SHOW}</span>
         <select
           id="active-filter-dropdown"
           onChange={e => {
             onActiveFiter(e.target.value);
           }}
+          className={darkMode ? 'bg-darkmode-liblack text-light' : ''}
         >
           <option value="all">All</option>
           <option value="active">Active</option>
