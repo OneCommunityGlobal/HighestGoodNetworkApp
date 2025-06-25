@@ -505,8 +505,9 @@ const ScheduleReasonModal = ({
                 </ModalBody>
                 <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
                   <Button variant="primary" onClick={()=>{
-                    handelConfirmReason()
                     handleStartWeekConfirmationModal()
+                    handelConfirmReason()
+                    handleClose()
                   }}>
                     Confirm
                   </Button>

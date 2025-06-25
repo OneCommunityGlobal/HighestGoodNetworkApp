@@ -120,8 +120,8 @@ describe('TagsSearch Component', () => {
 
     // Check if addResources was called with the correct arguments
     await waitFor(() => {
-      expect(addResources).toHaveBeenCalledWith('aaa123', 'aaa', 'volunteer', undefined);
-      expect(addResources).toHaveBeenCalledWith('aaa067', 'aaa', 'owner', undefined);
+      expect(addResources).toHaveBeenCalledWith('aaa123', 'aaa', 'volunteer');
+      expect(addResources).toHaveBeenCalledWith('aaa067', 'aaa', 'owner');
     });
   });
 
