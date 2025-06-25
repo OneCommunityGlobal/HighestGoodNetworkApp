@@ -76,6 +76,7 @@ import {
 } from '../../actions/timeEntries.js';
 import ConfirmRemoveModal from './UserProfileModal/confirmRemoveModal';
 import { formatDateYYYYMMDD, CREATED_DATE_CRITERIA } from 'utils/formatDate.js';
+import AccessManagementModal from './UserProfileModal/AccessManagementModal';
 
 function UserProfile(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -126,11 +127,8 @@ function UserProfile(props) {
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
   const toggleRemoveModal = () => setIsRemoveModalOpen(!isRemoveModalOpen);
   const [loadingSummaries, setLoadingSummaries] = useState(false);
-  const [accessRemoved, setAccessRemoved] = useState(false);
-  const [showRemoveAccessModal, setShowRemoveAccessModal] = useState(false);
-  const [showRemovedNoticeModal, setShowRemovedNoticeModal] = useState(false);
-  const [showAddAccessModal, setShowAddAccessModal] = useState(false);
-  const [showAddedNoticeModal, setShowAddedNoticeModal] = useState(false);
+  const [accessRemoved, setAccessRemoved] = useState(true);
+  const [showAccessManagementModal, setShowAccessManagementModal] = useState(false);
   const [showConfirmRemove, setShowConfirmRemove] = useState(false);
   const [showConfirmAdd, setShowConfirmAdd] = useState(false);
   const [removalInProgress, setRemovalInProgress] = useState(false);
@@ -220,117 +218,110 @@ function UserProfile(props) {
 
   const handleRemoveClick = () => setShowConfirmRemove(true);
 
-  const confirmRemove = async () => {
-    setShowConfirmRemove(false);
-    setRemovalInProgress(true);
+  // const confirmRemove = async () => {
+  //   setShowConfirmRemove(false);
+  //   setRemovalInProgress(true);
 
-    const email = userProfile?.email;
-    const username = userProfile?.githubUsername;
-    const folderPath = `/${userProfile.firstName}${userProfile.lastName}`;
-    const requestorId = props.auth.user.userid;
-    const role = props.auth.user.role;
+  //   const email = userProfile?.email;
+  //   const username = userProfile?.githubUsername;
+  //   // const folderPath = `/${userProfile.firstName}${userProfile.lastName}`;
+  //   const folderPath = '/TestDropboxAPI';
+  //   const requestorId = props.auth.user.userid;
+  //   const role = props.auth.user.role;
 
-    try {
-      const results = await Promise.allSettled([
-        axios.delete('/api/sentry/remove', {
-          data: {
-            email,
-            requestor: { requestorId, role },
-          },
-        }),
-        axios.delete('/api/github/remove', {
-          data: {
-            username,
-            requestor: { requestorId, role },
-          },
-        }),
-        axios.post('/api/dropbox/delete-folder', {
-          folderPath,
-          requestor: { requestorId, role },
-        }),
-        // Slack is skipped as per your comment
-      ]);
-      console.log('Dropbox remove response:', response.data);
-      const services = ['Sentry', 'GitHub', 'Dropbox'];
+  //   try {
+  //     const results = await Promise.allSettled([
+  //       // axios.delete(ENDPOINTS.SENTRY_REMOVE, {
+  //       //   data: {
+  //       //     email,
+  //       //     requestor: { requestorId, role },
+  //       //   },
+  //       // }),
+  //       // axios.delete(ENDPOINTS.GITHUB_REMOVE, {
+  //       //   data: {
+  //       //     username,
+  //       //     requestor: { requestorId, role },
+  //       //   },
+  //       // }),
+  //       axios.post(ENDPOINTS.DROPBOX_DELETE, {
+  //         folderPath,
+  //         requestor: { requestorId, role },
+  //       }),
+  //       // Slack is skipped as per your comment
+  //     ]);
+  //     const services = ['Sentry', 'GitHub', 'Dropbox'];
 
-      results.forEach((res, i) => {
-        if (res.status === 'fulfilled') {
-          toast.success(`${services[i]} access removed`);
-        } else {
-          toast.error(`Failed to remove access from ${services[i]}`);
-        }
-      });
+  //     results.forEach((res, i) => {
+  //       if (res.status === 'fulfilled') {
+  //         toast.success(`${services[i]} access removed`);
+  //       } else {
+  //         toast.error(`Failed to remove access from ${services[i]}`);
+  //       }
+  //     });
 
-      setShowRemovedNoticeModal(true);
-      setAccessRemoved(true);
-    } catch (error) {
-      toast.error('Unexpected error during access removal.');
-    } finally {
-      setRemovalInProgress(false);
-    }
+  //     setAccessRemoved(true);
+  //   } catch (error) {
+  //     toast.error('Unexpected error during access removal.');
+  //   } finally {
+  //     setRemovalInProgress(false);
+  //   }
+  // };
+
+  const handleAddClick = () => setShowConfirmAdd(true);
+
+  // const confirmAdd = async () => {
+  //   setShowConfirmAdd(false);
+  //   setRemovalInProgress(true);
+
+  //   const email = userProfile?.email;
+  //   const username = userProfile?.githubUsername;
+  //   // const folderName = `${userProfile.firstName}${userProfile.lastName}`;
+  //   const folderName = 'TestDropboxAPI';
+  //   const requestorId = props.auth.user.userid;
+  //   const role = props.auth.user.role;
+
+  //   try {
+  //     const results = await Promise.allSettled([
+  //       // axios.post(ENDPOINTS.SENTRY_ADD, {
+  //       //   email,
+  //       //   requestor: { requestorId, role },
+  //       // }),
+  //       // axios.post(ENDPOINTS.GITHUB_ADD, {
+  //       //   username,
+  //       //   requestor: { requestorId, role },
+  //       // }),
+  //       axios.post(ENDPOINTS.DROPBOX_CREATE_ADD, {
+  //         folderPath: folderName,
+  //         email,
+  //         requestor: { requestorId, role },
+  //       }),
+  //       // axios.post(ENDPOINTS.SLACK_ADD, {
+  //       //   email,
+  //       //   requestor: { requestorId, role },
+  //       // }),
+  //     ]);
+
+  //     const services = ['Sentry', 'GitHub', 'Dropbox', 'Slack'];
+
+  //     results.forEach((res, i) => {
+  //       if (res.status === 'fulfilled') {
+  //         toast.success(`${services[i]} access granted`);
+  //       } else {
+  //         toast.error(`Failed to grant access to ${services[i]}`);
+  //       }
+  //     });
+
+  //     setAccessRemoved(false);
+  //   } catch (error) {
+  //     toast.error('Unexpected error during access addition.');
+  //   } finally {
+  //     setRemovalInProgress(false);
+  //   }
+  // };
+
+  const closeAddedPopup = () => {
+    setShowConfirmAdd(false);
   };
-
-const closeRemovedPopup = () => {
-  setShowRemovedPopup(false);
-};
-
-const handleAddClick = () => setShowConfirmAdd(true);
-
-const confirmAdd = async () => {
-  setShowConfirmAdd(false);
-  setRemovalInProgress(true);
-
-  const email = userProfile?.email;
-  const username = userProfile?.githubUsername;
-  const folderName = `${userProfile.firstName}${userProfile.lastName}`;
-  const requestorId = props.auth.user.userid;
-  const role = props.auth.user.role;
-
-  try {
-    const results = await Promise.allSettled([
-      axios.post('/api/sentry/invite', {
-        email,
-        requestor: { requestorId, role },
-      }),
-      axios.post('/api/github/invite', {
-        username,
-        requestor: { requestorId, role },
-      }),
-      axios.post('/api/dropbox/invite', {
-        folderPath: `/${folderName}`,
-        email,
-        requestor: { requestorId, role },
-      }),
-      axios.post('/api/slack/invite', {
-        email,
-        requestor: { requestorId, role },
-      }),
-    ]);
-
-    console.log('Dropbox add response:', response.data);
-
-    const services = ['Sentry', 'GitHub', 'Dropbox', 'Slack'];
-
-    results.forEach((res, i) => {
-      if (res.status === 'fulfilled') {
-        toast.success(`${services[i]} access granted`);
-      } else {
-        toast.error(`Failed to grant access to ${services[i]}`);
-      }
-    });
-
-    setShowAddedNoticeModal(true);
-    setAccessRemoved(false);
-  } catch (error) {
-    toast.error('Unexpected error during access addition.');
-  } finally {
-    setRemovalInProgress(false);
-  }
-};
-
-const closeAddedPopup = () => {
-  setShowAddedPopup(false);
-};
 
   const checkIsProjectsEqual = () => {
     const originalProjectProperties = [];
@@ -370,7 +361,7 @@ const closeAddedPopup = () => {
 
     if (!teamId) {
       setSummaryIntro(
-        `This week’s summary was managed by ${currentManager.firstName} ${currentManager.lastName} and includes .
+        `This week's summary was managed by ${currentManager.firstName} ${currentManager.lastName} and includes .
          These people did NOT provide a summary .
          <Insert the proofread and single-paragraph summary created by ChatGPT>`,
       );
@@ -403,7 +394,7 @@ const closeAddedPopup = () => {
           ? memberNotSubmitted.join(', ')
           : '<list all team members names NOT included in the summary>';
 
-      const summaryIntroString = `This week’s summary was managed by ${currentManager.firstName} ${currentManager.lastName} and includes ${memberSubmittedString}. These people did NOT provide a summary ${memberDidntSubmitString}. <Insert the proofread and single-paragraph summary created by ChatGPT>`;
+      const summaryIntroString = `This week's summary was managed by ${currentManager.firstName} ${currentManager.lastName} and includes ${memberSubmittedString}. These people did NOT provide a summary ${memberDidntSubmitString}. <Insert the proofread and single-paragraph summary created by ChatGPT>`;
 
       setSummaryIntro(summaryIntroString);
     } catch (error) {
@@ -1099,89 +1090,13 @@ const closeAddedPopup = () => {
       <TabToolTips />
       <BasicToolTips />
 
-      <Modal isOpen={showRemoveAccessModal} toggle={() => setShowRemoveAccessModal(false)}>
-        <ModalHeader toggle={() => setShowRemoveAccessModal(false)}>
-          Whoa Tiger!
-        </ModalHeader>
-        <ModalBody>
-          <p>Are you sure you want to remove the following access for this user:</p>
-          <div style={{ paddingLeft: '1rem' }}>
-            <ul style={{ paddingLeft: '1rem', marginBottom: '1rem' }}>
-              <li>GitHub</li>
-              <li>Dropbox</li>
-              <li>Sentry</li>
-            </ul>
-          </div>
-          <p>This action is not reversible.</p>
-        </ModalBody>
-        <ModalFooter>
-          <Button
-            color="danger" onClick={confirmRemove}
-          >
-            Yes, I’m sure
-          </Button>
-          <Button color="secondary" onClick={() => setShowRemoveAccessModal(false)}>
-            No, take me back!
-          </Button>
-        </ModalFooter>
-      </Modal>
+      <AccessManagementModal
+        isOpen={showAccessManagementModal}
+        onClose={() => setShowAccessManagementModal(false)}
+        userProfile={userProfile}
+        darkMode={darkMode}
+      />
 
-      <Modal isOpen={showRemovedNoticeModal} toggle={() => setShowRemovedNoticeModal(false)}>
-        <ModalHeader toggle={() => setShowRemovedNoticeModal(false)}>
-          Access Removed
-        </ModalHeader>
-        <ModalBody>
-          Access for this user has been removed.<br />
-          <strong>Remember to remove user for Slack manually.</strong>
-        </ModalBody>
-        <ModalFooter>
-          <Button color="primary" onClick={() => setShowRemovedNoticeModal(false)}>
-            OK
-          </Button>
-
-        </ModalFooter>
-      </Modal>
-
-      <Modal isOpen={showAddAccessModal} toggle={() => setShowAddAccessModal(false)}>
-        <ModalHeader toggle={() => setShowAddAccessModal(false)}>
-          Confirm Add Access
-        </ModalHeader>
-        <ModalBody>
-          <p>You are about to add access for:</p>
-          <ul style={{ paddingLeft: '1.25rem', marginBottom: '1rem' }}>
-            <li>GitHub</li>
-            <li>Dropbox</li>
-            <li>Slack</li>
-            <li>Sentry</li>
-          </ul>
-          <p>Are you sure you want to continue?</p>
-        </ModalBody>
-        <ModalFooter>
-          <Button
-            color="success" onClick={confirmAdd}
-          >
-            Yes, continue
-          </Button>
-          <Button color="secondary" onClick={() => setShowAddAccessModal(false)}>
-            Cancel
-          </Button>
-        </ModalFooter>
-      </Modal>
-
-      <Modal isOpen={showAddedNoticeModal} toggle={() => setShowAddedNoticeModal(false)}>
-        <ModalHeader toggle={() => setShowAddedNoticeModal(false)}>
-          Access Granted
-        </ModalHeader>
-        <ModalBody>
-          User has been given access to: GitHub, Dropbox and Sentry.<br />
-          <strong>Invite email for Slack has been sent.</strong>
-        </ModalBody>
-        <ModalFooter>
-          <Button color="primary" onClick={() => setShowAddedNoticeModal(false)}>
-            OK
-          </Button>
-        </ModalFooter>
-      </Modal>
       <Container
         className={`py-5 ${darkMode ? 'bg-yinmn-blue text-light border-0' : ''}`}
         id="containerProfile"
@@ -1342,11 +1257,7 @@ const closeAddedPopup = () => {
                   color="link"
                   style={{ padding: '0', border: 'none', background: 'none' }}
                   size="sm"
-                  onClick={
-                    accessRemoved
-                      ? () => setShowAddAccessModal(true)
-                      : () => setShowRemoveAccessModal(true)
-                  }
+                  onClick={() => setShowAccessManagementModal(true)}
                   title={
                     accessRemoved
                       ? 'Click to add user access to GitHub, Dropbox, Slack, and Sentry.'
