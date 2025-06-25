@@ -25,7 +25,7 @@ const StartDate = props => {
   if (!props.canEdit) {
     return (
       <p className={darkMode ? 'text-azure' : ''}>
-        {!props.userProfile.startDate ? 'N/A' : formatDateYYYYMMDD(props.userProfile.startDate)}
+        {!props.userProfile.startDate ? 'N/A' : formatDate(props.userProfile.startDate)}
       </p>
     );
   }
@@ -44,7 +44,7 @@ const StartDate = props => {
         }}
         placeholder="Start Date"
         invalid={!props.canEdit}
-        max={props.userProfile.endDate ? formatDateYYYYMMDD(props.userProfile.endDate) : '9999-12-31'}
+        max={props.userProfile.endDate || '9999-12-31'}
       />
       {startDateAlert && (
         <FormFeedback style={{ display: 'block' }}>{startDateAlert}</FormFeedback>
@@ -59,7 +59,7 @@ const EndDate = props => {
   if (!props.canEdit) {
     return (
       <p className={darkMode ? 'text-azure' : ''}>
-        {props.userProfile.endDate ? formatDateYYYYMMDD(props.userProfile.endDate) : 'N/A'}
+        {props.userProfile.endDate ? formatDate(props.userProfile.endDate) : 'N/A'}
       </p>
     );
   }

@@ -77,7 +77,7 @@ function TimeEntryForm(props) {
 
   const initialFormValues = {
     dateOfWork: moment()
-      .tz(userTimeZone)
+      .tz('America/Los_Angeles')
       .format('YYYY-MM-DD'),
     personId: viewingUser.userId ?? authUser.userid,
     projectId: '',
@@ -587,7 +587,7 @@ function TimeEntryForm(props) {
       setFormValues({
         ...formValues,
         dateOfWork: moment(actualDate)
-          .tz(userTimeZone)
+          .tz('America/Los_Angeles')
           .format('YYYY-MM-DD'),
       });
     }
