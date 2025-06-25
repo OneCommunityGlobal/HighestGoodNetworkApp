@@ -221,7 +221,7 @@
   margin-bottom: 4px;
 }
 
-.filter-select {
+.filter-select-job-analytics {
   width: 100%;
   padding: 6px 8px;
   border: 1px solid #dadce0;
@@ -230,15 +230,15 @@
   background-color: #ffffff;
   color: #3c4043;
   cursor: pointer;
-  height: 32px;
+  height: 32px !important;
 }
 
-.filter-select:focus {
+.filter-select-job-analytics:focus {
   outline: none;
   border-color: #4285f4;
 }
 
-.filter-select:hover {
+.filter-select-job-analytics:hover {
   border-color: #9aa0a6;
 }
 

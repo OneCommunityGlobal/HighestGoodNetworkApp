@@ -1,4 +1,3 @@
-
 // Helper function to generate dates relative to now
 const generateTimestamp = (daysAgo, hoursAgo = 0) => {
   const date = new Date();
