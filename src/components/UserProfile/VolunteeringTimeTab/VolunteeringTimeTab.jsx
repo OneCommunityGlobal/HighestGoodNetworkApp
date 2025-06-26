@@ -389,17 +389,41 @@ const ViewTab = props => {
       <Row className="volunteering-time-row">
         <Col md="6">
           <Label className={`hours-label ${darkMode ? 'text-light' : ''}`}>Start Date</Label>
+          {canEdit && props.toggleStartDateMode && (
+            <div>
+              <small className={`text-muted ${darkMode ? 'text-light' : ''}`}>
+                {props.startDateMode === 'manual' ? 'Manual Entry' : 'Calculated from Time Entries'}
+              </small>
+            </div>
+          )}
         </Col>
         <Col md="6">
-          <StartDate
-            role={role}
-            userProfile={userProfile}
-            setUserProfile={setUserProfile}
-            canEdit={canEdit}
-            onStartDateComponent={handleStartDates}
-            darkMode={darkMode}
-            startDateAlert={startDateAlert}
-          />
+          <div className="d-flex align-items-center">
+            <div className="flex-grow-1">
+              <StartDate
+                role={role}
+                userProfile={userProfile}
+                setUserProfile={setUserProfile}
+                canEdit={canEdit}
+                onStartDateComponent={handleStartDates}
+                darkMode={darkMode}
+                startDateAlert={startDateAlert}
+              />
+            </div>
+            {canEdit && props.toggleStartDateMode && (
+              <Button
+                size="sm"
+                color="info"
+                className="ml-2 start-date-toggle-btn"
+                onClick={props.toggleStartDateMode}
+                style={darkMode ? boxStyleDark : boxStyle}
+              >
+                {props.startDateMode === 'manual'
+                  ? 'Switch to Auto'
+                  : 'Switch to Manual'}
+              </Button>
+            )}
+          </div>
         </Col>
       </Row>
 

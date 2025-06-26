@@ -156,7 +156,7 @@ function TimeEntryForm(props) {
   const isForAuthUser = timeEntryUserId === authUser.userid;
   const isSameDayTimeEntry =
     moment(actualDate)
-      .tz(userTimeZone)
+      .tz('America/Los_Angeles')
       .format('YYYY-MM-DD') === formValues.dateOfWork;
   const isSameDayAuthUserEdit = isForAuthUser && isSameDayTimeEntry;
   const canEditTimeEntryTime = props.hasPermission('editTimeEntryTime');
