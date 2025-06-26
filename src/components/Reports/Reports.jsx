@@ -112,7 +112,8 @@ class ReportsPage extends Component {
   async componentDidMount() {
     const fetchProjects = this.props.fetchAllProjects();
     const fetchTeams = this.props.getAllUserTeams();
-    const fetchUserProfile = this.props.getUserProfileBasicInfo();
+    // Added 'Report' parameter to identify the source for fetching all user basic info
+    const fetchUserProfile = this.props.getUserProfileBasicInfo('Report');
 
     // parallel api calls
     await Promise.all([fetchProjects, fetchTeams, fetchUserProfile]);
@@ -485,7 +486,7 @@ class ReportsPage extends Component {
       this.state.peopleSearchData = this.filteredPeopleList(this.state.peopleSearchData);
     }
 
-    const isOxfordBlue = darkMode ? 'bg-oxford-blue' : '';
+    const isOxfordBlue = darkMode ? 'bg-oxford-blue text-light' : 'bg-white-smoke';
     const isYinmnBlue = darkMode ? 'bg-yinmn-blue' : '';
     const textColor = darkMode ? 'text-light' : '';
     const boxStyling = darkMode ? boxStyleDark : boxStyle;
@@ -511,7 +512,7 @@ class ReportsPage extends Component {
           type="button"
         >
           <div className="container-component-category">
-            <h2 className="mt-3 mb-5">
+            <h3 className="mt-3 ">
               {/* Loading spinner at the top */}
               {this.state.loading && (
                 <div className="loading-spinner-top">
@@ -530,7 +531,7 @@ class ReportsPage extends Component {
                   darkMode={darkMode}
                 />
               </div>
-            </h2>
+            </h3>
             <div className={textColor}>
               <p>Select a Category</p>
             </div>
@@ -651,9 +652,9 @@ class ReportsPage extends Component {
                     </div>
                   </div>
                   <div className="total-report-item">
-                    <Button 
-                      type="button" 
-                      color="info" 
+                    <Button
+                      type="button"
+                      color="info"
                       onClick={this.showContributorsReport}
                     >
                       {this.state.showContributorsReport
