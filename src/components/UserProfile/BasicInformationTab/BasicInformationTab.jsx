@@ -18,7 +18,6 @@ import axios from 'axios';
 import { isString } from 'lodash';
 import { toast } from 'react-toastify';
 
-
 const Name = props => {
   const { userProfile, setUserProfile, formValid, setFormValid, canEdit, desktopDisplay } = props;
   const { firstName, lastName } = userProfile;
@@ -127,7 +126,7 @@ const Email = props => {
 
             <ToggleSwitch
               switchType="email-subcription"
-              state={emailSubscriptions? emailSubscriptions : false}
+              state={emailSubscriptions ? emailSubscriptions : false}
               handleUserProfile={props.handleUserProfile}
             />
 
@@ -327,10 +326,10 @@ const BasicInformationTab = props => {
 
     axios.get(ENDPOINTS.TIMEZONE_LOCATION(userProfile.location.userProvided)).then(res => {
       if (res.status === 200) {
-        const {timezone, currentLocation } = res.data;
+        const { timezone, currentLocation } = res.data;
         setTimeZoneFilter(timezone);
         setUserProfile({ ...userProfile, timeZone: timezone, location: currentLocation });
-      } 
+      }
     }).catch(err => {
       toast.error(`An error occurred : ${err.response.data}`);
       if (errorOccurred) setErrorOccurred(false);
@@ -533,7 +532,7 @@ const BasicInformationTab = props => {
       {desktopDisplay ? (
         <Col md="1">
           <div style={{ marginTop: topMargin, marginLeft: '-20px' }}>
-            <EditableInfoModal role={role} areaName={'roleInfo'} areaTitle="Roles" fontSize={20}/>
+            <EditableInfoModal role={role} areaName={'roleInfo'} areaTitle="Roles" fontSize={20} />
           </div>
         </Col>
       ) : (
@@ -624,12 +623,14 @@ const BasicInformationTab = props => {
     </>
   );
 
+  const formatEndDate = (date) => moment.utc(date).format('MMM-DD-YY');
+
   const endDateComponent = (
     <>
       <Col md={desktopDisplay ? '8' : ''} className={desktopDisplay ? 'mr-5' : ''}>
         <Label className='mr-1'>
           {userProfile.endDate
-            ? 'End Date ' + formatDate(userProfile.endDate)
+            ? 'End Date ' + formatEndDate(userProfile.endDate)
             : 'End Date ' + 'N/A'}
         </Label>
         {canEdit && !desktopDisplay && (
@@ -666,8 +667,8 @@ const BasicInformationTab = props => {
               {userProfile.isActive
                 ? 'Active'
                 : userProfile.reactivationDate
-                ? 'Paused until ' + formatDate(userProfile.reactivationDate)
-                : 'Inactive'}
+                  ? 'Paused until ' + formatDate(userProfile.reactivationDate)
+                  : 'Inactive'}
             </Label>
             &nbsp;
             {canEdit && (
@@ -689,8 +690,8 @@ const BasicInformationTab = props => {
                 {userProfile.isActive
                   ? 'Active'
                   : userProfile.reactivationDate
-                  ? 'Paused until ' + formatDate(userProfile.reactivationDate)
-                  : 'Inactive'}
+                    ? 'Paused until ' + formatDate(userProfile.reactivationDate)
+                    : 'Inactive'}
               </Label>
               &nbsp;
               {canEdit && (

@@ -11,7 +11,7 @@ import { boxStyle } from 'styles';
 import { connect } from 'react-redux';
 import { formatDate } from 'utils/formatDate';
 import { cantUpdateDevAdminDetails } from 'utils/permissions';
-
+import moment from 'moment';
 
 /**
  * The body row of the user table
@@ -27,7 +27,6 @@ const UserTableData = React.memo(props => {
     onReset(false);
   }, [props.isActive, props.resetLoading]);
 
-
   /**
    * Checks whether users should be able to change the record of other users.
    * @returns {boolean} true if the target user record has a owner role, the logged in 
@@ -41,6 +40,10 @@ const UserTableData = React.memo(props => {
     return (props.user.role === 'Owner' && !canAddDeleteEditOwners)
       || cantUpdateDevAdminDetails(recordEmail, loginUserEmail);
   };
+
+  const formatEndDate = (date) => {
+    return moment.utc(date).format('MMM-DD-YY');
+  }
 
   return (
     <tr className="usermanagement__tr" id={`tr_user_${props.index}`}>
@@ -167,13 +170,13 @@ const UserTableData = React.memo(props => {
       <td>{props.user.createdDate ? formatDate(props.user.createdDate) : 'N/A'}</td>
 
       <td className="email_cell">
-        {props.user.endDate ? formatDate(props.user.endDate) : 'N/A'}
+        {props.user.endDate ? formatEndDate(props.user.endDate) : 'N/A'}
 
         <FontAwesomeIcon
           className="copy_icon"
           icon={faCopy}
           onClick={() => {
-            navigator.clipboard.writeText(props.user.endDate ? formatDate(props.user.endDate) : 'N/A');
+            navigator.clipboard.writeText(props.user.endDate ? formatEndDate(props.user.endDate) : 'N/A');
             toast.success('End Date Copied!');
           }}
         />

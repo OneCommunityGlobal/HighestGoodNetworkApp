@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import { FiUser } from 'react-icons/fi';
 import moment from 'moment';
 import { toast } from 'react-toastify';
-import { formatDate } from '../../../utils/formatDate';
+// import { formatDate } from '../../../utils/formatDate';
 import {
   updateUserProfileProperty,
   getUserProfile,
@@ -97,7 +97,7 @@ class PeopleReport extends Component {
       await this.props.getUserProjects(userId);
       await this.props.getWeeklySummaries(userId);
       await this.props.getTimeEntriesForPeriod(userId, fromDate, toDate);
-      await this.props.getTimeendDateEntriesForPeriod(userId, fromDate, toDate);
+      await this.props.getTimeEndDateEntriesForPeriod(userId, fromDate, toDate);
 
       const { userProfile, userTask, userProjects, timeEntries, auth } = this.props;
 
@@ -108,11 +108,8 @@ class PeopleReport extends Component {
         isLoading: false,
         bioStatus: userProfile.bioPosted,
         authRole: auth.user.role,
-        userProfile: {
-          ...userProfile,
-        },
         isRehireable: userProfile.isRehireable,
-        userTask: [...userTask],
+        userTask: Array.isArray(userTask) ? [...userTask] : [],
         userProjects: {
           ...userProjects,
         },
@@ -124,6 +121,19 @@ class PeopleReport extends Component {
         },
       });
 
+    }
+  }
+
+  async componentDidUpdate(prevProps) {
+    if (
+      prevProps.userProfile !== this.props.userProfile &&
+      Object.keys(this.props.userProfile).length > 0
+    ) {
+      this.setState({
+        userProfile: { ...this.props.userProfile },
+        isRehireable: this.props.userProfile.isRehireable,
+        bioStatus: this.props.userProfile.bioPosted,
+      });
     }
   }
 
@@ -278,6 +288,10 @@ class PeopleReport extends Component {
       .format('YYYY-MM-DD');
   }
 
+  formatDate(date) {
+    return moment.utc(date).format('MMM-DD-YY');
+  }
+
   render() {
     const {
       userProfile,
@@ -292,7 +306,6 @@ class PeopleReport extends Component {
     // eslint-disable-next-line no-unused-vars
     const { firstName, lastName, weeklycommittedHours, hoursByCategory } = userProfile;
     const { tangibleHoursReportedThisWeek, auth, match } = this.props;
-
 
     let totalTangibleHrsRound = 0;
     if (hoursByCategory) {
@@ -405,12 +418,13 @@ class PeopleReport extends Component {
         }
         task._id = userTask[i]._id;
         task.resources.push(resourcesName);
-        if (userTask[i].startedDatetime == null) {
-          task.startDate = 'null';
-        }
-        if (userTask[i].endedDatime == null) {
-          task.endDate = 'null';
-        }
+        task.startDate = userTask[i].startedDatetime
+          ? moment.utc(userTask[i].startedDatetime).format('MM-DD-YY')
+          : 'N/A';
+
+        task.endDate = userTask[i].endedDatetime
+          ? moment.utc(userTask[i].endedDatetime).format('MM-DD-YY')
+          : 'N/A';
         task.hoursBest = userTask[i].hoursBest;
         task.hoursMost = userTask[i].hoursMost;
         task.hoursWorst = userTask[i].hoursWorst;
@@ -461,11 +475,11 @@ class PeopleReport extends Component {
 
             <div className="stats">
               <div>
-                <h4>{formatDate(createdDate)}</h4>
+                <h4>{this.formatDate(createdDate)}</h4>
                 <p>Start Date</p>
               </div>
               <div>
-                <h4>{endDate ? formatDate(endDate) : 'N/A'}</h4>
+                <h4>{endDate ? this.formatDate(endDate) : 'N/A'}</h4>
                 <p>End Date</p>
               </div>
               {bioStatus ? (

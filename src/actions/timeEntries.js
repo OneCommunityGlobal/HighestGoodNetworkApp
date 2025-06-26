@@ -98,7 +98,7 @@ export const getTimeEndDateEntriesForPeriod = (userId, fromDate, toDate) => {
       const daysUntilSaturday = dayOfWeek <= 6 ? 6 - dayOfWeek : 6 + (7 - dayOfWeek);
       const lastSatday = moment(lastEntry.dateOfWork).add(daysUntilSaturday, 'days');
 
-      const formattedLastSatday = moment.utc(lastSatday).format('YYYY-MM-DD');
+      const formattedLastSatday = moment.utc(lastEntry.dateOfWork).format('YYYY-MM-DD');
       return formattedLastSatday;
     } catch (error) {
       console.error("Error fetching time entries:", error);
@@ -109,7 +109,6 @@ export const getTimeEndDateEntriesForPeriod = (userId, fromDate, toDate) => {
     }
   };
 };
-
 
 export const postTimeEntry = timeEntry => {
   const url = ENDPOINTS.TIME_ENTRY();
