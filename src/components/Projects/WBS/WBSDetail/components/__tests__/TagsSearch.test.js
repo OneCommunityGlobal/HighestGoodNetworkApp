@@ -90,8 +90,6 @@ describe('TagsSearch Component', () => {
     await waitFor(() => {
       expect(screen.getByText('aaa volunteer')).toBeInTheDocument();
       expect(screen.getByText('aaa owner')).toBeInTheDocument();
-      // expect(screen.queryByText('bbb test')).not.toBeInTheDocument();
-      // expect(screen.queryByText('ccc manager')).not.toBeInTheDocument();
     });
   });
 
@@ -106,18 +104,12 @@ describe('TagsSearch Component', () => {
       jest.advanceTimersByTime(400);
     });
 
-    // Wait for the dropdown to display filtered options
     await waitFor(() => {
       const volunteerOption = screen.getByText('aaa volunteer');
       const ownerOption = screen.getByText('aaa owner');
       expect(volunteerOption).toBeInTheDocument();
       expect(ownerOption).toBeInTheDocument();
-
-      // Simulate clicking the filtered options
-      fireEvent.mouseDown(volunteerOption);
-      fireEvent.mouseDown(ownerOption);
     });
-
     // Check if addResources was called with the correct arguments
     await waitFor(() => {
       expect(addResources).toHaveBeenCalledWith('aaa123', 'aaa', 'volunteer');
@@ -130,6 +122,10 @@ describe('TagsSearch Component', () => {
 
     const searchInputElement = await screen.findByPlaceholderText('Add resources');
     fireEvent.change(searchInputElement, { target: { value: 'aaa' } });
+
+    act(() => {
+      jest.advanceTimersByTime(400);
+    });
 
     await waitFor(() => {
       expect(addResources).not.toHaveBeenCalled();
