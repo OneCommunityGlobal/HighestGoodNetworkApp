@@ -1,5 +1,6 @@
-import { sampleData } from './data';
+import sampleData from './data';
 
-export const getApplicationData = () => {
+const getApplicationData = () => {
   return sampleData;
 };
+export default getApplicationData;
