@@ -4,8 +4,7 @@
 // import React from 'react';
 import { mount } from 'enzyme';
 import { Provider } from 'react-redux';
-import { createStore, combineReducers, applyMiddleware } from 'redux';
-import thunk from 'redux-thunk';
+import { createStore, combineReducers} from 'redux';
 import { MemoryRouter } from 'react-router-dom'; // ✅ Router wrapper required
 import { localReducers, sessionReducers } from '../../../reducers';
 import mockAdminState from '../../../__tests__/mockAdminState';
@@ -20,7 +19,7 @@ const rootReducer = combineReducers({
   ...localReducers,
   ...sessionReducers,
 });
-const store = createStore(rootReducer, applyMiddleware(thunk));
+const store = createStore(rootReducer);
 
 describe('Leaderboard page structure', () => {
   let mountedLeaderboard;
