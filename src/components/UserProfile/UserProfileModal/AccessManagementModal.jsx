@@ -239,7 +239,7 @@ const AccessManagementModal = ({
         case 'dropbox':
           endpoint = ENDPOINTS.DROPBOX_CREATE_ADD;
           payload = { 
-            folderPath: `/${userProfile.firstName}${userProfile.lastName}`,
+            folderPath: `${userProfile.firstName} ${userProfile.lastName}`,
             email, 
             requestor: { requestorId, role } 
           };
@@ -283,7 +283,7 @@ const AccessManagementModal = ({
         case 'dropbox':
           endpoint = ENDPOINTS.DROPBOX_DELETE;
           payload = { 
-            folderPath: `${userProfile.firstName}${userProfile.lastName}`,
+            folderPath: `${userProfile.firstName} ${userProfile.lastName}`,
             requestor: { requestorId, role } 
           };
           break;
