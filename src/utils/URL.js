@@ -254,6 +254,18 @@ export const ENDPOINTS = {
     return url;
   },
 
+  // Project cost tracking endpoints
+  PROJECT_COST_IDS: `${APIEndpoint}/bm/projects-cost/ids`,
+  PROJECT_COSTS_BY_ID: (projectId, categories, fromDate, toDate) => {
+    let url = `${APIEndpoint}/bm/projects/${projectId}/costs`;
+    const params = [];
+    if (categories) params.push(`categories=${categories}`);
+    if (fromDate) params.push(`fromDate=${fromDate}`);
+    if (toDate) params.push(`toDate=${toDate}`);
+    if (params.length > 0) url += `?${params.join('&')}`;
+    return url;
+  },
+
   BM_TAGS: `${APIEndpoint}/bm/tags`,
   BM_TAG_ADD: `${APIEndpoint}/bm/tags`,
   BM_TAGS_DELETE: `${APIEndpoint}/bm/tags`,

@@ -1,7 +1,8 @@
 // React is needed for JSX transformation
 // eslint-disable-next-line no-unused-vars
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import { useParams, useLocation } from 'react-router-dom';
 import CostPredictionChart from './CostPredictionChart';
 import './CostPredictionPage.css';
 
@@ -9,6 +10,13 @@ function CostPredictionPage() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const [loading] = useState(false);
   const [error] = useState(null);
+  const { projectId } = useParams();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const projectIdFromQuery = queryParams.get('projectId');
+
+  // Use projectId from params or query string
+  const selectedProjectId = projectId || projectIdFromQuery;
 
   // Apply dark mode styles to document body when in dark mode
   React.useEffect(() => {
@@ -55,7 +63,9 @@ function CostPredictionPage() {
 
         {error && <div className="page-error">{error}</div>}
 
-        {!loading && !error && <CostPredictionChart darkMode={darkMode} isFullPage />}
+        {!loading && !error && (
+          <CostPredictionChart darkMode={darkMode} isFullPage projectId={selectedProjectId} />
+        )}
       </div>
     </div>
   );

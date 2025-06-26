@@ -485,7 +485,11 @@ export default (
 
         <BMProtectedRoute
           path="/bmdashboard/cost-prediction"
-          fallback
+          exact
+          component={CostPredictionPage}
+        />
+        <BMProtectedRoute
+          path="/bmdashboard/cost-prediction/:projectId"
           exact
           component={CostPredictionPage}
         />

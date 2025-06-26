@@ -8,46 +8,19 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-  ReferenceLine,
 } from 'recharts';
 import { useHistory } from 'react-router-dom';
 import Select from 'react-select';
 import './CostPredictionChart.css';
-
-// Generate fixed mock data
-const mockData = [
-  { date: 'Jan 2024', laborCost: 120, materialsCost: 80, equipmentCost: 50, isPrediction: false },
-  { date: 'Feb 2024', laborCost: 180, materialsCost: 100, equipmentCost: 60, isPrediction: false },
-  { date: 'Mar 2024', laborCost: 240, materialsCost: 160, equipmentCost: 80, isPrediction: false },
-  { date: 'Apr 2024', laborCost: 300, materialsCost: 200, equipmentCost: 120, isPrediction: false },
-  { date: 'May 2024', laborCost: 380, materialsCost: 230, equipmentCost: 150, isPrediction: false },
-  { date: 'Jun 2024', laborCost: 450, materialsCost: 280, equipmentCost: 170, isPrediction: false },
-  { date: 'Jul 2024', laborCost: 520, materialsCost: 320, equipmentCost: 190, isPrediction: false },
-  { date: 'Aug 2024', laborCost: 580, materialsCost: 360, equipmentCost: 210, isPrediction: false },
-  { date: 'Sep 2024', laborCost: 650, materialsCost: 400, equipmentCost: 230, isPrediction: false },
-  { date: 'Oct 2024', laborCost: 700, materialsCost: 430, equipmentCost: 250, isPrediction: false },
-  { date: 'Nov 2024', laborCost: 750, materialsCost: 470, equipmentCost: 260, isPrediction: true },
-  { date: 'Dec 2024', laborCost: 800, materialsCost: 510, equipmentCost: 280, isPrediction: true },
-  { date: 'Jan 2025', laborCost: 850, materialsCost: 550, equipmentCost: 300, isPrediction: true },
-  { date: 'Feb 2025', laborCost: 900, materialsCost: 590, equipmentCost: 320, isPrediction: true },
-  { date: 'Mar 2025', laborCost: 950, materialsCost: 630, equipmentCost: 340, isPrediction: true },
-  { date: 'Apr 2025', laborCost: 1000, materialsCost: 670, equipmentCost: 360, isPrediction: true },
-  { date: 'May 2025', laborCost: 1050, materialsCost: 710, equipmentCost: 380, isPrediction: true },
-  { date: 'Jun 2025', laborCost: 1100, materialsCost: 750, equipmentCost: 400, isPrediction: true },
-];
-
-// Add total cost for each entry
-const mockDataWithTotal = mockData.map(item => ({
-  ...item,
-  totalCost: item.laborCost + item.materialsCost + item.equipmentCost,
-}));
+import { getProjectCosts, getProjectIds } from '../../../../services/projectCostTrackingService';
+import moment from 'moment';
 
 // Cost category options
 const costOptions = [
-  { value: 'laborCost', label: 'Labor Cost' },
-  { value: 'materialsCost', label: 'Materials Cost' },
-  { value: 'equipmentCost', label: 'Equipment Cost' },
-  { value: 'totalCost', label: 'Total Cost' },
+  { value: 'Labor', label: 'Labor Cost' },
+  { value: 'Materials', label: 'Materials Cost' },
+  { value: 'Equipment', label: 'Equipment Cost' },
+  { value: 'Total', label: 'Total Cost' },
 ];
 
 // Custom tooltip component
@@ -65,10 +38,10 @@ function CustomTooltip({ active, payload, label, currency }) {
       {payload.map((entry, index) => {
         let costLabel = '';
 
-        if (entry.dataKey === 'laborCost') costLabel = 'Labor Cost';
-        else if (entry.dataKey === 'materialsCost') costLabel = 'Materials Cost';
-        else if (entry.dataKey === 'equipmentCost') costLabel = 'Equipment Cost';
-        else if (entry.dataKey === 'totalCost') costLabel = 'Total Cost';
+        if (entry.dataKey === 'Labor') costLabel = 'Labor Cost';
+        else if (entry.dataKey === 'Materials') costLabel = 'Materials Cost';
+        else if (entry.dataKey === 'Equipment') costLabel = 'Equipment Cost';
+        else if (entry.dataKey === 'Total') costLabel = 'Total Cost';
 
         return (
           <div key={index} className="tooltip-item">
@@ -82,30 +55,131 @@ function CustomTooltip({ active, payload, label, currency }) {
   );
 }
 
-function CostPredictionChart({ darkMode, isFullPage = false }) {
-  console.log('Rendering CostPredictionChart', { darkMode, isFullPage });
+function CostPredictionChart({ darkMode, isFullPage = false, projectId }) {
+  console.log('Rendering CostPredictionChart', { darkMode, isFullPage, projectId });
 
   const [data, setData] = useState([]);
   const [selectedCosts, setSelectedCosts] = useState([
-    { value: 'laborCost', label: 'Labor Cost' },
-    { value: 'materialsCost', label: 'Materials Cost' },
+    { value: 'Labor', label: 'Labor Cost' },
+    { value: 'Materials', label: 'Materials Cost' },
   ]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [currency] = useState('$'); // Currency symbol
-  const [plannedBudget] = useState(2250); // Mock planned budget
+  const [availableProjects, setAvailableProjects] = useState([]);
+  const [selectedProject, setSelectedProject] = useState(null);
   const history = useHistory();
 
-  // Load mock data on component mount
+  // Fetch available projects on component mount
   useEffect(() => {
-    console.log('Loading data...');
-    setData(mockDataWithTotal);
-    setLoading(false);
-  }, []);
+    const fetchProjects = async () => {
+      try {
+        const projectIds = await getProjectIds();
+        setAvailableProjects(projectIds.map(id => ({ value: id, label: id })));
 
-  // Log when data changes
+        // Select the first project by default or use the provided projectId
+        if (projectIds.length > 0) {
+          const initialProject = projectId || projectIds[0];
+          setSelectedProject({ value: initialProject, label: initialProject });
+        }
+      } catch (err) {
+        console.error('Error fetching project IDs:', err);
+        setError('Failed to load projects');
+      }
+    };
+
+    fetchProjects();
+  }, [projectId]);
+
+  // Fetch cost data when selected project changes
   useEffect(() => {
-    console.log('Data updated:', data);
-  }, [data]);
+    const fetchData = async () => {
+      if (!selectedProject) return;
+
+      setLoading(true);
+      try {
+        const costData = await getProjectCosts(selectedProject.value);
+
+        // Process the data for the chart
+        const processedData = processDataForChart(costData);
+        setData(processedData);
+        setLoading(false);
+      } catch (err) {
+        console.error('Error fetching cost data:', err);
+        setError('Failed to load cost data');
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [selectedProject]);
+
+  // Process the API data into a format suitable for the chart
+  const processDataForChart = apiData => {
+    if (!apiData || !apiData.actual) return [];
+
+    const { actual, predicted } = apiData;
+    const allDates = new Set();
+    const processedData = [];
+
+    // Collect all dates from actual data
+    Object.keys(actual).forEach(category => {
+      actual[category].forEach(item => {
+        allDates.add(moment(item.date).format('MMM YYYY'));
+      });
+    });
+
+    // Create data points for each date
+    const sortedDates = Array.from(allDates).sort((a, b) =>
+      moment(a, 'MMM YYYY').diff(moment(b, 'MMM YYYY')),
+    );
+
+    sortedDates.forEach(dateStr => {
+      const dataPoint = { date: dateStr, isPrediction: false };
+
+      // Add cost values for each category
+      Object.keys(actual).forEach(category => {
+        const matchingItem = actual[category].find(
+          item => moment(item.date).format('MMM YYYY') === dateStr,
+        );
+
+        if (matchingItem) {
+          dataPoint[category] = matchingItem.cost;
+        }
+      });
+
+      processedData.push(dataPoint);
+    });
+
+    // Add prediction data
+    if (predicted) {
+      Object.keys(predicted).forEach(category => {
+        predicted[category].forEach(item => {
+          const dateStr = moment(item.date).format('MMM YYYY');
+
+          // Check if this date already exists in the data
+          const existingPoint = processedData.find(point => point.date === dateStr);
+
+          if (existingPoint) {
+            // Update existing point with prediction flag and value
+            existingPoint.isPrediction = true;
+            existingPoint[category] = item.cost;
+          } else {
+            // Create new data point for prediction
+            const newPoint = {
+              date: dateStr,
+              isPrediction: true,
+              [category]: item.cost,
+            };
+            processedData.push(newPoint);
+          }
+        });
+      });
+    }
+
+    // Sort the final data by date
+    return processedData.sort((a, b) => moment(a.date, 'MMM YYYY').diff(moment(b, 'MMM YYYY')));
+  };
 
   const handleCardClick = () => {
     if (!isFullPage) {
@@ -119,21 +193,17 @@ function CostPredictionChart({ darkMode, isFullPage = false }) {
     setSelectedCosts(selected || []);
   };
 
-  // Define line colors
-  const costColors = {
-    laborCost: '#4589FF',
-    materialsCost: '#FF6A00',
-    equipmentCost: '#8A2BE2',
-    totalCost: '#3CB371',
+  // Handle project selection
+  const handleProjectChange = selected => {
+    setSelectedProject(selected);
   };
 
-  // Simple function to render dots
-  const renderDot = dataKey => props => {
-    const { cx, cy, payload, index } = props;
-    if (!payload || payload.isPrediction) return null;
-    return (
-      <circle key={`dot-${dataKey}-${index}`} cx={cx} cy={cy} r={4} fill={costColors[dataKey]} />
-    );
+  // Define line colors
+  const costColors = {
+    Labor: '#4589FF',
+    Materials: '#FF6A00',
+    Equipment: '#8A2BE2',
+    Total: '#3CB371',
   };
 
   // Render a simplified chart for card view
@@ -166,8 +236,9 @@ function CostPredictionChart({ darkMode, isFullPage = false }) {
         </h3>
 
         {loading && <div className="cost-chart-loading">Loading...</div>}
+        {error && <div className="cost-chart-error">{error}</div>}
 
-        {!loading && data.length > 0 && (
+        {!loading && !error && data.length > 0 && (
           <div
             style={{
               height: 'calc(100% - 40px)',
@@ -185,7 +256,6 @@ function CostPredictionChart({ darkMode, isFullPage = false }) {
                     fontSize: 10,
                   }}
                   tickMargin={5}
-                  tickFormatter={value => value.split(' ')[0]}
                   height={25}
                 />
                 <YAxis
@@ -214,32 +284,32 @@ function CostPredictionChart({ darkMode, isFullPage = false }) {
 
                 {/* Only show Labor and Materials cost in card view */}
                 <Line
-                  key="laborCost"
+                  key="Labor"
                   type="monotone"
-                  dataKey="laborCost"
+                  dataKey="Labor"
                   name="Labor Cost"
-                  stroke={costColors.laborCost}
+                  stroke={costColors.Labor}
                   strokeWidth={2}
                   dot={props => {
                     const { cx, cy, payload } = props;
                     if (!payload || payload.isPrediction) return null;
-                    return <circle cx={cx} cy={cy} r={2} fill={costColors.laborCost} />;
+                    return <circle cx={cx} cy={cy} r={2} fill={costColors.Labor} />;
                   }}
                   activeDot={{ r: 4 }}
                   isAnimationActive={false}
                   strokeDasharray={payload => (payload && payload.isPrediction ? '5 5' : '0')}
                 />
                 <Line
-                  key="materialsCost"
+                  key="Materials"
                   type="monotone"
-                  dataKey="materialsCost"
+                  dataKey="Materials"
                   name="Materials Cost"
-                  stroke={costColors.materialsCost}
+                  stroke={costColors.Materials}
                   strokeWidth={2}
                   dot={props => {
                     const { cx, cy, payload } = props;
                     if (!payload || payload.isPrediction) return null;
-                    return <circle cx={cx} cy={cy} r={2} fill={costColors.materialsCost} />;
+                    return <circle cx={cx} cy={cy} r={2} fill={costColors.Materials} />;
                   }}
                   activeDot={{ r: 4 }}
                   isAnimationActive={false}
@@ -250,7 +320,7 @@ function CostPredictionChart({ darkMode, isFullPage = false }) {
           </div>
         )}
 
-        {!loading && data.length === 0 && (
+        {!loading && !error && data.length === 0 && (
           <div className="cost-chart-empty" style={{ color: darkMode ? '#e0e0e0' : 'inherit' }}>
             <p>No data available</p>
           </div>
@@ -289,6 +359,38 @@ function CostPredictionChart({ darkMode, isFullPage = false }) {
       </h3>
 
       <div className="cost-chart-filters">
+        <div className="filter-group">
+          <label style={darkMode ? { color: '#e0e0e0' } : {}}>Project</label>
+          <Select
+            className="project-select"
+            classNamePrefix="select"
+            value={selectedProject}
+            onChange={handleProjectChange}
+            options={availableProjects}
+            placeholder="Select a project"
+            styles={
+              darkMode
+                ? {
+                    control: baseStyles => ({
+                      ...baseStyles,
+                      backgroundColor: '#2c3344',
+                      borderColor: '#364156',
+                    }),
+                    menu: baseStyles => ({
+                      ...baseStyles,
+                      backgroundColor: '#2c3344',
+                    }),
+                    option: (baseStyles, state) => ({
+                      ...baseStyles,
+                      backgroundColor: state.isFocused ? '#364156' : '#2c3344',
+                      color: '#e0e0e0',
+                    }),
+                  }
+                : {}
+            }
+          />
+        </div>
+
         <div className="filter-group">
           <label style={darkMode ? { color: '#e0e0e0' } : {}}>Cost Categories</label>
           <Select
@@ -344,8 +446,9 @@ function CostPredictionChart({ darkMode, isFullPage = false }) {
       </div>
 
       {loading && <div className="cost-chart-loading">Loading cost prediction data...</div>}
+      {error && <div className="cost-chart-error">{error}</div>}
 
-      {!loading && (
+      {!loading && !error && (
         <div
           style={{
             width: '100%',
@@ -437,16 +540,6 @@ function CostPredictionChart({ darkMode, isFullPage = false }) {
                   backgroundColor: darkMode ? '#1e2736' : 'transparent',
                 }}
               />
-              <ReferenceLine
-                y={plannedBudget}
-                stroke="#00C853"
-                strokeDasharray="3 3"
-                label={{
-                  value: `Planned Budget: ${currency}${plannedBudget}`,
-                  fill: darkMode ? '#e0e0e0' : '#333',
-                  position: 'top',
-                }}
-              />
 
               {selectedCosts.map(cost => {
                 const dataKey = cost.value;
@@ -500,12 +593,6 @@ function CostPredictionChart({ darkMode, isFullPage = false }) {
             style={{ marginTop: '20px', textAlign: 'center' }}
           >
             <div className="chart-legend-item">
-              <span className="legend-marker" style={{ backgroundColor: '#00C853' }}></span>
-              <span className="legend-label" style={{ color: darkMode ? '#e0e0e0' : 'inherit' }}>
-                Planned Budget
-              </span>
-            </div>
-            <div className="chart-legend-item">
               <svg width="16" height="16" style={{ display: 'inline-block', marginRight: '4px' }}>
                 <path
                   d="M8,2 L14,8 L8,14 L2,8 Z"
@@ -523,7 +610,7 @@ function CostPredictionChart({ darkMode, isFullPage = false }) {
         </div>
       )}
 
-      {!loading && data.length === 0 && (
+      {!loading && !error && data.length === 0 && (
         <div className="cost-chart-empty" style={{ color: darkMode ? '#e0e0e0' : 'inherit' }}>
           <p>No data available for the selected filters.</p>
         </div>
