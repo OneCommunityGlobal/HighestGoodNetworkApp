@@ -265,12 +265,12 @@ function TotalPeopleReport(props) {
           :
         </div>
         <div className="total-item">
-          <div className="total-number">{allPeople.length}</div>
-          <div className="total-text">members have contributed more than 10 hours.</div>
+          <span className="total-number">{allPeople.length}</span>
+          <span className="total-text">members have contributed more than 10 hours.</span>
         </div>
         <div className="total-item">
-          <div className="total-number">{totalTangibleTime.toFixed(2)}</div>
-          <div className="total-text">hours of tangible time have been logged.</div>
+          <span className="total-number">{totalTangibleTime.toFixed(2)}</span>
+          <span className="total-text">hours of tangible time have been logged.</span>
         </div>
         <div>
           {showMonthly && peopleInMonth.length > 0 ? (
@@ -325,7 +325,7 @@ function TotalPeopleReport(props) {
       ) : (
         <div>
           <div>{totalPeopleInfo(allPeople)}</div>
-          <div>{showTotalPeopleTable ? totalPeopleTable(allPeople) : null}</div>
+          <div className='tables'>{showTotalPeopleTable ? totalPeopleTable(allPeople) : null}</div>
         </div>
       )}
     </div>
