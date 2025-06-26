@@ -127,11 +127,7 @@ function UserProfile(props) {
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
   const toggleRemoveModal = () => setIsRemoveModalOpen(!isRemoveModalOpen);
   const [loadingSummaries, setLoadingSummaries] = useState(false);
-  const [accessRemoved, setAccessRemoved] = useState(true);
   const [showAccessManagementModal, setShowAccessManagementModal] = useState(false);
-  const [showConfirmRemove, setShowConfirmRemove] = useState(false);
-  const [showConfirmAdd, setShowConfirmAdd] = useState(false);
-  const [removalInProgress, setRemovalInProgress] = useState(false);
 
   const updateRemovedImage = async () => {
     try {
@@ -214,113 +210,6 @@ function UserProfile(props) {
         return updatedOriginalProfile;
       });
     });
-  };
-
-  const handleRemoveClick = () => setShowConfirmRemove(true);
-
-  // const confirmRemove = async () => {
-  //   setShowConfirmRemove(false);
-  //   setRemovalInProgress(true);
-
-  //   const email = userProfile?.email;
-  //   const username = userProfile?.githubUsername;
-  //   // const folderPath = `/${userProfile.firstName}${userProfile.lastName}`;
-  //   const folderPath = '/TestDropboxAPI';
-  //   const requestorId = props.auth.user.userid;
-  //   const role = props.auth.user.role;
-
-  //   try {
-  //     const results = await Promise.allSettled([
-  //       // axios.delete(ENDPOINTS.SENTRY_REMOVE, {
-  //       //   data: {
-  //       //     email,
-  //       //     requestor: { requestorId, role },
-  //       //   },
-  //       // }),
-  //       // axios.delete(ENDPOINTS.GITHUB_REMOVE, {
-  //       //   data: {
-  //       //     username,
-  //       //     requestor: { requestorId, role },
-  //       //   },
-  //       // }),
-  //       axios.post(ENDPOINTS.DROPBOX_DELETE, {
-  //         folderPath,
-  //         requestor: { requestorId, role },
-  //       }),
-  //       // Slack is skipped as per your comment
-  //     ]);
-  //     const services = ['Sentry', 'GitHub', 'Dropbox'];
-
-  //     results.forEach((res, i) => {
-  //       if (res.status === 'fulfilled') {
-  //         toast.success(`${services[i]} access removed`);
-  //       } else {
-  //         toast.error(`Failed to remove access from ${services[i]}`);
-  //       }
-  //     });
-
-  //     setAccessRemoved(true);
-  //   } catch (error) {
-  //     toast.error('Unexpected error during access removal.');
-  //   } finally {
-  //     setRemovalInProgress(false);
-  //   }
-  // };
-
-  const handleAddClick = () => setShowConfirmAdd(true);
-
-  // const confirmAdd = async () => {
-  //   setShowConfirmAdd(false);
-  //   setRemovalInProgress(true);
-
-  //   const email = userProfile?.email;
-  //   const username = userProfile?.githubUsername;
-  //   // const folderName = `${userProfile.firstName}${userProfile.lastName}`;
-  //   const folderName = 'TestDropboxAPI';
-  //   const requestorId = props.auth.user.userid;
-  //   const role = props.auth.user.role;
-
-  //   try {
-  //     const results = await Promise.allSettled([
-  //       // axios.post(ENDPOINTS.SENTRY_ADD, {
-  //       //   email,
-  //       //   requestor: { requestorId, role },
-  //       // }),
-  //       // axios.post(ENDPOINTS.GITHUB_ADD, {
-  //       //   username,
-  //       //   requestor: { requestorId, role },
-  //       // }),
-  //       axios.post(ENDPOINTS.DROPBOX_CREATE_ADD, {
-  //         folderPath: folderName,
-  //         email,
-  //         requestor: { requestorId, role },
-  //       }),
-  //       // axios.post(ENDPOINTS.SLACK_ADD, {
-  //       //   email,
-  //       //   requestor: { requestorId, role },
-  //       // }),
-  //     ]);
-
-  //     const services = ['Sentry', 'GitHub', 'Dropbox', 'Slack'];
-
-  //     results.forEach((res, i) => {
-  //       if (res.status === 'fulfilled') {
-  //         toast.success(`${services[i]} access granted`);
-  //       } else {
-  //         toast.error(`Failed to grant access to ${services[i]}`);
-  //       }
-  //     });
-
-  //     setAccessRemoved(false);
-  //   } catch (error) {
-  //     toast.error('Unexpected error during access addition.');
-  //   } finally {
-  //     setRemovalInProgress(false);
-  //   }
-  // };
-
-  const closeAddedPopup = () => {
-    setShowConfirmAdd(false);
   };
 
   const checkIsProjectsEqual = () => {
@@ -1259,14 +1148,12 @@ function UserProfile(props) {
                   size="sm"
                   onClick={() => setShowAccessManagementModal(true)}
                   title={
-                    accessRemoved
-                      ? 'Click to add user access to GitHub, Dropbox, Slack, and Sentry.'
-                      : 'CAREFUL: Clicking this button removes access to GitHub, Dropbox, Sentry, and Slack.'
+                    'Click to add user access to GitHub, Dropbox, Slack, and Sentry.'
                   }
                 >
                   <img
-                    src={accessRemoved ? '/HGN_Add_Access.png' : '/HGN_closeout_icon.png'}
-                    alt={accessRemoved ? 'Add Access' : 'Remove Access'}
+                    src='/HGN_Add_Access.png'
+                    alt='Add Access'
                     style={{ width: '20px', height: '20px' }}
                   />
                 </Button>

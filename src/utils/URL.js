@@ -275,7 +275,6 @@ export const ENDPOINTS = {
   DROPBOX_ADD: `${APIEndpoint}/dropbox/invite`,
   SLACK_ADD: `${APIEndpoint}/slack/invite`,
   DROPBOX_CREATE_ADD: `${APIEndpoint}/dropbox/create-folder-and-invite`,
-
   ACCESS_MANAGEMENT: `${APIEndpoint}/accessManagement`,
 };
 

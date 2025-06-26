@@ -77,7 +77,6 @@ const AccessManagementModal = ({
   }, [isOpen, userProfile?._id, userProfile]);
 
   const fetchAccessData = async () => {
-    console.log('fetchAccessData called with userProfile:', userProfile);
     setLoading(true);
     try {
       const response = await axios.get(ENDPOINTS.ACCESS_MANAGEMENT, {
@@ -85,7 +84,6 @@ const AccessManagementModal = ({
           userId: userProfile._id,
         },
       });
-      console.log('Access data response:', response.data);
       setAccessData(response.data);
     } catch (error) {
       console.error('Error fetching access data:', error);
@@ -184,7 +182,7 @@ const AccessManagementModal = ({
       
       await fetchAccessData(); // Refresh data
     } catch (error) {
-      console.error('Error in bulk invite:', error);
+      //console.error('Error in bulk invite:', error);
       toast.error('Unexpected error during bulk invite');
     } finally {
       setActionInProgress(false);
@@ -217,7 +215,7 @@ const AccessManagementModal = ({
       
       await fetchAccessData(); // Refresh data
     } catch (error) {
-      console.error('Error in bulk revoke:', error);
+      //console.error('Error in bulk revoke:', error.response);
       toast.error('Unexpected error during bulk revoke');
     } finally {
       setActionInProgress(false);
@@ -262,8 +260,8 @@ const AccessManagementModal = ({
       toast.success(`${appConfigs[appName].name} invitation sent successfully`);
       await fetchAccessData(); // Refresh data
     } catch (error) {
-      console.error(`Error inviting to ${appName}:`, error);
-      toast.error(`Failed to send ${appConfigs[appName].name} invitation`);
+      // console.error(`Error inviting to ${appName}:`, error.response);
+      toast.error(error.response.data.error);
     } finally {
       setActionInProgress(false);
     }
@@ -303,8 +301,8 @@ const AccessManagementModal = ({
       toast.success(`${appConfigs[appName].name} access revoked successfully`);
       await fetchAccessData(); // Refresh data
     } catch (error) {
-      console.error(`Error revoking ${appName}:`, error);
-      toast.error(`Failed to revoke ${appConfigs[appName].name} access`);
+      //console.error(`Error revoking ${appName}:`, error);
+      toast.error(error.response.data.error);
     } finally {
       setActionInProgress(false);
     }
@@ -584,8 +582,6 @@ const AccessManagementModal = ({
   };
 
   if (!isOpen) return null;
-
-  console.log('Modal rendering - loading:', loading, 'accessData:', accessData);
 
   // Only calculate these if we have accessData (not loading and data is available)
   const invitableApps = !loading && accessData ? getInvitableApps() : [];
