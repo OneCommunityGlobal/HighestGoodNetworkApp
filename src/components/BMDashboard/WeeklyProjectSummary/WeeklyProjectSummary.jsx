@@ -8,7 +8,9 @@ import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
 import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
 import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
+import CostDonutChartComponent from './Financials/CostBreakDown/CostBreakDown';
 import styles from './WeeklyProjectSummary.module.css';
+
 
 const projectStatusButtons = [
   {
@@ -247,9 +249,9 @@ export default function WeeklyProjectSummary() {
                 </div>
               );
             })}
-
+       
             <div className={`${styles.weeklyProjectSummaryCard} ${styles.financialBig}`}>
-              📊 Big Card
+       <CostDonutChartComponent />{' '}
             </div>
           </>
         ),
