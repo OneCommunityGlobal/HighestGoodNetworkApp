@@ -81,8 +81,7 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
       modalMessage: `<p style="${darkMode ? 'color: white' : 'color: black;'}">Do you want to archive ${projectData.projectName}?</p>`,
       modalTitle: CONFIRM_ARCHIVE,
       hasConfirmBtn: true,
-      hasInactiveBtn: false,
-      hasActiveBtn: false,
+      hasInactiveBtn: projectData.isActive,
     });
   };
 
@@ -169,7 +168,6 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
 
   const postProject = async (name, category) => {
     await props.postNewProject(name, category);
-    refreshProjects(); // Refresh project list after adding a project
   };
 
   const generateProjectList = (categorySelectedForSort, showStatus, sortedByName) => {
@@ -224,9 +222,7 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
     setAllProjects(filteredProjects);
   };
 
-  const refreshProjects = async () => {
-    await props.fetchAllProjects();
-  };
+
 
   useEffect(() => {
     props.fetchAllProjects();
