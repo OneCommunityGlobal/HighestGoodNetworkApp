@@ -1174,6 +1174,23 @@ const WeeklySummariesReport = props => {
     }));
   };
 
+  const handleSaveFilter = () => {
+    // eslint-disable-next-line no-console
+    console.log(state.selectedCodes);
+    // eslint-disable-next-line no-console
+    console.log(state.selectedColors);
+    // eslint-disable-next-line no-console
+    console.log(state.selectedExtraMembers);
+    // eslint-disable-next-line no-console
+    console.log(state.selectedBioStatus);
+    // eslint-disable-next-line no-console
+    console.log(state.selectedOverTime);
+    // eslint-disable-next-line no-console
+    console.log(state.selectedSpecialColors);
+    // eslint-disable-next-line no-console
+    console.log(state.selectedTrophies);
+  };
+
   // Setup effect hooks for initial data load
   useEffect(() => {
     let isMounted = true;
@@ -1277,20 +1294,43 @@ const WeeklySummariesReport = props => {
           </h3>
         </Col>
       </Row>
-      {(authEmailWeeklySummaryRecipient === authorizedUser1 ||
-        authEmailWeeklySummaryRecipient === authorizedUser2) && (
-        <Row className="d-flex justify-content-center mb-3">
-          <Button
-            color="primary"
-            className="permissions-management__button"
-            type="button"
-            onClick={() => onClickRecepients()}
-            style={darkMode ? boxStyleDark : boxStyle}
-          >
-            Weekly Summary Report Recipients
-          </Button>
-        </Row>
-      )}
+      <Row className="mb-2">
+        <Col lg={{ size: 10, offset: 1 }}>
+          <div className="d-flex justify-content-end">
+            {(authEmailWeeklySummaryRecipient === authorizedUser1 ||
+              authEmailWeeklySummaryRecipient === authorizedUser2) && (
+              <Button
+                color="primary"
+                className="permissions-management__button text-nowrap mx-1"
+                type="button"
+                onClick={() => onClickRecepients()}
+                style={darkMode ? boxStyleDark : boxStyle}
+              >
+                Weekly Summary Report Recipients
+              </Button>
+            )}
+
+            <Button
+              color="primary"
+              outline
+              className="mx-1"
+              type="button"
+              style={darkMode ? boxStyleDark : boxStyle}
+            >
+              Select Filter
+            </Button>
+            <Button
+              color="primary"
+              className="ml-1"
+              type="button"
+              onClick={handleSaveFilter}
+              style={darkMode ? boxStyleDark : boxStyle}
+            >
+              Save Filter
+            </Button>
+          </div>
+        </Col>
+      </Row>
       <Row>
         <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }} xs={{ size: 6 }}>
           <div className="filter-container-teamcode">
