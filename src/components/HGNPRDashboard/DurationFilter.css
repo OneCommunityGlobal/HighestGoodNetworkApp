@@ -1,0 +1,86 @@
+.duration-filter {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: center;
+}
+.duration-filter-label {
+  font-size: 1rem;
+  color: #052C65;
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+.duration-filter-select {
+  padding: 0.3rem 1.2rem 0.3rem 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #052C65;
+  background: #fff;
+  color: #052C65;
+  font-size: 1rem;
+  outline: none;
+  transition: border 0.2s;
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+.duration-filter-select:focus {
+  border: 2px solid #052C65;
+}
+
+@media (max-width: 900px) {
+  .duration-filter-label {
+    font-size: 0.95rem;
+  }
+  .duration-filter-select {
+    font-size: 0.95rem;
+    padding: 0.25rem 1rem 0.25rem 0.4rem;
+    border-radius: 5px;
+  }
+  .duration-filter {
+    gap: 0.4rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .duration-filter-label {
+    font-size: 0.85rem;
+  }
+  .duration-filter-select {
+    font-size: 0.85rem;
+    padding: 0.18rem 0.7rem 0.18rem 0.3rem;
+    border-radius: 4px;
+  }
+  .duration-filter {
+    gap: 0.3rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .duration-filter-label {
+    font-size: 0.7rem;
+  }
+  .duration-filter-select {
+    font-size: 0.7rem;
+    padding: 0.1rem 0.4rem 0.1rem 0.2rem;
+    border-radius: 3px;
+  }
+  .duration-filter {
+    gap: 0.18rem;
+  }
+}
+
+@media (max-width: 300px) {
+  .duration-filter-label {
+    font-size: 0.5rem;
+  }
+  .duration-filter-select {
+    font-size: 0.5rem;
+    padding: 0.05rem 0.2rem 0.05rem 0.1rem;
+    border-radius: 2px;
+  }
+  .duration-filter {
+    gap: 0.08rem;
+  }
+} 

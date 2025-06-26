@@ -1,0 +1,25 @@
+import './DurationFilter.css';
+
+function DurationFilter({ options, value, onChange }) {
+  return (
+    <div className="duration-filter">
+      <label htmlFor="duration-select" className="duration-filter-label">
+        Duration:
+      </label>
+      <select
+        id="duration-select"
+        className="duration-filter-select"
+        value={value}
+        onChange={e => onChange(e.target.value)}
+      >
+        {options.map(opt => (
+          <option key={opt.value} value={opt.value}>
+            {opt.label}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
+export default DurationFilter;
