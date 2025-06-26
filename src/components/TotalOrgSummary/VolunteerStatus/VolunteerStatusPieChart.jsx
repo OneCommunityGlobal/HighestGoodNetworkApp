@@ -8,6 +8,7 @@ Chart.register(ArcElement);
 
 function VolunteerStatusPieChart(props) {
   const { totalVolunteers, percentageChange, data: volunteerData } = props.data;
+  const { comparisonType } = props;
 
   const chartData = {
     labels: volunteerData.map(item => item.label),
@@ -55,15 +56,17 @@ function VolunteerStatusPieChart(props) {
         <div className="volunteer-status-center">
           <h2 className="volunteer-status-heading">TOTAL VOLUNTEERS</h2>
           <p className="volunteer-count">{totalVolunteers}</p>
-          <p
-            className="percentage-change"
-            style={{ color: percentageChangeColor }}
-            aria-label={`Percentage change: ${percentageChange}% week over week`}
-          >
-            {percentageChange >= 0
-              ? `+${percentageChange}% WEEK OVER WEEK`
-              : `${percentageChange}% WEEK OVER WEEK`}
-          </p>
+          {comparisonType !== 'No Comparison' && (
+            <p
+              className="percentage-change"
+              style={{ color: percentageChangeColor }}
+              aria-label={`Percentage change: ${percentageChange}% ${comparisonType.toLowerCase()}`}
+            >
+              {percentageChange >= 0
+                ? `+${percentageChange}% ${comparisonType.toUpperCase()}`
+                : `${percentageChange}% ${comparisonType.toUpperCase()}`}
+            </p>
+          )}
         </div>
       </div>
       <div className="volunteer-status-labels">
@@ -93,6 +96,7 @@ VolunteerStatusPieChart.propTypes = {
       }),
     ).isRequired,
   }).isRequired,
+  comparisonType: PropTypes.string.isRequired,
 };
 
 export default VolunteerStatusPieChart;
