@@ -28,6 +28,10 @@
 
 .countdownCircle {
   width: 90%;
+  max-width: 320px;
+  max-height: 320px;
+  aspect-ratio: 1 / 1;
+  margin: 0 auto;
 }
 
 .countdownCircle .content {
@@ -71,7 +75,7 @@
   justify-content: space-between;
 }
 
-.operators button{
+.operators button {
   background-color: #343a40;
   border: none;
 }
@@ -102,17 +106,17 @@
   gap: 0.5rem;
 }
 
-.addGrid button{
+.addGrid button {
   padding: 0;
-  margin:0;
-  border:none;
+  margin: 0;
+  border: none;
   height: 100%;
   background-color: #343a40;
 }
 
-.addGrid span{
+.addGrid span {
   /* padding: 0; */
-  border:none;
+  border: none;
 }
 
 .btn {
@@ -200,6 +204,7 @@ input[type='number'] {
   -moz-appearance: textfield;
   appearance: textfield;
 }
+
 /* Hide spin buttons in number input for Firefox */
 input[type='number']::-moz-inner-spin-button {
   display: none;

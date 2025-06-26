@@ -7,7 +7,7 @@ import './DonutChart.css';
 Chart.register(ArcElement);
 
 function DonutChart(props) {
-  const { title, totalCount, percentageChange, data, colors, hasData } = props;
+  const { title, totalCount, percentageChange, data, colors, hasData, comparisonType } = props;
 
   if (!hasData) {
     return (
@@ -63,11 +63,13 @@ function DonutChart(props) {
           <div className="donut-center">
             <h5 className="donut-heading">{title}</h5>
             <h4 className="donut-count">{totalCount}</h4>
-            <h6 className="donut-comparison-percent" style={{ color: percentageChangeColor }}>
-              {percentageChange >= 0
-                ? `+${percentageChange}% WEEK OVER WEEK`
-                : `${percentageChange}% WEEK OVER WEEK`}
-            </h6>
+            {comparisonType !== 'No Comparison' && (
+              <h6 className="donut-comparison-percent" style={{ color: percentageChangeColor }}>
+                {percentageChange >= 0
+                  ? `+${percentageChange}% ${comparisonType.toUpperCase()}`
+                  : `${percentageChange}% ${comparisonType.toUpperCase()}`}
+              </h6>
+            )}
           </div>
         </div>
         <div className="donut-labels">
@@ -97,6 +99,7 @@ DonutChart.propTypes = {
     }),
   ).isRequired,
   colors: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
+  comparisonType: PropTypes.string.isRequired,
   hasData: PropTypes.bool,
 };
 

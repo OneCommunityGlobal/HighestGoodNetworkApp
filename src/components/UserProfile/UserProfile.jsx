@@ -353,7 +353,9 @@ function UserProfile(props) {
         startDate: newUserProfile?.startDate ? formatDateYYYYMMDD(newUserProfile?.startDate) : '',
         createdDate: formatDateYYYYMMDD(newUserProfile?.createdDate),
         ...(newUserProfile?.endDate &&
-          newUserProfile.endDate !== '' && { endDate: formatDateYYYYMMDD(newUserProfile.endDate) }),
+          newUserProfile.endDate !== '' && { 
+            endDate: moment.utc(newUserProfile.endDate).format('YYYY-MM-DD')
+          }),
       };
 
       setUserProfile(profileWithFormattedDates);
@@ -737,7 +739,7 @@ function UserProfile(props) {
 
     if (!isActive) {
       endDate = await dispatch(
-        getTimeEndDateEntriesByPeriod(userProfile._id, userProfile.createdDate, userProfile.toDate),
+        getTimeEndDateEntriesByPeriod(userProfile._id, userProfile.createdDate, moment().format('YYYY-MM-DDTHH:mm:ss')),
       );
       if (endDate == 'N/A') {
         endDate = userProfile.createdDate;
@@ -1208,7 +1210,7 @@ function UserProfile(props) {
           <h6 className={darkMode ? 'text-light' : 'text-azure'}>{jobTitle}</h6>
           <p className={`proile-rating ${darkMode ? 'text-light' : ''}`}>
             {/* use converted date without tz otherwise the record's will updated with timezoned ts for start date.  */}
-            From :{' '}
+            From:{' '}
             <span className={darkMode ? 'text-light' : ''}>
               {formatDateLocal(userProfile.startDate)}
             </span>
@@ -1470,7 +1472,7 @@ function UserProfile(props) {
                   </Button>
                 </Link>
               )}
-              {canEdit && activeTab && (
+              {(canEdit && activeTab || canEditTeamCode) && (
                 <>
                   <SaveButton
                     className="mr-1 btn-bottom"
