@@ -68,6 +68,14 @@ import noShowVizReducer from './communityPortal/noShowVizReducer';
 // lbdashboard
 import wishListReducer from './lbdashboard/wishListItemReducer';
 
+// listing and biddding dashboard
+
+import {
+  listOverviewReducer,
+  listingAvailabilityReducer,
+  listingBookingReducer,
+} from './lbDashboard/listOverviewReducer';
+
 const localReducers = {
   auth: authReducer,
   allUserProfiles: allUserProfilesReducer,
@@ -125,6 +133,12 @@ const localReducers = {
 
   bmProjectMembers: bmProjectMemberReducer,
   bmTimeLogger: bmTimeLoggerReducer,
+
+  WishListItem: wishListReducer,
+
+  listOverview: listOverviewReducer,
+  listingAvailability: listingAvailabilityReducer,
+  listingBooking: listingBookingReducer,
 };
 
 const sessionReducers = {

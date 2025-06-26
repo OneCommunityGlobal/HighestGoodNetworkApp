@@ -39,7 +39,7 @@
   background-color: #9dd425;
 }
 
-.container-main {
+.container-main-map {
   background-color: #e0e0e0;
   display: flex;
   flex-direction: column;
@@ -155,7 +155,7 @@
 
 .village img {
   width: auto;
-  height: 75%;
+  height: 50%;
   cursor: pointer;
 }
 
@@ -168,7 +168,7 @@
   .main-container {
     padding: 0;
   }
-  .container-main {
+  .container-main-map {
     flex-direction: column;
     align-items: center;
   }
@@ -227,7 +227,7 @@
 
 
 @media (max-width: 580px) {
-  .container-main {
+  .container-main-map {
     padding: 10px;
     margin: 10px;
   }
