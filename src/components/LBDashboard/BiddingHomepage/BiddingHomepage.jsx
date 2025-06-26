@@ -424,6 +424,7 @@ function BiddingHomepage() {
                       type="date"
                       id="startDate"
                       value={startDate}
+                      max={endDate || undefined}
                       onChange={e => {
                         setStartDate(e.target.value);
                         setCurrentPage(1);
@@ -439,6 +440,7 @@ function BiddingHomepage() {
                       type="date"
                       id="endDate"
                       value={endDate}
+                      min={startDate || undefined}
                       onChange={e => {
                         setEndDate(e.target.value);
                         setCurrentPage(1);
