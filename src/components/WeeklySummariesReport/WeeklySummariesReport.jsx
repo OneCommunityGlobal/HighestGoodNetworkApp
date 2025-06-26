@@ -390,15 +390,6 @@ const WeeklySummariesReport = props => {
           _ids: teamCodeGroup?.noCodeLabel?.map(item => item._id),
         });
 
-      // // Add members from all unselected team to membersFromUnselectedTeam
-      // const membersFromUnselectedTeam = [];
-      // summariesCopy.forEach(summary => {
-      //   membersFromUnselectedTeam.push({
-      //     label: `${summary.firstName} ${summary.lastName}`,
-      //     value: summary._id,
-      //   });
-      // });
-
       const chartData = [];
 
       // Store the data in the tab-specific state
@@ -449,12 +440,15 @@ const WeeklySummariesReport = props => {
   const membersFromUnselectedTeam = useMemo(() => {
     // Add all selected member in a Set
     const selectedMemberSet = new Set();
+
     state.selectedCodes.forEach(code => {
       if (code.value === '') return;
-      const team = state.tableData[code.value];
-      team.forEach(member => {
-        selectedMemberSet.add(member._id);
-      });
+      if (code.value in state.tableData) {
+        const team = state.tableData[code.value];
+        team.forEach(member => {
+          selectedMemberSet.add(member._id);
+        });
+      }
     });
 
     // Filter members from unselected set
@@ -972,7 +966,14 @@ const WeeklySummariesReport = props => {
 
   const handleAllTeamCodeReplace = async () => {
     try {
-      const { replaceCode, selectedCodes, summaries, teamCodes, teamCodeWarningUsers } = state;
+      const {
+        replaceCode,
+        selectedCodes,
+        summaries,
+        teamCodes,
+        teamCodeWarningUsers,
+        tableData,
+      } = state;
 
       setState(prev => ({
         ...prev,
@@ -1054,6 +1055,12 @@ const WeeklySummariesReport = props => {
           }
         });
 
+        const updatedTableData = tableData;
+        updatedTableData[replaceCode] = updatedSummaries.filter(s => s.teamCode === replaceCode);
+        oldTeamCodes.forEach(code => {
+          updatedTableData[code] = updatedSummaries.filter(s => s.teamCode === code);
+        });
+
         setState(prev => ({
           ...prev,
           summaries: updatedSummaries,
@@ -1062,6 +1069,7 @@ const WeeklySummariesReport = props => {
           replaceCode: '',
           replaceCodeError: null,
           teamCodeWarningUsers: updatedWarningUsers,
+          tableData: updatedTableData,
         }));
 
         filterWeeklySummaries();
@@ -1502,6 +1510,37 @@ const WeeklySummariesReport = props => {
             blurInputOnSelect={false}
           /> */}
         </Col>
+        {permissionState.codeEditPermission &&
+          state.selectedCodes &&
+          state.selectedCodes.length > 0 && (
+            <Col lg={{ size: 5 }} md={{ size: 6 }} xs={{ size: 6 }}>
+              Replace With
+              <Input
+                type="string"
+                placeholder="replace"
+                value={state.replaceCode || ''}
+                onChange={e => {
+                  handleReplaceCode(e);
+                }}
+              />
+              {state.replaceCodeLoading ? (
+                <Spinner className="mt-3 mr-1" color="primary" />
+              ) : (
+                <Button
+                  className="mr-1 mt-3 btn-bottom"
+                  color="primary"
+                  onClick={handleAllTeamCodeReplace}
+                >
+                  Replace
+                </Button>
+              )}
+              {state.replaceCodeError && (
+                <Alert className="code-alert" color="danger">
+                  {state.replaceCodeError}
+                </Alert>
+              )}
+            </Col>
+          )}
       </Row>
 
       {state.chartShow && (
@@ -1516,37 +1555,6 @@ const WeeklySummariesReport = props => {
           </Col>
           <Col lg={{ size: 4 }} md={{ size: 12 }} xs={{ size: 11 }} style={{ width: '100%' }}>
             <TeamChart teamData={state.structuredTableData} darkMode={darkMode} />
-          </Col>
-        </Row>
-      )}
-      {permissionState.codeEditPermission && state.selectedCodes && state.selectedCodes.length > 0 && (
-        <Row style={{ marginBottom: '10px' }}>
-          <Col lg={{ size: 5, offset: 1 }} xs={{ size: 5, offset: 1 }}>
-            Replace With
-            <Input
-              type="string"
-              placeholder="replace"
-              value={state.replaceCode || ''}
-              onChange={e => {
-                handleReplaceCode(e);
-              }}
-            />
-            {state.replaceCodeLoading ? (
-              <Spinner className="mt-3 mr-1" color="primary" />
-            ) : (
-              <Button
-                className="mr-1 mt-3 btn-bottom"
-                color="primary"
-                onClick={handleAllTeamCodeReplace}
-              >
-                Replace
-              </Button>
-            )}
-            {state.replaceCodeError && (
-              <Alert className="code-alert" color="danger">
-                {state.replaceCodeError}
-              </Alert>
-            )}
           </Col>
         </Row>
       )}
