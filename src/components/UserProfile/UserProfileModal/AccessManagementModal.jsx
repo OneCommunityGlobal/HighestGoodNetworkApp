@@ -259,8 +259,8 @@ const AccessManagementModal = ({
       toast.success(`${appConfigs[appName].name} invitation sent successfully`);
       await fetchAccessData(); // Refresh data
     } catch (error) {
-      // console.error(`Error inviting to ${appName}:`, error.response);
-      toast.error(error.response.data.error);
+      //console.error(`Error inviting to ${appName}:`, error.response);
+      toast.error(error.response.data.message);
     } finally {
       setActionInProgress(false);
     }
@@ -300,7 +300,7 @@ const AccessManagementModal = ({
       await fetchAccessData(); // Refresh data
     } catch (error) {
       //console.error(`Error revoking ${appName}:`, error);
-      toast.error(error.response.data.error);
+      toast.error(error.response.data.message);
     } finally {
       setActionInProgress(false);
     }
