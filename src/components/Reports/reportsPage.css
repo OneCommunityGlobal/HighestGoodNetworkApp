@@ -403,3 +403,26 @@
 .bg-yinmn-blue .info-modal-content.force-white-text * {
   color: #fff !important;
 }
+
+/* Collapse/expand section for report buttons on mobile */
+.reports-collapse-section {
+  width: 100%;
+}
+.reports-collapse-section button.btn {
+  width: 100%;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+#reports-buttons-list {
+  transition: max-height 0.3s ease;
+  overflow: hidden;
+}
+@media (max-width: 767px) {
+  .total-report-container {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .total-report-item {
+    margin-bottom: 0.5rem;
+  }
+}
