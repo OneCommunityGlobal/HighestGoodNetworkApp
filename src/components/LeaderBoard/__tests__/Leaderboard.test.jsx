@@ -4,7 +4,7 @@
 // import React from 'react';
 import { mount } from 'enzyme';
 import { Provider } from 'react-redux';
-import { createStore, combineReducers} from 'redux';
+import { createStore, combineReducers } from 'redux';
 import { MemoryRouter } from 'react-router-dom'; // ✅ Router wrapper required
 import { localReducers, sessionReducers } from '../../../reducers';
 import mockAdminState from '../../../__tests__/mockAdminState';
