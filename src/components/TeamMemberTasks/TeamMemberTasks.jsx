@@ -505,7 +505,6 @@ const TeamMemberTasks = React.memo(props => {
       filterByTeams(user.teams)
     );
   };
-
   return (
     <div
       className={`container team-member-tasks ${
