@@ -23,15 +23,17 @@ export const fetchProjectById = projectId => {
   return async dispatch => {
     try {
       const response = await axios.get(url);
+      if (!response.data) {
+        throw new Error('No data received from project API');
+      }
+
       const projectData = response.data;
-
       dispatch(setProject(projectData));
+      return projectData; 
 
-      return projectData;
     } catch (error) {
       dispatch(setErrors(error));
-
-      throw error;
+      return null; 
     }
   };
 };

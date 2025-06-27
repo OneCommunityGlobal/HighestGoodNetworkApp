@@ -27,6 +27,7 @@ import { getUserProfile } from 'actions/userProfile';
 import axios from 'axios';
 import hasPermission from 'utils/permissions';
 import { boxStyle, boxStyleDark } from 'styles';
+import { useDispatch } from 'react-redux';
 import { postTimeEntry, editTimeEntry, getTimeEntriesForWeek } from '../../../actions/timeEntries';
 import AboutModal from './AboutModal';
 import TangibleInfoModal from './TangibleInfoModal';
@@ -34,6 +35,7 @@ import ReminderModal from './ReminderModal';
 import TimeLogConfirmationModal from './TimeLogConfirmationModal';
 import { ENDPOINTS } from '../../../utils/URL';
 import '../../Header/DarkMode.css';
+import { updateIndividualTaskTime } from '../../TeamMemberTasks/actions';
 
 // Images are not allowed in timelog
 const customImageUploadHandler = () =>
@@ -64,11 +66,14 @@ const customImageUploadHandler = () =>
 function TimeEntryForm(props) {
   /* ---------------- variables -------------- */
   // props from parent
-  const { from, sendStop, edit, data, toggle, isOpen, tab, darkMode } = props;
+  const { from, sendStop, edit, data, toggle, isOpen, tab, darkMode, userProfile } = props;
   // props from store
   const { authUser } = props;
+  const dispatch = useDispatch();
 
   const viewingUser = JSON.parse(sessionStorage.getItem('viewingUser') ?? '{}');
+  const userTimeZone = userProfile?.timeZone || 'America/Los_Angeles';
+  const [actualDate, setActualDate] = useState('');
 
   const initialFormValues = {
     dateOfWork: moment()
@@ -150,7 +155,7 @@ function TimeEntryForm(props) {
 
   const isForAuthUser = timeEntryUserId === authUser.userid;
   const isSameDayTimeEntry =
-    moment()
+    moment(actualDate)
       .tz('America/Los_Angeles')
       .format('YYYY-MM-DD') === formValues.dateOfWork;
   const isSameDayAuthUserEdit = isForAuthUser && isSameDayTimeEntry;
@@ -311,7 +316,7 @@ function TimeEntryForm(props) {
   };
 
   const submitTimeEntry = async () => {
-    const { hours: formHours, minutes: formMinutes } = formValues;
+    const { hours: formHours, minutes: formMinutes, personId, taskId } = formValues;
     const timeEntry = { ...formValues };
     const isTimeModified = edit && (initialHours !== formHours || initialMinutes !== formMinutes);
 
@@ -337,6 +342,13 @@ function TimeEntryForm(props) {
         case 'Timer':
           sendStop();
           clearForm();
+          dispatch(
+            updateIndividualTaskTime({
+              newTime: { hours: formHours, minutes: formMinutes },
+              taskId,
+              personId,
+            }),
+          );
           break;
         case 'TimeLog': {
           const date = moment(formValues.dateOfWork);
@@ -532,6 +544,21 @@ function TimeEntryForm(props) {
     }
   };
 
+const getActualDate = async () => {
+    try {
+        const fetchedActualDate = await Promise.any([
+            fetch(`http://worldtimeapi.org/api/timezone/${userTimeZone}`).then((res) => res.json()),
+            fetch(`https://timeapi.io/api/Time/current/zone?timeZone=${userTimeZone}`).then((res) => res.json()),
+        ]);
+        
+        setActualDate(fetchedActualDate.utc_datetime || fetchedActualDate.dateTime);
+    } catch (error) {
+        setActualDate(null);  // Clear previous date
+        toast.error("Failed to fetch the actual date. Please refresh and try logging time again ");
+      
+    }
+};
+
   /* ---------------- useEffects -------------- */
   useEffect(() => {
     if (isAsyncDataLoaded) {
@@ -546,6 +573,24 @@ function TimeEntryForm(props) {
       loadAsyncData(timeEntryUserId);
     }
   }, [isOpen, timeEntryUserId]);
+
+  useEffect(() => {
+    if (isOpen) {
+      setActualDate(null);
+      getActualDate();
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (actualDate) {
+      setFormValues({
+        ...formValues,
+        dateOfWork: moment(actualDate)
+          .tz('America/Los_Angeles')
+          .format('YYYY-MM-DD'),
+      });
+    }
+  }, [actualDate]);
 
   useEffect(() => {
     setFormValues({ ...formValues, ...data });
@@ -727,7 +772,7 @@ function TimeEntryForm(props) {
             color="primary"
             onClick={handleSubmit}
             style={darkMode ? boxStyleDark : boxStyle}
-            disabled={submitting}
+            disabled={!actualDate || submitting}
           >
             {(() => {
               if (edit) {
@@ -780,7 +825,7 @@ TimeEntryForm.propTypes = {
 
 const mapStateToProps = state => ({
   authUser: state.auth.user,
-  darkMode: state.theme.darkMode,
+  darkMode: state.theme.darkMode
 });
 
 export default connect(mapStateToProps, {

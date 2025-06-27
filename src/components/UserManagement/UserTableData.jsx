@@ -5,12 +5,17 @@ import { useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-toastify';
-import { Link, useHistory } from 'react-router-dom';
+// import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
+import { faUser, faUsers, faShieldAlt, faBriefcase, faUserTie, faCrown, faChalkboardTeacher, faBug, faGlobe, faStar } from '@fortawesome/free-solid-svg-icons';
+import { UncontrolledTooltip } from 'reactstrap';
 import { updateUserInfomation } from '../../actions/userManagement';
 import { getAllRoles } from '../../actions/role';
 import ResetPasswordButton from './ResetPasswordButton';
-import { DELETE, PAUSE, RESUME, SET_FINAL_DAY, CANCEL } from '../../languages/en/ui';
-import { UserStatus, FinalDay } from '../../utils/enums';
+// import { DELETE, PAUSE, RESUME, SET_FINAL_DAY, CANCEL } from '../../languages/en/ui';
+import { DELETE, PAUSE, RESUME } from '../../languages/en/ui';
+// import { UserStatus, FinalDay } from '../../utils/enums';
+import { UserStatus } from '../../utils/enums';
 import ActiveCell from './ActiveCell';
 import TimeDifference from './TimeDifference';
 import hasPermission from '../../utils/permissions';
@@ -28,8 +33,8 @@ const UserTableData = React.memo(props => {
   const [tooltipDeleteOpen, setTooltipDelete] = useState(false);
   const [tooltipPauseOpen, setTooltipPause] = useState(false);
   const [tooltipFinalDayOpen, setTooltipFinalDay] = useState(false);
-  const isMobile = props.isMobile;
-  const mobileFontSize = props.mobileFontSize;
+  const {isMobile} = props;
+  const {mobileFontSize} = props;
   const [tooltipReportsOpen, setTooltipReports] = useState(false);
 
   const [isChanging, onReset] = useState(false);
@@ -72,6 +77,18 @@ const UserTableData = React.memo(props => {
   const togglePauseTooltip = () => setTooltipPause(!tooltipPauseOpen);
   const toggleFinalDayTooltip = () => setTooltipFinalDay(!tooltipFinalDayOpen);
   const toggleReportsTooltip = () => setTooltipReports(!tooltipReportsOpen);
+  const roleIcons = {
+    Volunteer: faUser,
+    'Core Team': faUsers,
+    Administrator: faShieldAlt,
+    'Assistant Manager': faUserTie,
+    Owner: faCrown,
+    Mentor: faChalkboardTeacher,
+    Manager: faBriefcase,
+    TestRole: faBug,
+    General: faGlobe,
+    Creator: faStar,
+  };
 
   /**
    * reset the changing state upon rerender with new isActive status
@@ -136,6 +153,21 @@ const UserTableData = React.memo(props => {
           index={props.index}
           onClick={() => props.onActiveInactiveClick(props.user)}
         />
+        <span className='infringement-count'>
+          <a
+            href={`/userprofile/${props.user._id}`}
+            id={`blue-squares-${props.user._id}`} // Unique ID for tooltip target
+            title={`This person has ${props.user.infringementCount} blue square${props.user.infringementCount !== 1 ? 's' : ''}`}
+          >
+            {props.user.infringementCount}
+          </a>
+          {/* <UncontrolledTooltip
+            placement="top"
+            target={`blue-squares-${props.user._id}`}
+          >
+            This person has {props.user.infringementCount} blue square{props.user.infringementCount !== 1 ? 's' : ''}
+          </UncontrolledTooltip> */}
+        </span>
         {!canSeeReports ? (
           <Tooltip
             placement="bottom"
@@ -247,10 +279,16 @@ const UserTableData = React.memo(props => {
       </td>
       <td id="usermanagement_role">
         {editUser?.role && roles !== undefined ? (
-          formData.role
+          <>
+          <FontAwesomeIcon id={`role-icon-${props.index}`} icon={roleIcons[formData.role] || faUser} />
+          <UncontrolledTooltip placement="top" target={`role-icon-${props.index}`}>
+            {formData.role}
+          </UncontrolledTooltip>
+        </>
         ) : (
           <select
             id=""
+            style={{ width: '100px'}}
             value={formData.role}
             onChange={e => {
               updateFormData({ ...formData, role: e.target.value });
@@ -354,6 +392,7 @@ const UserTableData = React.memo(props => {
           className={`btn btn-outline-${props.isActive ? 'warning' : 'success'} btn-sm`}
           onClick={() => {
             if (cantUpdateDevAdminDetails(props.user.email, props.authEmail)) {
+              // eslint-disable-next-line no-alert
               alert(
                 'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.',
               );
@@ -379,6 +418,7 @@ const UserTableData = React.memo(props => {
       <td className="centered-td">
         <button
           type="button"
+          aria-label="Log Time Off"
           className={`btn btn-outline-primary btn-sm${props.timeOffRequests?.length > 0 ? ` time-off-request-btn-moved` : ''
             }`}
           onClick={() => props.onLogTimeOffClick(props.user)}

@@ -1,4 +1,4 @@
-import { SET_SELECTED_PROJECT_ID } from "../../constants/bmdashboard/projectConstants";
+import { SET_SELECTED_PROJECT_ID } from '../../constants/bmdashboard/projectConstants';
 
 export const selectedProjectIdReducer = (state = '', action) => {
   switch (action.type) {
@@ -8,5 +8,3 @@ export const selectedProjectIdReducer = (state = '', action) => {
       return state;
   }
 };
-
-
