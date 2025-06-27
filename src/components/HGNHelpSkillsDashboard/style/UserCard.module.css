@@ -1,4 +1,4 @@
-.user-card {
+.userCard {
   width: 360px;
   height: auto;
   padding: 30px 24px;
@@ -32,7 +32,7 @@
   margin-right: auto;
 }
 
-.user-name {
+.userName {
   font-size: 30px;
   font-weight: 400;
   color: black;
@@ -41,7 +41,7 @@
   /*font-size: Large;*/
 }
 
-.contact-line {
+.contactLine {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -50,13 +50,13 @@
   margin-bottom: 6px;
 }
 
-.contact-icon {
+.contactIcon {
   width: 18px;
   height: 18px;
   margin-top: 1px;
 }
 
-.score-skills-wrapper {
+.scoreSkillsWrapper {
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -64,40 +64,40 @@
   margin-top: 4px;
 }
 
-.score-line {
+.scoreLine {
   font-size: 22px;
   text-align: left;
   margin-left: 4px;
 }
 
-.score-label {
+.scoreLabel {
   font-weight: 400;
 }
 
-.score-value {
+.scoreValue {
   font-weight: 700;
   padding-left: 4px;
 }
 
-.score-max {
+.scoreMax {
   font-weight: 700;
   padding-left: 4px;
 }
 
-.skills-section {
+.skillsSection {
   width: 100%;
   text-align: left;
   padding: 0 4px;
 }
 
-.skills-label {
+.skillsLabel {
   font-size: 20px;
   font-weight: 400;
   text-decoration: underline;
   margin-bottom: 4px;
 }
 
-.skills-text {
+.skillsText {
   font-size: 16px;
   font-weight: 400;
   color: #616161;
