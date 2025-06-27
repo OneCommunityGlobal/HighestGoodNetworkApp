@@ -1467,7 +1467,7 @@ function UserProfile(props) {
                   </Button>
                 </Link>
               )}
-              {(canEdit && activeTab || canEditTeamCode) && (
+              {((canEdit && activeTab) || canEditTeamCode) && (
                 <>
                   <SaveButton
                     className="mr-1 btn-bottom"
@@ -1478,7 +1478,7 @@ function UserProfile(props) {
                       !formValid.email ||
                       !codeValid ||
                       (userStartDate > userEndDate && userEndDate !== '') ||
-                      titleOnSet ||
+                      // titleOnSet ||
                       (isProfileEqual && isTasksEqual && isProjectsEqual)
                     }
                     userProfile={userProfile}
@@ -1610,7 +1610,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
-                              titleOnSet ||
+                              // titleOnSet ||
                               (isProfileEqual && isTasksEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
@@ -1690,7 +1690,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
-                              titleOnSet ||
+                              // titleOnSet ||
                               (isProfileEqual && isTasksEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
@@ -1786,7 +1786,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
-                              titleOnSet ||
+                              // titleOnSet ||
                               (isProfileEqual && isTasksEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
@@ -1872,7 +1872,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
-                              titleOnSet ||
+                              // titleOnSet ||
                               (isProfileEqual && isTasksEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
@@ -1945,7 +1945,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
-                              titleOnSet ||
+                              // titleOnSet ||
                               (isProfileEqual && isTasksEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
