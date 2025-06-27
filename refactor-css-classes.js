@@ -85,7 +85,6 @@ const replaceInCodeFile = filePath => {
     console.log('⚠️  No className replacements made.');
   }
 };
-
 const cssFiles = []; // To collect all CSS files
 const codeFiles = []; // To collect all JS/JSX files
 
@@ -125,7 +124,7 @@ const walkDir = dir => {
 };
 
 // 🚀 Start here: Replace with your actual project folder path
-const rootDir = 'src/components/LBDashboard/Map/MasterPlan';
+const rootDir = 'src/components/BMDashboard/Team/CreateNewTeam';
 walkDir(rootDir);
 
 // const mapPath = path.join(__dirname, 'class-map.json');
