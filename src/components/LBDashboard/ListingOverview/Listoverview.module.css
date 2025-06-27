@@ -39,11 +39,7 @@
   background-color: #9dd425;
 }
 
-<<<<<<< HEAD:src/components/LBDashboard/ListingOverview/Listoverview.css
-.container-main-overview {
-=======
 .containerMain {
->>>>>>> origin/development:src/components/LBDashboard/ListingOverview/Listoverview.module.css
   background-color: #e0e0e0;
   display: flex;
   flex-direction: row;
@@ -207,11 +203,7 @@ p {
   .mainContainer {
     padding: 0;
   }
-<<<<<<< HEAD:src/components/LBDashboard/ListingOverview/Listoverview.css
-  .container-main-overview {
-=======
   .containerMain {
->>>>>>> origin/development:src/components/LBDashboard/ListingOverview/Listoverview.module.css
     flex-direction: column;
     align-items: center;
   }
@@ -241,11 +233,7 @@ p {
 
 @media (max-width: 580px) {
   
-<<<<<<< HEAD:src/components/LBDashboard/ListingOverview/Listoverview.css
-  .container-main-overview {
-=======
   .containerMain {
->>>>>>> origin/development:src/components/LBDashboard/ListingOverview/Listoverview.module.css
     padding: 10px;
     margin: 10px;
   }
