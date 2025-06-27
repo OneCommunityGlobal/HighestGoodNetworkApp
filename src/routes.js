@@ -374,6 +374,7 @@ export default (
           exact
           component={UserManagement}
           fallback
+          allowedRoles={[UserRole.Administrator, UserRole.Owner, UserRole.Manager]}
           routePermissions={RoutePermissions.userManagement}
         />
         <ProtectedRoute
