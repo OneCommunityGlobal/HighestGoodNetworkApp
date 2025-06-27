@@ -597,6 +597,7 @@ function Timer({ authUser, darkMode, isPopout }) {
           isOpen={logTimeEntryModal}
           data={logTimer}
           sendStop={sendStop}
+          sendClear={sendClear}
         />
       )}
       <audio

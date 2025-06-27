@@ -66,7 +66,7 @@ const customImageUploadHandler = () =>
 function TimeEntryForm(props) {
   /* ---------------- variables -------------- */
   // props from parent
-  const { from, sendStop, edit, data, toggle, isOpen, tab, darkMode, userProfile } = props;
+  const { from, sendStop, sendClear, edit, data, toggle, isOpen, tab, darkMode, userProfile } = props;
   // props from store
   const { authUser } = props;
   const dispatch = useDispatch();
@@ -342,6 +342,7 @@ function TimeEntryForm(props) {
         case 'Timer':
           sendStop();
           clearForm();
+          sendClear();
           dispatch(
             updateIndividualTaskTime({
               newTime: { hours: formHours, minutes: formMinutes },
