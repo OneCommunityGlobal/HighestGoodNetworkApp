@@ -59,7 +59,6 @@ import { timeOffRequestsReducer } from './timeOffRequestReducer';
 import { totalOrgSummaryReducer } from './totalOrgSummaryReducer';
 import { allUsersTimeEntriesReducer } from './allUsersTimeEntriesReducer';
 import issueReducer from './bmdashboard/issueReducer';
-import { selectedProjectIdReducer } from './bmdashboard/selectedProjectIdReducer';
 import HGNFormReducer from './hgnFormReducers';
 // import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
 import messageReducer from './lbdashboard/messagingReducer';
@@ -119,7 +118,6 @@ const localReducers = {
   bmConsumables: consumablesReducer,
   bmReusables: reusablesReducer,
   dashboard: dashboardReducer,
-  selectedProjectId: selectedProjectIdReducer,
 
   // lbdashboard
   wishlistItem: wishListReducer,
