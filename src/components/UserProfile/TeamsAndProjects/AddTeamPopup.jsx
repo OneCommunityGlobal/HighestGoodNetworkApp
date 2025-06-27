@@ -64,11 +64,10 @@ const AddTeamPopup = React.memo(props => {
     if ((result || selectedTeam) && some) {
       props.onSelectAssignTeam(result ? result : selectedTeam);
 
-      toast.success('Team assigned successfully '); // toast notification
       setSearchText('');
 
       selectedTeam && (onSelectTeam(undefined), onValidation(false));
-      closePopup() // automatically closes the popup after team assigned
+      closePopup(); // automatically closes the popup after team assigned
     } else
       toast.error(
         'Your user has been found in this team. Please select another team to add your user.',
@@ -135,6 +134,7 @@ const AddTeamPopup = React.memo(props => {
             teamsData={props.teamsData}
             onCreateNewTeam={onCreateTeam}
             searchText={searchText}
+            setInputs={onSelectTeam}
             setSearchText={setSearchText} // Added setSearchText prop
           />
           <Button

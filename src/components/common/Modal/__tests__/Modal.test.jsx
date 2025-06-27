@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
@@ -13,6 +14,7 @@ const store = mockStore(initialState);
 
 describe('ModalExample Component', () => {
   it('renders when isOpen is true', () => {
+    // eslint-disable-next-line no-unused-vars
     const { getByText } = render(
       <Provider store={store}>
         <ModalExample isOpen modalTitle="Test Modal" />
@@ -26,7 +28,12 @@ describe('ModalExample Component', () => {
     const closeModalMock = jest.fn();
     render(
       <Provider store={store}>
-        <ModalExample isOpen closeModal={closeModalMock} modalTitle="Test Modal" />
+        <ModalExample
+          isOpen
+          closeModal={closeModalMock}
+          confirmModal={() => {}}
+          modalTitle="Test Modal"
+        />
       </Provider>,
     );
 
@@ -80,12 +87,13 @@ describe('ModalExample Component', () => {
           isOpen
           closeModal={() => {}}
           setInactiveModal={setInactiveModalMock}
+          setInactiveButton="Yes, hide it all"
           modalTitle="Test Modal"
         />
       </Provider>,
     );
 
-    fireEvent.click(screen.getByText(/set inactive/i));
+    fireEvent.click(screen.getByText(/yes, hide it all/i));
     expect(setInactiveModalMock).toHaveBeenCalled();
   });
 
