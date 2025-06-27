@@ -7,7 +7,15 @@ import {
   FETCH_ISSUE_TYPES_YEARS_SUCCESS,
   FETCH_ISSUE_TYPES_YEARS_FAILURE,
 } from '../../constants/bmdashboard/issueConstants';
-import { ENDPOINTS } from '../../utils/URL'; // Import the endpoints
+// import { ENDPOINTS } from '../../utils/URL'; // Import the endpoints
+import { ENDPOINTS, ApiEndpoint } from '../../utils/URL';
+import {
+  FETCH_LONGEST_OPEN_ISSUES_REQUEST,
+  FETCH_LONGEST_OPEN_ISSUES_SUCCESS,
+  FETCH_LONGEST_OPEN_ISSUES_FAILURE,
+  SET_DATE_FILTER,
+  SET_PROJECT_FILTER,
+} from '../../constants/bmdashboard/issueConstants';
 
 // Action to fetch issues for the bar chart
 export const fetchIssues = filters => async dispatch => {
@@ -52,3 +60,34 @@ export const fetchIssueTypesAndYears = () => async dispatch => {
     });
   }
 };
+
+export const fetchLongestOpenIssues = (dates = [], projects = []) => async dispatch => {
+  try {
+    dispatch({ type: FETCH_LONGEST_OPEN_ISSUES_REQUEST });
+
+    const params = new URLSearchParams();
+    if (dates.length) params.append('dates', dates.join(','));
+    if (projects.length) params.append('projects', projects.join(','));
+
+    const response = await axios.get(`${ApiEndpoint}/bm/issues/longest-open?${params}`);
+    dispatch({
+      type: FETCH_LONGEST_OPEN_ISSUES_SUCCESS,
+      payload: response.data,
+    });
+  } catch (error) {
+    dispatch({
+      type: FETCH_LONGEST_OPEN_ISSUES_FAILURE,
+      payload: error.message,
+    });
+  }
+};
+
+export const setDateFilter = dates => ({
+  type: SET_DATE_FILTER,
+  payload: dates,
+});
+
+export const setProjectFilter = projects => ({
+  type: SET_PROJECT_FILTER,
+  payload: projects,
+});
