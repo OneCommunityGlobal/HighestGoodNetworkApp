@@ -7,7 +7,7 @@ import { Modal, ModalBody, ModalHeader, ModalFooter, Button } from 'reactstrap';
  * @param {Func} props.setVisible
  * @param {Boolean} props.darkMode
  */
-const TangibleInfoModal = props => {
+function TangibleInfoModal(props) {
   return (
     <Modal isOpen={props.visible} className={props.darkMode ? 'text-light' : ''}>
       <ModalHeader className={props.darkMode ? 'bg-space-cadet' : ''}>Info</ModalHeader>
@@ -26,6 +26,6 @@ const TangibleInfoModal = props => {
       </ModalFooter>
     </Modal>
   );
-};
+}
 
 export default TangibleInfoModal;
