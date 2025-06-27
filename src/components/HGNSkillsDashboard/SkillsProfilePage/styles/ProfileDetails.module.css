@@ -1,28 +1,28 @@
-.profile-details {
+.profileDetails {
   width: 100%;
   margin-bottom: 20px;
 }
 
-.profile-details h3 {
+.profileDetails h3 {
   color: #3ea0cb;
   font-size: 20px;
   margin-bottom: 10px;
 }
 
-.profile-details h4 {
+.profileDetails h4 {
   font-size: 16px;
   color: #333;
   margin: 15px 0 10px;
 }
 
-.horizontal-separator {
+.horizontalSeparator {
   border: 0;
   border-top: 1px solid #e0e0e0;
   margin: 10px 0;
 }
 
-.team-info,
-.contacts-info {
+.teamInfo,
+.contactsInfo {
   display: flex;
   flex-wrap: wrap;
   gap: 15px;
@@ -31,18 +31,18 @@
   margin-bottom: 10px;
 }
 
-.team-info span,
-.contacts-info span {
+.teamInfo span,
+.contactsInfo span {
   white-space: nowrap;
 }
 
-.team-info strong,
-.contacts-info strong {
+.teamInfo strong,
+.contactsInfo strong {
   color: #869aa3;
 }
 
-.team-info .value,
-.contacts-info .value {
+.teamInfo .value,
+.contactsInfo .value {
   font-weight: bold;
 }
 
@@ -58,7 +58,7 @@ strong {
   font-size: 1rem;
 }
 
-.github-link {
+.githubLink {
   color: #1a73e8;
   text-decoration: none;
   font-weight: 500;
@@ -68,7 +68,7 @@ strong {
   transition: background-color 0.2s ease, color 0.2s ease; /* Smooth hover effect */
 }
 
-.github-link:hover {
+.githubLink:hover {
   background-color: #f0f4f8;
   color: #1557b0;
   text-decoration: underline;
@@ -76,17 +76,17 @@ strong {
 
 /* Responsive adjustments */
 @media (max-width: 600px) {
-  .github-link {
+  .githubLink {
     padding: 1px 4px;
   }
 }
 
 @media (max-width: 768px) {
-  .profile-details {
+  .profileDetails {
     width: 100%;
   }
-  .team-info,
-  .contacts-info {
+  .teamInfo,
+  .contactsInfo {
     flex-direction: column;
     gap: 5px;
   }

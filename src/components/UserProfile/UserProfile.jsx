@@ -154,6 +154,8 @@ function UserProfile(props) {
 
   const [userStartDate, setUserStartDate] = useState('');
   const [userEndDate, setUserEndDate] = useState('');
+  const [originalStartDate, setOriginalStartDate] = useState('');
+  const [startDateMode, setStartDateMode] = useState('manual'); // 'manual' or 'calculated'
 
   const [inputAutoComplete, setInputAutoComplete] = useState([]);
   const [inputAutoStatus, setInputAutoStatus] = useState();
@@ -401,38 +403,21 @@ function UserProfile(props) {
         createdDate: formatDateYYYYMMDD(newUserProfile?.createdDate),
         ...(newUserProfile?.endDate &&
           newUserProfile.endDate !== '' && {
-            endDate: moment.utc(newUserProfile.endDate).format('YYYY-MM-DD'),
+            endDate: formatDateYYYYMMDD(newUserProfile.endDate),
           }),
       };
 
       setUserProfile(profileWithFormattedDates);
       setOriginalUserProfile(profileWithFormattedDates);
+      setOriginalStartDate(profileWithFormattedDates.startDate);
       setIsRehireable(newUserProfile.isRehireable);
 
       // run after main profile is loaded
       const teamId = newUserProfile?.teams[0]?._id;
       loadSummaryIntroDetails(teamId, newUserProfile);
 
-      // fetch start date separately tonot block main profile rendering
-      dispatch(
-        getTimeStartDateEntriesByPeriod(userId, newUserProfile.createdDate, newUserProfile.toDate),
-      ).then(startDate => {
-        if (startDate !== 'N/A') {
-          const formattedStartDate = startDate.split('T')[0];
-          setUserStartDate(formattedStartDate);
-
-          // Update start date if needed
-          const createdDate = newUserProfile?.createdDate
-            ? newUserProfile.createdDate.split('T')[0]
-            : null;
-
-          if (createdDate && new Date(startDate) < new Date(createdDate)) {
-            setUserProfile(prev => ({ ...prev, startDate: createdDate }));
-          } else {
-            setUserProfile(prev => ({ ...prev, startDate: formattedStartDate }));
-          }
-        }
-      });
+      // Note: Removed automatic getTimeStartDateEntriesByPeriod call to prevent overwriting manual startDate changes
+      // Users can now toggle between manual and calculated startDate via button
 
       checkIsProjectsEqual();
       setShowLoading(false);
@@ -987,6 +972,42 @@ function UserProfile(props) {
     setUserEndDate(endDate);
   };
 
+  const toggleStartDateMode = async () => {
+    if (startDateMode === 'manual') {
+      // Switch to calculated mode - fetch from time entries
+      setStartDateMode('calculated');
+      const userId = props?.match?.params?.userId;
+      if (userId && userProfile) {
+        try {
+          const startDate = await dispatch(
+            getTimeStartDateEntriesByPeriod(userId, userProfile.createdDate, userProfile.toDate),
+          );
+          if (startDate !== 'N/A') {
+            const formattedStartDate = startDate.split('T')[0];
+            setUserStartDate(formattedStartDate);
+
+            // Update start date if needed
+            const createdDate = userProfile?.createdDate
+              ? userProfile.createdDate.split('T')[0]
+              : null;
+
+            if (createdDate && new Date(startDate) < new Date(createdDate)) {
+              setUserProfile(prev => ({ ...prev, startDate: createdDate }));
+            } else {
+              setUserProfile(prev => ({ ...prev, startDate: formattedStartDate }));
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching calculated start date:', error);
+        }
+      }
+    } else {
+      // Switch to manual mode - restore original database value
+      setStartDateMode('manual');
+      setUserProfile(prev => ({ ...prev, startDate: originalStartDate }));
+    }
+  };
+
   return (
     <div className={darkMode ? 'bg-oxford-blue' : ''} style={{ minHeight: '100%' }}>
       <ActiveInactiveConfirmationPopup
@@ -1398,6 +1419,8 @@ function UserProfile(props) {
                   canEdit={canEditUserProfile}
                   canUpdateSummaryRequirements={canUpdateSummaryRequirements}
                   onStartDate={handleStartDate}
+                  startDateMode={startDateMode}
+                  toggleStartDateMode={toggleStartDateMode}
                   darkMode={darkMode}
                 />
               </TabPane>
@@ -1702,6 +1725,8 @@ function UserProfile(props) {
                     canEdit={canEditUserProfile}
                     canUpdateSummaryRequirements={canUpdateSummaryRequirements}
                     onStartDate={handleStartDate}
+                    startDateMode={startDateMode}
+                    toggleStartDateMode={toggleStartDateMode}
                     darkMode={darkMode}
                   />
                 </ModalBody>

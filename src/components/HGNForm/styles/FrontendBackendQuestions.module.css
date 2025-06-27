@@ -1,4 +1,4 @@
-.frontend-backend-questions {
+.frontendBackendQuestions {
   width: 50%;
   margin: 10px auto;
   border: 1px solid #c0c0c0;
@@ -8,19 +8,19 @@
 }
 
 @media (max-width: 768px) {
-  .frontend-backend-questions {
+  .frontendBackendQuestions {
     width: 80%;
     margin: 10px auto;
   }
 }
 
 @media (max-width: 480px) {
-  .frontend-backend-questions {
+  .frontendBackendQuestions {
     width: 90%;
   }
 }
 
-.frontend-backend-questions h1 {
+.frontendBackendQuestions h1 {
   text-align: left;
   margin-bottom: 20px;
   margin-left: 30px;
@@ -28,7 +28,7 @@
   font-weight: 400;
 }
 
-.frontend-backend-questions p {
+.frontendBackendQuestions p {
   line-height: 1.2;
   text-align: left;
   margin-left: 30px;
@@ -36,14 +36,14 @@
   margin-bottom: 0;
 }
 
-.frontend-backend-questions hr {
+.frontendBackendQuestions hr {
   border: none;
   border-top: 2px solid #ddd;
   margin: 10px 0;
 }
 
-.blue-strip {
-  height: 25px;
+.blueStrip {
+  height: 50px;
   background-color: #5082a7;
   width: 100%;
   margin-top: 0;
@@ -62,7 +62,7 @@
   margin-bottom: 10px;
 }
 
-.frontend-backend-rating {
+.frontendBackendRating {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
@@ -70,39 +70,39 @@
   margin: 10px 60px;
 }
 
-.frontend-backend-rating div {
+.frontendBackendRating div {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.frontend-backend-rating label {
+.frontendBackendRating label {
   margin-bottom: 2px;
 }
 
 @media screen and (max-width: 1024px) {
-  .frontend-backend-rating div {
+  .frontendBackendRating div {
     width: 30%;
   }
 }
 
 @media screen and (max-width: 768px) {
-  .frontend-backend-rating div {
+  .frontendBackendRating div {
     width: 45%;
   }
 }
 
 @media screen and (max-width: 480px) {
-  .frontend-backend-rating div {
+  .frontendBackendRating div {
     width: 100%;
   }
 }
 
-.question-container{
+.questionContainer{
   width:100%;
 }
 
-.edit-question-container {  
+.editQuestionContainer {  
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -116,7 +116,7 @@
   padding:10px;
 }
 
-.edit-title {
+.editTitle {
   font-size: 1rem;
   font-weight: bold;
   margin-bottom: 0.5rem;
@@ -124,12 +124,12 @@
   color: #2f5061;
 }
 
-.edit-question {
+.editQuestion {
   display: flex;
   align-items: center;
 }
 
-.edit-input {
+.editInput {
   flex: 1;
   padding: 0.6rem;
   border: 1px solid #ddd;
@@ -141,13 +141,13 @@
   margin-left:0;
 }
 
-.edit-input:focus {
+.editInput:focus {
   border-color: #007bff;
   box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
   outline: none;
 }
 
-.save-icon {
+.saveIcon {
   cursor: pointer;
   color: green;
   font-size: 1.5rem;
@@ -155,12 +155,12 @@
   margin-right: 20px;
 }
 
-.save-icon:hover {
+.saveIcon:hover {
   color: #006400;
   transform: scale(1.2);
 }
 
-.edit-icon {
+.editIcon {
   cursor: pointer;
   color: #5082a7;
   margin-left: 5px;
@@ -168,12 +168,69 @@
   transition: color 0.2s ease-in-out, transform 0.2s ease-in-out;
 }
 
-.edit-icon:hover {
+.editIcon:hover {
   color: #0056b3;
   transform: scale(1.2);
 }
 
-.edit-icon:active {
+.editIcon:active {
   color: #003f7f;
   transform: scale(1.1);
+}
+
+
+.buttonContainer {
+  display: flex;
+  justify-content: space-between;
+  margin:10px;
+}
+
+.buttonContainer button {
+  padding: 10px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  margin: 15px;
+  width: 20%;
+  border: 2px solid #2e5163;
+  font-size: medium;
+}
+
+.hgnReturnButton {
+  color: white;
+  background-color:#2e5163 ;
+  border-radius: 10px;
+  width: 20%;
+  margin-left:0;
+}
+
+.hgnReturnButton:hover {
+  background-color:#4e748d;
+  border-color: #4e748d ;
+}
+
+.nextButton {
+  background-color: #2e5163;
+  border-radius: 10px;
+  width: 20%;
+}
+
+.nextButton:hover {
+  background-color: #4e748d;
+  border-color: #4e748d;
+}
+
+.editButton {
+  background-color: #2e5163;
+  margin-left: 10px;
+}
+
+.submitButton {
+  background-color: #081437;
+  transition: all 0.3s ease;
+  border-radius: 10px;
+}
+
+.submitButton:hover {
+  background-color: #21618a;
+  /* color: white; */
 }

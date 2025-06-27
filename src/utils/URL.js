@@ -255,6 +255,7 @@ export const ENDPOINTS = {
   BM_ISSUE_CHART: `${APIEndpoint}/bm/issue/issue-chart`,
 
   BM_ISSUE_FORM: `${APIEndpoint}/bm/issue/add`,
+  BM_RENTAL_CHART: `${APIEndpoint}/bm/rentalChart`,
 
 
   BM_TAGS: `${APIEndpoint}/bm/tags`,
