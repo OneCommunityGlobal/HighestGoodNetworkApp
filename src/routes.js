@@ -113,7 +113,7 @@ import NoshowViz from './components/CommunityPortal/Attendence/NoshowViz';
 // import AddActivities from './components/CommunityPortal/Activities/AddActivities';
 // import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
 
-import ActivitiesPage from './components/CommunityPortal/Activities/ActivitiesPage'; 
+import ActivitiesPage from './components/CommunityPortal/Activities/ActivitiesPage';
 
 import EventStats from './components/CommunityPortal/EventPersonalization/EventStats';
 
@@ -134,6 +134,7 @@ import SkillsOverviewPage from './components/HGNHelpSkillsDashboard/SkillsOvervi
 import CommunityMembersPage from './components/HGNHelpSkillsDashboard/CommunityMembersPage';
 import UserProfilePage from './components/HGNHelpSkillsDashboard/UserProfilePage';
 import FeedbackModal from './components/HGNHelpSkillsDashboard/FeedbackModal';
+import PopularPRChart from 'components/Analytics/PopularPRChart';
 
 
 // eslint-disable-next-line import/order, import/no-unresolved
@@ -358,7 +359,7 @@ export default (
           fallback
           routePermissions={RoutePermissions.workBreakdownStructure}
         />
-            
+
         <ProtectedRoute
           path="/communityportal/activity/:activityId/resources"
           exact
@@ -479,6 +480,14 @@ export default (
           allowedRoles={[UserRole.Owner]}
         />
 
+        <ProtectedRoute
+          path="/analytics/popular-prs"
+          exact
+          component={PopularPRChart}
+          fallback
+        />
+
+
         {/* ----- BEGIN BM Dashboard Routing ----- */}
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
         <Route path="/bmdashboard/login" component={BMLogin} />
@@ -523,7 +532,7 @@ export default (
           component={PurchaseConsumable}
         />
         <BMProtectedRoute path="/bmdashboard/issue" fallback component={Issue} />
-        <BMProtectedRoute path="/bmdashboard/rentalchart" component={RentalChart}/>
+        <BMProtectedRoute path="/bmdashboard/rentalchart" component={RentalChart} />
         <BMProtectedRoute path="/bmdashboard/inventory/types" component={CheckTypes} />
         <BMProtectedRoute path="/bmdashboard/equipment" fallback exact component={EquipmentList} />
         <BMProtectedRoute path="/bmdashboard/equipment/:equipmentId" component={EquipmentDetail} />
@@ -581,11 +590,11 @@ export default (
 
         <CPProtectedRoute path="/communityportal/reports/participation" component={NoshowViz} />
 
-        <CPProtectedRoute path="/communityportal/activities/:activityid/resources" exact component={Resources}/>
+        <CPProtectedRoute path="/communityportal/activities/:activityid/resources" exact component={Resources} />
         <CPProtectedRoute path="/communityportal/activities/:activityid" exact component={Activity} />
         <CPProtectedRoute path="/communityportal/reports/participation" exact component={EventParticipation} />
         <CPProtectedRoute path="/communityportal/reports/event/personalization" exact component={EventStats} />
-        <CPProtectedRoute path="/communityportal/ActivitiesPage" exact component={ActivitiesPage}/>
+        <CPProtectedRoute path="/communityportal/ActivitiesPage" exact component={ActivitiesPage} />
 
 
 
@@ -633,31 +642,31 @@ export default (
         <ProtectedRoute path="/userprofile/:userId" fallback component={UserProfile} />
         <ProtectedRoute path="/userprofileedit/:userId" component={UserProfileEdit} />
         <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
-        <ProtectedRoute path="/memberlist" exact component={MemberList}/>
+        <ProtectedRoute path="/memberlist" exact component={MemberList} />
         <Route path="/Logout" component={Logout} />
         <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
 
-         {/* ----- HGN Help Community Skills Dashboard Routes ----- */}
+        {/* ----- HGN Help Community Skills Dashboard Routes ----- */}
         <ProtectedRoute path="/hgnhelp" exact component={LandingPage} />
         <ProtectedRoute path="/hgnhelp/skills-overview" exact component={SkillsOverviewPage} />
         <ProtectedRoute path="/hgnhelp/community" exact component={CommunityMembersPage} />
         <ProtectedRoute path="/hgnhelp/profile/:userId" exact component={UserProfilePage} />
         <ProtectedRoute path="/hgnhelp/feedback" exact component={FeedbackModal} />
-        <ProtectedRoute path="/hgnform" exact component={Page1}/>
-        <ProtectedRoute path="/hgnform/page2" exact component={Page2}/>
-        <ProtectedRoute path="/hgnform/page3" exact component={Page3}/>
-        <ProtectedRoute path="/hgnform/page4" exact component={Page4}/>
-        <ProtectedRoute path="/hgnform/page5" exact component={Page5}/>
-        <ProtectedRoute path="/hgnform/page6" exact component={Page6}/>
+        <ProtectedRoute path="/hgnform" exact component={Page1} />
+        <ProtectedRoute path="/hgnform/page2" exact component={Page2} />
+        <ProtectedRoute path="/hgnform/page3" exact component={Page3} />
+        <ProtectedRoute path="/hgnform/page4" exact component={Page4} />
+        <ProtectedRoute path="/hgnform/page5" exact component={Page5} />
+        <ProtectedRoute path="/hgnform/page6" exact component={Page6} />
         <ProtectedRoute path="/hgn/profile/skills" exact component={UserSkillsProfile} />
-        <ProtectedRoute path="/tsaformpage1" exact component={TSAFormPage1} /> 
-        <ProtectedRoute path="/tsaformpage2" exact component={TSAFormPage2} /> 
-        <ProtectedRoute path="/tsaformpage3" exact component={TSAFormPage3} /> 
-        <ProtectedRoute path="/tsaformpage4" exact component={TSAFormPage4} /> 
-        <ProtectedRoute path="/tsaformpage5" exact component={TSAFormPage5} /> 
-        <ProtectedRoute path="/tsaformpage6" exact component={TSAFormPage6} /> 
-        <ProtectedRoute path="/tsaformpage7" exact component={TSAFormPage7} /> 
-        <ProtectedRoute path="/tsaformpage8" exact component={TSAFormPage8} /> 
+        <ProtectedRoute path="/tsaformpage1" exact component={TSAFormPage1} />
+        <ProtectedRoute path="/tsaformpage2" exact component={TSAFormPage2} />
+        <ProtectedRoute path="/tsaformpage3" exact component={TSAFormPage3} />
+        <ProtectedRoute path="/tsaformpage4" exact component={TSAFormPage4} />
+        <ProtectedRoute path="/tsaformpage5" exact component={TSAFormPage5} />
+        <ProtectedRoute path="/tsaformpage6" exact component={TSAFormPage6} />
+        <ProtectedRoute path="/tsaformpage7" exact component={TSAFormPage7} />
+        <ProtectedRoute path="/tsaformpage8" exact component={TSAFormPage8} />
         <ProtectedRoute path="/ExperienceDonutChart" component={ExperienceDonutChart} fallback />
         <ProtectedRoute path="/" exact component={Dashboard} />
         <Route path="*" component={NotFoundPage} />
