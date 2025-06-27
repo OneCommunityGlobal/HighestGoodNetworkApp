@@ -53,12 +53,19 @@ function JobCCDashboard() {
 
   const handleSearchChange = e => setSearch(e.target.value);
 
+  const formatTextSearch = text =>
+    text
+      .toLowerCase()
+      .split('')
+      .filter(item => item !== ' ')
+      .join('');
+
   const filteredJobs = jobs.filter(job => {
     const matchesFilter = filter ? job.category === filter : true;
     const matchesSearch =
       search.length === 0 ||
-      job.title.toLowerCase().includes(search.toLowerCase()) ||
-      job.ccList.some(entry => entry.email.toLowerCase().includes(search.toLowerCase()));
+      formatTextSearch(job.title).includes(formatTextSearch(search)) ||
+      job.ccList.some(entry => formatTextSearch(entry.email).includes(formatTextSearch(search)));
     return matchesFilter && matchesSearch;
   });
 
@@ -148,23 +155,29 @@ function JobCCDashboard() {
           </tr>
         </thead>
         <tbody>
-          {filteredJobs.map(job => (
-            <tr key={job._id}>
-              <td className={`${darkMode ? 'text-light' : 'text-dark'}`}>{job.title}</td>
-              <td className={`${darkMode ? 'text-light' : 'text-dark'}`}>{job.category}</td>
-              <td className={`${darkMode ? 'text-light' : 'text-dark'}`}>
-                {new Date(job.datePosted).toLocaleDateString()}
-              </td>
-              <td className={`${darkMode ? 'text-light' : 'text-dark'}`}>
-                {job.ccList.map(entry => entry.email).join(', ') || 'No CCs'}
-              </td>
-              <td className={`${darkMode ? 'text-light' : 'text-dark'}`}>
-                <Button color="info" size="sm" onClick={() => handleOpenModal(job)}>
-                  Manage CCs
-                </Button>
-              </td>
-            </tr>
-          ))}
+          {filteredJobs.length === 0 ? (
+            <h4 className={`${darkMode ? 'text-light' : 'text-dark'} text-center`}>
+              No title or email were found.
+            </h4>
+          ) : (
+            filteredJobs.map(job => (
+              <tr key={job._id}>
+                <td className={`${darkMode ? 'text-light' : 'text-dark'}`}>{job.title}</td>
+                <td className={`${darkMode ? 'text-light' : 'text-dark'}`}>{job.category}</td>
+                <td className={`${darkMode ? 'text-light' : 'text-dark'}`}>
+                  {new Date(job.datePosted).toLocaleDateString()}
+                </td>
+                <td className={`${darkMode ? 'text-light' : 'text-dark'}`}>
+                  {job.ccList.map(entry => entry.email).join(', ') || 'No CCs'}
+                </td>
+                <td className={`${darkMode ? 'text-light' : 'text-dark'}`}>
+                  <Button color="info" size="sm" onClick={() => handleOpenModal(job)}>
+                    Manage CCs
+                  </Button>
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </Table>
 

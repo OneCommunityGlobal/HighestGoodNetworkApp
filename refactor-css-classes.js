@@ -125,7 +125,7 @@ const walkDir = dir => {
 };
 
 // 🚀 Start here: Replace with your actual project folder path
-const rootDir = 'src/components/JobCCDashboard';
+const rootDir = 'src/components/BMDashboard/Team/CreateNewTeam';
 walkDir(rootDir);
 
 // const mapPath = path.join(__dirname, 'class-map.json');
