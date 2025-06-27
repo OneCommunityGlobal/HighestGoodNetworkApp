@@ -1,11 +1,11 @@
-.right-section {
+.rightSection {
   width: 70%;
   padding: 0px 20px;
   display: flex;
   flex-direction: column;
 }
 
-.skills-and-chart {
+.skillsAndChart {
   display: flex;
   gap: 10px;
 }
@@ -17,10 +17,10 @@ h3 {
 }
 
 @media (max-width: 768px) {
-  .right-section {
+  .rightSection {
     width: 100%;
   }
-  .skills-and-chart {
+  .skillsAndChart {
     flex-direction: column;
   }
 }

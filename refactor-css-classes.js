@@ -94,6 +94,9 @@ const codeFiles = []; // To collect all JS/JSX files
 const cssFiles = []; // To collect all CSS files
 const codeFiles = []; // To collect all JS/JSX files
 
+const cssFiles = []; // To collect all CSS files
+const codeFiles = []; // To collect all JS/JSX files
+
 // Step 3: Walk through project and process files
 const walkDir = dir => {
   // First pass: Collect files into two separate arrays

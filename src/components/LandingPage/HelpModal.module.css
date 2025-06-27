@@ -1,14 +1,14 @@
 /* Import Roboto font */
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 
-.help-modal .modal-dialog {
+.helpModal .modalDialog {
   max-width: 992px;
   margin: 1.75rem auto;
   width: 100%;
   padding: 0 15px;
 }
 
-.help-modal .modal-content {
+.helpModal .modalContent {
   width: 100%;
   min-height: 416px;
   background: #FFFFFF;
@@ -19,12 +19,12 @@
   overflow: hidden;
 }
 
-.help-modal .modal-header {
+.helpModal .modalHeader {
   border: none;
   padding: 48px 80px 24px;
 }
 
-.help-modal .btn-close {
+.helpModal .btnClose {
   position: absolute;
   right: 28px;
   top: 27px;
@@ -38,8 +38,8 @@
   overflow: hidden;
 }
 
-.help-modal .btn-close::before,
-.help-modal .btn-close::after {
+.helpModal .btnClose::before,
+.helpModal .btnClose::after {
   content: '';
   position: absolute;
   width: 1.5px;
@@ -50,26 +50,26 @@
   transform-origin: center;
 }
 
-.help-modal .btn-close::before {
+.helpModal .btnClose::before {
   transform: translate(-50%, -50%) rotate(45deg);
 }
 
-.help-modal .btn-close::after {
+.helpModal .btnClose::after {
   transform: translate(-50%, -50%) rotate(-45deg);
 }
 
-.help-modal .btn-close:hover::before,
-.help-modal .btn-close:hover::after {
+.helpModal .btnClose:hover::before,
+.helpModal .btnClose:hover::after {
   background: rgba(0, 0, 0, 0.6);
 }
 
 /* Remove default Bootstrap X button background */
-.help-modal .btn-close:focus {
+.helpModal .btnClose:focus {
   box-shadow: none;
   opacity: 1;
 }
 
-.help-modal .modal-title {
+.helpModal .modalTitle {
   font-family: 'Roboto';
   font-style: normal;
   font-weight: 700;
@@ -79,20 +79,20 @@
   margin: 0;
 }
 
-.help-modal .modal-body {
+.helpModal .modalBody {
   padding: 0 80px;
   position: relative;
 }
 
 /* Select dropdown */
-.select-container {
+.selectContainer {
   width: 100%;
   max-width: 832px;
   margin: 0 auto;
   position: relative;
 }
 
-.select-button {
+.selectButton {
   box-sizing: border-box;
   width: 100%;
   height: 62px;
@@ -107,7 +107,7 @@
   margin-bottom: 24px;
 }
 
-.select-button-text {
+.selectButtonText {
   font-family: 'Roboto';
   font-style: normal;
   font-weight: 400;
@@ -116,11 +116,11 @@
   color: rgba(0, 0, 0, 0.5);
 }
 
-.select-button-text.selected {
+.selectButtonText.selected {
   color: #000000;
 }
 
-.select-button-arrow {
+.selectButtonArrow {
   width: 12px;
   height: 12px;
   border-style: solid;
@@ -130,12 +130,12 @@
   border-color: #000000;
 }
 
-.select-button-arrow.open {
+.selectButtonArrow.open {
   transform: rotate(-135deg);
   margin-top: 6px;
 }
 
-.select-options {
+.selectOptions {
   position: absolute;
   top: calc(100% - 24px);
   left: 0;
@@ -148,7 +148,7 @@
   z-index: 1050;
 }
 
-.select-option {
+.selectOption {
   padding: 12px 20px;
   font-family: 'Roboto';
   font-style: normal;
@@ -160,11 +160,11 @@
   transition: background-color 0.2s ease;
 }
 
-.select-option:hover {
+.selectOption:hover {
   background: rgba(86, 54, 213, 0.1);
 }
 
-.help-modal .text-muted {
+.helpModal .textMuted {
   font-family: 'Roboto';
   font-style: italic;
   font-weight: 400;
@@ -176,7 +176,7 @@
   padding-left: 5px;
 }
 
-.help-modal .text-muted button {
+.helpModal .textMuted button {
   color: #0066CC;
   text-decoration: none;
   margin-left: 4px;
@@ -186,18 +186,18 @@
   padding: 0;
 }
 
-.help-modal .text-muted button:hover {
+.helpModal .textMuted button:hover {
   text-decoration: underline;
 }
 
-.help-modal .modal-footer {
+.helpModal .modalFooter {
   border: none;
   padding: 0 80px 48px;
   margin: 0;
   justify-content: flex-end;
 }
 
-.help-modal .btn-primary {
+.helpModal .btnPrimary {
   width: 109px;
   height: 52px;
   background: #5636D5;
@@ -215,11 +215,11 @@
   transition: background-color 0.2s ease;
 }
 
-.help-modal .btn-primary:hover:not(:disabled) {
+.helpModal .btnPrimary:hover:not(:disabled) {
   background: #4528AC;
 }
 
-.help-modal .btn-primary:disabled {
+.helpModal .btnPrimary:disabled {
   background: #5636D5;
   opacity: 0.5;
   cursor: not-allowed;
@@ -227,11 +227,11 @@
 
 /* Responsive adjustments */
 @media (max-width: 992px) {
-  .help-modal .modal-body {
+  .helpModal .modalBody {
     padding: 0 20px;
   }
   
-  .help-modal .text-muted {
+  .helpModal .textMuted {
     padding-left: 0;
   }
 }
