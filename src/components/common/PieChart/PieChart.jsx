@@ -198,7 +198,7 @@ export function PieChart({
             <thead>
               <tr>
                 <th>Color</th>
-                <th>Project Name</th>
+                <th>Task Name</th>
                 <th>Hours</th>
               </tr>
             </thead>
