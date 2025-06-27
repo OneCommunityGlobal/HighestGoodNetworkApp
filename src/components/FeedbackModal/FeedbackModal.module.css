@@ -113,7 +113,7 @@
 
 .textCenter {
   text-align: center;
-  margin-top: 10px;
+  /* margin-top: 10px; this broke the existing pages. Please use only unique classnames and not common class names for styling.*/
 }
 
 .suggestionsLink {

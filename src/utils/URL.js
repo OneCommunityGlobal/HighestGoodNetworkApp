@@ -105,7 +105,7 @@ export const ENDPOINTS = {
   AUTHORIZE_WEEKLY_SUMMARY_REPORTS: () =>
     `${APIEndpoint}/userProfile/authorizeUser/weeeklySummaries`,
   TOTAL_ORG_SUMMARY: (startDate, endDate, comparisonStartDate, comparisonEndDate) =>
-    `${APIEndpoint}/reports/volunteerstats?startDate=${startDate}&endDate=${endDate}&comparisonStartDate=${comparisonStartDate}&comparisonEndDate=${comparisonEndDate}`,
+    `${APIEndpoint}/reports/volunteerstats?startDate=${startDate}&endDate=${endDate}&comparisonStartDate=${comparisonStartDate || ''}&comparisonEndDate=${comparisonEndDate || ''}`,
   VOLUNTEER_TRENDS: (timeFrame, offset, customStartDate, customEndDate) =>
     `${APIEndpoint}/reports/volunteertrends?timeFrame=${timeFrame}&offset=${offset}${
       customStartDate ? `&customStartDate=${customStartDate}` : ''
@@ -255,6 +255,7 @@ export const ENDPOINTS = {
   BM_ISSUE_CHART: `${APIEndpoint}/bm/issue/issue-chart`,
 
   BM_ISSUE_FORM: `${APIEndpoint}/bm/issue/add`,
+  BM_RENTAL_CHART: `${APIEndpoint}/bm/rentalChart`,
 
 
   BM_TAGS: `${APIEndpoint}/bm/tags`,

@@ -20,7 +20,6 @@ import './wbs.css';
 
 import { useFetchWbsTasks } from './hook';
 import { FilterBar } from './FilterBar';
-import { use } from 'react';
 
 function WBSTasks(props) {
   // const { tasks, fetched, darkMode } = props;

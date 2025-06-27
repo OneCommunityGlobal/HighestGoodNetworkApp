@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import '../styles/FrontendBackendQuestions.css';
 import { FaEdit, FaRegSave } from 'react-icons/fa';
 import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
@@ -8,6 +7,7 @@ import { ENDPOINTS } from 'utils/URL';
 import { toast } from 'react-toastify';
 import { setformData } from 'actions/hgnFormAction';
 import { Spinner } from 'reactstrap';
+import styles from '../styles/FrontendBackendQuestions.module.css';
 
 function BackendQuestions() {
   const navigate = useHistory();
@@ -108,44 +108,44 @@ function BackendQuestions() {
   if (loading) {
     return (
       <div>
-        <Spinner color="primary" className="spinner-hgnform" />;
+        <Spinner color="primary" className={`${styles.spinnerHgnform}`} />;
       </div>
     );
   }
 
   return (
-    <div className="frontend-backend-questions">
-      <h3 className="blue-strip">Backend Questions</h3>
+    <div className={`${styles.frontendBackendQuestions}`}>
+      <h3 className={`${styles.blueStrip}`}>Backend Questions</h3>
       <form onSubmit={handleNext}>
         {questions.map((question, index) => {
           const fieldName = fieldNameMap[index] || `backend_Question_${index}`;
 
           return (
             <div className="frontend-backend" key={question._id || index}>
-              <div className="question-container">
+              <div className={`${styles.questionContainer}`}>
                 {editingIndex === index && isOwner ? (
-                  <div className="edit-question-container">
-                    <p className="edit-title">Edit Question</p>
-                    <div className="edit-question">
+                  <div className={`${styles.editQuestionContainer}`}>
+                    <p className={`${styles.editTitle}`}>Edit Question</p>
+                    <div className={`${styles.editQuestion}`}>
                       <input
                         type="text"
                         value={editedText}
                         onChange={e => setEditedText(e.target.value)}
-                        className="edit-input"
+                        className={`${styles.editInput}`}
                       />
                       <FaRegSave
                         title="Save"
-                        className="save-icon"
+                        className={`${styles.saveIcon}`}
                         onClick={() => handleSaveClick(index)}
                       />
                     </div>
                   </div>
                 ) : (
-                  <p className="question">
+                  <p className={`${styles.question}`}>
                     {searchQuestion(4, index + 1)}
                     {isOwner && (
                       <FaEdit
-                        className="edit-icon"
+                        className={`${styles.editIcon}`}
                         onClick={() => handleEditClick(index)}
                         title="Edit"
                       />
@@ -154,7 +154,7 @@ function BackendQuestions() {
                 )}
               </div>
 
-              <div className="frontend-backend-rating">
+              <div className={`${styles.frontendBackendRating}`}>
                 {Array.from({ length: 10 }, (_, i) => (
                   <div key={i}>
                     <label htmlFor={`${fieldName}_${i + 1}`}>{i + 1}</label>
@@ -174,11 +174,11 @@ function BackendQuestions() {
           );
         })}
 
-        <div className="button-container">
-          <button type="button" className="hgn-return-button" onClick={handleBack}>
+        <div className={`${styles.buttonContainer}`}>
+          <button type="button" className={`${styles.hgnReturnButton}`} onClick={handleBack}>
             Back
           </button>
-          <button type="submit" className="next-button">
+          <button type="submit" className={`${styles.nextButton}`}>
             Next
           </button>
         </div>

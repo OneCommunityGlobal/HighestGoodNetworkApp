@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Label, Alert, Form } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Alert, Form } from 'reactstrap';
 import Input from '../common/Input';
 import { boxStyle, boxStyleDark } from '../../styles';
 import '../Header/DarkMode.css';

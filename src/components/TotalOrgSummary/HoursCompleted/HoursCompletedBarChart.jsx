@@ -90,6 +90,9 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
   };
   const renderCustomizedLabel = props => {
     const { x, y, width, value, index } = props;
+    if (typeof y !== 'number' || Number.isNaN(y)) {
+      return null;
+    }
     const { percentage } = chartData[index];
     const { change } = chartData[index];
     const perFontSize = cardSize.height === '548px' ? '0.6em' : '0.8em';
