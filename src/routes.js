@@ -22,6 +22,8 @@ import FaqHistory from 'components/Faq/FaqHistory';
 import UnansweredFaqs from 'components/Faq/UnansweredFaqs';
 import HeaderRenderer from 'components/Header/HeaderRenderer';
 import { ExperienceDonutChart } from 'components/ExperienceDonutChart';
+
+// hgnform routes
 import Page1 from './components/HGNForm/pages/Page1';
 import Page2 from './components/HGNForm/pages/Page2';
 import Page3 from './components/HGNForm/pages/Page3';
@@ -36,6 +38,7 @@ import TSAFormPage5 from './components/TSAForm/pages/TSAFormPage5';
 import TSAFormPage6 from './components/TSAForm/pages/TSAFormPage6';
 import TSAFormPage7 from './components/TSAForm/pages/TSAFormPage7';
 import TSAFormPage8 from './components/TSAForm/pages/TSAFormPage8';
+
 import Timelog from './components/Timelog';
 import LessonForm from './components/BMDashboard/Lesson/LessonForm';
 import UserProfileEdit from './components/UserProfile/UserProfileEdit';
@@ -68,8 +71,9 @@ import UserSkillsProfile from './components/HGNSkillsDashboard/SkillsProfilePage
 // LB Dashboard
 import LBProtectedRoute from './components/common/LBDashboard/LBProtectedRoute/LBProtectedRoute';
 import LBHome from './components/LBDashboard/Home/Home';
-import LBLogin from './components/LBDashboard/Login';
 import LBDashboard from './components/LBDashboard';
+import LBLogin from './components/LBDashboard/Login';
+import LBMessaging from './components/LBDashboard/Messaging/LBMessaging';
 import MasterPlan from './components/LBDashboard/Map/MasterPlan/MasterPlan';
 import ListOveriew from './components/LBDashboard/ListingOverview/ListOverview';
 import LBBidOverview from './components/LBDashboard/BiddingOverview/BiddingOverview';
@@ -467,7 +471,13 @@ export default (
           // setting permission as Weeklysummariesreport for now. Later it will be changed to weeklyVolunteerSummary. - H
           routePermissions={RoutePermissions.weeklySummariesReport}
         />
-        <ProtectedRoute path="/job-notification-dashboard" exact component={JobCCDashboard} fallback allowedRoles={[UserRole.Owner]} />
+        <ProtectedRoute
+          path="/job-notification-dashboard"
+          exact
+          component={JobCCDashboard}
+          fallback
+          allowedRoles={[UserRole.Owner]}
+        />
 
         {/* ----- BEGIN BM Dashboard Routing ----- */}
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
@@ -584,6 +594,7 @@ export default (
         <LBProtectedRoute path="/lbdashboard/listOverview" exact component={ListOveriew} />
         <LBProtectedRoute path="/lbdashboard/masterplan" exact component={MasterPlan} />
         <Route path="/lbdashboard/login" component={LBLogin} />
+        <LBProtectedRoute path="/lbdashboard/messaging" component={LBMessaging} />
         <Route // Should be LBProtectedRoute
           path="/lbdashboard/listingshome"
           render={() => (
