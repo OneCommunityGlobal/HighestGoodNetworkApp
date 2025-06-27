@@ -89,7 +89,7 @@ function JobCCDashboard() {
 
   return (
     <div
-      className={`job-cc-dashboard ${darkMode ? 'dark-mode-job-cc-dashboard' : ''}`}
+    className={`${styles.jobCcDashboard} ${darkMode ? styles.darkModeJobCcDashboard : ''}`}
       style={{ height: '100%' }}
     >
       <h1 className={`${styles.dashboardTitle}`}>Job CC Dashboard</h1>
