@@ -1,4 +1,4 @@
-.star-rating {
+.starRating {
   display: flex;
   align-items: center;
 }
@@ -18,10 +18,10 @@
   color: #ffc107;
 }
 
-.dark-mode .star.empty {
+.darkMode .star.empty {
   color: #555;
 }
 
-.dark-mode .star.filled {
+.darkMode .star.filled {
   color: #ffc107;
 } 

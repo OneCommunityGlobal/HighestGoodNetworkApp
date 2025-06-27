@@ -94,7 +94,6 @@ const Project = props => {
 
   return (
     <>
-      <tbody>
         <tr className="projects__tr" id={'tr_' + props.projectId}>
 
           <th className="projects__order--input" scope="row">
@@ -199,7 +198,6 @@ const Project = props => {
             </td>
           ) : null}
         </tr>
-      </tbody>
     </>
   );
 };
