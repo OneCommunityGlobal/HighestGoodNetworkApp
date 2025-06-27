@@ -32,6 +32,8 @@ export default function Warning({ personId, username, userRole, displayUser }) {
     dispatch(hasPermission('deactivateWarningTracker')) ||
     dispatch(hasPermission('deleteWarningTracker'));
 
+  const canEditWarning = dispatch(hasPermission('setTrackingManagement'));
+
   const fetchUsersWarningsById = async () => {
     dispatch(getWarningsByUserId(personId)).then(res => {
       if (res.error) {
@@ -107,19 +109,20 @@ export default function Warning({ personId, username, userRole, displayUser }) {
       ));
 
   return (
-    isAllowedToTracking &&
-    (userRole === 'Administrator' || userRole === 'Owner' || userRole === 'Manager') && (
+    isAllowedToTracking && (
       <div className="warnings-container">
         <div className="button__container">
-          <Button
-            className="btn btn-warning warning-btn tracking__btn"
-            size="sm"
-            onClick={handleToggle}
-          >
-            {toggle ? 'Hide' : 'Tracking'}
-          </Button>
-
           {canViewTrackerButton && (
+            <Button
+              className="btn btn-warning warning-btn tracking__btn"
+              size="sm"
+              onClick={handleToggle}
+            >
+              {toggle ? 'Hide' : 'Tracking'}
+            </Button>
+          )}
+
+          {canEditWarning && (
             <Button
               className="btn"
               size="sm"
