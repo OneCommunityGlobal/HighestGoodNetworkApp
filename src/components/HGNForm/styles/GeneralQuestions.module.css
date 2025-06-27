@@ -1,4 +1,4 @@
-.general-questions {
+.generalQuestions {
   width: 50%;
   margin: 10px auto;
   border: 1px solid #c0c0c0;
@@ -8,14 +8,14 @@
 }
 
 @media (max-width: 768px) {
-  .general-questions {
+  .generalQuestions {
     width: 80%;
     margin: 10px auto;
   }
 }
 
 @media (max-width: 480px) {
-  .general-questions {
+  .generalQuestions {
     width: 90%;
   }
 }
@@ -28,7 +28,7 @@
   font-weight: 400;
 } */
 
-.general-questions p {
+.generalQuestions p {
   line-height: 1.2;
   text-align: left;
   margin-left: 30px;
@@ -42,7 +42,7 @@
   margin: 10px 0;
 } */
 
-.blue-strip {
+.blueStrip {
   height: 50px;
   background-color: #5082a7;
   width: 100%;
@@ -61,7 +61,7 @@
   align-items: flex-start;
   width: 100%;
 }
-.hours-radio {
+.hoursRadio {
   display: flex;
   gap: 10px;
   align-items: center;
@@ -70,11 +70,11 @@
   overflow-x: auto;
 }
 
-.hours-radio label {
+.hoursRadio label {
   margin: 0;
 }
 
-.hours-radio input[type="radio"] {
+.hoursRadio input[type="radio"] {
   margin-right: 2px;
   margin-bottom:0;
 }
@@ -85,7 +85,7 @@
   align-items: flex-start;
 }
 
-.standup-radio {
+.standupRadio {
   display: flex;
   gap: 10px;
   align-items: center;
@@ -93,11 +93,11 @@
   margin-left: 32px;
 }
 
-.standup-radio label {
+.standupRadio label {
   margin: 0;
 }
 
-.standup-radio input[type="radio"] {
+.standupRadio input[type="radio"] {
   margin-right: 2px;
   margin-bottom:0;
 }
@@ -107,7 +107,7 @@
   flex-direction: column;
   align-items: flex-start;
 }
-.period-radio {
+.periodRadio {
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -115,16 +115,16 @@
   margin-left: 32px;
 }
 
-.period-radio div {
+.periodRadio div {
   display: flex;
   align-items: center;
 }
 
-.period-radio label {
+.periodRadio label {
   margin: 0;
 }
 
-.period-radio input[type="radio"] {
+.periodRadio input[type="radio"] {
   margin-right: 10px;
   margin-bottom:0;
 }
@@ -150,7 +150,7 @@
   background-color: #e6f5f3;
 }
 
-.radio-rating {
+.radioRating {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
@@ -158,35 +158,35 @@
   margin: 10px 60px;
 }
 
-.radio-rating div {
+.radioRating div {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.radio-rating label {
+.radioRating label {
   margin-bottom: 2px;
 }
 
 @media screen and (max-width: 1024px) {
-  .radio-rating div {
+  .radioRating div {
     width: 30%;
   }
 }
 
 @media screen and (max-width: 768px) {
-  .radio-rating div {
+  .radioRating div {
     width: 45%;
   }
 }
 
 @media screen and (max-width: 480px) {
-  .radio-rating div {
+  .radioRating div {
     width: 100%;
   }
 }
 
-.preferences-checkbox {
+.preferencesCheckbox {
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -194,22 +194,22 @@
   margin-bottom:10px;
 }
 
-.preferences-checkbox div {
+.preferencesCheckbox div {
   display: flex;
   align-items: center;
 }
 
-.preferences-checkbox input[type="checkbox"] {
+.preferencesCheckbox input[type="checkbox"] {
   margin-right: 5px;
   margin-left: 30px;
   margin-bottom: 0;
 }
 
-.preferences-checkbox label {
+.preferencesCheckbox label {
   margin: 0;
 }
 
-.availability-selector {
+.availabilitySelector {
   font-family: Arial, sans-serif;
   text-align: left;
   max-width: 800px;
@@ -217,34 +217,34 @@
   overflow-x: auto;
 }
 
-.availability-grid {
+.availabilityGrid {
   display: grid;
   grid-template-columns: 1fr repeat(9, 1fr);
   gap: 5px;
   align-items: center;
 }
 
-.time-cell {
+.timeCell {
   text-align: center;
   margin-bottom: 5px;
 }
 
-.day-label {
+.dayLabel {
   text-align: left;
   grid-column: 1 / 2;
 }
 
-.availability-checkbox {
+.availabilityCheckbox {
   display: inline-block;
   margin: 5px auto;
   grid-column: span 1;
 }
 
-.question-container{
+.questionContainer{
   width:100%;
 }
 
-.edit-question-container {  
+.editQuestionContainer {  
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -258,7 +258,7 @@
   padding:10px;
 }
 
-.edit-title {
+.editTitle {
   font-size: 1rem;
   font-weight: bold;
   margin-bottom: 0.5rem;
@@ -266,12 +266,12 @@
   color: #2f5061;
 }
 
-.edit-question {
+.editQuestion {
   display: flex;
   align-items: center;
 }
 
-.edit-input {
+.editInput {
   flex: 1;
   padding: 0.6rem;
   border: 1px solid #ddd;
@@ -283,13 +283,13 @@
   margin-left:0;
 }
 
-.edit-input:focus {
+.editInput:focus {
   border-color: #007bff;
   box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
   outline: none;
 }
 
-.save-icon {
+.saveIcon {
   cursor: pointer;
   color: green;
   font-size: 1.5rem;
@@ -299,12 +299,12 @@
   margin-bottom: 0.5rem;
 }
 
-.save-icon:hover {
+.saveIcon:hover {
   color: #006400;
   transform: scale(1.2);
 }
 
-.edit-icon {
+.editIcon {
   cursor: pointer;
   color: #5082a7;
   margin-left: 5px;
@@ -313,17 +313,17 @@
   margin-bottom: 0.2rem;
 }
 
-.edit-icon:hover {
+.editIcon:hover {
   color: #0056b3;
   transform: scale(1.2);
 }
 
-.edit-icon:active {
+.editIcon:active {
   color: #003f7f;
   transform: scale(1.1);
 }
 
-.spinner-hgnform{
+.spinnerHgnform{
   position: fixed;
   top: 55%;
   left: 50%;
@@ -332,4 +332,61 @@
   border-width: 5px !important; /* Adjust the thickness */
   border-color: white !important; /* Change to your desired color */
   border-right-color: #5082a7 !important; /* Keeps animation effect */
+}
+
+
+.buttonContainer {
+  display: flex;
+  justify-content: space-between;
+  margin:10px;
+}
+
+.buttonContainer button {
+  padding: 10px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  margin: 15px;
+  width: 20%;
+  border: 2px solid #2e5163;
+  font-size: medium;
+}
+
+.hgnReturnButton {
+  color: white;
+  background-color:#2e5163 ;
+  border-radius: 10px;
+  width: 20%;
+  margin-left:0;
+}
+
+.hgnReturnButton:hover {
+  background-color:#4e748d;
+  border-color: #4e748d ;
+}
+
+.nextButton {
+  background-color: #2e5163;
+  border-radius: 10px;
+  width: 20%;
+}
+
+.nextButton:hover {
+  background-color: #4e748d;
+  border-color: #4e748d;
+}
+
+.editButton {
+  background-color: #2e5163;
+  margin-left: 10px;
+}
+
+.submitButton {
+  background-color: #081437;
+  transition: all 0.3s ease;
+  border-radius: 10px;
+}
+
+.submitButton:hover {
+  background-color: #21618a;
+  /* color: white; */
 }
