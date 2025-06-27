@@ -314,7 +314,6 @@ export const permissionLabels = [
               },
               {
                 label: 'Edit Task',
-                key: 'updateTask',
                 subperms: [
                   {
                     label: 'Edit Task',
