@@ -85,14 +85,6 @@ const replaceInCodeFile = filePath => {
     console.log('⚠️  No className replacements made.');
   }
 };
-const cssFiles = []; // To collect all CSS files
-const codeFiles = []; // To collect all JS/JSX files
-
-const cssFiles = []; // To collect all CSS files
-const codeFiles = []; // To collect all JS/JSX files
-
-const cssFiles = []; // To collect all CSS files
-const codeFiles = []; // To collect all JS/JSX files
 
 const cssFiles = []; // To collect all CSS files
 const codeFiles = []; // To collect all JS/JSX files
