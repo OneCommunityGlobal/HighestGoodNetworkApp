@@ -1,7 +1,7 @@
 /* eslint-disable no-shadow */
 /* eslint-disable no-use-before-define */
 import { useState, useEffect } from 'react';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import SearchProjectByPerson from 'components/SearchProjectByPerson/SearchProjectByPerson';
 import ProjectsList from 'components/BMDashboard/Projects/ProjectsList';
 import { fetchAllProjects, modifyProject, clearError } from '../../actions/projects';
@@ -12,8 +12,8 @@ import Overview from './Overview';
 import AddProject from './AddProject';
 import ProjectTableHeader from './ProjectTableHeader';
 import Project from './Project';
-import ModalTemplate from '../common/Modal';
-import { CONFIRM_ARCHIVE } from '../../languages/en/messages';
+import ModalTemplate from './../common/Modal';
+import { CONFIRM_ARCHIVE, PROJECT_INACTIVE_CONFIRMATION, PROJECT_ACTIVE_CONFIRMATION } from './../../languages/en/messages';
 import './projects.css';
 import Loading from '../common/Loading';
 import hasPermission from '../../utils/permissions';
@@ -22,6 +22,9 @@ import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
 const Projects = function(props) {
   const { role } = props.state.userProfile;
   const { darkMode } = props.state.theme;
+  
+const allReduxProjects = useSelector(state => state.allProjects.projects);
+const projectFetchStatus = useSelector(state => state.allProjects.status);
   const numberOfProjects = props.state.allProjects.projects.length;
   const numberOfActive = props.state.allProjects.projects.filter(project => project.isActive)
     .length;
@@ -32,6 +35,7 @@ const Projects = function(props) {
     modalTitle: '',
     hasConfirmBtn: false,
     hasInactiveBtn: false,
+    hasActiveBtn: false,
   };
 
   const [modalData, setModalData] = useState(initialModalData);
@@ -51,7 +55,7 @@ const Projects = function(props) {
   const [projectList, setProjectList] = useState(null);
   const [searchName, setSearchName] = useState('');
   const [allProjects, setAllProjects] = useState(null);
-
+  const [isChangingStatus, setIsChangingStatus] = useState(false);
   const [isArchiving, setIsArchiving] = useState(false);
 
   const useDebounce = (value, delay) => {
@@ -78,11 +82,37 @@ const Projects = function(props) {
     setProjectTarget(projectData);
     setModalData({
       showModal: true,
-      modalMessage: `<p>Do you want to archive ${projectData.projectName}?</p>`,
+      modalMessage: `<p style="${darkMode ? 'color: white' : 'color: black;'}">Do you want to archive ${projectData.projectName}?</p>`,
       modalTitle: CONFIRM_ARCHIVE,
       hasConfirmBtn: true,
-      hasInactiveBtn: true,
+      hasInactiveBtn: false,
+      hasActiveBtn: false,
     });
+  };
+
+  const onClickProjectStatusBtn = (projectData) => {
+    setProjectTarget(projectData);
+    if (projectData.isActive) {
+      // If the project is archived, allow unarchiving
+      setModalData({
+        showModal: true,
+        modalMessage: `<p style="${darkMode ? 'color: white' : 'color: black'}">${PROJECT_INACTIVE_CONFIRMATION}</p>`,
+        modalTitle: `Inactive Confirmation - ${projectData.projectName} `,
+        hasConfirmBtn: false,
+        hasInactiveBtn: true, // No need for inactive button
+        hasActiveBtn: false,
+      });
+    } else if (!projectData.isActive) {
+      // If the project is inactive, allow setting it to active
+      setModalData({
+        showModal: true,
+        modalMessage: `<p style="${darkMode ? 'color: white' : 'color: black;'}">${PROJECT_ACTIVE_CONFIRMATION}</p>`,
+        modalTitle: `Active Confirmation - ${projectData.projectName} `,
+        hasConfirmBtn: false,
+        hasInactiveBtn: false, // No need for inactive button
+        hasActiveBtn: true,
+      });
+    }
   };
 
   const onCloseModal = () => {
@@ -133,9 +163,12 @@ const Projects = function(props) {
     onCloseModal();
   };
 
-  const setInactiveProject = async () => {
-    const updatedProject = { ...projectTarget, isActive: !projectTarget.active };
-    await onUpdateProject(updatedProject);
+  const setProjectStatus = async () => {
+    setIsChangingStatus(true);
+    const updatedProject = { ...projectTarget, isActive: !projectTarget.isActive };
+    await onUpdateProject(updatedProject)
+    setIsChangingStatus(false);
+    // Close the modal after update
     onCloseModal();
   };
 
@@ -145,9 +178,8 @@ const Projects = function(props) {
   };
 
   const generateProjectList = (categorySelectedForSort, showStatus) => {
-    const { projects } = props.state.allProjects;
     const activeMemberCounts = props.state.projectMembers?.activeMemberCounts || {};  
-    const filteredProjects = projects
+    const filteredProjects = allReduxProjects
       .filter(project => !project.isArchived)
       .filter(project => {
         if (categorySelectedForSort && showStatus){
@@ -203,12 +235,13 @@ const Projects = function(props) {
   
     const renderedProjects = sortedProjects.map((project, index) => (
       <Project
-        key={project._id}
+        key={`${project._id}-${project.isActive}`}
         index={index}
         projectData={project}
         activeMemberCounts={activeMemberCounts[project._id] || 0}
         onUpdateProject={onUpdateProject}
         onClickArchiveBtn={onClickArchiveBtn}
+        onClickProjectStatusBtn={onClickProjectStatusBtn}
         darkMode={darkMode}
       />
     ));
@@ -231,7 +264,13 @@ const Projects = function(props) {
   }, []);
 
   useEffect(() => {
-    generateProjectList(categorySelectedForSort, showStatus, sortedByName);
+    // console.log('generateProjectList triggered:', {
+    //   fetched: props.state.allProjects.fetched,
+    //   fetching: props.state.allProjects.fetching,
+    //   dataLength: allReduxProjects?.length || 0,
+    //   status: props.state.allProjects.status
+    // });
+    generateProjectList(categorySelectedForSort, showStatus);
     if (status !== 200) {
       setModalData({
         showModal: true,
@@ -241,15 +280,15 @@ const Projects = function(props) {
         hasInactiveBtn: false,
       });
     }
-  }, [categorySelectedForSort, showStatus, sorter, sortedByName, props.state.allProjects, props.state.theme.darkMode, props.state.projectMembers?.activeMemberCounts]);
+  }, [categorySelectedForSort, showStatus, sorter, allReduxProjects, props.state.theme.darkMode, props.state.projectMembers?.activeMemberCounts]);
 
   useEffect(() => {
     const fetchProjects = async () => {
       if (debouncedSearchName) {
         const projects = await props.getProjectsByUsersName(debouncedSearchName);
-        if (projects) {
-          const newProjectList = allProjects.filter(project =>
-            projects.some(p => p === project.key),
+        if (projects && allReduxProjects) {
+          const newProjectList = allProjects.filter(project => 
+            projects.some(p => p === project._id)
           );
           setProjectList(newProjectList);
         } else {
@@ -260,13 +299,14 @@ const Projects = function(props) {
       }
     };
     fetchProjects();
-  }, [debouncedSearchName]);
+  }, [debouncedSearchName, allProjects, allReduxProjects]);
 
   const handleSearchName = searchNameInput => {
     setSearchName(searchNameInput);
   };
 
   return (
+
     <div className={darkMode ? 'bg-oxford-blue text-light' : ''}>
       <div className={`container py-3 ${darkMode ? 'bg-yinmn-blue-light text-light' : ''}`}>
         {fetching || !fetched ? <Loading align="center" /> : null}
@@ -307,12 +347,17 @@ const Projects = function(props) {
         isOpen={modalData.showModal}
         closeModal={onCloseModal}
         confirmModal={modalData.hasConfirmBtn ? confirmArchive : null}
-        setInactiveModal={modalData.hasInactiveBtn ? setInactiveProject : null}
+        setInactiveModal={modalData.hasInactiveBtn ? setProjectStatus : null}
+        setActiveModal={modalData.hasActiveBtn ? setProjectStatus : null}
         modalMessage={modalData.modalMessage}
         modalTitle={modalData.modalTitle}
         darkMode={darkMode}
         confirmButtonText={isArchiving ? 'Archiving...' : 'Confirm'}
         isConfirmDisabled={isArchiving}
+        setInactiveButton={isChangingStatus ? 'Setting Inactive' : 'Yes, hide it all'}
+        isSetInactiveDisabled={isChangingStatus}
+        setActiveButton={isChangingStatus ? 'Setting Active' : 'Yes, revive the monster'}
+        isSetActiveDisabled={isChangingStatus}
       />
     </div>
   );
