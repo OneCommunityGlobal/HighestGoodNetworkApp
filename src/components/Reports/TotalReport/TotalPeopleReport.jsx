@@ -49,26 +49,49 @@ function TotalPeopleReport(props) {
   }, [fromDate, toDate, userList]);
 
   const sumByUser = useCallback((objectArray, property) => {
-    return objectArray.reduce((acc, obj) => {
-      const key = obj[property];
-      if (!acc[key]) {
-        acc[key] = {
-          userId: key,
-          hours: 0,
-          minutes: 0,
-          tangibleHours: 0,
-          tangibleMinutes: 0,
-        };
+  return objectArray.reduce((acc, obj) => {
+    const key = obj[property];
+    if (!acc[key]) {
+      acc[key] = {
+        userId: key,
+        hours: 0,
+        minutes: 0,
+        tangibleHours: 0,
+        tangibleMinutes: 0,
+      };
+    }
+
+    const hours = Number(obj.hours);
+    const minutes = Number(obj.minutes);
+
+    // Sum total
+    acc[key].minutes += minutes;
+    acc[key].hours += hours;
+
+    // Normalize minutes to hours if >= 60
+    if (acc[key].minutes >= 60) {
+      const extraHours = Math.floor(acc[key].minutes / 60);
+      acc[key].hours += extraHours;
+      acc[key].minutes %= acc[key].minutes % 60;
+    }
+
+    // Repeat for tangible
+    if (obj.isTangible) {
+      acc[key].tangibleMinutes += minutes;
+      acc[key].tangibleHours += hours;
+
+      if (acc[key].tangibleMinutes >= 60) {
+        const extraTangibleHours = Math.floor(acc[key].tangibleMinutes / 60);
+        acc[key].tangibleHours += extraTangibleHours;
+        acc[key].tangibleMinutes %= acc[key].tangibleMinutes % 60;
       }
-      if (obj.isTangible) {
-        acc[key].tangibleHours += Number(obj.hours);
-        acc[key].tangibleMinutes += Number(obj.minutes);
-      }
-      acc[key].hours += Number(obj.hours);
-      acc[key].minutes += Number(obj.minutes);
-      return acc;
-    }, {});
-  }, []);
+    }
+
+    return acc;
+  }, {});
+}, []);
+
+
 
   const groupByTimeRange = useCallback((objectArray, timeRange) => {
     let range = 0;
