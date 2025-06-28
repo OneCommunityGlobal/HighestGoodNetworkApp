@@ -73,6 +73,7 @@ import {
 import {
   getTimeEndDateEntriesByPeriod,
   getTimeStartDateEntriesByPeriod,
+  getTimeEntriesForWeek,
 } from '../../actions/timeEntries.js';
 import ConfirmRemoveModal from './UserProfileModal/confirmRemoveModal';
 import { formatDateYYYYMMDD, CREATED_DATE_CRITERIA } from 'utils/formatDate.js';
@@ -126,6 +127,7 @@ function UserProfile(props) {
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
   const toggleRemoveModal = () => setIsRemoveModalOpen(!isRemoveModalOpen);
   const [loadingSummaries, setLoadingSummaries] = useState(false);
+  const allRequests = useSelector(state => state.timeOffRequests?.requests);
 
   const updateRemovedImage = async () => {
     try {
@@ -250,8 +252,8 @@ function UserProfile(props) {
 
     if (!teamId) {
       setSummaryIntro(
-        `This week’s summary was managed by ${currentManager.firstName} ${currentManager.lastName} and includes . 
-         These people did NOT provide a summary . 
+        `This week’s summary was managed by ${currentManager.firstName} ${currentManager.lastName} and includes .
+         These people did NOT provide a summary .
          <Insert the proofread and single-paragraph summary created by ChatGPT>`,
       );
       return;
@@ -265,13 +267,30 @@ function UserProfile(props) {
         member => member._id !== currentManager._id && member.isActive,
       );
 
-      const memberSubmitted = activeMembers
-        .filter(member => member.weeklySummaries[0].summary !== '')
-        .map(member => `${member.firstName} ${member.lastName}`);
+      //submitted a summary, maybe didn't complete their hours just yet
+      const memberSubmitted = await Promise.all(
+        activeMembers
+          .filter(member => member.weeklySummaries[0].summary !== '')
+          .map(async member => {
+            const results = await dispatch(getTimeEntriesForWeek(member._id, 0));
+
+            const returnData = calculateTotalTime(results.data, true);
+
+            return returnData < member.weeklycommittedHours
+              ? `${member.firstName} ${member.lastName} hasn't completed hours`
+              : `${member.firstName} ${member.lastName}`;
+          }),
+      );
 
       const memberNotSubmitted = activeMembers
         .filter(member => member.weeklySummaries[0].summary === '')
-        .map(member => `${member.firstName} ${member.lastName}`);
+        .map(member => {
+          if (getTimeOffStatus(member._id)) {
+            return `${member.firstName} ${member.lastName} off for the week`;
+          } else {
+            return `${member.firstName} ${member.lastName}`;
+          }
+        });
 
       const memberSubmittedString =
         memberSubmitted.length !== 0
@@ -290,6 +309,13 @@ function UserProfile(props) {
       console.error('Error fetching team users:', error);
     }
   };
+
+  const calculateTotalTime = (data, isTangible) => {
+    const filteredData = data.filter(entry => entry.isTangible === isTangible);
+    const reducer = (total, entry) => total + Number(entry.hours) + Number(entry.minutes) / 60;
+    return filteredData.reduce(reducer, 0);
+  };
+
   const loadUserTasks = async () => {
     const userId = props?.match?.params?.userId;
     axios
@@ -324,6 +350,29 @@ function UserProfile(props) {
     }
   };
 
+  const getTimeOffStatus = personId => {
+    if (!allRequests[personId]) {
+      return false;
+    }
+    let hasTimeOff = false;
+    const sortedRequests = allRequests[personId].sort((a, b) =>
+      moment(a.startingDate).diff(moment(b.startingDate)),
+    );
+
+    const mostRecentRequest =
+      sortedRequests.find(request => moment().isBefore(moment(request.endingDate), 'day')) ||
+      sortedRequests[0];
+
+    const startOfWeek = moment().startOf('week');
+    const endOfWeek = moment().endOf('week');
+
+    const isCurrentlyOff =
+      moment(mostRecentRequest.startingDate).isBefore(endOfWeek) &&
+      moment(mostRecentRequest.endingDate).isSameOrAfter(startOfWeek);
+
+    return isCurrentlyOff;
+  };
+
   const loadUserProfile = async () => {
     const userId = props?.match?.params?.userId;
 
@@ -353,8 +402,8 @@ function UserProfile(props) {
         startDate: newUserProfile?.startDate ? formatDateYYYYMMDD(newUserProfile?.startDate) : '',
         createdDate: formatDateYYYYMMDD(newUserProfile?.createdDate),
         ...(newUserProfile?.endDate &&
-          newUserProfile.endDate !== '' && { 
-            endDate: formatDateYYYYMMDD(newUserProfile.endDate)
+          newUserProfile.endDate !== '' && {
+            endDate: formatDateYYYYMMDD(newUserProfile.endDate),
           }),
       };
 
@@ -722,7 +771,11 @@ function UserProfile(props) {
 
     if (!isActive) {
       endDate = await dispatch(
-        getTimeEndDateEntriesByPeriod(userProfile._id, userProfile.createdDate, moment().format('YYYY-MM-DDTHH:mm:ss')),
+        getTimeEndDateEntriesByPeriod(
+          userProfile._id,
+          userProfile.createdDate,
+          moment().format('YYYY-MM-DDTHH:mm:ss'),
+        ),
       );
       if (endDate == 'N/A') {
         endDate = userProfile.createdDate;
@@ -1043,12 +1096,12 @@ function UserProfile(props) {
             ) : (
               <></>
             )}
-            {/*                   
-              {((userProfile?.profilePic==undefined || 
-                userProfile?.profilePic==null || 
-                userProfile?.profilePic=="")&& 
+            {/*
+              {((userProfile?.profilePic==undefined ||
+                userProfile?.profilePic==null ||
+                userProfile?.profilePic=="")&&
                 (userProfile?.suggestedProfilePics!==undefined &&
-                  userProfile?.suggestedProfilePics!==null && 
+                  userProfile?.suggestedProfilePics!==null &&
                   userProfile?.suggestedProfilePics.length!==0
                 ))?
                 <Button color="primary" onClick={toggleModal}>Suggested Profile Image</Button>
@@ -1467,7 +1520,7 @@ function UserProfile(props) {
                   </Button>
                 </Link>
               )}
-              {(canEdit && activeTab || canEditTeamCode) && (
+              {((canEdit && activeTab) || canEditTeamCode) && (
                 <>
                   <SaveButton
                     className="mr-1 btn-bottom"
@@ -2017,4 +2070,6 @@ function UserProfile(props) {
   );
 }
 
-export default connect(null, { hasPermission, updateUserStatus })(UserProfile);
+export default connect(null, { hasPermission, updateUserStatus, getTimeEntriesForWeek })(
+  UserProfile,
+);
