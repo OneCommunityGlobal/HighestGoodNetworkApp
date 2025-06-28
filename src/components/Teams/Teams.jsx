@@ -3,7 +3,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Container } from 'reactstrap';
 import { toast } from 'react-toastify';
-import { searchWithAccent } from 'utils/search';
 import lo from 'lodash';
 import {
   getAllUserTeams,
@@ -279,7 +278,7 @@ class Teams extends React.PureComponent {
           onClose={this.onAddTeamPopupClose}
           teamsData={{ allTeams }}
           userTeamsById={[]}
-          onSelectAssignTeam={async newTeam => {
+          onSelectAssignTeam={async () => {
             try {
               // Close the popup first
               this.setState({
