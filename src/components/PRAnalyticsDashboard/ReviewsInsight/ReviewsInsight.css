@@ -1,0 +1,62 @@
+.reviews-insight-container {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.filters {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.filter-item {
+  display: flex;
+  flex-direction: column;
+  margin-right: 20px;
+}
+
+.filter-item label {
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.selected-teams {
+  margin-bottom: 20px;
+  font-style: italic;
+}
+
+.graphs {
+  display: flex;
+  justify-content: space-around;
+}
+
+.graph {
+  width: 100%; /* Adjusts to the full width of the container */
+  max-width: 600px; /* Optional: Limits the maximum width */
+  margin: 0 auto; /* Centers the graph */
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.graph-placeholder {
+  height: 300px; /* Increased height for better visibility */
+  background-color: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #888;
+  font-size: 14px;
+}
+
+.team-name {
+  font-weight: bold;
+  margin-bottom: 10px;
+  text-align: center;
+}

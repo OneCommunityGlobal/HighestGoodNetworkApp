@@ -198,6 +198,9 @@ const UserRoleTab = lazy(() => import('./components/PermissionsManagement/UserRo
 const Teams = lazy(() => import('./components/Teams/Teams'));
 const JobFormBuilder = lazy(() => import('./components/Collaboration/JobFormbuilder'));
 
+// PR Analytics Dashboard
+import ReviewsInsight from './components/PRAnalyticsDashboard/ReviewsInsight/ReviewsInsight'
+
 export default (
   <Switch>
     {/* ----- LB Dashboard Routing ----- */}
@@ -482,7 +485,7 @@ export default (
         {/* ----- BEGIN BM Dashboard Routing ----- */}
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
         <Route path="/bmdashboard/login" component={BMLogin} />
-
+d
         <BMProtectedRoute
           path="/bmdashboard/materials/purchase"
           fallback
@@ -613,6 +616,11 @@ export default (
         {/* Good Education  Portal Routes */}
         <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />
         <Route path="/educationportal/login" component={EPLogin} />
+
+
+        {/* PR Analytics Dashboard */}
+        <Route path="/pull-request-analytics/reviews-insight" component={ReviewsInsight} />
+
 
         {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
 
