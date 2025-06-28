@@ -136,6 +136,7 @@ function InfoForm() {
 
       // PAGE 5: Follow-up form fields
       followup_platform: '',
+      followup_mern_work_experience: '',
       followup_other_skills: '',
       followup_suggestion: '',
       followup_additional_info: '',
