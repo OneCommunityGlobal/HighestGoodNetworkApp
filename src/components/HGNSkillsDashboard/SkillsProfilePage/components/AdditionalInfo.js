@@ -1,17 +1,20 @@
 import axios from 'axios';
-import { useState, useEffect, useLocation } from 'react';
+import { useState, useEffect } from 'react';
 import '../styles/AdditionalInfo.css';
 import { useSelector } from 'react-redux';
 import { ENDPOINTS } from 'utils/URL';
 import { toast } from 'react-toastify';
-import { FaEdit, FaRegSave } from 'react-icons/fa';
+// import { FaEdit, FaRegSave } from 'react-icons/fa';
 
 // function AdditionalInfo({ profileData }) {
 function AdditionalInfo() {
   const [questions, setQuestions] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [editingIndex, setEditingIndex] = useState(null);
-  const [editedText, setEditedText] = useState('');
+  // const [loading, setLoading] = useState(true);
+  // const [editingIndex, setEditingIndex] = useState(null);
+  // const [editedText, setEditedText] = useState('');
+  const [setLoading] = useState(true);
+  // const [editingIndex, setEditingIndex] = useState(null);
+  const [setEditedText] = useState('');
   //  const location = useLocation();
   //  const { isOwner } = location.state;
 
@@ -41,7 +44,7 @@ function AdditionalInfo() {
     //  setEditedText(questions[index]?.text || '');
   };
 
-  const handleSaveClick = async index => {
+  /*  const handleSaveClick = async index => {
     try {
       const updatedQuestions = [...questions];
       updatedQuestions[index] = {
@@ -63,7 +66,7 @@ function AdditionalInfo() {
       toast.error('Error saving question. Please try again.');
     }
   };
-
+*/
   const profileData = useSelector(state => state.userSkills.profileData);
 
   // eslint-disable-next-line no-console
