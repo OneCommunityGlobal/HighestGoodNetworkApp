@@ -195,11 +195,8 @@ describe("Projects component",()=>{
       role: {roles: rolesMock.role.roles}
     })
 
-    const {container}=render(<MemoryRouter><Provider store={testStore}><Projects /></Provider></MemoryRouter>)
+    render(<MemoryRouter><Provider store={testStore}><Projects /></Provider></MemoryRouter>)
     expect(screen.getByText("ERROR")).toBeInTheDocument()
-
-    const ascendingButton=container.querySelector('[id="Ascending"]')
-    fireEvent.click(ascendingButton)
 
     // Code related to "Archive" functionality is refactored into Project component and will be tested in Project.test.js 
   //   const archiveButton=screen.getAllByText('Archive')[1]

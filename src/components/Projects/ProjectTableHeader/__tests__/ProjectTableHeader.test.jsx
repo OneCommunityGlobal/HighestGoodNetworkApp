@@ -50,6 +50,16 @@ const renderProjectTableHeader = (projectTableHeaderProps) => {
 describe('ProjectTableHeader Component', () => {
   const sampleProps = {
     role: 'Owner',
+    sorted: {
+      column: "PROJECTS",
+      direction: "DEFAULT"
+    },
+    selectedValue: '',
+    showStatus: '',
+    onChange: jest.fn(),
+    selectStatus: jest.fn(),
+    handleSort: jest.fn(),
+    darkMode: false
   };
   const hasPermission = jest.fn((a) => true)
   sampleProps.hasPermission = hasPermission;
