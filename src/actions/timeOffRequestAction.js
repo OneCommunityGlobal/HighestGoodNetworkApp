@@ -118,6 +118,42 @@ const isUserGoingOnVacation = requests => {
   return userGoingOnVacation || null;
 };
 
+const isUserGoingOnFutureTimeOff = requests => {
+  let closestStartDate = null;
+  let minDifference = Infinity;
+
+  const currentDate = moment.tz('America/Los_Angeles').startOf('day');
+
+  // for (const request of requests) {
+  //   if (
+  //     currentDate.isBefore(moment(request.startingDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ')) &&
+  //     Math.floor(moment(request.startingDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ').diff(currentDate)) <
+  //       minDifference
+  //   ) {
+  //     closestStartDate = request;
+  //     minDifference = Math.floor(
+  //       moment(request.startingDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ').diff(currentDate),
+  //     );
+  //   }
+  // }
+
+  requests.forEach((request) => {
+    const requestDate = moment(request.startingDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
+    const diff = Math.floor(requestDate.diff(currentDate));
+    
+    if (currentDate.isBefore(requestDate) && diff < minDifference) {
+      closestStartDate = request;
+      minDifference = diff;
+    }
+  });
+
+  if (closestStartDate) {
+    return closestStartDate;
+  }
+
+  return null;
+};
+
 // Thunk Function
 export const getAllTimeOffRequests = () => async dispatch => {
   try {
@@ -194,32 +230,6 @@ export const deleteTimeOffRequestThunk = id => async dispatch => {
     const deletedRequest = response.data;
     dispatch(deleteTimeOffRequest(deletedRequest));
   } catch (error) {
-    console.log(error);
+    toast.info(error);
   }
-};
-
-const isUserGoingOnFutureTimeOff = requests => {
-  let closestStartDate = null;
-  let minDifference = Infinity;
-
-  const currentDate = moment.tz('America/Los_Angeles').startOf('day');
-
-  for (const request of requests) {
-    if (
-      currentDate.isBefore(moment(request.startingDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ')) &&
-      Math.floor(moment(request.startingDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ').diff(currentDate)) <
-        minDifference
-    ) {
-      closestStartDate = request;
-      minDifference = Math.floor(
-        moment(request.startingDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ').diff(currentDate),
-      );
-    }
-  }
-
-  if (closestStartDate) {
-    return closestStartDate;
-  }
-
-  return null;
 };

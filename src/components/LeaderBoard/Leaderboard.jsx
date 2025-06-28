@@ -108,7 +108,7 @@ function LeaderBoard({
     }
   }, []);
 
-  // const isOwner = ['Owner'].includes(loggedInUser.role);
+  const isOwner = ['Owner'].includes(loggedInUser.role);
   const allowedRoles = ['Administrator', 'Manager', 'Mentor', 'Core Team', 'Assistant Manager'];
   const isAllowedOtherThanOwner = allowedRoles.includes(loggedInUser.role);
   const [currentTimeOfftooltipOpen, setCurrentTimeOfftooltipOpen] = useState({});
