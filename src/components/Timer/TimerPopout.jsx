@@ -71,7 +71,7 @@ function TimerPopout({ authUser, darkMode, TimerComponent }) {
         popup.document.head.appendChild(style);
       } catch (e) {
         // This can happen with CORS stylesheets
-        console.error('Could not copy stylesheet', e);
+        // Silently ignore CORS errors when copying stylesheets
       }
     });
 
