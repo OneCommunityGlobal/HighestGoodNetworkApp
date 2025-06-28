@@ -1,3 +1,6 @@
+/* eslint-disable no-alert */
+/* eslint-disable no-console */
+// eslint-disable-next-line no-alert
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
@@ -230,7 +233,6 @@ function JobFormBuilder() {
 
   const handleAddOption = () => {
     if (newOption.trim() === '') {
-      // eslint-disable-next-line no-alert
       alert('Option cannot be empty!');
       return;
     }
@@ -243,7 +245,6 @@ function JobFormBuilder() {
 
   const handleAddField = async () => {
     if (newField.questionText.trim() === '') {
-      // eslint-disable-next-line no-alert
       alert('Field label is required!');
       return;
     }
@@ -252,7 +253,6 @@ function JobFormBuilder() {
       ['checkbox', 'radio', 'dropdown'].includes(newField.questionType) &&
       newField.options.length === 0
     ) {
-      // eslint-disable-next-line no-alert
       alert('You must add at least one option for this field!');
       return;
     }
@@ -353,11 +353,7 @@ function JobFormBuilder() {
           />
           <form>
             {formFields.map((field, index) => (
-              <div
-                className={styles.formDiv}
-                /* eslint-disable-next-line react/no-array-index-key */
-                key={index + 1}
-              >
+              <div className={styles.formDiv} key={uuidv4()}>
                 <QuestionFieldActions
                   field={field}
                   index={index}
@@ -401,12 +397,8 @@ function JobFormBuilder() {
                       ))}
                     {field.questionType === 'dropdown' && (
                       <select className={styles.jobformSelect}>
-                        {field.options.map((option, idx) => (
-                          <option
-                            /* eslint-disable-next-line react/no-array-index-key */
-                            key={idx + 1}
-                            value={option}
-                          >
+                        {field.options.map(option => (
+                          <option key={uuidv4()} value={option}>
                             {option}
                           </option>
                         ))}
