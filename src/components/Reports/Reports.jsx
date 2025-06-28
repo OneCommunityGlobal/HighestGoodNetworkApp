@@ -583,6 +583,16 @@ class ReportsPage extends Component {
                     <img src={teamsImage} alt="that representes the teams" />
                   </button>
                 </div>
+                <HoursReport
+  users={userProfilesBasicInfo}
+  teams={allTeams}
+  projects={projects}
+  fetchHoursByPeople={getUsersTotalHoursForSpecifiedPeriod}
+  fetchHoursByProjects={yourProjectHoursFetcher}
+  fetchHoursByTeams={yourTeamHoursFetcher}
+  startDate={this.state.startDate}
+  endDate={this.state.endDate}
+/>
                 <div
                   className={`mt-3 p-3 rounded-lg ${darkMode ? 'bg-yinmn-blue text-light' : 'bg-white'
                     }`}
