@@ -56,9 +56,6 @@ describe('TeamTableSearchPanelBase', () => {
       </Provider>,
     );
 
-    // Using screen.debug() to see what's being rendered
-    screen.debug();
-
     const createNewTeamButton = screen.getByText('Create New Team');
     expect(createNewTeamButton).toBeInTheDocument();
   });
@@ -93,7 +90,7 @@ describe('TeamTableSearchPanelBase', () => {
       </Provider>,
     );
 
-    const searchInput = getByPlaceholderText('Search Text');
+    const searchInput = getByPlaceholderText('Search Teams');
     fireEvent.change(searchInput, { target: { value: 'search query' } });
     expect(initialProps.onSearch).toHaveBeenCalledWith('search query');
   });
