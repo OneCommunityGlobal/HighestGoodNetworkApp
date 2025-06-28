@@ -1,14 +1,14 @@
-import '../styles/ProfileDetails.css';
+import styles from '../styles/ProfileDetails.module.css';
 
 function ProfileDetails({ profileData }) {
   return (
-    <div className="profile-details">
+    <div className={`${styles.profileDetails}`}>
       <h3>User Profile</h3>
-      <hr className="horizontal-separator" />
-      <div className="team-info">
+      <hr className={`${styles.horizontalSeparator}`} />
+      <div className={`${styles.teamInfo}`}>
         <span>
           <strong>Team Name:</strong>{' '}
-          <span className="value">
+          <span className={`${styles.value}`}>
             {profileData.teams?.length > 0
               ? profileData.teams[profileData.teams.length - 1].name
               : 'Not Assigned'}
@@ -16,29 +16,29 @@ function ProfileDetails({ profileData }) {
         </span>
         <span>
           <strong>Years of Experience:</strong>{' '}
-          <span className="value">
+          <span className={`${styles.value}`}>
             {profileData.skillInfo?.general?.yearsOfExperience || 'N/A'}
           </span>
         </span>
       </div>
       <h3>Contact Information</h3>
-      <hr className="horizontal-separator" />
-      <div className="contacts-info">
+      <hr className={`${styles.horizontalSeparator}`} />
+      <div className={`${styles.contactsInfo}`}>
         <span>
           <strong>Email:</strong>{' '}
-          <span className="value">{profileData.contactInfo.email || '🔒'}</span>
+          <span className={`${styles.value}`}>{profileData.contactInfo.email || '🔒'}</span>
         </span>
         <span>
           <strong>Phone Number:</strong>{' '}
-          <span className="value">{profileData.contactInfo.phone || '🔒'}</span>
+          <span className={`${styles.value}`}>{profileData.contactInfo.phone || '🔒'}</span>
         </span>
         <span>
           <strong>Slack:</strong>{' '}
-          <span className="value">{profileData.socialHandles.slack || 'N/A'}</span>
+          <span className={`${styles.value}`}>{profileData.socialHandles.slack || 'N/A'}</span>
         </span>
         <span>
           <strong>GitHub:</strong>{' '}
-          <span className="value">
+          <span className={`${styles.value}`}>
             {profileData.socialHandles.github ? (
               <a
                 href={
@@ -48,7 +48,7 @@ function ProfileDetails({ profileData }) {
                 }
                 target="_blank"
                 rel="noopener noreferrer"
-                className="github-link"
+                className={`${styles.githubLink}`}
               >
                 {profileData.socialHandles.github.includes('http')
                   ? profileData.socialHandles.github.split('/').pop()
@@ -60,7 +60,7 @@ function ProfileDetails({ profileData }) {
           </span>
         </span>
       </div>
-      <hr className="horizontal-separator" />
+      <hr className={`${styles.horizontalSeparator}`} />
     </div>
   );
 }
