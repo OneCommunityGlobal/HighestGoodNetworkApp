@@ -73,6 +73,7 @@ import {
 import {
   getTimeEndDateEntriesByPeriod,
   getTimeStartDateEntriesByPeriod,
+  getTimeEntriesForWeek,
 } from '../../actions/timeEntries.js';
 import ConfirmRemoveModal from './UserProfileModal/confirmRemoveModal';
 import { formatDateYYYYMMDD, CREATED_DATE_CRITERIA } from 'utils/formatDate.js';
@@ -126,6 +127,7 @@ function UserProfile(props) {
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
   const toggleRemoveModal = () => setIsRemoveModalOpen(!isRemoveModalOpen);
   const [loadingSummaries, setLoadingSummaries] = useState(false);
+  const allRequests = useSelector(state => state.timeOffRequests?.requests);
 
   const updateRemovedImage = async () => {
     try {
@@ -152,6 +154,8 @@ function UserProfile(props) {
 
   const [userStartDate, setUserStartDate] = useState('');
   const [userEndDate, setUserEndDate] = useState('');
+  const [originalStartDate, setOriginalStartDate] = useState('');
+  const [startDateMode, setStartDateMode] = useState('manual'); // 'manual' or 'calculated'
 
   const [inputAutoComplete, setInputAutoComplete] = useState([]);
   const [inputAutoStatus, setInputAutoStatus] = useState();
@@ -248,8 +252,8 @@ function UserProfile(props) {
 
     if (!teamId) {
       setSummaryIntro(
-        `This week’s summary was managed by ${currentManager.firstName} ${currentManager.lastName} and includes . 
-         These people did NOT provide a summary . 
+        `This week’s summary was managed by ${currentManager.firstName} ${currentManager.lastName} and includes .
+         These people did NOT provide a summary .
          <Insert the proofread and single-paragraph summary created by ChatGPT>`,
       );
       return;
@@ -263,13 +267,30 @@ function UserProfile(props) {
         member => member._id !== currentManager._id && member.isActive,
       );
 
-      const memberSubmitted = activeMembers
-        .filter(member => member.weeklySummaries[0].summary !== '')
-        .map(member => `${member.firstName} ${member.lastName}`);
+      //submitted a summary, maybe didn't complete their hours just yet
+      const memberSubmitted = await Promise.all(
+        activeMembers
+          .filter(member => member.weeklySummaries[0].summary !== '')
+          .map(async member => {
+            const results = await dispatch(getTimeEntriesForWeek(member._id, 0));
+
+            const returnData = calculateTotalTime(results.data, true);
+
+            return returnData < member.weeklycommittedHours
+              ? `${member.firstName} ${member.lastName} hasn't completed hours`
+              : `${member.firstName} ${member.lastName}`;
+          }),
+      );
 
       const memberNotSubmitted = activeMembers
         .filter(member => member.weeklySummaries[0].summary === '')
-        .map(member => `${member.firstName} ${member.lastName}`);
+        .map(member => {
+          if (getTimeOffStatus(member._id)) {
+            return `${member.firstName} ${member.lastName} off for the week`;
+          } else {
+            return `${member.firstName} ${member.lastName}`;
+          }
+        });
 
       const memberSubmittedString =
         memberSubmitted.length !== 0
@@ -288,6 +309,13 @@ function UserProfile(props) {
       console.error('Error fetching team users:', error);
     }
   };
+
+  const calculateTotalTime = (data, isTangible) => {
+    const filteredData = data.filter(entry => entry.isTangible === isTangible);
+    const reducer = (total, entry) => total + Number(entry.hours) + Number(entry.minutes) / 60;
+    return filteredData.reduce(reducer, 0);
+  };
+
   const loadUserTasks = async () => {
     const userId = props?.match?.params?.userId;
     axios
@@ -322,6 +350,29 @@ function UserProfile(props) {
     }
   };
 
+  const getTimeOffStatus = personId => {
+    if (!allRequests[personId]) {
+      return false;
+    }
+    let hasTimeOff = false;
+    const sortedRequests = allRequests[personId].sort((a, b) =>
+      moment(a.startingDate).diff(moment(b.startingDate)),
+    );
+
+    const mostRecentRequest =
+      sortedRequests.find(request => moment().isBefore(moment(request.endingDate), 'day')) ||
+      sortedRequests[0];
+
+    const startOfWeek = moment().startOf('week');
+    const endOfWeek = moment().endOf('week');
+
+    const isCurrentlyOff =
+      moment(mostRecentRequest.startingDate).isBefore(endOfWeek) &&
+      moment(mostRecentRequest.endingDate).isSameOrAfter(startOfWeek);
+
+    return isCurrentlyOff;
+  };
+
   const loadUserProfile = async () => {
     const userId = props?.match?.params?.userId;
 
@@ -351,37 +402,22 @@ function UserProfile(props) {
         startDate: newUserProfile?.startDate ? formatDateYYYYMMDD(newUserProfile?.startDate) : '',
         createdDate: formatDateYYYYMMDD(newUserProfile?.createdDate),
         ...(newUserProfile?.endDate &&
-          newUserProfile.endDate !== '' && { endDate: formatDateYYYYMMDD(newUserProfile.endDate) }),
+          newUserProfile.endDate !== '' && {
+            endDate: formatDateYYYYMMDD(newUserProfile.endDate),
+          }),
       };
 
       setUserProfile(profileWithFormattedDates);
       setOriginalUserProfile(profileWithFormattedDates);
+      setOriginalStartDate(profileWithFormattedDates.startDate);
       setIsRehireable(newUserProfile.isRehireable);
 
       // run after main profile is loaded
       const teamId = newUserProfile?.teams[0]?._id;
       loadSummaryIntroDetails(teamId, newUserProfile);
 
-      // fetch start date separately tonot block main profile rendering
-      dispatch(
-        getTimeStartDateEntriesByPeriod(userId, newUserProfile.createdDate, newUserProfile.toDate),
-      ).then(startDate => {
-        if (startDate !== 'N/A') {
-          const formattedStartDate = startDate.split('T')[0];
-          setUserStartDate(formattedStartDate);
-
-          // Update start date if needed
-          const createdDate = newUserProfile?.createdDate
-            ? newUserProfile.createdDate.split('T')[0]
-            : null;
-
-          if (createdDate && new Date(startDate) < new Date(createdDate)) {
-            setUserProfile(prev => ({ ...prev, startDate: createdDate }));
-          } else {
-            setUserProfile(prev => ({ ...prev, startDate: formattedStartDate }));
-          }
-        }
-      });
+      // Note: Removed automatic getTimeStartDateEntriesByPeriod call to prevent overwriting manual startDate changes
+      // Users can now toggle between manual and calculated startDate via button
 
       checkIsProjectsEqual();
       setShowLoading(false);
@@ -735,7 +771,11 @@ function UserProfile(props) {
 
     if (!isActive) {
       endDate = await dispatch(
-        getTimeEndDateEntriesByPeriod(userProfile._id, userProfile.createdDate, userProfile.toDate),
+        getTimeEndDateEntriesByPeriod(
+          userProfile._id,
+          userProfile.createdDate,
+          moment().format('YYYY-MM-DDTHH:mm:ss'),
+        ),
       );
       if (endDate == 'N/A') {
         endDate = userProfile.createdDate;
@@ -932,6 +972,42 @@ function UserProfile(props) {
     setUserEndDate(endDate);
   };
 
+  const toggleStartDateMode = async () => {
+    if (startDateMode === 'manual') {
+      // Switch to calculated mode - fetch from time entries
+      setStartDateMode('calculated');
+      const userId = props?.match?.params?.userId;
+      if (userId && userProfile) {
+        try {
+          const startDate = await dispatch(
+            getTimeStartDateEntriesByPeriod(userId, userProfile.createdDate, userProfile.toDate),
+          );
+          if (startDate !== 'N/A') {
+            const formattedStartDate = startDate.split('T')[0];
+            setUserStartDate(formattedStartDate);
+
+            // Update start date if needed
+            const createdDate = userProfile?.createdDate
+              ? userProfile.createdDate.split('T')[0]
+              : null;
+
+            if (createdDate && new Date(startDate) < new Date(createdDate)) {
+              setUserProfile(prev => ({ ...prev, startDate: createdDate }));
+            } else {
+              setUserProfile(prev => ({ ...prev, startDate: formattedStartDate }));
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching calculated start date:', error);
+        }
+      }
+    } else {
+      // Switch to manual mode - restore original database value
+      setStartDateMode('manual');
+      setUserProfile(prev => ({ ...prev, startDate: originalStartDate }));
+    }
+  };
+
   return (
     <div className={darkMode ? 'bg-oxford-blue' : ''} style={{ minHeight: '100%' }}>
       <ActiveInactiveConfirmationPopup
@@ -1020,12 +1096,12 @@ function UserProfile(props) {
             ) : (
               <></>
             )}
-            {/*                   
-              {((userProfile?.profilePic==undefined || 
-                userProfile?.profilePic==null || 
-                userProfile?.profilePic=="")&& 
+            {/*
+              {((userProfile?.profilePic==undefined ||
+                userProfile?.profilePic==null ||
+                userProfile?.profilePic=="")&&
                 (userProfile?.suggestedProfilePics!==undefined &&
-                  userProfile?.suggestedProfilePics!==null && 
+                  userProfile?.suggestedProfilePics!==null &&
                   userProfile?.suggestedProfilePics.length!==0
                 ))?
                 <Button color="primary" onClick={toggleModal}>Suggested Profile Image</Button>
@@ -1343,6 +1419,8 @@ function UserProfile(props) {
                   canEdit={canEditUserProfile}
                   canUpdateSummaryRequirements={canUpdateSummaryRequirements}
                   onStartDate={handleStartDate}
+                  startDateMode={startDateMode}
+                  toggleStartDateMode={toggleStartDateMode}
                   darkMode={darkMode}
                 />
               </TabPane>
@@ -1442,7 +1520,7 @@ function UserProfile(props) {
                   </Button>
                 </Link>
               )}
-              {(canEdit && activeTab || canEditTeamCode) && (
+              {((canEdit && activeTab) || canEditTeamCode) && (
                 <>
                   <SaveButton
                     className="mr-1 btn-bottom"
@@ -1647,6 +1725,8 @@ function UserProfile(props) {
                     canEdit={canEditUserProfile}
                     canUpdateSummaryRequirements={canUpdateSummaryRequirements}
                     onStartDate={handleStartDate}
+                    startDateMode={startDateMode}
+                    toggleStartDateMode={toggleStartDateMode}
                     darkMode={darkMode}
                   />
                 </ModalBody>
@@ -1990,4 +2070,6 @@ function UserProfile(props) {
   );
 }
 
-export default connect(null, { hasPermission, updateUserStatus })(UserProfile);
+export default connect(null, { hasPermission, updateUserStatus, getTimeEntriesForWeek })(
+  UserProfile,
+);

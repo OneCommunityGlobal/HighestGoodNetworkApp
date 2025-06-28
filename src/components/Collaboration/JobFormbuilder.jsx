@@ -1,10 +1,8 @@
-/* eslint-disable no-alert */
-/* eslint-disable no-console */
 import { useState, useEffect } from 'react';
-import './JobFormBuilder.css';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
+import styles from './JobFormBuilder.module.css';
 import { ENDPOINTS } from '../../utils/URL';
 import OneCommunityImage from './One-Community-Horizontal-Homepage-Header-980x140px-2.png';
 import QuestionSetManager from './QuestionSetManager';
@@ -232,6 +230,7 @@ function JobFormBuilder() {
 
   const handleAddOption = () => {
     if (newOption.trim() === '') {
+      // eslint-disable-next-line no-alert
       alert('Option cannot be empty!');
       return;
     }
@@ -244,6 +243,7 @@ function JobFormBuilder() {
 
   const handleAddField = async () => {
     if (newField.questionText.trim() === '') {
+      // eslint-disable-next-line no-alert
       alert('Field label is required!');
       return;
     }
@@ -252,6 +252,7 @@ function JobFormBuilder() {
       ['checkbox', 'radio', 'dropdown'].includes(newField.questionType) &&
       newField.options.length === 0
     ) {
+      // eslint-disable-next-line no-alert
       alert('You must add at least one option for this field!');
       return;
     }
@@ -307,17 +308,26 @@ function JobFormBuilder() {
   };
 
   return (
-    <div className="form-builder-container">
-      <img src={OneCommunityImage} alt="One Community Logo" id="onecommunity-image" />
-      <div className="jobform-navbar">
+    <div className={styles.formBuilderContainer}>
+      <img
+        src={OneCommunityImage}
+        alt="One Community Logo"
+        id="onecommunity-image"
+        className={styles.oneCommunityGlobalImg}
+      />
+      <div className={styles.jobformNavbar}>
         <div>
-          <input placeholder="Enter Job Title" />
-          <button type="button" className="go-button">
+          <input placeholder="Enter Job Title" className={styles.jobformInput} />
+          <button type="button" className={styles.goButton}>
             Go
           </button>
         </div>
         <div>
-          <select value={jobTitle} onChange={q => setJobTitle(q.target.value)}>
+          <select
+            value={jobTitle}
+            onChange={q => setJobTitle(q.target.value)}
+            className={styles.jobformSelect}
+          >
             <option value="Please Choose an option">Please Choose an Option</option>
             {jobPositions.map(e => (
               <option key={uuidv4()} value={e}>
@@ -327,16 +337,14 @@ function JobFormBuilder() {
           </select>
         </div>
       </div>
-
-      <h1>FORM CREATION</h1>
+      <h1 className={styles.jobformTitle}>FORM CREATION</h1>
 
       {role === 'Owner' ? (
-        <div className="custom-form">
-          <p>
-            Build your job application form by importing question templates or adding individual
-            questions. Use the question templates to quickly populate common questions, then
-            customize, edit, clone, or rearrange them as needed. You can control the visibility of
-            each question with the checkbox.
+        <div className={styles.customForm}>
+          <p className={styles.jobformDesc}>
+            Fill the form with questions about a specific position you want to create an ad for. The
+            default questions will automatically appear and are alredy selected. You can pick and
+            choose them with the checkbox.
           </p>
           <QuestionSetManager
             formFields={formFields}
@@ -346,13 +354,14 @@ function JobFormBuilder() {
           <form>
             {formFields.map((field, index) => (
               <div
-                className="form-div"
+                className={styles.formDiv}
                 /* eslint-disable-next-line react/no-array-index-key */
                 key={index + 1}
               >
                 <QuestionFieldActions
                   field={field}
                   index={index}
+                  className={styles.formDivCheckbox}
                   totalFields={formFields.length}
                   onClone={cloneField}
                   onMove={moveField}
@@ -361,25 +370,37 @@ function JobFormBuilder() {
                   visible={field.visible}
                   onVisibilityChange={event => changeVisiblity(event, field)}
                 />
-                <div key={uuidv4()} className="form-field">
-                  <label className="field-label">{field.questionText}</label>
-                  <div className="field-options">
+                <div key={uuidv4()} className={styles.formField}>
+                  <label className={`${styles.fieldLabel} ${styles.jbformLabel}`}>
+                    {field.questionText}
+                  </label>
+                  <div className={styles.fieldOptions}>
                     {field.questionType === 'textbox' && (
-                      <input type="text" placeholder="Enter Text here" />
+                      <input
+                        type="text"
+                        placeholder="Enter Text here"
+                        className={styles.jobformInput}
+                      />
                     )}
                     {field.questionType === 'date' && (
-                      <input type="date" placeholder="Enter date" />
+                      <input type="date" placeholder="Enter date" className={styles.jobformInput} />
                     )}
-                    {field.questionType === 'textarea' && <textarea />}
+                    {field.questionType === 'textarea' && (
+                      <textarea className={styles.jobformTextarea} />
+                    )}
                     {['checkbox', 'radio'].includes(field.questionType) &&
                       field.options.map(option => (
-                        <div key={uuidv4()} className="option-item">
-                          <input type={field.questionType} name={`field-${index}`} />
-                          <label className="jbform-label">{option}</label>
+                        <div key={uuidv4()} className={styles.optionItem}>
+                          <input
+                            type={field.questionType}
+                            name={`field-${index}`}
+                            className={styles.jobformInput}
+                          />
+                          <label className={styles.jbformLabel}>{option}</label>
                         </div>
                       ))}
                     {field.questionType === 'dropdown' && (
-                      <select>
+                      <select className={styles.jobformSelect}>
                         {field.options.map((option, idx) => (
                           <option
                             /* eslint-disable-next-line react/no-array-index-key */
@@ -396,9 +417,9 @@ function JobFormBuilder() {
               </div>
             ))}
           </form>
-          <div className="new-field-section">
+          <div className={styles.newFieldSection}>
             <div>
-              <label className="jbform-label">
+              <label className={styles.jbformLabel}>
                 Field Label:
                 <input
                   type="text"
@@ -408,14 +429,16 @@ function JobFormBuilder() {
                     setNewField(prev => ({ ...prev, questionText: e.target.value }));
                   }}
                   placeholder="Enter Field Label"
+                  className={styles.jobformInput}
                 />
               </label>
             </div>
             <div>
-              <label className="jbform-label">
+              <label className={styles.jbformLabel}>
                 Input Type:
                 <select
                   value={newField.questionType}
+                  className={styles.jobformSelect}
                   onChange={e => {
                     e.persist();
                     setNewField(prev => ({
@@ -437,23 +460,24 @@ function JobFormBuilder() {
 
             {/* Options Section */}
             {['checkbox', 'radio', 'dropdown'].includes(newField.questionType) && (
-              <div className="options-section">
-                <label className="jbform-label">
+              <div className={styles.optionsSection}>
+                <label className={styles.jbformLabel}>
                   Add Option:
                   <input
                     type="text"
                     value={newOption}
                     onChange={e => setNewOption(e.target.value)}
+                    className={styles.jobformInput}
                     placeholder="Enter an option"
                   />
                 </label>
-                <button type="button" onClick={handleAddOption} className="add-option-button">
+                <button type="button" onClick={handleAddOption} className={styles.addOptionButton}>
                   Add Option
                 </button>
-                <div className="options-list">
+                <div className={styles.optionsList}>
                   <h4>Options:</h4>
                   {newField.options.map(option => (
-                    <div key={uuidv4()} className="option-item">
+                    <div key={uuidv4()} className={styles.optionItem}>
                       {option}
                     </div>
                   ))}
@@ -461,11 +485,11 @@ function JobFormBuilder() {
               </div>
             )}
 
-            <button type="button" onClick={handleAddField} className="add-field-button">
+            <button type="button" onClick={handleAddField} className={styles.addFieldButton}>
               Add Field
             </button>
           </div>
-          <button type="submit" className="job-submit-button" onClick={handleSubmit}>
+          <button type="submit" className={styles.jobSubmitButton} onClick={handleSubmit}>
             Proceed to Submit with Details
           </button>
           {editModalOpen && editingQuestion && (
