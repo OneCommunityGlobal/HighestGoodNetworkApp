@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LabelList
 } from 'recharts';
@@ -20,49 +20,33 @@ const data = [
   { prNumber: 'PR1249', reviews: 19 },
   { prNumber: 'PR1248', reviews: 0 },
   { prNumber: 'PR1242', reviews: 2 },
-  { prNumber: 'PR1241', reviews: 20 },
+  { prNumber: 'PR1241', reviews: 50 }
 ];
 
-const durationOptions = ['Last Week', 'Last 2 weeks', 'Last Month', 'All Time'];
-
-const PopularPRChart = () => {
-  const [duration, setDuration] = useState('Last Week');
-
-  // Temporary data
+const PopularPRChart = ({ duration }) => {
   const filteredData = data;
 
   return (
-    <div style = {{ width: '100%', height: 500, overflowY: 'auto' }}>
-      <div style = {{ marginBottom: '1rem' }}>
-        <label htmlFor = "duration"> Duration: </label>
-        <select
-          id = "duration"
-          value = {duration}
-          onChange = {(e) => setDuration(e.target.value)}
-          style = {{ padding: '0.5rem', borderRadius: '4px' }}
-        >
-          {durationOptions.map(option => (
-            <option key = {option} value = {option}> {option} </option>
-          ))}
-        </select>
-      </div>
-
+    <div style={{ width: '100%', height: 500, overflowY: 'auto' }}>
       <ResponsiveContainer width="100%" height={400}>
         <BarChart
-          data = {filteredData}
-          layout = "vertical"
-          margin = {{ top: 20, right: 30, left: 150, bottom: 40 }}
+          data={filteredData}
+          layout="vertical"
+          margin={{ top: 20, right: 30, left: 150, bottom: 40 }}
         >
-          <XAxis type = "number" label = {{ value: 'Number of Reviews', position: 'insideBottom', offset: -5 }} />
+          <XAxis
+            type="number"
+            label={{ value: 'Number of Reviews', position: 'insideBottom', offset: -5 }}
+          />
           <YAxis
-            dataKey = "prNumber"
-            type = "category"
-            label = {{ value: 'PR Numbers', angle: -90, position: 'insideLeft' }}
-            width = {100}
+            dataKey="prNumber"
+            type="category"
+            label={{ value: 'PR Numbers', angle: -90, position: 'insideLeft' }}
+            width={100}
           />
           <Tooltip />
-          <Bar dataKey = "reviews" fill = "#052C65">
-            <LabelList dataKey = "reviews" position = "right" />
+          <Bar dataKey="reviews" fill="#052C65">
+            <LabelList dataKey="reviews" position="right" />
           </Bar>
         </BarChart>
       </ResponsiveContainer>

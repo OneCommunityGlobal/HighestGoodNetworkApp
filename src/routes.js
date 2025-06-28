@@ -141,6 +141,7 @@ import PopularPRChart from 'components/Analytics/PopularPRChart';
 import LogTools from './components/BMDashboard/LogTools/LogTools';
 import EquipmentUpdate from './components/BMDashboard/Tools/EquipmentUpdate';
 import ReviewersRequirementChart from 'components/Analytics/ReviewersRequirementChart';
+import AnalyticsDashboard from 'components/Analytics/AnalyticsDashboard';
 
 // Social Architecture
 const ResourceManagement = lazy(() => import('./components/ResourceManagement/ResourceManagement'));
@@ -491,6 +492,12 @@ export default (
           path="/analytics/review-summary"
           exact
           component={ReviewersRequirementChart}
+          fallback
+        />
+        <ProtectedRoute
+          path="/analytics/dashboard"
+          exact
+          component={AnalyticsDashboard}
           fallback
         />
 
