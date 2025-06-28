@@ -8,7 +8,7 @@ import BackendSkills from './BackendSkills';
 import DeploymentSkills from './DeploymentSkills';
 import SoftwarePractices from './SoftwarePractices';
 import AdditionalInfo from './AdditionalInfo';
-import '../styles/RightSection.css';
+import styles from '../styles/RightSection.module.css';
 
 /* function RightSection({ profileData }) { */
 function RightSection() {
@@ -39,9 +39,9 @@ function RightSection() {
   };
 
   return (
-    <div className="right-section">
+    <div className={`${styles.rightSection}`}>
       <ProfileDetails profileData={profileData} />
-      <div className="skills-and-chart">
+      <div className={`${styles.skillsAndChart}`}>
         <Skills selectedSkill={selectedSkill} onSkillClick={handleSkillClick} />
         {renderContent()}
       </div>

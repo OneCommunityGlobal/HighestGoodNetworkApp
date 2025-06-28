@@ -6,7 +6,7 @@ import WeeklySummary from '../WeeklySummary/WeeklySummary';
 import Badge from '../Badge';
 import Timelog from '../Timelog/Timelog';
 import SummaryBar from '../SummaryBar/SummaryBar';
-import './Dashboard.css';
+import styles from './Dashboard.module.css';
 import '../../App.css';
 import TimeOffRequestDetailModal from './TimeOffRequestDetailModal';
 

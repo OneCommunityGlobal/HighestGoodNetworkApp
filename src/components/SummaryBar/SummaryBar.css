@@ -218,7 +218,7 @@
 /* XLarge devices (landscape phones, 544px and down) */
 @media (max-width: 1200px) {
   .med_text_summary {
-    font-size: 0.75rem;
+    font-size: 0.70rem;
   }
   .name-linebreak {
     display: none;
@@ -231,14 +231,14 @@
     font-size: 2rem;
   }
   .med_text_summary {
-    font-size: 1rem;
+    font-size: 0.9rem;
   }
 }
 
 /* Med devices (tablets, 768px and down) */
 @media (max-width: 768px) {
   .med_text_summary {
-    font-size: 1rem;
+    font-size: 0.9rem;
   }
 }
 
