@@ -5,7 +5,7 @@ import cs from 'classnames';
 import { Provider } from 'react-redux';
 import styles from './Timer.module.css';
 import './Countdown.module.css';
-import createStore from '../../store';
+import { store } from '../../store';
 
 function TimerPopout({ authUser, darkMode, TimerComponent }) {
   const popupRef = useRef(null);
@@ -74,7 +74,6 @@ function TimerPopout({ authUser, darkMode, TimerComponent }) {
     `);
 
     const root = popup.document.getElementById('timer-root');
-    const { store } = createStore();
     ReactDOM.render(
       <Provider store={store}>
         <TimerComponent authUser={authUser} darkMode={darkMode} isPopout />
