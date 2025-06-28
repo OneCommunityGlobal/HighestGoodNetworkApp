@@ -10,13 +10,13 @@ import logger from '../services/logService';
 import httpService from '../services/httpService';
 import { setCurrentUser, logoutUser } from '../actions/authActions';
 
-import configureStore from '../store';
+import { persistor, store } from '../store';
 import Loading from './common/Loading';
 
 import config from '../config.json';
 import '../App.css';
+import { initMessagingSocket } from '../utils/messagingSocket';
 
-const { persistor, store } = configureStore();
 const { tokenKey } = config;
 // Require re-login 2 days before the token expires on server side
 // Avoid failure due to token expiration when user is working
@@ -48,7 +48,6 @@ function UpdateDocumentTitle() {
     authUser?.firstName && authUser?.lastName
       ? `${authUser.firstName} ${authUser.lastName}`
       : 'User';
-
   // Define the routes array with pattern and title
   const Routes = [
     { pattern: /^\/ProfileInitialSetup\/[^/]+$/, title: 'Profile Initial Setup' },
@@ -102,6 +101,7 @@ function UpdateDocumentTitle() {
     { pattern: /^\/bmdashboard\/tools\/[^/]+\/update$/, title: 'Update Tool' },
     { pattern: /^\/bmdashboard\/tools$/, title: 'Tools List' },
     { pattern: /^\/bmdashboard\/tools\/add$/, title: 'Add Tool' },
+    { pattern: /^\/bmdashboard\/tools\/equipmentupdate$/, title: 'Update Equipment or Tool' },
     { pattern: /^\/bmdashboard\/tools\/log$/, title: 'Log Tools' },
     { pattern: /^\/bmdashboard\/tools\/[^/]+$/, title: 'Tool Detail' },
     { pattern: /^\/bmdashboard\/lessonform\/[^/]*$/, title: 'Lesson Form' },
@@ -126,6 +126,15 @@ function UpdateDocumentTitle() {
     const match = Routes.find(route => route.pattern.test(location.pathname));
     document.title = match.title;
   }, [location, fullName]);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      initMessagingSocket(token);
+    } else {
+      Error('❌ No auth token found for WebSocket connection.');
+    }
+  }, []);
 
   return null;
 }

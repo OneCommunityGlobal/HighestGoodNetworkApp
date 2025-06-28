@@ -115,6 +115,8 @@ function WeeklySummaries({ userProfile }) {
     max_height: 500,
     autoresize_bottom_margin: 1,
     images_upload_handler: customImageUploadHandler,
+    skin: darkMode ? 'oxide-dark' : 'oxide',
+    content_css: darkMode ? 'dark' : 'default',
   };
 
   const renderSummary = (title, summary, index) => {
@@ -156,7 +158,7 @@ function WeeklySummaries({ userProfile }) {
     if (summary && (canEdit || currentUserID === loggedInUserId)) {
       // Display the summary with an "Edit" button
       return (
-        <div>
+        <div className={darkMode ? 'bg-yinmn-blue summary-text-light' : ''}>
           <h3>{title}</h3>
           {parse(editedSummaries[index])}
           <button type="button" className="button edit-button" onClick={() => toggleEdit(index)}>
@@ -168,7 +170,7 @@ function WeeklySummaries({ userProfile }) {
     if (summary) {
       // Display the summary with an "Edit" button
       return (
-        <div>
+        <div className={darkMode ? 'bg-yinmn-blue summary-text-light' : ''}>
           <h3>{title}</h3>
           {parse(editedSummaries[index])}
         </div>
@@ -178,7 +180,7 @@ function WeeklySummaries({ userProfile }) {
     return (
       <div>
         <h3>{title}</h3>
-        <p>
+        <p className={darkMode ? 'bg-yinmn-blue text-light' : ''}>
           {userProfile.firstName} {userProfile.lastName} did not submit a summary.
         </p>
       </div>

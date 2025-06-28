@@ -1,25 +1,35 @@
 // Version 1.0.0 - Initial tests for Login page structure, input handling, and login behavior
-
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
+// eslint-disable-next-line no-unused-vars
 import { shallow, mount } from 'enzyme';
+// eslint-disable-next-line no-unused-vars
+import { BrowserRouter } from 'react-router-dom';
 import { Login } from '../Login';
 import { loginUser } from '../../../actions/authActions';
 import { clearErrors } from '../../../actions/errorsActions';
-import { BrowserRouter } from 'react-router-dom';
 
 describe('Login page structure', () => {
-  let mountedLogin, props;
+  let mountedLogin;
+  let props;
 
   // Before each test, we initialize the props and shallow render the Login component
   beforeEach(() => {
     props = {
       auth: { isAuthenticated: false }, // Simulate a non-authenticated user
       errors: {}, // No errors initially
-      loginUser: loginUser, // Action for logging in
-      clearErrors: clearErrors, // Action for clearing errors
+      loginUser, // Action for logging in
+      clearErrors, // Action for clearing errors
     };
     // Shallow render the component to test its structure
-    mountedLogin = shallow(<Login {...props} />);
+    mountedLogin = shallow(
+      <Login
+        auth={props.auth}
+        errors={props.errors}
+        loginUser={props.loginUser}
+        clearErrors={props.clearErrors}
+      />,
+    );
   });
 
   // Test for ensuring that there are two input fields (e.g., email and password)
@@ -43,7 +53,9 @@ describe('Login page structure', () => {
 });
 
 describe('When user tries to input data', () => {
-  let mountedLoginPage, props, loginU;
+  let mountedLoginPage;
+  let props;
+  let loginU;
 
   // Before each test, we reset props and shallow render the Login component with mock data
   beforeEach(() => {
@@ -53,7 +65,9 @@ describe('When user tries to input data', () => {
       errors: {}, // No errors initially
       loginUser: loginU, // Mock login function
     };
-    mountedLoginPage = shallow(<Login {...props} />);
+    mountedLoginPage = shallow(
+      <Login auth={props.auth} errors={props.errors} loginUser={props.loginUser} />,
+    );
   });
 
   // Test for calling the handleInput method when the input field changes
@@ -92,7 +106,7 @@ describe('When user tries to input data', () => {
     const mockEvent = { currentTarget: Input };
     mountedLoginPage.instance().handleInput(mockEvent); // Trigger input change
     expect(mountedLoginPage.instance().state.errors.password).toEqual(
-      '"Password" is not allowed to be empty' // Expected error message for an empty password field
+      '"Password" is not allowed to be empty', // Expected error message for an empty password field
     );
   });
 
@@ -125,10 +139,17 @@ describe('Login behavior', () => {
     props = {
       auth: { isAuthenticated: true }, // Simulate authenticated user
       errors: {},
-      loginUser: loginUser,
+      loginUser,
       history: [], // Mock browser history object
     };
-    const wrapper = shallow(<Login {...props} />); // Shallow render the component
+    const wrapper = shallow(
+      <Login
+        auth={props.auth}
+        errors={props.errors}
+        loginUser={props.loginUser}
+        history={props.history} // Pass the mocked history object
+      />,
+    ); // Shallow render the component
     expect(wrapper.instance().props.history).toEqual(['/']); // Ensure the user is redirected to '/'
   });
 });

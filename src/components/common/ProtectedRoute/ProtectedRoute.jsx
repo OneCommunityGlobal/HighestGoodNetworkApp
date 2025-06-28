@@ -18,7 +18,7 @@ const ProtectedRoute = ({
   const userPermissions = auth.user?.permissions?.frontPermissions || [];
   const permissionsAllowed = new Set([...rolePermissions, ...userPermissions]);
   let hasPermissionToAccess = routePermissions?.some(perm => permissionsAllowed.has(perm));
-
+  
   if (Array.isArray(routePermissions)) {
     if (rolePermissions?.some(perm => routePermissions.includes(perm))) {
       hasPermissionToAccess = true;

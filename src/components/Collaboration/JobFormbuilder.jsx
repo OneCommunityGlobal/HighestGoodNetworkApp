@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import './JobFormBuilder.css';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
+import styles from './JobFormBuilder.module.css';
 import { ENDPOINTS } from '../../utils/URL';
 import OneCommunityImage from './One-Community-Horizontal-Homepage-Header-980x140px-2.png';
 
@@ -141,17 +141,26 @@ function JobFormBuilder() {
   };
 
   return (
-    <div className="form-builder-container">
-      <img src={OneCommunityImage} alt="One Community Logo" id="onecommunity-image" />
-      <div className="jobform-navbar">
+    <div className={styles.formBuilderContainer}>
+      <img
+        src={OneCommunityImage}
+        alt="One Community Logo"
+        id="onecommunity-image"
+        className={styles.oneCommunityGlobalImg}
+      />
+      <div className={styles.jobformNavbar}>
         <div>
-          <input placeholder="Enter Job Title" />
-          <button type="button" className="go-button">
+          <input placeholder="Enter Job Title" className={styles.jobformInput} />
+          <button type="button" className={styles.goButton}>
             Go
           </button>
         </div>
         <div>
-          <select value={jobTitle} onChange={q => setJobTitle(q.target.value)}>
+          <select
+            value={jobTitle}
+            onChange={q => setJobTitle(q.target.value)}
+            className={styles.jobformSelect}
+          >
             <option value="Please Choose an option">Please Choose an Option</option>
             {jobPositions.map((e, i) => (
               <option
@@ -165,11 +174,11 @@ function JobFormBuilder() {
           </select>
         </div>
       </div>
-      <h1>FORM CREATION</h1>
+      <h1 className={styles.jobformTitle}>FORM CREATION</h1>
 
       {role === 'Owner' ? (
-        <div className="custom-form">
-          <p>
+        <div className={styles.customForm}>
+          <p className={styles.jobformDesc}>
             Fill the form with questions about a specific position you want to create an ad for. The
             default questions will automatically appear and are alredy selected. You can pick and
             choose them with the checkbox.
@@ -177,43 +186,56 @@ function JobFormBuilder() {
           <form>
             {formFields.map((field, index) => (
               <div
-                className="form-div"
+                className={styles.formDiv}
                 /* eslint-disable-next-line react/no-array-index-key */
                 key={index + 1}
               >
                 <input
                   type="checkbox"
                   id="form-div-checkbox"
+                  className={styles.formDivCheckbox}
                   checked={field.visible}
                   onChange={event => changeVisiblity(event, field)}
                 />
                 <div
                   /* eslint-disable-next-line react/no-array-index-key */
                   key={index + 1}
-                  className="form-field"
+                  className={styles.formField}
                 >
-                  <label className="field-label">{field.questionText}</label>
-                  <div className="field-options">
+                  <label className={`${styles.fieldLabel} ${styles.jbformLabel}`}>
+                    {field.questionText}
+                  </label>
+                  <div className={styles.fieldOptions}>
                     {field.questionType === 'textbox' && (
-                      <input type="text" placeholder="Enter Text here" />
+                      <input
+                        type="text"
+                        placeholder="Enter Text here"
+                        className={styles.jobformInput}
+                      />
                     )}
                     {field.questionType === 'date' && (
-                      <input type="date" placeholder="Enter date" />
+                      <input type="date" placeholder="Enter date" className={styles.jobformInput} />
                     )}
-                    {field.questionType === 'textarea' && <textarea />}
+                    {field.questionType === 'textarea' && (
+                      <textarea className={styles.jobformTextarea} />
+                    )}
                     {['checkbox', 'radio'].includes(field.questionType) &&
                       field.options.map((option, idx) => (
                         <div
                           /* eslint-disable-next-line react/no-array-index-key */
                           key={idx + 1}
-                          className="option-item"
+                          className={styles.optionItem}
                         >
-                          <input type={field.questionType} name={`field-${index}`} />
-                          <label>{option}</label>
+                          <input
+                            type={field.questionType}
+                            name={`field-${index}`}
+                            className={styles.jobformInput}
+                          />
+                          <label className={styles.jbformLabel}>{option}</label>
                         </div>
                       ))}
                     {field.questionType === 'dropdown' && (
-                      <select>
+                      <select className={styles.jobformSelect}>
                         {field.options.map((option, idx) => (
                           <option
                             /* eslint-disable-next-line react/no-array-index-key */
@@ -230,9 +252,9 @@ function JobFormBuilder() {
               </div>
             ))}
           </form>
-          <div className="new-field-section">
+          <div className={styles.newFieldSection}>
             <div>
-              <label>
+              <label className={styles.jbformLabel}>
                 Field Label:
                 <input
                   type="text"
@@ -242,14 +264,16 @@ function JobFormBuilder() {
                     setNewField(prev => ({ ...prev, questionText: e.target.value }));
                   }}
                   placeholder="Enter Field Label"
+                  className={styles.jobformInput}
                 />
               </label>
             </div>
             <div>
-              <label>
+              <label className={styles.jbformLabel}>
                 Input Type:
                 <select
                   value={newField.questionType}
+                  className={styles.jobformSelect}
                   onChange={e => {
                     e.persist();
                     setNewField(prev => ({
@@ -271,26 +295,27 @@ function JobFormBuilder() {
 
             {/* Options Section */}
             {['checkbox', 'radio', 'dropdown'].includes(newField.questionType) && (
-              <div className="options-section">
-                <label>
+              <div className={styles.optionsSection}>
+                <label className={styles.jbformLabel}>
                   Add Option:
                   <input
                     type="text"
                     value={newOption}
                     onChange={e => setNewOption(e.target.value)}
+                    className={styles.jobformInput}
                     placeholder="Enter an option"
                   />
                 </label>
-                <button type="button" onClick={handleAddOption} className="add-option-button">
+                <button type="button" onClick={handleAddOption} className={styles.addOptionButton}>
                   Add Option
                 </button>
-                <div className="options-list">
+                <div className={styles.optionsList}>
                   <h4>Options:</h4>
                   {newField.options.map((option, index) => (
                     <div
                       /* eslint-disable-next-line react/no-array-index-key */
                       key={index + 1}
-                      className="option-item"
+                      className={styles.optionItem}
                     >
                       {option}
                     </div>
@@ -299,11 +324,11 @@ function JobFormBuilder() {
               </div>
             )}
 
-            <button type="button" onClick={handleAddField} className="add-field-button">
+            <button type="button" onClick={handleAddField} className={styles.addFieldButton}>
               Add Field
             </button>
           </div>
-          <button type="submit" className="job-submit-button" onClick={handleSubmit}>
+          <button type="submit" className={styles.jobSubmitButton} onClick={handleSubmit}>
             Proceed to Submit with Details
           </button>
         </div>

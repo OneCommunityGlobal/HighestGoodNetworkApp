@@ -1,65 +1,48 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { Button } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { updateUserFinalDayStatusIsSet } from '../../actions/userManagement';
-import { boxStyle, boxStyleDark } from '../../styles';
+import { boxStyle } from '../../styles';
 import SetUpFinalDayPopUp from './SetUpFinalDayPopUp';
-import { SET_FINAL_DAY, CANCEL , PROCESSING } from '../../languages/en/ui';
+import { SET_FINAL_DAY, CANCEL } from '../../languages/en/ui';
 import { FinalDay } from '../../utils/enums';
-/**
- * @param {*} props
- * @param {Boolean} props.isBigBtn
- * @param {*} props.userProfile.isSet
- * @returns
- */
+
 function SetUpFinalDayButton(props) {
-  const { darkMode } = props;
-  const [isSet, setIsSet] = useState(false);
+  const { darkMode, userProfile, onFinalDaySave } = props;
+  const [isSet, setIsSet] = useState(!!userProfile.endDate); // Determine if the final day is already set
   const [finalDayDateOpen, setFinalDayDateOpen] = useState(false);
   const dispatch = useDispatch();
-  const [isLoading, setIsLoading] = useState(false); // Added loading state
 
-  useEffect(() => {
-    if (props.userProfile?.endDate !== undefined) setIsSet(true);
-  }, []);
-
-  const onFinalDayClick = async () => {
-    setIsLoading(true); // Start loading indicator
-    try {
-      const activeStatus = props.userProfile.isActive ? 'Active' : 'Inactive';
-
-      if (isSet) {
+  const handleButtonClick = async () => {
+    if (isSet) {
+      // Delete the final day
+      try {
         await updateUserFinalDayStatusIsSet(
-          props.userProfile,
-          activeStatus,
+          userProfile,
+          userProfile.isActive ? 'Active' : 'Inactive',
           undefined,
           FinalDay.NotSetFinalDay,
         )(dispatch);
 
         setIsSet(false);
-        await props.loadUserProfile(); // Ensure state sync
+        // eslint-disable-next-line no-unused-expressions
+        onFinalDaySave && onFinalDaySave({ ...userProfile, endDate: undefined });
         toast.success("This user's final day has been deleted.");
-      } else {
-        setFinalDayDateOpen(true);
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('Error deleting final day:', error);
+        toast.error("An error occurred while deleting the user's final day.");
       }
-    } catch (error) {
-      console.error('Error handling final day click:', error);
-      toast.error("An error occurred while updating the user's final day.");
-    } finally {
-      setIsLoading(false); // Stop loading indicator
+    } else {
+      // Open the popup to set the final day
+      setFinalDayDateOpen(true);
     }
   };
 
-  const setUpFinalDayPopupClose = () => {
-    setFinalDayDateOpen(false);
-  };
-
-  const deactiveUser = async finalDayDate => {
-    setIsLoading(true); // Start loading indicator
+  const handleSaveFinalDay = async (finalDayDate) => {
     try {
       await updateUserFinalDayStatusIsSet(
-        props.userProfile,
+        userProfile,
         'Active',
         finalDayDate,
         FinalDay.FinalDay,
@@ -67,13 +50,13 @@ function SetUpFinalDayButton(props) {
 
       setIsSet(true);
       setFinalDayDateOpen(false);
-      await props.loadUserProfile(); // Ensure state sync
+      // eslint-disable-next-line no-unused-expressions
+      onFinalDaySave && onFinalDaySave({ ...userProfile, endDate: finalDayDate });
       toast.success("This user's final day has been set.");
     } catch (error) {
-      console.error('Error setting the final day:', error);
+      // eslint-disable-next-line no-console
+      console.error('Error setting final day:', error);
       toast.error("An error occurred while setting the user's final day.");
-    } finally {
-      setIsLoading(false); // Stop loading indicator
     }
   };
 
@@ -81,23 +64,25 @@ function SetUpFinalDayButton(props) {
     <>
       <SetUpFinalDayPopUp
         open={finalDayDateOpen}
-        onClose={setUpFinalDayPopupClose}
-        onSave={deactiveUser}
+        onClose={() => setFinalDayDateOpen(false)}
+        onSave={handleSaveFinalDay}
+        darkMode={darkMode}
       />
-      <Button
-        outline={!darkMode}
-        color={isSet ? 'warning' : 'success'}
-        className={`btn ${darkMode ? '' : `btn-outline-${isSet ? 'warning' : 'success'}`} ${
-          props.isBigBtn ? '' : 'btn-sm'
-        }  mr-1`}
-        onClick={() => {
-          onFinalDayClick(props.userProfile, isSet);
+      <button
+        type="button"
+        className={`btn btn-outline-${isSet ? 'warning' : 'success'} btn-sm`}
+        onClick={handleButtonClick}
+        style={{
+          ...darkMode ? { boxShadow: '0 0 0 0', fontWeight: 'bold' } : boxStyle,
+          padding: '5px', // Added 2px padding
         }}
-        style={darkMode ? boxStyleDark : boxStyle}
+        id={`btn-final-day-${userProfile._id}`}
+        disabled={props.canChangeUserStatus}
       >
-        {isLoading ? PROCESSING : isSet ? CANCEL : SET_FINAL_DAY} {/* Show loading state */}
-      </Button>
+        {isSet ? CANCEL : SET_FINAL_DAY}
+      </button>
     </>
   );
 }
+
 export default SetUpFinalDayButton;

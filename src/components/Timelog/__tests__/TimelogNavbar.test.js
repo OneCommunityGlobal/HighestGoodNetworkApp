@@ -1,10 +1,14 @@
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
+// eslint-disable-next-line no-unused-vars
 import { screen, render, fireEvent } from '@testing-library/react';
+// eslint-disable-next-line no-unused-vars
 import userEvent from '@testing-library/user-event';
 import configureStore from 'redux-mock-store';
 import { Route } from 'react-router-dom';
 import TimelogNavbar from '../TimelogNavbar';
 import { renderWithRouterMatch } from '../../../__tests__/utils';
+// eslint-disable-next-line no-unused-vars
 import { authMock, userProfileMock, timeEntryMock, userProjectMock } from '../../../__tests__/mockStates';
 
 const mockStore = configureStore();
