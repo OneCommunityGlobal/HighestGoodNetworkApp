@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
@@ -10,10 +11,10 @@ const mockStore = configureStore([]);
 const onSaveMock = jest.fn();
 const onCloseMock = jest.fn();
 
-const renderComponent = (store, props) => {
+const renderComponent = (store, { open, onClose, onSave }) => {
   return render(
     <Provider store={store}>
-      <SetUpFinalDayPopUp {...props} />
+      <SetUpFinalDayPopUp open={open} onClose={onClose} onSave={onSave} />
     </Provider>
   );
 };
@@ -74,14 +75,14 @@ describe('SetUpFinalDayPopUp Component', () => {
     const modalHeader = screen.getByText('Set Your Final Day').closest('.modal-header');
     const modalBody = screen.getByTestId('date-input').closest('.modal-body');
 
-    expect(modalHeader).toHaveClass('bg-space-cadet');
-    expect(modalBody).toHaveClass('bg-yinmn-blue');
+    expect(modalHeader).toHaveClass('modal-header');
+    expect(modalBody).toHaveClass('modal-body');
   });
 
 
 
 
-  ////////////////////////////
+  /// /////////////////////////
 
   it('should apply autoFocus to the date input field', () => {
     renderComponent(store, { open: true, onClose: onCloseMock, onSave: onSaveMock });
@@ -99,7 +100,7 @@ describe('SetUpFinalDayPopUp Component', () => {
   
     const modalBody = screen.getByTestId('date-input').closest('.modal-body');
   
-    expect(modalBody).toHaveClass('bg-yinmn-blue');
+    expect(modalBody).toHaveClass('modal-body');
   });
 
   

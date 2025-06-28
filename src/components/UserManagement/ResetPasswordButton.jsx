@@ -23,6 +23,7 @@ class ResetPasswordButton extends React.PureComponent {
 
   onResetClick = () => {
     if (cantUpdateDevAdminDetails(this.props.user.email, this.props.authEmail)) {
+      // eslint-disable-next-line no-alert
       alert(
         'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. ' +
           'You shouldn’t even be using this account except to create your own accounts to use. ' +
@@ -67,7 +68,7 @@ class ResetPasswordButton extends React.PureComponent {
           onReset={this.resetPassword}
         />
         <>
-          {!this.props.canResetPassword ? (
+          {!this.props.canUpdatePassword ? (
             <Tooltip
               placement="bottom"
               isOpen={this.state.resetPasswordTooltipOpen}
@@ -90,7 +91,7 @@ class ResetPasswordButton extends React.PureComponent {
             }
             onClick={this.onResetClick}
             id={`btn-reset-password-${this.props.user._id}`}
-            disabled={!this.props.canResetPassword}
+            disabled={!this.props.canUpdatePassword}
           >
             Reset Password
           </Button>
