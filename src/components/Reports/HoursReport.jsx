@@ -35,6 +35,14 @@ const HoursReport = ({
       const ids = selectedPeople.map(p => p.value);
       response = await fetchHoursByPeople(ids, from, to);
     }
+    if (type === 'projects' && selectedProjects.length > 0) {
+      const ids = selectedProjects.map(p => p.value);
+      response = await fetchHoursByProjects(ids, from, to);
+    }
+    if (type === 'teams' && selectedTeams.length > 0) {
+      const ids = selectedTeams.map(t => t.value);
+      response = await fetchHoursByTeams(ids, from, to);
+    }
     setReportData(response);
     setLoading(false);
   };
@@ -55,6 +63,29 @@ const HoursReport = ({
         </Button>
       </div>
 
+      <div className="mb-3">
+        <label>Select Projects:</label>
+        <Select
+          isMulti
+          options={formatOptions(projects, 'projectName', '_id')}
+          onChange={setSelectedProjects}
+        />
+        <Button className="mt-2" onClick={() => handleFetch('projects')}>
+          Generate Projects Report
+        </Button>
+      </div>
+
+      <div className="mb-3">
+        <label>Select Teams:</label>
+        <Select
+          isMulti
+          options={formatOptions(teams, 'teamName', '_id')}
+          onChange={setSelectedTeams}
+        />
+        <Button className="mt-2" onClick={() => handleFetch('teams')}>
+          Generate Teams Report
+        </Button>
+      </div>
 
       {loading ? (
         <Spinner color="primary" />
