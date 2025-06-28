@@ -140,6 +140,7 @@ import PopularPRChart from 'components/Analytics/PopularPRChart';
 // eslint-disable-next-line import/order, import/no-unresolved
 import LogTools from './components/BMDashboard/LogTools/LogTools';
 import EquipmentUpdate from './components/BMDashboard/Tools/EquipmentUpdate';
+import ReviewersRequirementChart from 'components/Analytics/ReviewersRequirementChart';
 
 // Social Architecture
 const ResourceManagement = lazy(() => import('./components/ResourceManagement/ResourceManagement'));
@@ -484,6 +485,12 @@ export default (
           path="/analytics/popular-prs"
           exact
           component={PopularPRChart}
+          fallback
+        />
+        <ProtectedRoute
+          path="/analytics/review-summary"
+          exact
+          component={ReviewersRequirementChart}
           fallback
         />
 
