@@ -5,7 +5,8 @@ const initialState = {
 /* eslint-disable-next-line default-param-last */
 const userSkillsReducer = (state = initialState, action) => {
   switch (action.type) {
-    case 'SET_PROFILE_DATA':
+    case 'SET_USER_SKILLS_PROFILE_DATA':
+      // case 'SET_PROFILE_DATA':
       return {
         ...state,
         profileData: action.payload,

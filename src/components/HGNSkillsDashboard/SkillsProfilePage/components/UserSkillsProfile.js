@@ -45,7 +45,9 @@ function UserSkillsProfile() {
         if (!data) throw new Error('Failed to fetch profile data');
 
         // Send data to Redux store
-        dispatch({ type: 'SET_PROFILE_DATA', payload: data });
+        // dispatch({ type: 'SET_PROFILE_DATA', payload: data });
+        dispatch({ type: 'SET_USER_SKILLS_PROFILE_DATA', payload: data });
+
         setProfileData(data);
         setLoading(false);
       } catch (err) {

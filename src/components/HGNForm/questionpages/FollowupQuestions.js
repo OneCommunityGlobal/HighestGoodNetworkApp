@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import '../styles/FollowupQuestions.css';
 import { FaEdit, FaRegSave } from 'react-icons/fa';
@@ -21,6 +21,7 @@ function FollowupQuestions() {
   const [loading, setLoading] = useState(true);
   const location = useLocation();
   const { isOwner } = location.state;
+  const textareaRef = useRef(null);
   // Fetch data from database
   useEffect(() => {
     const fetchQuestions = async () => {
@@ -188,18 +189,31 @@ function FollowupQuestions() {
       // Page 5
       followUp: {
         platform: finalData.followup_platform,
+        mern_work_experience: finalData.followup_mern_work_experience,
         other_skills: finalData.followup_other_skills,
         suggestion: finalData.followup_suggestion,
         additional_info: finalData.followup_additional_info,
       },
     };
   };
-
   const groupedData = groupFormDataByPage(newVolunteer, user.userid);
 
   // TODO: Add logic to send groupedData to backend
   const handleFormSubmission = e => {
     e.preventDefault();
+
+    const wordCount = newVolunteer.followup_mern_work_experience
+      .trim()
+      .split(' ') // split by space
+      .filter(word => word !== '' && word !== '\n' && word !== '\t').length; // remove empty strings and tabs/newlines
+    if (wordCount < 20) {
+      // eslint-disable-next-line no-alert
+      alert('Please enter at least 20 words.');
+      // Re-focus the textarea
+      textareaRef.current?.focus();
+      return;
+    }
+
     dispatch(setformData(newVolunteer));
     axios
       .post(ENDPOINTS.HGN_FORM_SUBMIT, groupedData)
@@ -226,6 +240,9 @@ function FollowupQuestions() {
     setNewVolunteer({ ...newVolunteer, [e.target.name]: e.target.value });
   };
 
+  const handleTextareaChange = e => {
+    setNewVolunteer({ ...newVolunteer, [e.target.name]: e.target.value });
+  };
   const searchQuestion = (page, qno) => {
     const questiontext = questions.find(question => question.page === page && question.qno === qno);
     return questiontext.text;
@@ -255,13 +272,13 @@ function FollowupQuestions() {
           //     : 'followup_additional_info';
           const fieldNames = [
             'followup_platform',
+            'followup_mern_work_experience',
             'followup_other_skills',
             'followup_suggestion',
             'followup_additional_info',
           ];
 
           const fieldName = fieldNames[index] || 'followup_additional_info';
-
           return (
             <div className="follow-up" key={question._id || index}>
               <div className="question-container">
@@ -295,14 +312,23 @@ function FollowupQuestions() {
                   </p>
                 )}
               </div>
-
-              <input
-                type="text"
-                name={fieldName}
-                value={newVolunteer[fieldName] || ''}
-                onChange={handleTextChange}
-                required={index === 0} // Only the first field is required
-              />
+              {index === 1 ? (
+                <textarea
+                  name={fieldName}
+                  value={newVolunteer[fieldName] || ''}
+                  onChange={handleTextareaChange}
+                  ref={textareaRef}
+                  required
+                />
+              ) : (
+                <input
+                  type="text"
+                  name={fieldName}
+                  value={newVolunteer[fieldName] || ''}
+                  onChange={handleTextChange}
+                  required={index === 0} // Only the first field is required
+                />
+              )}
             </div>
           );
         })}
