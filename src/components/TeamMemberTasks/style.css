@@ -479,7 +479,7 @@
   background-color: #1C1C1C !important;
 }
 .dropdown-content {
-  z-index: 11 !important;
+  z-index: 11;
 }
 
 .rmsc.dark-mode .dropdown-content,
