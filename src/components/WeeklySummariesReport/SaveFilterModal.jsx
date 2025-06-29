@@ -30,8 +30,8 @@ function SaveFilterModal({
       return;
     }
 
-    if (filterName.trim().length < 3) {
-      setError('Filter name must be at least 3 characters long');
+    if (filterName.trim().length > 5) {
+      setError('Filter name must be 5 characters or less');
       return;
     }
 
@@ -77,9 +77,10 @@ function SaveFilterModal({
             <Input
               id="filterName"
               type="text"
-              placeholder="Enter a name for this filter"
+              placeholder="Enter a name (max 5 characters)"
               value={filterName}
               onChange={handleInputChange}
+              maxLength={5}
               className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
               onKeyPress={e => {
                 if (e.key === 'Enter') {

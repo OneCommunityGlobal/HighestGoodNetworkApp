@@ -798,6 +798,7 @@ const WeeklySummariesReport = props => {
     try {
       setState(prevState => {
         let { teamCodes, summaries, selectedCodes } = prevState;
+        const { savedFilters } = prevState;
         // Find and update the user's team code in summaries
         summaries = summaries.map(summary => {
           if (userIdObj[summary._id]) {
@@ -870,9 +871,162 @@ const WeeklySummariesReport = props => {
             label: `Select All With NO Code (${noTeamCodeCount || 0})`,
             _ids: teamCodeWithUserId[''],
           });
-        return { ...prevState, summaries, teamCodes, selectedCodes };
+
+        // Clean up saved filters to remove invalid team codes
+        const validTeamCodeValues = teamCodes.map(code => code.value);
+        const cleanedSavedFilters = savedFilters
+          .map(filter => ({
+            ...filter,
+            codes: filter.codes.filter(code => validTeamCodeValues.includes(code.value)),
+          }))
+          .filter(filter => filter.codes.length > 0); // Remove filters with no valid codes
+
+        // Update localStorage with cleaned filters
+        localStorage.setItem('weeklySummariesSavedFilters', JSON.stringify(cleanedSavedFilters));
+
+        return {
+          ...prevState,
+          summaries,
+          teamCodes,
+          selectedCodes,
+          savedFilters: cleanedSavedFilters,
+        };
       });
       return null;
+    } catch (error) {
+      return null;
+    }
+  };
+
+  const handleSelectColorChange = event => {
+    setState(prevState => ({
+      ...prevState,
+      selectedColors: event,
+    }));
+  };
+
+  const handleReplaceCode = e => {
+    try {
+      e.persist();
+      setState(prevState => ({ ...prevState, replaceCode: e.target?.value }));
+      return e;
+    } catch (error) {
+      return null;
+    }
+  };
+
+  const handleTrophyToggleChange = () => {
+    setState(prevState => ({
+      ...prevState,
+      selectedTrophies: !prevState.selectedTrophies,
+    }));
+  };
+
+  const handleSpecialColorToggleChange = (color, isEnabled) => {
+    setState(prevState => ({
+      ...prevState,
+      selectedSpecialColors: {
+        ...prevState.selectedSpecialColors,
+        [color]: isEnabled,
+      },
+    }));
+  };
+
+  const handleSpecialColorDotClick = (userId, color) => {
+    setState(prevState => {
+      const updatedSummaries = prevState.summaries.map(summary => {
+        if (summary._id === userId) {
+          return { ...summary, filterColor: color };
+        }
+        return summary;
+      });
+
+      // Also update the tab-specific cache
+      const updatedSummariesByTab = {
+        ...prevState.summariesByTab,
+        [prevState.activeTab]: updatedSummaries,
+      };
+
+      return {
+        ...prevState,
+        summaries: updatedSummaries,
+        summariesByTab: updatedSummariesByTab,
+      };
+    });
+  };
+
+  // Saved filters functionality
+  const handleSaveFilter = filterName => {
+    const newFilter = {
+      id: Date.now().toString(),
+      name: filterName,
+      codes: [...state.selectedCodes],
+      createdAt: new Date().toISOString(),
+    };
+
+    setState(prevState => ({
+      ...prevState,
+      savedFilters: [...prevState.savedFilters, newFilter],
+      saveFilterModalOpen: false,
+    }));
+
+    // Save to localStorage
+    const existingFilters = JSON.parse(localStorage.getItem('weeklySummariesSavedFilters') || '[]');
+    const updatedFilters = [...existingFilters, newFilter];
+    localStorage.setItem('weeklySummariesSavedFilters', JSON.stringify(updatedFilters));
+  };
+
+  const handleDeleteFilter = filterId => {
+    setState(prevState => ({
+      ...prevState,
+      savedFilters: prevState.savedFilters.filter(filter => filter.id !== filterId),
+    }));
+
+    // Update localStorage
+    const existingFilters = JSON.parse(localStorage.getItem('weeklySummariesSavedFilters') || '[]');
+    const updatedFilters = existingFilters.filter(filter => filter.id !== filterId);
+    localStorage.setItem('weeklySummariesSavedFilters', JSON.stringify(updatedFilters));
+  };
+
+  const handleApplyFilter = filter => {
+    // Validate that the saved filter codes still exist in current team codes
+    const validCodes = filter.codes.filter(savedCode =>
+      state.teamCodes.some(currentCode => currentCode.value === savedCode.value),
+    );
+
+    setState(prevState => ({
+      ...prevState,
+      selectedCodes: validCodes,
+    }));
+  };
+
+  const handleOpenSaveFilterModal = () => {
+    setState(prevState => ({
+      ...prevState,
+      saveFilterModalOpen: true,
+    }));
+  };
+
+  const handleCloseSaveFilterModal = () => {
+    setState(prevState => ({
+      ...prevState,
+      saveFilterModalOpen: false,
+    }));
+  };
+
+  const passwordInputModalToggle = () => {
+    try {
+      return (
+        <PasswordInputModal
+          open={state.passwordModalOpen}
+          onClose={onpasswordModalClose}
+          checkForValidPwd={checkForValidPwd}
+          isValidPwd={state.isValidPwd}
+          setSummaryRecepientsPopup={setSummaryRecepientsPopup}
+          setAuthpassword={setAuthpassword}
+          authEmailWeeklySummaryRecipient={props.authEmailWeeklySummaryRecipient}
+        />
+      );
     } catch (error) {
       return null;
     }
@@ -989,135 +1143,6 @@ const WeeklySummariesReport = props => {
         ...prev,
         replaceCodeLoading: false,
       }));
-    }
-  };
-
-  const handleSelectColorChange = event => {
-    setState(prevState => ({
-      ...prevState,
-      selectedColors: event,
-    }));
-  };
-
-  const handleReplaceCode = e => {
-    try {
-      e.persist();
-      setState(prevState => ({ ...prevState, replaceCode: e.target?.value }));
-      return e;
-    } catch (error) {
-      return null;
-    }
-  };
-
-  const handleTrophyToggleChange = () => {
-    setState(prevState => ({
-      ...prevState,
-      selectedTrophies: !prevState.selectedTrophies,
-    }));
-  };
-
-  const handleSpecialColorToggleChange = (color, isEnabled) => {
-    setState(prevState => ({
-      ...prevState,
-      selectedSpecialColors: {
-        ...prevState.selectedSpecialColors,
-        [color]: isEnabled,
-      },
-    }));
-  };
-
-  const handleSpecialColorDotClick = (userId, color) => {
-    setState(prevState => {
-      const updatedSummaries = prevState.summaries.map(summary => {
-        if (summary._id === userId) {
-          return { ...summary, filterColor: color };
-        }
-        return summary;
-      });
-
-      // Also update the tab-specific cache
-      const updatedSummariesByTab = {
-        ...prevState.summariesByTab,
-        [prevState.activeTab]: updatedSummaries,
-      };
-
-      return {
-        ...prevState,
-        summaries: updatedSummaries,
-        summariesByTab: updatedSummariesByTab,
-      };
-    });
-  };
-
-  // Saved filters functionality
-  const handleSaveFilter = filterName => {
-    const newFilter = {
-      id: Date.now().toString(),
-      name: filterName,
-      codes: [...state.selectedCodes],
-      createdAt: new Date().toISOString(),
-    };
-
-    setState(prevState => ({
-      ...prevState,
-      savedFilters: [...prevState.savedFilters, newFilter],
-      saveFilterModalOpen: false,
-    }));
-
-    // Save to localStorage
-    const existingFilters = JSON.parse(localStorage.getItem('weeklySummariesSavedFilters') || '[]');
-    const updatedFilters = [...existingFilters, newFilter];
-    localStorage.setItem('weeklySummariesSavedFilters', JSON.stringify(updatedFilters));
-  };
-
-  const handleDeleteFilter = filterId => {
-    setState(prevState => ({
-      ...prevState,
-      savedFilters: prevState.savedFilters.filter(filter => filter.id !== filterId),
-    }));
-
-    // Update localStorage
-    const existingFilters = JSON.parse(localStorage.getItem('weeklySummariesSavedFilters') || '[]');
-    const updatedFilters = existingFilters.filter(filter => filter.id !== filterId);
-    localStorage.setItem('weeklySummariesSavedFilters', JSON.stringify(updatedFilters));
-  };
-
-  const handleApplyFilter = filter => {
-    setState(prevState => ({
-      ...prevState,
-      selectedCodes: filter.codes,
-    }));
-  };
-
-  const handleOpenSaveFilterModal = () => {
-    setState(prevState => ({
-      ...prevState,
-      saveFilterModalOpen: true,
-    }));
-  };
-
-  const handleCloseSaveFilterModal = () => {
-    setState(prevState => ({
-      ...prevState,
-      saveFilterModalOpen: false,
-    }));
-  };
-
-  const passwordInputModalToggle = () => {
-    try {
-      return (
-        <PasswordInputModal
-          open={state.passwordModalOpen}
-          onClose={onpasswordModalClose}
-          checkForValidPwd={checkForValidPwd}
-          isValidPwd={state.isValidPwd}
-          setSummaryRecepientsPopup={setSummaryRecepientsPopup}
-          setAuthpassword={setAuthpassword}
-          authEmailWeeklySummaryRecipient={props.authEmailWeeklySummaryRecipient}
-        />
-      );
-    } catch (error) {
-      return null;
     }
   };
 
@@ -1328,7 +1353,7 @@ const WeeklySummariesReport = props => {
             />
 
             {/* Save/Delete Buttons - only visible when codes are selected */}
-            {state.selectedCodes.length > 0 && (
+            {state.selectedCodes.length > 0 && hasPermissionToFilter && (
               <div className="filter-save-buttons">
                 <button
                   type="button"
