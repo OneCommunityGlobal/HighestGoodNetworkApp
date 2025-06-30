@@ -54,7 +54,6 @@ import { UserRole } from './utils/enums';
 import ForgotPassword from './components/Login/ForgotPassword';
 import Inventory from './components/Inventory';
 
-
 import EmailSubscribeForm from './components/EmailSubscribeForm';
 import UnsubscribePage from './components/EmailSubscribeForm/UnsubscribePage';
 import SubscribePage from './components/EmailSubscribeForm/SubscribePage';
@@ -95,7 +94,6 @@ import Toolslist from './components/BMDashboard/Tools/ToolsList';
 import AddTool from './components/BMDashboard/Tools/AddTool';
 import AttendanceNoShow from './components/AttendanceSystem/AttendanceNoShowCharts';
 
-
 import AddTeamMember from './components/BMDashboard/AddTeamMember/AddTeamMember';
 // eslint-disable-next-line import/order
 import IssueChart from './components/BMDashboard/Issues/issueCharts';
@@ -110,32 +108,24 @@ import CPLogin from './components/CommunityPortal/Login';
 import CPDashboard from './components/CommunityPortal';
 import ActivityList from './components/CommunityPortal/Activities/ActivityList';
 import Activity from './components/CommunityPortal/Activities/activityId/Activity'
-
 import NoshowViz from './components/CommunityPortal/Attendence/NoshowViz';
 // import AddActivities from './components/CommunityPortal/Activities/AddActivities';
 // import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
+import Register from './components/CommunityPortal/Activities/Register/Register';
 import ActivitiesPage from './components/CommunityPortal/Activities/ActivitiesPage';
-
 import EventStats from './components/CommunityPortal/EventPersonalization/EventStats';
-
-
 import Resources from './components/CommunityPortal/Activities/activityId/Resources';
-
 import EventParticipation from './components/CommunityPortal/Reports/Participation/EventParticipation';
-
-
 import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
 import EPDashboard from './components/EductionPortal';
 import HelpPage from './components/LandingPage/HelpPage';
-
 
 import LandingPage from './components/HGNHelpSkillsDashboard/LandingPage';
 import SkillsOverviewPage from './components/HGNHelpSkillsDashboard/SkillsOverviewPage';
 import CommunityMembersPage from './components/HGNHelpSkillsDashboard/CommunityMembersPage';
 import UserProfilePage from './components/HGNHelpSkillsDashboard/UserProfilePage';
 import FeedbackModal from './components/HGNHelpSkillsDashboard/FeedbackModal';
-
 
 // eslint-disable-next-line import/order, import/no-unresolved
 import LogTools from './components/BMDashboard/LogTools/LogTools';
@@ -532,7 +522,7 @@ export default (
           component={PurchaseConsumable}
         />
         <BMProtectedRoute path="/bmdashboard/issue" fallback component={Issue} />
-        <BMProtectedRoute path="/bmdashboard/rentalchart" component={RentalChart}/>
+        <BMProtectedRoute path="/bmdashboard/rentalchart" component={RentalChart} />
         <BMProtectedRoute path="/bmdashboard/inventory/types" component={CheckTypes} />
         <BMProtectedRoute path="/bmdashboard/equipment" fallback exact component={EquipmentList} />
         <BMProtectedRoute path="/bmdashboard/equipment/:equipmentId" component={EquipmentDetail} />
@@ -555,7 +545,11 @@ export default (
         <BMProtectedRoute path="/bmdashboard/AddTeamMember" component={AddTeamMember} />
         <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} />
         <BMProtectedRoute path="/bmdashboard/tools/log" exact component={LogTools} />
-        <BMProtectedRoute path="/bmdashboard/tools/equipmentupdate" exact component={EquipmentUpdate} />
+        <BMProtectedRoute
+          path="/bmdashboard/tools/equipmentupdate"
+          exact
+          component={EquipmentUpdate}
+        />
         <BMProtectedRoute path="/bmdashboard/tools/:toolId" component={ToolDetailPage} />
         <BMProtectedRoute path="/bmdashboard/lessonform/:projectId" component={LessonForm} />
         <BMProtectedRoute path="/bmdashboard/lessonform/" component={LessonForm} />
@@ -582,11 +576,10 @@ export default (
           component={BMTimeLogCard}
         />
 
-
         {/* Community Portal Routes */}
         <CPProtectedRoute path="/communityportal" exact component={CPDashboard} />
         <Route path="/communityportal/login" component={CPLogin} />
-        <CPProtectedRoute path="/communityportal/activities" exact component={ActivityList} />
+        <CPProtectedRoute path="/communityportal/Activities" exact component={ActivityList} />
 
         <CPProtectedRoute path="/communityportal/reports/participation" component={NoshowViz} />
 
@@ -597,6 +590,11 @@ export default (
         <CPProtectedRoute path="/communityportal/ActivitiesPage" exact component={ActivitiesPage} />
 
 
+        <CPProtectedRoute
+          path="/communityportal/Activities/Register/:activityId"
+          exact
+          component={Register}
+        />
 
         {/* Listing and Bidding Routes */}
         <LBProtectedRoute path="/lbdashboard" exact component={LBDashboard} />
@@ -616,13 +614,21 @@ export default (
         <Route path="/lbdashboard/bidoverview" exact component={LBBidOverview} />
         <LBProtectedRoute path="/lbdashboard/bidding" exact component={BiddingHomepage} />
 
-        <CPProtectedRoute path="/communityportal/reports/participation" exact component={EventParticipation} />
-
-
+        <CPProtectedRoute
+          path="/communityportal/reports/participation"
+          exact
+          component={EventParticipation}
+        />
 
         {/* Good Education  Portal Routes */}
         <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />
         <Route path="/educationportal/login" component={EPLogin} />
+
+        <CPProtectedRoute
+          path="/communityportal/reports/event/personalization"
+          exact
+          component={EventStats}
+        />
 
         {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
 
@@ -643,7 +649,7 @@ export default (
         <ProtectedRoute path="/userprofile/:userId" fallback component={UserProfile} />
         <ProtectedRoute path="/userprofileedit/:userId" component={UserProfileEdit} />
         <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
-        <ProtectedRoute path="/memberlist" exact component={MemberList}/>
+        <ProtectedRoute path="/memberlist" exact component={MemberList} />
         <Route path="/Logout" component={Logout} />
         <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
 
@@ -675,4 +681,4 @@ export default (
       </Switch>
     </>
   </Switch>
-)
+);
