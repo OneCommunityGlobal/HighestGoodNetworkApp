@@ -2,6 +2,7 @@ import './BlueSquare.css';
 import hasPermission from 'utils/permissions';
 import { connect } from 'react-redux';
 import { formatCreatedDate, formatDate } from 'utils/formatDate';
+import { useEffect } from 'react';
 
 
 const BlueSquare = (props) => {
@@ -26,8 +27,18 @@ const BlueSquare = (props) => {
       handleBlueSquare(true, 'viewBlueSquare', blueSquare._id);
     }
   };    
+  useEffect(() => {
+    if (window.location.hash === '#bluesquare') {
+      const blueSquareWindow = document.getElementById('bluesquare');
+      if (blueSquareWindow) {
+        const yOffset = -100;
+        const y = blueSquareWindow.getBoundingClientRect().top + window.scrollY + yOffset;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      }
+    }
+  }, []);
   return (
-    <div className={`blueSquareContainer ${darkMode ? 'bg-darkmode-liblack' : ''}`}>
+    <div id="bluesquare" className={`blueSquareContainer ${darkMode ? 'bg-darkmode-liblack' : ''}`}>
       <div className={`blueSquares ${blueSquares?.length ? '' : 'NoBlueSquares'}`}>
         {blueSquares?.length ? (
           blueSquares

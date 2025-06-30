@@ -15,13 +15,13 @@ import {
   Input,
 } from 'reactstrap';
 import { connect } from 'react-redux';
-import { HashLink as Link } from 'react-router-hash-link';
 import './SummaryBar.css';
 import { ENDPOINTS, ApiEndpoint } from 'utils/URL';
 import axios from 'axios';
 import hasPermission from 'utils/permissions';
 import { toast } from 'react-toastify';
-// import { useNavigate } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
+import { updateUserProfile } from '../../actions/userProfile';
 import TaskIcon from './task_icon.png';
 import BadgesIcon from './badges_icon.png';
 import BlueScoreIcon from './bluesquare_icon.png';
@@ -51,7 +51,6 @@ const SummaryBar = React.forwardRef((props, ref) => {
   const weeklyCommittedHours = committedHours + missedHours;
 
   const [userProfile, setUserProfile] = useState(undefined);
-  const [infringements, setInfringements] = useState(0);
   const [totalEffort, setTotalEffort] = useState(0);
   const [weeklySummary, setWeeklySummary] = useState(null);
   const [tasks, setTasks] = useState(undefined);
@@ -66,7 +65,7 @@ const SummaryBar = React.forwardRef((props, ref) => {
 
   const [categoryDescription, setCategoryDescription] = useState();
   const sortableContainerRef = useRef(null);
-  // const navigate = useNavigate();
+  const history = useHistory();
 
   const editRadioButtonSelected = value => {
     // dynamic way to set description rather than using tenerary operators.
@@ -198,15 +197,6 @@ const SummaryBar = React.forwardRef((props, ref) => {
       // eslint-disable-next-line no-console
       console.log('User Tasks not loaded.');
     }
-  };
-
-  // Get infringement count from userProfile
-  const getInfringements = () => {
-    // listed under the state.userProfile.infringements, could reset it to 0 at somepoint in the code, unsure where
-    // and which file exactly but is a method
-    return displayUserProfile && displayUserProfile.infringements
-      ? displayUserProfile.infringements.length
-      : 0;
   };
 
   // refactored for rading form values
@@ -358,8 +348,18 @@ const SummaryBar = React.forwardRef((props, ref) => {
   };
 
   // const onBlueSquareClick = () => {
-  //   navigate(`/userprofile/${displayUserProfile._id}#bluesquare`);
-  // };
+  const onBlueSquareClick = async () => {
+    props.updateUserProfile({
+      ...displayUserProfile,
+      infringementCount: 0,
+    });
+    // const updated = { ...displayUserProfile, infringementCount: 0 };
+    // console.log('Attempting to update:', updated);
+
+    // const status = await props.updateUserProfile(updated);
+    // console.log('Update status:', status);
+    history.push(`/userprofile/${displayUserProfile._id}#bluesquare`);
+  };
 
   const getWeeklySummary = user => {
     const latestSummary = user?.weeklySummaries?.[0];
@@ -389,8 +389,6 @@ const SummaryBar = React.forwardRef((props, ref) => {
 
   useEffect(() => {
     if (summaryBarData && displayUserProfile !== undefined) {
-      setInfringements(getInfringements());
-      // setBadges(getBadges());
       setTotalEffort(summaryBarData.tangibletime);
       setWeeklySummary(getWeeklySummary(displayUserProfile));
       setweeklySummaryNotReq(displayUserProfile?.weeklySummaryOption === 'Not Required');
@@ -711,14 +709,15 @@ const SummaryBar = React.forwardRef((props, ref) => {
             </div>
             &nbsp;&nbsp;
             <div className="image_frame">
-              {infringements > 0 && (
+              {/* Changed from infringement.length in displayUserProfile to using new value of infringementCount for new ones */}
+              {displayUserProfile.infringementCount > 0 && (
                 <div className="redBackgroup">
-                  <span>{infringements}</span>
-                  {/* need method to reset infringment count, unrelated to badge task though */}
+                  <span>{displayUserProfile.infringementCount}</span>
                 </div>
               )}
               {isAuthUser || canEditData() ? (
-                <Link
+                <button
+                  onClick={onBlueSquareClick}
                   className="sum_img"
                   style={{
                     background: 'none',
@@ -726,29 +725,16 @@ const SummaryBar = React.forwardRef((props, ref) => {
                     padding: 0,
                     cursor: 'pointer',
                   }}
-                  to={`/userprofile/${displayUserProfile._id}#bluesquare`}
+                  aria-label="Blue Square"
+                  type="button"
                 >
                   <img className="sum_img" src={BlueScoreIcon} alt="" />
-                </Link>
+                </button>
               ) : (
-                // <button
-                //   onClick={onBlueSquareClick}
-                //   className="sum_img"
-                //   style={{
-                //     background: 'none',
-                //     border: 'none',
-                //     padding: 0,
-                //     cursor: 'pointer',
-                //   }}
-                //   aria-label="Blue Square"
-                //   type="button"
-                // >
-                //   <img className="sum_img" src={BlueScoreIcon} alt="" />
-                // </button>
                 <div>
                   <img className="sum_img" src={BlueScoreIcon} alt="" />
                   <div className="redBackgroup">
-                    <span>{infringements}</span>
+                    <span>{displayUserProfile.infringementCount}</span>
                   </div>
                 </div>
               )}
@@ -1138,4 +1124,5 @@ export default connect(mapStateToProps, {
   hasPermission,
   getBadgeCount,
   resetBadgeCount,
+  updateUserProfile,
 })(React.memo(SummaryBar));

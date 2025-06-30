@@ -55,11 +55,6 @@ function Badge(props) {
     );
 
     const roundedHours = Math.floor(personalBestMaxHrs);
-    // const personalMaxText = newBadges.find(badgeObj => badgeObj.badge.type === 'Personal Max')
-    //   ? ` and have a personal best of ${roundedHours} ${
-    //       roundedHours === 1 ? 'hour' : 'hours'
-    //     } in a week`
-    //   : '';
     const personalMaxText = newBadges.find(badgeObj => badgeObj.badge.type === 'Personal Max') && (
       <>
         {' and have a personal best of '}
@@ -91,8 +86,7 @@ function Badge(props) {
         >
           {totalBadges}
         </span>{' '}
-        {totalBadges === 1 ? 'badge' : 'badges'}
-        {' total'}
+        {totalBadges === 1 ? 'badge' : 'badges total'}
         {personalMaxText}
         {'!'}
       </>
@@ -130,16 +124,6 @@ function Badge(props) {
             >
               <CardHeader tag="h3" onClick={toggleTypes} role="button" tabIndex={0}>
                 Badges <i className="fa fa-info-circle" id="BadgeInfo" />{' '}
-                <p
-                  className="fa"
-                  style={{
-                    fontWeight: 'bold',
-                    // fontSize: 18,
-                    color: darkMode ? '#007BFF' : '#285739',
-                  }}
-                >
-                  {' '}
-                </p>
               </CardHeader>
               <CardBody>
                 <NewBadges
