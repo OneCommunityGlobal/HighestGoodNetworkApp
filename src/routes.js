@@ -114,8 +114,6 @@ import Activity from './components/CommunityPortal/Activities/activityId/Activit
 import NoshowViz from './components/CommunityPortal/Attendence/NoshowViz';
 // import AddActivities from './components/CommunityPortal/Activities/AddActivities';
 // import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
-
-import ActivitiesPage from './components/CommunityPortal/Activities/ActivitiesPage';
 import ActivitiesPage from './components/CommunityPortal/Activities/ActivitiesPage';
 
 import EventStats from './components/CommunityPortal/EventPersonalization/EventStats';
