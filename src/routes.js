@@ -106,21 +106,11 @@ import CPProtectedRoute from './components/common/CPDashboard/CPProtectedRoute';
 import CPLogin from './components/CommunityPortal/Login';
 import CPDashboard from './components/CommunityPortal';
 import ActivityList from './components/CommunityPortal/Activities/ActivityList';
-import Activity from './components/CommunityPortal/Activities/activityId/Activity';
-
-import NoshowViz from './components/CommunityPortal/Attendence/NoshowViz';
 // import AddActivities from './components/CommunityPortal/Activities/AddActivities';
 // import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
 import Register from './components/CommunityPortal/Activities/Register/Register';
-
-import ActivitiesPage from './components/CommunityPortal/Activities/ActivitiesPage';
-
 import EventStats from './components/CommunityPortal/EventPersonalization/EventStats';
-
-import Resources from './components/CommunityPortal/Activities/activityId/Resources';
-
 import EventParticipation from './components/CommunityPortal/Reports/Participation/EventParticipation';
-
 import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
 import EPDashboard from './components/EductionPortal';
