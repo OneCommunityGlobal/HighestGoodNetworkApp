@@ -78,6 +78,7 @@ import LBMessaging from './components/LBDashboard/Messaging/LBMessaging';
 import MasterPlan from './components/LBDashboard/Map/MasterPlan/MasterPlan';
 import ListOveriew from './components/LBDashboard/ListingOverview/ListOverview';
 import LBBidOverview from './components/LBDashboard/BiddingOverview/BiddingOverview';
+import BiddingHomepage from './components/LBDashboard/BiddingHomepage/BiddingHomepage';
 import WishList from './components/LBDashboard/WishList/WishList';
 import WishListItem from './components/LBDashboard/WishList/ItemOverview';
 
@@ -359,7 +360,7 @@ export default (
           fallback
           routePermissions={RoutePermissions.workBreakdownStructure}
         />
-            
+
         <ProtectedRoute
           path="/communityportal/activity/:activityId/resources"
           exact
@@ -609,6 +610,7 @@ export default (
           )}
         />
         <Route path="/lbdashboard/bidoverview" exact component={LBBidOverview} />
+        <LBProtectedRoute path="/lbdashboard/bidding" exact component={BiddingHomepage} />
 
         <CPProtectedRoute path="/communityportal/reports/participation" exact component={EventParticipation} />
 

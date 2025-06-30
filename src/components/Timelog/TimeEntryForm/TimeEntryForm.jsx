@@ -23,11 +23,11 @@ import { isEmpty, isEqual } from 'lodash';
 import { Editor } from '@tinymce/tinymce-react';
 import { toast } from 'react-toastify';
 import ReactTooltip from 'react-tooltip';
-import { getUserProfile } from 'actions/userProfile';
 import axios from 'axios';
-import hasPermission from 'utils/permissions';
-import { boxStyle, boxStyleDark } from 'styles';
 import { useDispatch } from 'react-redux';
+import { boxStyle, boxStyleDark } from '../../../styles';
+import hasPermission from '../../../utils/permissions';
+import { getUserProfile } from '../../../actions/userProfile';
 import { postTimeEntry, editTimeEntry, getTimeEntriesForWeek } from '../../../actions/timeEntries';
 import AboutModal from './AboutModal';
 import TangibleInfoModal from './TangibleInfoModal';
@@ -544,20 +544,17 @@ function TimeEntryForm(props) {
     }
   };
 
-const getActualDate = async () => {
+  const getActualDate = () => {
     try {
-        const fetchedActualDate = await Promise.any([
-            fetch(`http://worldtimeapi.org/api/timezone/${userTimeZone}`).then((res) => res.json()),
-            fetch(`https://timeapi.io/api/Time/current/zone?timeZone=${userTimeZone}`).then((res) => res.json()),
-        ]);
-        
-        setActualDate(fetchedActualDate.utc_datetime || fetchedActualDate.dateTime);
+      const now = moment()
+        .tz(userTimeZone)
+        .toISOString();
+      setActualDate(now);
     } catch (error) {
-        setActualDate(null);  // Clear previous date
-        toast.error("Failed to fetch the actual date. Please refresh and try logging time again ");
-      
+      setActualDate(null);
+      toast.error('Failed to fetch the actual date. Please refresh and try logging time again');
     }
-};
+  };
 
   /* ---------------- useEffects -------------- */
   useEffect(() => {
@@ -825,7 +822,7 @@ TimeEntryForm.propTypes = {
 
 const mapStateToProps = state => ({
   authUser: state.auth.user,
-  darkMode: state.theme.darkMode
+  darkMode: state.theme.darkMode,
 });
 
 export default connect(mapStateToProps, {
