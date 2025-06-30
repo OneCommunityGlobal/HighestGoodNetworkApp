@@ -174,6 +174,23 @@ export const permissionLabels = [
         key: 'changeUserRehireableStatus',
         description: 'Gives the user permission to change the user status of rehireable or not.',
       },
+      {
+        label: 'Pause User Activity',
+        key: 'pauseUserActivity',
+        description:
+          'Gives the user permission to use the "Pause" button to pause user activity on their profile page.',
+      },
+      {
+        label: 'Set Final Day for User',
+        key: 'setUserFinalDay',
+        description:
+          'Gives the user permission to use the "Set Final Day" button to set a final working day for a user on their profile page.',
+      },
+      {
+        label: 'Tracking Management',
+        key: 'setTrackingManagement',
+        description: 'Gives the user permission to interact with the edit warnings list modal.',
+      },
     ],
   },
   {
@@ -353,6 +370,18 @@ export const permissionLabels = [
                 key: 'putReviewStatus',
                 description:
                   'Give the user permission to interact with any "Ready for Review" task button to either mark it as complete or reset it with "More work needed, reset this button" ',
+              },
+              {
+                label: 'View and Interact with Task "X" on Dashboards',
+                key: 'canDeleteTask',
+                description:
+                  'Gives the user permission to DELETE tasks from the Management Dashboard showing all their team members. ',
+              },
+              {
+                label: 'Unassign Team Members from Tasks',
+                key: 'deleteDashboardTask',
+                description:
+                  'Gives the user permission to UNASSIGN tasks from only their TEAM members through the Dashboard -> task -> red X. ',
               },
             ],
           },
@@ -559,6 +588,17 @@ export const permissionLabels = [
         key: 'seeUsersInDashboard',
         description:
           'Lets the user see all users in the dashboard as if they were on the same team. Requires "See All Users" to function',
+      },
+    ],
+  },
+  {
+    label: 'FAQs',
+    description: 'Category for all permissions related to FAQs',
+    subperms: [
+      {
+        label: 'Manage FAQs',
+        key: 'manageFAQs',
+        description: 'Gives the user permission to add, edit, and delete FAQs.',
       },
     ],
   },

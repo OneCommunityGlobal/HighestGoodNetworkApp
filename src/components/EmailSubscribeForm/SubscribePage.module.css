@@ -69,6 +69,90 @@
   background-size: contain;
 }
 
+.thanksContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: #ffffff; /* White background */
+  color: #000000; /* Default text color */
+  text-align: center;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow for better contrast */
+}
+
+.thanksMessage {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+  background: linear-gradient(90deg, #a8e063, #56ab2f, #315336); /* Green-themed gradient text */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; /* Makes the gradient visible */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for better readability */
+}
+
+.leafIcon {
+  width: 100px;
+  height: 100px;
+  margin-bottom: 20px;
+  animation: float 3s ease-in-out infinite; /* Floating animation for the icon */
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.confettiContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.buttonContainer {
+  margin-top: 20px;
+}
+
+.returnButton {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.returnButton:hover {
+  background-color: #0056b3;
+}
+
+/* Light mode variables */
+:root {
+  --modal-bg: #ffffff;
+  --modal-text: #000000;
+}
+
+/* Dark mode variables */
+[data-theme='dark'] {
+  --modal-bg: #333333;
+  --modal-text: #ffffff;
+}
+
 /* Add responsive designs and other styles as needed */
 @media (max-width: 768px) {
   .header {
