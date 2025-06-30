@@ -309,6 +309,9 @@ export const ENDPOINTS = {
   NOTIFICATIONS: `${APIEndpoint}/notification`,
   MSG_NOTIFICATION: `${APIEndpoint}/lb/notifications`,
 
+  // Injuries endpoints
+  INJURIES: `${APIEndpoint}/injuries`,
+
 
   // community portal
   CP_NOSHOW_VIZ_LOCATION: `${APIEndpoint}/communityportal/reports/participation/location`,
