@@ -92,10 +92,10 @@ import ToolDetailPage from './components/BMDashboard/Tools/ToolDetailPage';
 import CheckTypes from './components/BMDashboard/shared/CheckTypes';
 import Toolslist from './components/BMDashboard/Tools/ToolsList';
 import AddTool from './components/BMDashboard/Tools/AddTool';
+import AddTeamMember from './components/BMDashboard/AddTeamMember/AddTeamMember';
+import ExpenditureLineGraph from './components/BMDashboard/ExpenditureGraph/ExpenditureLineGraph';
 import AttendanceNoShow from './components/AttendanceSystem/AttendanceNoShowCharts';
 
-
-import AddTeamMember from './components/BMDashboard/AddTeamMember/AddTeamMember';
 // eslint-disable-next-line import/order
 import IssueChart from './components/BMDashboard/Issues/issueCharts';
 import BMTimeLogger from './components/BMDashboard/BMTimeLogger/BMTimeLogger';
@@ -546,6 +546,7 @@ export default (
         />
         <BMProtectedRoute path="/bmdashboard/tools" exact component={Toolslist} />
         <BMProtectedRoute path="/bmdashboard/AddTeamMember" component={AddTeamMember} />
+        <BMProtectedRoute path="/bmdashboard/ExpenditureLineGraph" component={ExpenditureLineGraph}/>
         <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} />
         <BMProtectedRoute path="/bmdashboard/tools/log" exact component={LogTools} />
         <BMProtectedRoute path="/bmdashboard/tools/equipmentupdate" exact component={EquipmentUpdate} />

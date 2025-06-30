@@ -8,6 +8,7 @@ import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
 import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
 import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
+import ExpenditureLineGraph from '../ExpenditureGraph/ExpenditureLineGraphComponent';
 import styles from './WeeklyProjectSummary.module.css';
 
 const projectStatusButtons = [
@@ -236,7 +237,7 @@ export default function WeeklyProjectSummary() {
         className: 'large',
         content: (
           <>
-            {Array.from({ length: 4 }).map(() => {
+            {Array.from({ length: 3 }).map(() => {
               const uniqueId = uuidv4();
               return (
                 <div
@@ -247,10 +248,11 @@ export default function WeeklyProjectSummary() {
                 </div>
               );
             })}
-
-            <div className={`${styles.weeklyProjectSummaryCard} ${styles.financialBig}`}>
-              📊 Big Card
+            <div className="weekly-project-summary-card financial-small">
+              <ExpenditureLineGraph />
             </div>
+
+            <div className="weekly-project-summary-card financial-big">📊 Big Card</div>
           </>
         ),
       },
