@@ -65,6 +65,7 @@ import Collaboration from './components/Collaboration';
 import MemberList from './components/QuestionnaireDashboard/MemberList';
 import EventPopularity from './components/EventPopularity/EventPopularity';
 import ApplicantsAgeChart from './components/ApplicantsChart';
+import ApplicationTimeChartPage from './components/ApplicationTimeChart';
 import ApplicationAnalyticsContainer from './components/ApplicationAnalytics';
 import UserSkillsProfile from './components/HGNSkillsDashboard/SkillsProfilePage/components/UserSkillsProfile';
 
@@ -406,6 +407,8 @@ export default (
         />
 
         <ProtectedRoute path="/applicants-chart" exact component={ApplicantsAgeChart} fallback />
+
+        <ProtectedRoute path="/application-time-chart" exact component={ApplicationTimeChartPage} fallback />
 
         <ProtectedRoute
           path="/application-analytics"
