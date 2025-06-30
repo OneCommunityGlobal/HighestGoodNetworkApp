@@ -353,11 +353,6 @@ const SummaryBar = React.forwardRef((props, ref) => {
       ...displayUserProfile,
       infringementCount: 0,
     });
-    // const updated = { ...displayUserProfile, infringementCount: 0 };
-    // console.log('Attempting to update:', updated);
-
-    // const status = await props.updateUserProfile(updated);
-    // console.log('Update status:', status);
     history.push(`/userprofile/${displayUserProfile._id}#bluesquare`);
   };
 
