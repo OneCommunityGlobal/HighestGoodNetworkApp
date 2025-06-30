@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './ReviewsInsight.css';
 import ActionDoneGraph from './ActionDoneGraph';
+import PRQualityGraph from './PRQualityGraph';
 
 function ReviewsInsight() {
   const [duration, setDuration] = useState('Last Week');
@@ -65,10 +66,7 @@ function ReviewsInsight() {
       {/* Graphs Section */}
       <div className="graphs">
         <ActionDoneGraph duration={duration} selectedTeams={selectedTeams} />
-        <div className="graph">
-          <h2>PR: Quality Distribution</h2>
-          <div className="graph-placeholder">[Graph Placeholder]</div>
-        </div>
+        <PRQualityGraph duration={duration} selectedTeams={selectedTeams} />
       </div>
     </div>
   );
