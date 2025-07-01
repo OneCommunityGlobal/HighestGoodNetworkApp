@@ -27,7 +27,7 @@ const AccessManagementModal = ({
   const [credentialsInput, setCredentialsInput] = useState({});
   const [inputTouched, setInputTouched] = useState({});
   
-  const requestorId = userProfile._id;
+  const targetUserId = userProfile._id;
   const role = userProfile.role;
 
   // App configurations with icons and colors
@@ -86,7 +86,7 @@ const AccessManagementModal = ({
       });
       setAccessData(response.data);
     } catch (error) {
-      console.error('Error fetching access data:', error);
+      //console.error('Error fetching access data:', error);
       toast.error('Failed to fetch access information');
     } finally {
       setLoading(false);
@@ -228,29 +228,29 @@ const AccessManagementModal = ({
     const credential = credentialsInput[appName]?.trim();
     const email = appName === 'github' ? undefined : credential;
     const username = appName === 'github' ? credential : undefined;
+
     try {
       let endpoint;
       let payload;
       switch (appName) {
         case 'github':
           endpoint = ENDPOINTS.GITHUB_ADD;
-          payload = { username, requestor: { requestorId, role } };
+          payload = { username, targetUser: { targetUserId, role } };
           break;
         case 'dropbox':
           endpoint = ENDPOINTS.DROPBOX_CREATE_ADD;
           payload = { 
             folderPath: `${userProfile.firstName} ${userProfile.lastName}`,
-            email, 
-            requestor: { requestorId, role } 
+            targetUser: { targetUserId, role, email } 
           };
           break;
         case 'slack':
           endpoint = ENDPOINTS.SLACK_ADD;
-          payload = { email, requestor: { requestorId, role } };
+          payload = { targetUser: { targetUserId, role, email } };
           break;
         case 'sentry':
           endpoint = ENDPOINTS.SENTRY_ADD;
-          payload = { email, requestor: { requestorId, role } };
+          payload = { targetUser: { targetUserId, role, email } };
           break;
         default:
           throw new Error('Unknown app');
@@ -278,18 +278,18 @@ const AccessManagementModal = ({
       switch (appName) {
         case 'github':
           endpoint = ENDPOINTS.GITHUB_REMOVE;
-          payload = { username, requestor: { requestorId, role } };
+          payload = { username, targetUser: { targetUserId, role } };
           break;
         case 'dropbox':
           endpoint = ENDPOINTS.DROPBOX_DELETE;
           payload = { 
             folderPath: `${userProfile.firstName} ${userProfile.lastName}`,
-            requestor: { requestorId, role } 
+            targetUser: { targetUserId, role } 
           };
           break;
         case 'sentry':
           endpoint = ENDPOINTS.SENTRY_REMOVE;
-          payload = { email, requestor: { requestorId, role } };
+          payload = { targetUser: { targetUserId, role, email } };
           break;
         default:
           throw new Error('Unknown app');
