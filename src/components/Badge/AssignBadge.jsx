@@ -129,7 +129,6 @@ function AssignBadge(props) {
             data-testid="NameInfo"
             style={{ cursor: 'pointer' }}
           />
-          
           <UncontrolledTooltip
             placement="right"
             target="NameInfo"
