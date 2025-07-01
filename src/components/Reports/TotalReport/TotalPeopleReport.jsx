@@ -72,7 +72,7 @@ function TotalPeopleReport(props) {
     if (acc[key].minutes >= 60) {
       const extraHours = Math.floor(acc[key].minutes / 60);
       acc[key].hours += extraHours;
-      acc[key].minutes %= acc[key].minutes % 60;
+      acc[key].minutes %= 60;
     }
 
     // Repeat for tangible
@@ -83,7 +83,7 @@ function TotalPeopleReport(props) {
       if (acc[key].tangibleMinutes >= 60) {
         const extraTangibleHours = Math.floor(acc[key].tangibleMinutes / 60);
         acc[key].tangibleHours += extraTangibleHours;
-        acc[key].tangibleMinutes %= acc[key].tangibleMinutes % 60;
+        acc[key].tangibleMinutes %= 60;
       }
     }
 
