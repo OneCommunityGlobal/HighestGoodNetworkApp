@@ -79,19 +79,17 @@ const TeamMemberTask = React.memo(
     );
     const thisWeekHours = user.totaltangibletime_hrs;
 
-    // these need to be changed to actual permissions...
     const rolesAllowedToResolveTasks = ['Administrator', 'Owner'];
     const rolesAllowedToSeeDeadlineCount = ['Manager', 'Mentor', 'Administrator', 'Owner'];
     const isAllowedToResolveTasks =
       rolesAllowedToResolveTasks.includes(userRole) || dispatch(hasPermission('resolveTask'));
     const isAllowedToSeeDeadlineCount = rolesAllowedToSeeDeadlineCount.includes(userRole);
-    // ^^^
 
     const canGetWeeklySummaries = dispatch(hasPermission('getWeeklySummaries'));
     const canSeeReports =
       rolesAllowedToResolveTasks.includes(userRole) || dispatch(hasPermission('getReports'));
     const canUpdateTask = dispatch(hasPermission('updateTask'));
-    const canRemoveUserFromTask = dispatch(hasPermission('removeUserFromTask'));
+    const canDeleteTask = dispatch(hasPermission('canDeleteTask'));
     const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
 
     const colorsObjs = {
@@ -119,6 +117,17 @@ const TeamMemberTask = React.memo(
         setIsTruncated(!isTruncated);
       }
     };
+
+    /** 
+    const handleReportClick = (event, to) => {
+      if (event.metaKey || event.ctrlKey || event.button === 1) {
+        return;
+      }
+
+      event.preventDefault(); // prevent full reload
+      history.push(`/peoplereport/${to}`);
+    };
+    */
 
     const openDetailModal = request => {
       dispatch(showTimeOffRequestModal(request));
@@ -200,7 +209,16 @@ const TeamMemberTask = React.memo(
                             }}
                             icon={faCircle}
                             data-testid="icon"
-                          />
+                          >{`${user.name}`}</FontAwesomeIcon>
+
+                          {user.role !== 'Volunteer' && (
+                            <div
+                              className="user-role"
+                              style={{ fontSize: '14px', color: darkMode ? 'lightgray' : 'gray' }}
+                            >
+                              {user.role}
+                            </div>
+                          )}
                         </div>
                         <Link to={`/timelog/${user.personId}`} className="timelog-info">
                           <i
@@ -397,7 +415,7 @@ const TeamMemberTask = React.memo(
                                           data-testid={`tick-${task.taskName}`}
                                         />
                                       )}
-                                      {(canUpdateTask || canRemoveUserFromTask) && (
+                                      {(canUpdateTask || canDeleteTask) && (
                                         <FontAwesomeIcon
                                           className="team-member-task-remove"
                                           icon={faTimes}

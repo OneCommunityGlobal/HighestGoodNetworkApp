@@ -1,6 +1,7 @@
 // Activity List Component
 import { useState, useEffect } from 'react';
 import './ActivityList.css';
+// import { useHistory } from 'react-router-dom';
 
 function ActivityList() {
   const [activities, setActivities] = useState([]);
@@ -77,7 +78,6 @@ function ActivityList() {
           />
         </label>
       </div>
-
       <div className="activity-list">
         {filteredActivities.length > 0 ? (
           <ul>
