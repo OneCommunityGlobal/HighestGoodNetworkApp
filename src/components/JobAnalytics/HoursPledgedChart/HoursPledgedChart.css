@@ -1,12 +1,33 @@
 .hours-pledged-chart {
   font-family: Arial, sans-serif;
   padding: 20px;
+  background-color: #ffffff;
+  color: #000000;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.hours-pledged-chart.dark-mode {
+  background-color: #1b2a41;
+  color: #f1f1f1;
 }
 
 .filters {
   display: flex;
   gap: 20px;
   margin-bottom: 20px;
+}
+
+.dark-mode .filters {
+  background-color: #1c2541;
+  color: #f1f1f1;
+  box-shadow: 2px 2px 4px 1px black;
+}
+
+.dark-mode .chart-container {
+  background-color: #1c2541;
+  color: #f1f1f1;
+  box-shadow: 2px 2px 4px 1px black;
+  border: none
 }
 
 .date-filter,
@@ -18,4 +39,12 @@
 label {
   font-weight: bold;
   margin-bottom: 5px;
+}
+
+.dark-mode label {
+  color: #f1f1f1 !important;
+}
+
+.dark-mode .css-b62m3t-container{
+  color: black !important;
 }

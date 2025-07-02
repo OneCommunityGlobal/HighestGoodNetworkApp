@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, LabelList } from 'recharts';
 import DatePicker from 'react-datepicker';
 import Select from 'react-select';
@@ -18,6 +19,8 @@ function HoursPledgedChart() {
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
     const [selectedRoles, setSelectedRoles] = useState([]);
+    const darkMode = useSelector(state => state.theme.darkMode);
+
 
     const roleOptions = mockData.map((item) => ({ value: item.role, label: item.role }));
 
@@ -35,7 +38,7 @@ function HoursPledgedChart() {
     }, [selectedRoles, data]);
 
     return (
-        <div className="hours-pledged-chart">
+        <div className={`hours-pledged-chart ${darkMode ? 'dark-mode' : ''}`}>
             <h2>Average Number of Hours/Week Pledged by Role</h2>
 
             <div className="filters">
@@ -69,22 +72,23 @@ function HoursPledgedChart() {
                     />
                 </div>
             </div>
-
-            <BarChart
-                width={600}
-                height={400}
-                data={filteredData}
-                layout="vertical"
-                margin={{ top: 20, right: 30, left: 100, bottom: 20 }}
-            >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis type="number" dataKey="avgHours" />
-                <YAxis type="category" dataKey="role" />
-                <Tooltip />
-                <Bar dataKey="avgHours" fill="#8884d8">
-                    <LabelList dataKey="avgHours" position="right" />
-                </Bar>
-            </BarChart>
+            <div className='chart-container'>
+                <BarChart
+                    width={600}
+                    height={400}
+                    data={filteredData}
+                    layout="vertical"
+                    margin={{ top: 20, right: 30, left: 100, bottom: 20 }}
+                >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis type="number" dataKey="avgHours" />
+                    <YAxis type="category" dataKey="role" />
+                    <Tooltip />
+                    <Bar dataKey="avgHours" fill={darkMode ? '#225163' : '#8884d8'}>
+                        <LabelList dataKey="avgHours" position="right" />
+                    </Bar>
+                </BarChart>
+            </div>
         </div>
     );
 }
