@@ -50,9 +50,13 @@ export function PeopleTasksPieChart({ darkMode }) {
       )}
       {showTasksPieChart && (
         <ReportPage.ReportBlock darkMode={darkMode}>
-          <h5 className="people-pie-charts-header">{`${
+          <h5 className="people-pie-charts-header">
+            {/* {`${
             showViewAllTasksButton ? 'Last ' : ''
-          }Tasks With Completed Hours`}</h5>
+          } */}
+          Tasks With Completed Hours
+          {/* } */}
+          </h5>
           <PieChart
             pieChartId="tasksPieChart"
             darkMode={darkMode}

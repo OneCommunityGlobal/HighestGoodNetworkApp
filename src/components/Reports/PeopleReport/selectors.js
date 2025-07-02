@@ -27,11 +27,11 @@ export const getPeopleReportData = state => ({
 
 export const peopleTasksPieChartViewData = ({ userProjects, timeEntries }) => {
 
-  console.log('userProjects:', userProjects);
-  console.log('timeEntries:', timeEntries);
+  // console.log('userProjects:', userProjects);
+  // console.log('timeEntries:', timeEntries);
 
   const directProjectLogs = timeEntries.period.filter(entry => entry.wbsId === null);
-  console.log('Direct-to-project time entries:', directProjectLogs);
+  // console.log('Direct-to-project time entries:', directProjectLogs);
   // console.log(userProjects);
 
   let hoursLoggedToProjectsOnly = {};
@@ -75,7 +75,8 @@ export const peopleTasksPieChartViewData = ({ userProjects, timeEntries }) => {
       projectName: project.projectName,
       totalTime,
     };
-  }).filter(p => p.totalTime > 0);
+  })
+  // .filter(p => p.totalTime > 0); // commented this line to  display all the projects even though the hours are not logged
 
   const resultArray2 = Object.keys(tasksWithLoggedHoursOnly).map(taskId => {
     const task = tasksWithLoggedHoursOnly[taskId];
@@ -86,7 +87,6 @@ export const peopleTasksPieChartViewData = ({ userProjects, timeEntries }) => {
     };
   });
 
-  // console.log(resultArray2);
 
   hoursLoggedToProjectsOnly = resultArray;
 
