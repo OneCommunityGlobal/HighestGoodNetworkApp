@@ -74,7 +74,8 @@ import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
 import EPDashboard from './components/EductionPortal';
 
-
+// import PR Dashboard
+import PromotionEligibility from './components/PRDashboard/PromotionEligibility';
 
 
 // eslint-disable-next-line import/order, import/no-unresolved
@@ -459,6 +460,7 @@ export default (
         <ProtectedRoute path="/hgnform/page5" exact component={Page5}/>
         <ProtectedRoute path="/hgnform/page6" exact component={Page6}/>  
         <ProtectedRoute path="/" exact component={Dashboard} />
+        <ProtectedRoute path="/pr-dashboard/promotion-eligibility" exact component={PromotionEligibility} />
         <Route path="*" component={NotFoundPage} />
       </Switch>
     </>
