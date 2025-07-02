@@ -1,17 +1,28 @@
 .reviews-insight-container {
   padding: 20px;
   font-family: Arial, sans-serif;
+  background-color: #ffffff;
+  color: #000000;
+  transition: background-color 0.3s, color 0.3s;
 }
 
-h1 {
-  text-align: center;
-  margin-bottom: 20px;
+.reviews-insight-container.dark-mode {
+  background-color: #1b2a41;
+  color: #f1f1f1;
 }
 
 .filters {
   display: flex;
   justify-content: space-between;
   margin-bottom: 20px;
+}
+
+.dark-mode .filters {
+  background-color: #1c2541;
+  color: #f1f1f1;
+  box-shadow: 2px 2px 4px 1px black;
+  padding: 10px;
+  border-radius: 8px;
 }
 
 .filter-item {
@@ -25,9 +36,17 @@ h1 {
   font-weight: bold;
 }
 
+.dark-mode .filter-item label {
+  color: #f1f1f1;
+}
+
 .selected-teams {
   margin-bottom: 20px;
   font-style: italic;
+}
+
+.dark-mode .selected-teams {
+  color: #f1f1f1;
 }
 
 .graphs {
@@ -36,17 +55,27 @@ h1 {
 }
 
 .graph {
-  width: 100%; /* Adjusts to the full width of the container */
-  max-width: 600px; /* Optional: Limits the maximum width */
-  margin: 0 auto; /* Centers the graph */
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
   border: 1px solid #ccc;
   padding: 10px;
   border-radius: 5px;
   text-align: center;
+  background-color: #ffffff;
+  color: #000000;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.dark-mode .graph {
+  background-color: #1c2541;
+  color: #f1f1f1;
+  box-shadow: 2px 2px 4px 1px black;
+  border: none;
 }
 
 .graph-placeholder {
-  height: 300px; /* Increased height for better visibility */
+  height: 300px;
   background-color: #f0f0f0;
   display: flex;
   align-items: center;
@@ -55,8 +84,17 @@ h1 {
   font-size: 14px;
 }
 
+.dark-mode .graph-placeholder {
+  background-color: #1c1c1c;
+  color: #f1f1f1;
+}
+
 .team-name {
   font-weight: bold;
   margin-bottom: 10px;
   text-align: center;
+}
+
+.dark-mode .team-name {
+  color: #f1f1f1;
 }

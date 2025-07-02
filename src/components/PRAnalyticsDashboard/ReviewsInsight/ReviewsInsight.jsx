@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux'; // Import useSelector for dark mode
 import './ReviewsInsight.css';
 import ActionDoneGraph from './ActionDoneGraph';
 import PRQualityGraph from './PRQualityGraph';
@@ -6,6 +7,7 @@ import PRQualityGraph from './PRQualityGraph';
 function ReviewsInsight() {
   const [duration, setDuration] = useState('Last Week');
   const [selectedTeams, setSelectedTeams] = useState([]);
+  const darkMode = useSelector((state) => state.theme.darkMode); // Get dark mode state from Redux
 
   const handleDurationChange = (event) => {
     setDuration(event.target.value);
@@ -17,7 +19,7 @@ function ReviewsInsight() {
   };
 
   return (
-    <div className="reviews-insight-container">
+    <div className={`reviews-insight-container ${darkMode ? 'dark-mode' : ''}`}>
       <h1>PR Reviews Insights</h1>
 
       {/* Filters Section */}
