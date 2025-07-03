@@ -122,17 +122,17 @@ class PeopleReport extends Component {
         },
       });
     }
-   
+
   }
 
   async componentDidUpdate(prevProps, prevState) {
-  if (prevState.userTask !== this.state.userTask ||
+    if (prevState.userTask !== this.state.userTask ||
       prevState.userProjects !== this.state.userProjects ||
       prevState.timeEntries !== this.state.timeEntries ||
       prevState.isLoading !== this.state.isLoading) {
-    // this.syncPanelHeights();
+      // this.syncPanelHeights();
+    }
   }
-}
 
   setStartDate(date) {
     this.setState(() => {
@@ -284,17 +284,17 @@ class PeopleReport extends Component {
   //     .subtract(offset, 'weeks')
   //     .format('YYYY-MM-DD');
   // }
-// syncPanelHeights = () => {
-// const leftEl = this.leftContentRef?.current;
-//   const rightEl = this.rightContentRef?.current;
+  // syncPanelHeights = () => {
+  // const leftEl = this.leftContentRef?.current;
+  //   const rightEl = this.rightContentRef?.current;
 
-//   if (leftEl && rightEl) {
-//     requestAnimationFrame(() => {
-//       const leftHeight = leftEl.offsetHeight;
-//       rightEl.style.height = `${leftHeight}px`;
-//     });
-//   }
-// };
+  //   if (leftEl && rightEl) {
+  //     requestAnimationFrame(() => {
+  //       const leftHeight = leftEl.offsetHeight;
+  //       rightEl.style.height = `${leftHeight}px`;
+  //     });
+  //   }
+  // };
 
   render() {
     const {
@@ -313,7 +313,7 @@ class PeopleReport extends Component {
 
     const totalTangibleHrsRound = (timeEntries.period?.reduce((total, entry) => {
       return total + (entry.hours + (entry.minutes / 60));
-    }, 0) || 0).toFixed(2);    
+    }, 0) || 0).toFixed(2);
 
     // eslint-disable-next-line react/no-unstable-nested-components,no-unused-vars
     function UserProject(props) {
@@ -386,7 +386,7 @@ class PeopleReport extends Component {
           intentInfo: '',
         };
         const resourcesName = [];
-        
+
         if (userTask[i].isActive) {
           task.active = 'Yes';
         } else {
@@ -472,16 +472,25 @@ class PeopleReport extends Component {
       );
       return accumulator.concat(incompleteTasks);
     }, []);
+    const visibleBlocks = [
+      'weeklycommittedHours',
+      userProfile.isActive ? 'hoursLogged' : null,
+      'blueSquares',
+      'totalHours'
+    ].filter(Boolean);
+
+    const boxCount = visibleBlocks.length;
 
     return (
-      <div className={`container-people-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
-        <div  className="people-report-flex-layout" >
 
-          <div xs="12" md="9" lg="9"   className="people-report-left" >
+      <div className={`container-people-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
+        <div className="people-report-flex-layout" >
+
+          <div xs="12" md="9" lg="9" className="people-report-left" >
             <ReportPage darkMode={darkMode}>
 
 
-              <div className={`people-report-time-logs-wrapper ${tangibleHoursReportedThisWeek === 0 ? "auto-width-report-time-logs-wrapper" : ""}`}>
+              <div className={`people-report-time-logs-wrapper`} style={boxCount === 3 ? { width: '68vw' } : { width: '100%' }}>
                 <ReportPage.ReportBlock
                   firstColor="#ff5e82"
                   secondColor="#e25cb2"
@@ -492,7 +501,7 @@ class PeopleReport extends Component {
                   <p>Weekly Committed Hours</p>
                 </ReportPage.ReportBlock>
 
-                {(userProfile.isActive === true) && (
+                {(userProfile.isActive) && (
 
                   <ReportPage.ReportBlock
                     firstColor="#b368d2"
@@ -632,7 +641,7 @@ class PeopleReport extends Component {
           )} */}
             </ReportPage>
           </div>
-          <div  className="people-report-right"  xs="12" md="3" lg="3">
+          <div className="people-report-right" xs="12" md="3" lg="3">
             <ReportPage.ReportHeader
               src={profilePic}
               avatar={profilePic ? undefined : <FiUser />}

@@ -71,7 +71,7 @@ function UserProjectPieChart({
           ? `${displayValue.toFixed(2)}% of ${calculateTotalHours(projectsData, tasksData).toFixed(
               2,
             )}`
-          : totalValue.toFixed(2),
+          : `${totalValue.toFixed(2)} Hrs`,
       );
 
     svg

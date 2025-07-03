@@ -29,9 +29,9 @@ body {
   color: #fff;
 }
 
-.auto-width-report-time-logs-wrapper {
+/* .auto-width-report-time-logs-wrapper {
   gap: 40px
-}
+} */
 
 
 /*profile style changes ends*/
@@ -210,21 +210,27 @@ body {
 
 .people-report-time-logs-wrapper {
   display: flex;
-  flex-wrap: wrap;
   gap: 1rem;
   justify-content: space-between;
-  /* align-items: stretch; */
-  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  width: 100%;
 }
 
 
 .people-report-time-log-block {
-  flex: 1 1 calc(25% - 1rem); 
-  min-width: 180px;
-  max-width: 100%;
   height: auto;
-  white-space: nowrap;
+  min-width: 180px;
 }
+
+/* .box-count-4 .people-report-time-log-block {
+  width: calc(25% - 0.75rem);
+}
+
+/* 3 boxes: fill the row equally */
+/* .box-count-3 .people-report-time-log-block {
+  width: calc(33.33% - 0.75rem);
+} */ 
+
 
 @media (min-width: 850px) {
   .people-report-time-logs-wrapper {
@@ -342,11 +348,13 @@ body {
 }
 
 .people-report-right {
-  width: 270px;
+  width: 23vw;
   display: flex;
   flex-direction: column;
   min-height: 100%;
   margin-top: 2rem;
+  height: 140vh; 
+  overflow: hidden;
 }
 
 .people-report-profile-wrapper {
