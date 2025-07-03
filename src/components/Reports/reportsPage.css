@@ -479,3 +479,17 @@
     margin-top: 0 !important;
   }
 }
+
+/* Style the Search button in the filter area */
+.table-data-container ~ .input-group .btn,
+.container-box-shadow .input-group .btn {
+  border-color: #fff !important;
+  color: #fff !important;
+  background: transparent !important;
+}
+.table-data-container ~ .input-group .btn:hover,
+.container-box-shadow .input-group .btn:hover {
+  background: #1a2746 !important;
+  color: #fff !important;
+  border-color: #fff !important;
+}
