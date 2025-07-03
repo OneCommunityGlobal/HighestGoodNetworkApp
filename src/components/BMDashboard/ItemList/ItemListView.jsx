@@ -6,7 +6,7 @@ import BMError from '../shared/BMError';
 import SelectForm from './SelectForm';
 import SelectItem from './SelectItem';
 import ItemsTable from './ItemsTable';
-import './ItemListView.css';
+import styles from './ItemListView.module.css';
 
 export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamicColumns }) {
   const [filteredItems, setFilteredItems] = useState(items);
@@ -44,7 +44,7 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
 
   if (isError) {
     return (
-      <main className="items_list_container">
+      <main className={`${styles.itemsListContainer}`}>
         <h2>{itemType} List</h2>
         <BMError errors={errors} />
       </main>
@@ -52,12 +52,12 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
   }
 
   return (
-    <main className="items_list_container">
+    <main className={`${styles.itemsListContainer}`}>
       <h3>{itemType}</h3>
       <section>
         <span>
           {items && (
-            <div className="select_input">
+            <div className={`${styles.selectInput}`}>
               <label>Time:</label>
               <DatePicker
                 selected={selectedTime}
@@ -81,14 +81,14 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
               />
             </div>
           )}
-          <div className="buttons-row">
-            <button type="button" className="btn-primary">
+          <div className={`${styles.buttonsRow}`}>
+            <button type="button" className={`${styles.btnPrimary}`}>
               Add Material
             </button>
-            <button type="button" className="btn-primary">
+            <button type="button" className={`${styles.btnPrimary}`}>
               Edit Name/Measurement
             </button>
-            <button type="button" className="btn-primary">
+            <button type="button" className={`${styles.btnPrimary}`}>
               View Update History
             </button>
           </div>

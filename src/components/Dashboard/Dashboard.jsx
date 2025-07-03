@@ -6,7 +6,7 @@ import WeeklySummary from '../WeeklySummary/WeeklySummary';
 import Badge from '../Badge';
 import Timelog from '../Timelog/Timelog';
 import SummaryBar from '../SummaryBar/SummaryBar';
-import './Dashboard.css';
+import styles from './Dashboard.module.css';
 import '../../App.css';
 import TimeOffRequestDetailModal from './TimeOffRequestDetailModal';
 
@@ -20,7 +20,6 @@ import {
 } from 'utils/constants';
 import { useDispatch } from 'react-redux';
 import { updateSummaryBarData } from 'actions/dashboardActions';
-
 
 export function Dashboard(props) {
   const [popup, setPopup] = useState(false);
@@ -77,7 +76,7 @@ export function Dashboard(props) {
 
   return (
     <Container fluid className={darkMode ? 'bg-oxford-blue' : ''}>
-      <FeedbackModal />
+      {/* <FeedbackModal /> */}
       <SummaryBar
         displayUserId={displayUserId}
         toggleSubmitForm={toggle}
@@ -85,7 +84,6 @@ export function Dashboard(props) {
         summaryBarData={summaryBarData}
         isNotAllowedToEdit={isNotAllowedToEdit}
       />
-
       <Row className="w-100 ml-1">
         <Col lg={7}></Col>
         <Col lg={5}>
