@@ -18,11 +18,23 @@ describe('<ReportTableSearchPanel />', () => {
     expect(inputElement).toBeInTheDocument();
   });
 
-  test('calls onSearch prop on text change', () => {
+  test('calls onSearch prop on button click', () => {
     const onSearchMock = jest.fn();
     render(<Provider store={store}><ReportTableSearchPanel onSearch={onSearchMock} /></Provider>);
     const inputElement = screen.getByPlaceholderText('Search Text');
     fireEvent.change(inputElement, { target: { value: 'test' } });
+    const button = screen.getByRole('button', { name: /search/i });
+    fireEvent.click(button);
+    expect(onSearchMock).toHaveBeenCalledTimes(1);
+    expect(onSearchMock).toHaveBeenCalledWith('test');
+  });
+
+  test('calls onSearch prop on Enter key', () => {
+    const onSearchMock = jest.fn();
+    render(<Provider store={store}><ReportTableSearchPanel onSearch={onSearchMock} /></Provider>);
+    const inputElement = screen.getByPlaceholderText('Search Text');
+    fireEvent.change(inputElement, { target: { value: 'test' } });
+    fireEvent.keyDown(inputElement, { key: 'Enter', code: 'Enter' });
     expect(onSearchMock).toHaveBeenCalledTimes(1);
     expect(onSearchMock).toHaveBeenCalledWith('test');
   });
@@ -41,24 +53,14 @@ describe('<ReportTableSearchPanel />', () => {
     expect(onSearchMock).not.toHaveBeenCalled();
   });
 
-  test('debounce the calls to onSearch prop on rapid text change', () => {
-    jest.useFakeTimers();
+  test('does not call onSearch prop on input change', () => {
     const onSearchMock = jest.fn();
     render(<Provider store={store}><ReportTableSearchPanel onSearch={onSearchMock} /></Provider>);
     const inputElement = screen.getByPlaceholderText('Search Text');
-    // Simulate the user rapidly typing "hello"
-    fireEvent.change(inputElement, { target: { value: 'h' } });
-    fireEvent.change(inputElement, { target: { value: 'he' } });
-    fireEvent.change(inputElement, { target: { value: 'hel' } });
-    fireEvent.change(inputElement, { target: { value: 'hell' } });
-    fireEvent.change(inputElement, { target: { value: 'hello' } });
-    // Fast-forward time
-    jest.runAllTimers();
-    // The `onSearch` callback should be called once if there is a debounce mechanism
-    // otherwise, it will be called 5 times
-    expect(onSearchMock).toHaveBeenCalledTimes(5);
-    expect(onSearchMock).toHaveBeenCalledWith('hello');
-    jest.useRealTimers();
+    fireEvent.change(inputElement, { target: { value: 'a' } });
+    fireEvent.change(inputElement, { target: { value: 'ab' } });
+    fireEvent.change(inputElement, { target: { value: 'abc' } });
+    expect(onSearchMock).not.toHaveBeenCalled();
   });
 
 });
