@@ -3,7 +3,7 @@
 /* eslint-disable react/no-unused-state */
 import { Component } from 'react';
 import { connect } from 'react-redux';
-import { Container, Button } from 'reactstrap';
+import { Container } from 'reactstrap';
 import { boxStyle, boxStyleDark } from 'styles';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import { searchWithAccent } from 'utils/search';
@@ -619,357 +619,187 @@ class ReportsPage extends Component {
                   darkMode={darkMode}
                   onClearFilters={this.handleClearFilters}
                 />
-                {isNarrowScreen ? (
-                  <div className="reports-collapse-section">
-                    <button
-                      className="btn btn-info btn-block mb-3"
-                      aria-expanded={!this.state.reportsCollapsed}
-                      aria-controls="reports-buttons-list"
-                      onClick={this.toggleReportsCollapse}
-                      type="button"
-                    >
-                      {this.state.reportsCollapsed ? 'Show Reports' : 'Hide Reports'}
-                    </button>
-                    <div
-                      id="reports-buttons-list"
-                      style={{ display: this.state.reportsCollapsed ? 'none' : 'block' }}
-                    >
-                      <div className="total-report-container">
-                        <div className="total-report-item">
-                          <Button type="button" color="info" onClick={this.showTotalProject}>
-                            {this.state.showTotalProject
-                              ? 'Hide Total Project Report'
-                              : 'Show Total Project Report'}
-                          </Button>
-                          <div style={{ display: 'inline-block', marginLeft: 10 }}>
-                            <EditableInfoModal
-                              areaName="totalProjectReportInfoPoint"
-                              areaTitle="Total Project Report"
-                              role={myRole}
-                              fontSize={15}
-                              isPermissionPage
-                              darkMode={darkMode}
-                            />
-                          </div>
-                        </div>
-                        <div className="total-report-item">
-                          <Button type="button" color="info" onClick={this.showTotalPeople}>
-                            {this.state.showTotalPeople
-                              ? 'Hide Total People Report'
-                              : 'Show Total People Report'}
-                          </Button>
-                          <div style={{ display: 'inline-block', marginLeft: 10 }}>
-                            <EditableInfoModal
-                              areaName="totalPeopleReportInfoPoint"
-                              areaTitle="Total People Report"
-                              role={myRole}
-                              fontSize={15}
-                              isPermissionPage
-                              darkMode={darkMode}
-                            />
-                          </div>
-                        </div>
-                        <div className="total-report-item">
-                          <Button color="info" onClick={this.showTotalTeam}>
-                            {this.state.showTotalTeam
-                              ? 'Hide Total Team Report'
-                              : 'Show Total Team Report'}
-                          </Button>
-                          <div style={{ display: 'inline-block', marginLeft: 10 }}>
-                            <EditableInfoModal
-                              areaName="totalTeamReportInfoPoint"
-                              areaTitle="Total Team Report"
-                              role={userRole}
-                              fontSize={15}
-                              isPermissionPage
-                              darkMode={darkMode}
-                            />
-                          </div>
-                        </div>
-                        <div className="total-report-item">
-                          <Button color="info" onClick={this.showContributorsReport}>
-                            {this.state.showContributorsReport
-                              ? 'Hide Contributors Report'
-                              : 'Show Contributors Report'}
-                          </Button>
-                          <div style={{ display: 'inline-block', marginLeft: 10 }}>
-                            <EditableInfoModal
-                              areaName="contributorsReportInfoPoint"
-                              areaTitle="Contributors Report"
-                              role={userRole}
-                              fontSize={15}
-                              isPermissionPage
-                              darkMode={darkMode}
-                            />
-                          </div>
-                        </div>
-                        <div className="total-report-item">
-                          <Button color="info" onClick={this.showAddProjHistory}>
-                            {this.state.showAddProjHistory
-                              ? 'Hide Project Lost Time'
-                              : 'Show Project Lost Time'}
-                          </Button>
-                          <div style={{ display: 'inline-block', marginLeft: 10 }}>
-                            <EditableInfoModal
-                              areaName="projectLostTimeInfoPoint"
-                              areaTitle="Project Lost Time"
-                              role={myRole}
-                              fontSize={15}
-                              isPermissionPage
-                              darkMode={darkMode}
-                            />
-                          </div>
-                        </div>
-                        <div className="total-report-item">
-                          <Button color="info" onClick={this.showAddPersonHistory}>
-                            {this.state.showAddPersonHistory
-                              ? 'Hide Person Lost Time'
-                              : 'Show Person Lost Time'}
-                          </Button>
-                          <div style={{ display: 'inline-block', marginLeft: 10 }}>
-                            <EditableInfoModal
-                              areaName="personLostTimeInfoPoint"
-                              areaTitle="Person Lost Time"
-                              role={myRole}
-                              fontSize={15}
-                              isPermissionPage
-                              darkMode={darkMode}
-                            />
-                          </div>
-                        </div>
-                        <div className="total-report-item">
-                          <Button color="info" onClick={this.showAddTeamHistory}>
-                            {this.state.showAddTeamHistory
-                              ? 'Hide Team Lost Time'
-                              : 'Show Team Lost Time'}
-                          </Button>
-                          <div style={{ display: 'inline-block', marginLeft: 10 }}>
-                            <EditableInfoModal
-                              areaName="teamLostTimeInfoPoint"
-                              areaTitle="Team Lost Time"
-                              role={myRole}
-                              fontSize={15}
-                              isPermissionPage
-                              darkMode={darkMode}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="total-report-container">
-                    <div className="total-report-item">
-                      <Button type="button" color="info" onClick={this.showTotalProject}>
-                        {this.state.showTotalProject
-                          ? 'Hide Total Project Report'
-                          : 'Show Total Project Report'}
-                      </Button>
-                      <div style={{ display: 'inline-block', marginLeft: 10 }}>
-                        <EditableInfoModal
-                          areaName="totalProjectReportInfoPoint"
-                          areaTitle="Total Project Report"
-                          role={myRole}
-                          fontSize={15}
-                          isPermissionPage
-                          darkMode={darkMode}
-                        />
-                      </div>
-                    </div>
-                    <div className="total-report-item">
-                      <Button type="button" color="info" onClick={this.showTotalPeople}>
-                        {this.state.showTotalPeople
-                          ? 'Hide Total People Report'
-                          : 'Show Total People Report'}
-                      </Button>
-                      <div style={{ display: 'inline-block', marginLeft: 10 }}>
-                        <EditableInfoModal
-                          areaName="totalPeopleReportInfoPoint"
-                          areaTitle="Total People Report"
-                          role={myRole}
-                          fontSize={15}
-                          isPermissionPage
-                          darkMode={darkMode}
-                        />
-                      </div>
-                    </div>
-                    <div className="total-report-item">
-                      <Button color="info" onClick={this.showTotalTeam}>
-                        {this.state.showTotalTeam
-                          ? 'Hide Total Team Report'
-                          : 'Show Total Team Report'}
-                      </Button>
-                      <div style={{ display: 'inline-block', marginLeft: 10 }}>
-                        <EditableInfoModal
-                          areaName="totalTeamReportInfoPoint"
-                          areaTitle="Total Team Report"
-                          role={userRole}
-                          fontSize={15}
-                          isPermissionPage
-                          darkMode={darkMode}
-                        />
-                      </div>
-                    </div>
-                    <div className="total-report-item">
-                      <Button color="info" onClick={this.showContributorsReport}>
-                        {this.state.showContributorsReport
-                          ? 'Hide Contributors Report'
-                          : 'Show Contributors Report'}
-                      </Button>
-                      <div style={{ display: 'inline-block', marginLeft: 10 }}>
-                        <EditableInfoModal
-                          areaName="contributorsReportInfoPoint"
-                          areaTitle="Contributors Report"
-                          role={userRole}
-                          fontSize={15}
-                          isPermissionPage
-                          darkMode={darkMode}
-                        />
-                      </div>
-                    </div>
-                    <div className="total-report-item">
-                      <Button color="info" onClick={this.showAddProjHistory}>
-                        {this.state.showAddProjHistory
-                          ? 'Hide Project Lost Time'
-                          : 'Show Project Lost Time'}
-                      </Button>
-                      <div style={{ display: 'inline-block', marginLeft: 10 }}>
-                        <EditableInfoModal
-                          areaName="projectLostTimeInfoPoint"
-                          areaTitle="Project Lost Time"
-                          role={myRole}
-                          fontSize={15}
-                          isPermissionPage
-                          darkMode={darkMode}
-                        />
-                      </div>
-                    </div>
-                    <div className="total-report-item">
-                      <Button color="info" onClick={this.showAddPersonHistory}>
-                        {this.state.showAddPersonHistory
-                          ? 'Hide Person Lost Time'
-                          : 'Show Person Lost Time'}
-                      </Button>
-                      <div style={{ display: 'inline-block', marginLeft: 10 }}>
-                        <EditableInfoModal
-                          areaName="personLostTimeInfoPoint"
-                          areaTitle="Person Lost Time"
-                          role={myRole}
-                          fontSize={15}
-                          isPermissionPage
-                          darkMode={darkMode}
-                        />
-                      </div>
-                    </div>
-                    <div className="total-report-item">
-                      <Button color="info" onClick={this.showAddTeamHistory}>
-                        {this.state.showAddTeamHistory
-                          ? 'Hide Team Lost Time'
-                          : 'Show Team Lost Time'}
-                      </Button>
-                      <div style={{ display: 'inline-block', marginLeft: 10 }}>
-                        <EditableInfoModal
-                          areaName="teamLostTimeInfoPoint"
-                          areaTitle="Team Lost Time"
-                          role={myRole}
-                          fontSize={15}
-                          isPermissionPage
-                          darkMode={darkMode}
-                        />
-                      </div>
-                    </div>
+                {isNarrowScreen && (
+                  <div className="table-data-container mt-5">
+                    {this.state.showPeople && (
+                      <PeopleTable userProfiles={this.state.peopleSearchData} darkMode={darkMode} />
+                    )}
+                    {this.state.showProjects && (
+                      <ProjectTable projects={this.state.projectSearchData} darkMode={darkMode} />
+                    )}
+                    {this.state.showTeams && (
+                      <TeamTable allTeams={this.state.teamSearchData} darkMode={darkMode} />
+                    )}
+                    {this.state.showTotalPeople && (
+                      <TotalPeopleReport
+                        startDate={this.state.startDate}
+                        endDate={this.state.endDate}
+                        userProfiles={userProfilesBasicInfo}
+                        darkMode={darkMode}
+                      />
+                    )}
+                    {this.state.showTotalTeam && (
+                      <TotalTeamReport
+                        startDate={this.state.startDate}
+                        endDate={this.state.endDate}
+                        userProfiles={userProfilesBasicInfo}
+                        allTeamsData={this.props.state.allTeamsData.allTeams}
+                        passTeamMemberList={this.setTeamMemberList}
+                        savedTeamMemberList={this.state.teamMemberList}
+                        darkMode={darkMode}
+                      />
+                    )}
+                    {!this.state.loading && this.state.showTotalProject && (
+                      <TotalProjectReport
+                        startDate={this.state.startDate}
+                        endDate={this.state.endDate}
+                        userProfiles={userProfilesBasicInfo}
+                        projects={projects}
+                        darkMode={darkMode}
+                      />
+                    )}
+                    {this.state.showContributorsReport && (
+                      <TotalContributorsReport
+                        startDate={this.state.startDate}
+                        endDate={this.state.endDate}
+                        userProfiles={userProfilesBasicInfo}
+                        darkMode={darkMode}
+                        userRole={userRole}
+                      />
+                    )}
+                    {this.state.showAddTimeForm && myRole === 'Owner' && (
+                      <AddLostTime
+                        isOpen={this.state.showAddTimeForm}
+                        toggle={this.setAddTime}
+                        projects={projects}
+                        teams={allTeams}
+                        users={userProfilesBasicInfo}
+                      />
+                    )}
+                    {this.state.showAddPersonHistory && (
+                      <LostTimeHistory
+                        type="person"
+                        isOpen={this.state.showAddPersonHistory}
+                        startDate={this.state.startDate}
+                        endDate={this.state.endDate}
+                        allData={userProfilesBasicInfo}
+                        darkMode={darkMode}
+                      />
+                    )}
+                    {this.state.showAddTeamHistory && (
+                      <LostTimeHistory
+                        type="team"
+                        isOpen={this.state.showAddTeamHistory}
+                        startDate={this.state.startDate}
+                        endDate={this.state.endDate}
+                        allData={allTeams}
+                        darkMode={darkMode}
+                      />
+                    )}
+                    {this.state.showAddProjHistory && (
+                      <LostTimeHistory
+                        type="project"
+                        isOpen={this.state.showAddProjHistory}
+                        startDate={this.state.startDate}
+                        endDate={this.state.endDate}
+                        allData={projects}
+                        darkMode={darkMode}
+                      />
+                    )}
                   </div>
                 )}
               </div>
             </div>
           </div>
-          <div className="table-data-container mt-5">
-            {this.state.showPeople && (
-              <PeopleTable userProfiles={this.state.peopleSearchData} darkMode={darkMode} />
-            )}
-            {this.state.showProjects && (
-              <ProjectTable projects={this.state.projectSearchData} darkMode={darkMode} />
-            )}
-            {this.state.showTeams && (
-              <TeamTable allTeams={this.state.teamSearchData} darkMode={darkMode} />
-            )}
-            {this.state.showTotalPeople && (
-              <TotalPeopleReport
-                startDate={this.state.startDate}
-                endDate={this.state.endDate}
-                userProfiles={userProfilesBasicInfo}
-                darkMode={darkMode}
-              />
-            )}
-            {this.state.showTotalTeam && (
-              <TotalTeamReport
-                startDate={this.state.startDate}
-                endDate={this.state.endDate}
-                userProfiles={userProfilesBasicInfo}
-                allTeamsData={this.props.state.allTeamsData.allTeams}
-                passTeamMemberList={this.setTeamMemberList}
-                savedTeamMemberList={this.state.teamMemberList}
-                darkMode={darkMode}
-              />
-            )}
-            {!this.state.loading && this.state.showTotalProject && (
-              <TotalProjectReport
-                startDate={this.state.startDate}
-                endDate={this.state.endDate}
-                userProfiles={userProfilesBasicInfo}
-                projects={projects}
-                darkMode={darkMode}
-              />
-            )}
-            {this.state.showContributorsReport && (
-              <TotalContributorsReport
-                startDate={this.state.startDate}
-                endDate={this.state.endDate}
-                userProfiles={userProfilesBasicInfo}
-                darkMode={darkMode}
-                userRole={userRole}
-              />
-            )}
-            {this.state.showAddTimeForm && myRole === 'Owner' && (
-              <AddLostTime
-                isOpen={this.state.showAddTimeForm}
-                toggle={this.setAddTime}
-                projects={projects}
-                teams={allTeams}
-                users={userProfilesBasicInfo}
-              />
-            )}
-            {this.state.showAddPersonHistory && (
-              <LostTimeHistory
-                type="person"
-                isOpen={this.state.showAddPersonHistory}
-                startDate={this.state.startDate}
-                endDate={this.state.endDate}
-                allData={userProfilesBasicInfo}
-                darkMode={darkMode}
-              />
-            )}
-            {this.state.showAddTeamHistory && (
-              <LostTimeHistory
-                type="team"
-                isOpen={this.state.showAddTeamHistory}
-                startDate={this.state.startDate}
-                endDate={this.state.endDate}
-                allData={allTeams}
-                darkMode={darkMode}
-              />
-            )}
-            {this.state.showAddProjHistory && (
-              <LostTimeHistory
-                type="project"
-                isOpen={this.state.showAddProjHistory}
-                startDate={this.state.startDate}
-                endDate={this.state.endDate}
-                allData={projects}
-                darkMode={darkMode}
-              />
-            )}
-          </div>
+          {!isNarrowScreen && (
+            <div className="table-data-container mt-5">
+              {this.state.showPeople && (
+                <PeopleTable userProfiles={this.state.peopleSearchData} darkMode={darkMode} />
+              )}
+              {this.state.showProjects && (
+                <ProjectTable projects={this.state.projectSearchData} darkMode={darkMode} />
+              )}
+              {this.state.showTeams && (
+                <TeamTable allTeams={this.state.teamSearchData} darkMode={darkMode} />
+              )}
+              {this.state.showTotalPeople && (
+                <TotalPeopleReport
+                  startDate={this.state.startDate}
+                  endDate={this.state.endDate}
+                  userProfiles={userProfilesBasicInfo}
+                  darkMode={darkMode}
+                />
+              )}
+              {this.state.showTotalTeam && (
+                <TotalTeamReport
+                  startDate={this.state.startDate}
+                  endDate={this.state.endDate}
+                  userProfiles={userProfilesBasicInfo}
+                  allTeamsData={this.props.state.allTeamsData.allTeams}
+                  passTeamMemberList={this.setTeamMemberList}
+                  savedTeamMemberList={this.state.teamMemberList}
+                  darkMode={darkMode}
+                />
+              )}
+              {!this.state.loading && this.state.showTotalProject && (
+                <TotalProjectReport
+                  startDate={this.state.startDate}
+                  endDate={this.state.endDate}
+                  userProfiles={userProfilesBasicInfo}
+                  projects={projects}
+                  darkMode={darkMode}
+                />
+              )}
+              {this.state.showContributorsReport && (
+                <TotalContributorsReport
+                  startDate={this.state.startDate}
+                  endDate={this.state.endDate}
+                  userProfiles={userProfilesBasicInfo}
+                  darkMode={darkMode}
+                  userRole={userRole}
+                />
+              )}
+              {this.state.showAddTimeForm && myRole === 'Owner' && (
+                <AddLostTime
+                  isOpen={this.state.showAddTimeForm}
+                  toggle={this.setAddTime}
+                  projects={projects}
+                  teams={allTeams}
+                  users={userProfilesBasicInfo}
+                />
+              )}
+              {this.state.showAddPersonHistory && (
+                <LostTimeHistory
+                  type="person"
+                  isOpen={this.state.showAddPersonHistory}
+                  startDate={this.state.startDate}
+                  endDate={this.state.endDate}
+                  allData={userProfilesBasicInfo}
+                  darkMode={darkMode}
+                />
+              )}
+              {this.state.showAddTeamHistory && (
+                <LostTimeHistory
+                  type="team"
+                  isOpen={this.state.showAddTeamHistory}
+                  startDate={this.state.startDate}
+                  endDate={this.state.endDate}
+                  allData={allTeams}
+                  darkMode={darkMode}
+                />
+              )}
+              {this.state.showAddProjHistory && (
+                <LostTimeHistory
+                  type="project"
+                  isOpen={this.state.showAddProjHistory}
+                  startDate={this.state.startDate}
+                  endDate={this.state.endDate}
+                  allData={projects}
+                  darkMode={darkMode}
+                />
+              )}
+            </div>
+          )}
         </div>
       </Container>
     );
