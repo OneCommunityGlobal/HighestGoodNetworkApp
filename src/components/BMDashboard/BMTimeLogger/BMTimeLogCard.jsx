@@ -21,9 +21,9 @@ function BMTimeLogCard(props) {
   }, [props.selectedProject, dispatch]);
 
   useEffect(() => {
-    if (projectInfo && projectInfo.members) {
-      setMemberList(projectInfo.members);
-      setFilteredMembers(projectInfo.members);
+    if (projectInfo && projectInfo.members.members) {
+      setMemberList(projectInfo.members.members);
+      setFilteredMembers(projectInfo.members.members);
       setIsMemberFetched(true);
     }
   }, [projectInfo]);

@@ -6,9 +6,10 @@ import styles from './BMTimeLogCard.module.css';
 function BMTimeLogDisplayMember({ firstName, lastName, role, memberId, projectId }) {
   const roleColors = {
     volunteer: '#78bdda', // light blue
-    core: '#ecb16c', // light orange
-    manager: '#6cc3b2', // light green
-    mentor: '#6cc3b2', // light green
+    'core team': '#6cc3b2', // light green
+    manager: '#ecb16c', // light orange
+    mentor: '#ecb16c', // light orange
+    admin: '#c36c6c', // light red
     owner: '#c36c6c', // light red
   };
 
