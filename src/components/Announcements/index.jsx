@@ -5,7 +5,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react';
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
-import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
+import ReactDOMServer from 'react-dom/server';
+import { sendEmail } from '../../actions/sendEmails';
+import WeeklyEmailTemplate from './WeeklyEmailTemplate';
 
 function Announcements({ title, email: initialEmail }) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -15,13 +17,27 @@ function Announcements({ title, email: initialEmail }) {
   const [emailContent, setEmailContent] = useState('');
   const [headerContent, setHeaderContent] = useState('');
   const [showEditor, setShowEditor] = useState(true);
-  const [isFileUploaded, setIsFileUploaded] = useState(false);
-  const editorRef = useRef(null);
+  const [templateHtml, setTemplateHtml] = useState('');
+  const [videoTopicImage, setVideoTopicImage] = useState(
+    'https://www.dropbox.com/scl/fi/e4gv4jo2p128u2ezqva4j/topic.jpg?rlkey=10qsu8i15my3fa3bk34z4yjhq&raw=1',
+  );
 
   useEffect(() => {
     setShowEditor(false);
     setTimeout(() => setShowEditor(true), 0);
   }, [darkMode]);
+
+  useEffect(() => {
+    // Render WeeklyEmailTemplate as HTML string for the editor
+    const html = ReactDOMServer.renderToStaticMarkup(
+      <WeeklyEmailTemplate
+        headerImageUrl={headerContent || undefined}
+        videoTopicImageUrl={videoTopicImage || undefined}
+        darkMode={darkMode}
+      />,
+    );
+    setTemplateHtml(html);
+  }, []);
 
   const editorInit = {
     license_key: 'gpl',
@@ -84,37 +100,27 @@ function Announcements({ title, email: initialEmail }) {
   };
 
   const addHeaderToEmailContent = () => {
-    if (!headerContent) return;
-    const imageTag = `<img src="${headerContent}" alt="Header Image" style="width: 100%; max-width: 100%; height: auto;">`;
-    const editor = window.tinymce.get('email-editor');
-    if (editor) {
-      editor.insertContent(imageTag);
-      setEmailContent(editor.getContent());
-    }
-    setHeaderContent('');
+    // Just refresh the template
+    const html = ReactDOMServer.renderToStaticMarkup(
+      <WeeklyEmailTemplate
+        headerImageUrl={headerContent || undefined}
+        videoTopicImageUrl={videoTopicImage || undefined}
+        darkMode={darkMode}
+      />,
+    );
+    setTemplateHtml(html);
   };
 
-  const convertImageToBase64 = (file, callback) => {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      callback(reader.result);
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const addImageToEmailContent = e => {
-    const imageFile = document.querySelector('input[type="file"]').files[0];
-    setIsFileUploaded(true);
-    convertImageToBase64(imageFile, base64Image => {
-      const imageTag = `<img src="${base64Image}" alt="Header Image" style="width: 100%; max-width: 100%; height: auto;">`;
-      setHeaderContent(prevContent => `${imageTag}${prevContent}`);
-      const editor = window.tinymce.get('email-editor');
-      if (editor) {
-        editor.insertContent(imageTag);
-        setEmailContent(editor.getContent());
-      }
-    });
-    e.target.value = '';
+  const addVideoTopicImageToTemplate = () => {
+    // Just refresh the template
+    const html = ReactDOMServer.renderToStaticMarkup(
+      <WeeklyEmailTemplate
+        headerImageUrl={headerContent || undefined}
+        videoTopicImageUrl={videoTopicImage || undefined}
+        darkMode={darkMode}
+      />,
+    );
+    setTemplateHtml(html);
   };
 
   const validateEmail = email => {
@@ -123,20 +129,16 @@ function Announcements({ title, email: initialEmail }) {
   };
 
   const handleSendEmails = () => {
-    const htmlContent = emailContent;
+    const editor = window.tinymce.get('email-editor');
+    const htmlContent = editor ? editor.getContent() : emailContent;
 
     if (emailList.length === 0 || emailList.every(e => !e.trim())) {
       toast.error('Error: Empty Email List. Please enter AT LEAST One email.');
       return;
     }
 
-    if (!isFileUploaded) {
-      toast.error('Error: Please upload a file.');
-      return;
-    }
-
-    if (!isFileUploaded) {
-      toast.error('Error: Please upload a file.');
+    if (!htmlContent || htmlContent.trim() === '') {
+      toast.error('Error: Email content cannot be empty.');
       return;
     }
 
@@ -152,15 +154,6 @@ function Announcements({ title, email: initialEmail }) {
     );
   };
 
-  const handleBroadcastEmails = () => {
-    const htmlContent = `
-    <div style="max-width: 900px; width: 100%; margin: auto;">
-      ${emailContent}
-    </div>
-  `;
-    dispatch(broadcastEmailsToAll('Weekly Update', htmlContent));
-  };
-
   return (
     <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: '100%' }}>
       <div className="email-update-container">
@@ -169,55 +162,28 @@ function Announcements({ title, email: initialEmail }) {
 
           <br />
           {showEditor && (
-            <Editor
-              tinymceScriptSrc="/tinymce/tinymce.min.js"
-              id="email-editor"
-              initialValue="<p>This is the initial content of the editor</p>"
-              init={editorInit}
-              onEditorChange={content => {
-                setEmailContent(content);
+            <div
+              style={{
+                height: '100%',
+                minHeight: '600px',
+                display: 'flex',
+                flexDirection: 'column',
               }}
-              onInit={(evt, editor) => {
-                editorRef.current = editor;
-              }}
-            />
-          )}
-          {title ? (
-            ''
-          ) : (
-            <div className="email-update-container">
-              <div className="editor">
-                <div className="email-list">
-                  <input
-                    type="text"
-                    value={emailTo}
-                    onChange={handleEmailListChange}
-                    placeholder="Enter email addresses (comma-separated)"
-                  />
-                </div>
-                <div className="header-image">
-                  <input
-                    type="text"
-                    value={headerContent}
-                    onChange={handleHeaderContentChange}
-                    placeholder="Enter header image URL"
-                  />
-                  <button type="button" onClick={addHeaderToEmailContent}>
-                    Add Header
-                  </button>
-                </div>
-                <div className="file-upload">
-                  <input type="file" onChange={addImageToEmailContent} />
-                </div>
-                <div className="send-buttons">
-                  <button type="button" onClick={handleSendEmails}>
-                    Send Emails
-                  </button>
-                  <button type="button" onClick={handleBroadcastEmails}>
-                    Broadcast to All
-                  </button>
-                </div>
-              </div>
+            >
+              <Editor
+                tinymceScriptSrc="/tinymce/tinymce.min.js"
+                id="email-editor"
+                initialValue={templateHtml}
+                init={{
+                  ...editorInit,
+                  height: '100%',
+                  min_height: 600,
+                  max_height: 9999,
+                }}
+                onEditorChange={content => {
+                  setEmailContent(content);
+                }}
+              />
             </div>
           )}
         </div>
@@ -247,40 +213,73 @@ function Announcements({ title, email: initialEmail }) {
             onClick={handleSendEmails}
             style={darkMode ? boxStyleDark : boxStyle}
           >
-            {title ? 'Send Email' : 'Send mail to specific users'}
+            {title ? 'Send Email' : 'Send mail to users'}
           </button>
 
           <hr />
-          <label htmlFor="header-content-input" className={darkMode ? 'text-light' : 'text-dark'}>
-            Insert header or image link:
+          {/* Header Image Input Box */}
+          <label htmlFor="header-image-input" className={darkMode ? 'text-light' : 'text-dark'}>
+            Header image link:
           </label>
-          <input
-            type="text"
-            id="header-content-input"
-            onChange={handleHeaderContentChange}
-            value={headerContent}
-            className={`input-text-for-announcement ${
-              darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
-            }`}
-          />
-          <button
-            type="button"
-            className="send-button"
-            onClick={addHeaderToEmailContent}
-            style={darkMode ? boxStyleDark : boxStyle}
-          >
-            Insert
-          </button>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <input
+              type="text"
+              id="header-image-input"
+              value={
+                headerContent ||
+                'https://www.dropbox.com/scl/fi/60pgjcylcw15uik0wmoxj/HD-Horizontal-Logo-1275x375.jpg?rlkey=34nu3c1pav1d16dkstu5jq8g8&raw=1'
+              }
+              onChange={handleHeaderContentChange}
+              className={`input-text-for-announcement ${
+                darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+              }`}
+            />
+            <button
+              type="button"
+              className="send-button small-button"
+              onClick={addHeaderToEmailContent}
+              style={darkMode ? boxStyleDark : boxStyle}
+            >
+              Change
+            </button>
+          </div>
+          <div style={{ color: '#888', fontSize: '13px', marginTop: '4px' }}>
+            For Dropbox URL that ends with &quot;dl=0&quot;, please replace with &quot;raw=1&quot;.
+          </div>
           <hr />
-          <label htmlFor="upload-header-input" className={darkMode ? 'text-light' : 'text-dark'}>
-            Upload Header (or footer):
+          {/* Video Topic Image Input Box (Changeable) */}
+          <label
+            htmlFor="video-topic-image-input"
+            className={darkMode ? 'text-light' : 'text-dark'}
+          >
+            Video topic image link:
           </label>
-          <input
-            type="file"
-            id="upload-header-input"
-            onChange={addImageToEmailContent}
-            className="input-file-upload"
-          />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <input
+              type="text"
+              id="video-topic-image-input"
+              value={
+                videoTopicImage ||
+                'https://www.dropbox.com/scl/fi/e4gv4jo2p128u2ezqva4j/topic.jpg?rlkey=10qsu8i15my3fa3bk34z4yjhq&raw=1'
+              }
+              onChange={e => setVideoTopicImage(e.target.value)}
+              className={`input-text-for-announcement ${
+                darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+              }`}
+            />
+            <button
+              type="button"
+              className="send-button small-button"
+              onClick={addVideoTopicImageToTemplate}
+              style={darkMode ? boxStyleDark : boxStyle}
+            >
+              Change
+            </button>
+          </div>
+          <div style={{ color: '#888', fontSize: '13px', marginTop: '4px' }}>
+            For Dropbox URL that ends with &quot;dl=0&quot;, please replace with &quot;raw=1&quot;.
+          </div>
+          <hr />
         </div>
       </div>
     </div>
