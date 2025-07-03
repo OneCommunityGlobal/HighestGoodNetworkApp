@@ -1,10 +1,10 @@
+/* eslint-disable no-undef */
 import { useState, useEffect, useMemo } from 'react';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import { getWeeklySummaries } from 'actions/weeklySummaries';
-import { Link, useLocation } from 'react-router-dom';
-import { connect, useDispatch } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { Link, useLocation, useHistory } from 'react-router-dom';
+import { connect, useDispatch, useSelector } from 'react-redux';
 import {
   Collapse,
   Navbar,
@@ -117,6 +117,20 @@ export function Header(props) {
     props.hasPermission('postTask', !isAuthUser && canInteractWithViewingUser) ||
     props.hasPermission('updateTask', !isAuthUser && canInteractWithViewingUser) ||
     props.hasPermission('deleteTask', !isAuthUser && canInteractWithViewingUser);
+
+  // Projects Dropdown
+  const projectPaths = [
+    '/bmdashboard/materials/add',
+    '/bmdashboard/logMaterial',
+    '/bmdashboard/materials',
+    '/bmdashboard/equipment/add',
+    '/bmdashboard/equipment',
+    '/bmdashboard/equipment/:equipmentId',
+    '/bmdashboard/tools/:equipmentId/update',
+    '/bmdashboard/Issue',
+    '/bmdashboard/lessonform/',
+  ];
+
   // Tasks
   const canUpdateTask = props.hasPermission(
     'updateTask',
@@ -154,6 +168,8 @@ export function Header(props) {
 
   const [showProjectDropdown, setShowProjectDropdown] = useState(false);
   const [isAckLoading, setIsAckLoading] = useState(false);
+
+  const selectedProjectId = useSelector(state => state.selectedProjectId);
 
   useEffect(() => {
     const handleStorageEvent = () => {
@@ -319,8 +335,14 @@ export function Header(props) {
     }
   }, [lastDismissed, userId, userDashboardProfile]);
 
+  // useEffect(() => {
+  //   setShowProjectDropdown(location.pathname.startsWith('/bmdashboard/projects/'));
+  // }, [location.pathname]);
   useEffect(() => {
-    setShowProjectDropdown(location.pathname.startsWith('/bmdashboard/projects/'));
+    const pathMatches = projectPaths.some(
+      path => location.pathname === path || location.pathname.startsWith(path),
+    );
+    setShowProjectDropdown(location.pathname.startsWith('/bmdashboard/projects/') || pathMatches);
   }, [location.pathname]);
 
   const fontColor = darkMode ? 'text-white dropdown-item-hover' : '';
@@ -420,6 +442,18 @@ export function Header(props) {
                       <DropdownItem tag={Link} to="/bmdashboard/lessonform/" className={fontColor}>
                         Lesson
                       </DropdownItem>
+                      <DropdownItem tag={Link} to="/bmdashboard" className={fontColor}>
+                        Main Dashboard
+                      </DropdownItem>
+                      {selectedProjectId && ( // Only show the link if a project ID is available
+                        <DropdownItem
+                          tag={Link}
+                          to={`/bmdashboard/projects/${selectedProjectId}`}
+                          className={fontColor}
+                        >
+                          Project Dashboard
+                        </DropdownItem>
+                      )}
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 )}
