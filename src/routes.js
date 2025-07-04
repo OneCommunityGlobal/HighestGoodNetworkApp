@@ -85,7 +85,7 @@ import EventStats from './components/CommunityPortal/EventPersonalization/EventS
 import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
 import EPDashboard from './components/EductionPortal';
-import MostSusceptibleTools from './components/MostSesceptible/toolBreakdownChart'
+import MostSusceptibleTools from './components/MostSusceptible/toolBreakdownChart'
 
 
 
