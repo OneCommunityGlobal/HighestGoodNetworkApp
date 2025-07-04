@@ -6,7 +6,7 @@ import './reportsPage.css';
 /**
  * The search panel stateless component for Report grid
  */
-function ReportTableSearchPanel({ onSearch, wildCardSearchText }) {
+function ReportTableSearchPanel({ onSearch, wildCardSearchText, onScrollToResults }) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const [inputValue, setInputValue] = useState(wildCardSearchText || '');
 
@@ -20,6 +20,9 @@ function ReportTableSearchPanel({ onSearch, wildCardSearchText }) {
 
   const handleSearch = () => {
     onSearch(inputValue);
+    if (onScrollToResults) {
+      onScrollToResults();
+    }
   };
 
   return (

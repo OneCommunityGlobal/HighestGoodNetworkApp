@@ -8,6 +8,7 @@ import { boxStyle, boxStyleDark } from 'styles';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import { searchWithAccent } from 'utils/search';
 import moment from 'moment-timezone';
+import React from 'react';
 import { fetchAllProjects } from '../../actions/projects';
 import { getAllUserTeams } from '../../actions/allTeamsAction';
 import TeamTable from './TeamTable';
@@ -110,6 +111,8 @@ class ReportsPage extends Component {
     this.showContributorsReport = this.showContributorsReport.bind(this);
     this.toggleReportsCollapse = this.toggleReportsCollapse.bind(this);
     this.handleResize = this.handleResize.bind(this);
+    this.resultsTableRef = React.createRef();
+    this.scrollToResults = this.scrollToResults.bind(this);
   }
 
   async componentDidMount() {
@@ -466,6 +469,12 @@ class ReportsPage extends Component {
     }));
   }
 
+  scrollToResults() {
+    if (window.innerWidth < 1024 && this.resultsTableRef.current) {
+      this.resultsTableRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
   render() {
     const { darkMode } = this.props.state.theme;
     const userRole = this.props.state.userProfile.role;
@@ -610,6 +619,7 @@ class ReportsPage extends Component {
                   onWildCardSearch={this.onWildCardSearch}
                   onCreateNewTeamShow={this.onCreateNewTeamShow}
                   wildCardSearchText={this.state.wildCardSearchText}
+                  scrollToResults={this.scrollToResults}
                 />
                 <ViewReportByDate
                   minDate={new Date(DATE_PICKER_MIN_DATE)}
@@ -620,7 +630,7 @@ class ReportsPage extends Component {
                   onClearFilters={this.handleClearFilters}
                 />
                 {isNarrowScreen && (
-                  <div className="table-data-container mt-5">
+                  <div className="table-data-container mt-5" ref={this.resultsTableRef}>
                     {this.state.showPeople && (
                       <PeopleTable userProfiles={this.state.peopleSearchData} darkMode={darkMode} />
                     )}
