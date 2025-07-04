@@ -2,7 +2,6 @@ import { useEffect, useState, useRef } from 'react';
 import { Button, Dropdown, Form, Input } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
-import { getAllUserProfile } from 'actions/userManagement';
 import './PermissionsManagement.css';
 import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
@@ -19,10 +18,8 @@ import { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import ReminderModal from './ReminderModal';
 
 function UserPermissionsPopUp({
-  allUserProfiles,
   // eslint-disable-next-line no-unused-vars
   toggle,
-  getAllUsers,
   roles,
   authUser,
   setReminderModal,
@@ -40,6 +37,8 @@ function UserPermissionsPopUp({
   const [actualUserRolePermission, setActualUserRolePermission] = useState();
   const [selectedAccount, setSelectedAccount] = useState('');
   const [toastShown, setToastShown] = useState(false);
+  const [allUserProfiles, setAllUserProfiles] = useState([]);
+  const [isLoadingUsers, setisLoadingUsers] = useState(true);
 
   const setToDefault = () => {
     setUserPermissions([]);
@@ -60,8 +59,18 @@ function UserPermissionsPopUp({
     setSelectedAccount(`${allUserInfo.firstName} ${allUserInfo.lastName}`);
   };
 
+  const fetchUserProfiles = async () => {
+    const userProfilesPromise = await axios.get(ENDPOINTS.USER_PROFILES);
+    try {
+      setAllUserProfiles(userProfilesPromise.data);
+      setisLoadingUsers(false);
+    } catch (error) {
+      // console.log(error.message);
+    }
+  };
+
   useEffect(() => {
-    getAllUsers();
+    fetchUserProfiles();
     if (actualUserProfile?.role && roles) {
       const roleIndex = roles?.findIndex(({ roleName }) => roleName === actualUserProfile?.role);
       const permissions = roleIndex !== -1 ? roles[roleIndex].permissions : [];
@@ -107,7 +116,7 @@ function UserPermissionsPopUp({
           setToastShown(true);
         }
         toggle();
-        getAllUsers();
+        fetchUserProfiles();
         getChangeLogs();
       })
       .catch(err => {
@@ -198,22 +207,32 @@ function UserPermissionsPopUp({
               }`}
               style={{ marginTop: '0px', width: '100%' }}
             >
-              {allUserProfiles
-                // eslint-disable-next-line array-callback-return, consistent-return
-                .filter(user => {
-                  if (
-                    user.firstName.toLowerCase().includes(searchText.toLowerCase()) ||
-                    user.lastName.toLowerCase().includes(searchText.toLowerCase()) ||
-                    `${user.firstName} ${user.lastName}`
-                      .toLowerCase()
-                      .includes(searchText.toLowerCase())
-                  ) {
-                    if (user.isActive) {
-                      return user;
+              {(() => {
+                const filteredUsers = allUserProfiles
+                  // eslint-disable-next-line array-callback-return, consistent-return
+                  .filter(user => {
+                    if (
+                      user.firstName.toLowerCase().includes(searchText.toLowerCase()) ||
+                      user.lastName.toLowerCase().includes(searchText.toLowerCase()) ||
+                      `${user.firstName} ${user.lastName}`
+                        .toLowerCase()
+                        .includes(searchText.toLowerCase())
+                    ) {
+                      if (user.isActive) {
+                        return user;
+                      }
                     }
-                  }
-                })
-                .map(user => (
+                  });
+
+                if (filteredUsers.length === 0 && searchText !== '') {
+                  return (
+                    <p className={`${darkMode ? 'text-light' : 'text-dark'} text-center`}>
+                      {!isLoadingUsers ? 'No user found' : 'Loading users...'}
+                    </p>
+                  );
+                }
+
+                return filteredUsers.map(user => (
                   <div
                     className="user__auto-complete"
                     key={user._id}
@@ -226,7 +245,8 @@ function UserPermissionsPopUp({
                   >
                     {`${user.firstName} ${user.lastName}`}
                   </div>
-                ))}
+                ));
+              })()}
             </div>
           ) : (
             // eslint-disable-next-line react/jsx-no-useless-fragment
@@ -266,7 +286,6 @@ function UserPermissionsPopUp({
 const mapStateToProps = state => ({
   authUser: state.auth.user,
   roles: state.role.roles,
-  allUserProfiles: state.allUserProfiles.userProfiles,
   permissionsUser: state.auth.permissions,
   darkMode: state.theme.darkMode,
 });
@@ -274,7 +293,6 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   getAllRoles: () => dispatch(getAllRoles()),
   addNewRole: newRole => dispatch(addNewRole(newRole)),
-  getAllUsers: () => dispatch(getAllUserProfile()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserPermissionsPopUp);
