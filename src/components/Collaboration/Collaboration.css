@@ -1,4 +1,4 @@
-.container,
+.collaboration-container,
 .job-landing .header img {
   width: 60%;
   max-width: 1000px;
@@ -8,7 +8,8 @@
 .job-ad {
   text-align: center;
 }
-.container {
+
+.collaboration-container {
   margin: 0 auto 50px;
   flex-direction: column;
   align-items: center;
