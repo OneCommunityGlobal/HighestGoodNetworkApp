@@ -47,15 +47,6 @@ import './WeeklySummariesReport.css';
 
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
 const fullCodeRegex = /^.{5,7}$/;
-const initialFilterState = {
-  selectedCodes: [], // this is the user’s filter preference
-  selectedColors: [],
-  selectedOverTime: false,
-  selectedBioStatus: false,
-  selectedTrophies: false,
-  selectedSpecialColors: { purple: false, green: false, navy: false },
-  chartShow: false,
-};
 const getWeekDates = () => {
   return Array.from({ length: 4 }).map((_, index) => ({
     fromDate: moment()
@@ -122,8 +113,6 @@ const intialPermissionState = {
 const WeeklySummariesReport = props => {
   const { loading, infoCollections, getInfoCollections } = props;
   const weekDates = getWeekDates();
-
-
   const [state, setState] = useState(initialState);
   const [permissionState, setPermissionState] = useState(intialPermissionState);
   const [filterState, setFilterState] = useState({
@@ -139,10 +128,9 @@ const WeeklySummariesReport = props => {
     },
   });
 
-const handleSelectCodeChange = (codes) => {
-  setFilterState(prev => ({ ...prev, selectedCodes: codes }));
-};
-
+  const handleSelectCodeChange = codes => {
+    setFilterState(prev => ({ ...prev, selectedCodes: codes }));
+  };
 
   // Misc functionalities
   /**
@@ -505,14 +493,7 @@ const handleSelectCodeChange = (codes) => {
         selectedTrophies,
         selectedSpecialColors,
       } = filterState;
-      
-      const {
-        summaries,
-        tableData,
-        COLORS,
-      } = state;
-      
-
+      const { summaries, tableData, COLORS } = state;
       // console.log('filterWeeklySummaries state:', {
       //   summariesLength: summaries?.length,
       //   tableDataExists: !!tableData,
@@ -798,7 +779,7 @@ const handleSelectCodeChange = (codes) => {
   const handleOverHoursToggleChange = () => {
     setFilterState(prev => ({
       ...prev,
-      selectedOverTime: !prev.selectedOverTime
+      selectedOverTime: !prev.selectedOverTime,
     }));
   };
 
