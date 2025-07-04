@@ -47,6 +47,15 @@ import './WeeklySummariesReport.css';
 
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
 const fullCodeRegex = /^.{5,7}$/;
+const initialFilterState = {
+  selectedCodes: [], // this is the user’s filter preference
+  selectedColors: [],
+  selectedOverTime: false,
+  selectedBioStatus: false,
+  selectedTrophies: false,
+  selectedSpecialColors: { purple: false, green: false, navy: false },
+  chartShow: false,
+};
 const getWeekDates = () => {
   return Array.from({ length: 4 }).map((_, index) => ({
     fromDate: moment()
@@ -113,8 +122,28 @@ const intialPermissionState = {
 const WeeklySummariesReport = props => {
   const { loading, infoCollections, getInfoCollections } = props;
   const weekDates = getWeekDates();
+
+
   const [state, setState] = useState(initialState);
   const [permissionState, setPermissionState] = useState(intialPermissionState);
+  const [filterState, setFilterState] = useState({
+    selectedCodes: [],
+    selectedColors: [],
+    selectedOverTime: false,
+    selectedBioStatus: false,
+    selectedTrophies: false,
+    selectedSpecialColors: {
+      purple: false,
+      green: false,
+      navy: false,
+    },
+  });
+
+const handleSelectCodeChange = (codes) => {
+  setFilterState(prev => ({ ...prev, selectedCodes: codes }));
+};
+
+
   // Misc functionalities
   /**
    * Sort the summaries in alphabetixal order
@@ -471,14 +500,18 @@ const WeeklySummariesReport = props => {
       const {
         selectedCodes,
         selectedColors,
-        summaries,
         selectedOverTime,
         selectedBioStatus,
         selectedTrophies,
+        selectedSpecialColors,
+      } = filterState;
+      
+      const {
+        summaries,
         tableData,
         COLORS,
-        selectedSpecialColors,
       } = state;
+      
 
       // console.log('filterWeeklySummaries state:', {
       //   summariesLength: summaries?.length,
@@ -762,17 +795,10 @@ const WeeklySummariesReport = props => {
     }
   };
 
-  const handleSelectCodeChange = event => {
-    setState(prev => ({
-      ...prev,
-      selectedCodes: event,
-    }));
-  };
-
   const handleOverHoursToggleChange = () => {
-    setState(prev => ({
+    setFilterState(prev => ({
       ...prev,
-      selectedOverTime: !prev.selectedOverTime,
+      selectedOverTime: !prev.selectedOverTime
     }));
   };
 
@@ -1243,7 +1269,7 @@ const WeeklySummariesReport = props => {
                 label: `${code.padEnd(10, ' ')} (${count}`,
               };
             })}
-            value={state.selectedCodes}
+            value={filterState.selectedCodes}
             onChange={handleSelectCodeChange}
             labelledBy="Select"
           />
