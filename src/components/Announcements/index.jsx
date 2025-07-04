@@ -173,17 +173,19 @@ function Announcements({ title, email: initialEmail }) {
             />
           )}
           <div className="send-buttons" style={{ marginTop: '1rem' }}>
-              <button type="button" onClick={handleBroadcastEmails} className="send-button">
-                Broadcast Weekly Update
-              </button>
-            </div>
+            <button type="button" onClick={handleBroadcastEmails} className="send-button">
+              Broadcast Weekly Update
+            </button>
+          </div>
         </div>
-        
-          {title ? (
-            ''
-          ) : (
 
-          <div className={`emails${darkMode ? 'bg-yinmn-blue text-light' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>
+        {title ? (
+          ''
+        ) : (
+          <div
+            className={`emails${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
             <label htmlFor="email-list-input" className={darkMode ? 'text-light' : 'text-dark'}>
               Email List (comma-separated)<span className="red-asterisk">* </span>:
             </label>
@@ -193,7 +195,9 @@ function Announcements({ title, email: initialEmail }) {
               value={emailTo}
               onChange={handleEmailListChange}
               placeholder="Enter email addresses (comma-separated)"
-              className={`input-text-for-announcement ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
+              className={`input-text-for-announcement ${
+                darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+              }`}
             />
             <button
               type="button"
@@ -203,7 +207,7 @@ function Announcements({ title, email: initialEmail }) {
             >
               {title ? 'Send Email' : 'Send mail to specific users'}
             </button>
-          
+
             <hr />
             <label htmlFor="header-content-input" className={darkMode ? 'text-light' : 'text-dark'}>
               Insert header or image link:
@@ -214,7 +218,9 @@ function Announcements({ title, email: initialEmail }) {
               value={headerContent}
               onChange={handleHeaderContentChange}
               placeholder="Enter header image URL"
-              className={`input-text-for-announcement ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
+              className={`input-text-for-announcement ${
+                darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+              }`}
             />
             <button
               type="button"
@@ -224,7 +230,7 @@ function Announcements({ title, email: initialEmail }) {
             >
               Insert
             </button>
-          
+
             <hr />
             <label htmlFor="upload-header-input" className={darkMode ? 'text-light' : 'text-dark'}>
               Upload Header (or footer):
@@ -236,9 +242,10 @@ function Announcements({ title, email: initialEmail }) {
               className="input-file-upload"
             />
           </div>
-          )}
+        )}
       </div>
-      </div>
-    )} 
-    
+    </div>
+  );
+}
+
 export default Announcements;
