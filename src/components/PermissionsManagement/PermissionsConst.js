@@ -336,7 +336,9 @@ export const permissionLabels = [
                   'Gives the user permission to add a task on any WBS. "Other Links" -> "Projects" -> "WBS Button" -> "Choose any WBS" -> "Add task button"',
               },
               {
-                label: 'Edit Task',
+                label: 'Edit Task/Task Extension',
+                description:
+                  'Category for all permissions related to editing tasks and task extensions',
                 subperms: [
                   {
                     label: 'Edit Task',
