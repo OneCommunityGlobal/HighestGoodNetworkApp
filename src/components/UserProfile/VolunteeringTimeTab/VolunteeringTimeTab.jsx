@@ -451,7 +451,7 @@ const ViewTab = props => {
           </Label>
         </Col>
         <Col md="6">
-          <p className={`hours-totalTangible-thisWeek ${darkMode ? 'text-azure' : ''}`}>
+          <p className={`hours-totalTangible-thisWeek ${darkMode ? 'text-azure' : ''}`} style={{textAlign: 'left'}}>
             {totalTangibleHoursThisWeek}
           </p>
         </Col>
