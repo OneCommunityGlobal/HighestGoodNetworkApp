@@ -9,11 +9,13 @@ import {
   faCompressArrowsAlt,
 } from '@fortawesome/free-solid-svg-icons';
 import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
-import { Table, Progress } from 'reactstrap';
+import { Table, Progress, Modal, ModalHeader, ModalFooter, ModalBody } from 'reactstrap';
 
 import { Link } from 'react-router-dom';
 import hasPermission from 'utils/permissions';
 import './style.css';
+import { getUserProfile } from 'actions/userProfile';
+import { toast } from 'react-toastify';
 
 import Warning from 'components/Warnings/Warnings';
 import { useDispatch, useSelector } from 'react-redux';
@@ -49,6 +51,57 @@ const TeamMemberTask = React.memo(
     const currentDate = moment.tz('America/Los_Angeles').startOf('day');
     const dispatch = useDispatch();
     const canSeeFollowUpCheckButton = userRole !== 'Volunteer';
+    const [isDashboardModalOpen, setIsDashboardModalOpen] = useState(false);
+    const dashboardToggle = item => setIsDashboardOpen(item.personId);
+    const manager = 'Manager';
+    const adm = 'Administrator';
+    const owner = 'Owner';
+
+    const handleDashboardAccess = () => {
+
+      // null checks
+      if (!user || !userRole || !user.role) {
+        toast.error("User information not available to determine dashboard access.");
+        return;
+      }
+
+
+      if (user.role === manager && [adm, owner].includes(userRole)) {
+        toast.error("Oops! You don't have the permission to access this user's dashboard!");
+      } else if (user.role === adm && [owner].includes(userRole)) {
+        toast.error("Oops! You don't have the permission to access this user's dashboard!");
+      } else if (![manager, adm, owner].includes(user.role) && [manager, adm, owner].includes(userRole)) {
+        toast.error("Oops! You don't have the permission to access this user's dashboard!");
+      } else {
+        openDashboardModal(); // the modal you already implemented
+      }
+    };
+
+    const openDashboardModal = () => {
+      setIsDashboardModalOpen(true);
+    };
+
+    const closeDashboardModal = () => {
+      setIsDashboardModalOpen(false);
+    };
+
+    const showDashboard = () => {
+      dispatch(getUserProfile(user.personId)).then(user => {
+            const { _id, role, firstName, lastName, profilePic, email } = user;
+            const viewingUser = {
+              userId: _id,
+              role,
+              firstName,
+              lastName,
+              email,
+              profilePic: profilePic || '/pfp-default-header.png',
+            };
+            sessionStorage.setItem('viewingUser', JSON.stringify(viewingUser));
+            window.dispatchEvent(new Event('storage'));
+            closeDashboardModal();
+          });
+    };
+
 
     const totalHoursRemaining = user.tasks.reduce((total, task) => {
       task.hoursLogged = task.hoursLogged || 0;
@@ -126,14 +179,25 @@ const TeamMemberTask = React.memo(
           <td colSpan={1} className={`${darkMode ? "bg-yinmn-blue" : ""}`}>
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <div className="committed-hours-circle">
-                <FontAwesomeIcon
-                  style={{
-                    color:
-                      user.totaltangibletime_hrs >= user.weeklycommittedHours ? 'green' : 'red',
+                <div
+                  role="button"
+                  tabIndex={0}
+                  onClick={handleDashboardAccess}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') handleDashboardAccess();
                   }}
-                  icon={faCircle}
-                  data-testid="icon"
-                />
+                >
+                  <FontAwesomeIcon
+                    style={{
+                      color: user.totaltangibletime_hrs >= user.weeklycommittedHours ? 'green' : 'red',
+                      cursor: 'pointer'
+                    }}
+                    icon={faCircle}
+                    title="Click to jump to dashboard"
+                    data-testid="icon"
+                  />
+                </div>
+
               </div>
               <Link to={`/timelog/${user.personId}`}>
                 <i
@@ -329,6 +393,27 @@ const TeamMemberTask = React.memo(
                 )}
               </tbody>
             </Table>
+              <Modal
+              isOpen={isDashboardModalOpen}
+              toggle={closeDashboardModal}
+              className={darkMode ? 'text-light dark-mode' : ''}
+            >
+              <ModalHeader
+                toggle={closeDashboardModal}
+                className={darkMode ? 'bg-space-cadet' : ''}
+              >
+                Jump to personal Dashboard
+              </ModalHeader>
+              <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+                <p className="title-dashboard">
+                  Are you sure you wish to view the dashboard for {user.name}?
+                </p>
+              </ModalBody>
+              <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+                <button className="btn btn-primary" onClick={showDashboard}>Ok</button>
+                <button className="btn btn-secondary" onClick={closeDashboardModal}>Cancel</button>
+              </ModalFooter>
+            </Modal>
             {showWhoHasTimeOff &&
               (onTimeOff || goingOnTimeOff) &&
               (expandTimeOffIndicator[user.personId] ? (
