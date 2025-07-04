@@ -1,5 +1,4 @@
-import { useState, useRef } from 'react';
-import Select from 'react-select';
+import { useState, useEffect, useRef } from 'react';
 import {
   BarChart,
   Bar,
@@ -9,97 +8,76 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-  LabelList,
 } from 'recharts';
+import Select from 'react-select';
+import httpService from '../../../services/httpService';
 
-const mockData = [
-  {
-    name: 'Project 1',
-    costOverrun: 12,
-    timeDelay: 18,
-    openIssues: 10,
-    dates: ['2025-06-01', '2025-06-08'],
-  },
-  {
-    name: 'Project 2',
-    costOverrun: 20,
-    timeDelay: 50,
-    openIssues: 5,
-    dates: ['2025-06-01', '2025-06-08'],
-  },
-  {
-    name: 'Project 3',
-    costOverrun: 31,
-    timeDelay: 20,
-    openIssues: 13,
-    dates: ['2025-06-01'],
-  },
-  {
-    name: 'Project 4',
-    costOverrun: 7,
-    timeDelay: 20,
-    openIssues: 6,
-    dates: ['2025-06-08'],
-  },
-  {
-    name: 'Project 5',
-    costOverrun: 17,
-    timeDelay: 9,
-    openIssues: 25,
-    dates: ['2025-06-01', '2025-06-08'],
-  },
-  {
-    name: 'Project 6',
-    costOverrun: 7,
-    timeDelay: 12,
-    openIssues: 11,
-    dates: ['2025-06-01'],
-  },
-  {
-    name: 'Project 7',
-    costOverrun: 5,
-    timeDelay: 11,
-    openIssues: 14,
-    dates: ['2025-06-08'],
-  },
-  {
-    name: 'Project 8',
-    costOverrun: 10,
-    timeDelay: 10,
-    openIssues: 20,
-    dates: ['2025-06-08'],
-  },
-];
-
-const allDates = Array.from(new Set(mockData.flatMap(p => p.dates)));
-const allProjects = mockData.map(p => p.name);
+// Fetch project risk profile data from backend
 
 export default function ProjectRiskProfileOverview() {
-  const [selectedDates, setSelectedDates] = useState(allDates);
-  const [selectedProjects, setSelectedProjects] = useState(allProjects);
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [allProjects, setAllProjects] = useState([]);
+  const [selectedProjects, setSelectedProjects] = useState([]);
   const [showProjectDropdown, setShowProjectDropdown] = useState(false);
+  const [allDates, setAllDates] = useState([]);
+  const [selectedDates, setSelectedDates] = useState([]);
   const [showDateDropdown, setShowDateDropdown] = useState(false);
 
   // Refs for focusing dropdowns
   const allSpanRef = useRef(null);
   const dateSpanRef = useRef(null);
 
+  useEffect(() => {
+    async function fetchData() {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await httpService.get(
+          `${process.env.REACT_APP_APIENDPOINT}/projects/risk-profile`,
+        );
+        let result = res.data;
+        if (!Array.isArray(result)) result = [result];
+        setData(result);
+        setAllProjects(result.map(p => p.projectName));
+        setSelectedProjects(result.map(p => p.projectName)); 
+        // Extract all unique dates from all projects
+        const dates = Array.from(new Set(result.flatMap(p => p.dates || [])));
+        setAllDates(dates);
+        setSelectedDates(dates);
+      } catch (err) {
+        setError('Failed to fetch project risk profile data.');
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, []);
+
   // Filter projects that are ongoing on ALL selected dates and in selectedProjects
-  const filteredData = mockData.filter(
-    p => selectedProjects.includes(p.name) && selectedDates.every(d => p.dates.includes(d)),
+  const filteredData = data.filter(
+    p =>
+      (selectedProjects.length === 0 || selectedProjects.includes(p.projectName)) &&
+      (selectedDates.length === 0 || (p.dates || []).some(d => selectedDates.includes(d)))
   );
 
+  // Project label function
   const getProjectLabel = () => {
     if (selectedProjects.length === allProjects.length) return 'ALL';
     if (selectedProjects.length === 0) return 'Select projects';
     return `${selectedProjects.length} selected`;
   };
 
+  // Dates label function
   const getDateLabel = () => {
     if (selectedDates.length === allDates.length) return 'ALL';
     if (selectedDates.length === 0) return 'Select dates';
     return `${selectedDates.length} selected`;
   };
+
+  if (loading) return <div>Loading project risk profiles...</div>;
+  if (error) return <div style={{ color: 'red' }}>{error}</div>;
 
   return (
     <div
@@ -256,7 +234,7 @@ export default function ProjectRiskProfileOverview() {
             role="button"
             aria-label="Show date dropdown"
           >
-            {getDateLabel()}
+            {getDateLabel && getDateLabel()}
             {showDateDropdown && (
               <div
                 style={{
@@ -338,24 +316,21 @@ export default function ProjectRiskProfileOverview() {
       </div>
       <ResponsiveContainer width="100%" height={350}>
         <BarChart
-          data={filteredData}
+          data={filteredData.map(item => ({
+            ...item,
+            predictedCostOverrun: item.predictedCostOverrun != null ? -1 * item.predictedCostOverrun : item.predictedCostOverrun,
+          }))}
           margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
           barGap={8}
         >
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
+          <XAxis dataKey="projectName" />
           <YAxis />
           <Tooltip />
           <Legend />
-          <Bar dataKey="costOverrun" name="Predicted Cost Overrun (%)" fill="#4285F4">
-            <LabelList dataKey="costOverrun" position="top" />
-          </Bar>
-          <Bar dataKey="openIssues" name="Issues" fill="#EA4335">
-            <LabelList dataKey="openIssues" position="top" />
-          </Bar>
-          <Bar dataKey="timeDelay" name="Predicted Time Delay (%)" fill="#FBBC05">
-            <LabelList dataKey="timeDelay" position="top" />
-          </Bar>
+          <Bar dataKey="predictedCostOverrun" name="Predicted Cost Overrun (%)" fill="#4285F4" />
+          <Bar dataKey="totalOpenIssues" name="Issues" fill="#EA4335" />
+          <Bar dataKey="predictedTimeDelay" name="Predicted Time Delay (%)" fill="#FBBC05" />
         </BarChart>
       </ResponsiveContainer>
     </div>
