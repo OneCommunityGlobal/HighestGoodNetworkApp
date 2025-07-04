@@ -116,7 +116,7 @@ button {
 
 /* .bg-space-cadet:hover{
   background-color: #1C2541 !important;
-  color:black; 
+  color:black;
 } */
 
 .bg-yinmn-blue {
@@ -174,11 +174,23 @@ button {
 }
 
 .box-shadow-dark {
-  box-shadow: 2px 2px 4px 1px black;
+  box-shadow: 2px 2px 4px 1px black !important;
 }
 
 .box-shadow-light {
   box-shadow: 2px 2px 4px 1px lightgray;
+}
+
+.dark-text-muted {
+  color: #b5bac5 !important;
+}
+
+.dark-text-info {
+  color: #6af1ea !important
+}
+
+.summary-text-light p{
+  color: #fff !important;
 }
 
 nav ul.navbar-nav li:last-child > div {
@@ -260,4 +272,11 @@ input[type='checkbox']:not([disabled]):hover {
 
 .pdrl-1 {
   padding: 0 1em !important;
+}
+.user-card-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 24px;
+  padding: 20px;
 }

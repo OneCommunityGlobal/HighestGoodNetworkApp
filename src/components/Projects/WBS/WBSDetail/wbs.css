@@ -230,9 +230,6 @@
 }
 
 @media (min-width: 200px) and (max-width: 1496px) {
-  table.responsive {
-    table-layout: fixed;
-  }
 
   .flex-responsive {
     display: flex;
@@ -288,7 +285,21 @@
     align-items: flex-start;
     margin-bottom: 10px;
   }
-  .wbs-button-group button {
+}
+
+.text-dark.end-modal-dt .DayPickerInput{
+  position: relative;
+}
+
+.text-dark.end-modal-dt .DayPickerInput-OverlayWrapper{
+  position: absolute;
+  bottom: 18.70em;
+  left: -5em; 
+  z-index: 9999;
+}
+
+@media (max-width: 768px) { /* arranging the buttons */
+  .button-group button {
     margin-bottom: 10px;
   }
 }
