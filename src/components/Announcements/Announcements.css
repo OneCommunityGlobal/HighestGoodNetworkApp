@@ -73,7 +73,9 @@ button.send-button:hover {
   margin-top: 0;
   /* Remove top margin for the heading */
 }
-
+.editor h3 {
+  color: #4285f4;
+}
 .emails {
   margin-top: 65px;
   padding: 24px; /* Increased padding */
