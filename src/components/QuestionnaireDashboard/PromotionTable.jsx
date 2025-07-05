@@ -14,7 +14,7 @@ const dummyMembers = Array.from({ length: 45 }, (_, i) => ({
   isNew: i < 15 // First 15 are new members
 }));
 
-export default function PromotionEligibilityTable() {
+function PromotionTable() {
   const [eligibilityData, setEligibilityData] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -79,3 +79,5 @@ export default function PromotionEligibilityTable() {
     </div>
   );
 }
+
+export default PromotionTable;
