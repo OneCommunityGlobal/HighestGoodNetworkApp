@@ -115,6 +115,23 @@ const WeeklySummariesReport = props => {
   const weekDates = getWeekDates();
   const [state, setState] = useState(initialState);
   const [permissionState, setPermissionState] = useState(intialPermissionState);
+  const [filterState, setFilterState] = useState({
+    selectedCodes: [],
+    selectedColors: [],
+    selectedOverTime: false,
+    selectedBioStatus: false,
+    selectedTrophies: false,
+    selectedSpecialColors: {
+      purple: false,
+      green: false,
+      navy: false,
+    },
+  });
+
+  const handleSelectCodeChange = codes => {
+    setFilterState(prev => ({ ...prev, selectedCodes: codes }));
+  };
+
   // Misc functionalities
   /**
    * Sort the summaries in alphabetixal order
@@ -471,15 +488,12 @@ const WeeklySummariesReport = props => {
       const {
         selectedCodes,
         selectedColors,
-        summaries,
         selectedOverTime,
         selectedBioStatus,
         selectedTrophies,
-        tableData,
-        COLORS,
         selectedSpecialColors,
-      } = state;
-
+      } = filterState;
+      const { summaries, tableData, COLORS } = state;
       // console.log('filterWeeklySummaries state:', {
       //   summariesLength: summaries?.length,
       //   tableDataExists: !!tableData,
@@ -762,15 +776,8 @@ const WeeklySummariesReport = props => {
     }
   };
 
-  const handleSelectCodeChange = event => {
-    setState(prev => ({
-      ...prev,
-      selectedCodes: event,
-    }));
-  };
-
   const handleOverHoursToggleChange = () => {
-    setState(prev => ({
+    setFilterState(prev => ({
       ...prev,
       selectedOverTime: !prev.selectedOverTime,
     }));
@@ -1243,7 +1250,7 @@ const WeeklySummariesReport = props => {
                 label: `${code.padEnd(10, ' ')} (${count}`,
               };
             })}
-            value={state.selectedCodes}
+            value={filterState.selectedCodes}
             onChange={handleSelectCodeChange}
             labelledBy="Select"
           />
