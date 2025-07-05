@@ -6,6 +6,8 @@ import thunk from 'redux-thunk';
 import { userPreferencesReducer } from 'reducers/lbdashboard/userPreferencesReducer';
 import { messagingReducer } from 'reducers/lbdashboard/messagingReducer';
 import { localReducers, sessionReducers } from './reducers';
+import { weeklyProjectSummaryReducer } from 'reducers/bmdashboard/weeklyProjectSummaryReducer';
+
 
 
 const middleware = [thunk];
@@ -17,6 +19,7 @@ const devTools = window.__REDUX_DEVTOOLS_EXTENSION__
 export const rootReducers = combineReducers({
   userPreferences: userPreferencesReducer,
   messages: messagingReducer,
+  weeklyProjectSummary: weeklyProjectSummaryReducer,
   ...localReducers,
   ...sessionReducers,
 });
@@ -47,3 +50,4 @@ const store = createStore(
 const persistor = persistStore(store);
 
 export { store, persistor };
+
