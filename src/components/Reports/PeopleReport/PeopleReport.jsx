@@ -552,7 +552,7 @@ class PeopleReport extends Component {
               secondColor="#928aef"
               className="people-report-time-log-block"
               darkMode={darkMode}
-            >. 
+            >
               <h3 className="text-light">{infringements.length}</h3>
               <p>Blue squares</p>
             </ReportPage.ReportBlock>

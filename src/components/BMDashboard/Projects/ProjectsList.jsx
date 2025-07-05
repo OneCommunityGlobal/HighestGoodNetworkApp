@@ -22,7 +22,7 @@ function ProjectsList() {
     : projects;
 
   return (
-    <Row className="ml-0 text-center">
+    <Row className="ml-0 text-center mt-5">
       <Select
         isMulti
         options={projectOptions}

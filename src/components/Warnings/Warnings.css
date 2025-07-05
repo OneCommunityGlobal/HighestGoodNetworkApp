@@ -69,16 +69,12 @@
 
 .button__container {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 10px;
-  gap: 0.5em; /* Adds spacing between the buttons */
+  margin-top: 0.1em;
 }
 
 .tracking__btn {
-  margin-right: 0; /* Reset margin to avoid unnecessary spacing */
+  margin-right: 0.3em;
 }
-
 .warnings__descriptions {
   display: flex;
   align-items: center;
@@ -185,22 +181,4 @@
 .modal__warning__deletion {
   font-weight: bold;
   font-size: 1.3rem;
-}
-
-/* Media query for screens smaller than 767px */
-@media (max-width: 767px) {
-  .warnings-container {
-    align-items: flex-start;
-  }
-
-  .button__container {
-    flex-direction: row;
-    justify-content: flex-start; 
-    gap: 0.5em; 
-  }
-
-  .tracking__btn {
-    margin-top: 0; 
-    margin-left: 0; 
-  }
 }
