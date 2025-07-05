@@ -58,8 +58,17 @@ import dashboardReducer from './dashboardReducer';
 import { timeOffRequestsReducer } from './timeOffRequestReducer';
 import { totalOrgSummaryReducer } from './totalOrgSummaryReducer';
 import { allUsersTimeEntriesReducer } from './allUsersTimeEntriesReducer';
+import issueReducer from './bmdashboard/issueReducer';
 import HGNFormReducer from './hgnFormReducers';
-import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
+// import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
+import messageReducer from './lbdashboard/messagingReducer';
+import userPreferencesReducer from './lbdashboard/userPreferencesReducer';
+
+// community portal
+import noShowVizReducer from './communityPortal/noShowVizReducer';
+
+// lbdashboard
+import wishListReducer from './lbdashboard/wishListItemReducer';
 
 const localReducers = {
   auth: authReducer,
@@ -109,9 +118,18 @@ const localReducers = {
   bmConsumables: consumablesReducer,
   bmReusables: reusablesReducer,
   dashboard: dashboardReducer,
+
+  // lbdashboard
+  wishlistItem: wishListReducer,
+
+  bmissuechart: issueReducer,
+  noShowViz: noShowVizReducer,
+
   bmProjectMembers: bmProjectMemberReducer,
   bmTimeLogger: bmTimeLoggerReducer,
-  weeklyProjectSummary: weeklyProjectSummaryReducer,
+  // lbdashboard
+  lbmessaging: messageReducer,
+  lbuserpreferences: userPreferencesReducer,
 };
 
 const sessionReducers = {

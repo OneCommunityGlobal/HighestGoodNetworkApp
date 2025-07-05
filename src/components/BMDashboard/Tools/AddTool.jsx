@@ -1,10 +1,10 @@
 import AddToolForm from './AddToolForm';
-import './AddTool.css';
+import styles from './AddTool.module.css';
 
 export default function AddTool() {
   return (
-    <main className="add-tool-container">
-      <header className="add-tool-header">
+    <main className={`${styles.addToolContainer}`}>
+      <header className={`${styles.addToolHeader}`}>
         <h2>ADD TYPE: TOOL</h2>
       </header>
       <AddToolForm />

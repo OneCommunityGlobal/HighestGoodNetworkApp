@@ -1,9 +1,24 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable new-cap */
 import { connect } from 'react-redux';
-import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
-import { Alert, Col, Container, Row, Button } from 'reactstrap';
+import {
+  Alert,
+  Col,
+  Container,
+  Row,
+  Dropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+} from 'reactstrap';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import 'moment-timezone';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
@@ -11,9 +26,6 @@ import { jsPDF } from 'jspdf';
 import hasPermission from 'utils/permissions';
 
 // actions
-import { getAllUserProfile } from 'actions/userManagement';
-import { getAllUsersTimeEntries } from 'actions/allUsersTimeEntries';
-import { getTimeEntryForOverDate } from 'actions/index';
 import { getTotalOrgSummary } from 'actions/totalOrgSummary';
 
 import '../Header/DarkMode.css';
@@ -37,7 +49,8 @@ import VolunteerTrendsLineChart from './VolunteerTrendsLineChart/VolunteerTrends
 import GlobalVolunteerMap from './GlobalVolunteerMap/GlobalVolunteerMap';
 import TaskCompletedBarChart from './TaskCompleted/TaskCompletedBarChart';
 
-function calculateFromDate() {
+function calculateStartDate() {
+  // returns a string date in YYYY-MM-DD format of the start of the previous week
   const currentDate = new Date();
   currentDate.setHours(0, 0, 0, 0);
   const dayOfWeek = currentDate.getDay();
@@ -46,7 +59,8 @@ function calculateFromDate() {
   return currentDate.toISOString().split('T')[0];
 }
 
-function calculateToDate() {
+function calculateEndDate() {
+  // returns a string date in YYYY-MM-DD format of the end of the previous week
   const currentDate = new Date();
   currentDate.setHours(0, 0, 0, 0);
   const dayOfWeek = currentDate.getDay();
@@ -55,82 +69,90 @@ function calculateToDate() {
   return currentDate.toISOString().split('T')[0];
 }
 
-function calculateFromOverDate() {
-  const currentDate = new Date();
-  currentDate.setHours(0, 0, 0, 0);
-  const dayOfWeek = currentDate.getDay();
-  const daysToSubtract = dayOfWeek === 0 ? 0 : dayOfWeek;
-  currentDate.setDate(currentDate.getDate() - daysToSubtract - 14);
-  return currentDate.toISOString().split('T')[0];
-}
+function calculateComparisonDates(comparisonType, fromDate, toDate) {
+  const start = new Date(fromDate);
+  const end = new Date(toDate);
+  const diffTime = Math.abs(end - start);
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-function calculateToOverDate() {
-  const currentDate = new Date();
-  currentDate.setHours(0, 0, 0, 0);
-  const dayOfWeek = currentDate.getDay();
-  const daysToAdd = dayOfWeek === 6 ? 0 : -8 - dayOfWeek;
-  currentDate.setDate(currentDate.getDate() + daysToAdd);
-  return currentDate.toISOString().split('T')[0];
-}
-
-const fromDate = calculateFromDate();
-const toDate = calculateToDate();
-const fromOverDate = calculateFromOverDate();
-const toOverDate = calculateToOverDate();
-
-const aggregateTimeEntries = userTimeEntries => {
-  const aggregatedEntries = {};
-
-  userTimeEntries.forEach(entry => {
-    const { personId, hours, minutes } = entry;
-    if (!aggregatedEntries[personId]) {
-      aggregatedEntries[personId] = {
-        hours: parseInt(hours, 10),
-        minutes: parseInt(minutes, 10),
+  switch (comparisonType) {
+    case 'Week Over Week':
+      return {
+        comparisonStartDate: new Date(start.setDate(start.getDate() - diffDays))
+          .toISOString()
+          .split('T')[0],
+        comparisonEndDate: new Date(end.setDate(end.getDate() - diffDays))
+          .toISOString()
+          .split('T')[0],
       };
-    } else {
-      aggregatedEntries[personId].hours += parseInt(hours, 10);
-      aggregatedEntries[personId].minutes += parseInt(minutes, 10);
-    }
-  });
+    case 'Month Over Month':
+      return {
+        comparisonStartDate: new Date(start.setMonth(start.getMonth() - 1))
+          .toISOString()
+          .split('T')[0],
+        comparisonEndDate: new Date(end.setMonth(end.getMonth() - 1)).toISOString().split('T')[0],
+      };
+    case 'Year Over Year':
+      return {
+        comparisonStartDate: new Date(start.setFullYear(start.getFullYear() - 1))
+          .toISOString()
+          .split('T')[0],
+        comparisonEndDate: new Date(end.setFullYear(end.getFullYear() - 1))
+          .toISOString()
+          .split('T')[0],
+      };
+    default:
+      return {
+        comparisonStartDate: null,
+        comparisonEndDate: null,
+      };
+  }
+}
 
-  Object.keys(aggregatedEntries).forEach(personId => {
-    const totalMinutes = aggregatedEntries[personId].minutes;
-    const additionalHours = Math.floor(totalMinutes / 60);
-    aggregatedEntries[personId].hours += additionalHours;
-    aggregatedEntries[personId].minutes = totalMinutes % 60;
-  });
-
-  const result = Object.entries(aggregatedEntries).map(([personId, { hours, minutes }]) => ({
-    personId,
-    hours,
-    minutes,
-  }));
-
-  return result;
-};
+const fromDate = calculateStartDate();
+const toDate = calculateEndDate();
 
 function TotalOrgSummary(props) {
-  const { darkMode, error, allUserProfiles } = props;
-  const [usersId, setUsersId] = useState([]);
-  const [usersTimeEntries, setUsersTimeEntries] = useState([]);
-  const [usersOverTimeEntries, setUsersOverTimeEntries] = useState([]);
+  const { darkMode, error } = props;
   const [isVolunteerFetchingError, setIsVolunteerFetchingError] = useState(false);
   const [volunteerStats, setVolunteerStats] = useState(null);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
-  const comparisonStartDate = '2025-01-16';
-  const comparisonEndDate = '2025-01-26';
   const [isLoading, setIsLoading] = useState(true);
-  const [taskProjectHours, setTaskProjectHours] = useState({
-    taskHours: 0,
-    projectHours: 0,
-    lastTaskHours: 0,
-    lastProjectHours: 0,
-  });
+  const [dateRangeDropdownOpen, setDateRangeDropdownOpen] = useState(false);
+  const [comparisonDropdownOpen, setComparisonDropdownOpen] = useState(false);
+  const [selectedDateRange, setSelectedDateRange] = useState('Current Week');
+  const [selectedComparison, setSelectedComparison] = useState('No Comparison');
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [currentFromDate, setCurrentFromDate] = useState(fromDate);
+  const [currentToDate, setCurrentToDate] = useState(toDate);
 
-  const dispatch = useDispatch();
+  useEffect(() => {
+    const fetchVolunteerStats = async () => {
+      try {
+        const { comparisonStartDate, comparisonEndDate } = calculateComparisonDates(
+          selectedComparison,
+          currentFromDate,
+          currentToDate,
+        );
 
-  const allUsersTimeEntries = useSelector(state => state.allUsersTimeEntries);
+        const volunteerStatsResponse = await props.getTotalOrgSummary(
+          currentFromDate,
+          currentToDate,
+          comparisonStartDate,
+          comparisonEndDate,
+        );
+        setVolunteerStats(volunteerStatsResponse.data);
+        await props.hasPermission('');
+        setIsLoading(false);
+      } catch (catchFetchError) {
+        setIsVolunteerFetchingError(true);
+      }
+    };
+
+    fetchVolunteerStats();
+  }, [currentFromDate, currentToDate, selectedComparison]);
 
   const handleSaveAsPDF = async () => {
     if (isGeneratingPDF) return;
@@ -367,98 +389,38 @@ function TotalOrgSummary(props) {
     }
   };
 
-  useEffect(() => {
-    dispatch(getAllUserProfile());
-  }, [dispatch]);
+  const handleDateRangeSelect = option => {
+    if (option === 'Select Date Range') {
+      setShowDatePicker(true);
+    } else {
+      setSelectedDateRange(option);
+      setShowDatePicker(false);
+      setSelectedComparison('No Comparison');
 
-  useEffect(() => {
-    if (Array.isArray(allUserProfiles.userProfiles) && allUserProfiles.userProfiles.length > 0) {
-      const idsList = allUserProfiles.userProfiles.reduce((acc, user) => {
-        if (user.isActive) acc.push(user._id);
-        return acc;
-      }, []);
-      setUsersId(idsList);
-    }
-  }, [allUserProfiles]);
-
-  useEffect(() => {
-    if (Array.isArray(usersId) && usersId.length > 0 && fromDate && toDate) {
-      dispatch(getAllUsersTimeEntries(usersId, fromDate, toDate));
-    }
-  }, [usersId, fromDate, toDate, dispatch]);
-
-  useEffect(() => {
-    if (
-      !Array.isArray(allUsersTimeEntries.usersTimeEntries) ||
-      allUsersTimeEntries.usersTimeEntries.length === 0
-    ) {
-      return;
-    }
-    const aggregatedEntries = aggregateTimeEntries(allUsersTimeEntries.usersTimeEntries);
-    setUsersTimeEntries(aggregatedEntries);
-  }, [allUsersTimeEntries]);
-
-  useEffect(() => {
-    if (Array.isArray(usersId) && usersId.length > 0) {
-      getTimeEntryForOverDate(usersId, fromOverDate, toOverDate)
-        .then(response => {
-          if (response && Array.isArray(response)) {
-            setUsersOverTimeEntries(response);
-          } else {
-            // eslint-disable-next-line no-console
-            console.log('error on fetching data');
-          }
-        })
-        .catch(() => {
-          // eslint-disable-next-line no-console
-          console.log('error on fetching data');
-        });
-    }
-  }, [allUsersTimeEntries, usersId, fromOverDate, toOverDate]);
-  useEffect(() => {
-    async function fetchData() {
-      const {
-        taskHours: { count: taskHours },
-        projectHours: { count: projectHours },
-      } = await props.getTaskAndProjectStats(fromDate, toDate);
-      const {
-        taskHours: { count: lastTaskHours },
-        projectHours: { count: lastProjectHours },
-      } = await props.getTaskAndProjectStats(fromOverDate, toOverDate);
-
-      if (taskHours && projectHours) {
-        setTaskProjectHours({
-          taskHours,
-          projectHours,
-          lastTaskHours,
-          lastProjectHours,
-        });
+      if (option === 'Current Week') {
+        setCurrentFromDate(fromDate);
+        setCurrentToDate(toDate);
+      } else if (option === 'Previous Week') {
+        const prevWeekStart = new Date(fromDate);
+        const prevWeekEnd = new Date(toDate);
+        prevWeekStart.setDate(prevWeekStart.getDate() - 7);
+        prevWeekEnd.setDate(prevWeekEnd.getDate() - 7);
+        setCurrentFromDate(prevWeekStart.toISOString().split('T')[0]);
+        setCurrentToDate(prevWeekEnd.toISOString().split('T')[0]);
       }
     }
-    fetchData();
-  }, [fromDate, toDate, fromOverDate, toOverDate, props]);
+  };
 
-  useEffect(() => {
-    const fetchVolunteerStats = async () => {
-      try {
-        const volunteerStatsResponse = await props.getTotalOrgSummary(
-          fromDate,
-          toDate,
-          comparisonStartDate,
-          comparisonEndDate,
-        );
-        setVolunteerStats(volunteerStatsResponse.data);
-        await props.hasPermission('');
-        setIsLoading(false);
-      } catch (catchFetchError) {
-        setIsVolunteerFetchingError(true);
-      }
-    };
+  const handleDatePickerSubmit = () => {
+    if (startDate && endDate) {
+      setSelectedDateRange(`${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`);
+      setShowDatePicker(false);
+      setSelectedComparison('No Comparison');
 
-    fetchVolunteerStats();
-  }, [fromDate, toDate, props]);
-
-  const { taskHours, projectHours, lastTaskHours, lastProjectHours } = taskProjectHours;
+      setCurrentFromDate(startDate.toISOString().split('T')[0]);
+      setCurrentToDate(endDate.toISOString().split('T')[0]);
+    }
+  };
 
   if (error || isVolunteerFetchingError) {
     return (
@@ -484,15 +446,100 @@ function TotalOrgSummary(props) {
       }`}
     >
       <Row className="report-header-row">
-        <Col lg={{ size: 6 }} className="report-header-title">
+        <div className="report-header-title">
           <h3 className="my-0">Total Org Summary</h3>
-        </Col>
-        <Col lg={{ size: 6 }} className="report-header-actions">
+        </div>
+        <div className="report-header-actions">
+          <Dropdown
+            isOpen={dateRangeDropdownOpen}
+            toggle={() => setDateRangeDropdownOpen(!dateRangeDropdownOpen)}
+          >
+            <DropdownToggle caret>{selectedDateRange}</DropdownToggle>
+            <DropdownMenu>
+              <DropdownItem onClick={() => handleDateRangeSelect('Current Week')}>
+                Current Week
+              </DropdownItem>
+              <DropdownItem onClick={() => handleDateRangeSelect('Previous Week')}>
+                Previous Week
+              </DropdownItem>
+              <DropdownItem onClick={() => handleDateRangeSelect('Select Date Range')}>
+                Select Date Range
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+          <Dropdown
+            isOpen={comparisonDropdownOpen}
+            toggle={() => setComparisonDropdownOpen(!comparisonDropdownOpen)}
+          >
+            <DropdownToggle caret>{selectedComparison}</DropdownToggle>
+            <DropdownMenu>
+              <DropdownItem onClick={() => setSelectedComparison('No Comparison')}>
+                No Comparison
+              </DropdownItem>
+              <DropdownItem onClick={() => setSelectedComparison('Week Over Week')}>
+                Week Over Week
+              </DropdownItem>
+              <DropdownItem onClick={() => setSelectedComparison('Month Over Month')}>
+                Month Over Month
+              </DropdownItem>
+              <DropdownItem onClick={() => setSelectedComparison('Year Over Year')}>
+                Year Over Year
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
           <Button className="share-pdf-btn" onClick={handleSaveAsPDF} disabled={isGeneratingPDF}>
             {isGeneratingPDF ? 'Generating PDF...' : 'Save as PDF'}
           </Button>
-        </Col>
+        </div>
       </Row>
+
+      <Modal isOpen={showDatePicker} toggle={() => setShowDatePicker(!showDatePicker)}>
+        <ModalHeader toggle={() => setShowDatePicker(!showDatePicker)}>
+          Select Date Range
+        </ModalHeader>
+        <ModalBody>
+          <div className="d-flex flex-column gap-4">
+            <div>
+              <label style={{ display: 'block', marginBottom: '1rem' }}>Start Date</label>
+              <div style={{ padding: '0.5rem 0' }}>
+                <DatePicker
+                  selected={startDate}
+                  onChange={date => setStartDate(date)}
+                  className="form-control"
+                  dateFormat="MM/dd/yyyy"
+                  placeholderText="Select start date"
+                />
+              </div>
+            </div>
+            <div>
+              <label style={{ display: 'block', marginBottom: '1rem' }}>End Date</label>
+              <div style={{ padding: '0.5rem 0' }}>
+                <DatePicker
+                  selected={endDate}
+                  onChange={date => setEndDate(date)}
+                  className="form-control"
+                  dateFormat="MM/dd/yyyy"
+                  placeholderText="Select end date"
+                  minDate={startDate}
+                />
+              </div>
+            </div>
+          </div>
+        </ModalBody>
+        <ModalFooter>
+          <Button color="secondary" onClick={() => setShowDatePicker(false)}>
+            Cancel
+          </Button>
+          <Button
+            color="primary"
+            onClick={handleDatePickerSubmit}
+            disabled={!startDate || !endDate}
+          >
+            Apply
+          </Button>
+        </ModalFooter>
+      </Modal>
+
       <hr />
       <AccordianWrapper title="Volunteer Status">
         <Row>
@@ -501,6 +548,7 @@ function TotalOrgSummary(props) {
               isLoading={isLoading}
               volunteerNumberStats={volunteerStats?.volunteerNumberStats}
               totalHoursWorked={volunteerStats?.totalHoursWorked}
+              comparisonType={selectedComparison}
             />
           </Col>
         </Row>
@@ -515,6 +563,7 @@ function TotalOrgSummary(props) {
               totalBadgesAwarded={volunteerStats?.totalBadgesAwarded}
               tasksStats={volunteerStats?.tasksStats}
               totalActiveTeams={volunteerStats?.totalActiveTeams}
+              comparisonType={selectedComparison}
             />
           </Col>
         </Row>
@@ -537,6 +586,7 @@ function TotalOrgSummary(props) {
               <VolunteerStatusChart
                 isLoading={isLoading}
                 volunteerNumberStats={volunteerStats?.volunteerNumberStats}
+                comparisonType={selectedComparison}
               />
             </div>
           </Col>
@@ -550,14 +600,14 @@ function TotalOrgSummary(props) {
                 <p>Volunteer Hours Distribution</p>
               </div>
               <div className="d-flex flex-row justify-content-center flex-wrap my-4">
-                <VolunteerHoursDistribution
+                <p>in progress...</p>
+                {/* <VolunteerHoursDistribution
                   isLoading={isLoading}
                   darkMode={darkMode}
-                  usersTimeEntries={usersTimeEntries}
-                  usersOverTimeEntries={usersOverTimeEntries}
                   hoursData={volunteerStats?.volunteerHoursStats}
                   totalHoursData={volunteerStats?.totalHoursWorked}
-                />
+                  comparisonType={selectedComparison}
+                /> */}
                 <div className="d-flex flex-column align-items-center justify-content-center">
                   <HoursWorkList />
                   <NumbersVolunteerWorked
@@ -593,6 +643,7 @@ function TotalOrgSummary(props) {
                   isLoading={isLoading}
                   data={volunteerStats?.taskAndProjectStats}
                   darkMode={darkMode}
+                  comparisonType={selectedComparison}
                 />
               </div>
             </div>
@@ -618,6 +669,7 @@ function TotalOrgSummary(props) {
                 isLoading={isLoading}
                 data={volunteerStats?.anniversaryStats}
                 darkMode={darkMode}
+                comparisonType={selectedComparison}
               />
             </div>
           </Col>
@@ -633,6 +685,7 @@ function TotalOrgSummary(props) {
               <WorkDistributionBarChart
                 isLoading={isLoading}
                 workDistributionStats={volunteerStats?.workDistributionStats}
+                comparisonType={selectedComparison}
               />
             </div>
           </Col>
@@ -645,6 +698,7 @@ function TotalOrgSummary(props) {
                 isLoading={isLoading}
                 roleDistributionStats={volunteerStats?.roleDistributionStats}
                 darkMode={darkMode}
+                comparisonType={selectedComparison}
               />
             </div>
           </Col>
@@ -660,7 +714,8 @@ function TotalOrgSummary(props) {
               <TeamStats
                 isLoading={isLoading}
                 usersInTeamStats={volunteerStats?.usersInTeamStats}
-                endDate={toDate}
+                endDate={currentToDate}
+                comparisonType={selectedComparison}
               />
             </div>
           </Col>
@@ -672,6 +727,7 @@ function TotalOrgSummary(props) {
               <BlueSquareStats
                 isLoading={isLoading}
                 blueSquareStats={volunteerStats?.blueSquareStats}
+                comparisonType={selectedComparison}
               />
             </div>
           </Col>
@@ -687,14 +743,12 @@ const mapStateToProps = state => ({
   role: state.auth.user.role,
   auth: state.auth,
   darkMode: state.theme.darkMode,
-  allUserProfiles: state.allUserProfiles,
 });
 
 const mapDispatchToProps = dispatch => ({
   getTotalOrgSummary: (startDate, endDate, comparisonStartDate, comparisonEndDate) =>
     dispatch(getTotalOrgSummary(startDate, endDate, comparisonStartDate, comparisonEndDate)),
   hasPermission: permission => dispatch(hasPermission(permission)),
-  getAllUserProfile: () => dispatch(getAllUserProfile()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(TotalOrgSummary);
