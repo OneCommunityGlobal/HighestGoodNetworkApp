@@ -171,8 +171,8 @@ describe('UserProfileModal component', () => {
   it('check if modify blue square works a s expected when type is set to modBlueSquare',()=>{
     renderComponent(store,'modBlueSquare',true)
     const summaryElement=document.body.querySelector('[id="summary"]')
-    fireEvent.change(summaryElement,{target:{value:"This is a second test blue square summary"}})
-    expect(summaryElement.value).toBe("This is a second test blue square summary")
+    fireEvent.change(summaryElement,{target:{value:"Assigned by HGN System:This is a second test blue square summary"}})
+    expect(summaryElement.value).toBe("Assigned by HGN System:This is a second test blue square summary")
 
     const updateButton=screen.getByText('Update')
     fireEvent.click(updateButton)
