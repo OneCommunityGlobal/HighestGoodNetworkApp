@@ -61,6 +61,8 @@ import { allUsersTimeEntriesReducer } from './allUsersTimeEntriesReducer';
 import issueReducer from './bmdashboard/issueReducer';
 import HGNFormReducer from './hgnFormReducers';
 // import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
+import bmInjuryReducer from './bmdashboard/injuryReducer';
+// import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
 import messageReducer from './lbdashboard/messagingReducer';
 import userPreferencesReducer from './lbdashboard/userPreferencesReducer';
 
@@ -108,6 +110,7 @@ const localReducers = {
   materials: materialsReducer,
   tools: toolReducer,
   bmProjects: bmProjectReducer,
+  bmInjuries: bmInjuryReducer,
   bmInvTypes: bmInvTypeReducer,
   timeOffRequests: timeOffRequestsReducer,
   lessons: lessonsReducer,
