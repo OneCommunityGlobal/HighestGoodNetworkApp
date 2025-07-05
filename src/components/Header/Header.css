@@ -1,13 +1,22 @@
+/* General Styling */
 .header-wrapper {
   height: fit-content;
   width: clamp(100vw, 0.1rem + 1vw, 100%);
 }
-
 .close-button {
   position: absolute;
   top: 0;
   left: 0;
   padding: 12px;
+}
+/* Timer Message Section */
+.timer-message-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* flex-wrap: wrap; */
+  width: 100%;
+  gap: 1rem;
 }
 
 .card-content {
@@ -38,15 +47,6 @@
   white-space: nowrap;
 }
 
-.timer-message-section {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  flex-wrap: nowrap;
-  gap: 1rem;
-  white-space: nowrap;
-}
-
 .redBackGroupHeader {
   z-index: 10;
   bottom: 0;
@@ -65,13 +65,24 @@
 }
 
 .owner-message {
-  margin-right: 3rem;
+  margin-right: 1rem;
+  
+}
+
+.navbar {
+  z-index: 100;
+  overflow: visible;
 }
 
 .nav-links {
   display: flex;
   flex-direction: row;
   align-items: center;
+  overflow: visible;
+}
+
+.dashboard-text-link {
+  font-size: 16px;
   flex-wrap: nowrap;
   gap: 1rem;
 }
@@ -86,25 +97,51 @@
   }
 }
 
-@media (max-width: 1500px) {
-  .dashboard-text-link {
-    font-size: 14px;
-  }
 
-  .owner-message {
-    margin-right: 0;
+
+/* Media Queries for Responsiveness */
+@media (max-width: 1400px) {
+  .nav-links {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    width: 100%;
+    overflow: visible;
+    flex-wrap: wrap;
   }
 }
 
 @media (max-width: 1050px) {
   .timer-message-section {
-    display: flex;
-    width: 0;
+    width: 100%;
     margin-right: 0;
   }
 
   .owner-message {
-    display: none;
+    display: block;
+    margin-right: 0;
+    text-align: center;
+    width: 100%;
+  }
+  .nav-links {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    overflow: visible;
+    flex-wrap: wrap;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .responsive-spacing {
+    margin-right: 5px;
+  }
+
+  .nav-links {
+    flex-direction: column;
+    width: 100%;
+    overflow: visible;
+    flex-wrap: wrap;
   }
 }
 
