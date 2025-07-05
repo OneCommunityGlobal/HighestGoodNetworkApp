@@ -4,31 +4,31 @@ import './DisplayBox.css'
 export default function DisplayBox( {onClose }) {
 
     const mockPromotionData = [
-  {
-    prReviewer: 'Akshay - Jayram',
-    teamCode: '123',
-    teamReviewerName: '""',
-    weeklyPRs: [
-      { week: '2024-06-01', prCount: 12 },
-      { week: '2024-06-08', prCount: 15 },
-      { week: '2024-06-15', prCount: 10 },
-      { week: '2024-06-22', prCount: 18 },
-      { week: '2024-06-29', prCount: 14 },
-    ],
-  },  
-  {
-    prReviewer: 'Ghazi1212',
-    teamCode: '456',
-    teamReviewerName: '""',
-    weeklyPRs: [
-      { week: '2024-06-01', prCount: 12 },
-      { week: '2024-06-08', prCount: 15 },
-      { week: '2024-06-15', prCount: 10 },
-      { week: '2024-06-22', prCount: 18 },
-      { week: '2024-06-29', prCount: 14 },
-    ],
-  }
-]
+    {
+      prReviewer: 'Akshay - Jayram',
+      teamCode: '123',
+      teamReviewerName: '""',
+      weeklyPRs: [
+        { week: '2024-06-01', prCount: 12 },
+        { week: '2024-06-08', prCount: 15 },
+        { week: '2024-06-15', prCount: 10 },
+        { week: '2024-06-22', prCount: 18 },
+        { week: '2024-06-29', prCount: 14 },
+      ],
+    },  
+    {
+      prReviewer: 'Ghazi1212',
+      teamCode: '456',
+      teamReviewerName: '""',
+      weeklyPRs: [
+        { week: '2024-06-01', prCount: 12 },
+        { week: '2024-06-08', prCount: 15 },
+        { week: '2024-06-15', prCount: 10 },
+        { week: '2024-06-22', prCount: 18 },
+        { week: '2024-06-29', prCount: 14 },
+      ],
+    }
+  ]
 
   const[checkedItems, setCheckedItems] = useState(Array(mockPromotionData.length).fill(false));
   const allChecked = checkedItems.every(Boolean);
