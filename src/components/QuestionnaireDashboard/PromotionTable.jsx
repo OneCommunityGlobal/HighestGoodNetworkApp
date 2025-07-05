@@ -1,6 +1,19 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
+const names = ['Alice', 'Bob', 'Charlie'];
+const dummyMembers = Array.from({ length: 45 }, (_, i) => ({
+  id: i + 1,
+  reviewer: names[i % names.length],
+  hasMetWeekly: i % 2 === 0, // Simulating weekly requirement met
+  requiredPRs: 5,
+  totalReviews: Math.floor(Math.random() * 10),
+  remainingWeeks: Math.max(0, 4 - Math.floor(Math.random() *
+  4)), // Random remaining weeks between 0 and 4
+  promote: i % 3 === 0, // Randomly decide if they should be promoted
+  isNew: i < 15 // First 15 are new members
+}));
+
 export default function PromotionEligibilityTable() {
   const [eligibilityData, setEligibilityData] = useState([]);
   const [loading, setLoading] = useState(true);

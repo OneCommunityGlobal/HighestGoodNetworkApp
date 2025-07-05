@@ -128,6 +128,9 @@ import CommunityMembersPage from './components/HGNHelpSkillsDashboard/CommunityM
 import UserProfilePage from './components/HGNHelpSkillsDashboard/UserProfilePage';
 import FeedbackModal from './components/HGNHelpSkillsDashboard/FeedbackModal';
 
+// Questionnaire Dashboard
+import PromotionTable from './components/QuestionnaireDashboard/PromotionTable';
+
 // eslint-disable-next-line import/order, import/no-unresolved
 import LogTools from './components/BMDashboard/LogTools/LogTools';
 import EquipmentUpdate from './components/BMDashboard/Tools/EquipmentUpdate';
@@ -479,6 +482,13 @@ export default (
           component={JobCCDashboard}
           fallback
           allowedRoles={[UserRole.Owner]}
+        />
+        <ProtectedRoute
+          path='/promotiontable'
+          exact
+          component={PromotionTable}
+          fallback
+          allowedRoles={[UserRole.Administrator, UserRole.Owner, UserRole.Manager]}
         />
 
         {/* ----- BEGIN BM Dashboard Routing ----- */}
