@@ -1,8 +1,35 @@
 import React, { useState} from 'react';
-import mockPromotionData from './DisplayBoxMockData';
 import './DisplayBox.css'
 
 export default function DisplayBox( {onClose }) {
+
+    const mockPromotionData = [
+  {
+    prReviewer: 'Akshay - Jayram',
+    teamCode: '123',
+    teamReviewerName: '""',
+    weeklyPRs: [
+      { week: '2024-06-01', prCount: 12 },
+      { week: '2024-06-08', prCount: 15 },
+      { week: '2024-06-15', prCount: 10 },
+      { week: '2024-06-22', prCount: 18 },
+      { week: '2024-06-29', prCount: 14 },
+    ],
+  },  
+  {
+    prReviewer: 'Ghazi1212',
+    teamCode: '456',
+    teamReviewerName: '""',
+    weeklyPRs: [
+      { week: '2024-06-01', prCount: 12 },
+      { week: '2024-06-08', prCount: 15 },
+      { week: '2024-06-15', prCount: 10 },
+      { week: '2024-06-22', prCount: 18 },
+      { week: '2024-06-29', prCount: 14 },
+    ],
+  }
+]
+
   const[checkedItems, setCheckedItems] = useState(Array(mockPromotionData.length).fill(false));
   const allChecked = checkedItems.every(Boolean);
   const handleCheckedBoxChange = (index) => {
@@ -14,6 +41,7 @@ export default function DisplayBox( {onClose }) {
   const handleSelectAll = () => {
     setCheckedItems(Array(mockPromotionData.length).fill(!allChecked));
   }
+
   return (
     <div className="overlay">
       <div className="popup">
@@ -37,7 +65,15 @@ export default function DisplayBox( {onClose }) {
                 <td>{promotion.prReviewer}</td>
                 <td>{promotion.teamCode}</td>
                 <td>{promotion.teamReviewerName}</td>
-                <td>{promotion.weeklyPRs.map(pr => pr.prCount).join(', ')}</td>
+                {/* <td>{promotion.weeklyPRs.map(pr => pr.prCount).join(', ')}</td> */}
+                <td>
+                  {promotion.weeklyPRs.map((pr, i) => (
+                    <span key={i} className={`pr-count-badge color-${i % 5}`}>
+                      {pr.prCount}
+                    </span>
+                  ))}
+                </td>
+
               </tr>
             ))}
           </tbody>

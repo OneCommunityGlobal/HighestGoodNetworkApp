@@ -59,3 +59,34 @@
   color: #000;
 }
 
+.pr-count-badge {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 4px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  color: black;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.color-0 {
+  background-color: rgb(154, 93, 181);
+}
+.color-1 {
+  background-color: rgb(77, 82, 174);
+}
+
+.color-2 {
+  background-color: rgb(87, 150, 198);
+}
+
+.color-3 {
+  background-color: rgb(95, 191, 95);
+}
+
+.color-4 {
+  background-color: #cbe360; 
+}
