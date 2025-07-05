@@ -160,8 +160,8 @@ describe('UserProfileModal component', () => {
     expect(screen.getByText("Summary")).toBeInTheDocument()
 
     const summaryElement=document.body.querySelector('[id="summary"]')
-    fireEvent.change(summaryElement,{target:{value:"This is a test summary"}})
-    expect(summaryElement.value).toBe("This is a test summary")
+    fireEvent.change(summaryElement,{target:{value:"Assigned by HGN System: This is a test summary"}})
+    expect(summaryElement.value).toBe("Assigned by HGN System: This is a test summary")
 
     const addBlueSquareButton=screen.getByText('Submit')
     fireEvent.click(addBlueSquareButton)
