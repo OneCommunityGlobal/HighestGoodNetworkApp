@@ -30,7 +30,7 @@ export const peopleTasksPieChartViewData = ({ userProjects, timeEntries }) => {
   // console.log('userProjects:', userProjects);
   // console.log('timeEntries:', timeEntries);
 
-  const directProjectLogs = timeEntries.period.filter(entry => entry.wbsId === null);
+  // const directProjectLogs = timeEntries.period.filter(entry => entry.wbsId === null);
   // console.log('Direct-to-project time entries:', directProjectLogs);
   // console.log(userProjects);
 
@@ -42,7 +42,7 @@ export const peopleTasksPieChartViewData = ({ userProjects, timeEntries }) => {
   //  }
 
   timeEntries.period.forEach(entry => {
-    const projectId = entry.projectId;
+    const { projectId } = entry;
     if (!projectId) return; // Skip if projectId is missing
 
     const time = entry.hours + entry.minutes / 60;

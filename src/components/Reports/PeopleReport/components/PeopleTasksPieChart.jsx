@@ -13,7 +13,7 @@ export function PeopleTasksPieChart({ darkMode }) {
     showTasksPieChart,
     showProjectsPieChart,
     tasksLegend,
-    showViewAllTasksButton,
+    // showViewAllTasksButton,
     hoursLoggedToProjectsOnly,
   } = useSelector(peopleTasksPieChartViewData);
 
