@@ -114,6 +114,7 @@ const localReducers = {
   project: bmProjectByIdReducer,
   bmTools: toolReducer,
   bmEquipments: equipmentReducer,
+  bmIssues: issueReducer,
   bmInvUnits: bmInvUnitReducer,
   bmConsumables: consumablesReducer,
   bmReusables: reusablesReducer,
