@@ -185,7 +185,7 @@ const UserTableData = React.memo(props => {
             type="button"
             className="team-member-tasks-user-report-link"
             style={{
-              fontSize: 18,
+              fontSize: 24,
               opacity: canSeeReports ? 1 : 0.7,
               background: 'none',
               border: 'none',
@@ -217,30 +217,6 @@ const UserTableData = React.memo(props => {
             />
           </button>
         </span>
-
-        <span style={{ position: 'absolute', bottom: 0, right: 0 }}>
-          <i
-            className="fa fa-clock-o"
-            aria-hidden="true"
-            style={{ fontSize: 14, cursor: 'pointer', marginRight: '5px' }}
-            title="Click to see user's timelog"
-            onClick={e => {
-              if (!canSeeReports) {
-                e.preventDefault();
-                return;
-              }
-
-              if (e.metaKey || e.ctrlKey || e.button === 1) {
-                window.open(`/timelog/${props.user._id}`, '_blank');
-                return;
-              }
-
-              e.preventDefault(); // prevent full reload
-              history.push(`/timelog/${props.user._id}`);
-            }}
-          />
-        </span>
-
         <TimeDifference
           userProfile={props.user}
           isUserSelf={props.user.email === props.authEmail}
