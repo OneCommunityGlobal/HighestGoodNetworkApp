@@ -15,47 +15,21 @@ function JobCategoryCCModal({ categories, onClose, darkMode, onRefresh }) {
       toast.error('Please enter an email.');
       return;
     }
-    if (filter === '') {
-      toast.error('Please select a category.');
-      return;
-    }
 
     setLoading(true);
+    try {
+      await axios.post(`${ENDPOINTS.JOB_NOTIFICATION_LIST}/category`, {
+        email,
+        category: filter,
+      });
 
-    if (filter === 'all') {
-      try {
-        await Promise.all(
-          categories.map(category =>
-            axios.post(`${ENDPOINTS.JOB_NOTIFICATION_LIST}/category`, {
-              email,
-              category,
-            }),
-          ),
-        );
-
-        // Add to local list for immediate UI feedback
-        setEmail('');
-        onRefresh(); // Refresh parent data
-      } catch (error) {
-        toast.error('Failed to add email. Please try again.');
-      } finally {
-        setLoading(false);
-      }
-    } else {
-      try {
-        await axios.post(`${ENDPOINTS.JOB_NOTIFICATION_LIST}/category`, {
-          email,
-          category: filter,
-        });
-
-        // Add to local list for immediate UI feedback
-        setEmail('');
-        onRefresh(); // Refresh parent data
-      } catch (error) {
-        toast.error('Failed to add email. Please try again.');
-      } finally {
-        setLoading(false);
-      }
+      // Add to local list for immediate UI feedback
+      setEmail('');
+      onRefresh(); // Refresh parent data
+    } catch (error) {
+      toast.error('Failed to add email. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -70,14 +44,7 @@ function JobCategoryCCModal({ categories, onClose, darkMode, onRefresh }) {
           <FormGroup>
             <Label for="filter">Filter by Category</Label>
             <Input type="select" id="filter" value={filter} onChange={handleFilterChange}>
-              <option key="" value="">
-                {' '}
-                Select Category{' '}
-              </option>
-              <option key="all" value="all">
-                {' '}
-                All{' '}
-              </option>
+              <option value="">All</option>
               {categories.map(category => (
                 <option key={category} value={category}>
                   {category}

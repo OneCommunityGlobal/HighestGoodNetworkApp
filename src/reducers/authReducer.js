@@ -1,24 +1,18 @@
 import { isEmpty } from 'lodash';
-import { SET_CURRENT_USER, SET_HEADER_DATA, START_FORCE_LOGOUT } from '../constants/auth';
+import { SET_CURRENT_USER, SET_HEADER_DATA } from '../constants/auth';
 
 const initialState = {
   isAuthenticated: false,
   user: {},
   firstName: '',
   profilePic: '',
-  forceLogoutAt: null,
-  timerId: null,
 };
 
 // eslint-disable-next-line default-param-last
 export const authReducer = (auth = initialState, action) => {
   if (action.type === SET_CURRENT_USER) {
     if (!action.payload) {
-      return {
-        ...initialState,
-        forceLogoutAt: null, // Ensure logout clears these values
-        timerId: null,
-      };
+      return initialState;
     }
     if (action.payload.new) {
       return {
@@ -38,13 +32,6 @@ export const authReducer = (auth = initialState, action) => {
       ...auth,
       firstName: action.payload.firstName,
       profilePic: action.payload.profilePic,
-    };
-  }
-  if (action.type === START_FORCE_LOGOUT) {
-    return {
-      ...auth,
-      forceLogoutAt: action.payload.forceLogoutAt,
-      timerId: action.payload.timerId,
     };
   }
 
