@@ -2,43 +2,63 @@ import React from 'react';
 import { Bar } from 'react-chartjs-2';
 import './ReviewsInsight.css';
 
-function ActionDoneGraph({ duration, selectedTeams }) {
-  // Sample data for the bar graph
+function ActionDoneGraph({ duration, selectedTeams, teamData }) {
+  const isAllTeams = selectedTeams.includes('All');
+
+  // Prepare data for the graph
   const data = {
-    labels: ['Approved', 'Changes Requested', 'Commented'], // X-Axis labels
+    labels: isAllTeams ? Object.keys(teamData) : selectedTeams, // Y-axis labels
     datasets: [
       {
-        label: 'PR Actions',
-        data: [12, 8, 15], // Example data for each action
-        backgroundColor: ['#28A745', '#DC3545', '#6C757D'], // Colors for bars
+        label: 'Approved',
+        data: isAllTeams
+          ? Object.values(teamData).map((team) => team[0])
+          : selectedTeams.map((team) => teamData[team][0]),
+        backgroundColor: '#28A745',
+      },
+      {
+        label: 'Changes Requested',
+        data: isAllTeams
+          ? Object.values(teamData).map((team) => team[1])
+          : selectedTeams.map((team) => teamData[team][1]),
+        backgroundColor: '#DC3545',
+      },
+      {
+        label: 'Commented',
+        data: isAllTeams
+          ? Object.values(teamData).map((team) => team[2])
+          : selectedTeams.map((team) => teamData[team][2]),
+        backgroundColor: '#6C757D',
       },
     ],
   };
 
   const options = {
-    indexAxis: 'y', // Sets the index axis to horizontal
+    indexAxis: 'y', // Horizontal bar graph
     responsive: true,
     plugins: {
       legend: {
-        display: false, // Hides the legend
+        display: true,
       },
       tooltip: {
-        enabled: true, // Enables tooltips
+        enabled: true,
       },
     },
     scales: {
       x: {
         title: {
           display: true,
-          text: 'Action Types', // X-Axis label
+          text: 'Count of PRs',
         },
+        beginAtZero: true,
+        stacked: false, // Disable stacking to show bars side by side
       },
       y: {
         title: {
           display: true,
-          text: 'Count of PRs', // Y-Axis label
+          text: 'Teams',
         },
-        beginAtZero: true, // Ensures the Y-axis starts at 0
+        stacked: false, // Disable stacking to show bars side by side
       },
     },
   };
@@ -46,13 +66,6 @@ function ActionDoneGraph({ duration, selectedTeams }) {
   return (
     <div className="graph">
       <h2>PR: Action Done</h2>
-      {selectedTeams.length === 1 ? (
-        <p className="team-name">Team: {selectedTeams[0]}</p>
-      ) : selectedTeams.length > 1 ? (
-        <p className="team-name">Teams: {selectedTeams.join(', ')}</p>
-      ) : (
-        <p className="team-name">No Team Selected</p>
-      )}
       <Bar data={data} options={options} />
     </div>
   );
