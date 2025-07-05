@@ -5,10 +5,8 @@ import storage from 'redux-persist/lib/storage'; // defaults to localStorage for
 import thunk from 'redux-thunk';
 import { userPreferencesReducer } from 'reducers/lbdashboard/userPreferencesReducer';
 import { messagingReducer } from 'reducers/lbdashboard/messagingReducer';
-import { localReducers, sessionReducers } from './reducers';
 import { weeklyProjectSummaryReducer } from 'reducers/bmdashboard/weeklyProjectSummaryReducer';
-
-
+import { localReducers, sessionReducers } from './reducers';
 
 const middleware = [thunk];
 const initialState = {};
@@ -50,4 +48,3 @@ const store = createStore(
 const persistor = persistStore(store);
 
 export { store, persistor };
-
