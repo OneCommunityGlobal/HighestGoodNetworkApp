@@ -51,10 +51,7 @@ function Badge(props) {
     if (!totalBadges) return 'You have no badges. ';
 
     const newBadges = badgeCollection.filter(
-      value =>
-        value &&
-        value.lastModified &&
-        Date.now() - new Date(value.lastModified).getTime() <= WEEK_DIFF,
+      value => Date.now() - new Date(value.lastModified).getTime() <= WEEK_DIFF,
     );
 
     const roundedHours = Math.floor(personalBestMaxHrs);

@@ -52,12 +52,18 @@ function QuickSetupModal(props) {
     }
   };
 
-  useEffect(() => {
-    if (props.teamsData && props.teamsData.allTeamCode) {
-      const teamCodes = props.teamsData.allTeamCode.distinctTeamCodes.map(value => ({ value }));
-      setQSTTeamCodes(teamCodes);
+  useEffect(()=>{
+    let teamCodes = [];
+    if(stateTeamCodes.length) {
+      teamCodes = [...stateTeamCodes];
+    }else if (props.teamsData?.allTeams) {
+      if( props.teamsData?.allTeamCode?.distinctTeamCodes ) {
+        teamCodes = props.teamsData.allTeamCode.distinctTeamCodes.map(value => ({ value }));
+      }
     }
-  }, [stateTeamCodes, props.teamsData]);
+    setQSTTeamCodes(teamCodes);
+  },[stateTeamCodes.length])
+
 
   return (
     <div className={`container pt-3 ${darkMode ? 'bg-yinmn-blue text-light border-0' : ''}`}>

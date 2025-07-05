@@ -1,4 +1,4 @@
-
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { shallow } from 'enzyme';
 import { UnconnectedUserManagement } from '../UserManagement';
@@ -12,19 +12,45 @@ jest.mock('../../../actions/userManagement', () => ({
 }));
 
 // Mock child components to avoid rendering them
-jest.mock('../UserTableHeader', () => () => <div>UserTableHeader</div>);
-jest.mock('../UserTableData', () => () => <div>UserTableData</div>);
-jest.mock('../UserTableSearchHeader', () => () => <div>UserTableSearchHeader</div>);
-jest.mock('../UserTableFooter', () => () => <div>UserTableFooter</div>);
-jest.mock('../UserSearchPanel', () => () => <div>UserSearchPanel</div>);
-jest.mock('../NewUserPopup', () => () => <div>NewUserPopup</div>);
-jest.mock('../ActivationDatePopup', () => () => <div>ActivationDatePopup</div>);
-jest.mock('../SetupHistoryPopup', () => () => <div>SetupHistoryPopup</div>);
-jest.mock('../DeleteUserPopup', () => () => <div>DeleteUserPopup</div>);
-jest.mock('../ActiveInactiveConfirmationPopup', () => () => <div>ActiveInactiveConfirmationPopup</div>);
-jest.mock('../SetUpFinalDayPopUp', () => () => <div>SetUpFinalDayPopUp</div>);
-jest.mock('../logTimeOffPopUp', () => () => <div>LogTimeOffPopUp</div>);
-jest.mock('../setupNewUserPopup', () => () => <div>SetupNewUserPopup</div>);
+jest.mock('../UserTableHeader', () => function first() {
+  return <div>UserTableHeader</div>
+});
+jest.mock('../UserTableData', () => function second() {
+  return <div>UserTableData</div>
+});
+jest.mock('../UserTableSearchHeader', () => function third() {
+  return <div>UserTableSearchHeader</div>
+});
+jest.mock('../UserTableFooter', () => function fourth() {
+  return <div>UserTableFooter</div>
+});
+jest.mock('../UserSearchPanel', () => function fifth() {
+  return <div>UserSearchPanel</div>
+});
+jest.mock('../NewUserPopup', () => function sixth() {
+  return <div>NewUserPopup</div>
+});
+jest.mock('../ActivationDatePopup', () => function seventh() {
+  return <div>ActivationDatePopup</div>
+});
+jest.mock('../SetupHistoryPopup', () => function eighth() {
+  return <div>SetupHistoryPopup</div>
+});
+jest.mock('../DeleteUserPopup', () => function ninth() {
+  return <div>DeleteUserPopup</div>
+});
+jest.mock('../ActiveInactiveConfirmationPopup', () => function tenth() {
+  return <div>ActiveInactiveConfirmationPopup</div>
+});
+jest.mock('../SetUpFinalDayPopUp', () => function eleventh() {
+  return <div>SetUpFinalDayPopUp</div>
+});
+jest.mock('../logTimeOffPopUp', () => function twelfth() {
+  return <div>LogTimeOffPopUp</div>
+});
+jest.mock('../setupNewUserPopup', () => function thirteenth() {
+  return <div>SetupNewUserPopup</div>
+});
 
 describe('UserManagement Component', () => {
   let wrapper;
@@ -59,7 +85,22 @@ describe('UserManagement Component', () => {
       },
     };
 
-    wrapper = shallow(<UnconnectedUserManagement {...props} />);
+    wrapper = shallow(<UnconnectedUserManagement 
+      getAllUserProfile={props.getAllUserProfile}
+      updateUserStatus={props.updateUserStatus}
+      updateUserFinalDayStatusIsSet={props.updateUserFinalDayStatusIsSet}
+      deleteUser={props.deleteUser}
+      hasPermission={props.hasPermission}
+      getAllTimeOffRequests={props.getAllTimeOffRequests}
+      state={props.state}
+      userProfile={props.userProfile}
+      userProfileEdit={props.userProfileEdit}
+      userPagination={props.userPagination}
+      theme={props.theme}
+      role={props.role}
+      timeOffRequests={props.timeOffRequests}
+      auth={props.auth}
+    />);
   });
 
   it('should render without errors', () => {

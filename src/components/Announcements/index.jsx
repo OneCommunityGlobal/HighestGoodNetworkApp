@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import { useState, useEffect } from 'react';
 import './Announcements.css';
 import { useDispatch, useSelector } from 'react-redux';
@@ -15,6 +16,7 @@ function Announcements({ title, email: initialEmail }) {
   const [headerContent, setHeaderContent] = useState('');
   const [showEditor, setShowEditor] = useState(true);
   const [isFileUploaded, setIsFileUploaded] = useState(false);
+  const editorRef = useRef(null);
 
   useEffect(() => {
     setShowEditor(false);
@@ -174,6 +176,9 @@ function Announcements({ title, email: initialEmail }) {
               init={editorInit}
               onEditorChange={content => {
                 setEmailContent(content);
+              }}
+              onInit={(evt, editor) => {
+                editorRef.current = editor;
               }}
             />
           )}

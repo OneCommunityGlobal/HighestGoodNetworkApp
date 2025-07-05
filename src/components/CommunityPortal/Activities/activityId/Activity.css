@@ -1,0 +1,266 @@
+.activity-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background-color: #f9f9f9;
+}
+
+.activity-event-card {
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 16px;
+  font-family: Arial, sans-serif;
+  background-color: #fff;
+  max-width: 1100px;
+}
+
+.activity-event-header {
+  display: flex;
+  gap: 20px;
+}
+
+.activity-event-image {
+  width: 180px;
+  height: 180px;
+  background-color: #e0e0e0;
+  text-align: center;
+  line-height: 180px;
+  font-weight: bold;
+  color: #555;
+}
+
+.activity-event-details {
+  flex-grow: 2;
+}
+
+.activity-event-type {
+  font-size: 12px;
+  color: gray;
+}
+
+.activity-event-title {
+  margin: 5px 0;
+}
+
+.activity-event-location {
+  font-size: 14px;
+}
+
+.activity-event-link {
+  color: #1a73e8;
+  text-decoration: none;
+}
+
+.activity-event-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 10px;
+}
+
+.activity-event-info > div {
+  min-width: 120px;
+}
+
+.activity-capacity {
+  color: red;
+}
+
+.activity-status-active {
+  color: green;
+  font-weight: bold;
+}
+
+.activity-event-buttons {
+  margin-top: 10px;
+}
+
+.feedback-btn,
+.contact-btn {
+  padding: 5px 12px;
+  margin-right: 10px;
+  border: none;
+  border-radius: 4px;
+  background-color: #dedede;
+  cursor: pointer;
+}
+
+.activity-calendar-box {
+  min-width: 220px;
+  text-align: center;
+}
+
+.activity-calendar-header {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.activity-calendar-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.activity-calendar-table th,
+.activity-calendar-table td {
+  width: 14.2%;
+  padding: 4px;
+  border: 1px solid #ddd;
+}
+
+.activity-active-date {
+  background-color: #f48fb1;
+  border-radius: 50%;
+}
+
+.activity-event-tabs {
+  display: flex;
+  gap: 20px;
+  border-top: 1px solid #ddd;
+  margin-top: 20px;
+  padding-top: 10px;
+}
+
+.activity-tab {
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.activity-tab.active {
+  border-bottom: 2px solid #000;
+  font-weight: bold;
+}
+
+.activity-participates-section {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+}
+
+.activity-participant {
+  display: flex;
+  gap: 5px;
+}
+
+.activity-faqs-section {
+  margin-top: 20px;
+}
+
+.activity-faq p {
+  color: #555;
+}
+
+.activity-faq h3 {
+  color: #000;
+}
+
+.activity-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  color: #fff;
+  text-align: center;
+  line-height: 30px;
+  font-weight: bold;
+}
+
+.purple {
+  background-color: purple;
+}
+
+.blue {
+  background-color: #3366ff;
+}
+
+@media (max-width: 800px) {
+  .activity-event-card {
+    max-width: 98vw;
+    padding: 8px;
+  }
+
+  .activity-event-header {
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+  }
+
+  .activity-event-image {
+    width: 120px;
+    height: 160px;
+    line-height: 120px;
+    font-size: 18px;
+    margin: 10px auto;
+  }
+
+  .activity-calendar-box {
+    min-width: unset;
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .activity-event-details {
+    width: 100%;
+  }
+
+  .activity-event-info {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .activity-event-tabs {
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    font-size: 15px;
+  }
+
+  .activity-participates-section {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 500px) {
+  .activity-event-card {
+    padding: 4px;
+    font-size: 14px;
+  }
+
+  .activity-event-title {
+    font-size: 18px;
+  }
+
+  .activity-event-image {
+    height: 180px;
+    line-height: 80px;
+    font-size: 15px;
+  }
+
+  .activity-calendar-header {
+    font-size: 14px;
+  }
+
+  .activity-calendar-table th,
+  .activity-calendar-table td {
+    padding: 2px;
+    font-size: 12px;
+  }
+
+  .activity-icon {
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+    font-size: 13px;
+  }
+
+  .activity-event-tabs {
+    font-size: 13px;
+    justify-content: space-evenly;
+    gap: 0;
+  }
+
+  .activity-tab {
+    padding: 6px 6px;
+  }
+}
