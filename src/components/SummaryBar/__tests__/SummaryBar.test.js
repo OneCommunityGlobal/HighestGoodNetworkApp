@@ -1,14 +1,14 @@
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { shallow } from 'enzyme';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
-import SummaryBar from '../SummaryBar';
 import MockAdapter from 'axios-mock-adapter';
-import axios from 'axios'; 
+import axios from 'axios';
+import SummaryBar from '../SummaryBar';
 
 const mockStore = configureMockStore();
 const store = mockStore({});
-
 
 const mock = new MockAdapter(axios);
 describe('SummaryBar Component', () => {
@@ -16,11 +16,11 @@ describe('SummaryBar Component', () => {
 
   const props = {
     displayUserId: '123',
-    summaryBarData: { tangibletime: 10 },    
+    summaryBarData: { tangibletime: 10 },
     auth: {
       user: {
         userid: '123', // Assuming 'authUser' expects a 'userid' field
-      }
+      },
     },
     userProfile: {
       _id: '123',
@@ -29,22 +29,30 @@ describe('SummaryBar Component', () => {
       email: 'john@example.com',
       role: 'Owner',
       weeklycommittedHours: 40,
-      missedHours: 5, 
-      infringements: [], 
-      badgeCollection: [], 
+      missedHours: 5,
+      infringements: [],
+      badgeCollection: [],
     },
     userTask: [],
     hasPermission: jest.fn(),
     toggleSubmitForm: jest.fn(),
     submittedSummary: false,
-
   };
 
   beforeEach(() => {
     wrapper = shallow(
       <Provider store={store}>
-        <SummaryBar {...props} />
-      </Provider>
+        <SummaryBar
+          displayUserId={props.displayUserId}
+          summaryBarData={props.summaryBarData}
+          auth={props.auth}
+          userProfile={props.userProfile}
+          userTask={props.userTask}
+          hasPermission={props.hasPermission}
+          toggleSubmitForm={props.toggleSubmitForm}
+          submittedSummary={props.submittedSummary}
+        />
+      </Provider>,
     );
   });
 
@@ -56,11 +64,9 @@ describe('SummaryBar Component', () => {
     wrapper.setProps({ displayUserProfile: undefined, summaryBarData: undefined });
     expect(wrapper.text()).toEqual('');
   });
-  
 
   it('updates correctly when props change', () => {
-    wrapper.setProps({ displayUserId: '456' }); 
-  
+    wrapper.setProps({ displayUserId: '456' });
   });
 
   it('correctly handles changes in user profile data', () => {
@@ -74,7 +80,6 @@ describe('SummaryBar Component', () => {
     if (instance && instance.someInternalMethod) {
       instance.someInternalMethod();
       wrapper.update();
-    
     }
   });
 
@@ -83,35 +88,29 @@ describe('SummaryBar Component', () => {
     mock.onGet('/api/user/profile/123').networkError();
     const instance = wrapper.instance();
     if (instance && instance.loadUserProfile) {
-      instance.loadUserProfile().then(() => {
-
-      });
+      instance.loadUserProfile().then(() => {});
     }
   });
-
-
-
 });
 
 describe('SummaryBar Component', () => {
-  let store;
+  let teststore;
   const initialState = {
     auth: { user: { userid: '123' } },
-    userProfile: { 
+    userProfile: {
       weeklycommittedHours: 40,
       missedHours: 5,
       firstName: 'John',
       lastName: 'Doe',
       badgeCollection: [],
-      infringements: []
+      infringements: [],
     },
-    userTask: { length: 5 }
+    userTask: { length: 5 },
   };
-
 
   beforeEach(() => {
     // Reset the mock store and axios mock before each test
-    store = mockStore(initialState);
+    teststore = mockStore(initialState);
     mock.reset();
 
     // Mock API responses
@@ -121,7 +120,7 @@ describe('SummaryBar Component', () => {
       firstName: 'John',
       lastName: 'Doe',
       badgeCollection: [],
-      infringements: []
+      infringements: [],
     });
 
     mock.onGet('/api/tasks/userid/123').reply(200, []);
@@ -130,11 +129,10 @@ describe('SummaryBar Component', () => {
   it('renders correctly with initial state', () => {
     // Render the component under test
     shallow(
-      <Provider store={store}>
+      <Provider store={teststore}>
         <SummaryBar displayUserId="123" summaryBarData={{ tangibletime: 20 }} />
-      </Provider>
+      </Provider>,
     );
-
   });
 });
 
@@ -142,35 +140,36 @@ describe('SummaryBar Component - others', () => {
   let wrapper;
   const initialState = {
     auth: { user: { userid: '123' } },
-    userProfile: { 
-        _id: '123',
-        firstName: 'John',
-        lastName: 'Doe',
-        email: 'john@example.com',
-        role: 'Owner',
-        weeklycommittedHours: 40,
-        missedHours: 5, 
-        infringements: [], 
-        badgeCollection: [],
+    userProfile: {
+      _id: '123',
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'john@example.com',
+      role: 'Owner',
+      weeklycommittedHours: 40,
+      missedHours: 5,
+      infringements: [],
+      badgeCollection: [],
     },
     userTask: { length: 5 },
-};
+  };
 
   beforeEach(() => {
-      mock.reset();
-      store.clearActions();
-      wrapper = shallow(
-          <Provider store={store}>
-               <SummaryBar {...initialState} />
-          </Provider>
-      );
+    mock.reset();
+    store.clearActions();
+    wrapper = shallow(
+      <Provider store={store}>
+        <SummaryBar
+          auth={initialState.auth}
+          userProfile={initialState.userProfile}
+          userTask={initialState.userTask}
+        />
+      </Provider>,
+    );
   });
 
   it('handles incomplete data scenarios', () => {
-      wrapper.setProps({ userProfile: null });
-      wrapper.update();
-
+    wrapper.setProps({ userProfile: null });
+    wrapper.update();
   });
-
- 
 });
