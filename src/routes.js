@@ -22,6 +22,7 @@ import FaqHistory from 'components/Faq/FaqHistory';
 import UnansweredFaqs from 'components/Faq/UnansweredFaqs';
 import HeaderRenderer from 'components/Header/HeaderRenderer';
 import { ExperienceDonutChart } from 'components/ExperienceDonutChart';
+import PRPromotionsPage from 'components/PRPromotions/PRPromotionsPage';
 
 // hgnform routes
 import Page1 from './components/HGNForm/pages/Page1';
@@ -678,6 +679,7 @@ export default (
         <ProtectedRoute path="/tsaformpage7" exact component={TSAFormPage7} />
         <ProtectedRoute path="/tsaformpage8" exact component={TSAFormPage8} />
         <ProtectedRoute path="/ExperienceDonutChart" component={ExperienceDonutChart} fallback />
+        <ProtectedRoute path="/prPromotionsPage" component={PRPromotionsPage} fallback />
 
         <ProtectedRoute path="/" exact component={Dashboard} />
         <Route path="*" component={NotFoundPage} />

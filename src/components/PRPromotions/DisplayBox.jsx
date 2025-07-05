@@ -82,7 +82,7 @@ export default function DisplayBox( {onClose }) {
           <button type="button" className="button" onClick={onClose}>
             Cancel
           </button>
-          <button type="button" className="button">
+          <button type="button" className="button"  disabled={!checkedItems.some(Boolean)}>
             Confirm
           </button>
         </div>

@@ -16,7 +16,7 @@ export default function PromotionsPage() {
   return (
     <div>
       <h1>Promotions Page</h1>
-      <button type="button" className="button" onClick={handleOpenModal}>Promote PR Reviewers</button>
+      <button type="button" className="button" onClick={handleOpenModal}>Promote ?</button>
       {showModal && <DisplayBox onClose={handleCloseModal} />}
     </div>
   );
