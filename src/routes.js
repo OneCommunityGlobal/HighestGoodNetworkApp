@@ -56,6 +56,7 @@ import NotFoundPage from './components/NotFound/NotFoundPage';
 import EmailSender from './components/common/EmailSender/EmailSender';
 import Collaboration from './components/Collaboration';
 import ApplicantsAgeChart from './components/ApplicantsChart';
+import JobAnalytics from './components/JobAnalytics/JobAnalytics';
 
 // LB Dashboard
 import LBProtectedRoute from './components/common/LBDashboard/LBProtectedRoute';
@@ -314,6 +315,7 @@ export default (
         />
 
         <ProtectedRoute path="/applicants-chart" exact component={ApplicantsAgeChart} fallback />
+        <ProtectedRoute path="/jobAnalytics" exact component={JobAnalytics} fallback/>
 
         <ProtectedRoute
           path="/announcements"

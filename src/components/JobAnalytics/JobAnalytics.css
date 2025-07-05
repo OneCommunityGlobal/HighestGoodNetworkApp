@@ -1,0 +1,51 @@
+/* JobAnalytics.css */
+.job-analytics-container {
+  padding: 1.5rem;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.job-analytics-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.job-analytics-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  justify-content: center;
+}
+
+.job-analytics-filters input,
+.job-analytics-filters select {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 0.375rem;
+  min-width: 160px;
+}
+
+.chart-wrapper {
+  width: 100%;
+  min-height: 200px; /* Ensure minimum height matches ResponsiveContainer */
+}
+
+.no-data-message {
+  text-align: center;
+  color: #666;
+  padding: 2rem;
+  font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+  .job-analytics-filters {
+    flex-direction: column;
+    align-items: center;
+  }
+  .chart-wrapper {
+    min-height: 300px;
+  }
+}
