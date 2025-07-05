@@ -6,25 +6,30 @@ const initialState = {
 const userSkillsReducer = (state = initialState, action) => {
   switch (action.type) {
     case 'SET_USER_SKILLS_PROFILE_DATA':
-      // case 'SET_PROFILE_DATA':
       return {
         ...state,
         profileData: action.payload,
+      };
+    case 'UPDATE_USER_SKILLS_PROFILE_DATA_FOLLOWUP_FIELDS':
+      return {
+        ...state,
+        profileData: {
+          ...state.profileData,
+          skillInfo: {
+            ...state.profileData.skillInfo,
+            followUp: {
+              ...state.profileData.skillInfo.followUp,
+              ...action.payload, // This merges the updated fields
+            },
+          },
+        },
       };
     default:
       return state;
   }
 };
-/*
-case 'UPDATE_WORK_EXPERIENCE':
-  return {
-    ...state,
-    profileData: {
-      ...state.profileData,
-      workExperience: action.payload,
-    },
-  };
 
+/*
 case 'UPDATE_ADDITIONAL_INFO':
   return {
     ...state,

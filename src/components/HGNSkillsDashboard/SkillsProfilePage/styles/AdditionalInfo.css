@@ -26,9 +26,8 @@
 }
 .question-and-response-box textarea {
    height: 150px; 
-  margin-bottom: 10px;
-margin-right: 10px;
-background-color: #e6f5f3;
+   margin: 5px 10px;  
+  background-color: #e6f5f3;
 }
 .question-and-response-box input[type="text"] {
   width: 40%;

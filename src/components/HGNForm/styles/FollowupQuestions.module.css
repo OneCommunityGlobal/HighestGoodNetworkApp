@@ -77,7 +77,8 @@
 }
 
 
-.follow-up textarea {
+/* .follow-up */
+textarea {
   width: 90%;
   padding: 10px;
   border: 1px solid #ccc;
