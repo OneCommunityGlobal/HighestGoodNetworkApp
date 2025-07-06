@@ -74,7 +74,7 @@ import {
   listOverviewReducer,
   listingAvailabilityReducer,
   listingBookingReducer,
-} from './lbDashboard/listOverviewReducer';
+} from './lbdashboard/listOverviewReducer';
 
 const localReducers = {
   auth: authReducer,
