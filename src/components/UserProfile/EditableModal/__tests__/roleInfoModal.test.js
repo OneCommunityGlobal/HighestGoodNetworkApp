@@ -7,6 +7,12 @@ import RoleInfoModal from '../RoleInfoModal';
 
 const mockStore = configureStore([]);
 
+// Mock the action functions to return plain objects instead of functions
+jest.mock('../../../../actions/information', () => ({
+  updateInfoCollection: jest.fn(() => ({ type: 'UPDATE_INFO_COLLECTION' })),
+  addInfoCollection: jest.fn(() => ({ type: 'ADD_INFO_COLLECTION' })),
+}));
+
 describe('RoleInfoModal component Test cases', () => {
   test('Test case 1 : Renders without crashing', () => {
     const store = mockStore({
@@ -65,5 +71,50 @@ describe('RoleInfoModal component Test cases', () => {
 
     const modalTitle = queryByText('Welcome to Information Page!');
     expect(modalTitle).not.toBeInTheDocument();
+  });
+
+  it('Test case 5 : Shows default message when info is undefined', () => {
+    const store = mockStore({
+      theme: themeMock,
+    });
+
+    const { getByTitle, getByText } = render(
+      <Provider store={store}>
+        <RoleInfoModal info={undefined} roleName="MentorInfo" />
+      </Provider>
+    );
+    
+    const infoIcon = getByTitle('Click for user class information');
+    expect(infoIcon).toBeInTheDocument();
+    
+    fireEvent.click(infoIcon);
+    const modalTitle = getByText('Welcome to Information Page!');
+    expect(modalTitle).toBeInTheDocument();
+    
+    const defaultMessage = getByText('Please input information!');
+    expect(defaultMessage).toBeInTheDocument();
+  });
+
+  it('Test case 6 : Shows default message when info has no content', () => {
+    const store = mockStore({
+      theme: themeMock,
+    });
+
+    const info = {
+      CanRead: true,
+      infoContent: '',
+    };
+
+    const { getByTitle, getByText } = render(
+      <Provider store={store}>
+        <RoleInfoModal info={info} roleName="MentorInfo" />
+      </Provider>
+    );
+    
+    const infoIcon = getByTitle('Click for user class information');
+    fireEvent.click(infoIcon);
+    
+    const defaultMessage = getByText('Please input information!');
+    expect(defaultMessage).toBeInTheDocument();
   });
 });
