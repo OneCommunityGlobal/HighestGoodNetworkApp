@@ -1,10 +1,17 @@
 // src/pages/JobAnalytics.jsx
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, LabelList,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+  LabelList,
 } from 'recharts';
-import "./JobAnalytics.css";
+import './JobAnalytics.css';
 
 const JobAnalytics = () => {
   const [data, setData] = useState([]);
@@ -23,7 +30,9 @@ const JobAnalytics = () => {
       if (granularity) query.append('granularity', granularity);
       if (metric) query.append('metric', metric);
 
-      const res = await axios.get(`${process.env.REACT_APP_APIENDPOINT}/job-analytics?${query.toString()}`);
+      const res = await axios.get(
+        `${process.env.REACT_APP_APIENDPOINT}/job-analytics?${query.toString()}`,
+      );
       setData(res.data);
     } catch (error) {
       console.error('Error fetching analytics:', error);
@@ -36,7 +45,7 @@ const JobAnalytics = () => {
 
   const title = metric === 'applications' ? 'Most Competitive Roles' : 'Most Popular Roles';
 
-  const renderCustomLabel = (props) => {
+  const renderCustomLabel = props => {
     const { x, y, width, value } = props;
     const labelX = x + width + 5;
     return (
@@ -46,9 +55,8 @@ const JobAnalytics = () => {
     );
   };
 
-  // Dynamically adjust dy based on number of data points
   const getLabelDy = () => {
-    return data.length <= 2 ? 65 : 60; // Larger dy for fewer roles to avoid clipping
+    return data.length <= 2 ? 65 : 60;
   };
 
   return (
@@ -56,20 +64,12 @@ const JobAnalytics = () => {
       <h2 className="job-analytics-title">{title}</h2>
 
       <div className="job-analytics-filters">
-        <input
-          type="date"
-          value={startDate}
-          onChange={e => setStartDate(e.target.value)}
-        />
-        <input
-          type="date"
-          value={endDate}
-          onChange={e => setEndDate(e.target.value)}
-        />
+        <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} />
+        <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} />
         <select
           multiple
           value={selectedRoles}
-          onChange={(e) =>
+          onChange={e =>
             setSelectedRoles(Array.from(e.target.selectedOptions, option => option.value))
           }
         >
@@ -80,18 +80,12 @@ const JobAnalytics = () => {
           <option value="Graphic Designer">Graphic Designer</option>
           <option value="Software Engineer">Software Engineer</option>
         </select>
-        <select
-          value={granularity}
-          onChange={e => setGranularity(e.target.value)}
-        >
+        <select value={granularity} onChange={e => setGranularity(e.target.value)}>
           <option value="weekly">Weekly</option>
           <option value="monthly">Monthly</option>
           <option value="annual">Annual</option>
         </select>
-        <select
-          value={metric}
-          onChange={e => setMetric(e.target.value)}
-        >
+        <select value={metric} onChange={e => setMetric(e.target.value)}>
           <option value="applications">Competitiveness</option>
           <option value="hits">Popularity</option>
         </select>
@@ -99,18 +93,24 @@ const JobAnalytics = () => {
 
       {data.length === 0 ? (
         <div className="no-data-message">
-          No data available for the selected filters. Please adjust your date range, roles, or granularity.
+          No data available for the selected filters. Please adjust your date range, roles, or
+          granularity.
         </div>
       ) : (
         <div className="chart-wrapper">
-          <ResponsiveContainer width="100%" height={Math.max(data.length * 70, 200)}> {/* Minimum height of 200px */}
+          <ResponsiveContainer width="100%" height={Math.max(data.length * 70, 200)}>
+            {' '}
+            {/* Minimum height of 200px */}
             <BarChart
               layout="vertical"
               data={data}
               margin={{ top: 20, right: 50, bottom: 20, left: 150 }}
             >
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis type="number" label={{ value: 'Number of Applications', position: 'bottom' }} />
+              <XAxis
+                type="number"
+                label={{ value: 'Number of Applications', position: 'bottom' }}
+              />
               <YAxis
                 dataKey="role"
                 type="category"
@@ -119,8 +119,8 @@ const JobAnalytics = () => {
                   value: 'Name of Role',
                   angle: -90,
                   position: 'outsideLeft',
-                  dx: -100, // Shift left
-                  dy: getLabelDy(), // Dynamic vertical offset
+                  dx: -100,
+                  dy: getLabelDy(),
                   style: { textAnchor: 'middle' },
                 }}
               />
