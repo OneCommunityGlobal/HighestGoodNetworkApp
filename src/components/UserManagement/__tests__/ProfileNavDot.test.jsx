@@ -1,8 +1,9 @@
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import { Router } from 'react-router-dom';
-import { ProfileNavDot } from '../ProfileNavDot';
+import ProfileNavDot from '../ProfileNavDot';
 
 describe('ProfileNavDot Component Tests', () => {
   test('renders ProfileNavDot without errors', () => {

@@ -1,9 +1,9 @@
-import '../styles/QuestionnaireInfo.css';
+import styles from '../styles/QuestionnaireInfo.module.css';
 
 function QuestionnaireInfo() {
   return (
-    <div className="questionnaire-info">
-      <div className="blue-strip" />
+    <div className={`${styles.questionnaireInfo}`}>
+      <div className={`${styles.blueStrip}`} />
       <h1>HGN Development Team Questionnaire</h1>
       <p>
         Your answers to this questionnaire are used for team collaboration and placing you on a
@@ -18,7 +18,7 @@ function QuestionnaireInfo() {
       </ol>
       <p style={{ marginTop: 0 }}>Please answer with your best judgement, thank you!</p>
       <hr />
-      <p className="required" style={{ color: 'red', margin: '15px' }}>
+      <p className={`${styles.required}`} style={{ color: 'red', margin: '15px' }}>
         * Indicates required question
       </p>
     </div>

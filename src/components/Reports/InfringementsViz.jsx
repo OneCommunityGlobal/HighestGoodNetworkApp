@@ -36,13 +36,12 @@ function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
       const tooltipEl = function tooltipEl(d) {
         return (
           `${'<div class="tip__container">' +
-            '<div class="close">' +
-            '<button>&times</button>' +
-            '</div>' +
-            '<div>' +
-            'Exact date: '}${d3.timeFormat('%A, %B %e, %Y')(d.date)}<br>` +
-          `Count: ${
-            d.count === 1 ? d.count : `${d.count} <span class="detailsModal"><a>See All</a></span>`
+          '<div class="close">' +
+          '<button>&times</button>' +
+          '</div>' +
+          '<div>' +
+          'Exact date: '}${d3.timeFormat('%A, %B %e, %Y')(d.date)}<br>` +
+          `Count: ${d.count === 1 ? d.count : `${d.count} <span class="detailsModal"><a>See All</a></span>`
           }<br>` +
           `Description: ${d.des[0]}</div>` +
           `</div>`
@@ -283,22 +282,22 @@ function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
         </Modal.Header>
         <Modal.Body>
           <div id="inf">
-            <thead>
-              <tr>
-                <th>Descriptions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {focusedInf.des
-                ? focusedInf.des.map(desc => {
-                    return (
-                      <tr>
-                        <td>{desc}</td>
-                      </tr>
-                    );
-                  })
-                : null}
-            </tbody>
+            <table>
+              <thead>
+                <tr>
+                  <th>Descriptions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {focusedInf.des
+                  ? focusedInf.des.map((desc) => (
+                    <tr key={desc}>
+                      <td>{desc}</td>
+                    </tr>
+                  ))
+                  : null}
+              </tbody>
+            </table>
           </div>
         </Modal.Body>
         <Modal.Footer>

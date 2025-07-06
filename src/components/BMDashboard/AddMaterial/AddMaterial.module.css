@@ -1,0 +1,127 @@
+.addMaterialForm{
+  width: 100%;
+}
+
+.addMaterialForm Label{
+font-size: .8em;
+}
+
+.addMaterialFlexGroup{
+  display: flex;  
+  gap: 2rem;
+}
+
+.addMaterialButtons{
+  display: flex;
+  gap: 1rem;
+  margin: 1rem auto 2rem;
+}
+
+.addMaterialButtons button{
+  width: 50%;
+}
+
+.addMaterialTotalPrice{
+  display: flex;  
+  border-radius: 10px;
+  line-height: 3rem;
+  font-weight: bolder;
+  background-color: #f5e6e6;
+  padding-left: 1em;
+}
+
+.addMaterialTotalPrice div{
+  width: 50%;
+}
+
+.totalPriceCalculated{
+  text-align: end;
+  padding-right: 1em;
+}
+
+.addMaterialCreatedby{
+  display: flex;  
+  border-radius: 10px;
+  line-height: 3rem;
+  font-weight: bolder;
+  background-color: #add3ef;
+  padding-left: 1em;
+  margin-top: 1em;
+}
+
+.addMaterialCreatedby div{
+  width: 50%;
+}
+
+.createdby{
+  text-align: end;
+  padding-right: 1em;
+}
+
+.filePreviewContainer{
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.materialFormError {
+  font-weight: 500;
+  font-size: 11px !important;
+  color: red;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.fieldRequired{
+  color: red;
+}
+
+@media screen and (max-width: 640px) {
+  .addMaterialFlexGroup {
+    display: block;
+  }
+
+  .filePreviewContainer{
+    display: block;
+  }
+}
+
+.addMaterialContainer{
+  width: 100%;
+  max-width: 800px;
+  margin: 1rem auto;
+  padding: 1rem 2rem;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+}
+
+.addMaterialHeader h2{
+ font-size: clamp(1.5rem, 2.5vw, 2.5rem);
+ margin-left: 1rem;
+}
+
+
+@media screen and (max-width: 800px) {
+  .addMaterialContainer {
+    width: 95%;
+  }
+}
+
+.navigationOptions .optionContainer {
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+}
+.navigationOptions .optionContainer:hover {
+  background-color: #f8f9fa;
+}
+.navigationOptions h5 {
+  margin-bottom: 8px;
+}
+.navigationOptions p {
+  margin-bottom: 15px;
+  font-size: 0.9rem;
+}

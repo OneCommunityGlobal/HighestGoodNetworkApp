@@ -1,4 +1,4 @@
-import './EPDashboard.css';
+import './EPDashboard.module.css';
 
 export function EPDashboard() {
   return <h1>Welcome to Education Portal</h1>;
