@@ -294,8 +294,8 @@ export const ENDPOINTS = {
   // lb dashboard endpoints
   LB_REGISTER: `${APIEndpoint}/lbdashboard/register`,
   LB_LOGIN: `${APIEndpoint}/lbdashboard/login`,
-  LB_REVIEWS: `${APIEndpoint}/lbdashboard/reviews`,
-  LB_REVIEW_BY_ID: reviewId => `${APIEndpoint}/lbdashboard/reviews/${reviewId}`,
+  LB_REVIEWS_SUBMIT: `${APIEndpoint}/lbdashboard/reviews/submit`,
+  LB_REVIEWS_BY_UNIT_ID: unitId => `${APIEndpoint}/lbdashboard/reviews/${unitId}`,
 
 
   // community portal

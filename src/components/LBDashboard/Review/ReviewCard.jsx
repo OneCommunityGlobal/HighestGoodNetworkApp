@@ -1,5 +1,5 @@
 import React from "react";
-import "./reviewForm.css";
+import styles from "./reviewForm.module.css";
 
 function ReviewCard({ userName, userImage, reviewDescription, stars, date }) {
   
@@ -10,7 +10,7 @@ function ReviewCard({ userName, userImage, reviewDescription, stars, date }) {
         {Array.from({ length: totalStars }, (_, i) => (
           <span
             key={i}
-            className={`star ${i < stars ? "active" : ""}`}
+            className={`${styles.star} ${i < stars ? styles.active : ""}`}
             style={{ fontSize: "0.8rem", marginRight: "2px" }}
           >
             ★
@@ -21,25 +21,25 @@ function ReviewCard({ userName, userImage, reviewDescription, stars, date }) {
   };
 
   return (
-    <div className="review-card">
+    <div className={styles['review-card']}>
       {/* Left div: user image */}
-      <div className="left-div">
+      <div className={styles['left-div']}>
         <img src={userImage} alt="User" />
       </div>
 
       {/* Right div: user info */}
-      <div className="right-div">
-        <div className="user-name">
-          <span className="name-review">
+      <div className={styles['right-div']}>
+        <div className={styles['user-name']}>
+          <span className={styles['name-review']}>
             {userName} {renderStars()}
             </span>
         </div>
-        <div className="review-description">
-          <span className="multiline-ellipsis">
+        <div className={styles['review-description']}>
+          <span className={styles['multiline-ellipsis']}>
             {reviewDescription}
           </span>
         </div>
-        <div className="review-time">{date}</div>
+        <div className={styles['review-time']}>{date}</div>
       </div>
     </div>
   );

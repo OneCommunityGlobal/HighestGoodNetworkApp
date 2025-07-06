@@ -1,5 +1,6 @@
+
 import React, { useState, useRef } from "react";
-import "./reviewForm.css";
+import styles from "./reviewForm.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMapMarkerAlt, faCamera } from "@fortawesome/free-solid-svg-icons";
 import ReviewCard from "./ReviewCard";
@@ -62,35 +63,35 @@ function ShowReviews() {
     let UnitName = "Unit 405, Earthbag Village"
   
   return (
-    <div className="payment-page">
-      <div className="logo-container">
+    <div className={styles['payment-page']}>
+      <div className={styles['logo-container']}>
         <img src={logo} alt="One Community Logo" />
       </div>
 
       {/* Outer card container */}
-      <div className="bid-container">
+      <div className={styles['bid-container']}>
         {/* Green header bar */}
-        <div className="header"></div>
+        <div className={styles.header}></div>
 
         {/* Inner content area */}
-        <div className="payment-container">
+        <div className={styles['payment-container']}>
           {/* Gray form container */}
-          <div className="form-container">
-            <div className="map-link-container">
+          <div className={styles['form-container']}>
+            <div className={styles['map-link-container']}>
               <span>
                 <FontAwesomeIcon icon={faMapMarkerAlt} style={{ color: "red" }} />{" "}
-                <a href="#" className="property-map-link">
+                <a href="#" className={styles['property-map-link']}>
                   View on Property Map
                 </a>
               </span>
             </div>
             <h1>{UnitName}</h1>
 
-            <div className="show-reviews">
-                <div className="img-container">
+            <div className={styles['show-reviews']}>
+                <div className={styles['img-container']}>
                     <img src={sampleUnit} alt="" />
                 </div>
-                <div className="reviews-container">
+                <div className={styles['reviews-container']}>
   
       {testReviews.map((review, index) => (
         <ReviewCard key={index} {...review} />
@@ -99,7 +100,7 @@ function ShowReviews() {
                  </div>
            
 
-            <div className="back-link">
+            <div className={styles['back-link']}>
               <a href="">{'<<'} Back to reviews</a>
             </div>
           </div>

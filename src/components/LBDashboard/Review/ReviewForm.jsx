@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import "./reviewForm.css";
+import styles from "./reviewForm.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMapMarkerAlt, faCamera } from "@fortawesome/free-solid-svg-icons";
 import { ENDPOINTS } from '../../../utils/URL';
@@ -97,11 +97,11 @@ function ReviewForm() {
   const renderStars = () => {
     const stars = [1, 2, 3, 4, 5];
     return (
-      <div className="star-rating">
+      <div className={styles['star-rating']}>
         {stars.map((star) => (
           <span
             key={star}
-            className={`star ${star <= rating ? "active" : ""}`}
+            className={`${styles.star} ${star <= rating ? styles.active : ""}`}
             onClick={() => handleRating(star)}
             onKeyDown={(e) => e.key === "Enter" && handleRating(star)}
             role="button"
@@ -115,24 +115,24 @@ function ReviewForm() {
   };
 
   return (
-    <div className="payment-page">
-      <div className="logo-container">
+    <div className={styles['payment-page']}>
+      <div className={styles['logo-container']}>
         <img src={logo} alt="One Community Logo" />
       </div>
 
       {/* Outer card container */}
-      <div className="bid-container">
+      <div className={styles['bid-container']}>
         {/* Green header bar */}
-        <div className="header"></div>
+        <div className={styles.header}></div>
 
         {/* Inner content area */}
-        <div className="payment-container">
+        <div className={styles['payment-container']}>
           {/* Gray form container */}
-          <div className="form-container">
-            <div className="map-link-container">
+          <div className={styles['form-container']}>
+            <div className={styles['map-link-container']}>
               <span>
                 <FontAwesomeIcon icon={faMapMarkerAlt} style={{ color: "red" }} />{" "}
-                <a href="#" className="property-map-link">
+                <a href="#" className={styles['property-map-link']}>
                   View on Property Map
                 </a>
               </span>
@@ -140,17 +140,17 @@ function ReviewForm() {
             <h1>Review</h1>
 
             <form onSubmit={handleSubmit}>
-              <div className="review-form">
-                <div className="review-container">
+              <div className={styles['review-form']}>
+                <div className={styles['review-container']}>
                   <textarea
                     placeholder="Write your review here..."
-                    className="review-textarea"
+                    className={styles['review-textarea']}
                     value={review}
                     onChange={handleReviewChange}
                   ></textarea>
                   <button
                     type="button"
-                    className="upload-button"
+                    className={styles['upload-button']}
                     onClick={handleUploadClick}
                   >
                     <FontAwesomeIcon icon={faCamera} style={{ color: "black" }} /> Upload images
@@ -165,7 +165,7 @@ function ReviewForm() {
                   />
                 </div>
 
-                <div className="rating-container">
+                <div className={styles['rating-container']}>
                     <>
                   <h2 style={{textAlign : "left"}}>Choose a rating</h2>
                   <span style={{background : "white" , width: "fit-content"}}>
@@ -173,13 +173,13 @@ function ReviewForm() {
                   </span>
                     </>
                 </div>
-                {error && <div className="error-message">{error}</div>}
+                {error && <div className={styles['error-message']}>{error}</div>}
               </div>
 
-              <div className="button-container">
+              <div className={styles['button-container']}>
                 <button 
                   type="submit" 
-                  className="submit-button"
+                  className={styles['submit-button']}
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? 'Submitting...' : 'Submit'}
@@ -187,7 +187,7 @@ function ReviewForm() {
               </div>
             </form>
 
-            <div className="back-link">
+            <div className={styles['back-link']}>
               <a href="">{'<<'} Back to reviews</a>
             </div>
           </div>
