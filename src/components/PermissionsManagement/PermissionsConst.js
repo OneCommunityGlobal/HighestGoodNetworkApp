@@ -12,6 +12,28 @@ const getAllSubpermissionKeys = permissions => {
   return keys;
 };
 
+export const generatePermissionLabelKeyMapping = (permissionLabels, start) => {
+  if (start >= permissionLabels.length) {
+    return {};
+  }
+  if (!permissionLabels?.length) {
+    return {};
+  }
+  const firstEle = permissionLabels[start];
+  const { label, key, subperms } = firstEle;
+  // console.log('label', label);
+  let currentVal;
+  if (subperms) {
+    currentVal = generatePermissionLabelKeyMapping(subperms, 0);
+  } else {
+    currentVal = { [key]: label };
+  }
+  return {
+    ...currentVal,
+    ...generatePermissionLabelKeyMapping(permissionLabels, start + 1),
+  };
+};
+
 export const permissionLabels = [
   {
     label: 'General',
@@ -57,6 +79,12 @@ export const permissionLabels = [
           'Under "Reports" -> "Weekly Summaries Reports", make the "Bio announcement" row highlighted yellow if that user is eligible for their bio to be posted (they have at least 80 tangible hours, 60 days on the team, and still don\'t have their bio posted)',
       },
       {
+        label: 'Toggle Request Bio',
+        key: 'requestBio',
+        description:
+          'Gives the user permission to toggle the "Bio announcement" switch under "Reports" -> "Weekly Summaries Reports"',
+      },
+      {
         label: 'See Volunteer Weekly Summaries',
         key: 'getVolunteerWeeklySummary',
         description:
@@ -98,6 +126,12 @@ export const permissionLabels = [
           'Gives the user permission to change the status of any user on the user profile page or User Management Page. "User Profile" -> "Green round button"',
       },
       {
+        label: 'Toggle Invisibility Permission Self and Others',
+        key: 'toggleInvisibility',
+        description:
+          'Gives the user permission to change the invisibility toggle for themselves and others',
+      },
+      {
         label: 'Assign Blue Squares',
         key: 'addInfringements',
         description: 'Gives the user permission to add blue squares to any user.',
@@ -125,6 +159,12 @@ export const permissionLabels = [
           'Gives the user permission to change the requirement to the user to submit a summary.',
       },
       {
+        label: 'Update Password (Others)',
+        key: 'updatePassword',
+        description:
+          'Gives the user permission to update the password of any user but Owner/Admin classes. ',
+      },
+      {
         label: 'Manage Time Off Requests',
         key: 'manageTimeOffRequests',
         description: 'Gives the user permission to Add/Delete/Edit Time off requests.',
@@ -133,6 +173,69 @@ export const permissionLabels = [
         label: 'Change Rehireable Status',
         key: 'changeUserRehireableStatus',
         description: 'Gives the user permission to change the user status of rehireable or not.',
+      },
+      {
+        label: 'Pause User Activity',
+        key: 'pauseUserActivity',
+        description:
+          'Gives the user permission to use the "Pause" button to pause user activity on their profile page.',
+      },
+      {
+        label: 'Set Final Day for User',
+        key: 'setUserFinalDay',
+        description:
+          'Gives the user permission to use the "Set Final Day" button to set a final working day for a user on their profile page.',
+      },
+      {
+        label: 'Tracking Management',
+        key: 'setTrackingManagement',
+        description: 'Gives the user permission to interact with the edit warnings list modal.',
+      },
+    ],
+  },
+  {
+    label: 'Tracking Management',
+    description: 'Permissions for managing tracking-related activities.',
+    subperms: [
+      {
+        label: 'View Tracking Overview',
+        key: 'viewTrackingOverview',
+        description: 'Allows user to view an overview of tracking activities for all users.',
+      },
+      {
+        label: 'Issue Tracking Warnings',
+        key: 'issueTrackingWarnings',
+        description: 'Allows the user to issue warnings for violations of tracking activities.',
+      },
+      {
+        label: 'Issue a Blue Square',
+        key: 'issueBlueSquare',
+        description: 'Allows the user to issue a blue square for viloations of tracking activity.',
+      },
+      {
+        label: 'Delete a Warning',
+        key: 'deleteWarning',
+        description: 'Gives the user permission to delete existing tracking warnings.',
+      },
+      {
+        label: 'Add a New Warning Tracker',
+        key: 'addWarningTracker',
+        description: 'Allows user to add a new warning tracker to the system.',
+      },
+      {
+        label: 'Deactivate a Warning Tracker',
+        key: 'deactivateWarningTracker',
+        description: 'Allows user to deactivate an existing warning tracker.',
+      },
+      {
+        label: 'Reactivate a Warning Tracker',
+        key: 'reactivateWarningTracker',
+        description: 'Allows user to reactivate an existing warning tracker.',
+      },
+      {
+        label: 'Delete a Warning Tracker',
+        key: 'deleteWarningTracker',
+        description: 'Gives user permission to delete a warning tracker from the system.',
       },
     ],
   },
@@ -257,10 +360,28 @@ export const permissionLabels = [
                   'Gives the user permission to suggest changes on a task. "Dashboard" -> "Tasks tab" -> "Click on any task" -> "Suggest button"',
               },
               {
+                label: 'Unassign Team Members from Tasks',
+                key: 'removeUserFromTask',
+                description:
+                  'Gives the user permission to UNASSIGN tasks from only their TEAM members through the Dashboard -> task -> red X.',
+              },
+              {
                 label: 'Interact with Task "Ready for Review"',
                 key: 'putReviewStatus',
                 description:
                   'Give the user permission to interact with any "Ready for Review" task button to either mark it as complete or reset it with "More work needed, reset this button" ',
+              },
+              {
+                label: 'View and Interact with Task "X" on Dashboards',
+                key: 'canDeleteTask',
+                description:
+                  'Gives the user permission to DELETE tasks from the Management Dashboard showing all their team members. ',
+              },
+              {
+                label: 'Unassign Team Members from Tasks',
+                key: 'deleteDashboardTask',
+                description:
+                  'Gives the user permission to UNASSIGN tasks from only their TEAM members through the Dashboard -> task -> red X. ',
               },
             ],
           },
@@ -312,6 +433,18 @@ export const permissionLabels = [
           'Gives the user permission to toggle the Tangible check when editing their own time entry.',
       },
       {
+        label: 'Timelog Management (Own)',
+        description: 'Category for all permissions related to timelog management',
+        subperms: [
+          {
+            label: 'Delete Time Entry (Own)',
+            key: 'deleteTimeEntryOwn',
+            description:
+              'Gives the user permission to Delete time entry from others users "Dashboard" -> "Leaderboard" -> "Dot By the side of user\'s name" -> "Current Time Log" -> "Trash button on bottom right"',
+          },
+        ],
+      },
+      {
         label: 'Timelog Management (Others)',
         description: 'Category for all permissions related to timelog management',
         subperms: [
@@ -323,7 +456,7 @@ export const permissionLabels = [
           },
           {
             label: 'Delete Time Entry (Others)',
-            key: 'deleteTimeEntry',
+            key: 'deleteTimeEntryOthers',
             description:
               'Gives the user permission to Delete time entry from others users "Dashboard" -> "Leaderboard" -> "Dot By the side of user\'s name" -> "Current Time Log" -> "Trash button on bottom right"',
           },
@@ -458,7 +591,20 @@ export const permissionLabels = [
       },
     ],
   },
+  {
+    label: 'FAQs',
+    description: 'Category for all permissions related to FAQs',
+    subperms: [
+      {
+        label: 'Manage FAQs',
+        key: 'manageFAQs',
+        description: 'Gives the user permission to add, edit, and delete FAQs.',
+      },
+    ],
+  },
 ];
+
+export const permissionLabelKeyMappingObj = generatePermissionLabelKeyMapping(permissionLabels, 0);
 
 export const roleOperationLabels = [
   {

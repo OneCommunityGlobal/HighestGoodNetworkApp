@@ -1,17 +1,36 @@
-import React, { useState, useEffect, useMemo } from 'react';
-// import { getUserProfile } from '../../actions/userProfile'
+import { useState, useEffect, useMemo } from 'react';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
-import { getHeaderData } from '../../actions/authActions';
-import { getAllRoles } from '../../actions/role';
 import { getWeeklySummaries } from 'actions/weeklySummaries';
 import { Link, useLocation } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
-import Timer from '../Timer/Timer';
-import OwnerMessage from '../OwnerMessage/OwnerMessage';
 import { useHistory } from 'react-router-dom';
 import {
-  LOGO,
+  Collapse,
+  Navbar,
+  NavbarToggler,
+  Nav,
+  NavItem,
+  NavLink,
+  UncontrolledDropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+  Card,
+} from 'reactstrap';
+import PopUpBar from 'components/PopUpBar';
+import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
+import { toast } from 'react-toastify';
+import { getHeaderData } from '../../actions/authActions';
+import { getAllRoles } from '../../actions/role';
+import Timer from '../Timer/Timer';
+import OwnerMessage from '../OwnerMessage/OwnerMessage';
+import {
   DASHBOARD,
   TIMELOG,
   REPORTS,
@@ -26,49 +45,28 @@ import {
   VIEW_PROFILE,
   UPDATE_PASSWORD,
   LOGOUT,
-  POPUP_MANAGEMENT,
   PERMISSIONS_MANAGEMENT,
   SEND_EMAILS,
-  VOLUNTEER_SUMMARY_REPORT,
   TOTAL_ORG_SUMMARY,
+  TOTAL_CONSTRUCTION_SUMMARY,
 } from '../../languages/en/ui';
-import {
-  Collapse,
-  Navbar,
-  NavbarToggler,
-  NavbarBrand,
-  Nav,
-  NavItem,
-  NavLink,
-  UncontrolledDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-  Container,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Button,
-  Card,
-} from 'reactstrap';
 import Logout from '../Logout/Logout';
-import PopUpBar from 'components/PopUpBar';
+import '../../App.css';
 import './Header.css';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
-import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
 import {
   getUnreadUserNotifications,
-  markNotificationAsRead,
   resetNotificationError,
 } from '../../actions/notificationAction';
-import { toast } from 'react-toastify';
 import NotificationCard from '../Notification/notificationCard';
 import DarkModeButton from './DarkModeButton';
+import BellNotification from './BellNotification';
+import { getUserProfile } from '../../actions/userProfile';
+import PermissionWatcher from '../Auth/PermissionWatcher';
 
 export function Header(props) {
   const location = useLocation();
-  const darkMode = props.darkMode;
+  const { darkMode } = props;
   const [isOpen, setIsOpen] = useState(false);
   const [logoutPopup, setLogoutPopup] = useState(false);
   const { isAuthenticated, user } = props.auth;
@@ -155,6 +153,8 @@ export function Header(props) {
   const dispatch = useDispatch();
   const history = useHistory();
 
+  const [showProjectDropdown, setShowProjectDropdown] = useState(false);
+
   useEffect(() => {
     const handleStorageEvent = () => {
       const sessionStorageData = JSON.parse(window.sessionStorage.getItem('viewingUser'));
@@ -191,6 +191,7 @@ export function Header(props) {
       }
     }
   }, [props.auth.isAuthenticated]);
+  const roles = props.role?.roles;
 
   useEffect(() => {
     if (roles.length === 0 && isAuthenticated) {
@@ -209,8 +210,6 @@ export function Header(props) {
     }
   }, [props.notification?.error]);
 
-  const roles = props.role?.roles;
-
   const toggle = () => {
     setIsOpen(prevIsOpen => !prevIsOpen);
   };
@@ -223,9 +222,9 @@ export function Header(props) {
     setPopup(false);
     sessionStorage.removeItem('viewingUser');
     window.dispatchEvent(new Event('storage'));
-    props.getWeeklySummaries(user.userid)
+    props.getWeeklySummaries(user.userid);
     history.push('/dashboard');
-  }
+  };
   const closeModal = () => {
     setModalVisible(false);
     const today = new Date();
@@ -254,6 +253,7 @@ export function Header(props) {
       setUserDashboardProfile(newUserProfile);
       setHasProfileLoaded(true); // Set flag to true after loading the profile
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.log('User Profile not loaded.', err);
     }
   };
@@ -283,12 +283,12 @@ export function Header(props) {
           setModalVisible(true);
           // Assistant Manager or Volunteer message
           setModalContent(
-            `If you are seeing this, it’s because you are on a team! As a member of a team, you need to turn in your work 24 hours earlier, i.e. FRIDAY night at midnight Pacific Time. This is so your manager has time to review it and submit and report on your entire team’s work by the usual Saturday night deadline. For any work you plan on completing Saturday, please take pictures as best you can and include it in your summary as if it were already done.\n\nBy dismissing this notice, you acknowledge you understand and will do this.`,
+            `If you are seeing this, it's because you are on a team! As a member of a team, you need to turn in your work 24 hours earlier, i.e. FRIDAY night at midnight Pacific Time. This is so your manager has time to review it and submit and report on your entire team's work by the usual Saturday night deadline. For any work you plan on completing Saturday, please take pictures as best you can and include it in your summary as if it were already done.\n\nBy dismissing this notice, you acknowledge you understand and will do this.`,
           );
         } else if (user.role === 'Manager') {
           setModalVisible(true);
           // Manager message
-          setModalContent(`If you are seeing this, it’s because you are a Manager of a team! Remember to turn in your team’s work by the Saturday night at midnight (Pacific Time) deadline. Every member of your team gets a notice like this too. Theirs tells them to get you their work 24 hours early so you have time to review it and submit it. If you have to remind them repeatedly (4+ times, track it on their Google Doc), they should receive a blue square.
+          setModalContent(`If you are seeing this, it's because you are a Manager of a team! Remember to turn in your team's work by the Saturday night at midnight (Pacific Time) deadline. Every member of your team gets a notice like this too. Theirs tells them to get you their work 24 hours early so you have time to review it and submit it. If you have to remind them repeatedly (4+ times, track it on their Google Doc), they should receive a blue square.
           `);
         }
       }
@@ -297,17 +297,22 @@ export function Header(props) {
     }
   }, [lastDismissed, userId, userDashboardProfile]);
 
+  useEffect(() => {
+    setShowProjectDropdown(location.pathname.startsWith('/bmdashboard/projects/'));
+  }, [location.pathname]);
+
   const fontColor = darkMode ? 'text-white dropdown-item-hover' : '';
 
   if (location.pathname === '/login') return null;
 
+  const viewingUser = JSON.parse(window.sessionStorage.getItem('viewingUser'))
   return (
-    <div className="header-wrapper">
+    <div className={`header-wrapper ${darkMode ? ' dark-mode' : ''}`}>
       <Navbar className="py-3 navbar" color="dark" dark expand="md">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
         <div
           className="timer-message-section"
-          style={user.role == 'Owner' ? { marginRight: '0.5rem' } : { marginRight: '1rem' }}
+          style={user.role === 'Owner' ? { marginRight: '0.5rem' } : { marginRight: '1rem' }}
         >
           {isAuthenticated && <Timer darkMode={darkMode} />}
           {isAuthenticated && (
@@ -319,13 +324,13 @@ export function Header(props) {
         <NavbarToggler onClick={toggle} />
         {isAuthenticated && (
           <Collapse isOpen={isOpen} navbar>
-            <Nav className="ml-auto nav-links" navbar>
+            <Nav className="ml-auto nav-links d-flex" navbar>
               <div
                 className="d-flex justify-content-center align-items-center"
                 style={{ width: '100%' }}
               >
                 {canUpdateTask && (
-                  <NavItem className='responsive-spacing'>
+                  <NavItem className="responsive-spacing">
                     <NavLink tag={Link} to="/taskeditsuggestions">
                       <div className="redBackGroupHeader">
                         <span>{props.taskEditSuggestionCount}</span>
@@ -333,20 +338,73 @@ export function Header(props) {
                     </NavLink>
                   </NavItem>
                 )}
-                <NavItem className='responsive-spacing'>
+                <NavItem className="responsive-spacing">
                   <NavLink tag={Link} to="/dashboard">
                     <span className="dashboard-text-link">{DASHBOARD}</span>
                   </NavLink>
                 </NavItem>
-                <NavItem className='responsive-spacing'>
-                  <NavLink tag={Link} to={`/timelog`}>
+                <NavItem className="responsive-spacing">
+                  <NavLink tag={Link} to="/timelog">
                     <span className="dashboard-text-link">{TIMELOG}</span>
                   </NavLink>
                 </NavItem>
+
+                {showProjectDropdown && (
+                  <UncontrolledDropdown nav inNavbar className="responsive-spacing">
+                    <DropdownToggle nav caret>
+                      <span className="dashboard-text-link">{PROJECTS}</span>
+                    </DropdownToggle>
+                    <DropdownMenu className={darkMode ? 'bg-yinmn-blue' : ''}>
+                      <DropdownItem
+                        tag={Link}
+                        to="/bmdashboard/materials/add"
+                        className={fontColor}
+                      >
+                        Add Material
+                      </DropdownItem>
+                      <DropdownItem tag={Link} to="/bmdashboard/logMaterial" className={fontColor}>
+                        Log Material
+                      </DropdownItem>
+                      <DropdownItem tag={Link} to="/bmdashboard/materials" className={fontColor}>
+                        Material List
+                      </DropdownItem>
+                      <DropdownItem
+                        tag={Link}
+                        to="/bmdashboard/equipment/add"
+                        className={fontColor}
+                      >
+                        Add Equipment/Tool
+                      </DropdownItem>
+                      <DropdownItem
+                        tag={Link}
+                        to="/bmdashboard/equipment/:equipmentId"
+                        className={fontColor}
+                      >
+                        Log Equipment/Tool
+                      </DropdownItem>
+                      <DropdownItem
+                        tag={Link}
+                        to="/bmdashboard/tools/:equipmentId/update"
+                        className={fontColor}
+                      >
+                        Update Equipment/Tool
+                      </DropdownItem>
+                      <DropdownItem tag={Link} to="/bmdashboard/equipment" className={fontColor}>
+                        Equipment/Tool List
+                      </DropdownItem>
+                      <DropdownItem tag={Link} to="/bmdashboard/Issue" className={fontColor}>
+                        Issue
+                      </DropdownItem>
+                      <DropdownItem tag={Link} to="/bmdashboard/lessonform/" className={fontColor}>
+                        Lesson
+                      </DropdownItem>
+                    </DropdownMenu>
+                  </UncontrolledDropdown>
+                )}
               </div>
               <div className="d-flex align-items-center justify-content-center">
                 {canGetReports || canGetWeeklySummaries || canGetWeeklyVolunteerSummary ? (
-                  <UncontrolledDropdown nav inNavbar className='responsive-spacing'>
+                  <UncontrolledDropdown nav inNavbar className="responsive-spacing">
                     <DropdownToggle nav caret>
                       <span className="dashboard-text-link">{REPORTS}</span>
                     </DropdownToggle>
@@ -369,24 +427,24 @@ export function Header(props) {
                       <DropdownItem tag={Link} to="/teamlocations" className={fontColor}>
                         {TEAM_LOCATIONS}
                       </DropdownItem>
+                      <DropdownItem
+                        tag={Link}
+                        to="/bmdashboard/totalconstructionsummary"
+                        className={fontColor}
+                      >
+                        {TOTAL_CONSTRUCTION_SUMMARY}
+                      </DropdownItem>
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 ) : (
-                  <NavItem className='responsive-spacing'>
+                  <NavItem className="responsive-spacing">
                     <NavLink tag={Link} to="/teamlocations">
-                      {TEAM_LOCATIONS}
+                      <span className="dashboard-text-link">{TEAM_LOCATIONS}</span>
                     </NavLink>
                   </NavItem>
                 )}
-                <NavItem className='responsive-spacing'>
-                  <NavLink tag={Link} to={`/timelog/${displayUserId}`}>
-                    <i className="fa fa-bell i-large">
-                      <i className="badge badge-pill badge-danger badge-notify">
-                        {/* Pull number of unread messages */}
-                      </i>
-                      <span className="sr-only">unread messages</span>
-                    </i>
-                  </NavLink>
+                <NavItem className="responsive-spacing">
+                  <BellNotification userId={displayUserId}/>
                 </NavItem>
                 {(canAccessUserManagement ||
                   canAccessBadgeManagement ||
@@ -395,24 +453,20 @@ export function Header(props) {
                   canAccessPopups ||
                   canAccessSendEmails ||
                   canAccessPermissionsManagement) && (
-                  <UncontrolledDropdown nav inNavbar className='responsive-spacing'>
+                  <UncontrolledDropdown nav inNavbar className="responsive-spacing">
                     <DropdownToggle nav caret>
                       <span className="dashboard-text-link">{OTHER_LINKS}</span>
                     </DropdownToggle>
                     <DropdownMenu className={darkMode ? 'bg-yinmn-blue' : ''}>
-                      {canAccessUserManagement ? (
+                      {canAccessUserManagement && (
                         <DropdownItem tag={Link} to="/usermanagement" className={fontColor}>
                           {USER_MANAGEMENT}
                         </DropdownItem>
-                      ) : (
-                        <React.Fragment></React.Fragment>
                       )}
-                      {canAccessBadgeManagement ? (
+                      {canAccessBadgeManagement && (
                         <DropdownItem tag={Link} to="/badgemanagement" className={fontColor}>
                           {BADGE_MANAGEMENT}
                         </DropdownItem>
-                      ) : (
-                        <React.Fragment></React.Fragment>
                       )}
                       {canAccessProjects && (
                         <DropdownItem tag={Link} to="/projects" className={fontColor}>
@@ -444,17 +498,24 @@ export function Header(props) {
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 )}
-                <NavItem className='responsive-spacing'>
+                <NavItem className="responsive-spacing">
                   <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
-                    <img
-                      src={`${profilePic || '/pfp-default-header.png'}`}
-                      alt=""
-                      style={{ maxWidth: '60px', maxHeight: '60px' }}
+                    <div
+                      style={{
+                        width: '60px',
+                        height: '60px',
+                        minWidth: '60px',
+                        minHeight: '60px',
+                        backgroundImage: `url(${profilePic || '/pfp-default-header.png'})`,
+                        backgroundSize: 'contain',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat'
+                      }}
                       className="dashboardimg"
                     />
                   </NavLink>
                 </NavItem>
-                <UncontrolledDropdown nav className='responsive-spacing'>
+                <UncontrolledDropdown nav className="responsive-spacing">
                   <DropdownToggle nav caret>
                     <span className="dashboard-text-link">
                       {WELCOME}, {firstName}
@@ -500,10 +561,13 @@ export function Header(props) {
       </Navbar>
       {!isAuthUser && (
         <PopUpBar
+          firstName={viewingUser.firstName}
+          lastName={viewingUser.lastName}
+          message={`You are currently viewing the header for ${viewingUser.firstName} ${viewingUser.lastName}`}
           onClickClose={() => setPopup(prevPopup => !prevPopup)}
-          viewingUser={JSON.parse(window.sessionStorage.getItem('viewingUser'))}
-        />
+          />
       )}
+      <PermissionWatcher props={props}/>
       <div>
         <Modal isOpen={popup} className={darkMode ? 'text-light' : ''}>
           <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>
@@ -523,17 +587,20 @@ export function Header(props) {
         </Modal>
       </div>
       {props.auth.isAuthenticated && isModalVisible && (
-        <Card color="primary">
-          <div className="close-button">
-            <Button close onClick={closeModal} />
-          </div>
-          <div className="card-content">{modalContent}</div>
-        </Card>
+        <div className={`${darkMode ? 'bg-oxford-blue' : ''} card-wrapper`}>
+          <Card color="primary" className='headerCard'>
+            <div className="close-button">
+              <Button close onClick={closeModal} />
+            </div>
+            <div className="card-content">{modalContent}</div>
+          </Card>
+        </div>
       )}
       {/* Only render one unread message at a time */}
       {props.auth.isAuthenticated && unreadNotifications?.length > 0 ? (
         <NotificationCard notification={unreadNotifications[0]} />
       ) : null}
+      <div className={darkMode ? 'header-margin' : 'header-margin-light'} />
     </div>
   );
 }
@@ -551,5 +618,6 @@ export default connect(mapStateToProps, {
   getHeaderData,
   getAllRoles,
   hasPermission,
-  getWeeklySummaries
+  getWeeklySummaries,
+  getUserProfile,
 })(Header);
