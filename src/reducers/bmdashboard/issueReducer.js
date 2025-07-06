@@ -2,6 +2,11 @@ import {
   FETCH_ISSUES_BARCHART_REQUEST,
   FETCH_ISSUES_BARCHART_SUCCESS,
   FETCH_ISSUES_BARCHART_FAILURE,
+  FETCH_LONGEST_OPEN_ISSUES_REQUEST,
+  FETCH_LONGEST_OPEN_ISSUES_SUCCESS,
+  FETCH_LONGEST_OPEN_ISSUES_FAILURE,
+  SET_DATE_FILTER,
+  SET_PROJECT_FILTER,
 } from '../../constants/bmdashboard/issueConstants';
 
 const initialState = {
@@ -10,6 +15,8 @@ const initialState = {
   issueTypes: [], // Store for issue types
   years: [], // Store for years
   error: null,
+  selectedDates: [],
+  selectedProjects: [],
 };
 
 // eslint-disable-next-line default-param-last
@@ -21,6 +28,35 @@ const issueReducer = (state = initialState, action) => {
       return { ...state, loading: false, issues: action.payload };
     case FETCH_ISSUES_BARCHART_FAILURE:
       return { ...state, loading: false, error: action.payload };
+    case FETCH_LONGEST_OPEN_ISSUES_REQUEST:
+      return {
+        ...state,
+        loading: true,
+        error: null,
+      };
+    case FETCH_LONGEST_OPEN_ISSUES_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        issues: action.payload,
+        error: null,
+      };
+    case FETCH_LONGEST_OPEN_ISSUES_FAILURE:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
+    case SET_DATE_FILTER:
+      return {
+        ...state,
+        selectedDates: action.payload,
+      };
+    case SET_PROJECT_FILTER:
+      return {
+        ...state,
+        selectedProjects: action.payload,
+      };
     default:
       return state;
   }

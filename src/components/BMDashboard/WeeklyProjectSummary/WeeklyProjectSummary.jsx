@@ -9,6 +9,7 @@ import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
 import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
 import styles from './WeeklyProjectSummary.module.css';
+import IssueCharts from '../Issues/openIssueCharts';
 
 const projectStatusButtons = [
   {
@@ -193,9 +194,11 @@ export default function WeeklyProjectSummary() {
       {
         title: 'Issue Tracking',
         key: 'Issue Tracking',
-        className: 'small',
+        className: 'full',
         content: (
-          <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>📊 Card</div>
+          <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+            <IssueCharts />
+          </div>
         ),
       },
       {
@@ -391,7 +394,10 @@ export default function WeeklyProjectSummary() {
       <div className={`${styles.weeklyProjectSummaryDashboardContainer}`}>
         <div className={`${styles.weeklyProjectSummaryDashboardGrid}`}>
           {sections.map(({ title, key, className, content }) => (
-            <div key={key} className={`weekly-project-summary-dashboard-section ${className}`}>
+            <div
+              key={key}
+              className={`${styles.weeklyProjectSummaryDashboardSection} ${styles[className]}`}
+            >
               <div
                 className={`${styles.weeklyProjectSummaryDashboardCategoryTitle}`}
                 onClick={() => toggleSection(key)}

@@ -131,7 +131,6 @@ import FeedbackModal from './components/HGNHelpSkillsDashboard/FeedbackModal';
 // eslint-disable-next-line import/order, import/no-unresolved
 import LogTools from './components/BMDashboard/LogTools/LogTools';
 import EquipmentUpdate from './components/BMDashboard/Tools/EquipmentUpdate';
-
 // Social Architecture
 const ResourceManagement = lazy(() => import('./components/ResourceManagement/ResourceManagement'));
 const RequestResources = lazy(() => import('./components/SocialArchitecture/RequestResources'));
@@ -583,7 +582,6 @@ export default (
         <CPProtectedRoute path="/communityportal" exact component={CPDashboard} />
         <Route path="/communityportal/login" component={CPLogin} />
         <CPProtectedRoute path="/communityportal/Activities" exact component={ActivityList} />
-
         <CPProtectedRoute path="/communityportal/reports/participation" component={NoshowViz} />
 
         <CPProtectedRoute path="/communityportal/activities/:activityid/resources" exact component={Resources}/>
