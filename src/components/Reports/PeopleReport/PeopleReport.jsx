@@ -432,6 +432,7 @@ class PeopleReport extends Component {
       const { profilePic, role, jobTitle, endDate, _id, startDate } = userProfile;
 
       return (
+        <div className="report-page-container">
         <ReportPage.ReportHeader
           src={profilePic}
           avatar={profilePic ? undefined : <FiUser />}
@@ -447,7 +448,7 @@ class PeopleReport extends Component {
                 {firstName} {lastName}
               </Link>
             </p>
-            <p>Role: {role}</p>
+              <p>Role: {role}</p>
             <p>Title: {jobTitle}</p>
 
             {/* {endDate ? ( */}
@@ -492,6 +493,7 @@ class PeopleReport extends Component {
             </div>
           </div>
         </ReportPage.ReportHeader>
+        </div>
       );
     };
 
@@ -552,7 +554,7 @@ class PeopleReport extends Component {
               secondColor="#928aef"
               className="people-report-time-log-block"
               darkMode={darkMode}
-            >. 
+            >
               <h3 className="text-light">{infringements.length}</h3>
               <p>Blue squares</p>
             </ReportPage.ReportBlock>

@@ -17,7 +17,11 @@ body {
 
 .stats {
   display: flex;
+  justify-content: center;
+  align-items: center;
   flex-direction: column;
+  width: 99%;
+  box-shadow: 0 0 6px 0px rgba(0, 0, 0, 0.25)
 }
 
 .rehireable {
@@ -216,12 +220,12 @@ body {
 
 .people-report-time-log-block {
   max-height: 100px;
-  width: 270px;
+  width: 230px;
   white-space: nowrap;
   margin-bottom: 16px;
 }
 
-@media (min-width: 850px) {
+@media (min-width: 1025px) {
   .people-report-time-logs-wrapper {
     margin-top: 25px;
     display: flex;
@@ -229,9 +233,10 @@ body {
     justify-content: space-between;
     color: white;
   }
+  
 }
 
-@media (min-width: 850px) and (max-width: 1249px) {
+@media (min-width: 768px) and (max-width: 1024px) {
   .people-report-time-logs-wrapper > * {
     margin-top: 25px;
     /* display: flex; */
@@ -241,7 +246,7 @@ body {
   }
 }
 
-@media (min-width: 275px) and (max-width: 435px) {
+@media (max-width: 435px) {
   .people-report-time-logs-wrapper > * {
     margin-top: 25px; 
     /* display: flex; */
@@ -298,4 +303,8 @@ body {
     justify-content: flex-start;
     align-items: flex-start;
   }
+}
+
+.report-page-container {
+  margin-top: 25px;
 }
