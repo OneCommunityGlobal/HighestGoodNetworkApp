@@ -134,6 +134,6 @@ function JobAnalytics() {
       )}
     </div>
   );
-};
+}
 
 export default JobAnalytics;
