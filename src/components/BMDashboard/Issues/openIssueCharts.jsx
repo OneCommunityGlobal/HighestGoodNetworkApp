@@ -135,33 +135,43 @@ function IssueCharts() {
       </div>
 
       <div className="chart-container" ref={chartContainerRef}>
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={issues} layout="vertical" margin={margin}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              type="number"
-              label={{ value: 'Duration in Months', position: 'insideBottom', offset: -5 }}
-            />
-            <YAxis
-              dataKey="issueName"
-              type="category"
-              tick={{ fontSize: 14, fontWeight: 500 }}
-              width={yAxisWidth}
-            />
-            <Tooltip
-              formatter={value => `${value} months`}
-              labelFormatter={label => `Issue: ${label}`}
-            />
-            <Bar dataKey="durationOpen" fill="#6495ED" barSize={30}>
-              <LabelList
-                dataKey="durationOpen"
-                position="right"
-                formatter={v => `${v} mo`}
-                className="recharts-label"
+        {!issues || issues.length === 0 ? (
+          <div className="no-data-message">
+            <div className="no-data-content">
+              <h3>No Open Issues Found</h3>
+              <p>There are currently no open issues matching your selected criteria.</p>
+              <p>Try adjusting your date range or project filters to see more results.</p>
+            </div>
+          </div>
+        ) : (
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={issues} layout="vertical" margin={margin}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis
+                type="number"
+                label={{ value: 'Duration in Months', position: 'insideBottom', offset: -5 }}
               />
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
+              <YAxis
+                dataKey="issueName"
+                type="category"
+                tick={{ fontSize: 14, fontWeight: 500 }}
+                width={yAxisWidth}
+              />
+              <Tooltip
+                formatter={value => `${value} months`}
+                labelFormatter={label => `Issue: ${label}`}
+              />
+              <Bar dataKey="durationOpen" fill="#6495ED" barSize={30}>
+                <LabelList
+                  dataKey="durationOpen"
+                  position="right"
+                  formatter={v => `${v} mo`}
+                  className="recharts-label"
+                />
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        )}
       </div>
     </div>
   );

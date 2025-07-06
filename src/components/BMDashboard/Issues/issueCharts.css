@@ -131,6 +131,38 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+.no-data-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+}
+
+.no-data-content {
+  text-align: center;
+  padding: 40px 20px;
+  max-width: 400px;
+}
+
+.no-data-content h3 {
+  color: #666;
+  font-size: 20px;
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+
+.no-data-content p {
+  color: #888;
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+
+.no-data-content p:last-child {
+  margin-bottom: 0;
+}
+
 @media (max-width: 768px) {
   .chart-container {
     height: 250px;
@@ -138,68 +170,7 @@
   }
 }
 
-/* Dark mode styles */
-.dark-mode .chart-container {
-  background: #1C2541;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
 
-.dark-mode .filter label {
-  color: #fff;
-}
-
-.dark-mode .date-range-picker span {
-  color: #ccc;
-}
-
-.dark-mode .react-datepicker {
-  background-color: #3A506B;
-  color: #ffffff;
-}
-
-.dark-mode .react-datepicker__header {
-  background-color: #1C2541;
-  border-bottom: 1px solid #555555;
-}
-
-.dark-mode .react-datepicker__current-month {
-  color: #ffffff;
-}
-
-.dark-mode .react-datepicker__navigation--previous::before,
-.dark-mode .react-datepicker__navigation--next::before {
-  border-color: #ffffff;
-}
-
-.dark-mode .react-datepicker__month-container {
-  background-color: #3A506B;
-}
-
-.dark-mode .react-datepicker__day,
-.dark-mode .react-datepicker__time-name {
-  color: #ffffff;
-}
-
-.dark-mode .react-datepicker__day-name {
-  background-color: #1C2541;
-  color: #ffffff;
-}
-
-.dark-mode .react-datepicker__day--selected,
-.dark-mode .react-datepicker__day--in-selecting-range,
-.dark-mode .react-datepicker__day--in-range,
-.dark-mode .react-datepicker__day:hover {
-  background-color: #1C2541;
-  color: #ffffff;
-}
-
-.dark-mode .react-datepicker__navigation {
-  background: none;
-}
-
-.dark-mode .react-datepicker__navigation::before {
-  border-color: #ffffff;
-}
 
 /* Responsive styles */
 @media (max-width: 768px) {
@@ -212,55 +183,3 @@
   }
 }
 
-/* Dark mode for react-select */
-.dark-mode .select__control {
-  background-color: #2b3e59;
-  color: #fff;
-  border-color: #555;
-}
-.dark-mode .select__menu {
-  background-color: #253342;
-  color: #fff;
-}
-.dark-mode .select__option {
-  background-color: #253342;
-  color: #fff;
-}
-.dark-mode .select__option--is-focused {
-  background-color: #3a506b;
-}
-.dark-mode .select__option--is-selected {
-  background-color: #1c2541;
-  color: #fff;
-}
-.dark-mode .select__single-value,
-.dark-mode .select__multi-value__label {
-  color: #fff;
-}
-.dark-mode .select__multi-value {
-  background-color: #3a506b;
-}
-.dark-mode .select__multi-value__remove {
-  color: #fff;
-  background: #1c2541;
-}
-.dark-mode .select__indicator {
-  color: #fff;
-}
-.dark-mode .select__input-container {
-  color: #fff;
-}
-
-.dark-mode .recharts-label {
-  fill: #fff !important;
-  font-weight: bold;
-  font-size: 16px;
-  text-shadow: 0 0 4px #000;
-}
-
-.dark-mode .filter-select.react-datepicker__input-container input,
-.dark-mode .react-datepicker__input-container input {
-  background-color: #2b3e59;
-  color: #fff;
-  border: 1px solid #555;
-}
