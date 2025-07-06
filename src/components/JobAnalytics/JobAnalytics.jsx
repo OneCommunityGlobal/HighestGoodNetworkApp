@@ -13,7 +13,7 @@ import {
 } from 'recharts';
 import './JobAnalytics.css';
 
-const JobAnalytics = () => {
+function JobAnalytics() {
   const [data, setData] = useState([]);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -35,7 +35,7 @@ const JobAnalytics = () => {
       );
       setData(res.data);
     } catch (error) {
-      console.error('Error fetching analytics:', error);
+      // console.error('Error fetching analytics:', error);
     }
   };
 
