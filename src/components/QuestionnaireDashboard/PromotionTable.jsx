@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 
 const names = ['Alice', 'Bob', 'Charlie'];
 const dummyMembers = Array.from({ length: 45 }, (_, i) => ({
@@ -19,50 +18,35 @@ function PromotionTable() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchEligibilityData();
-  }, []);
-
-  const fetchEligibilityData = async () => {
+    // Simulating an API call with the dummy data
     setLoading(true);
-    try {
-      const response = await axios.get("/api/promotion-eligibility");
-      setEligibilityData(response.data);
-    } catch (err) {
-      console.error("Failed to fetch promotion eligibility", err);
-    } finally {
+    const timer = setTimeout(() => {
+      setEligibilityData(dummyMembers);
       setLoading(false);
-    }
-  };
+    }, 500); // Simulate network delay
 
-  const renderRows = (members, isNew) =>
-    members.map((user, idx) => (
-      <tr key={idx}>
-        <td>{isNew ? "New Members" : "Existing Members"}</td>
-        <td>{user.reviewer}</td>
-        <td>{user.hasMetWeekly ? "✅ Has Met" : "❌ Has not Met"}</td>
-        <td>{user.requiredPRs}</td>
-        <td>{user.totalReviews}</td>
-        <td>{user.remainingWeeks}</td>
-        <td>{user.promote ? "✔️" : "◯"}</td>
-      </tr>
-    ));
+    return () => clearTimeout(timer); // Cleanup timer on unmount
+  }, []);
 
   const newMembers = eligibilityData.filter((u) => u.isNew);
   const existingMembers = eligibilityData.filter((u) => !u.isNew);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div>Loading promotions...</div>;
 
   return (
-    <div className="promotion-table-container">
-      <div className="button-group">
-        <button className="action-button">Review for this week</button>
-        <button className="action-button">Process Promotions</button>
+    <div className="container">
+      <div className="header">
+        <h1>Promotion Eligibility</h1>
+        <div className="actions">
+          <button className="btn btn-secondary">Review for this week</button>
+          <button className="btn btn-primary">Process Promotions</button>
+        </div>
       </div>
-      <h2>Promotion Eligibility</h2>
+
       <table className="promotion-table">
         <thead>
           <tr>
-            <th>New/Existing</th>
+            <th style={{width: '15%'}}>Existing member/ New member</th>
             <th>Reviewer</th>
             <th>Weekly Requirements</th>
             <th>Required PRs</th>
@@ -72,8 +56,47 @@ function PromotionTable() {
           </tr>
         </thead>
         <tbody>
-          {renderRows(newMembers, true)}
-          {renderRows(existingMembers, false)}
+          {/* --- New Members Section --- */}
+          <tr className="section-header">
+            <td colSpan="7">New Members</td>
+          </tr>
+          {newMembers.map((user) => (
+            <tr key={user.id}>
+              <td></td>
+              <td>{user.reviewer}</td>
+              <td className={user.hasMetWeekly ? 'status-met' : 'status-not-met'}>
+                <span className="status-icon">{user.hasMetWeekly ? '✓' : '✗'}</span>
+                {user.hasMetWeekly ? "Has Met" : "Has not Met"}
+              </td>
+              <td>{user.requiredPRs}</td>
+              <td>{user.totalReviews}</td>
+              <td>{user.remainingWeeks}</td>
+              <td>
+                <input className="promote-checkbox" type="checkbox" defaultChecked={user.promote} />
+              </td>
+            </tr>
+          ))}
+
+          {/* --- Existing Members Section --- */}
+          <tr className="section-header">
+            <td colSpan="7">Existing Members</td>
+          </tr>
+          {existingMembers.map((user) => (
+            <tr key={user.id}>
+              <td></td>
+              <td>{user.reviewer}</td>
+              <td className={user.hasMetWeekly ? 'status-met' : 'status-not-met'}>
+                <span className="status-icon">{user.hasMetWeekly ? '✓' : '✗'}</span>
+                {user.hasMetWeekly ? "Has Met" : "Has not Met"}
+              </td>
+              <td>{user.requiredPRs}</td>
+              <td>{user.totalReviews}</td>
+              <td>{user.remainingWeeks}</td>
+              <td>
+                <input className="promote-checkbox" type="checkbox" defaultChecked={user.promote} />
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>
