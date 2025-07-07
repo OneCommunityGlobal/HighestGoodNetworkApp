@@ -1,4 +1,3 @@
-/* eslint-disable react/sort-comp */
 import React from 'react';
 import { connect } from 'react-redux';
 import { Container } from 'reactstrap';
@@ -26,12 +25,15 @@ import CreateNewTeamPopup from './CreateNewTeamPopup';
 import DeleteTeamPopup from './DeleteTeamPopup';
 import TeamStatusPopup from './TeamStatusPopup';
 import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
+import { Button } from 'reactstrap';
 
 class Teams extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
       teamNameSearchText: '',
+      nonexistentTeamName: '',
+      isInputFilled: false,
       teamMembersPopupOpen: false,
       deleteTeamPopupOpen: false,
       createNewTeamPopupOpen: false,
@@ -171,12 +173,43 @@ class Teams extends React.PureComponent {
     );
   }
 
+  openCreateTeamModal = () => {
+    this.setState({
+      isInputFilled: true,
+      nonexistentTeamName: this.state.wildCardSearchText,
+      createNewTeamPopupOpen: true,
+    });
+  };
+
   /**
    * Creates the table body elements after applying the search filter and return it.
    */
   teamTableElements = allTeams => {
+    const { darkMode } = this.props.state.theme;
     if (allTeams && allTeams.length > 0) {
       const teamSearchData = this.filteredTeamList(allTeams);
+      if (teamSearchData.length === 0) {
+        // Se nenhum time for encontrado, retorna uma linha de mensagem
+
+        this.nonexistentTeamName = this.state.wildCardSearchText;
+
+        return [
+          <tr key="no-teams">
+            <td colSpan="100%" style={{ textAlign: 'center' }}>
+              <div className="team-not-found-message-container">
+                <p className={`${darkMode ? 'text-light' : 'text-black'}`}>
+                  No team found, but you can create this team by clicking the blue button named
+                  "Create Team".
+                </p>
+
+                <Button onClick={this.openCreateTeamModal} color="primary">
+                  Create Team
+                </Button>
+              </div>
+            </td>
+          </tr>,
+        ];
+      }
       /*
        * Builiding the table body for teams returns
        * the rows for currently selected page .
@@ -253,6 +286,8 @@ class Teams extends React.PureComponent {
           fetching={fetching}
         />
         <CreateNewTeamPopup
+          nonexistentTeamName={this.nonexistentTeamName}
+          isInputFilled={this.state.isInputFilled}
           open={this.state.createNewTeamPopupOpen}
           onClose={this.onCreateNewTeamClose}
           onOkClick={this.addNewTeam}
@@ -357,6 +392,7 @@ class Teams extends React.PureComponent {
    */
   onCreateNewTeamShow = () => {
     this.setState({
+      isInputFilled: false,
       createNewTeamPopupOpen: true,
       selectedTeam: '',
     });

@@ -10,6 +10,9 @@ export const CreateNewTeamPopup = React.memo(props => {
 
   const [newTeam, setNewName] = useState('');
 
+  //prettier-ignore
+  setTimeout(() => props.isInputFilled && setNewName(props.nonexistentTeamName), 900);
+
   const closePopup = () => {
     props.onClose();
   };
