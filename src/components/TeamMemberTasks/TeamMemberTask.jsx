@@ -89,7 +89,7 @@ const TeamMemberTask = React.memo(
     const canSeeReports =
       rolesAllowedToResolveTasks.includes(userRole) || dispatch(hasPermission('getReports'));
     const canUpdateTask = dispatch(hasPermission('updateTask'));
-    const canDeleteTask = dispatch(hasPermission('canDeleteTask'));
+    const canRemoveUserFromTask = dispatch(hasPermission('removeUserFromTask'));
     const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
 
     const colorsObjs = {
@@ -200,46 +200,38 @@ const TeamMemberTask = React.memo(
                     <div style={{ display: 'flex', flexWrap: 'wrap', flexDirection: 'column' }}>
                       <div className="member-links-wrapper">
                         <div className="committed-hours-circle">
-                          <div className="icon-row">
-                            <FontAwesomeIcon
-                              style={{
-                                color:
-                                  user.totaltangibletime_hrs >= user.weeklycommittedHours
-                                    ? 'green'
-                                    : 'red',
-                              }}
-                              icon={faCircle}
-                              data-testid="icon"
-                            />
-
-                            <Link to={`/timelog/${user.personId}`} className="timelog-info">
-                              <i
-                                className="fa fa-clock-o"
-                                aria-hidden="true"
-                                style={{
-                                  fontSize: 24,
-                                  cursor: 'pointer',
-                                  color: darkMode ? 'lightgray' : 'black',
-                                }}
-                                title="Click to see user's timelog"
-                              />
-                            </Link>
-                          </div>
+                          <FontAwesomeIcon
+                            style={{
+                              color:
+                                user.totaltangibletime_hrs >= user.weeklycommittedHours
+                                  ? 'green'
+                                  : 'red',
+                            }}
+                            icon={faCircle}
+                            data-testid="icon"
+                          >{`${user.name}`}</FontAwesomeIcon>
 
                           {user.role !== 'Volunteer' && (
                             <div
                               className="user-role"
-                              style={{
-                                fontSize: '14px',
-                                marginTop: '4px',
-                                textAlign: 'center',
-                                color: darkMode ? 'lightgray' : 'gray',
-                              }}
+                              style={{ fontSize: '14px', color: darkMode ? 'lightgray' : 'gray' }}
                             >
                               {user.role}
                             </div>
                           )}
                         </div>
+                        <Link to={`/timelog/${user.personId}`} className="timelog-info">
+                          <i
+                            className="fa fa-clock-o"
+                            aria-hidden="true"
+                            style={{
+                              fontSize: 24,
+                              cursor: 'pointer',
+                              color: darkMode ? 'lightgray' : 'black',
+                            }}
+                            title="Click to see user's timelog"
+                          />
+                        </Link>
                       </div>
                       {canUpdateTask && teamRoles && (
                         <div className="name-wrapper">
@@ -423,7 +415,7 @@ const TeamMemberTask = React.memo(
                                           data-testid={`tick-${task.taskName}`}
                                         />
                                       )}
-                                      {(canUpdateTask || canDeleteTask) && (
+                                      {(canUpdateTask || canRemoveUserFromTask) && (
                                         <FontAwesomeIcon
                                           className="team-member-task-remove"
                                           icon={faTimes}
