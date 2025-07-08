@@ -231,6 +231,8 @@ export const ENDPOINTS = {
   BM_EQUIPMENT_PURCHASE: `${APIEndpoint}/bm/equipment/purchase`,
   BM_PROJECTS: `${APIEndpoint}/bm/projects`,
   BM_PROJECT_BY_ID: projectId => `${APIEndpoint}/bm/project/${projectId}`,
+  BM_PROJECTS_LIST_FOR_MATERIALS_COST: `${APIEndpoint}/totalProjects `,
+  BM_PROJECT_MATERIALS_COST: `${APIEndpoint}/material-costs`,
   BM_UPDATE_MATERIAL: `${APIEndpoint}/bm/updateMaterialRecord`,
   BM_UPDATE_MATERIAL_BULK: `${APIEndpoint}/bm/updateMaterialRecordBulk`,
   BM_UPDATE_MATERIAL_STATUS: `${APIEndpoint}/bm/updateMaterialStatus`,
