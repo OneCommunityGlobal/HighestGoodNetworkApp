@@ -371,18 +371,6 @@ export const permissionLabels = [
                 description:
                   'Give the user permission to interact with any "Ready for Review" task button to either mark it as complete or reset it with "More work needed, reset this button" ',
               },
-              {
-                label: 'View and Interact with Task "X" on Dashboards',
-                key: 'canDeleteTask',
-                description:
-                  'Gives the user permission to DELETE tasks from the Management Dashboard showing all their team members. ',
-              },
-              {
-                label: 'Unassign Team Members from Tasks',
-                key: 'deleteDashboardTask',
-                description:
-                  'Gives the user permission to UNASSIGN tasks from only their TEAM members through the Dashboard -> task -> red X. ',
-              },
             ],
           },
         ],
