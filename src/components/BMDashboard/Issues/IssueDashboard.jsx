@@ -271,7 +271,7 @@ export default function IssueDashboard() {
 
       {/* Rename Modal */}
       {showRenameModal && (
-        <div className="modal-backdrop">
+        <div className="issues-modal-backdrop">
           <div className={`modal-dialog `}>
             <div className={`modal-content p-3 ${darkMode ? 'bg-oxford-blue text-light' : ''}`}>
               <h5>Rename Issue</h5>
@@ -306,7 +306,7 @@ export default function IssueDashboard() {
 
       {/* Delete Modal */}
       {showDeleteModal && (
-        <div className="modal-backdrop">
+        <div className="issues-modal-backdrop">
           <div className={`modal-dialog ${darkMode ? 'bg-dark text-light' : ''}`}>
             <div className={`modal-content p-3 ${darkMode ? 'bg-oxford-blue text-light' : ''}`}>
               <h5>Confirm Delete</h5>
@@ -338,7 +338,7 @@ export default function IssueDashboard() {
 
       {/* Copy Modal */}
       {showCopyModal && (
-        <div className="modal-backdrop">
+        <div className="issues-modal-backdrop">
           <div className={`modal-dialog ${darkMode ? 'bg-dark text-light' : ''}`}>
             <div className={`modal-content p-3 ${darkMode ? 'bg-oxford-blue text-light' : ''}`}>
               <h5>Confirm Copy</h5>
