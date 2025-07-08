@@ -50,7 +50,7 @@ describe('BadgeReport Component', () => {
     expect(earnedDatesHeaders).toHaveLength(2); // One for desktop, one for tablet
 
     //headers only in desktop view
-  //  expect(screen.getByText('Earned Dates')).toBeInTheDocument();
+    //  expect(screen.getByText('Earned Dates')).toBeInTheDocument();
     expect(screen.getByText('Count')).toBeInTheDocument();
     expect(screen.getByText('Featured')).toBeInTheDocument();
   });
