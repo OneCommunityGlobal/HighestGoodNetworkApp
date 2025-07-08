@@ -41,7 +41,7 @@ export default function ProjectRiskProfileOverview() {
         if (!Array.isArray(result)) result = [result];
         setData(result);
         setAllProjects(result.map(p => p.projectName));
-        setSelectedProjects(result.map(p => p.projectName)); 
+        setSelectedProjects(result.map(p => p.projectName));
         // Extract all unique dates from all projects
         const dates = Array.from(new Set(result.flatMap(p => p.dates || [])));
         setAllDates(dates);
@@ -59,7 +59,7 @@ export default function ProjectRiskProfileOverview() {
   const filteredData = data.filter(
     p =>
       (selectedProjects.length === 0 || selectedProjects.includes(p.projectName)) &&
-      (selectedDates.length === 0 || (p.dates || []).some(d => selectedDates.includes(d)))
+      (selectedDates.length === 0 || (p.dates || []).some(d => selectedDates.includes(d))),
   );
 
   // Project label function
@@ -318,7 +318,10 @@ export default function ProjectRiskProfileOverview() {
         <BarChart
           data={filteredData.map(item => ({
             ...item,
-            predictedCostOverrun: item.predictedCostOverrun != null ? -1 * item.predictedCostOverrun : item.predictedCostOverrun,
+            predictedCostOverrun:
+              item.predictedCostOverrun != null
+                ? -1 * item.predictedCostOverrun
+                : item.predictedCostOverrun,
           }))}
           margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
           barGap={8}
