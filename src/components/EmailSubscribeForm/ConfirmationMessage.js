@@ -27,7 +27,7 @@ function ConfirmationMessage({ message, isSuccess, confirmationMessageCallback }
           type="button"
           className={styles.button}
           onClick={() => {
-            history.push('/email-subscribe');
+            history.push('/subscribe');
             confirmationMessageCallback();
           }}
         >
