@@ -12,7 +12,6 @@ import {
   resetPostBuildingConsumableTypeResult,
 } from '../../../../actions/bmdashboard/invTypeActions';
 
-
 jest.mock('../../../../actions/bmdashboard/invUnitActions');
 jest.mock('../../../../actions/bmdashboard/invTypeActions');
 jest.mock('react-toastify', () => ({
