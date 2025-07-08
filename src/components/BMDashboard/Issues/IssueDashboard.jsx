@@ -106,7 +106,7 @@ export default function IssueDashboard() {
         </Col>
       </Row>
 
-      <div className="table-responsive">
+      <div className="issues-table-responsive">
         <Table hover className={`mb-0 ${darkMode ? 'table-dark' : ''}`}>
           <thead className={darkMode ? 'table-dark' : 'table-light'}>
             <tr>
