@@ -25,13 +25,13 @@ body {
 }
 
 
-.people-report-time-log-block h3{
+.people-report-time-log-block h3 {
   color: #fff;
 }
 
-.auto-width-report-time-logs-wrapper{
-  gap:40px
-}
+/* .auto-width-report-time-logs-wrapper {
+  gap: 40px
+} */
 
 
 /*profile style changes ends*/
@@ -209,21 +209,31 @@ body {
 }
 
 .people-report-time-logs-wrapper {
-  flex-wrap: wrap;
+  display: flex;
+  gap: 1rem;
   justify-content: space-between;
-  color: white;
+  flex-wrap: wrap;
+  width: 100%;
 }
 
+
 .people-report-time-log-block {
-  max-height: 100px;
-  width: 270px;
-  white-space: nowrap;
-  margin-bottom: 16px;
+  height: auto;
+  min-width: 180px;
 }
+
+/* .box-count-4 .people-report-time-log-block {
+  width: calc(25% - 0.75rem);
+}
+
+/* 3 boxes: fill the row equally */
+/* .box-count-3 .people-report-time-log-block {
+  width: calc(33.33% - 0.75rem);
+} */ 
+
 
 @media (min-width: 850px) {
   .people-report-time-logs-wrapper {
-    margin-top: 25px;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
@@ -232,8 +242,7 @@ body {
 }
 
 @media (min-width: 850px) and (max-width: 1249px) {
-  .people-report-time-logs-wrapper > * {
-    margin-top: 25px;
+  .people-report-time-logs-wrapper>* {
     /* display: flex; */
     flex-wrap: wrap;
     justify-content: space-between;
@@ -242,8 +251,8 @@ body {
 }
 
 @media (min-width: 275px) and (max-width: 435px) {
-  .people-report-time-logs-wrapper > * {
-    margin-top: 25px; 
+  .people-report-time-logs-wrapper>* {
+    margin-top: 25px;
     /* display: flex; */
     flex-wrap: wrap;
     justify-content: space-between;
@@ -272,23 +281,15 @@ body {
 .container-people-wrapper {
   min-height: 100%;
   max-width: 100vw;
-  /* display: flex;
+  display: flex;
   justify-content: center;
-  align-items: flex-start; */
+  align-items: flex-start;
   background-color: #faf7fc;
   margin: 0;
   padding-left: 1rem;
   padding-right: 1rem;
 }
 
-.report-stats {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  word-break: break-word;
-  max-width: 100vw;
-}
 
 
 @media (max-width: 1100px) {
@@ -299,3 +300,77 @@ body {
     align-items: flex-start;
   }
 }
+
+.order-column {
+  order: 1;
+}
+
+@media (max-width: 981px) {
+  .order-column {
+    order: -1;
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+}
+
+/* .people-report-flex-layout {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: space-between;
+  width: 100%;
+  gap: 20px;
+   flex-wrap: nowrap;
+  height: 100%;
+} */
+.people-report-flex-layout {
+  display: flex;
+  align-items: flex-start; 
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  gap: 20px;
+}
+
+.people-report-wrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 24px 32px;
+}
+
+.people-report-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.people-report-right {
+  width: 23vw;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  margin-top: 2rem;
+  height: 140vh; 
+  overflow: hidden;
+}
+
+.people-report-profile-wrapper {
+  position: relative;
+  margin-top: 2.3em; 
+  width: 100%;
+}
+
+.report-stats {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 16px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.08);
+}
+
