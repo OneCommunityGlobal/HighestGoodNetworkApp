@@ -13,7 +13,7 @@ jest.mock('components/Badge/CreateNewBadgePopup', () => () => <div>CreateNewBadg
 
 describe('BadgeDevelopment Component', () => {
   const mockStore = configureStore([thunk]);
- 
+
   const renderComponent = () => {
     const store = mockStore({
       allProjects: {
@@ -41,7 +41,7 @@ describe('BadgeDevelopment Component', () => {
       },
       theme: themeMock,
     });
-  
+
     return render(
       <Provider store={store}>
         <BadgeDevelopment />

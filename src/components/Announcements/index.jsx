@@ -1,13 +1,14 @@
 /* eslint-disable no-undef */
 import { useState, useEffect } from 'react';
-import './Announcements.css';
 import { useDispatch, useSelector } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 import { Editor } from '@tinymce/tinymce-react';
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
+import './Announcements.css';
 
-function Announcements({ title, email: initialEmail }) {
+function Announcements({ title, email: initialEmail, history }) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const dispatch = useDispatch();
   const [emailTo, setEmailTo] = useState('');
@@ -18,52 +19,25 @@ function Announcements({ title, email: initialEmail }) {
   const [isFileUploaded, setIsFileUploaded] = useState(false);
   const editorRef = useRef(null);
 
+  const editorInit = {
+    height: 500,
+    menubar: false,
+    plugins: [
+      'advlist autolink lists link image charmap print preview anchor',
+      'searchreplace visualblocks code fullscreen',
+      'insertdatetime media table paste code help wordcount',
+    ],
+    toolbar:
+      'undo redo | formatselect | bold italic backcolor | ' +
+      'alignleft aligncenter alignright alignjustify | ' +
+      'bullist numlist outdent indent | removeformat | help',
+    content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
+  };
+
   useEffect(() => {
     setShowEditor(false);
     setTimeout(() => setShowEditor(true), 0);
   }, [darkMode]);
-
-  const editorInit = {
-    license_key: 'gpl',
-    selector: 'Editor#email-editor',
-    height: 500,
-    plugins: [
-      'advlist autolink lists link image paste',
-      'charmap print preview anchor help',
-      'searchreplace visualblocks code',
-      'insertdatetime media table paste wordcount',
-    ],
-    menubar: false,
-    branding: false,
-    image_title: true,
-    automatic_uploads: true,
-    file_picker_callback(cb) {
-      const input = document.createElement('input');
-      input.setAttribute('type', 'file');
-      input.setAttribute('accept', 'image/*');
-
-      input.onchange = () => {
-        const file = input.files[0];
-        const reader = new FileReader();
-        reader.onload = () => {
-          const id = `blobid${new Date().getTime()}`;
-          const { blobCache } = window.tinymce.activeEditor.editorUpload;
-          const base64 = reader.result.split(',')[1];
-          const blobInfo = blobCache.create(id, file, base64);
-          blobCache.add(blobInfo);
-          cb(blobInfo.blobUri(), { title: file.name });
-        };
-        reader.readAsDataURL(file);
-      };
-
-      input.click();
-    },
-    a11y_advanced_options: true,
-    toolbar:
-      'undo redo | bold italic | blocks fontfamily fontsize | image alignleft aligncenter alignright | bullist numlist outdent indent | removeformat | help',
-    skin: darkMode ? 'oxide-dark' : 'oxide',
-    content_css: darkMode ? 'dark' : 'default',
-  };
 
   useEffect(() => {
     if (initialEmail) {
@@ -124,23 +98,19 @@ function Announcements({ title, email: initialEmail }) {
 
   const handleSendEmails = () => {
     const htmlContent = emailContent;
-
     if (emailList.length === 0 || emailList.every(e => !e.trim())) {
       toast.error('Error: Empty Email List. Please enter AT LEAST One email.');
       return;
     }
-
     if (!isFileUploaded) {
       toast.error('Error: Please upload a file.');
       return;
     }
     const invalidEmails = emailList.filter(email => !validateEmail(email.trim()));
-
     if (invalidEmails.length > 0) {
       toast.error(`Error: Invalid email addresses: ${invalidEmails.join(', ')}`);
       return;
     }
-
     dispatch(
       sendEmail(emailList.join(','), title ? 'Anniversary congrats' : 'Weekly update', htmlContent),
     );
@@ -248,8 +218,18 @@ function Announcements({ title, email: initialEmail }) {
           </div>
         )}
       </div>
+      <div style={{ padding: 0, marginLeft: 78 }}>
+        <button
+          type="button"
+          className="send-button"
+          onClick={() => history.push('/announcements/youtube-posting')}
+          style={darkMode ? boxStyleDark : boxStyle}
+        >
+          Go to YouTube Features
+        </button>
+      </div>
     </div>
   );
 }
 
-export default Announcements;
+export default withRouter(Announcements);

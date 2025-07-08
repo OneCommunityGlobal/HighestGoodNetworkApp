@@ -143,6 +143,9 @@ import FeedbackModal from './components/HGNHelpSkillsDashboard/FeedbackModal';
 import LogTools from './components/BMDashboard/LogTools/LogTools';
 import EquipmentUpdate from './components/BMDashboard/Tools/EquipmentUpdate';
 
+import YoutubeFeatures from './components/Announcements/YoutubeFeatures';
+import YoutubeUploadHistory from './components/Announcements/YoutubeUploadHistory';
+
 // Social Architecture
 const ResourceManagement = lazy(() => import('./components/ResourceManagement/ResourceManagement'));
 const RequestResources = lazy(() => import('./components/SocialArchitecture/RequestResources'));
@@ -424,6 +427,16 @@ export default (
           exact
           component={Announcements}
           routePermissions={RoutePermissions.announcements}
+        />
+        <ProtectedRoute
+          path="/announcements/youtube-posting"
+          exact
+          component={YoutubeFeatures}
+        />
+        <ProtectedRoute
+          path="/announcements/youtube-posting/history"
+          exact
+          component={YoutubeUploadHistory}
         />
         <ProtectedRoute
           path="/sendemail"
