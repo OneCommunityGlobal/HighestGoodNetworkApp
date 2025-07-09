@@ -105,7 +105,7 @@ export default function ToolStatusDonutChart() {
 
       <div className="tool-donut-filters">
         <div className="filter-item">
-          <label htmlFor="tool-select">Tool/Equipment Name</label>
+          <label htmlFor="tool-select" className="tool-donut-title">Tool/Equipment Name</label>
           <select id="tool-select" value={toolId} onChange={e => setToolId(e.target.value)}>
             <option value="">All</option>
             {uniqueTools.map(tool => (
@@ -117,7 +117,7 @@ export default function ToolStatusDonutChart() {
         </div>
 
         <div className="filter-item">
-          <label htmlFor="project-select">Project</label>
+          <label htmlFor="project-select" className="tool-donut-title">Project</label>
           <select
             id="project-select"
             value={projectId}
