@@ -11,18 +11,25 @@ import { SET_FINAL_DAY, CANCEL } from '../../../languages/en/ui';
 jest.mock('axios');
 
 const mockToastSuccess = jest.fn();
+const mockToastError = jest.fn();
 
-beforeAll(() => {
-  jest.mock('react-toastify', () => ({
-    toast: { success: mockToastSuccess },
-  }));
-});
+jest.mock('react-toastify', () => ({
+  toast: { 
+    success: (...args) => mockToastSuccess(...args),
+    error: (...args) => mockToastError(...args)
+  },
+}));
 
 const mockStore = configureStore();
 
 // const userProfileUrl = ENDPOINTS.USER_PROFILE(mockState.auth.user.userid);
 
 describe('SetUpFinalDayButton', () => {
+  beforeEach(() => {
+    mockToastSuccess.mockClear();
+    mockToastError.mockClear();
+  });
+
   const store = mockStore({
     theme: themeMock,
   });
@@ -83,7 +90,7 @@ describe('SetUpFinalDayButton', () => {
       fireEvent.click(cancelFinalDayButton);
 
       // Clicking CANCEL button calls final day deleted toast
-      waitFor(() => {
+      await waitFor(() => {
         expect(mockToastSuccess).toHaveBeenCalledWith(finalDayDeletedMessage);
       });
     });
@@ -126,12 +133,19 @@ describe('SetUpFinalDayButton', () => {
       await waitFor(() => expect(setYourFinalDayElement).toBeInTheDocument());
 
       const dateInput = screen.getByTestId('date-input');
-      fireEvent.change(dateInput, { target: { value: '12-07-2019' } });
+      // Use a future date to avoid validation error
+      const futureDate = new Date();
+      futureDate.setDate(futureDate.getDate() + 30); // 30 days from now
+      const futureDateString = futureDate.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+      
+      fireEvent.change(dateInput, { target: { value: futureDateString } });
+      // Mock PATCH request to succeed with the expected structure
+      axios.patch.mockResolvedValue({ data: { status: 200 } });
       const saveFinalDayPopup = screen.getByText('Save');
       fireEvent.click(saveFinalDayPopup);
 
       // When final day is set, expect toast to be called with appropriate message
-      waitFor(() => {
+      await waitFor(() => {
         expect(mockToastSuccess).toHaveBeenCalledWith(finalDaySetMessage);
       });
     });
