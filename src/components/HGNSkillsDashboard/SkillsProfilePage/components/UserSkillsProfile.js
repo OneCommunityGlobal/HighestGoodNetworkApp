@@ -2,11 +2,13 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { ClipLoader } from 'react-spinners';
 import jwtDecode from 'jwt-decode';
+import { useDispatch } from 'react-redux';
 import LeftSection from './LeftSection';
 import RightSection from './RightSection';
 import styles from '../styles/UserSkillsProfile.module.css';
 
 function UserSkillsProfile() {
+  const dispatch = useDispatch();
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -41,6 +43,10 @@ function UserSkillsProfile() {
 
         const { data } = response;
         if (!data) throw new Error('Failed to fetch profile data');
+
+        // Send data to Redux store
+        // dispatch({ type: 'SET_PROFILE_DATA', payload: data });
+        dispatch({ type: 'SET_USER_SKILLS_PROFILE_DATA', payload: data });
 
         setProfileData(data);
         setLoading(false);
@@ -79,11 +85,13 @@ function UserSkillsProfile() {
   }
 
   return (
-    <div className={`${styles.userProfileHome}`}>
-      <div className={`${styles.dashboardContainer}`}>
-        <LeftSection profileData={profileData} />
-        <div className={`${styles.verticalSeparator}`} />
-        <RightSection profileData={profileData} />
+    <div className="user-profile-home">
+      <div className="dashboard-container">
+        {/* <LeftSection profileData={profileData} /> */}
+        <LeftSection />
+        <div className="vertical-separator" />
+        {/* <RightSection profileData={profileData} /> */}
+        <RightSection />
       </div>
     </div>
   );
