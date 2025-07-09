@@ -135,6 +135,9 @@ export function Header(props) {
   // SendEmails
   const canAccessSendEmails = props.hasPermission('sendEmails', !isAuthUser);
   // Permissions
+
+  const canEditHeaderMessage = props.hasPermission('editHeaderMessage');
+
   const canAccessPermissionsManagement =
     props.hasPermission('postRole', !isAuthUser && canInteractWithViewingUser) ||
     props.hasPermission('putRole', !isAuthUser && canInteractWithViewingUser) ||
@@ -337,7 +340,7 @@ export function Header(props) {
           style={user.role === 'Owner' ? { marginRight: '0.5rem' } : { marginRight: '1rem' }}
         >
           {isAuthenticated && <Timer darkMode={darkMode} />}
-          {isAuthenticated && (
+          {(isAuthenticated || canEditHeaderMessage) &&(
             <div className="owner-message">
               <OwnerMessage />
             </div>
