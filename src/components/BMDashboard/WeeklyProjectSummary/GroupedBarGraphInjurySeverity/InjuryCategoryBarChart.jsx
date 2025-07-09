@@ -29,7 +29,7 @@ function InjuryCategoryBarChart() {
   const severities = useSelector(state => state.bmInjury?.severities || []);
   const injuryTypes = useSelector(state => state.bmInjury?.injuryTypes || []);
   const bmProjects = useSelector(state => state.bmProjects);
-
+  const darkMode = useSelector(state => state.theme?.darkMode);
   // Filter states
   const [projectFilter, setProjectFilter] = useState([]);
   const [severityFilter, setSeverityFilter] = useState([]);
@@ -56,7 +56,6 @@ function InjuryCategoryBarChart() {
   const typeOptions = Array.isArray(injuryTypes)
     ? injuryTypes.map(t => ({ value: t, label: t }))
     : [];
-
   // Fetch chart data when filters are changed
   useEffect(() => {
     if (!bmProjects.length || !severities.length || !injuryTypes.length) return;
@@ -92,11 +91,12 @@ function InjuryCategoryBarChart() {
   const uniqueProjects = [...new Set(data.map(d => d.projectName))];
 
   return (
-    <div className="injury-chart-container">
+    <div className={`injury-chart-container ${darkMode ? 'darkMode' : ''}`}>
       <h3 className="injury-chart-title">Injury Severity by Category of Worker Injured</h3>
 
       <div className="injury-chart-filters">
         <Select
+          classNamePrefix="injury-select"
           isMulti
           options={projectOptions}
           value={projectFilter}
@@ -104,6 +104,7 @@ function InjuryCategoryBarChart() {
           placeholder="Select Project(s)"
         />
         <Select
+          classNamePrefix="injury-select"
           isMulti
           options={severityOptions}
           value={severityFilter}
@@ -111,6 +112,7 @@ function InjuryCategoryBarChart() {
           placeholder="Select Severity"
         />
         <Select
+          classNamePrefix="injury-select"
           isMulti
           options={typeOptions}
           value={injuryTypeFilter}
@@ -134,12 +136,20 @@ function InjuryCategoryBarChart() {
           placeholderText="End Date"
         />
       </div>
+
       {loading && <p>Loading...</p>}
       {!loading && error && <p>Error: {error}</p>}
       {!loading && !error && (
         <ResponsiveContainer width="100%" height={400}>
           <BarChart data={chartData}>
-            <XAxis dataKey="workerCategory" interval={0} angle={-45} textAnchor="end" height={80} />
+            <XAxis
+              dataKey="workerCategory"
+              interval={0}
+              angle={-45}
+              textAnchor="end"
+              height={80}
+              tick={{ fill: darkMode ? '#fff' : '#000' }}
+            />
             <YAxis />
             <Tooltip />
             <Legend />
