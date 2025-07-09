@@ -8,6 +8,7 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  ReferenceLine,
 } from 'recharts';
 import { useHistory } from 'react-router-dom';
 import Select from 'react-select';
@@ -68,6 +69,8 @@ function CostPredictionChart({ darkMode, isFullPage = false, projectId }) {
   const [currency] = useState('$'); // Currency symbol
   const [availableProjects, setAvailableProjects] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
+  const [plannedBudget, setPlannedBudget] = useState(null);
+  const [lastPredictedValues, setLastPredictedValues] = useState({});
   const history = useHistory();
 
   // Fetch available projects on component mount
@@ -103,6 +106,16 @@ function CostPredictionChart({ darkMode, isFullPage = false, projectId }) {
         // Process the data for the chart
         const processedData = processDataForChart(costData);
         setData(processedData);
+
+        // Set the planned budget from the response
+        if (costData.plannedBudget) {
+          setPlannedBudget(costData.plannedBudget);
+        }
+
+        // Calculate and store last predicted values for reference lines
+        const lastValues = getLastPredictedValues(costData);
+        setLastPredictedValues(lastValues);
+
         setLoading(false);
       } catch (err) {
         console.error('Error fetching cost data:', err);
@@ -113,6 +126,26 @@ function CostPredictionChart({ darkMode, isFullPage = false, projectId }) {
 
     fetchData();
   }, [selectedProject]);
+
+  // Calculate last predicted values for reference lines
+  const getLastPredictedValues = costData => {
+    const lastValues = {};
+
+    if (!costData || !costData.predicted) {
+      return lastValues;
+    }
+
+    Object.keys(costData.predicted).forEach(category => {
+      const predictedItems = costData.predicted[category];
+      if (predictedItems && predictedItems.length > 0) {
+        // Get the last predicted value for this category
+        const lastPredicted = predictedItems[predictedItems.length - 1];
+        lastValues[category] = lastPredicted.cost;
+      }
+    });
+
+    return lastValues;
+  };
 
   // Process data for chart - modify this function to connect actual and predicted data
   const processDataForChart = costData => {
@@ -299,6 +332,32 @@ function CostPredictionChart({ darkMode, isFullPage = false, projectId }) {
                   }}
                   align="center"
                 />
+
+                {/* Reference Lines for Last Predicted Values */}
+                {['Labor', 'Materials'].map(category => {
+                  if (lastPredictedValues[category]) {
+                    return (
+                      <ReferenceLine
+                        key={`ref-${category}`}
+                        y={lastPredictedValues[category]}
+                        stroke={costColors[category]}
+                        strokeWidth={1.5}
+                        label={{
+                          value: `${category}: ${currency}${lastPredictedValues[
+                            category
+                          ].toLocaleString()}`,
+                          position: 'topLeft',
+                          style: {
+                            fontSize: 7,
+                            fill: costColors[category],
+                            fontWeight: '500',
+                          },
+                        }}
+                      />
+                    );
+                  }
+                  return null;
+                })}
 
                 {/* Only show Labor and Materials cost in card view */}
                 <Line
@@ -595,6 +654,33 @@ function CostPredictionChart({ darkMode, isFullPage = false, projectId }) {
                 }}
               />
 
+              {/* Reference Lines for Last Predicted Values */}
+              {selectedCosts.map(cost => {
+                const category = cost.value;
+                if (lastPredictedValues[category]) {
+                  return (
+                    <ReferenceLine
+                      key={`ref-${category}`}
+                      y={lastPredictedValues[category]}
+                      stroke={costColors[category]}
+                      strokeWidth={2}
+                      label={{
+                        value: `${cost.label} Target: ${currency}${lastPredictedValues[
+                          category
+                        ].toLocaleString()}`,
+                        position: 'topLeft',
+                        style: {
+                          fontSize: 11,
+                          fill: costColors[category],
+                          fontWeight: '600',
+                        },
+                      }}
+                    />
+                  );
+                }
+                return null;
+              })}
+
               {selectedCosts.map(cost => {
                 const dataKey = cost.value;
                 return (
@@ -645,7 +731,10 @@ function CostPredictionChart({ darkMode, isFullPage = false, projectId }) {
             className="chart-legend-container"
             style={{ marginTop: '20px', textAlign: 'center' }}
           >
-            <div className="chart-legend-item">
+            <div
+              className="chart-legend-item"
+              style={{ display: 'inline-block', marginRight: '20px' }}
+            >
               <svg width="16" height="16" style={{ display: 'inline-block', marginRight: '4px' }}>
                 <path
                   d="M8,2 L14,8 L8,14 L2,8 Z"
@@ -657,6 +746,14 @@ function CostPredictionChart({ darkMode, isFullPage = false, projectId }) {
               </svg>
               <span className="legend-label" style={{ color: darkMode ? '#e0e0e0' : 'inherit' }}>
                 Projected Values
+              </span>
+            </div>
+            <div className="chart-legend-item" style={{ display: 'inline-block' }}>
+              <svg width="16" height="16" style={{ display: 'inline-block', marginRight: '4px' }}>
+                <line x1="2" y1="8" x2="14" y2="8" stroke="#999" strokeWidth={1.5} />
+              </svg>
+              <span className="legend-label" style={{ color: darkMode ? '#e0e0e0' : 'inherit' }}>
+                Final Prediction Targets
               </span>
             </div>
           </div>
