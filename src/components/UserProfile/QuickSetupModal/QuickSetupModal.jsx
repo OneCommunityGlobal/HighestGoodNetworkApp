@@ -9,6 +9,7 @@ import SaveButton from '../UserProfileEdit/SaveButton';
 import AddNewTitleModal from './AddNewTitleModal';
 import EditTitlesModal from './EditTitlesModal';
 import { getAllTitle } from '../../../actions/title';
+import {fetchTeamCodeAllUsers} from './UserProfile/UserProfile';
 import './QuickSetupModal.css';
 import '../../Header/DarkMode.css';
 
@@ -201,4 +202,4 @@ function QuickSetupModal(props) {
   );
 }
 
-export default connect(null, { hasPermission })(QuickSetupModal);
+export default connect(null, { hasPermission, fetchTeamCodeAllUsers })(QuickSetupModal);
