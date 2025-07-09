@@ -39,6 +39,7 @@ import { BlueSquareEmailAssignment } from './blueSquareEmailBcc';
 import { userProjectsByUserNameReducer } from './userProjectsByUserNameReducer';
 import teamCodesReducer from './teamCodesReducer';
 import { projectByIdReducer } from './projectByIdReducer';
+import savedFilterReducer from './savedFilterReducer';
 
 // bm dashboard
 import { materialsReducer } from './bmdashboard/materialsReducer';
@@ -70,6 +71,7 @@ const localReducers = {
   allUserProfiles: allUserProfilesReducer,
   weeklySummaries: weeklySummariesReducer,
   weeklySummariesReport: weeklySummariesReportReducer,
+  savedFilters: savedFilterReducer,
   allProjects: allProjectsReducer,
   projectReport: projectReportReducer,
   projectMembers: projectMembershipReducer,

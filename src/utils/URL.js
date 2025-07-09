@@ -308,6 +308,12 @@ export const ENDPOINTS = {
   LB_LISTINGS_BASE: `${APIEndpoint}/lb`,
   HELP_CATEGORIES: `${APIEndpoint}/help-categories`,
 
+  // Saved Filters endpoints
+  SAVED_FILTERS: () => `${APIEndpoint}/savedFilters`,
+  SAVED_FILTER_BY_ID: filterId => `${APIEndpoint}/savedFilters/${filterId}`,
+  UPDATE_SAVED_FILTERS_TEAM_CODES: () => `${APIEndpoint}/savedFilters/updateTeamCodes`,
+  UPDATE_SAVED_FILTERS_INDIVIDUAL_TEAM_CODE: () => `${APIEndpoint}/savedFilters/updateIndividualTeamCode`,
+
 };
 
 export const ApiEndpoint = APIEndpoint;

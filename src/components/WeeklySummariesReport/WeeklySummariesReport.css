@@ -322,3 +322,21 @@
 .filter-save-btn.clear:hover {
   background-color: #c82333;
 }
+
+.saved-filter-button.active-filter {
+  background-color: #007bff !important;
+  color: white !important;
+  border-color: #007bff !important;
+}
+
+.saved-filter-button.active-filter button {
+  color: white !important;
+}
+
+.saved-filter-button.active-filter .saved-filter-delete-btn {
+  color: white !important;
+}
+
+.saved-filter-button.active-filter .saved-filter-delete-btn:hover {
+  color: #ffc107 !important;
+}
