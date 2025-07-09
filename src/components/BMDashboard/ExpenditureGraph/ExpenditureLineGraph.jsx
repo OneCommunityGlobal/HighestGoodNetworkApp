@@ -12,6 +12,7 @@ export default function ExpenditureLineGraph() {
   const [expenditureData, setExpenditureData] = useState([]);
   const [projects, setProjects] = useState([]);
   const [selectedProject, setSelectedProject] = useState('all');
+
   // date filters
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -70,7 +71,17 @@ export default function ExpenditureLineGraph() {
     };
   }, []);
 
-  const updateChart = chartData => {
+  // Destroy and recreate chart when theme changes
+  useEffect(() => {
+    if (chartInstance) {
+      chartInstance.destroy();
+      setChartInstance(null);
+    }
+  }, [darkMode]);
+
+  const createChart = chartData => {
+    if (!chartRef.current) return;
+
     const ctx = chartRef.current.getContext('2d');
     const chartTitle =
       selectedProject === 'all'
@@ -79,125 +90,114 @@ export default function ExpenditureLineGraph() {
 
     const gridColor = darkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
     const textColor = darkMode ? '#ffffff' : '#666666';
+    const chartBackgroundColor = darkMode ? '#1b2a41' : '#ffffff';
 
+    // Destroy existing chart if it exists
     if (chartInstance) {
-      // Update existing chart
-      chartInstance.data = chartData;
-      const { options } = chartInstance;
-      const { plugins, scales } = options;
-      const { x, y } = scales;
+      chartInstance.destroy();
+    }
 
-      plugins.title.text = chartTitle;
-      plugins.title.color = textColor;
-
-      x.grid.color = gridColor;
-      y.grid.color = gridColor;
-
-      x.ticks.color = textColor;
-      y.ticks.color = textColor;
-
-      x.title.color = textColor;
-      y.title.color = textColor;
-      chartInstance.options.plugins.title.color = textColor;
-      chartInstance.options.scales.y.grid.color = gridColor;
-      chartInstance.options.scales.x.grid.color = gridColor;
-      chartInstance.options.scales.y.ticks.color = textColor;
-      chartInstance.options.scales.x.ticks.color = textColor;
-      chartInstance.options.scales.y.title.color = textColor;
-      chartInstance.options.scales.x.title.color = textColor;
-      chartInstance.update();
-    } else {
-      // Create new chart
-      const config = {
-        type: 'line',
-        data: chartData,
-        options: {
-          responsive: true,
-          plugins: {
-            title: {
-              display: true,
-              text: chartTitle,
-              color: textColor,
-              font: {
-                size: 14,
-                weight: 'bold',
-              },
-              padding: {
-                top: 10,
-                bottom: 15,
-              },
+    const config = {
+      type: 'line',
+      data: chartData,
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          title: {
+            display: true,
+            text: chartTitle,
+            color: textColor,
+            font: {
+              size: 14,
+              weight: 'bold',
             },
-            legend: {
-              labels: {
-                color: textColor,
-                font: {
-                  size: 12,
-                },
-              },
-            },
-            tooltip: {
-              backgroundColor: darkMode ? '#3a506b' : 'rgba(0, 0, 0, 0.7)',
-              titleColor: '#ffffff',
-              bodyColor: '#ffffff',
-              borderColor: darkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)',
-              borderWidth: 1,
+            padding: {
+              top: 10,
+              bottom: 15,
             },
           },
-          scales: {
-            y: {
-              title: {
-                display: true,
-                text: 'Cost($)',
-                color: textColor,
-                font: {
-                  size: 12,
-                  weight: 'bold',
-                },
-              },
-              ticks: {
-                color: textColor,
-                font: {
-                  size: 11,
-                },
-                callback(value) {
-                  if (value >= 1000) {
-                    return `$${value / 1000}k`;
-                  }
-                  return `$${value}`;
-                },
-              },
-              grid: {
-                color: gridColor,
-                borderColor: gridColor,
+          legend: {
+            labels: {
+              color: textColor,
+              font: {
+                size: 12,
               },
             },
-            x: {
-              title: {
-                display: true,
-                text: 'Month',
-                color: textColor,
-                font: {
-                  size: 12,
-                  weight: 'bold',
-                },
+          },
+          tooltip: {
+            backgroundColor: darkMode ? '#3a506b' : 'rgba(0, 0, 0, 0.7)',
+            titleColor: '#ffffff',
+            bodyColor: '#ffffff',
+            borderColor: darkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)',
+            borderWidth: 1,
+          },
+        },
+        scales: {
+          y: {
+            title: {
+              display: true,
+              text: 'Cost($)',
+              color: textColor,
+              font: {
+                size: 12,
+                weight: 'bold',
               },
-              ticks: {
-                color: textColor,
-                font: {
-                  size: 11,
-                },
+            },
+            ticks: {
+              color: textColor,
+              font: {
+                size: 11,
               },
-              grid: {
-                color: gridColor,
-                borderColor: gridColor,
+              callback(value) {
+                if (value >= 1000) {
+                  return `$${value / 1000}k`;
+                }
+                return `$${value}`;
               },
+            },
+            grid: {
+              color: gridColor,
+              borderColor: gridColor,
+            },
+          },
+          x: {
+            title: {
+              display: true,
+              text: 'Month',
+              color: textColor,
+              font: {
+                size: 12,
+                weight: 'bold',
+              },
+            },
+            ticks: {
+              color: textColor,
+              font: {
+                size: 11,
+              },
+            },
+            grid: {
+              color: gridColor,
+              borderColor: gridColor,
             },
           },
         },
-      };
-      const newChartInstance = new Chart(ctx, config);
-      setChartInstance(newChartInstance);
-    }
+        animation: {
+          onComplete() {
+            const chart = this;
+            ctx.save();
+            ctx.globalCompositeOperation = 'destination-over';
+            ctx.fillStyle = chartBackgroundColor;
+            ctx.fillRect(0, 0, chart.width, chart.height);
+            ctx.restore();
+          },
+        },
+      },
+    };
+
+    const newChartInstance = new Chart(ctx, config);
+    setChartInstance(newChartInstance);
   };
 
   const processDataForChart = expenditureDataArr => {
@@ -205,7 +205,7 @@ export default function ExpenditureLineGraph() {
     const groupedByMonth = {};
     const categories = new Set();
 
-    // Extract month from date and group data
+    // month from date
     expenditureDataArr.forEach(item => {
       const date = new Date(item.date);
       const month = date.toLocaleString('default', { month: 'short' });
@@ -251,6 +251,7 @@ export default function ExpenditureLineGraph() {
     const datasets = Array.from(categories).map((category, index) => {
       const colors = ['#6293CC', '#C55151', '#E8D06B', '#94B66F'];
       const data = labels.map(month => groupedByMonth[month][category] || 0);
+
       return {
         label: category,
         data,
@@ -294,27 +295,9 @@ export default function ExpenditureLineGraph() {
       }
 
       const processedData = processDataForChart(filteredData);
-      updateChart(processedData);
+      createChart(processedData);
     }
   }, [selectedProject, dateRange, expenditureData, darkMode]);
-
-  useEffect(() => {
-    if (chartInstance) {
-      const textColor = darkMode ? '#ffffff' : '#666666';
-      const gridColor = darkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
-
-      chartInstance.options.plugins.title.color = textColor;
-      chartInstance.options.plugins.legend.labels.color = textColor;
-      chartInstance.options.scales.y.grid.color = gridColor;
-      chartInstance.options.scales.x.grid.color = gridColor;
-      chartInstance.options.scales.y.ticks.color = textColor;
-      chartInstance.options.scales.x.ticks.color = textColor;
-      chartInstance.options.scales.y.title.color = textColor;
-      chartInstance.options.scales.x.title.color = textColor;
-
-      chartInstance.update();
-    }
-  }, [darkMode, chartInstance]);
 
   const handleProjectChange = e => {
     setSelectedProject(e.target.value);
@@ -362,8 +345,9 @@ export default function ExpenditureLineGraph() {
     <div className={`expenditure-chart-container ${darkMode ? 'dark-mode' : ''}`}>
       <h1
         style={{
-          margin: '20px',
           color: darkMode ? 'var(--text-color)' : 'inherit',
+          textAlign: 'center',
+          margin: '0 0 10px 0',
         }}
       >
         Cost Breakdown by Type of Expenditures
@@ -372,88 +356,118 @@ export default function ExpenditureLineGraph() {
       <div
         className="filter-controls"
         style={{
-          backgroundColor: darkMode ? 'var(--card-bg)' : '#f5f5f5',
-          padding: '15px',
-          borderRadius: '8px',
-          marginBottom: '20px',
+          backgroundColor: darkMode ? 'var(--section-bg, #253342)' : '#f5f5f5',
+          display: 'flex',
+          flexDirection: 'column',
+          marginTop: 0,
+          paddingTop: 8,
+          border: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : 'none',
         }}
       >
-        <div className="project-filter" style={{ marginBottom: '10px' }}>
-          <label
-            style={{
-              color: darkMode ? 'var(--text-color)' : 'inherit',
-              marginRight: '10px',
-            }}
-          >
-            Filter by project:
-          </label>
-          <select
-            id="project-select"
-            value={selectedProject}
-            onChange={handleProjectChange}
-            disabled={loading || projects.length === 0}
-            style={{
-              padding: '6px 10px',
-              borderRadius: '4px',
-              border: darkMode ? '1px solid #4a5568' : '1px solid #ddd',
-              backgroundColor: darkMode ? '#2d3748' : '#fff',
-              color: darkMode ? '#e2e8f0' : 'inherit',
-            }}
-          >
-            <option value="all">All Projects</option>
-            {projects.map(project => (
-              <option key={project} value={project}>
-                {project}
-              </option>
-            ))}
-          </select>
-        </div>
-
         <div
-          className="filter-group"
-          style={{ display: 'flex', alignItems: 'center', gap: '10px' }}
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-end',
+            gap: '10px',
+            width: '100%',
+          }}
         >
-          <label htmlFor="start-date" style={{ color: darkMode ? 'var(--text-color)' : 'inherit' }}>
-            From:
-          </label>
-          <input
-            id="start-date"
-            type="date"
-            value={startDate}
-            onChange={handleStartDateChange}
-            disabled={loading}
+          <div
+            className="project-filter"
             style={{
-              padding: '6px 10px',
-              borderRadius: '4px',
-              border: darkMode ? '1px solid #4a5568' : '1px solid #ddd',
-              backgroundColor: darkMode ? '#2d3748' : '#fff',
-              color: darkMode ? '#e2e8f0' : 'inherit',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
             }}
-          />
+          >
+            <label
+              style={{
+                color: darkMode ? 'var(--text-color)' : 'inherit',
+              }}
+            >
+              Filter by project:
+            </label>
+            <select
+              id="project-select"
+              value={selectedProject}
+              onChange={handleProjectChange}
+              disabled={loading || projects.length === 0}
+              style={{
+                padding: '6px 10px',
+                borderRadius: '4px',
+                border: darkMode ? '1px solid rgba(255, 255, 255, 0.2)' : '1px solid #ddd',
+                backgroundColor: darkMode ? 'var(--section-bg, #253342)' : '#fff',
+                color: darkMode ? 'var(--text-color, #ffffff)' : 'inherit',
+              }}
+            >
+              <option value="all">All Projects</option>
+              {projects.map(project => (
+                <option key={project} value={project}>
+                  {project}
+                </option>
+              ))}
+            </select>
+          </div>
 
-          <label htmlFor="end-date" style={{ color: darkMode ? 'var(--text-color)' : 'inherit' }}>
-            To:
-          </label>
-          <input
-            id="end-date"
-            type="date"
-            value={endDate}
-            onChange={handleEndDateChange}
-            disabled={loading}
-            min={startDate}
+          <div
+            className="date-filters"
             style={{
-              padding: '6px 10px',
-              borderRadius: '4px',
-              border: darkMode ? '1px solid #4a5568' : '1px solid #ddd',
-              backgroundColor: darkMode ? '#2d3748' : '#fff',
-              color: darkMode ? '#e2e8f0' : 'inherit',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
             }}
-          />
+          >
+            <label
+              htmlFor="start-date"
+              style={{ color: darkMode ? 'var(--text-color)' : 'inherit' }}
+            >
+              From:
+            </label>
+            <input
+              id="start-date"
+              type="date"
+              value={startDate}
+              onChange={handleStartDateChange}
+              disabled={loading}
+              style={{
+                padding: '6px 10px',
+                borderRadius: '4px',
+                border: darkMode ? '1px solid rgba(255, 255, 255, 0.2)' : '1px solid #ddd',
+                backgroundColor: darkMode ? 'var(--section-bg, #253342)' : '#fff',
+                color: darkMode ? 'var(--text-color, #ffffff)' : 'inherit',
+              }}
+            />
+            <label htmlFor="end-date" style={{ color: darkMode ? 'var(--text-color)' : 'inherit' }}>
+              To:
+            </label>
+            <input
+              id="end-date"
+              type="date"
+              value={endDate}
+              onChange={handleEndDateChange}
+              disabled={loading}
+              min={startDate}
+              style={{
+                padding: '6px 10px',
+                borderRadius: '4px',
+                border: darkMode ? '1px solid rgba(255, 255, 255, 0.2)' : '1px solid #ddd',
+                backgroundColor: darkMode ? 'var(--section-bg, #253342)' : '#fff',
+                color: darkMode ? 'var(--text-color, #ffffff)' : 'inherit',
+              }}
+            />
+          </div>
         </div>
       </div>
-
       {loading && (
-        <p style={{ color: darkMode ? 'var(--text-color)' : 'inherit' }}>Loading data...</p>
+        <p
+          style={{
+            color: darkMode ? 'var(--text-color)' : 'inherit',
+            textAlign: 'center',
+          }}
+        >
+          Loading data...
+        </p>
       )}
 
       {error && (
@@ -465,6 +479,9 @@ export default function ExpenditureLineGraph() {
             padding: '10px',
             borderRadius: '4px',
             border: darkMode ? '1px solid #ff6b6b' : '1px solid #d32f2f',
+            textAlign: 'center',
+            maxWidth: '800px',
+            margin: '0 auto 20px auto',
           }}
         >
           Error: {error}
@@ -473,15 +490,40 @@ export default function ExpenditureLineGraph() {
 
       <div
         style={{
-          paddingTop: '20px',
-          margin: '15px',
-          backgroundColor: darkMode ? 'var(--card-bg)' : '#ffffff',
-          borderRadius: '8px',
-          boxShadow: darkMode ? '0 2px 5px var(--card-shadow)' : '0 2px 5px rgba(0, 0, 0, 0.1)',
-          padding: '15px',
+          display: 'flex',
+          justifyContent: 'center',
+          width: '100%',
+          padding: '0 20px',
         }}
       >
-        <canvas ref={chartRef} />
+        <div
+          style={{
+            backgroundColor: darkMode ? 'var(--card-bg, #1b2a41)' : '#ffffff',
+            borderRadius: '12px',
+            border: darkMode
+              ? '1px solid rgba(255, 255, 255, 0.1)'
+              : '1px solid rgba(0, 0, 0, 0.08)',
+            boxShadow: darkMode
+              ? '0 4px 12px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2)'
+              : '0 4px 12px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06)',
+            padding: '20px',
+            maxWidth: '800px',
+            width: '100%',
+            height: '400px',
+            position: 'relative',
+            transition: 'box-shadow 0.3s ease, border-color 0.3s ease',
+          }}
+        >
+          <canvas
+            ref={chartRef}
+            style={{
+              maxHeight: '100%',
+              maxWidth: '100%',
+              backgroundColor: darkMode ? '#1b2a41' : 'transparent',
+              borderRadius: '8px',
+            }}
+          />
+        </div>
       </div>
     </div>
   );

@@ -1,9 +1,30 @@
+:root {
+  --bg-color: #f9f9f9;
+  --section-bg: #f5f5f5;
+  --text-color: #222;
+  --card-bg: #fff;
+  --button-bg: #e8a71c;
+}
+
+.dark-mode {
+  --bg-color: #1b2a41;
+  --section-bg: #253342;
+  --text-color: #ffffff;
+  --card-bg: #16213e;
+  --button-bg: #e8a71c;
+}
+
+.body.dark-mode, .dark-mode body {
+  background-color: #1b2a41 !important;
+}
+
 .expenditure-chart-container {
     padding: 20px;
     background-color: #f9f9f9;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     transition: all 0.3s ease;
+    min-height: 100vh;
   }
   
   .expenditure-chart-container.dark-mode {
@@ -49,11 +70,6 @@
     display: flex;
     align-items: center;
   }
-  
-  label {
-    margin: 20px;
-  }
-  
   #project-select {
     margin-left: 15px;
   }
@@ -82,5 +98,5 @@ label {
 
 .dark-mode .project-filter,
 .dark-mode .filter-group {
-    background-color: var (--card-bg);
+    background-color: var(--card-bg);
 }
