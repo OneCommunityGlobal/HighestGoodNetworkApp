@@ -107,8 +107,7 @@ export const ENDPOINTS = {
   TOTAL_ORG_SUMMARY: (startDate, endDate, comparisonStartDate, comparisonEndDate) =>
     `${APIEndpoint}/reports/volunteerstats?startDate=${startDate}&endDate=${endDate}&comparisonStartDate=${comparisonStartDate || ''}&comparisonEndDate=${comparisonEndDate || ''}`,
   VOLUNTEER_TRENDS: (timeFrame, offset, customStartDate, customEndDate) =>
-    `${APIEndpoint}/reports/volunteertrends?timeFrame=${timeFrame}&offset=${offset}${
-      customStartDate ? `&customStartDate=${customStartDate}` : ''
+    `${APIEndpoint}/reports/volunteertrends?timeFrame=${timeFrame}&offset=${offset}${customStartDate ? `&customStartDate=${customStartDate}` : ''
     }${customEndDate ? `&customEndDate=${customEndDate}` : ''}`,
   HOURS_TOTAL_ORG_SUMMARY: (startDate, endDate) =>
     `${APIEndpoint}/reports/overviewsummaries/taskandprojectstats?startDate=${startDate}&endDate=${endDate}`,
@@ -257,10 +256,11 @@ export const ENDPOINTS = {
   BM_ISSUE_CHART: `${APIEndpoint}/bm/issue/issue-chart`,
 
   BM_ISSUE_FORM: `${APIEndpoint}/bm/issue/add`,
+  BM_INJURY_CATEGORY_BREAKDOWN: `${APIEndpoint}/bm/injuries/category-breakdown`,
+  BM_INJURY_SEVERITIES: `${APIEndpoint}/bm/injuries/injury-severities`,
+  BM_INJURY_TYPES: `${APIEndpoint}/bm/injuries/injury-types`,
   BM_INJURY_ISSUE: `${APIEndpoint}/bm/issues`,
   BM_RENTAL_CHART: `${APIEndpoint}/bm/rentalChart`,
-
-
   BM_TAGS: `${APIEndpoint}/bm/tags`,
   BM_TAG_ADD: `${APIEndpoint}/bm/tags`,
   BM_TAGS_DELETE: `${APIEndpoint}/bm/tags`,
