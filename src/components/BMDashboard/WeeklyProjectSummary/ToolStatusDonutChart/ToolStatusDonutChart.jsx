@@ -83,7 +83,9 @@ export default function ToolStatusDonutChart() {
     ).values(),
   );
 
-  let innerRadius, outerRadius, chartHeight;
+  let innerRadius;
+  let outerRadius;
+  let chartHeight;
   if (isXS) {
     innerRadius = 35;
     outerRadius = 60;
@@ -104,7 +106,9 @@ export default function ToolStatusDonutChart() {
 
       <div className="tool-donut-filters">
         <div className="filter-item">
-          <label htmlFor="tool-select" className="filter-label">Tool/Equipment Name</label>
+          <label htmlFor="tool-select" className="filter-label">
+            Tool/Equipment Name
+          </label>
           <select id="tool-select" value={toolId} onChange={e => setToolId(e.target.value)}>
             <option value="">All</option>
             {uniqueTools.map(tool => (
@@ -116,7 +120,9 @@ export default function ToolStatusDonutChart() {
         </div>
 
         <div className="filter-item">
-          <label htmlFor="project-select" className="filter-label">Project</label>
+          <label htmlFor="project-select" className="filter-label">
+            Project
+          </label>
           <select
             id="project-select"
             value={projectId}
