@@ -66,15 +66,30 @@ const teamMemberTasks = {
     },
   ],
 };
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin
 const userProfile = {
   _id: 'user123',
   role: 'Manager',
   startDate: '2023-12-08T08:00:00.000Z',
   teams: [{ teamName: 'mockTeamName', _id: 'team123' }],
 };
+<<<<<<< HEAD
 
 const timeOffRequests = { onTimeOff: false, goingOnTimeOff: false };
+const theme = { darkMode: false };
+
+const store = mockStore({
+  auth: auth,
+  teamMemberTasks: teamMemberTasks,
+  userProfile: userProfile,
+  theme: theme,
+  timeOffRequests: timeOffRequests,
+=======
+const timeOffRequests = { onTimeOff: false, goingOnTimeOff: false };
+
 const theme = { darkMode: false };
 
 const store = mockStore({
@@ -83,13 +98,13 @@ const store = mockStore({
   userProfile,
   theme,
   timeOffRequests,
+>>>>>>> origin
   infoCollections: { loading: false },
   role: rolesMock,
 });
 
 jest.mock('axios');
 jest.useFakeTimers();
-
 describe('TeamMemberTasks component', () => {
   beforeEach(() => {
     axios.get.mockResolvedValue({
@@ -98,11 +113,20 @@ describe('TeamMemberTasks component', () => {
     });
   });
 
+<<<<<<< HEAD
   afterEach(() => {
     jest.clearAllTimers();
   });
 
   it('renders without crashing', () => {
+=======
+describe('TeamMemberTasks component', () => {
+  it('renders without crashing', () => {
+    axios.get.mockResolvedValue({
+      status: 200,
+      data: '',
+    });
+>>>>>>> origin
     render(
       <Provider store={store}>
         <MemoryRouter>
@@ -111,8 +135,16 @@ describe('TeamMemberTasks component', () => {
       </Provider>,
     );
   });
+<<<<<<< HEAD
 
   it('check if Team Member Tasks header is displaying as expected', () => {
+=======
+  it('check if Team Member Tasks header is displaying as expected', () => {
+    axios.get.mockResolvedValue({
+      status: 200,
+      data: '',
+    });
+>>>>>>> origin
     render(
       <Provider store={store}>
         <MemoryRouter>
@@ -122,8 +154,16 @@ describe('TeamMemberTasks component', () => {
     );
     expect(screen.getByText('Team Member Tasks')).toBeInTheDocument();
   });
+<<<<<<< HEAD
 
   it('check if Team Member header is displaying as expected', () => {
+=======
+  it('check if Team Member header is displaying as expected', () => {
+    axios.get.mockResolvedValue({
+      status: 200,
+      data: '',
+    });
+>>>>>>> origin
     render(
       <Provider store={store}>
         <MemoryRouter>
@@ -133,8 +173,16 @@ describe('TeamMemberTasks component', () => {
     );
     expect(screen.getByText('Team Member')).toBeInTheDocument();
   });
+<<<<<<< HEAD
 
   it('check if Weekly Committed Hours header is displaying as expected', () => {
+=======
+  it('check if Weekly Committed Hours header is displaying as expected', () => {
+    axios.get.mockResolvedValue({
+      status: 200,
+      data: '',
+    });
+>>>>>>> origin
     render(
       <Provider store={store}>
         <MemoryRouter>
@@ -142,10 +190,20 @@ describe('TeamMemberTasks component', () => {
         </MemoryRouter>
       </Provider>,
     );
-    expect(screen.getByText('Weekly Committed Hours')).toBeInTheDocument();
+<<<<<<< HEAD
+    expect(screen.getByTitle('Weekly Committed Hours')).toBeInTheDocument();
   });
 
   it('check if Total Hours Completed this Week header is displaying as expected', () => {
+=======
+    expect(screen.getByText('Weekly Committed Hours')).toBeInTheDocument();
+  });
+  it('check if Total Hours Completed this Week header is displaying as expected', () => {
+    axios.get.mockResolvedValue({
+      status: 200,
+      data: '',
+    });
+>>>>>>> origin
     render(
       <Provider store={store}>
         <MemoryRouter>
@@ -153,10 +211,20 @@ describe('TeamMemberTasks component', () => {
         </MemoryRouter>
       </Provider>,
     );
-    expect(screen.getByText('Total Hours Completed this Week')).toBeInTheDocument();
+<<<<<<< HEAD
+    expect(screen.getByTitle('Total Hours Completed this Week')).toBeInTheDocument();
   });
 
   it('check if Total Remaining Hours header is displaying as expected', () => {
+=======
+    expect(screen.getByText('Total Hours Completed this Week')).toBeInTheDocument();
+  });
+  it('check if Total Remaining Hours header is displaying as expected', () => {
+    axios.get.mockResolvedValue({
+      status: 200,
+      data: '',
+    });
+>>>>>>> origin
     render(
       <Provider store={store}>
         <MemoryRouter>
@@ -164,10 +232,20 @@ describe('TeamMemberTasks component', () => {
         </MemoryRouter>
       </Provider>,
     );
-    expect(screen.getByText('Total Remaining Hours')).toBeInTheDocument();
+<<<<<<< HEAD
+    expect(screen.getByTitle('Total Remaining Hours')).toBeInTheDocument();
   });
 
   it('check if Tasks(s) header is displaying as expected', () => {
+=======
+    expect(screen.getByText('Total Remaining Hours')).toBeInTheDocument();
+  });
+  it('check if Tasks(s) header is displaying as expected', () => {
+    axios.get.mockResolvedValue({
+      status: 200,
+      data: '',
+    });
+>>>>>>> origin
     render(
       <Provider store={store}>
         <MemoryRouter>
@@ -177,8 +255,16 @@ describe('TeamMemberTasks component', () => {
     );
     expect(screen.getByText('Tasks(s)')).toBeInTheDocument();
   });
+<<<<<<< HEAD
 
   it('check if Progress header is displaying as expected', () => {
+=======
+  it('check if Progress header is displaying as expected', () => {
+    axios.get.mockResolvedValue({
+      status: 200,
+      data: '',
+    });
+>>>>>>> origin
     render(
       <Provider store={store}>
         <MemoryRouter>
@@ -188,10 +274,29 @@ describe('TeamMemberTasks component', () => {
     );
     expect(screen.getByText('Progress')).toBeInTheDocument();
   });
+<<<<<<< HEAD
 
   it('check if the skeleton loading html elements are not shown when isLoading is false', () => {
     const { container } = render(
       <Provider store={store}>
+=======
+  it('check if the skeleton loading html elements are shown when isLoading is true', () => {
+    axios.get.mockResolvedValue({
+      status: 200,
+      data: '',
+    });
+    const newTeamMemberTasks = { isLoading: true, usersWithTasks: [], usersWithTimeEntries: [] };
+    const testStore = mockStore({
+      auth,
+      teamMemberTasks: newTeamMemberTasks,
+      userProfile,
+      theme,
+      timeOffRequests,
+      infoCollections: { loading: false },
+    });
+    const { container } = render(
+      <Provider store={testStore}>
+>>>>>>> origin
         <MemoryRouter>
           <TeamMemberTasks />
         </MemoryRouter>
@@ -200,6 +305,7 @@ describe('TeamMemberTasks component', () => {
     const skeletonLoadingElement = container.querySelector(
       '.skeleton-loading-team-member-tasks-row',
     );
+<<<<<<< HEAD
     expect(skeletonLoadingElement).not.toBeInTheDocument();
   });
 
@@ -233,11 +339,24 @@ describe('TeamMemberTasks component', () => {
 
     const { container } = render(
       <Provider store={darkModeStore}>
+=======
+    expect(skeletonLoadingElement).toBeInTheDocument();
+  });
+  it('check if the skeleton loading html elements are not shown when isLoading is false', () => {
+    axios.get.mockResolvedValue({
+      status: 200,
+      data: '',
+    });
+
+    const { container } = render(
+      <Provider store={store}>
+>>>>>>> origin
         <MemoryRouter>
           <TeamMemberTasks />
         </MemoryRouter>
       </Provider>,
     );
+<<<<<<< HEAD
     const taskTableBody = container.querySelector('.task-table tbody');
     const timeOffElement = container.querySelector('.show-time-off-btn');
     const hoursCompletedElement = container.querySelector('.team-member-tasks-subtable');
@@ -275,6 +394,131 @@ describe('TeamMemberTasks component', () => {
   });
 
   it('check if days button works as expected', () => {
+=======
+    const skeletonLoadingElement = container.querySelector(
+      '.skeleton-loading-team-member-tasks-row',
+    );
+    expect(skeletonLoadingElement).not.toBeInTheDocument();
+  });
+  it('check if class names does not include color when dark mode is false', () => {
+    axios.get.mockResolvedValue({
+      status: 200,
+      data: '',
+    });
+
+    const { container } = render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <TeamMemberTasks />
+        </MemoryRouter>
+      </Provider>,
+    );
+    const darkModeElement = container.querySelector('.container.team-member-tasks');
+    const timeOffElement = container.querySelector('.show-time-off-btn');
+    const hoursCompletedElement = container.querySelector('.team-member-tasks-subtable');
+    const oneDayElement = container.querySelector(
+      '[title="Timelogs submitted in the past 1 days"]',
+    );
+    const twoDayElement = container.querySelector(
+      '[title="Timelogs submitted in the past 2 days"]',
+    );
+    const threeDayElement = container.querySelector(
+      '[title="Timelogs submitted in the past 3 days"]',
+    );
+    const fourDayElement = container.querySelector(
+      '[title="Timelogs submitted in the past 4 days"]',
+    );
+    const sevenDayElement = container.querySelector(
+      '[title="Timelogs submitted in the past 7 days"]',
+    );
+    expect(darkModeElement).toBeInTheDocument();
+    expect(hoursCompletedElement).toBeInTheDocument();
+    expect(timeOffElement).toBeInTheDocument();
+    expect(oneDayElement).toBeInTheDocument();
+    expect(twoDayElement).toBeInTheDocument();
+    expect(threeDayElement).toBeInTheDocument();
+    expect(fourDayElement).toBeInTheDocument();
+    expect(sevenDayElement).toBeInTheDocument();
+  });
+  it('check if class names does include color when dark mode is true', () => {
+    axios.get.mockResolvedValue({
+      status: 200,
+      data: '',
+    });
+
+    const darkTheme = { darkMode: true };
+
+    const testStore = mockStore({
+      auth,
+      teamMemberTasks,
+      userProfile,
+      theme: darkTheme,
+      timeOffRequests,
+      infoCollections: { loading: false },
+      role: rolesMock,
+    });
+
+    const { container } = render(
+      <Provider store={testStore}>
+        <MemoryRouter>
+          <TeamMemberTasks />
+        </MemoryRouter>
+      </Provider>,
+    );
+    const darkModeElement = container.querySelector('.container.team-member-tasks');
+    const timeOffElement = container.querySelector('.show-time-off-btn');
+    const hoursCompletedElement = container.querySelector('.team-member-tasks-subtable');
+    const oneDayElement = container.querySelector(
+      '[title="Timelogs submitted in the past 1 days"]',
+    );
+    const twoDayElement = container.querySelector(
+      '[title="Timelogs submitted in the past 2 days"]',
+    );
+    const threeDayElement = container.querySelector(
+      '[title="Timelogs submitted in the past 3 days"]',
+    );
+    const fourDayElement = container.querySelector(
+      '[title="Timelogs submitted in the past 4 days"]',
+    );
+    const sevenDayElement = container.querySelector(
+      '[title="Timelogs submitted in the past 7 days"]',
+    );
+    expect(darkModeElement).toBeInTheDocument();
+    expect(hoursCompletedElement).toBeInTheDocument();
+    expect(timeOffElement).toBeInTheDocument();
+    expect(oneDayElement).toBeInTheDocument();
+    expect(twoDayElement).toBeInTheDocument();
+    expect(threeDayElement).toBeInTheDocument();
+    expect(fourDayElement).toBeInTheDocument();
+    expect(sevenDayElement).toBeInTheDocument();
+  });
+  it('check if show time off button works as expected', () => {
+    axios.get.mockResolvedValue({
+      status: 200,
+      data: '',
+    });
+    const { container } = render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <TeamMemberTasks />
+        </MemoryRouter>
+      </Provider>,
+    );
+    const buttonElement = container.querySelector('[class="m-1 show-time-off-btn"]');
+    expect(container.querySelector('[class="show-time-off-calender-svg"]')).toBeInTheDocument();
+    expect(container.querySelector('[class="show-time-off-icon"]')).toBeInTheDocument();
+    fireEvent.click(buttonElement);
+    const iconElement = container.querySelector('[class="show-time-off-calender-svg"]');
+    expect(iconElement).toBeInTheDocument();
+    const newIconElement = container.querySelector('[class="show-time-off-icon"]');
+    expect(newIconElement).toBeInTheDocument();
+  });
+  it('check if days button works as expected', () => {
+    axios.get.mockResolvedValue({
+      status: 200,
+      data: '',
+    });
+>>>>>>> origin
     const { container } = render(
       <Provider store={store}>
         <MemoryRouter>
@@ -285,6 +529,7 @@ describe('TeamMemberTasks component', () => {
     const buttonElement = container.querySelector(
       '[title="Timelogs submitted in the past 1 days"]',
     );
+<<<<<<< HEAD
     expect(buttonElement).toHaveStyle(
       'color: rgb(34, 139, 34); background-color: white; border: 1px solid #228b22;',
     );
@@ -292,5 +537,30 @@ describe('TeamMemberTasks component', () => {
     expect(buttonElement).toHaveStyle(
       'color: white; background-color: rgb(34, 139, 34); border: 1px solid #228b22;',
     );
+=======
+    const daysButton = container.querySelector(
+      '[style="color: rgb(34, 139, 34); background-color: white; border: 1px solid #228b22;"]',
+    );
+    expect(daysButton).toBeInTheDocument();
+    fireEvent.click(buttonElement);
+    const newDaysButton = container.querySelector(
+      '[style="color: white; background-color: rgb(34, 139, 34); border: 1px solid #228b22;"]',
+    );
+    expect(newDaysButton).toBeInTheDocument();
+  });
+  it('check if TeamMemberTask without time entries gets displayed when isTimeFilterActive is set to False', () => {
+    axios.get.mockResolvedValue({
+      status: 200,
+      data: '',
+    });
+    const { container } = render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <TeamMemberTasks />
+        </MemoryRouter>
+      </Provider>,
+    );
+    expect(container.querySelector('[className="table-row"]')).not.toBeInTheDocument();
+>>>>>>> origin
   });
 });
