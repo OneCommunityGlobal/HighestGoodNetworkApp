@@ -54,6 +54,24 @@
   justify-content: space-around;
 }
 
+.charts {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly
+}
+
+.chart {
+  width: 250px;
+  text-align: center;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 5px;
+  text-align: center;
+  background-color: #ffffff;
+  color: #000000;
+  transition: background-color 0.3s, color 0.3s;
+}
+
 .graph {
   width: 100%;
   max-width: 600px;

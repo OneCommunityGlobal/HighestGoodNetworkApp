@@ -4,26 +4,19 @@ import './ReviewsInsight.css';
 
 function PRQualityGraph({ duration, selectedTeams, qualityData }) {
   const isAllTeams = selectedTeams.includes('All');
+  const teamsToDisplay = isAllTeams ? Object.keys(qualityData) : selectedTeams;
 
-  // Aggregate data for "All Teams" or use specific team data
-  const dataValues = isAllTeams
-    ? Object.values(qualityData).reduce(
-        (acc, team) => acc.map((value, index) => value + team[index]),
-        [0, 0, 0, 0]
-      )
-    : qualityData[selectedTeams[0]];
-
-  const data = {
+  const generateChartData = (team) => ({
     labels: ['Not Approved', 'Low Quality', 'Sufficient', 'Exceptional'],
     datasets: [
       {
-        label: 'PR Quality Distribution',
-        data: dataValues,
+        label: `PR Quality Distribution for ${team}`,
+        data: qualityData[team],
         backgroundColor: ['#DC3545', '#FFC107', '#28A745', '#007BFF'],
         hoverOffset: 4,
       },
     ],
-  };
+  });
 
   const options = {
     responsive: true,
@@ -43,9 +36,13 @@ function PRQualityGraph({ duration, selectedTeams, qualityData }) {
   };
 
   return (
-    <div className="graph">
-      <h2>PR: Quality Distribution</h2>
-      <Pie data={data} options={options} />
+    <div className="charts">
+      {teamsToDisplay.map((team) => (
+        <div key={team} className="chart">
+          <h2>PR Quality: {team}</h2>
+          <Pie data={generateChartData(team)} options={options} />
+        </div>
+      ))}
     </div>
   );
 }
