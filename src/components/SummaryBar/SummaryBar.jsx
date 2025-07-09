@@ -15,18 +15,21 @@ import {
   Input,
 } from 'reactstrap';
 import { connect } from 'react-redux';
-import { HashLink as Link } from 'react-router-hash-link';
 import './SummaryBar.css';
 import { ENDPOINTS, ApiEndpoint } from 'utils/URL';
 import axios from 'axios';
 import hasPermission from 'utils/permissions';
 import { toast } from 'react-toastify';
+import { useHistory } from 'react-router-dom';
+import { updateUserProfile } from '../../actions/userProfile';
 import TaskIcon from './task_icon.png';
 import BadgesIcon from './badges_icon.png';
 import BlueScoreIcon from './bluesquare_icon.png';
 import ReportIcon from './report_icon.png';
 import SuggestionsIcon from './suggestions_icon.png';
 import httpService from '../../services/httpService';
+
+import { getBadgeCount, resetBadgeCount } from '../../actions/badgeManagement';
 
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 
@@ -48,8 +51,6 @@ const SummaryBar = React.forwardRef((props, ref) => {
   const weeklyCommittedHours = committedHours + missedHours;
 
   const [userProfile, setUserProfile] = useState(undefined);
-  const [infringements, setInfringements] = useState(0);
-  const [badges, setBadges] = useState(0);
   const [totalEffort, setTotalEffort] = useState(0);
   const [weeklySummary, setWeeklySummary] = useState(null);
   const [tasks, setTasks] = useState(undefined);
@@ -64,6 +65,7 @@ const SummaryBar = React.forwardRef((props, ref) => {
 
   const [categoryDescription, setCategoryDescription] = useState();
   const sortableContainerRef = useRef(null);
+  const history = useHistory();
 
   const editRadioButtonSelected = value => {
     // dynamic way to set description rather than using tenerary operators.
@@ -195,31 +197,6 @@ const SummaryBar = React.forwardRef((props, ref) => {
       // eslint-disable-next-line no-console
       console.log('User Tasks not loaded.');
     }
-  };
-
-  // Get infringement count from userProfile
-  const getInfringements = () => {
-    return displayUserProfile && displayUserProfile.infringements
-      ? displayUserProfile.infringements.length
-      : 0;
-  };
-
-  // Get badges count from userProfile
-  const getBadges = () => {
-    if (!displayUserProfile || !displayUserProfile.badgeCollection) {
-      return 0;
-    }
-    let totalBadges = 0;
-    displayUserProfile.badgeCollection.forEach(badge => {
-      if (badge?.badge?.badgeName === 'Personal Max' || badge?.badge?.type === 'Personal Max') {
-        totalBadges += 1;
-      } else {
-        const badgeCount = badge?.count ? Number(badge.count) : 0;
-        totalBadges += Math.round(badgeCount);
-      }
-    });
-
-    return totalBadges;
   };
 
   // refactored for rading form values
@@ -370,6 +347,15 @@ const SummaryBar = React.forwardRef((props, ref) => {
     window.location.hash = '#badgesearned';
   };
 
+  // const onBlueSquareClick = () => {
+  const onBlueSquareClick = async () => {
+    props.updateUserProfile({
+      ...displayUserProfile,
+      infringementCount: 0,
+    });
+    history.push(`/userprofile/${displayUserProfile._id}#bluesquare`);
+  };
+
   const getWeeklySummary = user => {
     const latestSummary = user?.weeklySummaries?.[0];
     return latestSummary && new Date() < new Date(latestSummary.dueDate)
@@ -398,13 +384,15 @@ const SummaryBar = React.forwardRef((props, ref) => {
 
   useEffect(() => {
     if (summaryBarData && displayUserProfile !== undefined) {
-      setInfringements(getInfringements());
-      setBadges(getBadges());
       setTotalEffort(summaryBarData.tangibletime);
       setWeeklySummary(getWeeklySummary(displayUserProfile));
       setweeklySummaryNotReq(displayUserProfile?.weeklySummaryOption === 'Not Required');
     }
   }, [displayUserProfile, summaryBarData]);
+
+  useEffect(() => {
+    props.getBadgeCount(displayUserId);
+  }, [displayUserId, props]);
 
   useEffect(() => {
     // Check if we should open the suggestions modal
@@ -670,13 +658,24 @@ const SummaryBar = React.forwardRef((props, ref) => {
           <div className="d-flex justify-content-around no-gutters">
             &nbsp;&nbsp;
             <div className="image_frame">
-              <div className="redBackgroup">
+              {tasks > 0 && (
+                <div className="redBackgroup">
+                  <span>{tasks}</span>
+                </div>
+              )}
+              {/* <div className="redBackgroup">
                 <span>{tasks}</span>
-              </div>
+              </div> */}
               {isAuthUser || canEditData() ? (
                 <button
                   onClick={onTaskClick}
-                  style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+                  className="sum_img"
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    padding: 0,
+                    cursor: 'pointer',
+                  }}
                   aria-label="Task"
                   type="button"
                 >
@@ -688,13 +687,25 @@ const SummaryBar = React.forwardRef((props, ref) => {
             </div>
             &nbsp;&nbsp;
             <div className="image_frame">
-              <div className="redBackgroup">
+              {props.badgeCount > 0 && (
+                <div className="redBackgroup">
+                  <span>{props.badgeCount}</span>
+                </div>
+              )}
+              {/* <div className="redBackgroup">
                 <span>{badges}</span>
-              </div>
+                <span>{props.badgeCount}</span>
+              </div> */}
               {isAuthUser || canEditData() ? (
                 <button
                   onClick={onBadgeClick}
-                  style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+                  className="sum_img"
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    padding: 0,
+                    cursor: 'pointer',
+                  }}
                   aria-label="Badge"
                   type="button"
                 >
@@ -706,18 +717,32 @@ const SummaryBar = React.forwardRef((props, ref) => {
             </div>
             &nbsp;&nbsp;
             <div className="image_frame">
+              {/* Changed from infringement.length in displayUserProfile to using new value of infringementCount for new ones */}
+              {displayUserProfile.infringementCount > 0 && (
+                <div className="redBackgroup">
+                  <span>{displayUserProfile.infringementCount}</span>
+                </div>
+              )}
               {isAuthUser || canEditData() ? (
-                <Link to={`/userprofile/${displayUserProfile._id}#bluesquare`}>
+                <button
+                  onClick={onBlueSquareClick}
+                  className="sum_img"
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    padding: 0,
+                    cursor: 'pointer',
+                  }}
+                  aria-label="Blue Square"
+                  type="button"
+                >
                   <img className="sum_img" src={BlueScoreIcon} alt="" />
-                  <div className="redBackgroup">
-                    <span>{infringements}</span>
-                  </div>
-                </Link>
+                </button>
               ) : (
                 <div>
                   <img className="sum_img" src={BlueScoreIcon} alt="" />
                   <div className="redBackgroup">
-                    <span>{infringements}</span>
+                    <span>{displayUserProfile.infringementCount}</span>
                   </div>
                 </div>
               )}
@@ -727,7 +752,13 @@ const SummaryBar = React.forwardRef((props, ref) => {
               {isAuthUser || canEditData() ? (
                 <button
                   onClick={openReport}
-                  style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+                  className="sum_img"
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    padding: 0,
+                    cursor: 'pointer',
+                  }}
                   aria-label="Open Report"
                   type="button"
                 >
@@ -742,7 +773,13 @@ const SummaryBar = React.forwardRef((props, ref) => {
               {isAuthUser || canEditData() ? (
                 <button
                   onClick={openSuggestionModal}
-                  style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+                  className="sum_img"
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    padding: 0,
+                    cursor: 'pointer',
+                  }}
                   aria-label="Open Suggestions"
                   type="button"
                 >
@@ -1088,6 +1125,12 @@ const mapStateToProps = state => ({
   displayUserProfile: state.userProfile,
   displayUserTask: state.userTask,
   darkMode: state.theme.darkMode,
+  badgeCount: state.badge.badgeCount,
 });
 
-export default connect(mapStateToProps, { hasPermission })(React.memo(SummaryBar));
+export default connect(mapStateToProps, {
+  hasPermission,
+  getBadgeCount,
+  resetBadgeCount,
+  updateUserProfile,
+})(React.memo(SummaryBar));
