@@ -178,8 +178,15 @@ function InjuryChartForm() {
           <ResponsiveContainer width="100%" height={400}>
             <LineChart data={chartData} margin={{ top: 10, right: 30, left: 10, bottom: 30 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
-              <XAxis dataKey="month" padding={{ left: 20, right: 20 }} />
-              <YAxis allowDecimals={false} />
+              <XAxis
+                dataKey="month"
+                padding={{ left: 20, right: 20 }}
+                label={{ value: 'Month', position: 'insideBottom', offset: -10 }}
+              />
+              <YAxis
+                allowDecimals={false}
+                label={{ value: 'Number of Injuries', angle: -90, position: 'insideLeft' }}
+              />
               <Tooltip />
               <Legend />
               <Line
