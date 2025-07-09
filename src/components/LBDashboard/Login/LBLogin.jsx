@@ -1,14 +1,16 @@
 import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { Redirect } from 'react-router-dom';
+import { Redirect, useHistory, useLocation } from 'react-router-dom';
 import { Form, FormGroup, Input, Label, Button, FormFeedback } from 'reactstrap';
 import Joi from 'joi';
 import { loginBMUser } from 'actions/authActions';
-import './Login.css';
+import styles from './Login.module.css';
 import logo from '../../../assets/images/logo2.png';
 
 function LBLogin(props) {
-  const { dispatch, auth, history, location } = props;
+  const { dispatch, auth } = props;
+  const history = useHistory();
+  const location = useLocation();
   const [enteredEmail, setEnteredEmail] = useState('');
   const [enterPassword, setEnteredPassword] = useState('');
   const [validationError, setValidationError] = useState(null);
@@ -73,18 +75,18 @@ function LBLogin(props) {
   }
 
   return (
-    <div className="auth-page">
-      <div className="logo-container">
+    <div className={`${styles.authPage}`}>
+      <div className={`${styles.logoContainer}`}>
         <img src={logo} alt="One Community Logo" />
       </div>
-      <div className="form-container">
-        <div className="form-top" />
-        <div className="form-main">
+      <div className={`${styles.formContainer}`}>
+        <div className={`${styles.formTop}`} />
+        <div className={`${styles.formMain}`}>
           <h2>Log In To Listing and Biding Portal</h2>
           <p>Enter your credentials to access the Listing and Biding Portal Dashboard</p>
           <p>Note: You must use your Production/Main credentials for this login.</p>
-          <div className="form-content">
-            <Form onSubmit={handleSubmit}>
+          <div className={`${styles.formContent}`}>
+            <Form onSubmit={handleSubmit} className={`${styles.loginForm}`}>
               <FormGroup>
                 <Label for="email">Email</Label>
                 <Input

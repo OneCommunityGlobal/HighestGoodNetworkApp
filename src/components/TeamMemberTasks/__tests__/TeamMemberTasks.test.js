@@ -1,13 +1,12 @@
-import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
-import TeamMemberTasks from '../TeamMemberTasks';
-import { rolesMock } from '__tests__/mockStates';
 import { MemoryRouter } from 'react-router-dom';
 import axios from 'axios';
+import { rolesMock } from '../../../__tests__/mockStates';
+import TeamMemberTasks from '../TeamMemberTasks';
 
 const mockStore = configureStore([thunk]);
 
@@ -79,17 +78,18 @@ const timeOffRequests = { onTimeOff: false, goingOnTimeOff: false };
 const theme = { darkMode: false };
 
 const store = mockStore({
-  auth: auth,
-  teamMemberTasks: teamMemberTasks,
-  userProfile: userProfile,
-  theme: theme,
-  timeOffRequests: timeOffRequests,
+  auth,
+  teamMemberTasks,
+  userProfile,
+  theme,
+  timeOffRequests,
   infoCollections: { loading: false },
   role: rolesMock,
 });
 
 jest.mock('axios');
 jest.useFakeTimers();
+
 describe('TeamMemberTasks component', () => {
   beforeEach(() => {
     axios.get.mockResolvedValue({
@@ -142,7 +142,7 @@ describe('TeamMemberTasks component', () => {
         </MemoryRouter>
       </Provider>,
     );
-    expect(screen.getByTitle('Weekly Committed Hours')).toBeInTheDocument();
+    expect(screen.getByText('Weekly Committed Hours')).toBeInTheDocument();
   });
 
   it('check if Total Hours Completed this Week header is displaying as expected', () => {
@@ -153,7 +153,7 @@ describe('TeamMemberTasks component', () => {
         </MemoryRouter>
       </Provider>,
     );
-    expect(screen.getByTitle('Total Hours Completed this Week')).toBeInTheDocument();
+    expect(screen.getByText('Total Hours Completed this Week')).toBeInTheDocument();
   });
 
   it('check if Total Remaining Hours header is displaying as expected', () => {
@@ -164,7 +164,7 @@ describe('TeamMemberTasks component', () => {
         </MemoryRouter>
       </Provider>,
     );
-    expect(screen.getByTitle('Total Remaining Hours')).toBeInTheDocument();
+    expect(screen.getByText('Total Remaining Hours')).toBeInTheDocument();
   });
 
   it('check if Tasks(s) header is displaying as expected', () => {

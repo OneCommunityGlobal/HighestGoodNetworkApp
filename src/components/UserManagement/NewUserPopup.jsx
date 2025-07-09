@@ -47,6 +47,7 @@ const NewUserPopup = React.memo(props => {
           isPermissionPage
           role={role} // Pass the 'role' prop to EditableInfoModal
           darkMode={darkMode}
+          loading={props.loading}
         />
       </div>
       <Modal
@@ -67,6 +68,7 @@ const NewUserPopup = React.memo(props => {
             isPermissionPage
             role={role} // Pass the 'role' prop to EditableInfoModal
             darkMode={darkMode}
+            loading={props.loading}
           />
         </ModalHeader>
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
@@ -111,6 +113,7 @@ const NewUserPopup = React.memo(props => {
 const mapStateToProps = state => ({
   role: state.userProfile.role, // Map 'role' from Redux state to 'role' prop
   darkMode: state.theme.darkMode,
+  loading: state.infoCollections?.loading,
 });
 
 export default connect(mapStateToProps)(NewUserPopup);

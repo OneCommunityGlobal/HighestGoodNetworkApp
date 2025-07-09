@@ -9,12 +9,12 @@
 import { Button } from 'reactstrap';
 import { BiErrorCircle } from 'react-icons/bi';
 
-import './BMError.css';
+import styles from './BMError.module.css';
 
 export default function BMError({ errors }) {
   return (
     <section>
-      <p className="error_text">
+      <p className={`${styles.errorText}`}>
         <BiErrorCircle />
         There was an error processing your request:{' '}
         {errors.response

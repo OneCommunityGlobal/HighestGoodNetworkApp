@@ -33,7 +33,7 @@ import { connect, useSelector } from 'react-redux';
 import moment from 'moment';
 import ReactTooltip from 'react-tooltip';
 import ActiveCell from 'components/UserManagement/ActiveCell';
-import { ProfileNavDot } from 'components/UserManagement/ProfileNavDot';
+import ProfileNavDot from 'components/UserManagement/ProfileNavDot';
 import TeamMemberTasks from 'components/TeamMemberTasks';
 import { boxStyle, boxStyleDark } from 'styles';
 import { formatDate } from 'utils/formatDate';
@@ -77,7 +77,6 @@ const startOfWeek = offset => {
 const endOfWeek = offset => {
   return moment()
     .tz('America/Los_Angeles')
-    .endOf('week')
     .subtract(offset, 'weeks')
     .format('YYYY-MM-DD');
 };
@@ -513,11 +512,19 @@ function Timelog(props) {
     }
   }, [urlId]);
 
-  useEffect(() => {
-    if (userprofileId) {
-      setDisplayUserId(userprofileId);
-    }
-  }, [userprofileId]);
+/**
+   * made a change here to reset the user viewing to current user and not the displayed user id we were testing
+   * component reloads when we click the x icon to close the current viewing
+  */
+
+useEffect(() => {
+  // Reset displayUserId when switching btw users
+  const newUserId = getUserId();
+  if (displayUserId !== newUserId) {
+    setDisplayUserId(newUserId);
+    loadAsyncData(newUserId); // Reload data for the prev viewing user
+  }
+}, [userprofileId, viewingUser]);
 
   useEffect(() => {
     props.getBadgeCount(displayUserId);
@@ -981,7 +988,9 @@ function Timelog(props) {
                       />
                     )}
                     <TabPane tabId={0}>
-                      <TeamMemberTasks filteredUserTeamIds={props.filteredUserTeamIds} />
+                      <TeamMemberTasks 
+                      filteredUserTeamIds={props.filteredUserTeamIds} 
+                      />
                     </TabPane>
                     <TabPane tabId={1}>{currentWeekEntries}</TabPane>
                     <TabPane tabId={2}>{lastWeekEntries}</TabPane>
