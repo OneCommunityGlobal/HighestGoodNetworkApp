@@ -432,12 +432,17 @@ class PeopleReport extends Component {
       const { profilePic, role, jobTitle, endDate, _id, startDate } = userProfile;
 
       return (
+        <div className="profile-info-inner">
+        
         <ReportPage.ReportHeader
           src={profilePic}
           avatar={profilePic ? undefined : <FiUser />}
           isActive={isActive}
           darkMode={darkMode}
         >
+          
+          
+
           <div className={`report-stats ${darkMode ? 'text-light' : ''}`}>
             <p>
               <Link to={`/userProfile/${_id}`}
@@ -491,7 +496,11 @@ class PeopleReport extends Component {
               ) : null}
             </div>
           </div>
+          
+          
         </ReportPage.ReportHeader>
+        </div>
+       
       );
     };
 
@@ -521,8 +530,11 @@ class PeopleReport extends Component {
 
     return (
       <div className={`container-people-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
-        <ReportPage renderProfile={renderProfileInfo} darkMode={darkMode}>
+        <ReportPage renderProfile={() => null} darkMode={darkMode}>
+          <div className="people-report-header-layout">
+          {renderProfileInfo()}
           <div className={`people-report-time-logs-wrapper ${tangibleHoursReportedThisWeek === 0 && !Number.isNaN(tangibleHoursReportedThisWeek)? "auto-width-report-time-logs-wrapper" : ""}`}>
+            
             <ReportPage.ReportBlock
               firstColor="#ff5e82"
               secondColor="#e25cb2"
@@ -565,6 +577,7 @@ class PeopleReport extends Component {
               <h3 className="text-light">{totalTangibleHrsRound}</h3>
               <p>Total Hours Logged</p>
             </ReportPage.ReportBlock>
+          </div>
           </div>
 
           <PeopleTasksPieChart darkMode={darkMode} />

@@ -214,12 +214,26 @@ body {
   color: white;
 }
 
-.people-report-time-log-block {
+
+/*.people-report-time-log-block {
   max-height: 100px;
   width: 270px;
   white-space: nowrap;
   margin-bottom: 16px;
+}*/
+
+.people-report-time-log-block {
+  flex: 1 1 220px;
+  min-width: 100px;
+  padding: 12px;
+  box-sizing: border-box;
+  margin-bottom: 16px;
+  white-space: normal;         /* allow text wrapping */
+  overflow: visible;           /* don't crop or scroll content */
 }
+
+
+
 
 @media (min-width: 850px) {
   .people-report-time-logs-wrapper {
@@ -282,6 +296,7 @@ body {
 }
 
 .report-stats {
+  
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -299,3 +314,61 @@ body {
     align-items: flex-start;
   }
 }
+
+.people-report-header-layout {
+  
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  gap: 100px;
+}
+
+.people-report-header-layout .report-header {
+  flex: 1 1 350px;
+  min-width: 300px;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+
+/* Left side (summary blocks) */
+.people-report-time-logs-wrapper {
+  flex: 1 1 50%;
+}
+
+/* Right side (profile info) */
+.container-people-wrapper .report-header {
+  flex: 1 1 50%;
+  max-width: 50%;
+}
+
+/* Collapse to vertical layout on small screens */
+@media (max-width: 768px) {
+  .people-report-header-layout {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .container-people-wrapper .report-header {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .people-report-time-logs-wrapper {
+    width: 100%;
+  }
+}
+
+.report-stats {
+  padding-left: 24px;
+  
+}
+
+@media (max-width: 768px) {
+  .report-stats {
+    padding-left: 0;
+  }
+}
+
