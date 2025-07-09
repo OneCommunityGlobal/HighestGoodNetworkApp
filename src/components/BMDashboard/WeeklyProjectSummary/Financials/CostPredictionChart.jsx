@@ -114,71 +114,89 @@ function CostPredictionChart({ darkMode, isFullPage = false, projectId }) {
     fetchData();
   }, [selectedProject]);
 
-  // Process the API data into a format suitable for the chart
-  const processDataForChart = apiData => {
-    if (!apiData || !apiData.actual) return [];
-
-    const { actual, predicted } = apiData;
-    const allDates = new Set();
+  // Process data for chart - modify this function to connect actual and predicted data
+  const processDataForChart = costData => {
     const processedData = [];
 
-    // Collect all dates from actual data
-    Object.keys(actual).forEach(category => {
-      actual[category].forEach(item => {
-        allDates.add(moment(item.date).format('MMM YYYY'));
+    if (!costData || !costData.actual) {
+      return processedData;
+    }
+
+    // Get all dates from both actual and predicted data
+    const allDates = new Set();
+    const actualCategories = Object.keys(costData.actual);
+    const predictedCategories = costData.predicted ? Object.keys(costData.predicted) : [];
+
+    // Collect all dates
+    actualCategories.forEach(category => {
+      costData.actual[category].forEach(item => {
+        const dateStr = moment(item.date).format('MMM YYYY');
+        allDates.add(dateStr);
       });
     });
 
-    // Create data points for each date
-    const sortedDates = Array.from(allDates).sort((a, b) =>
-      moment(a, 'MMM YYYY').diff(moment(b, 'MMM YYYY')),
-    );
-
-    sortedDates.forEach(dateStr => {
-      const dataPoint = { date: dateStr, isPrediction: false };
-
-      // Add cost values for each category
-      Object.keys(actual).forEach(category => {
-        const matchingItem = actual[category].find(
-          item => moment(item.date).format('MMM YYYY') === dateStr,
-        );
-
-        if (matchingItem) {
-          dataPoint[category] = matchingItem.cost;
-        }
-      });
-
-      processedData.push(dataPoint);
-    });
-
-    // Add prediction data
-    if (predicted) {
-      Object.keys(predicted).forEach(category => {
-        predicted[category].forEach(item => {
+    if (costData.predicted) {
+      predictedCategories.forEach(category => {
+        costData.predicted[category].forEach(item => {
           const dateStr = moment(item.date).format('MMM YYYY');
-
-          // Check if this date already exists in the data
-          const existingPoint = processedData.find(point => point.date === dateStr);
-
-          if (existingPoint) {
-            // Update existing point with prediction flag and value
-            existingPoint.isPrediction = true;
-            existingPoint[category] = item.cost;
-          } else {
-            // Create new data point for prediction
-            const newPoint = {
-              date: dateStr,
-              isPrediction: true,
-              [category]: item.cost,
-            };
-            processedData.push(newPoint);
-          }
+          allDates.add(dateStr);
         });
       });
     }
 
-    // Sort the final data by date
-    return processedData.sort((a, b) => moment(a.date, 'MMM YYYY').diff(moment(b, 'MMM YYYY')));
+    // Sort dates chronologically
+    const sortedDates = Array.from(allDates).sort((a, b) =>
+      moment(a, 'MMM YYYY').diff(moment(b, 'MMM YYYY')),
+    );
+
+    // Create data points for each date
+    sortedDates.forEach(dateStr => {
+      const dataPoint = { date: dateStr };
+
+      // Add actual data values
+      actualCategories.forEach(category => {
+        const item = costData.actual[category].find(
+          item => moment(item.date).format('MMM YYYY') === dateStr,
+        );
+        if (item) {
+          dataPoint[category] = item.cost;
+        }
+      });
+
+      // Add predicted data values
+      if (costData.predicted) {
+        predictedCategories.forEach(category => {
+          const item = costData.predicted[category].find(
+            item => moment(item.date).format('MMM YYYY') === dateStr,
+          );
+          if (item) {
+            dataPoint[`${category}Predicted`] = item.cost;
+          }
+        });
+      }
+
+      // For the last actual data point of each category, also add it as the first predicted point
+      // This ensures the lines connect without a gap
+      if (costData.predicted) {
+        actualCategories.forEach(category => {
+          // Find the last actual data point for this category
+          const actualItems = costData.actual[category];
+          if (actualItems && actualItems.length > 0) {
+            const lastActualItem = actualItems[actualItems.length - 1];
+            const lastActualDateStr = moment(lastActualItem.date).format('MMM YYYY');
+
+            // If this is the last actual data point, also set it as the predicted value
+            if (dateStr === lastActualDateStr) {
+              dataPoint[`${category}Predicted`] = lastActualItem.cost;
+            }
+          }
+        });
+      }
+
+      processedData.push(dataPoint);
+    });
+
+    return processedData;
   };
 
   const handleCardClick = () => {
@@ -285,35 +303,71 @@ function CostPredictionChart({ darkMode, isFullPage = false, projectId }) {
                 {/* Only show Labor and Materials cost in card view */}
                 <Line
                   key="Labor"
-                  type="monotone"
+                  type="linear"
                   dataKey="Labor"
                   name="Labor Cost"
                   stroke={costColors.Labor}
                   strokeWidth={2}
+                  dot={{ r: 3 }}
+                  activeDot={{ r: 4 }}
+                  isAnimationActive={false}
+                />
+                <Line
+                  key="LaborPredicted"
+                  type="linear"
+                  dataKey="LaborPredicted"
+                  name="Labor Cost (Predicted)"
+                  stroke={costColors.Labor}
+                  strokeWidth={2}
+                  strokeDasharray="8 4"
                   dot={props => {
                     const { cx, cy, payload } = props;
-                    if (!payload || payload.isPrediction) return null;
-                    return <circle cx={cx} cy={cy} r={2} fill={costColors.Labor} />;
+                    if (!payload || !payload.LaborPredicted) return null;
+                    return (
+                      <path
+                        d={`M${cx},${cy - 3} L${cx + 3},${cy} L${cx},${cy + 3} L${cx - 3},${cy} Z`}
+                        fill="none"
+                        stroke={costColors.Labor}
+                        strokeWidth={1.5}
+                      />
+                    );
                   }}
                   activeDot={{ r: 4 }}
                   isAnimationActive={false}
-                  strokeDasharray={payload => (payload && payload.isPrediction ? '5 5' : '0')}
                 />
                 <Line
                   key="Materials"
-                  type="monotone"
+                  type="linear"
                   dataKey="Materials"
                   name="Materials Cost"
                   stroke={costColors.Materials}
                   strokeWidth={2}
+                  dot={{ r: 3 }}
+                  activeDot={{ r: 4 }}
+                  isAnimationActive={false}
+                />
+                <Line
+                  key="MaterialsPredicted"
+                  type="linear"
+                  dataKey="MaterialsPredicted"
+                  name="Materials Cost (Predicted)"
+                  stroke={costColors.Materials}
+                  strokeWidth={2}
+                  strokeDasharray="8 4"
                   dot={props => {
                     const { cx, cy, payload } = props;
-                    if (!payload || payload.isPrediction) return null;
-                    return <circle cx={cx} cy={cy} r={2} fill={costColors.Materials} />;
+                    if (!payload || !payload.MaterialsPredicted) return null;
+                    return (
+                      <path
+                        d={`M${cx},${cy - 3} L${cx + 3},${cy} L${cx},${cy + 3} L${cx - 3},${cy} Z`}
+                        fill="none"
+                        stroke={costColors.Materials}
+                        strokeWidth={1.5}
+                      />
+                    );
                   }}
                   activeDot={{ r: 4 }}
                   isAnimationActive={false}
-                  strokeDasharray={payload => (payload && payload.isPrediction ? '5 5' : '0')}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -544,19 +598,29 @@ function CostPredictionChart({ darkMode, isFullPage = false, projectId }) {
               {selectedCosts.map(cost => {
                 const dataKey = cost.value;
                 return (
-                  <Line
-                    key={dataKey}
-                    type="monotone"
-                    dataKey={dataKey}
-                    name={cost.label}
-                    stroke={costColors[dataKey]}
-                    strokeWidth={2}
-                    dot={props => {
-                      const { cx, cy, payload, index } = props;
-                      if (!payload) return null;
-                      // Different markers for actual vs predicted data
-                      if (payload.isPrediction) {
-                        // Diamond marker for predictions
+                  <>
+                    <Line
+                      key={dataKey}
+                      type="linear"
+                      dataKey={dataKey}
+                      name={cost.label}
+                      stroke={costColors[dataKey]}
+                      strokeWidth={2}
+                      dot={{ r: 4 }}
+                      activeDot={{ r: 6 }}
+                      isAnimationActive={false}
+                    />
+                    <Line
+                      key={`${dataKey}Predicted`}
+                      type="linear"
+                      dataKey={`${dataKey}Predicted`}
+                      name={`${cost.label} (Predicted)`}
+                      stroke={costColors[dataKey]}
+                      strokeWidth={2}
+                      strokeDasharray="8 4"
+                      dot={props => {
+                        const { cx, cy, payload, index } = props;
+                        if (!payload || !payload[`${dataKey}Predicted`]) return null;
                         return (
                           <path
                             d={`M${cx},${cy - 4} L${cx + 4},${cy} L${cx},${cy + 4} L${cx -
@@ -567,22 +631,11 @@ function CostPredictionChart({ darkMode, isFullPage = false, projectId }) {
                             key={`dot-${dataKey}-${index}`}
                           />
                         );
-                      }
-                      // Circle for actual data
-                      return (
-                        <circle
-                          key={`dot-${dataKey}-${index}`}
-                          cx={cx}
-                          cy={cy}
-                          r={4}
-                          fill={costColors[dataKey]}
-                        />
-                      );
-                    }}
-                    activeDot={{ r: 6 }}
-                    isAnimationActive={false}
-                    strokeDasharray={payload => (payload && payload.isPrediction ? '5 5' : '0')}
-                  />
+                      }}
+                      activeDot={{ r: 6 }}
+                      isAnimationActive={false}
+                    />
+                  </>
                 );
               })}
             </LineChart>
