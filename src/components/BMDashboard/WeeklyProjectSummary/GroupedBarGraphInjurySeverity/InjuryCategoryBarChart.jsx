@@ -1,6 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, Legend, LabelList, ResponsiveContainer
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+  LabelList,
+  ResponsiveContainer,
 } from 'recharts';
 import Select from 'react-select';
 import DatePicker from 'react-datepicker';
@@ -10,11 +17,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   fetchInjuryData,
   fetchSeverities,
-  fetchInjuryTypes
+  fetchInjuryTypes,
 } from '../../../../actions/bmdashboard/injuryActions';
 import { fetchBMProjects } from '../../../../actions/bmdashboard/projectActions';
 
-const InjuryCategoryBarChart = () => {
+function InjuryCategoryBarChart() {
   const dispatch = useDispatch();
 
   // Redux selectors
@@ -22,7 +29,6 @@ const InjuryCategoryBarChart = () => {
   const severities = useSelector(state => state.bmInjury?.severities || []);
   const injuryTypes = useSelector(state => state.bmInjury?.injuryTypes || []);
   const bmProjects = useSelector(state => state.bmProjects);
-
 
   // Filter states
   const [projectFilter, setProjectFilter] = useState([]);
@@ -40,9 +46,8 @@ const InjuryCategoryBarChart = () => {
 
   // Dropdown options
   const projectOptions = Array.isArray(bmProjects)
-  ? bmProjects.map(p => ({ value: p._id, label: p.name }))
-  : [];
-
+    ? bmProjects.map(p => ({ value: p._id, label: p.name }))
+    : [];
 
   const severityOptions = Array.isArray(severities)
     ? severities.map(s => ({ value: s, label: s }))
@@ -55,7 +60,6 @@ const InjuryCategoryBarChart = () => {
   // Fetch chart data when filters are changed
   useEffect(() => {
     if (!bmProjects.length || !severities.length || !injuryTypes.length) return;
-  
     const filters = {
       projectIds: projectFilter.map(p => p.value).join(','),
       startDate: startDate ? startDate.toISOString() : '',
@@ -63,7 +67,6 @@ const InjuryCategoryBarChart = () => {
       severities: severityFilter.map(s => s.value).join(','),
       types: injuryTypeFilter.map(t => t.value).join(','),
     };
-  
     dispatch(fetchInjuryData(filters));
   }, [
     projectFilter,
@@ -76,8 +79,6 @@ const InjuryCategoryBarChart = () => {
     severities,
     injuryTypes,
   ]);
-  
-
   // Restructure data for grouped bar chart
   const chartData = Object.values(
     data.reduce((acc, curr) => {
@@ -85,7 +86,7 @@ const InjuryCategoryBarChart = () => {
       acc[key] = acc[key] || { workerCategory: key };
       acc[key][curr.projectName] = curr.totalInjuries;
       return acc;
-    }, {})
+    }, {}),
   );
 
   const uniqueProjects = [...new Set(data.map(d => d.projectName))];
@@ -133,30 +134,17 @@ const InjuryCategoryBarChart = () => {
           placeholderText="End Date"
         />
       </div>
-
-      {loading ? (
-        <p>Loading...</p>
-      ) : error ? (
-        <p>Error: {error}</p>
-      ) : (
+      {loading && <p>Loading...</p>}
+      {!loading && error && <p>Error: {error}</p>}
+      {!loading && !error && (
         <ResponsiveContainer width="100%" height={400}>
           <BarChart data={chartData}>
-            <XAxis
-              dataKey="workerCategory"
-              interval={0}
-              angle={-45}
-              textAnchor="end"
-              height={80}
-            />
+            <XAxis dataKey="workerCategory" interval={0} angle={-45} textAnchor="end" height={80} />
             <YAxis />
             <Tooltip />
             <Legend />
             {uniqueProjects.map((project, index) => (
-              <Bar
-                key={project}
-                dataKey={project}
-                fill={index % 2 === 0 ? '#17c9d3' : '#000'}
-              >
+              <Bar key={project} dataKey={project} fill={index % 2 === 0 ? '#17c9d3' : '#000'}>
                 <LabelList dataKey={project} position="top" />
               </Bar>
             ))}
@@ -165,6 +153,6 @@ const InjuryCategoryBarChart = () => {
       )}
     </div>
   );
-};
+}
 
 export default InjuryCategoryBarChart;

@@ -12,10 +12,9 @@ const initialState = {
   error: null,
   severities: [],
   injuryTypes: [],
-
 };
-
-export const bmInjuryReducer = (state = initialState, action) => {
+// eslint-disable-next-line default-param-last
+function bmInjuryReducer(state = initialState, action) {
   switch (action.type) {
     case FETCH_BM_INJURY_DATA_REQUEST:
       return { ...state, loading: true, error: null };
@@ -30,4 +29,6 @@ export const bmInjuryReducer = (state = initialState, action) => {
     default:
       return state;
   }
-};
+}
+
+export default bmInjuryReducer;

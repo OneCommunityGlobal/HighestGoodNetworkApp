@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
-import { GET_ERRORS } from '../../constants/errors';
 
 export const FETCH_BM_INJURY_DATA_REQUEST = 'FETCH_BM_INJURY_DATA_REQUEST';
 export const FETCH_BM_INJURY_DATA_SUCCESS = 'FETCH_BM_INJURY_DATA_SUCCESS';
@@ -36,6 +35,7 @@ export const fetchSeverities = () => async dispatch => {
     const res = await axios.get(ENDPOINTS.BM_INJURY_SEVERITIES);
     dispatch(setInjurySeverities(res.data));
   } catch (error) {
+    /* eslint-disable-next-line no-console */
     console.error('[fetchSeverities] error:', error);
   }
 };
@@ -46,6 +46,7 @@ export const fetchInjuryTypes = () => async dispatch => {
     const res = await axios.get(ENDPOINTS.BM_INJURY_TYPES);
     dispatch(setInjuryTypes(res.data));
   } catch (error) {
+    /* eslint-disable-next-line no-console */
     console.error('[fetchInjuryTypes] error:', error);
   }
 };
