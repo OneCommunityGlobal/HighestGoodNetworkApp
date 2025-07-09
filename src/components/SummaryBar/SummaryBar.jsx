@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Container,
   Row,
@@ -30,7 +30,7 @@ import httpService from '../../services/httpService';
 
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 
-function SummaryBar(props) {
+const SummaryBar = React.forwardRef((props, ref) => {
   // from parent
   const { displayUserId, summaryBarData } = props;
   // from store
@@ -406,6 +406,15 @@ function SummaryBar(props) {
     }
   }, [displayUserProfile, summaryBarData]);
 
+  useEffect(() => {
+    // Check if we should open the suggestions modal
+    const shouldOpenSuggestions = localStorage.getItem('openSuggestionsModal');
+    if (shouldOpenSuggestions === 'true') {
+      localStorage.removeItem('openSuggestionsModal'); // Clear the flag
+      openSuggestionModal(); // Open the suggestions modal
+    }
+  }, []); // Run once when component mounts
+
   const getContainerClass = () => {
     if (isAuthUser || canEditData()) {
       return darkMode
@@ -416,6 +425,19 @@ function SummaryBar(props) {
       ? 'bg-space-cadet disabled-bar text-light box-shadow-dark'
       : 'bg--bar disabled-bar text--black box-shadow-light';
   };
+
+  useEffect(() => {
+    if (displayUserProfile) {
+      // eslint-disable-next-line no-console
+      console.log('User First Name : ', displayUserProfile.firstName);
+      // eslint-disable-next-line no-console
+      console.log('User Last Name:', displayUserProfile.lastName);
+
+      // Save to localStorage
+      localStorage.setItem('userFirstName', displayUserProfile.firstName);
+      localStorage.setItem('userLastName', displayUserProfile.lastName);
+    }
+  }, [displayUserProfile]);
 
   const renderSummary = () => {
     if (!weeklySummary) {
@@ -488,7 +510,7 @@ function SummaryBar(props) {
     }
 
     const message = weeklySummaryNotReq
-      ? 'You don’t need to complete a weekly summary, but you still can. Click here to submit it.'
+      ? "You don't need to complete a weekly summary, but you still can. Click here to submit it."
       : 'You still need to complete the weekly summary. Click here to submit it.';
 
     if (isAuthUser) {
@@ -526,6 +548,11 @@ function SummaryBar(props) {
   const fontColor = darkMode ? 'text-light' : '';
   const headerBg = darkMode ? 'bg-space-cadet' : '';
   const bodyBg = darkMode ? 'bg-yinmn-blue' : '';
+
+  // Expose the openSuggestionModal function through the ref
+  React.useImperativeHandle(ref, () => ({
+    openSuggestionModal,
+  }));
 
   return displayUserProfile !== undefined && summaryBarData !== undefined ? (
     <Container fluid className={`px-lg-0 rounded ${getContainerClass()}`} style={{ width: '97%' }}>
@@ -1054,7 +1081,7 @@ function SummaryBar(props) {
   ) : (
     <div>Loading</div>
   );
-}
+});
 
 const mapStateToProps = state => ({
   authUser: state.auth.user,
@@ -1063,4 +1090,4 @@ const mapStateToProps = state => ({
   darkMode: state.theme.darkMode,
 });
 
-export default connect(mapStateToProps, { hasPermission })(SummaryBar);
+export default connect(mapStateToProps, { hasPermission })(React.memo(SummaryBar));

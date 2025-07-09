@@ -35,7 +35,7 @@ describe('NotificationCard', () => {
       </Provider>,
     );
 
-    expect(screen.getByText(/You have a new notification from John Doe!/)).toBeInTheDocument();
+    expect(screen.getByText(/You have a new notification!/)).toBeInTheDocument();
     expect(
       screen.getByText((content, node) => {
         const hasText = thisnode => thisnode.textContent === 'This is a test message';
@@ -59,7 +59,7 @@ describe('NotificationCard', () => {
 
     fireEvent.click(screen.getByText('Mark as Read'));
 
-    // // 打印出 dispatch 的所有调用
+    // // Print all dispatch calls
     // console.log(store.dispatch.mock.calls);
 
     expect(store.dispatch).toHaveBeenCalledWith(mockAction);
