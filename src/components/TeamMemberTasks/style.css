@@ -9,15 +9,17 @@
 }
 
 .task_table-container {
-  overflow: hidden;
-  position: relative;
+  overflow-x: auto;
+  overflow-y: hidden;
+  max-width: 100%;
 }
 
 .task_table-container table {
   table-layout: fixed;
   width: 100%;
+  border-collapse: collapse;
+  overflow-y: scroll;
 }
-
 
 .team-member-tasks-bell {
   margin-right: 10px;
@@ -26,7 +28,6 @@
 }
 
 .team-member-tasks-done {
-  /* margin-left: 10px; */
   color: green;
   cursor: pointer;
 }
@@ -48,21 +49,26 @@
 }
 
 .committed-hours-circle {
-  padding: 0.75rem;
+  padding: 0.25rem;
 }
 
 .team-member-tasks .team-member-tasks-headers {
-  vertical-align: middle;
+  justify-content: center;
+  margin-left: -10px;
+  vertical-align: middle; 
+  text-align: center;
 }
 
 .team-member-tasks .team-member-tasks-subtable {
-  margin: 0;
-  text-align: center;
+  margin: 0 0 0 15px;
+  text-align: left;
+  vertical-align: middle;
+  justify-content: center; 
 }
 
 .team-task-progress {
   position: relative;
-  width: 120px;
+  width: 100px;
   min-width: 120px;
   max-width: 120px;
 }
@@ -75,11 +81,12 @@
   border-bottom: none;
 }
 
-.dark-teammember-row th{
+.dark-teammember-row th {
   background-color: #3a506b;
   color: white;
 }
-.light-teammember-row th{
+
+.light-teammember-row th {
   background-color: #f0f8ff;
   color: black;
 }
@@ -88,25 +95,35 @@
   text-align: left;
   display: flex;
   flex-direction: column;
-  /* Stack children vertically */
-  gap: 8px;
-  /* Space bet*/
+  gap: 1px;
+  vertical-align: middle; 
+
 }
 
 .team-member-tasks-user-name {
   width: 50%;
+  text-align: center;
+  justify-content: center;
+  vertical-align: middle; 
 }
 
-.team-member-tasks-user-report-link  .team-member-tasks-user-report-link-image{
-   width: 20px;
-   height: 20px;
-   margin: 0 0 5px 5px;
+.team-member-tasks-subtable th:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
+.team-member-tasks-user-report-link .team-member-tasks-user-report-link-image {
+  width: 20px;
+  height: 20px;
+  margin: 0 0 5px 5px;
+}
+
 .deadlineCount {
   position: absolute;
   text-align: center;
   vertical-align: middle;
-  background: #ff4d4f;
+  background: #FF4D4F;
   border-radius: 50%;
   color: #fff;
   height: 25px;
@@ -121,11 +138,11 @@
   justify-content: space-around;
 }
 
-.team-member-tasks-number{
+.team-member-tasks-number {
   display: inline-block;
   text-align: center;
   vertical-align: middle;
-  background: #ff4d4f;
+  background: #0000FF;
   border-radius: 50%;
   color: #fff;
   height: 22px;
@@ -133,13 +150,16 @@
   width: 22px;
   margin: 0 0 5px 5px;
 }
-.dashboard-team-clocks{
+
+.dashboard-team-clocks {
   color: #339CFF !important;
 }
 
 .team-clocks-header {
   height: 73.5px;
   align-items: center;
+  display: flex;
+  gap: 4px;
 }
 
 .hours-btn-container {
@@ -239,7 +259,7 @@
   border-radius: 6px;
   height: 42px;
   width: 42px;
-  border: 1px solid #17a2b8;
+  border: 1px solid #17A2B8;
   font-size: 12px;
   font-weight: bold;
   font-family: Arial, Helvetica, sans-serif;
@@ -254,14 +274,41 @@
   text-align: center;
 }
 
+.show-time-off-btn-selected {
+  background-color: #17A2B8;
+}
+
 .show-time-off-calender-svg {
+  width: 22px;
+  height: 20px;
   position: relative;
+  /* top: 11px;
+  left: -2px; */
+}
+
+.show-time-off-calender-svg-selected {
+  fill: white;
 }
 
 .show-time-off-icon {
   position: absolute;
   top: 6px;
   right: 6px;
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: white;
+}
+
+.show-time-off-icon-selected {
+  background-color: #17A2B8;
+}
+
+.show-time-off-icon path {
+  fill: #17A2B8;
 }
 
 .taking-time-off-content-btn {
@@ -291,8 +338,8 @@
 
 .time-off-detail-modal::-webkit-scrollbar-track {
   border-radius: 4px;
-  background-color: #e7e7e7;
-  border: 1px solid #cacaca;
+  background-color: #E7E7E7;
+  border: 1px solid #CACACA;
   box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
 }
 
@@ -301,7 +348,6 @@
   background-color: #007BFF;
   box-shadow: inset 0 0 3px #e7e7e7;
 }
-
 
 .time-off-detail-modal-section {
   margin-bottom: 10px;
@@ -347,28 +393,25 @@
   display: inline-flex;
   align-items: flex-start;
   gap: 8px;
-  /* Adjust the gap as needed */
 }
 
 .team-member-tasks-content {
   align-items: center;
-  /* Vertically center-align children */
   gap: 8px;
-  /* Space between children */
 }
 
 .team-task-progress-container {
   display: grid;
   grid-template-columns: 1fr repeat(2, auto);
   grid-template-rows: repeat(2, auto);
-  column-gap: 3px;
+  column-gap: 10px;
+  margin-left: -20px;
 }
 
 .team-task-progress-time {
   grid-column: 1 / span 1;
   grid-row: 1 / span 1;
   align-self: center;
-
 }
 
 .team-task-progress-time-volunteers {
@@ -386,7 +429,7 @@
 .team-task-progress-bar {
   grid-column: 1 / span 3;
   grid-row: 2 / span 1;
-  margin-top: 5px;
+  margin-top: 2px;
 }
 
 .task_table-container {
@@ -410,13 +453,11 @@
   height: auto;
 }
 
-
 .name {
-  margin-bottom: 4px;
-  margin-right: 4px;
   width: 2.5rem;
   display: flex;
   justify-content: center;
+  margin-bottom: 2px;
 }
 
 .name-initial {
@@ -426,7 +467,6 @@
   color: black;
   display: flex;
   justify-content: center;
-  /* Center horizontally */
   align-items: center;
   font-size: 10px;
   font-weight: 700;
@@ -444,7 +484,7 @@
 }
 
 .timelog-info {
-  width: 2.5rem;
+  width: 1.0rem;
   display: flex;
   justify-content: center;
 }
@@ -453,27 +493,20 @@
   background-color: #1C1C1C !important;
 }
 
-.rmsc.dark-mode .dropdown-content {
-  background-color: #1C1C1C !important;
-  color: #fff;
-}
-
+.rmsc.dark-mode .dropdown-content,
 .rmsc.dark-mode .dropdown-content .panel-content {
   background-color: #1C1C1C !important;
   color: #fff !important;
 }
 
+.rmsc.dark-mode .select-item,
+.rmsc.dark-mode .select-item.selected {
+  color: #fff !important;
+  background: #252525 !important;
+}
+
 .rmsc.dark-mode .select-item:hover {
   background: #252525 !important;
-  color: #fff !important;
-}
-
-.rmsc.dark-mode .select-item.selected {
-  background: #252525 !important;
-  color: #fff !important;
-}
-
-.rmsc.dark-mode .select-item {
   color: #fff !important;
 }
 
@@ -522,11 +555,9 @@
 }
 
 @media only screen and (max-width: 768px) {
-
   /* Adjust 768px to the breakpoint you want */
   .team-task-progress {
     width: 100%;
-    /* or any other value that fits your design */
     min-width: auto;
     max-width: none;
   }
@@ -555,13 +586,7 @@
     padding: 0 5%;
   }
 
-
-
-  .card-body {
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-  }
-
+  .card-body,
   .card-body .container {
     padding-left: 0 !important;
     padding-right: 0 !important;
@@ -580,14 +605,13 @@
     content: attr(data-label);
     font-size: 17px;
     font-weight: 500;
-
     display: block;
     text-align: left !important;
   }
 
   .table-row {
-    border: solid #e9ecef 2px;
-    background: #faf7fc;
+    border: solid #E9ECEF 2px;
+    background: #FAF7FC;
     font-size: 0.75rem !important;
   }
 
@@ -611,18 +635,10 @@
 
 @media only screen and (min-width: 768px) {
   .team-member-tasks h1 {
-    font-size: 24px;
-  }
-
-  /* .header-box {
-    flex-direction: unset;
-  } */
-
-  .team-member-tasks h1 {
     font-size: 28px;
   }
 
-  .remove-child-borders>td {
+  .remove-child-borders > td {
     border-top-width: 0 !important;
   }
 }
@@ -653,6 +669,8 @@
 @media only screen and (max-width: 530px) {
   .hours-btn-container {
     padding: 0;
+    /* preserve min-width:none from one side of the conflict */
+    min-width: none;
   }
 
   .team-selector-container {
@@ -671,7 +689,6 @@
     font-size: 14px;
     text-align: center;
   }
-
 }
 
 @media only screen and (max-width: 544px) {
