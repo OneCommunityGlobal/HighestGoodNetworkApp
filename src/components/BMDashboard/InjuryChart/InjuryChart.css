@@ -1,0 +1,278 @@
+/* InjuryChart.css */
+.injury-chart-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  background-color: var(--background-color);
+  min-height: 100vh;
+}
+
+.injury-chart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #ddd;
+}
+
+.injury-chart-header h2 {
+  margin: 0;
+  color: #333;
+  font-size: 24px;
+}
+
+.injury-chart-info {
+  display: flex;
+  align-items: center;
+  color: #666;
+  font-size: 14px;
+}
+
+.injury-chart-info svg {
+  margin-right: 8px;
+  color: #3498db;
+}
+
+/* InjuryChartForm.css */
+.injury-chart-form-container {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+.injury-filter-form {
+  margin-bottom: 20px;
+}
+
+.injury-filter-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 20px;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  align-items: flex-end;
+}
+
+.project-filter {
+  flex: 1;
+  min-width: 200px;
+}
+
+.date-filter {
+  flex: 1;
+  min-width: 200px;
+}
+
+.apply-filter-btn {
+  height: 38px;
+  padding: 0 20px;
+  font-weight: 600;
+}
+
+.injury-chart-display {
+  margin-top: 20px;
+}
+
+.chart-container {
+  background-color: var(--card-background);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  transition: box-shadow 0.3s ease;
+  margin-top: 1.5rem;
+}
+
+.chart-container:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+.chart-container h3 {
+  color: var(--text-primary);
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.chart-loading,
+.chart-error,
+.chart-no-data {
+  padding: 40px;
+  text-align: center;
+  font-size: 16px;
+  color: #666;
+  background-color: #f9f9f9;
+  border-radius: 6px;
+  margin-top: 20px;
+}
+
+.chart-error {
+  color: #d32f2f;
+  background-color: #ffebee;
+}
+
+.date-picker {
+  width: 100%;
+  height: 38px;
+}
+
+@media (max-width: 768px) {
+  .injury-filter-controls {
+    flex-direction: column;
+  }
+  
+  .project-filter,
+  .date-filter {
+    width: 100%;
+  }
+  
+  .apply-filter-btn {
+    width: 100%;
+  }
+
+  .injury-chart-container {
+    padding: 1rem;
+  }
+
+  .filter-form {
+    padding: 1rem !important;
+  }
+
+  .row.g-3 > div {
+    margin-bottom: 1rem;
+  }
+}
+
+/* Modern styling for the injury chart component */
+:root {
+  --primary-color: #2563eb;
+  --error-color: #dc2626;
+  --success-color: #059669;
+  --warning-color: #d97706;
+  --background-color: #f3f4f6;
+  --card-background: #ffffff;
+  --text-primary: #1f2937;
+  --text-secondary: #6b7280;
+  --border-color: #e5e7eb;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+}
+
+/* Filter form styling */
+.filter-form {
+  background-color: var(--card-background);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  transition: box-shadow 0.3s ease;
+}
+
+.filter-form:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+.filter-form .form-group {
+  margin-bottom: 0;
+}
+
+.filter-form label {
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+}
+
+/* Select input styling */
+.filter-form select.form-control {
+  appearance: none;
+  background-color: var(--card-background);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  /*padding: 0.625rem 1rem; */
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236B7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.5rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  padding-right: 2.5rem;
+  height: 38px;
+}
+
+.filter-form select.form-control:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+  outline: none;
+}
+
+/* Date picker styling */
+.filter-form .react-datepicker-wrapper {
+  width: 100%;
+}
+
+.filter-form .react-datepicker__input-container input {
+  width: 100%;
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  background-color: var(--card-background);
+  transition: all 0.2s ease;
+  height: 38px;
+}
+
+.filter-form .react-datepicker__input-container input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+  outline: none;
+}
+
+/* Loading and error states */
+.text-center.p-5 {
+  background-color: var(--card-background);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.spinner-border.text-primary {
+  color: var(--primary-color) !important;
+}
+
+.alert-danger {
+  background-color: #fef2f2;
+  border: 1px solid #fee2e2;
+  color: var(--error-color);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+/* Chart colors */
+.recharts-line-dot {
+  fill: var(--card-background);
+}
+
+/* Tooltip customization */
+.recharts-tooltip-wrapper {
+  background-color: var(--card-background) !important;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+}
+
+.recharts-default-tooltip {
+  background-color: var(--card-background) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: var(--radius-md) !important;
+}
+
+/* Legend customization */
+.recharts-default-legend {
+  padding: 1rem 0 !important;
+}
