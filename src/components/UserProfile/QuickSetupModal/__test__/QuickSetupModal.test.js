@@ -19,19 +19,26 @@ const mockStore = configureStore([]);
 
 describe('QuickSetupModal Component', () => {
   let store;
+  let mockFetchTeamCodeAllUsers;
 
   beforeEach(() => {
     store = mockStore({
       theme: { darkMode: false },
     });
     getAllTitle.mockResolvedValue({ data: mockTitles });
+    mockFetchTeamCodeAllUsers = jest.fn(() => Promise.resolve(['TeamCode1', 'TeamCode2']));
   });
 
   test('renders "Add New QST" button when user has addTitle permission', async () => {
     await act(async () => {
       render(
         <Provider store={store}>
-          <QuickSetupModal userProfile={mockUserProfile} hasPermission={() => true} />
+          <QuickSetupModal
+            userProfile={mockUserProfile}
+            hasPermission={() => true}
+            fetchTeamCodeAllUsers={mockFetchTeamCodeAllUsers}
+            teamsData={mockTeamsData}
+          />
         </Provider>
       );
     });
@@ -45,10 +52,11 @@ describe('QuickSetupModal Component', () => {
     await act(async () => {
       render(
         <Provider store={store}>
-          <QuickSetupModal 
-            userProfile={mockUserProfile} 
-            hasPermission={() => true} 
-            teamsData={mockTeamsData} 
+          <QuickSetupModal
+            userProfile={mockUserProfile}
+            hasPermission={() => true}
+            fetchTeamCodeAllUsers={mockFetchTeamCodeAllUsers}
+            teamsData={mockTeamsData}
           />
         </Provider>
       );
@@ -65,7 +73,12 @@ describe('QuickSetupModal Component', () => {
     await act(async () => {
       render(
         <Provider store={store}>
-          <QuickSetupModal userProfile={mockUserProfile} hasPermission={() => true} />
+          <QuickSetupModal
+            userProfile={mockUserProfile}
+            hasPermission={() => true}
+            fetchTeamCodeAllUsers={mockFetchTeamCodeAllUsers}
+            teamsData={mockTeamsData}
+          />
         </Provider>
       );
     });
