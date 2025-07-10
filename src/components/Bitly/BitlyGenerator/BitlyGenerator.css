@@ -1,0 +1,99 @@
+.bitly-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.bitly-container h2 {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.connect-btn,
+.qr-btn,
+.actions .input-group button {
+  background-color: #ffba00;
+  border: none;
+  padding: 0.5rem 1rem;
+  margin-left: 0.5rem;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.connect-btn:disabled,
+.actions .input-group button:disabled,
+.qr-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.connected button {
+  background: none;
+  border: none;
+  margin-left: 0.5rem;
+  cursor: pointer;
+}
+
+.actions .input-group {
+  display: flex;
+  margin-bottom: 1rem;
+}
+
+.actions .input-group input {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.short-link {
+  margin-bottom: 1rem;
+}
+
+.qr-code img {
+  max-width: 200px;
+  display: block;
+  margin: 1rem auto;
+}
+
+/* pill the whole “Connected” row a bit */
+.connected {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  background: #e6ffed;          /* soft green */
+  border: 1px solid #a7f3d0;    /* matching outline */
+  border-radius: 9999px;        /* pill shape */
+  font-size: 0.9rem;
+  color: #047857;     
+  margin-bottom: 10px;          /* deep green text */
+}
+
+/* pretty, lightweight “×” button */
+.disconnect-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;                /* keeps it circular */
+  height: 1.5rem;
+  margin-left: 0.25rem;
+  background: #fef2f2;          /* soft red-ish */
+  border: 1px solid #fecaca;
+  border-radius: 50%;
+  color: #dc2626;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.disconnect-btn:hover {
+  background: #fecaca;
+  transform: scale(1.07);
+}
+
+.disconnect-btn:active {
+  transform: scale(0.95);
+}

@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
 import { useState, useEffect, useRef } from 'react';
+import axios from 'axios';
 import './Announcements.css';
 import './Bitly.css';
 import { useDispatch, useSelector } from 'react-redux';
@@ -7,7 +8,9 @@ import { Editor } from '@tinymce/tinymce-react';
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
-import BitlyLinkGenerator from '../BitlyGenerator/BitlyGenerator';
+import BitlyLinkGenerator from '../Bitly/BitlyGenerator/BitlyGenerator';
+import BitlyOverview from '../Bitly/BitlyOverview/BitlyOverview';
+import '../Bitly/BitlyOverview/BitlyOverview.css';
 import BitlyIcon from '../../assets/images/bitly_icon.svg';
 
 function Announcements({ title, email: initialEmail }) {
@@ -22,7 +25,38 @@ function Announcements({ title, email: initialEmail }) {
   const editorRef = useRef(null);
 
   // New state for toggling Bitly
-  const [showBitly, setShowBitly] = useState(false);
+  const [bitlyConnected, setBitlyConnected] = useState(false);
+
+  // 1) On mount, pick up ?bitly=success and flip state
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('bitly') === 'success') setBitlyConnected(true);
+    const result = params.get('bitly');
+    const err = params.get('error');
+
+    if (result === 'success') {
+      setBitlyConnected(true);
+      toast.success('Bitly connected!');
+    } else if (result === 'error') {
+      // Display the specific error (e.g. user denied)
+      toast.error(`Bitly connection failed: ${err || 'Unknown error'}`);
+    }
+
+    // remove the query string from the URL
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }, []);
+
+  // 2) On mount, also check current connection status
+  useEffect(() => {
+    axios
+      .get('/api/bitly/status')
+      .then(res => {
+        if (res.data.connected) setBitlyConnected(true);
+      })
+      .catch(() => {
+        /* ignore errors */
+      });
+  }, []);
 
   useEffect(() => {
     setShowEditor(false);
@@ -165,7 +199,7 @@ function Announcements({ title, email: initialEmail }) {
   return (
     <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: '100%' }}>
       <div className="email-update-container">
-        <div className="editor" style={{ flex: showBitly ? 1 : 'unset' }}>
+        <div className="editor" style={{ flex: bitlyConnected ? 1 : 'unset' }}>
           <div className="editor-header">
             {title ? (
               <h3>{title}</h3>
@@ -175,7 +209,7 @@ function Announcements({ title, email: initialEmail }) {
                 <button
                   type="button"
                   className="blogger-toggle"
-                  onClick={() => setShowBitly(prev => !prev)}
+                  onClick={() => setBitlyConnected(prev => !prev)}
                   style={darkMode ? boxStyleDark : boxStyle}
                 >
                   <img src={BitlyIcon} alt="Bitly" className="bitly-icon" />
@@ -184,8 +218,11 @@ function Announcements({ title, email: initialEmail }) {
             )}
           </div>
 
-          {showBitly ? (
-            <BitlyLinkGenerator />
+          {bitlyConnected ? (
+            <>
+              <BitlyLinkGenerator onDisconnect={() => setBitlyConnected(false)} />
+              <BitlyOverview />
+            </>
           ) : (
             <>
               <br />
@@ -244,7 +281,7 @@ function Announcements({ title, email: initialEmail }) {
           )}
         </div>
 
-        {!showBitly && (
+        {!bitlyConnected && (
           <div
             className={`emails ${darkMode ? 'bg-yinmn-blue' : ''}`}
             style={darkMode ? boxStyleDark : boxStyle}

@@ -1,0 +1,15 @@
+.editable-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.edit-icon {
+  cursor: pointer;
+  font-size: 0.8em;
+  color: #888;
+  transition: color 0.2s;
+}
+.edit-icon:hover {
+  color: #333;
+}

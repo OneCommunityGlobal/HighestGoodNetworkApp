@@ -24,6 +24,7 @@ import HeaderRenderer from 'components/Header/HeaderRenderer';
 import { ExperienceDonutChart } from 'components/ExperienceDonutChart';
 
 // hgnform routes
+import BitlyCallback from 'components/Bitly/BitlyCallBack/BitlyCallback'
 import Page1 from './components/HGNForm/pages/Page1';
 import Page2 from './components/HGNForm/pages/Page2';
 import Page3 from './components/HGNForm/pages/Page3';
@@ -127,6 +128,8 @@ import SkillsOverviewPage from './components/HGNHelpSkillsDashboard/SkillsOvervi
 import CommunityMembersPage from './components/HGNHelpSkillsDashboard/CommunityMembersPage';
 import UserProfilePage from './components/HGNHelpSkillsDashboard/UserProfilePage';
 import FeedbackModal from './components/HGNHelpSkillsDashboard/FeedbackModal';
+
+// Bitly
 
 // eslint-disable-next-line import/order, import/no-unresolved
 import LogTools from './components/BMDashboard/LogTools/LogTools';
@@ -238,6 +241,7 @@ export default (
         </>
       )}
     />
+    <Route path="/bitly-callback" component={BitlyCallback} />
     <Route path="/form" component={FormEditor} />
     <Route path="/formviewer" component={FormViewer} />
     <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />

@@ -17,7 +17,7 @@ import './BitlyGenerator.css';
 axios.defaults.baseURL = 'http://localhost:4500';
 axios.defaults.headers.common['Content-Type'] = 'application/json';
 
-export default function BitlyGenerator() {
+export default function BitlyGenerator({ onDisconnect = () => {} }) {
   const [isConnected, setIsConnected] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [longUrl, setLongUrl] = useState('');
@@ -85,15 +85,13 @@ export default function BitlyGenerator() {
 
     try {
       setIsWorking(true);
-      const res = await axios.post(
-        '/api/bitly/qr',
-        { bitlinkId: shortLink.replace(/^https?:\/\//, '') },
-        { responseType: 'blob' },
-      );
-      const blobUrl = URL.createObjectURL(res.data);
+      const res = await axios.post('/api/bitly/qr', {
+        bitlinkId: shortLink.replace(/^https?:\/\//, ''),
+      });
+      const blobUrl = res.data.imageData;
       setQrSrc(blobUrl);
       toast.success('QR code generated!');
-    } catch {
+    } catch (err) {
       toast.error('Failed to generate QR code');
     } finally {
       setIsWorking(false);
@@ -105,6 +103,7 @@ export default function BitlyGenerator() {
     try {
       await axios.get('/api/bitly/logout');
       setIsConnected(false);
+      onDisconnect();
       setLongUrl('');
       setShortLink('');
       setQrSrc(null);
@@ -130,8 +129,13 @@ export default function BitlyGenerator() {
 
       {!isLoading && isConnected && (
         <div className="connected">
-          <FontAwesomeIcon icon={faCheck} /> Connected{' '}
-          <button type="button" onClick={handleDisconnect} aria-label="Disconnect from Bitly">
+          <FontAwesomeIcon icon={faCheck} /> Connected
+          <button
+            type="button"
+            className="disconnect-btn"
+            onClick={handleDisconnect}
+            aria-label="Disconnect from Bitly"
+          >
             <FontAwesomeIcon icon={faTimes} />
           </button>
         </div>
@@ -178,7 +182,7 @@ export default function BitlyGenerator() {
 
           {qrSrc && (
             <div className="qr-code">
-              <img src={qrSrc} alt="Bitly QR code" />
+              <img src={qrSrc} alt="QR" />
             </div>
           )}
         </div>
