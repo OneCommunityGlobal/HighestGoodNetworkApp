@@ -2,8 +2,7 @@
 /* eslint-disable no-shadow */
 /* eslint-disable react/require-default-props */
 /* eslint-disable react/forbid-prop-types */
-import { useEffect } from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {
@@ -33,6 +32,14 @@ import { getAllUserTeams, getAllTeamCode } from '../../actions/allTeamsAction';
 import TeamChart from './TeamChart';
 import SkeletonLoading from '../common/SkeletonLoading';
 import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
+import {
+  getSavedFilters,
+  createSavedFilter,
+  deleteSavedFilter,
+  updateSavedFilter,
+  updateSavedFiltersForTeamCodeChange,
+  updateSavedFiltersForIndividualTeamCodeChange,
+} from '../../actions/savedFilterActions';
 import WeeklySummaryRecipientsPopup from './WeeklySummaryRecepientsPopup';
 import FormattedReport from './FormattedReport';
 import GeneratePdfReport from './GeneratePdfReport';
@@ -43,6 +50,7 @@ import PasswordInputModal from './PasswordInputModal';
 import { showTrophyIcon } from '../../utils/anniversaryPermissions';
 import SelectTeamPieChart from './SelectTeamPieChart';
 import { setTeamCodes } from '../../actions/teamCodes';
+import SaveFilterModal from './SaveFilterModal';
 import './WeeklySummariesReport.css';
 
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
@@ -101,6 +109,8 @@ const initialState = {
     green: false,
     navy: false,
   },
+  // Saved filters functionality
+  saveFilterModalOpen: false,
 };
 
 const intialPermissionState = {
@@ -115,6 +125,11 @@ const WeeklySummariesReport = props => {
   const weekDates = getWeekDates();
   const [state, setState] = useState(initialState);
   const [permissionState, setPermissionState] = useState(intialPermissionState);
+
+  // Saved filters functionality
+  const [currentAppliedFilter, setCurrentAppliedFilter] = useState(null);
+  const [showModificationModal, setShowModificationModal] = useState(false);
+
   // Misc functionalities
   /**
    * Sort the summaries in alphabetixal order
@@ -701,6 +716,11 @@ const WeeklySummariesReport = props => {
         teamCodes: reorderedTeamCodes,
       };
     });
+
+    // Clear current applied filter if selection is cleared
+    if (currentAppliedFilter && event.length === 0) {
+      setCurrentAppliedFilter(null);
+    }
   };
 
   const handleOverHoursToggleChange = () => {
@@ -800,9 +820,198 @@ const WeeklySummariesReport = props => {
             label: `Select All With NO Code (${noTeamCodeCount || 0})`,
             _ids: teamCodeWithUserId[''],
           });
-        return { ...prevState, summaries, teamCodes, selectedCodes };
+
+        return {
+          ...prevState,
+          summaries,
+          teamCodes,
+          selectedCodes,
+        };
       });
+
+      // Update saved filters in the database with the new team code
+      if (oldTeamCode && newTeamCode && oldTeamCode !== newTeamCode) {
+        // Get the user ID from the userIdObj
+        const userId = Object.keys(userIdObj)[0];
+        props.updateSavedFiltersForIndividualTeamCodeChange(oldTeamCode, newTeamCode, userId);
+
+        // Refresh saved filters after the update
+        setTimeout(() => {
+          props.getSavedFilters();
+        }, 1000);
+      }
+
       return null;
+    } catch (error) {
+      return null;
+    }
+  };
+
+  const handleSelectColorChange = event => {
+    setState(prevState => ({
+      ...prevState,
+      selectedColors: event,
+    }));
+  };
+
+  const handleReplaceCode = e => {
+    try {
+      e.persist();
+      setState(prevState => ({ ...prevState, replaceCode: e.target?.value }));
+      return e;
+    } catch (error) {
+      return null;
+    }
+  };
+
+  const handleTrophyToggleChange = () => {
+    setState(prevState => ({
+      ...prevState,
+      selectedTrophies: !prevState.selectedTrophies,
+    }));
+  };
+
+  const handleSpecialColorToggleChange = (color, isEnabled) => {
+    setState(prevState => ({
+      ...prevState,
+      selectedSpecialColors: {
+        ...prevState.selectedSpecialColors,
+        [color]: isEnabled,
+      },
+    }));
+  };
+
+  const handleSpecialColorDotClick = (userId, color) => {
+    setState(prevState => {
+      const updatedSummaries = prevState.summaries.map(summary => {
+        if (summary._id === userId) {
+          return { ...summary, filterColor: color };
+        }
+        return summary;
+      });
+
+      // Also update the tab-specific cache
+      const updatedSummariesByTab = {
+        ...prevState.summariesByTab,
+        [prevState.activeTab]: updatedSummaries,
+      };
+
+      return {
+        ...prevState,
+        summaries: updatedSummaries,
+        summariesByTab: updatedSummariesByTab,
+      };
+    });
+  };
+
+  // Saved filters functionality
+  const handleSaveFilter = async filterName => {
+    const filterConfig = {
+      selectedCodes: state.selectedCodes.map(code => code.value),
+    };
+
+    const result = await props.createSavedFilter({
+      name: filterName,
+      filterConfig,
+    });
+
+    if (result.status === 201) {
+      setState(prevState => ({
+        ...prevState,
+        saveFilterModalOpen: false,
+      }));
+      // Refresh the saved filters list
+      props.getSavedFilters();
+    }
+  };
+
+  const handleUpdateFilter = async filterName => {
+    if (!currentAppliedFilter) return;
+
+    const filterConfig = {
+      selectedCodes: state.selectedCodes.map(code => code.value),
+    };
+
+    const result = await props.updateSavedFilter(currentAppliedFilter._id, {
+      name: filterName,
+      filterConfig,
+    });
+
+    if (result.status === 200) {
+      setShowModificationModal(false);
+      // Update the current applied filter with the new data
+      setCurrentAppliedFilter(result.data);
+      // Refresh the saved filters list
+      props.getSavedFilters();
+    }
+  };
+
+  const handleApplyFilter = filter => {
+    // Validate that the saved filter codes still exist in current team codes
+    const validCodes = filter.filterConfig.selectedCodes
+      .map(codeValue => state.teamCodes.find(currentCode => currentCode.value === codeValue))
+      .filter(Boolean);
+
+    setState(prevState => ({
+      ...prevState,
+      selectedCodes: validCodes,
+    }));
+
+    // Set the current applied filter
+    setCurrentAppliedFilter(filter);
+  };
+
+  const handleDeleteFilter = async filterId => {
+    const result = await props.deleteSavedFilter(filterId);
+    if (result.status === 200) {
+      // Clear current applied filter if it was deleted
+      if (currentAppliedFilter && currentAppliedFilter._id === filterId) {
+        setCurrentAppliedFilter(null);
+      }
+      // Refresh the saved filters list
+      props.getSavedFilters();
+    }
+  };
+
+  const handleOpenSaveFilterModal = () => {
+    // If no current filter is applied, always create a new filter
+    if (!currentAppliedFilter) {
+      setState(prevState => ({
+        ...prevState,
+        saveFilterModalOpen: true,
+      }));
+      return;
+    }
+
+    // If there's a current filter applied, always show modification modal
+    // regardless of whether the selection has changed or not
+    setShowModificationModal(true);
+  };
+
+  const handleCloseSaveFilterModal = () => {
+    setState(prevState => ({
+      ...prevState,
+      saveFilterModalOpen: false,
+    }));
+  };
+
+  const handleCloseModificationModal = () => {
+    setShowModificationModal(false);
+  };
+
+  const passwordInputModalToggle = () => {
+    try {
+      return (
+        <PasswordInputModal
+          open={state.passwordModalOpen}
+          onClose={onpasswordModalClose}
+          checkForValidPwd={checkForValidPwd}
+          isValidPwd={state.isValidPwd}
+          setSummaryRecepientsPopup={setSummaryRecepientsPopup}
+          setAuthpassword={setAuthpassword}
+          authEmailWeeklySummaryRecipient={props.authEmailWeeklySummaryRecipient}
+        />
+      );
     } catch (error) {
       return null;
     }
@@ -897,6 +1106,9 @@ const WeeklySummariesReport = props => {
           }
         });
 
+        // Update saved filters in the database with the new team code
+        await props.updateSavedFiltersForTeamCodeChange(oldTeamCodes, replaceCode);
+
         setState(prev => ({
           ...prev,
           summaries: updatedSummaries,
@@ -926,81 +1138,6 @@ const WeeklySummariesReport = props => {
         ...prev,
         replaceCodeLoading: false,
       }));
-    }
-  };
-
-  const handleSelectColorChange = event => {
-    setState(prevState => ({
-      ...prevState,
-      selectedColors: event,
-    }));
-  };
-
-  const handleReplaceCode = e => {
-    try {
-      e.persist();
-      setState(prevState => ({ ...prevState, replaceCode: e.target?.value }));
-      return e;
-    } catch (error) {
-      return null;
-    }
-  };
-
-  const handleTrophyToggleChange = () => {
-    setState(prevState => ({
-      ...prevState,
-      selectedTrophies: !prevState.selectedTrophies,
-    }));
-  };
-
-  const handleSpecialColorToggleChange = (color, isEnabled) => {
-    setState(prevState => ({
-      ...prevState,
-      selectedSpecialColors: {
-        ...prevState.selectedSpecialColors,
-        [color]: isEnabled,
-      },
-    }));
-  };
-
-  const handleSpecialColorDotClick = (userId, color) => {
-    setState(prevState => {
-      const updatedSummaries = prevState.summaries.map(summary => {
-        if (summary._id === userId) {
-          return { ...summary, filterColor: color };
-        }
-        return summary;
-      });
-
-      // Also update the tab-specific cache
-      const updatedSummariesByTab = {
-        ...prevState.summariesByTab,
-        [prevState.activeTab]: updatedSummaries,
-      };
-
-      return {
-        ...prevState,
-        summaries: updatedSummaries,
-        summariesByTab: updatedSummariesByTab,
-      };
-    });
-  };
-
-  const passwordInputModalToggle = () => {
-    try {
-      return (
-        <PasswordInputModal
-          open={state.passwordModalOpen}
-          onClose={onpasswordModalClose}
-          checkForValidPwd={checkForValidPwd}
-          isValidPwd={state.isValidPwd}
-          setSummaryRecepientsPopup={setSummaryRecepientsPopup}
-          setAuthpassword={setAuthpassword}
-          authEmailWeeklySummaryRecipient={props.authEmailWeeklySummaryRecipient}
-        />
-      );
-    } catch (error) {
-      return null;
     }
   };
 
@@ -1075,6 +1212,9 @@ const WeeklySummariesReport = props => {
     };
 
     fetchInitialPermissions();
+
+    // Load saved filters when component mounts
+    props.getSavedFilters();
   }, []);
 
   const { role, darkMode } = props;
@@ -1121,6 +1261,25 @@ const WeeklySummariesReport = props => {
     >
       {passwordInputModalToggle()}
       {popUpElements()}
+      <SaveFilterModal
+        isOpen={state.saveFilterModalOpen}
+        onClose={handleCloseSaveFilterModal}
+        onSave={handleSaveFilter}
+        selectedCodes={state.selectedCodes}
+        darkMode={darkMode}
+        existingFilterNames={props.savedFilters.map(filter => filter.name)}
+      />
+      <SaveFilterModal
+        isOpen={showModificationModal}
+        onClose={handleCloseModificationModal}
+        onSave={handleSaveFilter}
+        onUpdate={handleUpdateFilter}
+        selectedCodes={state.selectedCodes}
+        darkMode={darkMode}
+        existingFilterNames={props.savedFilters.map(filter => filter.name)}
+        currentFilter={currentAppliedFilter}
+        isModification
+      />
       <Row>
         <Col lg={{ size: 10, offset: 1 }}>
           <h3 className="mt-3 mb-5">
@@ -1206,21 +1365,49 @@ const WeeklySummariesReport = props => {
               </ReactTooltip>
             </>
           )}
-          <MultiSelect
-            className={`multi-select-filter text-dark ${darkMode ? 'dark-mode' : ''} ${
-              state.teamCodeWarningUsers.length > 0 ? 'warning-border' : ''
-            }`}
-            options={state.teamCodes.map(item => {
-              const [code, count] = item.label.split(' (');
-              return {
-                ...item,
-                label: `${code.padEnd(10, ' ')} (${count}`,
-              };
-            })}
-            value={state.selectedCodes}
-            onChange={handleSelectCodeChange}
-            labelledBy="Select"
-          />
+
+          {/* MultiSelect with Save/Delete Buttons */}
+          <div style={{ position: 'relative' }}>
+            <MultiSelect
+              className={`multi-select-filter text-dark ${darkMode ? 'dark-mode' : ''} ${
+                state.teamCodeWarningUsers.length > 0 ? 'warning-border' : ''
+              }`}
+              options={state.teamCodes.map(item => {
+                const [code, count] = item.label.split(' (');
+                return {
+                  ...item,
+                  label: `${code.padEnd(10, ' ')} (${count}`,
+                };
+              })}
+              value={state.selectedCodes}
+              onChange={handleSelectCodeChange}
+              labelledBy="Select"
+            />
+
+            {/* Save/Delete Buttons - only visible when codes are selected */}
+            {state.selectedCodes.length > 0 && hasPermissionToFilter && (
+              <div className="filter-save-buttons">
+                <button
+                  type="button"
+                  className="filter-save-btn save"
+                  onClick={handleOpenSaveFilterModal}
+                  title="Save current filter"
+                  aria-label="Save current filter"
+                >
+                  <i className="fa fa-save" />
+                </button>
+                <button
+                  type="button"
+                  className="filter-save-btn clear"
+                  onClick={() => handleSelectCodeChange([])}
+                  title="Clear selection"
+                  aria-label="Clear selection"
+                >
+                  <i className="fa fa-times" />
+                </button>
+              </div>
+            )}
+          </div>
         </Col>
 
         <Col lg={{ size: 5 }} md={{ size: 6, offset: -1 }} xs={{ size: 6, offset: -1 }}>
@@ -1351,6 +1538,57 @@ const WeeklySummariesReport = props => {
           </div>
         </Col>
       </Row>
+
+      {/* Saved Filter Buttons */}
+      {props.savedFilters && props.savedFilters.length > 0 && (
+        <Row style={{ marginBottom: '10px' }}>
+          <Col lg={{ size: 10, offset: 1 }} xs={{ size: 10, offset: 1 }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', alignItems: 'center' }}>
+              {props.savedFilters.map(filter => (
+                <div
+                  key={filter._id}
+                  className={`saved-filter-button ${darkMode ? 'dark-mode' : ''} ${
+                    currentAppliedFilter && currentAppliedFilter._id === filter._id
+                      ? 'active-filter'
+                      : ''
+                  }`}
+                >
+                  <button
+                    type="button"
+                    className="btn btn-link p-0 mr-1"
+                    style={{
+                      color: 'inherit',
+                      textDecoration: 'none',
+                      fontSize: '0.875rem',
+                      background: 'none',
+                      border: 'none',
+                      padding: 0,
+                      fontWeight:
+                        currentAppliedFilter && currentAppliedFilter._id === filter._id
+                          ? 'bold'
+                          : 'normal',
+                    }}
+                    onClick={() => handleApplyFilter(filter)}
+                    title={`Apply filter: ${filter.name}`}
+                  >
+                    {filter.name}
+                  </button>
+                  <button
+                    type="button"
+                    className="saved-filter-delete-btn"
+                    onClick={() => handleDeleteFilter(filter._id)}
+                    title="Delete filter"
+                    aria-label={`Delete filter ${filter.name}`}
+                  >
+                    <i className="fa fa-times" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </Col>
+        </Row>
+      )}
+
       {permissionState.codeEditPermission && state.selectedCodes && state.selectedCodes.length > 0 && (
         <Row style={{ marginBottom: '10px' }}>
           <Col lg={{ size: 5, offset: 1 }} xs={{ size: 5, offset: 1 }}>
@@ -1505,6 +1743,9 @@ const mapStateToProps = state => ({
   allBadgeData: state.badge?.allBadgeData || [],
   infoCollections: state.infoCollections?.infos || [],
   role: state?.auth?.user?.role || '',
+  savedFilters: state.savedFilters?.savedFilters || [],
+  savedFiltersLoading: state.savedFilters?.loading || false,
+  savedFiltersError: state.savedFilters?.error || null,
   auth: state?.auth || {},
   darkMode: state?.theme?.darkMode || false,
   authEmailWeeklySummaryRecipient: state?.auth?.user?.email || '',
@@ -1518,6 +1759,14 @@ const mapDispatchToProps = dispatch => ({
   getAllUserTeams: () => dispatch(getAllUserTeams()),
   getAllTeamCode: () => dispatch(getAllTeamCode()),
   setTeamCodes: teamCodes => dispatch(setTeamCodes(teamCodes)),
+  createSavedFilter: filter => dispatch(createSavedFilter(filter)),
+  deleteSavedFilter: filterId => dispatch(deleteSavedFilter(filterId)),
+  updateSavedFilter: (filterId, filterData) => dispatch(updateSavedFilter(filterId, filterData)),
+  getSavedFilters: () => dispatch(getSavedFilters()),
+  updateSavedFiltersForTeamCodeChange: (oldTeamCodes, newTeamCode) =>
+    dispatch(updateSavedFiltersForTeamCodeChange(oldTeamCodes, newTeamCode)),
+  updateSavedFiltersForIndividualTeamCodeChange: (oldTeamCode, newTeamCode, userId) =>
+    dispatch(updateSavedFiltersForIndividualTeamCodeChange(oldTeamCode, newTeamCode, userId)),
 });
 
 function WeeklySummariesReportTab({ tabId, hidden, children }) {
