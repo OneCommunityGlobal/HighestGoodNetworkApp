@@ -22,6 +22,7 @@ const renderAddWBS = (addWBSProps) => {
         },
       },
     },
+    theme: { darkMode: false },
     ...addWBSProps,
   };
 
@@ -65,7 +66,7 @@ describe("AddWBS component structure", () => {
   });
 
   test("button should not be in the document when the input field is empty", () => {
-    expect(screen.queryByRole('button')).toBeNull();
+    expect(screen.queryByTestId('add-wbs-button')).toBeNull();
   });
 
   test("user should be able to type in the input field", () => {
@@ -75,7 +76,7 @@ describe("AddWBS component structure", () => {
 
   test("button should appear when user types in the input field", () => {
     typeIntoInput({ input: '123' });
-    expect(screen.queryByRole('button')).not.toBeNull();
+    expect(screen.queryByTestId('add-wbs-button')).not.toBeNull();
   });
 });
 

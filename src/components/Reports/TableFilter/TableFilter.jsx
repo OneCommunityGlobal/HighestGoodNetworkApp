@@ -6,7 +6,6 @@ import './TableFilter.css';
 import { Checkbox } from 'components/common/Checkbox';
 import TextSuggestion from '../../UserManagement/TextSuggestion';
 import DropDownSearchBox from '../../UserManagement/DropDownSearchBox';
-import { divide } from 'lodash';
 
 const InputWithCalendarIcon = forwardRef(({ value, onClick }, ref) => {
   return (
@@ -38,16 +37,20 @@ function TableFilter({
   resources,
   status,
   priority,
+  StartDate,
+  EndDate,
+  UpdateStartDate,
+  UpdateEndDate,
 }) {
   const taskPriority = ['Primary', 'Secondary', 'Tertiary'];
   const taskStatus = ['Paused', 'Complete', 'Active'];
   const [taskActive, setTaskActive] = useState(true);
   const [taskAssign, setTaskAssign] = useState(true);
-  const [startDate, setStartDate] = useState(new Date('01/01/2010'));
-  const [endDate, setEndDate] = useState(new Date());
+  // const [startDate, setStartDate] = useState(new Date('01/01/2010'));
+  // const [endDate, setEndDate] = useState(new Date());
   const taskName = taskNameList.map((item) => item.taskName)
   const taskHour = taskNameList.map((item) => item.estimatedHours)
-  const taskResource = taskNameList.map(function (item) { return [item.resources.map((e) => e[0].name)].join() })
+  const taskResource = taskNameList.map(function taskResource(item) { return [item.resources.map((e) => e[0].name)].join() })
   const uniquetaskHour = [...new Set(taskHour)];
   const uniquetaskResource = [...new Set(taskResource)];
 
@@ -96,17 +99,17 @@ function TableFilter({
       />
       <DatePicker
         customInput={<InputWithCalendarIcon />}
-        selected={startDate}
+        selected={StartDate}
         minDate={new Date('01/01/2010')}
         maxDate={new Date()}
-        onChange={date => setStartDate(date)}
+        onChange={date => UpdateStartDate(date)}
       />
       <DatePicker
         customInput={<InputWithCalendarIcon />}
-        selected={endDate}
+        selected={EndDate}
         maxDate={new Date()}
         minDate={new Date('01/01/2010')}
-        onChange={date => setEndDate(date)}
+        onChange={date => UpdateEndDate(date)}
       />
       <Checkbox
         value={taskActive}

@@ -1,7 +1,8 @@
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
+// eslint-disable-next-line no-unused-vars
 import { render, screen, fireEvent, waitFor, act, wait } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import UserRoleTab from '../UserRoleTab';
 import thunk from 'redux-thunk';
 import mockAdminState from '__tests__/mockAdminState';
 import configureStore from 'redux-mock-store';
@@ -11,6 +12,7 @@ import { Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
 import { themeMock } from '__tests__/mockStates';
 import { ModalProvider } from 'context/ModalContext';
+import UserRoleTab from '../UserRoleTab';
 
 const mockStore = configureStore([thunk]);
 let store;
@@ -48,7 +50,7 @@ describe('UserRoleTab component when the role does not exist', () => {
     render(
       <Provider store={store}>
         <ModalProvider>
-        <UserRoleTab match={{ params: { userRole: 'Test' } }} />
+          <UserRoleTab match={{ params: { userRole: 'Test' } }} />
         </ModalProvider>
       </Provider>,
     );
@@ -61,7 +63,7 @@ describe('UserRoleTab component when the role does not exist', () => {
     render(
       <Provider store={store}>
         <ModalProvider>
-        <UserRoleTab match={{ params: { userRole: 'Test' } }} />
+          <UserRoleTab match={{ params: { userRole: 'Test' } }} />
         </ModalProvider>
       </Provider>,
     );
@@ -75,7 +77,7 @@ describe('UserRoleTab component when the role does not exist', () => {
     render(
       <Provider store={store}>
         <ModalProvider>
-        <UserRoleTab match={{ params: { userRole: 'Test' } }} />
+          <UserRoleTab match={{ params: { userRole: 'Test' } }} />
         </ModalProvider>
       </Provider>,
     );
@@ -89,7 +91,7 @@ describe('UserRoleTab component when the role does not exist', () => {
     render(
       <Provider store={store}>
         <ModalProvider>
-        <UserRoleTab match={{ params: { userRole: 'Test' } }} />
+          <UserRoleTab match={{ params: { userRole: 'Test' } }} />
         </ModalProvider>
       </Provider>,
     );
@@ -125,7 +127,7 @@ describe('UserRoleTab component when the role does exist', () => {
       <Router history={history}>
         <Provider store={testStore}>
           <ModalProvider>
-          <UserRoleTab match={{ params: { userRole: 'manager' } }} />
+            <UserRoleTab match={{ params: { userRole: 'manager' } }} />
           </ModalProvider>
         </Provider>
       </Router>,

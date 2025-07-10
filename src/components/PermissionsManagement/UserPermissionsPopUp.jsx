@@ -29,10 +29,12 @@ function UserPermissionsPopUp({
   reminderModal,
   modalStatus,
   darkMode,
+  getChangeLogs,
 }) {
   const [searchText, onInputChange] = useState('');
   const [actualUserProfile, setActualUserProfile] = useState();
   const [userPermissions, setUserPermissions] = useState();
+  const [userRemovedDefaultPermissions, setUserRemovedDefaultPermissions] = useState(); // defulat perms taht were deleted
   const [isOpen, setIsOpen] = useState(false);
   const [isInputFocus, setIsInputFocus] = useState(false);
   const [actualUserRolePermission, setActualUserRolePermission] = useState();
@@ -45,6 +47,9 @@ function UserPermissionsPopUp({
 
   useEffect(() => {
     setUserPermissions(actualUserProfile?.permissions?.frontPermissions);
+    setUserRemovedDefaultPermissions(
+      actualUserProfile?.permissions?.removedDefaultPermissions || [],
+    );
   }, [actualUserProfile]);
 
   const refInput = useRef();
@@ -81,9 +86,15 @@ function UserPermissionsPopUp({
 
     const url = ENDPOINTS.USER_PROFILE(userId);
     const allUserInfo = await axios.get(url).then(res => res.data);
-    const newUserInfo = { ...allUserInfo, permissions: { frontPermissions: userPermissions } };
+    const newUserInfo = {
+      ...allUserInfo,
+      permissions: {
+        frontPermissions: userPermissions,
+        removedDefaultPermissions: userRemovedDefaultPermissions,
+      },
+    };
 
-    await axios
+    axios
       .put(url, newUserInfo)
       .then(() => {
         if (!toastShown) {
@@ -96,6 +107,8 @@ function UserPermissionsPopUp({
           setToastShown(true);
         }
         toggle();
+        getAllUsers();
+        getChangeLogs();
       })
       .catch(err => {
         const ERROR_MESSAGE = `
@@ -105,7 +118,6 @@ function UserPermissionsPopUp({
           autoClose: 10000,
         });
       });
-    getAllUsers();
   };
   useEffect(() => {
     refInput.current.focus();
@@ -115,6 +127,7 @@ function UserPermissionsPopUp({
       setToastShown(false);
     }
   }, [modalStatus]);
+
   return (
     <>
       {modalStatus && (
@@ -136,7 +149,9 @@ function UserPermissionsPopUp({
           className={darkMode ? 'text-space-cadet' : ''}
           style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '5px' }}
         >
-          <h4 className="user-permissions-pop-up__title">User name:</h4>
+          <h4 className="user-permissions-pop-up__title">
+            User name<span className="red-asterisk">* </span>:
+          </h4>
           <Button
             type="button"
             color="success"
@@ -171,13 +186,16 @@ function UserPermissionsPopUp({
               setIsOpen(true);
             }}
             placeholder="Shows only ACTIVE users"
+            className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
           />
           {isInputFocus || (searchText !== '' && allUserProfiles && allUserProfiles.length > 0) ? (
             <div
               tabIndex="-1"
               role="menu"
               aria-hidden="false"
-              className={`dropdown-menu${isOpen ? ' show dropdown__user-perms' : ''}`}
+              className={`dropdown-menu${isOpen ? ' show dropdown__user-perms' : ''} ${
+                darkMode ? 'bg-darkmode-liblack text-light' : ''
+              }`}
               style={{ marginTop: '0px', width: '100%' }}
             >
               {allUserProfiles
@@ -225,6 +243,8 @@ function UserPermissionsPopUp({
               immutablePermissions={actualUserRolePermission}
               editable={!!actualUserProfile}
               setPermissions={setUserPermissions}
+              removedDefaultPermissions={userRemovedDefaultPermissions}
+              setRemovedDefaultPermissions={setUserRemovedDefaultPermissions}
             />
           </ul>
         </div>

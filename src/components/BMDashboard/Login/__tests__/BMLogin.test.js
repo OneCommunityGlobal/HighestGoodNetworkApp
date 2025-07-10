@@ -1,12 +1,13 @@
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import BMLogin from '..';
 import { useDispatch, Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
 import { BrowserRouter as Router } from 'react-router-dom';
 import axios from 'axios';
+import BMLogin from '..';
 
 const mockStore = configureStore([thunk]);
 let store;
@@ -31,7 +32,7 @@ beforeEach(() => {
 });
 
 jest.mock('axios');
-
+// eslint-disable-next-line no-unused-vars
 jest.mock('jwt-decode', () => jest.fn(token => ({ decodedPayload: 'mocked_decoded_payload' })));
 
 const history = {
@@ -89,6 +90,12 @@ describe('BMLogin component', () => {
       screen.getByText(
         'Enter your current user credentials to access the Building Management Dashboard',
       ),
+    ).toBeInTheDocument();
+  });
+  it('check if Note: You must use your Production/Main credentials for this login. header displays as expected', () => {
+    renderComponent(store);
+    expect(
+      screen.getByText('Note: You must use your Production/Main credentials for this login.'),
     ).toBeInTheDocument();
   });
   it('check if email label is displaying as expected', () => {

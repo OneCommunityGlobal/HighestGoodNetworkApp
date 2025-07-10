@@ -34,7 +34,12 @@ export class Login extends Form {
         const url = `/forcePasswordUpdate/${this.props.auth.user.userId}`;
         this.props.history.push(url);
       } else if (this.props.auth.isAuthenticated) {
-        this.props.history.push('/dashboard');
+        const redirectPath = this.props.location?.state?.from?.pathname;
+        if (redirectPath && redirectPath.includes('/hgnform')) {
+          this.props.history.push(redirectPath);
+        } else {
+          this.props.history.push('/dashboard');
+        }
       }
     }
     if (prevProps.errors.email !== this.props.errors.email) {

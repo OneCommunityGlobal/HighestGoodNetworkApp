@@ -1,4 +1,6 @@
+// eslint-disable-next-line import/no-unresolved
 import httpService from 'services/httpService';
+import { toast } from 'react-toastify';
 import moment from 'moment';
 import {
   FETCH_TIME_OFF_REQUESTS_SUCCESS,
@@ -70,8 +72,13 @@ const isTimeOffRequestIncludeCurrentWeek = request => {
   const requestStartingDate = moment(startingDate);
   const requestEndingDate = moment(endingDate);
 
-  const currentWeekStart = moment().startOf('week').add(1, 'second');
-  const currentWeekEnd = moment().endOf('week').subtract(1, 'day').subtract(1, 'second');
+  const currentWeekStart = moment()
+    .startOf('week')
+    .add(1, 'second');
+  const currentWeekEnd = moment()
+    .endOf('week')
+    .subtract(1, 'day')
+    .subtract(1, 'second');
 
   // Check if the current week falls within the date range of the request
   if (
@@ -86,13 +93,7 @@ const isTimeOffRequestIncludeCurrentWeek = request => {
 
 const isUserOnVacation = requests => {
   moment.tz.setDefault('America/Los_Angeles');
-
-  for (const request of requests) {
-    if(isTimeOffRequestIncludeCurrentWeek(request)) {
-      return request;
-    }
-  }
-  return null;
+  return requests.find(request => isTimeOffRequestIncludeCurrentWeek(request)) || null;
 };
 
 const isUserGoingOnVacation = requests => {
@@ -111,7 +112,6 @@ const isUserGoingOnVacation = requests => {
   return userGoingOnVacation || null;
 };
 
-
 // Thunk Function
 export const getAllTimeOffRequests = () => async dispatch => {
   try {
@@ -121,7 +121,7 @@ export const getAllTimeOffRequests = () => async dispatch => {
     const keys = Object.keys(requests);
     let onVacation = {};
     let goingOnVacation = {};
-    keys.forEach( key => {
+    keys.forEach(key => {
       const arrayOfRequests = requests[key];
       const isUserOff = isUserOnVacation(arrayOfRequests);
       const isUserGoingOff = isUserGoingOnVacation(arrayOfRequests);
@@ -130,7 +130,7 @@ export const getAllTimeOffRequests = () => async dispatch => {
       } else if (isUserGoingOff) {
         goingOnVacation = { ...goingOnVacation, [key]: { ...isUserGoingOff } };
       }
-    })
+    });
     dispatch(addIsOnTimeOffRequests(onVacation));
     dispatch(addGoingOnTimeOffRequests(goingOnVacation));
   } catch (error) {
@@ -144,7 +144,7 @@ export const addTimeOffRequestThunk = request => async dispatch => {
     const AddedRequest = response.data;
     dispatch(addTimeOffRequest(AddedRequest));
   } catch (error) {
-    console.log(error);
+    toast.info(error);
   }
 };
 
@@ -155,7 +155,7 @@ export const updateTimeOffRequestThunk = (id, data) => async dispatch => {
     const updatedRequest = response.data;
     dispatch(updateTimeOffRequest(updatedRequest));
   } catch (error) {
-    console.log(error);
+    toast.info(error);
   }
 };
 
@@ -165,6 +165,6 @@ export const deleteTimeOffRequestThunk = id => async dispatch => {
     const deletedRequest = response.data;
     dispatch(deleteTimeOffRequest(deletedRequest));
   } catch (error) {
-    console.log(error);
+    toast.info(error);
   }
 };

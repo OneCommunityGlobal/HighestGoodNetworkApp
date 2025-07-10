@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import CreateNewTeamPopup from 'components/Teams/CreateNewTeamPopup';
 import { screen, fireEvent } from '@testing-library/react';
@@ -13,7 +14,14 @@ const mock = jest.fn();
 
 describe('CreateNewTeamPopUp', () => {
   it('should call closePopup function', () => {
-    renderWithProvider(<CreateNewTeamPopup {...defaultProps} onClose={mock} />);
+    renderWithProvider(
+      <CreateNewTeamPopup
+        open={defaultProps.open}
+        teamName={defaultProps.teamName}
+        isEdit={defaultProps.isEdit}
+        onClose={mock}
+      />,
+    );
 
     const closeButton = screen.getByText('Close');
     fireEvent.click(closeButton);
@@ -22,7 +30,14 @@ describe('CreateNewTeamPopUp', () => {
   });
 
   it('should call OK button function', () => {
-    renderWithProvider(<CreateNewTeamPopup {...defaultProps} onOkClick={mock} />);
+    renderWithProvider(
+      <CreateNewTeamPopup
+        open={defaultProps.open}
+        teamName={defaultProps.teamName}
+        isEdit={defaultProps.isEdit}
+        onOkClick={mock}
+      />,
+    );
 
     const okButton = screen.getByText('OK');
     fireEvent.click(okButton);
@@ -31,21 +46,35 @@ describe('CreateNewTeamPopUp', () => {
   });
 
   it('should render "Update Team Name" title when isEdit is true', () => {
-    renderWithProvider(<CreateNewTeamPopup {...defaultProps} isEdit={true} />);
+    renderWithProvider(
+      <CreateNewTeamPopup open={defaultProps.open} teamName={defaultProps.teamName} isEdit />,
+    );
 
     const titleElement = screen.getByText('Update Team Name');
     expect(titleElement).toBeInTheDocument();
   });
 
   it('should render "Create New Team" title when isEdit is false', () => {
-    renderWithProvider(<CreateNewTeamPopup {...defaultProps} isEdit={false} />);
+    renderWithProvider(
+      <CreateNewTeamPopup
+        open={defaultProps.open}
+        teamName={defaultProps.teamName}
+        isEdit={false}
+      />,
+    );
 
     const titleElement = screen.getByText('Create New Team');
     expect(titleElement).toBeInTheDocument();
   });
 
   it('should update the newTeam state on input change', () => {
-    renderWithProvider(<CreateNewTeamPopup {...defaultProps} />);
+    renderWithProvider(
+      <CreateNewTeamPopup
+        open={defaultProps.open}
+        teamName={defaultProps.teamName}
+        isEdit={defaultProps.isEdit}
+      />,
+    );
 
     const inputElement = screen.getByPlaceholderText('Please enter a new team name');
 
@@ -56,7 +85,13 @@ describe('CreateNewTeamPopUp', () => {
 
   it('should not show an error message and call onOkClick when team name is not empty', () => {
     renderWithProvider(
-      <CreateNewTeamPopup {...defaultProps} onOkClick={mock} isValidTeam={true} />,
+      <CreateNewTeamPopup
+        open={defaultProps.open}
+        teamName={defaultProps.teamName}
+        isEdit={defaultProps.isEdit}
+        onOkClick={mock}
+        isValidTeam
+      />,
     );
 
     const okButton = screen.getByText('OK');
@@ -73,7 +108,13 @@ describe('CreateNewTeamPopUp', () => {
 
   it('should clear the error message when a valid team name is entered after an invalid attempt', () => {
     renderWithProvider(
-      <CreateNewTeamPopup {...defaultProps} onOkClick={mock} isValidTeam={false} />,
+      <CreateNewTeamPopup
+        open={defaultProps.open}
+        teamName={defaultProps.teamName}
+        isEdit={defaultProps.isEdit}
+        onOkClick={mock}
+        isValidTeam={false}
+      />,
     );
 
     const okButton = screen.getByText('OK');
@@ -93,7 +134,7 @@ describe('CreateNewTeamPopUp', () => {
   });
 
   it('should focus the input field when modal is opened', () => {
-    renderWithProvider(<CreateNewTeamPopup open={true} teamName="Example Team" isEdit={false} />);
+    renderWithProvider(<CreateNewTeamPopup open teamName="Example Team" isEdit={false} />);
 
     const inputElement = screen.getByPlaceholderText('Please enter a new team name');
     expect(document.activeElement).toBe(inputElement);

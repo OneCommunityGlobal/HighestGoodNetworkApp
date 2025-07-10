@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { Route } from 'react-router-dom';
 import configureMockStore from 'redux-mock-store';
@@ -28,9 +29,8 @@ const server = setupServer(
   }),
   // Any other requests error out
   rest.get('*', (req, res, ctx) => {
-    console.error(
-      `Please add request handler for ${req.url.toString()} in your MSW server requests.`,
-    );
+    // eslint-disable-next-line no-unused-vars
+    const logerror = `Unhandled request: ${req.url.toString()}`;
     return res(ctx.status(500), ctx.json({ error: 'You must add request handler.' }));
   }),
 );
@@ -57,11 +57,15 @@ describe('Update Password Page', () => {
   beforeEach(() => {
     store = mockStore({
       errors: '',
-      theme: {darkMode: true}
+      theme: { darkMode: true },
     });
     store.dispatch = jest.fn();
     renderWithRouterMatch(
-      <Route path="/updatepassword/:userId">{(props) => <UpdatePassword {...props} />}</Route>,
+      <Route path="/updatepassword/:userId">
+        {({ match, history, location }) => (
+          <UpdatePassword match={match} history={history} location={location} />
+        )}
+      </Route>,
       {
         route: `/updatepassword/${userID}`,
         store,
@@ -86,7 +90,7 @@ describe('Update Password Page', () => {
 
   describe('For incorrect user inputs', () => {
     it('should show error if current password is left blank', () => {
-      const currentPassword = screen.getByLabelText(/current password:/i);
+      const currentPassword = screen.getByLabelText(/current password/i);
       expect(currentPassword).toHaveValue('');
       userEvent.type(currentPassword, 'a');
       userEvent.clear(currentPassword);
@@ -94,8 +98,8 @@ describe('Update Password Page', () => {
       expect(screen.getByRole('button')).toBeDisabled();
     });
     it('should show error if new password is left blank and current password has value', () => {
-      const currentPassword = screen.getByLabelText(/current password:/i);
-      const newPassword = screen.getByLabelText(/new password:/i);
+      const currentPassword = screen.getByLabelText(/current password/i);
+      const newPassword = screen.getByLabelText(/new password/i);
       userEvent.type(currentPassword, 'a');
       userEvent.type(newPassword, 'a');
       userEvent.clear(newPassword);
@@ -103,7 +107,7 @@ describe('Update Password Page', () => {
       expect(screen.getByRole('button')).toBeDisabled();
     });
     it('should show error if new password is left blank and current password has no value', async () => {
-      const newPassword = screen.getByLabelText(/new password:/i);
+      const newPassword = screen.getByLabelText(/new password/i);
       await userEvent.type(newPassword, 'abc', { allAtOnce: false });
       userEvent.clear(newPassword);
       expect(screen.getByText(errorMessages.newpasswordEmpty)).toBeInTheDocument();
@@ -117,17 +121,17 @@ describe('Update Password Page', () => {
         'ABCDERF12344', // no lower case
         'ABCDEFabc', // no numbers or special characters
       ];
-      userEvent.type(screen.getByLabelText(/current password:/i), 'z');
-      errorValues.forEach((value) => {
-        userEvent.clear(screen.getByLabelText(/new password:/i));
-        userEvent.type(screen.getByLabelText(/new password:/i), value, { allAtOnce: false });
+      userEvent.type(screen.getByLabelText(/current password/i), 'z');
+      errorValues.forEach(value => {
+        userEvent.clear(screen.getByLabelText(/new password/i));
+        userEvent.type(screen.getByLabelText(/new password/i), value, { allAtOnce: false });
         expect(screen.getByText(errorMessages.newpasswordInvalid)).toBeInTheDocument();
         expect(screen.getByRole('button')).toBeDisabled();
       });
     });
     it('should show error if confirm new password is left blank and new password is blank', async () => {
-      const newPassword = screen.getByLabelText(/new password:/i);
-      const confirmPassword = screen.getByLabelText(/confirm password:/i);
+      const newPassword = screen.getByLabelText(/new password/i);
+      const confirmPassword = screen.getByLabelText(/confirm password/i);
       await userEvent.type(newPassword, 'test', { allAtOnce: false });
       userEvent.clear(newPassword);
       await userEvent.type(confirmPassword, 'test', { allAtOnce: false });
@@ -138,7 +142,7 @@ describe('Update Password Page', () => {
 
     it('should show error if confirm new password is left blank and new password is invalid', async () => {
       const newPassword = screen.getByLabelText(/new password/i);
-      const confirmPassword = screen.getByLabelText(/confirm password:/i);
+      const confirmPassword = screen.getByLabelText(/confirm password/i);
       await userEvent.type(newPassword, 'asv', { allAtOnce: false });
       await userEvent.type(confirmPassword, 'i', { allAtOnce: false });
       userEvent.clear(confirmPassword);
@@ -147,7 +151,7 @@ describe('Update Password Page', () => {
     });
     it('should show error if confirm new password is left blank and new password is valid', async () => {
       const newPassword = screen.getByLabelText(/new password/i);
-      const confirmPassword = screen.getByLabelText(/confirm password:/i);
+      const confirmPassword = screen.getByLabelText(/confirm password/i);
       await userEvent.type(newPassword, 'Abcde@1234', { allAtOnce: false });
       await userEvent.type(confirmPassword, 'i', { allAtOnce: false });
       userEvent.clear(confirmPassword);
@@ -156,13 +160,13 @@ describe('Update Password Page', () => {
     });
 
     it('should show error if new and confirm passwords are not same', async () => {
-      await userEvent.type(screen.getByLabelText(/current password:/i), 'Abced@12', {
+      await userEvent.type(screen.getByLabelText(/current password/i), 'Abced@12', {
         allAtOnce: false,
       });
-      await userEvent.type(screen.getByLabelText(/new password:/i), 'Abcdef@123', {
+      await userEvent.type(screen.getByLabelText(/new password/i), 'Abcdef@123', {
         allAtOnce: false,
       });
-      await userEvent.type(screen.getByLabelText(/confirm password:/i), 'Abcdef@124', {
+      await userEvent.type(screen.getByLabelText(/confirm password/i), 'Abcdef@124', {
         allAtOnce: false,
       });
       expect(screen.getByText(errorMessages.confirmpasswordMismatch)).toBeInTheDocument();
@@ -170,13 +174,13 @@ describe('Update Password Page', () => {
     });
 
     it('should show error if old,new, and confirm passwords are same', async () => {
-      await userEvent.type(screen.getByLabelText(/current password:/i), 'ABCDabc123!', {
+      await userEvent.type(screen.getByLabelText(/current password/i), 'ABCDabc123!', {
         allAtOnce: false,
       });
-      await userEvent.type(screen.getByLabelText(/new password:/i), 'ABCDabc123!', {
+      await userEvent.type(screen.getByLabelText(/new password/i), 'ABCDabc123!', {
         allAtOnce: false,
       });
-      await userEvent.type(screen.getByLabelText(/confirm password:/i), 'ABCDabc123!', {
+      await userEvent.type(screen.getByLabelText(/confirm password/i), 'ABCDabc123!', {
         allAtOnce: false,
       });
       expect(screen.getByText(errorMessages.oldnewPasswordsSame)).toBeInTheDocument();
@@ -189,13 +193,13 @@ describe('Update Password Page', () => {
       const newpassword = 'ABCdef@123';
       const confirmnewpassword = newpassword;
       const currentpassword = 'currentPassword1';
-      await userEvent.type(screen.getByLabelText(/current password:/i), currentpassword, {
+      await userEvent.type(screen.getByLabelText(/current password/i), currentpassword, {
         allAtOnce: false,
       });
-      await userEvent.type(screen.getByLabelText(/new password:/i), newpassword, {
+      await userEvent.type(screen.getByLabelText(/new password/i), newpassword, {
         allAtOnce: false,
       });
-      await userEvent.type(screen.getByLabelText(/confirm password:/i), confirmnewpassword, {
+      await userEvent.type(screen.getByLabelText(/confirm password/i), confirmnewpassword, {
         allAtOnce: false,
       });
       userEvent.click(screen.getByRole('button'), { name: /submit/i });

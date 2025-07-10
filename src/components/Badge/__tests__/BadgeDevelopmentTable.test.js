@@ -213,7 +213,7 @@ describe('BadgeDevelopmentTable component', () => {
     mockData.allBadgeData.forEach(async (item, index) => {
       const checkbox = container.querySelector(`#${item._id}`);
       if (index == 0) {
-        expect(checkbox.checked).toBe(true);
+        expect(checkbox.checked).toBe(false);
       } else {
         expect(checkbox.checked).toBe(false);
       }

@@ -1,4 +1,3 @@
-import './UpdateReusablesBulk.css';
 import * as moment from 'moment';
 import { Input, Label, Form, Row, Col } from 'reactstrap';
 import { useState } from 'react';
@@ -6,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import Select from 'react-select';
 import { fetchBMProjects } from 'actions/bmdashboard/projectActions';
+import styles from './UpdateReusablesBulk.module.css';
 
 function UpdateReusablesBulkInputs({ date, setDate, project, setProject }) {
   const dispatch = useDispatch();
@@ -37,8 +37,8 @@ function UpdateReusablesBulkInputs({ date, setDate, project, setProject }) {
   return (
     <div className="container">
       <Form>
-        <Row className="align-items-center logReusableInputRow">
-          <Col lg={6} md={12} className="logReusableInputCol">
+        <Row className={`align-items-center ${styles.logReusableInputRow}`}>
+          <Col lg={6} md={12} className={`${styles.logReusableInputCol}`}>
             <Row className="justify-content-start align-items-center">
               <Label for="selectdate" lg={2} md={3}>
                 Date:
@@ -56,7 +56,7 @@ function UpdateReusablesBulkInputs({ date, setDate, project, setProject }) {
             </Row>
           </Col>
 
-          <Col lg={6} md={12} className="logReusableInputCol">
+          <Col lg={6} md={12} className={`${styles.logReusableInputCol}`}>
             <Row className="justify-content-start align-items-center">
               <Label lg={3} md={3} for="selectproject">
                 Project:

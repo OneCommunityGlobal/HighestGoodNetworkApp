@@ -23,6 +23,7 @@
 
 .teamtable-container .row,
 .projecttable-container .row {
+  width: 100%;
   margin: 0px;
 }
 
@@ -47,6 +48,10 @@
 
 .project-auto-complete:hover {
   background: #ddebff;
+}
+
+.bg-darkmode-liblack .project-auto-complete:hover {
+  background: #000000;
 }
 
 .team-auto-complete {

@@ -39,26 +39,31 @@ const AddProjectPopup = React.memo(props => {
   }, [props.projects]);
 
   const onAssignProject = async () => {
-    if (isUserIsNotSelectedAutoComplete) {
-      const validateProjectName = validationProjectName();
-
-      if (!validateProjectName) {
-        isSetShowAlert(true);
-        setIsOpenDropdown(true);
-        return;
+    try {
+      if (isUserIsNotSelectedAutoComplete) {
+        const validateProjectName = validationProjectName();
+  
+        if (!validateProjectName) {
+          isSetShowAlert(true);
+          setIsOpenDropdown(true);
+          return;
+        }
       }
+  
+      if (selectedProject && !props.userProjectsById.some(x => x._id === selectedProject._id)) {
+        await props.onSelectAssignProject(selectedProject);
+        onSelectProject(undefined);
+        if (props.handleSubmit !== undefined) {
+         await props.handleSubmit();
+        }
+        toast.success('Project assigned successfully');
+      } else {
+        onValidation(false);
+      }
+    } catch (error) {
+      
     }
-
-    if (selectedProject && !props.userProjectsById.some(x => x._id === selectedProject._id)) {
-      await props.onSelectAssignProject(selectedProject);
-      onSelectProject(undefined);
-      toast.success('Project assigned successfully');
-    } else {
-      onValidation(false);
-    }
-    if (props.handleSubmit !== undefined) {
-      props.handleSubmit();
-    }
+   
   };
 
   const selectProject = project => {
@@ -73,11 +78,13 @@ const AddProjectPopup = React.memo(props => {
 
   const finishFetch = status => {
     setIsOpenDropdown(false);
+    
     toast.success(
       status === 200
         ? 'Project created successfully'
         : 'Project created successfully, but it is not possible to retrieve the new project.',
     );
+  
     setDropdownText(dropdownText);
   };
 
@@ -100,7 +107,7 @@ const AddProjectPopup = React.memo(props => {
 
     const newProject = {
       projectName: searchText,
-      category: dropdownText,
+      projectCategory: dropdownText,
       isActive: true,
     };
 

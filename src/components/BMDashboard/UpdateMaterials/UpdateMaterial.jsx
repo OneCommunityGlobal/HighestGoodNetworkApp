@@ -1,4 +1,3 @@
-import './UpdateMaterial.css';
 import { Container } from 'reactstrap';
 import * as moment from 'moment';
 import { FormGroup, Input, Label, Form, Col, Button } from 'reactstrap';
@@ -7,8 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { postMaterialUpdate } from 'actions/bmdashboard/materialsActions';
 import { toast } from 'react-toastify';
-import { resetMaterialUpdate } from 'actions/bmdashboard/materialsActions';
-import { fetchAllMaterials } from 'actions/bmdashboard/materialsActions';
+import styles from './UpdateMaterial.module.css';
 
 function UpdateMaterial({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
   const dispatch = useDispatch();
@@ -97,11 +95,9 @@ function UpdateMaterial({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
     if (bulk === true) sendUpdatedRecord(updateRecord, validations);
   };
 
-  const submitHandler = e => {
+  const submitHandler = async e => {
     e.preventDefault();
-    dispatch(postMaterialUpdate(updateRecord));
-    dispatch(resetMaterialUpdate());
-    dispatch(fetchAllMaterials());
+    await dispatch(postMaterialUpdate(updateRecord));
   };
 
   const changeRecordHandler = e => {
@@ -167,7 +163,7 @@ function UpdateMaterial({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
             min={0}
           />
           {validations.quantityUsed !== '' && (
-            <div className="materialFormTableError">{validations.quantityUsed}</div>
+            <div className={`${styles.materialFormTableError}`}>{validations.quantityUsed}</div>
           )}
         </td>
         <td>
@@ -193,7 +189,7 @@ function UpdateMaterial({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
             min={0}
           />
           {validations.quantityWasted !== '' && (
-            <div className="materialFormTableError">{validations.quantityWasted}</div>
+            <div className={`${styles.materialFormTableError}`}>{validations.quantityWasted}</div>
           )}
         </td>
         <td>
@@ -215,40 +211,40 @@ function UpdateMaterial({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
         </td>
       </tr>
       <tr>
-        <td colSpan={7} className="materialFormTableError">
+        <td colSpan={7} className={`${styles.materialFormTableError}`}>
           {validations.quantityTogether}
         </td>
       </tr>
     </>
   ) : (
-    <Container fluid className="updateMaterialContainer">
-      <div className="updateMaterialPage">
-        <div className="updateMaterial">
+    <Container fluid className={`${styles.updateMaterialContainer}`}>
+      <div className={`${styles.updateMaterialPage}`}>
+        <div className={`${styles.updateMaterial}`}>
           <Form>
-            {/* <img className='materialImage' alt='materialImage' src={riversand} /> */}
+            {/* <img className={`${styles.materialImage}`} alt='materialImage' src={riversand} /> */}
             <FormGroup row className="align-items-center justify-content-start">
-              <Label for="updateMaterialName" sm={4} className="materialFormLabel">
+              <Label for="updateMaterialName" sm={4} className={`${styles.materialFormLabel}`}>
                 Material
               </Label>
-              <Col sm={6} className="materialFormValue">
+              <Col sm={6} className={`${styles.materialFormValue}`}>
                 <b>{record?.itemType?.name}</b>
               </Col>
             </FormGroup>
 
             <FormGroup row className="align-items-center">
-              <Label for="updateMaterialProject" sm={4} className="materialFormLabel">
+              <Label for="updateMaterialProject" sm={4} className={`${styles.materialFormLabel}`}>
                 Project Name
               </Label>
-              <Col sm={8} className="materialFormValue">
+              <Col sm={8} className={`${styles.materialFormValue}`}>
                 {record?.project.name}
               </Col>
             </FormGroup>
 
             <FormGroup row className="align-items-center justify-content-start">
-              <Label for="updateMaterialDate" sm={4} className="materialFormLabel">
+              <Label for="updateMaterialDate" sm={4} className={`${styles.materialFormLabel}`}>
                 Date
               </Label>
-              <Col sm={6} className="materialFormValue">
+              <Col sm={6} className={`${styles.materialFormValue}`}>
                 <Input
                   id="updateMaterialDate"
                   name="date"
@@ -260,20 +256,20 @@ function UpdateMaterial({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
             </FormGroup>
 
             <FormGroup row className="align-items-center justify-content-start">
-              <Label for="updateMaterialUnit" sm={4} className="materialFormLabel">
+              <Label for="updateMaterialUnit" sm={4} className={`${styles.materialFormLabel}`}>
                 Available
               </Label>
-              <Col sm={6} className="materialFormValue">
+              <Col sm={6} className={`${styles.materialFormValue}`}>
                 {record?.stockAvailable}
               </Col>
             </FormGroup>
 
             {updateRecord.newAvailable !== undefined && (
               <FormGroup row className="align-items-center justify-content-start">
-                <Label for="updateMaterialUnit" sm={4} className="materialFormLabel">
+                <Label for="updateMaterialUnit" sm={4} className={`${styles.materialFormLabel}`}>
                   New Available
                 </Label>
-                <Col sm={6} className="materialFormValue">
+                <Col sm={6} className={`${styles.materialFormValue}`}>
                   <span
                     className={updateRecord.newAvailable < 0 ? 'materialFormErrorClr' : undefined}
                   >
@@ -284,10 +280,14 @@ function UpdateMaterial({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
             )}
 
             <FormGroup row>
-              <Label for="updateMaterialQuantityUsed" sm={4} className="materialFormLabel">
+              <Label
+                for="updateMaterialQuantityUsed"
+                sm={4}
+                className={`${styles.materialFormLabel}`}
+              >
                 Quantity Used
               </Label>
-              <Col sm={4} className="materialFormValue">
+              <Col sm={4} className={`${styles.materialFormValue}`}>
                 <Input
                   id="updateMaterialQuantityUsed"
                   name="quantityUsed"
@@ -298,7 +298,7 @@ function UpdateMaterial({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
                   min={0}
                 />
               </Col>
-              <Col sm={{ size: 4 }} className="materialFormValue">
+              <Col sm={{ size: 4 }} className={`${styles.materialFormValue}`}>
                 <Input
                   id="updateMaterialQtyUsedLogUnitSelect"
                   name="QtyUsedLogUnit"
@@ -312,16 +312,24 @@ function UpdateMaterial({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
               </Col>
 
               {validations.quantityUsed !== '' && (
-                <Label for="updateMaterialQuantityUsedError" sm={12} className="materialFormError">
+                <Label
+                  for="updateMaterialQuantityUsedError"
+                  sm={12}
+                  className={`${styles.materialFormError}`}
+                >
                   {validations.quantityUsed}
                 </Label>
               )}
             </FormGroup>
             <FormGroup row>
-              <Label for="updateMaterialquantityWasted" sm={4} className="materialFormLabel">
+              <Label
+                for="updateMaterialquantityWasted"
+                sm={4}
+                className={`${styles.materialFormLabel}`}
+              >
                 Quantity Wasted
               </Label>
-              <Col sm={4} className="materialFormValue">
+              <Col sm={4} className={`${styles.materialFormValue}`}>
                 <Input
                   id="updateMaterialquantityWasted"
                   name="quantityWasted"
@@ -332,7 +340,7 @@ function UpdateMaterial({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
                   min={0}
                 />
               </Col>
-              <Col sm={{ size: 4 }} className="materialFormValue">
+              <Col sm={{ size: 4 }} className={`${styles.materialFormValue}`}>
                 <Input
                   id="updateMaterialQtyWastedLogUnitSelect"
                   name="QtyWastedLogUnit"
@@ -348,7 +356,7 @@ function UpdateMaterial({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
                 <Label
                   for="updateMaterialQuantityWastedError"
                   sm={12}
-                  className="materialFormError"
+                  className={`${styles.materialFormError}`}
                 >
                   {validations.quantityWasted}
                 </Label>
@@ -360,7 +368,7 @@ function UpdateMaterial({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
                 <Label
                   for="updateMaterialQuantityTogetherError"
                   sm={12}
-                  className="materialFormError"
+                  className={`${styles.materialFormError}`}
                 >
                   {validations.quantityTogether}
                 </Label>
@@ -370,7 +378,7 @@ function UpdateMaterial({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
             <FormGroup row className="d-flex justify-content-right">
               <Button
                 disabled={postMaterialUpdateResult.loading || updateRecord.newAvailable < 0}
-                className="materialButtonBg"
+                className={`${styles.materialButtonBg}`}
                 onClick={e => submitHandler(e)}
               >
                 Update Material

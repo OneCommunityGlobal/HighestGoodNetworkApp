@@ -83,11 +83,14 @@ function CreateNewRolePopup({ toggle, roleNames, darkMode, addRole }) {
   return (
     <Form id="createRole" onSubmit={handleSubmit}>
       <FormGroup>
-        <Label className={darkMode ? 'text-light' : ''}>Role Name:</Label>
+        <Label className={darkMode ? 'text-light' : ''}>
+          Role Name<span className="red-asterisk">* </span>:
+        </Label>
         <Input
           placeholder="Please enter a new role name"
           value={newRoleName}
           onChange={handleRoleName}
+          className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
         />
         {isValidRole === false || isNotDuplicateRole === false ? (
           <Alert className="createRole__alert" color="danger">
@@ -97,7 +100,9 @@ function CreateNewRolePopup({ toggle, roleNames, darkMode, addRole }) {
       </FormGroup>
 
       <FormGroup>
-        <Label className={darkMode ? 'text-light' : ''}>Permissions:</Label>
+        <Label className={darkMode ? 'text-light' : ''}>
+          Permissions<span className="red-asterisk">* </span>:
+        </Label>
         <PermissionList
           rolePermissions={permissionsChecked}
           editable

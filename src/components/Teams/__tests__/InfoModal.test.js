@@ -14,10 +14,11 @@ describe('InfoModal', () => {
     theme: themeMock,
   });
 
-  let renderInfoModal = props => {
+  const renderInfoModal = mockprops => {
     const { rerender } = render(
       <Provider store={store}>
-        <InfoModal {...props} />
+        {/* eslint-disable-next-line react/jsx-props-no-spreading */}
+        <InfoModal {...mockprops} />
       </Provider>,
     );
 

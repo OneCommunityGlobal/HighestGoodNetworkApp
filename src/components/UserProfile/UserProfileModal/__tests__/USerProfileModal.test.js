@@ -160,8 +160,8 @@ describe('UserProfileModal component', () => {
     expect(screen.getByText("Summary")).toBeInTheDocument()
 
     const summaryElement=document.body.querySelector('[id="summary"]')
-    fireEvent.change(summaryElement,{target:{value:"This is a test summary"}})
-    expect(summaryElement.value).toBe("This is a test summary")
+    fireEvent.change(summaryElement,{target:{value:"Assigned by HGN System: This is a test summary"}})
+    expect(summaryElement.value).toBe("Assigned by HGN System: This is a test summary")
 
     const addBlueSquareButton=screen.getByText('Submit')
     fireEvent.click(addBlueSquareButton)
@@ -171,12 +171,12 @@ describe('UserProfileModal component', () => {
   it('check if modify blue square works a s expected when type is set to modBlueSquare',()=>{
     renderComponent(store,'modBlueSquare',true)
     const summaryElement=document.body.querySelector('[id="summary"]')
-    fireEvent.change(summaryElement,{target:{value:"This is a second test blue square summary"}})
-    expect(summaryElement.value).toBe("This is a second test blue square summary")
+    fireEvent.change(summaryElement,{target:{value:"Assigned by HGN System:This is a second test blue square summary"}})
+    expect(summaryElement.value).toBe("Assigned by HGN System:This is a second test blue square summary")
 
     const updateButton=screen.getByText('Update')
     fireEvent.click(updateButton)
-    expect(screen.getByText('This is a second test blue square summary')).toBeInTheDocument()
+    expect(screen.getByText('Assigned by HGN System:This is a second test blue square summary')).toBeInTheDocument()
     expect(modifyBlueSquares).toHaveBeenCalled()
 
     const cancelButton=screen.getByText('Cancel')

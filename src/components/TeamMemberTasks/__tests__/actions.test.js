@@ -10,7 +10,7 @@ import {
   deleteTaskNotificationBegin,
   deleteTaskNotificationSuccess,
   deleteTaskNotificationError,
-} from '../actions'; 
+} from '../actions';
 
 describe('Action Creators', () => {
   it('should create fetchTeamMembersDataBegin action', () => {
@@ -51,7 +51,7 @@ describe('Action Creators', () => {
     const error = 'Something went wrong';
     const expectedAction = {
       type: 'FETCH_TEAM_MEMBERS_DATA_ERROR',
-      payload: error
+      payload: error,
     };
     expect(fetchTeamMembersDataError(error)).toEqual(expectedAction);
   });
@@ -76,7 +76,7 @@ describe('Action Creators', () => {
     const error = 'Something went wrong';
     const expectedAction = {
       type: 'CREATE_OR_UPDATE_TASK_NOTIFICATION_ERROR',
-      payload: error
+      payload: error,
     };
     expect(createOrUpdateTaskNotificationError(error)).toEqual(expectedAction);
   });
@@ -101,7 +101,7 @@ describe('Action Creators', () => {
     const error = 'Something went wrong';
     const expectedAction = {
       type: 'DELETE_TASK_NOTIFICATION_ERROR',
-      payload: error
+      payload: error,
     };
     expect(deleteTaskNotificationError(error)).toEqual(expectedAction);
   });

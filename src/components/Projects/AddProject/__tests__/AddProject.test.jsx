@@ -78,7 +78,7 @@ const typeIntoInput = ({ input }) => {
   test("adds project on form submission", async () => {
     renderComponent();
     userEvent.click(screen.getByText("Add New Project"));
-    userEvent.type(screen.getByLabelText("Project Name (required)"), "Test Project");
+    userEvent.type(screen.getByLabelText("Project Name"), "Test Project");
     userEvent.selectOptions(screen.getByLabelText("Select Category"), "Food");
     userEvent.click(screen.getByText("Add Project"));
     

@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import MemberAutoComplete from 'components/Teams/MembersAutoComplete';
 import { renderWithProvider } from '__tests__/utils';
@@ -37,7 +38,15 @@ describe('MembersAutoComplete', () => {
   });
 
   it('should interacts with input field and calls setSearchText', () => {
-    renderWithProvider(<MemberAutoComplete {...defaultProps} />);
+    renderWithProvider(
+      <MemberAutoComplete
+        searchText={defaultProps.searchText}
+        setSearchText={defaultProps.setSearchText}
+        userProfileData={defaultProps.userProfileData}
+        onAddUser={defaultProps.onAddUser}
+        existingMembers={defaultProps.existingMembers}
+      />,
+    );
 
     const inputElement = screen.getByTestId('input-search');
     fireEvent.change(inputElement, { target: { value: 'Eduardo' } });
@@ -46,7 +55,15 @@ describe('MembersAutoComplete', () => {
   });
 
   it('should dropdown appears when the input is filled', () => {
-    renderWithProvider(<MemberAutoComplete {...dropdownProps} />);
+    renderWithProvider(
+      <MemberAutoComplete
+        searchText={dropdownProps.searchText}
+        setSearchText={dropdownProps.setSearchText}
+        userProfileData={dropdownProps.userProfileData}
+        onAddUser={dropdownProps.onAddUser}
+        existingMembers={dropdownProps.existingMembers}
+      />,
+    );
 
     const inputElement = screen.getByTestId('input-search');
     fireEvent.change(inputElement, { target: { value: 'Eduardo' } });
@@ -62,7 +79,15 @@ describe('MembersAutoComplete', () => {
       lastName: 'ADM',
     };
 
-    renderWithProvider(<MemberAutoComplete {...dropdownProps} />);
+    renderWithProvider(
+      <MemberAutoComplete
+        searchText={dropdownProps.searchText}
+        setSearchText={dropdownProps.setSearchText}
+        userProfileData={dropdownProps.userProfileData}
+        onAddUser={dropdownProps.onAddUser}
+        existingMembers={dropdownProps.existingMembers}
+      />,
+    );
 
     const inputElement = screen.getByTestId('input-search');
     fireEvent.change(inputElement, { target: { value: 'Eduardo' } });
