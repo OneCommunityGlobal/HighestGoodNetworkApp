@@ -32,12 +32,16 @@ export function PeopleTasksPieChart({ darkMode }) {
       {hoursLoggedToProjectsOnly.length!==0 && (
         <ReportPage.ReportBlock darkMode={darkMode}>
           <h5 className="people-pie-charts-header">Projects With Completed Hours</h5>
-          {hoursLoggedToProjectsOnly.length!==0 && <UserProjectPieChart
-            pieChartId="projectsPieChart"
-            darkMode={darkMode}
-            projectsData={hoursLoggedToProjectsOnly}
-            tasksData={tasksLegend}       
-          />}
+          {hoursLoggedToProjectsOnly.length!==0 && (
+            <div className="pie-chart-container">
+              <UserProjectPieChart
+                pieChartId="projectsPieChart"
+                darkMode={darkMode}
+                projectsData={hoursLoggedToProjectsOnly}
+                tasksData={tasksLegend}       
+              />
+            </div>)
+          }
         </ReportPage.ReportBlock>
       )}
       {showTasksPieChart && (
@@ -45,13 +49,15 @@ export function PeopleTasksPieChart({ darkMode }) {
           <h5 className="people-pie-charts-header">{`${
             showViewAllTasksButton ? 'Last ' : ''
           }Tasks With Completed Hours`}</h5>
-          <PieChart
-            pieChartId="tasksPieChart"
-            darkMode={darkMode}
-            data={tasksWithLoggedHoursById}
-            tasksData={tasksLegend}
-            projectsData={hoursLoggedToProjectsOnly}
-          />
+          <div className="pie-chart-container">
+            <PieChart
+              pieChartId="tasksPieChart"
+              darkMode={darkMode}
+              data={tasksWithLoggedHoursById}
+              tasksData={tasksLegend}
+              projectsData={hoursLoggedToProjectsOnly}
+            />
+          </div>
           {/* {showViewAllTasksButton && (
             <div>
               <div onClick={handleViewAll} className="show-all-tasks-button">
