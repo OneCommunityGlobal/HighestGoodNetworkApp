@@ -58,7 +58,7 @@ const ProjectTableHeader = props => {
       </th>
       <th scope="col" id="projects__active" className='align-middle'>
       <span className='d-flex justify-content-between align-middle mt-1'>
-        {ACTIVE}
+        {props.showStatus || ACTIVE}
         <DropdownButton className='ml-2 align-middle' id="" title="" size='sm'style={darkMode ? {} : boxStyle} variant='info' value={props.showStatus} onSelect={props.selectStatus}  menuAlign="right" >
         <Dropdown.Item default value="" disabled={!props.showStatus} className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}>{props.showStatus ? 'Clear filter' : 'Choose Status'}</Dropdown.Item>
           {statusList.map((status, index) => 

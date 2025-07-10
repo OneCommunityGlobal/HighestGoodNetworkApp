@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react';
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
+// import tinymce from 'tinymce';
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
 
 function Announcements({ title, email: initialEmail }) {
@@ -117,9 +118,9 @@ function Announcements({ title, email: initialEmail }) {
     e.target.value = '';
   };
 
-  const validateEmail = email => {
+  const validateEmail = emailAddress => {
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    return emailPattern.test(email);
+    return emailPattern.test(emailAddress);
   };
 
   const handleSendEmails = () => {
@@ -134,7 +135,12 @@ function Announcements({ title, email: initialEmail }) {
       toast.error('Error: Please upload a file.');
       return;
     }
-    const invalidEmails = emailList.filter(email => !validateEmail(email.trim()));
+
+    const invalidEmails = emailList.filter(emailAddress => !validateEmail(emailAddress.trim()));
+    if (!isFileUploaded) {
+      toast.error('Error: Please upload a file.');
+      return;
+    }
 
     if (invalidEmails.length > 0) {
       toast.error(`Error: Invalid email addresses: ${invalidEmails.join(', ')}`);
@@ -148,10 +154,9 @@ function Announcements({ title, email: initialEmail }) {
 
   const handleBroadcastEmails = () => {
     const htmlContent = `
-    <div style="max-width: 900px; width: 100%; margin: auto;">
-      ${emailContent}
-    </div>
-  `;
+      <div style="max-width: 900px; width: 100%; margin: auto;">
+        ${emailContent}
+      </div>`;
     dispatch(broadcastEmailsToAll('Weekly Update', htmlContent));
   };
 
