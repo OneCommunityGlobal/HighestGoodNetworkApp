@@ -28,8 +28,7 @@ const useLessonsData = (selectedProjects, startDate, endDate) => {
       try {
         const response = await axios.get('/api/projects');
         setAllProjects(response.data);
-      } catch (error) {
-      }
+      } catch (error) {}
     };
     fetchProjects();
   }, []);
