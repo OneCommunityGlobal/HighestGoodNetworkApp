@@ -102,19 +102,20 @@
   gap: 15px;
 }
 
-.weeklyProjectSummaryDashboardSection.full {
+/* .weeklyProjectSummaryDashboardSection options */
+.full {
   grid-column: span 4;
 }
 
-.weeklyProjectSummaryDashboardSection.large {
+.large {
   grid-column: span 3;
 }
 
-.weeklyProjectSummaryDashboardSection.half {
+.half {
   grid-column: span 2;
 }
 
-.weeklyProjectSummaryDashboardSection.small {
+.small {
   grid-column: span 1;
 }
 
