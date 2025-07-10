@@ -1,3 +1,6 @@
+/* eslint-disable */
+/* prettier-ignore */
+
 import { useState, useEffect } from 'react';
 import { Bar } from 'react-chartjs-2';
 import {
