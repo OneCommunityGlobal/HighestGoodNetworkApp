@@ -24,6 +24,7 @@ export default function BitlyGenerator({ onDisconnect = () => {} }) {
   const [shortLink, setShortLink] = useState('');
   const [qrSrc, setQrSrc] = useState(null);
   const [isWorking, setIsWorking] = useState(false);
+  const [bitlinkForQr, setBitlinkForQr] = useState('');
 
   // 1) Check if we already have a Bitly token
   async function checkConnection() {
@@ -64,13 +65,26 @@ export default function BitlyGenerator({ onDisconnect = () => {} }) {
     }
 
     try {
+      const { data: quota } = await axios.get('/api/bitly/quota');
+      if (quota.shortLinks.remaining === 0) {
+        toast.error('Your Bitly “Shortened URLs” quota is exhausted.');
+        return;
+      }
+    } catch {
+      /* fall through – we’ll still attempt the API; network failure handled below */
+    }
+
+    try {
       setIsWorking(true);
       const res = await axios.post('/api/bitly/shorten', { longUrl });
       setShortLink(res.data.link || res.data.id);
       setQrSrc(null);
       toast.success('Link shortened!');
-    } catch {
-      toast.error('Failed to shorten URL');
+    } catch (err) {
+      const msg =
+        err.response?.data?.error ||
+        (err.message.includes('encodes') ? 'Short-link quota exhausted' : err.message);
+      toast.error(`${msg}`);
     } finally {
       setIsWorking(false);
     }
@@ -78,21 +92,34 @@ export default function BitlyGenerator({ onDisconnect = () => {} }) {
 
   // 4) Generate QR code for the Bitlink
   async function handleGenerateQr() {
-    if (!shortLink) {
-      toast.error('Shorten a link first');
+    const bitlink = (bitlinkForQr || shortLink).trim();
+    if (!bitlink) {
+      toast.error('Enter a Bitlink or shorten one first');
       return;
     }
-
+    try {
+      const { data: quota } = await axios.get('/api/bitly/quota');
+      if (quota.qrCodes.remaining === 0) {
+        toast.error('Your Bitly QR-code quota is exhausted.');
+        return;
+      }
+    } catch {
+      /* ignore – we’ll rely on server error below */
+    }
     try {
       setIsWorking(true);
       const res = await axios.post('/api/bitly/qr', {
-        bitlinkId: shortLink.replace(/^https?:\/\//, ''),
+        bitlinkId: bitlink.replace(/^https?:\/\//, ''),
       });
       const blobUrl = res.data.imageData;
       setQrSrc(blobUrl);
       toast.success('QR code generated!');
+      setBitlinkForQr('');
     } catch (err) {
-      toast.error('Failed to generate QR code');
+      const msg =
+        err.response?.data?.error ||
+        (err.message.includes('QR-code quota') ? 'QR-code quota exhausted' : err.message);
+      toast.error(`${msg}`);
     } finally {
       setIsWorking(false);
     }
@@ -163,7 +190,14 @@ export default function BitlyGenerator({ onDisconnect = () => {} }) {
             </div>
           )}
 
-          {shortLink && (
+          <div className="input-group">
+            <input
+              type="text"
+              placeholder="Bitlink for QR"
+              value={bitlinkForQr}
+              onChange={e => setBitlinkForQr(e.target.value)}
+            />
+
             <button
               type="button"
               className="qr-btn"
@@ -178,7 +212,7 @@ export default function BitlyGenerator({ onDisconnect = () => {} }) {
               )}{' '}
               Generate QR
             </button>
-          )}
+          </div>
 
           {qrSrc && (
             <div className="qr-code">
