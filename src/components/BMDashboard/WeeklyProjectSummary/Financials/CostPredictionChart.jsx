@@ -342,17 +342,6 @@ function CostPredictionChart({ darkMode, isFullPage = false, projectId }) {
                         y={lastPredictedValues[category]}
                         stroke={costColors[category]}
                         strokeWidth={1.5}
-                        label={{
-                          value: `${category}: ${currency}${lastPredictedValues[
-                            category
-                          ].toLocaleString()}`,
-                          position: 'topLeft',
-                          style: {
-                            fontSize: 7,
-                            fill: costColors[category],
-                            fontWeight: '500',
-                          },
-                        }}
                       />
                     );
                   }
@@ -664,17 +653,6 @@ function CostPredictionChart({ darkMode, isFullPage = false, projectId }) {
                       y={lastPredictedValues[category]}
                       stroke={costColors[category]}
                       strokeWidth={2}
-                      label={{
-                        value: `${cost.label} Target: ${currency}${lastPredictedValues[
-                          category
-                        ].toLocaleString()}`,
-                        position: 'topLeft',
-                        style: {
-                          fontSize: 11,
-                          fill: costColors[category],
-                          fontWeight: '600',
-                        },
-                      }}
                     />
                   );
                 }
