@@ -1,11 +1,20 @@
 import { useState, useEffect } from 'react';
 import { Bar } from 'react-chartjs-2';
-import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Title} from 'chart.js';
+import {
+  Chart as ChartJS,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  Tooltip,
+  Title
+} from 'chart.js';
 import axios from 'axios';
 import Select from 'react-select';
 import DatePicker from 'react-datepicker';
+
 import 'react-datepicker/dist/react-datepicker.css';
 import './LessonsLearntChart.css';
+
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Title);
 
