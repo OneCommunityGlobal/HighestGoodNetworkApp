@@ -40,12 +40,10 @@ function TeamTable({ allTeams, auth, darkMode, refreshTeams }) {
         } else {
           // Revert the input if the update failed
           setTeamCode(teamData.teamCode);
-          console.error('Failed to update team code:', result);
         }
       } catch (error) {
         // Revert the input if there was an error
         setTeamCode(teamData.teamCode);
-        console.error('Error updating team code:', error);
       }
     };
 

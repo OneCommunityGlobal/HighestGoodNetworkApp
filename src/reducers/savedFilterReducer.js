@@ -105,4 +105,4 @@ export const savedFilterReducer = (state = initialState, action) => {
   }
 };
 
-export default savedFilterReducer; 
+export default savedFilterReducer;

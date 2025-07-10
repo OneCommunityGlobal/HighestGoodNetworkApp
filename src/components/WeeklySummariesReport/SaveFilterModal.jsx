@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
   Modal,
@@ -13,7 +13,7 @@ import {
 } from 'reactstrap';
 import { boxStyle, boxStyleDark } from 'styles';
 
-const SaveFilterModal = ({
+function SaveFilterModal({
   isOpen,
   onClose,
   onSave,
@@ -23,7 +23,7 @@ const SaveFilterModal = ({
   existingFilterNames,
   currentFilter,
   isModification = false,
-}) => {
+}) {
   const [filterName, setFilterName] = useState('');
   const [error, setError] = useState('');
 
@@ -41,7 +41,7 @@ const SaveFilterModal = ({
     } else {
       // For new filters, validate the name
       const trimmedName = filterName.trim();
-      
+
       if (!trimmedName) {
         setError('Filter name is required.');
         return;
@@ -72,15 +72,15 @@ const SaveFilterModal = ({
   return (
     <Modal isOpen={isOpen} toggle={handleClose} className={darkMode ? 'dark-mode' : ''}>
       <ModalHeader toggle={handleClose} className={darkMode ? 'bg-space-cadet' : ''}>
-        {isModification ? `Update Filter: ${currentFilter?.name || 'Unknown Filter'}` : 'Save Filter'}
+        {isModification
+          ? `Update Filter: ${currentFilter?.name || 'Unknown Filter'}`
+          : 'Save Filter'}
       </ModalHeader>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         {isModification ? (
           // For modifications, show current filter name as read-only
           <FormGroup>
-            <Label className={darkMode ? 'text-light' : ''}>
-              Filter Name
-            </Label>
+            <Label className={darkMode ? 'text-light' : ''}>Filter Name</Label>
             <div
               className={`p-2 border rounded ${
                 darkMode ? 'bg-darkmode-liblack text-light' : 'bg-light'
@@ -99,16 +99,16 @@ const SaveFilterModal = ({
               id="filterName"
               type="text"
               value={filterName}
-              onChange={(e) => setFilterName(e.target.value)}
+              onChange={e => setFilterName(e.target.value)}
               maxLength={7}
               placeholder="Enter filter name"
               className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
             />
           </FormGroup>
         )}
-        
+
         {error && <Alert color="danger">{error}</Alert>}
-        
+
         <FormGroup>
           <Label className={darkMode ? 'text-light' : ''}>
             {isModification ? 'Updated Team Codes:' : 'Selected Team Codes:'}
@@ -132,23 +132,31 @@ const SaveFilterModal = ({
       </ModalFooter>
     </Modal>
   );
-};
+}
 
 SaveFilterModal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   onSave: PropTypes.func.isRequired,
   onUpdate: PropTypes.func,
-  selectedCodes: PropTypes.array.isRequired,
+  selectedCodes: PropTypes.arrayOf(
+    PropTypes.shape({
+      value: PropTypes.string.isRequired,
+      label: PropTypes.string.isRequired,
+    }),
+  ).isRequired,
   darkMode: PropTypes.bool.isRequired,
-  existingFilterNames: PropTypes.array.isRequired,
-  currentFilter: PropTypes.object,
+  existingFilterNames: PropTypes.arrayOf(PropTypes.string).isRequired,
+  currentFilter: PropTypes.shape({
+    name: PropTypes.string,
+  }),
   isModification: PropTypes.bool,
 };
 
 SaveFilterModal.defaultProps = {
-  darkMode: false,
-  existingFilterNames: [],
+  onUpdate: null,
+  currentFilter: null,
+  isModification: false,
 };
 
 export default SaveFilterModal;

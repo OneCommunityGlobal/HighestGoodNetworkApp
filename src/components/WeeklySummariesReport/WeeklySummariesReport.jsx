@@ -129,7 +129,6 @@ const WeeklySummariesReport = props => {
   // Saved filters functionality
   const [currentAppliedFilter, setCurrentAppliedFilter] = useState(null);
   const [showModificationModal, setShowModificationModal] = useState(false);
-  const [pendingFilterConfig, setPendingFilterConfig] = useState(null);
 
   // Misc functionalities
   /**
@@ -947,24 +946,6 @@ const WeeklySummariesReport = props => {
     }
   };
 
-  const checkForFilterModification = () => {
-    if (!currentAppliedFilter) return false;
-
-    const currentCodes = state.selectedCodes.map(code => code.value).sort();
-    const savedCodes = currentAppliedFilter.filterConfig.selectedCodes.sort();
-
-    return JSON.stringify(currentCodes) !== JSON.stringify(savedCodes);
-  };
-
-  const handleFilterModification = () => {
-    if (checkForFilterModification()) {
-      setPendingFilterConfig({
-        selectedCodes: state.selectedCodes.map(code => code.value),
-      });
-      setShowModificationModal(true);
-    }
-  };
-
   const handleApplyFilter = filter => {
     // Validate that the saved filter codes still exist in current team codes
     const validCodes = filter.filterConfig.selectedCodes
@@ -1016,7 +997,6 @@ const WeeklySummariesReport = props => {
 
   const handleCloseModificationModal = () => {
     setShowModificationModal(false);
-    setPendingFilterConfig(null);
   };
 
   const passwordInputModalToggle = () => {
