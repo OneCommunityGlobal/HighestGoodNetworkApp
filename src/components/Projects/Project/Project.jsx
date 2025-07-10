@@ -6,7 +6,7 @@ import { NavItem } from 'reactstrap';
 import { connect } from 'react-redux';
 import hasPermission from 'utils/permissions';
 import { boxStyle } from 'styles';
-import { toast } from 'react-toastify';  
+import { toast } from 'react-toastify';
 import { modifyProject, clearError } from '../../../actions/projects';
 import ModalTemplate from './../../common/Modal';
 import { CONFIRM_ARCHIVE } from './../../../languages/en/messages';
@@ -14,7 +14,7 @@ import { CONFIRM_ARCHIVE } from './../../../languages/en/messages';
 const Project = props => {
   const { darkMode, index } = props;
   const [projectData, setProjectData] = useState(props.projectData);
-  const { projectName, isActive,isArchived, _id: projectId } = projectData;
+  const { projectName, isActive, isArchived, _id: projectId } = projectData;
   const [displayName, setDisplayName] = useState(projectName);
 
   const initialModalData = {
@@ -43,6 +43,7 @@ const Project = props => {
     const updatedProject = { ...projectData, [field]: value };
     setProjectData(updatedProject);
     props.modifyProject(updatedProject);
+
   };
 
   const onDisplayNameChange = (e) => {
@@ -75,71 +76,71 @@ const Project = props => {
   const onArchiveProject = () => {
     props.onClickArchiveBtn(projectData);
   }
-  
+
   const setProjectInactive = () => {
     updateProject('isActive', !isActive);
-    onCloseModal(); 
+    onCloseModal();
   }
   const confirmArchive = () => {
     updateProject('isArchived', !isArchived);
     props.onProjectArchived();
-    onCloseModal(); 
+    onCloseModal();
   };
 
 
 
   return (
     <>
-    <tr className="projects__tr" id={'tr_' + props.projectId}>
+        <tr className="projects__tr" id={'tr_' + props.projectId}>
 
-      <th className="projects__order--input" scope="row">
-        <div className={darkMode ? 'text-light' : ''}>{index + 1}</div>
-      </th>
-
-
-      <td data-testid="projects__name--input" className="projects__name--input">
-        {(canPutProject || canSeeProjectManagementFullFunctionality) ? (
+          <th className="projects__order--input" scope="row">
+            <div className={darkMode ? 'text-light' : ''}>{index + 1}</div>
+          </th>
 
 
-          <input
-            type="text"
-            className={`form-control ${darkMode ? 'bg-yinmn-blue border-0 text-light' : ''}`}
-            value={displayName}
-            onChange={onDisplayNameChange}
-            onBlur={() => onUpdateProjectName(displayName)}
-          />
-        ) : (
-          projectName
-        )}
-      </td>
-      <td className="projects__category--input">
+          <td data-testid="projects__name--input" className="projects__name--input">
+            {(canPutProject || canSeeProjectManagementFullFunctionality) ? (
 
-        {canEditCategoryAndStatus || canPutProject ? (
 
-          <select
+              <input
+                type="text"
+                className={`form-control ${darkMode ? 'bg-yinmn-blue border-0 text-light' : ''}`}
+                value={displayName}
+                onChange={onDisplayNameChange}
+                onBlur={() => onUpdateProjectName(displayName)}
+              />
+            ) : (
+              projectName
+            )}
+          </td>
+          <td className="projects__category--input">
 
-            data-testid="projects__category--input" //added for unit test
-            value={category}
-            onChange={e => {
-              onUpdateProjectCategory(e);
-            }}
-            className={darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}
-          >
-            <option value="Unspecified">Unspecified</option>
-            <option value="Food">Food</option>
-            <option value="Energy">Energy</option>
-            <option value="Housing">Housing</option>
-            <option value="Education">Education</option>
-            <option value="Society">Society</option>
-            <option value="Economics">Economics</option>
-            <option value="Stewardship">Stewardship</option>
-            <option value="Other">Other</option>
-          </select>
-        ) : (
-          category
-        )}
-      </td>
-      {/* <td className="projects__active--input" data-testid="project-active" onClick={canPutProject ? updateActive : null}>
+            {canEditCategoryAndStatus || canPutProject ? (
+
+              <select
+
+                data-testid="projects__category--input" //added for unit test
+                value={category}
+                onChange={e => {
+                  onUpdateProjectCategory(e);
+                }}
+                className={darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}
+              >
+                <option value="Unspecified">Unspecified</option>
+                <option value="Food">Food</option>
+                <option value="Energy">Energy</option>
+                <option value="Housing">Housing</option>
+                <option value="Education">Education</option>
+                <option value="Society">Society</option>
+                <option value="Economics">Economics</option>
+                <option value="Stewardship">Stewardship</option>
+                <option value="Other">Other</option>
+              </select>
+            ) : (
+              category
+            )}
+          </td>
+          {/* <td className="projects__active--input" data-testid="project-active" onClick={canPutProject ? updateActive : null}>
         {props.active ? ( */}
       <td className="projects__active--input" data-testid="project-active" onClick={canEditCategoryAndStatus || canPutProject ? onUpdateProjectActive : null}>
         {projectData.isActive ? (
