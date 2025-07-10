@@ -4,6 +4,8 @@ import Loading from 'components/common/Loading';
 import DonutChart from '../DonutChart/DonutChart';
 
 function BlueSquareStats({ isLoading, blueSquareStats }) {
+  // Debug: log blueSquareStats object once
+  console.log('BlueSquareStats props.blueSquareStats:', blueSquareStats);
   if (isLoading) {
     return (
       <div className="d-flex justify-content-center align-items-center">
