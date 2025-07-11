@@ -32,36 +32,33 @@
   color: #e0e0e0;
 }
 
-.cost-chart-filters {
+/* Filter-related styles removed */
+
+/* Simple Filters */
+.filters-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 15px;
+  gap: 16px;
   margin-bottom: 20px;
   width: 100%;
 }
 
-.filter-group {
+.filter-item {
   display: flex;
   flex-direction: column;
   flex: 1;
-  min-width: 200px;
+  min-width: 150px;
 }
 
-.filter-group label {
-  margin-bottom: 5px;
+.filter-item label {
+  margin-bottom: 6px;
   font-size: 14px;
   font-weight: 500;
+  color: #333;
 }
 
-.cost-select {
-  width: 100%;
-}
-
-.cost-currency {
-  display: flex;
-  align-items: flex-end;
-  padding-bottom: 8px;
-  font-size: 14px;
+.dark-mode .filter-item label {
+  color: #e0e0e0;
 }
 
 .cost-chart-loading {
@@ -193,13 +190,46 @@
   display: inline-block;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .cost-chart-filters {
-    flex-direction: column;
-  }
-  
-  .filter-group {
-    width: 100%;
-  }
+/* Removed obsolete responsive adjustments targeting filter classes */
+
+/* Dark theme overrides for react-select */
+.dark-mode .select__control,
+.dark-mode .select__control--is-focused {
+  background-color: #2c3344 !important;
+  border-color: #364156 !important;
+  color: #e0e0e0 !important;
+}
+
+.dark-mode .select__value-container {
+  background-color: #2c3344 !important;
+}
+
+.dark-mode .select__menu {
+  background-color: #2c3344 !important;
+}
+
+.dark-mode .select__option {
+  color: #e0e0e0 !important;
+}
+
+.dark-mode .select__option--is-focused,
+.dark-mode .select__option--is-selected {
+  background-color: #364156 !important;
+}
+
+.dark-mode .select__multi-value {
+  background-color: #364156 !important;
+}
+
+.dark-mode .select__multi-value__label {
+  color: #e0e0e0 !important;
+}
+
+.dark-mode .select__multi-value__remove {
+  color: #e0e0e0 !important;
+}
+
+.dark-mode .select__multi-value__remove:hover {
+  background-color: #ff4d4f !important;
+  color: #fff !important;
 } 

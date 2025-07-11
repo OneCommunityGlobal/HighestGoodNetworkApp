@@ -460,139 +460,109 @@ function CostPredictionChart({ darkMode, isFullPage = false, projectId }) {
         Planned v Actual Costs Tracking
       </h3>
 
+      {/* Simple Filters */}
       <div
+        className="filters-container"
         style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: '20px',
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: '16px',
           marginBottom: '20px',
           width: '100%',
           boxSizing: 'border-box',
         }}
       >
-        <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
-          <label style={{ marginBottom: '8px', ...(darkMode ? { color: '#e0e0e0' } : {}) }}>
+        {/* Project Selector */}
+        <div
+          className="filter-item"
+          style={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: '150px' }}
+        >
+          <label style={{ marginBottom: '6px', ...(darkMode ? { color: '#e0e0e0' } : {}) }}>
             Project
           </label>
-          <div style={{ width: '100%' }}>
-            <Select
-              className="project-select"
-              classNamePrefix="select"
-              value={selectedProject}
-              onChange={handleProjectChange}
-              options={availableProjects}
-              placeholder="Select a project"
-              isSearchable={false}
-              styles={
-                darkMode
-                  ? {
-                      container: baseStyles => ({
-                        ...baseStyles,
-                        width: '100%',
-                      }),
-                      control: baseStyles => ({
-                        ...baseStyles,
-                        backgroundColor: '#2c3344',
-                        borderColor: '#364156',
-                        width: '100%',
-                        minWidth: 'auto',
-                      }),
-                      menu: baseStyles => ({
-                        ...baseStyles,
-                        backgroundColor: '#2c3344',
-                        width: '100%',
-                      }),
-                      option: (baseStyles, state) => ({
-                        ...baseStyles,
-                        backgroundColor: state.isFocused ? '#364156' : '#2c3344',
-                        color: '#e0e0e0',
-                      }),
-                    }
-                  : {
-                      container: baseStyles => ({
-                        ...baseStyles,
-                        width: '100%',
-                      }),
-                      control: baseStyles => ({
-                        ...baseStyles,
-                        width: '100%',
-                        minWidth: 'auto',
-                      }),
-                      menu: baseStyles => ({
-                        ...baseStyles,
-                        width: '100%',
-                      }),
-                    }
-              }
-            />
-          </div>
+          <Select
+            classNamePrefix="select"
+            value={selectedProject}
+            onChange={handleProjectChange}
+            options={availableProjects}
+            placeholder="Select project"
+            isSearchable={false}
+            styles={
+              darkMode
+                ? {
+                    control: base => ({
+                      ...base,
+                      backgroundColor: '#2c3344',
+                      borderColor: '#364156',
+                      minHeight: '34px',
+                    }),
+                    menu: base => ({
+                      ...base,
+                      backgroundColor: '#2c3344',
+                    }),
+                    option: (base, state) => ({
+                      ...base,
+                      backgroundColor: state.isFocused ? '#364156' : '#2c3344',
+                      color: '#e0e0e0',
+                    }),
+                    singleValue: base => ({ ...base, color: '#e0e0e0' }),
+                  }
+                : {
+                    control: base => ({ ...base, minHeight: '34px' }),
+                    menu: base => ({ ...base }),
+                  }
+            }
+          />
         </div>
 
-        <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
-          <label style={{ marginBottom: '8px', ...(darkMode ? { color: '#e0e0e0' } : {}) }}>
+        {/* Cost Categories Selector */}
+        <div
+          className="filter-item"
+          style={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: '200px' }}
+        >
+          <label style={{ marginBottom: '6px', ...(darkMode ? { color: '#e0e0e0' } : {}) }}>
             Cost Categories
           </label>
-          <div style={{ width: '100%' }}>
-            <Select
-              className="cost-select"
-              classNamePrefix="select"
-              value={selectedCosts}
-              onChange={handleCostChange}
-              options={costOptions}
-              placeholder="Select cost categories"
-              isMulti
-              isClearable={true}
-              styles={
-                darkMode
-                  ? {
-                      control: baseStyles => ({
-                        ...baseStyles,
-                        backgroundColor: '#2c3344',
-                        borderColor: '#364156',
-                        width: '100%',
-                        minWidth: '200px',
-                      }),
-                      menu: baseStyles => ({
-                        ...baseStyles,
-                        backgroundColor: '#2c3344',
-                        width: '100%',
-                      }),
-                      option: (baseStyles, state) => ({
-                        ...baseStyles,
-                        backgroundColor: state.isFocused ? '#364156' : '#2c3344',
-                        color: '#e0e0e0',
-                      }),
-                      multiValue: baseStyles => ({
-                        ...baseStyles,
-                        backgroundColor: '#364156',
-                      }),
-                      multiValueLabel: baseStyles => ({
-                        ...baseStyles,
-                        color: '#e0e0e0',
-                      }),
-                      multiValueRemove: baseStyles => ({
-                        ...baseStyles,
-                        color: '#e0e0e0',
-                        ':hover': {
-                          backgroundColor: '#ff4d4f',
-                          color: '#fff',
-                        },
-                      }),
-                    }
-                  : {
-                      control: baseStyles => ({
-                        ...baseStyles,
-                        width: '100%',
-                        minWidth: '200px',
-                      }),
-                      menu: baseStyles => ({
-                        ...baseStyles,
-                        width: '100%',
-                      }),
-                    }
-              }
-            />
-          </div>
+          <Select
+            classNamePrefix="select"
+            value={selectedCosts}
+            onChange={handleCostChange}
+            options={costOptions}
+            placeholder="Select categories"
+            isMulti
+            isClearable
+            styles={
+              darkMode
+                ? {
+                    control: base => ({
+                      ...base,
+                      backgroundColor: '#2c3344',
+                      borderColor: '#364156',
+                      minHeight: '34px',
+                    }),
+                    menu: base => ({
+                      ...base,
+                      backgroundColor: '#2c3344',
+                    }),
+                    option: (base, state) => ({
+                      ...base,
+                      backgroundColor: state.isFocused ? '#364156' : '#2c3344',
+                      color: '#e0e0e0',
+                    }),
+                    multiValue: base => ({ ...base, backgroundColor: '#364156' }),
+                    multiValueLabel: base => ({ ...base, color: '#e0e0e0' }),
+                    multiValueRemove: base => ({
+                      ...base,
+                      color: '#e0e0e0',
+                      ':hover': { backgroundColor: '#ff4d4f', color: '#fff' },
+                    }),
+                  }
+                : {
+                    control: base => ({ ...base, minHeight: '34px' }),
+                    menu: base => ({ ...base }),
+                  }
+            }
+          />
         </div>
       </div>
 
@@ -603,7 +573,7 @@ function CostPredictionChart({ darkMode, isFullPage = false, projectId }) {
         <div
           style={{
             width: '100%',
-            height: 'calc(100% - 150px)',
+            height: '100%',
             position: 'relative',
             backgroundColor: darkMode ? '#1e2736' : 'transparent',
             minHeight: '600px',
