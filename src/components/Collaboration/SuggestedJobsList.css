@@ -1,0 +1,234 @@
+.job-details {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.job-requirements h4 {
+  margin-bottom: 0.25rem;
+}
+
+.job-requirements ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.apply-now-btn {
+  background-color: #007bff;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.apply-now-btn:hover {
+  background-color: #0056b3;
+}
+.job-ad a {
+  display: flex;
+  justify-content: center;
+}
+
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.pagination-controls button {
+  padding: 0.4rem 0.8rem;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.pagination-controls button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.job-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  color: #fff;
+}
+
+.job-landing {
+  width: 100%;
+  height: 100%;
+}
+
+.job-landing .job-header img {
+  height: auto;
+  margin: 0 auto;
+  flex-direction: column;
+}
+
+.job-navbar {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  background-color: #9c0;
+  padding: 20px;
+  flex-wrap: wrap;
+  box-sizing: border-box;
+}
+
+.search-form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.search-form input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.search-form button {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.job-select {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  appearance: none;
+  background-color: #fff;
+  background-image: url("data:image/svg+xml;utf8,<svg fill='gray' height='20' viewBox='0 0 20 20' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 18px 18px;
+  padding-right: 36px;
+  transition: background-image 0.2s;
+}
+
+.job-select:focus,
+.job-select:active {
+  background-image: url("data:image/svg+xml;utf8,<svg fill='black' height='20' viewBox='0 0 20 20' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 15l5-5 5 5z'/></svg>");
+}
+
+.job-list {
+  display: flex;
+  flex-direction: column;
+  grid-template-columns: 1fr; /* Column layout by default */
+  gap: 20px;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.job-ad {
+  background: #fff;
+  border: 1px solid #ccc;
+  padding: 30px 25px; /* Increased padding for bigger box */
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 0 1 350px; /* Bigger min width */
+  /* Max width to keep uniform size */
+  transition: transform 0.3s, box-shadow 0.3s;
+  margin-bottom: 30px;
+}
+
+.job-ad:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+}
+
+.job-role-name {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  text-align: center;
+  color: #0069d9;
+}
+
+.job-details {
+  font-size: 1.1rem;
+  color: #555;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.job-requirements h4 {
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #333;
+  text-align: left;
+}
+
+.job-requirements ul {
+  list-style-type: disc;
+  padding-left: 1.75rem;
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+  color: #444;
+}
+
+.apply-now-btn {
+  background-color: #007bff;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  border-radius: 6px;
+  text-align: center;
+  align-self: center; /* Center button */
+  width: fit-content;
+  transition: background-color 0.3s;
+}
+
+.apply-now-btn:hover {
+  background-color: #0056b3;
+}
+
+.job-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px; /* More gap for bigger cards */
+  margin: 0 auto;
+}
+
+.category-icon {
+  width: 150px;
+  height: 150px;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto 15px;
+}
+
+@media (max-width: 600px) {
+  .category-icon {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .job-grid {
+    justify-content: center;
+  }
+  .job-ad {
+    flex: 0 1 400px;
+  }
+}
