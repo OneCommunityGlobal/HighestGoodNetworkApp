@@ -161,6 +161,25 @@ function SuggestedJobsList() {
                 className="category-icon"
               />
               <h2 className="job-role-name">{ad.title}</h2>
+               {/* Location Tag */}
+      <div
+        className={`job-location-tag ${ad.location?.toLowerCase() !== 'remote' ? 'in-person' : 'remote'}`}
+        style={{
+          backgroundColor: ad.location?.toLowerCase() !== 'remote' ? '#ffeb3b' : '#d1ecf1',
+          color: ad.location?.toLowerCase() !== 'remote' ? '#333' : '#0c5460',
+          padding: '6px 12px',
+          borderRadius: '20px',
+          fontWeight: '600',
+          textAlign: 'center',
+          width: 'fit-content',
+          margin: '0 auto 1rem',
+          fontSize: '0.9rem',
+        }}
+      >
+        {ad.location?.toLowerCase() !== 'remote'
+          ? `In-Person | Location: ${ad.location}`
+          : 'Remote'}
+      </div>
               <p className="job-details">
                 {ad.description || 'No detailed description available.'}
               </p>
