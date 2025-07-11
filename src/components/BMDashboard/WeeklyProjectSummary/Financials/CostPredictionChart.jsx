@@ -11,10 +11,10 @@ import {
   ReferenceLine,
 } from 'recharts';
 import { useHistory } from 'react-router-dom';
+import moment from 'moment';
 import Select from 'react-select';
 import './CostPredictionChart.css';
 import { getProjectCosts, getProjectIds } from '../../../../services/projectCostTrackingService';
-import moment from 'moment';
 
 // Cost category options
 const costOptions = [
@@ -23,6 +23,187 @@ const costOptions = [
   { value: 'Equipment', label: 'Equipment Cost' },
   { value: 'Total', label: 'Total Cost' },
 ];
+
+// Custom dot component for predicted values - extracted to avoid nested component definition
+function PredictedDot({ cx, cy, payload, category, costColors }) {
+  if (!payload || !payload[`${category}Predicted`]) return null;
+  return (
+    <path
+      d={`M${cx},${cy - 3} L${cx + 3},${cy} L${cx},${cy + 3} L${cx - 3},${cy} Z`}
+      fill="none"
+      stroke={costColors[category]}
+      strokeWidth={1.5}
+    />
+  );
+}
+
+// Custom dot component for full page predicted values - extracted to avoid nested component definition
+function FullPagePredictedDot({ cx, cy, payload, category, costColors }) {
+  if (!payload || !payload[`${category}Predicted`]) return null;
+  return (
+    <path
+      d={`M${cx},${cy - 4} L${cx + 4},${cy} L${cx},${cy + 4} L${cx - 4},${cy} Z`}
+      fill="none"
+      stroke={costColors[category]}
+      strokeWidth={1.5}
+    />
+  );
+}
+
+// Define line colors
+const costColors = {
+  Labor: '#4589FF',
+  Materials: '#FF6A00',
+  Equipment: '#8A2BE2',
+  Total: '#3CB371',
+};
+
+// Dot rendering functions for Labor and Materials - fixed components
+const renderLaborDot = props => (
+  <PredictedDot
+    cx={props.cx}
+    cy={props.cy}
+    payload={props.payload}
+    category="Labor"
+    costColors={costColors}
+  />
+);
+
+const renderMaterialsDot = props => (
+  <PredictedDot
+    cx={props.cx}
+    cy={props.cy}
+    payload={props.payload}
+    category="Materials"
+    costColors={costColors}
+  />
+);
+
+// Create specific dot renderers for common categories
+function createStaticDotRenderer(category) {
+  return function DotRenderer(props) {
+    return (
+      <FullPagePredictedDot
+        cx={props.cx}
+        cy={props.cy}
+        payload={props.payload}
+        category={category}
+        costColors={costColors}
+      />
+    );
+  };
+}
+
+// Pre-defined dot renderers for different categories
+const renderLaborFullPageDot = createStaticDotRenderer('Labor');
+const renderMaterialsFullPageDot = createStaticDotRenderer('Materials');
+const renderEquipmentFullPageDot = createStaticDotRenderer('Equipment');
+const renderTotalFullPageDot = createStaticDotRenderer('Total');
+
+// Calculate last predicted values for reference lines
+const getLastPredictedValues = costData => {
+  const lastValues = {};
+
+  if (!costData || !costData.predicted) {
+    return lastValues;
+  }
+
+  Object.keys(costData.predicted).forEach(category => {
+    const predictedItems = costData.predicted[category];
+    if (predictedItems && predictedItems.length > 0) {
+      // Get the last predicted value for this category
+      const lastPredicted = predictedItems[predictedItems.length - 1];
+      lastValues[category] = lastPredicted.cost;
+    }
+  });
+
+  return lastValues;
+};
+
+// Process data for chart - modify this function to connect actual and predicted data
+const processDataForChart = costData => {
+  const processedData = [];
+
+  if (!costData || !costData.actual) {
+    return processedData;
+  }
+
+  // Get all dates from both actual and predicted data
+  const allDates = new Set();
+  const actualCategories = Object.keys(costData.actual);
+  const predictedCategories = costData.predicted ? Object.keys(costData.predicted) : [];
+
+  // Collect all dates
+  actualCategories.forEach(category => {
+    costData.actual[category].forEach(costItem => {
+      const dateStr = moment(costItem.date).format('MMM YYYY');
+      allDates.add(dateStr);
+    });
+  });
+
+  if (costData.predicted) {
+    predictedCategories.forEach(category => {
+      costData.predicted[category].forEach(costItem => {
+        const dateStr = moment(costItem.date).format('MMM YYYY');
+        allDates.add(dateStr);
+      });
+    });
+  }
+
+  // Sort dates chronologically
+  const sortedDates = Array.from(allDates).sort((a, b) =>
+    moment(a, 'MMM YYYY').diff(moment(b, 'MMM YYYY')),
+  );
+
+  // Create data points for each date
+  sortedDates.forEach(dateStr => {
+    const dataPoint = { date: dateStr };
+
+    // Add actual data values
+    actualCategories.forEach(category => {
+      const costItem = costData.actual[category].find(
+        costEntry => moment(costEntry.date).format('MMM YYYY') === dateStr,
+      );
+      if (costItem) {
+        dataPoint[category] = costItem.cost;
+      }
+    });
+
+    // Add predicted data values
+    if (costData.predicted) {
+      predictedCategories.forEach(category => {
+        const costItem = costData.predicted[category].find(
+          costEntry => moment(costEntry.date).format('MMM YYYY') === dateStr,
+        );
+        if (costItem) {
+          dataPoint[`${category}Predicted`] = costItem.cost;
+        }
+      });
+    }
+
+    // For the last actual data point of each category, also add it as the first predicted point
+    // This ensures the lines connect without a gap
+    if (costData.predicted) {
+      actualCategories.forEach(category => {
+        // Find the last actual data point for this category
+        const actualItems = costData.actual[category];
+        if (actualItems && actualItems.length > 0) {
+          const lastActualItem = actualItems[actualItems.length - 1];
+          const lastActualDateStr = moment(lastActualItem.date).format('MMM YYYY');
+
+          // If this is the last actual data point, also set it as the predicted value
+          if (dateStr === lastActualDateStr) {
+            dataPoint[`${category}Predicted`] = lastActualItem.cost;
+          }
+        }
+      });
+    }
+
+    processedData.push(dataPoint);
+  });
+
+  return processedData;
+};
 
 // Custom tooltip component
 function CustomTooltip({ active, payload, label, currency }) {
@@ -36,7 +217,7 @@ function CustomTooltip({ active, payload, label, currency }) {
     <div className="cost-chart-tooltip">
       <p className="tooltip-date">{label}</p>
       <p className="tooltip-type">{isPrediction ? 'Predicted' : 'Actual'}</p>
-      {payload.map((entry, index) => {
+      {payload.map(entry => {
         let costLabel = '';
 
         if (entry.dataKey === 'Labor') costLabel = 'Labor Cost';
@@ -45,8 +226,8 @@ function CustomTooltip({ active, payload, label, currency }) {
         else if (entry.dataKey === 'Total') costLabel = 'Total Cost';
 
         return (
-          <div key={index} className="tooltip-item">
-            <span className="tooltip-marker" style={{ backgroundColor: entry.color }}></span>
+          <div key={`tooltip-${entry.dataKey}-${entry.value}`} className="tooltip-item">
+            <span className="tooltip-marker" style={{ backgroundColor: entry.color }} />
             <span className="tooltip-label">{costLabel}:</span>
             <span className="tooltip-value">{`${currency}${entry.value.toLocaleString()}`}</span>
           </div>
@@ -57,8 +238,6 @@ function CustomTooltip({ active, payload, label, currency }) {
 }
 
 function CostPredictionChart({ darkMode, isFullPage = false, projectId }) {
-  console.log('Rendering CostPredictionChart', { darkMode, isFullPage, projectId });
-
   const [data, setData] = useState([]);
   const [selectedCosts, setSelectedCosts] = useState([
     { value: 'Labor', label: 'Labor Cost' },
@@ -69,7 +248,6 @@ function CostPredictionChart({ darkMode, isFullPage = false, projectId }) {
   const [currency] = useState('$'); // Currency symbol
   const [availableProjects, setAvailableProjects] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
-  const [plannedBudget, setPlannedBudget] = useState(null);
   const [lastPredictedValues, setLastPredictedValues] = useState({});
   const history = useHistory();
 
@@ -86,7 +264,6 @@ function CostPredictionChart({ darkMode, isFullPage = false, projectId }) {
           setSelectedProject({ value: initialProject, label: initialProject });
         }
       } catch (err) {
-        console.error('Error fetching project IDs:', err);
         setError('Failed to load projects');
       }
     };
@@ -107,18 +284,12 @@ function CostPredictionChart({ darkMode, isFullPage = false, projectId }) {
         const processedData = processDataForChart(costData);
         setData(processedData);
 
-        // Set the planned budget from the response
-        if (costData.plannedBudget) {
-          setPlannedBudget(costData.plannedBudget);
-        }
-
         // Calculate and store last predicted values for reference lines
         const lastValues = getLastPredictedValues(costData);
         setLastPredictedValues(lastValues);
 
         setLoading(false);
       } catch (err) {
-        console.error('Error fetching cost data:', err);
         setError('Failed to load cost data');
         setLoading(false);
       }
@@ -126,111 +297,6 @@ function CostPredictionChart({ darkMode, isFullPage = false, projectId }) {
 
     fetchData();
   }, [selectedProject]);
-
-  // Calculate last predicted values for reference lines
-  const getLastPredictedValues = costData => {
-    const lastValues = {};
-
-    if (!costData || !costData.predicted) {
-      return lastValues;
-    }
-
-    Object.keys(costData.predicted).forEach(category => {
-      const predictedItems = costData.predicted[category];
-      if (predictedItems && predictedItems.length > 0) {
-        // Get the last predicted value for this category
-        const lastPredicted = predictedItems[predictedItems.length - 1];
-        lastValues[category] = lastPredicted.cost;
-      }
-    });
-
-    return lastValues;
-  };
-
-  // Process data for chart - modify this function to connect actual and predicted data
-  const processDataForChart = costData => {
-    const processedData = [];
-
-    if (!costData || !costData.actual) {
-      return processedData;
-    }
-
-    // Get all dates from both actual and predicted data
-    const allDates = new Set();
-    const actualCategories = Object.keys(costData.actual);
-    const predictedCategories = costData.predicted ? Object.keys(costData.predicted) : [];
-
-    // Collect all dates
-    actualCategories.forEach(category => {
-      costData.actual[category].forEach(item => {
-        const dateStr = moment(item.date).format('MMM YYYY');
-        allDates.add(dateStr);
-      });
-    });
-
-    if (costData.predicted) {
-      predictedCategories.forEach(category => {
-        costData.predicted[category].forEach(item => {
-          const dateStr = moment(item.date).format('MMM YYYY');
-          allDates.add(dateStr);
-        });
-      });
-    }
-
-    // Sort dates chronologically
-    const sortedDates = Array.from(allDates).sort((a, b) =>
-      moment(a, 'MMM YYYY').diff(moment(b, 'MMM YYYY')),
-    );
-
-    // Create data points for each date
-    sortedDates.forEach(dateStr => {
-      const dataPoint = { date: dateStr };
-
-      // Add actual data values
-      actualCategories.forEach(category => {
-        const item = costData.actual[category].find(
-          item => moment(item.date).format('MMM YYYY') === dateStr,
-        );
-        if (item) {
-          dataPoint[category] = item.cost;
-        }
-      });
-
-      // Add predicted data values
-      if (costData.predicted) {
-        predictedCategories.forEach(category => {
-          const item = costData.predicted[category].find(
-            item => moment(item.date).format('MMM YYYY') === dateStr,
-          );
-          if (item) {
-            dataPoint[`${category}Predicted`] = item.cost;
-          }
-        });
-      }
-
-      // For the last actual data point of each category, also add it as the first predicted point
-      // This ensures the lines connect without a gap
-      if (costData.predicted) {
-        actualCategories.forEach(category => {
-          // Find the last actual data point for this category
-          const actualItems = costData.actual[category];
-          if (actualItems && actualItems.length > 0) {
-            const lastActualItem = actualItems[actualItems.length - 1];
-            const lastActualDateStr = moment(lastActualItem.date).format('MMM YYYY');
-
-            // If this is the last actual data point, also set it as the predicted value
-            if (dateStr === lastActualDateStr) {
-              dataPoint[`${category}Predicted`] = lastActualItem.cost;
-            }
-          }
-        });
-      }
-
-      processedData.push(dataPoint);
-    });
-
-    return processedData;
-  };
 
   const handleCardClick = () => {
     if (!isFullPage) {
@@ -249,12 +315,20 @@ function CostPredictionChart({ darkMode, isFullPage = false, projectId }) {
     setSelectedProject(selected);
   };
 
-  // Define line colors
-  const costColors = {
-    Labor: '#4589FF',
-    Materials: '#FF6A00',
-    Equipment: '#8A2BE2',
-    Total: '#3CB371',
+  // Get appropriate dot renderer for the category
+  const getDotRenderer = category => {
+    switch (category) {
+      case 'Labor':
+        return renderLaborFullPageDot;
+      case 'Materials':
+        return renderMaterialsFullPageDot;
+      case 'Equipment':
+        return renderEquipmentFullPageDot;
+      case 'Total':
+        return renderTotalFullPageDot;
+      default:
+        return renderLaborFullPageDot; // fallback
+    }
   };
 
   // Render a simplified chart for card view
@@ -368,18 +442,7 @@ function CostPredictionChart({ darkMode, isFullPage = false, projectId }) {
                   stroke={costColors.Labor}
                   strokeWidth={2}
                   strokeDasharray="8 4"
-                  dot={props => {
-                    const { cx, cy, payload } = props;
-                    if (!payload || !payload.LaborPredicted) return null;
-                    return (
-                      <path
-                        d={`M${cx},${cy - 3} L${cx + 3},${cy} L${cx},${cy + 3} L${cx - 3},${cy} Z`}
-                        fill="none"
-                        stroke={costColors.Labor}
-                        strokeWidth={1.5}
-                      />
-                    );
-                  }}
+                  dot={renderLaborDot}
                   activeDot={{ r: 4 }}
                   isAnimationActive={false}
                 />
@@ -402,18 +465,7 @@ function CostPredictionChart({ darkMode, isFullPage = false, projectId }) {
                   stroke={costColors.Materials}
                   strokeWidth={2}
                   strokeDasharray="8 4"
-                  dot={props => {
-                    const { cx, cy, payload } = props;
-                    if (!payload || !payload.MaterialsPredicted) return null;
-                    return (
-                      <path
-                        d={`M${cx},${cy - 3} L${cx + 3},${cy} L${cx},${cy + 3} L${cx - 3},${cy} Z`}
-                        fill="none"
-                        stroke={costColors.Materials}
-                        strokeWidth={1.5}
-                      />
-                    );
-                  }}
+                  dot={renderMaterialsDot}
                   activeDot={{ r: 4 }}
                   isAnimationActive={false}
                 />
@@ -495,6 +547,7 @@ function CostPredictionChart({ darkMode, isFullPage = false, projectId }) {
                       backgroundColor: '#2c3344',
                       borderColor: '#364156',
                       minHeight: '34px',
+                      padding: '2px 8px',
                     }),
                     menu: base => ({
                       ...base,
@@ -508,7 +561,11 @@ function CostPredictionChart({ darkMode, isFullPage = false, projectId }) {
                     singleValue: base => ({ ...base, color: '#e0e0e0' }),
                   }
                 : {
-                    control: base => ({ ...base, minHeight: '34px' }),
+                    control: base => ({
+                      ...base,
+                      minHeight: '34px',
+                      padding: '2px 8px',
+                    }),
                     menu: base => ({ ...base }),
                   }
             }
@@ -539,6 +596,7 @@ function CostPredictionChart({ darkMode, isFullPage = false, projectId }) {
                       backgroundColor: '#2c3344',
                       borderColor: '#364156',
                       minHeight: '34px',
+                      padding: '2px 8px',
                     }),
                     menu: base => ({
                       ...base,
@@ -558,7 +616,11 @@ function CostPredictionChart({ darkMode, isFullPage = false, projectId }) {
                     }),
                   }
                 : {
-                    control: base => ({ ...base, minHeight: '34px' }),
+                    control: base => ({
+                      ...base,
+                      minHeight: '34px',
+                      padding: '2px 8px',
+                    }),
                     menu: base => ({ ...base }),
                   }
             }
@@ -701,20 +763,7 @@ function CostPredictionChart({ darkMode, isFullPage = false, projectId }) {
                       stroke={costColors[dataKey]}
                       strokeWidth={2}
                       strokeDasharray="8 4"
-                      dot={props => {
-                        const { cx, cy, payload, index } = props;
-                        if (!payload || !payload[`${dataKey}Predicted`]) return null;
-                        return (
-                          <path
-                            d={`M${cx},${cy - 4} L${cx + 4},${cy} L${cx},${cy + 4} L${cx -
-                              4},${cy} Z`}
-                            fill="none"
-                            stroke={costColors[dataKey]}
-                            strokeWidth={1.5}
-                            key={`dot-${dataKey}-${index}`}
-                          />
-                        );
-                      }}
+                      dot={getDotRenderer(dataKey)}
                       activeDot={{ r: 6 }}
                       isAnimationActive={false}
                     />

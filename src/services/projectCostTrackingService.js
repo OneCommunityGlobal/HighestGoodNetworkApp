@@ -6,13 +6,8 @@ import { ENDPOINTS } from '../utils/URL';
  * @returns {Promise<Array>} Array of project IDs
  */
 export const getProjectIds = async () => {
-  try {
-    const response = await axios.get(ENDPOINTS.PROJECT_COST_IDS);
-    return response.data.projectIds || [];
-  } catch (error) {
-    console.error('Error fetching project IDs:', error);
-    throw error;
-  }
+  const response = await axios.get(ENDPOINTS.PROJECT_COST_IDS);
+  return response.data.projectIds || [];
 };
 
 /**
@@ -25,16 +20,11 @@ export const getProjectIds = async () => {
  * @returns {Promise<Object>} Cost data including actual and predicted costs
  */
 export const getProjectCosts = async (projectId, options = {}) => {
-  try {
-    const { categories, fromDate, toDate } = options;
-    const response = await axios.get(
-      ENDPOINTS.PROJECT_COSTS_BY_ID(projectId, categories, fromDate, toDate),
-    );
-    return response.data;
-  } catch (error) {
-    console.error(`Error fetching costs for project ${projectId}:`, error);
-    throw error;
-  }
+  const { categories, fromDate, toDate } = options;
+  const response = await axios.get(
+    ENDPOINTS.PROJECT_COSTS_BY_ID(projectId, categories, fromDate, toDate),
+  );
+  return response.data;
 };
 
 export default {
