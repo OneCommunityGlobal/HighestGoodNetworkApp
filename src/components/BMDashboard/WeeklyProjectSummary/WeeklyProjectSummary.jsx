@@ -15,7 +15,6 @@ import { CostPredictionChart } from './Financials';
 import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
 import styles from './WeeklyProjectSummary.module.css';
 
-
 const projectStatusButtons = [
   {
     title: 'Total Projects',
@@ -215,10 +214,10 @@ export default function WeeklyProjectSummary() {
 
         content: (
           <>
-            <div className="weekly-project-summary-card normal-card">
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
               <ToolsHorizontalBarChart darkMode={darkMode} />
             </div>
-            <div className="weekly-project-summary-card normal-card">📊 Card</div>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>📊 Card</div>
           </>
         ),
       },
@@ -256,8 +255,7 @@ export default function WeeklyProjectSummary() {
               );
             })}
 
-
-            <div className="weekly-project-summary-card financial-big">
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.financialBig}`}>
               <CostPredictionChart darkMode={darkMode} />
             </div>
           </>
