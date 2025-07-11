@@ -460,90 +460,139 @@ function CostPredictionChart({ darkMode, isFullPage = false, projectId }) {
         Planned v Actual Costs Tracking
       </h3>
 
-      <div className="cost-chart-filters">
-        <div className="filter-group">
-          <label style={darkMode ? { color: '#e0e0e0' } : {}}>Project</label>
-          <Select
-            className="project-select"
-            classNamePrefix="select"
-            value={selectedProject}
-            onChange={handleProjectChange}
-            options={availableProjects}
-            placeholder="Select a project"
-            styles={
-              darkMode
-                ? {
-                    control: baseStyles => ({
-                      ...baseStyles,
-                      backgroundColor: '#2c3344',
-                      borderColor: '#364156',
-                    }),
-                    menu: baseStyles => ({
-                      ...baseStyles,
-                      backgroundColor: '#2c3344',
-                    }),
-                    option: (baseStyles, state) => ({
-                      ...baseStyles,
-                      backgroundColor: state.isFocused ? '#364156' : '#2c3344',
-                      color: '#e0e0e0',
-                    }),
-                  }
-                : {}
-            }
-          />
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          gap: '20px',
+          marginBottom: '20px',
+          width: '100%',
+          boxSizing: 'border-box',
+        }}
+      >
+        <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
+          <label style={{ marginBottom: '8px', ...(darkMode ? { color: '#e0e0e0' } : {}) }}>
+            Project
+          </label>
+          <div style={{ width: '100%' }}>
+            <Select
+              className="project-select"
+              classNamePrefix="select"
+              value={selectedProject}
+              onChange={handleProjectChange}
+              options={availableProjects}
+              placeholder="Select a project"
+              isSearchable={false}
+              styles={
+                darkMode
+                  ? {
+                      container: baseStyles => ({
+                        ...baseStyles,
+                        width: '100%',
+                      }),
+                      control: baseStyles => ({
+                        ...baseStyles,
+                        backgroundColor: '#2c3344',
+                        borderColor: '#364156',
+                        width: '100%',
+                        minWidth: 'auto',
+                      }),
+                      menu: baseStyles => ({
+                        ...baseStyles,
+                        backgroundColor: '#2c3344',
+                        width: '100%',
+                      }),
+                      option: (baseStyles, state) => ({
+                        ...baseStyles,
+                        backgroundColor: state.isFocused ? '#364156' : '#2c3344',
+                        color: '#e0e0e0',
+                      }),
+                    }
+                  : {
+                      container: baseStyles => ({
+                        ...baseStyles,
+                        width: '100%',
+                      }),
+                      control: baseStyles => ({
+                        ...baseStyles,
+                        width: '100%',
+                        minWidth: 'auto',
+                      }),
+                      menu: baseStyles => ({
+                        ...baseStyles,
+                        width: '100%',
+                      }),
+                    }
+              }
+            />
+          </div>
         </div>
 
-        <div className="filter-group">
-          <label style={darkMode ? { color: '#e0e0e0' } : {}}>Cost Categories</label>
-          <Select
-            className="cost-select"
-            classNamePrefix="select"
-            value={selectedCosts}
-            onChange={handleCostChange}
-            options={costOptions}
-            placeholder="Select cost categories"
-            isMulti
-            isClearable={true}
-            styles={
-              darkMode
-                ? {
-                    control: baseStyles => ({
-                      ...baseStyles,
-                      backgroundColor: '#2c3344',
-                      borderColor: '#364156',
-                    }),
-                    menu: baseStyles => ({
-                      ...baseStyles,
-                      backgroundColor: '#2c3344',
-                    }),
-                    option: (baseStyles, state) => ({
-                      ...baseStyles,
-                      backgroundColor: state.isFocused ? '#364156' : '#2c3344',
-                      color: '#e0e0e0',
-                    }),
-                    multiValue: baseStyles => ({
-                      ...baseStyles,
-                      backgroundColor: '#364156',
-                    }),
-                    multiValueLabel: baseStyles => ({
-                      ...baseStyles,
-                      color: '#e0e0e0',
-                    }),
-                    multiValueRemove: baseStyles => ({
-                      ...baseStyles,
-                      color: '#e0e0e0',
-                      ':hover': {
-                        backgroundColor: '#ff4d4f',
-                        color: '#fff',
-                      },
-                    }),
-                  }
-                : {}
-            }
-          />
-        </div>
-        <div className="cost-currency">
-          <span style={darkMode ? { color: '#e0e0e0' } : {}}>Currency: {currency}</span>
+        <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
+          <label style={{ marginBottom: '8px', ...(darkMode ? { color: '#e0e0e0' } : {}) }}>
+            Cost Categories
+          </label>
+          <div style={{ width: '100%' }}>
+            <Select
+              className="cost-select"
+              classNamePrefix="select"
+              value={selectedCosts}
+              onChange={handleCostChange}
+              options={costOptions}
+              placeholder="Select cost categories"
+              isMulti
+              isClearable={true}
+              styles={
+                darkMode
+                  ? {
+                      control: baseStyles => ({
+                        ...baseStyles,
+                        backgroundColor: '#2c3344',
+                        borderColor: '#364156',
+                        width: '100%',
+                        minWidth: '200px',
+                      }),
+                      menu: baseStyles => ({
+                        ...baseStyles,
+                        backgroundColor: '#2c3344',
+                        width: '100%',
+                      }),
+                      option: (baseStyles, state) => ({
+                        ...baseStyles,
+                        backgroundColor: state.isFocused ? '#364156' : '#2c3344',
+                        color: '#e0e0e0',
+                      }),
+                      multiValue: baseStyles => ({
+                        ...baseStyles,
+                        backgroundColor: '#364156',
+                      }),
+                      multiValueLabel: baseStyles => ({
+                        ...baseStyles,
+                        color: '#e0e0e0',
+                      }),
+                      multiValueRemove: baseStyles => ({
+                        ...baseStyles,
+                        color: '#e0e0e0',
+                        ':hover': {
+                          backgroundColor: '#ff4d4f',
+                          color: '#fff',
+                        },
+                      }),
+                    }
+                  : {
+                      control: baseStyles => ({
+                        ...baseStyles,
+                        width: '100%',
+                        minWidth: '200px',
+                      }),
+                      menu: baseStyles => ({
+                        ...baseStyles,
+                        width: '100%',
+                      }),
+                    }
+              }
+            />
+          </div>
         </div>
       </div>
 
