@@ -1,3 +1,17 @@
+/* Dark mode placeholder style */
+input.dark-mode-placeholder::placeholder {
+  color: #ffffff;
+  opacity: 0.7; /* Optional: adjust to make it a bit subtle */
+}
+.no-jobs-notice img {
+  filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.job-placeholder button,
+.no-jobs-notice button {
+  min-width: 120px;
+}
+
 .job-location-tag {
   padding: 6px 12px;
   border-radius: 20px;

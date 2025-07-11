@@ -12,6 +12,7 @@ function SuggestedJobsList() {
   const [jobAds, setJobAds] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
+  const [hasSearched, setHasSearched] = useState(false);
   const adsPerPage = 3;
   const darkMode = useSelector(state => state.theme.darkMode);
   // Fetch categories on mount
@@ -61,12 +62,14 @@ function SuggestedJobsList() {
     e.preventDefault();
     setCurrentPage(1); // Reset page to 1 on new search
     setQuery(e.target.elements.searchInput.value.trim());
+    setHasSearched(true);
   };
 
   // Handle category change
   const handleCategoryChange = e => {
     setCategory(e.target.value);
     setCurrentPage(1); // Reset page to 1 on category change
+    setHasSearched(true);
   };
 
   // Pagination controls
@@ -119,9 +122,10 @@ function SuggestedJobsList() {
             type="text"
             placeholder="Search by title..."
             defaultValue={query}
-            className={darkMode ? 'bg-space-cadet text-light' : ''}
+            className={`${darkMode ? 'bg-space-cadet text-light dark-mode-placeholder' : ''}`}
             style={{ padding: '8px' }}
           />
+
           <button className="btn btn-secondary" type="submit">
             Go
           </button>
@@ -142,9 +146,8 @@ function SuggestedJobsList() {
       </nav>
 
       {/* Job ads listing */}
-
       <div className="job-grid" style={{ margin: '0 auto' }}>
-        {jobAds.length > 0 ? (
+        {jobAds.length > 0 &&
           jobAds.map(ad => (
             <div
               key={ad._id}
@@ -170,7 +173,6 @@ function SuggestedJobsList() {
                 {ad.title}
               </h2>
 
-              {/* Location Tag */}
               <div
                 className={`job-location-tag ${
                   ad.location?.toLowerCase() !== 'remote' ? 'in-person' : 'remote'
@@ -191,6 +193,7 @@ function SuggestedJobsList() {
                   ? `In-Person | Location: ${ad.location}`
                   : 'Remote'}
               </div>
+
               <p className="job-details" style={{ color: darkMode ? 'white' : undefined }}>
                 {ad.description || 'No detailed description available.'}
               </p>
@@ -205,6 +208,7 @@ function SuggestedJobsList() {
                   </ul>
                 </div>
               )}
+
               <a
                 href={`https://www.onecommunityglobal.org/collaboration/job-application/${ad._id}`}
                 target="_blank"
@@ -215,14 +219,55 @@ function SuggestedJobsList() {
                 </button>
               </a>
             </div>
-          ))
-        ) : (
-          <div className={`no-jobs-notice ${darkMode ? 'text-light' : ''}`}>
+          ))}
+
+        {jobAds.length === 0 && hasSearched && (
+          <div
+            className={`no-jobs-notice ${darkMode ? 'text-light' : ''}`}
+            style={{ textAlign: 'center', padding: '2rem' }}
+          >
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/7486/7486780.png"
+              alt="No results"
+              style={{ width: '100px', marginBottom: '1rem' }}
+            />
             <h3>No Job Ads Found</h3>
-            <p>Try adjusting your search or selecting a different category.</p>
+            <h4 style={{ color: darkMode ? '#ffffff' : '#007bff' }}>
+              We couldn’t find any matches. Try a different keyword or category.
+            </h4>
+          </div>
+        )}
+
+        {jobAds.length === 0 && !hasSearched && (
+          <div
+            className={`job-placeholder ${darkMode ? 'text-light' : ''}`}
+            style={{ textAlign: 'center', padding: '2rem' }}
+          >
+            <h2>🔍 Begin Your Search</h2>
+            <h4 style={{ color: darkMode ? '#ffffff' : '#007bff' }}>
+              Use the search bar or pick a category to explore available job roles!
+            </h4>
+            <div style={{ marginTop: '1.5rem' }}>
+              {['Engineering', 'Marketing', 'Design', 'Finance'].map(cat => (
+                <button
+                  type="submit"
+                  key={cat}
+                  className="btn btn-outline-primary"
+                  onClick={() => {
+                    setCategory(cat);
+                    setCurrentPage(1);
+                    setHasSearched(true);
+                  }}
+                  style={{ margin: '0.3rem' }}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
           </div>
         )}
       </div>
+
       {/* Pagination */}
       {totalPages > 1 && (
         <div
