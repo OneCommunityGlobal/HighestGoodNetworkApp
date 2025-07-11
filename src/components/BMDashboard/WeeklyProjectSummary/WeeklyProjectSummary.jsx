@@ -8,6 +8,10 @@ import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
 import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
 import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
+
+import ToolsHorizontalBarChart from './Tools/ToolsHorizontalBarChart';
+import { CostPredictionChart } from './Financials';
+
 import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
 import styles from './WeeklyProjectSummary.module.css';
 
@@ -207,17 +211,15 @@ export default function WeeklyProjectSummary() {
         title: 'Tools and Equipment Tracking',
         key: 'Tools and Equipment Tracking',
         className: 'half',
-        content: [1, 2].map(() => {
-          const uniqueId = uuidv4();
-          return (
-            <div
-              key={uniqueId}
-              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
-            >
-              📊 Card
+
+        content: (
+          <>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+              <ToolsHorizontalBarChart darkMode={darkMode} />
             </div>
-          );
-        }),
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>📊 Card</div>
+          </>
+        ),
       },
       {
         title: 'Lessons Learned',
@@ -241,7 +243,7 @@ export default function WeeklyProjectSummary() {
         className: 'large',
         content: (
           <>
-            {Array.from({ length: 4 }).map(() => {
+            {Array.from({ length: 3 }).map(() => {
               const uniqueId = uuidv4();
               return (
                 <div
@@ -254,7 +256,7 @@ export default function WeeklyProjectSummary() {
             })}
 
             <div className={`${styles.weeklyProjectSummaryCard} ${styles.financialBig}`}>
-              📊 Big Card
+              <CostPredictionChart darkMode={darkMode} />
             </div>
           </>
         ),
@@ -299,7 +301,7 @@ export default function WeeklyProjectSummary() {
         }),
       },
     ],
-    [quantityOfMaterialsUsedData],
+    [quantityOfMaterialsUsedData, darkMode],
   );
 
   const handleSaveAsPDF = async () => {
