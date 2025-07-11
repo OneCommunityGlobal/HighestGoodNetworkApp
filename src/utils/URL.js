@@ -233,6 +233,8 @@ export const ENDPOINTS = {
   BM_EQUIPMENT_PURCHASE: `${APIEndpoint}/bm/equipment/purchase`,
   BM_PROJECTS: `${APIEndpoint}/bm/projects`,
   BM_PROJECT_BY_ID: projectId => `${APIEndpoint}/bm/project/${projectId}`,
+  BM_PROJECTS_LIST_FOR_MATERIALS_COST: `${APIEndpoint}/totalProjects `,
+  BM_PROJECT_MATERIALS_COST: `${APIEndpoint}/material-costs`,
   BM_UPDATE_MATERIAL: `${APIEndpoint}/bm/updateMaterialRecord`,
   BM_UPDATE_MATERIAL_BULK: `${APIEndpoint}/bm/updateMaterialRecordBulk`,
   BM_UPDATE_MATERIAL_STATUS: `${APIEndpoint}/bm/updateMaterialStatus`,
@@ -256,6 +258,7 @@ export const ENDPOINTS = {
   BM_ISSUE_CHART: `${APIEndpoint}/bm/issue/issue-chart`,
 
   BM_ISSUE_FORM: `${APIEndpoint}/bm/issue/add`,
+  BM_INJURY_ISSUE: `${APIEndpoint}/bm/issues`,
   BM_RENTAL_CHART: `${APIEndpoint}/bm/rentalChart`,
 
   BM_TAGS: `${APIEndpoint}/bm/tags`,
@@ -291,19 +294,6 @@ export const ENDPOINTS = {
   GET_ALL_JOB_FORMS: `${APIEndpoint}/jobforms/all`,
   GET_FORM_RESPONSES: formID => `${APIEndpoint}/jobforms/${formID}/responses`,
 
-  ADD_QUESTION: formId => `${APIEndpoint}/jobforms/${formId}/questions`,
-  UPDATE_QUESTION: (formId, questionIndex) =>
-    `${APIEndpoint}/jobforms/${formId}/questions/${questionIndex}`,
-  DELETE_QUESTION: (formId, questionIndex) =>
-    `${APIEndpoint}/jobforms/${formId}/questions/${questionIndex}`,
-  REORDER_QUESTIONS: formId => `${APIEndpoint}/jobforms/${formId}/questions/reorder`,
-
-  GET_ALL_TEMPLATES: `${APIEndpoint}/templates`,
-  CREATE_TEMPLATE: `${APIEndpoint}/templates`,
-  GET_TEMPLATE_BY_ID: id => `${APIEndpoint}/templates/${id}`,
-  UPDATE_TEMPLATE: id => `${APIEndpoint}/templates/${id}`,
-  DELETE_TEMPLATE: id => `${APIEndpoint}/templates/${id}`,
-
   JOB_NOTIFICATION_LIST: `${APIEndpoint}/job-notification-list/`,
 
   MESSAGING_SERVICE: new URL('/messaging-service', APIEndpoint.replace('http', 'ws')).toString(),
@@ -322,16 +312,6 @@ export const ENDPOINTS = {
   NOTIFICATIONS: `${APIEndpoint}/notification`,
   MSG_NOTIFICATION: `${APIEndpoint}/lb/notifications`,
 
-  DROPBOX_DELETE: `${APIEndpoint}/dropbox/delete-folder`,
-  GITHUB_REMOVE: `${APIEndpoint}/github/remove`,
-  SENTRY_REMOVE: `${APIEndpoint}/sentry/remove`,
-
-  SENTRY_ADD: `${APIEndpoint}/sentry/invite`,
-  GITHUB_ADD: `${APIEndpoint}/github/invite`,
-  DROPBOX_ADD: `${APIEndpoint}/dropbox/invite`,
-  SLACK_ADD: `${APIEndpoint}/slack/invite`,
-  DROPBOX_CREATE_ADD: `${APIEndpoint}/dropbox/create-folder-and-invite`,
-  ACCESS_MANAGEMENT: `${APIEndpoint}/accessManagement`,
 
   // community portal
   CP_NOSHOW_VIZ_LOCATION: `${APIEndpoint}/communityportal/reports/participation/location`,

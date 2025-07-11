@@ -1,5 +1,6 @@
 /* EmailUpdateComponent.css */
 
+
 h2,
 h3 {
   color: #4285f4;
@@ -22,7 +23,7 @@ label {
 
 .input-text-for-announcement,
 textarea {
-  margin-top: 5px; /* Space above input fields */
+  margin-top: 5px;   /* Space above input fields */
   width: 100%;
   padding: 12px; /* Increased padding */
   border: 1px solid #ccc;
@@ -72,7 +73,9 @@ button.send-button:hover {
   margin-top: 0;
   /* Remove top margin for the heading */
 }
-
+.editor h3 {
+  color: #4285f4;
+}
 .emails {
   margin-top: 65px;
   padding: 24px; /* Increased padding */
@@ -118,32 +121,33 @@ button.send-button:hover {
 /* Responsive design: Adjust the layout for smaller screens */
 @media (max-width: 800px) {
   .email-update-container {
-    display: flex;
-    flex-direction: column;
-    padding: 20px;
-    box-sizing: border-box; /* Ensures padding is included in width */
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      box-sizing: border-box; /* Ensures padding is included in width */
   }
   .editor {
-    width: 100%;
-    margin-right: 0;
-    margin-bottom: 20px;
+      width: 100%;
+      margin-right: 0;
+      margin-bottom: 20px;
   }
   .emails {
-    width: 100%;
-    margin-top: 20px;
-    padding: 20px 12px; /* Adjust padding for smaller screens */
-    box-sizing: border-box; /* Ensures padding is included in width */
+      width: 100%;
+      margin-top: 20px;
+      padding: 20px 12px; /* Adjust padding for smaller screens */
+      box-sizing: border-box; /* Ensures padding is included in width */
   }
   .send-button {
-    width: 100%;
-    margin-bottom: 10px;
-    padding: 12px; /* Ensures padding is consistent */
-    box-sizing: border-box; /* Ensures padding is included in width */
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 12px; /* Ensures padding is consistent */
+      box-sizing: border-box; /* Ensures padding is included in width */
   }
   .input-text-for-announcement,
   textarea {
-    width: 100%;
-    padding: 12px; /* Ensures padding is consistent */
-    box-sizing: border-box; /* Ensures padding is included in width */
+      width: 100%;
+      padding: 12px; /* Ensures padding is consistent */
+      box-sizing: border-box; /* Ensures padding is included in width */
   }
 }
+

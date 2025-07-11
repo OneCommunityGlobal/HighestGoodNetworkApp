@@ -152,7 +152,7 @@ function Collaboration() {
             <img src={OneCommunityImage} alt="One Community Logo" />
           </a>
         </div>
-        <div className="collaboration-container">
+        <div className="container">
           <nav className="job-navbar">
             <div className="job-navbar-left">
               <form className="search-form">
@@ -292,7 +292,7 @@ function Collaboration() {
           <img src={OneCommunityImage} alt="One Community Logo" />
         </a>
       </div>
-      <div className="collaboration-container">
+      <div className="container">
         <nav className="job-navbar">
           <div className="job-navbar-left">
             <form className="search-form">
