@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { ApiEndpoint } from 'utils/URL';
 import { toast } from 'react-toastify';
 import OneCommunityImage from '../../assets/images/logo2.png';
@@ -12,7 +13,7 @@ function SuggestedJobsList() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const adsPerPage = 3;
-
+  const darkMode = useSelector(state => state.theme.darkMode);
   // Fetch categories on mount
   useEffect(() => {
     const fetchCategories = async () => {
@@ -92,7 +93,7 @@ function SuggestedJobsList() {
   };
 
   return (
-    <div className="job-landing">
+    <div className={`job-landing ${darkMode ? 'bg-oxford-blue text-light' : ''}`}>
       <div className="job-header" style={{ textAlign: 'center', marginBottom: '20px' }}>
         <a
           href="https://www.onecommunityglobal.org/collaboration/"
@@ -118,6 +119,7 @@ function SuggestedJobsList() {
             type="text"
             placeholder="Search by title..."
             defaultValue={query}
+            className={darkMode ? 'bg-space-cadet text-light' : ''}
             style={{ padding: '8px' }}
           />
           <button className="btn btn-secondary" type="submit">
@@ -125,7 +127,11 @@ function SuggestedJobsList() {
           </button>
         </form>
 
-        <select className="job-select" value={category} onChange={handleCategoryChange}>
+        <select
+          className={`job-select ${darkMode ? 'bg-space-cadet text-light' : ''}`}
+          value={category}
+          onChange={handleCategoryChange}
+        >
           <option value="">Select from Categories</option>
           {categories.map(cat => (
             <option key={cat} value={cat}>
@@ -142,7 +148,7 @@ function SuggestedJobsList() {
           jobAds.map(ad => (
             <div
               key={ad._id}
-              className="job-ad"
+              className={`job-ad ${darkMode ? 'bg-yinmn-blue text-light boxStyleDark' : ''}`}
               style={{
                 marginBottom: '20px',
                 borderBottom: '1px solid #ccc',
@@ -160,29 +166,35 @@ function SuggestedJobsList() {
                 }}
                 className="category-icon"
               />
-              <h2 className="job-role-name">{ad.title}</h2>
-               {/* Location Tag */}
-      <div
-        className={`job-location-tag ${ad.location?.toLowerCase() !== 'remote' ? 'in-person' : 'remote'}`}
-        style={{
-          backgroundColor: ad.location?.toLowerCase() !== 'remote' ? '#ffeb3b' : '#d1ecf1',
-          color: ad.location?.toLowerCase() !== 'remote' ? '#333' : '#0c5460',
-          padding: '6px 12px',
-          borderRadius: '20px',
-          fontWeight: '600',
-          textAlign: 'center',
-          width: 'fit-content',
-          margin: '0 auto 1rem',
-          fontSize: '0.9rem',
-        }}
-      >
-        {ad.location?.toLowerCase() !== 'remote'
-          ? `In-Person | Location: ${ad.location}`
-          : 'Remote'}
-      </div>
-              <p className="job-details">
+              <h2 className="job-role-name" style={{ color: darkMode ? 'white' : undefined }}>
+                {ad.title}
+              </h2>
+
+              {/* Location Tag */}
+              <div
+                className={`job-location-tag ${
+                  ad.location?.toLowerCase() !== 'remote' ? 'in-person' : 'remote'
+                }`}
+                style={{
+                  backgroundColor: ad.location?.toLowerCase() !== 'remote' ? '#ffeb3b' : '#d1ecf1',
+                  color: ad.location?.toLowerCase() !== 'remote' ? '#333' : '#0c5460',
+                  padding: '6px 12px',
+                  borderRadius: '20px',
+                  fontWeight: '600',
+                  textAlign: 'center',
+                  width: 'fit-content',
+                  margin: '0 auto 1rem',
+                  fontSize: '0.9rem',
+                }}
+              >
+                {ad.location?.toLowerCase() !== 'remote'
+                  ? `In-Person | Location: ${ad.location}`
+                  : 'Remote'}
+              </div>
+              <p className="job-details" style={{ color: darkMode ? 'white' : undefined }}>
                 {ad.description || 'No detailed description available.'}
               </p>
+
               {ad.requirements && ad.requirements.length > 0 && (
                 <div className="job-requirements">
                   <h4>Requirements:</h4>
@@ -205,7 +217,7 @@ function SuggestedJobsList() {
             </div>
           ))
         ) : (
-          <div className="no-jobs-notice">
+          <div className={`no-jobs-notice ${darkMode ? 'text-light' : ''}`}>
             <h3>No Job Ads Found</h3>
             <p>Try adjusting your search or selecting a different category.</p>
           </div>
@@ -213,7 +225,10 @@ function SuggestedJobsList() {
       </div>
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="pagination-controls" style={{ textAlign: 'center', marginTop: '20px' }}>
+        <div
+          className={`pagination-controls ${darkMode ? 'text-light' : ''}`}
+          style={{ textAlign: 'center', marginTop: '20px' }}
+        >
           <button
             type="button"
             onClick={goToPreviousPage}
