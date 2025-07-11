@@ -44,6 +44,7 @@
     "lz-string": "^1.5.0",
     "moment": "^2.30.1",
     "moment-timezone": "^0.5.33",
+    "object-hash": "^3.0.0",
     "pdfmake": "^0.1.65",
     "prop-types": "^15.7.2",
     "react": "^16.14.0",
