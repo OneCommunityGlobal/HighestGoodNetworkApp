@@ -69,8 +69,7 @@ function AdditionalInfo() {
         .split(' ') // split by space
         .filter(word => word !== '' && word !== '\n' && word !== '\t').length; // remove empty strings and tabs/newlines
       if (wordCount < 20) {
-        // eslint-disable-next-line no-alert
-        alert('Please enter at least 20 words.');
+        toast.error('Please enter at least 20 words');
         // Re-focus the textarea
         textareaRef.current?.focus();
         return;
