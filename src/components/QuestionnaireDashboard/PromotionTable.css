@@ -46,6 +46,14 @@
   color: #24292e;
 }
 
+.actions .btn {
+  margin-right: 100px;
+}
+
+.actions .btn:last-child {
+  margin-right: 0;
+}
+
 .promotion-table {
   width: 100%;
   border-collapse: collapse;
