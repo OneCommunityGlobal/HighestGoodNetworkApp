@@ -8,36 +8,42 @@ import DeploymentSkills from './DeploymentSkills';
 import SoftwarePractices from './SoftwarePractices';
 import styles from '../styles/RightSection.module.css';
 
-function RightSection({ profileData }) {
+function RightSection({ profileData, darkMode }) {
   const [selectedSkill, setSelectedSkill] = useState('Dashboard');
 
   const handleSkillClick = skill => {
-    setSelectedSkill(skill); // Update selected skill
+    setSelectedSkill(skill);
   };
 
-  // Render the appropriate component based on selectedSkill
   const renderContent = () => {
     switch (selectedSkill) {
       case 'Dashboard':
-        return <RadarChart profileData={profileData} />;
+        return <RadarChart profileData={profileData} darkMode={darkMode} />;
       case 'Frontend':
-        return <FrontendSkills profileData={profileData} />;
+        return <FrontendSkills profileData={profileData} darkMode={darkMode} />;
       case 'Backend':
-        return <BackendSkills profileData={profileData} />;
+        return <BackendSkills profileData={profileData} darkMode={darkMode} />;
       case 'Deployment & DevOps':
-        return <DeploymentSkills profileData={profileData} />;
+        return <DeploymentSkills profileData={profileData} darkMode={darkMode} />;
       case 'Software Practices':
-        return <SoftwarePractices profileData={profileData} />;
+        return <SoftwarePractices profileData={profileData} darkMode={darkMode} />;
       default:
-        return <RadarChart profileData={profileData} />;
+        return <RadarChart profileData={profileData} darkMode={darkMode} />;
     }
   };
 
   return (
-    <div className={`${styles.rightSection}`}>
-      <ProfileDetails profileData={profileData} />
+    <div
+      className={`${styles.rightSection} ${darkMode ? styles.dark : ''}`}
+      style={{
+        background: darkMode ? '#232b39' : '#fff',
+        color: darkMode ? '#f7fafc' : '#2d3748',
+        transition: 'background 0.3s, color 0.3s',
+      }}
+    >
+      <ProfileDetails profileData={profileData} darkMode={darkMode} />
       <div className={`${styles.skillsAndChart}`}>
-        <Skills selectedSkill={selectedSkill} onSkillClick={handleSkillClick} />
+        <Skills selectedSkill={selectedSkill} onSkillClick={handleSkillClick} darkMode={darkMode} />
         {renderContent()}
       </div>
     </div>
