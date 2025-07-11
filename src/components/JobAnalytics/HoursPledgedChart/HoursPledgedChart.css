@@ -48,3 +48,21 @@ label {
 .dark-mode .css-b62m3t-container{
   color: black !important;
 }
+
+.spinner {
+  text-align: center;
+  font-size: 18px;
+  color: #888;
+}
+
+.error-message {
+  text-align: center;
+  color: #dc3545;
+  font-weight: bold;
+}
+
+.empty-message {
+  text-align: center;
+  color: #888;
+  font-style: italic;
+}
