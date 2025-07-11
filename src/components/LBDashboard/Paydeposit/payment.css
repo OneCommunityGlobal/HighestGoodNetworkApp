@@ -1,0 +1,196 @@
+/* Payment Main Container */
+.payment-main-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #e0e0e0;
+  width: 100%;
+  min-height: 100vh;
+  padding: 20px;
+  overflow: hidden;
+}
+
+/* Logo Container */
+.payment-logo-container {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.payment-logo-container img {
+  max-width: 30%;
+  height: auto;
+  min-width: 250px;
+}
+
+/* Card Container */
+.payment-card-container {
+  width: 85%;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  overflow: hidden;
+ 
+}
+
+/* Card Header (Green bar) */
+.payment-card-header {
+  height: 60px;
+  background-color: #9dd425;
+}
+
+/* Card Content */
+.payment-card-content {
+  /* padding: 20px 40px 40px 40px; */
+  width: auto;
+  background-color: #e0e0e0;
+  margin: 20px 40px 30px 40px;
+  padding: 20px 0px 20px 0px;
+}
+
+/* Form Container */
+.payment-form-container {
+  width: 100%;
+}
+
+.payment-form-container h2 {
+  font-size: 28px;
+  text-align: center;
+  padding-top: 10px;
+  color: #202020;
+}
+
+/* Image Section */
+.payment-image-section {
+  text-align: center;
+}
+
+.payment-image-section img {
+  width: 30vw;
+  height: 25vh;
+}
+
+.payment-image-description {
+  margin-top: 8px;
+  font-size: 15px;
+  color: #333;
+  font-weight: bold;
+}
+
+/* Booking Details */
+.payment-booking-details {
+  padding-left: 15%;
+  padding-bottom: 20px;
+}
+
+.payment-booking-section {
+  display: flex;
+  justify-content: space-between;
+  color: #000;
+  width: 80%;
+}
+
+.payment-booking-section h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #000;
+}
+
+/* Due Container */
+.payment-due-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Row Layout for form inputs */
+.payment-row-layout {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  width: 80%;
+}
+
+/* Form Row */
+.payment-form-row {
+  display: flex;
+  flex-direction: column;
+  width: 200px;
+  margin-bottom: 10px;
+}
+
+.payment-form-row input {
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Payment Action Column */
+.payment-action-column {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  width: 81%;
+}
+
+/* Proceed Button */
+#paymentForm button.payment-proceed-button {
+  margin-top: 10px;
+  background-color: #28a745;
+  color: white;
+  border: #202020 solid 1px;
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  max-width: fit-content;
+}
+
+#paymentForm button.payment-proceed-button:hover {
+  background-color: #218838 !important;
+}
+
+/* Responsive Styles */
+@media (max-width: 990px) {
+  .payment-main-container {
+    padding: 0;
+  }
+  .payment-card-content {
+    flex-direction: column;
+    align-items: center;
+  }
+  .payment-row-layout {
+    width: 98%;
+  }
+}
+
+@media (max-width: 580px) {
+  .payment-card-content {
+    padding: 10px;
+    margin: 10px;
+  }
+  .payment-row-layout {
+    flex-direction: column;
+    align-items: center;
+  }
+  .payment-form-row input {
+    width: 90%;
+  }
+  .payment-action-column {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+#card-name-field-container iframe,
+#card-number-field-container iframe,
+#card-expiry-field-container iframe,
+#card-cvv-field-container iframe {
+  width: 100% !important;
+  max-width: 300px !important;
+  border: none !important;
+  box-shadow: none !important;
+  /* color: #202020 !important; */
+}

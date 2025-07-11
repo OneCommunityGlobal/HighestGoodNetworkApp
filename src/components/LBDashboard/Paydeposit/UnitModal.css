@@ -1,0 +1,133 @@
+/* 
+  Force the modal to be ~60% width
+  and center it horizontally. 
+*/
+.modal-dialog{
+    width : 45vw !important
+}
+.modal-header {
+    padding: 10px !important;
+}
+  /* GREEN HEADER */
+  .modal-header-custom {
+    /* Remove or keep position: relative if you need it elsewhere */
+    position: relative;
+  
+    background-color: #9dd425;
+    display: flex;
+    align-items: center;
+    
+    /* Reduced top/bottom padding from 15px to 10px => ~33% smaller */
+    padding: 10px 20px;
+    
+    border-bottom: none;
+  }
+  
+  .modal-title {
+    color: black;
+    font-weight: bold;
+    font-size: 20px;
+    margin: 0;
+  }
+  
+  /* RED CLOSE BUTTON (top-right) */
+  .close-button {
+    display: inline-flex;
+    align-items: center;      /* Center X vertically */
+    justify-content: center;  /* Center X horizontally */
+    width: 30px !important;              /* Force a fixed width */
+    height: 30px;             /* Force a fixed height */
+    background-color: red;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    border: 2px solid black;
+    border-radius: 8px;
+    cursor: pointer;
+    margin: 0;
+    padding: 0; /* No extra padding since we're using a fixed width/height */
+  }
+  
+  /* BODY LAYOUT */
+  .modal-body-custom {
+    padding: 20px;
+  }
+  
+  /* WRAPPER FOR IMAGE (LEFT) + TEXT (RIGHT) */
+  .modal-content-wrapper {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: nowrap;
+  }
+  
+  /* CAROUSEL CONTAINER */
+  .carousel-container {
+    position: relative;
+    width: 45%;
+    min-width: 300px;
+  }
+  
+  .carousel-image {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+  }
+  
+  /* NAV BUTTONS */
+  .carousel-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 18px;
+  }
+  
+  .carousel-button.left {
+    left: 5px;
+  }
+  
+  .carousel-button.right {
+    right: 5px;
+  }
+  
+  /* TEXT SECTION */
+  .text-section {
+    width: 50%;
+    min-width: 250px;
+  }
+  
+  .text-section h4 {
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  /* FOOTER */
+  .modal-footer-custom {
+    display: flex;
+    justify-content: flex-end;
+    padding: 15px 20px;
+    border-top: none;
+  }
+  
+  .property-map-link {
+    color: blue;
+    text-decoration: underline;
+    font-size: 14px;
+  }
+  
+  /* RESPONSIVE: stack content if screen too narrow */
+  @media (max-width: 768px) {
+    .modal-content-wrapper {
+      flex-direction: column;
+      gap: 15px;
+    }
+    .carousel-container,
+    .text-section {
+      width: 100% !important;
+    }
+  }
