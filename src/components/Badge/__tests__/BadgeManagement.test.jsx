@@ -75,56 +75,48 @@ describe('BadgeManagement returnUpdatedBadgesCollection unit test', () => {
   });
 });
 
-vi.useFakeTimers();
-
-describe('BadgeManagement validateBadges action unit test', () => {
+describe('BadgeManagement validateBadges action', () => {
   let store;
 
   beforeEach(() => {
     store = mockStore({});
-    vi.useFakeTimers();
+  });
+  afterEach(() => {
+    vi.clearAllMocks();
+    store.clearActions();
   });
 
-  test('should dispatch getMessage and closeAlert when firstName or lastName is missing', async () => {
-    // Dispatch the validateBadges action with empty firstName and lastName
+  it('dispatches GET_MESSAGE and CLOSE_ALERT when name is missing', async () => {
     await store.dispatch(validateBadges('', ''));
-
     const actions = store.getActions();
-    expect(actions[0]).toEqual({
+
+    expect(actions).toContainEqual({
       type: GET_MESSAGE,
       message: 'The Name Find function does not work without entering a name. Nice try though.',
       color: 'danger',
     });
-
-    vi.advanceTimersByTime(6000);
-
-    const nextActions = store.getActions();
-    expect(nextActions).toContainEqual({ type: CLOSE_ALERT });
+    // since setTimeout → immediate, CLOSE_ALERT is already dispatched
+    expect(actions).toContainEqual({ type: CLOSE_ALERT });
   });
 
-  test('should not dispatch any actions when both firstName and lastName are provided', async () => {
+  it('dispatches nothing when both names provided', async () => {
     await store.dispatch(validateBadges('John', 'Doe'));
-
-    // Check that no actions were dispatched
-    const actions = store.getActions();
-    expect(actions).toHaveLength(0);
+    expect(store.getActions()).toHaveLength(0);
   });
 });
 
-describe('BadgeManagement assignBadges action unit test', () => {
+describe('BadgeManagement assignBadges action', () => {
   let store;
 
   beforeEach(() => {
     store = mockStore({});
-    vi.useFakeTimers();
   });
-
   afterEach(() => {
-    vi.clearAllTimers();
-    vi.resetAllMocks();
+    vi.clearAllMocks();
+    store.clearActions();
   });
 
-  test('should dispatch getMessage and closeAlert when no badges are selected', async () => {
+  it('dispatches error + CLOSE_ALERT when no badges selected', async () => {
     await store.dispatch(assignBadges('John', 'Doe', []));
     const actions = store.getActions();
 
@@ -134,14 +126,11 @@ describe('BadgeManagement assignBadges action unit test', () => {
         "Um no, that didn't work. Badge Select Function must include actual selection of badges to work. Better luck next time!",
       color: 'danger',
     });
-
-    vi.advanceTimersByTime(6000);
-    expect(store.getActions()).toContainEqual({ type: CLOSE_ALERT });
+    expect(actions).toContainEqual({ type: CLOSE_ALERT });
   });
 
-  test('should dispatch getMessage and closeAlert when user is not found', async () => {
-    axios.get.mockResolvedValue({ data: [] }); // Mock API response as user not found
-
+  it('dispatches error + CLOSE_ALERT when user not found', async () => {
+    axios.get.mockResolvedValue({ data: [] });
     await store.dispatch(assignBadges('John', 'Doe', ['badge1']));
     const actions = store.getActions();
 
@@ -151,15 +140,12 @@ describe('BadgeManagement assignBadges action unit test', () => {
         "Can't find that user. Step 1 to getting badges: Be in the system. Not in the system? No badges for you!",
       color: 'danger',
     });
-
-    vi.advanceTimersByTime(6000);
-    expect(store.getActions()).toContainEqual({ type: CLOSE_ALERT });
+    expect(actions).toContainEqual({ type: CLOSE_ALERT });
   });
 
-  test('should dispatch success message when badges are assigned successfully', async () => {
+  it('dispatches success + CLOSE_ALERT on successful assign', async () => {
     axios.get.mockResolvedValue({ data: [{ badgeCollection: [], _id: 'user1' }] });
-    axios.put.mockResolvedValue({}); // Mock successful PUT request
-
+    axios.put.mockResolvedValue({});
     await store.dispatch(assignBadges('John', 'Doe', ['badge1']));
     const actions = store.getActions();
 
@@ -169,15 +155,12 @@ describe('BadgeManagement assignBadges action unit test', () => {
         "Awesomesauce! Not only have you increased a person's badges, you've also proportionally increased their life happiness!",
       color: 'success',
     });
-
-    vi.advanceTimersByTime(6000);
-    expect(store.getActions()).toContainEqual({ type: CLOSE_ALERT });
+    expect(actions).toContainEqual({ type: CLOSE_ALERT });
   });
 
-  test('should dispatch error message when API call fails', async () => {
+  it('dispatches error + CLOSE_ALERT on API failure', async () => {
     axios.get.mockResolvedValue({ data: [{ badgeCollection: [], _id: 'user1' }] });
-    axios.put.mockRejectedValue(new Error('API Error')); // Mock API failure
-
+    axios.put.mockRejectedValue(new Error('API Error'));
     await store.dispatch(assignBadges('John', 'Doe', ['badge1']));
     const actions = store.getActions();
 
@@ -186,8 +169,6 @@ describe('BadgeManagement assignBadges action unit test', () => {
       message: 'Oops, something is wrong!',
       color: 'danger',
     });
-
-    vi.advanceTimersByTime(6000);
-    expect(store.getActions()).toContainEqual({ type: CLOSE_ALERT });
+    expect(actions).toContainEqual({ type: CLOSE_ALERT });
   });
 });

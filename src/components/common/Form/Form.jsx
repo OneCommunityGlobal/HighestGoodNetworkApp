@@ -271,16 +271,21 @@ class Form extends Component {
       const file = e.target.files[0];
       const reader = new FileReader();
       const { name } = e.target;
-      if (file) {
-        switch (readAsType) {
-          case 'data':
-            reader.readAsDataURL(file);
-            break;
-          default:
-            break;
-        }
+
+      if (!file) return;
+
+      reader.onload = event => {
+        const result = event.target.result;
+        this.handleState(name, {
+          data: result,
+          name: file.name,
+          type: file.type,
+        });
+      };
+
+      if (readAsType === 'data') {
+        reader.readAsDataURL(file);
       }
-      reader.onload = () => this.handleState(name, reader.result);
     };
 
     this.handleState = (name, value) => {
@@ -310,6 +315,7 @@ class Form extends Component {
     this.isStateChanged = () => !isEqual(this.state.data, this.initialState.data);
 
     this.validateProperty = (name, value) => {
+      if (!this.schema[name]) return null;
       const obj = { [name]: value };
       const schema = { [name]: this.schema[name] };
       const refs = schema[name]._refs;

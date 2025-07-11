@@ -2,7 +2,6 @@
 import React from 'react';
 import Form from '../Form';
 
-
 describe('Form ', () => {
   let form;
 
@@ -69,19 +68,23 @@ describe('Form ', () => {
       expect(form.state.data[editorName]).toBe(editorValue);
     });
 
-    test.skip('handles file upload correctly', done => {
+    test('handles file upload correctly', async () => {
       const fileName = 'testFile.txt';
       const fileContent = 'Test file content';
       const file = new File([fileContent], fileName, { type: 'text/plain' });
-      // Simulate file upload
+
+      // Kick off the upload
       form.handleFileUpload({ target: { name: 'fileInput', files: [file] } });
-      // Assertions need to wait for the next event loop tick to allow the mock FileReader to update the state
-      setTimeout(() => {
-        expect(form.state.data.fileInput).toMatch(/^data:text\/plain;base64,/);
-        expect(form.state.data.fileInput.name).toBe(fileName);
-        expect(form.state.data.fileInput.type).toBe('text/plain');
-        done(); // Signal that the test is complete
-      });
+
+      // Wait one tick so FileReader.onload fires
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      const uploaded = form.state.data.fileInput;
+      // Should now be an object { data, name, type }
+      expect(typeof uploaded).toBe('object');
+      expect(uploaded.name).toBe(fileName);
+      expect(uploaded.type).toBe('text/plain');
+      expect(uploaded.data).toMatch(/^data:text\/plain;base64,/);
     });
 
     test('handles dropdown changes correctly', () => {
