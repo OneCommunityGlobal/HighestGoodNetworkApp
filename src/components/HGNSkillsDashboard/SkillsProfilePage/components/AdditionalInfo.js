@@ -6,6 +6,13 @@ import { ENDPOINTS } from 'utils/URL';
 import { toast } from 'react-toastify';
 import { updateFollowUpFields } from '../../../../actions/userSkillsActions';
 
+function checkIfupdateUserSkillsProfileFollowUp(permissions, role, requestorId, userid) {
+  if (role === 'Administrator' || role === 'Owner' || requestorId === userid) return true;
+  // eslint-disable-next-line no-console
+  console.log(permissions?.frontPermissions.includes('updateUserSkillsProfileFollowUp'));
+  return permissions?.frontPermissions.includes('updateUserSkillsProfileFollowUp');
+}
+
 function AdditionalInfo() {
   const [questions, setQuestions] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
@@ -18,6 +25,11 @@ function AdditionalInfo() {
     other_skills: profileData?.skillInfo?.followUp?.other_skills || '',
   });
   const textareaRef = useRef(null);
+  const role = useSelector(state => state.auth.user.role);
+
+  const permissions = useSelector(state => state.auth.user.permissions);
+
+  const requestorId = useSelector(state => state.auth.user.userid);
 
   // Fetch data from database
   useEffect(() => {
@@ -45,6 +57,12 @@ function AdditionalInfo() {
   };
 
   const handleEditSave = () => {
+    if (
+      !checkIfupdateUserSkillsProfileFollowUp(permissions, role, requestorId, profileData?.userId)
+    )
+      // eslint-disable-next-line no-alert
+      alert('Edit Not allowed');
+
     if (isEditing) {
       const wordCount = formData.mern_work_experience
         .trim()

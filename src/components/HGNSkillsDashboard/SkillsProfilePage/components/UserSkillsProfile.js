@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { ClipLoader } from 'react-spinners';
 import jwtDecode from 'jwt-decode';
@@ -8,6 +9,7 @@ import RightSection from './RightSection';
 import styles from '../styles/UserSkillsProfile.module.css';
 
 function UserSkillsProfile() {
+  const { userId } = useParams();
   const dispatch = useDispatch();
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -23,11 +25,11 @@ function UserSkillsProfile() {
         }
 
         // Decode the token to get the user ID
-        const decodedToken = jwtDecode(token);
+        // const decodedToken = jwtDecode(token);
         // console.log('Decoded Token:', decodedToken);
-        const userId = decodedToken.userid;
+        // const userId = decodedToken.userid;
         if (!userId) {
-          throw new Error('User ID not found in token.');
+          return; // throw new Error('User ID not found in token.');
         }
 
         const response = await axios.get(
@@ -51,7 +53,11 @@ function UserSkillsProfile() {
         setProfileData(data);
         setLoading(false);
       } catch (err) {
-        setError(err.message);
+        // eslint-disable-next-line no-console
+        console.log(' error fetchData ');
+        // eslint-disable-next-line no-console
+        console.log(err);
+        setError(err.response.data.error);
         setLoading(false);
       }
     };
