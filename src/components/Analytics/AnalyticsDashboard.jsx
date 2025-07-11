@@ -32,10 +32,10 @@ const AnalyticsDashboard = () => {
         <ReviewersRequirementChart duration={duration} />
       </div>
 
-      <div>
+      {/* <div>
         <h2 style={{ marginBottom: '1rem' }}>20 Most Popular PRs</h2>
         <PopularPRChart duration={duration} />
-      </div>
+      </div> */}
     </div>
   );
 };
