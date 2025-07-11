@@ -65,12 +65,11 @@ const TeamMemberTask = React.memo(
         return;
       }
 
-
-      if (user.role === manager && [adm, owner].includes(userRole)) {
+      if (userRole === manager && [adm, owner].includes(user.role)) {
         toast.error("Oops! You don't have the permission to access this user's dashboard!");
-      } else if (user.role === adm && [owner].includes(userRole)) {
+      } else if (userRole === adm && [owner].includes(user.role)) {
         toast.error("Oops! You don't have the permission to access this user's dashboard!");
-      } else if (![manager, adm, owner].includes(user.role) && [manager, adm, owner].includes(userRole)) {
+      } else if (![manager, adm, owner].includes(userRole) && [manager, adm, owner].includes(user.role)) {
         toast.error("Oops! You don't have the permission to access this user's dashboard!");
       } else {
         openDashboardModal(); // the modal you already implemented
