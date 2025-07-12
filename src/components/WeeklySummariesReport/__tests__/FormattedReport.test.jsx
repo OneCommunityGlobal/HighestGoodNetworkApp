@@ -28,9 +28,16 @@ vi.mock(
     },
 );
 
-vi.mock('axios', () => ({
-  patch: vi.fn(() => Promise.resolve({ status: 200 })),
-}));
+vi.mock('axios', () => {
+  const mAxios = {
+    defaults: { headers: { post: {} } },
+    patch: vi.fn(() => Promise.resolve({ status: 200 })),
+  };
+  return {
+    __esModule: true,
+    default: mAxios,
+  };
+});
 
 vi.mock('react-toastify', () => ({
   toast: {

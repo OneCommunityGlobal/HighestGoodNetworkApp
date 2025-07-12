@@ -1,4 +1,3 @@
-import './UpdateReusable.css';
 import { Container } from 'reactstrap';
 import moment from 'moment';
 import { FormGroup, Input, Label, Form, Col, Button } from 'reactstrap';
@@ -9,6 +8,7 @@ import { postReusableUpdate } from '~/actions/bmdashboard/reusableActions';
 import { toast } from 'react-toastify';
 import { resetReusableUpdate } from '~/actions/bmdashboard/reusableActions';
 import { fetchAllReusables } from '~/actions/bmdashboard/reusableActions';
+import './UpdateReusable.module.css';
 
 function UpdateReusable({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
   const dispatch = useDispatch();
@@ -234,7 +234,7 @@ function UpdateReusable({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
       <div className="updateReusablePage">
         <div className="updateReusable">
           <Form>
-            {/* <img className='reusableImage' alt='reusableImage' src={riversand} /> */}
+            {/* <img className="reusableImage" alt='reusableImage' src={riversand} /> */}
             <FormGroup row className="align-items-center justify-content-start">
               <Label for="updateReusableName" sm={4} className="reusableFormLabel">
                 Reusable

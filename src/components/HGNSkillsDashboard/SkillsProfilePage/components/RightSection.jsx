@@ -6,7 +6,7 @@ import FrontendSkills from './FrontendSkills';
 import BackendSkills from './BackendSkills';
 import DeploymentSkills from './DeploymentSkills';
 import SoftwarePractices from './SoftwarePractices';
-import '../styles/RightSection.css';
+import styles from '../styles/RightSection.module.css';
 
 function RightSection({ profileData }) {
   const [selectedSkill, setSelectedSkill] = useState('Dashboard');
@@ -34,9 +34,9 @@ function RightSection({ profileData }) {
   };
 
   return (
-    <div className="right-section">
+    <div className={`${styles.rightSection}`}>
       <ProfileDetails profileData={profileData} />
-      <div className="skills-and-chart">
+      <div className={`${styles.skillsAndChart}`}>
         <Skills selectedSkill={selectedSkill} onSkillClick={handleSkillClick} />
         {renderContent()}
       </div>

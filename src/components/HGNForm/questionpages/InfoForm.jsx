@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import '../styles/InfoForm.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { setformData } from '~/actions/hgnFormAction';
 import { Spinner } from 'reactstrap';
+import styles from '../styles/InfoForm.module.css';
 
 function InfoForm() {
   const formData = useSelector(state => state.hgnForm);
@@ -145,14 +145,14 @@ function InfoForm() {
   };
 
   return !loading ? (
-    <div className="info-form-container">
+    <div className={`${styles.infoFormContainer}`}>
       <form onSubmit={handleNext}>
-        <div className="form-inputs">
+        <div className={`${styles.formInputs}`}>
           <label htmlFor="name">
             Name <span style={{ color: 'red' }}>*</span>
           </label>
           <input
-            className={`info-input ${showError ? 'error' : ''}`}
+            className={`${styles.infoInput} ${showError ? styles.error : ''}`}
             type="text"
             id="name"
             value={newVolunteer.name}
@@ -166,15 +166,17 @@ function InfoForm() {
             disabled={!!(userProfile !== undefined || userProfile !== null)}
           />
           {showError && (
-            <span className="error-message">Name must be at least 2 characters long</span>
+            <span className={`${styles.errorMessage}`}>
+              Name must be at least 2 characters long
+            </span>
           )}
         </div>
-        <div className="form-inputs">
+        <div className={`${styles.formInputs}`}>
           <label htmlFor="email">
             Email <span style={{ color: 'red' }}>*</span>
           </label>
           <input
-            className="info-input"
+            className={`${styles.infoInput}`}
             type="email"
             id="email"
             value={newVolunteer.email}
@@ -184,12 +186,12 @@ function InfoForm() {
             disabled={!!(user.email !== undefined || user.email !== null)}
           />
         </div>
-        <div className="form-inputs">
+        <div className={`${styles.formInputs}`}>
           <label htmlFor="github">
             GitHub <span style={{ color: 'red' }}>*</span>
           </label>
           <input
-            className="info-input"
+            className={`${styles.infoInput}`}
             type="text"
             id="github"
             value={newVolunteer.github}
@@ -199,12 +201,12 @@ function InfoForm() {
             disabled={loading}
           />
         </div>
-        <div className="form-inputs">
+        <div className={`${styles.formInputs}`}>
           <label htmlFor="slack">
             Slack <span style={{ color: 'red' }}>*</span>
           </label>
           <input
-            className="info-input"
+            className={`${styles.infoInput}`}
             type="text"
             id="slack"
             value={newVolunteer.slack}
@@ -215,15 +217,15 @@ function InfoForm() {
           />
         </div>
         {isSlackNameWarning && (
-          <span className="error-message" style={{ color: 'red', margin: '20px 20px' }}>
+          <span className={`${styles.errorMessage}`} style={{ color: 'red', margin: '20px 20px' }}>
             Kindly ensure your Slack name matches your full name as entered above. If it does not,
             please go to your Slack account to update your name, then return to this form to
             continue.
           </span>
         )}
-        <div className="form-inputs-slack">
+        <div className={`${styles.formInputsSlack}`}>
           <input
-            className="slack-checkbox"
+            className={`${styles.slackCheckbox}`}
             type="checkbox"
             id="sameAsName"
             checked={newVolunteer.isSlackSameAsName}
@@ -236,16 +238,19 @@ function InfoForm() {
           </label>
         </div>
 
-        <span className="error-message" style={{ color: '#2e5163', margin: '20px 20px' }}>
+        <span
+          className={`${styles.errorMessage}`}
+          style={{ color: '#2e5163', margin: '20px 20px' }}
+        >
           <strong>NOTE:</strong> Your name and email need to match what is on your DropBox and
           Google Doc. Please edit them on your Profile Page if they don’t.{' '}
         </span>
 
-        <div className="button-container">
-          <button type="button" className="hgn-return-button" onClick={handleCancel}>
+        <div className={`${styles.buttonContainer}`}>
+          <button type="button" className={`${styles.hgnReturnButton}`} onClick={handleCancel}>
             Cancel
           </button>
-          <button type="submit" className="next-button">
+          <button type="submit" className={`${styles.nextButton}`}>
             Next
           </button>
         </div>
@@ -253,7 +258,7 @@ function InfoForm() {
     </div>
   ) : (
     <div>
-      <Spinner color="primary" className="spinner-hgnform" style={{ top: '80%' }} />;
+      <Spinner color="primary" className={`${styles.spinnerHgnform}`} style={{ top: '80%' }} />;
     </div>
   );
 }

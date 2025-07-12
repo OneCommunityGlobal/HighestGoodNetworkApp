@@ -4,7 +4,7 @@ import BMError from '../shared/BMError';
 import SelectForm from '../ItemList/SelectForm';
 import SelectItem from '../ItemList/SelectItem';
 import ToolItemsTable from './ToolItemsTable';
-import './ToolItemListView.css';
+import styles from './ToolItemListView.module.css';
 
 export function ToolItemListView({
   itemType,
@@ -47,14 +47,14 @@ export function ToolItemListView({
 
   if (isError) {
     return (
-      <main className="items_list_container">
+      <main className={`${styles.itemsListContainer}`}>
         <h2>{itemType} List</h2>
         <BMError errors={errors} />
       </main>
     );
   }
   return (
-    <main className="items_list_container">
+    <main className={`${styles.itemsListContainer}`}>
       <h3>{itemType}</h3>
       <section>
         <span style={{ display: 'flex', margin: '5px' }}>

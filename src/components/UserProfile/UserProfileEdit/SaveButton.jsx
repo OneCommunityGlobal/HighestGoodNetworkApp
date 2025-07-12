@@ -18,7 +18,7 @@ const getRandomMessage = () => {
   return messages[Math.floor(Math.random() * messages.length)];
 };
 
-const invalidCodemessage = 'Nice save! It seems you do not have a valid team code. It would be a lot cooler if you did. You can add one in the teams tab';
+const invalidCodemessage = 'Nice save! It seems you do not have a valid team code. It would be a lot cooler if you did. You can add one in the teams tab.';
 const validTeamCodeRegex = /^.{5,7}$/;
 const stillSavingMessage = 'Saving, will take just a second...';
 
@@ -47,6 +47,10 @@ const SaveButton = props => {
       setIsLoading(false);
       setIsErr(false);
       setSaved();
+
+      setTimeout(() => {
+        setModal(true);
+      }, 1000); 
     } catch (err) {
       setIsErr(true);
       setIsLoading(false);

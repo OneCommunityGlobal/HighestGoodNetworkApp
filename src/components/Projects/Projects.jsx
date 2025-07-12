@@ -238,6 +238,12 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
   }, []);
 
   useEffect(() => {
+    // console.log('generateProjectList triggered:', {
+    //   fetched: props.state.allProjects.fetched,
+    //   fetching: props.state.allProjects.fetching,
+    //   dataLength: allReduxProjects?.length || 0,
+    //   status: props.state.allProjects.status
+    // });
     generateProjectList(categorySelectedForSort, showStatus, sortedByName);
     if (status !== 200) {
       setModalData({
@@ -268,7 +274,7 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
       }
     };
     fetchProjects();
-  }, [debouncedSearchName, allReduxProjects]);
+  }, [debouncedSearchName, allProjects, allReduxProjects]);
 
   const handleSearchName = searchNameInput => {
     setSearchName(searchNameInput);

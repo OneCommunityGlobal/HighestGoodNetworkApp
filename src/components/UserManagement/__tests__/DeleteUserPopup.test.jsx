@@ -43,7 +43,11 @@ beforeEach(() => {
 
 describe('delete user popup', () => {
   beforeEach(() => {
-    renderWithProvider(<DeleteUserPopup {...defaultProps} />, { store });
+    renderWithProvider(<DeleteUserPopup 
+      open={defaultProps.open}
+      onClose={defaultProps.onClose}
+      onDelete={defaultProps.onDelete}
+    />, { store });
   });
 
   describe('Structure', () => {
@@ -88,7 +92,11 @@ describe('delete user popup', () => {
 
 describe('delete user popup additional tests', () => {
   beforeEach(() => {
-    renderWithProvider(<DeleteUserPopup {...defaultProps} />, { store });
+    renderWithProvider(<DeleteUserPopup 
+      open={defaultProps.open}
+      onClose={defaultProps.onClose}
+      onDelete={defaultProps.onDelete}
+    />, { store });
   });
 
   describe('Texts display', () => {

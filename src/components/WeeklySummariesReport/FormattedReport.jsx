@@ -9,12 +9,13 @@ import ReactHtmlParser from 'react-html-parser';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-import { faCopy } from '@fortawesome/free-solid-svg-icons';
-
-import { assignStarDotColors, showStar } from '~/utils/leaderboardPermissions';
-import { toggleUserBio } from '~/actions/weeklySummariesReport';
-import RoleInfoModal from '~/components/UserProfile/EditableModal/RoleInfoModal';
+import { faCopy, faMailBulk } from '@fortawesome/free-solid-svg-icons';
 import {
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
   Input,
   ListGroup,
   ListGroupItem as LGI,
@@ -29,15 +30,21 @@ import {
   Col,
   Alert,
 } from 'reactstrap';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMailBulk } from '@fortawesome/free-solid-svg-icons';
+import { assignStarDotColors, showStar } from '~/utils/leaderboardPermissions';
+
+import { postLeaderboardData } from '~/actions/leaderBoardData';
+import { calculateDurationBetweenDates, showTrophyIcon } from '~/utils/anniversaryPermissions';
+import { toggleUserBio } from '~/actions/weeklySummariesReport';
+
+import RoleInfoModal from '~/components/UserProfile/EditableModal/RoleInfoModal';
 import CopyToClipboard from '~/components/common/Clipboard/CopyToClipboard';
 import styles from './WeeklySummariesReport.module.scss';
-import hasPermission from '../../utils/permissions';
+import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import { ENDPOINTS } from '~/utils/URL';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 import GoogleDocIcon from '../common/GoogleDocIcon';
-import { cantUpdateDevAdminDetails } from '../../utils/permissions';
 
 const textColors = {
   Default: '#000000',
@@ -63,6 +70,7 @@ function FormattedReport({
   allRoleInfo,
   badges,
   loadBadges,
+  loadTrophies,
   canEditTeamCode,
   auth,
   canSeeBioHighlight,
@@ -104,6 +112,7 @@ function FormattedReport({
               canEditTeamCode={canEditTeamCode}
               badges={badges}
               loadBadges={loadBadges}
+              loadTrophies={loadTrophies}
               canSeeBioHighlight={canSeeBioHighlight}
               darkMode={darkMode}
               handleTeamCodeChange={handleTeamCodeChange}
@@ -218,6 +227,7 @@ function ReportDetails({
   allRoleInfo,
   badges,
   loadBadges,
+  loadTrophies,
   canEditTeamCode,
   canSeeBioHighlight,
   loggedInUserEmail,
@@ -250,6 +260,7 @@ function ReportDetails({
             weekIndex={weekIndex}
             allRoleInfo={allRoleInfo}
             auth={auth}
+            loadTrophies={loadTrophies}
             handleSpecialColorDotClick={handleSpecialColorDotClick}
           />
         </ListGroupItem>
@@ -525,7 +536,10 @@ function TotalValidWeeklySummaries({ summary, canEditSummaryCount, darkMode }) {
           />
         </div>
       ) : (
-        <div>&nbsp;{weeklySummariesCount || 'No valid submissions yet!'}</div>
+        <div>
+          &nbsp;
+          {weeklySummariesCount || 'No valid submissions yet!'}
+        </div>
       )}
     </div>
   );
@@ -660,10 +674,36 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
   );
 }
 
-function Index({ summary, weekIndex, allRoleInfo, auth, handleSpecialColorDotClick }) {
+function Index({
+  summary,
+  weekIndex,
+  allRoleInfo,
+  auth,
+  loadTrophies,
+  handleSpecialColorDotClick,
+}) {
+  const colors = ['purple', 'green', 'navy'];
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
   const currentDate = moment.tz('America/Los_Angeles').startOf('day');
-  const colors = ['purple', 'green', 'navy'];
+  const [setTrophyFollowedUp] = useState(summary?.trophyFollowedUp);
+  const dispatch = useDispatch();
+
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const trophyIconToggle = () => {
+    if (auth?.user?.role === 'Owner' || auth?.user?.role === 'Administrator') {
+      setModalOpen(prevState => (prevState ? false : summary._id));
+    }
+  };
+
+  const handleChangingTrophyIcon = async newTrophyStatus => {
+    setModalOpen(false);
+    await dispatch(postLeaderboardData(summary._id, newTrophyStatus));
+
+    setTrophyFollowedUp(newTrophyStatus);
+
+    toast.success('Trophy status updated successfully');
+  };
 
   const googleDocLink = summary.adminLinks?.reduce((targetLink, currentElement) => {
     if (currentElement.Name === 'Google Doc') {
@@ -672,6 +712,27 @@ function Index({ summary, weekIndex, allRoleInfo, auth, handleSpecialColorDotCli
     }
     return targetLink;
   }, undefined);
+
+  const summarySubmissionDate = moment()
+    .tz('America/Los_Angeles')
+    .endOf('week')
+    .subtract(weekIndex, 'week')
+    .format('YYYY-MM-DD');
+
+  const durationSinceStarted = calculateDurationBetweenDates(
+    summarySubmissionDate,
+    summary?.startDate?.split('T')[0] || null,
+  );
+
+  const handleIconContent = duration => {
+    if (duration.months >= 5.8 && duration.months <= 6.2) {
+      return '6M';
+    }
+    if (duration.years >= 0.9) {
+      return `${Math.round(duration.years)}Y`;
+    }
+    return null;
+  };
 
   return (
     <>
@@ -695,7 +756,10 @@ function Index({ summary, weekIndex, allRoleInfo, auth, handleSpecialColorDotCli
         <div style={{ display: 'flex' }}>
           <GoogleDocIcon link={googleDocLink} />
           <span>
-            <b>&nbsp;&nbsp;{summary.role !== 'Volunteer' && `(${summary.role})`}</b>
+            <b>
+              &nbsp;&nbsp;
+              {summary.role !== 'Volunteer' && `(${summary.role})`}
+            </b>
           </span>
           {summary.role !== 'Volunteer' && (
             <RoleInfoModal
@@ -703,6 +767,42 @@ function Index({ summary, weekIndex, allRoleInfo, auth, handleSpecialColorDotCli
               auth={auth}
             />
           )}
+          {loadTrophies &&
+            showTrophyIcon(summarySubmissionDate, summary?.startDate?.split('T')[0] || null) && (
+              <i
+                className="fa fa-trophy"
+                style={{
+                  marginLeft: '10px',
+                  fontSize: '25px',
+                  cursor: 'pointer',
+                  color: summary?.trophyFollowedUp === true ? '#ffbb00' : '#FF0800',
+                }}
+                onClick={trophyIconToggle}
+              >
+                <p style={{ fontSize: '10px', marginLeft: '5px' }}>
+                  {handleIconContent(durationSinceStarted)}
+                </p>
+              </i>
+            )}
+          <Modal isOpen={modalOpen === summary._id} toggle={trophyIconToggle}>
+            <ModalHeader toggle={trophyIconToggle}>Followed Up?</ModalHeader>
+            <ModalBody>
+              <p>Are you sure you have followed up this icon?</p>
+            </ModalBody>
+            <ModalFooter>
+              <Button variant="secondary" onClick={trophyIconToggle}>
+                Cancel
+              </Button>{' '}
+              <Button
+                color="primary"
+                onClick={() => {
+                  handleChangingTrophyIcon(true);
+                }}
+              >
+                Confirm
+              </Button>
+            </ModalFooter>
+          </Modal>
         </div>
       </div>
 
@@ -748,8 +848,9 @@ function Index({ summary, weekIndex, allRoleInfo, auth, handleSpecialColorDotCli
               fontSize: '10px',
             }}
           >
-            +{Math.round((hoursLogged / summary.promisedHoursByWeek[weekIndex] - 1) * 100)}%
-          </span>
+            +{Math.round((hoursLogged / summary.promisedHoursByWeek[weekIndex] - 1) * 100)}
+%
+</span>
         </i>
       )}
     </>

@@ -36,8 +36,6 @@ const TaskCompletedModal = React.memo(props => {
         prevTasks.map(t => (t._id === task._id ? updatedTask : t)),
       );
     }
-
-    toast.success('Task is successfully marked as done.');
   };
 
   const removeUserFromTask = task => {

@@ -3,7 +3,7 @@ import { Form, FormGroup, Label, Input, Button, Badge } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import Joi from 'joi-browser';
 import { boxStyle } from '../../../../styles';
-import './CreateNewTeam.css';
+import styles from './CreateNewTeam.module.css';
 import { getUserProfileBasicInfo } from '../../../../actions/userManagement';
 
 const initialFormState = {
@@ -212,15 +212,15 @@ export default function CreateNewTeam() {
   // const isTaskAssigned = assignedTasks.includes(selectedTask);
 
   return (
-    <main className="add-team-container">
-      <header className="add-team-header">
+    <main className={`${styles.addTeamContainer}`}>
+      <header className={`${styles.addTeamHeader}`}>
         <h2>Create New Team</h2>
       </header>
 
-      <Form className="add-team-form container" onSubmit={handleSubmit}>
+      <Form className={`${styles.addTeamForm} container`} onSubmit={handleSubmit}>
         <FormGroup>
           <Label for="teamName">
-            Team Name<span className="field-required">*</span>
+            Team Name<span className={`${styles.fieldRequired}`}>*</span>
           </Label>
           <Input
             id="team-name"
@@ -232,22 +232,22 @@ export default function CreateNewTeam() {
             onBlur={handleTeamNameBlur}
           />
           {errors.teamName && (
-            <Label for="teamNameErr" sm={12} className="teamFormError">
+            <Label for="teamNameErr" sm={12} className={`${styles.teamFormError}`}>
               {errors.teamName}
             </Label>
           )}
         </FormGroup>
         <FormGroup>
           <Label for="member-select">
-            Add Members<span className="field-required">*</span>
+            Add Members<span className={`${styles.fieldRequired}`}>*</span>
           </Label>
-          <div className="select-container">
+          <div className={`${styles.selectContainer}`}>
             <Input
               id="members-select"
               type="select"
               value={selectedMember}
               onChange={handleMemberChange}
-              className="member-dropdown"
+              className={`${styles.memberDropdown}`}
             >
               <option value="">Select a Member</option>
               {members.map((user, index) => (
@@ -266,19 +266,19 @@ export default function CreateNewTeam() {
             </Button>
           </div>
           {errors.assignedMembers && (
-            <Label for="assignedMembersErr" className="teamFormError">
+            <Label for="assignedMembersErr" className={`${styles.teamFormError}`}>
               {errors.assignedMembers}
             </Label>
           )}
           {errorMessage && (
-            <Label className="teamFormError" style={{ color: 'red' }}>
+            <Label className={`${styles.teamFormError}`} style={{ color: 'red' }}>
               {errorMessage}
             </Label>
           )}
         </FormGroup>
         <div>
           {assignedMembers.length > 0 && <label>Currently Assigned Members:</label>}
-          <div className="badge-container">
+          <div className={`${styles.badgeContainer}`}>
             {assignedMembers.map((member, index) => {
               return (
                 // eslint-disable-next-line react/no-array-index-key
@@ -291,7 +291,7 @@ export default function CreateNewTeam() {
         </div>
         <FormGroup>
           <Label for="task-select">Add Main Tasks</Label>
-          <div className="select-container">
+          <div className={`${styles.selectContainer}`}>
             <Input id="tasks-select" type="select" value={selectedTask} onChange={handleTaskChange}>
               <option value="">Select a Task</option>
               {tasks.map((task, index) => (
@@ -310,7 +310,7 @@ export default function CreateNewTeam() {
             </Button>
           </div>
           {errorMessage && (
-            <Label className="teamFormError" style={{ color: 'red' }}>
+            <Label className={`${styles.teamFormError}`} style={{ color: 'red' }}>
               {taskErrorMessage}
             </Label>
           )}
@@ -318,7 +318,7 @@ export default function CreateNewTeam() {
 
         <div>
           {assignedTasks.length > 0 && <label>Currently Assigned Tasks:</label>}
-          <div className="badge-container">
+          <div className={`${styles.badgeContainer}`}>
             {assignedTasks.map((task, index) => {
               return (
                 // eslint-disable-next-line react/no-array-index-key
@@ -350,12 +350,12 @@ export default function CreateNewTeam() {
             onChange={event => handleInputChange('additionalInformation', event.target.value)}
           />
           {errors.additionalInformation && (
-            <Label for="additionalInformationErr" sm={12} className="teamFormError">
+            <Label for="additionalInformationErr" sm={12} className={`${styles.teamFormError}`}>
               {errors.additionalInformation}
             </Label>
           )}
         </FormGroup>
-        <div className="add-team-buttons">
+        <div className={`${styles.addTeamButtons}`}>
           <Button id="cancel-button" outline style={boxStyle} onClick={handleCancelClick}>
             Cancel
           </Button>

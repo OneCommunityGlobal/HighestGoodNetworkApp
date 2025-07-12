@@ -63,6 +63,7 @@ export const getTimeEntriesForWeek = (userId, offset) => {
       await dispatch(setTimeEntriesForWeek(filteredEntries, offset));
       // await dispatch(setTimeEntriesForWeek(res.data, offset));
     }
+    return res;
   };
 };
 

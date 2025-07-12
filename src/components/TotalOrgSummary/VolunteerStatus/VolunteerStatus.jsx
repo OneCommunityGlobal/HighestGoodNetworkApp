@@ -3,7 +3,7 @@ import { normalizeVolunteerStats } from '~/utils/totalOrgSummary';
 import Loading from '~/components/common/Loading';
 import StatisticsTab from '../StatisticsTab/StatisticsTab';
 
-function VolunteerStatus({ isLoading, volunteerNumberStats, totalHoursWorked }) {
+function VolunteerStatus({ isLoading, volunteerNumberStats, totalHoursWorked, comparisonType }) {
   const statsTabs = useMemo(() => normalizeVolunteerStats(volunteerNumberStats, totalHoursWorked), [
     volunteerNumberStats,
     totalHoursWorked,
@@ -31,6 +31,7 @@ function VolunteerStatus({ isLoading, volunteerNumberStats, totalHoursWorked }) 
           type={tab.type}
           tabBackgroundColor={tab.tabBackgroundColor}
           shapeBackgroundColor={tab.shapeBackgroundColor}
+          comparisonType={comparisonType}
         />
       ))}
     </div>

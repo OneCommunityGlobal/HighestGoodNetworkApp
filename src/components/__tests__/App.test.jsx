@@ -24,6 +24,26 @@ vi.mock('chart.js', () => {
   };
 });
 
+vi.mock('../../store', () => {
+  const store = { dispatch: vi.fn() };
+  const persistor = {
+    subscribe: vi.fn(),
+    dispatch: vi.fn(),
+    getState: vi.fn(() => ({ bootstrapped: true })),
+    persist: vi.fn(),
+    flush: vi.fn(),
+  };
+
+  return {
+    __esModule: true,
+    // if your real module default-exports a function that returns { store, persistor }
+    default: () => ({ store, persistor }),
+    // also provide the named exports
+    store,
+    persistor,
+  };
+});
+
 // Stub react-chartjs-2 so <Bar> and <Line> render null
 vi.mock('react-chartjs-2', () => ({
   __esModule: true,
@@ -61,23 +81,6 @@ vi.mock('../../services/httpService', () => ({
   __esModule: true,
   default: { setjwt: vi.fn() },
 }));
-
-vi.mock('../../store', () => {
-  const store = {
-    dispatch: vi.fn(),
-  };
-  const persistor = {
-    subscribe: vi.fn(),
-    dispatch: vi.fn(),
-    getState: vi.fn(() => ({ bootstrapped: true })),
-    persist: vi.fn(),
-    flush: vi.fn(),
-  };
-  return {
-    __esModule: true,
-    default: () => ({ persistor, store }),
-  };
-});
 
 vi.mock('jwt-decode', () => ({
   __esModule: true,

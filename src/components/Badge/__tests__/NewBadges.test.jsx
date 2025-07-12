@@ -152,7 +152,7 @@ describe('NewBadges component', () => {
     expect(badgeImages).toHaveLength(3);
 
     fireEvent.mouseEnter(badgeImages[0]);
-    screen.findByText(/Early Bird/);
+    await screen.findByText(/Early Bird/);
   });
 
   it('should filter out badges earned older than a week', async () => {

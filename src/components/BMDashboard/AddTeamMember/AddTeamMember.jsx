@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import Select from 'react-select';
 import { MdOutlinePersonAddAlt1 } from 'react-icons/md';
-import './AddTeamMember.css';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { ENDPOINTS } from '~/utils/URL';
+import styles from './AddTeamMember.module.css';
 
 function AddTeamMember() {
   const initialState = {
@@ -138,14 +138,14 @@ function AddTeamMember() {
   };
 
   return (
-    <div className="container-add">
-      <div className="icon-add-person">
+    <div className={`${styles.containerAdd}`}>
+      <div className={`${styles.iconAddPerson}`}>
         <MdOutlinePersonAddAlt1 size={90} />
-        <h1 className="title-member">Create new team member</h1>
+        <h1 className={`${styles.titleMember}`}>Create new team member</h1>
       </div>
 
-      <div className="name-container">
-        <div className="input-name">
+      <div className={`${styles.nameContainer}`}>
+        <div className={`${styles.inputName}`}>
           <label htmlFor="firstName">First Name</label>
           <input
             id="firstName"
@@ -156,11 +156,11 @@ function AddTeamMember() {
             className={formData.errors.firstName ? 'error' : ''}
           />
           {formData.errors.firstName && (
-            <span className="error-message">{formData.errors.firstName}</span>
+            <span className={`${styles.errorMessage}`}>{formData.errors.firstName}</span>
           )}
         </div>
 
-        <div className="input-name">
+        <div className={`${styles.inputName}`}>
           <label htmlFor="lastName">Last Name</label>
           <input
             id="lastName"
@@ -171,13 +171,13 @@ function AddTeamMember() {
             className={formData.errors.lastName ? 'error' : ''}
           />
           {formData.errors.lastName && (
-            <span className="error-message">{formData.errors.lastName}</span>
+            <span className={`${styles.errorMessage}`}>{formData.errors.lastName}</span>
           )}
         </div>
       </div>
 
-      <div className="role-container">
-        <div className="role-input">
+      <div className={`${styles.roleContainer}`}>
+        <div className={`${styles.roleInput}`}>
           <label htmlFor="role">Roles</label>
           <Select
             id="role"
@@ -186,9 +186,11 @@ function AddTeamMember() {
             onChange={option => handleSelectChange(option, 'role')}
             className={formData.errors.role ? 'error' : ''}
           />
-          {formData.errors.role && <span className="error-message">{formData.errors.role}</span>}
+          {formData.errors.role && (
+            <span className={`${styles.errorMessage}`}>{formData.errors.role}</span>
+          )}
         </div>
-        <div className="role-input">
+        <div className={`${styles.roleInput}`}>
           <label>Specify Role</label>
           <input
             name="roleSpecify"
@@ -198,13 +200,13 @@ function AddTeamMember() {
             className={formData.errors.roleSpecify ? 'error' : ''}
           />
           {formData.errors.roleSpecify && (
-            <span className="error-message">{formData.errors.roleSpecify}</span>
+            <span className={`${styles.errorMessage}`}>{formData.errors.roleSpecify}</span>
           )}
         </div>
       </div>
 
-      <div className="team-container">
-        <div className="team-input">
+      <div className={`${styles.teamContainer}`}>
+        <div className={`${styles.teamInput}`}>
           <label htmlFor="team">Teams</label>
           <Select
             id="team"
@@ -213,9 +215,11 @@ function AddTeamMember() {
             onChange={option => handleSelectChange(option, 'team')}
             className={formData.errors.team ? 'error' : ''}
           />
-          {formData.errors.team && <span className="error-message">{formData.errors.team}</span>}
+          {formData.errors.team && (
+            <span className={`${styles.errorMessage}`}>{formData.errors.team}</span>
+          )}
         </div>
-        <div className="team-input">
+        <div className={`${styles.teamInput}`}>
           <label>Specify Team</label>
           <input
             name="teamSpecify"
@@ -225,12 +229,12 @@ function AddTeamMember() {
             className={formData.errors.teamSpecify ? 'error' : ''}
           />
           {formData.errors.teamSpecify && (
-            <span className="error-message">{formData.errors.teamSpecify}</span>
+            <span className={`${styles.errorMessage}`}>{formData.errors.teamSpecify}</span>
           )}
         </div>
       </div>
 
-      <div className="contact-info">
+      <div className={`${styles.contactInfo}`}>
         <label htmlFor="email">Email Address</label>
         <input
           type="email"
@@ -240,14 +244,16 @@ function AddTeamMember() {
           onChange={handleInputChange}
           className={formData.errors.email ? 'error' : ''}
         />
-        {formData.errors.email && <span className="error-message">{formData.errors.email}</span>}
+        {formData.errors.email && (
+          <span className={`${styles.errorMessage}`}>{formData.errors.email}</span>
+        )}
 
-        <div className="phone-input-group">
+        <div className={`${styles.phoneInputGroup}`}>
           <Select
             options={countryCodes}
             value={countryCodes.find(code => code.value === formData.countryCode)}
             onChange={option => handleSelectChange(option, 'countryCode')}
-            className="country-code-select"
+            className={`${styles.countryCodeSelect}`}
           />
           <input
             type="tel"
@@ -265,15 +271,21 @@ function AddTeamMember() {
             placeholder="123-456-7890"
           />
         </div>
-        {formData.errors.phone && <span className="error-message">{formData.errors.phone}</span>}
+        {formData.errors.phone && (
+          <span className={`${styles.errorMessage}`}>{formData.errors.phone}</span>
+        )}
       </div>
 
-      <div className="submit-cancel">
-        <button type="button" className="cancel-button" onClick={() => setFormData(initialState)}>
+      <div className={`${styles.submitCancel}`}>
+        <button
+          type="button"
+          className={`${styles.cancelButton}`}
+          onClick={() => setFormData(initialState)}
+        >
           Cancel
         </button>
 
-        <button type="submit" className="submit-button" onClick={handleSubmit}>
+        <button type="submit" className={`${styles.submitButton}`} onClick={handleSubmit}>
           Submit
         </button>
       </div>

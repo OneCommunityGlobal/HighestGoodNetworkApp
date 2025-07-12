@@ -66,12 +66,14 @@ const customImageUploadHandler = () =>
 function TimeEntryForm(props) {
   /* ---------------- variables -------------- */
   // props from parent
-  const { from, sendStop, edit, data, toggle, isOpen, tab, darkMode } = props;
+  const { from, sendStop, edit, data, toggle, isOpen, tab, darkMode, userProfile } = props;
   // props from store
   const { authUser } = props;
   const dispatch = useDispatch();
 
   const viewingUser = JSON.parse(sessionStorage.getItem('viewingUser') ?? '{}');
+  const userTimeZone = userProfile?.timeZone || 'America/Los_Angeles';
+  const [actualDate, setActualDate] = useState('');
 
   const initialFormValues = {
     dateOfWork: moment()
@@ -153,7 +155,7 @@ function TimeEntryForm(props) {
 
   const isForAuthUser = timeEntryUserId === authUser.userid;
   const isSameDayTimeEntry =
-    moment()
+    moment(actualDate)
       .tz('America/Los_Angeles')
       .format('YYYY-MM-DD') === formValues.dateOfWork;
   const isSameDayAuthUserEdit = isForAuthUser && isSameDayTimeEntry;
@@ -542,6 +544,18 @@ function TimeEntryForm(props) {
     }
   };
 
+  const getActualDate = () => {
+    try {
+      const now = moment()
+        .tz(userTimeZone)
+        .toISOString();
+      setActualDate(now);
+    } catch (error) {
+      setActualDate(null);
+      toast.error('Failed to fetch the actual date. Please refresh and try logging time again');
+    }
+  };
+
   /* ---------------- useEffects -------------- */
   useEffect(() => {
     if (isAsyncDataLoaded) {
@@ -556,6 +570,24 @@ function TimeEntryForm(props) {
       loadAsyncData(timeEntryUserId);
     }
   }, [isOpen, timeEntryUserId]);
+
+  useEffect(() => {
+    if (isOpen) {
+      setActualDate(null);
+      getActualDate();
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (actualDate && !edit) {
+      setFormValues({
+        ...formValues,
+        dateOfWork: moment(actualDate)
+          .tz('America/Los_Angeles')
+          .format('YYYY-MM-DD'),
+      });
+    }
+  }, [actualDate]);
 
   useEffect(() => {
     setFormValues({ ...formValues, ...data });
@@ -742,7 +774,7 @@ function TimeEntryForm(props) {
             color="primary"
             onClick={handleSubmit}
             style={darkMode ? boxStyleDark : boxStyle}
-            disabled={submitting}
+            disabled={!actualDate || submitting}
           >
             {(() => {
               if (edit) {

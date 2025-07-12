@@ -25,13 +25,19 @@ describe('SetUpFinalDayButton', () => {
   const store = mockStore({
     theme: themeMock,
   });
-  const renderSetUpFinalDayButton = props => {
+  const renderSetUpFinalDayButton = ({ userProfile, loadUserProfile, isBigBtn, darkMode }) => {
     render(
       <Provider store={store}>
-        <SetUpFinalDayButton {...props} />
-      </Provider>,
+        <SetUpFinalDayButton
+          userProfile={userProfile}
+          loadUserProfile={loadUserProfile}
+          isBigBtn={isBigBtn}
+          darkMode={darkMode}
+        />
+      </Provider>
     );
   };
+  
 
   describe('useEffect tests', () => {
     let props;

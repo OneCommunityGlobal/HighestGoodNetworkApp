@@ -1,11 +1,11 @@
 // import React from 'react';
 import { render } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import userTableDataPermissions from '../../../utils/userTableDataPermissions';
-import UserTableHeader from '../UserTableHeader';
 import { rootReducers } from '../../../store';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
+import UserTableHeader from '../UserTableHeader';
+import userTableDataPermissions from '../../../utils/userTableDataPermissions';
 import {
   ACTIVE,
   FIRST_NAME,

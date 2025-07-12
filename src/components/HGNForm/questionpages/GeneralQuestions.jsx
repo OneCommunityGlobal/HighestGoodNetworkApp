@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import '../styles/GeneralQuestions.css';
 import { FaEdit, FaRegSave } from 'react-icons/fa';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
@@ -8,6 +7,7 @@ import { toast } from 'react-toastify';
 import { setformData } from '~/actions/hgnFormAction';
 import { Spinner } from 'reactstrap';
 import { ENDPOINTS } from '~/utils/URL';
+import styles from '../styles/GeneralQuestions.module.css';
 
 function GeneralQuestions() {
   const navigate = useHistory();
@@ -225,29 +225,33 @@ function GeneralQuestions() {
 
   const renderEditableQuestion = index => {
     return (
-      <div className="question-container">
+      <div className={`${styles.questionContainer}`}>
         {editingIndex === index && isOwner ? (
-          <div className="edit-question-container">
-            <p className="edit-title">Edit Question</p>
-            <div className="edit-question">
+          <div className={`${styles.editQuestionContainer}`}>
+            <p className={`${styles.editTitle}`}>Edit Question</p>
+            <div className={`${styles.editQuestion}`}>
               <input
                 type="text"
                 value={editedText}
                 onChange={e => setEditedText(e.target.value)}
-                className="edit-input"
+                className={`${styles.editInput}`}
               />
               <FaRegSave
                 title="Save"
-                className="save-icon"
+                className={`${styles.saveIcon}`}
                 onClick={() => handleSaveClick(index)}
               />
             </div>
           </div>
         ) : (
-          <p className="question">
+          <p className={`${styles.question}`}>
             {searchQuestion(2, index + 1)}
             {isOwner && (
-              <FaEdit className="edit-icon" onClick={() => handleEditClick(index)} title="Edit" />
+              <FaEdit
+                className={`${styles.editIcon}`}
+                onClick={() => handleEditClick(index)}
+                title="Edit"
+              />
             )}
           </p>
         )}
@@ -257,18 +261,18 @@ function GeneralQuestions() {
   if (loading) {
     return (
       <div>
-        <Spinner color="primary" className="spinner-hgnform" />;
+        <Spinner color="primary" className={`${styles.spinnerHgnform}`} />;
       </div>
     );
   }
 
   return (
-    <div className="general-questions">
-      <h3 className="blue-strip">General Questions</h3>
+    <div className={`${styles.generalQuestions}`}>
+      <h3 className={`${styles.blueStrip}`}>General Questions</h3>
       <form onSubmit={handleNext}>
-        <div className="hours">
+        <div className={`${styles.hours}`}>
           {renderEditableQuestion(0)}
-          <div className="hours-radio">
+          <div className={`${styles.hoursRadio}`}>
             <input
               type="radio"
               name="hours"
@@ -302,9 +306,9 @@ function GeneralQuestions() {
           </div>
         </div>
 
-        <div className="period">
+        <div className={`${styles.period}`}>
           {renderEditableQuestion(1)}
-          <div className="period-radio">
+          <div className={`${styles.periodRadio}`}>
             <div>
               <input
                 type="radio"
@@ -364,9 +368,9 @@ function GeneralQuestions() {
           </div>
         </div>
 
-        <div className="standup">
+        <div className={`${styles.standup}`}>
           {renderEditableQuestion(2)}
-          <div className="standup-radio">
+          <div className={`${styles.standupRadio}`}>
             <input
               type="radio"
               name="standup"
@@ -400,7 +404,7 @@ function GeneralQuestions() {
           </div>
         </div>
 
-        <div className="locations">
+        <div className={`${styles.locations}`}>
           {renderEditableQuestion(3)}
           <input
             type="text"
@@ -414,7 +418,7 @@ function GeneralQuestions() {
 
         <div className="manager">
           {renderEditableQuestion(4)}
-          <div className="standup-radio">
+          <div className={`${styles.standupRadio}`}>
             <input
               type="radio"
               name="manager"
@@ -450,7 +454,7 @@ function GeneralQuestions() {
 
         <div className="combined_frontend_backend">
           {renderEditableQuestion(5)}
-          <div className="radio-rating">
+          <div className={`${styles.radioRating}`}>
             {Array.from({ length: 10 }, (_, i) => (
               <div key={i}>
                 <label htmlFor={`f${i + 1}`}>{i + 1}</label>
@@ -470,7 +474,7 @@ function GeneralQuestions() {
 
         {/* <div className="combined_skills">
           {renderEditableQuestion(6)}
-          <div className="radio-rating">
+          <div className={`${styles.radioRating}`}>
             {Array.from({ length: 10 }, (_, i) => (
               <div key={i}>
                 <label htmlFor={`b${i + 1}`}>{i + 1}</label>
@@ -490,7 +494,7 @@ function GeneralQuestions() {
 
         <div className="mern_skills">
           {renderEditableQuestion(6)}
-          <div className="radio-rating">
+          <div className={`${styles.radioRating}`}>
             {Array.from({ length: 10 }, (_, i) => (
               <div key={i}>
                 <label htmlFor={`b${i + 1}`}>{i + 1}</label>
@@ -510,7 +514,7 @@ function GeneralQuestions() {
 
         <div className="leadership_skills">
           {renderEditableQuestion(7)}
-          <div className="radio-rating">
+          <div className={`${styles.radioRating}`}>
             {Array.from({ length: 10 }, (_, i) => (
               <div key={i}>
                 <label htmlFor={`b${i + 1}`}>{i + 1}</label>
@@ -530,7 +534,7 @@ function GeneralQuestions() {
 
         <div className="leadership_experience">
           {renderEditableQuestion(8)}
-          <div className="radio-rating">
+          <div className={`${styles.radioRating}`}>
             {Array.from({ length: 10 }, (_, i) => (
               <div key={i}>
                 <label htmlFor={`b${i + 1}`}>{i + 1}</label>
@@ -550,7 +554,7 @@ function GeneralQuestions() {
 
         <div className="preferences">
           {renderEditableQuestion(9)}
-          <div className="preferences-checkbox">
+          <div className={`${styles.preferencesCheckbox}`}>
             {[
               'frontend',
               'backend',
@@ -579,17 +583,17 @@ function GeneralQuestions() {
 
         <div className="availability">
           {renderEditableQuestion(10)}
-          <div className="availability-selector">
-            <div className="availability-grid">
+          <div className={`${styles.availabilitySelector}`}>
+            <div className={`${styles.availabilityGrid}`}>
               <div className="corner-cell" />
               {times.map(time => (
-                <div key={`time-${time}`} className="time-cell">
+                <div key={`time-${time}`} className={`${styles.timeCell}`}>
                   {time}
                 </div>
               ))}
               {days.map(day => (
                 <React.Fragment key={`day-${day}`}>
-                  <div className="day-label">{day}</div>
+                  <div className={`${styles.dayLabel}`}>{day}</div>
                   {times.map((time, timeIndex) => (
                     <input
                       key={`${day}-${time}`}
@@ -599,7 +603,7 @@ function GeneralQuestions() {
                         false
                       }
                       name={`${day.toLowerCase()}-${timeIndex}`}
-                      className="availability-checkbox"
+                      className={`${styles.availabilityCheckbox}`}
                       onChange={e => handleAvailabilityChange(day, time, e.target.checked)}
                     />
                   ))}
@@ -612,11 +616,11 @@ function GeneralQuestions() {
           )}
         </div>
 
-        <div className="button-container">
-          <button type="button" className="hgn-return-button" onClick={handleBack}>
+        <div className={`${styles.buttonContainer}`}>
+          <button type="button" className={`${styles.hgnReturnButton}`} onClick={handleBack}>
             Back
           </button>
-          <button type="submit" className="next-button">
+          <button type="submit" className={`${styles.nextButton}`}>
             Next
           </button>
         </div>

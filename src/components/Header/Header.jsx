@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, React } from 'react';
 import { ENDPOINTS } from '~/utils/URL';
 import axios from 'axios';
 import { getWeeklySummaries } from '~/actions/weeklySummaries';
@@ -217,28 +217,30 @@ export function Header(props) {
   const openModal = () => {
     setLogoutPopup(true);
   };
-  
+
   const handlePermissionChangeAck = async () => {
     // handle setting the ack true
     try {
-      setIsAckLoading(true)
-      const {firstName: name, lastName, personalLinks, adminLinks, _id} = props.userProfile
-      axios.put(ENDPOINTS.USER_PROFILE(_id), {
-        // req fields for updation
-        firstName: name, 
-        lastName, 
-        personalLinks,
-        adminLinks,
-        
-        isAcknowledged: true,
-      }).then(()=>{
-        setIsAckLoading(false);
-        dispatch(getUserProfile(_id));
-      });
+      setIsAckLoading(true);
+      const { firstName: name, lastName, personalLinks, adminLinks, _id } = props.userProfile;
+      axios
+        .put(ENDPOINTS.USER_PROFILE(_id), {
+          // req fields for updation
+          firstName: name,
+          lastName,
+          personalLinks,
+          adminLinks,
+
+          isAcknowledged: true,
+        })
+        .then(() => {
+          setIsAckLoading(false);
+          dispatch(getUserProfile(_id));
+        });
     } catch (e) {
       // console.log('update ack', e);
     }
-  }
+  };
 
   const removeViewingUser = () => {
     setPopup(false);
@@ -327,9 +329,9 @@ export function Header(props) {
 
   if (location.pathname === '/login') return null;
 
-  const viewingUser = JSON.parse(window.sessionStorage.getItem('viewingUser'))
+  const viewingUser = JSON.parse(window.sessionStorage.getItem('viewingUser'));
   return (
-    <div className="header-wrapper" data-testid="header">
+    <div className={`header-wrapper${darkMode ? ' dark-mode' : ''}`} data-testid="header">
       <Navbar className="py-3 navbar" color="dark" dark expand="md">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
         <div
@@ -466,7 +468,7 @@ export function Header(props) {
                   </NavItem>
                 )}
                 <NavItem className="responsive-spacing">
-                  <BellNotification userId={displayUserId}/>
+                  <BellNotification userId={displayUserId} />
                 </NavItem>
                 {(canAccessUserManagement ||
                   canAccessBadgeManagement ||
@@ -531,7 +533,7 @@ export function Header(props) {
                         backgroundImage: `url(${profilePic || '/pfp-default-header.png'})`,
                         backgroundSize: 'contain',
                         backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
+                        backgroundRepeat: 'no-repeat',
                       }}
                       className="dashboardimg"
                     />
@@ -583,12 +585,16 @@ export function Header(props) {
       </Navbar>
       {!isAuthUser && (
         <PopUpBar
+          firstName={viewingUser.firstName}
+          lastName={viewingUser.lastName}
           message={`You are currently viewing the header for ${viewingUser.firstName} ${viewingUser.lastName}`}
           onClickClose={() => setPopup(prevPopup => !prevPopup)}
-          />
+        />
       )}
-      {props.auth.isAuthenticated && props.userProfile?.permissions?.isAcknowledged===false && (
+      {props.auth.isAuthenticated && props.userProfile?.permissions?.isAcknowledged === false && (
         <PopUpBar
+          firstName={viewingUser?.firstName || firstName}
+          lastName={viewingUser?.lastName}
           message="Heads Up, there were permission changes made to this account"
           onClickClose={handlePermissionChangeAck}
           textColor="black_text"
@@ -615,7 +621,7 @@ export function Header(props) {
       </div>
       {props.auth.isAuthenticated && isModalVisible && (
         <div className={`${darkMode ? 'bg-oxford-blue' : ''} card-wrapper`}>
-          <Card color="primary" className='headerCard'>
+          <Card color="primary" className="headerCard">
             <div className="close-button">
               <Button close onClick={closeModal} />
             </div>

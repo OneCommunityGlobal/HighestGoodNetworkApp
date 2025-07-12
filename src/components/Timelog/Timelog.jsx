@@ -33,7 +33,7 @@ import { connect, useSelector } from 'react-redux';
 import moment from 'moment';
 import ReactTooltip from 'react-tooltip';
 import ActiveCell from '~/components/UserManagement/ActiveCell';
-import { ProfileNavDot } from '~/components/UserManagement/ProfileNavDot';
+import ProfileNavDot from '~/components/UserManagement/ProfileNavDot';
 import TeamMemberTasks from '~/components/TeamMemberTasks';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { formatDate } from '~/utils/formatDate';
@@ -77,7 +77,6 @@ const startOfWeek = offset => {
 const endOfWeek = offset => {
   return moment()
     .tz('America/Los_Angeles')
-    .endOf('week')
     .subtract(offset, 'weeks')
     .format('YYYY-MM-DD');
 };
@@ -989,7 +988,9 @@ useEffect(() => {
                       />
                     )}
                     <TabPane tabId={0}>
-                      <TeamMemberTasks filteredUserTeamIds={props.filteredUserTeamIds} />
+                      <TeamMemberTasks 
+                      filteredUserTeamIds={props.filteredUserTeamIds} 
+                      />
                     </TabPane>
                     <TabPane tabId={1}>{currentWeekEntries}</TabPane>
                     <TabPane tabId={2}>{lastWeekEntries}</TabPane>

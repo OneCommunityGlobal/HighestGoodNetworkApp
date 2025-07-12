@@ -1,23 +1,28 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
+import { render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
-import axios from 'axios';
 import configureStore from 'redux-mock-store';
+
 import WBS from './wbs';
-import { setWBSStart, setWBS, fetchAllWBS } from '../../../actions/wbs';
+import { fetchAllWBS } from '../../../actions/wbs';
 import { getProjectDetail } from '../../../actions/project';
 
 vi.mock('../../../actions/wbs', () => ({
-  addNewWBS: vi.fn(),
-  fetchAllWBS: vi.fn(),
+  __esModule: true,
+  fetchAllWBS: vi.fn(projectId => ({ type: 'FETCH_ALL_WBS', payload: projectId })),
   setWBSStart: vi.fn(() => ({ type: 'SET_WBS_START' })),
   setWBS: vi.fn(data => ({ type: 'SET_WBS', payload: data })),
-  setWBSError: vi.fn(err => ({ type: 'SET_WBS_ERROR', payload: err })),
+  addNewWBS: vi.fn(),
+  setWBSError: vi.fn(),
 }));
 
-vi.mock('axios');
+vi.mock('../../../actions/project', () => ({
+  __esModule: true,
+  getProjectDetail: vi.fn(projectId => ({ type: 'GET_PROJECT_DETAIL', payload: projectId })),
+}));
+
 vi.mock('./AddWBS', () => ({
   __esModule: true,
   default: () => <div data-testid="add-wbs">AddWBS Mock</div>,
@@ -33,13 +38,9 @@ vi.mock('./WBSItem/WBSItem', () => ({
     </tr>
   ),
 }));
-vi.mock('../../../actions/project', () => ({
-  __esModule: true,
-  getProjectDetail: vi.fn(),
-}));
-const mockStore = configureStore([]);
 
 describe('WBS Component', () => {
+  const mockStore = configureStore([]);
   let store;
   const projectId = 'project123';
 
@@ -70,15 +71,14 @@ describe('WBS Component', () => {
     store.dispatch = vi.fn();
   });
 
-  const renderComponent = () => {
-    return render(
+  const renderComponent = () =>
+    render(
       <Provider store={store}>
         <MemoryRouter>
           <WBS match={{ params: { projectId } }} />
         </MemoryRouter>
-      </Provider>,
+      </Provider>
     );
-  };
 
   it('renders the WBS component without crashing', () => {
     renderComponent();
@@ -87,7 +87,6 @@ describe('WBS Component', () => {
 
   it('dispatches fetchAllWBS and getProjectDetail on mount', () => {
     renderComponent();
-    // the component itself calls these on mount:
     expect(store.dispatch).toHaveBeenCalledWith(fetchAllWBS(projectId));
     expect(store.dispatch).toHaveBeenCalledWith(getProjectDetail(projectId));
   });
@@ -110,7 +109,6 @@ describe('WBS Component', () => {
     const backLink = screen.getByRole('link', { name: /Return to Project List/i });
     expect(backLink).toHaveAttribute('href', '/projects/');
     const backButton = screen.getByRole('button');
-    expect(backButton).toBeInTheDocument();
     expect(backButton).toHaveClass('btn-secondary');
   });
 

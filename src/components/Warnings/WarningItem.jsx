@@ -66,6 +66,7 @@ function WarningItem({
       )}
 
       <div className="warning-wrapper">
+        <p className="warning-text"> {warningText}</p>
         <WarningIcons
           warnings={warnings}
           warningText={warningText}
@@ -77,7 +78,6 @@ function WarningItem({
           canIssueBlueSquare={canIssueBlueSquare}
           canDeleteWarning={canDeleteWarning}
         />
-        <p className="warning-text"> {warningText}</p>
       </div>
     </div>
   );
