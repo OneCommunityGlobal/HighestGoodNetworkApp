@@ -110,27 +110,7 @@ function CustomTooltip({ active, payload, isCardView }) {
   );
 }
 
-// Define label component separately to avoid nested component definition
-function CustomLabel({ x, y, width, value, isCardView }) {
-  // Don't show any labels in card view
-  if (isCardView) return null;
-
-  // Don't show zero values
-  if (value === 0) return null;
-
-  return (
-    <text
-      x={x + width / 2}
-      y={y + 15}
-      fill="#fff"
-      textAnchor="middle"
-      dominantBaseline="middle"
-      fontSize="12"
-    >
-      {value}
-    </text>
-  );
-}
+// Custom label component no longer needed - using built-in LabelList with dataKey
 
 // Pre-defined tooltip for card view to avoid inline function in render
 const CardViewTooltip = <CustomTooltip isCardView />;
@@ -138,8 +118,7 @@ const CardViewTooltip = <CustomTooltip isCardView />;
 // Pre-defined tooltip for full page view to avoid inline function in render
 const FullPageTooltip = <CustomTooltip isCardView={false} />;
 
-// Pre-defined label for full page view to avoid inline function in render
-const FullPageLabel = <CustomLabel isCardView={false} />;
+// Pre-defined labels no longer needed - using built-in LabelList with dataKey
 
 function ToolsHorizontalBarChart({ darkMode, isFullPage = false, projectId, startDate, endDate }) {
   const [data, setData] = useState(emptyData);
@@ -524,7 +503,13 @@ function ToolsHorizontalBarChart({ darkMode, isFullPage = false, projectId, star
                 }}
               />
               <Bar dataKey="inUse" stackId="a" fill="#4589FF" name="In Use">
-                <LabelList content={FullPageLabel} />
+                <LabelList
+                  dataKey="inUse"
+                  position="center"
+                  fill="#fff"
+                  fontSize={12}
+                  formatter={value => (value === 0 ? '' : value)}
+                />
               </Bar>
               <Bar
                 dataKey="needsReplacement"
@@ -532,10 +517,22 @@ function ToolsHorizontalBarChart({ darkMode, isFullPage = false, projectId, star
                 fill="#FF0000"
                 name="Needs to be replaced"
               >
-                <LabelList content={FullPageLabel} />
+                <LabelList
+                  dataKey="needsReplacement"
+                  position="center"
+                  fill="#fff"
+                  fontSize={12}
+                  formatter={value => (value === 0 ? '' : value)}
+                />
               </Bar>
               <Bar dataKey="yetToReceive" stackId="a" fill="#FFB800" name="Yet to receive">
-                <LabelList content={FullPageLabel} />
+                <LabelList
+                  dataKey="yetToReceive"
+                  position="center"
+                  fill="#fff"
+                  fontSize={12}
+                  formatter={value => (value === 0 ? '' : value)}
+                />
               </Bar>
             </BarChart>
           </ResponsiveContainer>
