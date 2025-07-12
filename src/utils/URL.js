@@ -106,7 +106,7 @@ export const ENDPOINTS = {
   AUTHORIZE_WEEKLY_SUMMARY_REPORTS: () =>
     `${APIEndpoint}/userProfile/authorizeUser/weeeklySummaries`,
   TOTAL_ORG_SUMMARY: (startDate, endDate, comparisonStartDate, comparisonEndDate) =>
-    `${APIEndpoint}/reports/volunteerstats?startDate=${startDate}&endDate=${endDate}&comparisonStartDate=${comparisonStartDate}&comparisonEndDate=${comparisonEndDate}`,
+    `${APIEndpoint}/reports/volunteerstats?startDate=${startDate}&endDate=${endDate}&comparisonStartDate=${comparisonStartDate || ''}&comparisonEndDate=${comparisonEndDate || ''}`,
   VOLUNTEER_TRENDS: (timeFrame, offset, customStartDate, customEndDate) =>
     `${APIEndpoint}/reports/volunteertrends?timeFrame=${timeFrame}&offset=${offset}${
       customStartDate ? `&customStartDate=${customStartDate}` : ''
@@ -232,6 +232,8 @@ export const ENDPOINTS = {
   BM_EQUIPMENT_PURCHASE: `${APIEndpoint}/bm/equipment/purchase`,
   BM_PROJECTS: `${APIEndpoint}/bm/projects`,
   BM_PROJECT_BY_ID: projectId => `${APIEndpoint}/bm/project/${projectId}`,
+  BM_PROJECTS_LIST_FOR_MATERIALS_COST: `${APIEndpoint}/totalProjects `,
+  BM_PROJECT_MATERIALS_COST: `${APIEndpoint}/material-costs`,
   BM_UPDATE_MATERIAL: `${APIEndpoint}/bm/updateMaterialRecord`,
   BM_UPDATE_MATERIAL_BULK: `${APIEndpoint}/bm/updateMaterialRecordBulk`,
   BM_UPDATE_MATERIAL_STATUS: `${APIEndpoint}/bm/updateMaterialStatus`,
@@ -256,6 +258,8 @@ export const ENDPOINTS = {
   BM_ISSUE_CHART: `${APIEndpoint}/bm/issue/issue-chart`,
 
   BM_ISSUE_FORM: `${APIEndpoint}/bm/issue/add`,
+  BM_INJURY_ISSUE: `${APIEndpoint}/bm/issues`,
+  BM_RENTAL_CHART: `${APIEndpoint}/bm/rentalChart`,
 
 
   BM_TAGS: `${APIEndpoint}/bm/tags`,
@@ -292,9 +296,22 @@ export const ENDPOINTS = {
   GET_FORM_RESPONSES: formID => `${APIEndpoint}/jobforms/${formID}/responses`,
 
   JOB_NOTIFICATION_LIST: `${APIEndpoint}/job-notification-list/`,
+
+  MESSAGING_SERVICE: new URL('/messaging-service', APIEndpoint.replace('http', 'ws')).toString(),
   // lb dashboard endpoints
   LB_REGISTER: `${APIEndpoint}/lbdashboard/register`,
   LB_LOGIN: `${APIEndpoint}/lbdashboard/login`,
+  LB_SEND_MESSAGE: `${APIEndpoint}/lb/messages`,
+  LB_READ_MESSAGE: `${APIEndpoint}/lb/messages/conversation`,
+  LB_UPDATE_MESSAGE_STATUS: `${APIEndpoint}/lb/messages/statuses`,
+  LB_EXISTING_CHATS: `${APIEndpoint}/lb/messages/existing-chats`,
+  LB_SEARCH_USERS: `${APIEndpoint}/lb/messages/search-users`,
+  LB_GET_USER_PREFERENCES: `${APIEndpoint}/lb/preferences`,
+  LB_UPDATE_USER_PREFERENCES: `${APIEndpoint}/lb/preferences`,
+  LB_MARK_MESSAGES_AS_READ: `${APIEndpoint}/lb/messages/mark-as-read`,
+
+  NOTIFICATIONS: `${APIEndpoint}/notification`,
+  MSG_NOTIFICATION: `${APIEndpoint}/lb/notifications`,
 
 
   // community portal

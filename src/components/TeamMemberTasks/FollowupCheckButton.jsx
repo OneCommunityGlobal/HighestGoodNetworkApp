@@ -62,7 +62,7 @@ function FollowupCheckButton({ moseoverText, user, task }) {
 
     const data = {
       followUpCheck: needFollowUp ? true : !isChecked,
-      followUpPercentageDeadlineNumber: progressPersantage,
+      followUpPercentageDeadline: progressPersantage,
     };
     dispatch(setUserFollowUp(user.personId, task._id, data));
   };

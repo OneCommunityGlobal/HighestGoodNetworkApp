@@ -22,13 +22,6 @@ function TaskChangeLogModal({ isOpen, toggle, task, darkMode }) {
   const [pagination, setPagination] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Fetch change logs from backend API
-  useEffect(() => {
-    if (isOpen && task?._id) {
-      fetchChangeLogs(currentPage);
-    }
-  }, [isOpen, task, currentPage]);
-
   const fetchChangeLogs = async (page = 1) => {
     if (!task?._id) return;
 
@@ -45,7 +38,7 @@ function TaskChangeLogModal({ isOpen, toggle, task, darkMode }) {
       setChangeLogs(response.data.changeLogs || []);
       setPagination(response.data.pagination || {});
     } catch (err) {
-      console.error('Failed to fetch change logs:', err);
+      // console.error('Failed to fetch change logs:', err);
 
       // Check if it's a 404 (endpoint not found)
       if (err.response?.status === 404) {
@@ -57,13 +50,23 @@ function TaskChangeLogModal({ isOpen, toggle, task, darkMode }) {
       } else if (err.response?.status === 403) {
         setError('You do not have permission to view change history.');
       } else {
-        setError(`Failed to load change history. Error: ${err.response?.status || 'Unknown'} - ${err.response?.data?.message || err.message}`);
+        setError(
+          `Failed to load change history. Error: ${err.response?.status || 'Unknown'} - ${err
+            .response?.data?.message || err.message}`,
+        );
       }
       setChangeLogs([]);
     } finally {
       setLoading(false);
     }
   };
+
+  // Fetch change logs from backend API
+  useEffect(() => {
+    if (isOpen && task?._id) {
+      fetchChangeLogs(currentPage);
+    }
+  }, [isOpen, task, currentPage]);
 
   // Reset page when modal opens
   useEffect(() => {
@@ -329,6 +332,7 @@ function TaskChangeLogModal({ isOpen, toggle, task, darkMode }) {
                   <ul className="pagination pagination-sm">
                     <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
                       <button
+                        type="button"
                         className="page-link"
                         onClick={() => handlePageChange(currentPage - 1)}
                         disabled={currentPage === 1}
@@ -346,7 +350,11 @@ function TaskChangeLogModal({ isOpen, toggle, task, darkMode }) {
                             key={page}
                             className={`page-item ${currentPage === page ? 'active' : ''}`}
                           >
-                            <button className="page-link" onClick={() => handlePageChange(page)}>
+                            <button
+                              type="button"
+                              className="page-link"
+                              onClick={() => handlePageChange(page)}
+                            >
                               {page}
                             </button>
                           </li>
@@ -359,6 +367,7 @@ function TaskChangeLogModal({ isOpen, toggle, task, darkMode }) {
                       className={`page-item ${currentPage === pagination.pages ? 'disabled' : ''}`}
                     >
                       <button
+                        type="button"
                         className="page-link"
                         onClick={() => handlePageChange(currentPage + 1)}
                         disabled={currentPage === pagination.pages}

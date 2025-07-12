@@ -61,9 +61,14 @@ import { allUsersTimeEntriesReducer } from './allUsersTimeEntriesReducer';
 import issueReducer from './bmdashboard/issueReducer';
 import HGNFormReducer from './hgnFormReducers';
 // import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
+import messageReducer from './lbdashboard/messagingReducer';
+import userPreferencesReducer from './lbdashboard/userPreferencesReducer';
 
 // community portal
 import noShowVizReducer from './communityPortal/noShowVizReducer';
+
+// lbdashboard
+import wishListReducer from './lbdashboard/wishListItemReducer';
 
 const localReducers = {
   auth: authReducer,
@@ -109,15 +114,23 @@ const localReducers = {
   project: bmProjectByIdReducer,
   bmTools: toolReducer,
   bmEquipments: equipmentReducer,
+  bmIssues: issueReducer,
   bmInvUnits: bmInvUnitReducer,
   bmConsumables: consumablesReducer,
   bmReusables: reusablesReducer,
   dashboard: dashboardReducer,
+
+  // lbdashboard
+  wishlistItem: wishListReducer,
+
   bmissuechart: issueReducer,
   noShowViz: noShowVizReducer,
 
   bmProjectMembers: bmProjectMemberReducer,
   bmTimeLogger: bmTimeLoggerReducer,
+  // lbdashboard
+  lbmessaging: messageReducer,
+  lbuserpreferences: userPreferencesReducer,
 };
 
 const sessionReducers = {
