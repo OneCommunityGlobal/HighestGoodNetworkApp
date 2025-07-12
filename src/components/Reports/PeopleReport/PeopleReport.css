@@ -326,10 +326,11 @@ body {
 } */
 .people-report-flex-layout {
   display: flex;
-  align-items: flex-start; 
+  flex-wrap: nowrap; 
+  align-items: flex-start;
   justify-content: space-between;
-  flex-wrap: nowrap;
   gap: 20px;
+  width: 100%;
 }
 
 .people-report-wrapper {
