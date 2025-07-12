@@ -21,8 +21,7 @@ export const updateFollowUpFields = (userId,formData) => async (dispatch) => {
                 toast.success('Work Experience and Additional Information updated successfully!');
               }
             catch(error) {
-                // eslint-disable-next-line no-console
-                console.error('Error updating the details. Please try again.');
+                toast.error('Error updating the details. Please try again.');
             dispatch({ type: 'UPDATE_USER_SKILLS_PROFILE_DATA_FOLLOWUP_FIELDS_FAIL' });
               
    

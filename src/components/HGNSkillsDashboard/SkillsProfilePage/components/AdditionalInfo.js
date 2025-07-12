@@ -56,30 +56,6 @@ function AdditionalInfo() {
     setFormData({ ...formData, [field]: e.target.value });
   };
 
-  const handleEditSave = () => {
-    if (
-      !checkIfupdateUserSkillsProfileFollowUp(permissions, role, requestorId, profileData?.userId)
-    )
-      // eslint-disable-next-line no-alert
-      alert('Edit Not allowed');
-
-    if (isEditing) {
-      const wordCount = formData.mern_work_experience
-        .trim()
-        .split(' ') // split by space
-        .filter(word => word !== '' && word !== '\n' && word !== '\t').length; // remove empty strings and tabs/newlines
-      if (wordCount < 20) {
-        toast.error('Please enter at least 20 words');
-        // Re-focus the textarea
-        textareaRef.current?.focus();
-        return;
-      }
-
-      dispatch(updateFollowUpFields(profileData?.userId, formData));
-    }
-    setIsEditing(!isEditing);
-  };
-
   const fields = [
     {
       name: 'followup_platform',
@@ -100,6 +76,43 @@ function AdditionalInfo() {
       key: 'other_skills',
     },
   ];
+
+  const handleEditSave = () => {
+    if (
+      !checkIfupdateUserSkillsProfileFollowUp(permissions, role, requestorId, profileData?.userId)
+    )
+      // eslint-disable-next-line no-alert
+      alert('Edit Not allowed');
+
+    if (isEditing) {
+      const isMissingRequiredField = fields.some(field => {
+        // eslint-disable-next-line no-console
+        console.log(field.key);
+        if (!formData[field.key]?.trim()) {
+          toast.error(`"${field.key}" is required`);
+          return true;
+        }
+        return false;
+      });
+
+      if (isMissingRequiredField) return;
+
+      const wordCount = formData.mern_work_experience
+        .trim()
+        .split(' ') // split by space
+        .filter(word => word !== '' && word !== '\n' && word !== '\t').length; // remove empty strings and tabs/newlines
+      if (wordCount < 20) {
+        toast.error('Please enter at least 20 words');
+        // Re-focus the textarea
+        textareaRef.current?.focus();
+        return;
+      }
+
+      dispatch(updateFollowUpFields(profileData?.userId, formData));
+    }
+    setIsEditing(!isEditing);
+  };
+
   if (loading) return <div>Loading...</div>;
   return (
     <div className="AdditionalInfoBox">
@@ -111,37 +124,39 @@ function AdditionalInfo() {
       </div>
       <hr className="horizontal-separator" />
       {!!questions &&
-        questions.slice(0, 3).map((question, index) => {
-          const field = fields[index];
-
-          return (
-            <div className="question-and-response-box" key={field.key}>
-              <div className="question-box">
-                <p>{question.text}</p>
+        questions
+          .slice(0, 3)
+          .sort((a, b) => a.qno - b.qno)
+          .map((question, index) => {
+            const field = fields[index];
+            return (
+              <div className="question-and-response-box" key={field.key}>
+                <div className="question-box">
+                  <p>{question.text}</p>
+                </div>
+                {field.type === 'textarea' ? (
+                  <textarea
+                    name={field.name}
+                    value={formData[field.key]}
+                    onChange={handleChange(field.key)}
+                    placeholder="mern work experience in 2 to 5 sentences"
+                    readOnly={!isEditing}
+                    ref={textareaRef}
+                    required
+                  />
+                ) : (
+                  <input
+                    type="text"
+                    name={field.name}
+                    value={formData[field.key]}
+                    onChange={handleChange(field.key)}
+                    required
+                    readOnly={!isEditing}
+                  />
+                )}
               </div>
-              {field.type === 'textarea' ? (
-                <textarea
-                  name={field.name}
-                  value={formData[field.key]}
-                  onChange={handleChange(field.key)}
-                  placeholder="mern work experience in 2 to 5 sentences"
-                  readOnly={!isEditing}
-                  ref={textareaRef}
-                  required
-                />
-              ) : (
-                <input
-                  type="text"
-                  name={field.name}
-                  value={formData[field.key]}
-                  onChange={handleChange(field.key)}
-                  required
-                  readOnly={!isEditing}
-                />
-              )}
-            </div>
-          );
-        })}
+            );
+          })}
     </div>
   );
 }
