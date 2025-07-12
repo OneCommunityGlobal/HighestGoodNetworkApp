@@ -24,7 +24,9 @@ const renderMemberRow = (memberProps) => {
         permissions: {
           frontPermissions: [], // or appropriate mock data
         },
+
       },
+      hadPermission: jest.fn((a) => true)
     },
     ...memberProps
 
