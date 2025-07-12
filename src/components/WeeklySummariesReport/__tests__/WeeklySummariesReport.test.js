@@ -1,10 +1,9 @@
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { getWeeklySummariesReport } from '../../../actions/weeklySummariesReport';
-import configureStore from '../../../store';
+import { store } from '../../../store';
 import { ENDPOINTS } from '../../../utils/URL';
 
-const { store } = configureStore();
 const url = ENDPOINTS.WEEKLY_SUMMARIES_REPORT();
 
 const server = setupServer(
@@ -62,12 +61,11 @@ describe('WeeklySummariesReport Redux related actions', () => {
     // Additional tests for Redux actions
     describe('action dispatching', () => {
       it('should update the loading state correctly during fetch', async () => {
-        const { store: testStore } = configureStore();
-        const fetchPromise = testStore.dispatch(getWeeklySummariesReport());
-        expect(testStore.getState().weeklySummariesReport.loading).toBe(true);
+        const fetchPromise = store.dispatch(getWeeklySummariesReport());
+        expect(wsReportSlice().loading).toBe(true);
         await fetchPromise;
-        expect(testStore.getState().weeklySummariesReport.loading).toBe(false);
-        expect(testStore.getState().weeklySummariesReport.summaries).toBeDefined();
+        expect(wsReportSlice().loading).toBe(false);
+        expect(wsReportSlice().summaries).toBeDefined();
       });
 
       it('should handle errors correctly', async () => {
@@ -77,10 +75,9 @@ describe('WeeklySummariesReport Redux related actions', () => {
           ),
         );
 
-        const { store: testStore } = configureStore();
-        await testStore.dispatch(getWeeklySummariesReport());
-        expect(testStore.getState().weeklySummariesReport.loading).toBe(false);
-        expect(testStore.getState().weeklySummariesReport.error).toBeTruthy();
+        await store.dispatch(getWeeklySummariesReport());
+        expect(wsReportSlice().loading).toBe(false);
+        expect(wsReportSlice().error).toBeTruthy();
       });
     });
 

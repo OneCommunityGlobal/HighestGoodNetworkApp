@@ -45,6 +45,12 @@ function WBSTasks(props) {
   const { tasks, isLoading, error, refresh } = useFetchWbsTasks(wbsId);
 
   useEffect(() => {
+    if(!isLoading){
+      setPageLoadTime(Date.now());
+    }
+  },[tasks, isLoading]);
+
+  useEffect(() => {
     setLevelOneTasks(
       filterTasks(
         tasks.filter(task => task.level === 1),

@@ -9,6 +9,7 @@ function StatisticsTab(props) {
     isIncreased,
     tabBackgroundColor,
     shapeBackgroundColor,
+    comparisonType,
   } = props;
 
   return (
@@ -31,15 +32,17 @@ function StatisticsTab(props) {
           {number}
         </h3>
       </div>
-      <h4
-        className={`statistics-percentage ${
-          isIncreased ? 'statistics-percentage-increase' : 'statistics-percentage-decrease'
-        }`}
-        aria-live="polite"
-      >
-        {isIncreased ? '+' : '-'}
-        {percentageChange}% week over week
-      </h4>
+      {comparisonType !== 'No Comparison' && (
+        <h4
+          className={`statistics-percentage ${
+            isIncreased ? 'statistics-percentage-increase' : 'statistics-percentage-decrease'
+          }`}
+          aria-live="polite"
+        >
+          {isIncreased ? '+' : '-'}
+          {percentageChange}% {comparisonType.toLowerCase()}
+        </h4>
+      )}
     </div>
   );
 }

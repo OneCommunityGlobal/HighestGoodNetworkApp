@@ -714,7 +714,7 @@ function AddTaskModal(props) {
               </div>
               <div>
                 <div className={`border p-1 ${fontColor}`} aria-labelledby="why-task-label">
-                  <h4 id="why-task-label">Why this Task is Important</h4>
+                  <div id="why-task-label">Why this Task is Important</div>
                   <Editor
                     tinymceScriptSrc="/tinymce/tinymce.min.js"
                     licenseKey="gpl"
@@ -728,7 +728,7 @@ function AddTaskModal(props) {
               </div>
               <div>
                 <div className={`border p-1 ${fontColor}`} aria-labelledby="design-intent-label">
-                  <h4 id="design-intent-label">Design Intent</h4>
+                  <div id="design-intent-label">Design Intent</div>
                   <Editor
                     tinymceScriptSrc="/tinymce/tinymce.min.js"
                     licenseKey="gpl"
@@ -742,7 +742,7 @@ function AddTaskModal(props) {
               </div>
               <div>
                 <div className={`border p-1 ${fontColor}`} aria-labelledby="endstate-label">
-                  <h4 id="endstate-label">Endstate</h4>
+                  <div id="endstate-label">Endstate</div>
                   <Editor
                     tinymceScriptSrc="/tinymce/tinymce.min.js"
                     licenseKey="gpl"

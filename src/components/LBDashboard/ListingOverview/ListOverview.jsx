@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
-import './Listoverview.css';
 import Carousel from 'react-bootstrap/Carousel';
 import logo from '../../../assets/images/logo2.png';
 import mapIcon from '../../../assets/images/mapIcon.png';
+import styles from './Listoverview.module.css';
 
 function ListOverview() {
   const [listing, setListing] = React.useState({});
@@ -25,18 +25,18 @@ function ListOverview() {
   }, []);
 
   return (
-    <div className="main-container">
-      <div className="logo-container">
+    <div className={`${styles.mainContainer}`}>
+      <div className={`${styles.logoContainer}`}>
         <img src={logo} alt="One Community Logo" />
       </div>
-      <div className="content-container">
-        <div className="container-top" />
-        <div className="container-main">
-          <div className="details-left">
-            <div className="listing-details mobile-display">
+      <div className={`${styles.contentContainer}`}>
+        <div className={`${styles.containerTop}`} />
+        <div className={`${styles.containerMain}`}>
+          <div className={`${styles.detailsLeft}`}>
+            <div className={`${styles.listingDetails} ${styles.mobileDisplay}`}>
               <h1>{listing.title}</h1>
             </div>
-            <div className="image-carousel">
+            <div className={`${styles.imageCarousel}`}>
               <Carousel>
                 {listing.images?.map((image, index) => (
                   <Carousel.Item key={image}>
@@ -46,10 +46,10 @@ function ListOverview() {
               </Carousel>
             </div>
 
-            <div className="amenities">
+            <div className={`${styles.amenities}`}>
               <div>
                 <h2>Available amenities in this unit:</h2>
-                <ol className="amenities-list">
+                <ol className={`${styles.amenitiesList}`}>
                   {listing.unitAmenities?.map(amenity => (
                     <li key={amenity}>{amenity}</li>
                   ))}
@@ -57,24 +57,24 @@ function ListOverview() {
               </div>
               <div>
                 <h2>Village level amenities:</h2>
-                <ol className="amenities-list">
+                <ol className={`${styles.amenitiesList}`}>
                   {listing.villageAmenities?.map(amenity => (
                     <li key={amenity}>{amenity}</li>
                   ))}
                 </ol>
               </div>
             </div>
-            <div className="location">
+            <div className={`${styles.location}`}>
               <img src={mapIcon} alt="Map Icon" />
               <a href="/">{listing.location}</a>
             </div>
           </div>
-          <div className="details-right">
-            <div className="listing-details">
-              <h1 className="desktop-display">{listing.title}</h1>
+          <div className={`${styles.detailsRight}`}>
+            <div className={`${styles.listingDetails}`}>
+              <h1 className={`${styles.desktopDisplay}`}>{listing.title}</h1>
               <p>{listing.description}</p>
             </div>
-            <div className="rent-form">
+            <div className={`${styles.rentForm}`}>
               <label htmlFor="from">
                 Rent from
                 <input type="date" name="from" id="from" />
@@ -89,7 +89,7 @@ function ListOverview() {
               <h6>The Dates you picked are not available</h6>
               <a href="/">Click here to see available dates</a>
             </div>
-            <div className="chat-host">
+            <div className={`${styles.chatHost}`}>
               <button type="button">
                 <img
                   width="24"

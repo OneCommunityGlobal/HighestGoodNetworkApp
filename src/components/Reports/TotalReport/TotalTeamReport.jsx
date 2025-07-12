@@ -359,12 +359,12 @@ const groupedDate = useMemo(() => {
           From {startDate.toLocaleDateString()} to {endDate.toLocaleDateString()}:
         </div>
         <div className="total-item">
-          <div className="total-number">{totalTeam.length}</div>
-          <div className="total-text">teams contributed over 10 hours.</div>
+          <span className="total-number">{totalTeam.length}</span>
+          <span className="total-text">teams contributed over 10 hours.</span>
         </div>
         <div className="total-item">
-          <div className="total-number">{totalTangibleTime.toFixed(2)}</div>
-          <div className="total-text">hours of tangible time logged.</div>
+          <span className="total-number">{totalTangibleTime.toFixed(2)}</span>
+          <span className="total-text">hours of tangible time logged.</span>
         </div>
         <div>
           {showMonthly && teamInMonth.length > 0 && (
@@ -478,7 +478,7 @@ const groupedDate = useMemo(() => {
     }
 
     return (
-      <table className="table table-bordered table-responsive-sm team-table">
+      <table className="details-table table table-bordered table-responsive-sm team-table">
         <thead className={darkMode ? 'bg-space-cadet text-light' : ''} style={{pointerEvents: 'none' }}>
           <tr>
             <th scope="col" id="projects__order">

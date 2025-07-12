@@ -28,7 +28,12 @@ describe('ModalExample Component', () => {
     const closeModalMock = jest.fn();
     render(
       <Provider store={store}>
-        <ModalExample isOpen closeModal={closeModalMock} modalTitle="Test Modal" />
+        <ModalExample
+          isOpen
+          closeModal={closeModalMock}
+          confirmModal={() => {}}
+          modalTitle="Test Modal"
+        />
       </Provider>,
     );
 
@@ -82,12 +87,13 @@ describe('ModalExample Component', () => {
           isOpen
           closeModal={() => {}}
           setInactiveModal={setInactiveModalMock}
+          setInactiveButton="Yes, hide it all"
           modalTitle="Test Modal"
         />
       </Provider>,
     );
 
-    fireEvent.click(screen.getByText(/set inactive/i));
+    fireEvent.click(screen.getByText(/yes, hide it all/i));
     expect(setInactiveModalMock).toHaveBeenCalled();
   });
 

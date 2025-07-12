@@ -1,0 +1,26 @@
+.rightSection {
+  width: 70%;
+  padding: 0px 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.skillsAndChart {
+  display: flex;
+  gap: 10px;
+}
+
+h3 {
+  color: #3ea0cb;
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+@media (max-width: 768px) {
+  .rightSection {
+    width: 100%;
+  }
+  .skillsAndChart {
+    flex-direction: column;
+  }
+}

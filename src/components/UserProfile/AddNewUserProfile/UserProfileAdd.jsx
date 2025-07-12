@@ -798,6 +798,7 @@ class UserProfileAdd extends Component {
       allowsDuplicateName: allowsDuplicateName,
       createdDate: createdDate,
       teamCode: this.state.teamCode,
+      trophyFollowedUp: false,
       actualEmail: actualEmail,
       actualPassword: actualPassword,
       startDate: startDate,

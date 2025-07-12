@@ -23,7 +23,16 @@ describe('DropDownSearchBox', () => {
     const store = mockStore(initialState);
 
   it('renders with correct options', () => {
-    const { getByRole, getByText } = render(<Provider store={store}><DropDownSearchBox {...mockProps} /></Provider>);
+    const { getByRole, getByText } = render(<Provider store={store}><DropDownSearchBox 
+      id={mockProps.id}
+      placeholder={mockProps.placeholder}
+      items={mockItems}
+      searchCallback={mockSearchCallback}
+      value={mockProps.value}
+      width={mockProps.width}
+      className={mockProps.className}
+      />
+      </Provider>);
 
     // Check for placeholder
     expect(getByText(mockProps.placeholder)).toBeInTheDocument();
@@ -38,7 +47,16 @@ describe('DropDownSearchBox', () => {
   });
 
   it('calls searchCallback with correct value on selection change', () => {
-    const { getByRole } = render(<Provider store={store}><DropDownSearchBox {...mockProps} /></Provider>);
+    const { getByRole } = render(<Provider store={store}><DropDownSearchBox 
+        id={mockProps.id}
+        placeholder={mockProps.placeholder}
+        items={mockItems}
+        searchCallback={mockSearchCallback}
+        value={mockProps.value}
+        width={mockProps.width}
+        className={mockProps.className}
+    />
+    </Provider>);
     const select = getByRole('combobox');
 
     fireEvent.change(select, { target: { value: mockItems[1] } });

@@ -95,7 +95,7 @@ const SetupNewUserPopup = React.memo(props => {
             htmlFor="email"
             className={`setup-new-user-popup-label ${darkMode ? 'text-light' : ''}`}
           >
-            Email{<span className="red-asterisk">* </span>}
+            Email<span className="red-asterisk">* </span>
           </label>
           <input
             type="email"
