@@ -1,49 +1,97 @@
-.chart-container {
-  min-height: 100vh;
+.tools-availability-page {
   padding: 20px;
-  font-family: Arial, sans-serif;
 }
 
-.light-theme {
-  background-color: #ffffff;
-  color: #000000;
+.tools-chart-title {
+  margin: 10px 0 20px 0;
+  text-align: center;
+  width: 100%;
 }
 
-.light-theme .select,
-.light-theme .button {
-  background-color: #f2f2f2;
-  color: #000;
+.tools-availability-content {
+  padding: 20px;
+  border-radius: 8px;
+  background-color: white;
+}
+
+.tools-horizontal-chart-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 15px;
+  background-color: white;
+}
+
+.tools-chart-filters {
+  display: flex;
+  gap: 30px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.date-picker-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.date-picker {
+  padding: 5px;
+  border-radius: 4px;
   border: 1px solid #ccc;
 }
 
-.dark-theme {
-  background-color: #1b2a41;
-  color: #f1f1f1;
-}
-
-.dark-theme .select,
-.dark-theme .button {
-  background-color: #2d4059;
-  color: #f1f1f1;
-  border: 1px solid #555;
-}
-
-.select,
-.button {
-  padding: 6px 10px;
-  border-radius: 4px;
+.clear-dates-btn {
+  padding: 2px 6px;
   font-size: 14px;
-  outline: none;
+  background-color: #ccc;
+  border: none;
+  border-radius: 3px;
   cursor: pointer;
 }
 
-.label {
-  font-weight: 500;
+.tools-chart-error,
+.tools-chart-loading,
+.tools-chart-empty {
+  text-align: center;
+  font-size: 14px;
+  margin-top: 40px;
 }
 
-.filters {
-  display: flex;
-  gap: 20px;
-  align-items: center;
-  margin-bottom: 20px;
+.dark-mode .tools-availability-content,
+.dark-mode .tools-horizontal-chart-container {
+  background-color: #222b3c;
+  color: #e0e0e0;
+}
+
+.dark-mode .date-picker {
+  background-color: #222b3c;
+  color: #e0e0e0;
+  border-color: #364156;
+}
+
+.dark-mode .clear-dates-btn {
+  background-color: #222b3c;
+  color: #e0e0e0;
+}
+
+.dark-mode .tools-chart-tooltip {
+  background-color: rgb(50, 73, 105);
+}
+
+.tools-chart-tooltip {
+  background-color: rgba(255, 255, 255, 0.95);
+  border: 1px solid #ccc;
+  padding: 8px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  max-width: 200px;
 }

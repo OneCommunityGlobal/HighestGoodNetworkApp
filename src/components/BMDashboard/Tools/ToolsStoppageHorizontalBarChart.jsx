@@ -1,165 +1,330 @@
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import Select from 'react-select';
 import {
   BarChart,
   Bar,
   XAxis,
   YAxis,
-  CartesianGrid,
   Tooltip,
-  Legend,
-  LabelList,
   ResponsiveContainer,
+  LabelList,
+  Legend,
+  CartesianGrid,
 } from 'recharts';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
+import axios from 'axios';
+import { ENDPOINTS } from '../../../utils/URL';
 import './ToolsStoppageHorizontalBarChart.css';
 
-const projects = [
-  { id: 'p1', name: 'Project Alpha' },
-  { id: 'p2', name: 'Project Beta' },
-  { id: 'p3', name: 'Project Gamma' },
-];
+// Define tooltip component separately to avoid nested component definition
+function CustomTooltip({ active, payload }) {
+  if (!active || !payload || !payload.length) {
+    return null;
+  }
 
-const sampleData = [
-  {
-    toolName: 'Hammer',
-    usedForLifetime: 50,
-    damaged: 30,
-    lost: 20,
-    projectId: 'p1',
-    date: new Date('2025-06-01'),
-  },
-  {
-    toolName: 'Drill',
-    usedForLifetime: 60,
-    damaged: 25,
-    lost: 15,
-    projectId: 'p2',
-    date: new Date('2025-06-02'),
-  },
-  {
-    toolName: 'Wrench',
-    usedForLifetime: 70,
-    damaged: 20,
-    lost: 10,
-    projectId: 'p1',
-    date: new Date('2025-06-03'),
-  },
-  {
-    toolName: 'Screwdriver',
-    usedForLifetime: 40,
-    damaged: 35,
-    lost: 25,
-    projectId: 'p3',
-    date: new Date('2025-06-04'),
-  },
-  {
-    toolName: 'Cutter',
-    usedForLifetime: 55,
-    damaged: 30,
-    lost: 15,
-    projectId: 'p2',
-    date: new Date('2025-06-05'),
-  },
-  {
-    toolName: 'Pliers',
-    usedForLifetime: 65,
-    damaged: 20,
-    lost: 15,
-    projectId: 'p3',
-    date: new Date('2025-06-06'),
-  },
-];
-
-function StackedBarChart() {
-  const darkMode = useSelector(state => state.theme.darkMode);
-  const [selectedProject, setSelectedProject] = useState('');
-  const [dateRange, setDateRange] = useState([null, null]);
-  const [filteredData, setFilteredData] = useState(sampleData);
-  const [startDate, endDate] = dateRange;
-
-  useEffect(() => {
-    let filtered = sampleData;
-
-    if (selectedProject) {
-      filtered = filtered.filter(item => item.projectId === selectedProject);
-    }
-
-    if (startDate && endDate) {
-      filtered = filtered.filter(
-        item => new Date(item.date) >= startDate && new Date(item.date) <= endDate,
-      );
-    }
-
-    setFilteredData(filtered);
-  }, [selectedProject, startDate, endDate]);
-
+  // Full detailed tooltip for full page view
   return (
-    <div className={`chart-container ${darkMode ? 'dark-theme' : 'light-theme'}`}>
-      <h2>Reason of Stoppage of Tools</h2>
+    <div className="tools-chart-tooltip">
+      <p style={{ margin: '0 0 5px 0', fontWeight: 'bold' }}>{payload[0].payload.name}</p>
+      {payload.map(entry => {
+        let statusLabel = 'Unknown';
+        if (entry.dataKey === 'usedForLifetime') {
+          statusLabel = 'Used its lifetime';
+        } else if (entry.dataKey === 'damaged') {
+          statusLabel = 'Damaged';
+        } else if (entry.dataKey === 'lost') {
+          statusLabel = 'Lost';
+        }
 
-      <div className="filters">
-        <div>
-          <label className="label">Project:</label>
-          <br />
-          <select
-            className="select"
-            value={selectedProject}
-            onChange={e => setSelectedProject(e.target.value)}
-          >
-            <option value="">All Projects</option>
-            {projects.map(proj => (
-              <option key={proj.id} value={proj.id}>
-                {proj.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label className="label">Date Range:</label>
-          <br />
-          <DatePicker
-            selectsRange
-            startDate={startDate}
-            endDate={endDate}
-            onChange={update => setDateRange(update)}
-            isClearable
-            className="select"
-          />
-        </div>
-      </div>
-
-      <ResponsiveContainer width="100%" height={400}>
-        <BarChart
-          layout="vertical"
-          data={filteredData}
-          margin={{ top: 20, right: 30, left: 100, bottom: 20 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#444' : '#ccc'} />
-          <XAxis type="number" domain={[0, 100]} unit="%" stroke={darkMode ? '#ddd' : '#000'} />
-          <YAxis dataKey="toolName" type="category" stroke={darkMode ? '#ddd' : '#000'} />
-          <Tooltip
-            contentStyle={{
-              backgroundColor: darkMode ? '#333' : '#fff',
-              color: darkMode ? '#fff' : '#000',
+        return (
+          <p
+            key={entry.dataKey}
+            style={{
+              color: entry.color,
+              margin: '3px 0',
+              fontSize: '11px',
+              display: 'flex',
+              justifyContent: 'space-between',
             }}
-          />
-          <Legend />
-          <Bar dataKey="usedForLifetime" stackId="a" fill="blue">
-            <LabelList dataKey="usedForLifetime" position="insideRight" />
-          </Bar>
-          <Bar dataKey="damaged" stackId="a" fill="red">
-            <LabelList dataKey="damaged" position="insideRight" />
-          </Bar>
-          <Bar dataKey="lost" stackId="a" fill="yellow">
-            <LabelList dataKey="lost" position="insideRight" />
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
+          >
+            <span>{statusLabel}</span>
+            <span style={{ marginLeft: '10px' }}>{entry.value}</span>
+          </p>
+        );
+      })}
     </div>
   );
 }
 
-export default StackedBarChart;
+// Define label component separately to avoid nested component definition
+function CustomLabel({ x, y, width, value }) {
+  // Don't show zero values
+  if (value === 0) return null;
+
+  return (
+    <text
+      x={x + width / 2}
+      y={y + 15}
+      fill="#fff"
+      textAnchor="middle"
+      dominantBaseline="middle"
+      fontSize="12"
+    >
+      {value}
+    </text>
+  );
+}
+
+export default function ToolsStoppageHorizontalBarChart() {
+  const darkMode = useSelector(state => state.theme.darkMode);
+  const [projects, setProjects] = useState([]);
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [data, setData] = useState([]);
+  const emptyData = [];
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await axios.get(ENDPOINTS.BM_TOOL_PROJECTS);
+        setProjects(response.data);
+      } catch (err) {
+        // Error logging should be replaced with proper logging service
+        // eslint-disable-next-line no-console
+        console.error('Error fetching projects:', err);
+        setError('Failed to load projects. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, []);
+
+  useEffect(() => {
+    const fetchToolsStoppageData = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        // If we have a specific project ID, fetch data for that project
+        if (selectedProject) {
+          const url = ENDPOINTS.BM_TOOLS_STOPPAGE_BY_PROJECT(
+            selectedProject?.value,
+            startDate,
+            endDate,
+          );
+          const response = await axios.get(url);
+          const responseData = response.data;
+
+          if (responseData && responseData.length > 0) {
+            // Sort by total quantity and ensure tool names are properly formatted
+            const sortedData = [...responseData].map(item => ({
+              ...item,
+              // Ensure the name property is properly formatted and capitalized
+              name: item.toolName || item.name,
+            }));
+            setData(sortedData);
+          } else {
+            setData(emptyData);
+            setError('No tool stoppage reason data found for this project.');
+          }
+        }
+        // when no specific project is selected, fetch first project as sample
+        else if (projects.length > 0) {
+          // Use first project for the widget view
+          const firstProject = projects[0];
+          setSelectedProject({ value: firstProject.projectId, label: firstProject.projectName });
+          const url = ENDPOINTS.BM_TOOLS_STOPPAGE_BY_PROJECT(firstProject.projectId, null, null);
+          const response = await axios.get(url);
+          const responseData = response.data;
+
+          if (responseData && responseData.length > 0) {
+            // Sort by total quantity and ensure tool names are properly formatted
+            const sortedData = [...responseData].map(item => ({
+              ...item,
+              // Ensure the name property is properly formatted and capitalized
+              name: item.toolName || item.name,
+            }));
+            setData(sortedData);
+          } else {
+            setData(emptyData);
+          }
+        } else {
+          setData(emptyData);
+        }
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error('Error fetching tools data:', err);
+        setData(emptyData);
+        setError('Failed to load tools stoppage reason data. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchToolsStoppageData();
+  }, [selectedProject, startDate, endDate, projects]);
+
+  const projectOptions = projects.map(project => ({
+    value: project.projectId,
+    label: project.projectName,
+  }));
+
+  const handleProjectChange = selectedOption => {
+    setSelectedProject(selectedOption);
+  };
+
+  const handleStartDateChange = e => {
+    setStartDate(e.target.value);
+  };
+
+  const handleEndDateChange = e => {
+    setEndDate(e.target.value);
+  };
+
+  const handleClearDates = () => {
+    setStartDate('');
+    setEndDate('');
+  };
+
+  const selectDarkStyles = {
+    control: base => ({
+      ...base,
+      backgroundColor: '#2c3344',
+      borderColor: '#364156',
+    }),
+    menu: base => ({
+      ...base,
+      backgroundColor: '#2c3344',
+    }),
+    option: (base, state) => ({
+      ...base,
+      backgroundColor: state.isFocused ? '#364156' : '#2c3344',
+      color: '#e0e0e0',
+    }),
+    singleValue: base => ({
+      ...base,
+      color: '#e0e0e0',
+    }),
+    placeholder: base => ({
+      ...base,
+      color: '#aaaaaa',
+    }),
+  };
+
+  return (
+    <div className={`tools-availability-page ${darkMode ? 'dark-mode' : ''}`}>
+      <h3 className="tools-chart-title">Reason of Stoppage of Tools</h3>
+      <div className="tools-availability-content">
+        <div className="tools-chart-filters">
+          <div className="filter-group">
+            <label htmlFor="project-select">Project</label>
+            <Select
+              id="project-select"
+              className="project-select"
+              classNamePrefix="select"
+              value={selectedProject}
+              onChange={handleProjectChange}
+              options={projectOptions}
+              placeholder="Select a project ID to view data"
+              isClearable={false}
+              isDisabled={projects.length === 0}
+              styles={darkMode ? selectDarkStyles : {}}
+            />
+          </div>
+
+          <div className="filter-group">
+            <label>Date Range (Optional)</label>
+            <div className="date-picker-group">
+              <input
+                type="date"
+                className="date-picker"
+                value={startDate}
+                onChange={handleStartDateChange}
+              />
+              <span>to</span>
+              <input
+                type="date"
+                className="date-picker"
+                value={endDate}
+                onChange={handleEndDateChange}
+              />
+              {(startDate || endDate) && (
+                <button
+                  type="button"
+                  className="clear-dates-btn"
+                  onClick={handleClearDates}
+                  aria-label="Clear date filters"
+                >
+                  ×
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="tools-horizontal-chart-container">
+          {error && <div className="tools-chart-error">{error}</div>}
+          {loading && <div className="tools-chart-loading">Loading tool availability data...</div>}
+
+          {!loading && selectedProject && data.length > 0 && (
+            <ResponsiveContainer width="100%" height={600}>
+              <BarChart
+                layout="vertical"
+                data={data}
+                margin={{ top: 20, right: 60, left: 60, bottom: 40 }}
+                barSize={32}
+              >
+                <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                <XAxis
+                  type="number"
+                  domain={[0, dataMax => Math.ceil(dataMax / 25) * 25]}
+                  tickCount={5}
+                />
+                <YAxis
+                  type="category"
+                  dataKey="name"
+                  tickFormatter={value =>
+                    value.length > 20 ? `${value.substring(0, 18)}...` : value
+                  }
+                />
+                <Tooltip
+                  content={
+                    <CustomTooltip
+                      darkMode={darkMode}
+                      cursor={{
+                        fill: darkMode ? 'rgb(50, 73, 105)' : '#e0e0e0',
+                      }}
+                    />
+                  }
+                />
+                <Legend verticalAlign="bottom" height={36} />
+                <Bar dataKey="usedForLifetime" stackId="a" fill="#4589FF" name="Used its lifetime">
+                  <LabelList dataKey="usedForLifetime" content={<CustomLabel />} />
+                </Bar>
+                <Bar dataKey="damaged" stackId="a" fill="#FF0000" name="Damaged">
+                  <LabelList dataKey="damaged" content={<CustomLabel />} />
+                </Bar>
+                <Bar dataKey="lost" stackId="a" fill="#FFB800" name="Lost">
+                  <LabelList dataKey="lost" content={<CustomLabel />} />
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          )}
+
+          {!loading && selectedProject && data.length === 0 && (
+            <div className="tools-chart-empty">
+              <p>No data available for the selected filters.</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
