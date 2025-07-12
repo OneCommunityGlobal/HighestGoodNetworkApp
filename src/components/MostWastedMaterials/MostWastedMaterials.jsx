@@ -1,83 +1,363 @@
-import React, { useState, useEffect } from "react";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  LabelList
-} from "recharts";
+'use client';
 
-const mockData = [
-  { material: "Concrete", percentage: 32 },
-  { material: "Wood", percentage: 27 },
-  { material: "Steel", percentage: 18 },
-  { material: "Glass", percentage: 12 },
-  { material: "Plastic", percentage: 9 },
+import { useState, useEffect, useRef } from 'react';
+import { Bar, BarChart, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip } from 'recharts';
+
+// Mock data for demonstration
+const mockProjects = [
+  { id: 'all', name: 'All Projects' },
+  { id: 'project-1', name: 'Construction Site A' },
+  { id: 'project-2', name: 'Office Building B' },
+  { id: 'project-3', name: 'Residential Complex C' },
 ];
 
-const projectOptions = ["Project A", "Project B", "Project C"];
+const mockData = {
+  all: [
+    { material: 'Concrete', wastePercentage: 15.8 },
+    { material: 'Steel Rebar', wastePercentage: 12.3 },
+    { material: 'Lumber', wastePercentage: 11.7 },
+    { material: 'Drywall', wastePercentage: 9.4 },
+    { material: 'Insulation', wastePercentage: 8.9 },
+    { material: 'Tiles', wastePercentage: 7.2 },
+    { material: 'Paint', wastePercentage: 6.8 },
+    { material: 'Electrical Wire', wastePercentage: 5.1 },
+  ],
+  'project-1': [
+    { material: 'Concrete', wastePercentage: 18.2 },
+    { material: 'Steel Rebar', wastePercentage: 14.1 },
+    { material: 'Lumber', wastePercentage: 10.3 },
+    { material: 'Drywall', wastePercentage: 8.7 },
+    { material: 'Insulation', wastePercentage: 7.9 },
+  ],
+  'project-2': [
+    { material: 'Drywall', wastePercentage: 13.5 },
+    { material: 'Steel Rebar', wastePercentage: 11.8 },
+    { material: 'Concrete', wastePercentage: 10.9 },
+    { material: 'Tiles', wastePercentage: 9.2 },
+    { material: 'Paint', wastePercentage: 8.4 },
+  ],
+  'project-3': [
+    { material: 'Lumber', wastePercentage: 16.3 },
+    { material: 'Insulation', wastePercentage: 12.7 },
+    { material: 'Drywall', wastePercentage: 11.1 },
+    { material: 'Paint', wastePercentage: 9.8 },
+    { material: 'Tiles', wastePercentage: 6.5 },
+  ],
+};
 
-export default function MostWastedMaterialsGraph() {
-  const [selectedProject, setSelectedProject] = useState("Project A");
-  const [dateRange, setDateRange] = useState({ start: new Date(), end: new Date() });
-  const [data, setData] = useState([]);
+// Custom Dropdown Component
+const CustomDropdown = ({ options, selected, onSelect }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
   useEffect(() => {
-    // Simulate data fetch based on filters
-    const sortedData = [...mockData].sort((a, b) => b.percentage - a.percentage);
-    setData(sortedData);
+    const handleClickOutside = event => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  return (
+    <div style={{ position: 'relative' }} ref={dropdownRef}>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        style={{
+          width: '100%',
+          padding: '8px 16px',
+          textAlign: 'left',
+          backgroundColor: '#ffffff',
+          border: '1px solid #d1d5db',
+          borderRadius: '6px',
+          cursor: 'pointer',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+      >
+        <span>{selected.name}</span>
+        <span style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}>▼</span>
+      </button>
+
+      {isOpen && (
+        <div
+          style={{
+            position: 'absolute',
+            zIndex: 10,
+            width: '100%',
+            marginTop: '4px',
+            backgroundColor: '#ffffff',
+            border: '1px solid #d1d5db',
+            borderRadius: '6px',
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+          }}
+        >
+          {options.map(option => (
+            <button
+              key={option.id}
+              onClick={() => {
+                onSelect(option);
+                setIsOpen(false);
+              }}
+              style={{
+                width: '100%',
+                padding: '8px 16px',
+                textAlign: 'left',
+                backgroundColor: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+              }}
+              onMouseEnter={e => (e.target.style.backgroundColor = '#f3f4f6')}
+              onMouseLeave={e => (e.target.style.backgroundColor = 'transparent')}
+            >
+              {option.name}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Custom Label component for displaying percentages on bars
+const CustomLabel = props => {
+  const { x, y, width, value } = props;
+  return (
+    <text
+      x={x + width / 2}
+      y={y - 5}
+      fill="#374151"
+      textAnchor="middle"
+      fontSize="12"
+      fontWeight="500"
+    >
+      {`${value}%`}
+    </text>
+  );
+};
+
+// Custom Tooltip Component
+const CustomTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div
+        style={{
+          backgroundColor: '#ffffff',
+          border: '1px solid #e5e7eb',
+          borderRadius: '8px',
+          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+          padding: '12px',
+        }}
+      >
+        <p style={{ fontWeight: '500', color: '#111827', margin: '0 0 4px 0' }}>{label}</p>
+        <p style={{ fontSize: '14px', color: '#6b7280', margin: '0' }}>
+          Waste: {payload[0].value}%
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
+
+export default function MostWastedMaterialsDashboard() {
+  const [selectedProject, setSelectedProject] = useState(mockProjects[0]);
+  const [dateRange, setDateRange] = useState({
+    from: '2024-01-01',
+    to: new Date().toISOString().split('T')[0],
+  });
+  const [chartData, setChartData] = useState([]);
+
+  // Get data based on selected project and sort by waste percentage (descending)
+  useEffect(() => {
+    const data = mockData[selectedProject.id] || mockData['all'];
+    const sortedData = [...data].sort((a, b) => b.wastePercentage - a.wastePercentage);
+    setChartData(sortedData);
   }, [selectedProject, dateRange]);
 
   return (
-    <div style={{ padding: "1rem", boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)", borderRadius: "1rem" }}>
-      <h2 style={{ fontSize: "1.5rem", fontWeight: "600", marginBottom: "1rem", textAlign: "center" }}>Most Wasted Materials</h2>
-      <div style={{ display: "flex", gap: "1rem", marginBottom: "1.5rem", flexWrap: "wrap", justifyContent: "center" }}>
-        <div>
-          <label htmlFor="project" style={{ display: "block", marginBottom: ".5rem" }}>Project</label>
-          <select
-            id="project"
-            value={selectedProject}
-            onChange={(e) => setSelectedProject(e.target.value)}
-            style={{ padding: ".5rem", borderRadius: ".5rem", border: "1px solid #ccc" }}
-          >
-            {projectOptions.map((project) => (
-              <option key={project} value={project}>
-                {project}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label htmlFor="date" style={{ display: "block", marginBottom: ".5rem" }}>Date Range</label>
-          <input
-            type="date"
-            value={dateRange.start.toISOString().split('T')[0]}
-            onChange={(e) => setDateRange({ ...dateRange, start: new Date(e.target.value) })}
-            style={{ padding: ".5rem", borderRadius: ".5rem", border: "1px solid #ccc", marginRight: ".5rem" }}
-          />
-          <input
-            type="date"
-            value={dateRange.end.toISOString().split('T')[0]}
-            onChange={(e) => setDateRange({ ...dateRange, end: new Date(e.target.value) })}
-            style={{ padding: ".5rem", borderRadius: ".5rem", border: "1px solid #ccc" }}
-          />
+    <div
+      style={{
+        width: '100%',
+        maxWidth: '1200px',
+        margin: '0 auto',
+        padding: '24px',
+        backgroundColor: '#f9fafb',
+        minHeight: '100vh',
+      }}
+    >
+      {/* Title */}
+      <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+        <h1
+          style={{
+            fontSize: '32px',
+            fontWeight: 'bold',
+            color: '#111827',
+            margin: '0',
+          }}
+        >
+          Most Wasted Materials
+        </h1>
+      </div>
+
+      {/* Filters */}
+      <div
+        style={{
+          backgroundColor: '#ffffff',
+          borderRadius: '8px',
+          border: '1px solid #e5e7eb',
+          padding: '24px',
+          marginBottom: '24px',
+          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+        }}
+      >
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+            gap: '20px',
+          }}
+        >
+          {/* Project Filter */}
+          <div>
+            <label
+              style={{
+                display: 'block',
+                fontSize: '14px',
+                fontWeight: '600',
+                color: '#374151',
+                marginBottom: '8px',
+              }}
+            >
+              Project Filter
+            </label>
+            <CustomDropdown
+              options={mockProjects}
+              selected={selectedProject}
+              onSelect={setSelectedProject}
+            />
+          </div>
+
+          {/* Date Range Filter */}
+          <div>
+            <label
+              style={{
+                display: 'block',
+                fontSize: '14px',
+                fontWeight: '600',
+                color: '#374151',
+                marginBottom: '8px',
+              }}
+            >
+              Date Filter
+            </label>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+              <div>
+                <label
+                  style={{
+                    display: 'block',
+                    fontSize: '12px',
+                    color: '#6b7280',
+                    marginBottom: '4px',
+                  }}
+                >
+                  From
+                </label>
+                <input
+                  type="date"
+                  value={dateRange.from}
+                  onChange={e => setDateRange(prev => ({ ...prev, from: e.target.value }))}
+                  style={{
+                    width: '100%',
+                    padding: '8px 12px',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '6px',
+                    fontSize: '14px',
+                  }}
+                />
+              </div>
+              <div>
+                <label
+                  style={{
+                    display: 'block',
+                    fontSize: '12px',
+                    color: '#6b7280',
+                    marginBottom: '4px',
+                  }}
+                >
+                  To
+                </label>
+                <input
+                  type="date"
+                  value={dateRange.to}
+                  onChange={e => setDateRange(prev => ({ ...prev, to: e.target.value }))}
+                  style={{
+                    width: '100%',
+                    padding: '8px 12px',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '6px',
+                    fontSize: '14px',
+                  }}
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <ResponsiveContainer width="100%" height={400}>
-        <BarChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 30 }}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="material" />
-          <YAxis label={{ value: "% Wasted", angle: -90, position: "insideLeft" }} />
-          <Tooltip />
-          <Bar dataKey="percentage" fill="#8884d8">
-            <LabelList dataKey="percentage" position="top" formatter={(value) => `${value}%`} />
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
+      {/* Chart */}
+      <div
+        style={{
+          backgroundColor: '#ffffff',
+          borderRadius: '8px',
+          border: '1px solid #e5e7eb',
+          padding: '24px',
+          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+        }}
+      >
+        <div style={{ width: '100%', height: '500px' }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart
+              data={chartData}
+              margin={{
+                top: 30,
+                right: 30,
+                left: 20,
+                bottom: 60,
+              }}
+            >
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+              <XAxis
+                dataKey="material"
+                angle={-45}
+                textAnchor="end"
+                height={80}
+                fontSize={12}
+                interval={0}
+                tick={{ fill: '#374151' }}
+              />
+              <YAxis
+                label={{
+                  value: 'Percentage of Material Wasted (%)',
+                  angle: -90,
+                  position: 'insideLeft',
+                  style: { textAnchor: 'middle', fill: '#374151' },
+                }}
+                fontSize={12}
+                tick={{ fill: '#374151' }}
+              />
+              <Tooltip content={<CustomTooltip />} />
+              <Bar
+                dataKey="wastePercentage"
+                fill="#3b82f6"
+                radius={[4, 4, 0, 0]}
+                label={<CustomLabel />}
+              />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
     </div>
   );
 }
