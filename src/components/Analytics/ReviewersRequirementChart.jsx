@@ -19,7 +19,7 @@ const ReviewersRequirementChart = ({ duration }) => {
     const fetchAPIData = async () => {
       try {
         const token = localStorage.getItem('token');
-        const res = await fetch(`http://localhost:4500/api/analytics/github-reviews`, {
+        const res = await fetch(`http://localhost:4500/api/analytics/github-reviews?duration=lastWeek&sort=asc`, {
           headers: {
             Authorization: `${token}`,
             'Content-Type': 'application/json',
