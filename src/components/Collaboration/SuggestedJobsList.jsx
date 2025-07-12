@@ -60,16 +60,24 @@ function SuggestedJobsList() {
   // Handle form submission for search
   const handleSubmit = e => {
     e.preventDefault();
-    setCurrentPage(1); // Reset page to 1 on new search
-    setQuery(e.target.elements.searchInput.value.trim());
-    setHasSearched(true);
+    const inputQuery = e.target.elements.searchInput.value.trim();
+    setQuery(inputQuery);
+    setCurrentPage(1);
+    setHasSearched(inputQuery !== '' || category !== '');
   };
 
   // Handle category change
   const handleCategoryChange = e => {
-    setCategory(e.target.value);
+    const selectedValue = e.target.value;
+    setCategory(selectedValue);
     setCurrentPage(1); // Reset page to 1 on category change
-    setHasSearched(true);
+
+    // 👇 Reset hasSearched based on input
+    if (selectedValue === '' && query.trim() === '') {
+      setHasSearched(false);
+    } else {
+      setHasSearched(true);
+    }
   };
 
   // Pagination controls
