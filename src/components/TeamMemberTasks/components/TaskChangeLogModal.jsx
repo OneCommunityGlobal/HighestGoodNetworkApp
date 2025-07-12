@@ -47,7 +47,7 @@ function TaskChangeLogModal({ isOpen, toggle, task, darkMode }) {
     } catch (err) {
       console.error('Failed to fetch change logs:', err);
 
-      // Check if it's a 404 (endpoint not found) - backend not implemented yet
+      // Check if it's a 404 (endpoint not found)
       if (err.response?.status === 404) {
         setError(
           'Backend API not yet implemented. Individual change tracking requires backend deployment.',
