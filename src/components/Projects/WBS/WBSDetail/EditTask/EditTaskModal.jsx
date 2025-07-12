@@ -237,9 +237,7 @@ function EditTaskModal(props) {
     if (error === 'none' || Object.keys(error).length === 0) {
       toggle();
       toast.success('Update Success!');
-      toast.success('Update Success!');
     } else {
-      toast.error(`Update failed! Error is ${props.tasks.error}`);
       toast.error(`Update failed! Error is ${props.tasks.error}`);
     }
   };
