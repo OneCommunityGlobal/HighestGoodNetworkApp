@@ -30,6 +30,26 @@ function getXTicksAndDomain(data) {
   return { domain: [0, upper], ticks };
 }
 
+function CustomTooltip({ active, payload }) {
+  if (active && payload && payload.length) {
+    const data = payload[0].payload;
+    return (
+      <div className="custom-tooltip">
+        <div className="tooltip-header">
+          <h4>{data.prNumber}</h4>
+        </div>
+        <p className="tooltip-title">{data.title}</p>
+        <div className="tooltip-details">
+          <p>
+            <strong>Reviews:</strong> {data.reviewCount}
+          </p>
+        </div>
+      </div>
+    );
+  }
+  return null;
+}
+
 function PRReviewTeamAnalytics() {
   const [duration, setDuration] = useState(DURATION_OPTIONS[0].value);
   const [data, setData] = useState([]);
@@ -39,11 +59,15 @@ function PRReviewTeamAnalytics() {
   useEffect(() => {
     setLoading(true);
     setError(null);
-    // TODO: Replace with real API call
     setTimeout(() => {
-      const sorted = [...PRData].sort((a, b) => b.reviewCount - a.reviewCount);
-      setData(sorted.slice(0, 20));
-      setLoading(false);
+      try {
+        const sorted = [...PRData].sort((a, b) => b.reviewCount - a.reviewCount);
+        setData(sorted.slice(0, 20)); // Get Top 20 PRs based on review count
+        setLoading(false);
+      } catch (err) {
+        setError('Failed to load PR data');
+        setLoading(false);
+      }
     }, 800);
   }, [duration]);
 
@@ -54,9 +78,29 @@ function PRReviewTeamAnalytics() {
 
   let content;
   if (loading) {
-    content = <div className="pr-review-analytics-loading">Loading...</div>;
+    content = (
+      <div className="pr-review-analytics-loading">
+        <div className="loading-spinner" />
+        <p>Loading PR Analytics...</p>
+      </div>
+    );
   } else if (error) {
-    content = <div className="pr-review-analytics-error">{error}</div>;
+    content = (
+      <div className="pr-review-analytics-error">
+        <div className="error-icon">⚠️</div>
+        <p>{error}</p>
+        <button type="button" className="retry-button" onClick={() => window.location.reload()}>
+          Retry
+        </button>
+      </div>
+    );
+  } else if (data.length === 0) {
+    content = (
+      <div className="pr-review-analytics-empty">
+        <div className="empty-icon">📊</div>
+        <p>No PR data available</p>
+      </div>
+    );
   } else {
     content = (
       <div className="pr-review-analytics-fixed-labels-layout">
@@ -91,14 +135,14 @@ function PRReviewTeamAnalytics() {
                 domain={domain}
                 ticks={ticks}
               />
-              <Tooltip
-                formatter={value => [`${value}`, 'Reviews']}
-                labelFormatter={label => {
-                  const pr = data.find(d => d.prNumber === label);
-                  return pr ? `${label}: ${pr.title}` : label;
-                }}
-              />
-              <Bar dataKey="reviewCount" fill="#052C65" radius={[0, 8, 8, 0]}>
+              <Tooltip content={<CustomTooltip />} />
+              <Bar
+                dataKey="reviewCount"
+                fill="#052C65"
+                radius={[0, 8, 8, 0]}
+                animationDuration={1000}
+                animationBegin={0}
+              >
                 <LabelList dataKey="reviewCount" position="right" fill="#052C65" />
               </Bar>
             </BarChart>

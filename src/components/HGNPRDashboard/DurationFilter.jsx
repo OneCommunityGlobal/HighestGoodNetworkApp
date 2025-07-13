@@ -11,6 +11,7 @@ function DurationFilter({ options, value, onChange }) {
         className="duration-filter-select"
         value={value}
         onChange={e => onChange(e.target.value)}
+        aria-label="Select duration filter"
       >
         {options.map(opt => (
           <option key={opt.value} value={opt.value}>
@@ -18,6 +19,7 @@ function DurationFilter({ options, value, onChange }) {
           </option>
         ))}
       </select>
+      <div className="duration-filter-icon">▼</div>
     </div>
   );
 }
