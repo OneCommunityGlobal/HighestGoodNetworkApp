@@ -1,7 +1,7 @@
 import { FaSpinner } from 'react-icons/fa';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import './PromotionEligibility.css'; // Make sure this file exists
+import './PromotionEligibility.css';
 
 function PromotionEligibility() {
   const [loading, setLoading] = useState(true);
