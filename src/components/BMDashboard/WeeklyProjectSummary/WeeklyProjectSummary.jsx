@@ -181,7 +181,7 @@ export default function WeeklyProjectSummary() {
           if (index === 1) {
             content = <QuantityOfMaterialsUsed data={quantityOfMaterialsUsedData} />;
           } else if (index === 2) {
-            content = <TotalMaterialCostPerProject />;
+            // content = <TotalMaterialCostPerProject />;
           } else {
             content = <p>📊 Card</p>;
           }
