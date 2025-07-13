@@ -7,7 +7,6 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { createMemoryHistory } from 'history';
 import { Router } from 'react-router-dom';
-import { waitFor } from '@testing-library/react';
 import ProtectedRoute from '../ProtectedRoute';
 
 // Custom render function that includes access to the history object
@@ -53,34 +52,21 @@ describe('ProtectedRoute Component', () => {
     });
   });
 
-  test('should redirect to login if user is not authenticated', async () => {
-    store = mockStore({
-      auth: {
-        isAuthenticated: false,
-        user: { role: 'guest', permissions: { frontPermissions: [] } },
-      },
-      role: {
-        roles: [{ roleName: 'guest', permissions: [] }],
-      },
-    });
-
+  test('should redirect to login if user is not authenticated', () => {
     const { history } = renderWithRouter(
       <ProtectedRoute path="/protected" component={TargetComponent} />,
       { route: '/protected', store },
     );
-
-    await waitFor(() => {
-      expect(history.location.pathname).toBe('/login');
-    });
+    expect(history.location.pathname).toBe('/login');
   });
 
-  test('authenticated user without required permissions should redirect to dashboard', async () => {
+  test('authenticated user without required permissions should redirect to dashboard', () => {
     store = mockStore({
       auth: {
         isAuthenticated: true,
         user: { role: 'user', permissions: { frontPermissions: [] } },
       },
-      role: { roles: [{ roleName: 'guest', permissions: [] }] },
+      role: { roles: [] },
     });
 
     const { history } = renderWithRouter(
@@ -91,13 +77,10 @@ describe('ProtectedRoute Component', () => {
       />,
       { route: '/protected', store },
     );
-
-    await waitFor(() => {
-      expect(history.location.pathname).toBe('/dashboard');
-    });
+    expect(history.location.pathname).toBe('/dashboard');
   });
 
-  test('user with required role should access the protected route', async () => {
+  test('user with required role should access the protected route', () => {
     store = mockStore({
       auth: {
         isAuthenticated: true,
@@ -114,12 +97,10 @@ describe('ProtectedRoute Component', () => {
       </Provider>,
     );
 
-    await waitFor(() => {
-      expect(screen.getByText(/Target Page/i)).toBeInTheDocument();
-    });
+    expect(screen.getByText(/Target Page/i)).toBeInTheDocument();
   });
 
-  test('user with required permissions through roles should access the protected route', async () => {
+  test('user with required permissions through roles should access the protected route', () => {
     store = mockStore({
       auth: {
         isAuthenticated: true,
@@ -139,18 +120,17 @@ describe('ProtectedRoute Component', () => {
         </MemoryRouter>
       </Provider>,
     );
-    await waitFor(() => {
-      expect(screen.getByText(/Target Page/i)).toBeInTheDocument();
-    });
+
+    expect(screen.getByText(/Target Page/i)).toBeInTheDocument();
   });
 
-  test('user with required permissions through user permissions should access the protected route', async () => {
+  test('user with required permissions through user permissions should access the protected route', () => {
     store = mockStore({
       auth: {
         isAuthenticated: true,
         user: { role: 'user', permissions: { frontPermissions: ['SPECIAL_ACCESS'] } },
       },
-      role: { roles: [{ roleName: 'user', permissions: [] }] },
+      role: { roles: [] },
     });
 
     render(
@@ -165,18 +145,16 @@ describe('ProtectedRoute Component', () => {
       </Provider>,
     );
 
-    await waitFor(() => {
-      expect(screen.getByText(/Target Page/i)).toBeInTheDocument();
-    });
+    expect(screen.getByText(/Target Page/i)).toBeInTheDocument();
   });
 
-  test('proper rendering of the component when conditions are met', async () => {
+  test('proper rendering of the component when conditions are met', () => {
     store = mockStore({
       auth: {
         isAuthenticated: true,
         user: { role: 'user', permissions: { frontPermissions: ['SPECIAL_ACCESS'] } },
       },
-      role: { roles: [{ roleName: 'user', permissions: [] }] },
+      role: { roles: [] },
     });
 
     render(
@@ -187,8 +165,6 @@ describe('ProtectedRoute Component', () => {
       </Provider>,
     );
 
-    await waitFor(() => {
-      expect(screen.getByText(/Target Page/i)).toBeInTheDocument();
-    });
+    expect(screen.getByText(/Target Page/i)).toBeInTheDocument();
   });
 });
