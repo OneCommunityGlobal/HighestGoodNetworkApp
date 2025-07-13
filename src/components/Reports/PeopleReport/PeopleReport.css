@@ -220,7 +220,7 @@ body {
 
 .people-report-time-log-block {
   max-height: 100px;
-  width: 230px;
+  width: 220px;
   white-space: nowrap;
   margin-bottom: 16px;
 }
@@ -233,7 +233,6 @@ body {
     justify-content: space-between;
     color: white;
   }
-  
 }
 
 @media (min-width: 768px) and (max-width: 1024px) {

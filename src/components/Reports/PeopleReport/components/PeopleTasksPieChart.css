@@ -1,13 +1,13 @@
 .people-pie-charts-wrapper {
   display: grid;
   grid-auto-flow: row;
-  min-height: 500px;
+  min-height: 400px;
   row-gap: 24px;
   color: rgba(0, 0, 0, 0.5);
 }
 
 @media (min-width: 1400px) {
-  .people-pie-charts-wrapper {
+  .people-pie-charts-wrapper.two-charts {
     grid-template-columns: repeat(2, 1fr);
     column-gap: 24px;
   }
@@ -22,6 +22,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-wrap: wrap;
   margin-top: 30px;
 }
 

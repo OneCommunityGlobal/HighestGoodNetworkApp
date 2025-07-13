@@ -468,19 +468,19 @@ class PeopleReport extends Component {
 
             <div className="stats">
               <div>
-                <h4>{formatDate(startDate)}</h4>
+                <h5>{formatDate(startDate)}</h5>
                 <p>Start Date</p>
               </div>
               <div>
-                <h4>{endDate ? formatDate(endDate) : 'N/A'}</h4>
+                <h5>{endDate ? formatDate(endDate) : 'N/A'}</h5>
                 <p>End Date</p>
               </div>
               {bioStatus ? (
                 <div>
-                  <h5>Bio {bioStatus === 'default' ? 'not requested' : bioStatus}</h5>{' '}
+                  <h6>Bio {bioStatus === 'default' ? 'not requested' : bioStatus}</h6>{' '}
                   {authRole === 'Administrator' || authRole === 'Owner' ? (
                     <ToggleSwitch
-                      fontSize="13px"
+                      fontSize="12px"
                       fontColor="#007BFF"
                       switchType="bio"
                       state={bioStatus}

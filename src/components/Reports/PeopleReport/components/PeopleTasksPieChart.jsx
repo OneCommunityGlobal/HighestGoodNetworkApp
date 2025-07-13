@@ -26,9 +26,14 @@ export function PeopleTasksPieChart({ darkMode }) {
   // function handleViewAll() {
   //   setShowAllTasks(prev => !prev);
   // }
+  const pieChartCount = 
+  (hoursLoggedToProjectsOnly.length !== 0 ? 1 : 0) + 
+  (showTasksPieChart ? 1 : 0);
+
+  const isTwoCharts = pieChartCount === 2;
 
   return (
-    <div className={`people-pie-charts-wrapper ${darkMode ? 'text-light' : ''}`}>
+    <div className={`people-pie-charts-wrapper ${isTwoCharts ? 'two-charts' : ''} ${darkMode ? 'text-light' : ''}`}>
       {hoursLoggedToProjectsOnly.length!==0 && (
         <ReportPage.ReportBlock darkMode={darkMode}>
           <h5 className="people-pie-charts-header">Projects With Completed Hours</h5>
