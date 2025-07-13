@@ -24,11 +24,9 @@ function PromotionEligibility() {
 
   if (loading) {
     return (
-      <div className="screen-center">
-        <div className="text-center">
-          <FaSpinner className="spinner" />
-          <div>Loading Reviewer data...</div>
-        </div>
+      <div className="text-center">
+        <FaSpinner className="spinner" />
+        <div>Loading Reviewer data...</div>
       </div>
     );
   }
