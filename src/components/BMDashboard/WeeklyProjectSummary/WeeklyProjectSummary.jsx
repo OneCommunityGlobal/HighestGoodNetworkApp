@@ -10,6 +10,7 @@ import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions
 import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
 import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
 import styles from './WeeklyProjectSummary.module.css';
+import IssueCharts from '../Issues/openIssueCharts';
 
 const projectStatusButtons = [
   {
@@ -198,9 +199,11 @@ export default function WeeklyProjectSummary() {
       {
         title: 'Issue Tracking',
         key: 'Issue Tracking',
-        className: 'small',
+        className: 'full',
         content: (
-          <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>📊 Card</div>
+          <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+            <IssueCharts />
+          </div>
         ),
       },
       {
