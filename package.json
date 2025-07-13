@@ -111,7 +111,7 @@
     "test": "cross-env CI=true vitest",
     "test:watch": "vitest --reporter=verbose",
     "test:coverage": "cross-env CI=true vitest --coverage --reporter=verbose",
-    "test:changed": "vitest --changedSince=origin/development --reporter=verbose",
+    "test:changed": "vitest --changed origin/development --reporter=verbose",
     "eject": "react-scripts eject",
     "start:local": "react-scripts start",
     "lint": "eslint . --ext .jsx,.js",
