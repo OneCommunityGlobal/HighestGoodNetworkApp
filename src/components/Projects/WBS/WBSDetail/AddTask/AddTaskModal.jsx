@@ -754,8 +754,11 @@ function AddTaskModal(props) {
                   />
                 </div>
               </div>
-              <div className="d-flex border add-modal-dt">
-                <span scope="col" className={`form-date p-1 ${fontColor}`}>Start Date</span>
+
+              <div className="d-flex border">
+                <span scope="col" className={`form-date p-1 ${fontColor}`}>
+                  Start Date
+                </span>
                 <span scope="col" className="border-left p-1">
                   <div>
                     <DayPickerInput
@@ -769,7 +772,7 @@ function AddTaskModal(props) {
                   </div>
                 </span>
               </div>
-              <div className="d-flex border align-items-center  add-modal-dt">
+              <div className="d-flex border align-items-center">
                 <label
                   htmlFor="end-date-input"
                   className={`form-date p-1 ${fontColor}`}
