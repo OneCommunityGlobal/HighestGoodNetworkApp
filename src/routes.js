@@ -57,6 +57,7 @@ import EmailSender from './components/common/EmailSender/EmailSender';
 import Collaboration from './components/Collaboration';
 import ApplicantsAgeChart from './components/ApplicantsChart';
 import UserSkillsProfile from './components/HGNSkillsDashboard/SkillsProfilePage/components/UserSkillsProfile';
+import ApplicantVolunteerRatio from './components/ApplicantVolunteerRatio/ApplicantVolunteerRatio';
 
 // LB Dashboard
 import LBProtectedRoute from './components/common/LBDashboard/LBProtectedRoute/LBProtectedRoute';
@@ -324,6 +325,7 @@ export default (
         />
 
         <ProtectedRoute path="/applicants-chart" exact component={ApplicantsAgeChart} fallback />
+        <ProtectedRoute path="/applicant-volunteer-ratio" exact component={ApplicantVolunteerRatio} />
 
         <ProtectedRoute
           path="/announcements"
