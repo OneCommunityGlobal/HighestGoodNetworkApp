@@ -392,6 +392,7 @@ const WeeklySummariesReport = props => {
 
   const filterWeeklySummaries = () => {
     try {
+      const currentWeekIndex = navItems.findIndex(state.activeTab);
       const {
         selectedCodes,
         selectedColors,
@@ -421,6 +422,19 @@ const WeeklySummariesReport = props => {
         .map(([color]) => color);
 
       const temp = summaries.filter(summary => {
+        // if this user is inactive, only include them on their final week tab
+        if (!summary.isActive) {
+          const idx = summary.finalWeekIndex;
+          if (typeof idx !== 'number' || idx < 0 || idx >= weekDates.length) {
+            return false;
+          }
+          if (currentWeekIndex < idx) {
+            return false;
+          }
+
+          return true;
+        }
+
         const { activeTab } = state;
         const hoursLogged = (summary.totalSeconds[navItems.indexOf(activeTab)] || 0) / 3600;
         const isMeetCriteria =
@@ -592,6 +606,7 @@ const WeeklySummariesReport = props => {
       }));
     }
   };
+
   /**
    * Handle tab switching
    */
