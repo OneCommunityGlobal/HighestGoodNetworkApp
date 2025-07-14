@@ -165,14 +165,38 @@ export const permissionLabels = [
           'Gives the user permission to update the password of any user but Owner/Admin classes. ',
       },
       {
+        label: 'Reset / Change Password (Others)',
+        key: 'resetPassword',
+        description:
+          'Gives the user permission to Reset and/or Change the password of any user but Owner/Admin classes. ',
+      },
+      {
         label: 'Manage Time Off Requests',
         key: 'manageTimeOffRequests',
         description: 'Gives the user permission to Add/Delete/Edit Time off requests.',
       },
+
       {
         label: 'Change Rehireable Status',
         key: 'changeUserRehireableStatus',
         description: 'Gives the user permission to change the user status of rehireable or not.',
+      },
+      {
+        label: 'Pause User Activity',
+        key: 'pauseUserActivity',
+        description:
+          'Gives the user permission to use the "Pause" button to pause user activity on their profile page.',
+      },
+      {
+        label: 'Set Final Day for User',
+        key: 'setUserFinalDay',
+        description:
+          'Gives the user permission to use the "Set Final Day" button to set a final working day for a user on their profile page.',
+      },
+      {
+        label: 'Tracking Management',
+        key: 'setTrackingManagement',
+        description: 'Gives the user permission to interact with the edit warnings list modal.',
       },
     ],
   },
