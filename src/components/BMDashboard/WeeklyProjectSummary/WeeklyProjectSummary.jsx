@@ -8,7 +8,7 @@ import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
 import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
 import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
-import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
+import ExpenditureLineGraph from '../ExpenditureGraph/ExpenditureLineGraphComponent';
 import styles from './WeeklyProjectSummary.module.css';
 import IssueCharts from '../Issues/openIssueCharts';
 
@@ -181,7 +181,7 @@ export default function WeeklyProjectSummary() {
           if (index === 1) {
             content = <QuantityOfMaterialsUsed data={quantityOfMaterialsUsedData} />;
           } else if (index === 2) {
-            content = <TotalMaterialCostPerProject />;
+            // content = <TotalMaterialCostPerProject />;
           } else {
             content = <p>📊 Card</p>;
           }
@@ -244,7 +244,7 @@ export default function WeeklyProjectSummary() {
         className: 'large',
         content: (
           <>
-            {Array.from({ length: 4 }).map(() => {
+            {Array.from({ length: 3 }).map(() => {
               const uniqueId = uuidv4();
               return (
                 <div
@@ -255,10 +255,11 @@ export default function WeeklyProjectSummary() {
                 </div>
               );
             })}
-
-            <div className={`${styles.weeklyProjectSummaryCard} ${styles.financialBig}`}>
-              📊 Big Card
+            <div className="weekly-project-summary-card financial-small">
+              <ExpenditureLineGraph />
             </div>
+
+            <div className="weekly-project-summary-card financial-big">📊 Big Card</div>
           </>
         ),
       },
