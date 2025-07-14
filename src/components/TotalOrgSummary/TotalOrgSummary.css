@@ -133,7 +133,6 @@
 
 /* PDF button styles */
 .share-pdf-btn {
-  margin-left: auto;
   padding: 8px 16px !important;
   height: 36px !important;
   display: flex !important;
@@ -196,18 +195,7 @@
 .report-header-row {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-  width: 100%;
-  padding: 0 15px;
-  position: relative;
-  min-height: 60px;
-  padding-bottom: 1rem;
-}
-
-.report-header-title {
-  display: flex;
-  align-items: center;
+  gap: 20px;
 }
 
 .report-header-title h3 {
@@ -219,7 +207,14 @@
 
 .report-header-actions {
   display: flex;
-  justify-content: flex-end;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 600px) {
+  .container {
+    flex-direction: column;
+  }
 }
 
 .container-total-org-wrapper.bg-oxford-blue .component-container p.m-0,
