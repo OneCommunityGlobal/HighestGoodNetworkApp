@@ -118,7 +118,7 @@ const TeamMemberTask = React.memo(
       }
     };
 
-    /** 
+    /**
     const handleReportClick = (event, to) => {
       if (event.metaKey || event.ctrlKey || event.button === 1) {
         return;
