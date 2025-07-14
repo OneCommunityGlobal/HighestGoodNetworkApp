@@ -5,7 +5,6 @@ import { faEdit, faSave } from '@fortawesome/free-solid-svg-icons';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { faClock } from '@fortawesome/free-solid-svg-icons';
 import { getAllUserProfile } from '../../actions/userManagement';
 import { ENDPOINTS } from '../../utils/URL';
 import userTableDataPermissions from '../../utils/userTableDataPermissions';
