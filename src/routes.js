@@ -74,6 +74,7 @@ import LBProtectedRoute from './components/common/LBDashboard/LBProtectedRoute/L
 import LBHome from './components/LBDashboard/Home/Home';
 import LBDashboard from './components/LBDashboard';
 import LBLogin from './components/LBDashboard/Login';
+import LBRegister from './components/LBDashboard/Register/LBRegister';
 import LBMessaging from './components/LBDashboard/Messaging/LBMessaging';
 import MasterPlan from './components/LBDashboard/Map/MasterPlan/MasterPlan';
 import ListOveriew from './components/LBDashboard/ListingOverview/ListOverview';
@@ -215,7 +216,7 @@ export default (
         <>
           <AutoUpdate />
           <ToastContainer />
-          {/* <LBRegister /> */}
+          <LBRegister />
         </>
       )}
     />
@@ -607,6 +608,7 @@ export default (
         <LBProtectedRoute path="/lbdashboard/listOverview" exact component={ListOveriew} />
         <LBProtectedRoute path="/lbdashboard/masterplan" exact component={MasterPlan} />
         <Route path="/lbdashboard/login" component={LBLogin} />
+        <Route path="/lbdashboard/register" component={LBRegister} />
         <LBProtectedRoute path="/lbdashboard/messaging" component={LBMessaging} />
         <Route // Should be LBProtectedRoute
           path="/lbdashboard/listingshome"
