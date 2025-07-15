@@ -38,6 +38,25 @@ vi.mock('axios', () => {
   return { default: mockAxios };
 });
 
+vi.mock('msw', () => ({
+  rest: {
+    get:     vi.fn(),
+    post:    vi.fn(),
+    patch:   vi.fn(),
+    put:     vi.fn(),
+    delete:  vi.fn(),
+    options: vi.fn(),
+  },
+}))
+
+vi.mock('msw/node', () => ({
+  setupServer: () => ({
+    listen: () => {},
+    resetHandlers: () => {},
+    close: () => {},
+  }),
+}));
+
 // Mock react-toastify
 vi.mock('react-toastify', () => {
   return {

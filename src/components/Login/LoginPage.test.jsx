@@ -1,28 +1,3 @@
-vi.mock('~/services/httpService', () => ({
-  __esModule: true,
-  default: {
-    post:   vi.fn(),
-    get:    vi.fn(),
-    put:    vi.fn(),
-    patch:  vi.fn(),
-    delete: vi.fn(),
-    setjwt: vi.fn(),
-  },
-}))
-
-vi.mock('~/services/logService', () => ({
-  __esModule: true,
-  default: {
-    info:  vi.fn(),
-    error: vi.fn(),
-  },
-}))
-
-// 2) Stub AutoUpdate so it can’t do `new Request('/hash.txt')`
-vi.mock('../../components/AutoUpdate/AutoUpdate', () => ({
-  __esModule: true,
-  default: () => null,
-}), { virtual: true });
 import { renderWithRouterMatch } from '../../__tests__/utils';
 import '@testing-library/jest-dom/extend-expect';
 import { createMemoryHistory } from 'history';
@@ -35,6 +10,36 @@ import mockState from '../../__tests__/mockAdminState';
 import routes from '../../routes';
 import { clearErrors } from '../../actions/errorsActions';
 import { loginUser } from '../../actions/authActions';
+
+vi.mock('~/services/httpService', () => ({
+  __esModule: true,
+  default: {
+    post: vi.fn(),
+    get: vi.fn(),
+    put: vi.fn(),
+    patch: vi.fn(),
+    delete: vi.fn(),
+    setjwt: vi.fn(),
+  },
+}));
+
+vi.mock('~/services/logService', () => ({
+  __esModule: true,
+  default: {
+    info: vi.fn(),
+    error: vi.fn(),
+  },
+}));
+
+// 2) Stub AutoUpdate so it can’t do `new Request('/hash.txt')`
+vi.mock(
+  '../../components/AutoUpdate/AutoUpdate',
+  () => ({
+    __esModule: true,
+    default: () => null,
+  }),
+  { virtual: true },
+);
 
 // Mock dependencies
 vi.mock('jwt-decode', () => ({
@@ -271,7 +276,6 @@ describe('Login behavior', () => {
     // Get the mocked httpService
     // Won't work after node 20 update
     // const httpService = require('../../services/httpService');
-
     // // Setup the mock to return a rejected promise with a 403 error
     // httpService.post.mockImplementationOnce(() =>
     //   Promise.reject({
@@ -283,20 +287,15 @@ describe('Login behavior', () => {
     //     },
     //   }),
     // );
-
     // const expectedAction = {
     //   type: GET_ERRORS,
     //   payload: { email: 'Invalid email and/ or password.' },
     // };
-
     // const cred = { email: 'incorrectEmail', password: 'incorrectPassword' };
     // const anAction = loginUser(cred);
-
     // expect(typeof anAction).toEqual('function');
-
     // const dispatch = vi.fn();
     // await anAction(dispatch);
-
     // expect(dispatch).toHaveBeenCalledWith(expectedAction);
   });
 });

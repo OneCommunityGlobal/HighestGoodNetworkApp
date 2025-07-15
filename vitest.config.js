@@ -6,8 +6,8 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      "~": resolve("src/"),
-      "__tests__": resolve("src/__tests__"),
+      '~': resolve('src/'),
+      __tests__: resolve('src/__tests__'),
     },
   },
 

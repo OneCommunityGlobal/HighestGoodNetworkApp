@@ -3,8 +3,8 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { connect } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
 import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from '~/languages/en/messages';
-import DayPickerInput from 'react-day-picker/DayPickerInput';
-import 'react-day-picker/lib/style.css';
+import { DayPicker, useInput } from 'react-day-picker';
+import 'react-day-picker/dist/style.css';
 import dateFnsFormat from 'date-fns/format';
 import dateFnsParse from 'date-fns/parse';
 import parseISO from 'date-fns/parseISO';
@@ -23,6 +23,41 @@ import ReadOnlySectionWrapper from './ReadOnlySectionWrapper';
 import '../../../../Header/DarkMode.css';
 import '../wbs.css';
 import TagsSearch from '../components/TagsSearch';
+
+
+/** tiny reusable v8 DateInput using useInput + DayPicker **/
+function DateInput({ id, ariaLabel, placeholder, value, onChange, disabled }) {
+  const { inputProps, dayPickerProps, show, toggle } = useInput({
+    mode: 'single',
+    selected: value ? new Date(value) : undefined,
+    onDayChange: (date) => {
+      // format back into MM/dd/yy
+      const f = dateFnsFormat(utcToZonedTime(date, TIMEZONE), FORMAT);
+      onChange(f);
+      toggle(false);
+    },
+  });
+
+  return (
+    <div style={{ position: 'relative' }}>
+      <input
+        {...inputProps}
+        id={id}
+        aria-label={ariaLabel}
+        placeholder={placeholder}
+        onFocus={() => !disabled && toggle(true)}
+        readOnly
+        disabled={disabled}
+        className={disabled && darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+      />
+      {show && !disabled && (
+        <div style={{ position: 'absolute', zIndex: 10 }}>
+          <DayPicker {...dayPickerProps} />
+        </div>
+      )}
+    </div>
+  );
+}
 
 function EditTaskModal(props) {
   /*
@@ -839,22 +874,23 @@ function EditTaskModal(props) {
                   Start Date
                 </td>
                 <td id="edit-modal-td">
-                  {ReadOnlySectionWrapper(
-                    <div className="text-dark">
-                      <DayPickerInput
-                        format={FORMAT}
-                        formatDate={formatDate}
-                        placeholder={`${dateFnsFormat(new Date(), FORMAT)}`}
-                        onDayChange={(day, mod, input) => changeDateStart(input.state.value)}
-                        value={startedDate ? dateFnsFormat(new Date(startedDate), FORMAT) : ''}
-                      />
-                      <div className="warning text-danger">
-                        {dateWarning ? DUE_DATE_MUST_GREATER_THAN_START_DATE : ''}
-                      </div>
-                    </div>,
-                    editable,
-                    convertDate(startedDate),
-                  )}
+                {ReadOnlySectionWrapper(
+                  <div className="text-dark">
+                    <DateInput
+                      id="start-date-input"
+                      ariaLabel="Start Date"
+                      placeholder={dateFnsFormat(new Date(), FORMAT)}
+                      value={startedDate}
+                      onChange={changeDateStart}
+                      disabled={!editable}
+                    />
+                    <div className="warning text-danger">
+                      {dateWarning ? DUE_DATE_MUST_GREATER_THAN_START_DATE : ''}
+                    </div>
+                  </div>,
+                  editable,
+                  convertDate(startedDate),
+                )}
                 </td>
               </tr>
               <tr>
@@ -862,22 +898,23 @@ function EditTaskModal(props) {
                   End Date
                 </td>
                 <td id="edit-modal-td">
-                  {ReadOnlySectionWrapper(
-                    <div className="text-dark">
-                      <DayPickerInput
-                        format={FORMAT}
-                        formatDate={formatDate}
-                        placeholder={`${dateFnsFormat(new Date(), FORMAT)}`}
-                        onDayChange={(day, mod, input) => changeDateEnd(input.state.value)}
-                        value={dueDate ? dateFnsFormat(new Date(dueDate), FORMAT) : ''}
-                      />
-                      <div className="warning text-danger">
-                        {dateWarning ? DUE_DATE_MUST_GREATER_THAN_START_DATE : ''}
-                      </div>
-                    </div>,
-                    editable,
-                    convertDate(dueDate),
-                  )}
+                {ReadOnlySectionWrapper(
+                  <div className="text-dark">
+                    <DateInput
+                      id="start-date-input"
+                      ariaLabel="Start Date"
+                      placeholder={dateFnsFormat(new Date(), FORMAT)}
+                      value={startedDate}
+                      onChange={changeDateStart}
+                      disabled={!editable}
+                    />
+                    <div className="warning text-danger">
+                      {dateWarning ? DUE_DATE_MUST_GREATER_THAN_START_DATE : ''}
+                    </div>
+                  </div>,
+                  editable,
+                  convertDate(startedDate),
+                )}
                 </td>
               </tr>
             </tbody>
