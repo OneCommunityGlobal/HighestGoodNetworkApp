@@ -187,6 +187,7 @@ function UserPermissionsPopUp({
             }}
             placeholder="Shows only ACTIVE users"
             className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+            autoComplete="off"
           />
           {isInputFocus || (searchText !== '' && allUserProfiles && allUserProfiles.length > 0) ? (
             <div
