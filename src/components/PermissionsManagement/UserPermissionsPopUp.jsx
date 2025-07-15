@@ -144,6 +144,7 @@ function UserPermissionsPopUp({
         onSubmit={e => {
           updateProfileOnSubmit(e);
         }}
+        autoComplete="off"
       >
         <div
           className={darkMode ? 'text-space-cadet' : ''}
@@ -173,7 +174,7 @@ function UserPermissionsPopUp({
           style={{ width: '100%', marginRight: '5px' }}
         >
           <Input
-            type="text"
+            type="search"
             value={searchText}
             innerRef={refInput}
             // eslint-disable-next-line no-unused-vars
@@ -188,6 +189,7 @@ function UserPermissionsPopUp({
             placeholder="Shows only ACTIVE users"
             className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
             autoComplete="off"
+            name="user-search"
           />
           {isInputFocus || (searchText !== '' && allUserProfiles && allUserProfiles.length > 0) ? (
             <div
