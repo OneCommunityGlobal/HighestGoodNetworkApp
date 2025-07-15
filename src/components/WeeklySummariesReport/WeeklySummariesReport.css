@@ -141,6 +141,7 @@
 .filter-container {
   display: flex;
   justify-content: flex-end;
+  flex-wrap: wrap;
 }
 .filter-container-teamcode {
   display: flex;
@@ -169,10 +170,14 @@
 }
 
 .top-select {
-  z-index: 50 !important;
+  z-index: 30 !important;
   position: relative !important;
 }
 
+.second-select {
+  z-index: 29 !important;
+  position: relative !important;
+}
 @media screen and (max-width: 544px) {
   .responsive-font-size {
     font-size: 0.75rem !important;

@@ -22,6 +22,10 @@ import {
   Button,
   Input,
   Spinner,
+  ButtonDropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
 } from 'reactstrap';
 import ReactTooltip from 'react-tooltip';
 import { MultiSelect } from 'react-multi-select-component';
@@ -46,6 +50,7 @@ import PasswordInputModal from './PasswordInputModal';
 import { showTrophyIcon } from '../../utils/anniversaryPermissions';
 import SelectTeamPieChart from './SelectTeamPieChart';
 import { setTeamCodes } from '../../actions/teamCodes';
+import CreateFilterModal from './CreateFilterModal';
 import './WeeklySummariesReport.css';
 
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
@@ -147,6 +152,12 @@ const WeeklySummariesReport = props => {
   const weekDates = getWeekDates();
   const [state, setState] = useState(initialState);
   const [permissionState, setPermissionState] = useState(intialPermissionState);
+  const [saveFilterDropdownOpen, setSaveFilterDropdownOpen] = useState(false);
+  const [createFilterModalOpen, setCreateFilterModalOpen] = useState(false);
+
+  const toggleSaveFilterDropdown = () => setSaveFilterDropdownOpen(prev => !prev);
+  const toggleCreateFilterModal = () => setCreateFilterModalOpen(prev => !prev);
+
   // Misc functionalities
   /**
    * Sort the summaries in alphabetixal order
@@ -1174,23 +1185,6 @@ const WeeklySummariesReport = props => {
     }));
   };
 
-  const handleSaveFilter = () => {
-    // eslint-disable-next-line no-console
-    console.log(state.selectedCodes);
-    // eslint-disable-next-line no-console
-    console.log(state.selectedColors);
-    // eslint-disable-next-line no-console
-    console.log(state.selectedExtraMembers);
-    // eslint-disable-next-line no-console
-    console.log(state.selectedBioStatus);
-    // eslint-disable-next-line no-console
-    console.log(state.selectedOverTime);
-    // eslint-disable-next-line no-console
-    console.log(state.selectedSpecialColors);
-    // eslint-disable-next-line no-console
-    console.log(state.selectedTrophies);
-  };
-
   // Setup effect hooks for initial data load
   useEffect(() => {
     let isMounted = true;
@@ -1319,15 +1313,42 @@ const WeeklySummariesReport = props => {
             >
               Select Filter
             </Button>
-            <Button
-              color="primary"
+            <ButtonDropdown
               className="ml-1"
-              type="button"
-              onClick={handleSaveFilter}
               style={darkMode ? boxStyleDark : boxStyle}
+              isOpen={saveFilterDropdownOpen}
+              toggle={toggleSaveFilterDropdown}
             >
-              Save Filter
-            </Button>
+              <DropdownToggle caret color="primary">
+                Save Filter
+              </DropdownToggle>
+              <DropdownMenu right>
+                <DropdownItem>Update Existing Filter</DropdownItem>
+                <DropdownItem onClick={() => setCreateFilterModalOpen(true)}>
+                  Create New Filter
+                </DropdownItem>
+              </DropdownMenu>
+            </ButtonDropdown>
+            <CreateFilterModal
+              isOpen={createFilterModalOpen}
+              toggle={toggleCreateFilterModal}
+              initialState={{
+                teamCodes: state.teamCodes,
+                selectedCodes: state.selectedCodes,
+                teamCodeWarningUsers: state.teamCodeWarningUsers,
+                colorOptions: state.colorOptions,
+                selectedColors: state.selectedColors,
+                selectedExtraMembers: state.selectedExtraMembers,
+                tableData: state.tableData,
+                summaries: state.summaries,
+                selectedTrophies: state.selectedTrophies,
+                selectedSpecialColors: state.selectedSpecialColors,
+                selectedBioStatus: state.selectedBioStatus,
+                selectedOverTime: state.selectedOverTime,
+              }}
+              darkMode={darkMode}
+              hasPermissionToFilter={hasPermissionToFilter}
+            />
           </div>
         </Col>
       </Row>
