@@ -935,9 +935,6 @@ function UserProfile(props) {
   const canSeeQSC = props.hasPermission('seeQSC');
   const canEditVisibility = props.hasPermission('toggleInvisibility');
   const canSeeReports = props.hasPermission('getReports');
-  const { role: userRole } = userProfile;
-  const canResetPassword =
-    props.hasPermission('resetPassword') && !(userRole === 'Administrator' || userRole === 'Owner'); 
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
 
   const canEditUserProfile = targetIsDevAdminUneditable
@@ -1491,7 +1488,7 @@ function UserProfile(props) {
               </TabPane>
             </TabContent>
             <div className="profileEditButtonContainer">
-              {canResetPassword && (
+              {canUpdatePassword && canEdit && !isUserSelf && (
                 <ResetPasswordButton
                   className="mr-1 btn-bottom"
                   user={userProfile}
@@ -1622,7 +1619,7 @@ function UserProfile(props) {
                 <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
                   <Row>
                     <div className="profileEditButtonContainer">
-                      {canResetPassword && (
+                      {canUpdatePassword && canEdit && !isUserSelf && (
                         <ResetPasswordButton
                           className="mr-1 btn-bottom"
                           user={userProfile}
