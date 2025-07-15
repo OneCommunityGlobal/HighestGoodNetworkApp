@@ -143,6 +143,8 @@ import FeedbackModal from './components/HGNHelpSkillsDashboard/FeedbackModal';
 // eslint-disable-next-line import/order, import/no-unresolved
 import LogTools from './components/BMDashboard/LogTools/LogTools';
 import EquipmentUpdate from './components/BMDashboard/Tools/EquipmentUpdate';
+
+import AnalyticsDashboard from './components/JobCCDashboard/AnalyticsPage/JobAnalytics';
 // Social Architecture
 const ResourceManagement = lazy(() => import('./components/ResourceManagement/ResourceManagement'));
 const RequestResources = lazy(() => import('./components/SocialArchitecture/RequestResources'));
@@ -579,7 +581,11 @@ export default (
         />
 
 
-        {/* Community Portal Routes */}
+        {/* Community Portal Routes */} 
+        <Route
+          path="/application/analytics"
+          exact component={AnalyticsDashboard}
+        />
         <CPProtectedRoute path="/communityportal" exact component={CPDashboard} />
         <Route path="/communityportal/login" component={CPLogin} />
         <CPProtectedRoute path="/communityportal/activities" exact component={ActivityList} />
@@ -671,7 +677,7 @@ export default (
         <ProtectedRoute path="/tsaformpage8" exact component={TSAFormPage8} />
         <ProtectedRoute path="/ExperienceDonutChart" component={ExperienceDonutChart} fallback />
         <ProtectedRoute path="/" exact component={Dashboard} />
-        <Route path="*" component={NotFoundPage} />
+        <Route path="*" component={NotFoundPage} />       
       </Switch>
     </>
   </Switch>
