@@ -1,0 +1,101 @@
+.pr-grading-container {
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  padding: 20px 0;
+}
+
+.pr-grading-card {
+  border: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+.pr-grading-header {
+  background-color: #ffffff;
+  border-bottom: 1px solid #e9ecef;
+  padding: 20px;
+}
+
+.pr-grading-title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.team-info-badge {
+  background-color: #a7f3d0;
+  display: inline-block;
+  padding: 10px 20px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+
+.team-info {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #065f46;
+  margin: 0;
+}
+
+.active-members-section {
+  margin-bottom: 30px;
+}
+
+.active-members-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #0d7377;
+  margin-bottom: 20px;
+}
+
+.coming-soon-message {
+  text-align: center;
+  padding: 40px 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 2px dashed #dee2e6;
+}
+
+.coming-soon-message h4 {
+  color: #ffa500;
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+}
+
+.coming-soon-message p {
+  color: #6c757d;
+  font-size: 1rem;
+  margin-bottom: 10px;
+}
+
+.coming-soon-message ul {
+  text-align: left;
+  max-width: 500px;
+  margin: 0 auto;
+  color: #495057;
+}
+
+.coming-soon-message li {
+  margin-bottom: 5px;
+  padding-left: 5px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .pr-grading-title {
+    font-size: 1.5rem;
+  }
+  
+  .team-info {
+    font-size: 1rem;
+  }
+  
+  .pr-grading-container {
+    padding: 10px;
+  }
+  
+  .coming-soon-message {
+    padding: 20px 10px;
+  }
+} 
