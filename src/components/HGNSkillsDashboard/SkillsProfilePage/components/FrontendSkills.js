@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { toast } from 'react-toastify';
@@ -10,10 +10,30 @@ function FrontendSkills({ profileData }) {
   const safeProfileData = profileData || {};
   const skillInfo = safeProfileData.skillInfo || {};
   const frontend = skillInfo.frontend || {};
-  
+
   const [userSkillsData, setUserSkillsData] = useState(null);
   const [skillsLoading, setSkillsLoading] = useState(true);
-  const currentUser = useSelector((state) => state.auth.user);
+  const currentUser = useSelector(state => state.auth.user);
+
+  const fetchUserSkills = async () => {
+    try {
+      setSkillsLoading(true);
+      const response = await axios.get(`${ENDPOINTS.HGN_FORM_SUBMIT}`, {
+        params: { skillsOnly: true },
+      });
+      const userSurveyData = response.data.find(
+        user => user.userInfo?.email?.toLowerCase() === currentUser.email?.toLowerCase(),
+      );
+
+      if (userSurveyData) {
+        setUserSkillsData(userSurveyData);
+      }
+    } catch (error) {
+      toast.error('Failed to load skills data.');
+    } finally {
+      setSkillsLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (currentUser?.email) {
@@ -23,29 +43,7 @@ function FrontendSkills({ profileData }) {
     }
   }, [currentUser]);
 
-  const fetchUserSkills = async () => {
-    try {
-      setSkillsLoading(true);
-      const response = await axios.get(`${ENDPOINTS.HGN_FORM_SUBMIT}`, {
-        params: { skillsOnly: true }
-      });
-      console.log("response-frontend: ", response.data);
-      const userSurveyData = response.data.find(
-        (user) => user.userInfo?.email?.toLowerCase() === currentUser.email?.toLowerCase()
-      );
-      
-      if (userSurveyData) {
-        setUserSkillsData(userSurveyData);
-      }
-    } catch (error) {
-      console.error("Failed to fetch skills data:", error);
-      toast.error("Failed to load skills data.");
-    } finally {
-      setSkillsLoading(false);
-    }
-  };
-
-  // Get the current skills data 
+  // Get the current skills data
   const getCurrentSkillsData = () => {
     if (userSkillsData?.frontend) {
       return userSkillsData.frontend;
@@ -56,7 +54,7 @@ function FrontendSkills({ profileData }) {
   // skills array based on current skills data
   const getSkillsArray = () => {
     const currentSkills = getCurrentSkillsData();
-    
+
     return [
       { value: currentSkills.overall, label: 'Overall Frontend' },
       { value: currentSkills.HTML, label: 'HTML' },
@@ -76,9 +74,9 @@ function FrontendSkills({ profileData }) {
 
     let scaledValue = numValue;
     if (userSkillsData?.frontend) {
-      scaledValue = numValue * 2; // Scale 1-5 to 2-10
+      scaledValue = numValue * 2;
     }
-    
+
     if (scaledValue <= 4) return `${styles.skillValue} ${styles.red}`;
     if (scaledValue <= 8) return `${styles.skillValue} ${styles.orange}`;
     return `${styles.skillValue} ${styles.green}`;
@@ -86,10 +84,6 @@ function FrontendSkills({ profileData }) {
 
   const getDisplayValue = value => {
     const numValue = Number(value) || 0;
-    
-    if (userSkillsData?.frontend) {
-      return numValue * 2; // Scale 1-5 to 2-10 for display
-    }
     return numValue;
   };
 
@@ -109,9 +103,7 @@ function FrontendSkills({ profileData }) {
       <div className={`${styles.skillsRow}`}>
         {skills.map(skill => (
           <div key={skill.label} className={`${styles.skillItem}`}>
-            <span className={getColorClass(skill.value)}>
-              {getDisplayValue(skill.value)}
-            </span>
+            <span className={getColorClass(skill.value)}>{getDisplayValue(skill.value)}</span>
             <span className={`${styles.skillLabel}`}>{skill.label}</span>
           </div>
         ))}

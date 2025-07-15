@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import {
@@ -317,7 +318,6 @@ function SkillsTabbedSection({ skillsData, darkMode }) {
     );
   };
 
-
   return (
     <Card>
       <CardBody style={{ padding: '1rem' }}>
@@ -392,7 +392,6 @@ function UserProfilePage() {
   useEffect(() => {
     const loadUserProfile = async () => {
       if (!userId) return;
-
       try {
         setLoading(true);
         const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
@@ -421,7 +420,8 @@ function UserProfilePage() {
 
       {/* Skills tabbed section */}
       <div className={`${styles.skillsSection}`}>
-        <SkillsTabbedSection skillsData={mockSkillsData} darkMode={true} />      </div>
+        <SkillsTabbedSection skillsData={mockSkillsData} darkMode />{' '}
+      </div>
     </div>
   );
 }

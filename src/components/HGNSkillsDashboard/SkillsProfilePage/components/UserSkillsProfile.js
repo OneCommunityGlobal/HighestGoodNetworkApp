@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux'; 
+import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { ClipLoader } from 'react-spinners';
 import jwtDecode from 'jwt-decode';
@@ -12,9 +12,8 @@ function UserSkillsProfile() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const darkMode = useSelector(state => state.theme.darkMode); 
+  const darkMode = useSelector(state => state.theme.darkMode);
 
-  // Fetch data from backend on component mount
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -23,21 +22,17 @@ function UserSkillsProfile() {
           throw new Error('No token found. Please log in.');
         }
 
-        // Decode the token to get the user ID
         const decodedToken = jwtDecode(token);
         const userId = decodedToken.userid;
         if (!userId) {
           throw new Error('User ID not found in token.');
         }
 
-        const response = await axios.get(
-          `http://localhost:4500/api/skills/profile/${userId}`,
-          {
-            headers: {
-              Authorization: `${token}`,
-            },
+        const response = await axios.get(`http://localhost:4500/api/skills/profile/${userId}`, {
+          headers: {
+            Authorization: `${token}`,
           },
-        );
+        });
 
         const { data } = response;
         if (!data) throw new Error('Failed to fetch profile data');
@@ -62,7 +57,7 @@ function UserSkillsProfile() {
           color: darkMode ? '#f7fafc' : '#2d3748',
         }}
       >
-        <ClipLoader color={darkMode ? "#90cdf4" : "#007bff"} size={70} />
+        <ClipLoader color={darkMode ? '#90cdf4' : '#007bff'} size={70} />
         <p>Loading Profile...</p>
       </div>
     );

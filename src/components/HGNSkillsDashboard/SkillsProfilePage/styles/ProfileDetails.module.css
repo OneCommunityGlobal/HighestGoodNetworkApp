@@ -91,3 +91,8 @@ strong {
     gap: 5px;
   }
 }
+
+.otherSkills {
+  color: #869aa3;
+  font-weight: bold;
+}

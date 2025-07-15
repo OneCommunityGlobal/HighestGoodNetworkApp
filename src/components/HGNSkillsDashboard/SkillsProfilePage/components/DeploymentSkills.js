@@ -1,10 +1,10 @@
-import styles from '../styles/SkillsSection.module.css';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { Spinner } from 'reactstrap';
 import { ENDPOINTS } from 'utils/URL';
+import styles from '../styles/SkillsSection.module.css';
 
 function DeploymentSkills({ profileData }) {
   const safeProfileData = profileData || {};
@@ -13,7 +13,27 @@ function DeploymentSkills({ profileData }) {
 
   const [userSkillsData, setUserSkillsData] = useState(null);
   const [skillsLoading, setSkillsLoading] = useState(true);
-  const currentUser = useSelector((state) => state.auth.user);
+  const currentUser = useSelector(state => state.auth.user);
+
+  const fetchUserSkills = async () => {
+    try {
+      setSkillsLoading(true);
+      const response = await axios.get(`${ENDPOINTS.HGN_FORM_SUBMIT}`, {
+        params: { skillsOnly: true },
+      });
+      const userSurveyData = response.data.find(
+        user => user.userInfo?.email?.toLowerCase() === currentUser.email?.toLowerCase(),
+      );
+
+      if (userSurveyData) {
+        setUserSkillsData(userSurveyData);
+      }
+    } catch (error) {
+      toast.error('Failed to load skills data.');
+    } finally {
+      setSkillsLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (currentUser?.email) {
@@ -23,35 +43,12 @@ function DeploymentSkills({ profileData }) {
     }
   }, [currentUser]);
 
-    const fetchUserSkills = async () => {
-    try {
-      setSkillsLoading(true);
-      const response = await axios.get(`${ENDPOINTS.HGN_FORM_SUBMIT}`, {
-        params: { skillsOnly: true }
-      });
-      console.log("response-deployment: ", response.data);
-      const userSurveyData = response.data.find(
-        (user) => user.userInfo?.email?.toLowerCase() === currentUser.email?.toLowerCase()
-      );
-      
-      if (userSurveyData) {
-        setUserSkillsData(userSurveyData);
-      }
-    } catch (error) {
-      console.error("Failed to fetch skills data:", error);
-      toast.error("Failed to load skills data.");
-    } finally {
-      setSkillsLoading(false);
-    }
-  };
-
-    const getCurrentSkillsData = () => {
+  const getCurrentSkillsData = () => {
     if (userSkillsData?.backend) {
       return userSkillsData.backend;
     }
     return deployment;
   };
-
 
   const getSkillsArray = () => {
     const currentSkills = getCurrentSkillsData();
@@ -62,24 +59,20 @@ function DeploymentSkills({ profileData }) {
       { value: currentSkills.EnvironmentSetup, label: 'Environment Setup' },
     ];
   };
-  // Function to determine color based on value
+  // get color based on value
   const getColorClass = value => {
-    const numValue = Number(value) || 0; // Convert to number, default to 0 if undefined
+    const numValue = Number(value) || 0;
     if (numValue <= 4) return `${styles.skillValue} ${styles.red}`;
     if (numValue <= 7) return `${styles.skillValue} ${styles.orange}`;
-    return `${styles.skillValue} ${styles.green}`; // 9-10
+    return `${styles.skillValue} ${styles.green}`;
   };
 
   const getDisplayValue = value => {
     const numValue = Number(value) || 0;
+    return numValue;
+  };
 
-    if (userSkillsData?.deployment) {
-      return numValue * 2; // Scale 1-5 to 2-10 for display
-    }
-    return numValue; 
-  }
-
-    if (skillsLoading) {
+  if (skillsLoading) {
     return (
       <div className={`${styles.skillsLoading}`}>
         <Spinner size="sm" color="primary" />
@@ -94,9 +87,7 @@ function DeploymentSkills({ profileData }) {
       <div className={`${styles.skillsRow}`}>
         {skills.map(skill => (
           <div key={skill.label} className={`${styles.skillItem}`}>
-            <span className={getColorClass(skill.value)}>
-              {getDisplayValue(skill.value)}
-            </span>
+            <span className={getColorClass(skill.value)}>{getDisplayValue(skill.value)}</span>
             <span className={`${styles.skillLabel}`}>{skill.label}</span>
           </div>
         ))}

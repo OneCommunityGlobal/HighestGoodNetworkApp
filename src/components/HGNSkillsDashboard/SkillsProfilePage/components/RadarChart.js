@@ -16,9 +16,7 @@ import { Spinner } from 'reactstrap';
 import { ENDPOINTS } from 'utils/URL';
 import styles from '../styles/RadarChart.module.css';
 
-
 ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
-
 
 // Define skill mappings: label -> data source
 const SKILL_MAPPINGS = [
@@ -50,7 +48,6 @@ const SKILL_MAPPINGS = [
   { label: 'Agile', section: 'backend', key: 'AgileDevelopment' },
 ];
 
-
 function RadarChart({ profileData, darkMode }) {
   const safeProfileData = profileData || {};
   const skillInfo = safeProfileData.skillInfo || {};
@@ -58,11 +55,9 @@ function RadarChart({ profileData, darkMode }) {
   const frontend = skillInfo.frontend || {};
   const backend = skillInfo.backend || {};
 
-
   const [userSkillsData, setUserSkillsData] = useState(null);
   const [skillsLoading, setSkillsLoading] = useState(true);
   const currentUser = useSelector(state => state.auth.user);
-
 
   const fetchUserSkills = async () => {
     try {
@@ -74,7 +69,6 @@ function RadarChart({ profileData, darkMode }) {
         user => user.userInfo?.email?.toLowerCase() === currentUser.email?.toLowerCase(),
       );
 
-
       if (userSurveyData) {
         setUserSkillsData(userSurveyData);
       }
@@ -85,7 +79,6 @@ function RadarChart({ profileData, darkMode }) {
     }
   };
 
-
   useEffect(() => {
     if (currentUser?.email) {
       fetchUserSkills();
@@ -94,11 +87,9 @@ function RadarChart({ profileData, darkMode }) {
     }
   }, [currentUser]);
 
-
   // get skill value from current data submitted
   const getSkillValue = (section, key) => {
     let value = 0;
-
 
     // user survey data first
     if (userSkillsData) {
@@ -108,35 +99,28 @@ function RadarChart({ profileData, darkMode }) {
       }
     }
 
-
     // Fall back to profile data
     const profileSections = { general, frontend, backend };
     if (profileSections[section] && profileSections[section][key] !== undefined) {
       value = Number(profileSections[section][key]) || 0;
     }
 
-
     return value;
   };
 
-
   // dynamic chart data
- const getChartData = () => {
+  const getChartData = () => {
     const data = SKILL_MAPPINGS.map(skill => {
       const value = getSkillValue(skill.section, skill.key);
-      console.log(`${skill.label}: ${value}`); // Debug log
       return value;
     });
-
-    console.log('Chart data:', data); // Debug log
-    console.log('Profile data:', profileData); // Debug log
 
     return {
       labels: SKILL_MAPPINGS.map(skill => skill.label),
       datasets: [
         {
           label: 'Skills (Profile Data)',
-          data: data,
+          data,
           backgroundColor: darkMode ? 'rgba(160, 240, 232, 0.2)' : 'rgba(160, 240, 232, 0.2)',
           borderColor: darkMode ? 'rgb(107, 234, 232)' : 'rgb(107, 234, 232)',
           borderWidth: 2,
@@ -144,27 +128,25 @@ function RadarChart({ profileData, darkMode }) {
           pointBorderColor: darkMode ? '#232b39' : '#fff',
           pointHoverBackgroundColor: darkMode ? '#232b39' : '#fff',
           pointHoverBorderColor: darkMode ? 'rgb(107, 234, 232)' : 'rgb(107, 234, 232)',
-          pointRadius: 4, 
+          pointRadius: 4,
           pointHoverRadius: 6,
         },
       ],
     };
   };
 
-
-
   const chartOptions = {
     scales: {
       r: {
-        angleLines: { 
+        angleLines: {
           color: darkMode ? '#4a5568' : '#e2e8f0',
           lineWidth: 1,
           suggestedMin: 0,
           suggestedMax: 10,
         },
-        grid: { 
+        grid: {
           color: darkMode ? '#4a5568' : '#e2e8f0',
-          lineWidth: 1
+          lineWidth: 1,
         },
         pointLabels: {
           color: darkMode ? '#f7fafc' : '#2d3748',
@@ -227,26 +209,23 @@ function RadarChart({ profileData, darkMode }) {
     );
   }
 
-
   return (
-      <div
-    className={`${styles.radarChart}`}
-    style={{
-      width: '500px', 
-      height: '500px', 
-      margin: '0 auto',
-      background: darkMode ? '#232b39' : '#fff',
-      color: darkMode ? '#f7fafc' : '#2d3748',
-      borderRadius: '12px',
-      transition: 'background 0.3s, color 0.3s',
-    }}
-  >
+    <div
+      className={`${styles.radarChart}`}
+      style={{
+        width: '500px',
+        height: '500px',
+        margin: '0 auto',
+        background: darkMode ? '#232b39' : '#fff',
+        color: darkMode ? '#f7fafc' : '#2d3748',
+        borderRadius: '12px',
+        transition: 'background 0.3s, color 0.3s',
+      }}
+    >
       {userSkillsData && <div className={`${styles.dataSourceIndicator}`} />}
       <Radar data={getChartData()} options={chartOptions} />
     </div>
   );
 }
 
-
 export default RadarChart;
-
