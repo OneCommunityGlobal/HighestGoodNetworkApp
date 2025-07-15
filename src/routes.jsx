@@ -67,6 +67,7 @@ import LBProtectedRoute from './components/common/LBDashboard/LBProtectedRoute/L
 import LBHome from './components/LBDashboard/Home/Home';
 import LBDashboard from './components/LBDashboard';
 import LBLogin from './components/LBDashboard/Login';
+import LBRegister from './components/LBDashboard/Register/LBRegister';
 import LBMessaging from './components/LBDashboard/Messaging/LBMessaging';
 import MasterPlan from './components/LBDashboard/Map/MasterPlan/MasterPlan';
 import ListOveriew from './components/LBDashboard/ListingOverview/ListOverview';
@@ -101,6 +102,7 @@ import CPProtectedRoute from './components/common/CPDashboard/CPProtectedRoute';
 import CPLogin from './components/CommunityPortal/Login';
 import CPDashboard from './components/CommunityPortal';
 import ActivityList from './components/CommunityPortal/Activities/ActivityList';
+import ActivityAttendance from './components/CommunityPortal/Activities/ActivityAttendance';
 import Activity from './components/CommunityPortal/Activities/activityId/Activity'
 
 import NoshowViz from './components/CommunityPortal/Attendence/NoshowViz';
@@ -128,6 +130,9 @@ import SkillsOverviewPage from './components/HGNHelpSkillsDashboard/SkillsOvervi
 import CommunityMembersPage from './components/HGNHelpSkillsDashboard/CommunityMembersPage';
 import UserProfilePage from './components/HGNHelpSkillsDashboard/UserProfilePage';
 import FeedbackModal from './components/HGNHelpSkillsDashboard/FeedbackModal';
+// import AddActivities from './components/CommunityPortal/Activities/AddActivities';
+// import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
+import ActivityAgenda from './components/CommunityPortal/Activities/ActivityAgenda';
 
 
 // eslint-disable-next-line import/order, import/no-unresolved
@@ -202,7 +207,7 @@ export default (
         <>
           <AutoUpdate />
           <ToastContainer />
-          {/* <LBRegister /> */}
+          <LBRegister />
         </>
       )}
     />
@@ -573,6 +578,12 @@ export default (
         <CPProtectedRoute path="/communityportal" exact component={CPDashboard} />
         <Route path="/communityportal/login" component={CPLogin} />
         <CPProtectedRoute path="/communityportal/activities" exact component={ActivityList} />
+        <CPProtectedRoute
+          path="/communityportal/ActivityAttendance"
+          exact
+          component={ActivityAttendance}
+        />
+        {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
         <CPProtectedRoute path="/communityportal/reports/participation" component={NoshowViz} />
 
         <CPProtectedRoute path="/communityportal/activities/:activityid/resources" exact component={Resources}/>
@@ -588,6 +599,7 @@ export default (
         <LBProtectedRoute path="/lbdashboard/listOverview" exact component={ListOveriew} />
         <LBProtectedRoute path="/lbdashboard/masterplan" exact component={MasterPlan} />
         <Route path="/lbdashboard/login" component={LBLogin} />
+        <Route path="/lbdashboard/register" component={LBRegister} />
         <LBProtectedRoute path="/lbdashboard/messaging" component={LBMessaging} />
         <Route // Should be LBProtectedRoute
           path="/lbdashboard/listingshome"
@@ -610,6 +622,7 @@ export default (
         <Route path="/educationportal/login" component={EPLogin} />
 
         {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
+        <CPProtectedRoute path="/communityportal/ActivityAgenda" exact component={ActivityAgenda} />
 
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
         {/* <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} /> */}

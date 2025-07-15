@@ -21,7 +21,6 @@ import {
   MANAGE_FINAL_DAY,
   USER_START_DATE,
   USER_END_DATE,
-  REQUESTED_TIME_OFF,
 } from '../../languages/en/ui';
 
 /**
@@ -233,7 +232,22 @@ const UserTableHeader = React.memo(
         </th>
 
         <th scope="col" id="usermanagement_requested_time_off" style={darkModeStyle}>
-          <div className="text-center m-auto">{REQUESTED_TIME_OFF}</div>
+        <div
+          className="text-center m-auto"
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}
+        >
+          <span>Req.</span>
+          <i
+            className="fa fa-clock-o"
+            aria-hidden="true"
+            title="time"
+            style={{
+              fontSize: '14px',
+              color: darkMode ? 'lightgray' : 'black',
+            }}
+          />
+          <span>off</span>
+        </div>
         </th>
 
         <th scope="col" id="usermanagement_finalday" style={darkModeStyle}>
