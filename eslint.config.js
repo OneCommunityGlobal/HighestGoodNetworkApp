@@ -17,8 +17,6 @@ const baseExtends = compat.extends(...shareables).map(presetConfig => ({
   ...presetConfig,
 }));
 
-const jestExtends = compat.extends('plugin:jest/recommended');
-
 module.exports = [
   {
     ignores: [
@@ -58,8 +56,11 @@ module.exports = [
         ecmaFeatures: { jsx: true },
       },
       globals: {
-        Atomics: 'readonly',
-        SharedArrayBuffer: 'readonly',
+        window: 'readonly',
+        document: 'readonly',
+        navigator: 'readonly',
+        IntersectionObserver: 'readonly',
+        WebSocket: 'readonly',
       },
     },
     settings: {
@@ -69,19 +70,21 @@ module.exports = [
       },
     },
     rules: {
+      'react/react-in-jsx-scope': 'off',
       'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx'] }],
       'no-underscore-dangle': 'off',
       'react/prop-types': 'off',
       'react-hooks/exhaustive-deps': 'off',
       'no-alert': 'warn',
       'no-console': 'warn',
+      'import/extensions': 'off',
+      'import/no-unresolved': 'off',
       'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
     },
   },
 
-  ...jestExtends.map(jestConfig => ({
+  {
     files: ['**/__tests__/*.{js,jsx}', '**/*.test.{js,jsx}'],
-    ...jestConfig,
     languageOptions: {
       globals: {
         describe: 'readonly',
@@ -92,7 +95,8 @@ module.exports = [
         afterAll: 'readonly',
         beforeEach: 'readonly',
         afterEach: 'readonly',
+        vi: 'readonly',
       },
     },
-  })),
+  },
 ];
