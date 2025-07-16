@@ -217,7 +217,6 @@ const UserTableData = React.memo(props => {
             />
           </button>
         </span>
-
         <span style={{ position: 'absolute', bottom: 0, right: 0 }}>
           <i
             className="fa fa-clock-o"
@@ -240,7 +239,6 @@ const UserTableData = React.memo(props => {
             }}
           />
         </span>
-
         <TimeDifference
           userProfile={props.user}
           isUserSelf={props.user.email === props.authEmail}

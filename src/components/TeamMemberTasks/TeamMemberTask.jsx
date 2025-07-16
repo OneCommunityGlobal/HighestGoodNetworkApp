@@ -89,7 +89,7 @@ const TeamMemberTask = React.memo(
     const canSeeReports =
       rolesAllowedToResolveTasks.includes(userRole) || dispatch(hasPermission('getReports'));
     const canUpdateTask = dispatch(hasPermission('updateTask'));
-    const canDeleteTask = dispatch(hasPermission('canDeleteTask'));
+    const canRemoveUserFromTask = dispatch(hasPermission('removeUserFromTask'));
     const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
 
     const colorsObjs = {
@@ -118,7 +118,7 @@ const TeamMemberTask = React.memo(
       }
     };
 
-    /** 
+    /**
     const handleReportClick = (event, to) => {
       if (event.metaKey || event.ctrlKey || event.button === 1) {
         return;
@@ -225,16 +225,10 @@ const TeamMemberTask = React.memo(
                               />
                             </Link>
                           </div>
-
                           {user.role !== 'Volunteer' && (
                             <div
                               className="user-role"
-                              style={{
-                                fontSize: '14px',
-                                marginTop: '4px',
-                                textAlign: 'center',
-                                color: darkMode ? 'lightgray' : 'gray',
-                              }}
+                              style={{ fontSize: '14px', color: darkMode ? 'lightgray' : 'gray' }}
                             >
                               {user.role}
                             </div>
@@ -423,7 +417,7 @@ const TeamMemberTask = React.memo(
                                           data-testid={`tick-${task.taskName}`}
                                         />
                                       )}
-                                      {(canUpdateTask || canDeleteTask) && (
+                                      {(canUpdateTask || canRemoveUserFromTask) && (
                                         <FontAwesomeIcon
                                           className="team-member-task-remove"
                                           icon={faTimes}

@@ -383,7 +383,7 @@ const ViewTab = props => {
           <Label className={`hours-label ${darkMode ? 'text-light' : ''}`}>Account Created Date</Label>
         </Col>
         <Col md="6">
-        <p className={darkMode ? 'text-azure' : ''} style={{ textAlign: 'left' }}>{formatDateMMDDYYYY(userProfile.createdDate)}</p>
+          <p className={darkMode ? 'text-azure' : ''}>{formatDateMMDDYYYY(userProfile.createdDate)}</p>
         </Col>
       </Row>
       <Row className="volunteering-time-row">
@@ -451,7 +451,7 @@ const ViewTab = props => {
           </Label>
         </Col>
         <Col md="6">
-          <p className={`hours-totalTangible-thisWeek ${darkMode ? 'text-azure' : ''}`} style={{textAlign: 'left'}}>
+          <p className={`hours-totalTangible-thisWeek ${darkMode ? 'text-azure' : ''}`}>
             {totalTangibleHoursThisWeek}
           </p>
         </Col>
