@@ -10,8 +10,8 @@ function InfoForm() {
   const dispatch = useDispatch();
   const user = useSelector(state => state.auth.user);
   const isOwner = user.role === 'Owner';
-  const { userProfilesBasicInfo } = useSelector(state => state.allUserProfilesBasicInfo);
-  const userProfile = userProfilesBasicInfo.find(profile => profile._id === user.userid);
+  const userProfile = useSelector(state => state.allUserProfilesBasicInfo?.userProfilesBasicInfo);
+
   const [newVolunteer, setNewVolunteer] = useState({
     ...formData,
     github: formData?.github || '',
