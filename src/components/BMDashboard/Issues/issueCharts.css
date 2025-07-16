@@ -54,7 +54,7 @@
   .issue-chart-label {
     font-size: 16px;
     color: #555;
-    /* margin-right: 10px; this broke the existing pages. Please use only unique classnames and not tag names for styling.*/
+    margin-right: 10px;
   }
 
   .select-container {
@@ -80,3 +80,106 @@
   .issue-chart-select:focus {
     border-color: #4CAF50; /* Green border on focus */
   }
+
+.issue-chart-container {
+  padding: 20px;
+}
+
+.issue-chart-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.filters-container {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.filter {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filter label {
+  font-weight: 500;
+}
+
+.filter-select {
+  min-width: 200px;
+}
+
+.date-range-picker {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.date-range-picker span {
+  color: #666;
+}
+
+.chart-container {
+  width: 100%;
+  height: 400px;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.no-data-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+}
+
+.no-data-content {
+  text-align: center;
+  padding: 40px 20px;
+  max-width: 400px;
+}
+
+.no-data-content h3 {
+  color: #666;
+  font-size: 20px;
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+
+.no-data-content p {
+  color: #888;
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+
+.no-data-content p:last-child {
+  margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+  .chart-container {
+    height: 250px;
+    padding: 10px;
+  }
+}
+
+
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .filters-container {
+    flex-direction: column;
+  }
+
+  .filter {
+    width: 100%;
+  }
+}
+
