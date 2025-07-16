@@ -1,6 +1,5 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/button-has-type */
-/* eslint-disable no-return-assign */
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   LineChart,
