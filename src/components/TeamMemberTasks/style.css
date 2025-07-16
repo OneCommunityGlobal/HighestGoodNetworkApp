@@ -671,6 +671,15 @@
   .responsive-btn-size {
     display: none;
   }
+
+  .task_table-container {
+    max-height: 70vh; 
+    overflow-y: auto;
+  }
+  
+  .task_table-container table {
+    width: 100%;
+  }
 }
 
 @media only screen and (max-width: 530px) {
