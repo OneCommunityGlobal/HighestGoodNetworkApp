@@ -38,17 +38,17 @@ export const fetchEquipmentById = equipmentId => {
   };
 };
 
-export const fetchAllEquipments = () => {
-  return async dispatch => {
-    axios
-      .get(ENDPOINTS.BM_EQUIPMENTS)
-      .then(res => {
-        dispatch(setEquipments(res.data));
-      })
-      .catch(err => {
-        dispatch(setErrors(err));
-      });
-  };
+export const fetchAllEquipments = (projectId = null) => async dispatch => {
+  const url = projectId
+    ? `${ENDPOINTS.BM_EQUIPMENTS}?project=${projectId}`
+    : ENDPOINTS.BM_EQUIPMENTS;
+
+  try {
+    const res = await axios.get(url);
+    dispatch(setEquipments(res.data));
+  } catch (err) {
+    dispatch(setErrors(err));
+  }
 };
 
 export const addEquipmentType = async body => {
