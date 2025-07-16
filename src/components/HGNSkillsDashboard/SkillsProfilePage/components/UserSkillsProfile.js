@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { ClipLoader } from 'react-spinners';
-import jwtDecode from 'jwt-decode';
 import { useDispatch } from 'react-redux';
 import LeftSection from './LeftSection';
 import RightSection from './RightSection';
@@ -24,39 +23,26 @@ function UserSkillsProfile() {
           throw new Error('No token found. Please log in.');
         }
 
-        // Decode the token to get the user ID
-        // const decodedToken = jwtDecode(token);
-        // console.log('Decoded Token:', decodedToken);
-        // const userId = decodedToken.userid;
         if (!userId) {
           return; // throw new Error('User ID not found in token.');
         }
 
-        const response = await axios.get(
-          // 'http://localhost:4500/api/skills/profile/665524c257ca141fe8921b41',
-          `http://localhost:4500/api/skills/profile/${userId}`,
-          {
-            headers: {
-              Authorization: `${token}`,
-            },
+        const response = await axios.get(`http://localhost:4500/api/skills/profile/${userId}`, {
+          headers: {
+            Authorization: `${token}`,
           },
-        );
+        });
         // console.log('Profile Data:', response.data);
 
         const { data } = response;
         if (!data) throw new Error('Failed to fetch profile data');
 
         // Send data to Redux store
-        // dispatch({ type: 'SET_PROFILE_DATA', payload: data });
         dispatch({ type: 'SET_USER_SKILLS_PROFILE_DATA', payload: data });
 
         setProfileData(data);
         setLoading(false);
       } catch (err) {
-        // eslint-disable-next-line no-console
-        console.log(' error fetchData ');
-        // eslint-disable-next-line no-console
-        console.log(err);
         setError(err.response.data.error);
         setLoading(false);
       }
@@ -93,10 +79,8 @@ function UserSkillsProfile() {
   return (
     <div className="user-profile-home">
       <div className="dashboard-container">
-        {/* <LeftSection profileData={profileData} /> */}
         <LeftSection />
         <div className="vertical-separator" />
-        {/* <RightSection profileData={profileData} /> */}
         <RightSection />
       </div>
     </div>
