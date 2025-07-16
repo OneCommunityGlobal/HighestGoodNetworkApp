@@ -65,6 +65,9 @@ import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryR
 // community portal
 import noShowVizReducer from './communityPortal/noShowVizReducer';
 
+// lbdashboard
+import wishListReducer from './lbdashboard/wishListItemReducer';
+
 const localReducers = {
   auth: authReducer,
   allUserProfiles: allUserProfilesReducer,
@@ -109,16 +112,25 @@ const localReducers = {
   project: bmProjectByIdReducer,
   bmTools: toolReducer,
   bmEquipments: equipmentReducer,
+  bmIssues: issueReducer,
   bmInvUnits: bmInvUnitReducer,
   bmConsumables: consumablesReducer,
   bmReusables: reusablesReducer,
   dashboard: dashboardReducer,
+  weeklyProjectSummary: weeklyProjectSummaryReducer,
+
+  // lbdashboard
+  wishlistItem: wishListReducer,
+
   bmissuechart: issueReducer,
   noShowViz: noShowVizReducer,
   weeklyProjectSummary: weeklyProjectSummaryReducer,
 
   bmProjectMembers: bmProjectMemberReducer,
   bmTimeLogger: bmTimeLoggerReducer,
+  // lbdashboard
+  lbmessaging: messageReducer,
+  lbuserpreferences: userPreferencesReducer,
 };
 
 const sessionReducers = {

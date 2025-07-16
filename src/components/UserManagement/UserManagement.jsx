@@ -36,7 +36,8 @@ import NewUserPopup from './NewUserPopup';
 import ActivationDatePopup from './ActivationDatePopup';
 import { UserStatus, UserDeleteType, FinalDay } from '../../utils/enums';
 import hasPermission, { cantDeactivateOwner } from '../../utils/permissions';
-import { searchWithAccent } from '../../utils/search';
+// Commented out because it's not used
+// import { searchWithAccent } from '../../utils/search';
 import SetupHistoryPopup from './SetupHistoryPopup';
 import DeleteUserPopup from './DeleteUserPopup';
 import ActiveInactiveConfirmationPopup from './ActiveInactiveConfirmationPopup';
@@ -112,17 +113,20 @@ class UserManagement extends React.PureComponent {
   }
 
   handleResize = () => {
+    // eslint-disable-next-line no-console
     console.log(window.innerWidth);
     this.setState({ isMobile: window.innerWidth <= 750 });
   };
 
+  // eslint-disable-next-line react/sort-comp
   async componentDidUpdate(prevProps, prevState) {
     
     if (prevProps.state.theme.darkMode !== this.props.state.theme.darkMode) {
-      const darkMode = this.props.state.theme.darkMode;
-      let { userProfiles, fetching } = this.props.state.allUserProfiles;
-      let { roles: rolesPermissions } = this.props.state.role;
-      let { requests: timeOffRequests } = this.props.state.timeOffRequests;
+      const {darkMode} = this.props.state.theme;
+      // eslint-disable-next-line no-unused-vars
+      const { userProfiles, fetching } = this.props.state.allUserProfiles;
+      const { roles: rolesPermissions } = this.props.state.role;
+      const { requests: timeOffRequests } = this.props.state.timeOffRequests;
 
       
       this.getFilteredData(userProfiles, rolesPermissions, timeOffRequests, darkMode, this.state.editable, this.state.isMobile, this.state.mobileFontSize,);
@@ -142,10 +146,11 @@ class UserManagement extends React.PureComponent {
       (prevState.wildCardSearchText !== this.state.wildCardSearchText) ||
       searchStateChanged || pageSizeChanged || userProfilesChanged) {
 
-      let darkMode = this.props.state.theme.darkMode;
-      let { userProfiles, fetching } = this.props.state.allUserProfiles;
-      let { roles: rolesPermissions } = this.props.state.role;
-      let { requests: timeOffRequests } = this.props.state.timeOffRequests;
+      const {darkMode} = this.props.state.theme;
+      // eslint-disable-next-line no-unused-vars
+      const { userProfiles, fetching } = this.props.state.allUserProfiles;
+      const { roles: rolesPermissions } = this.props.state.role;
+      const { requests: timeOffRequests } = this.props.state.timeOffRequests;
       this.getFilteredData(userProfiles, rolesPermissions, timeOffRequests, darkMode, this.state.editable, this.state.isMobile, this.state.mobileFontSize,);
     }
   }
@@ -308,38 +313,76 @@ class UserManagement extends React.PureComponent {
       const isLastNameExactMatch = lastNameSearch.endsWith(' ') && trimmedLastNameSearch.length > 0;
 
 
-      const firstNameMatches = trimmedFirstNameSearch
-        ? (isFirstNameExactMatch
-          ? firstName === trimmedFirstNameSearch.toLowerCase()
-          : firstName.includes(trimmedFirstNameSearch.toLowerCase()))
-        : true;
+      // const firstNameMatches = trimmedFirstNameSearch
+      //  ? (isFirstNameExactMatch
+      //    ? firstName === trimmedFirstNameSearch.toLowerCase()
+      //    : firstName.includes(trimmedFirstNameSearch.toLowerCase()))
+      //  : true;
 
+      let firstNameMatches = true;
+      if (trimmedFirstNameSearch) {
+        if (isFirstNameExactMatch) {
+          firstNameMatches = firstName === trimmedFirstNameSearch.toLowerCase();
+        } else {
+          firstNameMatches = firstName.includes(trimmedFirstNameSearch.toLowerCase());
+        }
+      }
 
-      const lastNameMatches = trimmedLastNameSearch
-        ? (isLastNameExactMatch
-          ? lastName === trimmedLastNameSearch.toLowerCase()
-          : lastName.includes(trimmedLastNameSearch.toLowerCase()))
-        : true;
+      // const lastNameMatches = trimmedLastNameSearch
+      //  ? (isLastNameExactMatch
+      //    ? lastName === trimmedLastNameSearch.toLowerCase()
+      //    : lastName.includes(trimmedLastNameSearch.toLowerCase()))
+      //  : true;
 
+      let lastNameMatches = true;
+      if (trimmedLastNameSearch) {
+        if (isLastNameExactMatch) {
+          lastNameMatches = lastName === trimmedLastNameSearch.toLowerCase();
+        } else {
+          lastNameMatches = lastName.includes(trimmedLastNameSearch.toLowerCase());
+        }
+      }
 
-      const wildcardMatches = wildCardSearch
-        ? wildCardSearch.includes(" ")
-          ? (firstName + " " + lastName).startsWith(wildCardSearch.trim()) ||
-          (firstName + " " + lastName) === wildCardSearch.trim() ||
-          email === wildCardSearch.trim()
-          : firstName.startsWith(wildCardSearch) ||
-          lastName.startsWith(wildCardSearch) ||
-          firstName.includes(wildCardSearch) ||
-          lastName.includes(wildCardSearch) ||
-          email.includes(wildCardSearch)
-        : true;
+      // const wildcardMatches = wildCardSearch
+      //   ? wildCardSearch.includes(" ")
+      //     ? (`${firstName  } ${  lastName}`).startsWith(wildCardSearch.trim()) ||
+      //     (`${firstName  } ${  lastName}`) === wildCardSearch.trim() ||
+      //     email === wildCardSearch.trim()
+      //     : firstName.startsWith(wildCardSearch) ||
+      //     lastName.startsWith(wildCardSearch) ||
+      //    firstName.includes(wildCardSearch) ||
+      //    lastName.includes(wildCardSearch) ||
+      //    email.includes(wildCardSearch)
+      //  : true;
+
+      let wildcardMatches = true;
+      if (wildCardSearch) {
+        const fullName = `${firstName} ${lastName}`;
+        const trimmedSearch = wildCardSearch.trim();
+
+        if (wildCardSearch.includes(' ')) {
+          wildcardMatches =
+            fullName.startsWith(trimmedSearch) ||
+            fullName === trimmedSearch ||
+            email === trimmedSearch;
+        } else {
+          wildcardMatches =
+            firstName.startsWith(wildCardSearch) ||
+            lastName.startsWith(wildCardSearch) ||
+            firstName.includes(wildCardSearch) ||
+            lastName.includes(wildCardSearch) ||
+            email.includes(wildCardSearch);
+        }
+      }
 
       const nameMatches = firstNameMatches && lastNameMatches && wildcardMatches;
 
       return (
         nameMatches &&
         user.role.toLowerCase().includes(this.state.roleSearchText.toLowerCase()) &&
+
        // user.jobTitle.toLowerCase().includes(this.state.titleSearchText.toLowerCase()) &&
+
         user.email.toLowerCase().includes(this.state.emailSearchText.toLowerCase()) &&
         (this.state.weeklyHrsSearchText === '' ||
           user.weeklycommittedHours === Number(this.state.weeklyHrsSearchText)) &&
@@ -409,8 +452,10 @@ class UserManagement extends React.PureComponent {
     // Check if target user is Jae's related user and authorized to manage time off requests
     if (cantUpdateDevAdminDetails(user.email, this.authEmail)) {
       if (user?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
+        // eslint-disable-next-line no-alert
         alert(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
       } else {
+        // eslint-disable-next-line no-alert
         alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
       }
       return;
@@ -437,8 +482,10 @@ class UserManagement extends React.PureComponent {
   onFinalDayClick = (user, status) => {
     if (cantUpdateDevAdminDetails(user.email, this.authEmail)) {
       if (user?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
+        // eslint-disable-next-line no-alert
         alert(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
       } else {
+        // eslint-disable-next-line no-alert
         alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
       }
       return;
@@ -515,6 +562,7 @@ class UserManagement extends React.PureComponent {
     // const canChangeUserStatus = hasPermission('changeUserStatus');
     if (cantDeactivateOwner(user, authRole)) {
       // Owner user cannot be deactivated by another user that is not an Owner.
+      // eslint-disable-next-line no-alert
       alert('You are not authorized to deactivate an owner.');
       return;
     }
@@ -532,17 +580,14 @@ class UserManagement extends React.PureComponent {
       {      
         activeInactivePopupOpen: false,      
         selectedUser: undefined,      
-        isUpdating: true    
       });
-      
-      console.log("setActiveInactive: ", this.state.selectedUser);
-    
+          
       this.props.updateUserStatus(      
-        this.state.selectedUser, isActive ? UserStatus.Active : UserStatus.InActive,      
-        undefined,    
-      ).finally(() => {      
-        this.setState({ isUpdating: false });    
-      });
+        this.state.selectedUser, isActive ? UserStatus.Active : UserStatus.InActive, undefined,    
+      )
+      // ).finally(() => {      
+      //  this.setState({ isUpdating: false });    
+      // });
   };
 
   /**
@@ -571,7 +616,7 @@ class UserManagement extends React.PureComponent {
     this.setState({
       deletePopupOpen: false,
       selectedUser: undefined,
-      isUpdating: true
+      // isUpdating: true
     });
 
     if (deleteType === UserDeleteType.Inactive) {
@@ -579,16 +624,18 @@ class UserManagement extends React.PureComponent {
         this.state.selectedUser,
         UserStatus.InActive,
         undefined
-      ).finally(() => {
-        this.setState({ isUpdating: false });
-      });
+      )
+//      ).finally(() => {
+//        this.setState({ isUpdating: false });
+//      });
     } else {
       this.props.deleteUser(
         this.state.selectedUser,
         deleteType
-      ).finally(() => {
-        this.setState({ isUpdating: false });
-      });
+      )
+//      ).finally(() => {
+//        this.setState({ isUpdating: false });
+//      });
     }
   };
 
@@ -693,7 +740,7 @@ class UserManagement extends React.PureComponent {
         const { userProfiles } = this.props.state.allUserProfiles;
         const { roles: rolesPermissions } = this.props.state.role;
         const { requests: timeOffRequests } = this.props.state.timeOffRequests;
-        const darkMode = this.props.state.theme.darkMode;
+        const {darkMode} = this.props.state.theme;
 
         this.getFilteredData(userProfiles, rolesPermissions, timeOffRequests, darkMode);
       }
