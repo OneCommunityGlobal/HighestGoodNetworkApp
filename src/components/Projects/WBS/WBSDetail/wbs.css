@@ -248,6 +248,7 @@
   padding: 0;
   display: flex;
   border: .01em solid #cdcbcb;
+  align-items: center;
 }
 
 .add_new_task_form-label{
