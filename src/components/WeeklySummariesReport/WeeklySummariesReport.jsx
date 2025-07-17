@@ -5,7 +5,7 @@
 
 // import Select, { components } from 'react-select';
 // import { FixedSizeList as List } from 'react-window';
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -110,6 +110,7 @@ const initialState = {
     navy: false,
   },
   selectedExtraMembers: [],
+  membersFromUnselectedTeam: [],
 };
 
 const intialPermissionState = {
@@ -448,7 +449,7 @@ const WeeklySummariesReport = props => {
   };
 
   // Update members of membersFromUnselectedTeam dropdown
-  const membersFromUnselectedTeam = useMemo(() => {
+  useEffect(() => {
     // Add all selected member in a Set
     const selectedMemberSet = new Set();
 
@@ -463,17 +464,24 @@ const WeeklySummariesReport = props => {
     });
 
     // Filter members from unselected set
-    const membersFromUnselectedTeam = [];
+    const newMembersFromUnselectedTeam = [];
     state.summaries.forEach(summary => {
       if (!selectedMemberSet.has(summary._id)) {
-        membersFromUnselectedTeam.push({
+        newMembersFromUnselectedTeam.push({
           label: `${summary.firstName} ${summary.lastName}`,
           value: summary._id,
           role: summary.role,
         });
       }
     });
-    return membersFromUnselectedTeam;
+    setState(prev => ({
+      ...prev,
+      membersFromUnselectedTeam: newMembersFromUnselectedTeam,
+      // Remove individuals that is in selected team
+      selectedExtraMembers: state.selectedExtraMembers.filter(
+        member => !selectedMemberSet.has(member.value),
+      ),
+    }));
   }, [state.selectedCodes, state.summaries]);
 
   const onSummaryRecepientsPopupClose = () => {
@@ -1347,6 +1355,7 @@ const WeeklySummariesReport = props => {
                 selectedSpecialColors: state.selectedSpecialColors,
                 selectedBioStatus: state.selectedBioStatus,
                 selectedOverTime: state.selectedOverTime,
+                membersFromUnselectedTeam: state.membersFromUnselectedTeam,
               }}
               darkMode={darkMode}
               hasPermissionToFilter={hasPermissionToFilter}
@@ -1553,7 +1562,7 @@ const WeeklySummariesReport = props => {
           <div>Select Extra Members</div>
           <MultiSelect
             className={`report-multi-select-filter text-dark ${darkMode ? 'dark-mode' : ''}`}
-            options={membersFromUnselectedTeam}
+            options={state.membersFromUnselectedTeam}
             value={state.selectedExtraMembers}
             onChange={handleSelectExtraMembersChange}
           />

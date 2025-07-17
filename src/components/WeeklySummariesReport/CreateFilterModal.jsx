@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Modal,
   ModalHeader,
@@ -53,7 +53,7 @@ function CreateFilterModal({ isOpen, toggle, initialState, darkMode, hasPermissi
   }, [state.filterName]);
 
   // Update members of membersFromUnselectedTeam dropdown
-  const membersFromUnselectedTeam = useMemo(() => {
+  useEffect(() => {
     // Add all selected member in a Set
     const selectedMemberSet = new Set();
 
@@ -78,7 +78,14 @@ function CreateFilterModal({ isOpen, toggle, initialState, darkMode, hasPermissi
         });
       }
     });
-    return newMembersFromUnselectedTeam;
+    setState(prev => ({
+      ...prev,
+      membersFromUnselectedTeam: newMembersFromUnselectedTeam,
+      // Remove individuals that is in selected team
+      selectedExtraMembers: state.selectedExtraMembers.filter(
+        member => !selectedMemberSet.has(member.value),
+      ),
+    }));
   }, [state.selectedCodes, state.summaries]);
 
   const handleFilterNameChange = value => {
@@ -262,7 +269,7 @@ function CreateFilterModal({ isOpen, toggle, initialState, darkMode, hasPermissi
               </div>
               <MultiSelect
                 className={`report-multi-select-filter text-dark ${darkMode ? 'dark-mode' : ''}`}
-                options={membersFromUnselectedTeam}
+                options={state.membersFromUnselectedTeam}
                 value={state.selectedExtraMembers}
                 onChange={handleSelectExtraMembersChange}
               />
