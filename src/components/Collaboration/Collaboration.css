@@ -10,7 +10,7 @@
 .job-ad {
   text-align: center;
 }
-.container {
+.user-collaboration-container {
   width: 90%;
   margin: 0 auto;
   flex-direction: column;
@@ -392,7 +392,7 @@
 }
 
 
-.dark-mode {
+.user-collaboration-dark-mode {
   background-color: #1B2A41;
   color: #f1f1f1;
 }
@@ -403,71 +403,71 @@
 #6C757D
 #225163
 */
-.dark-mode .container {
+.user-collaboration-dark-mode .user-collaboration-container {
   background-color: #1B2A41;
 }
 
-.dark-mode .job-navbar {
+.user-collaboration-dark-mode .job-navbar {
   background-color: #1C2541;
   box-shadow: 2px 2px 4px 1px black;
 }
 
-.dark-mode .job-ad {
+.user-collaboration-dark-mode .job-ad {
   background: linear-gradient(135deg, #23272a, #181a1b);
   border-color: #333;
 }
 
-.dark-mode .job-ad h3,
-.dark-mode .jobs-summaries-list h3 {
+.user-collaboration-dark-mode .job-ad h3,
+.user-collaboration-dark-mode .jobs-summaries-list h3 {
   color: #e0e0e0;
 }
 
-.dark-mode .job-tooltip,
-.dark-mode .category-tooltip {
+.user-collaboration-dark-mode .job-tooltip,
+.user-collaboration-dark-mode .category-tooltip {
   background-color: #225163;
   color: #f1f1f1;
   box-shadow: 2px 2px 4px 1px black;
   border-color: #3A506B;
 }
 
-.dark-mode .job-tooltip p{
+.user-collaboration-dark-mode .job-tooltip p{
   color: #f1f1f1;
 }
 
-.dark-mode .job-tooltip button {
+.user-collaboration-dark-mode .job-tooltip button {
   color: #f1f1f1;
   background-color: #6C757D;
   padding: 5px 10px;
   border-radius: 5px;
 }
 
-.dark-mode .job-tooltip::after {
+.user-collaboration-dark-mode .job-tooltip::after {
   border-color: transparent #225163 transparent transparent;
 }
 
-.dark-mode .pagination button {
+.user-collaboration-dark-mode .pagination button {
   background-color: #23272a;
   color: #f1f1f1;
   border: 1px solid #444;
 }
 
-.dark-mode .pagination button:disabled {
+.user-collaboration-dark-mode .pagination button:disabled {
   background-color: #333333;
   color: #888888;
 }
 
-.dark-mode .search-form input,
-.dark-mode select {
+.user-collaboration-dark-mode .search-form input,
+.user-collaboration-dark-mode select {
   background-color: #1C1C1C;
   color: #f1f1f1;
   border: 1px solid #444;
 }
 
-.dark-mode .search-form input::placeholder{
+.user-collaboration-dark-mode .search-form input::placeholder{
   color: #f1f1f1;
 }
 
-.dark-mode .job-select {
+.user-collaboration-dark-mode .job-select {
   background-color: #1C1C1C;
   color: #f1f1f1;
   border: 1px solid #444;
@@ -479,22 +479,22 @@
 }
 
 
-.dark-mode .search-form button,
-.dark-mode .btn {
+.user-collaboration-dark-mode .search-form button,
+.user-collaboration-dark-mode .btn {
   background-color: #333;
   color: #f1f1f1;
   border: 1px solid #444;
 }
 
-.dark-mode .job-query {
+.user-collaboration-dark-mode .job-query {
   color:#f1f1f1;
 }
 
-.dark-mode .job-query strong {
+.user-collaboration-dark-mode .job-query strong {
   color: #9c0;
 }
 
-.dark-mode .job-head {
+.user-collaboration-dark-mode .job-head {
   color: #f1f1f1;
 }
 
@@ -502,25 +502,25 @@
   text-align: center;
 }
 
-.dark-mode .job-intro {
+.user-collaboration-dark-mode .job-intro {
   color: #f1f1f1;
 }
 
-.dark-mode .jobs-summaries-list {
+.user-collaboration-dark-mode .jobs-summaries-list {
   gap: 10px;
 }
 
-.dark-mode .job-summary-item {
+.user-collaboration-dark-mode .job-summary-item {
   background: linear-gradient(135deg, #23272a, #181a1b);
   padding: 10px;
   border-radius: 5px;
 }
 
-.dark-mode .job-summary-item p {
+.user-collaboration-dark-mode .job-summary-item p {
   color: #e0e0e0;
 }
 
-.dark-mode .job-select:focus,
-.dark-mode .job-select:active {
+.user-collaboration-dark-mode .job-select:focus,
+.user-collaboration-dark-mode .job-select:active {
   background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='20' viewBox='0 0 20 20' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 15l5-5 5 5z'/></svg>");
 }
