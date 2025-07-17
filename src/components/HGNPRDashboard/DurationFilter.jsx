@@ -1,9 +1,16 @@
 import './DurationFilter.css';
+import { useTheme } from './ThemeContext';
 
 function DurationFilter({ options, value, onChange }) {
+  const { darkMode } = useTheme();
+  const labelColor = darkMode ? '#f8fafc' : '#052C65';
   return (
     <div className="duration-filter">
-      <label htmlFor="duration-select" className="duration-filter-label">
+      <label
+        htmlFor="duration-select"
+        className="duration-filter-label"
+        style={{ color: labelColor }}
+      >
         Duration:
       </label>
       <select
