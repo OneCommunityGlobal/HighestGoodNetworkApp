@@ -1,0 +1,68 @@
+.chart-container {
+  max-width: 700px;
+  margin: 2rem auto;
+  padding: 1rem;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.filter-section {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  min-width: 140px;
+  flex: 1;
+  max-width: 200px;
+}
+
+.filter-group label {
+  margin-bottom: 0.4rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #444;
+}
+
+.filter-group input[type='date'],
+.filter-group select {
+  padding: 0.4rem 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.chart-area {
+  position: relative;
+  min-height: 360px;
+}
+
+.spinner {
+  text-align: center;
+  font-weight: 600;
+  font-size: 1.25rem;
+  padding: 2rem 0;
+}
+
+.error-message,
+.no-data-available {
+  text-align: center;
+  font-size: 1rem;
+  color: #666;
+  font-weight: 500;
+  padding: 2rem 0;
+}
