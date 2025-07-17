@@ -1264,7 +1264,7 @@ const WeeklySummariesReport = props => {
   return (
     <Container
       fluid
-      className={`container-wsr-wrapper py-3 mb-5 ${
+      className={`weekly-summaries-report container-wsr-wrapper py-3 mb-5 ${
         darkMode ? 'bg-oxford-blue text-light' : 'bg--white-smoke'
       }`}
     >
@@ -1333,6 +1333,8 @@ const WeeklySummariesReport = props => {
               isOpen={createFilterModalOpen}
               toggle={toggleCreateFilterModal}
               initialState={{
+                filterName: '',
+                filterDescription: '',
                 teamCodes: state.teamCodes,
                 selectedCodes: state.selectedCodes,
                 teamCodeWarningUsers: state.teamCodeWarningUsers,
@@ -1406,9 +1408,9 @@ const WeeklySummariesReport = props => {
             </>
           )}
           <MultiSelect
-            className={`multi-select-filter top-select text-dark ${darkMode ? 'dark-mode' : ''} ${
-              state.teamCodeWarningUsers.length > 0 ? 'warning-border' : ''
-            }`}
+            className={`report-multi-select-filter top-select text-dark ${
+              darkMode ? 'dark-mode' : ''
+            } ${state.teamCodeWarningUsers.length > 0 ? 'warning-border' : ''}`}
             options={state.teamCodes.map(item => {
               const [code, count] = item.label.split(' (');
               return {
@@ -1424,7 +1426,7 @@ const WeeklySummariesReport = props => {
 
         <Col lg={{ size: 5 }} md={{ size: 6, offset: -1 }} xs={{ size: 6, offset: -1 }}>
           <MultiSelect
-            className={`multi-select-filter text-dark ${darkMode ? 'dark-mode' : ''}`}
+            className={`report-multi-select-filter text-dark ${darkMode ? 'dark-mode' : ''}`}
             options={state.colorOptions}
             value={state.selectedColors}
             onChange={handleSelectColorChange}
@@ -1448,6 +1450,7 @@ const WeeklySummariesReport = props => {
                           type="checkbox"
                           className="switch-toggle"
                           id={`${color}-toggle`}
+                          checked={state.selectedSpecialColors[color]}
                           onChange={e => handleSpecialColorToggleChange(color, e.target.checked)}
                         />
                         <label className="switch-toggle-label" htmlFor={`${color}-toggle`}>
@@ -1479,6 +1482,7 @@ const WeeklySummariesReport = props => {
                     type="checkbox"
                     className="switch-toggle"
                     id="bio-status-toggle"
+                    checked={state.selectedBioStatus}
                     onChange={handleBioStatusToggleChange}
                   />
                   <label className="switch-toggle-label" htmlFor="bio-status-toggle">
@@ -1496,6 +1500,7 @@ const WeeklySummariesReport = props => {
                     type="checkbox"
                     className="switch-toggle"
                     id="trophy-toggle"
+                    checked={state.selectedTrophies}
                     onChange={handleTrophyToggleChange}
                   />
                   <label className="switch-toggle-label" htmlFor="trophy-toggle">
@@ -1513,6 +1518,7 @@ const WeeklySummariesReport = props => {
                     type="checkbox"
                     className="switch-toggle"
                     id="over-hours-toggle"
+                    checked={state.selectedOverTime}
                     onChange={handleOverHoursToggleChange}
                   />
                   <label className="switch-toggle-label" htmlFor="over-hours-toggle">
@@ -1546,7 +1552,7 @@ const WeeklySummariesReport = props => {
         >
           <div>Select Extra Members</div>
           <MultiSelect
-            className={`multi-select-filter text-dark ${darkMode ? 'dark-mode' : ''}`}
+            className={`report-multi-select-filter text-dark ${darkMode ? 'dark-mode' : ''}`}
             options={membersFromUnselectedTeam}
             value={state.selectedExtraMembers}
             onChange={handleSelectExtraMembersChange}

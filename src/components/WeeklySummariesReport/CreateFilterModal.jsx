@@ -8,6 +8,7 @@ import {
   Label,
   Input,
   Form,
+  FormFeedback,
   Row,
   Col,
 } from 'reactstrap';
@@ -37,12 +38,19 @@ const defaultState = {
 
 function CreateFilterModal({ isOpen, toggle, initialState, darkMode, hasPermissionToFilter }) {
   const [state, setState] = useState(() => initialState ?? defaultState);
-  const [filterName, setFilterName] = useState('');
-  const [filterDesc, setFilterDesc] = useState('');
+  const [errors, setErrors] = useState('');
 
   useEffect(() => {
     setState(initialState);
   }, [initialState]);
+
+  useEffect(() => {
+    if (!state.filterName.trim()) {
+      setErrors('Filter name is required');
+    } else {
+      setErrors('');
+    }
+  }, [state.filterName]);
 
   // Update members of membersFromUnselectedTeam dropdown
   const membersFromUnselectedTeam = useMemo(() => {
@@ -72,6 +80,13 @@ function CreateFilterModal({ isOpen, toggle, initialState, darkMode, hasPermissi
     });
     return newMembersFromUnselectedTeam;
   }, [state.selectedCodes, state.summaries]);
+
+  const handleFilterNameChange = value => {
+    setState(prev => ({
+      ...prev,
+      filterName: value,
+    }));
+  };
 
   const handleSelectCodesChange = event => {
     setState(prev => ({
@@ -145,29 +160,31 @@ function CreateFilterModal({ isOpen, toggle, initialState, darkMode, hasPermissi
     }));
   };
 
+  const handleSubmit = e => {
+    e.preventDefault();
+    if (errors === '') {
+      // No errors → submit form
+      // eslint-disable-next-line no-console
+      console.log('Form submitted:');
+      toggle();
+    }
+  };
+
   return (
-    <Modal size="lg" isOpen={isOpen} toggle={toggle}>
+    <Modal size="lg" isOpen={isOpen} toggle={toggle} className="weekly-summaries-report">
       <ModalHeader toggle={toggle}>Create A New Filter</ModalHeader>
       <ModalBody>
         <Form>
           <Label for="filterName">Filter Name *</Label>
           <Input
             id="filterName"
-            value={filterName}
-            onChange={e => setFilterName(e.target.value)}
+            value={state.filterName}
+            onChange={e => handleFilterNameChange(e.target.value)}
             placeholder="Enter filter name"
             required
+            invalid={!!errors}
           />
-          <Label for="filterDesc" className="pt-4">
-            Filter Description *
-          </Label>
-          <Input
-            id="filterDesc"
-            value={filterDesc}
-            onChange={e => setFilterDesc(e.target.value)}
-            placeholder="Enter description"
-            required
-          />
+          <FormFeedback>{errors}</FormFeedback>
 
           <Row className="pt-4">
             <Col md={6} sm={12}>
@@ -175,7 +192,7 @@ function CreateFilterModal({ isOpen, toggle, initialState, darkMode, hasPermissi
                 <b>Select Team Code</b>
               </div>
               <MultiSelect
-                className={`multi-select-filter top-select text-dark ${
+                className={`report-multi-select-filter top-select text-dark ${
                   darkMode ? 'dark-mode' : ''
                 } ${state.teamCodeWarningUsers.length > 0 ? 'warning-border' : ''}`}
                 options={state.teamCodes.map(item => {
@@ -213,7 +230,7 @@ function CreateFilterModal({ isOpen, toggle, initialState, darkMode, hasPermissi
                 <b>Select Color</b>
               </div>
               <MultiSelect
-                className={`multi-select-filter second-select text-dark ${
+                className={`report-multi-select-filter second-select text-dark ${
                   darkMode ? 'dark-mode' : ''
                 }`}
                 options={state.colorOptions}
@@ -244,7 +261,7 @@ function CreateFilterModal({ isOpen, toggle, initialState, darkMode, hasPermissi
                 <b>Select Extra Members</b>
               </div>
               <MultiSelect
-                className={`multi-select-filter text-dark ${darkMode ? 'dark-mode' : ''}`}
+                className={`report-multi-select-filter text-dark ${darkMode ? 'dark-mode' : ''}`}
                 options={membersFromUnselectedTeam}
                 value={state.selectedExtraMembers}
                 onChange={handleSelectExtraMembersChange}
@@ -280,11 +297,11 @@ function CreateFilterModal({ isOpen, toggle, initialState, darkMode, hasPermissi
                         <input
                           type="checkbox"
                           className="switch-toggle"
-                          id={`${color}-toggle`}
+                          id={`modal-${color}-toggle`}
                           checked={state.selectedSpecialColors[color]}
                           onChange={e => handleSpecialColorToggleChange(color, e.target.checked)}
                         />
-                        <label className="switch-toggle-label" htmlFor={`${color}-toggle`}>
+                        <label className="switch-toggle-label" htmlFor={`modal-${color}-toggle`}>
                           <span className="switch-toggle-inner" />
                           <span className="switch-toggle-switch" />
                         </label>
@@ -314,11 +331,11 @@ function CreateFilterModal({ isOpen, toggle, initialState, darkMode, hasPermissi
                   <input
                     type="checkbox"
                     className="switch-toggle"
-                    id="bio-status-toggle"
+                    id="modal-bio-status-toggle"
                     checked={state.selectedBioStatus}
                     onChange={handleBioStatusToggleChange}
                   />
-                  <label className="switch-toggle-label" htmlFor="bio-status-toggle">
+                  <label className="switch-toggle-label" htmlFor="modal-bio-status-toggle">
                     <span className="switch-toggle-inner" />
                     <span className="switch-toggle-switch" />
                   </label>
@@ -333,10 +350,10 @@ function CreateFilterModal({ isOpen, toggle, initialState, darkMode, hasPermissi
                     type="checkbox"
                     className="switch-toggle"
                     checked={state.selectedTrophies}
-                    id="trophy-toggle"
+                    id="modal-trophy-toggle"
                     onChange={handleTrophyToggleChange}
                   />
-                  <label className="switch-toggle-label" htmlFor="trophy-toggle">
+                  <label className="switch-toggle-label" htmlFor="modal-trophy-toggle">
                     <span className="switch-toggle-inner" />
                     <span className="switch-toggle-switch" />
                   </label>
@@ -351,10 +368,10 @@ function CreateFilterModal({ isOpen, toggle, initialState, darkMode, hasPermissi
                     type="checkbox"
                     className="switch-toggle"
                     checked={state.selectedOverTime}
-                    id="over-hours-toggle"
+                    id="modal-over-hours-toggle"
                     onChange={handleOverHoursToggleChange}
                   />
-                  <label className="switch-toggle-label" htmlFor="over-hours-toggle">
+                  <label className="switch-toggle-label" htmlFor="modal-over-hours-toggle">
                     <span className="switch-toggle-inner" />
                     <span className="switch-toggle-switch" />
                   </label>
@@ -365,7 +382,7 @@ function CreateFilterModal({ isOpen, toggle, initialState, darkMode, hasPermissi
         </Form>
       </ModalBody>
       <ModalFooter>
-        <Button color="primary" onClick={toggle}>
+        <Button color="primary" onClick={handleSubmit}>
           Create
         </Button>
         <Button color="secondary" onClick={toggle}>
