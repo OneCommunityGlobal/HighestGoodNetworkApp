@@ -666,7 +666,17 @@ export default (
         <ProtectedRoute path="/hgnform/page4" exact component={Page4}/>
         <ProtectedRoute path="/hgnform/page5" exact component={Page5}/>
         <ProtectedRoute path="/hgnform/page6" exact component={Page6}/>
-        <ProtectedRoute path="/hgn/profile/skills" exact component={UserSkillsProfile} />
+        <ProtectedRoute
+          path="/hgn/profile/skills"
+          exact
+          fallback
+          component={UserSkillsProfile}
+          allowedRoles={[
+            UserRole.Administrator,
+            UserRole.CoreTeam,
+            UserRole.Owner,
+          ]}
+          routePermissions={RoutePermissions.accessHGNSkillsDashboard} />
         <ProtectedRoute path="/tsaformpage1" exact component={TSAFormPage1} />
         <ProtectedRoute path="/tsaformpage2" exact component={TSAFormPage2} />
         <ProtectedRoute path="/tsaformpage3" exact component={TSAFormPage3} />
