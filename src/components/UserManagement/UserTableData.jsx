@@ -186,6 +186,7 @@ const UserTableData = React.memo(props => {
             className="team-member-tasks-user-report-link"
             style={{
               fontSize: 18,
+              fontSize: 18,
               opacity: canSeeReports ? 1 : 0.7,
               background: 'none',
               border: 'none',
