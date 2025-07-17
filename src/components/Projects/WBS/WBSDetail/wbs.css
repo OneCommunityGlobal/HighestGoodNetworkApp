@@ -191,6 +191,10 @@
   width: 100% !important;
 }
 
+.tasks-detail-header {
+  vertical-align: middle !important;
+}
+
 .action-edit-btn {
   padding-right: 5px;
 }
@@ -244,6 +248,7 @@
   padding: 0;
   display: flex;
   border: .01em solid #cdcbcb;
+  align-items: center;
 }
 
 .add_new_task_form-label{

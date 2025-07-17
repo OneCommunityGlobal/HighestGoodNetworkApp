@@ -232,6 +232,7 @@ export const ENDPOINTS = {
   BM_EQUIPMENT_TYPES: `${APIEndpoint}/bm/invtypes/equipments`,
   BM_EQUIPMENT_PURCHASE: `${APIEndpoint}/bm/equipment/purchase`,
   BM_PROJECTS: `${APIEndpoint}/bm/projects`,
+  BM_PROJECT_EXPENSE_BY_ID: projectId => `${APIEndpoint}/bm/project/${projectId}/expenses`,
   BM_PROJECT_BY_ID: projectId => `${APIEndpoint}/bm/project/${projectId}`,
   BM_PROJECTS_LIST_FOR_MATERIALS_COST: `${APIEndpoint}/totalProjects `,
   BM_PROJECT_MATERIALS_COST: `${APIEndpoint}/material-costs`,
