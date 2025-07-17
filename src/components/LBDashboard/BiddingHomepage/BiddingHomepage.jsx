@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import {
   Container,
   Row,
@@ -262,6 +263,7 @@ const propertyListings = [
 ];
 
 function BiddingHomepage() {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState('Filter by Village');
   const [searchQuery, setSearchQuery] = useState('');
@@ -343,12 +345,12 @@ function BiddingHomepage() {
   };
 
   return (
-    <div className="bidding-bg">
+    <div className={`bidding-bg ${darkMode ? 'dark-mode' : ''}`}>
       <div className="logo-container">
         <img src={logo} alt="One Community - For The Highest Good Of All" className="main-logo" />
       </div>
-      <Container fluid className="bidding-homepage-container">
-        <div className="bidding-header">
+      <Container fluid className={`bidding-homepage-container ${darkMode ? 'dark-mode' : ''}`}>
+        <div className={`bidding-header ${darkMode ? 'dark-mode' : ''}`}>
           <Row className="align-items-center w-100">
             <Col md={6} className="d-flex align-items-center gap-2">
               <Dropdown isOpen={dropdownOpen} toggle={toggle} className="village-filter">
@@ -400,7 +402,7 @@ function BiddingHomepage() {
             </Col>
           </Row>
         </div>
-        <div className="navigation-tabs">
+        <div className={`navigation-tabs ${darkMode ? 'dark-mode' : ''}`}>
           <div className="filter-by-date d-flex align-items-center gap-3">
             <Dropdown
               isOpen={dateFilterDropdownOpen}
@@ -422,6 +424,7 @@ function BiddingHomepage() {
                       type="date"
                       id="startDate"
                       value={startDate}
+                      max={endDate || undefined}
                       onChange={e => {
                         setStartDate(e.target.value);
                         setCurrentPage(1);
@@ -437,6 +440,7 @@ function BiddingHomepage() {
                       type="date"
                       id="endDate"
                       value={endDate}
+                      min={startDate || undefined}
                       onChange={e => {
                         setEndDate(e.target.value);
                         setCurrentPage(1);
@@ -482,7 +486,7 @@ function BiddingHomepage() {
           {currentProperties.length > 0 ? (
             currentProperties.map(property => (
               <Col md={4} key={property.id} className="property-card-col">
-                <div className="property-card property-card-gray">
+                <div className={`property-card property-card-gray ${darkMode ? 'dark-mode' : ''}`}>
                   <div className="property-image">
                     <img src={property.image} alt={property.title} />
                   </div>
@@ -503,7 +507,9 @@ function BiddingHomepage() {
             ))
           ) : (
             <Col xs={12} className="text-center py-5">
-              <h3>No properties match your filter criteria</h3>
+              <h3 className={darkMode ? 'text-light' : ''}>
+                No properties match your filter criteria
+              </h3>
             </Col>
           )}
         </Row>
@@ -512,7 +518,7 @@ function BiddingHomepage() {
         {filteredProperties.length > itemsPerPage && (
           <Row className="justify-content-center mb-4">
             <Col xs="auto">
-              <Pagination className="custom-pagination">
+              <Pagination className={`custom-pagination ${darkMode ? 'dark-mode' : ''}`}>
                 <PaginationItem disabled={currentPage === 1}>
                   <PaginationLink onClick={handlePrevPage}>
                     <FaChevronLeft />
@@ -538,7 +544,7 @@ function BiddingHomepage() {
         {/* Results info */}
         <Row className="mb-3">
           <Col xs={12} className="text-center">
-            <small className="text-muted">
+            <small className={`text-muted ${darkMode ? 'text-light' : ''}`}>
               Showing {startIndex + 1}-{Math.min(endIndex, filteredProperties.length)} of{' '}
               {filteredProperties.length} properties
               {currentPage > 1 && ` (Page ${currentPage} of ${totalPages})`}

@@ -64,8 +64,8 @@ describe('NewBadges component', () => {
     mockBadges.forEach(async (badge, index) => {
       fireEvent.mouseEnter(badgeImages[index]);
       await waitFor(() => {
-        expect(screen.getByText(badge.badge.badge.badgeName)).toBeInTheDocument();
-        expect(screen.getByText(badge.badge.badge.description)).toBeInTheDocument();
+        expect(screen.getByText(badge.badge.badgeName)).toBeInTheDocument();
+        expect(screen.getByText(badge.badge.description)).toBeInTheDocument();
       });
     });
   });
@@ -151,7 +151,7 @@ describe('NewBadges component', () => {
     expect(badgeImages).toHaveLength(3);
 
     fireEvent.mouseEnter(badgeImages[0]);
-    screen.findByText(/Early Bird/);
+    await screen.findByText(/Early Bird/);
   });
 
   it('should filter out badges earned older than a week', async () => {
