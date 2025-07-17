@@ -1,6 +1,7 @@
+/* global localStorage */
 import { vi } from 'vitest';
-import initAuth from '../authInit';
 import jwtDecode from 'jwt-decode';
+import initAuth from '../authInit';
 import httpService from '../../services/httpService';
 import { store } from '../../store';
 import { logoutUser, setCurrentUser } from '../../actions/authActions';
@@ -22,7 +23,7 @@ describe('initAuth()', () => {
     });
 
     it('logs out expired token', () => {
-        jwtDecode.mockReturnValue({ expiryTimestamp: Date.now() - 10_000 });
+        jwtDecode.mockReturnValue({ expiryTimestamp: Date.now() - 10000 });
         localStorage.setItem(config.tokenKey, 'expiredToken');
 
         initAuth();
