@@ -52,7 +52,7 @@ describe('TinyMCEEditor Component', () => {
     );
 
     await waitFor(() => {
-      const editorTextarea = document.getElementById(mockProps.name);
+      const editorTextarea = screen.getByTestId(`editor-${mockProps.name}`);
       expect(editorTextarea).toBeInTheDocument();
     });
   });
@@ -83,7 +83,7 @@ describe('TinyMCEEditor Component', () => {
     );
 
     await waitFor(() => {
-      const wrapper = document.querySelector(`.${mockProps.className}`);
+      const wrapper = screen.getByTestId(`editor-${mockProps.name}`);
       expect(wrapper).toBeInTheDocument();
     });
   });
@@ -158,7 +158,7 @@ describe('TinyMCEEditor Component', () => {
       />,
     );
 
-    const editorTextarea = document.getElementById(mockProps.name);
+    const editorTextarea = screen.getByTestId(`editor-${mockProps.name}`);
     expect(editorTextarea).toBeInTheDocument();
     expect(screen.getByLabelText(mockProps.label)).toBeInTheDocument();
     expect(editorTextarea).toBeInTheDocument();
