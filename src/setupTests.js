@@ -1,4 +1,6 @@
 // Used in vitest.config.js or test setup
+/* global beforeAll, afterAll */
+/* eslint-disable no-console */
 import '@testing-library/jest-dom';
 import { vi } from 'vitest';
 
@@ -24,13 +26,14 @@ vi.mock('axios', () => {
         data: {},
         status: 200,
       }).catch((err) => {
-        if (!err.response) {
-          err.response = {
+        const newErr = { ...err };
+        if (!newErr.response) {
+          newErr.response = {
             status: 500,
-            data: { message: err.message || 'Network Error' },
+            data: { message: newErr.message || 'Network Error' },
           };
         }
-        return Promise.reject(err);
+        return Promise.reject(newErr);
       });
     });
   });
@@ -40,20 +43,20 @@ vi.mock('axios', () => {
 
 vi.mock('msw', () => ({
   rest: {
-    get:     vi.fn(),
-    post:    vi.fn(),
-    patch:   vi.fn(),
-    put:     vi.fn(),
-    delete:  vi.fn(),
+    get: vi.fn(),
+    post: vi.fn(),
+    patch: vi.fn(),
+    put: vi.fn(),
+    delete: vi.fn(),
     options: vi.fn(),
   },
 }))
 
 vi.mock('msw/node', () => ({
   setupServer: () => ({
-    listen: () => {},
-    resetHandlers: () => {},
-    close: () => {},
+    listen: () => { },
+    resetHandlers: () => { },
+    close: () => { },
   }),
 }));
 
