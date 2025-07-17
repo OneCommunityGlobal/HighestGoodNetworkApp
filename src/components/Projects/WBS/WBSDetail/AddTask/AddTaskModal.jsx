@@ -8,6 +8,7 @@ import dateFnsFormat from 'date-fns/format';
 import { boxStyle, boxStyleDark } from 'styles';
 import { useMemo } from 'react';
 import { addNewTask } from '../../../../../actions/task';
+import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from '../../../../../languages/en/messages';
 import {
   START_DATE_ERROR_MESSAGE,
@@ -18,6 +19,7 @@ import '../../../../Header/DarkMode.css';
 import TagsSearch from '../components/TagsSearch';
 import './AddTaskModal.css';
 import { fetchAllMembers } from 'actions/projectMembers';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 
 const TINY_MCE_INIT_OPTIONS = {
@@ -671,7 +673,17 @@ function AddTaskModal(props) {
                       aria-label="Add Link"
                       onClick={addLink}
                     >
-                      Add Link
+                      <FontAwesomeIcon
+                        icon={faPlusCircle}
+                        title="Add link"
+                        style={{
+                          color: '#007bff',           
+                          cursor: 'pointer',
+                          fontSize: '1.1rem',         
+                          marginLeft: '8px',          
+                          verticalAlign: 'middle',    
+                        }}
+                      />
                     </button>
                   </div>
                   <div>

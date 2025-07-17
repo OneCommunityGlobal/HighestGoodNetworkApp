@@ -191,6 +191,10 @@
   width: 100% !important;
 }
 
+.tasks-detail-header {
+  vertical-align: middle !important;
+}
+
 .action-edit-btn {
   padding-right: 5px;
 }
