@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import './TeamChart.css';
+import './TeamChart.module.css';
 
 function TeamRow({ rowData }) {
   const { type, data } = rowData;

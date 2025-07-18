@@ -43,7 +43,7 @@ import PasswordInputModal from './PasswordInputModal';
 import { showTrophyIcon } from '../../utils/anniversaryPermissions';
 import SelectTeamPieChart from './SelectTeamPieChart';
 import { setTeamCodes } from '../../actions/teamCodes';
-import './WeeklySummariesReport.css';
+import styles from './WeeklySummariesReport.module.css';
 
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
 const fullCodeRegex = /^.{5,7}$/;
@@ -1170,20 +1170,20 @@ const WeeklySummariesReport = props => {
       )}
       <Row>
         <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }} xs={{ size: 6 }}>
-          <div className="filter-container-teamcode">
+          <div className={`${styles.filterContainerTeamcode}`}>
             <div>Select Team Code</div>
-            <div className="filter-style">
+            <div className={`${styles.filterStyle}`}>
               <span>Show Chart</span>
-              <div className="switch-toggle-control">
+              <div className={`${styles.switchToggleControl}`}>
                 <input
                   type="checkbox"
-                  className="switch-toggle"
+                  className={`${styles.switchToggle}`}
                   id="chart-status-toggle"
                   onChange={handleChartStatusToggleChange}
                 />
-                <label className="switch-toggle-label" htmlFor="chart-status-toggle">
-                  <span className="switch-toggle-inner" />
-                  <span className="switch-toggle-switch" />
+                <label className={`${styles.switchToggleLabel}`} htmlFor="chart-status-toggle">
+                  <span className={`${styles.switchToggleInner}`} />
+                  <span className={`${styles.switchToggleSwitch}`} />
                 </label>
               </div>
             </div>
@@ -1265,25 +1265,28 @@ const WeeklySummariesReport = props => {
       )}
       <Row style={{ marginBottom: '10px' }}>
         <Col lg={{ size: 10, offset: 1 }} xs={{ size: 8, offset: 4 }}>
-          <div className="filter-container">
+          <div className={`${styles.filterContainer}`}>
             {hasPermissionToFilter && (
-              <div className="filter-style margin-right">
+              <div className={`${styles.filterStyle} ${styles.marginRight}`}>
                 <span>Filter by Special Colors</span>
                 <div
                   style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '2px' }}
                 >
                   {['purple', 'green', 'navy'].map(color => (
                     <div key={`${color}-toggle`} style={{ display: 'flex', alignItems: 'center' }}>
-                      <div className="switch-toggle-control">
+                      <div className={`${styles.switchToggleControl}`}>
                         <input
                           type="checkbox"
-                          className="switch-toggle"
+                          className={`${styles.switchToggle}`}
                           id={`${color}-toggle`}
                           onChange={e => handleSpecialColorToggleChange(color, e.target.checked)}
                         />
-                        <label className="switch-toggle-label" htmlFor={`${color}-toggle`}>
-                          <span className="switch-toggle-inner" />
-                          <span className="switch-toggle-switch" />
+                        <label
+                          className={`${styles.switchToggleLabel}`}
+                          htmlFor={`${color}-toggle`}
+                        >
+                          <span className={`${styles.switchToggleInner}`} />
+                          <span className={`${styles.switchToggleSwitch}`} />
                         </label>
                       </div>
                       <span
@@ -1303,52 +1306,52 @@ const WeeklySummariesReport = props => {
               </div>
             )}
             {(hasPermissionToFilter || props.hasPermission('highlightEligibleBios')) && (
-              <div className="filter-style margin-right">
+              <div className={`${styles.filterStyle} ${styles.marginRight}`}>
                 <span>Filter by Bio Status</span>
-                <div className="switch-toggle-control">
+                <div className={`${styles.switchToggleControl}`}>
                   <input
                     type="checkbox"
-                    className="switch-toggle"
+                    className={`${styles.switchToggle}`}
                     id="bio-status-toggle"
                     onChange={handleBioStatusToggleChange}
                   />
-                  <label className="switch-toggle-label" htmlFor="bio-status-toggle">
-                    <span className="switch-toggle-inner" />
-                    <span className="switch-toggle-switch" />
+                  <label className={`${styles.switchToggleLabel}`} htmlFor="bio-status-toggle">
+                    <span className={`${styles.switchToggleInner}`} />
+                    <span className={`${styles.switchToggleSwitch}`} />
                   </label>
                 </div>
               </div>
             )}
             {hasPermissionToFilter && (
-              <div className="filter-style margin-right">
+              <div className={`${styles.filterStyle} ${styles.marginRight}`}>
                 <span>Filter by Trophies</span>
-                <div className="switch-toggle-control">
+                <div className={`${styles.switchToggleControl}`}>
                   <input
                     type="checkbox"
-                    className="switch-toggle"
+                    className={`${styles.switchToggle}`}
                     id="trophy-toggle"
                     onChange={handleTrophyToggleChange}
                   />
-                  <label className="switch-toggle-label" htmlFor="trophy-toggle">
-                    <span className="switch-toggle-inner" />
-                    <span className="switch-toggle-switch" />
+                  <label className={`${styles.switchToggleLabel}`} htmlFor="trophy-toggle">
+                    <span className={`${styles.switchToggleInner}`} />
+                    <span className={`${styles.switchToggleSwitch}`} />
                   </label>
                 </div>
               </div>
             )}
             {hasPermissionToFilter && (
-              <div className="filter-style">
+              <div className={`${styles.filterStyle}`}>
                 <span>Filter by Over Hours</span>
-                <div className="switch-toggle-control">
+                <div className={`${styles.switchToggleControl}`}>
                   <input
                     type="checkbox"
-                    className="switch-toggle"
+                    className={`${styles.switchToggle}`}
                     id="over-hours-toggle"
                     onChange={handleOverHoursToggleChange}
                   />
-                  <label className="switch-toggle-label" htmlFor="over-hours-toggle">
-                    <span className="switch-toggle-inner" />
-                    <span className="switch-toggle-switch" />
+                  <label className={`${styles.switchToggleLabel}`} htmlFor="over-hours-toggle">
+                    <span className={`${styles.switchToggleInner}`} />
+                    <span className={`${styles.switchToggleSwitch}`} />
                   </label>
                 </div>
                 <ReactTooltip
@@ -1390,7 +1393,7 @@ const WeeklySummariesReport = props => {
               </Button>
             )}
             {state.replaceCodeError && (
-              <Alert className="code-alert" color="danger">
+              <Alert className={`${styles.codeAlert}`} color="danger">
                 {state.replaceCodeError}
               </Alert>
             )}
@@ -1432,7 +1435,11 @@ const WeeklySummariesReport = props => {
                       <Col sm="12" md="6" className="mb-2">
                         From <b>{weekDates[index].fromDate}</b> to <b>{weekDates[index].toDate}</b>
                       </Col>
-                      <Col sm="12" md="6" style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                      <Col
+                        sm="12"
+                        md="6"
+                        style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}
+                      >
                         <GeneratePdfReport
                           summaries={state.filteredSummaries}
                           weekIndex={index}
