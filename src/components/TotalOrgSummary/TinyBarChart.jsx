@@ -1,3 +1,5 @@
+/* eslint-disable react/jsx-no-comment-textnodes */
+/* eslint-disable prettier/prettier */
 import {
   BarChart,
   Bar,
@@ -40,7 +42,12 @@ function ProjectLabel({ viewBox, info }) {
       >
         <div style={{ color: '#444', fontWeight: 'bold', fontSize: 15 }}>Projects</div>
         <div style={{ color: '#222', fontWeight: 'bold', fontSize: 14 }}>{info.amount}</div>
-        <div style={{ color: '#666', fontSize: 10 }}>({info.percentage})</div>
+        // eslint-disable-next-line prettier/prettier
+        <div style={{ color: '#666', fontSize: 10 }}>
+          (
+          {info.percentage}
+          )
+        </div>
         <div style={{ color: info.fontcolor, fontSize: 10, fontWeight: 'bold' }}>{info.change}</div>
       </div>
     </foreignObject>

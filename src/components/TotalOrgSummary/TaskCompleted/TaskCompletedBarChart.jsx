@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import TinyBarChart from '../TinyBarChart';
 import Loading from '../../common/Loading';
 
@@ -59,7 +60,9 @@ export default function TaskCompletedBarChart({ isLoading, data, darkMode }) {
           fontSize="0.8em"
           textAnchor="middle"
         >
-          ({percentage})
+          (
+          {percentage}
+          )
         </text>
         <text x={x + width / 2} y={y - 10} fill={fontcolor} fontSize="0.8em" textAnchor="middle">
           {change}

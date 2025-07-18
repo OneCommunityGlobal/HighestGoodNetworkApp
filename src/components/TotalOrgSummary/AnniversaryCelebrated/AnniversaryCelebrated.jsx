@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { useHistory } from 'react-router-dom';
 import { SiGmail } from 'react-icons/si';
 import Loading from '~/components/common/Loading';
@@ -68,11 +69,12 @@ export default function AnniversaryCelebrated({ isLoading, data, darkMode }) {
             style={{ cursor: 'pointer', display: 'block' }}
             onClick={() => handleEmailClick(email)}
           />
-
           <p
             className="m-0 align-self-center"
             style={{ color: darkMode ? '#fff' : '#000' }}
-          >{`${firstName} ${lastName}`}</p>
+          >
+            {`${firstName} ${lastName}`}
+          </p>
           <img
             src={anniversaryMonths === 6 ? sixMonthsAward : oneYearAward}
             alt="six months award"

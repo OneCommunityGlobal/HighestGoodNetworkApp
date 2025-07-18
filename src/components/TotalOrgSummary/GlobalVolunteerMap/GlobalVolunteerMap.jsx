@@ -60,7 +60,10 @@ function MapComponent({ locations = [], isLoading, error }) {
     <div className="map-container" style={{ marginTop: '20px' }}>
       {error && (
         <div className="error-container">
-          <p>Error: {error}</p>
+          <p>
+            Error:
+            {error}
+          </p>
           <button
             type="button"
             onClick={() => {

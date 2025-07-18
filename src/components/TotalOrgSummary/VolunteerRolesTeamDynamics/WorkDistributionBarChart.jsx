@@ -1,5 +1,5 @@
-import Loading from '~/components/common/Loading';
 import { ResponsiveContainer, BarChart, XAxis, YAxis, Tooltip, Legend, Bar, Cell } from 'recharts';
+import Loading from '~/components/common/Loading';
 
 const COLORS = [
   '#14b32b',
