@@ -609,7 +609,7 @@ function TotalOrgSummary(props) {
                   comparisonType={selectedComparison}
                 /> */}
                 <div className="d-flex flex-column align-items-center justify-content-center">
-                  <HoursWorkList />
+                  <HoursWorkList data={volunteerStats?.volunteerHoursStats} />
                   <NumbersVolunteerWorked
                     isLoading={isLoading}
                     data={volunteerStats?.volunteersOverAssignedTime}

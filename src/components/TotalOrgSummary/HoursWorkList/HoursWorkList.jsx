@@ -1,11 +1,28 @@
-function HoursWorkList() {
-  const ranges = [
-    { name: '10-19.99', min: 10, max: 19.99, color: '#0088FE' },
-    { name: '20-29.99', min: 20, max: 29.99, color: '#00C49F' },
-    { name: '30-34.99', min: 30, max: 34.99, color: '#FFBB28' },
-    { name: '35-39.99', min: 35, max: 39.99, color: '#FF8042' },
-    { name: '40+', min: 40, max: Infinity, color: '#800080' },
-  ];
+const keyColors = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#800080'];
+
+function HoursWorkList({ data }) {
+  if (!data) return <div />;
+
+  const ranges = data.map((elem, index) => {
+    const rangeStr = elem._id;
+    const entry = {
+      name: rangeStr,
+    };
+
+    const rangeArr = rangeStr.split('-');
+    entry.color = keyColors[index];
+
+    if (rangeArr.length > 1) {
+      const [min, max] = rangeArr;
+      entry.min = Number(min);
+      entry.max = Number(max);
+    } else {
+      const min = rangeStr.split('+');
+      entry.min = Number(min);
+      entry.max = Infinity;
+    }
+    return entry;
+  });
 
   return (
     <div>
