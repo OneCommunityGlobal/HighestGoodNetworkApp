@@ -53,10 +53,16 @@ module.exports = [
       // eslint-disable-next-line global-require
       parser: require('@babel/eslint-parser'),
       parserOptions: {
-        requireConfigFile: true,
+        requireConfigFile: false,
         ecmaVersion: 2020,
         sourceType: 'module',
         ecmaFeatures: { jsx: true },
+        babelOptions: {
+          plugins: [
+            '@babel/plugin-transform-optional-chaining',
+            '@babel/plugin-transform-nullish-coalescing-operator',
+          ],
+        },
       },
       globals: {
         window: 'readonly',
