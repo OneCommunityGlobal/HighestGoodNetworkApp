@@ -180,37 +180,32 @@
 }
 
 .pr-grading-screen-pr-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  display: block;
+  line-height: 1.5;
 }
 
 .pr-grading-screen-pr-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-bottom: 4px;
+  display: inline-block;
+  margin-bottom: 8px;
+  margin-right: 8px;
 }
 
 .pr-grading-screen-pr-number {
   background-color: #e9ecef;
-  padding: 6px 12px;
+  padding: 4px 8px;
   border-radius: 4px;
   font-family: 'Courier New', monospace;
   font-size: 0.9rem;
   font-weight: 500;
   color: #495057;
   border: 1px solid #ced4da;
-  min-width: 80px;
-  text-align: center;
+  display: inline-block;
 }
 
 .pr-grading-screen-pr-number.pr-grading-screen-pair {
   background-color: #d4edda;
   color: #155724;
   border: 1px solid #c3e6cb;
-  min-width: 120px;
 }
 
 .pr-grading-screen-grade {
@@ -252,11 +247,12 @@
   font-size: 0.85rem;
   font-weight: 600;
   padding: 6px 12px;
-  margin-top: 8px;
+  margin-top: 12px;
   border-radius: 4px;
   background-color: #28a745;
   border: none;
   color: white;
+  display: block;
 }
 
 .pr-grading-screen-add-btn:hover {

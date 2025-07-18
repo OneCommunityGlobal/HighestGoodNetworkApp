@@ -77,13 +77,6 @@ const PRGradingScreen = () => {
                                   >
                                     {pr.prNumbers}
                                   </span>
-                                  <span
-                                    className={`pr-grading-screen-grade pr-grading-screen-grade-${pr.grade
-                                      .toLowerCase()
-                                      .replace(' ', '-')}`}
-                                  >
-                                    {pr.grade}
-                                  </span>
                                 </div>
                               );
                             })}
