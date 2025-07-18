@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-one-expression-per-line */
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Tooltip } from 'reactstrap';

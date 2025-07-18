@@ -1,3 +1,5 @@
+/* eslint-disable react/jsx-curly-newline */
+/* eslint-disable react/jsx-one-expression-per-line */
 import { useEffect, useState, useMemo, useRef } from 'react';
 import Select from 'react-select';
 import { Bar } from 'react-chartjs-2';

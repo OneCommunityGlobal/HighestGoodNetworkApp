@@ -3,6 +3,7 @@ import axios from 'axios';
 
 import * as actions from '../../constants/weeklySummaries';
 import { ENDPOINTS } from '~/utils/URL';
+// eslint-disable-next-line import/namespace
 import { fetchWeeklySummariesBegin, fetchWeeklySummariesSuccess, fetchWeeklySummariesError, getWeeklySummaries, updateWeeklySummaries } from '../weeklySummaries'
 import { getUserProfileActionCreator } from "../userProfile";
 

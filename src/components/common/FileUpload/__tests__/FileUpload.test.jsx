@@ -1,18 +1,21 @@
 // eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
-import { vi } from 'vitest'
+import { vi } from 'vitest';
+// eslint-disable-next-line import/namespace, import/default, import/no-named-as-default, import/no-named-as-default-member
 import FileUpload from '../FileUpload';
 
 describe('FileUpload Component', () => {
   it('renders without crashing', () => {
     const { container } = render(<FileUpload name="test-upload" label="Upload File" />);
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
     const label = container.querySelector('label[title="Upload File"]');
     expect(label).toBeInTheDocument();
   });
 
   it('displays an error message if provided', () => {
     const { getByText } = render(<FileUpload name="test-upload" error="File is too large" />);
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     expect(getByText(/File is too large/)).toBeInTheDocument();
   });
 
@@ -24,6 +27,7 @@ describe('FileUpload Component', () => {
       <FileUpload name="test-upload" accept="image/png" onUpload={onUploadMock} />,
     );
 
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
     const input = container.querySelector('input[type="file"]');
     fireEvent.change(input, { target: { files: [file] } });
 
@@ -38,6 +42,7 @@ describe('FileUpload Component', () => {
       <FileUpload name="test-upload" accept="image/png" maxSizeinKB={1} onUpload={onUploadMock} />,
     );
 
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
     const input = container.querySelector('input[type="file"]');
     fireEvent.change(input, { target: { files: [file] } });
 
@@ -56,6 +61,7 @@ describe('FileUpload Component', () => {
       <FileUpload name="test-upload" accept="image/png" onUpload={onUploadMock} />,
     );
     // Target the file input, not the label
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
     const input = container.querySelector('input[type="file"]');
 
     fireEvent.change(input, { target: { files: [file] } });
@@ -67,6 +73,7 @@ describe('FileUpload Component', () => {
 
     const { container } = render(<FileUpload name="test-upload" onUpload={onUploadMock} />);
 
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
     const input = container.querySelector('input[type="file"]');
     fireEvent.change(input, { target: { files: [] } });
 

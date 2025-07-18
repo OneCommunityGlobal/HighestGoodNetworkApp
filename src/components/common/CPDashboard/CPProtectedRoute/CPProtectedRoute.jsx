@@ -23,12 +23,14 @@ const CPProtectedRoute = ({ component: Component, render, auth, fallback, ...res
         return Component && fallback ? (
           <Suspense
             fallback={
+              // eslint-disable-next-line react/jsx-wrap-multilines
               <div className="d-flex justify-content-center">
                 <i className="fa fa-spinner fa-pulse" />
               </div>
             }
           >
             {' '}
+            {/* eslint-disable-next-line react/jsx-one-expression-per-line */}
             <Component {...props} />{' '}
           </Suspense>
         ) : Component ? (

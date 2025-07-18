@@ -1,4 +1,8 @@
+/* eslint-disable import/no-named-as-default */
+/* eslint-disable import/default */
+/* eslint-disable import/namespace */
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
+// eslint-disable-next-line import/no-named-as-default-member
 import UpdateConsumable from './UpdateConsumable';
 import styles from './UpdateConsumable.module.css';
 

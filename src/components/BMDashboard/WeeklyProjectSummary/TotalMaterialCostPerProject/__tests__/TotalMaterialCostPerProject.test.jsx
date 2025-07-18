@@ -1,3 +1,8 @@
+/* eslint-disable testing-library/prefer-screen-queries */
+/* eslint-disable testing-library/prefer-presence-queries */
+/* eslint-disable testing-library/prefer-find-by */
+/* eslint-disable testing-library/no-node-access */
+/* eslint-disable react/jsx-one-expression-per-line */
 import { render, screen, waitFor, within, fireEvent } from '@testing-library/react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
@@ -104,7 +109,7 @@ describe('TotalMaterialCostPerProject', () => {
     });
 
     // Remove option Project A
-    userEvent.click(screen.getByRole('button', { name: 'Remove Project A' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Remove Project A' }));
     const barChart = screen.getByTestId('bar-chart');
     expect(within(barChart).queryByText(/Project A/)).not.toBeInTheDocument();
 

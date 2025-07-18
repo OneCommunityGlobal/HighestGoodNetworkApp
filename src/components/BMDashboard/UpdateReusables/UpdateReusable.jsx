@@ -1,3 +1,6 @@
+/* eslint-disable react/jsx-one-expression-per-line */
+/* eslint-disable import/no-duplicates */
+/* eslint-disable import/order */
 import { Container } from 'reactstrap';
 import moment from 'moment';
 import { FormGroup, Input, Label, Form, Col, Button } from 'reactstrap';

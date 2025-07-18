@@ -2,8 +2,6 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
-
-
 import { ENDPOINTS } from '~/utils/URL';
 
 // Mock the action creators

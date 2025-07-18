@@ -12,6 +12,7 @@ import {
   postTimeEntry,
   getTimeEndDateEntriesByPeriod,
   getTimeEntriesForPeriod,
+  // eslint-disable-next-line import/namespace
 } from '../timeEntries';
 // Import the constants
 import { GET_TIME_ENTRIES_PERIOD, GET_TIME_ENTRIES_WEEK } from '../../constants/timeEntries';

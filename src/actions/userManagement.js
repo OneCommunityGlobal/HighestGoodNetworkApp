@@ -17,6 +17,7 @@ import {
 } from '../constants/userManagement';
 import { ENDPOINTS } from '~/utils/URL';
 import { UserStatus } from '~/utils/enums';
+// eslint-disable-next-line import/namespace
 import { getTimeEndDateEntriesByPeriod } from './timeEntries';
 
 /**

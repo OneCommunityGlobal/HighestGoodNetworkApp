@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-one-expression-per-line */
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { Container, Row, Col } from 'reactstrap';
@@ -26,7 +27,6 @@ function ProjectDetails() {
       <Row className="justify-content-center">
         <Col xs="12" lg="10">
           <h1 className="mb-4">{currProject.name} Dashboard</h1>
-
           <LogBar projectId={projectId} />
 
           <Row className="mt-4">

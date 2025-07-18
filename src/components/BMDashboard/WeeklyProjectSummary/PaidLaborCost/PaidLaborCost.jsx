@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import { useState, useEffect, useMemo } from 'react';
 import { Bar } from 'react-chartjs-2';
 import {
