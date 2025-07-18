@@ -391,8 +391,13 @@ const WeeklySummariesReport = props => {
   };
 
   const filterWeeklySummaries = () => {
+    console.log("reached 1")
     try {
-      const currentWeekIndex = navItems.findIndex(state.activeTab);
+      console.log("reached 2")
+      
+      console.log(navItems)
+      console.log(state.activeTab)
+      const currentWeekIndex = navItems.indexOf(state.activeTab);
       const {
         selectedCodes,
         selectedColors,
@@ -404,6 +409,8 @@ const WeeklySummariesReport = props => {
         COLORS,
         selectedSpecialColors,
       } = state;
+
+      console.log("reachedd here");
 
       // console.log('filterWeeklySummaries state:', {
       //   summariesLength: summaries?.length,
@@ -434,6 +441,13 @@ const WeeklySummariesReport = props => {
 
           return true;
         }
+
+//         console.log(
+//   'Filter triggered!',
+//   '\nTotal summaries before filtering:', summaries.length,
+//   '\nFilter - Bio Status ON?:', selectedBioStatus,
+//   '\nSummaries after filtering:', temp.length
+// );
 
         const { activeTab } = state;
         const hoursLogged = (summary.totalSeconds[navItems.indexOf(activeTab)] || 0) / 3600;
@@ -726,10 +740,15 @@ const WeeklySummariesReport = props => {
   };
 
   const handleBioStatusToggleChange = () => {
-    setState(prev => ({
+    console.log("reached status change")
+   setState(prev => {
+    const newValue = !prev.selectedBioStatus;
+    console.log("selectedBioStatus toggled to:", newValue);
+    return {
       ...prev,
-      selectedBioStatus: !prev.selectedBioStatus,
-    }));
+      selectedBioStatus: newValue,
+    };
+  });
   };
 
   const handleChartStatusToggleChange = () => {
@@ -1048,7 +1067,9 @@ const WeeklySummariesReport = props => {
   }, [loading, state.loading]);
 
   useEffect(() => {
+    console.log("use effect is triggered")
     if (state.summaries && state.summaries.length > 0) {
+      console.log("function triggered")
       filterWeeklySummaries();
     }
   }, [
@@ -1060,7 +1081,7 @@ const WeeklySummariesReport = props => {
     state.selectedSpecialColors,
     state.summaries,
     state.activeTab,
-  ]);
+  ]); 
 
   useEffect(() => {
     // On mount: fetch all badges before deriving permissions
