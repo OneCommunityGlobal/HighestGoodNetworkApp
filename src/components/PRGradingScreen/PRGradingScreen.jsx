@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, Row, Col, Card, Table, Button } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button } from 'react-bootstrap';
 import { getAllMockData } from './mockData';
 import './PRGradingScreen.css';
 
@@ -8,73 +8,77 @@ const PRGradingScreen = () => {
   const [reviewerData, setReviewerData] = useState(reviewers);
 
   return (
-    <Container fluid className="pr-grading-container">
+    <Container fluid className="pr-grading-screen-container">
       <Row className="justify-content-center">
         <Col md={12}>
-          <Card className="pr-grading-card">
-            <Card.Header className="pr-grading-header">
-              <div className="header-content">
-                <div className="header-left">
-                  <h1 className="pr-grading-title">Weekly PR grading screen</h1>
-                  <div className="team-info-badge">
-                    <h2 className="team-info">
+          <Card className="pr-grading-screen-card">
+            <Card.Header className="pr-grading-screen-header">
+              <div className="pr-grading-screen-header-content">
+                <div className="pr-grading-screen-header-left">
+                  <h1 className="pr-grading-screen-title">Weekly PR grading screen</h1>
+                  <div className="pr-grading-screen-team-info-badge">
+                    <h2 className="pr-grading-screen-team-info">
                       {teamData.teamName} - {teamData.dateRange.start} to {teamData.dateRange.end}
                     </h2>
                   </div>
                 </div>
-                <div className="header-right">
-                  <Button variant="outline-dark" className="done-button">
+                <div className="pr-grading-screen-header-right">
+                  <Button variant="outline-dark" className="pr-grading-screen-done-button">
                     Done
                   </Button>
                 </div>
               </div>
             </Card.Header>
             <Card.Body>
-              <div className="active-members-section">
-                <h3 className="active-members-title">Active Members</h3>
+              <div className="pr-grading-screen-active-members-section">
+                <h3 className="pr-grading-screen-active-members-title">Active Members</h3>
               </div>
 
-              <div className="table-container">
-                <Table className="pr-grading-table">
+              <div className="pr-grading-screen-table-container">
+                <table className="pr-grading-screen-table">
                   <thead>
                     <tr>
-                      <th>Reviewer Name</th>
-                      <th>PR reviewed</th>
-                      <th>PRs Needed</th>
-                      <th>PR Numbers</th>
+                      <th className="pr-grading-screen-th-name">Reviewer Name</th>
+                      <th className="pr-grading-screen-th-reviewed">PR reviewed</th>
+                      <th className="pr-grading-screen-th-needed">PRs Needed</th>
+                      <th className="pr-grading-screen-th-numbers">PR Numbers</th>
                     </tr>
                   </thead>
                   <tbody>
                     {reviewerData.map(reviewer => (
-                      <tr key={reviewer.id}>
-                        <td>
-                          <div className="reviewer-name-cell">
-                            <div className="reviewer-name">{reviewer.reviewer}</div>
-                            {reviewer.role && <div className="reviewer-role">{reviewer.role}</div>}
+                      <tr key={reviewer.id} className="pr-grading-screen-table-row">
+                        <td className="pr-grading-screen-td-name">
+                          <div className="pr-grading-screen-reviewer-info">
+                            <div className="pr-grading-screen-reviewer-name">
+                              {reviewer.reviewer}
+                            </div>
+                            {reviewer.role && (
+                              <div className="pr-grading-screen-reviewer-role">{reviewer.role}</div>
+                            )}
                           </div>
                         </td>
-                        <td className="text-center">
-                          <span>{reviewer.prsReviewed}</span>
+
+                        <td className="pr-grading-screen-td-reviewed">
+                          {reviewer.gradedPrs.length}
                         </td>
-                        <td className="text-center">
-                          <span>{reviewer.prsNeeded}</span>
-                        </td>
-                        <td>
-                          <div className="pr-numbers-cell">
-                            {/* Display existing graded PRs */}
+
+                        <td className="pr-grading-screen-td-needed">{reviewer.prsNeeded}</td>
+
+                        <td className="pr-grading-screen-td-numbers">
+                          <div className="pr-grading-screen-pr-list">
                             {reviewer.gradedPrs.map(pr => {
                               const isBackendFrontendPair = pr.prNumbers.includes('+');
                               return (
-                                <div key={pr.id} className="pr-entry">
+                                <div key={pr.id} className="pr-grading-screen-pr-item">
                                   <span
-                                    className={`pr-numbers ${
-                                      isBackendFrontendPair ? 'backend-frontend-pair' : ''
+                                    className={`pr-grading-screen-pr-number ${
+                                      isBackendFrontendPair ? 'pr-grading-screen-pair' : ''
                                     }`}
                                   >
                                     {pr.prNumbers}
                                   </span>
                                   <span
-                                    className={`grade-badge grade-${pr.grade
+                                    className={`pr-grading-screen-grade pr-grading-screen-grade-${pr.grade
                                       .toLowerCase()
                                       .replace(' ', '-')}`}
                                   >
@@ -83,9 +87,11 @@ const PRGradingScreen = () => {
                                 </div>
                               );
                             })}
-
-                            {/* Add New button */}
-                            <Button variant="success" size="sm" className="add-new-btn">
+                            <Button
+                              variant="success"
+                              size="sm"
+                              className="pr-grading-screen-add-btn"
+                            >
                               + Add new
                             </Button>
                           </div>
@@ -93,7 +99,7 @@ const PRGradingScreen = () => {
                       </tr>
                     ))}
                   </tbody>
-                </Table>
+                </table>
               </div>
             </Card.Body>
           </Card>
