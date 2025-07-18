@@ -155,6 +155,7 @@ function WBSTasks(props) {
               load={refresh}
               pageLoadTime={pageLoadTime}
               darkMode={darkMode}
+              tasks={tasks} 
             />
           ) : null}
 
