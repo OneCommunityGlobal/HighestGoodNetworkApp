@@ -1,16 +1,16 @@
-.spinner {
+.promo-spinner {
   font-size: 1.5rem;
-  margin: 0 auto 0.5rem auto;
-  animation: spin 1s linear infinite;
+  margin: 0 auto 0.5rem;
+  animation: promo-eligibility__spin 1s linear infinite;
 }
 
-@keyframes spin {
+@keyframes promo-eligibility__spin {
   100% {
     transform: rotate(360deg);
   }
 }
 
-.screen-container {
+.promo-container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -19,20 +19,20 @@
   box-sizing: border-box;
 }
 
-.title {
+.promo-title {
   font-size: 1.25rem;
   font-weight: bold;
   margin-bottom: 1rem;
 }
 
-.subtitle {
+.promo-subtitle {
   font-size: 1rem;
   font-weight: 600;
   text-align: center;
   margin-bottom: 0.5rem;
 }
 
-.table-container {
+.promo-table-wrapper {
   margin-bottom: 1.5rem;
   width: 100%;
   display: flex;
@@ -40,28 +40,27 @@
   overflow-x: auto;
 }
 
-.styled-table {
+.promo-table {
   border-collapse: collapse;
   font-size: 0.875rem;
-  width: auto;
   min-width: 70vw;
 }
 
-.styled-table th,
-.styled-table td {
+.promo-table th,
+.promo-table td {
   border: 1px solid #ccc;
   padding: 8px;
 }
 
-.header-row {
+.promo-header-row {
   background-color: #f0f0f0;
 }
 
-.text-center {
+.promo-text-center {
   text-align: center;
 }
 
-.error {
+.promo-error {
   color: red;
   text-align: center;
   padding: 1rem;

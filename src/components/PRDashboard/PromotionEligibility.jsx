@@ -24,25 +24,25 @@ function PromotionEligibility() {
 
   if (loading) {
     return (
-      <div className="text-center">
-        <FaSpinner className="spinner" />
+      <div className="promo-text-center">
+        <FaSpinner className="promo-spinner" />
         <div>Loading Reviewer data...</div>
       </div>
     );
   }
 
   if (error) {
-    return <div className="error">{error}</div>;
+    return <div className="promo-error">{error}</div>;
   }
 
   return (
-    <div className="screen-container">
-      <h1 className="title">Promotion Eligibility</h1>
+    <div className="promo-container">
+      <h1 className="promo-title">Promotion Eligibility</h1>
 
-      <div className="table-container">
+      <div className="promo-table-wrapper">
         <div>
-          <h2 className="subtitle">New Members</h2>
-          <table className="styled-table">
+          <h2 className="promo-subtitle">New Members</h2>
+          <table className="promo-table">
             <thead>
               <tr>
                 <th>Reviewer</th>
@@ -60,7 +60,7 @@ function PromotionEligibility() {
                 <td>10</td>
                 <td>25</td>
                 <td>0</td>
-                <td className="text-center">
+                <td className="promo-text-center">
                   <input type="checkbox" />
                 </td>
               </tr>
@@ -69,12 +69,12 @@ function PromotionEligibility() {
         </div>
       </div>
 
-      <div className="table-container">
+      <div className="promo-table-wrapper">
         <div>
-          <h2 className="subtitle">Existing Members</h2>
-          <table className="styled-table">
+          <h2 className="promo-subtitle">Existing Members</h2>
+          <table className="promo-table">
             <thead>
-              <tr className="header-row">
+              <tr className="promo-header-row">
                 <th>Reviewer</th>
                 <th>Weekly Requirements</th>
                 <th>Required PRs</th>
@@ -90,7 +90,7 @@ function PromotionEligibility() {
                 <td>5</td>
                 <td>18</td>
                 <td>1</td>
-                <td className="text-center">
+                <td className="promo-text-center">
                   <input type="checkbox" disabled />
                 </td>
               </tr>
