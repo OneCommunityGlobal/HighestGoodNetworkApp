@@ -5,6 +5,26 @@ import './PeopleTableDetails.css';
 import NewModal from '../common/NewModal';
 import TableFilter from './TableFilter/TableFilter';
 
+function TaskModalTrigger({ value, windowWidth, renderMobileFilteredTask, renderFilteredTask }) {
+  return (
+    <>
+      {windowWidth <= 1020 ? renderMobileFilteredTask(value) : renderFilteredTask(value)}
+    </>
+  );
+}
+
+function TaskModalContent({ whyInfo, intentInfo, endstateInfo }) {
+  return (
+    <>
+      <div>Why This Task is important</div>
+      <textarea className="rectangle" type="text" value={whyInfo} readOnly />
+      <div>Design Intent</div>
+      <textarea className="rectangle" type="text" value={intentInfo} readOnly />
+      <div>End State</div>
+      <textarea className="rectangle" type="text" value={endstateInfo} readOnly />
+    </>
+  );
+}
 
 function PeopleTableDetails(props) {
   const [name, setName] = useState('');
@@ -165,12 +185,12 @@ function PeopleTableDetails(props) {
             </div>
             <div className='task-info'>
               <div className='sub-head'>Resources</div>
-              <div>{value.resources?.map(res =>
-                res.map((resource, index) => {
-                  if (index < 2) {
+              <div>{value.resources?.map((res, outerIndex) =>
+                res.map((resource, innerIndex) => {
+                  if (innerIndex < 2) {
                     return (
                       <img
-                        key={`${value._id}-${resource.name}`}
+                        key={`${outerIndex}-${innerIndex}`}
                         alt={resource.name}
                         src={resource.profilePic || '/pfp-default.png'}
                         className="img-circle"
@@ -215,12 +235,12 @@ function PeopleTableDetails(props) {
         <div>{value.priority}</div>
         <div>{value.status}</div>
         <div>
-          {value.resources?.map(res =>
-            res.map((resource, index) => {
-              if (index < 2) {
+          {value.resources?.map((res, outerIndex) =>
+            res.map((resource, innerIndex) => {
+              if (innerIndex < 2) {
                 return (
                   <img
-                    key={`${value._id}-${resource.name}`}
+                    key={`${outerIndex}-${innerIndex}`}
                     alt={resource.name}
                     src={resource.profilePic || '/pfp-default.png'}
                     className="img-circle"
@@ -231,10 +251,10 @@ function PeopleTableDetails(props) {
               return null;
             }),
           )}
-          {value.resources?.map((res) =>
+          {value.resources?.map((res, outerIndex) =>
             res.length > 2 ? (
               <button
-                key={res[0]?.name || res[0]?.id}
+                key={`button-${outerIndex}`}
                 type="button"
                 className="name resourceMoreToggle"
                 onClick={() => toggleMoreResources(value._id)}
@@ -245,21 +265,19 @@ function PeopleTableDetails(props) {
           )}
           <div id={value._id} className="extra">
             <div className="extra1">
-              {value.resources?.map(res =>
+              {value.resources?.map((res, outerIndex) =>
                 // eslint-disable-next-line array-callback-return,consistent-return
-                res.map((resource, index) => {
-                  if (index >= 2) {
-                    return (
-                      <img
-                        key={resource.index}
-                        alt={resource.name}
-                        src={resource.profilePic || '/pfp-default.png'}
-                        className="img-circle"
-                        title={resource.name}
-                      />
-                    );
-                  }
-                }),
+                res
+                .filter((_, index) => index >= 2)
+                .map((resource, innerIndex) => (
+                  <img
+                    key={`${outerIndex}-${innerIndex}`}
+                    alt={resource.name}
+                    src={resource.profilePic || '/pfp-default.png'}
+                    className="img-circle"
+                    title={resource.name}
+                  />
+                )),
               )}
             </div>
           </div>
@@ -326,13 +344,23 @@ function PeopleTableDetails(props) {
         {filteredTasks.map(value => (
 
           // eslint-disable-next-line react/no-unstable-nested-components
-          <NewModal header="Task info" trigger={() => <> {(windowWidth <= 1020) ? renderMobileFilteredTask(value) : renderFilteredTask(value)}</>}>
-            <div>Why This Task is important</div>
-            <textarea className="rectangle" type="text" value={value.whyInfo} />
-            <div>Design Intent</div>
-            <textarea className="rectangle" type="text" value={value.intentInfo} />
-            <div>End State</div>
-            <textarea className="rectangle" type="text" value={value.endstateInfo} />
+          <NewModal
+            key={value._id}
+            header="Task info"
+            trigger={
+              <TaskModalTrigger
+                value={value}
+                windowWidth={windowWidth}
+                renderMobileFilteredTask={renderMobileFilteredTask}
+                renderFilteredTask={renderFilteredTask}
+              />
+            }
+          >
+            <TaskModalContent
+              whyInfo={value.whyInfo}
+              intentInfo={value.intentInfo}
+              endstateInfo={value.endstateInfo}
+            />
           </NewModal>
         ))}
       </div>
