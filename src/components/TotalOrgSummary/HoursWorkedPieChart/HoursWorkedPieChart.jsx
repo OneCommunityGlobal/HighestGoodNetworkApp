@@ -70,13 +70,31 @@ const renderCustomizedLabel = ({
   );
 };
 
-export default function HoursWorkedPieChart({
-  userData,
-  darkMode,
-  windowSize,
-  comparisonType,
-  colors,
-}) {
+function CustomTooltip({ active, payload }) {
+  if (active && payload && payload.length) {
+    return (
+      <div
+        style={{
+          backgroundColor: 'white',
+          border: '1px solid #ccc',
+          padding: '10px 20px',
+          borderRadius: '3px',
+          display: 'grid',
+          justifyItems: 'center',
+        }}
+      >
+        <p>
+          <strong>{payload[0].name} Hours</strong>
+        </p>
+        <p>{payload[0].value}</p>
+      </div>
+    );
+  }
+
+  return null;
+}
+
+export default function HoursWorkedPieChart({ userData, windowSize, comparisonType, colors }) {
   let innerRadius = 80;
   let outerRadius = 160;
   if (windowSize.width <= 650) {
@@ -104,6 +122,7 @@ export default function HoursWorkedPieChart({
                 <Cell key={`cell-${entry.value}`} fill={colors[index % colors.length]} />
               ))}
           </Pie>
+          <Tooltip content={CustomTooltip} />
         </PieChart>
       </ResponsiveContainer>
     </div>
