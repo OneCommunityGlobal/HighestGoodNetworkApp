@@ -3,7 +3,6 @@ import { Card, Row, Col } from 'reactstrap';
 import { useDispatch, connect } from 'react-redux';
 import ReactHtmlParser from 'react-html-parser';
 import moment from 'moment-timezone';
-import './Timelog.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
 import hasPermission from 'utils/permissions';
@@ -15,6 +14,7 @@ import DeleteModal from './DeleteModal';
 
 import { editTimeEntry, getTimeEntriesForWeek } from '../../actions/timeEntries';
 import { editTeamMemberTimeEntry } from '../../actions/task';
+import styles from './Timelog.module.css';
 
 /**
  * This component can be imported in TimeLog component's week tabs and Tasks tab
@@ -134,7 +134,7 @@ function TimeEntry(props) {
         }}
       >
         <Row className="mx-0">
-          <Col md={3} className="date-block px-0">
+          <Col md={3} className={`${styles.dateBlock} px-0`}>
             <div className="date-div">
               <div>
                 <h4 className={darkMode ? 'text-light' : ''}>{moment(dateOfWork).format('MMM D')}</h4>
@@ -172,8 +172,8 @@ function TimeEntry(props) {
             </div>
           </Col>
           <Col md={5} className="pl-2 pr-0">
-            <div className="time-entry-container">
-              <div className={`notes-section ${darkMode ? 'notes-text-light' : ''}`}>
+            <div className={`${styles.timeEntryContainer}`}>
+              <div className={`${styles.notesSection} ${darkMode ? styles.notesTextLight : ''}`}>
                 <div className={darkMode ? "dark-text-muted" : "text-muted"}>Notes:</div>
                 {ReactHtmlParser(notes)}
               </div>

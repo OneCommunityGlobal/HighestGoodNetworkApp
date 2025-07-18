@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import parse from 'html-react-parser';
-import './Timelog.css';
 import { getUserProfile, updateUserProfile } from 'actions/userProfile';
 import hasPermission from 'utils/permissions';
 import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react';
 import Spinner from 'react-bootstrap/Spinner';
 import { updateWeeklySummaries } from '../../actions/weeklySummaries';
+import styles from './Timelog.module.css';
 
 function WeeklySummaries({ userProfile }) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -137,7 +137,7 @@ function WeeklySummaries({ userProfile }) {
           <div style={{ marginTop: '10px' }}>
             <button
               type="button"
-              className="button save-button"
+              className={`${styles.button} ${styles.saveButton}`}
               onClick={() => handleSave(index)}
               disabled={LoadingHandleSave === index}
             >
@@ -146,7 +146,7 @@ function WeeklySummaries({ userProfile }) {
 
             <button
               type="button"
-              className="button cancel-button"
+              className={`${styles.button} ${styles.cancelButton}`}
               onClick={() => handleCancel(index)}
             >
               Cancel
@@ -161,7 +161,7 @@ function WeeklySummaries({ userProfile }) {
         <div className={darkMode ? 'bg-yinmn-blue summary-text-light' : ''}>
           <h3>{title}</h3>
           {parse(editedSummaries[index])}
-          <button type="button" className="button edit-button" onClick={() => toggleEdit(index)}>
+          <button type="button" className={`${styles.button} ${styles.editButton}`} onClick={() => toggleEdit(index)}>
             Edit
           </button>
         </div>

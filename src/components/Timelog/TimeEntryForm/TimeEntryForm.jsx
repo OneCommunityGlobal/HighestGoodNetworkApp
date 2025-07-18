@@ -35,6 +35,8 @@ import ReminderModal from './ReminderModal';
 import TimeLogConfirmationModal from './TimeLogConfirmationModal';
 import { ENDPOINTS } from '../../../utils/URL';
 import '../../Header/DarkMode.css';
+import styles from '../Timelog.module.css';
+
 import { updateIndividualTaskTime } from '../../TeamMemberTasks/actions';
 
 // Images are not allowed in timelog
@@ -617,7 +619,7 @@ function TimeEntryForm(props) {
             Time Entry
             {viewingUser.userId ? ` for ${viewingUser.firstName} ${viewingUser.lastName} ` : ' '}
             <i
-              className="fa fa-info-circle"
+              className={`fa fa-info-circle ${styles.customStyle}`}
               data-tip
               data-for="registerTip"
               aria-hidden="true"
@@ -746,7 +748,7 @@ function TimeEntryForm(props) {
                 />
                 Tangible&nbsp;
                 <i
-                  className="fa fa-info-circle"
+                  className={`fa fa-info-circle ${styles.customStyle}`}
                   data-tip
                   data-for="tangibleTip"
                   aria-hidden="true"

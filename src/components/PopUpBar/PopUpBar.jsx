@@ -1,5 +1,5 @@
 import Loading from 'components/common/Loading';
-import './PopUpBar.css';
+import styles from './PopUpBar.module.css';
 
 function PopUpBar({
   firstName = window.viewingUser?.firstName,
@@ -16,9 +16,13 @@ function PopUpBar({
   const displayText = message ?? defaultTemplate;
 
   return (
-    <div className="popup_container" data-testid="test-popup" style={{ color: textColor }}>
+    <div
+      className={`${styles.popupContainer}`}
+      data-testid="test-popup"
+      style={{ color: textColor }}
+    >
       {isLoading ? <Loading /> : <p className="popup_message">{displayText}</p>}
-      <button type="button" className="close_button" onClick={onClickClose}>
+      <button type="button" className={`${styles.closeButton}`} onClick={onClickClose}>
         X
       </button>
     </div>

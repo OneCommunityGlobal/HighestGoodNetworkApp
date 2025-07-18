@@ -1,34 +1,34 @@
-.date-block {
+.dateBlock {
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
 }
 
-.card-body-shadow {
+.cardBodyShadow {
   box-shadow: 2px 2px 4px 1px lightgray;
 }
 
-.card-header-shadow {
+.cardHeaderShadow {
   box-shadow: 2px 2px 4px 1px lightgray;
   margin-bottom: 1px;
 }
 
-.card-body-shadow-dark {
+.cardBodyShadowDark {
   box-shadow: 2px 2px 4px 1px black;
 }
 
-.card-header-shadow-dark {
+.cardHeaderShadowDark {
   box-shadow: 2px 2px 4px 1px black;
   margin-bottom: 1px;
 }
 
-.time-entry-container {
+.timeEntryContainer {
   display: flex;
   flex-direction: column;
 }
 
-.notes-section {
+.notesSection {
   flex: 1;
   margin-bottom: 13px;
   overflow-wrap: break-word;
@@ -46,49 +46,49 @@
   position: absolute;
 }
 
-.red .progress-bar {
+.red .progressBar {
   background-color: red;
 }
 
-.orange .progress-bar {
+.orange .progressBar {
   background-color: orange;
 }
 
-.green .progress-bar {
+.green .progressBar {
   background-color: green;
 }
 
-.blue .progress-bar {
+.blue .progressBar {
   background-color: blue;
 }
 
-.indigo .progress-bar {
+.indigo .progressBar {
   background-color: #000066;
 }
 
-.violet .progress-bar {
+.violet .progressBar {
   background-color: #990099;
 }
 
-.purple .progress-bar {
+.purple .progressBar {
   background-color: #660099;
 }
 
-.navbar-border {
+.navbarBorder {
   border-radius: 5px;
   border: 1px solid rgba(0, 0, 0, 0.125);
 }
 
-.tab-pane {
+.tabPane {
   width: 100%;
 }
 
-.search-time-entries-btn {
+.searchTimeEntriesBtn {
   margin-left: 6px;
   margin-top: 0px;
 }
 
-.min-width-100 {
+.minWidth100 {
   min-width: 100%;
 }
 
@@ -97,13 +97,13 @@
   padding: 0 17%;
 }
 
-.active.dark-mode.nav-link {
+.active.darkMode.navLink {
   background-color: #1C1C1C !important;
   color: #fff !important;
   border-bottom: 0 !important;
 }
 
-.notes-text-light p{
+.notesTextLight p{
   color: #fff; /* White text for dark mode */
 }
 
@@ -128,13 +128,13 @@
 }
 
 @media screen and (max-width: 575px) and (min-width: 399px) {
-  .search-time-entries-btn {
+  .searchTimeEntriesBtn {
     margin-top: 15px;
   }
 }
 
 @media (max-width: 544px) {
-  .tab-pane {
+  .tabPane {
     max-height: 1000px;
     overflow-y: scroll;
     width: 100%;
@@ -156,7 +156,7 @@
   text-overflow: ellipsis;
 }
 
-.right-padding-temp-fix {
+.rightPaddingTempFix {
   padding-right: 0px !important;
 }
 
@@ -171,25 +171,25 @@
   font-weight: bold;
 }
 
-.edit-button {
+.editButton {
   background-color: blue;
   /* Blue for the Edit button */
   color: white;
 }
 
-.save-button {
+.saveButton {
   background-color: green;
   /* Green for the Save button */
   color: white;
 }
 
-.cancel-button {
+.cancelButton {
   background-color: red;
   /* Red for the Cancel button */
   color: white;
 }
 
-.edit-textarea {
+.editTextarea {
   min-height: 150px;
   resize: vertical;
 }
@@ -203,68 +203,68 @@
 }
 
 
-.custom-text-alignment {
+.customTextAlignment {
   text-align: center;
 }
 
 
-.tasks-and-timelog-header-row {
+.tasksAndTimelogHeaderRow {
   display: grid;
   grid-template-columns: auto auto;
   align-items: center;
 }
 
-.tasks-and-timelog-header-add-time-div {
+.tasksAndTimelogHeaderAddTimeDiv {
   float: right;
 }
 
-.taskboard-header-title {
+.taskboardHeaderTitle {
   font-size: 1.8rem;
 }
 
 @media screen and (max-width: 1240px) {
-  .tasks-and-timelog-header-row {
+  .tasksAndTimelogHeaderRow {
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: auto auto;
   }
 
-  .tasks-and-timelog-header-add-time-div {
+  .tasksAndTimelogHeaderAddTimeDiv {
     float: none;
     margin-top: 10px;
   }
 
-  .task-and-timelog-card-nav {
+  .taskAndTimelogCardNav {
     font-size: .9rem;
   }
 }
 
 @media (min-width: 992px) {
-  .custom-text-alignment {
+  .customTextAlignment {
     text-align: right;
   }
 }
 
 
-.container-timelog-wrapper {
+.containerTimelogWrapper {
   min-height: 100%;
   min-width: 100%;
 }
 
 @media only screen and (max-width: 544px) {
-  .responsive-font-size {
+  .responsiveFontSize {
     font-size: 0.75rem !important;
   }
 }
 
 @media only screen and (max-width: 575px) {
-  .date-selector-form {
+  .dateSelectorForm {
     margin-left: 5px;
   }
 }
 
 /* Ensure the button content (text + icon) is aligned horizontally */
-.followup-button {
+.followupButton {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -272,14 +272,13 @@
 }
 
 /* Adjust the icon position to ensure it stays on the right */
-.followup-tooltip-button {
+.followupTooltipButton {
   display: inline-flex;
   align-items: center;
 }
 
 /* Keep the icon aligned within the button */
-.fa-info-circle {
+.customStyle {
   font-size: 14px;
   margin-left: 5px;
-  /* Add spacing between text and icon */
 }
