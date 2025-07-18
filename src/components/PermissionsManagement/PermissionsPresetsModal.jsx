@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-indent */
 import { connect } from 'react-redux';
 import Preset from './Preset';
 

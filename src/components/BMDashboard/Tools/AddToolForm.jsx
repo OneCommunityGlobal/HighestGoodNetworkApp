@@ -1,5 +1,7 @@
+/* eslint-disable react/jsx-one-expression-per-line */
 import { useState, useEffect } from 'react';
 import { Form, FormGroup, Label, Input, Button } from 'reactstrap';
+// eslint-disable-next-line import/order
 import DragAndDrop from '~/components/common/DragAndDrop/DragAndDrop';
 import PhoneInput from 'react-phone-input-2';
 import { toast } from 'react-toastify';

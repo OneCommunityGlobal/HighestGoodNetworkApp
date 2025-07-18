@@ -1,3 +1,8 @@
+/* eslint-disable import/order */
+/* eslint-disable import/no-named-as-default-member */
+/* eslint-disable import/no-named-as-default */
+/* eslint-disable import/namespace */
+/* eslint-disable import/default */
 import { CPHeader } from '~/components/CommunityPortal';
 import { useLocation } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -12,7 +17,7 @@ export function HeaderRenderer(props) {
   const isCommunityPortal = location.pathname.startsWith('/communityportal');
   
 // eslint-disable-next-line react/jsx-props-no-spreading
-  return isCommunityPortal ? <CPHeader {...props} /> : <Header {...props}/>;
+  return isCommunityPortal ? <CPHeader {...props} /> : <Header {...props} />;
 }
 
 

@@ -3,7 +3,7 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
-import { vi } from 'vitest'
+import { vi } from 'vitest';
 import CopyToClipboard from '../CopyToClipboard';
 import { themeMock } from '../../../../__tests__/mockStates';
 
@@ -36,6 +36,7 @@ describe('CopyToClipboard', () => {
     );
 
     // Select the element using its class
+    // eslint-disable-next-line testing-library/no-node-access
     const copyIcon = document.querySelector('.copy-to-clipboard');
 
     // Simulate a click event on the icon
@@ -47,6 +48,7 @@ describe('CopyToClipboard', () => {
     // Use setTimeout to give the component time to display the message
     setTimeout(() => {
       // Ensure that toast.success was called with the correct message
+      // eslint-disable-next-line no-undef
       expect(mockToastSuccess).toHaveBeenCalledWith(message);
     }, 1000);
   });

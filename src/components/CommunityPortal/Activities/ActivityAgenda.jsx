@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-one-expression-per-line */
 import './ActivityAgenda.css';
 import { useSelector } from 'react-redux';
 import ActivityImg from '../../../assets/images/yoga-img.png';

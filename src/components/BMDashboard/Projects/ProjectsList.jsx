@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Row } from 'reactstrap';
 import Select from 'react-select';
+// eslint-disable-next-line import/namespace, import/default, import/no-named-as-default, import/no-named-as-default-member
 import ProjectSummary from './ProjectSummary';
 
 function ProjectsList() {

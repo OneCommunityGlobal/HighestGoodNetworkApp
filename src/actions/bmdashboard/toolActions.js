@@ -1,4 +1,5 @@
 import axios from 'axios';
+// eslint-disable-next-line import/no-named-as-default
 import GET_TOOL_BY_ID, { GET_TOOLS } from '../../constants/bmdashboard/toolsConstants';
 import { GET_ERRORS } from '../../constants/errors';
 import { ENDPOINTS } from '~/utils/URL';

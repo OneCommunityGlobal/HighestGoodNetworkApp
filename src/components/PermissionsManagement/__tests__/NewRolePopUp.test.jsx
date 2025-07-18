@@ -1,3 +1,10 @@
+/* eslint-disable testing-library/no-node-access */
+/* eslint-disable testing-library/no-container */
+/* eslint-disable import/no-named-as-default-member */
+/* eslint-disable import/namespace */
+/* eslint-disable import/no-named-as-default */
+/* eslint-disable import/default */
+/* eslint-disable import/order */
 // src/components/PermissionsManagement/__tests__/NewRolePopUp.test.jsx
 /**
  * @vitest-environment jsdom

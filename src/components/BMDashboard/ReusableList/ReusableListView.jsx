@@ -1,6 +1,8 @@
+/* eslint-disable import/default */
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAllReusables } from '~/actions/bmdashboard/reusableActions';
+// eslint-disable-next-line import/namespace, import/no-named-as-default, import/no-named-as-default-member
 import ItemListView from '../ItemList/ItemListView';
 import UpdateReusableModal from '../UpdateReusables/UpdateReusableModal';
 

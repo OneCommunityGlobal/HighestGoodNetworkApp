@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
+/* eslint-disable import/order */
 import { updateQuestion, deleteQuestion } from '~/actions/formActions';
 import { useDispatch } from 'react-redux';
 import OptionMaker from './OptionMaker';

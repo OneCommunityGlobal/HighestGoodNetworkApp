@@ -1,8 +1,10 @@
+/* eslint-disable react/jsx-one-expression-per-line */
+/* eslint-disable no-undef */
 import { useEffect, useState } from 'react';
 import './Collaboration.css';
 import { toast } from 'react-toastify';
-import { ApiEndpoint } from '~/utils/URL';
 import { useSelector } from 'react-redux';
+import { ApiEndpoint } from '~/utils/URL';
 import OneCommunityImage from '../../assets/images/logo2.png';
 
 function Collaboration() {

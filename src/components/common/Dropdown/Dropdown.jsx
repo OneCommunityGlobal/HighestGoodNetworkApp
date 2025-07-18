@@ -6,7 +6,8 @@ const Dropdown = ({ value, name, label, options, className, error, ...rest }) =>
       <label htmlFor={name}>{label}</label>
 
       <select value={value} name={name} id={name} {...rest} className="form-control">
-        <option value="">Please select a {label}</option>
+        {/* eslint-disable-next-line react/jsx-one-expression-per-line */}
+        <option value="">Please select a{label}</option>
         {options.map(item => (
           <option value={item._id} key={item._id}>
             {item.name}

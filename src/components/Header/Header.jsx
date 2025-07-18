@@ -1,10 +1,14 @@
+/* eslint-disable import/no-named-as-default-member */
+/* eslint-disable import/no-named-as-default */
+/* eslint-disable import/namespace */
+/* eslint-disable import/default */
+/* eslint-disable no-undef */
+/* eslint-disable react/destructuring-assignment */
+/* eslint-disable react/jsx-one-expression-per-line */
 import { useState, useEffect, useMemo, React } from 'react';
-import { ENDPOINTS } from '~/utils/URL';
 import axios from 'axios';
-import { getWeeklySummaries } from '~/actions/weeklySummaries';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation , useHistory } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 import {
   Collapse,
   Navbar,
@@ -23,9 +27,11 @@ import {
   Button,
   Card,
 } from 'reactstrap';
+import { toast } from 'react-toastify';
 import PopUpBar from '~/components/PopUpBar';
 import { fetchTaskEditSuggestions } from '~/components/TaskEditSuggestions/thunks';
-import { toast } from 'react-toastify';
+import { getWeeklySummaries } from '~/actions/weeklySummaries';
+import { ENDPOINTS } from '~/utils/URL';
 import { getHeaderData } from '../../actions/authActions';
 import { getAllRoles } from '../../actions/role';
 import Timer from '../Timer/Timer';

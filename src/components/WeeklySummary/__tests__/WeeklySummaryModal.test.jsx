@@ -55,6 +55,7 @@ describe('WeeklySummaryModal Component', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     // Add a modal root element if it's using React portals
+    // eslint-disable-next-line testing-library/no-node-access
     if (!document.getElementById('modal-root')) {
       const modalRoot = document.createElement('div');
       modalRoot.id = 'modal-root';
@@ -64,6 +65,7 @@ describe('WeeklySummaryModal Component', () => {
 
   afterEach(() => {
     // Clean up any DOM modifications
+    // eslint-disable-next-line testing-library/no-node-access
     const modalRoot = document.getElementById('modal-root');
     if (modalRoot) {
       document.body.removeChild(modalRoot);
@@ -72,6 +74,7 @@ describe('WeeklySummaryModal Component', () => {
 
   it('should render the component without errors', () => {
     const { container } = renderWithProvider(<WeeklySummaryModal />);
+    // eslint-disable-next-line testing-library/no-node-access
     expect(container.firstChild).not.toBeNull();
   });
 

@@ -1,3 +1,11 @@
+/* eslint-disable react/jsx-closing-tag-location */
+/* eslint-disable react/jsx-indent */
+/* eslint-disable prettier/prettier */
+/* eslint-disable react/jsx-one-expression-per-line */
+/* eslint-disable import/no-named-as-default-member */
+/* eslint-disable import/no-named-as-default */
+/* eslint-disable import/default */
+/* eslint-disable import/namespace */
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import BMError from '../shared/BMError';
@@ -48,7 +56,10 @@ export function ToolItemListView({
   if (isError) {
     return (
       <main className={`${styles.itemsListContainer}`}>
-        <h2>{itemType} List</h2>
+        <h2>{itemType}
+{' '}
+List
+</h2>
         <BMError errors={errors} />
       </main>
     );

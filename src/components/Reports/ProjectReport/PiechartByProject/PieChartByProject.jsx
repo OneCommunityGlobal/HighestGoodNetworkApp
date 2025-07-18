@@ -1,3 +1,8 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
+/* eslint-disable react/jsx-first-prop-new-line */
+/* eslint-disable react/jsx-one-expression-per-line */
+/* eslint-disable react/jsx-closing-tag-location */
+/* eslint-disable react/jsx-indent */
 /* eslint-disable import/prefer-default-export */
 import { useEffect, useState } from 'react';
 import {ProjectPieChart} from '../ProjectPieChart/ProjectPieChart';
@@ -227,11 +232,13 @@ export function PieChartByProject({
           />
         </div>
 
-        {isChecked && ( <div style={{textAlign:'left', margin:'auto'}}>
+        {isChecked && ( 
+<div style={{textAlign:'left', margin:'auto'}}>
         <p style={{textAlign:'center'}}>{showMembers === null ? 'All members' : ''}</p>
         <div className={style.switchSection}>
         <div style={{ wordBreak: 'keep-all', color: darkMode ? 'white' : ''}}
-          className={`d-flex flex-row align-items-center justify-content-between ${style.switchContainer}`}>
+          className={`d-flex flex-row align-items-center justify-content-between ${style.switchContainer}`}
+        >
           <p className={darkMode ? 'text-light' : 'blue'}>Inactive Members</p>
           <div className="pr-2">
             <TriMembersStateToggleSwitch
@@ -246,12 +253,15 @@ export function PieChartByProject({
           <p style={{fontWeight:'bold'}}>Total Inactive Members: {inactiveData.length} <span> - Hrs Applied: { globalInactiveHours.toFixed(2) } </span> </p>
           <p style={{fontWeight:'bold'}}>Total Applied Hours: {totalHours.toFixed(2)} </p>
           <p style={{fontWeight:'bold'}}>Total Members:  {mergedProjectUsersArray.length}</p>
-        </div>)}
+        </div>
+)}
 
       </div>
-        {isChecked && (<div style={{ width: '100%', height: '32rem' }}>
+        {isChecked && (
+<div style={{ width: '100%', height: '32rem' }}>
         <ProjectPieChart userData={totalHours > 0 ? userData : noDataPlaceholder} windowSize={windowSize.width} darkMode={darkMode} />
-      </div>)}
+      </div>
+)}
 
     </div>
   )  

@@ -1,3 +1,4 @@
+/* eslint-disable testing-library/prefer-screen-queries */
 // eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';

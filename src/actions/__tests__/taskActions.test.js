@@ -16,10 +16,11 @@ import { ENDPOINTS } from '~/utils/URL';
 
 vi.mock('axios');
 
+// eslint-disable-next-line no-unused-vars
 let actualMoment;
 
 beforeAll(async () => {
-actualMoment = await vi.importActual('moment');
+  actualMoment = await vi.importActual('moment');
 });
 
 vi.mock('moment', async () => {

@@ -1,3 +1,5 @@
+/* eslint-disable import/no-named-as-default */
+/* eslint-disable import/namespace */
 /* eslint-disable import/no-unresolved */
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -6,6 +8,7 @@ import { BsInfoCircle } from 'react-icons/bs';
 import { fetchBMProjects } from '~/actions/bmdashboard/projectActions';
 import { fetchToolTypes } from '~/actions/bmdashboard/invTypeActions';
 import BMError from '../shared/BMError';
+// eslint-disable-next-line import/default, import/no-named-as-default-member
 import PurchaseForm from './PurchaseForm';
 import styles from './PurchaseTool.module.css';
 

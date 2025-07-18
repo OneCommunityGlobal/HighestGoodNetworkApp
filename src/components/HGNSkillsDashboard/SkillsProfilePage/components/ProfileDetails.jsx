@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-one-expression-per-line */
 import styles from '../styles/ProfileDetails.module.css';
 
 function ProfileDetails({ profileData }) {

@@ -1,3 +1,5 @@
+/* eslint-disable react/jsx-closing-tag-location */
+/* eslint-disable react/jsx-one-expression-per-line */
 import { useState, useEffect } from 'react';
 import { Button } from 'react-bootstrap';
 import {

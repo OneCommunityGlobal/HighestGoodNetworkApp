@@ -1,6 +1,8 @@
 import axios from 'axios';
 import httpService from '../services/httpService';
+// eslint-disable-next-line import/no-duplicates
 import { ApiEndpoint } from '~/utils/URL';
+// eslint-disable-next-line import/no-duplicates
 import { ENDPOINTS } from '~/utils/URL';
 
 const APIEndpoint = ApiEndpoint;

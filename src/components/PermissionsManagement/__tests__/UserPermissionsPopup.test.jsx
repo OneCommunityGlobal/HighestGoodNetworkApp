@@ -1,3 +1,12 @@
+/* eslint-disable testing-library/no-wait-for-multiple-assertions */
+/* eslint-disable prettier/prettier */
+/* eslint-disable import/no-named-as-default-member */
+/* eslint-disable import/no-named-as-default */
+/* eslint-disable import/default */
+/* eslint-disable import/namespace */
+/* eslint-disable import/first */
+/* eslint-disable testing-library/no-wait-for-side-effects */
+/* eslint-disable testing-library/no-node-access */
 vi.mock('react-toastify', () => ({
   __esModule: true,
   toast: {

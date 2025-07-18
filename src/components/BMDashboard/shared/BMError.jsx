@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-one-expression-per-line */
 // This component provides users with information about the error
 // and the ability to refresh the page to reattempt their request.
 // The component takes in an axios error as props.

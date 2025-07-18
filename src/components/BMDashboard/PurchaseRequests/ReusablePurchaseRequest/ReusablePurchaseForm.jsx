@@ -1,6 +1,7 @@
 import { fetchBMProjects } from '~/actions/bmdashboard/projectActions';
 import { fetchReusableTypes } from '~/actions/bmdashboard/invTypeActions';
 import { purchaseReusable } from '~/actions/bmdashboard/reusableActions';
+// eslint-disable-next-line import/namespace, import/default, import/no-named-as-default, import/no-named-as-default-member
 import PurchaseForm from '../PurchaseForm';
 
 const formLabels = {

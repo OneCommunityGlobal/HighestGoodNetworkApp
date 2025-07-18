@@ -1,3 +1,5 @@
+/* eslint-disable testing-library/no-render-in-lifecycle */
+/* eslint-disable react/jsx-props-no-spreading */
 import { render, screen } from '@testing-library/react';
 import { MonthlyEffort } from '../MonthlyEffort';
 

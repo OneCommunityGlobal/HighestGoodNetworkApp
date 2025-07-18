@@ -1,3 +1,4 @@
+/* eslint-disable testing-library/no-render-in-lifecycle */
 // eslint-disable-next-line no-unused-vars
 import React from 'react';
 import moment from 'moment';
@@ -8,6 +9,7 @@ import configureStore from 'redux-mock-store';
 import { themeMock } from '__tests__/mockStates';
 import { Provider } from 'react-redux';
 import { weeklySummaryMockData1 } from '../__mocks__/weeklySummaryMockData'; // Located in the tested component's __mocks__ folder
+// eslint-disable-next-line import/namespace
 import { WeeklySummary } from '../WeeklySummary';
 import CountdownTimer from '../CountdownTimer';
 
@@ -17,6 +19,7 @@ vi.mock('../CurrentPromptModal', () => ({
   __esModule: true,
   default: () => <div data-testid="current-prompt-modal">Mocked Prompt Modal</div>,
 }));
+// eslint-disable-next-line react/jsx-props-no-spreading, no-unused-vars
 const wrapper = props => render(<CurrentPromptModal {...props} />);
 vi.mock('react-toastify', () => ({
   toast: vi.fn(),
@@ -109,6 +112,7 @@ describe('WeeklySummary page', () => {
     });
 
     beforeEach(() => {
+      // eslint-disable-next-line testing-library/no-render-in-lifecycle
       render(
         <Provider store={store}>
           <WeeklySummary
@@ -165,21 +169,25 @@ describe('WeeklySummary page', () => {
     });
     it('should make 1st tab active when clicked', () => {
       // First tab click.
+      // eslint-disable-next-line testing-library/await-async-events
       userEvent.click(screen.getByTestId('tab-1'));
       expect(screen.getByTestId('tab-1').classList.contains('active')).toBe(true);
     });
     it('should make 2nd tab active when clicked', () => {
       // Second tab click.
+      // eslint-disable-next-line testing-library/await-async-events
       userEvent.click(screen.getByTestId('tab-2'));
       expect(screen.getByTestId('tab-2').classList.contains('active')).toBe(true);
     });
     it('should make 3rd tab active when clicked', () => {
       // Third tab click.
+      // eslint-disable-next-line testing-library/await-async-events
       userEvent.click(screen.getByTestId('tab-3'));
       expect(screen.getByTestId('tab-3').classList.contains('active')).toBe(true);
     });
     it('should make 4th tab active when clicked', () => {
       // Fourth tab click.
+      // eslint-disable-next-line testing-library/await-async-events
       userEvent.click(screen.getByTestId('tab-4'));
       expect(screen.getByTestId('tab-4').classList.contains('active')).toBe(true);
     });
@@ -195,6 +203,7 @@ describe('WeeklySummary page', () => {
       const dueDate = moment().subtract(1, 'seconds');
       render(<CountdownTimer date={dueDate} />);
 
+      // eslint-disable-next-line testing-library/prefer-find-by
       await waitFor(() => screen.getByText("Time's up!"));
 
       expect(screen.getByText(/^time's up!$/i)).toBeInTheDocument();
@@ -233,9 +242,12 @@ describe('WeeklySummary page', () => {
     });
 
     const testTooltip = async testId => {
+      // eslint-disable-next-line testing-library/prefer-find-by
       const tooltipIcon = await waitFor(() => screen.getByTestId(testId));
       expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
+      // eslint-disable-next-line testing-library/await-async-events
       userEvent.hover(tooltipIcon);
+      // eslint-disable-next-line testing-library/prefer-find-by
       const tooltip = await waitFor(() => screen.getByRole('tooltip'));
       expect(tooltip).toBeInTheDocument();
     };
@@ -304,6 +316,7 @@ describe('WeeklySummary page', () => {
       it('should display error message, confirm and close button when user input incorrect url input', async () => {
         const theurl = 'this is a test script';
         const element = screen.getByTestId('media-input');
+        // eslint-disable-next-line testing-library/await-async-events
         userEvent.paste(element, theurl);
         expect(screen.getByRole('dialog')).toBeInTheDocument();
         expect(screen.getAllByRole('button', { name: /Confirm/i })).toHaveLength(1);
@@ -334,8 +347,11 @@ describe('WeeklySummary page', () => {
       it('should display the correct url input', () => {
         const correcturl = 'https://testweb.com';
         const element = screen.getByTestId('media-input');
+        // eslint-disable-next-line testing-library/await-async-events
         userEvent.paste(element, correcturl);
+        // eslint-disable-next-line testing-library/await-async-events
         userEvent.click(screen.getByText('Confirm'));
+        // eslint-disable-next-line testing-library/await-async-events
         userEvent.paste(element, correcturl);
         expect(element).toHaveValue('https://testweb.com');
         expect(screen.getByText('Open link')).toBeInTheDocument();
@@ -346,14 +362,17 @@ describe('WeeklySummary page', () => {
       it('should be unchecked by default and can be checked', () => {
         const mediaCheckbox = screen.getByTestId('mediaConfirm');
         expect(mediaCheckbox).not.toBeChecked();
+        // eslint-disable-next-line testing-library/await-async-events
         userEvent.click(mediaCheckbox);
         expect(mediaCheckbox).toBeChecked();
       });
       it('should display an error message if a checkbox is unchecked after it was checked first', () => {
         const mediaCheckbox = screen.getByTestId('mediaConfirm');
         expect(mediaCheckbox).not.toBeChecked();
+        // eslint-disable-next-line testing-library/await-async-events
         userEvent.click(mediaCheckbox);
         expect(mediaCheckbox).toBeChecked();
+        // eslint-disable-next-line testing-library/await-async-events
         userEvent.click(mediaCheckbox);
         expect(mediaCheckbox).not.toBeChecked();
         const mediaCheckboxError = screen.getByText(
@@ -367,14 +386,17 @@ describe('WeeklySummary page', () => {
       it('should be unchecked by default and can be checked', () => {
         const editorCheckbox = screen.getByTestId('editorConfirm');
         expect(editorCheckbox).not.toBeChecked();
+        // eslint-disable-next-line testing-library/await-async-events
         userEvent.click(editorCheckbox);
         expect(editorCheckbox).toBeChecked();
       });
       it('should display an error message if a checkbox is unchecked after it was checked first', () => {
         const editorCheckbox = screen.getByTestId('editorConfirm');
         expect(editorCheckbox).not.toBeChecked();
+        // eslint-disable-next-line testing-library/await-async-events
         userEvent.click(editorCheckbox);
         expect(editorCheckbox).toBeChecked();
+        // eslint-disable-next-line testing-library/await-async-events
         userEvent.click(editorCheckbox);
         expect(editorCheckbox).not.toBeChecked();
         const editorCheckboxError = screen.getByText(
@@ -388,14 +410,17 @@ describe('WeeklySummary page', () => {
       it('should be unchecked by default and can be checked', () => {
         const proofreadCheckbox = screen.getByTestId('proofreadConfirm');
         expect(proofreadCheckbox).not.toBeChecked();
+        // eslint-disable-next-line testing-library/await-async-events
         userEvent.click(proofreadCheckbox);
         expect(proofreadCheckbox).toBeChecked();
       });
       it('should display an error message if a checkbox is unchecked after it was checked first', () => {
         const proofreadCheckbox = screen.getByTestId('proofreadConfirm');
         expect(proofreadCheckbox).not.toBeChecked();
+        // eslint-disable-next-line testing-library/await-async-events
         userEvent.click(proofreadCheckbox);
         expect(proofreadCheckbox).toBeChecked();
+        // eslint-disable-next-line testing-library/await-async-events
         userEvent.click(proofreadCheckbox);
         expect(proofreadCheckbox).not.toBeChecked();
         const proofreadCheckboxError = screen.getByText(
@@ -425,10 +450,14 @@ describe('WeeklySummary page', () => {
         // const labelText = screen.getByLabelText(/Link to your media files/i);
         // await userEvent.type(labelText, 'https://www.example.com/');
         // check off the media URL concent checkbox
+        // eslint-disable-next-line testing-library/await-async-events
         userEvent.click(screen.getByTestId('mediaConfirm'));
+        // eslint-disable-next-line testing-library/await-async-events
         userEvent.click(screen.getByTestId('editorConfirm'));
+        // eslint-disable-next-line testing-library/await-async-events
         userEvent.click(screen.getByTestId('proofreadConfirm'));
         expect(saveButton).toBeEnabled();
+        // eslint-disable-next-line testing-library/await-async-events
         userEvent.click(saveButton);
       });
     });

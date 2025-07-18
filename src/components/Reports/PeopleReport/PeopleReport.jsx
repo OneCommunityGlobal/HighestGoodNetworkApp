@@ -1,3 +1,10 @@
+/* eslint-disable import/no-named-as-default-member */
+/* eslint-disable import/no-named-as-default */
+/* eslint-disable import/default */
+/* eslint-disable import/namespace */
+/* eslint-disable react/jsx-key */
+/* eslint-disable no-undef */
+/* eslint-disable react/destructuring-assignment */
 /* eslint-disable no-nested-ternary */
 import { Component } from 'react';
 import '../../Teams/Team.css';
@@ -440,15 +447,25 @@ class PeopleReport extends Component {
         >
           <div className={`report-stats ${darkMode ? 'text-light' : ''}`}>
             <p>
-              <Link to={`/userProfile/${_id}`}
+              <Link
+                to={`/userProfile/${_id}`}
                 title="View Profile"
                 className={darkMode ? 'text-light font-weight-bold' : ''}
-                style={{ fontSize: "24px" }}>
-                {firstName} {lastName}
+                style={{ fontSize: "24px" }}
+              >
+                {firstName} 
+                {' '}
+                {lastName}
               </Link>
             </p>
-            <p>Role: {role}</p>
-            <p>Title: {jobTitle}</p>
+            <p>
+              Role:
+              {role}
+            </p>
+            <p>
+              Title:
+              {jobTitle}
+            </p>
 
             {/* {endDate ? ( */}
             <div className="rehireable">
@@ -476,7 +493,11 @@ class PeopleReport extends Component {
               </div>
               {bioStatus ? (
                 <div>
-                  <h5>Bio {bioStatus === 'default' ? 'not requested' : bioStatus}</h5>{' '}
+                  <h5>
+                    Bio
+                    {bioStatus === 'default' ? 'not requested' : bioStatus}
+                  </h5>
+                  {' '}
                   {authRole === 'Administrator' || authRole === 'Owner' ? (
                     <ToggleSwitch
                       fontSize="13px"
@@ -575,7 +596,9 @@ class PeopleReport extends Component {
                   className={`${darkMode ? 'text-light' : ''}
                    d-flex align-items-center flex-row justify-content-center`}
                 >
-                  Loading tasks: &nbsp; <Spinner color={`${darkMode ? 'light' : 'dark'}`} />
+                  Loading tasks: &nbsp; 
+                  {' '}
+                  <Spinner color={`${darkMode ? 'light' : 'dark'}`} />
                 </div>
               ) : activeTasks.length > 0 ? (
                 <>

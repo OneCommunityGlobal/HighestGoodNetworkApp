@@ -1,3 +1,6 @@
+/* eslint-disable import/order */
+/* eslint-disable react/jsx-closing-tag-location */
+/* eslint-disable react/jsx-indent */
 import { ReportPage } from '~/components/Reports/sharedComponents/ReportPage';
 // eslint-disable-next-line no-unused-vars
 import React from 'react';

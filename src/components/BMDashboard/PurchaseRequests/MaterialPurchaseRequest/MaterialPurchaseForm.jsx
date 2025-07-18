@@ -1,6 +1,8 @@
+/* eslint-disable import/default */
 import { fetchBMProjects } from '~/actions/bmdashboard/projectActions';
 import { fetchMaterialTypes } from '~/actions/bmdashboard/invTypeActions';
 import { purchaseMaterial } from '~/actions/bmdashboard/materialsActions';
+// eslint-disable-next-line import/namespace, import/no-named-as-default, import/no-named-as-default-member
 import PurchaseForm from '../PurchaseForm';
 
 const formLabels = {

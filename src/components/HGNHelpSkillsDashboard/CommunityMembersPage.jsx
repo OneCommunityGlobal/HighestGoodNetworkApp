@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import { useState } from 'react';
 import RankedUserList from './RankedUserList'; // wherever your RankedUserList is
 

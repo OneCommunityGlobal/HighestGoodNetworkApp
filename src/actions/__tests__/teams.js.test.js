@@ -5,6 +5,7 @@ import {
   getUserTeamMembers1,
   getTeamDetail,
   fetchAllManagingTeams,
+  // eslint-disable-next-line import/namespace
 } from '../team'; // Import fetchAllManagingTeams
 import { GET_TEAM_BY_ID } from '../../constants/team';
 import httpService from '../../services/httpService';

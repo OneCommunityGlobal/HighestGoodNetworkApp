@@ -1,3 +1,7 @@
+/* eslint-disable import/no-named-as-default-member */
+/* eslint-disable import/no-named-as-default */
+/* eslint-disable import/default */
+/* eslint-disable import/namespace */
 import { useState } from 'react';
 import ProfileDetails from './ProfileDetails';
 import Skills from './Skills';

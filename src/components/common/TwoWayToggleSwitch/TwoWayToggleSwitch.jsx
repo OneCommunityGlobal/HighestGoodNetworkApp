@@ -10,6 +10,7 @@ function TwoWayToggleSwitch({ isOn, handleToggle }) {
         id="toggle-switch-new"
         type="checkbox"
       />
+      {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
       <label className="toggle-switch-label" htmlFor="toggle-switch-new">
         <span className="toggle-switch-inner" />
         <span className="toggle-switch-switch" />

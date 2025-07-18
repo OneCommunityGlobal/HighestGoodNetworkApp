@@ -1,3 +1,5 @@
+/* eslint-disable react/jsx-one-expression-per-line */
+/* eslint-disable no-undef */
 import { useState, useEffect, useRef } from 'react';
 import {
   Modal,

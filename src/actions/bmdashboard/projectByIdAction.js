@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { ENDPOINTS } from '~/utils/URL';
+// eslint-disable-next-line import/no-named-as-default
 import GET_BM_PROJECT_BY_ID from '../../constants/bmdashboard/projectConstants';
 import { GET_ERRORS } from '../../constants/errors';
 
@@ -28,11 +29,11 @@ export const fetchProjectById = projectId => {
 
       const projectData = response.data;
       dispatch(setProject(projectData));
-      return projectData; 
+      return projectData;
 
     } catch (error) {
       dispatch(setErrors(error));
-      return null; 
+      return null;
     }
   };
 };

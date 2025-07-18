@@ -1,3 +1,9 @@
+/* eslint-disable testing-library/await-async-events */
+/* eslint-disable testing-library/no-wait-for-multiple-assertions */
+/* eslint-disable import/no-named-as-default-member */
+/* eslint-disable import/no-named-as-default */
+/* eslint-disable import/default */
+/* eslint-disable import/namespace */
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';

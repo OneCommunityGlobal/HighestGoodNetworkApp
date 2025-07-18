@@ -1,4 +1,6 @@
+/* eslint-disable import/namespace */
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
+// eslint-disable-next-line import/default, import/no-named-as-default, import/no-named-as-default-member
 import UpdateMaterial from './UpdateMaterial';
 import styles from './UpdateMaterial.module.css';
 

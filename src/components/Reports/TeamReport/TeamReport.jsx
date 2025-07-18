@@ -1,3 +1,10 @@
+/* eslint-disable import/no-duplicates */
+/* eslint-disable import/no-named-as-default-member */
+/* eslint-disable import/no-named-as-default */
+/* eslint-disable import/default */
+/* eslint-disable import/namespace */
+/* eslint-disable react/jsx-one-expression-per-line */
+/* eslint-disable jsx-a11y/label-has-associated-control */
 // eslint-disable-next-line no-unused-vars
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { debounce } from 'lodash';
@@ -7,8 +14,8 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { FiUsers } from 'react-icons/fi';
 import axios from 'axios';
-import { ENDPOINTS } from '~/utils/URL';
 import { useRef } from 'react';
+import { ENDPOINTS } from '~/utils/URL';
 import {
   getAllUserTeams,
   postNewTeam,
@@ -353,8 +360,7 @@ export function TeamReport({ match }) {
                   setSearchParams(prevParams => ({
                     ...prevParams,
                     createdAt: new Date(date),
-                  }))
-                }
+                  }))}
                 className="form-control w-auto"
                 id="search-by-startDate"
               />
@@ -374,8 +380,7 @@ export function TeamReport({ match }) {
                   setSearchParams(prevParams => ({
                     ...prevParams,
                     modifiedAt: new Date(date),
-                  }))
-                }
+                  }))}
                 className="form-control w-auto"
                 id="search-by-endDate"
               />

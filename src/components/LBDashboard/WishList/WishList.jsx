@@ -1,3 +1,8 @@
+/* eslint-disable react/jsx-one-expression-per-line */
+/* eslint-disable import/no-named-as-default-member */
+/* eslint-disable import/no-named-as-default */
+/* eslint-disable import/default */
+/* eslint-disable import/namespace */
 import './WishList.css';
 import { connect, useDispatch } from 'react-redux';
 import { FaMapMarkerAlt } from 'react-icons/fa';

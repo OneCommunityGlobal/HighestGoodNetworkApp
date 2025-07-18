@@ -1,3 +1,9 @@
+/* eslint-disable react/jsx-one-expression-per-line */
+/* eslint-disable import/no-duplicates */
+/* eslint-disable import/no-named-as-default-member */
+/* eslint-disable import/no-named-as-default */
+/* eslint-disable import/default */
+/* eslint-disable import/namespace */
 import { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 

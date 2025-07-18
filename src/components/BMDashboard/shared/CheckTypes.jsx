@@ -1,3 +1,6 @@
+/* eslint-disable react/no-unknown-property */
+/* eslint-disable react/jsx-one-expression-per-line */
+// eslint-disable-next-line import/order
 import { fetchInvTypeByType } from '~/actions/bmdashboard/invTypeActions';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -148,23 +151,25 @@ function CheckTypes({ type }) {
                 ))}
               </tbody>
             </Table>
-            <style jsx>{`
-              tbody tr:nth-child(odd) {
-                background-color: ${darkMode ? '#1C2541' : '#ffffff'};
-                color: ${darkMode ? '#ffffff' : '#000000'};
-              }
-              tbody tr:nth-child(even) {
-                background-color: ${darkMode ? '#3A506B' : '#f9f9f9'};
-                color: ${darkMode ? '#ffffff' : '#000000'};
-              }
-              tbody tr:hover {
-                background-color: ${darkMode ? '#23395d !important' : '#e9ecef !important'};
-                color: ${darkMode ? '#ffffff !important' : '#000000 !important'};
-              }
-              thead tr:hover {
-                background-color: ${darkMode ? '#1C2541' : '#ffffff'};
-              }
-            `}</style>
+            <style jsx>
+              {`
+                tbody tr:nth-child(odd) {
+                  background-color: ${darkMode ? '#1C2541' : '#ffffff'};
+                  color: ${darkMode ? '#ffffff' : '#000000'};
+                }
+                tbody tr:nth-child(even) {
+                  background-color: ${darkMode ? '#3A506B' : '#f9f9f9'};
+                  color: ${darkMode ? '#ffffff' : '#000000'};
+                }
+                tbody tr:hover {
+                  background-color: ${darkMode ? '#23395d !important' : '#e9ecef !important'};
+                  color: ${darkMode ? '#ffffff !important' : '#000000 !important'};
+                }
+                thead tr:hover {
+                  background-color: ${darkMode ? '#1C2541' : '#ffffff'};
+                }
+              `}
+            </style>
           </div>
         </CardBody>
       </Card>

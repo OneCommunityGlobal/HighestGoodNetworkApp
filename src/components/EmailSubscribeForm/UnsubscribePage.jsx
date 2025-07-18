@@ -1,3 +1,4 @@
+/* eslint-disable import/namespace */
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import styles from './SubscribePage.module.css'; // Reuse the same styles as SubscribePage

@@ -52,6 +52,7 @@ describe('TinyMCEEditor Component', () => {
     );
 
     await waitFor(() => {
+      // eslint-disable-next-line testing-library/no-node-access
       const editorTextarea = document.getElementById(mockProps.name);
       expect(editorTextarea).toBeInTheDocument();
     });
@@ -83,6 +84,7 @@ describe('TinyMCEEditor Component', () => {
     );
 
     await waitFor(() => {
+      // eslint-disable-next-line testing-library/no-node-access
       const wrapper = document.querySelector(`.${mockProps.className}`);
       expect(wrapper).toBeInTheDocument();
     });
@@ -157,7 +159,7 @@ describe('TinyMCEEditor Component', () => {
         config={config}
       />,
     );
-
+    // eslint-disable-next-line testing-library/no-node-access
     const editorTextarea = document.getElementById(mockProps.name);
     expect(editorTextarea).toBeInTheDocument();
     expect(screen.getByLabelText(mockProps.label)).toBeInTheDocument();

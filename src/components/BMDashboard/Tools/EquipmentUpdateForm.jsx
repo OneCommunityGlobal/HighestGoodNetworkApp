@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-one-expression-per-line */
 import { useState, useEffect, useMemo } from 'react';
 import { Form, FormGroup, Label, Input, Button } from 'reactstrap';
 import { toast } from 'react-toastify';

@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-one-expression-per-line */
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { getFAQHistory } from './api';

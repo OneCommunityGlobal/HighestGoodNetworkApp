@@ -1,3 +1,4 @@
+/* eslint-disable testing-library/no-container */
 import React from 'react';
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
@@ -14,10 +15,12 @@ vi.mock('react-toastify', () => ({
     error: vi.fn(),
   },
 }));
+// eslint-disable-next-line import/first
 import { toast } from 'react-toastify';
 
 vi.mock('axios');
 
+// eslint-disable-next-line import/first
 import CurrentPromptModal from '~/components/WeeklySummary/CurrentPromptModal';
 
 const mockStore = configureStore([thunk]);
@@ -44,6 +47,7 @@ describe('CurrentPromptModal component', () => {
   it('renders without crashing', async () => {
     axios.get.mockResolvedValue({ status: 200, data: [] });
 
+    // eslint-disable-next-line testing-library/no-unnecessary-act
     await act(async () => {
       render(
         <Provider store={store}>
@@ -58,6 +62,7 @@ describe('CurrentPromptModal component', () => {
   it('opens the modal when "View and Copy Current AI Prompt" is clicked', async () => {
     axios.get.mockResolvedValue({ status: 200, data: [] });
 
+    // eslint-disable-next-line testing-library/no-unnecessary-act
     await act(async () => {
       const { container } = render(
         <Provider store={store}>
@@ -65,6 +70,7 @@ describe('CurrentPromptModal component', () => {
         </Provider>,
       );
 
+      // eslint-disable-next-line testing-library/no-node-access
       const btn = container.querySelector('button.p-1.mb-1.responsive-font-size.btn.btn-info');
       expect(btn).toHaveTextContent('View and Copy Current AI Prompt');
       fireEvent.click(btn);
@@ -76,6 +82,7 @@ describe('CurrentPromptModal component', () => {
   it('shows tooltip on hover of info icon', async () => {
     axios.get.mockResolvedValue({ status: 200, data: [] });
 
+    // eslint-disable-next-line testing-library/no-unnecessary-act
     await act(async () => {
       const { container } = render(
         <Provider store={store}>
@@ -83,6 +90,7 @@ describe('CurrentPromptModal component', () => {
         </Provider>,
       );
 
+      // eslint-disable-next-line testing-library/no-node-access
       const icon = container.querySelector('.fa.fa-info-circle');
       fireEvent.mouseEnter(icon);
       await waitFor(() => {
@@ -99,6 +107,7 @@ describe('CurrentPromptModal component', () => {
     const promptText = `Please edit the following summary…`;
     axios.get.mockResolvedValue({ data: { aIPromptText: promptText } });
 
+    // eslint-disable-next-line testing-library/no-unnecessary-act
     await act(async () => {
       const { container } = render(
         <Provider store={store}>
@@ -106,11 +115,13 @@ describe('CurrentPromptModal component', () => {
         </Provider>,
       );
 
+      // eslint-disable-next-line testing-library/no-node-access
       fireEvent.click(container.querySelector('button.p-1.mb-1.responsive-font-size.btn.btn-info'));
 
       // now wait for the async fetch & render
       await waitFor(() => {
         const dialog = screen.getByRole('document');
+        // eslint-disable-next-line testing-library/no-node-access
         const body = dialog.querySelector('.modal-body');
         expect(body).toHaveTextContent(promptText);
       });
@@ -120,6 +131,7 @@ describe('CurrentPromptModal component', () => {
   it('closes the modal when the close button is clicked', async () => {
     axios.get.mockResolvedValue({ status: 200, data: [] });
 
+    // eslint-disable-next-line testing-library/no-unnecessary-act
     await act(async () => {
       const { container } = render(
         <Provider store={store}>
@@ -127,9 +139,11 @@ describe('CurrentPromptModal component', () => {
         </Provider>,
       );
 
+      // eslint-disable-next-line testing-library/no-node-access
       fireEvent.click(container.querySelector('button.p-1.mb-1.responsive-font-size.btn.btn-info'));
 
       const dialog = await screen.findByRole('document');
+      // eslint-disable-next-line testing-library/no-node-access
       const closeBtn = dialog.querySelector('.close');
       fireEvent.click(closeBtn);
 
@@ -144,6 +158,7 @@ describe('CurrentPromptModal component', () => {
     axios.get.mockResolvedValue({ data: { aIPromptText: promptText } });
     axios.put.mockResolvedValue({ status: 200 });
 
+    // eslint-disable-next-line testing-library/no-unnecessary-act
     await act(async () => {
       const { container } = render(
         <Provider store={store}>
@@ -151,6 +166,7 @@ describe('CurrentPromptModal component', () => {
         </Provider>,
       );
 
+      // eslint-disable-next-line testing-library/no-node-access
       fireEvent.click(container.querySelector('button.p-1.mb-1.responsive-font-size.btn.btn-info'));
       const copyBtn = await screen.findByRole('button', { name: 'Copy Prompt' });
 
@@ -159,6 +175,7 @@ describe('CurrentPromptModal component', () => {
       // ensure clipboard.writeText was called with exactly that text
       await waitFor(() => {
         expect(mockWriteText).toHaveBeenCalledWith(promptText);
+        // eslint-disable-next-line testing-library/no-wait-for-multiple-assertions
         expect(mockToastSuccess).toHaveBeenCalledWith('Prompt Copied!');
       });
     });

@@ -1,6 +1,7 @@
 import axios from "axios";
 import { SET_ISSUES } from "~/constants/bmdashboard/issueConstants";
 import { GET_ERRORS } from "~/constants/errors";
+// eslint-disable-next-line import/order
 import { toast } from "react-toastify";
 import { ENDPOINTS } from "~/utils/URL";
 

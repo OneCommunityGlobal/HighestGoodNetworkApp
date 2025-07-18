@@ -1,10 +1,13 @@
+/* eslint-disable react/destructuring-assignment */
+/* eslint-disable react/jsx-closing-tag-location */
+/* eslint-disable react/jsx-indent */
 import { useState, useEffect } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, FormGroup, Label, Input, Form, Row, Col } from 'reactstrap';
-import { getFontColor, getBoxStyling } from '~/styles';
 import { connect, useDispatch } from 'react-redux';
-import { getUserProfile } from '~/actions/userProfile';
 import moment from 'moment';
 import { isEmpty } from 'lodash';
+import { getUserProfile } from '~/actions/userProfile';
+import { getFontColor, getBoxStyling } from '~/styles';
 import { deleteTimeEntry, editTimeEntry } from '~/actions/timeEntries';
 import './EditHistoryModal.css';
 import '../../Header/DarkMode.css'

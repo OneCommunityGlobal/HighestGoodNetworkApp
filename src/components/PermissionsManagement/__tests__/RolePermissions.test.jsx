@@ -1,11 +1,7 @@
-vi.mock('react-toastify', () => ({
-  __esModule: true,
-  toast: {
-    success: vi.fn(),
-    error:   vi.fn(),
-  },
-  ToastContainer: () => null,
-}))
+/* eslint-disable testing-library/no-wait-for-multiple-assertions */
+/* eslint-disable testing-library/prefer-presence-queries */
+/* eslint-disable testing-library/no-node-access */
+/* eslint-disable testing-library/no-container */
 // eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
@@ -20,6 +16,15 @@ import { Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
 import { ModalContext } from '~/context/ModalContext';
 import RolePermissions from '../RolePermissions';
+
+vi.mock('react-toastify', () => ({
+  __esModule: true,
+  toast: {
+    success: vi.fn(),
+    error: vi.fn(),
+  },
+  ToastContainer: () => null,
+}));
 
 const mockModalContext = {
   modalStatus: false,

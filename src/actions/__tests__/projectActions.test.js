@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 
+// eslint-disable-next-line import/namespace
 import { getProjectDetail, setProjectDetail } from '../project';
 import { ENDPOINTS } from '~/utils/URL';
 import { GET_PROJECT_BY_ID } from '../../constants/project';

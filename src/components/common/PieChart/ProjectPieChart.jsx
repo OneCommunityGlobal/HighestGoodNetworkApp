@@ -1,4 +1,5 @@
 /* eslint-disable no-restricted-globals */
+/* eslint-disable testing-library/no-node-access */
 import { useEffect, useState, useMemo } from 'react';
 import * as d3 from 'd3';
 import { CHART_RADIUS, CHART_SIZE } from './constants';
@@ -200,7 +201,7 @@ function UserProjectPieChart({
                     />
                   </td>
                   <td>{project.projectName}</td>
-                  <td>{project.totalTime.toFixed(2)} </td>
+                  <td>{project.totalTime.toFixed(2)}</td>
                 </tr>
               ))}
             </tbody>
@@ -208,7 +209,8 @@ function UserProjectPieChart({
         </div>
 
         <div className="data-total-value">
-          <strong>Total Hours:</strong> {totalHours.toFixed(2)}
+          <strong>Total Hours:</strong>
+          {totalHours.toFixed(2)}
         </div>
       </div>
     </div>

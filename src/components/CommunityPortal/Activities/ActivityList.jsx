@@ -1,3 +1,7 @@
+/* eslint-disable react/jsx-indent */
+/* eslint-disable prettier/prettier */
+/* eslint-disable react/jsx-one-expression-per-line */
+/* eslint-disable jsx-a11y/label-has-associated-control */
 // Activity List Component
 import { useState, useEffect } from 'react';
 import './ActivityList.css';
@@ -83,7 +87,8 @@ function ActivityList() {
           <ul>
             {filteredActivities.map(activity => (
               <li key={activity.id}>
-                <strong>{activity.name}</strong> - {activity.type} - {activity.date} -{' '}
+                <strong>{activity.name}</strong> -{activity.type} -{activity.date} -
+{' '}
                 {activity.location}
               </li>
             ))}

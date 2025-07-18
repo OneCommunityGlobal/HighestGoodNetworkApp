@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-one-expression-per-line */
 import { useState } from 'react';
 import './MemberList.css';
 

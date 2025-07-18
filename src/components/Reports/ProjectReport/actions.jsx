@@ -1,3 +1,4 @@
+/* eslint-disable import/namespace */
 import { getProjectDetail } from '../../../actions/project';
 import { fetchAllMembers } from '../../../actions/projectMembers';
 import { fetchAllWBS } from '../../../actions/wbs';

@@ -1,5 +1,16 @@
+/* eslint-disable consistent-return */
+/* eslint-disable import/no-named-as-default-member */
+/* eslint-disable import/no-named-as-default */
+/* eslint-disable import/default */
+/* eslint-disable import/order */
+/* eslint-disable import/namespace */
+/* eslint-disable import/first */
+/* eslint-disable react/jsx-props-no-spreading */
+/* eslint-disable testing-library/no-container */
+/* eslint-disable testing-library/no-node-access */
 // eslint-disable-next-line no-unused-vars
 vi.mock('../../../actions/leaderBoardData', () => ({
+  // eslint-disable-next-line prettier/prettier
   getOrgData:vi.fn(),
 }));
 import React from 'react';
@@ -63,7 +74,7 @@ describe('Leaderboard page structure', () => {
       ...mockAdminState,
       organizationData: { weeklyCommittedHours: 0, tangibletime: 0, totaltime: 0 },
       getLeaderboardData: vi.fn(),
-      getOrgData:            vi.fn(),
+      getOrgData: vi.fn(),
       loggedInUser: { role: 'Admin' },
       loading: false,
       darkMode: true,
@@ -79,13 +90,13 @@ describe('Leaderboard page structure', () => {
     vi.clearAllMocks();
   });
 
- const renderWithProvider = (ui, options) =>
-   render(
-     <Provider store={store}>
-       <MemoryRouter>{ui}</MemoryRouter>
-     </Provider>,
-     options
-   );
+  const renderWithProvider = (ui, options) =>
+    render(
+      <Provider store={store}>
+        <MemoryRouter>{ui}</MemoryRouter>
+      </Provider>,
+      options,
+    );
 
   it('should render without errors', () => {
     expect(() => {

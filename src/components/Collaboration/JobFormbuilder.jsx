@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
+/* eslint-disable no-undef */
 import { useState } from 'react';
 import axios from 'axios';
 import { useSelector } from 'react-redux';

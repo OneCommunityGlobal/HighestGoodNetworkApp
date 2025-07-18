@@ -77,6 +77,7 @@ describe('Form ', () => {
       form.handleFileUpload({ target: { name: 'fileInput', files: [file] } });
 
       // Wait one tick so FileReader.onload fires
+      // eslint-disable-next-line no-promise-executor-return
       await new Promise(resolve => setTimeout(resolve, 0));
 
       const uploaded = form.state.data.fileInput;

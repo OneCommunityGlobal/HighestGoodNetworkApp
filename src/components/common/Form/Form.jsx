@@ -250,6 +250,7 @@ class Form extends Component {
     };
 
     this.handleCollection = (collection, item, action, index = null) => {
+      // eslint-disable-next-line react/destructuring-assignment
       const data = this.state.data[collection] || [];
       switch (action) {
         case 'create':
@@ -269,12 +270,14 @@ class Form extends Component {
 
     this.handleFileUpload = (e, readAsType = 'data') => {
       const file = e.target.files[0];
+      // eslint-disable-next-line no-undef
       const reader = new FileReader();
       const { name } = e.target;
 
       if (!file) return;
 
       reader.onload = event => {
+        // eslint-disable-next-line prefer-destructuring
         const result = event.target.result;
         this.handleState(name, {
           data: result,
@@ -312,6 +315,7 @@ class Form extends Component {
       this.setState({ data, errors });
     };
 
+    // eslint-disable-next-line react/destructuring-assignment
     this.isStateChanged = () => !isEqual(this.state.data, this.initialState.data);
 
     this.validateProperty = (name, value) => {
@@ -322,6 +326,7 @@ class Form extends Component {
       if (refs) {
         refs.forEach(ref => {
           schema[ref] = this.schema[ref];
+          // eslint-disable-next-line react/destructuring-assignment
           obj[ref] = this.state.data[ref];
         });
       }
@@ -335,6 +340,7 @@ class Form extends Component {
     this.validateForm = () => {
       const errors = {};
       const options = { abortEarly: false };
+      // eslint-disable-next-line react/destructuring-assignment
       const { error } = Joi.object(this.schema).validate(this.state.data, options);
 
       if (!error) return null;

@@ -1,3 +1,6 @@
+/* eslint-disable react/jsx-first-prop-new-line */
+/* eslint-disable react/jsx-one-expression-per-line */
+/* eslint-disable react/jsx-indent */
 /* eslint-disable import/prefer-default-export */
 import { useEffect, useState } from 'react';
 import './ProjectMemberTable.css';
@@ -43,7 +46,7 @@ export function ProjectMemberTable({ projectMembers, skip, take, handleMemberCou
       <div>
         <div>{skip + index + 1}</div>
       </div>
-      <Link to={`/userprofile/${member._id}`} title="View Profile"  className={`project-member-table-name-column ${darkMode ? "text-light" : ""}`}>
+      <Link to={`/userprofile/${member._id}`} title="View Profile" className={`project-member-table-name-column ${darkMode ? "text-light" : ""}`}>
         <div>
         {window.innerWidth >= 1100 ? `${member.firstName} ${member.lastName}` : `${member.firstName.substring(0, 10)} ${member.lastName.substring(0, 1)}`}          
         </div>
@@ -126,9 +129,9 @@ export function ProjectMemberTable({ projectMembers, skip, take, handleMemberCou
       </div>
       <div>
         {memberFilter === 'all-time' && allMemberTable.length > 0 && allMemberTable}
-        {memberFilter === 'all-time' && allMemberTable.length === 0 && <Stub darkMode={darkMode}/>}
+        {memberFilter === 'all-time' && allMemberTable.length === 0 && <Stub darkMode={darkMode} />}
         {memberFilter !== 'all-time' && activeMemberTable.length > 0 && activeMemberTable}
-        {memberFilter !== 'all-time' && activeMemberTable.length === 0 && <Stub darkMode={darkMode}/>}
+        {memberFilter !== 'all-time' && activeMemberTable.length === 0 && <Stub darkMode={darkMode} />}
       </div>
     </div>
   );

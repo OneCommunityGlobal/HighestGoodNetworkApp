@@ -1,7 +1,11 @@
+/* eslint-disable import/first */
+/* eslint-disable testing-library/no-node-access */
+/* eslint-disable testing-library/no-container */
 import React from 'react';
 import { vi } from 'vitest';                      // 1) import vi first
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
+
 vi.mock('../ReportCharts', () => ({
   __esModule: true,                               // mark it as an ES module
   default: (props) => (                           // this becomes the default export

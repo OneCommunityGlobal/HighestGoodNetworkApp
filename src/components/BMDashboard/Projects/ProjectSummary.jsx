@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-one-expression-per-line */
 import { Row, Col, Label } from 'reactstrap';
 import { useState, useEffect } from 'react';
 import './ProjectSummary.css'; // Import the CSS file

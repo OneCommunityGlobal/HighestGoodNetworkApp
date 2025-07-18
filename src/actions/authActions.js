@@ -26,6 +26,7 @@ export const loginUser = credentials => dispatch => {
         dispatch(setCurrentUser({ new: true, userId: res.data.userId }));
         return { success: true, new: true };
       }
+      // eslint-disable-next-line no-undef
       localStorage.setItem(tokenKey, res.data.token);
       httpService.setjwt(res.data.token);
       const decoded = jwtDecode(res.data.token);
@@ -55,6 +56,7 @@ export const loginBMUser = credentials => async dispatch => {
   return httpService
     .post(ENDPOINTS.BM_LOGIN, credentials)
     .then(res => {
+      // eslint-disable-next-line no-undef
       localStorage.setItem(tokenKey, res.data.token);
       httpService.setjwt(res.data.token);
       const decoded = jwtDecode(res.data.token);
@@ -94,6 +96,7 @@ export const getHeaderData = userId => {
 };
 
 export const logoutUser = () => dispatch => {
+  // eslint-disable-next-line no-undef
   localStorage.removeItem(tokenKey);
   httpService.setjwt(false);
   dispatch(setCurrentUser(null));
@@ -103,6 +106,7 @@ export const refreshToken = userId => {
   return async dispatch => {
     const res = await axios.get(ENDPOINTS.USER_REFRESH_TOKEN(userId));
     if (res.status === 200) {
+      // eslint-disable-next-line no-undef
       localStorage.setItem(tokenKey, res.data.refreshToken);
       httpService.setjwt(res.data.refreshToken);
       const decoded = jwtDecode(res.data.refreshToken);

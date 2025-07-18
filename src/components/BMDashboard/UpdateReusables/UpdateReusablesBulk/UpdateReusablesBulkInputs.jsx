@@ -1,3 +1,4 @@
+/* eslint-disable import/no-duplicates */
 import moment from 'moment';
 import { Input, Label, Form, Row, Col } from 'reactstrap';
 import { useState } from 'react';
