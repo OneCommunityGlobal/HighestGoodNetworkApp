@@ -92,21 +92,22 @@ export default function Warning({ personId, username, userRole, displayUser }) {
       setUsersWarnings(res);
     });
   };
-
+  /* eslint-disable prettier/prettier, react/jsx-indent-props, react/jsx-closing-bracket-location */
   const warnings = !toggle
-    ? null
-    : usersWarnings.map(warning => (
-        <WarningItem
-          key={warning.title}
-          warnings={warning.warnings}
-          warningText={warning.title}
-          handlePostWarningDetails={handlePostWarningDetails}
-          username={username}
-          submitWarning={handlePostWarningDetails}
-          handleDeleteWarning={handleDeleteWarning}
-          userRole={userRole}
-        />
-      ));
+  ? null
+  : usersWarnings.map(warning => (
+    <WarningItem
+      key={warning.title}
+      warnings={warning.warnings}
+      warningText={warning.title}
+      handlePostWarningDetails={handlePostWarningDetails}
+      username={username}
+      submitWarning={handlePostWarningDetails}
+      handleDeleteWarning={handleDeleteWarning}
+      userRole={userRole}
+    />
+    ));
+  /* eslint-enable prettier/prettier, react/jsx-indent-props, react/jsx-closing-bracket-location */
 
   return (
     isAllowedToTracking && (
@@ -143,7 +144,10 @@ export default function Warning({ personId, username, userRole, displayUser }) {
           />
         )}
 
-        <div className="warning-wrapper"> {warnings}</div>
+        <div className="warning-wrapper">
+          {/* eslint-disable-next-line prettier/prettier */}
+          {warnings}
+        </div>
         <div className="error-container">
           {error && (
             <Alert key="warning" variant="warning">

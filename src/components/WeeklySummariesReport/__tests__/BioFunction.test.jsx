@@ -33,6 +33,7 @@ describe('BioFunction component', () => {
         userId={props.userId}
       />,
     );
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     expect(getByText('Bio announcement:')).toBeInTheDocument();
   });
 
@@ -49,10 +50,12 @@ describe('BioFunction component', () => {
         userId={props.userId}
       />,
     );
-
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     expect(getByText('Bio announcement:')).toBeInTheDocument();
 
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
     const divElements = container.querySelector('#bio-announcement');
+    // eslint-disable-next-line testing-library/no-node-access
     expect(divElements.children.length).toBe(2);
   });
 
@@ -71,7 +74,9 @@ describe('BioFunction component', () => {
       />,
     );
 
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     expect(getByText('Bio announcement:')).toBeInTheDocument();
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
     const divElements = container.querySelectorAll('.bio-toggle');
     expect(divElements.length).toBe(0);
   });
@@ -91,7 +96,9 @@ describe('BioFunction component', () => {
       />,
     );
 
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     expect(getByText('Bio announcement:')).toBeInTheDocument();
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     expect(getByText('Not requested/posted')).toBeInTheDocument();
   });
 
@@ -110,8 +117,10 @@ describe('BioFunction component', () => {
         userId={props.userId}
       />,
     );
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     expect(getByText('Bio announcement:')).toBeInTheDocument();
 
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     expect(getByText('Posted')).toBeInTheDocument();
   });
 
@@ -130,8 +139,10 @@ describe('BioFunction component', () => {
         userId={props.userId}
       />,
     );
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     expect(getByText('Bio announcement:')).toBeInTheDocument();
 
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     expect(getByText('Requested')).toBeInTheDocument();
   });
 });

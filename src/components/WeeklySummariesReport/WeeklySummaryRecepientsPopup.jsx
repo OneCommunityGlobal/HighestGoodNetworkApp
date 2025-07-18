@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { boxStyle, boxStyleDark } from '~/styles';
 import '../Header/DarkMode.css';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Container, Alert } from 'reactstrap';
 import { toast } from 'react-toastify';
@@ -8,6 +7,7 @@ import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import { boxStyle, boxStyleDark } from '~/styles';
 import MembersAutoComplete from '../Teams/MembersAutoComplete';
 import {
   getSummaryRecipients,
@@ -128,18 +128,20 @@ const WeeklySummaryRecipientsPopup = React.memo(props => {
           {infoModalOpen && (
             <div className="mt-3">
               <span style={{ fontSize: '.8em' }}>
-                Authoried User: {authEmailWeeklySummaryRecipient}
+                Authoried User:
+                {authEmailWeeklySummaryRecipient}
               </span>
               <section>
                 <span className="mr-3" style={{ fontSize: '.8em' }}>
-                  Password: {showPassword ? password : ''}
+                  Password:
+                  {showPassword ? password : ''}
                 </span>
                 {!showPassword && (
                   <Button
                     onClick={() => setShowPassword(true)}
                     style={darkMode ? boxStyleDark : boxStyle}
                   >
-                    Reveal{' '}
+                    Reveal
                   </Button>
                 )}
                 {showPassword && (
@@ -213,4 +215,5 @@ const WeeklySummaryRecipientsPopup = React.memo(props => {
     </Container>
   );
 });
+WeeklySummaryRecipientsPopup.displayName = 'WeeklySummaryRecipientsPopup';
 export default WeeklySummaryRecipientsPopup;

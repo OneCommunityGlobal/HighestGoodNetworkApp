@@ -21,7 +21,8 @@ function TeamRow({ rowData }) {
         <td>
           <a href={`/userprofile/${data.id}`}>{data.role}</a>
         </td>
-        <td>{data.length}</td> {/* Leave an empty cell for the total members */}
+        <td>{data.length}</td>
+        {/* Leave an empty cell for the total members */}
       </tr>
     );
   }

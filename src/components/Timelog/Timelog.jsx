@@ -1,3 +1,4 @@
+/* eslint-disable no-shadow */
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-alert */
 /* eslint-disable no-console */
@@ -32,6 +33,8 @@ import classnames from 'classnames';
 import { connect, useSelector } from 'react-redux';
 import moment from 'moment';
 import ReactTooltip from 'react-tooltip';
+import axios from 'axios';
+import PropTypes from 'prop-types';
 import ActiveCell from '~/components/UserManagement/ActiveCell';
 import ProfileNavDot from '~/components/UserManagement/ProfileNavDot';
 import TeamMemberTasks from '~/components/TeamMemberTasks';
@@ -39,13 +42,11 @@ import { boxStyle, boxStyleDark } from '~/styles';
 import { formatDate } from '~/utils/formatDate';
 import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
 import { cantUpdateDevAdminDetails } from '~/utils/permissions';
-import axios from 'axios';
 import {
   DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
   DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
   PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
 } from '~/utils/constants';
-import PropTypes from 'prop-types';
 import { getTimeEntriesForWeek, getTimeEntriesForPeriod } from '../../actions/timeEntries';
 import { getUserProfile, updateUserProfile, getUserTasks } from '../../actions/userProfile';
 import { getUserProjects } from '../../actions/userProjects';
@@ -55,6 +56,7 @@ import TimeEntryForm from './TimeEntryForm';
 import TimeEntry from './TimeEntry';
 import EffortBar from './EffortBar';
 import SummaryBar from '../SummaryBar/SummaryBar';
+// eslint-disable-next-line import/no-named-as-default
 import WeeklySummary from '../WeeklySummary/WeeklySummary';
 import LoadingSkeleton from '../common/SkeletonLoading';
 import hasPermission from '../../utils/permissions';
@@ -85,8 +87,7 @@ function Timelog(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const location = useLocation();
 
-  // Main Function component
-  const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
+  
 
   // access the store states
   const {
@@ -97,7 +98,27 @@ function Timelog(props) {
     displayUserProjects,
     disPlayUserTasks,
     userId,
+    passSummaryBarData,
+    badgeCount,
+    filteredUserTeamIds,
+    hasPermission,
+    getUserProfile,
+    getTimeEntriesForWeek,
+    getTimeEntriesForPeriod,
+    getAllRoles,
+    getUserProjects,
+    getUserTasks,
+    // eslint-disable-next-line no-unused-vars
+    userProfile,
+    // eslint-disable-next-line no-unused-vars
+    setProjectId,
+    // eslint-disable-next-line no-unused-vars
+    timeEntriesLoading,
+    isDashboard
   } = props;
+
+  // Main Function component
+  const canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
 
   const initialState = {
     timeEntryFormModal: false,
@@ -195,7 +216,7 @@ function Timelog(props) {
     }
 
     // Sets active tab to "Current Week Timelog" when the Progress bar in Leaderboard is clicked
-    if (!props.isDashboard) {
+    if (!isDashboard) {
       tab = 1;
     }
 
@@ -261,14 +282,14 @@ function Timelog(props) {
     setTimeLogState({ ...timeLogState, isTimeEntriesLoading: true });
     try {
       await Promise.all([
-        props.getUserProfile(uid),
-        props.getTimeEntriesForWeek(uid, 0),
-        props.getTimeEntriesForWeek(uid, 1),
-        props.getTimeEntriesForWeek(uid, 2),
-        props.getTimeEntriesForPeriod(uid, timeLogState.fromDate, timeLogState.toDate),
-        props.getAllRoles(),
-        props.getUserProjects(uid),
-        props.getUserTasks(uid),
+        getUserProfile(uid),
+        getTimeEntriesForWeek(uid, 0),
+        getTimeEntriesForWeek(uid, 1),
+        getTimeEntriesForWeek(uid, 2),
+        getTimeEntriesForPeriod(uid, timeLogState.fromDate, timeLogState.toDate),
+        getAllRoles(),
+        getUserProjects(uid),
+        getUserTasks(uid),
       ]);
 
       const url = ENDPOINTS.TASKS_BY_USERID(uid);
@@ -286,8 +307,10 @@ function Timelog(props) {
   const toggle = () => {
     if (isNotAllowedToEdit) {
       if (displayUserProfile?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
+        // eslint-disable-next-line no-undef
         alert(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
       } else {
+        // eslint-disable-next-line no-undef
         alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
       }
       return;
@@ -330,7 +353,7 @@ function Timelog(props) {
 
   const changeTab = tab => {
     if (tab === 6) {
-      props.resetBadgeCount(displayUserId);
+      resetBadgeCount(displayUserId);
     }
 
     // Clear the hash to trigger the useEffect on hash change
@@ -358,10 +381,11 @@ function Timelog(props) {
   const handleSearch = e => {
     // check if the toDate is before the fromDate
     if (moment(timeLogState.fromDate).isAfter(moment(timeLogState.toDate))) {
+      // eslint-disable-next-line no-undef
       alert('Invalid Date Range: the From Date must be before the To Date');
     } else {
       e.preventDefault();
-      props.getTimeEntriesForPeriod(displayUserId, timeLogState.fromDate, timeLogState.toDate);
+      getTimeEntriesForPeriod(displayUserId, timeLogState.fromDate, timeLogState.toDate);
     }
   };
 
@@ -382,14 +406,24 @@ function Timelog(props) {
     if (timeLogState.activeTab === 4) {
       return (
         <p className={`ml-1 responsive-font-size ${darkMode ? 'text-light' : ''}`}>
-          Viewing time Entries from <b>{formatDate(timeLogState.fromDate)}</b> to{' '}
+          Viewing time Entries from 
+          {' '}
+          <b>{formatDate(timeLogState.fromDate)}</b>
+          {' '}
+          to
+          {' '}
           <b>{formatDate(timeLogState.toDate)}</b>
         </p>
       );
     }
     return (
       <p className={`ml-1 responsive-font-size ${darkMode ? 'text-light' : ''}`}>
-        Viewing time Entries from <b>{formatDate(startOfWeek(timeLogState.activeTab - 1))}</b> to{' '}
+        Viewing time Entries from 
+        {' '}
+        <b>{formatDate(startOfWeek(timeLogState.activeTab - 1))}</b>
+        {' '}
+        to
+        {' '}
         <b>{formatDate(endOfWeek(timeLogState.activeTab - 1))}</b>
       </p>
     );
@@ -399,8 +433,8 @@ function Timelog(props) {
     // pass the data to summary bar
     const weekEffort = calculateTotalTime(timeEntries.weeks[0], true);
     setTimeLogState({ ...timeLogState, currentWeekEffort: weekEffort });
-    if (props.isDashboard) {
-      props.passSummaryBarData({ personId: uid, tangibletime: weekEffort });
+    if (isDashboard) {
+      passSummaryBarData({ personId: uid, tangibletime: weekEffort });
     } else {
       setSummaryBarData({ personId: uid, tangibletime: weekEffort });
     }
@@ -527,7 +561,7 @@ useEffect(() => {
 }, [userprofileId, viewingUser]);
 
   useEffect(() => {
-    props.getBadgeCount(displayUserId);
+    getBadgeCount(displayUserId);
   }, [displayUserId, props]);
 
   useEffect(() => {
@@ -561,7 +595,7 @@ useEffect(() => {
 
   const containerStyle = () => {
     if (darkMode) {
-      return props.isDashboard ? {} : { padding: '0 15px 300px 15px' };
+      return isDashboard ? {} : { padding: '0 15px 300px 15px' };
     }
     return {};
   };
@@ -571,7 +605,7 @@ useEffect(() => {
       className={`container-timelog-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}
       style={containerStyle()}
     >
-      {!props.isDashboard ? (
+      {!isDashboard ? (
         <Container fluid>
           <SummaryBar
             displayUserId={displayUserId}
@@ -583,7 +617,7 @@ useEffect(() => {
         </Container>
       ) : (
         <Container style={{ textAlign: 'right', minWidth: '100%' }}>
-          {props.isDashboard ? null : (
+          {isDashboard ? null : (
             <EditableInfoModal
               areaName="DashboardTimelog"
               areaTitle="Timelog"
@@ -599,7 +633,7 @@ useEffect(() => {
       {timeLogState.isTimeEntriesLoading ? (
         <LoadingSkeleton template="Timelog" />
       ) : (
-        <div className={`${!props.isDashboard ? 'timelogPageContainer' : 'ml-3 min-width-100'}`}>
+        <div className={`${!isDashboard ? 'timelogPageContainer' : 'ml-3 min-width-100'}`}>
           {timeLogState.summary ? (
             <div className="my-2">
               <div id="weeklySum">
@@ -642,7 +676,7 @@ useEffect(() => {
                               isActive={displayUserProfile.isActive}
                               user={displayUserProfile}
                               onClick={() => {
-                                props.updateUserProfile({
+                                updateUserProfile({
                                   ...displayUserProfile,
                                   isActive: !displayUserProfile.isActive,
                                   endDate:
@@ -708,7 +742,8 @@ useEffect(() => {
                                     monthly management team reviews and Welcome Team Calls, and
                                     non-action-item-related research, classes, and other learning,
                                     meetings, etc., that benefit or relate to the project but are
-                                    not related to a specific action item in the{' '}
+                                    not related to a specific action item in the
+                                    {' '}
                                     <a
                                       href="https://www.tinyurl.com/oc-os-wbs"
                                       onClick={e => e.stopPropagation()}
@@ -740,7 +775,9 @@ useEffect(() => {
                           <div className="tasks-and-timelog-header-add-time-div">
                             <div>
                               <Button color="warning" onClick={toggle} style={boxStyle}>
-                                Add Time Entry {!isAuthUser && `for ${fullName}`}
+                                Add Time Entry 
+                                {' '}
+                                {!isAuthUser && `for ${fullName}`}
                               </Button>
                             </div>
                           </div>
@@ -886,7 +923,7 @@ useEffect(() => {
                       >
                         Badges
                         <span className="badge badge-pill badge-danger ml-2">
-                          {props.badgeCount}
+                          {badgeCount}
                         </span>
                       </NavLink>
                     </NavItem>
@@ -989,7 +1026,7 @@ useEffect(() => {
                     )}
                     <TabPane tabId={0}>
                       <TeamMemberTasks 
-                      filteredUserTeamIds={props.filteredUserTeamIds} 
+                        filteredUserTeamIds={filteredUserTeamIds} 
                       />
                     </TabPane>
                     <TabPane tabId={1}>{currentWeekEntries}</TabPane>

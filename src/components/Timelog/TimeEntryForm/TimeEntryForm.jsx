@@ -4,7 +4,7 @@
 /* eslint-disable no-param-reassign */
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import {
   Form,
   FormGroup,
@@ -23,11 +23,12 @@ import { isEmpty, isEqual } from 'lodash';
 import { Editor } from '@tinymce/tinymce-react';
 import { toast } from 'react-toastify';
 import ReactTooltip from 'react-tooltip';
-import { getUserProfile } from '~/actions/userProfile';
 import axios from 'axios';
+import { getUserProfile } from '~/actions/userProfile';
+
 import hasPermission from '~/utils/permissions';
 import { boxStyle, boxStyleDark } from '~/styles';
-import { useDispatch } from 'react-redux';
+
 import { postTimeEntry, editTimeEntry, getTimeEntriesForWeek } from '../../../actions/timeEntries';
 import AboutModal from './AboutModal';
 import TangibleInfoModal from './TangibleInfoModal';
@@ -66,9 +67,9 @@ const customImageUploadHandler = () =>
 function TimeEntryForm(props) {
   /* ---------------- variables -------------- */
   // props from parent
-  const { from, sendStop, edit, data, toggle, isOpen, tab, darkMode, userProfile } = props;
+  // eslint-disable-next-line no-shadow
+  const { from, sendStop, edit, data, toggle, isOpen, tab, darkMode, userProfile, authUser, hasPermission, getTimeEntriesForWeek, getUserProfile, editTimeEntry, postTimeEntry} = props;
   // props from store
-  const { authUser } = props;
   const dispatch = useDispatch();
 
   const viewingUser = JSON.parse(sessionStorage.getItem('viewingUser') ?? '{}');
@@ -159,13 +160,13 @@ function TimeEntryForm(props) {
       .tz('America/Los_Angeles')
       .format('YYYY-MM-DD') === formValues.dateOfWork;
   const isSameDayAuthUserEdit = isForAuthUser && isSameDayTimeEntry;
-  const canEditTimeEntryTime = props.hasPermission('editTimeEntryTime');
-  const canEditTimeEntryDescription = props.hasPermission('editTimeEntryDescription');
+  const canEditTimeEntryTime = hasPermission('editTimeEntryTime');
+  const canEditTimeEntryDescription = hasPermission('editTimeEntryDescription');
   const canEditTimeEntryToggleTangible = isForAuthUser
-    ? props.hasPermission('toggleTangibleTime')
-    : props.hasPermission('editTimeEntryToggleTangible');
-  const canEditTimeEntryDate = props.hasPermission('editTimeEntryDate');
-  const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
+    ? hasPermission('toggleTangibleTime')
+    : hasPermission('editTimeEntryToggleTangible');
+  const canEditTimeEntryDate = hasPermission('editTimeEntryDate');
+  const canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
 
   // Administrator/Owner can add time entries for any dates, and other roles can only edit their own time entry in the same day.
   const canChangeTime =
@@ -354,14 +355,14 @@ function TimeEntryForm(props) {
           const date = moment(formValues.dateOfWork);
           const today = moment().tz('America/Los_Angeles');
           const offset = today.week() - date.week();
-          props.getTimeEntriesForWeek(timeEntryUserId, Math.min(offset, 3));
+          getTimeEntriesForWeek(timeEntryUserId, Math.min(offset, 3));
           clearForm();
           break;
         }
         case 'WeeklyTab':
           await Promise.all([
-            props.getUserProfile(timeEntryUserId),
-            props.getTimeEntriesForWeek(timeEntryUserId, tab),
+            getUserProfile(timeEntryUserId),
+            getTimeEntriesForWeek(timeEntryUserId, tab),
           ]);
           break;
         default:
@@ -378,9 +379,9 @@ function TimeEntryForm(props) {
 
     try {
       if (edit) {
-        await props.editTimeEntry(data._id, timeEntry, initialDateOfWork);
+        await editTimeEntry(data._id, timeEntry, initialDateOfWork);
       } else {
-        await props.postTimeEntry(timeEntry);
+        await postTimeEntry(timeEntry);
       }
 
       await handlePostSubmitActions();

@@ -1,24 +1,26 @@
-/*********************************************************************************
+/** *******************************************************************************
  * Component: MEMBER
  * Author: Henry Ng - 02/03/20
  * Display member of the members list
- ********************************************************************************/
+ ******************************************************************************* */
+/* eslint-disable import/no-useless-path-segments, react/function-component-definition */
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Alert } from 'reactstrap';
-import { importTask } from './../../../../../actions/task';
 import readXlsxFile from 'read-excel-file';
-import { getPopupById } from './../../../../../actions/popupEditorAction';
-import { TASK_IMPORT_POPUP_ID } from './../../../../../constants/popupId';
-import ReactHtmlParser from 'react-html-parser';
+import ReactHtmlParser from 'html-react-parser';
+import { importTask } from './../../../../../actions/task'; /* eslint-disable import/no-useless-path-segments, react/function-component-definition */
+import { getPopupById } from './../../../../../actions/popupEditorAction'; /* eslint-disable import/no-useless-path-segments, react/function-component-definition */
+import { TASK_IMPORT_POPUP_ID } from './../../../../../constants/popupId'; /* eslint-disable import/no-useless-path-segments, react/function-component-definition */
 import { boxStyle, boxStyleDark } from '~/styles';
 import '../../../../Header/DarkMode.css'
 
-const ImportTask = props => {
+const ImportTask = props => { // eslint-disable-line react/function-component-definition
   /*
   * -------------------------------- variable declarations -------------------------------- 
   */
   // props from store 
+  // eslint-disable-next-line react/destructuring-assignment
   const { popupContent, members, darkMode } = props;
 
   // states from hooks
@@ -32,67 +34,30 @@ const ImportTask = props => {
   * -------------------------------- functions -------------------------------- 
   */
  const toggle = async () => {
+    // eslint-disable-next-line react/destructuring-assignment
     props.getPopupById(TASK_IMPORT_POPUP_ID);
     setInstruction(ReactHtmlParser(popupContent));
     setModal(!modal);
     setImportStatus('choosing');
   };
 
-  const handleFileChosen = file => {
-    readXlsxFile(file).then(rows => {
-      handleFileRead(rows);
-    });
-  };
-
-  const handleFileRead = async rows => {
-    setImportStatus('importing');
-    const tmpList = [];
-    try {
-      rows.forEach((rowArr, i) => {
-        if (i >= 2) {
-          // level 1
-          if (rowArr[0] !== null && rowArr[1] !== null) {
-            tmpList.push(newTask(rowArr[0], rowArr[1], 1, rowArr, i));
-          }
-          // level 2
-          if (rowArr[2] !== null && rowArr[3] !== null) {
-            tmpList.push(newTask(rowArr[2], rowArr[3], 2, rowArr, i));
-          }
-          // level 3
-          if (rowArr[4] !== null && rowArr[5] !== null) {
-            tmpList.push(newTask(rowArr[4], rowArr[5], 3, rowArr, i));
-          }
-          // level 4
-          if (rowArr[6] !== null && rowArr[7] !== null) {
-            tmpList.push(newTask(rowArr[6], rowArr[7], 4, rowArr, i));
-          }
-        }
-      });
-      setInstruction(ReactHtmlParser(rows[0][0] + '<br/> Rows: ' + rows.length))
-      setImportStatus('imported');
-      setTaskList(tmpList);
-    } catch (error) {
-      setImportStatus('importError');
-      setAlert(error.message);
-    }
-  };
-
   const newTask = (num, taskName, level, rowArr, i) => {
     const nameCache = []; // check for duplicates
     const resourcesNames = rowArr[9]?.split(',').map(name => {
-      name = name.trim();
-      const member = members.find(p => `${p.firstName} ${p.lastName}`.toLocaleLowerCase() === name.toLowerCase());
+      const trimmedName = name.trim();
+      const member = members.find(p => `${p.firstName} ${p.lastName}`.toLocaleLowerCase() === trimmedName.toLowerCase());
 
-      if (!member) throw new Error(`Error: ${name} is not in the project member list`);
+      if (!member) throw new Error(`Error: ${trimmedName} is not in the project member list`);
 
-      if (nameCache.includes(name)) throw new Error(`Error: There are more than one [${name}] in resources on line ${i + 1}`);
-      nameCache.push(name);
+      if (nameCache.includes(trimmedName)) throw new Error(`Error: There are more than one [${trimmedName}] in resources on line ${i + 1}`);
+      nameCache.push(trimmedName);
       
-      return name + '|' + member._id + '|' + (member.profilePic || '/defaultprofilepic.png');
+      return `${trimmedName  }|${  member._id  }|${  member.profilePic || '/defaultprofilepic.png'}`;
     }) || [];  // if cell under resources column is empty (rowArr[9] is undefined), then assign resources with []
 
-    let newTask = {
-      taskName: taskName,
+    const newTaskk = {
+      taskName,
+      // eslint-disable-next-line react/destructuring-assignment
       wbsId: String(props.wbsId),
       num: String(num),
       level: parseInt(level, 10),
@@ -120,11 +85,51 @@ const ImportTask = props => {
       endstateInfo: String(rowArr[20]),
     };
 
-    return newTask;
+    return newTaskk;
+  };
+
+  const handleFileRead = async rows => {
+    setImportStatus('importing');
+    const tmpList = [];
+    try {
+      rows.forEach((rowArr, i) => {
+        if (i >= 2) {
+          // level 1
+          if (rowArr[0] !== null && rowArr[1] !== null) {
+            tmpList.push(newTask(rowArr[0], rowArr[1], 1, rowArr, i));
+          }
+          // level 2
+          if (rowArr[2] !== null && rowArr[3] !== null) {
+            tmpList.push(newTask(rowArr[2], rowArr[3], 2, rowArr, i));
+          }
+          // level 3
+          if (rowArr[4] !== null && rowArr[5] !== null) {
+            tmpList.push(newTask(rowArr[4], rowArr[5], 3, rowArr, i));
+          }
+          // level 4
+          if (rowArr[6] !== null && rowArr[7] !== null) {
+            tmpList.push(newTask(rowArr[6], rowArr[7], 4, rowArr, i));
+          }
+        }
+      });
+      setInstruction(ReactHtmlParser(`${rows[0][0]  }<br/> Rows: ${  rows.length}`))
+      setImportStatus('imported');
+      setTaskList(tmpList);
+    } catch (error) {
+      setImportStatus('importError');
+      setAlert(error.message);
+    }
+  };
+
+  const handleFileChosen = file => {
+    readXlsxFile(file).then(rows => {
+      handleFileRead(rows);
+    });
   };
 
   const uploadTaskList = async () => {
     setImportStatus('uploading');
+    // eslint-disable-next-line react/destructuring-assignment
     await props.importTask(taskList, props.wbsId);
     // await props.load();
     setImportStatus('uploaded');
@@ -137,8 +142,11 @@ const ImportTask = props => {
   }
 
   const onCloseHandler = async () => {
+    // eslint-disable-next-line react/destructuring-assignment
     props.setIsLoading(true);
+    // eslint-disable-next-line react/destructuring-assignment
     await props.load();
+    // eslint-disable-next-line react/destructuring-assignment
     props.setIsLoading(false);
   }
 
@@ -149,6 +157,7 @@ const ImportTask = props => {
   */
 
   useEffect(() => {
+    // eslint-disable-next-line react/destructuring-assignment
     props.getPopupById(TASK_IMPORT_POPUP_ID)
   }, [popupContent])
 
@@ -160,6 +169,7 @@ const ImportTask = props => {
           <table className={`table table-bordered ${darkMode ? 'text-light' : ''}`}>
             <tbody>
               <tr>
+                {/* eslint-disable-next-line jsx-a11y/scope */}
                 <td scope="col">
                   <div id="instruction">
                     {instruction}
@@ -168,6 +178,7 @@ const ImportTask = props => {
               </tr>
               {importStatus === 'choosing' ? (
                 <tr>
+                  {/* eslint-disable-next-line jsx-a11y/scope */}
                   <td scope="col">
                     <input
                       type="file"
@@ -261,7 +272,17 @@ const ImportTask = props => {
         </ModalFooter>
       </Modal>
       <Button color="primary" className="controlBtn" size="sm" onClick={toggle} style={darkMode ? boxStyleDark : boxStyle}>
-        <span onClick={toggle}>Import Tasks</span>
+        <span
+          onClick={toggle}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') toggle();
+          }}
+        >
+          {' '}
+          Import Tasks
+        </span>
       </Button>
     </>
   );
@@ -271,6 +292,6 @@ const mapStateToProps = state => ({
   popupContent: state.popupEditor.currPopup.popupContent,
   members: state.projectMembers.members,
   darkMode: state.theme.darkMode,
-  state: state,
+  state,
 });
 export default connect(mapStateToProps, { importTask, getPopupById })(ImportTask);

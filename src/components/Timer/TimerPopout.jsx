@@ -74,6 +74,7 @@ function TimerPopout({ authUser, darkMode, TimerComponent }) {
     `);
 
     const root = popup.document.getElementById('timer-root');
+    // eslint-disable-next-line react/no-deprecated
     ReactDOM.render(
       <Provider store={store}>
         <TimerComponent authUser={authUser} darkMode={darkMode} isPopout />
@@ -82,6 +83,7 @@ function TimerPopout({ authUser, darkMode, TimerComponent }) {
     );
 
     popup.onbeforeunload = () => {
+      // eslint-disable-next-line react/no-deprecated
       ReactDOM.unmountComponentAtNode(root);
     };
   };

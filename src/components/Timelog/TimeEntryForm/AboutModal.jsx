@@ -6,11 +6,11 @@ import { Modal, ModalBody, ModalHeader, ModalFooter, Button } from 'reactstrap';
  * @param {Boolean} props.visible
  * @param {Func} props.setVisible
  */
-function AboutModal(props) {
+function AboutModal({ visible, darkMode, setVisible }) {
   return (
-    <Modal isOpen={props.visible} className={props.darkMode ? 'text-light' : ''}>
-      <ModalHeader className={props.darkMode ? 'bg-space-cadet' : ''}>Info</ModalHeader>
-      <ModalBody className={props.darkMode ? 'bg-yinmn-blue' : ''}>
+    <Modal isOpen={visible} className={darkMode ? 'text-light' : ''}>
+      <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>Info</ModalHeader>
+      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <p>
           This is the One Community time clock! It is used to clock in and out when doing your
           volunteer work with One Community. Whenever you stop this timer, it will ask you to log
@@ -65,8 +65,8 @@ function AboutModal(props) {
           system the same as a time edit.
         </p>
       </ModalBody>
-      <ModalFooter className={props.darkMode ? 'bg-yinmn-blue' : ''}>
-        <Button onClick={() => props.setVisible(false)} color="primary">
+      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <Button onClick={() => setVisible(false)} color="primary">
           Close
         </Button>
       </ModalFooter>

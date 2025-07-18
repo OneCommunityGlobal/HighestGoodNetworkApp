@@ -4,7 +4,7 @@ import Card from 'react-bootstrap/Card';
 import Nav from 'react-bootstrap/Nav';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart } from '@fortawesome/free-regular-svg-icons';
-import ReactHtmlParser from 'react-html-parser';
+import ReactHtmlParser from 'html-react-parser';
 import { formatDateAndTime } from '~/utils/formatDate';
 import DeleteLessonCardPopUp from './DeleteLessonCardPopUp';
 import styles from './LessonCard.module.css';
@@ -91,7 +91,8 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
                 {lesson.title}
               </Nav.Item>
               <Nav.Item className={`${styles.lessonCardNavItem} nav-item-date`}>
-                Date: {formatDateAndTime(lesson.date)}
+                Date:
+                {formatDateAndTime(lesson.date)}
               </Nav.Item>
             </div>
             <div>
@@ -114,7 +115,7 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
           <>
             <Card.Body className={`${styles.scrollableCardBody}`}>
               <Card.Text className={`${styles.cardTagAndFile}`}>
-                Tags:{' '}
+                Tags:
                 {lesson.tags &&
                   lesson.tags.length > 0 &&
                   lesson.tags.map(tag => (
@@ -156,16 +157,19 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
               </Card.Text>
 
               <Card.Text className={`${styles.cardTagAndFile}`}>
-                File: <span className={`${styles.lessonFile}`}>file</span>
+                File:
+                <span className={`${styles.lessonFile}`}>file</span>
               </Card.Text>
             </Card.Body>
             <Card.Footer className={`${styles.lessonCardFooter} text-muted`}>
               <div>
                 <span className={`${styles.footerItemsAuthorAndFrom}`}>
-                  Author: {lesson.author?.name || 'Unknown'}
+                  Author:
+                  {lesson.author?.name || 'Unknown'}
                 </span>
                 <span className={`${styles.footerItemsAuthorAndFrom}`}>
-                  From: {lesson.relatedProject?.name || 'Unknown Project'}
+                  From:
+                  {lesson.relatedProject?.name || 'Unknown Project'}
                 </span>
               </div>
               <div className={`${styles.lessonCardFooterItems}`}>
@@ -209,7 +213,8 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
                         fill: isLiked ? '#ff4d4d' : 'none',
                       }}
                     />
-                    Like: {totalLikes}
+                    Like:
+                    {totalLikes}
                   </span>
                 </div>
               </div>

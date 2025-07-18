@@ -9,6 +9,12 @@
   },
   //"eslint.enable": true,
   // available through eslint plugin in vscode
+  "eslint.useFlatConfig": true,
+  "eslint.workingDirectories": ["."],
+  "eslint.options": {
+    "overrideConfigFile": "./eslint.config.js"
+  },
+  // "eslint.experimental.useFlatConfig": true,
   "eslint.alwaysShowStatus": true,
   "editor.tabSize": 2,
   "editor.codeActionsOnSave": {

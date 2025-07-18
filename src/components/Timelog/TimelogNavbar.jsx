@@ -29,7 +29,9 @@ function TimelogNavbar({ userId }) {
     <div>
       <Navbar className="navbar navbar-expand-sm navbar-light navbar-border bg-light mb-2 col-md-12 nav-fill">
         <NavbarBrand className="navbar-brand pb-3">
-          {firstName} {lastName}
+          {firstName} 
+          {' '}
+          {lastName}
           &apos;s Timelog
         </NavbarBrand>
         <NavbarToggler onClick={toggleNavbar} />
@@ -37,7 +39,13 @@ function TimelogNavbar({ userId }) {
           <Nav navbar className="navbar-nav w-100">
             <NavItem className="nav-item navbar-text w-80" id="timelogweeklychart">
               <div>
-                Current Week : {totalEffort.toFixed(2)} / {weeklycommittedHours.toFixed(2)}
+                Current Week : 
+                {' '}
+                {totalEffort.toFixed(2)}
+                {' '}
+                / 
+                {' '}
+                {weeklycommittedHours.toFixed(2)}
               </div>
               <Progress
                 value={getProgressValue(totalEffort, weeklycommittedHours)}

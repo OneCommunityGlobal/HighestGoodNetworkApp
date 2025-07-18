@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Form, FormControl, Button } from 'react-bootstrap';
 import axios from 'axios';
-import { ENDPOINTS } from '~/utils/URL';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import { ENDPOINTS } from '~/utils/URL';
 import postNewLesson from '../../../actions/bmdashboard/lessonActions';
 import { getAllRoles } from '../../../actions/role';
 import { fetchBMProjects } from '../../../actions/bmdashboard/projectActions';
@@ -147,6 +147,7 @@ function LessonForm() {
   };
 
   const handleClick = () => {
+    /* eslint-disable testing-library/no-node-access */
     const fileInput = document.getElementById('fileInput');
     if (fileInput) {
       fileInput.click();
@@ -303,6 +304,11 @@ function LessonForm() {
                         key={tag}
                         className={`${styles.tagOption}`}
                         onClick={() => handleTagSelection(tag)}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={e => {
+                          if (e.key === 'Enter' || e.key === ' ') handleTagSelection(tag);
+                        }}
                       >
                         <span>{tag}</span>
                       </div>
@@ -337,7 +343,13 @@ function LessonForm() {
                   disabled={!!projectId}
                 >
                   {!selectedProject && !projectId && <option>Select Project</option>}
-                  {projectId && <option value={projectId}>Project {projectname}</option>}
+                  {projectId && (
+                    <option value={projectId}>
+                      {/* eslint-disable-next-line prettier/prettier */}
+                      Project
+                      {projectname}
+                    </option>
+                  )}
                   {projects.map(project => (
                     <option key={project._id} value={project._id}>
                       {project.name}
@@ -383,7 +395,10 @@ function LessonForm() {
                 className={`dragAndDropStyle ${selectedFile ? 'fileSelected' : ''}`}
               >
                 {selectedFile ? (
-                  <p>Selected File: {selectedFile.name}</p>
+                  <p>
+                    Selected File:
+                    {selectedFile.name}
+                  </p>
                 ) : (
                   <div className={`${styles.textAndImageDiv}`}>
                     <div className={`${styles.imageDiv}`} style={style} />

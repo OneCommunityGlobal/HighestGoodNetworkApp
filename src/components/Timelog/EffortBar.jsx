@@ -26,12 +26,25 @@ function EffortBar({ activeTab, projectsOrTasksSelected }) {
   return (
     <div className="m-auto row text-white text-center align-self-center">
       <span className="bg-primary col-md-4 p-1 ">
-        Tangible Effort: {tangibleTime.toFixed(2)} hrs
+        Tangible Effort: 
+        {' '}
+        {tangibleTime.toFixed(2)}
+        {' '}
+        hrs
       </span>
       <span className="bg-secondary col-md-4 p-1">
-        Intangible Effort: {intangibleTime.toFixed(2)} hrs
+        Intangible Effort: 
+        {' '}
+        {intangibleTime.toFixed(2)}
+        {' '}
+        hrs
       </span>
-      <span className="bg-success col-md-4 p-1">Total Effort: {totalTime.toFixed(2)} hrs</span>
+      <span className="bg-success col-md-4 p-1">
+        Total Effort:
+        {totalTime.toFixed(2)}
+        {' '}
+        hrs
+      </span>
     </div>
   );
 }

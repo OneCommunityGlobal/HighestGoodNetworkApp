@@ -50,7 +50,10 @@ module.exports = [
   {
     files: ['**/*.{js,jsx}'],
     languageOptions: {
+      // eslint-disable-next-line global-require
+      parser: require('@babel/eslint-parser'),
       parserOptions: {
+        requireConfigFile: true,
         ecmaVersion: 2020,
         sourceType: 'module',
         ecmaFeatures: { jsx: true },
@@ -61,6 +64,7 @@ module.exports = [
         navigator: 'readonly',
         IntersectionObserver: 'readonly',
         WebSocket: 'readonly',
+        sessionStorage: 'readonly',
       },
     },
     settings: {

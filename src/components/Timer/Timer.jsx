@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /* eslint-disable jsx-a11y/media-has-caption */
 import moment from 'moment';
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
@@ -638,7 +639,9 @@ function Timer({ authUser, darkMode, isPopout }) {
             }}
           >
             Yes, reset time!
-          </Button>{' '}
+            {/* eslint-disable-next-line prettier/prettier */}
+          </Button>
+          {' '}
         </ModalFooter>
       </Modal>
       <Modal
@@ -679,9 +682,11 @@ function Timer({ authUser, darkMode, isPopout }) {
         <ModalHeader className={headerBg} toggle={toggleTimeIsOver}>
           Time Complete!
         </ModalHeader>
-        <ModalBody className={bodyBg}>{`You have worked for ${logHours ? `${logHours} hours` : ''}${
-          logMinutes ? ` ${logMinutes} minutes` : ''
-        }. Click below if you'd like to add time or Log Time.`}</ModalBody>
+        <ModalBody className={bodyBg}>
+          {`You have worked for ${logHours ? `${logHours} hours` : ''}${
+            logMinutes ? ` ${logMinutes} minutes` : ''
+          }. Click below if you'd like to add time or Log Time.`}
+        </ModalBody>
         <ModalFooter className={bodyBg}>
           <Button
             color="primary"
@@ -691,7 +696,9 @@ function Timer({ authUser, darkMode, isPopout }) {
             }}
           >
             Log Time
-          </Button>{' '}
+            {/* eslint-disable-next-line prettier/prettier */}
+          </Button>
+          {' '}
           <Button
             color="secondary"
             onClick={() => {
@@ -701,7 +708,9 @@ function Timer({ authUser, darkMode, isPopout }) {
             }}
           >
             Add More Time
-          </Button>{' '}
+            {/* eslint-disable-next-line prettier/prettier */}
+          </Button>
+          {' '}
         </ModalFooter>
       </Modal>
     </div>

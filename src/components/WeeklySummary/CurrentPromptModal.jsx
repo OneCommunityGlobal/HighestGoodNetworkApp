@@ -132,7 +132,10 @@ function CurrentPromptModal(props) {
           onClick={toggle}
           style={darkMode ? boxStyleDark : boxStyle}
         >
-          View and Copy <img src={iconNew} alt="new" style={{ width: '1.5em', height: '1.5em' }} />{' '}
+          View and Copy
+          {/* eslint-disable-next-line prettier/prettier */}
+          <img src={iconNew} alt="new" style={{ width: '1.5em', height: '1.5em' }} />
+          {' '}
           AI Prompt
           <i
             className="fa fa-info-circle"

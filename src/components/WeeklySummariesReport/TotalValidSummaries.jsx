@@ -21,7 +21,7 @@ function TotalValidSummaries(props) {
     try {
       await axios.patch(url, { key: 'weeklySummariesCount', value: count });
     } catch (err) {
-      // eslint-disable-next-line no-alert
+      // eslint-disable-next-line no-alert, no-undef
       alert(
         'An error occurred while attempting to save the new weekly summaries count change to the profile.',
       );
@@ -37,10 +37,12 @@ function TotalValidSummaries(props) {
     <div className={styles.totalValidWrapper}>
       {weeklySummariesCount === 8 ? (
         <div className="total-valid-text" style={style}>
+          {/* eslint-disable-next-line react/jsx-one-expression-per-line */}
           <b>Total Valid Weekly Summaries:</b>{' '}
         </div>
       ) : (
         <div className="total-valid-text">
+          {/* eslint-disable-next-line react/jsx-one-expression-per-line */}
           <b style={style}>Total Valid Weekly Summaries:</b>{' '}
         </div>
       )}
@@ -56,7 +58,10 @@ function TotalValidSummaries(props) {
           />
         </div>
       ) : (
-        <div>&nbsp;{weeklySummariesCount || 'No valid submissions yet!'}</div>
+        <div>
+          &nbsp;
+          {weeklySummariesCount || 'No valid submissions yet!'}
+        </div>
       )}
     </div>
   );

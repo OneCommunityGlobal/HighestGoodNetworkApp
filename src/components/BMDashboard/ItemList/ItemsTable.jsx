@@ -103,14 +103,16 @@ export default function ItemsTable({
             <tr>
               {selectedProject === 'all' ? (
                 <th onClick={() => sortData('ProjectName')}>
-                  Project <FontAwesomeIcon icon={projectNameCol.iconsToDisplay} size="lg" />
+                  Project
+                  <FontAwesomeIcon icon={projectNameCol.iconsToDisplay} size="lg" />
                 </th>
               ) : (
                 <th>Project</th>
               )}
               {selectedItem === 'all' ? (
                 <th onClick={() => sortData('InventoryItemType')}>
-                  Name <FontAwesomeIcon icon={inventoryItemTypeCol.iconsToDisplay} size="lg" />
+                  Name
+                  <FontAwesomeIcon icon={inventoryItemTypeCol.iconsToDisplay} size="lg" />
                 </th>
               ) : (
                 <th>Name</th>

@@ -1,5 +1,6 @@
 // eslint-disable-next-line no-unused-vars
 import React from 'react';
+// eslint-disable-next-line no-unused-vars
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
@@ -67,7 +68,7 @@ describe('Warning Component', () => {
     );
 
     const toggleButton = screen.getByText('Tracking');
-    await waitFor(() => fireEvent.click(toggleButton));
+    fireEvent.click(toggleButton);
 
     expect(await screen.findByText('Hide')).toBeInTheDocument();
     expect(await screen.findByText('Warning 1')).toBeInTheDocument();

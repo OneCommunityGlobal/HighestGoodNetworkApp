@@ -1,15 +1,16 @@
 import { useState, useEffect } from 'react';
 import { Card, Row, Col } from 'reactstrap';
 import { useDispatch, connect } from 'react-redux';
-import ReactHtmlParser from 'react-html-parser';
+import ReactHtmlParser from 'html-react-parser';
 import moment from 'moment-timezone';
 import './Timelog.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
-import hasPermission from '~/utils/permissions';
-import { hrsFilterBtnColorMap } from '~/constants/colors';
-import { cantUpdateDevAdminDetails } from '~/utils/permissions';
+// import hasPermission from '~/utils/permissions';
 import { toast } from 'react-toastify';
+import { hrsFilterBtnColorMap } from '~/constants/colors';
+import { hasPermission, cantUpdateDevAdminDetails } from '~/utils/permissions';
+
 import TimeEntryForm from './TimeEntryForm';
 import DeleteModal from './DeleteModal';
 
@@ -44,8 +45,11 @@ function TimeEntry(props) {
   const dispatch = useDispatch();
 
   const hasATimeEntryEditPermission =
+    // eslint-disable-next-line react/destructuring-assignment
     props.hasPermission('editTimeEntryTime') ||
+    // eslint-disable-next-line react/destructuring-assignment
     props.hasPermission('editTimeEntryDescription') ||
+    // eslint-disable-next-line react/destructuring-assignment
     props.hasPermission('editTimeEntryDate');
 
   const cantEditJaeRelatedRecord = cantUpdateDevAdminDetails(
@@ -145,7 +149,10 @@ function TimeEntry(props) {
           </Col>
           <Col md={4} className="px-0">
             <h4 className={darkMode ? "dark-text-info" : "text-success"}>
-              {hours}h {minutes}m
+              {hours}
+              h
+              {minutes}
+              m
             </h4>
             <div className={darkMode ? "dark-text-muted" : "text-muted"}>Project/Task:</div>
             <p className={darkMode ? 'text-light' : ''}>

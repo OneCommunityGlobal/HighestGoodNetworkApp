@@ -49,30 +49,49 @@ function WarningModal({
         <ModalHeader>Issue Warning</ModalHeader>
         <ModalBody>
           <h3>
-            Are you sure you want to issue a {numberOfWarnings >= 3 ? 'blue square' : 'warning'} to:{' '}
-            {username}?
+            {/* eslint-disable-next-line prettier/prettier */}
+            Are you sure you want to issue a
+            {numberOfWarnings >= 3 ? 'blue square' : 'warning'}
+            {/* eslint-disable-next-line prettier/prettier */}
+            to:
+            {' '}
+            {username}
+            ?
           </h3>
           <p>
-            The {numberOfWarnings >= 3 ? 'blue square' : 'warning'} will be because they didn&apos;t
-            meet the criteria for the following area:{' '}
+            The
+            {numberOfWarnings >= 3 ? 'blue square' : 'warning'}
+            {/* eslint-disable-next-line prettier/prettier */}
+            will be because they didn&apos;t
+            meet the criteria for the following area:
+            {' '}
             <span className="warning__body--bold">{warningText}</span>
           </p>
           {numberOfWarnings >= 3 && (
             <>
               <p className="warning__body--bold warning__body--margin"> Plase Note:</p>
               <p>
-                <span className="warning__body--bold">{username}</span> has received{' '}
-                {numberOfWarnings} warnings, so by default they should get a blue square. If it has
+                <span className="warning__body--bold">{username}</span>
+                {/* eslint-disable-next-line prettier/prettier */}
+                has received
+                {' '}
+                {numberOfWarnings}
+                {/* eslint-disable-next-line prettier/prettier */}
+                warnings, so by default they should get a blue square. If it has
                 been a while since their last warning, you may issue another warning instead.
               </p>
             </>
           )}
           <p>
-            Issue a warning and the dot color will be:{' '}
+            {/* eslint-disable-next-line prettier/prettier */}
+            Issue a warning and the dot color will be:
+            {' '}
             <span className="warning__body--bold">Yellow</span>
           </p>
           <p>
-            Issue a blue square and the dot color will be:{' '}
+            {/* eslint-disable-next-line prettier/prettier */}
+            Issue a blue square and the dot color will be:
+            {' '}
             <span className="warning__body--bold">Red</span>
           </p>
         </ModalBody>

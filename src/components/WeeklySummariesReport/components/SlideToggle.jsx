@@ -9,10 +9,12 @@ const SlideToggle = ({ color = 'default', onChange, className }) => {
   const [checked, setChecked] = useState(false);
 
   return (
+    // eslint-disable-next-line jsx-a11y/label-has-associated-control
     <label className={cn(styles.switch, styles[color], checked && styles.checked, className)}>
       <input
         type="checkbox"
         checked={checked}
+        aria-label={`Toggle ${color} switch`}
         onChange={() => {
           onChange(color, !checked);
           setChecked(!checked);

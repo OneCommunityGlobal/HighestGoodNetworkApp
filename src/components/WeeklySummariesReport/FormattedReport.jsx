@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-one-expression-per-line */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import { useState, useRef, useEffect } from 'react';
@@ -5,7 +6,7 @@ import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import 'moment-timezone';
-import ReactHtmlParser from 'react-html-parser';
+import ReactHtmlParser from 'html-react-parser';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axios from 'axios';
@@ -397,7 +398,7 @@ function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange, darkMode 
         [userProfileSummary._id]: true,
       }); // Update the team code dynamically
     } catch (err) {
-      // eslint-disable-next-line no-alert
+      // eslint-disable-next-line no-alert, no-undef
       alert(
         `An error occurred while attempting to save the new team code change to the profile.${err}`,
       );
@@ -504,7 +505,7 @@ function TotalValidWeeklySummaries({ summary, canEditSummaryCount, darkMode }) {
     try {
       await axios.patch(url, { key: 'weeklySummariesCount', value: count });
     } catch (err) {
-      // eslint-disable-next-line no-alert
+      // eslint-disable-next-line no-alert, no-undef
       alert(
         'An error occurred while attempting to save the new weekly summaries count change to the profile.',
       );
@@ -864,10 +865,11 @@ function Index({
               fontWeight: 'bold',
               fontSize: '10px',
             }}
+            // eslint-disable-next-line react/jsx-no-comment-textnodes
           >
-            +{Math.round((hoursLogged / summary.promisedHoursByWeek[weekIndex] - 1) * 100)}
-%
-</span>
+            // eslint-disable-next-line prettier/prettier +
+            {Math.round((hoursLogged / summary.promisedHoursByWeek[weekIndex] - 1) * 100)}%
+          </span>
         </i>
       )}
     </>

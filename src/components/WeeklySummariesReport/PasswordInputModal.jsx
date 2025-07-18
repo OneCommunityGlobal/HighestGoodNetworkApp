@@ -13,10 +13,10 @@ import {
 import { useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEyeSlash, faEye } from '@fortawesome/free-solid-svg-icons';
-import { boxStyle, boxStyleDark } from '~/styles';
 import '../Header/DarkMode.css';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { boxStyle, boxStyleDark } from '~/styles';
 import { ENDPOINTS } from '~/utils/URL';
 import {
   authorizeWeeklySummaries,
@@ -99,7 +99,7 @@ export default function PasswordInputModal({
             <Alert color="danger">{state.passwordMatchErr}</Alert>
           )}
           {isValidPwd && state.passwordMatch !== '' && (
-            <Alert color="success">{state.passwordMatch} </Alert>
+            <Alert color="success">{state.passwordMatch}</Alert>
           )}
           <FormGroup>
             <Input

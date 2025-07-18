@@ -22,7 +22,9 @@ function DeleteLessonCardPopUp({ open, setDeletePopup, deleteLesson, lessonId })
       <ModalFooter>
         <Button color="danger" onClick={onDelete} style={boxStyle}>
           Delete
-        </Button>{' '}
+          {/* eslint-disable-next-line prettier/prettier */}
+        </Button>
+        {' '}
         <Button color="primary" onClick={closePopup} style={boxStyle}>
           Cancel
         </Button>

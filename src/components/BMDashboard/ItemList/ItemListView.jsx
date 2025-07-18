@@ -45,7 +45,10 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
   if (isError) {
     return (
       <main className={`${styles.itemsListContainer}`}>
-        <h2>{itemType} List</h2>
+        <h2>
+          {itemType}
+          List
+        </h2>
         <BMError errors={errors} />
       </main>
     );
@@ -58,6 +61,7 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
         <span>
           {items && (
             <div className={`${styles.selectInput}`}>
+              {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
               <label>Time:</label>
               <DatePicker
                 selected={selectedTime}

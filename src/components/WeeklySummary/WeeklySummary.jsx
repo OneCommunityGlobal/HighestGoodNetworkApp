@@ -299,6 +299,7 @@ schema = Joi.object({
     // console.log('this.props.userRole in WeeklySummary: ', this.props.userRole);
   }
 
+  // eslint-disable-next-line class-methods-use-this
   doesDateBelongToWeek = (dueDate, weekIndex) => {
     const pstStartOfWeek = moment()
       .tz('America/Los_Angeles')
@@ -340,7 +341,7 @@ schema = Joi.object({
   handleMove = () => {
     const { isNotAllowedToEdit } = this.props;
     if (isNotAllowedToEdit) {
-      // eslint-disable-next-line no-alert
+      // eslint-disable-next-line no-alert, no-undef
       alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
       return;
     }
@@ -623,6 +624,7 @@ schema = Joi.object({
   };
 
   // Handler for error scenario after save
+  // eslint-disable-next-line class-methods-use-this
   handleSaveError = toastIdOnSave => {
     toast.error('✘ The data could not be saved!', {
       toastId: toastIdOnSave,
@@ -631,13 +633,16 @@ schema = Joi.object({
     });
   };
 
+  // eslint-disable-next-line class-methods-use-this
   // Main save handler, used by both handleMoveSave and handleSave
   mainSaveHandler = async closeAfterSave => {
     const toastIdOnSave = 'toast-on-save';
     const errors = this.validate();
 
     this.setState({ errors: errors || {} });
-    if (errors) this.state.moveConfirm = false;
+    if (errors) {
+      this.setState({ moveConfirm: false });
+    }
     if (errors) return;
 
     const result = await this.handleChangeInSummary();
@@ -656,10 +661,10 @@ schema = Joi.object({
     const { isNotAllowedToEdit, displayUserEmail } = this.props;
     if (isNotAllowedToEdit) {
       if (displayUserEmail === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
-        // eslint-disable-next-line no-alert, prettier/prettier
+        // eslint-disable-next-line no-alert, prettier/prettier, no-undef
         alert(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
       } else {
-        // eslint-disable-next-line no-alert, prettier/prettier
+        // eslint-disable-next-line no-alert, prettier/prettier, no-undef
         alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
       }
       return;
@@ -668,7 +673,7 @@ schema = Joi.object({
       event.preventDefault();
     }
     const { moveConfirm, moveSelect } = this.state;
-    this.state.moveConfirm = true;
+    this.setState({ moveConfirm: true });
     this.mainSaveHandler(false);
     if (moveConfirm) {
       this.toggleTab(moveSelect);
@@ -679,10 +684,10 @@ schema = Joi.object({
     const { isNotAllowedToEdit, displayUserEmail } = this.props;
     if (isNotAllowedToEdit) {
       if (displayUserEmail === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
-        // eslint-disable-next-line no-alert, prettier/prettier
+        // eslint-disable-next-line no-alert, prettier/prettier, no-undef
         alert(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
       } else {
-        // eslint-disable-next-line no-alert, prettier/prettier
+        // eslint-disable-next-line no-alert, prettier/prettier, no-undef
         alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
       }
       return;
@@ -799,7 +804,8 @@ schema = Joi.object({
         {/* Before clicking Save button, summariesCountShowing is 0 */}
         <Row className="w-100 ml-1">
           <Col className="pl-0">
-            Total submitted: {summariesCountShowing || formElements.weeklySummariesCount}
+            Total submitted:
+            {summariesCountShowing || formElements.weeklySummariesCount}
           </Col>
           <Col className="text-right">
             <Button
@@ -1028,7 +1034,7 @@ schema = Joi.object({
                 </Row>
                 <Row>
                   <Col>
-                   <FormGroup style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '12px' }}>
+                    <FormGroup style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '12px' }}>
                       <CustomInput
                         id="mediaConfirm"
                         data-testid="mediaConfirm"
@@ -1039,9 +1045,12 @@ schema = Joi.object({
                         valid={formElements.mediaConfirm}
                         onChange={this.handleCheckboxChange}
                       />
+                      {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
                       <label
                         htmlFor="mediaConfirm"
-                        style={{ marginLeft: '10px', lineHeight: '1.5',cursor: 'pointer', }} className={darkMode ? 'text-light' : 'text-dark'}>
+                        style={{ marginLeft: '10px', lineHeight: '1.5',cursor: 'pointer', }}
+                        className={darkMode ? 'text-light' : 'text-dark'}
+                      >
                         I have provided a minimum of 4 screenshots (6-10 preferred) of this
                         week&apos;s work. (required)
                       </label>
@@ -1055,7 +1064,7 @@ schema = Joi.object({
                 </Row>
                 <Row>
                   <Col>
-                   <FormGroup style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '12px' }}>
+                    <FormGroup style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '12px' }}>
                       <CustomInput
                         id="editorConfirm"
                         data-testid="editorConfirm"
@@ -1066,10 +1075,13 @@ schema = Joi.object({
                         valid={formElements.editorConfirm}
                         onChange={this.handleCheckboxChange}
                       />
+                      {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
                       <label
                         htmlFor="editorConfirm"
-                        style={{ marginLeft: '10px', lineHeight: '1.5', cursor: 'pointer',}} className={darkMode ? 'text-light' : 'text-dark'}>
-                         I used GPT (or other AI editor) with the most current prompt.
+                        style={{ marginLeft: '10px', lineHeight: '1.5', cursor: 'pointer',}}
+                        className={darkMode ? 'text-light' : 'text-dark'}
+                      >
+                        I used GPT (or other AI editor) with the most current prompt.
                       </label>
                     </FormGroup>
                     {errors.editorConfirm && (
@@ -1081,7 +1093,7 @@ schema = Joi.object({
                 </Row>
                 <Row>
                   <Col>
-                   <FormGroup style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '12px' }}>
+                    <FormGroup style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '12px' }}>
                       <CustomInput
                         id="proofreadConfirm"
                         name="proofreadConfirm"
@@ -1092,10 +1104,13 @@ schema = Joi.object({
                         valid={formElements.proofreadConfirm}
                         onChange={this.handleCheckboxChange}
                       />
+                      {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
                       <label
                         htmlFor="proofreadConfirm"
-                        style={{ marginLeft: '10px', lineHeight: '1.5', cursor: 'pointer', }} className={darkMode ? 'text-light' : 'text-dark'}>
-                         I proofread my weekly summary.
+                        style={{ marginLeft: '10px', lineHeight: '1.5', cursor: 'pointer', }}
+                        className={darkMode ? 'text-light' : 'text-dark'}
+                      >
+                        I proofread my weekly summary.
                       </label>
                     </FormGroup>
                     {errors.proofreadConfirm && (

@@ -2,8 +2,8 @@
 /* eslint-disable no-shadow */
 /* eslint-disable react/require-default-props */
 /* eslint-disable react/forbid-prop-types */
-import { useEffect } from 'react';
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+// import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {
@@ -23,9 +23,9 @@ import {
 import ReactTooltip from 'react-tooltip';
 import { MultiSelect } from 'react-multi-select-component';
 import moment from 'moment';
+import axios from 'axios';
 import { boxStyle, boxStyleDark } from '~/styles';
 import 'moment-timezone';
-import axios from 'axios';
 
 import { ENDPOINTS } from '~/utils/URL';
 import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
@@ -1107,7 +1107,10 @@ const WeeklySummariesReport = props => {
           style={{ width: '30%', margin: '0 auto' }}
         >
           <Col>
-            <Alert color="danger">Error! {error.message}</Alert>
+            <Alert color="danger">
+              Error!
+              {error.message}
+            </Alert>
           </Col>
         </Row>
       </Container>
@@ -1181,7 +1184,12 @@ const WeeklySummariesReport = props => {
                   id="chart-status-toggle"
                   onChange={handleChartStatusToggleChange}
                 />
-                <label className="switch-toggle-label" htmlFor="chart-status-toggle">
+                {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+                <label
+                  className="switch-toggle-label"
+                  htmlFor="chart-status-toggle"
+                  aria-label="Toggle Chart Display"
+                >
                   <span className="switch-toggle-inner" />
                   <span className="switch-toggle-switch" />
                 </label>
@@ -1217,7 +1225,8 @@ const WeeklySummariesReport = props => {
                 }}
               />
               <ReactTooltip id="teamCodeWarningTooltip" place="top" effect="solid">
-                {state.teamCodeWarningUsers.length} users have mismatched team codes!
+                {state.teamCodeWarningUsers.length}
+                users have mismatched team codes!
               </ReactTooltip>
             </>
           )}
@@ -1281,7 +1290,12 @@ const WeeklySummariesReport = props => {
                           id={`${color}-toggle`}
                           onChange={e => handleSpecialColorToggleChange(color, e.target.checked)}
                         />
-                        <label className="switch-toggle-label" htmlFor={`${color}-toggle`}>
+                        {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+                        <label
+                          className="switch-toggle-label"
+                          htmlFor={`${color}-toggle`}
+                          aria-label="Filter Color Toggle"
+                        >
                           <span className="switch-toggle-inner" />
                           <span className="switch-toggle-switch" />
                         </label>
@@ -1312,6 +1326,7 @@ const WeeklySummariesReport = props => {
                     id="bio-status-toggle"
                     onChange={handleBioStatusToggleChange}
                   />
+                  {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
                   <label className="switch-toggle-label" htmlFor="bio-status-toggle">
                     <span className="switch-toggle-inner" />
                     <span className="switch-toggle-switch" />
@@ -1329,6 +1344,7 @@ const WeeklySummariesReport = props => {
                     id="trophy-toggle"
                     onChange={handleTrophyToggleChange}
                   />
+                  {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
                   <label className="switch-toggle-label" htmlFor="trophy-toggle">
                     <span className="switch-toggle-inner" />
                     <span className="switch-toggle-switch" />
@@ -1346,6 +1362,7 @@ const WeeklySummariesReport = props => {
                     id="over-hours-toggle"
                     onChange={handleOverHoursToggleChange}
                   />
+                  {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
                   <label className="switch-toggle-label" htmlFor="over-hours-toggle">
                     <span className="switch-toggle-inner" />
                     <span className="switch-toggle-switch" />
@@ -1430,7 +1447,10 @@ const WeeklySummariesReport = props => {
                   <>
                     <Row>
                       <Col sm="12" md="6" className="mb-2">
-                        From <b>{weekDates[index].fromDate}</b> to <b>{weekDates[index].toDate}</b>
+                        From
+                        <b>{weekDates[index].fromDate}</b>
+                        to
+                        <b>{weekDates[index].toDate}</b>
                       </Col>
                       <Col sm="12" md="6" style={{ display: 'flex', justifyContent: 'flex-end' }}>
                         <GeneratePdfReport
@@ -1443,9 +1463,12 @@ const WeeklySummariesReport = props => {
                           <Button
                             className="btn--dark-sea-green"
                             style={darkMode ? boxStyleDark : boxStyle}
-                            onClick={() =>
-                              setState(prev => ({ ...prev, loadTrophies: !state.loadTrophies }))
-                            }
+                            onClick={() => {
+                              return setState(prev => ({
+                                ...prev,
+                                loadTrophies: !state.loadTrophies,
+                              }));
+                            }}
                           >
                             {state.loadTrophies ? 'Hide Trophies' : 'Load Trophies'}
                           </Button>
@@ -1456,7 +1479,8 @@ const WeeklySummariesReport = props => {
                           onClick={refreshCurrentTab}
                           disabled={state.refreshing}
                         >
-                          {state.refreshing ? <Spinner size="sm" /> : null} Refresh
+                          {state.refreshing ? <Spinner size="sm" /> : null}
+                          Refresh
                         </Button>
                       </Col>
                     </Row>
@@ -1464,7 +1488,8 @@ const WeeklySummariesReport = props => {
                       <>
                         <Row>
                           <Col>
-                            <b>Total Team Members:</b> {state.filteredSummaries.length}
+                            <b>Total Team Members:</b>
+                            {state.filteredSummaries.length}
                           </Col>
                         </Row>
                         <Row>

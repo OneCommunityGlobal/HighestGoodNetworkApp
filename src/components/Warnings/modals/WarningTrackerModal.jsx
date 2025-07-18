@@ -106,7 +106,11 @@ function WarningTrackerModal({
       <Popover id="details">
         <Popover.Title as="h4">Description</Popover.Title>
         <Popover.Content>
-          This will {title} this warning tracker,{' '}
+          This will
+          {title}
+          {/* eslint-disable-next-line prettier/prettier */}
+          this warning tracker,
+          {' '}
           {title === 'activate'
             ? 'showing all saved warning-tracking data of this type'
             : 'retaining the data but hiding all warning tracking of this type'}
@@ -218,7 +222,11 @@ function WarningTrackerModal({
           <h2>Whooooo Tiger!! </h2>
           <p>Are you sure you want to delete this warning? </p>
           <p>Deleteing this warning will delete all associated data tied to it from all users.</p>
-          <p className="modal__warning__deletion">Warning Title: {warningTitle}</p>
+          <p className="modal__warning__deletion">
+            {/* eslint-disable-next-line prettier/prettier */}
+            Warning Title:
+            {warningTitle}
+          </p>
         </ModalBody>
 
         <ModalFooter>

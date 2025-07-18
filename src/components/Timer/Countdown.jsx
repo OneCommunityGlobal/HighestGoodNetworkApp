@@ -9,13 +9,14 @@ import {
   BsHourglassTop,
   BsHourglassSplit,
   BsHourglassBottom,
+  BsXLg,
 } from 'react-icons/bs';
 import { FaSave, FaAngleUp, FaAngleDown } from 'react-icons/fa';
 import moment from 'moment';
 import { useRef, useState } from 'react';
 import cs from 'classnames';
 import { toast } from 'react-toastify';
-import { BsXLg } from 'react-icons/bs';
+
 import css from './Countdown.module.css';
 
 function getClockIcon(index) {
@@ -315,8 +316,8 @@ export default function Countdown({
                   <FaAngleUp
                     className={cs(css.transitionColor, css.up)}
                     onClick={() =>
-                      handleInitialMinuteChange(initialHours === 0 && initialMinutes < 15 ? 1 : 15)
-                    }
+                      // eslint-disable-next-line prettier/prettier
+                      handleInitialMinuteChange(initialHours === 0 && initialMinutes < 15 ? 1 : 15)}
                   />
                 )}
                 <Input
@@ -336,8 +337,8 @@ export default function Countdown({
                     onClick={() =>
                       handleInitialMinuteChange(
                         initialHours === 0 && initialMinutes <= 15 ? -1 : -15,
-                      )
-                    }
+                        // eslint-disable-next-line prettier/prettier
+                      )}
                   />
                 )}
               </div>

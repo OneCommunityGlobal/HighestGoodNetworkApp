@@ -66,7 +66,10 @@ function WarningItem({
       )}
 
       <div className="warning-wrapper">
-        <p className="warning-text"> {warningText}</p>
+        {/* eslint-disable-next-line prettier/prettier */}
+        <p className="warning-text">
+          {warningText}
+        </p>
         <WarningIcons
           warnings={warnings}
           warningText={warningText}

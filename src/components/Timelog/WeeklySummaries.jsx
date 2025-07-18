@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import parse from 'html-react-parser';
 import './Timelog.css';
-import { getUserProfile, updateUserProfile } from '~/actions/userProfile';
-import hasPermission from '~/utils/permissions';
 import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react';
 import Spinner from 'react-bootstrap/Spinner';
+import hasPermission from '~/utils/permissions';
+import { getUserProfile, updateUserProfile } from '~/actions/userProfile';
 import { updateWeeklySummaries } from '../../actions/weeklySummaries';
 
 function WeeklySummaries({ userProfile }) {
@@ -92,7 +92,7 @@ function WeeklySummaries({ userProfile }) {
       toggleEdit(index);
     } else {
       // Invalid summary, show an error message or handle it as needed
-      // eslint-disable-next-line no-alert
+      // eslint-disable-next-line no-alert, no-undef
       alert('Please enter a valid summary with at least 50 words.');
     }
   };
@@ -129,8 +129,7 @@ function WeeklySummaries({ userProfile }) {
             init={TINY_MCE_INIT_OPTIONS}
             value={editedSummaries[index]}
             onEditorChange={(content, editor) =>
-              handleSummaryChange({ target: { value: content } }, index, editor)
-            }
+              handleSummaryChange({ target: { value: content } }, index, editor)}
             onGetContent={(content, editor) => setWordCount(editor.plugins.wordcount.getCount())}
           />
 
@@ -181,7 +180,11 @@ function WeeklySummaries({ userProfile }) {
       <div>
         <h3>{title}</h3>
         <p className={darkMode ? 'bg-yinmn-blue text-light' : ''}>
-          {userProfile.firstName} {userProfile.lastName} did not submit a summary.
+          {userProfile.firstName} 
+          {' '}
+          {userProfile.lastName}
+          {' '}
+          did not submit a summary.
         </p>
       </div>
     );

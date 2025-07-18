@@ -11,7 +11,7 @@ import {
   InputGroupText,
   Input,
 } from 'reactstrap';
-import ReactHtmlParser from 'react-html-parser';
+import ReactHtmlParser from 'html-react-parser';
 import { boxStyle, boxStyleDark } from '~/styles';
 import '../../Header/DarkMode.css';
 

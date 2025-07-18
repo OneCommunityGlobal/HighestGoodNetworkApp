@@ -13,7 +13,12 @@ export default function RecordsModal({ modal, setModal, record, setRecord, recor
 
     return (
       <Modal isOpen={modal} size="xl">
-        <ModalHeader>{recordType} Record</ModalHeader>
+        {/* eslint-disable-next-line prettier/prettier */}
+        <ModalHeader>
+          {recordType}
+          {' '}
+          Record
+        </ModalHeader>
         <ModalBody>
           <div className={`${styles.recordsModalTableContainer}`}>
             <Table>

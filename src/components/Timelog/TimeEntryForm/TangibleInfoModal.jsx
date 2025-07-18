@@ -7,11 +7,11 @@ import { Modal, ModalBody, ModalHeader, ModalFooter, Button } from 'reactstrap';
  * @param {Func} props.setVisible
  * @param {Boolean} props.darkMode
  */
-function TangibleInfoModal(props) {
+function TangibleInfoModal({ visible, darkMode, setVisible }) {
   return (
-    <Modal isOpen={props.visible} className={props.darkMode ? 'text-light' : ''}>
-      <ModalHeader className={props.darkMode ? 'bg-space-cadet' : ''}>Info</ModalHeader>
-      <ModalBody className={props.darkMode ? 'bg-yinmn-blue' : ''}>
+    <Modal isOpen={visible} className={darkMode ? 'text-light' : ''}>
+      <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>Info</ModalHeader>
+      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <p>
           Intangible time is time logged to items not related to your specific action items OR for
           time that needs to be manually changed to tangible time by an Admin (e.g. work away from
@@ -19,8 +19,8 @@ function TangibleInfoModal(props) {
           request.
         </p>
       </ModalBody>
-      <ModalFooter className={props.darkMode ? 'bg-yinmn-blue' : ''}>
-        <Button onClick={() => props.setVisible(false)} color="primary">
+      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <Button onClick={() => setVisible(false)} color="primary">
           Close
         </Button>
       </ModalFooter>

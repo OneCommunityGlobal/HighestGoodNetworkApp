@@ -58,7 +58,9 @@ const renderCustomizedLabel = ({
         textAnchor={textAnchor}
         fontSize={fontSize}
         fill={fill}
-      >{`${name || ''} ${percent}%`}</text>
+      >
+        {`${name || ''} ${percent}%`}
+      </text>
     </g>
   );
 };
@@ -146,7 +148,8 @@ export default function SelectTeamPieChart(props) {
           textAnchor="middle"
           dominantBaseline="middle"
         >
-          Total: {total}
+          Total:
+          {total}
         </text>
       </PieChart>
     </ResponsiveContainer>
