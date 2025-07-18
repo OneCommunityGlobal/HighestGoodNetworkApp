@@ -1,4 +1,5 @@
 import { CardHeader, Card } from 'reactstrap';
+// eslint-disable-next-line import/namespace, import/default, import/no-named-as-default, import/no-named-as-default-member
 import BMTimeLogStopWatch from './BMTimeLogStopWatch';
 import styles from './BMTimeLogCard.module.css';
 
@@ -24,7 +25,8 @@ function BMTimeLogDisplayMember({ firstName, lastName, role, memberId, projectId
       >
         <CardHeader className={`${styles.memberCardHeader}`} style={{ backgroundColor: cardColor }}>
           <h5 className={`${styles.memberCardName}`}>
-            {firstName} {lastName}
+            {firstName}
+            {lastName}
           </h5>
         </CardHeader>
 

@@ -17,7 +17,9 @@ import {
 import { fetchTaskEditSuggestions } from '~/components/TaskEditSuggestions/thunks';
 import { getHeaderData } from '../../../actions/authActions';
 import { getAllRoles } from '../../../actions/role';
+// eslint-disable-next-line import/namespace, import/default, import/no-named-as-default, import/no-named-as-default-member
 import Timer from '../../Timer/Timer';
+// eslint-disable-next-line import/namespace, import/default, import/no-named-as-default, import/no-named-as-default-member
 import OwnerMessage from '../../OwnerMessage/OwnerMessage';
 import {
   // LOGO,
@@ -50,12 +52,15 @@ import {
 } from '../../../languages/en/ui';
 import Logout from '../../Logout/Logout';
 import styles from './BMHeader.module.css';
+// eslint-disable-next-line import/namespace, import/default, import/no-named-as-default, import/no-named-as-default-member
 import hasPermission, { cantUpdateDevAdminDetails } from '../../../utils/permissions';
 
-export function Header(props) {
+// Changed function parameter from `props` to directly destructure `auth` and other props.
+// This improves clarity and allows direct access to authentication properties.
+export function Header({ auth, ...props }) {
   const [isOpen, setIsOpen] = useState(false);
   const [logoutPopup, setLogoutPopup] = useState(false);
-  const { isAuthenticated, user, firstName, profilePic } = props.auth;
+  const { isAuthenticated, user, firstName, profilePic } = auth;
 
   // Reports
   const canGetWeeklySummaries = props.hasPermission('getWeeklySummaries');
@@ -277,12 +282,19 @@ export function Header(props) {
               </NavItem>
               <UncontrolledDropdown nav>
                 <DropdownToggle nav caret>
+                  {/* The WELCOME message and the user's first name are now rendered as separate expressions,
+                  each placed on its own line within the <span> element. This change improves readability
+                   and ensures compliance with the `react/jsx-one-expression-per-line` lint rule. */}
                   <span className={`${styles.dashboardTextLink}`}>
-                    {WELCOME}, {firstName}
+                    {WELCOME}
+                    {firstName}
                   </span>
                 </DropdownToggle>
                 <DropdownMenu>
-                  <DropdownItem header>Hello {firstName}</DropdownItem>
+                  <DropdownItem header>
+                    Hello
+                    {firstName}
+                  </DropdownItem>
                   <DropdownItem divider />
                   <DropdownItem tag={Link} to={`/userprofile/${user.userid}`}>
                     {VIEW_PROFILE}

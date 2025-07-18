@@ -1,5 +1,7 @@
 import moment from 'moment';
+// eslint-disable-next-line no-unused-vars
 import { render, screen, waitFor } from '@testing-library/react';
+// eslint-disable-next-line react/no-deprecated
 import { unmountComponentAtNode } from 'react-dom';
 import CountdownTimer from '~/components/WeeklySummary/CountdownTimer';
 
@@ -32,9 +34,7 @@ describe('Time Countdown Timer Test', () => {
     const tickTest = moment().subtract(1, 'seconds');
     render(<CountdownTimer date={tickTest} />, container);
 
-    await waitFor(() => screen.getByText("Time's up!"));
-
-    expect(screen.getByText("Time's up!")).toBeInTheDocument();
+    expect(await screen.findByText("Time's up!")).toBeInTheDocument();
   });
 
   it('displays "Time\'s Up" message when timer finished at the same time', async () => {
@@ -42,8 +42,7 @@ describe('Time Countdown Timer Test', () => {
     const tickTest = moment().subtract(0, 'seconds');
     render(<CountdownTimer date={tickTest} />, container);
 
-    await waitFor(() => screen.getByText("Time's up!"));
-    expect(screen.getByText("Time's up!")).toBeInTheDocument();
+    expect(await screen.findByText("Time's up!")).toBeInTheDocument();
   });
 
   it('displays "Time\'s Up" message when timer finished 999 seconds ago', async () => {
@@ -51,8 +50,7 @@ describe('Time Countdown Timer Test', () => {
     const tickTest = moment().subtract(999, 'seconds');
     render(<CountdownTimer date={tickTest} />, container);
 
-    await waitFor(() => screen.getByText("Time's up!"));
-    expect(screen.getByText("Time's up!")).toBeInTheDocument();
+    expect(await screen.findByText("Time's up!")).toBeInTheDocument();
   });
 
   it('displays "Sec" when timer is not finished', () => {

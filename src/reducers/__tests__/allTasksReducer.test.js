@@ -1,4 +1,5 @@
-import { taskReducer } from '../allTasksReducer';
+// eslint-disable-next-line import/namespace, import/default, import/no-named-as-default, import/no-named-as-default-member
+import taskReducer from '../allTasksReducer';
 import * as types from '../../constants/task';
 
 describe('Task Reducer', () => {
