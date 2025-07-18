@@ -40,7 +40,6 @@ import VolunteerStatusChart from './VolunteerStatus/VolunteerStatusChart';
 import BlueSquareStats from './BlueSquareStats/BlueSquareStats';
 import TeamStats from './TeamStats/TeamStats';
 import HoursCompletedBarChart from './HoursCompleted/HoursCompletedBarChart';
-import HoursWorkList from './HoursWorkList/HoursWorkList';
 import NumbersVolunteerWorked from './NumbersVolunteerWorked/NumbersVolunteerWorked';
 import AnniversaryCelebrated from './AnniversaryCelebrated/AnniversaryCelebrated';
 import RoleDistributionPieChart from './VolunteerRolesTeamDynamics/RoleDistributionPieChart';
@@ -609,7 +608,6 @@ function TotalOrgSummary(props) {
                   comparisonType={selectedComparison}
                 /> */}
                 <div className="d-flex flex-column align-items-center justify-content-center">
-                  <HoursWorkList data={volunteerStats?.volunteerHoursStats} />
                   <NumbersVolunteerWorked
                     isLoading={isLoading}
                     data={volunteerStats?.volunteersOverAssignedTime}
