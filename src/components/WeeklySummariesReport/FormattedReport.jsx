@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import 'moment-timezone';
-import ReactHtmlParser from 'react-html-parser';
+import parse from 'html-react-parser';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axios from 'axios';
@@ -352,7 +352,7 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
 
       return (
         <div style={style} className={styles.weeklySummaryReportContainer}>
-          <div className={styles.weeklySummaryText}>{ReactHtmlParser(summaryText)}</div>
+          <div className={styles.weeklySummaryText}>{parse(summaryText)}</div>
           <FontAwesomeIcon
             icon={faCopy}
             className={styles.copyIcon}

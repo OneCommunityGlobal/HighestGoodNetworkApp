@@ -10,7 +10,7 @@ import { importTask } from './../../../../../actions/task';
 import readXlsxFile from 'read-excel-file';
 import { getPopupById } from './../../../../../actions/popupEditorAction';
 import { TASK_IMPORT_POPUP_ID } from './../../../../../constants/popupId';
-import ReactHtmlParser from 'react-html-parser';
+import parse from 'html-react-parser';
 import { boxStyle, boxStyleDark } from '~/styles';
 import '../../../../Header/DarkMode.css'
 
@@ -26,14 +26,14 @@ const ImportTask = props => {
   const [modal, setModal] = useState(false);
   const [taskList, setTaskList] = useState([]);
   const [alert, setAlert] = useState('')
-  const [instruction, setInstruction] = useState(ReactHtmlParser(popupContent));  // right now the saved popupContent for this is 'Task PR#905', better to change it 
+  const [instruction, setInstruction] = useState(parse(popupContent));  // right now the saved popupContent for this is 'Task PR#905', better to change it 
 
   /*
   * -------------------------------- functions -------------------------------- 
   */
  const toggle = async () => {
     props.getPopupById(TASK_IMPORT_POPUP_ID);
-    setInstruction(ReactHtmlParser(popupContent));
+    setInstruction(parse(popupContent));
     setModal(!modal);
     setImportStatus('choosing');
   };
@@ -68,7 +68,7 @@ const ImportTask = props => {
           }
         }
       });
-      setInstruction(ReactHtmlParser(rows[0][0] + '<br/> Rows: ' + rows.length))
+      setInstruction(parse(rows[0][0] + '<br/> Rows: ' + rows.length))
       setImportStatus('imported');
       setTaskList(tmpList);
     } catch (error) {
@@ -132,7 +132,7 @@ const ImportTask = props => {
 
   const reset = () => {
     setImportStatus('choosing');
-    setInstruction(ReactHtmlParser(popupContent));
+    setInstruction(parse(popupContent));
     setTaskList([]);
   }
 
