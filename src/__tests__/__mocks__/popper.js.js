@@ -1,7 +1,6 @@
-// This is needed to remove a warning related to popper.js when testing reactstrap tooltips.
-// More on this bug: https://github.com/react-bootstrap/react-bootstrap/issues/4997
-/* eslint-disable import/no-extraneous-dependencies */
-/* eslint-env jest */
+
+// Import test functions for linting and test environment
+/* eslint-disable no-undef */
 import PopperJs from 'popper.js';
 
 // export default class Popper {
@@ -16,10 +15,8 @@ import PopperJs from 'popper.js';
   // To mimic static property
   Popper.placements = PopperJs.placements;
   export default Popper;
-
-
-  describe('Stop Error', () => {
-   it('should not error out due to no tests (popper.js.js)', () => {
-    
+describe('Stop Error', () => {
+  it('should not error out due to no tests (popper.js.js)', () => {
+    // This is a placeholder test to prevent errors
   });
 });

@@ -60,8 +60,9 @@ function AutoUpdate() {
       <Row>
         <Col sm={{ size: 12 }}>
           <Alert color="warning">
-            <b>Alert:</b> The Highest Good Network application has updated! Please refresh this page
-            after saving your work to apply the latest updates and bug fixes.
+            <b>Alert:</b>
+            The Highest Good Network application has updated! Please refresh this pageafter saving
+            your work to apply the latest updates and bug fixes.
           </Alert>
         </Col>
       </Row>

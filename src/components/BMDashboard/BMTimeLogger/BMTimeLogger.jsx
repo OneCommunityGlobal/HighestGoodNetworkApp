@@ -37,7 +37,10 @@ function BMTimeLogger() {
 
       {/* select project dropdown */}
       <Row>
-        <Col xs="3">Date: {moment().format('MM/DD/YY')}</Col>
+        <Col xs="3">
+          Date:
+          {moment().format('MM/DD/YY')}
+        </Col>
         <Col xs="1">
           <p>Project:</p>
         </Col>

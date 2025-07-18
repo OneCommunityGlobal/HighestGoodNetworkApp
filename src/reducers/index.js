@@ -9,8 +9,8 @@ import {
   enableUserInfoEditReducer,
 } from './allUserProfilesReducer';
 import { leaderboardDataReducer, orgDataReducer } from './leaderboardDataReducer';
-import weeklySummariesReducer from './weeklySummariesReducer';
-import weeklySummariesReportReducer from './weeklySummariesReportReducer';
+import { weeklySummariesReducer } from './weeklySummariesReducer';
+import { weeklySummariesReportReducer } from './weeklySummariesReportReducer';
 import { allProjectsReducer } from './allProjectsReducer';
 import { projectReportReducer } from './projectReportReducer';
 import userProjectsReducer from './userProjectsReducer';
@@ -20,6 +20,7 @@ import { teamByIdReducer } from './teamByIdReducer';
 import { errorsReducer } from './errorsReducer';
 import { timeEntriesReducer } from './timeEntriesReducer';
 import wbsReducer from './wbsReducer';
+// eslint-disable-next-line import/namespace
 import { taskReducer } from './allTasksReducer';
 import { managingTeamsReducer } from './managingTeamsReducer';
 import { teamUsersReducer } from './teamsTeamMembersReducer';
@@ -31,7 +32,7 @@ import { rolePresetReducer } from './rolePresetReducer';
 import { ownerMessageReducer } from './ownerMessageReducer';
 import warningsByUserIdReducer from './warningsReducer';
 import { infoCollectionsReducer } from './informationReducer';
-import mouseoverTextReducer from './mouseoverTextReducer';
+import { mouseoverTextReducer } from './mouseoverTextReducer';
 import notificationReducer from './notificationReducer';
 import weeklySummaryRecipientsReducer from './weeklySummaryRecipientsReducer';
 import { followUpReducer } from './followUpReducer';
@@ -45,6 +46,7 @@ import { materialsReducer } from './bmdashboard/materialsReducer';
 import { reusablesReducer } from './bmdashboard/reusablesReducer';
 import { bmProjectReducer } from './bmdashboard/projectReducer';
 import { bmInvTypeReducer } from './bmdashboard/inventoryTypeReducer';
+// eslint-disable-next-line import/namespace
 import { lessonsReducer } from './bmdashboard/lessonsReducer';
 import { bmProjectByIdReducer } from './bmdashboard/projectByIdReducer';
 import { bmInvUnitReducer } from './bmdashboard/inventoryUnitReducer';
@@ -62,10 +64,10 @@ import issueReducer from './bmdashboard/issueReducer';
 import HGNFormReducer from './hgnFormReducers';
 import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
 import messageReducer from './lbdashboard/messagingReducer';
-import userPreferencesReducer from './lbdashboard/userPreferencesReducer';
+import { userPreferencesReducer } from './lbdashboard/userPreferencesReducer';
 
 // community portal
-import noShowVizReducer from './communityPortal/noShowVizReducer';
+import { noShowVizReducer } from './communityPortal/noShowVizReducer';
 
 // lbdashboard
 import wishListReducer from './lbdashboard/wishListItemReducer';

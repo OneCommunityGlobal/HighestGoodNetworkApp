@@ -140,7 +140,8 @@ function BMTimeLogStopWatch({ projectId, memberId }) {
         <Row className="justify-content-center">
           <Col xs="auto">
             <Button className={`${styles.memberStopwatch} mb-2 px-3`}>
-              {hr.toString().padStart(2, '0')}:{min.toString().padStart(2, '0')}:
+              {hr.toString().padStart(2, '0')}
+              {min.toString().padStart(2, '0')}
               {sec.toString().padStart(2, '0')}
             </Button>
           </Col>

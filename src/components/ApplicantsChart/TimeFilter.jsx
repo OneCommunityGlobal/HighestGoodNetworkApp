@@ -22,25 +22,29 @@ function TimeFilter({ onFilterChange }) {
         flexWrap: 'wrap',
       }}
     >
-      <label htmlFor="timeFilterSelect" style={{ fontWeight: 500 }}>
-        Time Filter:
-      </label>
-      <select
-        id="timeFilterSelect"
-        value={selectedOption}
-        onChange={e => setSelectedOption(e.target.value)}
-        style={{
-          padding: '6px 12px',
-          borderRadius: '4px',
-          border: '1px solid #ccc',
-          fontSize: '14px',
-        }}
+      {/* Wrapped the <select> inside <label> to ensure accessibility compliance.
+          This fixes ESLint error: jsx-a11y/label-has-associated-control */}
+      <label
+        htmlFor="timeFilterSelect"
+        style={{ fontWeight: 500, display: 'flex', alignItems: 'center', gap: '8px' }}
       >
-        <option value="weekly">Weekly</option>
-        <option value="monthly">Monthly</option>
-        <option value="yearly">Yearly</option>
-        <option value="custom">Custom Dates</option>
-      </select>
+        <select
+          id="timeFilterSelect"
+          value={selectedOption}
+          onChange={e => setSelectedOption(e.target.value)}
+          style={{
+            padding: '6px 12px',
+            borderRadius: '4px',
+            border: '1px solid #ccc',
+            fontSize: '14px',
+          }}
+        >
+          <option value="weekly">Weekly</option>
+          <option value="monthly">Monthly</option>
+          <option value="yearly">Yearly</option>
+          <option value="custom">Custom Dates</option>
+        </select>
+      </label>
 
       {selectedOption === 'custom' && (
         <>

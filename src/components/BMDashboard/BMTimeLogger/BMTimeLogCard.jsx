@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Container, Row, Col, InputGroup, Input } from 'reactstrap';
+// Import useSelector and useDispatch hooks from react-redux for interacting with the Redux store
 import { useSelector, useDispatch } from 'react-redux';
 import BMError from '../shared/BMError';
 import { fetchBMProjectMembers } from '../../../actions/bmdashboard/projectMemberAction';
 import BMTimeLogDisplayMember from './BMTimeLogDisplayMember';
 
-function BMTimeLogCard(props) {
+// Destructure selectedProject from props for cleaner code and to satisfy ESLint rules
+function BMTimeLogCard({ selectedProject }) {
   const [isError, setIsError] = useState(false);
   const [memberList, setMemberList] = useState([]);
   const [isMemberFetched, setIsMemberFetched] = useState(false);
@@ -13,12 +15,14 @@ function BMTimeLogCard(props) {
   const [searchQuery, setSearchQuery] = useState('');
 
   const dispatch = useDispatch();
+  // Select the errors state from the Redux store
   const errors = useSelector(state => state.errors);
+  // Select the bmProjectMembers state from the Redux store
   const projectInfo = useSelector(state => state.bmProjectMembers);
-
+  // Fetch project members whenever the selected project or dispatch changes
   useEffect(() => {
-    dispatch(fetchBMProjectMembers(props.selectedProject));
-  }, [props.selectedProject, dispatch]);
+    dispatch(fetchBMProjectMembers(selectedProject));
+  }, [selectedProject, dispatch]);
 
   useEffect(() => {
     if (projectInfo && projectInfo.members) {
@@ -93,7 +97,12 @@ function BMTimeLogCard(props) {
                 />
               </InputGroup>
               <small className="text-muted">
-                Found {filteredMembers.length} out of {memberList.length} members
+                {/* Display the count of filtered members out of the total member list */}
+                Found
+                {filteredMembers.length}
+                out of
+                {memberList.length}
+                members
               </small>
             </Col>
           </Row>
@@ -108,7 +117,7 @@ function BMTimeLogCard(props) {
                     role={value.user.role}
                     index={index}
                     memberId={value.user._id}
-                    projectId={props.selectedProject}
+                    projectId={selectedProject}
                   />
                 </Col>
               ))}
@@ -116,7 +125,11 @@ function BMTimeLogCard(props) {
           ) : (
             <Row>
               <Col className="text-center py-4">
-                <h5>No members found matching &quot;{searchQuery}&quot;</h5>
+                <h5>
+                  No members found matching &quot;
+                  {searchQuery}
+                  &quot;
+                </h5>
               </Col>
             </Row>
           )}

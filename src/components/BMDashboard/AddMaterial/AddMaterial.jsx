@@ -246,7 +246,8 @@ export default function AddMaterialForm() {
         <Form className={`${styles.addMaterialForm} container`} onSubmit={handleSubmit}>
           <FormGroup>
             <Label for="material-select">
-              Select Material <span className={`${styles.fieldRequired}`}>*</span>
+              Select Material
+              <span className={`${styles.fieldRequired}`}>*</span>
             </Label>
             <Input
               id="material-select"
@@ -287,7 +288,8 @@ export default function AddMaterialForm() {
           )}
           <FormGroup>
             <Label for="unit-select">
-              Select Unit <span className={`${styles.fieldRequired}`}>*</span>
+              Select Unit
+              <span className={`${styles.fieldRequired}`}>*</span>
             </Label>
             <Input
               id="unit-select"
@@ -330,7 +332,8 @@ export default function AddMaterialForm() {
           )}
           <FormGroup>
             <Label for="invoice-number">
-              Invoice Number or ID <span className={`${styles.fieldRequired}`}>*</span>
+              Invoice Number or ID
+              <span className={`${styles.fieldRequired}`}>*</span>
             </Label>
             <Input
               id="invoice-number"
@@ -349,7 +352,7 @@ export default function AddMaterialForm() {
           <div className={`${styles.addMaterialFlexGroup}`}>
             <FormGroup>
               <Label for="unit-price">
-                Unit Price (excl.taxes & shipping){' '}
+                Unit Price (excl.taxes & shipping)
                 <span className={`${styles.fieldRequired}`}>*</span>
               </Label>
               <Input
@@ -381,7 +384,8 @@ export default function AddMaterialForm() {
             </FormGroup>
             <FormGroup>
               <Label for="quantity">
-                Total quantity <span className={`${styles.fieldRequired}`}>*</span>
+                Total quantity
+                <span className={`${styles.fieldRequired}`}>*</span>
               </Label>
               <Input
                 id="quantity"
@@ -400,7 +404,8 @@ export default function AddMaterialForm() {
           <div className={`${styles.addMaterialFlexGroup}`}>
             <FormGroup>
               <Label for="purchase-date">
-                Purchase Date <span className={`${styles.fieldRequired}`}>*</span>
+                Purchase Date
+                <span className={`${styles.fieldRequired}`}>*</span>
               </Label>
               <Input
                 id="purchase-date"
@@ -485,7 +490,8 @@ export default function AddMaterialForm() {
           </FormGroup>
           <FormGroup>
             <Label for="description">
-              Material Description <span className={`${styles.fieldRequired}`}>*</span>
+              Material Description
+              <span className={`${styles.fieldRequired}`}>*</span>
             </Label>
             <Input
               type="textarea"
@@ -505,7 +511,8 @@ export default function AddMaterialForm() {
           <div className={`${styles.addMaterialTotalPrice}`}>
             <div>Total Price</div>
             <div className={`${styles.totalPriceCalculated}`}>
-              {totalPriceWithShipping} {formData.currency}
+              {totalPriceWithShipping}
+              {formData.currency}
             </div>
           </div>
           <div className={`${styles.addMaterialCreatedby}`}>
