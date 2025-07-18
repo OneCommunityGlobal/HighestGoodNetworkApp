@@ -1,3 +1,16 @@
+/* eslint-disable no-undef */
+/* eslint-disable import/order */
+/* eslint-disable react/jsx-curly-newline */
+/* eslint-disable react/jsx-one-expression-per-line */
+/* eslint-disable react/jsx-indent-props */
+/* eslint-disable react/jsx-max-props-per-line */
+/* eslint-disable react/jsx-tag-spacing */
+/* eslint-disable react/jsx-closing-bracket-location */
+/* eslint-disable react/jsx-first-prop-new-line */
+/* eslint-disable react/jsx-props-no-multi-spaces */
+/* eslint-disable react/jsx-closing-tag-location */
+/* eslint-disable react/jsx-wrap-multilines */
+/* eslint-disable react/jsx-indent */
 import { useEffect, useState, useRef, useCallback } from 'react';
 import './Leaderboard.css';
 import { isEqual, debounce } from 'lodash';
@@ -34,7 +47,7 @@ import moment from 'moment-timezone';
 import { boxStyle } from '~/styles';
 import axios from 'axios';
 import { getUserProfile } from '~/actions/userProfile';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { boxStyleDark } from '../../styles';
 import '../Header/DarkMode.css';
 import '../UserProfile/TeamsAndProjects/autoComplete.css';

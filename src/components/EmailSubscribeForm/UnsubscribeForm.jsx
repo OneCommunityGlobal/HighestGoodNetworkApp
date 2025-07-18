@@ -1,3 +1,4 @@
+/* eslint-disable import/namespace */
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';

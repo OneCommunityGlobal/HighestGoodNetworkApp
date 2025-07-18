@@ -1,10 +1,13 @@
+/* eslint-disable react/destructuring-assignment */
+/* eslint-disable react/jsx-closing-tag-location */
+/* eslint-disable react/jsx-indent */
 import axios from 'axios';
 import { useEffect, useState } from 'react';
+import { connect } from 'react-redux';
 import { ENDPOINTS } from '~/utils/URL';
 import Loading from '~/components/common/Loading';
 import { boxStyle, boxStyleDark } from '~/styles';
 import hasPermission from '~/utils/permissions';
-import { connect } from 'react-redux';
 import EditHistoryModal from './EditHistoryModal';
 
 function LostTimeHistory(props) {
@@ -89,7 +92,7 @@ function LostTimeHistory(props) {
     let newEntriesRow = [];
     if (timeEntries.length > 0) {
       newEntriesRow = timeEntries.map((entry) => (
-        <tr id={`tr_${entry._id}`} key={entry._id}  className={darkMode ? 'hover-effect-reports-page-dark-mode text-light' : ''}>
+        <tr id={`tr_${entry._id}`} key={entry._id} className={darkMode ? 'hover-effect-reports-page-dark-mode text-light' : ''}>
           <td>
             {entry.name}
           </td>
@@ -151,11 +154,12 @@ function LostTimeHistory(props) {
     <div className="table-data-container mt-5">
       {isOpen && (
         dataLoading? (
-          <Loading align="center" darkMode={darkMode}/>
+          <Loading align="center" darkMode={darkMode} />
         ): (
           <table 
-          className={`table ${darkMode ? 'bg-yinmn-blue' : 'table-bordered'}`}
-          style={darkMode ? boxStyleDark : boxStyle}>
+            className={`table ${darkMode ? 'bg-yinmn-blue' : 'table-bordered'}`}
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
           <thead>
             <tr className={darkMode ? 'bg-space-cadet text-light' : ''}>
               <th scope="col">

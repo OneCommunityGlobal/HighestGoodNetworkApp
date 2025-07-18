@@ -1,3 +1,9 @@
+/* eslint-disable import/no-named-as-default-member */
+/* eslint-disable import/no-named-as-default */
+/* eslint-disable import/default */
+/* eslint-disable import/namespace */
+/* eslint-disable react/destructuring-assignment */
+/* eslint-disable react/jsx-indent */
 /* eslint-disable import/prefer-default-export */
 import { useState, useEffect } from 'react';
 import { Button } from 'react-bootstrap';
@@ -33,7 +39,9 @@ function ShowCollapse(props) {
       )}
       {}
       <Button onClick={() => setOpen(!open)} aria-expanded={open} size="sm">
-        {open ? 'Show less' : `Show more (${props.resources.length})`} ➤
+        {open ? 'Show less' : `Show more (${props.resources.length})`}
+{' '}
+➤
       </Button>
     </>
   );
@@ -101,7 +109,7 @@ export function TasksDetail(props) {
   ) : (
     <ShowCollapse resources={task.resources} />
   )}
-</td>
+      </td>
 
       <td className="tasks-detail-center-cells collapse-column">
         {task.isAssigned ? <div>Assign</div> : <div>Not Assign</div>}
@@ -131,7 +139,10 @@ export function TasksDetail(props) {
 
   return (
     <div>
-      <div className={`tasks-detail-total ${darkMode ? 'text-light' : ''}`}>Total: {tasksList.length}</div>
+      <div className={`tasks-detail-total ${darkMode ? 'text-light' : ''}`}>
+Total:
+{tasksList.length}
+      </div>
       <table className={`tasks-detail-table ${darkMode ? 'dark-mode-table' : ''}`}>
         <thead className='tasks-detail-table-head'>
           <tr className={darkMode ? 'bg-space-cadet text-light' : ''}>

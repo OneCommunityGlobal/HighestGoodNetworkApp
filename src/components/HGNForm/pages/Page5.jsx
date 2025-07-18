@@ -1,3 +1,7 @@
+/* eslint-disable import/namespace */
+/* eslint-disable import/no-named-as-default-member */
+/* eslint-disable import/no-named-as-default */
+/* eslint-disable import/default */
 import { useEffect, useRef } from 'react';
 import Banner from '../questionpages/Banner';
 import QuestionnaireHeader from '../questionpages/QuestionnaireHeader';

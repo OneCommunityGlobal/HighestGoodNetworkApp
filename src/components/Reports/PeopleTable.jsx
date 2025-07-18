@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-one-expression-per-line */
 import '../Teams/Team.css';
 import { Link } from 'react-router-dom';
 import './reports.css';

@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-one-expression-per-line */
 import { useState, useEffect } from 'react';
 import { Button } from 'reactstrap';
 import { getUnansweredFAQs, deleteUnansweredFAQ } from './api';

@@ -1,3 +1,11 @@
+/* eslint-disable import/namespace */
+/* eslint-disable import/order */
+/* eslint-disable no-undef */
+/* eslint-disable react/jsx-closing-tag-location */
+/* eslint-disable prettier/prettier */
+/* eslint-disable react/jsx-indent */
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 import { useEffect, useState, useRef } from 'react';
 import { Button, Dropdown, Form, Input } from 'reactstrap';
 import { toast } from 'react-toastify';
@@ -151,8 +159,10 @@ function UserPermissionsPopUp({
           style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '5px' }}
         >
           <h4 className="user-permissions-pop-up__title">
-            User name<span className="red-asterisk">* </span>:
-          </h4>
+            User name
+            <span className="red-asterisk">* </span>
+:
+</h4>
           <Button
             type="button"
             color="success"

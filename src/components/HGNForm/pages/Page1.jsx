@@ -1,3 +1,7 @@
+/* eslint-disable import/no-named-as-default-member */
+/* eslint-disable import/namespace */
+/* eslint-disable import/no-named-as-default */
+/* eslint-disable import/default */
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { getUserProfileBasicInfo } from '~/actions/userManagement';

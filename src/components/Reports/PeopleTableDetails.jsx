@@ -1,3 +1,7 @@
+/* eslint-disable react/jsx-tag-spacing */
+/* eslint-disable react/jsx-closing-tag-location */
+/* eslint-disable react/jsx-one-expression-per-line */
+/* eslint-disable react/jsx-key */
 import { useState, useEffect } from 'react';
 import 'reactjs-popup/dist/index.css';
 import { Container } from 'reactstrap';

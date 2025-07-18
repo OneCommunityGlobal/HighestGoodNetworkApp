@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-one-expression-per-line */
 import { useSelector } from 'react-redux';
 
 function NetlifyPoweredLink() {

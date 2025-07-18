@@ -1,11 +1,13 @@
+/* eslint-disable react/jsx-one-expression-per-line */
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { useState, useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { FaEdit, FaRegSave } from 'react-icons/fa';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import { setformData } from '~/actions/hgnFormAction';
 import { Spinner } from 'reactstrap';
+import { setformData } from '~/actions/hgnFormAction';
 import { ENDPOINTS } from '~/utils/URL';
 import styles from '../styles/GeneralQuestions.module.css';
 

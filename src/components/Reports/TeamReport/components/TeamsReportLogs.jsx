@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 import { ReportPage } from '~/components/Reports/sharedComponents/ReportPage';
 // eslint-disable-next-line no-unused-vars
 import React, { useState, useEffect } from 'react';

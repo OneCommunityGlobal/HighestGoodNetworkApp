@@ -1,3 +1,9 @@
+/* eslint-disable no-promise-executor-return */
+/* eslint-disable import/no-named-as-default-member */
+/* eslint-disable import/no-named-as-default */
+/* eslint-disable import/namespace */
+/* eslint-disable import/order */
+/* eslint-disable import/default */
 import { renderWithRouterMatch } from '../../__tests__/utils';
 import '@testing-library/jest-dom/extend-expect';
 import { createMemoryHistory } from 'history';
@@ -5,7 +11,6 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { screen } from '@testing-library/react';
 import { ApiEndpoint, ENDPOINTS } from '~/utils/URL';
-import { GET_ERRORS } from '../../constants/errors';
 import mockState from '../../__tests__/mockAdminState';
 import routes from '../../routes';
 import { clearErrors } from '../../actions/errorsActions';
@@ -172,6 +177,7 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 
+// eslint-disable-next-line no-unused-vars
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -179,6 +185,7 @@ function sleep(ms) {
 mockState.auth.isAuthenticated = false;
 
 describe('Login behavior', () => {
+  // eslint-disable-next-line no-unused-vars
   let loginMountedPage;
 
   it('should perform correct redirection if user tries to access a proctected route from some other location', async () => {

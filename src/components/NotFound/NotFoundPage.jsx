@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-one-expression-per-line */
 /* eslint-disable no-unused-vars */
 /* eslint-disable prettier/prettier */
 import React from 'react';
@@ -14,7 +15,8 @@ function NotFoundPage() {
   return (
     <div className={cn(styles.notFoundContainer, darkMode ? cn(
       styles.darkMode, styles.bgBlack
-    ) : '')}>
+    ) : '')}
+    >
       <img
         className={styles.notFoundImage}
         src={darkMode ? NotFoundDarkImage : NotFoundImage}

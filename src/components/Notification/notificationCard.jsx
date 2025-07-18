@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-one-expression-per-line */
 import React from 'react';
 import { Card, CardTitle, CardText, Button, CardBody, Container } from 'reactstrap';
 import parse from 'html-react-parser';

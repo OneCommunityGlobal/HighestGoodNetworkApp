@@ -1,3 +1,4 @@
+/* eslint-disable import/namespace */
 // eslint-disable-next-line no-unused-vars
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';

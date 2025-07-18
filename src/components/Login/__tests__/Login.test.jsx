@@ -1,3 +1,6 @@
+/* eslint-disable import/namespace */
+/* eslint-disable testing-library/no-render-in-lifecycle */
+/* eslint-disable testing-library/no-node-access */
 // Version 1.0.0 - Updated tests for Login page structure, input handling, and login behavior
 import { render, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
@@ -323,4 +326,3 @@ describe('Login behavior', () => {
     expect(pushSpy).toHaveBeenCalledWith('/dashboard');
   });
 });
-

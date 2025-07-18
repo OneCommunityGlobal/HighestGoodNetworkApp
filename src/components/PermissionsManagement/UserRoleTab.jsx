@@ -1,3 +1,5 @@
+/* eslint-disable react/destructuring-assignment */
+/* eslint-disable import/order */
 import { useEffect } from 'react';
 import { connect } from 'react-redux';
 import './UserRoleTab.css';

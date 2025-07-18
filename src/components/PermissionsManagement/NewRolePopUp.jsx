@@ -1,3 +1,7 @@
+/* eslint-disable react/jsx-closing-tag-location */
+/* eslint-disable prettier/prettier */
+/* eslint-disable react/jsx-indent */
+/* eslint-disable import/no-duplicates */
 import { useState } from 'react';
 import { Alert, Button, Form, FormGroup, Input, Label } from 'reactstrap';
 import { toast } from 'react-toastify';
@@ -84,8 +88,10 @@ function CreateNewRolePopup({ toggle, roleNames, darkMode, addRole }) {
     <Form id="createRole" onSubmit={handleSubmit}>
       <FormGroup>
         <Label className={darkMode ? 'text-light' : ''}>
-          Role Name<span className="red-asterisk">* </span>:
-        </Label>
+          Role Name
+          <span className="red-asterisk">* </span>
+:
+</Label>
         <Input
           placeholder="Please enter a new role name"
           value={newRoleName}
@@ -101,8 +107,10 @@ function CreateNewRolePopup({ toggle, roleNames, darkMode, addRole }) {
 
       <FormGroup>
         <Label className={darkMode ? 'text-light' : ''}>
-          Permissions<span className="red-asterisk">* </span>:
-        </Label>
+          Permissions
+          <span className="red-asterisk">* </span>
+:
+</Label>
         <PermissionList
           rolePermissions={permissionsChecked}
           editable

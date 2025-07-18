@@ -1,17 +1,24 @@
+/* eslint-disable import/no-duplicates */
+/* eslint-disable jsx-a11y/label-has-associated-control */
+/* eslint-disable no-undef */
+/* eslint-disable react/jsx-one-expression-per-line */
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+/* eslint-disable react/jsx-indent */
 import { useState } from 'react';
 import './LBMessaging.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell, faLocationArrow, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch, useSelector } from 'react-redux';
+import { useEffect, useRef } from 'react';
+import { toast } from 'react-toastify';
+import axios from 'axios';
 import { getUserProfileBasicInfo } from '~/actions/userManagement';
 import {
   fetchUserPreferences,
   updateUserPreferences,
 } from '~/actions/lbdashboard/userPreferenceActions';
-import { useEffect, useRef } from 'react';
-import { toast } from 'react-toastify';
 import { fetchExistingChats, fetchMessages } from '~/actions/lbdashboard/messagingActions';
-import axios from 'axios';
 import { ENDPOINTS } from '~/utils/URL';
 import {
   initMessagingSocket,

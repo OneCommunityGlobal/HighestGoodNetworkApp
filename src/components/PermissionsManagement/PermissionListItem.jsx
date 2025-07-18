@@ -1,10 +1,15 @@
+/* eslint-disable import/no-named-as-default-member */
+/* eslint-disable import/no-named-as-default */
+/* eslint-disable import/default */
+/* eslint-disable import/namespace */
+/* eslint-disable react/jsx-one-expression-per-line */
+/* eslint-disable react/destructuring-assignment */
 /* eslint-disable react/jsx-no-useless-fragment */
 /* eslint-disable no-nested-ternary */
 import { useState, useContext, useEffect } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import { boxStyle, boxStyleDark } from '~/styles';
-import { useSelector } from 'react-redux';
 // eslint-disable-next-line import/no-cycle
 import { ModalContext } from '~/context/ModalContext';
 // eslint-disable-next-line import/no-cycle

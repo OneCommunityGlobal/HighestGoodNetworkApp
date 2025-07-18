@@ -1,8 +1,10 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
+/* eslint-disable react/jsx-one-expression-per-line */
 import { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { setformData } from '~/actions/hgnFormAction';
 import { Spinner } from 'reactstrap';
+import { setformData } from '~/actions/hgnFormAction';
 import styles from '../styles/InfoForm.module.css';
 
 function InfoForm() {

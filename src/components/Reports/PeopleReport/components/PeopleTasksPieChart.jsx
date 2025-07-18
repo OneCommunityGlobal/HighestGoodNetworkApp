@@ -1,3 +1,8 @@
+/* eslint-disable import/named */
+/* eslint-disable import/namespace */
+/* eslint-disable react/jsx-closing-tag-location */
+/* eslint-disable react/jsx-one-expression-per-line */
+/* eslint-disable react/jsx-wrap-multilines */
 /* eslint-disable import/prefer-default-export */
 import { useSelector } from 'react-redux';
 import { PieChart } from '../../../common/PieChart';

@@ -1,3 +1,7 @@
+/* eslint-disable react/no-unknown-property */
+/* eslint-disable react/jsx-one-expression-per-line */
+/* eslint-disable react/jsx-closing-tag-location */
+
 'use client';
 
 import {

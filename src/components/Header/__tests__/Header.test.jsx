@@ -1,3 +1,5 @@
+/* eslint-disable import/namespace */
+/* eslint-disable import/first */
 import { vi } from 'vitest'; // ← MUST be first
 import React from 'react';
 

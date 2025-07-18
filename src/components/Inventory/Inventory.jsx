@@ -1,3 +1,5 @@
+/* eslint-disable react/jsx-indent */
+/* eslint-disable react/jsx-wrap-multilines */
 import { useSelector } from "react-redux";
 
 function Inventory() {

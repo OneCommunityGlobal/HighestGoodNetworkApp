@@ -1,3 +1,6 @@
+/* eslint-disable react/jsx-closing-tag-location */
+/* eslint-disable react/jsx-one-expression-per-line */
+/* eslint-disable import/namespace */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import { useState } from 'react';
 import './PermissionChangeLogTable.css';

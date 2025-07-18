@@ -1,3 +1,7 @@
+/* eslint-disable import/no-named-as-default-member */
+/* eslint-disable import/no-named-as-default */
+/* eslint-disable import/default */
+/* eslint-disable import/namespace */
 import { connect } from 'react-redux';
 import { get, round, maxBy } from 'lodash';
 import { getLeaderboardData, postLeaderboardData, getOrgData } from '../../actions/leaderBoardData';

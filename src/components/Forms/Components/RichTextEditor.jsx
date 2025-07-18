@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 /* eslint-disable no-unused-vars */
 import { useRef, useState } from 'react';
 import { Editor } from '@tinymce/tinymce-react';

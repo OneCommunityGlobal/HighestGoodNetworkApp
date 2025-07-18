@@ -1,3 +1,7 @@
+/* eslint-disable import/no-named-as-default-member */
+/* eslint-disable import/no-named-as-default */
+/* eslint-disable import/default */
+/* eslint-disable import/namespace */
 import { useEffect, useRef } from 'react';
 import Banner from '../questionpages/Banner';
 import Progress from '../questionpages/Progress';

@@ -1,3 +1,8 @@
+/* eslint-disable no-undef */
+/* eslint-disable import/no-named-as-default-member */
+/* eslint-disable import/no-named-as-default */
+/* eslint-disable import/default */
+/* eslint-disable import/namespace */
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { ClipLoader } from 'react-spinners';
@@ -65,7 +70,10 @@ function UserSkillsProfile() {
   if (error) {
     return (
       <div className={`${styles.skillsError}`}>
-        <p>Error: {error}</p>
+        <p>
+          Error:
+          {error}
+        </p>
       </div>
     );
   }

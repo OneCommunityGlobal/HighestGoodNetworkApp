@@ -1,5 +1,10 @@
+/* eslint-disable import/order */
+/* eslint-disable react/destructuring-assignment */
+/* eslint-disable react/jsx-closing-tag-location */
+/* eslint-disable react/jsx-indent */
 import { useEffect, useState } from 'react';
 import { useDispatch, connect, useSelector } from 'react-redux';
+import { isEmpty, isEqual } from 'lodash';
 import MemberAutoComplete from '~/components/Teams/MembersAutoComplete';
 import AddProjectsAutoComplete from '~/components/UserProfile/TeamsAndProjects/AddProjectsAutoComplete';
 import AddTeamsAutoComplete from '~/components/UserProfile/TeamsAndProjects/AddTeamsAutoComplete';
@@ -9,7 +14,6 @@ import moment from 'moment-timezone';
 import { Button, Col, Form, FormGroup, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'reactstrap';
 import { getFontColor, getBoxStyling } from '~/styles';
 import '../../Header/DarkMode.css'
-import { isEmpty, isEqual } from 'lodash';
 import { getUserProfile } from '~/actions/userProfile';
 import { postTimeEntry } from '~/actions/timeEntries';
 
@@ -303,11 +307,11 @@ function AddLostTime(props) {
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <Form>
           <FormGroup>
-            <Label for="entryType" className={fontColor} >Type</Label>
+            <Label for="entryType" className={fontColor}>Type</Label>
             <span className="red-asterisk">* </span>
-            <br/>
+            <br />
             <div className={`type-container ${fontColor}`}>
-              <div className='type-item' style={{paddingLeft: '20px'}} >
+              <div className='type-item' style={{paddingLeft: '20px'}}>
                 <Input
                   type="radio"
                   id="project"

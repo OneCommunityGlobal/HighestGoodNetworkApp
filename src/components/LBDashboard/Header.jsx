@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-one-expression-per-line */
 import { connect } from 'react-redux';
 import { useState } from 'react';
 

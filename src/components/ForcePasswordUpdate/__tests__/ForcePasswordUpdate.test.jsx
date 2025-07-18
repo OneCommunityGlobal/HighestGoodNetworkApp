@@ -1,3 +1,11 @@
+/* eslint-disable react/jsx-props-no-spreading */
+/* eslint-disable testing-library/no-wait-for-multiple-assertions */
+/* eslint-disable testing-library/no-render-in-lifecycle */
+/* eslint-disable import/namespace */
+/* eslint-disable import/first */
+/* eslint-disable no-unused-vars */
+/* eslint-disable max-classes-per-file */
+/* eslint-disable import/newline-after-import */
 import { vi } from 'vitest';
 import React from 'react';
 vi.mock('react-leaflet', () => ({

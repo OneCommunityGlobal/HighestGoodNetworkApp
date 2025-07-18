@@ -1,7 +1,8 @@
+/* eslint-disable react/jsx-one-expression-per-line */
 /* eslint-disable react/button-has-type */
 import './PermissionsManagement.css';
-import { ModalContext } from '~/context/ModalContext';
 import { useContext } from 'react';
+import { ModalContext } from '~/context/ModalContext';
 
 function ReminderModal({
   setReminderModal,

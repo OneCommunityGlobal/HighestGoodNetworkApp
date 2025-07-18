@@ -1,3 +1,7 @@
+/* eslint-disable import/no-named-as-default-member */
+/* eslint-disable import/no-named-as-default */
+/* eslint-disable import/default */
+/* eslint-disable import/namespace */
 import { connect } from 'react-redux';
 // eslint-disable-next-line import/no-cycle
 import PermissionListItem from './PermissionListItem';

@@ -1,3 +1,9 @@
+/* eslint-disable import/no-named-as-default-member */
+/* eslint-disable import/no-named-as-default */
+/* eslint-disable import/default */
+/* eslint-disable import/namespace */
+/* eslint-disable react/jsx-one-expression-per-line */
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import './ItemOverview.css';
 import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';

@@ -30,36 +30,48 @@ const renderActiveShape = (props, darkMode, showAllValues, accumulatedValues) =>
     <g>
       {!showAllValues ? (
         <>
-        <svg
-        className="flex flex-column justify-content-center align-items-center"
-        >
-          <text x={cx} y={cy} dy={-32} textAnchor="middle" fill={darkMode ? 'white' : fill}  >
-          Selected values
-          </text>
-          <text x={cx} y={cy} dy={-14} textAnchor="middle" fill={darkMode ? 'white' : fill}  >
-          {accumulatedValues.toFixed(2)}hrs.
-          </text>
-          <text x={cx} y={cy} dy={4} textAnchor="middle" fill={darkMode ? 'white' : fill}  >
-          Total hrs.({payload.totalHoursCalculated.toFixed(2)})
-          </text>
-        </svg>
+          <svg
+            className="flex flex-column justify-content-center align-items-center"
+          >
+            <text x={cx} y={cy} dy={-32} textAnchor="middle" fill={darkMode ? 'white' : fill}>
+              Selected values
+            </text>
+            <text x={cx} y={cy} dy={-14} textAnchor="middle" fill={darkMode ? 'white' : fill}>
+              {accumulatedValues.toFixed(2)}
+              hrs.
+            </text>
+            <text x={cx} y={cy} dy={4} textAnchor="middle" fill={darkMode ? 'white' : fill}>
+              Total hrs.(
+              {payload.totalHoursCalculated.toFixed(2)}
+              )
+            </text>
+          </svg>
           <text x={ex * .94 + (cos >= 0 ? 1 : -1) * 12} y={ey} textAnchor={textAnchor} fill={darkMode ? 'white' : '#333'}>
-              {`${payload.name.substring(0, 14)}`} {`${payload.lastName.substring(0, 1)}`} {`${value.toFixed(2)}hrs`} ({`${(percent * 100).toFixed(2)}%`})
+            {`${payload.name.substring(0, 14)}`} 
+            {' '}
+            {`${payload.lastName.substring(0, 1)}`} 
+            {' '}
+            {`${value.toFixed(2)}hrs`}
+            {' '}
+            (
+            {`${(percent * 100).toFixed(2)}%`}
+            )
           </text>
         </>
 
       ) : (
         <>
-        <text x={cx} y={cy} dy={-30} textAnchor="middle" fill={darkMode ? 'white' : fill}  >
-          All Members
-        </text>
-        <text x={cx} y={cy} dy={0} textAnchor="middle" fill={darkMode ? 'white' : fill}  >
-        Total hrs: {payload.totalHoursCalculated.toFixed(2)}
-        </text>
+          <text x={cx} y={cy} dy={-30} textAnchor="middle" fill={darkMode ? 'white' : fill}>
+            All Members
+          </text>
+          <text x={cx} y={cy} dy={0} textAnchor="middle" fill={darkMode ? 'white' : fill}>
+            Total hrs: 
+            {' '}
+            {payload.totalHoursCalculated.toFixed(2)}
+          </text>
 
         </>
-      )
-      }
+      )}
       <Sector
         cx={cx}
         cy={cy}
@@ -136,7 +148,7 @@ export function ProjectPieChart  ({ userData, windowSize, darkMode }) {
             dataKey="value"
             onMouseEnter={showAllValues ? null : (data, index, event) => onPieEnter(data, index, event.nativeEvent)}
             darkMode={darkMode}
-            >
+          >
             {showAllValues && (
               <LabelList
                 dataKey="value"
@@ -160,8 +172,8 @@ export function ProjectPieChart  ({ userData, windowSize, darkMode }) {
               />
             )}
           </Pie>
-          </PieChart>
-        </ResponsiveContainer>
-      </div>
+        </PieChart>
+      </ResponsiveContainer>
+    </div>
   )
 }

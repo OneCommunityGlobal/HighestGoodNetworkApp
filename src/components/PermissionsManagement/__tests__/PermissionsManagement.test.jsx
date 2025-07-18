@@ -1,3 +1,10 @@
+/* eslint-disable testing-library/no-container */
+/* eslint-disable testing-library/no-unnecessary-act */
+/* eslint-disable import/no-named-as-default-member */
+/* eslint-disable import/no-named-as-default */
+/* eslint-disable import/default */
+/* eslint-disable import/namespace */
+/* eslint-disable testing-library/no-node-access */
 // eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { render, screen, fireEvent, act } from '@testing-library/react';
@@ -158,7 +165,7 @@ describe('PermissionsManagement', () => {
   });
 
   it('displays loading message while fetching data', async () => {
-    axios.get.mockImplementation(() => new Promise(() => { }));
+    axios.get.mockImplementation(() => new Promise(() => {}));
     await renderComponent();
     expect(screen.getByText('Loading...')).toBeInTheDocument();
   });

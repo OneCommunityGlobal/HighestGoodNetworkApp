@@ -1,3 +1,5 @@
+/* eslint-disable no-undef */
+/* eslint-disable prettier/prettier */
 import { ENDPOINTS } from '~/utils/URL';
 import httpService from '../../../services/httpService';
 

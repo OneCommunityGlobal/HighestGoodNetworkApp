@@ -1,3 +1,8 @@
+/* eslint-disable react/jsx-closing-tag-location */
+/* eslint-disable react/jsx-indent */
+/* eslint-disable prettier/prettier */
+/* eslint-disable react/jsx-one-expression-per-line */
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import styles from './BiddingOverview.module.css';
@@ -121,8 +126,10 @@ function BiddingOverview() {
           <div className={`${styles.biddingCard}`}>
             <div className={`${styles.biddingLeft}`}>
               <div className={`${styles.currentBid}`}>
-                Current bid: {unitDetails.currentBid} /night
-              </div>
+                Current bid: {unitDetails.currentBid}
+{' '}
+/night
+</div>
               <div className={`${styles.biddingImage}`}>
                 <img
                   src={unitDetails.images[currentImageIndex]}
@@ -196,7 +203,10 @@ function BiddingOverview() {
 
             <div className={`${styles.biddingRight}`}>
               <div className={`${styles.unitHeader}`}>
-                <h2 className={`${styles.unitTitle}`}>Unit {unitDetails.unitNumber}</h2>
+                <h2 className={`${styles.unitTitle}`}>
+                  Unit
+                  {unitDetails.unitNumber}
+                </h2>
                 <h3 className={`${styles.unitSubtitle}`}>{unitDetails.villageName}</h3>
               </div>
 

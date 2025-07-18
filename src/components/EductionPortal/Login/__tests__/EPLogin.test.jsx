@@ -1,3 +1,10 @@
+/* eslint-disable import/no-named-as-default-member */
+/* eslint-disable import/no-named-as-default */
+/* eslint-disable import/default */
+/* eslint-disable import/namespace */
+/* eslint-disable testing-library/no-wait-for-multiple-assertions */
+/* eslint-disable testing-library/no-node-access */
+/* eslint-disable testing-library/no-container */
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import { useDispatch, Provider } from 'react-redux';
@@ -32,7 +39,7 @@ beforeEach(() => {
 vi.mock('axios');
 
 vi.mock('jwt-decode', () => ({
-  default: vi.fn(() => ({ decodedPayload: 'mocked_decoded_payload' }))
+  default: vi.fn(() => ({ decodedPayload: 'mocked_decoded_payload' })),
 }));
 const history = {
   push: vi.fn(),

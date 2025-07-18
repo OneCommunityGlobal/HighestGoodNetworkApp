@@ -1,3 +1,9 @@
+/* eslint-disable import/no-named-as-default-member */
+/* eslint-disable import/no-named-as-default */
+/* eslint-disable import/default */
+/* eslint-disable import/namespace */
+/* eslint-disable testing-library/no-unnecessary-act */
+/* eslint-disable testing-library/no-render-in-lifecycle */
 // eslint-disable-next-line no-unused-vars
 import React from 'react';
 import thunk from 'redux-thunk';
@@ -5,8 +11,8 @@ import { Route } from 'react-router-dom';
 import { screen, act } from '@testing-library/react';
 import configureMockStore from 'redux-mock-store';
 import userEvent from '@testing-library/user-event';
-import { ModalProvider } from '~/context/ModalContext';
 import axios from 'axios';
+import { ModalProvider } from '~/context/ModalContext';
 import { renderWithRouterMatch } from '../../__tests__/utils';
 import PermissionsManagement from './PermissionsManagement';
 import { rolesMock, themeMock } from '../../__tests__/mockStates';
@@ -81,7 +87,7 @@ describe('permissions management page structure', () => {
       const addNewRoleButton = screen.queryByRole('button', { name: /add new role/i });
       if (addNewRoleButton) {
         await act(async () => {
-          userEvent.click(addNewRoleButton);
+          await userEvent.click(addNewRoleButton);
         });
         expect(screen.getByRole('dialog')).toBeInTheDocument();
         expect(screen.getByRole('button', { name: 'Close' })).toBeInTheDocument();
