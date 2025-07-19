@@ -1,10 +1,10 @@
 import { Link } from 'react-router-dom';
 import { useEffect, useState, useMemo, useCallback } from 'react';
-import { ENDPOINTS } from '~/utils/URL';
 import axios from 'axios';
 import './TotalReport.css';
 import { Button } from 'reactstrap';
 import ReactTooltip from 'react-tooltip';
+import { ENDPOINTS } from '~/utils/URL';
 import TotalReportBarGraph from './TotalReportBarGraph';
 import Loading from '../../common/Loading';
 
@@ -48,7 +48,7 @@ function TotalPeopleReport(props) {
           date: entry.dateOfWork,
         }));
         setAllTimeEntries(timeEntries);
-      } catch (error) {
+      } catch {
         setTotalPeopleReportDataLoading(false);
       }
     },
@@ -234,7 +234,9 @@ function TotalPeopleReport(props) {
               </th>
               <td>
                 <Link to={`/userProfile/${person.userId}`} className={darkMode ? 'text-light' : ''}>
-                  {person.firstName} {person.lastName}
+                  {person.firstName} 
+                  {' '}
+                  {person.lastName}
                 </Link>
               </td>
               <td>{person.tangibleTime}</td>
@@ -250,13 +252,16 @@ function TotalPeopleReport(props) {
       <div className={`total-container ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
         <div className={`total-title ${darkMode ? 'text-azure' : ''}`}>Total People Report</div>
         <div className="total-period">
-          In the period from{' '}
+          In the period from
+          {' '}
           {startDate.toLocaleDateString('en-US', {
             month: '2-digit',
             day: '2-digit',
             year: 'numeric',
-          })}{' '}
-          to{' '}
+          })}
+          {' '}
+          to
+          {' '}
           {endDate.toLocaleDateString('en-US', {
             month: '2-digit',
             day: '2-digit',
