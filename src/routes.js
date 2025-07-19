@@ -1,6 +1,7 @@
 // Delete these two lines:
 import FormEditor from 'components/Forms/FormEditor';
 import FormViewer from 'components/Forms/FormViewer';
+import PRDashboard from 'components/PRDashboard';
 import { lazy } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import SetupProfile from 'components/SetupProfile/SetupProfile';
@@ -22,9 +23,6 @@ import UnansweredFaqs from 'components/Faq/UnansweredFaqs';
 import HeaderRenderer from 'components/Header/HeaderRenderer';
 import IssueDashboard from 'components/BMDashboard/Issues/IssueDashboard';
 import { ExperienceDonutChart } from 'components/ExperienceDonutChart';
-import hasPermission from './utils/permissions';
-import PRDashboard from './components/PRDashboard';
-
 // hgnform routes
 import Page1 from './components/HGNForm/pages/Page1';
 import Page2 from './components/HGNForm/pages/Page2';
@@ -313,13 +311,13 @@ export default (
           ]}
           routePermissions={RoutePermissions.weeklySummariesReport}
         />
-        {hasPermission('accessPRTeamDashboard') && (
-          <ProtectedRoute
-            path="/pr-dashboard"
-            exact
-            component={PRDashboard}
-          />
-        )}
+        <ProtectedRoute
+          path="/pr-dashboard"
+          exact
+          component={PRDashboard}
+          fallback
+          routePermissions={RoutePermissions.prDashboard}
+        />
 
         <ProtectedRoute
           path="/reports"

@@ -13,7 +13,6 @@ import {
   DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
   PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
 } from 'utils/constants';
-import hasPermission from '../../utils/permissions';
 import PermissionList from './PermissionList';
 import { addNewRole, getAllRoles } from '../../actions/role';
 import { cantUpdateDevAdminDetails } from '../../utils/permissions';
@@ -238,23 +237,6 @@ function UserPermissionsPopUp({
           )}
         </Dropdown>
         <div>
-          {hasPermission('promoteToPRTeam') && actualUserProfile && (
-            <Button
-              color="info"
-              onClick={() => {
-                if (!userPermissions.includes('accessPRTeamDashboard')) {
-                  setUserPermissions([...userPermissions, 'accessPRTeamDashboard']);
-                  toast.success('User granted PR Team Dashboard access.');
-                } else {
-                  toast.info('User already has PR Team Dashboard access.');
-                }
-              }}
-              style={{ marginBottom: '1rem' }}
-            >
-              Promote to PR Team
-            </Button>
-          )}
-
           <h4 className={`user-permissions-pop-up__title ${darkMode ? 'text-space-cadet' : ''}`}>
             Permissions:
           </h4>

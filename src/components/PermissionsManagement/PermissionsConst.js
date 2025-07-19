@@ -72,6 +72,11 @@ export const permissionLabels = [
         key: 'accessPRTeamDashboard',
         description: 'Gives access to the PR Team dashboard, including view and edit rights.',
       },
+      {
+        label: 'Promote user to PR Team',
+        key: 'promoteToPRTeam',
+        description: 'Allows assigning a user to the PR Team role.',
+      },
 
       {
         label: 'Edit Total Valid Weekly Summaries',
@@ -203,11 +208,6 @@ export const permissionLabels = [
         label: 'Tracking Management',
         key: 'setTrackingManagement',
         description: 'Gives the user permission to interact with the edit warnings list modal.',
-      },
-      {
-        label: 'Promote user to PR Team',
-        key: 'promoteToPRTeam',
-        description: 'Allows assigning a user to the PR Team role.',
       },
     ],
   },
