@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import Select from 'react-select';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import {
   BarChart,
   Bar,
@@ -10,6 +12,7 @@ import {
   ResponsiveContainer,
   LabelList,
   Legend,
+  Label,
   CartesianGrid,
 } from 'recharts';
 import axios from 'axios';
@@ -79,8 +82,8 @@ export default function ToolsStoppageHorizontalBarChart() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const [projects, setProjects] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [data, setData] = useState([]);
@@ -110,14 +113,16 @@ export default function ToolsStoppageHorizontalBarChart() {
     const fetchToolsStoppageData = async () => {
       setLoading(true);
       setError(null);
+      const formattedStart = startDate ? new Date(startDate).toISOString() : null;
+      const formattedEnd = endDate ? new Date(endDate).toISOString() : null;
 
       try {
         // If we have a specific project ID, fetch data for that project
         if (selectedProject) {
           const url = ENDPOINTS.BM_TOOLS_STOPPAGE_BY_PROJECT(
             selectedProject?.value,
-            startDate,
-            endDate,
+            formattedStart,
+            formattedEnd,
           );
           const response = await axios.get(url);
           const responseData = response.data;
@@ -176,23 +181,18 @@ export default function ToolsStoppageHorizontalBarChart() {
     label: project.projectName,
   }));
 
+  // Handle project selection change
   const handleProjectChange = selectedOption => {
     setSelectedProject(selectedOption);
   };
 
-  const handleStartDateChange = e => {
-    setStartDate(e.target.value);
-  };
-
-  const handleEndDateChange = e => {
-    setEndDate(e.target.value);
-  };
-
+  // Clear date filters
   const handleClearDates = () => {
-    setStartDate('');
-    setEndDate('');
+    setStartDate(null);
+    setEndDate(null);
   };
 
+  // Styles for dark mode select component
   const selectDarkStyles = {
     control: base => ({
       ...base,
@@ -220,7 +220,9 @@ export default function ToolsStoppageHorizontalBarChart() {
 
   return (
     <div className={`tools-availability-page ${darkMode ? 'dark-mode' : ''}`}>
-      <h3 className="tools-chart-title">Reason of Stoppage of Tools</h3>
+      <h3 className={`tools-chart-title ${darkMode ? 'dark-mode' : ''}`}>
+        Reason of Stoppage of Tools
+      </h3>
       <div className="tools-availability-content">
         <div className="tools-chart-filters">
           <div className="filter-group">
@@ -242,18 +244,28 @@ export default function ToolsStoppageHorizontalBarChart() {
           <div className="filter-group">
             <label>Date Range (Optional)</label>
             <div className="date-picker-group">
-              <input
-                type="date"
+              <DatePicker
+                selected={startDate}
+                onChange={date => setStartDate(date)}
+                selectsStart
+                startDate={startDate}
+                endDate={endDate}
+                placeholderText="Start Date"
                 className="date-picker"
-                value={startDate}
-                onChange={handleStartDateChange}
+                isClearable
+                maxDate={endDate}
               />
               <span>to</span>
-              <input
-                type="date"
+              <DatePicker
+                selected={endDate}
+                onChange={date => setEndDate(date)}
+                selectsEnd
+                startDate={startDate}
+                endDate={endDate}
+                placeholderText="End Date"
                 className="date-picker"
-                value={endDate}
-                onChange={handleEndDateChange}
+                isClearable
+                minDate={startDate}
               />
               {(startDate || endDate) && (
                 <button
@@ -293,16 +305,20 @@ export default function ToolsStoppageHorizontalBarChart() {
                   tickFormatter={value =>
                     value.length > 20 ? `${value.substring(0, 18)}...` : value
                   }
-                />
+                >
+                  <Label
+                    value="Tool Name  -->"
+                    angle={-90}
+                    position="insideBottomLeft"
+                    offset={-5}
+                    style={{ textAnchor: 'middle', fontWeight: 'bold' }}
+                  />
+                </YAxis>
                 <Tooltip
-                  content={
-                    <CustomTooltip
-                      darkMode={darkMode}
-                      cursor={{
-                        fill: darkMode ? 'rgb(50, 73, 105)' : '#e0e0e0',
-                      }}
-                    />
-                  }
+                  cursor={{
+                    fill: darkMode ? 'rgb(50, 73, 105)' : '#e0e0e0',
+                  }}
+                  content={<CustomTooltip darkMode={darkMode} />}
                 />
                 <Legend verticalAlign="bottom" height={36} />
                 <Bar dataKey="usedForLifetime" stackId="a" fill="#4589FF" name="Used its lifetime">

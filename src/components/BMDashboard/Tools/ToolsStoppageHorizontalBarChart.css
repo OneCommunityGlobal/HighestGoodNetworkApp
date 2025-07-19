@@ -6,6 +6,11 @@
   margin: 10px 0 20px 0;
   text-align: center;
   width: 100%;
+  color: black;
+}
+
+.dark-mode .tools-chart-title {
+  color: rgb(225, 229, 234);
 }
 
 .tools-availability-content {
@@ -20,7 +25,6 @@
   align-items: center;
   width: 100%;
   height: 100%;
-  padding: 15px;
   background-color: white;
 }
 
