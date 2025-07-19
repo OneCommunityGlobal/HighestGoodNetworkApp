@@ -6,6 +6,9 @@ import './PRGradingScreen.css';
 const PRGradingScreen = () => {
   const { teamData, reviewers } = getAllMockData();
   const [reviewerData, setReviewerData] = useState(reviewers);
+  const [activeInput, setActiveInput] = useState(null); // Track which reviewer is adding PR
+  const [inputValue, setInputValue] = useState('');
+  const [inputError, setInputError] = useState('');
 
   const handlePRReviewedChange = (reviewerId, newValue) => {
     setReviewerData(prevData =>
@@ -13,6 +16,73 @@ const PRGradingScreen = () => {
         reviewer.id === reviewerId ? { ...reviewer, prsReviewed: newValue } : reviewer,
       ),
     );
+  };
+
+  const validatePRNumber = value => {
+    const trimmed = value.trim();
+    // Pattern: single number or two numbers with +
+    const pattern = /^\d+(\s*\+\s*\d+)?$/;
+
+    if (!trimmed) {
+      return { isValid: false, error: 'PR number cannot be empty' };
+    }
+
+    if (!pattern.test(trimmed)) {
+      return { isValid: false, error: 'Format should be: 1070 or 1070 + 1256' };
+    }
+
+    return { isValid: true, error: '' };
+  };
+
+  const isBackendFrontendPair = value => {
+    return value.includes('+');
+  };
+
+  const handleAddNewClick = reviewerId => {
+    setActiveInput(reviewerId);
+    setInputValue('');
+    setInputError('');
+  };
+
+  const handleInputChange = value => {
+    setInputValue(value);
+    const validation = validatePRNumber(value);
+    setInputError(validation.error);
+  };
+
+  const handleInputSubmit = () => {
+    const validation = validatePRNumber(inputValue);
+    if (validation.isValid) {
+      const reviewerId = activeInput;
+      const newPREntry = {
+        id: `pr_${Date.now()}_${Math.random()
+          .toString(36)
+          .substr(2, 9)}`,
+        prNumbers: inputValue.trim(),
+        grade: 'Added', // Default grade for newly added PRs
+      };
+
+      setReviewerData(prevData =>
+        prevData.map(reviewer =>
+          reviewer.id === reviewerId
+            ? { ...reviewer, gradedPrs: [...reviewer.gradedPrs, newPREntry] }
+            : reviewer,
+        ),
+      );
+
+      // Reset states
+      setActiveInput(null);
+      setInputValue('');
+      setInputError('');
+    } else {
+      setInputError(validation.error);
+    }
+  };
+
+  const handleCancel = () => {
+    setActiveInput(null);
+    setInputValue('');
+    setInputError('');
   };
 
   return (
@@ -97,13 +167,67 @@ const PRGradingScreen = () => {
                                 </div>
                               );
                             })}
-                            <Button
-                              variant="success"
-                              size="sm"
-                              className="pr-grading-screen-add-btn"
-                            >
-                              + Add new
-                            </Button>
+                            {/* Add New Button */}
+                            {activeInput !== reviewer.id && (
+                              <Button
+                                variant="success"
+                                size="sm"
+                                className="pr-grading-screen-add-btn"
+                                onClick={() => handleAddNewClick(reviewer.id)}
+                              >
+                                + Add new
+                              </Button>
+                            )}
+
+                            {/* PR Number Input */}
+                            {activeInput === reviewer.id && (
+                              <div className="pr-grading-screen-input-container">
+                                <div className="pr-grading-screen-input-wrapper">
+                                  <input
+                                    type="text"
+                                    value={inputValue}
+                                    onChange={e => handleInputChange(e.target.value)}
+                                    onKeyPress={e => {
+                                      if (e.key === 'Enter') {
+                                        handleInputSubmit();
+                                      } else if (e.key === 'Escape') {
+                                        handleCancel();
+                                      }
+                                    }}
+                                    placeholder="1070 or 1070 + 1256"
+                                    className={`pr-grading-screen-pr-number-input ${
+                                      isBackendFrontendPair(inputValue)
+                                        ? 'pr-grading-screen-pair-input'
+                                        : ''
+                                    } ${inputError ? 'pr-grading-screen-input-error' : ''}`}
+                                    autoFocus
+                                  />
+                                  <div className="pr-grading-screen-input-buttons">
+                                    <Button
+                                      variant="primary"
+                                      size="sm"
+                                      onClick={handleInputSubmit}
+                                      disabled={!inputValue.trim()}
+                                    >
+                                      Add
+                                    </Button>
+                                    <Button variant="secondary" size="sm" onClick={handleCancel}>
+                                      Cancel
+                                    </Button>
+                                  </div>
+                                </div>
+                                {inputError && (
+                                  <div className="pr-grading-screen-error-message">
+                                    {inputError}
+                                  </div>
+                                )}
+                                {isBackendFrontendPair(inputValue) && !inputError && (
+                                  <div className="pr-grading-screen-pair-message">
+                                    Frontend-Backend Pair Detected
+                                  </div>
+                                )}
+                              </div>
+                            )}
                           </div>
                         </td>
                       </tr>
