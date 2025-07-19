@@ -1,9 +1,8 @@
-import React, { useState} from 'react';
-import './DisplayBox.css'
+import { useState } from 'react';
+import './DisplayBox.css';
 
-export default function DisplayBox( {onClose }) {
-
-    const mockPromotionData = [
+export default function DisplayBox({ onClose }) {
+  const mockPromotionData = [
     {
       prReviewer: 'Akshay - Jayram',
       teamCode: '123',
@@ -15,7 +14,7 @@ export default function DisplayBox( {onClose }) {
         { week: '2024-06-22', prCount: 18 },
         { week: '2024-06-29', prCount: 14 },
       ],
-    },  
+    },
     {
       prReviewer: 'Ghazi1212',
       teamCode: '456',
@@ -27,31 +26,37 @@ export default function DisplayBox( {onClose }) {
         { week: '2024-06-22', prCount: 18 },
         { week: '2024-06-29', prCount: 14 },
       ],
-    }
-  ]
+    },
+  ];
 
-  const[checkedItems, setCheckedItems] = useState(Array(mockPromotionData.length).fill(false));
+  const [checkedItems, setCheckedItems] = useState(Array(mockPromotionData.length).fill(false));
   const allChecked = checkedItems.every(Boolean);
+
   const handleCheckedBoxChange = (index) => {
     const newChecked = [...checkedItems];
     newChecked[index] = !newChecked[index];
     setCheckedItems(newChecked);
-  
-  }
+  };
+
   const handleSelectAll = () => {
     setCheckedItems(Array(mockPromotionData.length).fill(!allChecked));
-  }
+  };
 
   return (
     <div className="overlay">
       <div className="popup">
-        <h2 className="popup-heading">
-          Are you sure you want to promote these PR reviewers?
-        </h2>
+        <h2 className="popup-heading">Are you sure you want to promote these PR reviewers?</h2>
         <table className="popup-table">
           <thead>
             <tr>
-              <th><input type="checkbox" checked={allChecked} onChange={handleSelectAll}></input></th>
+              <th>
+                <input
+                  type="checkbox"
+                  checked={allChecked}
+                  onChange={handleSelectAll}
+                  aria-label="Select all reviewers"
+                />
+              </th>
               <th>PR Reviewer</th>
               <th>Team Code</th>
               <th>Team Reviewer Name</th>
@@ -60,20 +65,25 @@ export default function DisplayBox( {onClose }) {
           </thead>
           <tbody>
             {mockPromotionData.map((promotion, index) => (
-              <tr key={index}>
-                <td>< input type="checkbox" checked={checkedItems[index]} onChange={() => handleCheckedBoxChange(index)}></input></td>
+              <tr key={`${promotion.prReviewer}-${promotion.teamCode}`}>
+                <td>
+                  <input
+                    type="checkbox"
+                    checked={checkedItems[index]}
+                    onChange={() => handleCheckedBoxChange(index)}
+                    aria-label={`Select reviewer ${promotion.prReviewer}`}
+                  />
+                </td>
                 <td>{promotion.prReviewer}</td>
                 <td>{promotion.teamCode}</td>
                 <td>{promotion.teamReviewerName}</td>
-                {/* <td>{promotion.weeklyPRs.map(pr => pr.prCount).join(', ')}</td> */}
                 <td>
                   {promotion.weeklyPRs.map((pr, i) => (
-                    <span key={i} className={`pr-count-badge color-${i % 5}`}>
+                    <span key={`${promotion.prReviewer}-${i}`} className={`pr-count-badge color-${i % 5}`}>
                       {pr.prCount}
                     </span>
                   ))}
                 </td>
-
               </tr>
             ))}
           </tbody>
@@ -82,7 +92,7 @@ export default function DisplayBox( {onClose }) {
           <button type="button" className="button" onClick={onClose}>
             Cancel
           </button>
-          <button type="button" className="button"  disabled={!checkedItems.some(Boolean)}>
+          <button type="button" className="button" disabled={!checkedItems.some(Boolean)}>
             Confirm
           </button>
         </div>
