@@ -3,6 +3,10 @@ import { Bar } from 'react-chartjs-2';
 import './ReviewsInsight.css';
 
 function ActionDoneGraph({ duration, selectedTeams, teamData }) {
+  if (!teamData || Object.keys(teamData).length === 0) {
+    return <div>No data available for Action Done Graph.</div>;
+  }
+
   const isAllTeams = selectedTeams.includes('All');
 
   // Prepare data for the graph
@@ -12,22 +16,22 @@ function ActionDoneGraph({ duration, selectedTeams, teamData }) {
       {
         label: 'Approved',
         data: isAllTeams
-          ? Object.values(teamData).map((team) => team[0])
-          : selectedTeams.map((team) => teamData[team][0]),
+          ? Object.keys(teamData).map((team) => teamData[team]?.actionSummary?.Approved || 0)
+          : selectedTeams.map((team) => teamData[team]?.actionSummary?.Approved || 0),
         backgroundColor: '#28A745',
       },
       {
         label: 'Changes Requested',
         data: isAllTeams
-          ? Object.values(teamData).map((team) => team[1])
-          : selectedTeams.map((team) => teamData[team][1]),
+          ? Object.keys(teamData).map((team) => teamData[team]?.actionSummary?.['Changes Requested'] || 0)
+          : selectedTeams.map((team) => teamData[team]?.actionSummary?.['Changes Requested'] || 0),
         backgroundColor: '#DC3545',
       },
       {
         label: 'Commented',
         data: isAllTeams
-          ? Object.values(teamData).map((team) => team[2])
-          : selectedTeams.map((team) => teamData[team][2]),
+          ? Object.keys(teamData).map((team) => teamData[team]?.actionSummary?.Commented || 0)
+          : selectedTeams.map((team) => teamData[team]?.actionSummary?.Commented || 0),
         backgroundColor: '#6C757D',
       },
     ],
@@ -51,14 +55,12 @@ function ActionDoneGraph({ duration, selectedTeams, teamData }) {
           text: 'Count of PRs',
         },
         beginAtZero: true,
-        stacked: false, // Disable stacking to show bars side by side
       },
       y: {
         title: {
           display: true,
           text: 'Teams',
         },
-        stacked: false, // Disable stacking to show bars side by side
       },
     },
   };

@@ -116,3 +116,15 @@
 .dark-mode .team-name {
   color: #f1f1f1;
 }
+
+.loading {
+  text-align: center;
+  font-size: 18px;
+  color: #888;
+}
+
+.error {
+  text-align: center;
+  color: #dc3545;
+  font-weight: bold;
+}
