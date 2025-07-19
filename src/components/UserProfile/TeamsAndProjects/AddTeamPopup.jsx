@@ -25,6 +25,10 @@ const AddTeamPopup = React.memo(props => {
   const closePopup = () => {
     props.onClose();
     !isNotDisplayAlert && setIsNotDisplayAlert(true);
+    setDuplicateTeam(false);
+    onValidation(true);
+    onNewTeamValidation(true);
+    setSearchText('');
   };
 
   // prettier-ignore
@@ -42,7 +46,7 @@ const AddTeamPopup = React.memo(props => {
 
   const IfTheUserNotSelectedSuggestionAutoComplete = () => {
     // prettier-ignore
-    if(searchText === '')  {onValidation(false);  return;}
+    if(searchText === '' || searchText.trim() === '')  {onValidation(false);  return;}
 
     const filterTeamData = FilteredToTeamSpecific(true);
 
@@ -50,12 +54,13 @@ const AddTeamPopup = React.memo(props => {
       onAssignTeam(filterTeamData);
       onValidation(true);
       !isNotDisplayAlert && setIsNotDisplayAlert(true);
+      setDuplicateTeam(false);
     } else setIsNotDisplayAlert(false);
   };
 
   const onAssignTeam = result => {
     //  prettier-ignore
-    if (!searchText) {onValidation(false);  return;} /* when the user typed nothing  */
+    if (!searchText || searchText.trim() === '') {onValidation(false);  return;} /* when the user typed nothing  */
 
     const idToCheck = result ? result._id : selectedTeam._id;
 
@@ -80,13 +85,26 @@ const AddTeamPopup = React.memo(props => {
   };
 
   const onCreateTeam = async () => {
-    if (searchText !== '') {
+    if (searchText !== '' && searchText.trim() !== '') {
+      // Client-side duplicate check
+      const trimmedTeamName = searchText.trim();
+      const existingTeam = props.teamsData.allTeams.find(
+        team => team.teamName.toLowerCase().trim() === trimmedTeamName.toLowerCase()
+      );
+      
+      if (existingTeam) {
+        setDuplicateTeam(true);
+        setIsLoading(false);
+        return;
+      }
+
       const CancelToken = axios.CancelToken;
       const source = CancelToken.source();
       const timeout = setTimeout(() => axiosResponseExceededTimeout(source), 20000);
 
       setIsLoading(true);
-      const response = await dispatch(postNewTeam(searchText, true, source));
+      setDuplicateTeam(false); // Clear duplicate error when attempting to create
+      const response = await dispatch(postNewTeam(trimmedTeamName, true, source));
       clearTimeout(timeout);
       if (response.status === 200) {
         setDuplicateTeam(false);
@@ -103,16 +121,46 @@ const AddTeamPopup = React.memo(props => {
           response.status === 500
             ? 'No response received from the server'
             : 'Error occurred while creating team';
-        response.status === 403 ? setDuplicateTeam(true) : toast.error(messageToastError);
+        
+        // Check for duplicate team error (403 or specific error message)
+        if (response.status === 403 || 
+            (response.data && response.data.message && 
+             response.data.message.toLowerCase().includes('already exists'))) {
+          setDuplicateTeam(true);
+        } else {
+          toast.error(messageToastError);
+        }
       }
     } else {
       onNewTeamValidation(false);
     }
   };
 
+  const checkForDuplicateTeam = (teamName) => {
+    if (!teamName || !teamName.trim()) {
+      setDuplicateTeam(false);
+      return;
+    }
+    
+    const trimmedTeamName = teamName.trim();
+    const existingTeam = props.teamsData.allTeams.find(
+      team => team.teamName.toLowerCase().trim() === trimmedTeamName.toLowerCase()
+    );
+    
+    setDuplicateTeam(!!existingTeam);
+  };
+
+  const handleSearchTextChange = (newText) => {
+    setSearchText(newText);
+    checkForDuplicateTeam(newText);
+  };
+
   useEffect(() => {
     onValidation(true);
     onNewTeamValidation(true);
+    setDuplicateTeam(false);
+    setIsNotDisplayAlert(true);
+    setSearchText('');
   }, [props.open]);
 
   return (
@@ -135,7 +183,7 @@ const AddTeamPopup = React.memo(props => {
             onCreateNewTeam={onCreateTeam}
             searchText={searchText}
             setInputs={onSelectTeam}
-            setSearchText={setSearchText} // Added setSearchText prop
+            setSearchText={handleSearchTextChange} // Use the new handler
           />
           <Button
             color="primary"
@@ -164,7 +212,10 @@ const AddTeamPopup = React.memo(props => {
               {/* prettier-ignore  */}
               <Button color="info" onClick={onCreateTeam}><b>Create Team</b></Button>
               {/* prettier-ignore  */}
-              <Button color="danger" onClick={() => setIsNotDisplayAlert(true)}><b>Cancel team creation </b></Button>
+              <Button color="danger" onClick={() => {
+                setIsNotDisplayAlert(true);
+                setDuplicateTeam(false);
+              }}><b>Cancel team creation </b></Button>
             </div>
           </>
         )}
@@ -176,7 +227,11 @@ const AddTeamPopup = React.memo(props => {
         {!isValidNewTeam && !isDuplicateTeam ? (
           <Alert color="danger">Please enter a team name.</Alert>
         ) : null}
-        {isDuplicateTeam && <Alert color="danger">A team with this name already exists</Alert>}
+        {isDuplicateTeam && (
+          <Alert color="warning">
+            <strong>A team with this name already exists!</strong> Please choose a different name.
+          </Alert>
+        )}
       </ModalBody>
       <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
         <Button color="secondary" onClick={closePopup}>

@@ -67,12 +67,12 @@ const AddTeamsAutoComplete = React.memo(props => {
           {props.teamsData.allTeams ? (
             props.teamsData.allTeams.every(
               team => team.teamName.toLowerCase() !== props.searchText.toLowerCase(),
-            ) && (
+            ) && props.searchText.trim() !== '' && (
               <div
                 className="team-auto-complete"
                 onClick={() => {
                   toggle(false);
-                  props.onCreateNewTeam(props.searchText);
+                  props.onCreateNewTeam(props.searchText.trim());
                 }}
               >
                 Create new team: {props.searchText}
