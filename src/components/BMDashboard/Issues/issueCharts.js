@@ -132,12 +132,13 @@ function IssueChart() {
   });
 
   return (
-    <div className="event-container">
-      <h2 className="event-title">Issues Chart</h2>
+    <div className="issue-chart-event-container">
+      <h2 className="issue-chart-event-title">Issues Chart</h2>
 
       <div>
-        <label>Issue Type:</label>
+        <label className="issue-chart-label">Issue Type:</label>
         <Select
+          className="issue-chart-select"
           isMulti
           options={issueTypes}
           onChange={selectedOptions => handleFilterChange(selectedOptions, 'issueTypes')}
@@ -145,8 +146,9 @@ function IssueChart() {
           placeholder="Select Issue Type(s)"
         />
 
-        <label>Year:</label>
+        <label className="issue-chart-label">Year:</label>
         <Select
+          className="issue-chart-select"
           isMulti
           options={years}
           onChange={selectedOptions => handleFilterChange(selectedOptions, 'years')}

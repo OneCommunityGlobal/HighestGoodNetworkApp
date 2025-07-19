@@ -118,7 +118,7 @@ const TeamMemberTask = React.memo(
       }
     };
 
-    /** 
+    /**
     const handleReportClick = (event, to) => {
       if (event.metaKey || event.ctrlKey || event.button === 1) {
         return;
@@ -225,16 +225,10 @@ const TeamMemberTask = React.memo(
                               />
                             </Link>
                           </div>
-
                           {user.role !== 'Volunteer' && (
                             <div
                               className="user-role"
-                              style={{
-                                fontSize: '14px',
-                                marginTop: '4px',
-                                textAlign: 'center',
-                                color: darkMode ? 'lightgray' : 'gray',
-                              }}
+                              style={{ fontSize: '14px', color: darkMode ? 'lightgray' : 'gray' }}
                             >
                               {user.role}
                             </div>
