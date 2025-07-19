@@ -4,6 +4,7 @@ import { ENDPOINTS } from '~/utils/URL';
 import './TotalReport.css';
 import TotalReportBarGraph from './TotalReportBarGraph';
 import Loading from '../../common/Loading';
+// eslint-disable-next-line import/no-named-as-default
 import EditableInfoModal from '../../UserProfile/EditableModal/EditableInfoModal';
 
 function TotalContributorsReport({ startDate, endDate, userProfiles, darkMode, userRole }) {
@@ -173,7 +174,14 @@ function TotalContributorsReport({ startDate, endDate, userProfiles, darkMode, u
         />
       </div>
       <div className="total-period">
-        In the period from {startDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })} to {endDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })}:
+        In the period from 
+        {' '}
+        {startDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })}
+        {' '}
+        to 
+        {' '}
+        {endDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })}
+        :
       </div>
       <div className="total-item">
         <div className="total-number">{contributors.length}</div>
