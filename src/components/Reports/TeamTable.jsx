@@ -1,4 +1,4 @@
-// eslint-disable-next-line no-unused-vars
+ 
 import { React, useState } from 'react';
 import { Link } from 'react-router-dom';
 import './TeamTable.css';
@@ -40,7 +40,7 @@ function TeamTable({ allTeams, auth, darkMode }) {
   
     return (
       <div className='team-code-form-field'>
-        {canEditTeamCode ?
+        {canEditTeamCode ? (
           <div style={{paddingRight: "5px"}}>
             <FormGroup>
               <Input
@@ -56,14 +56,14 @@ function TeamTable({ allTeams, auth, darkMode }) {
                 className={darkMode ? "bg-darkmode-liblack text-light border-0" : ''}
               />
               <FormFeedback>
-                 NOT SAVED! The code must be between 5 and 7 characters long
+                NOT SAVED! The code must be between 5 and 7 characters long
               </FormFeedback>
             </FormGroup>
           </div>
+        )
         : 
-          `${teamCode === ''? "No assigned code!": teamCode}`
-        }
-        </div>
+          `${teamCode === ''? "No assigned code!": teamCode}`}
+      </div>
     )
   }
 
@@ -88,7 +88,7 @@ function TeamTable({ allTeams, auth, darkMode }) {
           )}
         </td>
         <td>
-          <EditTeamCode team={team}/>
+          <EditTeamCode team={team} />
         </td>
       </tr>
     ));
@@ -96,7 +96,8 @@ function TeamTable({ allTeams, auth, darkMode }) {
   return (
     <table 
       className={`table ${darkMode ? 'bg-yinmn-blue' : 'table-bordered'}`}
-      style={darkMode ? boxStyleDark : boxStyle}>
+      style={darkMode ? boxStyleDark : boxStyle}
+    >
       <thead>
         <tr className={darkMode ? 'bg-space-cadet text-light' : ''}>
           <th scope="col" id="projects__order">
