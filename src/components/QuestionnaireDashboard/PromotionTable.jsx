@@ -37,8 +37,12 @@ function PromotionTable() {
       <div className="header">
         <h1>Promotion Eligibility</h1>
         <div className="actions">
-          <button type="button" className="btn btn-secondary">Review for this week</button>
-          <button type="button" className="btn btn-primary">Process Promotions</button>
+          <button type="button" className="btn btn-secondary">
+            Review for this week
+          </button>
+          <button type="button" className="btn btn-primary">
+            Process Promotions
+          </button>
         </div>
       </div>
 
