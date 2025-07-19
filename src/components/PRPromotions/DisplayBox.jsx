@@ -32,7 +32,7 @@ export default function DisplayBox({ onClose }) {
   const [checkedItems, setCheckedItems] = useState(Array(mockPromotionData.length).fill(false));
   const allChecked = checkedItems.every(Boolean);
 
-  const handleCheckedBoxChange = (index) => {
+  const handleCheckedBoxChange = index => {
     const newChecked = [...checkedItems];
     newChecked[index] = !newChecked[index];
     setCheckedItems(newChecked);
@@ -78,8 +78,11 @@ export default function DisplayBox({ onClose }) {
                 <td>{promotion.teamCode}</td>
                 <td>{promotion.teamReviewerName}</td>
                 <td>
-                  {promotion.weeklyPRs.map((pr, i) => (
-                    <span key={`${promotion.prReviewer}-${i}`} className={`pr-count-badge color-${i % 5}`}>
+                  {promotion.weeklyPRs.map(pr => (
+                    <span
+                      key={`${promotion.prReviewer}-${pr.week}`}
+                      className={`pr-count-badge color-${pr.week}`}
+                    >
                       {pr.prCount}
                     </span>
                   ))}

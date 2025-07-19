@@ -1,20 +1,19 @@
 .overlay {
-  position:fixed;
+  position: fixed;
   inset: 0;
   background-color: rgba(0, 0, 0, 0.5);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .popup {
   background-color: rgb(187, 185, 185);
-  padding:24px;
-  border-radius:8px;
+  padding: 24px;
+  border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  max-width:800px;
-  width:100%;
+  max-width: 800px;
+  width: 100%;
   border: 6px solid black;
   border-radius: 8px;
 }
@@ -24,7 +23,7 @@
   font-size: 20px;
   /* font-weight: bold; */
   margin-bottom: 16px;
-  color:black;
+  color: black;
 }
 
 .popup-table {
@@ -55,7 +54,7 @@
   border-radius: 4px;
   border: none;
   cursor: pointer;
-  background-color:  #f0f0f0;
+  background-color: #f0f0f0;
   color: #000;
 }
 
@@ -68,7 +67,6 @@
 .button:disabled:hover {
   background-color: #ccc;
 }
-
 
 .pr-count-badge {
   display: inline-flex;
@@ -99,5 +97,5 @@
 }
 
 .color-4 {
-  background-color: #cbe360; 
+  background-color: #cbe360;
 }
