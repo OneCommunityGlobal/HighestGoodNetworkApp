@@ -79,6 +79,11 @@ function FormattedReport({
   const dispatch = useDispatch();
   const isEditCount = dispatch(hasPermission('totalValidWeeklySummaries'));
 
+
+// for rendering
+  const [bioStatusMap, setBioStatusMap] = useState({});
+  const [rerenderKey, setRerenderKey] = useState(0);
+
   // Only proceed if summaries is valid
   if (!summaries || !Array.isArray(summaries) || summaries.length === 0) {
     return (
@@ -96,6 +101,8 @@ function FormattedReport({
         {summaries
           .filter(summary => {
             // Add safety check for each summary
+            const currentStatus = bioStatusMap[summary._id] ?? summary.bioPosted; // for rerendering
+            if (currentStatus === 'posted') return false;
             if (!summary || !summary.totalSeconds) {
               return false;
             }
@@ -107,6 +114,7 @@ function FormattedReport({
             <ReportDetails
               loggedInUserEmail={loggedInUserEmail}
               key={summary._id}
+              // key={`${summary._id}_${summary._rerender || ''}`} // TESTING BY USING THIS
               summary={summary}
               weekIndex={weekIndex}
               bioCanEdit={bioCanEdit}
@@ -121,6 +129,10 @@ function FormattedReport({
               handleTeamCodeChange={handleTeamCodeChange}
               auth={auth}
               handleSpecialColorDotClick={handleSpecialColorDotClick}
+
+              // for rerendering
+              setBioStatusMap={setBioStatusMap}
+              setRerenderKey={setRerenderKey}
             />
           ))}
       </ListGroup>
@@ -237,6 +249,9 @@ function ReportDetails({
   handleTeamCodeChange,
   auth,
   handleSpecialColorDotClick,
+// to rerender the ddata
+  setBioStatusMap,
+  setRerenderKey
 }) {
   const [filteredBadges, setFilteredBadges] = useState([]);
   const ref = useRef(null);
@@ -244,19 +259,24 @@ function ReportDetails({
   const [bioStatus, setBioStatus] = useState(summary.bioPosted);
 
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
-  const isMeetCriteria =
+  const [isMeetCriteria, setIsMeetCriteria] = useState(
     canSeeBioHighlight &&
     summary.totalTangibleHrs > 80 &&
     summary.daysInTeam > 60 &&
-    bioStatus !== 'posted';
+    bioStatus !== 'posted');
 
   useEffect(() => {
     setFilteredBadges(badges.filter(badge => badge.showReport === true));
   }, []);
 
-//   useEffect(() => {
-//   setBioStatus(summary.bioPosted);
-// }, [summary.bioPosted]);
+useEffect(() => {
+  setIsMeetCriteria(
+    canSeeBioHighlight &&
+    summary.totalTangibleHrs > 80 &&
+    summary.daysInTeam > 60 &&
+    bioStatus !== 'posted'
+  );
+}, [bioStatus, canSeeBioHighlight, summary.totalTangibleHrs, summary.daysInTeam]);
 
   return (
     <li className={`list-group-item px-0 ${darkMode ? 'bg-yinmn-blue' : ''}`} ref={ref}>
@@ -282,13 +302,18 @@ function ReportDetails({
               />
             </ListGroupItem>
             <ListGroupItem darkMode={darkMode}>
-              <div style={{ width: '200%', backgroundColor: isMeetCriteria ? 'yellow' : 'none' }}>
+              <div style={{ width: '200%', backgroundColor: isMeetCriteria ? 'yellow' : 'transparent' }}>
                 <Bio
                   bioCanEdit={bioCanEdit && !cantEditJaeRelatedRecord}
                   userId={summary._id}
                   bioPosted={bioStatus} 
                   summary={summary}
                   setBioStatus={setBioStatus} 
+                  // for rerendering
+                  notifyBioStatusChange={(id, status) => {
+                    setBioStatusMap(prev => ({ ...prev, [id]: status }));
+                    setRerenderKey(prev => prev + 1); // force re-render
+                  }}
                 />
               </div>
             </ListGroupItem>
@@ -555,7 +580,7 @@ function Bio({ bioCanEdit, ...props }) {
   return bioCanEdit ? <BioSwitch {...props} /> : <BioLabel {...props} />;
 }
 
-function BioSwitch({ userId, bioPosted, summary, setBioStatus }) {
+function BioSwitch({ userId, bioPosted, summary, setBioStatus, notifyBioStatusChange  }) {
   const dispatch = useDispatch();
   const style = { color: textColors[summary?.weeklySummaryOption] || textColors.Default };
 
@@ -579,7 +604,9 @@ function BioSwitch({ userId, bioPosted, summary, setBioStatus }) {
           switchType="bio"
           state={bioPosted}
           handleUserProfile={bio => {
+            setBioStatus(bio);
             handleChangeBioPosted(userId, bio);
+            notifyBioStatusChange(userId, bio);
           }}
         />
       </div>
