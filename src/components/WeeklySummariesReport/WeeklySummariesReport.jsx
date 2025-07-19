@@ -391,14 +391,7 @@ const WeeklySummariesReport = props => {
   };
 
   const filterWeeklySummaries = () => {
-    console.log("reached 1")
     try {
-      console.log("reached 2")
-      console.log('state.activeTab:', state.activeTab, '| typeof:', typeof state.activeTab);
-      console.log('navItems:', navItems);
-navItems.forEach((item, i) => {
-  console.log(`Compare [${i}]: "${item}" === "${state.activeTab}" ?`, item === state.activeTab);
-});
       const currentWeekIndex = navItems.findIndex(item => item === state.activeTab);
 
       if (currentWeekIndex === -1) {
@@ -418,16 +411,13 @@ navItems.forEach((item, i) => {
         selectedSpecialColors,
       } = state;
 
-      console.log(currentWeekIndex);
-
-      console.log("reachedd here");
-
-      console.log('filterWeeklySummaries state:', {
-        summariesLength: summaries?.length,
-        tableDataExists: !!tableData,
-        selectedCodesLength: selectedCodes?.length,
-        selectedColorsLength: selectedColors?.length,
-      });
+      
+      // console.log('filterWeeklySummaries state:', {
+      //   summariesLength: summaries?.length,
+      //   tableDataExists: !!tableData,
+      //   selectedCodesLength: selectedCodes?.length,
+      //   selectedColorsLength: selectedColors?.length,
+      // });
       const chartData = [];
       let temptotal = 0;
       const structuredTeamTableData = [];
@@ -440,7 +430,7 @@ navItems.forEach((item, i) => {
 
       const temp = summaries.filter(summary => {
         // if this user is inactive, only include them on their final week tab
-        console.log("Is Summary Active : " + summary.isActive);
+      
         if (summary.isActive === false) {
           const idx = summary.finalWeekIndex;
           if (typeof idx !== 'number' || idx < 0 || idx >= weekDates.length) {
@@ -500,8 +490,6 @@ navItems.forEach((item, i) => {
           hasTrophy
         );
       });
-
-      console.log('Total after filter:', temp.length);
 
       if (selectedCodes[0]?.value === '' || selectedCodes.length >= 52) {
         if (selectedCodes.length >= 52) {
@@ -756,10 +744,8 @@ navItems.forEach((item, i) => {
   };
 
   const handleBioStatusToggleChange = () => {
-    console.log("reached status change")
    setState(prev => {
     const newValue = !prev.selectedBioStatus;
-    console.log("selectedBioStatus toggled to:", newValue);
     return {
       ...prev,
       selectedBioStatus: newValue,
@@ -1083,9 +1069,7 @@ navItems.forEach((item, i) => {
   }, [loading, state.loading]);
 
   useEffect(() => {
-    console.log("use effect is triggered")
     if (state.summaries && state.summaries.length > 0) {
-      console.log("function triggered")
       filterWeeklySummaries();
     }
   }, [

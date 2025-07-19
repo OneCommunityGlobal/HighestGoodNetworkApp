@@ -241,17 +241,22 @@ function ReportDetails({
   const [filteredBadges, setFilteredBadges] = useState([]);
   const ref = useRef(null);
   const cantEditJaeRelatedRecord = cantUpdateDevAdminDetails(summary.email, loggedInUserEmail);
+  const [bioStatus, setBioStatus] = useState(summary.bioPosted);
 
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
   const isMeetCriteria =
     canSeeBioHighlight &&
     summary.totalTangibleHrs > 80 &&
     summary.daysInTeam > 60 &&
-    summary.bioPosted !== 'posted';
+    bioStatus !== 'posted';
 
   useEffect(() => {
     setFilteredBadges(badges.filter(badge => badge.showReport === true));
   }, []);
+
+//   useEffect(() => {
+//   setBioStatus(summary.bioPosted);
+// }, [summary.bioPosted]);
 
   return (
     <li className={`list-group-item px-0 ${darkMode ? 'bg-yinmn-blue' : ''}`} ref={ref}>
@@ -281,8 +286,9 @@ function ReportDetails({
                 <Bio
                   bioCanEdit={bioCanEdit && !cantEditJaeRelatedRecord}
                   userId={summary._id}
-                  bioPosted={summary.bioPosted}
+                  bioPosted={bioStatus} 
                   summary={summary}
+                  setBioStatus={setBioStatus} 
                 />
               </div>
             </ListGroupItem>
@@ -549,18 +555,19 @@ function Bio({ bioCanEdit, ...props }) {
   return bioCanEdit ? <BioSwitch {...props} /> : <BioLabel {...props} />;
 }
 
-function BioSwitch({ userId, bioPosted, summary }) {
-  const [bioStatus, setBioStatus] = useState(bioPosted);
+function BioSwitch({ userId, bioPosted, summary, setBioStatus }) {
   const dispatch = useDispatch();
   const style = { color: textColors[summary?.weeklySummaryOption] || textColors.Default };
 
-  // eslint-disable-next-line no-shadow
   const handleChangeBioPosted = async (userId, bioStatus) => {
     const res = await dispatch(toggleUserBio(userId, bioStatus));
     if (res.status === 200) {
       toast.success('You have changed the bio announcement status of this user.');
+       summary.bioPosted = bioStatus;
+      setBioStatus(bioStatus); // updating parent state
     }
   };
+
 
   return (
     <div>
@@ -570,9 +577,8 @@ function BioSwitch({ userId, bioPosted, summary }) {
       <div className={styles.bioToggle}>
         <ToggleSwitch
           switchType="bio"
-          state={bioStatus}
+          state={bioPosted}
           handleUserProfile={bio => {
-            setBioStatus(bio);
             handleChangeBioPosted(userId, bio);
           }}
         />
@@ -580,6 +586,7 @@ function BioSwitch({ userId, bioPosted, summary }) {
     </div>
   );
 }
+
 
 function BioLabel({ bioPosted, summary }) {
   const style = {
