@@ -1,3 +1,7 @@
+// Delete these two lines:
+import FormEditor from 'components/Forms/FormEditor';
+import FormViewer from 'components/Forms/FormViewer';
+import PRDashboard from 'components/PRDashboard';
 import { lazy } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
@@ -71,28 +75,24 @@ import FaqSearch from 'components/Faq/FaqSearch';
 import FaqManagement from 'components/Faq/FaqManagement';
 import FaqHistory from 'components/Faq/FaqHistory';
 import UnansweredFaqs from 'components/Faq/UnansweredFaqs';
-
-import TeamLocations from 'components/TeamLocations';
-import AttendanceNoShow from 'components/AttendanceSystem/AttendanceNoShowCharts';
-
-import Collaboration from 'components/Collaboration';
-import MostSusceptibleTools from 'components/MostSusceptible/toolBreakdownChart';
-
-import Page1 from 'components/HGNForm/pages/Page1';
-import Page2 from 'components/HGNForm/pages/Page2';
-import Page3 from 'components/HGNForm/pages/Page3';
-import Page4 from 'components/HGNForm/pages/Page4';
-import Page5 from 'components/HGNForm/pages/Page5';
-import Page6 from 'components/HGNForm/pages/Page6';
-
-import TSAFormPage1 from 'components/TSAForm/pages/TSAFormPage1';
-import TSAFormPage2 from 'components/TSAForm/pages/TSAFormPage2';
-import TSAFormPage3 from 'components/TSAForm/pages/TSAFormPage3';
-import TSAFormPage4 from 'components/TSAForm/pages/TSAFormPage4';
-import TSAFormPage5 from 'components/TSAForm/pages/TSAFormPage5';
-import TSAFormPage6 from 'components/TSAForm/pages/TSAFormPage6';
-import TSAFormPage7 from 'components/TSAForm/pages/TSAFormPage7';
-import TSAFormPage8 from 'components/TSAForm/pages/TSAFormPage8';
+import HeaderRenderer from 'components/Header/HeaderRenderer';
+import IssueDashboard from 'components/BMDashboard/Issues/IssueDashboard';
+import { ExperienceDonutChart } from 'components/ExperienceDonutChart';
+// hgnform routes
+import Page1 from './components/HGNForm/pages/Page1';
+import Page2 from './components/HGNForm/pages/Page2';
+import Page3 from './components/HGNForm/pages/Page3';
+import Page4 from './components/HGNForm/pages/Page4';
+import Page5 from './components/HGNForm/pages/Page5';
+import Page6 from './components/HGNForm/pages/Page6';
+import TSAFormPage1 from './components/TSAForm/pages/TSAFormPage1';
+import TSAFormPage2 from './components/TSAForm/pages/TSAFormPage2';
+import TSAFormPage3 from './components/TSAForm/pages/TSAFormPage3';
+import TSAFormPage4 from './components/TSAForm/pages/TSAFormPage4';
+import TSAFormPage5 from './components/TSAForm/pages/TSAFormPage5';
+import TSAFormPage6 from './components/TSAForm/pages/TSAFormPage6';
+import TSAFormPage7 from './components/TSAForm/pages/TSAFormPage7';
+import TSAFormPage8 from './components/TSAForm/pages/TSAFormPage8';
 
 import HelpPage from 'components/LandingPage/HelpPage';
 
@@ -314,9 +314,13 @@ export default (
           ]}
           routePermissions={RoutePermissions.weeklySummariesReport}
         />
-        {hasPermission('accessPRTeamDashboard') && (
-          <ProtectedRoute path="/pr-dashboard" exact component={PRDashboard} />
-        )}
+        <ProtectedRoute
+          path="/pr-dashboard"
+          exact
+          component={PRDashboard}
+          fallback
+          routePermissions={RoutePermissions.prDashboard}
+        />
 
         <ProtectedRoute
           path="/reports"
