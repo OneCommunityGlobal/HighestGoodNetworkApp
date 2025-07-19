@@ -21,6 +21,11 @@ import './ToolsStoppageHorizontalBarChart.css';
 
 // Define tooltip component separately to avoid nested component definition
 function CustomTooltip({ active, payload }) {
+  const barColors = {
+    usedForLifetime: '#4589FF',
+    damaged: '#FF0000',
+    lost: '#FFB800',
+  };
   if (!active || !payload || !payload.length) {
     return null;
   }
@@ -50,8 +55,10 @@ function CustomTooltip({ active, payload }) {
               justifyContent: 'space-between',
             }}
           >
-            <span>{statusLabel}</span>
-            <span style={{ marginLeft: '10px' }}>{entry.value}</span>
+            <span style={{ color: barColors[entry.dataKey] }}>{statusLabel}</span>
+            <span style={{ color: barColors[entry.dataKey], marginLeft: '10px' }}>
+              {entry.value}
+            </span>
           </p>
         );
       })}
