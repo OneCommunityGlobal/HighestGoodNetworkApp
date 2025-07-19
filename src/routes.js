@@ -23,6 +23,7 @@ import UnansweredFaqs from 'components/Faq/UnansweredFaqs';
 import HeaderRenderer from 'components/Header/HeaderRenderer';
 import IssueDashboard from 'components/BMDashboard/Issues/IssueDashboard';
 import { ExperienceDonutChart } from 'components/ExperienceDonutChart';
+import LessonForm from 'components/BMDashboard/Lesson/LessonForm';
 
 // hgnform routes
 import Page1 from './components/HGNForm/pages/Page1';
@@ -41,7 +42,8 @@ import TSAFormPage7 from './components/TSAForm/pages/TSAFormPage7';
 import TSAFormPage8 from './components/TSAForm/pages/TSAFormPage8';
 
 import Timelog from './components/Timelog';
-import LessonForm from './components/BMDashboard/Lesson/LessonForm';
+// import LessonForm from './components/BMDashboard/Lesson/LessonForm';
+
 import UserProfileEdit from './components/UserProfile/UserProfileEdit';
 import Dashboard from './components/Dashboard';
 import Logout from './components/Logout/Logout';
