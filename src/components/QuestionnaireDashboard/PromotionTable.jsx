@@ -37,8 +37,8 @@ function PromotionTable() {
       <div className="header">
         <h1>Promotion Eligibility</h1>
         <div className="actions">
-          <button className="btn btn-secondary">Review for this week</button>
-          <button className="btn btn-primary">Process Promotions</button>
+          <button type="button" className="btn btn-secondary">Review for this week</button>
+          <button type="button" className="btn btn-primary">Process Promotions</button>
         </div>
       </div>
 
@@ -61,7 +61,7 @@ function PromotionTable() {
           </tr>
           {newMembers.map(user => (
             <tr key={user.id}>
-              <td></td>
+              <td />
               <td>{user.reviewer}</td>
               <td className={user.hasMetWeekly ? 'status-met' : 'status-not-met'}>
                 <span className="status-icon">{user.hasMetWeekly ? '✓' : '✗'}</span>
@@ -82,7 +82,7 @@ function PromotionTable() {
           </tr>
           {existingMembers.map(user => (
             <tr key={user.id}>
-              <td></td>
+              <td />
               <td>{user.reviewer}</td>
               <td className={user.hasMetWeekly ? 'status-met' : 'status-not-met'}>
                 <span className="status-icon">{user.hasMetWeekly ? '✓' : '✗'}</span>
