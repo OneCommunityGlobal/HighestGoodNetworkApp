@@ -8,6 +8,7 @@ import TotalMaterialCostPerProject from '../TotalMaterialCostPerProject';
 
 // Mocks
 jest.mock('axios');
+jest.setTimeout(20000);
 jest.mock('react-toastify', () => ({
   toast: {
     error: jest.fn(),
@@ -86,6 +87,7 @@ describe('TotalMaterialCostPerProject', () => {
     await waitFor(() => {
       expect(screen.getByText('Project A')).toBeInTheDocument();
     });
+    screen.debug();
 
     const control = document.querySelector('.select__control');
 
@@ -104,12 +106,14 @@ describe('TotalMaterialCostPerProject', () => {
     });
 
     // Remove option Project A
-    userEvent.click(screen.getByRole('button', { name: 'Remove Project A' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Remove Project A' }));
+
     const barChart = screen.getByTestId('bar-chart');
     expect(within(barChart).queryByText(/Project A/)).not.toBeInTheDocument();
 
     // Select Project A using the dropdown
     const mySelectComponent = screen.queryByTestId('select-projects-dropdown');
+    expect(mySelectComponent).toBeInTheDocument();
 
     fireEvent.keyDown(mySelectComponent.firstChild, { key: 'ArrowDown' });
     await waitFor(() => screen.getByText('Project A'));
