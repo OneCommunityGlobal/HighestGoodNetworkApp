@@ -4,36 +4,40 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from
 import { boxStyle, boxStyleDark } from '~/styles';
 import '../Header/DarkMode.css';
 
-export const CreateNewTeamPopup = React.memo(props => {
+function CreateNewTeamPopupComponent(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const allTeams = useSelector(state => state.allTeamsData.allTeams);
+
+  const { onClose, onOkClick, teamName, isEdit, open } = props;
 
   const [newTeam, setNewName] = useState('');
 
   const closePopup = () => {
-    props.onClose();
+    onClose();
   };
 
   const [isValidTeam, onValidation] = useState(true);
   const [teamExists, setTeamExists] = useState(false);
 
   useEffect(() => {
-    setNewName(props.teamName);
-    onValidation(true);
-    setTeamExists(false);
-  }, [props.open, props.teamName]);
-
-  const handleTeamNameChange = e => {
-    const teamName = e.target.value;
     setNewName(teamName);
     onValidation(true);
-    setTeamExists(allTeams.some(team => team.teamName.toLowerCase() === teamName.toLowerCase()));
+    setTeamExists(false);
+  }, [open, teamName]);
+
+  const handleTeamNameChange = e => {
+    const inputTeamName = e.target.value;
+    setNewName(inputTeamName);
+    onValidation(true);
+    setTeamExists(
+      allTeams.some(team => team.teamName.toLowerCase() === inputTeamName.toLowerCase()),
+    );
   };
 
   const handleSubmit = async () => {
     if (newTeam !== '') {
-      if (!teamExists || props.isEdit) {
-        await props.onOkClick(newTeam, props.isEdit);
+      if (!teamExists || isEdit) {
+        await onOkClick(newTeam, isEdit);
       } else {
         setTeamExists(true);
       }
@@ -45,16 +49,18 @@ export const CreateNewTeamPopup = React.memo(props => {
   return (
     <Modal
       autoFocus={false}
-      isOpen={props.open}
+      isOpen={open}
       toggle={closePopup}
       className={darkMode ? 'dark-mode text-light' : ''}
     >
       <ModalHeader toggle={closePopup} className={darkMode ? 'bg-space-cadet' : ''}>
-        {props.isEdit ? 'Update Team Name' : 'Create New Team'}
+        {isEdit ? 'Update Team Name' : 'Create New Team'}
       </ModalHeader>
       <ModalBody style={{ textAlign: 'start' }} className={darkMode ? 'bg-yinmn-blue' : ''}>
-        <label className={darkMode ? 'text-light' : ''}>
-          Name of the Team<span className="red-asterisk">* </span>
+        {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+        <label htmlFor="teamName" className={darkMode ? 'text-light' : ''}>
+          Name of the Team
+          <span className="red-asterisk">*</span>
         </label>
 
         <Input
@@ -67,7 +73,7 @@ export const CreateNewTeamPopup = React.memo(props => {
           required
         />
         {!isValidTeam && <Alert color="danger">Please enter a team name.</Alert>}
-        {teamExists && !props.isEdit && (
+        {teamExists && !isEdit && (
           <Alert color="warning">
             That’s a great team name! So great that someone else already created that team. Please
             choose a new name or use the existing team.
@@ -84,5 +90,7 @@ export const CreateNewTeamPopup = React.memo(props => {
       </ModalFooter>
     </Modal>
   );
-});
+}
+
+export const CreateNewTeamPopup = React.memo(CreateNewTeamPopupComponent);
 export default CreateNewTeamPopup;
