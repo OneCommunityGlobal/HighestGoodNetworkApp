@@ -394,10 +394,18 @@ const WeeklySummariesReport = props => {
     console.log("reached 1")
     try {
       console.log("reached 2")
-      
-      console.log(navItems)
-      console.log(state.activeTab)
-      const currentWeekIndex = navItems.indexOf(state.activeTab);
+      console.log('state.activeTab:', state.activeTab, '| typeof:', typeof state.activeTab);
+      console.log('navItems:', navItems);
+navItems.forEach((item, i) => {
+  console.log(`Compare [${i}]: "${item}" === "${state.activeTab}" ?`, item === state.activeTab);
+});
+      const currentWeekIndex = navItems.findIndex(item => item === state.activeTab);
+
+      if (currentWeekIndex === -1) {
+  console.warn('Could not match tab:', state.activeTab);
+  return;
+}
+
       const {
         selectedCodes,
         selectedColors,
@@ -410,14 +418,16 @@ const WeeklySummariesReport = props => {
         selectedSpecialColors,
       } = state;
 
+      console.log(currentWeekIndex);
+
       console.log("reachedd here");
 
-      // console.log('filterWeeklySummaries state:', {
-      //   summariesLength: summaries?.length,
-      //   tableDataExists: !!tableData,
-      //   selectedCodesLength: selectedCodes?.length,
-      //   selectedColorsLength: selectedColors?.length,
-      // });
+      console.log('filterWeeklySummaries state:', {
+        summariesLength: summaries?.length,
+        tableDataExists: !!tableData,
+        selectedCodesLength: selectedCodes?.length,
+        selectedColorsLength: selectedColors?.length,
+      });
       const chartData = [];
       let temptotal = 0;
       const structuredTeamTableData = [];
@@ -430,7 +440,8 @@ const WeeklySummariesReport = props => {
 
       const temp = summaries.filter(summary => {
         // if this user is inactive, only include them on their final week tab
-        if (!summary.isActive) {
+        console.log("Is Summary Active : " + summary.isActive);
+        if (summary.isActive === false) {
           const idx = summary.finalWeekIndex;
           if (typeof idx !== 'number' || idx < 0 || idx >= weekDates.length) {
             return false;
@@ -441,6 +452,8 @@ const WeeklySummariesReport = props => {
 
           return true;
         }
+        
+
 
 //         console.log(
 //   'Filter triggered!',
@@ -487,6 +500,8 @@ const WeeklySummariesReport = props => {
           hasTrophy
         );
       });
+
+      console.log('Total after filter:', temp.length);
 
       if (selectedCodes[0]?.value === '' || selectedCodes.length >= 52) {
         if (selectedCodes.length >= 52) {
@@ -565,6 +580,7 @@ const WeeklySummariesReport = props => {
       }));
       return chartData;
     } catch (error) {
+      console.log(error);
       return null;
     }
   };
