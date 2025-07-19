@@ -8,6 +8,7 @@ import dateFnsFormat from 'date-fns/format';
 import { boxStyle, boxStyleDark } from 'styles';
 import { useMemo } from 'react';
 import { addNewTask } from '../../../../../actions/task';
+import { faPlusCircle, faMinusCircle } from '@fortawesome/free-solid-svg-icons';
 import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from '../../../../../languages/en/messages';
 import {
   START_DATE_ERROR_MESSAGE,
@@ -18,6 +19,7 @@ import '../../../../Header/DarkMode.css';
 import TagsSearch from '../components/TagsSearch';
 import './AddTaskModal.css';
 import { fetchAllMembers } from 'actions/projectMembers';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 
 const TINY_MCE_INIT_OPTIONS = {
@@ -676,12 +678,28 @@ function AddTaskModal(props) {
                       aria-label="Add Link"
                       onClick={addLink}
                     >
-                      Add Link
+                      <FontAwesomeIcon
+                        icon={faPlusCircle}
+                        title="Add link"
+                        style={{
+                          color: '#007bff',           
+                          cursor: 'pointer',
+                          fontSize: '1.1rem',         
+                          marginLeft: '8px',          
+                          verticalAlign: 'middle',    
+                        }}
+                      />
                     </button>
                   </div>
                   <div>
                     {links.map((link, i) => (
-                      <div key={i} className="link-item">
+                      <div key={i} className="link-item" style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'flex-start', 
+                        gap: '8px',
+                        marginBottom: '4px',
+                      }}>
                         <a href={link} className="task-link" target="_blank" rel="noreferrer">
                           {link}
                         </a>
@@ -689,8 +707,24 @@ function AddTaskModal(props) {
                           type="button"
                           aria-label={`Delete link ${link}`}
                           onClick={() => removeLink(i)}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            marginLeft: '8px',
+                            padding: 0,
+                            display: 'flex',
+                            alignItems: 'center',
+                            cursor: 'pointer',
+                          }}
                         >
-                          Delete
+                          <FontAwesomeIcon
+                            icon={faMinusCircle}
+                            title="Remove link"
+                            style={{
+                              color: '#dc3545', // Bootstrap red
+                              fontSize: '1.1rem',
+                            }}
+                          />
                         </button>
                       </div>
                     ))}
