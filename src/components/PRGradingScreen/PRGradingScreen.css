@@ -93,26 +93,27 @@
   padding: 16px 15px;
   vertical-align: middle;
   font-size: 0.9rem;
+  text-align: center !important;
 }
 
 .pr-grading-screen-th-name {
   width: 25%;
-  text-align: center;
+  text-align: center !important;
 }
 
 .pr-grading-screen-th-reviewed {
   width: 10%;
-  text-align: center;
+  text-align: center !important;
 }
 
 .pr-grading-screen-th-needed {
   width: 10%;
-  text-align: center;
+  text-align: center !important;
 }
 
 .pr-grading-screen-th-numbers {
   width: 55%;
-  text-align: center;
+  text-align: center !important;
 }
 
 /* Table Body */
@@ -288,6 +289,7 @@
 /* PR Number Input Components */
 .pr-grading-screen-input-container {
   margin-top: 8px;
+  text-align: center;
 }
 
 .pr-grading-screen-input-wrapper {
@@ -295,6 +297,7 @@
   align-items: center;
   gap: 8px;
   margin-bottom: 8px;
+  justify-content: center;
 }
 
 .pr-grading-screen-pr-number-input {
@@ -329,12 +332,14 @@
 .pr-grading-screen-input-buttons {
   display: flex;
   gap: 4px;
+  justify-content: center;
 }
 
 .pr-grading-screen-error-message {
   color: #dc3545;
   font-size: 0.75rem;
   margin-top: 4px;
+  text-align: center;
 }
 
 .pr-grading-screen-pair-message {
@@ -342,6 +347,7 @@
   font-size: 0.75rem;
   margin-top: 4px;
   font-weight: 500;
+  text-align: center;
 }
 
 
@@ -395,7 +401,7 @@
 
   .pr-grading-screen-input-wrapper {
     flex-direction: column;
-    align-items: stretch;
+    align-items: center;
     gap: 6px;
   }
 
