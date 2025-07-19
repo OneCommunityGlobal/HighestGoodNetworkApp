@@ -97,7 +97,7 @@
 
 .pr-grading-screen-th-name {
   width: 25%;
-  text-align: left;
+  text-align: center;
 }
 
 .pr-grading-screen-th-reviewed {
@@ -112,7 +112,7 @@
 
 .pr-grading-screen-th-numbers {
   width: 55%;
-  text-align: left;
+  text-align: center;
 }
 
 /* Table Body */
@@ -133,10 +133,12 @@
 .pr-grading-screen-td-name {
   width: 25%;
   vertical-align: middle;
+  text-align: center;
 }
 
 .pr-grading-screen-reviewer-info {
   display: block;
+  text-align: center;
 }
 
 .pr-grading-screen-reviewer-name {
@@ -163,6 +165,28 @@
   font-size: 1rem;
 }
 
+.pr-grading-screen-pr-input {
+  width: 60px;
+  padding: 4px 8px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #333;
+  background-color: #ffffff;
+}
+
+.pr-grading-screen-pr-input:focus {
+  outline: none;
+  border-color: #80bdff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.pr-grading-screen-pr-input:hover {
+  border-color: #adb5bd;
+}
+
 /* Column 3: PRs Needed */
 .pr-grading-screen-td-needed {
   width: 10%;
@@ -177,11 +201,13 @@
 .pr-grading-screen-td-numbers {
   width: 55%;
   vertical-align: middle;
+  text-align: center;
 }
 
 .pr-grading-screen-pr-list {
   display: block;
   line-height: 1.5;
+  text-align: center;
 }
 
 .pr-grading-screen-pr-item {
@@ -252,7 +278,7 @@
   background-color: #28a745;
   border: none;
   color: white;
-  display: block;
+  display: inline-block;
 }
 
 .pr-grading-screen-add-btn:hover {
@@ -298,5 +324,11 @@
   
   .pr-grading-screen-td-numbers {
     width: 60%;
+  }
+  
+  .pr-grading-screen-pr-input {
+    width: 50px;
+    padding: 3px 6px;
+    font-size: 0.9rem;
   }
 }

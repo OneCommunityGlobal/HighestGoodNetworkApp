@@ -7,6 +7,14 @@ const PRGradingScreen = () => {
   const { teamData, reviewers } = getAllMockData();
   const [reviewerData, setReviewerData] = useState(reviewers);
 
+  const handlePRReviewedChange = (reviewerId, newValue) => {
+    setReviewerData(prevData =>
+      prevData.map(reviewer =>
+        reviewer.id === reviewerId ? { ...reviewer, prsReviewed: newValue } : reviewer,
+      ),
+    );
+  };
+
   return (
     <Container fluid className="pr-grading-screen-container">
       <Row className="justify-content-center">
@@ -59,7 +67,16 @@ const PRGradingScreen = () => {
                         </td>
 
                         <td className="pr-grading-screen-td-reviewed">
-                          {reviewer.gradedPrs.length}
+                          <input
+                            type="number"
+                            value={reviewer.prsReviewed}
+                            onChange={e =>
+                              handlePRReviewedChange(reviewer.id, Number(e.target.value) || 0)
+                            }
+                            onFocus={e => e.target.select()}
+                            className="pr-grading-screen-pr-input"
+                            min="0"
+                          />
                         </td>
 
                         <td className="pr-grading-screen-td-needed">{reviewer.prsNeeded}</td>

@@ -14,7 +14,7 @@ export const mockReviewers = [
     id: '1',
     reviewer: 'Abi',
     prsNeeded: 10,
-    prsReviewed: 10,
+    prsReviewed: 4,
     gradedPrs: [
       { id: 'pr1', prNumbers: '3100 + 1410', grade: 'Exceptional' },
       { id: 'pr2', prNumbers: '2045', grade: 'Okay' },
@@ -27,7 +27,7 @@ export const mockReviewers = [
     reviewer: 'Abdel',
     role: 'Mentor and longterm PR person, must do 1 PR review a week',
     prsNeeded: 7,
-    prsReviewed: 0,
+    prsReviewed: 3,
     gradedPrs: [
       { id: 'pr5', prNumbers: '1245', grade: 'Okay' },
       { id: 'pr6', prNumbers: '2876 + 3421', grade: 'Exceptional' },
@@ -38,7 +38,7 @@ export const mockReviewers = [
     id: '3',
     reviewer: 'Anand',
     prsNeeded: 10,
-    prsReviewed: 10,
+    prsReviewed: 3,
     gradedPrs: [
       { id: 'pr8', prNumbers: '1070 + 1256', grade: 'Exceptional' },
       { id: 'pr9', prNumbers: '2134', grade: 'Okay' },
@@ -57,7 +57,7 @@ export const mockReviewers = [
     reviewer: 'Christy',
     role: 'Expressers',
     prsNeeded: 5,
-    prsReviewed: 7,
+    prsReviewed: 3,
     gradedPrs: [
       { id: 'pr11', prNumbers: '5678', grade: 'Okay' },
       { id: 'pr12', prNumbers: '6789 + 7890', grade: 'Exceptional' },
@@ -69,7 +69,7 @@ export const mockReviewers = [
     reviewer: 'Kurtis',
     role: 'Mentor and longterm PR person, must do 1 PR review a week',
     prsNeeded: 12,
-    prsReviewed: 0,
+    prsReviewed: 4,
     gradedPrs: [
       { id: 'pr14', prNumbers: '9012', grade: 'Okay' },
       { id: 'pr15', prNumbers: '1234 + 5678', grade: 'Exceptional' },
