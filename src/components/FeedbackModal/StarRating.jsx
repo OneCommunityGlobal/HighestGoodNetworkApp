@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-import './StarRating.css';
+import styles from './StarRating.module.css';
 
 function StarRating({ id, rating, onChange }) {
   const [hover, setHover] = useState(0);
 
   return (
-    <div className="star-rating">
+    <div className={`${styles.starRating}`}>
       {[...Array(5)].map((_, index) => {
         const starValue = index + 1;
 
