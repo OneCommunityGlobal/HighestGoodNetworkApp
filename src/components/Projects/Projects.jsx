@@ -39,9 +39,13 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
   };
 
   const [modalData, setModalData] = useState(initialModalData);
-  const [categorySelectedForSort, setCategorySelectedForSort] = useState('');
-  const [showStatus, setShowStatus] = useState('');
-  const [sortedByName, setSortedByName] = useState('');
+  const [categorySelectedForSort, setCategorySelectedForSort] = useState("");
+  const [showStatus, setShowStatus] = useState("");
+  const [sortedByName, setSortedByName] = useState("");
+  const [sorter, setSorter] = useState({
+    column: "PROJECTS",
+    direction: "DEFAULT",
+  });  
   const [projectTarget, setProjectTarget] = useState({
     projectName: '',
     projectId: -1,
@@ -124,20 +128,21 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
     setShowStatus(value);
   };
 
-  // const handleSort = (e) => {
-  //   const clickedId = e.target.id;
-  //   setSortedByName(prevState => prevState === clickedId ? "" : clickedId);
-  // }
-  const handleSort = e => {
-    const clickedId = e.target.id;
-    if (clickedId === 'SortingByRecentEditedInventory') {
-      setSortedByName(prevState =>
-        prevState === 'SortingByRecentEditedInventory' ? '' : 'SortingByRecentEditedInventory',
-      );
-    } else {
-      setSortedByName(prevState => (prevState === clickedId ? '' : clickedId));
-    }
+  const handleSort = (column) => {
+    setSorter(prev => {
+      if (prev.column === column) {
+        const nextDirection = prev.direction === "DEFAULT"
+          ? "ASC"
+          : prev.direction === "ASC"
+            ? "DESC"
+            : "DEFAULT";
+        return { column, direction: nextDirection };
+      } else {
+        return { column, direction: "ASC" };
+      }
+    });
   };
+  
   const onUpdateProject = async updatedProject => {
     await props.modifyProject(updatedProject);
     // Optimistically update the state
@@ -172,57 +177,79 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
     refreshProjects(); // Refresh project list after adding a project
   };
 
-  const generateProjectList = (categorySelectedForSort, showStatus, sortedByName) => {
-    // const { projects } = props.state.allProjects;
-    const activeMemberCounts = props.state.projectMembers?.activeMemberCounts || {};
-    const filteredProjects = allReduxProjects.filter(project => !project.isArchived).filter(project => {
-      if (categorySelectedForSort && showStatus){
-        return project.category === categorySelectedForSort && project.isActive === showStatus;
-      } else if (categorySelectedForSort) {
-        return project.category === categorySelectedForSort;
-      } else if (showStatus === 'Active') {
-        return project.isActive === true;
-      } else if (showStatus === 'Inactive') {
-        return project.isActive === false;
-      } else {
-        return true;
+  const generateProjectList = (categorySelectedForSort, showStatus) => {
+    const activeMemberCounts = props.state.projectMembers?.activeMemberCounts || {};  
+    const filteredProjects = allReduxProjects
+      .filter(project => !project.isArchived)
+      .filter(project => {
+        if (categorySelectedForSort && showStatus){
+          return project.category === categorySelectedForSort && project.isActive === showStatus;
+        } else if (categorySelectedForSort) {
+          return project.category === categorySelectedForSort;
+        } else if (showStatus === 'Active') {
+          return project.isActive === true;
+        } else if (showStatus === 'Inactive') {
+          return project.isActive === false;
+        } else {
+          return true;
+        }
+      });
+  
+    const sortedProjects = [...filteredProjects].sort((a, b) => {
+      const { column, direction } = sorter;
+  
+      if (column === "PROJECTS") {
+        if (direction === "ASC") {
+          return a.projectName.localeCompare(b.projectName, undefined, { sensitivity: 'base' });
+        } else if (direction === "DESC") {
+          return b.projectName.localeCompare(a.projectName, undefined, { sensitivity: 'base' });
+        } else {
+          return 0; // Default: recently added, retain original order
+        }
       }
-      })
-      .sort((a, b) => {
-        if (sortedByName === 'Ascending') {
-          return a.projectName[0].toLowerCase() < b.projectName[0].toLowerCase() ? -1 : 1;
+  
+      if (column === "MEMBERS") {
+        if (direction === "ASC") {
+          const countA = activeMemberCounts[a._id] || 0;
+          const countB = activeMemberCounts[b._id] || 0;
+          return countA - countB;
+        } else if (direction === "DESC") {
+          const countA = activeMemberCounts[a._id] || 0;
+          const countB = activeMemberCounts[b._id] || 0;
+          return countB - countA;
+        } else {
+          return 0; // Default: keep same order as PROJECT sorting
         }
-        if (sortedByName === 'Descending') {
-          return a.projectName[0].toLowerCase() < b.projectName[0].toLowerCase() ? 1 : -1;
-        }
-        if (sortedByName === 'SortingByRecentEditedMembers') {
-          return a.membersModifiedDatetime < b.membersModifiedDatetime ? 1 : -1;
-        }
-        if (sortedByName === 'SortingByRecentEditedInventory') {
-          return a.inventoryModifiedDatetime < b.inventoryModifiedDatetime ? 1 : -1;
-        }
-        if (sortedByName === 'SortingByMostActiveMembers') {
-          const lenA = activeMemberCounts[a._id] || 0;
-          const lenB = activeMemberCounts[b._id] || 0;
-          return lenB - lenA; // Most active first
-        }
+      }
+
+      if (column === "INVENTORY") {
+        const dateA = new Date(a.inventoryModifiedDatetime);
+        const dateB = new Date(b.inventoryModifiedDatetime);
+        if (direction === "ASC") return dateA - dateB;
+        if (direction === "DESC") return dateB - dateA;
         return 0;
-      })
-      .map((project, index) => (
-        <Project
-          // key={project._id}
-          key={`${project._id}-${project.isActive}`} 
-          index={index}
-          projectData={project}
-          onUpdateProject={onUpdateProject}
-          onClickArchiveBtn={onClickArchiveBtn}
-          onClickProjectStatusBtn={onClickProjectStatusBtn}
-          darkMode={darkMode}
-        />
-      ));
-    setProjectList(filteredProjects);
-    setAllProjects(filteredProjects);
+      }
+  
+      return 0;
+    });
+  
+    const renderedProjects = sortedProjects.map((project, index) => (
+      <Project
+        key={`${project._id}-${project.isActive}`}
+        index={index}
+        projectData={project}
+        activeMemberCounts={activeMemberCounts[project._id] || 0}
+        onUpdateProject={onUpdateProject}
+        onClickArchiveBtn={onClickArchiveBtn}
+        onClickProjectStatusBtn={onClickProjectStatusBtn}
+        darkMode={darkMode}
+      />
+    ));
+  
+    setProjectList(renderedProjects);
+    setAllProjects(renderedProjects);
   };
+  
 
   const refreshProjects = async () => {
     await props.fetchAllProjects();
@@ -243,7 +270,7 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
     //   dataLength: allReduxProjects?.length || 0,
     //   status: props.state.allProjects.status
     // });
-    generateProjectList(categorySelectedForSort, showStatus, sortedByName);
+    generateProjectList(categorySelectedForSort, showStatus);
     if (status !== 200) {
       setModalData({
         showModal: true,
@@ -253,8 +280,7 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
         hasInactiveBtn: false,
       });
     }
-  }, [categorySelectedForSort, showStatus, sortedByName, allReduxProjects, props.state.theme.darkMode]);
-  // }, [fetched, categorySelectedForSort, showStatus, sortedByName, props.state.theme.darkMode]);
+  }, [categorySelectedForSort, showStatus, sorter, allReduxProjects, props.state.theme.darkMode, props.state.projectMembers?.activeMemberCounts]);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -296,7 +322,7 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
           />
           <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
 
-          {canPostProject ? <AddProject hasPermission={hasPermission} /> : null}
+            {canPostProject ? <AddProject hasPermission={hasPermission} /> : null}
         </div>
 
         <SearchProjectByPerson onSearch={handleSearchName} />
@@ -308,7 +334,7 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
               selectedValue={categorySelectedForSort}
               showStatus={showStatus}
               selectStatus={onSelectStatus}
-              sorted={sortedByName}
+              sorted={sorter}
               handleSort={handleSort}
               darkMode={darkMode}
             />
