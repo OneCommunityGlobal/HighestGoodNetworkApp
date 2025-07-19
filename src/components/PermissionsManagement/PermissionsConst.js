@@ -68,6 +68,12 @@ export const permissionLabels = [
           'Makes ONLY the "Reports" -> "Weekly Summaries Reports" option appear/accessible.',
       },
       {
+        label: 'See/Edit PR Team Dashboard',
+        key: 'accessPRTeamDashboard',
+        description: 'Gives access to the PR Team dashboard, including view and edit rights.',
+      },
+
+      {
         label: 'Edit Total Valid Weekly Summaries',
         key: 'totalValidWeeklySummaries',
         description: 'Gives permission to edit total valid weekly summaries count under reports',
@@ -197,6 +203,11 @@ export const permissionLabels = [
         label: 'Tracking Management',
         key: 'setTrackingManagement',
         description: 'Gives the user permission to interact with the edit warnings list modal.',
+      },
+      {
+        label: 'Promote user to PR Team',
+        key: 'promoteToPRTeam',
+        description: 'Allows assigning a user to the PR Team role.',
       },
     ],
   },
