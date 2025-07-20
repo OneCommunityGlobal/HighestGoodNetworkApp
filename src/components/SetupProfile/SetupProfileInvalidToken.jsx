@@ -8,27 +8,35 @@ const TOKEN_NOT_FOUND = 'NOT_FOUND';
 
 const TOKEN_HAS_SETUP_MESSAGE = (
   <>
-    The link you&apos;ve attempted to use has been <strong>setup already</strong>.{' '}
+    The link you&apos;ve attempted to use has been
+    {/* eslint-disable-next-line prettier/prettier */}
+    <strong>setup already</strong>
+    .
+    {' '}
   </>
 );
 const TOKEN_CANCEL_MESSAGE = (
   <>
-    The link you&apos;ve attempted to use has been <strong>cancelled by the admin</strong>.
+    The link you&apos;ve attempted to use has been
+    <strong>cancelled by the admin</strong>
   </>
 );
 const TOKEN_INVALID_MESSAGE = (
   <>
-    The link you&apos;ve attempted to use is <strong>invalid</strong>.
+    The link you&apos;ve attempted to use is
+    <strong>invalid</strong>
   </>
 );
 const TOKEN_EXPIRED_MESSAGE = (
   <>
-    The link you&apos;ve attempted to use is <strong>expired</strong>.
+    The link you&apos;ve attempted to use is
+    <strong>expired</strong>
   </>
 );
 const TOKEN_NOT_FOUND_MESSAGE = (
   <>
-    The link you&apos;ve attempted to use is <strong>not found</strong>.
+    The link you&apos;ve attempted to use is
+    <strong>not found</strong>
   </>
 );
 

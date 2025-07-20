@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unknown-property */
 import React, { useState, useEffect, useRef } from 'react';
 import {
   Container,
@@ -17,10 +18,10 @@ import {
 import { connect } from 'react-redux';
 import { HashLink as Link } from 'react-router-hash-link';
 import './SummaryBar.css';
-import { ENDPOINTS, ApiEndpoint } from '~/utils/URL';
 import axios from 'axios';
-import hasPermission from '~/utils/permissions';
 import { toast } from 'react-toastify';
+import { ENDPOINTS, ApiEndpoint } from '~/utils/URL';
+import hasPermission from '~/utils/permissions';
 import TaskIcon from './task_icon.png';
 import BadgesIcon from './badges_icon.png';
 import BlueScoreIcon from './bluesquare_icon.png';
@@ -32,9 +33,16 @@ import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 
 const SummaryBar = React.forwardRef((props, ref) => {
   // from parent
-  const { displayUserId, summaryBarData } = props;
+  const {
+    displayUserId,
+    summaryBarData,
+    authUser,
+    displayUserProfile,
+    displayUserTask,
+    darkMode,
+  } = props;
   // from store
-  const { authUser, displayUserProfile, displayUserTask, darkMode } = props;
+  // const { authUser, displayUserProfile, displayUserTask, darkMode } = props;
 
   const authId = authUser.userid;
   const isAuthUser = displayUserId === authId;
@@ -408,8 +416,10 @@ const SummaryBar = React.forwardRef((props, ref) => {
 
   useEffect(() => {
     // Check if we should open the suggestions modal
+    // eslint-disable-next-line no-undef
     const shouldOpenSuggestions = localStorage.getItem('openSuggestionsModal');
     if (shouldOpenSuggestions === 'true') {
+      // eslint-disable-next-line no-undef
       localStorage.removeItem('openSuggestionsModal'); // Clear the flag
       openSuggestionModal(); // Open the suggestions modal
     }
@@ -434,7 +444,9 @@ const SummaryBar = React.forwardRef((props, ref) => {
       console.log('User Last Name:', displayUserProfile.lastName);
 
       // Save to localStorage
+      // eslint-disable-next-line no-undef
       localStorage.setItem('userFirstName', displayUserProfile.firstName);
+      // eslint-disable-next-line no-undef
       localStorage.setItem('userLastName', displayUserProfile.lastName);
     }
   }, [displayUserProfile]);
@@ -564,7 +576,9 @@ const SummaryBar = React.forwardRef((props, ref) => {
           <div>
             <font className="align-middle" size="3">
               {' '}
-              Activity for{' '}
+              {/* eslint-disable-next-line prettier/prettier */}
+              Activity for
+              {' '}
             </font>
             <CardTitle className={`align-middle ${darkMode ? 'text-light' : 'text-dark'}`} tag="h3">
               <div className="font-weight-bold">
@@ -630,7 +644,10 @@ const SummaryBar = React.forwardRef((props, ref) => {
                 style={{ whiteSpace: 'nowrap', padding: '0px 10px' }}
               >
                 <div className="align-items-center med_text_summary">
-                  Current Week : {totalEffort.toFixed(2)} / {weeklyCommittedHours.toFixed(2)}
+                  {/* eslint-disable-next-line prettier/prettier */}
+                  Current Week :
+                  {/* eslint-disable-next-line react/jsx-one-expression-per-line */}
+                  {totalEffort.toFixed(2)} / {weeklyCommittedHours.toFixed(2)}
                   <Progress
                     value={getProgressValue(totalEffort, weeklyCommittedHours)}
                     color={getProgressColor(totalEffort, weeklyCommittedHours)}
@@ -652,13 +669,17 @@ const SummaryBar = React.forwardRef((props, ref) => {
               style={{ border: '1px solid black' }}
             >
               <div className="m-auto p-2 text-center">
-                <font
+                <span
                   onClick={props.toggleSubmitForm}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter' || e.key === ' ') props.toggleSubmitForm();
+                  }}
+                  role="button"
+                  tabIndex="0"
                   className="med_text_summary align-middle summary-toggle"
-                  size="3"
                 >
                   {renderSummaryMessage()}
-                </font>
+                </span>
               </div>
             </div>
           </Row>
@@ -771,7 +792,10 @@ const SummaryBar = React.forwardRef((props, ref) => {
                   size="md"
                 >
                   Edit Category
-                </Button>{' '}
+                  {/* eslint-disable-next-line prettier/prettier */}
+                  {/* eslint-disable-next-line prettier/prettier */}
+                </Button>
+                {' '}
                 &nbsp;&nbsp;&nbsp;
                 <Button
                   onClick={() => setExtraFieldForSuggestionForm('field')}
@@ -800,7 +824,10 @@ const SummaryBar = React.forwardRef((props, ref) => {
                         name="action"
                         value="add"
                         required
-                      />{' '}
+                      />
+                      {/* eslint-disable-next-line prettier/prettier */}
+                      {/* eslint-disable-next-line prettier/prettier */}
+                      {' '}
                       Add
                     </Label>
                   </FormGroup>
@@ -813,7 +840,10 @@ const SummaryBar = React.forwardRef((props, ref) => {
                           name="action"
                           value="edit"
                           required
-                        />{' '}
+                        />
+                        {/* eslint-disable-next-line prettier/prettier */}
+                        {/* eslint-disable-next-line prettier/prettier */}
+                        {' '}
                         Edit
                       </Label>
                     </FormGroup>
@@ -829,7 +859,10 @@ const SummaryBar = React.forwardRef((props, ref) => {
                         disabled={
                           extraFieldForSuggestionForm === 'field' && inputFiled.length === 0
                         }
-                      />{' '}
+                      />
+                      {/* eslint-disable-next-line prettier/prettier */}
+                      {/* eslint-disable-next-line prettier/prettier */}
+                      {' '}
                       Delete
                     </Label>
                   </FormGroup>
@@ -877,7 +910,9 @@ const SummaryBar = React.forwardRef((props, ref) => {
                 )}
                 <Button id="add" type="submit" color="success" size="md">
                   Submit
-                </Button>{' '}
+                  {/* eslint-disable-next-line prettier/prettier */}
+                </Button>
+                {' '}
                 &nbsp;&nbsp;&nbsp;
                 <Button
                   onClick={() => {
@@ -921,7 +956,9 @@ const SummaryBar = React.forwardRef((props, ref) => {
                 <FormGroup>
                   <Label for="suggestion" className={fontColor}>
                     {' '}
-                    Write your suggestion:{' '}
+                    {/* eslint-disable-next-line prettier/prettier */}
+                    Write your suggestion:
+                    {' '}
                   </Label>
                   <Input
                     type="textarea"
@@ -936,7 +973,9 @@ const SummaryBar = React.forwardRef((props, ref) => {
                 inputFiled.map(item => (
                   <FormGroup key={item.id}>
                     <Label for="title" className={fontColor}>
-                      {item}{' '}
+                      {/* eslint-disable-next-line prettier/prettier */}
+                      {item}
+                      {' '}
                     </Label>
                     <Input type="textbox" name={item} id={item.id} placeholder="" required />
                   </FormGroup>
@@ -947,19 +986,23 @@ const SummaryBar = React.forwardRef((props, ref) => {
                 </legend>
                 <FormGroup check>
                   <Label check className={fontColor}>
-                    <Input type="radio" name="confirm" value="yes" required /> Yes
+                    <Input type="radio" name="confirm" value="yes" required />
+                    Yes
                   </Label>
                 </FormGroup>
                 <FormGroup check>
                   <Label check className={fontColor}>
-                    <Input type="radio" name="confirm" value="no" required /> No
+                    <Input type="radio" name="confirm" value="no" required />
+                    No
                   </Label>
                 </FormGroup>
               </FormGroup>
               <FormGroup>
                 <Button type="submit" color="primary" size="lg">
                   Submit
-                </Button>{' '}
+                  {/* eslint-disable-next-line prettier/prettier */}
+                </Button>
+                {' '}
                 &nbsp;&nbsp;&nbsp;
                 <Button
                   onClick={() => setShowSuggestionModal(prev => !prev)}
@@ -979,7 +1022,9 @@ const SummaryBar = React.forwardRef((props, ref) => {
             <Form onSubmit={sendBugReport} id="bugReportForm">
               <FormGroup>
                 <Label for="title" className={fontColor}>
-                  [Feature Name] Bug Title{' '}
+                  {/* eslint-disable-next-line prettier/prettier */}
+                  [Feature Name] Bug Title
+                  {' '}
                 </Label>
                 <Input
                   type="textbox"
@@ -992,7 +1037,9 @@ const SummaryBar = React.forwardRef((props, ref) => {
               <FormGroup>
                 <Label for="environment" className={fontColor}>
                   {' '}
-                  Environment (OS/Device/App Version/Connection/Time etc){' '}
+                  {/* eslint-disable-next-line prettier/prettier */}
+                  Environment (OS/Device/App Version/Connection/Time etc)
+                  {' '}
                 </Label>
                 <Input
                   type="textarea"
@@ -1004,7 +1051,9 @@ const SummaryBar = React.forwardRef((props, ref) => {
               </FormGroup>
               <FormGroup>
                 <Label for="reproduction" className={fontColor}>
-                  Steps to reproduce (Please Number, Short Sweet to the point){' '}
+                  {/* eslint-disable-next-line prettier/prettier */}
+                  Steps to reproduce (Please Number, Short Sweet to the point)
+                  {' '}
                 </Label>
                 <Input
                   type="textarea"
@@ -1016,7 +1065,9 @@ const SummaryBar = React.forwardRef((props, ref) => {
               </FormGroup>
               <FormGroup>
                 <Label for="expected" className={fontColor}>
-                  Expected Result (Short Sweet to the point){' '}
+                  {/* eslint-disable-next-line prettier/prettier */}
+                  Expected Result (Short Sweet to the point)
+                  {' '}
                 </Label>
                 <Input
                   type="textarea"
@@ -1028,7 +1079,9 @@ const SummaryBar = React.forwardRef((props, ref) => {
               </FormGroup>
               <FormGroup>
                 <Label for="actual" className={fontColor}>
-                  Actual Result (Short Sweet to the point){' '}
+                  {/* eslint-disable-next-line prettier/prettier */}
+                  Actual Result (Short Sweet to the point)
+                  {' '}
                 </Label>
                 <Input
                   type="textarea"
@@ -1040,7 +1093,9 @@ const SummaryBar = React.forwardRef((props, ref) => {
               </FormGroup>
               <FormGroup>
                 <Label for="visual" className={fontColor}>
-                  Visual Proof (screenshots, videos, text){' '}
+                  {/* eslint-disable-next-line prettier/prettier */}
+                  Visual Proof (screenshots, videos, text)
+                  {' '}
                 </Label>
                 <Input
                   type="textarea"
@@ -1052,12 +1107,16 @@ const SummaryBar = React.forwardRef((props, ref) => {
               </FormGroup>
               <FormGroup>
                 <Label for="severity" className={fontColor}>
-                  Severity/Priority (How Bad is the Bug?){' '}
+                  {/* eslint-disable-next-line prettier/prettier */}
+                  Severity/Priority (How Bad is the Bug?)
+                  {' '}
                 </Label>
                 <Input type="select" name="severity" id="severity" defaultValue="" required>
                   <option hidden value="" disabled>
                     {' '}
-                    -- select an option --{' '}
+                    {/* eslint-disable-next-line prettier/prettier */}
+                    -- select an option --
+                    {' '}
                   </option>
                   <option>1. High/Critical </option>
                   <option>2. Medium </option>
@@ -1067,7 +1126,9 @@ const SummaryBar = React.forwardRef((props, ref) => {
               <FormGroup>
                 <Button type="submit" color="primary" size="lg">
                   Submit
-                </Button>{' '}
+                  {/* eslint-disable-next-line prettier/prettier */}
+                </Button>
+                {' '}
                 &nbsp;&nbsp;&nbsp;
                 <Button onClick={openReport} color="danger" size="lg">
                   Close
@@ -1082,6 +1143,9 @@ const SummaryBar = React.forwardRef((props, ref) => {
     <div>Loading</div>
   );
 });
+
+// Set display name explicitly
+SummaryBar.displayName = 'SummaryBar';
 
 const mapStateToProps = state => ({
   authUser: state.auth.user,

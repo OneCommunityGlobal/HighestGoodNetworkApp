@@ -8,8 +8,9 @@ import '../../Header/DarkMode.css';
 class ViewReportByDate extends Component {
   constructor(props) {
     super(props);
+    const { minDate } = props;
     this.state = {
-      startDate: new Date(this.props.minDate),
+      startDate: new Date(minDate),
       endDate: new Date(),
     };
 
@@ -19,38 +20,46 @@ class ViewReportByDate extends Component {
   }
 
   onStartDateChange(date) {
-    if (date > new Date(this.props.minDate) && date <= this.state.endDate) {
+    const { minDate, onDateChange } = this.props;
+    const { endDate } = this.state;
+    if (date > new Date(minDate) && date <= endDate) {
       this.setState({ startDate: date });
-      this.props.onDateChange({ startDate: date, endDate: this.state.endDate });
+      onDateChange({ startDate: date, endDate });
     }
   }
 
   onEndDateChange(date) {
-    if (date >= this.state.startDate) {
+    const { startDate } = this.state;
+    const { onDateChange } = this.props;
+    if (date >= startDate) {
       this.setState({ endDate: date });
-      this.props.onDateChange({ startDate: this.state.startDate, endDate: date });
+      onDateChange({ startDate, endDate: date });
     }
   }
 
   clearDates() {
+    const { minDate, onClearFilters } = this.props;
     this.setState({
-      startDate: new Date(this.props.minDate),
+      startDate: new Date(minDate),
       endDate: new Date(),
     });
-    this.props.onClearFilters();
+    onClearFilters();
   }
 
   render() {
     const { minDate, maxDate, textColor, darkMode } = this.props;
+    const { startDate, endDate } = this.state;
 
     return (
       <div className={`date-picker-container ${darkMode ? 'dark-mode' : ''}`}>
-        <div id="task_startDate" className="date-picker-item">
+        <div className="date-picker-item">
+          {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */ }
           <label htmlFor="task_startDate" className={`date-picker-label ${textColor}`}>
             Start Date
           </label>
           <DatePicker
-            selected={this.state.startDate}
+            id="task_startDate"
+            selected={startDate}
             minDate={minDate}
             maxDate={maxDate}
             onChange={this.onStartDateChange}
@@ -58,12 +67,14 @@ class ViewReportByDate extends Component {
             popperPlacement="top-start"
           />
         </div>
-        <div id="task_EndDate" className="date-picker-item">
-          <label htmlFor="task_EndDate" className={`date-picker-label ${textColor}`}>
+        <div className="date-picker-item">
+          {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */ }
+          <label htmlFor="task_endDate" className={`date-picker-label ${textColor}`}>
             End Date
           </label>
           <DatePicker
-            selected={this.state.endDate}
+            id="task_endDate"
+            selected={endDate}
             minDate={minDate}
             maxDate={maxDate}
             onChange={this.onEndDateChange}
@@ -71,9 +82,11 @@ class ViewReportByDate extends Component {
             popperPlacement="top"
           />
         </div>
-        <div id="task_EndDate" className="date-picker-item">
+        <div className="date-picker-item">
+          {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */ }
           <label htmlFor="task_EndDate" className={`date-picker-label ${textColor}`} />
           <Button
+            id="task_EndDate"
             onClick={this.clearDates}
             color="danger"
             style={darkMode ? boxStyleDark : boxStyle}

@@ -8,10 +8,16 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Alert } from 'reactstrap';
 import readXlsxFile from 'read-excel-file';
+<<<<<<< HEAD
 import ReactHtmlParser from 'html-react-parser';
 import { importTask } from './../../../../../actions/task'; /* eslint-disable import/no-useless-path-segments, react/function-component-definition */
 import { getPopupById } from './../../../../../actions/popupEditorAction'; /* eslint-disable import/no-useless-path-segments, react/function-component-definition */
 import { TASK_IMPORT_POPUP_ID } from './../../../../../constants/popupId'; /* eslint-disable import/no-useless-path-segments, react/function-component-definition */
+=======
+import { getPopupById } from './../../../../../actions/popupEditorAction';
+import { TASK_IMPORT_POPUP_ID } from './../../../../../constants/popupId';
+import parse from 'html-react-parser';
+>>>>>>> origin/newell-update-node-version-from-sundar
 import { boxStyle, boxStyleDark } from '~/styles';
 import '../../../../Header/DarkMode.css'
 
@@ -28,7 +34,7 @@ const ImportTask = props => { // eslint-disable-line react/function-component-de
   const [modal, setModal] = useState(false);
   const [taskList, setTaskList] = useState([]);
   const [alert, setAlert] = useState('')
-  const [instruction, setInstruction] = useState(ReactHtmlParser(popupContent));  // right now the saved popupContent for this is 'Task PR#905', better to change it 
+  const [instruction, setInstruction] = useState(parse(popupContent));  // right now the saved popupContent for this is 'Task PR#905', better to change it 
 
   /*
   * -------------------------------- functions -------------------------------- 
@@ -36,11 +42,53 @@ const ImportTask = props => { // eslint-disable-line react/function-component-de
  const toggle = async () => {
     // eslint-disable-next-line react/destructuring-assignment
     props.getPopupById(TASK_IMPORT_POPUP_ID);
-    setInstruction(ReactHtmlParser(popupContent));
+    setInstruction(parse(popupContent));
     setModal(!modal);
     setImportStatus('choosing');
   };
 
+<<<<<<< HEAD
+=======
+  const handleFileChosen = file => {
+    readXlsxFile(file).then(rows => {
+      handleFileRead(rows);
+    });
+  };
+
+  const handleFileRead = async rows => {
+    setImportStatus('importing');
+    const tmpList = [];
+    try {
+      rows.forEach((rowArr, i) => {
+        if (i >= 2) {
+          // level 1
+          if (rowArr[0] !== null && rowArr[1] !== null) {
+            tmpList.push(newTask(rowArr[0], rowArr[1], 1, rowArr, i));
+          }
+          // level 2
+          if (rowArr[2] !== null && rowArr[3] !== null) {
+            tmpList.push(newTask(rowArr[2], rowArr[3], 2, rowArr, i));
+          }
+          // level 3
+          if (rowArr[4] !== null && rowArr[5] !== null) {
+            tmpList.push(newTask(rowArr[4], rowArr[5], 3, rowArr, i));
+          }
+          // level 4
+          if (rowArr[6] !== null && rowArr[7] !== null) {
+            tmpList.push(newTask(rowArr[6], rowArr[7], 4, rowArr, i));
+          }
+        }
+      });
+      setInstruction(parse(rows[0][0] + '<br/> Rows: ' + rows.length))
+      setImportStatus('imported');
+      setTaskList(tmpList);
+    } catch (error) {
+      setImportStatus('importError');
+      setAlert(error.message);
+    }
+  };
+
+>>>>>>> origin/newell-update-node-version-from-sundar
   const newTask = (num, taskName, level, rowArr, i) => {
     const nameCache = []; // check for duplicates
     const resourcesNames = rowArr[9]?.split(',').map(name => {
@@ -137,7 +185,7 @@ const ImportTask = props => { // eslint-disable-line react/function-component-de
 
   const reset = () => {
     setImportStatus('choosing');
-    setInstruction(ReactHtmlParser(popupContent));
+    setInstruction(parse(popupContent));
     setTaskList([]);
   }
 

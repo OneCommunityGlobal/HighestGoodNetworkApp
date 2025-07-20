@@ -316,7 +316,9 @@ function LogTools() {
             ) : (
               <tr>
                 <td colSpan="6">
-                  There are no tools to {selectedAction.toLowerCase()} for this project
+                  There are no tools to
+                  {selectedAction.toLowerCase()}
+                  for this project
                 </td>
               </tr>
             )}

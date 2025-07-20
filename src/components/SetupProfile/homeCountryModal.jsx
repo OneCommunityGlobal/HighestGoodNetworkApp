@@ -161,7 +161,9 @@ function HomeCountryModal({ isOpen, toggle, setLocation, token }) {
                   {' '}
                   {`Do you want to represent ${
                     locationInput?.city ? `${locationInput?.city}, ` : ''
-                  } ${locationInput?.country} ?`}{' '}
+                    // eslint-disable-next-line prettier/prettier
+                  } ${locationInput?.country} ?`}
+                  {' '}
                 </p>
               </Col>
             </Row>

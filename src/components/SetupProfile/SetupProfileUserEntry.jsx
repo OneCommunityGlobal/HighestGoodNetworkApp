@@ -19,8 +19,6 @@ import {
   UncontrolledTooltip,
 } from 'reactstrap';
 import PhoneInput from 'react-phone-input-2';
-import { ENDPOINTS } from '~/utils/URL';
-import httpService from '~/services/httpService';
 import { useHistory } from 'react-router-dom';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -28,6 +26,8 @@ import { useDispatch } from 'react-redux';
 import jwtDecode from 'jwt-decode';
 import Image from 'react-bootstrap/Image';
 import { toast } from 'react-toastify';
+import { ENDPOINTS } from '~/utils/URL';
+import httpService from '~/services/httpService';
 import tokenKey from '../../config.json';
 import { setCurrentUser } from '../../actions/authActions';
 import HomeCountryModal from './homeCountryModal';
@@ -240,6 +240,7 @@ function SetupProfileUserEntry({ token, userEmail }) {
   };
 
   const handleProfilePictureClick = () => {
+    // eslint-disable-next-line testing-library/no-node-access
     pictureInputRef.current.click();
   };
 
@@ -272,6 +273,7 @@ function SetupProfileUserEntry({ token, userEmail }) {
         return;
       }
 
+      // eslint-disable-next-line no-undef
       const fileReader = new FileReader();
       fileReader.readAsDataURL(pictureFile);
       fileReader.onloadend = () => {
@@ -327,7 +329,7 @@ function SetupProfileUserEntry({ token, userEmail }) {
           ...prevErrors,
           location: 'Invalid location',
         }));
-        // eslint-disable-next-line no-alert
+        // eslint-disable-next-line no-alert, no-undef
         alert(`An error occurred : ${err.response.data}`);
       });
   };
@@ -582,6 +584,7 @@ function SetupProfileUserEntry({ token, userEmail }) {
         .post(ENDPOINTS.SETUP_NEW_USER_PROFILE(), data)
         .then(response => {
           if (response.status === 200) {
+            // eslint-disable-next-line no-undef
             localStorage.setItem(tokenKey, response.data.token);
             httpService.setjwt(response.data.token);
             const decoded = jwtDecode(response.data.token);
@@ -648,7 +651,8 @@ function SetupProfileUserEntry({ token, userEmail }) {
           <Row>
             <Col md="3" className="text-md-right">
               <Label>
-                Name<span style={{ color: 'red' }}>*</span>
+                Name
+                <span style={{ color: 'red' }}>*</span>
               </Label>
             </Col>
             <Col md="4">
@@ -687,7 +691,8 @@ function SetupProfileUserEntry({ token, userEmail }) {
           <Row>
             <Col md="3" className="text-md-right">
               <Label>
-                Password<span style={{ color: 'red' }}>*</span>
+                Password
+                <span style={{ color: 'red' }}>*</span>
               </Label>
             </Col>
             <Col md="4">
@@ -772,7 +777,8 @@ function SetupProfileUserEntry({ token, userEmail }) {
           <Row className="mt-3">
             <Col md="3" className="text-md-right">
               <Label>
-                Job Title<span style={{ color: 'red' }}>*</span>
+                Job Title
+                <span style={{ color: 'red' }}>*</span>
               </Label>
             </Col>
             <Col md="8">
@@ -795,7 +801,8 @@ function SetupProfileUserEntry({ token, userEmail }) {
           <Row>
             <Col md="3" className="text-md-right">
               <Label>
-                Email/Phone<span style={{ color: 'red' }}>*</span>
+                Email/Phone
+                <span style={{ color: 'red' }}>*</span>
               </Label>
             </Col>
             <Col md="4">
@@ -835,7 +842,8 @@ function SetupProfileUserEntry({ token, userEmail }) {
           <Row>
             <Col md="3" className="text-md-right">
               <Label>
-                Video Call Preference<span style={{ color: 'red' }}>*</span>
+                Video Call Preference
+                <span style={{ color: 'red' }}>*</span>
               </Label>
             </Col>
             <Col md="8">
@@ -891,8 +899,9 @@ function SetupProfileUserEntry({ token, userEmail }) {
                 <UncontrolledTooltip placement="right" target="countryRep" id="coutry-rep-tooltip">
                   <p className="alert alert-info" id="country-rep-info">
                     One Community is a global effort and international team that has had volunteers
-                    volunteering from and/or representing <b>{totalCountryCount}</b> different
-                    countries around the world. Complete this field if you are currently residing in
+                    volunteering from and/or representing
+                    <b>{totalCountryCount}</b>
+                    different countries around the world. Complete this field if you are currently a
                     a country other than your own and wish to be represented on our global
                     contributors map with your birth country instead of your current city and/or
                     country.
@@ -921,7 +930,8 @@ function SetupProfileUserEntry({ token, userEmail }) {
           <Row className="mt-3">
             <Col md="3" className="text-md-right">
               <Label>
-                Location<span style={{ color: 'red' }}>*</span>
+                Location
+                <span style={{ color: 'red' }}>*</span>
               </Label>
             </Col>
             <Col md="4">
@@ -962,7 +972,8 @@ function SetupProfileUserEntry({ token, userEmail }) {
           <Row>
             <Col md="3" className="text-md-right">
               <Label>
-                Time Zone<span style={{ color: 'red' }}>*</span>
+                Time Zone
+                <span style={{ color: 'red' }}>*</span>
               </Label>
             </Col>
             <Col md="8">

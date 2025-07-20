@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 import { Button } from 'react-bootstrap';
 import Collapse from 'react-bootstrap/Collapse';
 import EditTaskModal from '../../Projects/WBS/WBSDetail/EditTask/EditTaskModal';
-import 'react-table/react-table.css';
 import './TasksDetail.css';
 
 

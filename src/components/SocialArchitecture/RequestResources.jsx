@@ -35,6 +35,7 @@ function RequestResources() {
       <h2 className={styles.formTitle}>REQUEST MATERIAL</h2>
       <form className={styles.requestResourceForm} onSubmit={handleSubmit}>
         <div className={`${styles.formGroup} ${styles.largeWidth}`}>
+          {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
           <label htmlFor="eventName">Event Name</label>
           <input
             type="text"
@@ -48,6 +49,7 @@ function RequestResources() {
         </div>
 
         <div className={`${styles.formGroup} ${styles.largeWidth}`}>
+          {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
           <label htmlFor="organizerName">Organizer Name</label>
           <input
             type="text"
@@ -61,6 +63,7 @@ function RequestResources() {
         </div>
 
         <div className={`${styles.formGroup} ${styles.largeWidth}`}>
+          {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
           <label htmlFor="itemName">Item Name</label>
           <input
             type="text"
@@ -74,6 +77,7 @@ function RequestResources() {
         </div>
 
         <div className={`${styles.formGroup} ${styles.largeWidth}`}>
+          {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
           <label htmlFor="requestQuantity">Request Quantity</label>
           <input
             type="number"
@@ -88,6 +92,7 @@ function RequestResources() {
         </div>
 
         <div className={`${styles.formGroup} ${styles.Date}`}>
+          {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
           <label htmlFor="requestedDate">Requested Date</label>
           <input
             type="date"
@@ -100,6 +105,7 @@ function RequestResources() {
         </div>
 
         <div className={`${styles.formGroup} ${styles.Date}`}>
+          {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
           <label htmlFor="returnDate">Return Date</label>
           <input
             type="date"
@@ -112,6 +118,7 @@ function RequestResources() {
         </div>
 
         <div className={styles.formGroup}>
+          {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
           <label htmlFor="organizerPhone">Organizer Phone Number</label>
           <div className="phone-input">
             <input
@@ -136,6 +143,7 @@ function RequestResources() {
         </div>
 
         <div className={styles.formGroup}>
+          {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
           <label htmlFor="materialImage">Upload Material Picture</label>
           <input
             type="file"
@@ -147,6 +155,7 @@ function RequestResources() {
         </div>
 
         <div className={styles.formGroup}>
+          {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
           <label htmlFor="notes">Notes</label>
           <textarea
             id="notes"

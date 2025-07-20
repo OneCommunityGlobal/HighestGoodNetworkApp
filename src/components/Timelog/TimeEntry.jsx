@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Card, Row, Col } from 'reactstrap';
 import { useDispatch, connect } from 'react-redux';
-import ReactHtmlParser from 'html-react-parser';
+// import ReactHtmlParser from 'html-react-parser';
+import parse from 'html-react-parser';
 import moment from 'moment-timezone';
 import './Timelog.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -182,7 +183,7 @@ function TimeEntry(props) {
             <div className="time-entry-container">
               <div className={`notes-section ${darkMode ? 'notes-text-light' : ''}`}>
                 <div className={darkMode ? "dark-text-muted" : "text-muted"}>Notes:</div>
-                {ReactHtmlParser(notes)}
+                {parse(notes)}
               </div>
               <div className="d-flex justify-content-end">
                 {(hasATimeEntryEditPermission || isAuthUserAndSameDayEntry) &&

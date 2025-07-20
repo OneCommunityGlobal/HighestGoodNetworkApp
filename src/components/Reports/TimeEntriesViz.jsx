@@ -24,6 +24,7 @@ function TimeEntriesViz({ timeEntries, fromDate, toDate, darkMode }) {
         try {
           d3.selectAll('#tlplot > *').remove();
         } catch (e) {
+          // eslint-disable-next-line no-console
           console.error('Error clearing graph:', e);
           while (tlplotElement.firstChild) {
             tlplotElement.removeChild(tlplotElement.firstChild);
@@ -33,6 +34,7 @@ function TimeEntriesViz({ timeEntries, fromDate, toDate, darkMode }) {
         try {
           d3.selectAll('#tlplot > *').remove();
         } catch (e) {
+          // eslint-disable-next-line no-console
           console.error('Error clearing graph:', e);
           // Alternative approach if d3 selector fails
           while (tlplotElement.firstChild) {
@@ -81,8 +83,10 @@ function TimeEntriesViz({ timeEntries, fromDate, toDate, darkMode }) {
 
         try {
           // Wrap all D3 operations in try-catch for better error handling
+          // eslint-disable-next-line testing-library/no-node-access
           const d3Element = d3.select('#tlplot');
           if (!d3Element) {
+            // eslint-disable-next-line no-console
             console.error('Could not select #tlplot element');
             return;
           }
@@ -137,10 +141,12 @@ function TimeEntriesViz({ timeEntries, fromDate, toDate, darkMode }) {
             .attr('stroke-width', 3)
             .attr('fill', 'white')
             .on('click', function handleEvent(event, d) {
+              // eslint-disable-next-line testing-library/no-node-access
               const prevTooltip = d3.select(`.ent${d.id}`);
 
               if (prevTooltip.empty()) {
                 const Tooltip = d3
+                // eslint-disable-next-line testing-library/no-node-access
                   .select('#tlplot')
                   .append('div')
                   .style('opacity', 0)
@@ -156,7 +162,7 @@ function TimeEntriesViz({ timeEntries, fromDate, toDate, darkMode }) {
                   .style('left', `${event.pageX + 10}px`)
                   .style('top', `${event.pageY}px`)
                   .style('opacity', 1);
-
+                // eslint-disable-next-line testing-library/no-node-access
                 Tooltip.select('.close').on('click', function closeTooltip() {
                   Tooltip.remove();
                 });
@@ -190,28 +196,30 @@ function TimeEntriesViz({ timeEntries, fromDate, toDate, darkMode }) {
             .style('font-weight', 700)
             .style('display', 'none')
             .text(d => d3.timeFormat('%m/%d/%Y')(d.date));
-
+          
           const legend = d3
+          // eslint-disable-next-line testing-library/no-node-access
             .select('#tlplot')
             .append('div')
             .attr('class', 'legendContainer');
           legend.html(legendEl(totalHours));
-
+          // eslint-disable-next-line testing-library/no-node-access
           legend.select('.entLabelsOff').on('click', function handleEntLabelsOffClick() {
             d3.selectAll('.entCountLabel').style('display', 'none');
             d3.selectAll('.entDateLabel').style('display', 'none');
           });
-
+          // eslint-disable-next-line testing-library/no-node-access  
           legend.select('.entCountLabelsOn').on('click', function handleEntCountLabelsOnClick() {
             d3.selectAll('.entCountLabel').style('display', 'block');
             d3.selectAll('.entDateLabel').style('display', 'none');
           });
-
+          // eslint-disable-next-line testing-library/no-node-access
           legend.select('.entDateLabelsOn').on('click', function handleEntDateLabelsOnClick() {
             d3.selectAll('.entDateLabel').style('display', 'block');
             d3.selectAll('.entCountLabel').style('display', 'none');
           });
         } catch (error) {
+          // eslint-disable-next-line no-console
           console.error('Error rendering D3 graph:', error);
         }
       }
