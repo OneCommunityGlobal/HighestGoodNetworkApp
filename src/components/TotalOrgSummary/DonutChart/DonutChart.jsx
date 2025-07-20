@@ -66,8 +66,8 @@ function DonutChart(props) {
             {comparisonType !== 'No Comparison' && (
               <h6 className="donut-comparison-percent" style={{ color: percentageChangeColor }}>
                 {percentageChange >= 0
-                  ? `+${percentageChange}% ${comparisonType.toUpperCase()}`
-                  : `${percentageChange}% ${comparisonType.toUpperCase()}`}
+                  ? `+${(percentageChange * 100).toFixed(0)}% ${comparisonType.toUpperCase()}`
+                  : `${(percentageChange * 100).toFixed(0)}% ${comparisonType.toUpperCase()}`}
               </h6>
             )}
           </div>
