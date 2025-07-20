@@ -34,7 +34,7 @@ export function WbsTable({ wbs, skip, take, match, canViewWBS, darkMode }) {
         <div className='wbs-table-id-column'>
           <CopyToClipboard writeText={item._id} message={`Copied "${item._id}".`} />
           {item._id}
-      </div>  
+        </div>  
       </div>
     ));
   }
@@ -52,7 +52,7 @@ export function WbsTable({ wbs, skip, take, match, canViewWBS, darkMode }) {
         <div className="wbs-table-cell wbs-table-active-column">Active</div>
         <div className="wbs-table-cell">ID</div>
       </div>
-      <div>{WbsList.length > 0 ? WbsList : <Stub color={darkMode ? "white" : ""}/>}</div>
+      <div>{WbsList.length > 0 ? WbsList : <Stub color={darkMode ? "white" : ""} />}</div>
     </div>
   );
 }
