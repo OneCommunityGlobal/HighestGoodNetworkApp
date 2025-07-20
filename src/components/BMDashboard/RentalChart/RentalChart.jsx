@@ -402,7 +402,7 @@ export default function RentalChart() {
               id="chart-type"
               value={chartType}
               onChange={handleTypeChange}
-              className={darkMode ? 'dark-select' : ''}
+              className={darkMode ? 'rental-chart-select dark-select' : 'rental-chart-select'}
             >
               <option value="cost">Total Rental Cost</option>
               <option value="percentage">% of Materials Cost</option>
@@ -417,7 +417,7 @@ export default function RentalChart() {
               id="project-filter"
               value={selectedProject}
               onChange={handleProjectChange}
-              className={darkMode ? 'dark-select' : ''}
+              className={darkMode ? 'rental-chart-select dark-select' : 'rental-chart-select'}
             >
               <option value="All">All Projects</option>
               {availableProjects.map(projectId => (
@@ -437,7 +437,7 @@ export default function RentalChart() {
               value={selectedTool}
               onChange={handleToolChange}
               disabled={groupBy === 'project' && selectedProject !== 'All'}
-              className={darkMode ? 'dark-select' : ''}
+              className={darkMode ? 'rental-chart-select dark-select' : 'rental-chart-select'}
             >
               <option value="All">All Tools</option>
               {availableTools.map(tool => (
