@@ -79,7 +79,14 @@ function PromotionEligibility() {
       weeks: 1,
       promote: false,
     },
-    { reviewer: '666saofeng', weekly: '✅ Has Met', prs: 10, reviews: 20, weeks: 0, promote: true },
+    {
+      reviewer: '666saofeng',
+      weekly: '✅ Has Met',
+      prs: 10,
+      reviews: 20,
+      weeks: 0,
+      promote: true,
+    },
     {
       reviewer: 'aaronleechan',
       weekly: '❌ Has not Met',
@@ -98,9 +105,40 @@ function PromotionEligibility() {
     },
   ];
 
-  const renderTable = (title, data) => (
-    <div className="promo-table-wrapper">
-      <h2 className="promo-subtitle">{title}</h2>
+  const renderGroupRows = (label, members) => [
+    <tr key={label} className="promo-group-row">
+      <td colSpan="7" className="promo-group-header">
+        {label}
+      </td>
+    </tr>,
+    ...members.map(r => (
+      <tr key={r.reviewer}>
+        <td>{r.reviewer}</td>
+        <td>{r.weekly}</td>
+        <td>{r.prs}</td>
+        <td>{r.reviews}</td>
+        <td>{r.weeks}</td>
+        <td className="promo-text-center">
+          <input type="checkbox" checked={r.promote} disabled={!r.promote} />
+        </td>
+      </tr>
+    )),
+  ];
+
+  return (
+    <div className="promo-container" style={{ maxWidth: '900px', margin: '0 auto' }}>
+      <h1 className="promo-title">Promotion Eligibility</h1>
+      <div
+        className="promo-controls"
+        style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}
+      >
+        <button type="button" className="promo-button">
+          Review for this week
+        </button>
+        <button type="button" className="promo-button">
+          Process Promotions
+        </button>
+      </div>
       <table className="promo-table">
         <thead>
           <tr>
@@ -113,28 +151,10 @@ function PromotionEligibility() {
           </tr>
         </thead>
         <tbody>
-          {data.map(r => (
-            <tr key={r.reviewer}>
-              <td>{r.reviewer}</td>
-              <td>{r.weekly}</td>
-              <td>{r.prs}</td>
-              <td>{r.reviews}</td>
-              <td>{r.weeks}</td>
-              <td className="promo-text-center">
-                <input type="checkbox" checked={r.promote} disabled={!r.promote} />
-              </td>
-            </tr>
-          ))}
+          {renderGroupRows('New Members', newMembers)}
+          {renderGroupRows('Existing Members', existingMembers)}
         </tbody>
       </table>
-    </div>
-  );
-
-  return (
-    <div className="promo-container">
-      <h1 className="promo-title">Promotion Eligibility</h1>
-      {renderTable('New Members', newMembers)}
-      {renderTable('Existing Members', existingMembers)}
     </div>
   );
 }
