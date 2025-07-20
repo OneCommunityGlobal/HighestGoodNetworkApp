@@ -138,7 +138,8 @@ function ResourceManagement() {
               <div className={styles.resourceItemDetail}>{resource.facilities}</div>
               <div className={styles.resourceItemDetail}>{resource.materials}</div>
               <div className={styles.resourceItemDetail}>
-                <span className={styles.calendarIcon}>📅</span> {resource.date}
+                <span className={styles.calendarIcon}>📅</span>
+                {resource.date}
               </div>
             </div>
             <hr className={styles.lineSperator} />
