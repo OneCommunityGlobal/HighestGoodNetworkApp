@@ -375,6 +375,8 @@ function UserProfile(props) {
         : '';
       setCalculatedStartDate(createdDate);
     }
+  };
+
   const getTimeOffStatus = personId => {
     if (!allRequests[personId]) {
       return false;
