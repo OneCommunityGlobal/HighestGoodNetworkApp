@@ -582,9 +582,11 @@ export default (
 
 
         {/* Community Portal Routes */} 
-        <Route
+        <ProtectedRoute
           path="/application/analytics"
           exact component={AnalyticsDashboard}
+          fallback
+          // allowedRoles={[UserRole.Administrator, UserRole.Owner]}
         />
         <CPProtectedRoute path="/communityportal" exact component={CPDashboard} />
         <Route path="/communityportal/login" component={CPLogin} />

@@ -35,6 +35,7 @@ import {
   TIMELOG,
   REPORTS,
   WEEKLY_SUMMARIES_REPORT,
+  JOB_ANALYTICS_REPORT,
   TEAM_LOCATIONS,
   OTHER_LINKS,
   USER_MANAGEMENT,
@@ -91,6 +92,7 @@ export function Header(props) {
     !isAuthUser && canInteractWithViewingUser,
   );
   const canGetWeeklyVolunteerSummary = props.hasPermission('getWeeklySummaries');
+  const canGetJobAnalytics = props.hasPermission('getJobReports');
 
   // Users
   const canAccessUserManagement =
@@ -444,6 +446,11 @@ export function Header(props) {
                       {canGetWeeklyVolunteerSummary && (
                         <DropdownItem tag={Link} to="/totalorgsummary" className={fontColor}>
                           {TOTAL_ORG_SUMMARY}
+                        </DropdownItem>
+                      )}
+                      {canGetJobAnalytics && (
+                        <DropdownItem tag={Link} to="/application/analytics" className={fontColor}>
+                          {JOB_ANALYTICS_REPORT}
                         </DropdownItem>
                       )}
                       <DropdownItem tag={Link} to="/teamlocations" className={fontColor}>
