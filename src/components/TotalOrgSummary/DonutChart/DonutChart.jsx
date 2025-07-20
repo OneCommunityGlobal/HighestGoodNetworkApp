@@ -7,17 +7,7 @@ import './DonutChart.css';
 Chart.register(ArcElement);
 
 function DonutChart(props) {
-  const { title, totalCount, percentageChange, data, colors, hasData, comparisonType } = props;
-
-  if (!hasData) {
-    return (
-      <div className="donut-container">
-        <div className="donut-no-data">
-          <p className="no-data-text">No data available</p>
-        </div>
-      </div>
-    );
-  }
+  const { title, totalCount, percentageChange, data, colors, comparisonType } = props;
 
   const chartData = {
     labels: data.map(item => item.label),
@@ -100,11 +90,6 @@ DonutChart.propTypes = {
   ).isRequired,
   colors: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
   comparisonType: PropTypes.string.isRequired,
-  hasData: PropTypes.bool,
-};
-
-DonutChart.defaultProps = {
-  hasData: true,
 };
 
 export default DonutChart;
