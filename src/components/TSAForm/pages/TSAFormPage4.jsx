@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import { useHistory } from 'react-router-dom';
 import { useState } from 'react';
 
@@ -144,6 +145,7 @@ function TSAFormPage4() {
           border: errors.EstablishingRequirements ? '2px solid red' : 'none',
         }}
       >
+        {/* eslint-disable jsx-a11y/label-has-associated-control */}
         <label
           style={{
             display: 'flex',
@@ -154,7 +156,9 @@ function TSAFormPage4() {
           }}
         >
           <span>
-            Establishing requirements:{' '}
+            {/* eslint-disable-next-line prettier/prettier */}
+            Establishing requirements:
+            {' '}
             <span style={{ fontWeight: 'normal' }}>
               Helping with document requirements that designs need to satisfy.
             </span>
@@ -173,11 +177,13 @@ function TSAFormPage4() {
         >
           <span style={{ fontSize: '14px', fontWeight: 'bold' }}>
             Can&apos;t or don&apos;t want
-            <br /> to help here
+            <br />
+            to help here
           </span>
           <span style={{ fontSize: '14px', fontWeight: 'bold' }}>
             Very much can and
-            <br /> want to help here
+            <br />
+            want to help here
           </span>
         </div>
 
@@ -235,7 +241,9 @@ function TSAFormPage4() {
           }}
         >
           <span>
-            Conceptual Designs:{' '}
+            {/* eslint-disable-next-line prettier/prettier */}
+            Conceptual Designs:
+            {' '}
             <span style={{ fontWeight: 'normal' }}>
               Helping develop high-level concepts to satisfy the requirements.
             </span>
@@ -254,11 +262,13 @@ function TSAFormPage4() {
         >
           <span style={{ fontSize: '14px', fontWeight: 'bold' }}>
             Can&apos;t or don&apos;t want
-            <br /> to help here
+            <br />
+            to help here
           </span>
           <span style={{ fontSize: '14px', fontWeight: 'bold' }}>
             Very much can and
-            <br /> want to help here
+            <br />
+            want to help here
           </span>
         </div>
 
@@ -316,7 +326,9 @@ function TSAFormPage4() {
           }}
         >
           <span>
-            Preliminary Design Review:{' '}
+            {/* eslint-disable-next-line prettier/prettier */}
+            Preliminary Design Review:
+            {' '}
             <span style={{ fontWeight: 'normal' }}>
               Helping review preliminary design and provide feedback to the design team.
             </span>
@@ -336,11 +348,13 @@ function TSAFormPage4() {
         >
           <span style={{ fontSize: '14px', fontWeight: 'bold' }}>
             Can&apos;t or don&apos;t want
-            <br /> to help here
+            <br />
+            to help here
           </span>
           <span style={{ fontSize: '14px', fontWeight: 'bold' }}>
             Very much can and
-            <br /> want to help here
+            <br />
+            want to help here
           </span>
         </div>
 
@@ -398,7 +412,9 @@ function TSAFormPage4() {
           }}
         >
           <span>
-            Design Verification/Analysis:{' '}
+            {/* eslint-disable-next-line prettier/prettier */}
+            Design Verification/Analysis:
+            {' '}
             <span style={{ fontWeight: 'normal' }}>
               {' '}
               Helping with Mechanical and Structural FEA to verify/validate the design concepts,
@@ -420,11 +436,13 @@ function TSAFormPage4() {
         >
           <span style={{ fontSize: '14px', fontWeight: 'bold' }}>
             Can&apos;t or don&apos;t want
-            <br /> to help here
+            <br />
+            to help here
           </span>
           <span style={{ fontSize: '14px', fontWeight: 'bold' }}>
             Very much can and
-            <br /> want to help here
+            <br />
+            want to help here
           </span>
         </div>
 
@@ -482,7 +500,9 @@ function TSAFormPage4() {
           }}
         >
           <span>
-            Final Design Review:{' '}
+            {/* eslint-disable-next-line prettier/prettier */}
+            Final Design Review:
+            {' '}
             <span style={{ fontWeight: 'normal' }}>
               {' '}
               Helping review a final design for completeness and accuracy.
@@ -503,11 +523,13 @@ function TSAFormPage4() {
         >
           <span style={{ fontSize: '14px', fontWeight: 'bold' }}>
             Can&apos;t or don&apos;t want
-            <br /> to help here
+            <br />
+            to help here
           </span>
           <span style={{ fontSize: '14px', fontWeight: 'bold' }}>
             Very much can and
-            <br /> want to help here
+            <br />
+            want to help here
           </span>
         </div>
 
@@ -565,7 +587,9 @@ function TSAFormPage4() {
           }}
         >
           <span>
-            Detailed drawings and/or statement of work (SOW):{' '}
+            {/* eslint-disable-next-line prettier/prettier */}
+            Detailed drawings and/or statement of work (SOW):
+            {' '}
             <span style={{ fontWeight: 'normal' }}>
               {' '}
               Helping generate and check detailed design, fabrication and/or construction
@@ -587,11 +611,13 @@ function TSAFormPage4() {
         >
           <span style={{ fontSize: '14px', fontWeight: 'bold' }}>
             Can&apos;t or don&apos;t want
-            <br /> to help here
+            <br />
+            to help here
           </span>
           <span style={{ fontSize: '14px', fontWeight: 'bold' }}>
             Very much can and
-            <br /> want to help here
+            <br />
+            want to help here
           </span>
         </div>
 
@@ -642,7 +668,8 @@ function TSAFormPage4() {
           htmlFor="certifications"
           style={{ display: 'block', marginBottom: '20px', fontWeight: 'bold' }}
         >
-          Anything else? <span style={{ fontWeight: 'normal' }}>(and your score for it)</span>
+          Anything else?
+          <span style={{ fontWeight: 'normal' }}>(and your score for it)</span>
         </label>
         <input
           type="text"

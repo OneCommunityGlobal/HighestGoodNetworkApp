@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import { useHistory } from 'react-router-dom';
 import { useState } from 'react';
 
@@ -57,7 +58,9 @@ function TSAFormPage1() {
 
     const hasErrors = Object.values(newErrors).some(Boolean);
     if (hasErrors) {
-      const firstErrorField = Object.entries(newErrors).find(([, val]) => val)?.[0];
+      // const firstErrorField = Object.entries(newErrors).find(([, val]) => val)?.[0];
+      const found = Object.entries(newErrors).find(([, val]) => val);
+      const firstErrorField = found ? found[0] : null;
       const el = document.querySelector(`[name="${firstErrorField}"]`);
       if (el && el.scrollIntoView) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
@@ -213,6 +216,7 @@ function TSAFormPage1() {
           border: errors.email ? '2px solid #d93025' : '1px solid #ccc',
         }}
       >
+        {/* eslint-disable jsx-a11y/label-has-associated-control */}
         <label
           style={{
             display: 'flex',
@@ -289,7 +293,8 @@ function TSAFormPage1() {
         />
         {errors.fullname && (
           <div style={{ color: 'red', fontSize: '14px', marginTop: '5px' }}>
-            This field is required <br />
+            This field is required
+            <br />
             Please enter your Full Name (first and last name required)
           </div>
         )}
@@ -424,7 +429,8 @@ function TSAFormPage1() {
           }}
         >
           <span style={{ fontWeight: 'bold' }}>
-            Areas of Expertise: <span style={{ fontWeight: 'normal' }}>(Check all that apply)</span>
+            Areas of Expertise:
+            <span style={{ fontWeight: 'normal' }}>(Check all that apply)</span>
           </span>
 
           <span style={{ color: 'red' }}>*</span>

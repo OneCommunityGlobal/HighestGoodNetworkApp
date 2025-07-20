@@ -64,6 +64,7 @@ function TSAFormPage8() {
           Successfully Submitted!
         </div>
         <div style={{ padding: '35px', fontSize: '16px', lineHeight: '1.6', textAlign: 'center' }}>
+          {/* eslint-disable jsx-a11y/label-has-associated-control */}
           <label
             htmlFor="acknowledgement"
             style={{

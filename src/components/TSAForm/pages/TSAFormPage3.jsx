@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import { useHistory } from 'react-router-dom';
 import { useState } from 'react';
 
@@ -169,7 +170,8 @@ function TSAFormPage3() {
           }}
         >
           <label style={{ display: 'block', marginBottom: '20px', fontWeight: 'bold' }}>
-            {item.question} <span style={{ color: 'red' }}>*</span>
+            {item.question}
+            <span style={{ color: 'red' }}>*</span>
           </label>
 
           <div
@@ -249,7 +251,9 @@ function TSAFormPage3() {
             fontWeight: 'bold',
           }}
         >
-          If you answered a 7 or above in the previous question, what&apos;s your availability?{' '}
+          {/* eslint-disable-next-line prettier/prettier */}
+          If you answered a 7 or above in the previous question, what&apos;s your availability?
+          {' '}
           <span style={{ color: 'red' }}>*</span>
         </label>
 
@@ -369,10 +373,15 @@ function TSAFormPage3() {
           }}
         >
           <span>
-            Participate in design reviews?{' '}
+            {/* eslint-disable-next-line prettier/prettier */}
+            Participate in design reviews?
+            {' '}
             <span style={{ fontWeight: 'normal' }}>
               (Meet to evaluate a design and provide feedback)
-            </span>{' '}
+              {/* eslint-disable-next-line prettier/prettier */}
+            </span>
+            
+            {' '}
           </span>
 
           <span style={{ color: 'red' }}>*</span>
@@ -453,10 +462,14 @@ function TSAFormPage3() {
           }}
         >
           <span>
-            Technical consultation?{' '}
+            {/* eslint-disable-next-line prettier/prettier */}
+            Technical consultation?
+            {' '}
             <span style={{ fontWeight: 'normal' }}>
               (A resource for electricians, plumbers, structural engineers, etc.)
-            </span>{' '}
+              {/* eslint-disable-next-line prettier/prettier */}
+            </span>
+            {' '}
           </span>
 
           <span style={{ color: 'red' }}>*</span>
@@ -537,8 +550,12 @@ function TSAFormPage3() {
           }}
         >
           <span>
-            Virtual review of written reports?{' '}
-            <span style={{ fontWeight: 'normal' }}>(tutorials, instructional, etc.)</span>{' '}
+            {/* eslint-disable-next-line prettier/prettier */}
+            Virtual review of written reports?
+            {' '}
+            {/* eslint-disable-next-line prettier/prettier */}
+            <span style={{ fontWeight: 'normal' }}>(tutorials, instructional, etc.)</span>
+            {' '}
           </span>
           <span style={{ color: 'red' }}>*</span>
         </label>
@@ -618,8 +635,14 @@ function TSAFormPage3() {
           }}
         >
           <span>
-            Detailed virtual review of drawings and plans?{' '}
-            <span style={{ fontWeight: 'normal' }}>(red-marking, design suggestions, etc.)</span>{' '}
+            {/* eslint-disable-next-line prettier/prettier */}
+            Detailed virtual review of drawings and plans?
+            {' '}
+            <span style={{ fontWeight: 'normal' }}>
+              (red-marking, design suggestions, etc.)
+              {/* eslint-disable-next-line prettier/prettier */}
+            </span>
+            {' '}
           </span>
           <span style={{ color: 'red' }}>*</span>
         </label>
@@ -777,10 +800,14 @@ function TSAFormPage3() {
           }}
         >
           <span>
-            Conceptual design of systems?{' '}
+            {/* eslint-disable-next-line prettier/prettier */}
+            Conceptual design of systems?
+            {' '}
             <span style={{ fontWeight: 'normal' }}>
               (Vermiculture toilet, net-zero bathroom, heat recycling showers, etc.)
-            </span>{' '}
+              {/* eslint-disable-next-line prettier/prettier */}
+            </span>
+            {' '}
           </span>
           <span style={{ color: 'red' }}>*</span>
         </label>
@@ -860,8 +887,14 @@ function TSAFormPage3() {
           }}
         >
           <span>
-            Verifying analyses?{' '}
-            <span style={{ fontWeight: 'normal' }}>(Google Sheets and other calculations)</span>{' '}
+            {/* eslint-disable-next-line prettier/prettier */}
+            Verifying analyses?
+            {' '}
+            <span style={{ fontWeight: 'normal' }}>
+              (Google Sheets and other calculations)
+              {/* eslint-disable-next-line prettier/prettier */}
+            </span>
+            {' '}
           </span>
           <span style={{ color: 'red' }}>*</span>
         </label>

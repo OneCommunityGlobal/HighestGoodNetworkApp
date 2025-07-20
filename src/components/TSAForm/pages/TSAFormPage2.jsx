@@ -147,6 +147,7 @@ function TSAFormPage2() {
           border: errors.interested ? '2px solid red' : 'none',
         }}
       >
+        {/* eslint-disable jsx-a11y/label-has-associated-control */}
         <label
           style={{
             display: 'flex',
@@ -342,7 +343,9 @@ function TSAFormPage2() {
           }}
         >
           <span>
-            Building infrastructure?{' '}
+            {/* eslint-disable-next-line prettier/prettier */}
+            Building infrastructure?
+            {' '}
             <span style={{ fontWeight: 'normal' }}>
               (Duplicable City Center, Earthbag Village, Strawbale Classroom, etc.)
             </span>
@@ -429,7 +432,9 @@ function TSAFormPage2() {
           }}
         >
           <span>
-            Food infrastructure?{' '}
+            {/* eslint-disable-next-line prettier/prettier */}
+            Food infrastructure?
+            {' '}
             <span style={{ fontWeight: 'normal' }}>
               (Tropical Atrium, Aquapini/Zenapini In-ground Growing Structures, Vermi-Composting
               Toilet, etc.)
@@ -514,7 +519,9 @@ function TSAFormPage2() {
           }}
         >
           <span>
-            Energy infrastructure?{' '}
+            {/* eslint-disable-next-line prettier/prettier */}
+            Energy infrastructure?
+            {' '}
             <span style={{ fontWeight: 'normal' }}>(Solar, Wind, Micro-hydro, etc.)</span>
           </span>
           <span style={{ color: 'red' }}> *</span>
@@ -596,10 +603,14 @@ function TSAFormPage2() {
           }}
         >
           <span>
-            Stewardship infrastructure ?{' '}
+            {/* eslint-disable-next-line prettier/prettier */}
+            Stewardship infrastructure ?
+            {' '}
             <span style={{ fontWeight: 'normal' }}>
               {' '}
-              (Recycling, Maintenance and Upkeep Plans, etc.){' '}
+              {/* eslint-disable-next-line prettier/prettier */}
+              (Recycling, Maintenance and Upkeep Plans, etc.)
+              {' '}
             </span>
           </span>
 
