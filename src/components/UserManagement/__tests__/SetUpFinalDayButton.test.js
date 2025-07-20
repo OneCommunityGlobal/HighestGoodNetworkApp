@@ -1,3 +1,4 @@
+
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import configureStore from 'redux-mock-store';
@@ -7,16 +8,21 @@ import { themeMock } from '../../../__tests__/mockStates';
 import SetUpFinalDayButton from '../SetUpFinalDayButton';
 import { SET_FINAL_DAY, CANCEL } from '../../../languages/en/ui';
 // import { updateUserFinalDayStatus } from '../../../actions/userManagement.js';
+jest.mock('react-toastify', () => ({
+  toast: {
+    success: jest.fn(),
+  },
+}));
 
 jest.mock('axios');
 
 const mockToastSuccess = jest.fn();
 
-beforeAll(() => {
-  jest.mock('react-toastify', () => ({
-    toast: { success: mockToastSuccess },
-  }));
-});
+// beforeAll(() => {
+//   jest.mock('react-toastify', () => ({
+//     toast: { success: mockToastSuccess },
+//   }));
+// });
 
 const mockStore = configureStore();
 
