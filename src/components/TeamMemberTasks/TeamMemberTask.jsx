@@ -53,16 +53,12 @@ const TeamMemberTask = React.memo(
 
     // Role-based access control flags
     const canSeeFollowUpCheckButton = userRole !== 'Volunteer';
-    const rolesAllowedToResolveTasks = ['Administrator', 'Owner'];
-    const rolesAllowedToSeeDeadlineCount = ['Manager', 'Mentor', 'Administrator', 'Owner'];
 
     // Permission checks
-    const isAllowedToResolveTasks =
-      rolesAllowedToResolveTasks.includes(userRole) || dispatch(hasPermission('resolveTask'));
-    const isAllowedToSeeDeadlineCount = rolesAllowedToSeeDeadlineCount.includes(userRole);
+    const isAllowedToResolveTasks = dispatch(hasPermission('resolveTask'));
+    const isAllowedToSeeDeadlineCount = dispatch(hasPermission('getReports'));
     const canGetWeeklySummaries = dispatch(hasPermission('getWeeklySummaries'));
-    const canSeeReports =
-      rolesAllowedToResolveTasks.includes(userRole) || dispatch(hasPermission('getReports'));
+    const canSeeReports = dispatch(hasPermission('getReports'));
 
     // Task management permissions
     const canUpdateTask = dispatch(hasPermission('updateTask'));
