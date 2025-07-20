@@ -36,17 +36,66 @@ function PromotionEligibility() {
   }
 
   const newMembers = [
-    { reviewer: 'Akshay - Jayaram', weekly: '✅ Has Met', prs: 10, reviews: 20, weeks: 0, promote: true },
-    { reviewer: 'Ghazi1212', weekly: '✅ Has Met', prs: 10, reviews: 20, weeks: 0, promote: true },
-    { reviewer: 'jaissica', weekly: '❌ Has not Met', prs: 10, reviews: 7, weeks: 2, promote: false },
+    {
+      reviewer: 'Akshay - Jayaram',
+      weekly: '✅ Has Met',
+      prs: 10,
+      reviews: 20,
+      weeks: 0,
+      promote: true,
+    },
+    {
+      reviewer: 'Ghazi1212',
+      weekly: '✅ Has Met',
+      prs: 10,
+      reviews: 20,
+      weeks: 0,
+      promote: true,
+    },
+    {
+      reviewer: 'jaissica',
+      weekly: '❌ Has not Met',
+      prs: 10,
+      reviews: 7,
+      weeks: 2,
+      promote: false,
+    },
   ];
 
   const existingMembers = [
-    { reviewer: 'SunilKotte', weekly: '❌ Has not Met', prs: 7, reviews: 7, weeks: 1, promote: false },
-    { reviewer: '20Chen7', weekly: '❌ Has not Met', prs: 10, reviews: 10, weeks: 1, promote: false },
+    {
+      reviewer: 'SunilKotte',
+      weekly: '❌ Has not Met',
+      prs: 7,
+      reviews: 7,
+      weeks: 1,
+      promote: false,
+    },
+    {
+      reviewer: '20Chen7',
+      weekly: '❌ Has not Met',
+      prs: 10,
+      reviews: 10,
+      weeks: 1,
+      promote: false,
+    },
     { reviewer: '666saofeng', weekly: '✅ Has Met', prs: 10, reviews: 20, weeks: 0, promote: true },
-    { reviewer: 'aaronleechan', weekly: '❌ Has not Met', prs: 10, reviews: 8, weeks: 1, promote: false },
-    { reviewer: 'AaronPersaud', weekly: '❌ Has not Met', prs: 7, reviews: 5, weeks: 1, promote: false },
+    {
+      reviewer: 'aaronleechan',
+      weekly: '❌ Has not Met',
+      prs: 10,
+      reviews: 8,
+      weeks: 1,
+      promote: false,
+    },
+    {
+      reviewer: 'AaronPersaud',
+      weekly: '❌ Has not Met',
+      prs: 7,
+      reviews: 5,
+      weeks: 1,
+      promote: false,
+    },
   ];
 
   const renderTable = (title, data) => (
@@ -64,8 +113,8 @@ function PromotionEligibility() {
           </tr>
         </thead>
         <tbody>
-          {data.map((r, idx) => (
-            <tr key={idx}>
+          {data.map(r => (
+            <tr key={r.reviewer}>
               <td>{r.reviewer}</td>
               <td>{r.weekly}</td>
               <td>{r.prs}</td>
