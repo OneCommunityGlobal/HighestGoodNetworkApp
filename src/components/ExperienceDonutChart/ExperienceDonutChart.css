@@ -49,7 +49,7 @@ h2 {
   height: 100px;
 }
 
-button {
+/* button { this broke the existing pages. Please use only unique classnames and not tag names for styling.
   padding: 0.5rem 1.25rem;
   border: none;
   border-radius: 6px;
@@ -61,7 +61,7 @@ button {
   align-self: flex-end;
   flex: 0 0 140px;
   transition: background-color 0.3s ease;
-}
+} */
 
 button:hover {
   background-color: #2a82c9;
@@ -84,9 +84,12 @@ button:hover {
   font-weight: 600;
   text-align: center;
   padding: 2rem 0;
+  text-align: center;
+  font-size: 1rem;
+  color: #666;
 }
 
-p {
+.no-data-available {
   text-align: center;
   font-size: 1rem;
   color: #666;

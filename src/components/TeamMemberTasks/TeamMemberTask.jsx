@@ -79,19 +79,17 @@ const TeamMemberTask = React.memo(
     );
     const thisWeekHours = user.totaltangibletime_hrs;
 
-    // these need to be changed to actual permissions...
     const rolesAllowedToResolveTasks = ['Administrator', 'Owner'];
     const rolesAllowedToSeeDeadlineCount = ['Manager', 'Mentor', 'Administrator', 'Owner'];
     const isAllowedToResolveTasks =
       rolesAllowedToResolveTasks.includes(userRole) || dispatch(hasPermission('resolveTask'));
     const isAllowedToSeeDeadlineCount = rolesAllowedToSeeDeadlineCount.includes(userRole);
-    // ^^^
 
     const canGetWeeklySummaries = dispatch(hasPermission('getWeeklySummaries'));
     const canSeeReports =
       rolesAllowedToResolveTasks.includes(userRole) || dispatch(hasPermission('getReports'));
     const canUpdateTask = dispatch(hasPermission('updateTask'));
-    const canRemoveUserFromTask = dispatch(hasPermission('removeUserFromTask'));
+    const canDeleteTask = dispatch(hasPermission('canDeleteTask'));
     const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
 
     const colorsObjs = {
@@ -119,6 +117,17 @@ const TeamMemberTask = React.memo(
         setIsTruncated(!isTruncated);
       }
     };
+
+    /**
+    const handleReportClick = (event, to) => {
+      if (event.metaKey || event.ctrlKey || event.button === 1) {
+        return;
+      }
+
+      event.preventDefault(); // prevent full reload
+      history.push(`/peoplereport/${to}`);
+    };
+    */
 
     const openDetailModal = request => {
       dispatch(showTimeOffRequestModal(request));
@@ -191,29 +200,40 @@ const TeamMemberTask = React.memo(
                     <div style={{ display: 'flex', flexWrap: 'wrap', flexDirection: 'column' }}>
                       <div className="member-links-wrapper">
                         <div className="committed-hours-circle">
-                          <FontAwesomeIcon
-                            style={{
-                              color:
-                                user.totaltangibletime_hrs >= user.weeklycommittedHours
-                                  ? 'green'
-                                  : 'red',
-                            }}
-                            icon={faCircle}
-                            data-testid="icon"
-                          />
+                          <div className="icon-row">
+                            <FontAwesomeIcon
+                              style={{
+                                color:
+                                  user.totaltangibletime_hrs >= user.weeklycommittedHours
+                                    ? 'green'
+                                    : 'red',
+                              }}
+                              icon={faCircle}
+                              data-testid="icon"
+                            />
+
+                            <Link to={`/timelog/${user.personId}`} className="timelog-info">
+                              <i
+                                className="fa fa-clock-o"
+                                aria-hidden="true"
+                                style={{
+                                  fontSize: 24,
+                                  cursor: 'pointer',
+                                  color: darkMode ? 'lightgray' : 'black',
+                                }}
+                                title="Click to see user's timelog"
+                              />
+                            </Link>
+                          </div>
+                          {user.role !== 'Volunteer' && (
+                            <div
+                              className="user-role"
+                              style={{ fontSize: '14px', color: darkMode ? 'lightgray' : 'gray' }}
+                            >
+                              {user.role}
+                            </div>
+                          )}
                         </div>
-                        <Link to={`/timelog/${user.personId}`} className="timelog-info">
-                          <i
-                            className="fa fa-clock-o"
-                            aria-hidden="true"
-                            style={{
-                              fontSize: 24,
-                              cursor: 'pointer',
-                              color: darkMode ? 'lightgray' : 'black',
-                            }}
-                            title="Click to see user's timelog"
-                          />
-                        </Link>
                       </div>
                       {canUpdateTask && teamRoles && (
                         <div className="name-wrapper">
@@ -246,7 +266,11 @@ const TeamMemberTask = React.memo(
                   <td colSpan={2} className={`${darkMode ? 'bg-yinmn-blue' : ''}`}>
                     <Table borderless className="team-member-tasks-subtable">
                       <tbody>
-                        <tr>
+                        <tr
+                          style={{
+                            width: '500px',
+                          }}
+                        >
                           <td className="team-member-tasks-user-name">
                             <Link
                               className="team-member-tasks-user-name-link"
@@ -393,7 +417,7 @@ const TeamMemberTask = React.memo(
                                           data-testid={`tick-${task.taskName}`}
                                         />
                                       )}
-                                      {(canUpdateTask || canRemoveUserFromTask) && (
+                                      {(canUpdateTask || canDeleteTask) && (
                                         <FontAwesomeIcon
                                           className="team-member-task-remove"
                                           icon={faTimes}
