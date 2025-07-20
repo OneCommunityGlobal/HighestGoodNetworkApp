@@ -1,14 +1,16 @@
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Button, Alert } from 'react-bootstrap';
+// import hasPermission from 'utils/permissions';
+import hasPermission from '../../utils/permissions';
 import {
   getWarningsByUserId,
   postWarningByUserId,
   deleteWarningsById,
 } from '../../actions/warnings';
 import WarningTrackerModal from './modals/WarningTrackerModal';
-
 import WarningIcons from './WarningIcons';
+// import WarningItem from './WarningItem';
 import './Warnings.css';
 import WarningModal from './modals/WarningModal';
 // Better Descriptions (“i” = ,ltd = Please be more specific in your time log descriptions.)
@@ -26,6 +28,13 @@ export default function Warning({ personId, username, userRole, displayUser }) {
   const [toggleWarningModal, setToggleWarningModal] = useState(false);
   const [selectedWarning, setSelectedWarning] = useState(null);
   const [error, setError] = useState(null);
+  const isAllowedToTracking = dispatch(hasPermission('viewTrackingOverview'));
+  const canViewTrackerButton =
+    dispatch(hasPermission('addWarningTracker')) ||
+    dispatch(hasPermission('deactivateWarningTracker')) ||
+    dispatch(hasPermission('deleteWarningTracker'));
+
+  const canEditWarning = dispatch(hasPermission('setTrackingManagement'));
 
   const fetchUsersWarningsById = async () => {
     dispatch(getWarningsByUserId(personId)).then(res => {
@@ -114,18 +123,20 @@ export default function Warning({ personId, username, userRole, displayUser }) {
       ));
 
   return (
-    (userRole === 'Administrator' || userRole === 'Owner') && (
+    isAllowedToTracking && (
       <div className="warnings-container">
         <div className="button__container">
-          <Button
-            className="btn btn-warning warning-btn tracking__btn"
-            size="sm"
-            onClick={handleToggle}
-          >
-            {toggle ? 'Hide' : 'Tracking'}
-          </Button>
+          {canViewTrackerButton && (
+            <Button
+              className="btn btn-warning warning-btn tracking__btn"
+              size="sm"
+              onClick={handleToggle}
+            >
+              {toggle ? 'Hide' : 'Tracking'}
+            </Button>
+          )}
 
-          {userRole === 'Owner' && (
+          {canEditWarning && (
             <Button
               className="btn"
               size="sm"
@@ -152,6 +163,7 @@ export default function Warning({ personId, username, userRole, displayUser }) {
             personId={personId}
             setToggleWarningTrackerModal={setToggleWarningTrackerModal}
             getUsersWarnings={fetchUsersWarningsById}
+            userRole={userRole}
           />
         )}
 

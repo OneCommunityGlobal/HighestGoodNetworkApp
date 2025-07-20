@@ -7,11 +7,11 @@ import {
   Button,
   FormGroup,
   Form,
-  Col,
-  Row,
   Input,
   Label,
 } from 'reactstrap';
+import { useDispatch } from 'react-redux';
+import hasPermission from '../../../utils/permissions';
 import WarningIcons from '../WarningIcons';
 import getOrdinal from '../../../utils/getOrdinal';
 import '../Warnings.css';
@@ -32,6 +32,12 @@ function WarningModal({
 }) {
   const { id: warningId, warningText, username, deleteWarning } = warning || {};
   const [times, ordinal] = getOrdinal(numberOfWarnings + 1);
+
+  const dispatch = useDispatch();
+
+  const canIssueTrackingWarnings = dispatch(hasPermission('issueTrackingWarnings'));
+  const canIssueBlueSquare = dispatch(hasPermission('issueBlueSquare'));
+  const canDeleteWarning = dispatch(hasPermission('deleteWarning'));
 
   const isFormComplete = () => {
     return warning.specialWarnings.every(warn => warningSelections[warn.title]);
@@ -56,6 +62,7 @@ function WarningModal({
               setToggleModal(false);
             }}
             color="primary"
+            disabled={!canDeleteWarning}
           >
             Delete Warning
           </Button>
@@ -141,7 +148,7 @@ function WarningModal({
 
                     <WarningIcons
                       warnings={warn.warnings}
-                      userProfileModal={true}
+                      userProfileModal
                       warningText={warn.title}
                     />
                   </div>
@@ -183,6 +190,7 @@ function WarningModal({
                         .map((item, index) => (
                           <FormGroup
                             check
+                            // eslint-disable-next-line react/no-array-index-key
                             key={index}
                             style={{
                               display: 'flex',
@@ -268,6 +276,7 @@ function WarningModal({
                 }}
                 color="warning"
                 className="warning__modal__footer__btn"
+                disabled={!canIssueTrackingWarnings}
               >
                 Issue Warning
               </Button>
@@ -280,6 +289,7 @@ function WarningModal({
                 }}
                 color="primary"
                 className="warning__modal__footer__btn"
+                disabled={!canIssueBlueSquare}
               >
                 Issue Blue Square
               </Button>
@@ -333,156 +343,3 @@ function WarningModal({
 }
 
 export default WarningModal;
-{
-  /* <FormGroup
-                          check
-                          style={{
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            flexDirection: 'column',
-                            gap: '0.5rem', // Adds spacing between label and input
-                          }}
-                        >
-                          <Label
-                            check
-                            style={{
-                              fontWeight: 'bold', // Optional for better visibility
-                              // marginBottom: '0.5rem', // Ensures spacing
-                            }}
-                          >
-                            Issue Warning
-                          </Label>
-                          <Input
-                            name="radio1"
-                            type="radio"
-                            style={{
-                              marginTop: '2.5rem', // Fine-tune the distance
-                            }}
-                          />
-                        </FormGroup> */
-}
-{
-  /* <FormGroup
-                            check
-                            style={{
-                              display: 'flex',
-                              justifyContent: 'center',
-                              alignItems: 'center',
-                              flexDirection: 'column',
-                              gap: '2rem', // Adds spacing between label and input
-                            }}
-                          >
-                            <Label
-                              check
-                              style={{
-                                fontWeight: 'bold', // Optional for better visibility
-                                // marginBottom: '0.5rem', // Ensures spacing
-                              }}
-                            >
-                              Log Warning
-                            </Label>
-                            <Input
-                              name="radio1"
-                              type="radio"
-                              style={{
-                                marginTop: '2rem', // Fine-tune the distance
-                              }}
-                            />
-                          </FormGroup>
-                          <FormGroup
-                            check
-                            style={{
-                              display: 'flex',
-                              justifyContent: 'center',
-                              alignItems: 'center',
-                              flexDirection: 'column',
-                              gap: '2rem', // Adds spacing between label and input
-                            }}
-                          >
-                            <Label
-                              check
-                              style={{
-                                fontWeight: 'bold', // Optional for better visibility
-                                // marginBottom: '0.5rem', // Ensures spacing
-                              }}
-                            >
-                              Log Warning
-                            </Label>
-                            <Input
-                              name="radio1"
-                              type="radio"
-                              style={{
-                                marginTop: '2rem', // Fine-tune the distance
-                              }}
-                            />
-                          </FormGroup> */
-}
-
-{
-  /* <FormGroup>
-                          <FormGroup>
-                            <Label check>Log Warning </Label>
-                            <Input name="radio2" type="radio" />
-                          </FormGroup>
-                          <FormGroup check>
-                            <Input
-                              name="radio2"
-                              type="radio"
-                              // style={{
-                              //   display: 'block', // This makes the input field a block element
-                              //   marginBottom: '0.5rem', // Optional spacing between input and label
-                              // }}
-                            />{' '}
-                            <Label check>Issue Warning</Label>
-                          </FormGroup>
-                          <FormGroup check>
-                            <Input
-                              name="radio2"
-                              type="radio"
-                              // style={{
-                              //   display: 'block', // This makes the input field a block element
-                              //   marginBottom: '0.5rem', // Optional spacing between input and label
-                              // }}
-                            />{' '}
-                            <Label check>Issue Blue Square</Label>
-                          </FormGroup>
-                          {/* </Row> */
-}
-{
-  /* </Form> */
-}
-{
-  /* <SliderToggle />
-                      <Button
-                        onClick={() => {
-                          // email will be sent and logged
-                          handleIssueWarning({ ...warning, colorAssigned: 'yellow' });
-                          setToggleModal(false);
-                        }}
-                        color="warning"
-                        className="warning__modal__footer__btn"
-                        style={{
-                          fontSize: '8px',
-                          width: '100px',
-                        }}
-                      >
-                        Issue Warning
-                      </Button>
-
-                      <Button
-                        onClick={() => {
-                          // alert('BLUE SQUARE ISSUED!!');
-                          handleIssueWarning({ ...warning, colorAssigned: 'red' });
-                          setToggleModal(false);
-                        }}
-                        color="primary"
-                        className="warning__modal__footer__btn"
-                        style={{
-                          fontSize: '8px',
-                          width: '100px',
-                        }}
-                      >
-                        Issue Blue Square
-                      </Button> */
-}

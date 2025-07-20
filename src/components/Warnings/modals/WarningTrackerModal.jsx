@@ -12,6 +12,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Popover from 'react-bootstrap/Popover';
+import hasPermission from 'utils/permissions';
 import {
   postNewWarning,
   getWarningDescriptions,
@@ -22,7 +23,6 @@ import {
 
 import '../Warnings.css';
 import reorder from '../reorder.svg';
-
 /**
  *
  *
@@ -35,6 +35,7 @@ function WarningTrackerModal({
   toggleWarningTrackerModal,
   getUsersWarnings,
   setToggleWarningTrackerModal,
+  userRole,
 }) {
   const [toggeleWarningInput, setToggeleWarningInput] = useState(false);
   const [newWarning, setNewWarning] = useState('');
@@ -48,6 +49,17 @@ function WarningTrackerModal({
   const [error, setError] = useState(null);
 
   const dispatch = useDispatch();
+  const rolesAllowedToTracking = ['Administrator', 'Owner'];
+  const canAddWarningTracker =
+    rolesAllowedToTracking.includes(userRole) || dispatch(hasPermission('addWarningTracker'));
+  const canDeactivateWarningTracker =
+    rolesAllowedToTracking.includes(userRole) ||
+    dispatch(hasPermission('deactivateWarningTracker'));
+  const canReactivateWarningTracker =
+    rolesAllowedToTracking.includes(userRole) ||
+    dispatch(hasPermission('reactivateWarningTracker'));
+  const canDeleteWarningTracker =
+    rolesAllowedToTracking.includes(userRole) || dispatch(hasPermission('deleteWarningTracker'));
 
   const fetchWarningDescriptions = async () => {
     dispatch(getWarningDescriptions()).then(res => {
@@ -131,11 +143,9 @@ function WarningTrackerModal({
     dispatch(deleteWarningDescription(warningId)).then(res => {
       if (res.error) {
         setError(res.error);
-        return;
       }
-      setWarningDescriptions(prev => prev.filter(warning => warning._id !== warningId));
-      getUsersWarnings();
     });
+    setWarningDescriptions(prev => prev.filter(warning => warning._id !== warningId));
   };
 
   const handleEditWarningDescription = (e, warningId) => {
@@ -196,6 +206,7 @@ function WarningTrackerModal({
         setWarningDescriptions(res.newWarnings);
         getUsersWarnings();
         setError(null);
+        setToggeleWarningInput(false);
       },
     );
   };
@@ -236,6 +247,8 @@ function WarningTrackerModal({
   }
 
   return (
+    // need to make .modal in modal.css z-index go to 1051
+    // or make .modal-backdrop z-index go to 1049 otherwise the important makes it nullify the warning tracker modal
     <Modal
       isOpen={toggleWarningTrackerModal}
       toggle={() => setToggleWarningTrackerModal(false)}
@@ -285,6 +298,7 @@ function WarningTrackerModal({
                   color="warning"
                   className="warning__descriptions__btn"
                   onClick={() => handleDeactivate(warning._id)}
+                  disabled={!canDeactivateWarningTracker}
                 >
                   <i className="fa fa-minus" />
                 </Button>
@@ -299,6 +313,7 @@ function WarningTrackerModal({
                   color="success"
                   className="warning__descriptions__btn"
                   onClick={() => handleDeactivate(warning._id)}
+                  disabled={!canReactivateWarningTracker}
                 >
                   <i className="fa fa-plus" />
                 </Button>
@@ -309,6 +324,7 @@ function WarningTrackerModal({
               color="danger"
               className="warning__descriptions__btn"
               onClick={() => handleTriggerDeleteWarningDescription(warning)}
+              disabled={!canDeleteWarningTracker}
             >
               <FontAwesomeIcon icon={faTimes} />
             </Button>
@@ -342,6 +358,7 @@ function WarningTrackerModal({
               className="add__btn"
               color="primary"
               onClick={() => setToggeleWarningInput(true)}
+              disabled={!canAddWarningTracker}
             >
               Add New Warning Tracker
             </Button>

@@ -21,6 +21,7 @@ function WarningIcon({
   warningText,
   handleShowWarningModal,
   numberOfWarnings,
+  canIssueTrackingWarnings,
   handleWarningIconClicked,
 }) {
   // const {
@@ -36,6 +37,9 @@ function WarningIcon({
 
   // eslint-disable-next-line no-shadow
   const handleIssueWarning = id => {
+    if (!canIssueTrackingWarnings) {
+      return;
+    }
     const today = moment().format('MM/DD/YYYY HH:mm:ss a');
     const [todaysDate, todaysTime, todaysTimeOfDay] = today.split(' ');
 

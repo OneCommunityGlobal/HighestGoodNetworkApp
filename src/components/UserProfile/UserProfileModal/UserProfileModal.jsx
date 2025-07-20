@@ -19,7 +19,8 @@ import '../../Header/DarkMode.css';
 import hasPermission from 'utils/permissions';
 import { connect, useSelector } from 'react-redux';
 import { OverlayTrigger, Popover } from 'react-bootstrap';
-import WarningModal from 'components/Warnings/modals/WarningModal';
+import WarningModal from '../../Warnings/modals/WarningModal';
+
 const UserProfileModal = props => {
   const {
     isOpen,
@@ -35,11 +36,6 @@ const UserProfileModal = props => {
     handleLogWarning,
   } = props;
   let blueSquare = [
-    {
-      date: 'ERROR',
-      description:
-        'This is auto generated text. You must save the document first before viewing newly created blue squares.',
-    },
   ];
 
   if (type !== 'message' && type !== 'addBlueSquare') {
@@ -48,7 +44,20 @@ const UserProfileModal = props => {
     }
   }
 
-  const darkMode = useSelector(state => state.theme.darkMode);
+  const firstName = localStorage.getItem('userFirstName');
+  const lastName = localStorage.getItem('userLastName');
+
+  const getAssignedByText = () => {
+    const today = new Date();
+    const formattedDate = `${today.getMonth() + 1}/${today.getDate()}/${today.getFullYear()}`;
+    if (firstName && lastName) {
+      return `Assigned by ${firstName} ${lastName.charAt(0)} ${formattedDate}:`;
+    } else {
+      return `Assigned by HGN System:`;
+    }
+  };
+
+  const darkMode = useSelector(state=>state.theme.darkMode);
 
   const canPutUserProfile = props.hasPermission('putUserProfile');
   const canEditInfringements = props.hasPermission('editInfringements');
@@ -63,15 +72,23 @@ const UserProfileModal = props => {
   const [adminLinkName, setAdminLinkName] = useState('');
   const [adminLinkURL, setAdminLinkURL] = useState('');
 
-  const [dateStamp, setDateStamp] = useState(blueSquare[0]?.date || '');
-  const [summary, setSummary] = useState(blueSquare[0]?.description || '');
 
-  const [addButton, setAddButton] = useState(true);
-  const [summaryFieldView, setSummaryFieldView] = useState(true);
+  const [dateStamp, setDateStamp] = useState(blueSquare[0]?.date || '');
+  const assignedText = getAssignedByText();
+  const [summary, setSummary] = useState(() => {
+    const initialDescription = blueSquare[0]?.description || '';
+    return assignedText + initialDescription;
+  });
+
+
+
+  const [addButton, setAddButton] = useState(false); 
+  const [summaryFieldView, setSummaryFieldView] = useState(false); 
   const [displayWarningModal, setDisplayWarningModal] = useState(false);
   const [displayBothModal, setDisplayBothModal] = useState(false);
   const [showWarningSpinner, setShowWarningSpinner] = useState(false);
   const [warningSelections, setWarningSelections] = useState({});
+
   const [personalLinks, dispatchPersonalLinks] = useReducer(
     (personalLinks, { type, value, passedIndex }) => {
       switch (type) {
@@ -136,7 +153,14 @@ const UserProfileModal = props => {
     } else if (event.target.id === 'linkURL') {
       setLinkURL(event.target.value.trim());
     } else if (event.target.id === 'summary') {
-      setSummary(event.target.value);
+      
+        const userInput = event.target.value;
+        if (!userInput.startsWith(assignedText)) {
+          setSummary(assignedText + userInput.slice(assignedText.length));
+        } else {
+          setSummary(userInput);
+        }
+      
       checkFields(dateStamp, summary);
       adjustTextareaHeight(event.target);
     } else if (event.target.id === 'date') {
@@ -192,15 +216,13 @@ const UserProfileModal = props => {
 
     modifyBlueSquares(id, dateStamp, summary, 'delete');
   };
-  function checkFields(field1, field2) {
-    // console.log('f1:', field1, ' f2:', field2);
-
-    if (field1 != null && field2 != null) {
-      setAddButton(false);
-    } else {
-      setAddButton(true);
+  function checkFields(field1, field2) { 
+      if (field1.trim() && field2.trim()) {
+        setAddButton(false);
+      } else {
+        setAddButton(true);
+      }
     }
-  }
 
   const adjustTextareaHeight = textarea => {
     textarea.style.height = 'auto';
@@ -301,104 +323,25 @@ const UserProfileModal = props => {
                         <div className="customTitle">+ ADD LINK:</div>
                       </div>
 
-                      <div style={{ display: 'flex', margin: '5px' }}>
-                        <input
-                          className="customEdit"
-                          id="linkName"
-                          placeholder="enter name"
-                          onChange={e => setAdminLinkName(e.target.value)}
-                        />
-                        <input
-                          className="customEdit"
-                          id="linkURL"
-                          placeholder="enter link"
-                          onChange={e => setAdminLinkURL(e.target.value.trim())}
-                        />
-                        <button
-                          className="addButton"
-                          onClick={() =>
-                            dispatchAdminLinks({
-                              type: 'add',
-                              value: { Name: adminLinkName, Link: adminLinkURL },
-                            })
-                          }
-                        >
-                          +
-                        </button>
-                      </div>
-                    </Col>
-                  </Card>
-                </CardBody>
-              )}
-              <CardBody>
-                <Card>
-                  <Label className={fontColor} style={{ display: 'flex', margin: '5px' }}>
-                    Personal Links:
-                  </Label>
-                  <Col>
-                    <div style={{ display: 'flex', margin: '5px' }}>
-                      <div className="customTitle">Name</div>
-                      <div className="customTitle">Link URL</div>
-                    </div>
-                    {personalLinks.map((link, index) => (
-                      <div key={index} style={{ display: 'flex', margin: '5px' }}>
-                        <input
-                          className="customInput"
-                          value={link.Name}
-                          onChange={e =>
-                            dispatchPersonalLinks({
-                              type: 'updateName',
-                              value: e.target.value,
-                              passedIndex: index,
-                            })
-                          }
-                        />
-                        <input
-                          className="customInput"
-                          value={link.Link}
-                          onChange={e =>
-                            dispatchPersonalLinks({
-                              type: 'updateLink',
-                              value: e.target.value,
-                              passedIndex: index,
-                            })
-                          }
-                        />
-                        <button
-                          className="closeButton"
-                          color="danger"
-                          onClick={() =>
-                            dispatchPersonalLinks({ type: 'remove', passedIndex: index })
-                          }
-                        >
-                          X
-                        </button>
-                      </div>
-                    ))}
-
-                    <div style={{ display: 'flex', margin: '5px' }}>
-                      <div className="customTitle">+ ADD LINK:</div>
-                    </div>
-
                     <div style={{ display: 'flex', margin: '5px' }}>
                       <input
                         className="customEdit"
                         id="linkName"
                         placeholder="enter name"
-                        onChange={e => setLinkName(e.target.value)}
+                        onChange={e => setAdminLinkName(e.target.value)}
                       />
                       <input
                         className="customEdit"
                         id="linkURL"
                         placeholder="enter link"
-                        onChange={e => setLinkURL(e.target.value.trim())}
+                        onChange={e => setAdminLinkURL(e.target.value.trim())}
                       />
                       <button
                         className="addButton"
                         onClick={() =>
-                          dispatchPersonalLinks({
+                          dispatchAdminLinks({
                             type: 'add',
-                            value: { Name: linkName, Link: linkURL },
+                            value: { Name: adminLinkName, Link: adminLinkURL },
                           })
                         }
                       >
@@ -408,33 +351,108 @@ const UserProfileModal = props => {
                   </Col>
                 </Card>
               </CardBody>
-            </div>
-          )}
+            )}
+            <CardBody>
+              <Card>
+                <Label className={fontColor} style={{ display: 'flex', margin: '5px' }}>Personal Links:</Label>
+                <Col>
+                  <div style={{ display: 'flex', margin: '5px' }}>
+                    <div className="customTitle">Name</div>
+                    <div className="customTitle">Link URL</div>
+                  </div>
+                  {personalLinks.map((link, index) => (
+                    <div key={index} style={{ display: 'flex', margin: '5px' }}>
+                      <input
+                        className="customInput"
+                        value={link.Name}
+                        onChange={e =>
+                          dispatchPersonalLinks({
+                            type: 'updateName',
+                            value: e.target.value,
+                            passedIndex: index,
+                          })
+                        }
+                      />
+                      <input
+                        className="customInput"
+                        value={link.Link}
+                        onChange={e =>
+                          dispatchPersonalLinks({
+                            type: 'updateLink',
+                            value: e.target.value,
+                            passedIndex: index,
+                          })
+                        }
+                      />
+                      <button
+                        className="closeButton"
+                        color="danger"
+                        onClick={() =>
+                          dispatchPersonalLinks({ type: 'remove', passedIndex: index })
+                        }
+                      >
+                        X
+                      </button>
+                    </div>
+                  ))}
+
+                  <div style={{ display: 'flex', margin: '5px' }}>
+                    <div className="customTitle">+ ADD LINK:</div>
+                  </div>
+
+                  <div style={{ display: 'flex', margin: '5px' }}>
+                    <input
+                      className="customEdit"
+                      id="linkName"
+                      placeholder="enter name"
+                      onChange={e => setLinkName(e.target.value)}
+                    />
+                    <input
+                      className="customEdit"
+                      id="linkURL"
+                      placeholder="enter link"
+                      onChange={e => setLinkURL(e.target.value.trim())}
+                    />
+                    <button
+                      className="addButton"
+                      onClick={() =>
+                        dispatchPersonalLinks({
+                          type: 'add',
+                          value: { Name: linkName, Link: linkURL },
+                        })
+                      }
+                    >
+                      +
+                    </button>
+                  </div>
+                </Col>
+              </Card>
+            </CardBody>
+          </div>
+        )}
 
           {type === 'addBlueSquare' && (
             <>
               <FormGroup>
-                <Label className={fontColor} for="date">
-                  Date
-                </Label>
-                <Input type="date" name="date" id="date" onChange={handleChange} />
+                <Label className={fontColor} for="date">Date</Label>
+                <Input type="date" name="date" id="date" value={dateStamp} onChange={handleChange} />
               </FormGroup>
 
-              <FormGroup hidden={summaryFieldView}>
-                <Label className={fontColor} for="report">
-                  Summary
-                </Label>
-                <Input
-                  type="textarea"
-                  id="summary"
-                  onChange={handleChange}
-                  value={summary}
-                  style={{ minHeight: '200px', overflow: 'hidden' }}
-                  onInput={e => adjustTextareaHeight(e.target)}
+            <FormGroup hidden={summaryFieldView}>
+              <Label className={fontColor} for="report">Summary</Label>
+              
+                <Input 
+                  type="textarea" 
+                  id="summary" 
+                  onChange={handleChange} 
+                  value={summary} 
+                  style={{ minHeight: '200px', overflow: 'hidden'}} 
+                  onInput={e => adjustTextareaHeight(e.target)} 
                 />
-              </FormGroup>
-            </>
-          )}
+              
+            </FormGroup>
+          </>
+        )}
 
           {type === 'modBlueSquare' && (
             <>
