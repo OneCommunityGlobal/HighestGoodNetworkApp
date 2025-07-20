@@ -1,6 +1,6 @@
+/* eslint-disable no-undef */
 // This is needed to remove a warning related to popper.js when testing reactstrap tooltips.
 // More on this bug: https://github.com/react-bootstrap/react-bootstrap/issues/4997
-/* eslint-disable import/no-extraneous-dependencies */
 /* eslint-env jest */
 import PopperJs from 'popper.js';
 

@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
@@ -88,14 +87,26 @@ describe('PasswordInputModal', () => {
     const passwordInput = screen.getByTestId('password-input');
     const authorizeButton = screen.getByRole('button', { name: /Authorize/i });
 
-    userEvent.type(passwordInput, 'correctPassword');
+    await userEvent.type(passwordInput, 'correctPassword'); // ✅ Fix: Await userEvent
     fireEvent.click(authorizeButton);
 
     await waitFor(() => {
       expect(mockCheckForValidPwd).toHaveBeenCalledWith(true);
+    });
+
+    await waitFor(() => {
       expect(mockSetAuthpassword).toHaveBeenCalledWith('correctPassword');
+    });
+
+    await waitFor(() => {
       expect(mockSetSummaryRecepientsPopup).toHaveBeenCalledWith(true);
+    });
+
+    await waitFor(() => {
       expect(mockOnClose).toHaveBeenCalled();
+    });
+
+    await waitFor(() => {
       expect(toast.success).toHaveBeenCalledWith(
         'Authorization successful! Please wait to see Recipients table!',
       );

@@ -47,8 +47,8 @@ describe('TaskEditSuggestionsModal Rendering', () => {
       },
     };
     const props = { ...defaultProps, taskEditSuggestion, isTaskEditSuggestionsModalOpen: true };
-    const { queryByText } = render(<TaskEditSuggestionsModal {...props} />);
-    expect(queryByText(/John Doe/i)).not.toBeInTheDocument();
+    render(<TaskEditSuggestionsModal {...props} />);
+    expect(screen.queryByText(/John Doe/i)).not.toBeInTheDocument();
   });
 });
 

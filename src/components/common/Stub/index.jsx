@@ -1,2 +1,2 @@
 // eslint-disable-next-line import/prefer-default-export
-export { Stub } from './Stub';
+export { default as Stub } from './Stub';

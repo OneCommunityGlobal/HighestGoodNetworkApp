@@ -70,10 +70,12 @@ function TaskEditSuggestions() {
               <thead className={darkMode ? 'text-light' : ''}>
                 <tr>
                   <th onClick={() => dispatch(toggleDateSuggestedSortDirection())}>
-                    Date Suggested <SortArrow sortDirection={dateSuggestedSortDirection} />
+                    Date Suggested
+                    <SortArrow sortDirection={dateSuggestedSortDirection} />
                   </th>
                   <th onClick={() => dispatch(toggleUserSortDirection())}>
-                    User <SortArrow sortDirection={userSortDirection} />
+                    User
+                    <SortArrow sortDirection={userSortDirection} />
                   </th>
                   <th>Task</th>
                   <th aria-label="Task" />

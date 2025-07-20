@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { TeamTableHeader } from '~/components/Teams/TeamTableHeader';
@@ -17,7 +16,14 @@ describe('TeamTableHeader (pure)', () => {
     render(
       <table>
         <tbody>
-          <TeamTableHeader {...defaultProps} />
+          <TeamTableHeader
+            hasPermission={defaultProps.hasPermission}
+            darkMode={defaultProps.darkMode}
+            sortTeamNameState={defaultProps.sortTeamNameState}
+            sortTeamActiveState={defaultProps.sortTeamActiveState}
+            onTeamNameSort={defaultProps.onTeamNameSort}
+            onTeamActiveSort={defaultProps.onTeamActiveSort}
+          />
         </tbody>
       </table>,
     );
@@ -26,7 +32,6 @@ describe('TeamTableHeader (pure)', () => {
     expect(screen.getByRole('button', { name: /Team Name/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Active/i })).toBeInTheDocument();
     expect(screen.getByText(/Members/i)).toBeInTheDocument();
-    // delete column should appear since hasPermission() returns true
     expect(screen.getByTestId('teams__delete')).toBeInTheDocument();
   });
 
@@ -34,7 +39,14 @@ describe('TeamTableHeader (pure)', () => {
     render(
       <table>
         <tbody>
-          <TeamTableHeader {...defaultProps} hasPermission={() => false} />
+          <TeamTableHeader
+            hasPermission={() => false}
+            darkMode={defaultProps.darkMode}
+            sortTeamNameState={defaultProps.sortTeamNameState}
+            sortTeamActiveState={defaultProps.sortTeamActiveState}
+            onTeamNameSort={defaultProps.onTeamNameSort}
+            onTeamActiveSort={defaultProps.onTeamActiveSort}
+          />
         </tbody>
       </table>,
     );
@@ -43,8 +55,8 @@ describe('TeamTableHeader (pure)', () => {
   });
 
   it('is wrapped in React.memo', () => {
-    // React.memo components share the same $$typeof
-    const dummyMemo = React.memo(() => { });
-    expect(TeamTableHeader.$$typeof).toBe(dummyMemo.$$typeof);
+    const DummyMemoComponent = () => {};
+    const MemoWrapped = React.memo(DummyMemoComponent);
+    expect(TeamTableHeader.$$typeof).toBe(MemoWrapped.$$typeof);
   });
 });

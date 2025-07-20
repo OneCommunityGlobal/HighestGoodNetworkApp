@@ -59,11 +59,11 @@ describe('TaskEditSuggestionRow', () => {
     expect(mockHandleToggle).toHaveBeenCalledTimes(1);
   });
 
-  it('prevents event propagation when the button is clicked', () => {
+  it('prevents event propagation when the button is clicked', async () => {
     const mockParentHandler = vi.fn();
 
     render(
-      <div onClick={mockParentHandler}>
+      <div onClick={mockParentHandler} role="button" tabIndex={0} onKeyDown={() => {}}>
         <TaskEditSuggestionRow
           taskEditSuggestion={taskEditSuggestionMock}
           handleToggleTaskEditSuggestionModal={mockHandleToggle}
@@ -72,7 +72,7 @@ describe('TaskEditSuggestionRow', () => {
     );
 
     const button = screen.getByText('View Suggestion');
-    userEvent.click(button);
+    await userEvent.click(button);
 
     expect(mockParentHandler).not.toHaveBeenCalled();
     expect(mockHandleToggle).toHaveBeenCalledWith(taskEditSuggestionMock);

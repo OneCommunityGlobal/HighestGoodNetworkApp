@@ -20,7 +20,7 @@ vi.mock('~/actions/weeklySummariesReportRecepients', () => ({
   deleteSummaryRecipient: vi.fn().mockResolvedValue(200),
 }));
 
-+vi.mock('~/components/Teams/MembersAutoComplete', () => ({
+vi.mock('~/components/Teams/MembersAutoComplete', () => ({
   __esModule: true,
   default: function MockMembersAutoComplete({ searchText, setSearchText, onAddUser }) {
     return (

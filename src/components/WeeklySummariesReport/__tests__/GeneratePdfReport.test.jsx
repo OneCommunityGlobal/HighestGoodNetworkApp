@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
@@ -12,7 +11,7 @@ const dummyWeekDates = () => ({
 const weekidx2 = 2;
 
 describe('structure test', () => {
-  beforeEach(() => {
+  it('should render button that generates PDF reports', () => {
     render(
       <GeneratePdfReport
         summaries={dummySummary}
@@ -20,9 +19,6 @@ describe('structure test', () => {
         weekDates={dummyWeekDates()}
       />,
     );
-  });
-
-  it('should render button that generates PDF reports', () => {
     expect(screen.getByRole('button', { name: /Open PDF/i })).toBeInTheDocument();
   });
 });

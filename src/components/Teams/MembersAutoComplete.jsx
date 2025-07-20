@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 import { useState } from 'react';
 import { Dropdown, Input } from 'reactstrap';
 import { useSelector } from 'react-redux';
@@ -59,10 +60,19 @@ export function MemberAutoComplete(props) {
               <div
                 key={item._id}
                 className="user-auto-cpmplete"
+                role="button"
+                tabIndex={0}
                 onClick={() => {
                   props.setSearchText(`${item.firstName} ${item.lastName}`);
                   toggle(false);
                   props.onAddUser(item);
+                }}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    props.setSearchText(`${item.firstName} ${item.lastName}`);
+                    toggle(false);
+                    props.onAddUser(item);
+                  }
                 }}
               >
                 {`${item.firstName} ${item.lastName}`}
@@ -93,10 +103,19 @@ export function MemberAutoComplete(props) {
               <div
                 key={item._id}
                 className="user-auto-cpmplete"
+                role="button"
+                tabIndex={0}
                 onClick={() => {
                   props.setSearchText(`${item.firstName} ${item.lastName}`);
                   toggle(false);
                   props.onAddUser(item);
+                }}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    props.setSearchText(`${item.firstName} ${item.lastName}`);
+                    toggle(false);
+                    props.onAddUser(item);
+                  }
                 }}
               >
                 {`${item.firstName} ${item.lastName}`}

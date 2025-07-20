@@ -1,9 +1,8 @@
-// eslint-disable-next-line no-unused-vars
 import React from 'react';
-import DeleteTeamPopup from '~/components/Teams/DeleteTeamPopup';
 import { screen, fireEvent } from '@testing-library/react';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
+import DeleteTeamPopup from '~/components/Teams/DeleteTeamPopup';
 import { renderWithProvider } from '../../../__tests__/utils';
 import { authMock, userProfileMock, rolesMock, themeMock } from '../../../__tests__/mockStates';
 

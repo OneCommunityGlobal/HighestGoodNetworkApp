@@ -1,8 +1,7 @@
-// eslint-disable-next-line no-unused-vars
 import React from 'react';
-import MemberAutoComplete from '~/components/Teams/MembersAutoComplete';
 import { renderWithProvider } from '__tests__/utils';
 import { screen, fireEvent } from '@testing-library/react';
+import MemberAutoComplete from '~/components/Teams/MembersAutoComplete';
 
 const mock = vi.fn();
 

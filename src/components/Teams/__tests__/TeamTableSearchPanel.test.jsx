@@ -1,11 +1,9 @@
-// eslint-disable-next-line no-unused-vars
 import React from 'react';
-import { TeamTableSearchPanelBase } from '~/components/Teams/TeamTableSearchPanel';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
-// eslint-disable-next-line no-unused-vars
 import { render, fireEvent, screen } from '@testing-library/react';
 import thunk from 'redux-thunk';
+import { TeamTableSearchPanelBase } from '~/components/Teams/TeamTableSearchPanel';
 import { authMock, userProfileMock, rolesMock } from '../../../__tests__/mockStates';
 
 const mockStore = configureStore([thunk]);
@@ -42,7 +40,6 @@ describe('TeamTableSearchPanelBase', () => {
   });
 
   it('renders the "Create New Team" button when user has permission', () => {
-    // Explicitly mock hasPermission to return true for 'postTeam'
     const mockHasPermission = vi.fn(permission => permission === 'postTeam');
 
     render(
@@ -56,15 +53,12 @@ describe('TeamTableSearchPanelBase', () => {
       </Provider>,
     );
 
-    // Using screen.debug() to see what's being rendered
-    screen.debug();
-
     const createNewTeamButton = screen.getByText('Create New Team');
     expect(createNewTeamButton).toBeInTheDocument();
   });
 
   it('calls onCreateNewTeamClick when the "Create New Team" button is clicked', () => {
-    const { getByRole } = render(
+    render(
       <Provider store={store}>
         <TeamTableSearchPanelBase
           onCreateNewTeamClick={initialProps.onCreateNewTeamClick}
@@ -75,14 +69,14 @@ describe('TeamTableSearchPanelBase', () => {
       </Provider>,
     );
 
-    const createNewTeamButton = getByRole('button', { name: 'Create New Team' });
+    const createNewTeamButton = screen.getByRole('button', { name: 'Create New Team' });
+    expect(createNewTeamButton).toBeInTheDocument();
     // fireEvent.click(createNewTeamButton);
     // expect(initialProps.onCreateNewTeamClick).toHaveBeenCalled();
-    expect(createNewTeamButton).toBeInTheDocument();
   });
 
   it('calls onSearch when the input value changes', () => {
-    const { getByPlaceholderText } = render(
+    render(
       <Provider store={store}>
         <TeamTableSearchPanelBase
           onCreateNewTeamClick={initialProps.onCreateNewTeamClick}
@@ -93,7 +87,7 @@ describe('TeamTableSearchPanelBase', () => {
       </Provider>,
     );
 
-    const searchInput = getByPlaceholderText('Search Text');
+    const searchInput = screen.getByPlaceholderText('Search Text');
     fireEvent.change(searchInput, { target: { value: 'search query' } });
     expect(initialProps.onSearch).toHaveBeenCalledWith('search query');
   });

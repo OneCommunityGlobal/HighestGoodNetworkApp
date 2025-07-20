@@ -1,8 +1,7 @@
-import { render, fireEvent, screen } from '@testing-library/react';
+import { render, fireEvent, screen, waitFor } from '@testing-library/react';
 import * as reduxHooks from 'react-redux';
 import configureStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
-import { waitFor } from '@testing-library/react';
 import { themeMock } from '../../../__tests__/mockStates';
 import { toggleDateSuggestedSortDirection, toggleUserSortDirection } from '../actions';
 import TaskEditSuggestions from '../TaskEditSuggestions';
@@ -50,9 +49,7 @@ describe('TaskEditSuggestions', () => {
     store = mockStore(initialState);
     mockDispatch = vi.fn();
     vi.spyOn(reduxHooks, 'useDispatch').mockReturnValue(mockDispatch);
-    vi
-      .spyOn(reduxHooks, 'useSelector')
-      .mockImplementation(selector => selector(store.getState()));
+    vi.spyOn(reduxHooks, 'useSelector').mockImplementation(selector => selector(store.getState()));
   });
 
   afterEach(() => {
@@ -134,9 +131,7 @@ describe('TaskEditSuggestions loading', () => {
     store = mockStore(initialState);
     mockDispatch = vi.fn();
     vi.spyOn(reduxHooks, 'useDispatch').mockReturnValue(mockDispatch);
-    vi
-      .spyOn(reduxHooks, 'useSelector')
-      .mockImplementation(selector => selector(store.getState()));
+    vi.spyOn(reduxHooks, 'useSelector').mockImplementation(selector => selector(store.getState()));
   });
 
   afterEach(() => {
