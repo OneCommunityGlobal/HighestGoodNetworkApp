@@ -310,8 +310,15 @@ export default function WeeklyProjectSummary() {
         content: [1, 2, 3, 4].map((_, index) => {
           const uniqueId = uuidv4();
           return (
-            <div key={uniqueId} className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
-              {index === 2 ? <CostPredictionChart projectId={1} /> : index === 3 ? <ActualVsPlannedCost /> : '📊 Card'}
+            <div
+              key={uniqueId}
+              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+            >
+              {(() => {
+                if (index === 2) return <CostPredictionChart projectId={1} />;
+                if (index === 3) return <ActualVsPlannedCost />;
+                return '📊 Card';
+              })()}
             </div>
           );
         }),
