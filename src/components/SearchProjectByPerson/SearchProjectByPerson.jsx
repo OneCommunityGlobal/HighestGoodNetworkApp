@@ -56,7 +56,8 @@ export default function SearchProjectByPerson({ onSearch, suggestions, onSelectS
                 onClick={() => handleSuggestionClick(suggestion)}
                 className="suggestion-button"
               >
-                {suggestion.firstName} {suggestion.lastName}
+                {suggestion.firstName}
+                {suggestion.lastName}
               </button>
             </li>
           ))}
