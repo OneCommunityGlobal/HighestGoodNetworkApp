@@ -21,52 +21,6 @@
   color: #333;
 }
 
-/* Layout for filter controls */
-.filters-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: flex-start;
-  margin-bottom: 1rem;
-}
-
-/* Individual filter group */
-.filter-group {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  flex: 0 0 auto;
-  min-width: 140px;
-}
-
-/* Label above each filter */
-.filter-group label {
-  font-size: 0.85rem;
-  color: #666;
-  margin-bottom: 4px;
-}
-
-/* Shared styles for select and date input */
-.filter-select,
-.filter-input {
-  font-size: 0.9rem;
-  padding: 6px 8px;
-  height: 32px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background-color: #fff;
-  transition: border-color 0.2s;
-  appearance: none;
-  box-sizing: border-box;
-}
-
-/* Focus state for inputs */
-.filter-select:focus,
-.filter-input:focus {
-  outline: none;
-  border-color: #007bff;
-}
-
 /* Wrapper for the chart canvas */
 .chart-wrapper {
   width: 100%;
@@ -83,14 +37,32 @@
   display: block;
 }
 
+/* Light mode for multi select*/
+.custom-select__control {
+  background-color: #fff;
+  color: #000;
+  border-color: #ccc;
+}
+
+.custom-select__multi-value {
+  background-color: #e2e6ea;
+}
+
+.custom-select__multi-value__label {
+  color: #000;
+}
+
+.custom-select__multi-value__remove {
+  color: #000;
+}
+
+.custom-select__multi-value__remove:hover {
+  background-color: #ced4da;
+  color: #fff;
+}
+
 /* Stack filters on narrow screens */
 @media (max-width: 768px) {
-  .filters-container {
-    flex-direction: column;
-  }
-  .filter-group {
-    width: 100%;
-  }
   .chart-wrapper {
     max-height: 300px;
   }
@@ -104,11 +76,6 @@
   .chart-title {
     font-size: 1rem;
     margin-bottom: 8px;
-  }
-  .filter-group label,
-  .filter-select,
-  .filter-input {
-    font-size: 0.8rem;
   }
   .chart-wrapper {
     max-height: 250px;
@@ -124,80 +91,50 @@
 }
 
 /* Text color in dark mode */
-.dark-mode .chart-title,
-.dark-mode .filter-group label {
+.dark-mode .chart-title {
   color: var(--text-color);
 }
 
-/* Inputs in dark mode */
-.dark-mode .filter-select,
-.dark-mode .filter-input {
-  background-color: var(--section-bg);
-  border-color: var(--section-title-bg);
-  color: var(--text-color);
+/* Dark background for react-datepicker input */
+.dark-theme .datepicker-dark {
+  background-color: #2b3e59 !important;
+  color: #fff !important;
+  border-color: #6b6767 !important;
 }
 
-/* Match project-toggle to other inputs */
-.dark-mode .project-dropdown-toggle {
-  background-color: var(--section-bg);
-  border-color: var(--section-title-bg);
-  color: var(--text-color);
+/* Dark mode for multi select*/
+.dark-theme .custom-select__control, .dark-theme .custom-select__menu {
+  background-color: #2b3e59!important;
+  border-color: #666!important;
+  color: #fff!important;
 }
 
-/* ===== Project dropdown toggle ===== */
-.project-dropdown-toggle {
-  font-size: 0.9rem;
-  padding: 6px 8px;
-  height: 32px;
-  line-height: 1.2;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background-color: #fff;
-  box-sizing: border-box;
-  appearance: none;
-  color: #333;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
+.dark-theme .custom-select__multi-value {
+  background-color: #1c2541!important;
 }
 
-/* Popup list styling */
-.project-dropdown-popup {
-  position: absolute;
-  background-color: #fff;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  margin-top: 4px;
-  padding: 6px 8px;
-  max-height: 160px;
-  overflow-y: auto;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  z-index: 999;
-  width: 100%;
+.dark-theme .custom-select__multi-value__label {
+  color: #fff!important;
 }
 
-/* Hide native scrollbar */
-.project-dropdown-popup::-webkit-scrollbar {
-  width: 0;
-  background: transparent;
+.dark-theme .custom-select__multi-value__remove {
+  color: #fff!important;
 }
 
-/* Each option in popup */
-.project-dropdown-popup label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.85rem;
-  margin-bottom: 4px;
-  cursor: pointer;
+.dark-theme .custom-select__multi-value__remove:hover {
+  background-color: #ff6b6b!important;
+  color: #fff!important;
 }
 
-/* Dark mode for popup items */
-.dark-mode .project-dropdown-popup {
-  background-color: var(--section-bg);
-  border-color: var(--section-title-bg);
+.dark-theme .custom-select__option {
+  background-color: #2b3e59!important;
+  color: #fff!important;
 }
 
-.dark-mode .project-dropdown-popup label {
-  color: var(--text-color);
+.dark-theme .custom-select__option--is-focused {
+  background-color: #6c757d!important;
+}
+
+.dark-theme .custom-select__option--is-selected {
+  background-color: #007bff!important;
 }

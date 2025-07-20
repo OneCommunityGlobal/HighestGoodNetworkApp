@@ -224,6 +224,17 @@ export const ENDPOINTS = {
   BM_TAGS: `${APIEndpoint}/bm/tags`,
   BM_TAG_ADD: `${APIEndpoint}/bm/tags`,
   BM_TAGS_DELETE: `${APIEndpoint}/bm/tags`,
+   // bm issues endpoints
+  BM_GET_OPEN_ISSUES: (projectIds, startDate, endDate) => {
+    let url = `${APIEndpoint}/bm/issues/most-expensive`;
+    const params = [];
+    if (projectIds) params.push(`projectIds=${projectIds}`);
+    if (startDate) params.push(`startDate=${startDate}`);
+    if (endDate) params.push(`endDate=${endDate}`);
+    if (params.length > 0) url += `?${params.join('&')}`;
+    return url;
+  },
+  BM_GET_ISSUE_PROJECTS: `${APIEndpoint}/bm/issues/projects`,
 
   GET_TIME_OFF_REQUESTS: () => `${APIEndpoint}/getTimeOffRequests`,
   ADD_TIME_OFF_REQUEST: () => `${APIEndpoint}/setTimeOffRequest`,
