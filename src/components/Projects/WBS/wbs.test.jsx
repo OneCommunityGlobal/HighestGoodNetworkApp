@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
@@ -8,6 +7,8 @@ import axios from 'axios';
 import configureStore from 'redux-mock-store';
 import WBS from './wbs';
 import { setWBSStart, setWBS } from '../../../actions/wbs';
+
+
 
 jest.mock('../../../actions/wbs', () => ({
   addNewWBS: jest.fn(),
@@ -74,7 +75,6 @@ describe('WBS Component', () => {
   });
 
   it('dispatches setWBSStart and setWBS when fetchAllWBS is called on mount', async () => {
-    jest.setTimeout(10000);
     const mockWBSData = [{ _id: 'wbs1', wbsName: 'WBS 1' }];
     axios.get.mockResolvedValueOnce({ data: mockWBSData });
 
@@ -83,10 +83,10 @@ describe('WBS Component', () => {
     expect(store.dispatch).toHaveBeenCalledWith(setWBSStart());
 
     await waitFor(() => {
-      expect(store.dispatch).toHaveBeenCalledWith(setWBSStart());
       expect(store.dispatch).toHaveBeenCalledWith(setWBS(mockWBSData));
     });
   });
+
 
   it('renders AddWBS component', () => {
     renderComponent();
@@ -115,4 +115,5 @@ describe('WBS Component', () => {
     expect(screen.getByText('#')).toBeInTheDocument();
     expect(screen.getByText('Name')).toBeInTheDocument();
   });
+  
 });

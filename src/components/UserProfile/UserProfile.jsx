@@ -81,6 +81,7 @@ import ConfirmRemoveModal from './UserProfileModal/confirmRemoveModal';
 import { formatDateYYYYMMDD, CREATED_DATE_CRITERIA } from 'utils/formatDate.js';
 import { use } from 'react';
 import { postWarningByUserId, getSpecialWarnings, postNewWarningsByUserId } from '../../actions/warnings';
+import AccessManagementModal from './UserProfileModal/AccessManagementModal';
 
 function UserProfile(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -136,6 +137,7 @@ function UserProfile(props) {
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
   const toggleRemoveModal = () => setIsRemoveModalOpen(!isRemoveModalOpen);
   const [loadingSummaries, setLoadingSummaries] = useState(false);
+  const [showAccessManagementModal, setShowAccessManagementModal] = useState(false);
   const allRequests = useSelector(state => state.timeOffRequests?.requests);
 
   const updateRemovedImage = async () => {
@@ -323,7 +325,7 @@ function UserProfile(props) {
           ? memberNotSubmitted.join(', ')
           : '<list all team members names NOT included in the summary>';
 
-      const summaryIntroString = `This week’s summary was managed by ${currentManager.firstName} ${currentManager.lastName} and includes ${memberSubmittedString}. These people did NOT provide a summary ${memberDidntSubmitString}. <Insert the proofread and single-paragraph summary created by ChatGPT>`;
+      const summaryIntroString = `This week's summary was managed by ${currentManager.firstName} ${currentManager.lastName} and includes ${memberSubmittedString}. These people did NOT provide a summary ${memberDidntSubmitString}. <Insert the proofread and single-paragraph summary created by ChatGPT>`;
 
       setSummaryIntro(summaryIntroString);
     } catch (error) {
@@ -1163,6 +1165,13 @@ function UserProfile(props) {
       <TabToolTips />
       <BasicToolTips />
 
+      <AccessManagementModal
+        isOpen={showAccessManagementModal}
+        onClose={() => setShowAccessManagementModal(false)}
+        userProfile={userProfile}
+        darkMode={darkMode}
+      />
+
       <Container
         className={`py-5 ${darkMode ? 'bg-yinmn-blue text-light border-0' : ''}`}
         id="containerProfile"
@@ -1317,6 +1326,25 @@ function UserProfile(props) {
                 </Link>
               </span>
             )}
+            {(requestorRole === 'Owner' || requestorRole === 'Administrator') && (
+              <span className="mr-2">
+                <Button
+                  color="link"
+                  style={{ padding: '0', border: 'none', background: 'none' }}
+                  size="sm"
+                  onClick={() => setShowAccessManagementModal(true)}
+                  title={
+                    'Click to add user access to GitHub, Dropbox, Slack, and Sentry.'
+                  }
+                >
+                  <img
+                    src='/HGN_Add_Access.png'
+                    alt='Add Access'
+                    style={{ width: '20px', height: '20px' }}
+                  />
+                </Button>
+              </span>
+            )}
             {canChangeRehireableStatus && (
               <span className="mr-2">
                 <i
@@ -1364,7 +1392,7 @@ function UserProfile(props) {
             )}
           </div>
           <h6 className={darkMode ? 'text-light' : 'text-azure'}>{jobTitle}</h6>
-          <p className={`proile-rating ${darkMode ? 'text-light' : ''}`}>
+          <p className={`proile-rating ${darkMode ? 'text-light' : ''}`} style={{ textAlign: 'left' }}>
             {/* use converted date without tz otherwise the record's will updated with timezoned ts for start date.  */}
             From:{' '}
             <span className={darkMode ? 'text-light' : ''}>

@@ -207,28 +207,92 @@ const WeeklySummariesReport = props => {
     }
   };
 
-  // eslint-disable-next-line consistent-return
+  // Initial data loading
   const createIntialSummaries = async () => {
     try {
-      const initialTabIndex = 0;
-      const activeTab = navItems[initialTabIndex];
+      const {
+        allBadgeData,
+        getWeeklySummariesReport,
+        fetchAllBadges,
+        hasPermission,
+        auth,
+        setTeamCodes,
+      } = props;
 
-      const res = await props.getWeeklySummariesReport(initialTabIndex);
+      // Get the active tab from session storage or use default
+      const activeTab =
+        sessionStorage.getItem('tabSelection') === null
+          ? navItems[1]
+          : sessionStorage.getItem('tabSelection');
+
+      // Get the week index for the active tab
+      const weekIndex = navItems.indexOf(activeTab);
+
+      // console.log(`Initial load: Fetching data for tab ${activeTab} with weekIndex ${weekIndex}`);
+
+      // Set initial loading and active tab state
+      setState(prevState => ({
+        ...prevState,
+        loading: true,
+        activeTab,
+        tabsLoading: {
+          ...prevState.tabsLoading,
+          [activeTab]: true,
+        },
+      }));
+
+      // Get permissions
+      const badgeStatusCode = await fetchAllBadges();
+      setPermissionState(prev => ({
+        ...prev,
+        bioEditPermission: hasPermission('putUserProfileImportantInfo'),
+        canEditSummaryCount: hasPermission('putUserProfileImportantInfo'),
+        codeEditPermission:
+          hasPermission('editTeamCode') ||
+          auth.user.role === 'Owner' ||
+          auth.user.role === 'Administrator',
+        canSeeBioHighlight: hasPermission('highlightEligibleBios'),
+      }));
+
+      // Fetch data for the active tab only
+      const res = await getWeeklySummariesReport(weekIndex);
+      // console.log('API response:', res);
+      // console.log('Response data:', res?.data);
+      // console.log('Data is array:', Array.isArray(res?.data));
+      // console.log('Data length:', res?.data?.length);
       const summaries = res?.data ?? [];
 
+      if (!Array.isArray(summaries) || summaries.length === 0) {
+        setState(prevState => ({
+          ...prevState,
+          loading: false,
+          tabsLoading: {
+            ...prevState.tabsLoading,
+            [activeTab]: false,
+          },
+        }));
+        return null;
+      }
+
+      // Process the data
+      const teamCodeGroup = {};
+      const teamCodes = [];
+
+      // Shallow copy and sort
       let summariesCopy = [...summaries];
       summariesCopy = alphabetize(summariesCopy);
 
+      // Add new key of promised hours by week
       summariesCopy = summariesCopy.map(summary => {
         const promisedHoursByWeek = weekDates.map(weekDate =>
           getPromisedHours(weekDate.toDate, summary.weeklycommittedHoursHistory),
         );
+
         const filterColor = summary.filterColor || null;
+
         return { ...summary, promisedHoursByWeek, filterColor };
       });
 
-      const teamCodeGroup = {};
-      const teamCodes = [];
       const colorOptionGroup = new Set();
       const colorOptions = [];
       const COLORS = [
@@ -254,6 +318,7 @@ const WeeklySummariesReport = props => {
         '#C8A2C8',
       ];
 
+      // Process team codes and colors
       summariesCopy.forEach(summary => {
         const code = summary.teamCode || 'noCodeLabel';
         if (teamCodeGroup[code]) {
@@ -262,9 +327,7 @@ const WeeklySummariesReport = props => {
           teamCodeGroup[code] = [summary];
         }
 
-        if (summary.weeklySummaryOption) {
-          colorOptionGroup.add(summary.weeklySummaryOption);
-        }
+        if (summary.weeklySummaryOption) colorOptionGroup.add(summary.weeklySummaryOption);
       });
 
       Object.keys(teamCodeGroup).forEach(code => {
@@ -277,46 +340,57 @@ const WeeklySummariesReport = props => {
         }
       });
 
-      if (teamCodeGroup.noCodeLabel?.length > 0) {
-        teamCodes.push({
-          value: '',
-          label: `Select All With NO Code (${teamCodeGroup.noCodeLabel.length})`,
-          _ids: teamCodeGroup.noCodeLabel.map(item => item._id),
-        });
-      }
+      setTeamCodes(teamCodes);
 
       colorOptionGroup.forEach(option => {
-        colorOptions.push({ value: option, label: option });
+        colorOptions.push({
+          value: option,
+          label: option,
+        });
       });
 
-      colorOptions.sort((a, b) => a.label.localeCompare(b.label));
-      teamCodes.sort((a, b) => a.label.localeCompare(b.label));
+      colorOptions.sort((a, b) => `${a.label}`.localeCompare(`${b.label}`));
+      teamCodes
+        .sort((a, b) => `${a.label}`.localeCompare(`${b.label}`))
+        .push({
+          value: '',
+          label: `Select All With NO Code (${teamCodeGroup.noCodeLabel?.length || 0})`,
+          _ids: teamCodeGroup?.noCodeLabel?.map(item => item._id),
+        });
 
       const chartData = [];
 
+      // Store the data in the tab-specific state
       setState(prevState => ({
         ...prevState,
         loading: false,
-        activeTab,
+        allRoleInfo: [],
         summaries: summariesCopy,
-        filteredSummaries: summariesCopy,
         loadedTabs: [activeTab],
-        summariesByTab: { [activeTab]: summariesCopy },
+        summariesByTab: {
+          [activeTab]: summariesCopy,
+        },
+        badges: allBadgeData,
+        hasSeeBadgePermission: badgeStatusCode === 200,
+        filteredSummaries: summariesCopy,
         tableData: teamCodeGroup,
         chartData,
         COLORS,
         colorOptions,
         teamCodes,
         teamCodeWarningUsers: summariesCopy.filter(s => s.teamCodeWarning),
-        tabsLoading: { ...prevState.tabsLoading, [activeTab]: false },
-        selectedCodes: [],
+        auth,
+        tabsLoading: {
+          [activeTab]: false,
+        },
       }));
 
-      // 🔐 Now load info collections
+      // Now load info collections
       await intialInfoCollections(summariesCopy);
+
+      return summariesCopy;
     } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('Error in createInitialSummaries:', error);
+      // console.error('Error in createInitialSummaries:', error);
       setState(prevState => ({
         ...prevState,
         loading: false,
@@ -394,7 +468,6 @@ const WeeklySummariesReport = props => {
 
   const filterWeeklySummaries = () => {
     try {
-      const currentWeekIndex = navItems.findIndex(state.activeTab);
       const {
         selectedCodes,
         selectedColors,
@@ -424,19 +497,6 @@ const WeeklySummariesReport = props => {
         .map(([color]) => color);
 
       const temp = summaries.filter(summary => {
-        // if this user is inactive, only include them on their final week tab
-        if (!summary.isActive) {
-          const idx = summary.finalWeekIndex;
-          if (typeof idx !== 'number' || idx < 0 || idx >= weekDates.length) {
-            return false;
-          }
-          if (currentWeekIndex < idx) {
-            return false;
-          }
-
-          return true;
-        }
-
         const { activeTab } = state;
         const hoursLogged = (summary.totalSeconds[navItems.indexOf(activeTab)] || 0) / 3600;
         const isMeetCriteria =
@@ -608,7 +668,6 @@ const WeeklySummariesReport = props => {
       }));
     }
   };
-
   /**
    * Handle tab switching
    */
@@ -704,20 +763,10 @@ const WeeklySummariesReport = props => {
   };
 
   const handleSelectCodeChange = event => {
-    setState(prev => {
-      const selectedValues = event.map(e => e.value);
-      // Move selected codes to the front of the dropdown list // newly added
-      const reorderedTeamCodes = [
-        ...prev.teamCodes.filter(code => selectedValues.includes(code.value)), // selected first
-        ...prev.teamCodes.filter(code => !selectedValues.includes(code.value)), // then the rest
-      ];
-
-      return {
-        ...prev,
-        selectedCodes: event,
-        teamCodes: reorderedTeamCodes,
-      };
-    });
+    setState(prev => ({
+      ...prev,
+      selectedCodes: event,
+    }));
   };
 
   const handleOverHoursToggleChange = () => {
@@ -890,11 +939,6 @@ const WeeklySummariesReport = props => {
             _ids: updatedSummaries.filter(s => s.teamCode === replaceCode).map(s => s._id),
           });
 
-        const reorderedTeamCodes = [
-          updatedSelectedCodes[0], // the newly replaced code on top
-          ...updatedTeamCodes.filter(tc => tc.value !== updatedSelectedCodes[0].value),
-        ];
-
         const updatedWarningUsers = [...teamCodeWarningUsers];
         updatedUsers.forEach(({ userId, teamCodeWarning }) => {
           const existingIndex = updatedWarningUsers.findIndex(user => user._id === userId);
@@ -917,9 +961,7 @@ const WeeklySummariesReport = props => {
         setState(prev => ({
           ...prev,
           summaries: updatedSummaries,
-          // teamCodes: updatedTeamCodes,
-          teamCodes: reorderedTeamCodes,
-          // selectedCodes: [],
+          teamCodes: updatedTeamCodes,
           selectedCodes: updatedSelectedCodes,
           replaceCode: '',
           replaceCodeError: null,
@@ -1026,12 +1068,10 @@ const WeeklySummariesReport = props => {
     let isMounted = true;
     window._isMounted = isMounted;
 
-    // Wrap createIntialSummaries in an async fn so we can await it
-    const loadInitialData = async () => {
-      await createIntialSummaries();
-    };
-    // Kick off the async load on mount
-    loadInitialData();
+    // console.log('Initial useEffect running');
+
+    // Only load the initial tab, nothing else
+    createIntialSummaries();
 
     return () => {
       isMounted = false;
@@ -1063,37 +1103,6 @@ const WeeklySummariesReport = props => {
     state.summaries,
     state.activeTab,
   ]);
-
-  useEffect(() => {
-    // On mount: fetch all badges before deriving permissions
-    const fetchInitialPermissions = async () => {
-      try {
-        // Fetch all badges first so we can derive up‑to‑date permissions
-        await props.fetchAllBadges();
-        setPermissionState(prev => ({
-          ...prev,
-          bioEditPermission: props.hasPermission('putUserProfileImportantInfo'),
-          // codeEditPermission: props.hasPermission('replaceTeamCodes'),
-          // allow team‑code edits for specific roles or permissions
-          codeEditPermission:
-            props.hasPermission('editTeamCode') ||
-            props.auth?.user?.role === 'Owner' ||
-            props.auth?.user?.role === 'Administrator',
-          // Permit editing of summary hour counts if the user has that badge
-          canEditSummaryCount: props.hasPermission('editSummaryHoursCount'),
-          // Show bio highlights only to users with that permission
-          canSeeBioHighlight: props.hasPermission('highlightEligibleBios'),
-        }));
-      } catch (error) {
-        // log failure fetching badges or permissions
-        // eslint-disable-next-line no-console
-        console.error('Failed to fetch badges or permissions', error);
-      }
-    };
-
-    fetchInitialPermissions();
-  }, []);
-
   const { role, darkMode } = props;
   const { error } = props;
   const hasPermissionToFilter = role === 'Owner' || role === 'Administrator';
