@@ -1,3 +1,9 @@
+<<<<<<< HEAD
+=======
+
+import IssueHeader from './IssueHeader';
+
+>>>>>>> 754761c9ce377fbe7a0cf1abce7c385422e24da6
 import { useState, useEffect } from 'react';
 import {
   FiChevronLeft,
@@ -101,10 +107,17 @@ export default function IssueDashboard() {
         darkMode ? 'bg-oxford-blue text-light' : ''
       }`}
     >
+<<<<<<< HEAD
       <div>
         <IssueHeader />
       </div>
       <Row className="mb-3">
+=======
+    <div>
+    <IssueHeader/>
+</div>
+<Row className="mb-3">
+>>>>>>> 754761c9ce377fbe7a0cf1abce7c385422e24da6
         <Col>
           <h4 className="fw-semibold">Issue Dashboard</h4>
         </Col>
@@ -370,7 +383,10 @@ export default function IssueDashboard() {
             </div>
           </div>
         </div>
+<<<<<<< HEAD
       )}
+=======
+>>>>>>> 754761c9ce377fbe7a0cf1abce7c385422e24da6
     </div>
   );
 }
