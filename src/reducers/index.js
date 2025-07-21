@@ -63,6 +63,7 @@ import HGNFormReducer from './hgnFormReducers';
 // import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
 import bmInjuryReducer from './bmdashboard/injuryReducer';
 // import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
+import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
 import messageReducer from './lbdashboard/messagingReducer';
 import userPreferencesReducer from './lbdashboard/userPreferencesReducer';
 
@@ -121,6 +122,7 @@ const localReducers = {
   bmConsumables: consumablesReducer,
   bmReusables: reusablesReducer,
   dashboard: dashboardReducer,
+  weeklyProjectSummary: weeklyProjectSummaryReducer,
 
   // lbdashboard
   wishlistItem: wishListReducer,

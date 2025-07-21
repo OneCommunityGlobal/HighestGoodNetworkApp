@@ -49,7 +49,7 @@ function BlueSquareStats({ isLoading, blueSquareStats, comparisonType }) {
         <DonutChart
           title="TOTAL BLUE SQUARES"
           totalCount={totalBlueSquares.count}
-          percentageChange={totalBlueSquares.comparisonPercentage}
+          percentageChange={totalBlueSquares.comparisonPercentage ?? 0}
           data={data}
           colors={BLUE_SQUARE_STATS_COLORS}
           comparisonType={comparisonType}
