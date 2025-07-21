@@ -123,6 +123,7 @@ describe('TagsSearch Component', () => {
       expect(addResources).toHaveBeenCalledWith('aaa123', 'aaa', 'volunteer', undefined);
       expect(addResources).toHaveBeenCalledWith('aaa067', 'aaa', 'owner', undefined);
     });
+    
   });
 
   it('does not add resource if no member is clicked', async () => {

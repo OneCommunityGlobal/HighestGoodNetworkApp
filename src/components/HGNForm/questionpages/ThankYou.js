@@ -1,9 +1,9 @@
-import '../styles/QuestionnaireInfo.css';
+import styles from '../styles/QuestionnaireInfo.module.css';
 
 function ThankYou() {
   return (
-    <div className="questionnaire-info">
-      <div className="blue-strip" />
+    <div className={`${styles.questionnaireInfo}`}>
+      <div className={`${styles.blueStrip}`} />
       <h1 style={{ marginBottom: '40px' }}>HGN Development Team Questionnaire</h1>
       <p style={{ marginBottom: '30px', fontSize: '16px', fontWeight: 'bold' }}>
         Thank you for your response! Your answers have been successfully recorded.

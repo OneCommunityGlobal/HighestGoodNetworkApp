@@ -7,7 +7,7 @@ import { fetchBMProjects } from 'actions/bmdashboard/projectActions';
 import { fetchToolTypes } from 'actions/bmdashboard/invTypeActions';
 import BMError from '../shared/BMError';
 import PurchaseForm from './PurchaseForm';
-import './PurchaseTool.css';
+import styles from './PurchaseTool.module.css';
 
 export default function PurchaseTool() {
   const dispatch = useDispatch();
@@ -37,8 +37,8 @@ export default function PurchaseTool() {
   }
 
   return (
-    <main className="purchase-tool-container">
-      <header className="purchase-tool-header">
+    <main className={`${styles.purchaseToolContainer}`}>
+      <header className={`${styles.purchaseToolHeader}`}>
         <h2>Purchase Request: Tools</h2>
         <div className="inv-form-info">
           <BsInfoCircle />

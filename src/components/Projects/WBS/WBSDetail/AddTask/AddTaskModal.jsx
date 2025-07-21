@@ -8,6 +8,7 @@ import dateFnsFormat from 'date-fns/format';
 import { boxStyle, boxStyleDark } from 'styles';
 import { useMemo } from 'react';
 import { addNewTask } from '../../../../../actions/task';
+import { faPlusCircle, faMinusCircle } from '@fortawesome/free-solid-svg-icons';
 import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from '../../../../../languages/en/messages';
 import {
   START_DATE_ERROR_MESSAGE,
@@ -18,6 +19,7 @@ import '../../../../Header/DarkMode.css';
 import TagsSearch from '../components/TagsSearch';
 import './AddTaskModal.css';
 import { fetchAllMembers } from 'actions/projectMembers';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 
 const TINY_MCE_INIT_OPTIONS = {
@@ -39,7 +41,7 @@ function AddTaskModal(props) {
    * -------------------------------- variable declarations --------------------------------
    */
   // props from store
-  const { tasks, copiedTask, allMembers, allProjects, error, darkMode } = props;
+  const { copiedTask, allMembers, allProjects, error, darkMode, tasks } = props;
 
   const handleBestHoursChange = e => {
     setHoursBest(e.target.value);
@@ -69,8 +71,8 @@ function AddTaskModal(props) {
   // states from hooks
 
   const defaultCategory = useMemo(() => {
-  if (props.taskId) {
-    const task = tasks.find(({ _id }) => _id === props.taskId);
+  if (props.taskId && Array.isArray(props.tasks)) {
+    const task = props.tasks.find(({ _id }) => _id === props.taskId);
     return task?.category || 'Unspecified';
   } 
   if (props.projectId) {
@@ -79,7 +81,7 @@ function AddTaskModal(props) {
   }
 
   return 'Unspecified';
-}, [props.taskId, props.projectId, tasks, allProjects.projects]);
+}, [props.taskId, props.projectId, props.tasks, allProjects.projects]);
 
 
 
@@ -134,9 +136,11 @@ function AddTaskModal(props) {
   };
 
   const getNewNum = () => {
+    if (!Array.isArray(props.tasks)) return '1';
     let newNum;
+    console.log(props)
     if (props.taskId) {
-      const numOfLastInnerLevelTask = tasks.reduce((num, task) => {
+      const numOfLastInnerLevelTask = props.tasks.reduce((num, task) => {
         if (task.mother === props.taskId) {
           const numIndexArray = task.num.split('.');
           const numOfInnerLevel = numIndexArray[props.level];
@@ -148,7 +152,7 @@ function AddTaskModal(props) {
       currentLevelIndexes[props.level] = `${numOfLastInnerLevelTask + 1}`;
       newNum = currentLevelIndexes.join('.');
     } else {
-      const numOfLastLevelOneTask = tasks.reduce((num, task) => {
+      const numOfLastLevelOneTask = props.tasks.reduce((num, task) => {
         if (task.level === 1) {
           const numIndexArray = task.num.split('.');
           const indexOfFirstNum = numIndexArray[0];
@@ -330,7 +334,10 @@ function AddTaskModal(props) {
    * -------------------------------- useEffects --------------------------------
    */
   useEffect(() => {
-    setNewTaskNum(getNewNum());
+    if (modal) {
+      setNewTaskNum(getNewNum());
+    }
+    // setNewTaskNum(getNewNum());
   }, [modal]);
 
   useEffect(() => {
@@ -671,12 +678,28 @@ function AddTaskModal(props) {
                       aria-label="Add Link"
                       onClick={addLink}
                     >
-                      Add Link
+                      <FontAwesomeIcon
+                        icon={faPlusCircle}
+                        title="Add link"
+                        style={{
+                          color: '#007bff',           
+                          cursor: 'pointer',
+                          fontSize: '1.1rem',         
+                          marginLeft: '8px',          
+                          verticalAlign: 'middle',    
+                        }}
+                      />
                     </button>
                   </div>
                   <div>
                     {links.map((link, i) => (
-                      <div key={i} className="link-item">
+                      <div key={i} className="link-item" style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'flex-start', 
+                        gap: '8px',
+                        marginBottom: '4px',
+                      }}>
                         <a href={link} className="task-link" target="_blank" rel="noreferrer">
                           {link}
                         </a>
@@ -684,8 +707,24 @@ function AddTaskModal(props) {
                           type="button"
                           aria-label={`Delete link ${link}`}
                           onClick={() => removeLink(i)}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            marginLeft: '8px',
+                            padding: 0,
+                            display: 'flex',
+                            alignItems: 'center',
+                            cursor: 'pointer',
+                          }}
                         >
-                          Delete
+                          <FontAwesomeIcon
+                            icon={faMinusCircle}
+                            title="Remove link"
+                            style={{
+                              color: '#dc3545', // Bootstrap red
+                              fontSize: '1.1rem',
+                            }}
+                          />
                         </button>
                       </div>
                     ))}
@@ -714,7 +753,7 @@ function AddTaskModal(props) {
               </div>
               <div>
                 <div className={`border p-1 ${fontColor}`} aria-labelledby="why-task-label">
-                  <h4 id="why-task-label">Why this Task is Important</h4>
+                  <div id="why-task-label">Why this Task is Important</div>
                   <Editor
                     tinymceScriptSrc="/tinymce/tinymce.min.js"
                     licenseKey="gpl"
@@ -728,7 +767,7 @@ function AddTaskModal(props) {
               </div>
               <div>
                 <div className={`border p-1 ${fontColor}`} aria-labelledby="design-intent-label">
-                  <h4 id="design-intent-label">Design Intent</h4>
+                  <div id="design-intent-label">Design Intent</div>
                   <Editor
                     tinymceScriptSrc="/tinymce/tinymce.min.js"
                     licenseKey="gpl"
@@ -742,7 +781,7 @@ function AddTaskModal(props) {
               </div>
               <div>
                 <div className={`border p-1 ${fontColor}`} aria-labelledby="endstate-label">
-                  <h4 id="endstate-label">Endstate</h4>
+                  <div id="endstate-label">Endstate</div>
                   <Editor
                     tinymceScriptSrc="/tinymce/tinymce.min.js"
                     licenseKey="gpl"
@@ -754,11 +793,8 @@ function AddTaskModal(props) {
                   />
                 </div>
               </div>
-
-              <div className="d-flex border">
-                <span scope="col" className={`form-date p-1 ${fontColor}`}>
-                  Start Date
-                </span>
+              <div className="d-flex border add-modal-dt">
+                <span scope="col" className={`form-date p-1 ${fontColor}`}>Start Date</span>
                 <span scope="col" className="border-left p-1">
                   <div>
                     <DayPickerInput
@@ -772,7 +808,7 @@ function AddTaskModal(props) {
                   </div>
                 </span>
               </div>
-              <div className="d-flex border align-items-center">
+              <div className="d-flex border align-items-center  add-modal-dt">
                 <label
                   htmlFor="end-date-input"
                   className={`form-date p-1 ${fontColor}`}
@@ -823,7 +859,7 @@ function AddTaskModal(props) {
 }
 
 const mapStateToProps = state => ({
-  tasks: state.tasks.taskItems,
+  // tasks: state.tasks.taskItems,
   copiedTask: state.tasks.copiedTask,
   allMembers: state.projectMembers.members,
   allProjects: state.allProjects,

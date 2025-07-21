@@ -272,9 +272,6 @@ describe('Force Password Update behaviour', () => {
     });
   });
   it('should update password after submit is clicked', async () => {
-    // const pushSpy = jest.spyOn(history, 'replace');
-    // eslint-disable-next-line no-unused-vars
-    const history = { replace: jest.fn() };
     fireEvent.change(screen.getByLabelText('New Password:'), {
       target: { value: 'newPassword8' },
     });
@@ -287,17 +284,13 @@ describe('Force Password Update behaviour', () => {
 
     await waitFor(() => {
       expect(passwordUpdated).toBeTruthy();
-      fireEvent.click(
-        screen.getByText(
-          'You will now be directed to the login page where you can login with your new password.',
-        ),
-      );
     });
-    /*
-    await waitFor(()=> {
-      expect(screen.getByLabelText('Email:')).toBeTruthy();
-    });
-    */
+
+    // Wait for the toast message to appear
+    const toastMessage = await screen.findByText(
+      'You will now be directed to the login page where you can login with your new password.',
+    );
+    expect(toastMessage).toBeInTheDocument();
   });
 });
 

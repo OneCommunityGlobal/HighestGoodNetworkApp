@@ -313,109 +313,106 @@ export default function PaidLaborCost() {
   };
 
   return (
-    <div>
-      <div className={`paid-labor-cost-container ${darkMode ? 'dark-mode' : ''}`}>
-        <h4 className="paid-labor-cost-title">Paid Labor Cost</h4>
+    <div className={`paid-labor-cost-container ${darkMode ? 'dark-mode' : ''}`}>
+      <h4 className="paid-labor-cost-title">Paid Labor Cost</h4>
 
-        {/* Loading indicator */}
-        {loading ? (
-          <div className="paid-labor-cost-loading">Loading data...</div>
-        ) : (
-          <>
-            {/* Filter Row */}
-            <div className="paid-labor-cost-filters">
-              {/* Task Filter */}
-              <div className="paid-labor-cost-filter-group">
-                <label className="paid-labor-cost-filter-label" htmlFor="task-filter">
-                  Tasks
-                </label>
-                <select
-                  id="task-filter"
-                  value={taskFilter}
-                  onChange={e => setTaskFilter(e.target.value)}
-                  className="paid-labor-cost-filter-select"
-                >
-                  <option value="ALL">ALL</option>
-                  {taskOptions.map(option => (
-                    <option key={option.id} value={option.value}>
-                      {option.value}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Project Filter */}
-              <div className="paid-labor-cost-filter-group">
-                <label className="paid-labor-cost-filter-label" htmlFor="project-filter">
-                  Project
-                </label>
-                <select
-                  id="project-filter"
-                  value={projectFilter}
-                  onChange={e => setProjectFilter(e.target.value)}
-                  className="paid-labor-cost-filter-select"
-                >
-                  <option value="All Projects">ALL</option>
-                  {projectOptions.map(option => (
-                    <option key={option.id} value={option.value}>
-                      {option.value}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Date Filter */}
-              <div className="paid-labor-cost-filter-group">
-                <label className="paid-labor-cost-filter-label" htmlFor="date-filter">
-                  Dates
-                </label>
-                <select
-                  id="date-filter"
-                  value={dateMode}
-                  onChange={e => {
-                    setDateMode(e.target.value);
-                    // Reset date range when the date filter changes
-                    setDateRange({ startDate: null, endDate: null });
-                  }}
-                  className="paid-labor-cost-filter-select"
-                >
-                  {dateOptions.map(option => (
-                    <option key={option.id} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            {/* Our Custom DateRangePicker shown in CUSTOM mode - replacing Airbnb DateRangePicker */}
-            {dateMode === 'CUSTOM' && (
-              <div className="paid-labor-cost-daterange-row">
-                <PaidLaborCostDatePicker
-                  startDate={dateRange.startDate}
-                  endDate={dateRange.endDate}
-                  onDatesChange={handleDateRangeChange}
-                  minDate={new Date(1980, 0, 1)}
-                  placeholder="Select date range"
-                />
-              </div>
-            )}
-
-            {/* Chart Container */}
-            <div className="paid-labor-cost-chart-scroll-wrapper">
-              <div
-                style={{
-                  width:
-                    tasksToInclude.length > 3 ? `${(tasksToInclude.length + 1) * 50}px` : '100%',
-                  height: '300px',
-                }}
+      {/* Loading indicator */}
+      {loading ? (
+        <div className="paid-labor-cost-loading">Loading data...</div>
+      ) : (
+        <>
+          {/* Filter Row */}
+          <div className="paid-labor-cost-filters">
+            {/* Task Filter */}
+            <div className="paid-labor-cost-filter-group">
+              <label className="paid-labor-cost-filter-label" htmlFor="task-filter">
+                Tasks
+              </label>
+              <select
+                id="task-filter"
+                value={taskFilter}
+                onChange={e => setTaskFilter(e.target.value)}
+                className="paid-labor-cost-filter-select"
               >
-                <Bar data={chartData} options={options} />
-              </div>
+                <option value="ALL">ALL</option>
+                {taskOptions.map(option => (
+                  <option key={option.id} value={option.value}>
+                    {option.value}
+                  </option>
+                ))}
+              </select>
             </div>
-          </>
-        )}
-      </div>
+
+            {/* Project Filter */}
+            <div className="paid-labor-cost-filter-group">
+              <label className="paid-labor-cost-filter-label" htmlFor="project-filter">
+                Project
+              </label>
+              <select
+                id="project-filter"
+                value={projectFilter}
+                onChange={e => setProjectFilter(e.target.value)}
+                className="paid-labor-cost-filter-select"
+              >
+                <option value="All Projects">ALL</option>
+                {projectOptions.map(option => (
+                  <option key={option.id} value={option.value}>
+                    {option.value}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Date Filter */}
+            <div className="paid-labor-cost-filter-group">
+              <label className="paid-labor-cost-filter-label" htmlFor="date-filter">
+                Dates
+              </label>
+              <select
+                id="date-filter"
+                value={dateMode}
+                onChange={e => {
+                  setDateMode(e.target.value);
+                  // Reset date range when the date filter changes
+                  setDateRange({ startDate: null, endDate: null });
+                }}
+                className="paid-labor-cost-filter-select"
+              >
+                {dateOptions.map(option => (
+                  <option key={option.id} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Our Custom DateRangePicker shown in CUSTOM mode - replacing Airbnb DateRangePicker */}
+          {dateMode === 'CUSTOM' && (
+            <div className="paid-labor-cost-daterange-row">
+              <PaidLaborCostDatePicker
+                startDate={dateRange.startDate}
+                endDate={dateRange.endDate}
+                onDatesChange={handleDateRangeChange}
+                minDate={new Date(1980, 0, 1)}
+                placeholder="Select date range"
+              />
+            </div>
+          )}
+
+          {/* Chart Container */}
+          <div className="paid-labor-cost-chart-scroll-wrapper">
+            <div
+              style={{
+                width: tasksToInclude.length > 3 ? `${(tasksToInclude.length + 1) * 50}px` : '100%',
+                height: '300px',
+              }}
+            >
+              <Bar data={chartData} options={options} />
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
