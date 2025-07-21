@@ -70,7 +70,7 @@ export default function ResourceUsage() {
   const [insightsTimePeriod, setInsightsTimePeriod] = useState('Last Week');
   const [data, setData] = useState(allData.venue);
 
-  const filterDataByDate = (data, period) => {
+  const filterDataByDate = (datas, period) => {
     const today = new Date();
     const startDate = new Date();
 
@@ -91,7 +91,7 @@ export default function ResourceUsage() {
     startDate.setHours(0, 0, 0, 0);
     today.setHours(23, 59, 59, 999);
 
-    return data.filter(item => {
+    return datas.filter(item => {
       const itemDate = new Date(item.date);
       return itemDate >= startDate && itemDate <= today;
     });
@@ -191,8 +191,8 @@ export default function ResourceUsage() {
           </Dropdown>
         </div>
         <div className="insights-grid">
-          {insights.map((insight, index) => (
-            <div key={index} className="insight-card">
+          {insights.map((_, insight) => (
+            <div key={insight.title} className="insight-card">
               <div className="insight-title">{insight.title}</div>
               <div className="insight-badge" style={{ backgroundColor: insight.color }}>
                 {insight.value}
