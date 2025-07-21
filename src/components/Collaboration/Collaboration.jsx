@@ -5,7 +5,7 @@ import { ApiEndpoint } from 'utils/URL';
 import OneCommunityImage from './One-Community-Horizontal-Homepage-Header-980x140px-2.png';
 
 import 'leaflet/dist/leaflet.css';
-
+import ApplicantSourceDonutChart from '../ApplicantSourceDonutChart/ApplicantSourceDonutChart';
 class Collaboration extends Component {
   constructor(props) {
     super(props);
@@ -301,6 +301,7 @@ class Collaboration extends Component {
               </button>
             ))}
           </div>
+          <ApplicantSourceDonutChart></ApplicantSourceDonutChart>
         </div>
       </div>
     );

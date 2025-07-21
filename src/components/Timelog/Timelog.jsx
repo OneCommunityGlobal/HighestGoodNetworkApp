@@ -637,7 +637,6 @@ useEffect(() => {
                             role={authUser.role} // Pass the 'role' prop to EditableInfoModal
                             darkMode={darkMode}
                           />
-
                           <span className="mr-2" style={{ padding: '1px' }}>
                             <ActiveCell
                               isActive={displayUserProfile.isActive}

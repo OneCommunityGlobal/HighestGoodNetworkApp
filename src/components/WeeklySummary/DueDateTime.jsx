@@ -22,7 +22,9 @@ function DueDateTime({ dueDate, isShow, darkMode }) {
           <FontAwesomeIcon icon={faCalendarCheck} className="mr-1" />{' '}
           {displayTime.format('MMM-DD-YY')} at {displayTime.format('HH:mm')} PST
         </div>
+        
         <CountdownTimer date={dueDate} darkMode={darkMode} />
+        
       </div>
     </div>
   );
