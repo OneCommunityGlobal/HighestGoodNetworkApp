@@ -165,10 +165,17 @@ export const permissionLabels = [
           'Gives the user permission to update the password of any user but Owner/Admin classes. ',
       },
       {
+        label: 'Reset / Change Password (Others)',
+        key: 'resetPassword',
+        description:
+          'Gives the user permission to Reset and/or Change the password of any user but Owner/Admin classes. ',
+      },
+      {
         label: 'Manage Time Off Requests',
         key: 'manageTimeOffRequests',
         description: 'Gives the user permission to Add/Delete/Edit Time off requests.',
       },
+
       {
         label: 'Change Rehireable Status',
         key: 'changeUserRehireableStatus',
@@ -185,6 +192,11 @@ export const permissionLabels = [
         key: 'setUserFinalDay',
         description:
           'Gives the user permission to use the "Set Final Day" button to set a final working day for a user on their profile page.',
+      },
+      {
+        label: 'Tracking Management',
+        key: 'setTrackingManagement',
+        description: 'Gives the user permission to interact with the edit warnings list modal.',
       },
     ],
   },
@@ -365,6 +377,18 @@ export const permissionLabels = [
                 key: 'putReviewStatus',
                 description:
                   'Give the user permission to interact with any "Ready for Review" task button to either mark it as complete or reset it with "More work needed, reset this button" ',
+              },
+              {
+                label: 'View and Interact with Task "X" on Dashboards',
+                key: 'canDeleteTask',
+                description:
+                  'Gives the user permission to DELETE tasks from the Management Dashboard showing all their team members. ',
+              },
+              {
+                label: 'Unassign Team Members from Tasks',
+                key: 'deleteDashboardTask',
+                description:
+                  'Gives the user permission to UNASSIGN tasks from only their TEAM members through the Dashboard -> task -> red X. ',
               },
             ],
           },

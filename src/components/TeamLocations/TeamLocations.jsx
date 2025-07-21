@@ -1,6 +1,6 @@
 import axios from 'axios';
 import 'leaflet/dist/leaflet.css';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, forwardRef } from 'react';
 import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import { Button, Container, Spinner } from 'reactstrap';
@@ -26,7 +26,7 @@ function getUserName(profile) {
   return userName;
 }
 
-function TeamLocations() {
+const TeamLocations = forwardRef(() => {
   const [userProfiles, setUserProfiles] = useState([]);
   const [manuallyAddedProfiles, setManuallyAddedProfiles] = useState([]);
   const [addNewIsOpen, setAddNewIsOpen] = useState(false);
@@ -418,7 +418,9 @@ function TeamLocations() {
             zoom={3}
             scrollWheelZoom
             style={{ border: '1px solid grey' }}
-            ref={mapRef}
+            whenCreated={mapInstance => {
+              mapRef.current = mapInstance;
+            }}
           >
             <EventComponent
               setPopupsOpen={setPopupsOpen}
@@ -454,7 +456,7 @@ function TeamLocations() {
       </div>
     </Container>
   );
-}
+});
 
 function EventComponent({ setPopupsOpen, currentUser, setMarkerPopupVisible }) {
   const map = useMapEvents({

@@ -2,7 +2,7 @@ import { Button, CardBody, Row, Col, Container } from 'reactstrap';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
-import './BMTimeLogCard.css';
+import styles from './BMTimeLogCard.module.css';
 import {
   startTimeLog,
   pauseTimeLog,
@@ -136,10 +136,10 @@ function BMTimeLogStopWatch({ projectId, memberId }) {
 
   return (
     <CardBody style={{ width: '100%' }}>
-      <Container className="stopwatch-container">
+      <Container className={`${styles.stopwatchContainer}`}>
         <Row className="justify-content-center">
           <Col xs="auto">
-            <Button className="member-stopwatch mb-2 px-3">
+            <Button className={`${styles.memberStopwatch} mb-2 px-3`}>
               {hr.toString().padStart(2, '0')}:{min.toString().padStart(2, '0')}:
               {sec.toString().padStart(2, '0')}
             </Button>
@@ -151,19 +151,19 @@ function BMTimeLogStopWatch({ projectId, memberId }) {
             <b>{startButtonText}</b>
           </Button>
 
-          <Button className="member-stop" onClick={stop}>
+          <Button className={`${styles.memberStop}`} onClick={stop}>
             <b>STOP</b>
           </Button>
         </Row>
         <Row className="justify-content-center mb-1">
           Start at:
           <Col>
-            <b className="font-color-gray">{currentTime}</b>
+            <b className={`${styles.fontColorGray}`}>{currentTime}</b>
           </Col>
         </Row>
         {/* <Row className="mb-2">Task: </Row> */}
         <Row className="justify-content-center">
-          <Button className="member-clear" onClick={clear}>
+          <Button className={`${styles.memberClear}`} onClick={clear}>
             <b>CLEAR</b>
           </Button>
         </Row>

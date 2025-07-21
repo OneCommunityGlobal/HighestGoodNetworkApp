@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Input, ListGroup, ListGroupItem } from 'reactstrap';
-import './MemberSearchBar.css';
+import styles from './MemberSearchBar.module.css';
 
 function MemberSearchBar({ id, value, onChange, inactive, usersList = [] }) {
   const [searchTerm, setSearchTerm] = useState(value);
@@ -69,7 +69,7 @@ function MemberSearchBar({ id, value, onChange, inactive, usersList = [] }) {
   };
 
   return (
-    <div className="member-search-container">
+    <div className={`${styles.memberSearchContainer}`}>
       <Input
         type="text"
         placeholder="Full Name"
@@ -82,11 +82,11 @@ function MemberSearchBar({ id, value, onChange, inactive, usersList = [] }) {
           }
         }}
         onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-        className="simplified-input"
+        className={`${styles.simplifiedInput}`}
       />
 
       {showSuggestions && suggestions.length > 0 && (
-        <ListGroup className="suggestions-list">
+        <ListGroup className={`${styles.suggestionsList}`}>
           {suggestions.map(suggestion => (
             <ListGroupItem
               key={`suggestion-${id}-${suggestion.firstName}-${suggestion.lastName}`}
@@ -100,10 +100,12 @@ function MemberSearchBar({ id, value, onChange, inactive, usersList = [] }) {
       )}
 
       {showSuggestions && suggestions.length === 0 && searchTerm.trim() !== '' && !loading && (
-        <div className="no-results">No {inactive ? 'inactive' : 'active'} members found</div>
+        <div className={`${styles.noResults}`}>
+          No {inactive ? 'inactive' : 'active'} members found
+        </div>
       )}
 
-      {loading && <div className="loading-indicator">Loading...</div>}
+      {loading && <div className={`${styles.loadingIndicator}`}>Loading...</div>}
     </div>
   );
 }
