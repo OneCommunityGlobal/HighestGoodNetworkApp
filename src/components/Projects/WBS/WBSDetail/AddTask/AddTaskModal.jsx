@@ -5,6 +5,9 @@ import ReactTooltip from 'react-tooltip';
 import DayPickerInput from 'react-day-picker/DayPickerInput';
 import { Editor } from '@tinymce/tinymce-react';
 import dateFnsFormat from 'date-fns/format';
+import dateFnsParse from 'date-fns/parse';
+import { isValid } from 'date-fns';
+import { DateUtils } from 'react-day-picker';
 import { boxStyle, boxStyleDark } from 'styles';
 import { useMemo } from 'react';
 import { addNewTask } from '../../../../../actions/task';
@@ -102,6 +105,8 @@ function AddTaskModal(props) {
   const [endstateInfo, setEndstateInfo] = useState('');
   const [startDateError, setStartDateError] = useState(false);
   const [endDateError, setEndDateError] = useState(false);
+  const [startDateFormatError, setStartDateFormatError] = useState(false);
+  const [endDateFormatError, setEndDateFormatError] = useState(false);
   const [dueDate, setDueDate] = useState('');
   const [modal, setModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -182,6 +187,37 @@ function AddTaskModal(props) {
 
   const formatDate = (date, format, locale) => dateFnsFormat(date, format, { locale });
 
+  const parseDate = (str, format, locale) => {
+    // Allow empty string for partial typing
+    if (!str || str.trim() === '') return undefined;
+    
+    try {
+      const parsed = dateFnsParse(str, format, new Date(), { locale });
+      if (DateUtils.isDate(parsed) && isValid(parsed)) {
+        return parsed;
+      }
+    } catch (error) {
+      // Return undefined for invalid dates while typing
+    }
+    return undefined;
+  };
+
+  const validateDateFormat = (dateString) => {
+    if (!dateString || dateString.trim() === '') return true;
+    
+    // Check if it matches the expected format pattern MM/dd/yy
+    const formatRegex = /^(0?[1-9]|1[0-2])\/(0?[1-9]|[12]\d|3[01])\/\d{2}$/;
+    if (!formatRegex.test(dateString)) return false;
+    
+    // Check if it's a valid date
+    try {
+      const parsed = dateFnsParse(dateString, FORMAT, new Date());
+      return isValid(parsed);
+    } catch (error) {
+      return false;
+    }
+  };
+
   const calHoursEstimate = (isOn = null) => {
     let currHoursMost = parseInt(hoursMost);
     let currHoursWorst = parseInt(hoursWorst);
@@ -214,16 +250,26 @@ function AddTaskModal(props) {
     }
   }, [hoursBest, hoursWorst, hoursMost, hoursEstimate]);
 
-  const changeDateStart = startDate => {
-    setStartedDate(startDate);
+  const changeDateStart = (_, __, dayPickerInput) => {
+    const value = dayPickerInput.getInput().value;
+    setStartedDate(value);
+    
+    // Validate format
+    const isValidFormat = validateDateFormat(value);
+    setStartDateFormatError(!isValidFormat);
   };
 
-  const changeDateEnd = dueDate => {
-    if (!startedDate) {
+  const changeDateEnd = (_, __, dayPickerInput) => {
+    const value = dayPickerInput.getInput().value;
+    if (!startedDate && value) {
       const newDate = dateFnsFormat(new Date(), FORMAT);
       setStartedDate(newDate);
     }
-    setDueDate(dueDate);
+    setDueDate(value);
+    
+    // Validate format
+    const isValidFormat = validateDateFormat(value);
+    setEndDateFormatError(!isValidFormat);
   };
 
   useEffect(()=>{
@@ -235,6 +281,25 @@ function AddTaskModal(props) {
       setStartDateError(false);
     }
   }, [startedDate, dueDate]);
+
+  // Validate date formats when dates change
+  useEffect(() => {
+    if (startedDate) {
+      const isValidFormat = validateDateFormat(startedDate);
+      setStartDateFormatError(!isValidFormat);
+    } else {
+      setStartDateFormatError(false);
+    }
+  }, [startedDate]);
+
+  useEffect(() => {
+    if (dueDate) {
+      const isValidFormat = validateDateFormat(dueDate);
+      setEndDateFormatError(!isValidFormat);
+    } else {
+      setEndDateFormatError(false);
+    }
+  }, [dueDate]);
 
   const addLink = () => {
     setLinks([...links, link]);
@@ -264,6 +329,8 @@ function AddTaskModal(props) {
     setCategory(defaultCategory);
     setStartDateError(false);
     setEndDateError(false);
+    setStartDateFormatError(false);
+    setEndDateFormatError(false);
     setHasNegativeHours(false);
   };
 
@@ -352,6 +419,8 @@ function AddTaskModal(props) {
       setDueDate('');
       setStartDateError(false);
       setEndDateError(false);
+      setStartDateFormatError(false);
+      setEndDateFormatError(false);
     }
   }, [modal]);
 
@@ -764,10 +833,14 @@ function AddTaskModal(props) {
                     <DayPickerInput
                       format={FORMAT}
                       formatDate={formatDate}
+                      parseDate={parseDate}
                       placeholder={`${dateFnsFormat(new Date(), FORMAT)}`}
-                      onDayChange={(day, mod, input) => changeDateStart(input.state.value)}
+                      onDayChange={changeDateStart}
                       value={startedDate}
                     />
+                    <div className="warning text-danger">
+                      {startDateFormatError && 'Please enter date in MM/dd/yy format'}
+                    </div>
                     <div className="warning">{startDateError ? START_DATE_ERROR_MESSAGE : ''}</div>
                   </div>
                 </span>
@@ -785,11 +858,15 @@ function AddTaskModal(props) {
                     id="end-date-input" // Add id to associate the label
                     format={FORMAT}
                     formatDate={formatDate}
+                    parseDate={parseDate}
                     placeholder={`${dateFnsFormat(new Date(), FORMAT)}`}
-                    onDayChange={(day, mod, input) => changeDateEnd(input.state.value)}
+                    onDayChange={changeDateEnd}
                     value={dueDate}
                     inputProps={{ 'aria-label': 'End Date' }} // Add aria-label for accessibility
                   />
+                  <div className="warning text-danger">
+                    {endDateFormatError && 'Please enter date in MM/dd/yy format'}
+                  </div>
                   <div className="warning">{endDateError ? END_DATE_ERROR_MESSAGE : ''}</div>
                 </span>
               </div>
@@ -801,7 +878,7 @@ function AddTaskModal(props) {
             color="primary"
             onClick={addNewTask}
             disabled={
-              taskName === '' || hoursWarning || isLoading || startDateError || endDateError || hasNegativeHours
+              taskName === '' || hoursWarning || isLoading || startDateError || endDateError || startDateFormatError || endDateFormatError || hasNegativeHours
             }
             style={darkMode ? boxStyleDark : boxStyle}
           >

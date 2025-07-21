@@ -10,6 +10,7 @@ import dateFnsParse from 'date-fns/parse';
 import parseISO from 'date-fns/parseISO';
 import { isValid } from 'date-fns';
 import { utcToZonedTime } from 'date-fns-tz';
+import { DateUtils } from 'react-day-picker';
 import { updateTask } from 'actions/task';
 import { Editor } from '@tinymce/tinymce-react';
 import hasPermission from 'utils/permissions';
@@ -60,6 +61,8 @@ function EditTaskModal(props) {
   const [startedDate, setStartedDate] = useState();
   const [dueDate, setDueDate] = useState();
   const [dateWarning, setDateWarning] = useState(false);
+  const [startDateFormatError, setStartDateFormatError] = useState(false);
+  const [endDateFormatError, setEndDateFormatError] = useState(false);
   const [currentMode, setCurrentMode] = useState('');
 
   const categoryOptions = [
@@ -145,16 +148,26 @@ function EditTaskModal(props) {
     }
   };
 
-  const changeDateStart = startDate => {
-    setStartedDate(startDate);
+  const changeDateStart = (_, __, dayPickerInput) => {
+    const value = dayPickerInput.getInput().value;
+    setStartedDate(value);
+    
+    // Validate format
+    const isValidFormat = validateDateFormat(value);
+    setStartDateFormatError(!isValidFormat);
   };
 
-  const changeDateEnd = dueDate => {
-    if (!startedDate) {
+  const changeDateEnd = (_, __, dayPickerInput) => {
+    const value = dayPickerInput.getInput().value;
+    if (!startedDate && value) {
       const newDate = dateFnsFormat(utcToZonedTime(new Date(), TIMEZONE), FORMAT);
       setStartedDate(newDate);
     }
-    setDueDate(dueDate);
+    setDueDate(value);
+    
+    // Validate format
+    const isValidFormat = validateDateFormat(value);
+    setEndDateFormatError(!isValidFormat);
   };
 
   useEffect(() => {
@@ -183,11 +196,34 @@ function EditTaskModal(props) {
     return dateFnsFormat(zonedDate, format);
   };
   const parseDate = (str, format, locale) => {
-    const parsed = dateFnsParse(str, format, new Date(), { locale });
-    if (DateUtils.isDate(parsed)) {
-      return parsed;
+    // Allow empty string for partial typing
+    if (!str || str.trim() === '') return undefined;
+    
+    try {
+      const parsed = dateFnsParse(str, format, new Date(), { locale });
+      if (DateUtils.isDate(parsed) && isValid(parsed)) {
+        return parsed;
+      }
+    } catch (error) {
+      // Return undefined for invalid dates while typing
     }
     return undefined;
+  };
+
+  const validateDateFormat = (dateString) => {
+    if (!dateString || dateString.trim() === '') return true;
+    
+    // Check if it matches the expected format pattern MM/dd/yy
+    const formatRegex = /^(0?[1-9]|1[0-2])\/(0?[1-9]|[12]\d|3[01])\/\d{2}$/;
+    if (!formatRegex.test(dateString)) return false;
+    
+    // Check if it's a valid date
+    try {
+      const parsed = dateFnsParse(dateString, FORMAT, new Date());
+      return isValid(parsed);
+    } catch (error) {
+      return false;
+    }
   };
 
   const addLink = () => {
@@ -237,9 +273,7 @@ function EditTaskModal(props) {
     if (error === 'none' || Object.keys(error).length === 0) {
       toggle();
       toast.success('Update Success!');
-      toast.success('Update Success!');
     } else {
-      toast.error(`Update failed! Error is ${props.tasks.error}`);
       toast.error(`Update failed! Error is ${props.tasks.error}`);
     }
   };
@@ -252,10 +286,7 @@ function EditTaskModal(props) {
       if (date.includes('T')) {
         const parsedDate = parseISO(date);
         if (!isValid(parsedDate)) return;
-
-        // Convert to timezone-aware date
-        const zonedDate = utcToZonedTime(parsedDate, TIMEZONE);
-        return dateFnsFormat(zonedDate, FORMAT);
+        return dateFnsFormat(parsedDate, FORMAT);
       }
 
       // Handle date string in FORMAT format
@@ -300,13 +331,34 @@ function EditTaskModal(props) {
     setWhyInfo(thisTask?.whyInfo);
     setIntentInfo(thisTask?.intentInfo);
     setEndstateInfo(thisTask?.endstateInfo);
-    setStartedDate(thisTask?.startedDatetime);
-    setDueDate(thisTask?.dueDatetime);
+    setStartedDate(convertDate(thisTask?.startedDatetime));
+    setDueDate(convertDate(thisTask?.dueDatetime));
+    setStartDateFormatError(false);
+    setEndDateFormatError(false);
   }, [thisTask]);
 
   useEffect(() => {
     ReactTooltip.rebuild();
   }, [links]);
+
+  // Validate date formats when dates change
+  useEffect(() => {
+    if (startedDate) {
+      const isValidFormat = validateDateFormat(startedDate);
+      setStartDateFormatError(!isValidFormat);
+    } else {
+      setStartDateFormatError(false);
+    }
+  }, [startedDate]);
+
+  useEffect(() => {
+    if (dueDate) {
+      const isValidFormat = validateDateFormat(dueDate);
+      setEndDateFormatError(!isValidFormat);
+    } else {
+      setEndDateFormatError(false);
+    }
+  }, [dueDate]);
 
   useEffect(() => {
     let isMounted = true;
@@ -844,16 +896,20 @@ function EditTaskModal(props) {
                       <DayPickerInput
                         format={FORMAT}
                         formatDate={formatDate}
+                        parseDate={parseDate}
                         placeholder={`${dateFnsFormat(new Date(), FORMAT)}`}
-                        onDayChange={(day, mod, input) => changeDateStart(input.state.value)}
-                        value={startedDate ? dateFnsFormat(new Date(startedDate), FORMAT) : ''}
+                        onDayChange={changeDateStart}
+                        value={startedDate || ''}
                       />
+                      <div className="warning text-danger">
+                        {startDateFormatError && 'Please enter date in MM/dd/yy format'}
+                      </div>
                       <div className="warning text-danger">
                         {dateWarning ? DUE_DATE_MUST_GREATER_THAN_START_DATE : ''}
                       </div>
                     </div>,
                     editable,
-                    convertDate(startedDate),
+                    startedDate,
                   )}
                 </td>
               </tr>
@@ -867,16 +923,20 @@ function EditTaskModal(props) {
                       <DayPickerInput
                         format={FORMAT}
                         formatDate={formatDate}
+                        parseDate={parseDate}
                         placeholder={`${dateFnsFormat(new Date(), FORMAT)}`}
-                        onDayChange={(day, mod, input) => changeDateEnd(input.state.value)}
-                        value={dueDate ? dateFnsFormat(new Date(dueDate), FORMAT) : ''}
+                        onDayChange={changeDateEnd}
+                        value={dueDate || ''}
                       />
+                      <div className="warning text-danger">
+                        {endDateFormatError && 'Please enter date in MM/dd/yy format'}
+                      </div>
                       <div className="warning text-danger">
                         {dateWarning ? DUE_DATE_MUST_GREATER_THAN_START_DATE : ''}
                       </div>
                     </div>,
                     editable,
-                    convertDate(dueDate),
+                    dueDate,
                   )}
                 </td>
               </tr>
@@ -890,7 +950,7 @@ function EditTaskModal(props) {
                 color="primary"
                 onClick={updateTask}
                 style={darkMode ? boxStyleDark : boxStyle}
-                disabled={dateWarning}
+                disabled={dateWarning || startDateFormatError || endDateFormatError}
               >
                 Update
               </Button>

@@ -333,11 +333,15 @@ function Task(props) {
               {parseFloat(props.estimatedHours).toFixed(2)}
             </td>
             <td className="desktop-view">
-              {startedDate.getFullYear() !== 1969 ? formatDate(startedDate) : null}
+              {startedDate.getFullYear() !== 1969 ? 
+                `${startedDate.toLocaleDateString('en-US', { month: 'short' })}-${startedDate.getDate().toString().padStart(2, '0')}-${startedDate.getFullYear()}` 
+                : null}
               <br />
             </td>
             <td className="desktop-view">
-              {dueDate.getFullYear() !== 1969 ? formatDate(dueDate) : null}
+              {dueDate.getFullYear() !== 1969 ? 
+                `${dueDate.toLocaleDateString('en-US', { month: 'short' })}-${dueDate.getDate().toString().padStart(2, '0')}-${dueDate.getFullYear()}` 
+                : null}
             </td>
             <td className="desktop-view">
               {props.links.map((link, i) =>
