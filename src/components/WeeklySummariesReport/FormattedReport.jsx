@@ -701,6 +701,7 @@ function Index({ summary, weekIndex, allRoleInfo, auth, handleSpecialColorDotCli
             <RoleInfoModal
               info={allRoleInfo.find(item => item.infoName === `${summary.role}Info`)}
               auth={auth}
+              roleName={`${summary.role}Info`}
             />
           )}
         </div>
