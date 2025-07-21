@@ -9,6 +9,7 @@ import EditableInfoModal from '../../UserProfile/EditableModal/EditableInfoModal
 function TotalContributorsReport({ startDate, endDate, userProfiles, darkMode, userRole }) {
   const [contributors, setContributors] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [dataReady, setDataReady] = useState(false);
   const [timeEntries, setTimeEntries] = useState([]);
   const [showMonthly, setShowMonthly] = useState(false);
   const [showYearly, setShowYearly] = useState(false);
@@ -21,17 +22,26 @@ function TotalContributorsReport({ startDate, endDate, userProfiles, darkMode, u
 
   // Fetch time entries for the selected period
   const loadTimeEntriesForPeriod = useCallback(async (controller) => {
+    const url = ENDPOINTS.TIME_ENTRIES_REPORTS;
+
+    if (!url) {
+      return;
+    }
+
     try {
       const response = await axios.post(
-        `${ENDPOINTS.APIEndpoint()}/TimeEntry/reports`,
-        {
-          fromDate,
-          toDate,
-          userList,
-        },
+        url,
+        { users: userList, fromDate, toDate },
         { signal: controller.signal }
       );
-      setTimeEntries(response.data);
+      const mappedTimeEntries = response.data.map(entry => ({
+        userId: entry.personId,
+        hours: entry.hours,
+        minutes: entry.minutes,
+        isTangible: entry.isTangible,
+        date: entry.dateOfWork,
+      }));
+      setTimeEntries(mappedTimeEntries);
     } catch (error) {
       if (!axios.isCancel(error)) {
         // Handle error silently or show user-friendly message
@@ -42,28 +52,72 @@ function TotalContributorsReport({ startDate, endDate, userProfiles, darkMode, u
 
   // Group time entries by user and calculate total hours
   const sumByUser = useCallback((entries) => {
-    return entries.reduce((acc, { userId, hours = 0, minutes = 0, tangibleTime = 0 }) => {
+    return entries.reduce((acc, { userId, hours: entryHours = 0, minutes: entryMinutes = 0, isTangible = false }) => {
       if (!acc[userId]) {
         acc[userId] = {
           userId,
           hours: 0,
           minutes: 0,
-          tangibleTime: 0,
+          tangibleHours: 0,
+          tangibleMinutes: 0,
         };
       }
-      acc[userId].hours += hours;
+
+      const hours = Number(entryHours);
+      const minutes = Number(entryMinutes);
+
+      // Sum total
       acc[userId].minutes += minutes;
-      acc[userId].tangibleTime += tangibleTime;
+      acc[userId].hours += hours;
+
+      // Normalize minutes to hours if >= 60
+      if (acc[userId].minutes >= 60) {
+        const extraHours = Math.floor(acc[userId].minutes / 60);
+        acc[userId].hours += extraHours;
+        acc[userId].minutes %= 60;
+      }
+
+      // Repeat for tangible
+      if (isTangible) {
+        acc[userId].tangibleMinutes += minutes;
+        acc[userId].tangibleHours += hours;
+
+        if (acc[userId].tangibleMinutes >= 60) {
+          const extraTangibleHours = Math.floor(acc[userId].tangibleMinutes / 60);
+          acc[userId].tangibleHours += extraTangibleHours;
+          acc[userId].tangibleMinutes %= 60;
+        }
+      }
+
       return acc;
     }, {});
   }, []);
 
   // Filter users who have contributed more than 10 hours
   const filterContributors = useCallback((users) => {
-    return users.filter(user => 
-      (user.hours + user.minutes/60) >= 10
-    );
-  }, []);
+    return users
+      .filter(user => {
+        const allTimeLogged = user.hours + user.minutes / 60.0;
+        return allTimeLogged >= 10;
+      })
+      .map(user => {
+        const matchedUser = userProfiles.find(profile => profile._id === user.userId);
+        if (matchedUser) {
+          const allTangibleTimeLogged = user.tangibleHours + user.tangibleMinutes / 60.0;
+          return {
+            userId: user.userId,
+            firstName: matchedUser.firstName,
+            lastName: matchedUser.lastName,
+            totalTime: (user.hours + user.minutes / 60.0).toFixed(2),
+            tangibleTime: allTangibleTimeLogged.toFixed(2),
+            hours: user.hours,
+            minutes: user.minutes,
+          };
+        }
+        return null;
+      })
+      .filter(Boolean);
+  }, [userProfiles]);
 
   // Group entries by time range (month/year)
   const groupByTimeRange = useCallback((entries, timeRange) => {
@@ -133,16 +187,18 @@ function TotalContributorsReport({ startDate, endDate, userProfiles, darkMode, u
   // Load data when date range changes
   useEffect(() => {
     setLoading(true);
+    setDataReady(false);
     const controller = new AbortController();
     loadTimeEntriesForPeriod(controller).then(() => {
       setLoading(false);
+      setDataReady(true);
     });
     return () => controller.abort();
   }, [loadTimeEntriesForPeriod]);
 
   // Process data when time entries are loaded
   useEffect(() => {
-    if (!loading && timeEntries.length > 0) {
+    if (!loading && dataReady) {
       setShowMonthly(false);
       setShowYearly(false);
       const groupedUsers = Object.values(sumByUser(timeEntries));
@@ -150,7 +206,7 @@ function TotalContributorsReport({ startDate, endDate, userProfiles, darkMode, u
       setContributors(contributedUsers);
       checkPeriodForSummary();
     }
-  }, [loading, timeEntries, sumByUser, filterContributors, checkPeriodForSummary]);
+  }, [loading, dataReady, timeEntries, sumByUser, filterContributors, checkPeriodForSummary]);
 
   if (loading) {
     return <Loading darkMode={darkMode} />;

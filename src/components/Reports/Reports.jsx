@@ -450,7 +450,8 @@ class ReportsPage extends Component {
       showAddTimeForm: false,
       showAddProjHistory: false,
       showAddPersonHistory: false,
-      showAddTeamHistory: false
+      showAddTeamHistory: false,
+      showCharts: !prevState.showContributorsReport
     }));
   }
 
@@ -851,14 +852,14 @@ class ReportsPage extends Component {
                     />
                   )}
                   {this.state.showContributorsReport && (
-              <TotalContributorsReport
-                startDate={this.state.startDate}
-                endDate={this.state.endDate}
-                userProfiles={userProfilesBasicInfo}
-                darkMode={darkMode}
-                userRole={userRole}
-              />
-            )}
+                    <TotalContributorsReport
+                      startDate={this.state.startDate}
+                      endDate={this.state.endDate}
+                      userProfiles={userProfilesBasicInfo}
+                      darkMode={darkMode}
+                      userRole={userRole}
+                    />
+                  )}
             {this.state.showAddTimeForm && myRole === 'Owner' && (
                     <AddLostTime
                       isOpen={this.state.showAddTimeForm}
