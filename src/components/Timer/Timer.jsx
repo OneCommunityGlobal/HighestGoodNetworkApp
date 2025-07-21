@@ -22,8 +22,10 @@ import config from '../../config.json';
 import TimeEntryForm from '../Timelog/TimeEntryForm';
 import Countdown from './Countdown';
 import TimerStatus from './TimerStatus';
+import TimerPopout from './TimerPopout';
 
-function Timer({ authUser, darkMode }) {
+function Timer({ authUser, darkMode, isPopout }) {
+  const realIsPopout = typeof isPopout === 'boolean' ? isPopout : !!window.opener;
   /**
    *  Because the websocket can not be closed when internet is cut off (lost server connection),
    *  the readyState will be stuck at OPEN, so here we need to use a custom readyState to
@@ -391,7 +393,6 @@ function Timer({ authUser, darkMode }) {
   }, [inacModal]);
 
   useEffect(() => {
-    // If initial json message is null, do nothing
     if (!isInitialJsonMessageReceived) return;
 
     sendGetTimer();
@@ -401,8 +402,157 @@ function Timer({ authUser, darkMode }) {
   const headerBg = darkMode ? 'bg-space-cadet' : '';
   const bodyBg = darkMode ? 'bg-yinmn-blue' : '';
 
+  if (realIsPopout) {
+    return (
+      <div className={cs(css.timer, darkMode ? 'dark-mode' : '')}>
+        <div className={css.timerContent}>
+          {customReadyState === ReadyState.OPEN && (
+            <Countdown
+              message={message}
+              timerRange={{ MAX_HOURS, MIN_MINS }}
+              running={running}
+              wsMessageHandler={wsJsonMessageHandler}
+              remaining={remaining}
+              setConfirmationResetModal={setConfirmationResetModal}
+              checkBtnAvail={checkBtnAvail}
+              handleStartButton={handleStartButton}
+              handleAddButton={handleAddButton}
+              handleSubtractButton={handleSubtractButton}
+              handleStopButton={handleStopButton}
+              toggleTimer={() => window.close()}
+            />
+          )}
+          {customReadyState !== ReadyState.OPEN && (
+            <TimerStatus
+              readyState={customReadyState}
+              message={message}
+              toggleTimer={() => window.close()}
+            />
+          )}
+        </div>
+        {logTimeEntryModal && (
+          <TimeEntryForm
+            from="Timer"
+            edit={false}
+            toggle={toggleLogTimeModal}
+            isOpen={logTimeEntryModal}
+            data={logTimer}
+            sendStop={sendStop}
+          />
+        )}
+        <audio
+          ref={timeIsOverAudioRef}
+          key="timeIsOverAudio"
+          loop
+          preload="auto"
+          src="https://bigsoundbank.com/UPLOAD/mp3/2554.mp3"
+        />
+        <audio
+          ref={forcedPausedAudioRef}
+          key="forcedPausedAudio"
+          loop
+          preload="auto"
+          src="https://bigsoundbank.com/UPLOAD/mp3/1102.mp3"
+        />
+        <Modal
+          isOpen={confirmationResetModal}
+          toggle={() => setConfirmationResetModal(!confirmationResetModal)}
+          centered
+          size="md"
+          className={cs(fontColor, darkMode ? 'dark-mode' : '')}
+        >
+          <ModalHeader
+            className={darkMode ? 'bg-space-cadet' : ''}
+            toggle={() => setConfirmationResetModal(false)}
+          >
+            Reset Time
+          </ModalHeader>
+          <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+            Are you sure you want to reset your time?
+          </ModalBody>
+          <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+            <Button
+              color="primary"
+              onClick={() => {
+                sendClear();
+                setConfirmationResetModal(false);
+              }}
+            >
+              Yes, reset time!
+            </Button>{' '}
+          </ModalFooter>
+        </Modal>
+        <Modal
+          className={cs(fontColor, darkMode ? 'dark-mode' : '')}
+          size="md"
+          isOpen={inacModal}
+          toggle={() => setInacModal(!inacModal)}
+          centered
+        >
+          <ModalHeader className={headerBg} toggle={() => setInacModal(!inacModal)}>
+            Timer Paused
+          </ModalHeader>
+          <ModalBody className={bodyBg}>
+            The user timer has been paused due to inactivity or a lost in connection to the server.
+            Please check your internet connection and refresh the page to continue. This is to
+            ensure that our resources are being used efficiently and to improve performance for all
+            of our users.
+          </ModalBody>
+          <ModalFooter className={bodyBg}>
+            <Button
+              color="primary"
+              onClick={() => {
+                setInacModal(!inacModal);
+                sendAckForced();
+              }}
+            >
+              I understand
+            </Button>
+          </ModalFooter>
+        </Modal>
+        <Modal
+          className={cs(fontColor, darkMode ? 'dark-mode' : '')}
+          isOpen={timeIsOverModalOpen}
+          toggle={toggleTimeIsOver}
+          centered
+          size="md"
+        >
+          <ModalHeader className={headerBg} toggle={toggleTimeIsOver}>
+            Time Complete!
+          </ModalHeader>
+          <ModalBody className={bodyBg}>{`You have worked for ${
+            logHours ? `${logHours} hours` : ''
+          }${
+            logMinutes ? ` ${logMinutes} minutes` : ''
+          }. Click below if you'd like to add time or Log Time.`}</ModalBody>
+          <ModalFooter className={bodyBg}>
+            <Button
+              color="primary"
+              onClick={() => {
+                toggleTimeIsOver();
+                toggleLogTimeModal();
+              }}
+            >
+              Log Time
+            </Button>{' '}
+            <Button
+              color="secondary"
+              onClick={() => {
+                toggleTimeIsOver();
+                handleAddButton(15);
+                sendStart();
+              }}
+            >
+              Add More Time
+            </Button>{' '}
+          </ModalFooter>
+        </Modal>
+      </div>
+    );
+  }
+
   return (
-    <div className={css.timerContainer}>
+    <div className={cs(css.timerContainer)}>
       <button
         type="button"
         disabled={isButtonDisabled}
@@ -410,11 +560,9 @@ function Timer({ authUser, darkMode }) {
         className={css.btnDiv}
         aria-label="Open timer dropdown"
       >
-        <BsAlarmFill
-          className={cs(css.transitionColor, isButtonDisabled ? css.btnDisabled : css.btn)}
-          fontSize="2rem"
-          title="Open timer dropdown"
-        />
+        <div className={cs(css.iconWrapper, isButtonDisabled ? css.btnDisabled : css.btn)}>
+          <BsAlarmFill fontSize="2rem" title="Open timer dropdown" />
+        </div>
       </button>
       <div className={css.previewContainer} title="Open timer dropdown">
         <Progress multi style={{ height: '6px' }}>
@@ -426,7 +574,7 @@ function Timer({ authUser, darkMode }) {
           <button
             type="button"
             disabled={isButtonDisabled}
-            className={cs(css.preview, isButtonDisabled && css.btnDisabled)}
+            className={css.preview}
             onClick={toggleTimer}
           >
             {moment.utc(remaining).format('HH:mm:ss')}
@@ -445,14 +593,19 @@ function Timer({ authUser, darkMode }) {
             }}
             title="Add 15min"
             aria-label="Add 15min"
+            style={{ background: 'none', border: 'none' }}
           >
-            <FaPlusCircle
+            <div
               className={cs(
+                css.iconWrapper,
                 isButtonDisabled ? css.btnDisabled : css.transitionColor,
-                checkBtnAvail(15) ? css.btn : css.btnDisabled,
               )}
-              fontSize="1.5rem"
-            />
+            >
+              <FaPlusCircle
+                className={checkBtnAvail(15) ? css.btn : css.btnDisabled}
+                fontSize="1.5rem"
+              />
+            </div>
           </button>
           <button
             type="button"
@@ -460,14 +613,19 @@ function Timer({ authUser, darkMode }) {
             onClick={() => handleSubtractButton(15)}
             title="Subtract 15min"
             aria-label="Subtract 15min"
+            style={{ background: 'none', border: 'none' }}
           >
-            <FaMinusCircle
+            <div
               className={cs(
+                css.iconWrapper,
                 isButtonDisabled ? css.btnDisabled : css.transitionColor,
-                checkBtnAvail(-15) ? css.btn : css.btnDisabled,
               )}
-              fontSize="1.5rem"
-            />
+            >
+              <FaMinusCircle
+                className={checkBtnAvail(-15) ? css.btn : css.btnDisabled}
+                fontSize="1.5rem"
+              />
+            </div>
           </button>
           {!started || paused ? (
             <button
@@ -475,15 +633,20 @@ function Timer({ authUser, darkMode }) {
               disabled={isButtonDisabled}
               onClick={handleStartButton}
               aria-label="Start timer"
+              style={{ background: 'none', border: 'none' }}
             >
-              <FaPlayCircle
+              <div
                 className={cs(
+                  css.iconWrapper,
                   isButtonDisabled ? css.btnDisabled : css.transitionColor,
-                  remaining !== 0 ? css.btn : css.btnDisabled,
                 )}
-                fontSize="1.5rem"
-                title="Start timer"
-              />
+              >
+                <FaPlayCircle
+                  className={remaining !== 0 ? css.btn : css.btnDisabled}
+                  fontSize="1.5rem"
+                  title="Start timer"
+                />
+              </div>
             </button>
           ) : (
             <button
@@ -491,12 +654,16 @@ function Timer({ authUser, darkMode }) {
               disabled={isButtonDisabled}
               onClick={sendPause}
               aria-label="Pause timer"
+              style={{ background: 'none', border: 'none' }}
             >
-              <FaPauseCircle
-                className={cs(css.btn, isButtonDisabled ? css.btnDisabled : css.transitionColor)}
-                fontSize="1.5rem"
-                title="Pause timer"
-              />
+              <div
+                className={cs(
+                  css.iconWrapper,
+                  isButtonDisabled ? css.btnDisabled : css.transitionColor,
+                )}
+              >
+                <FaPauseCircle className={css.btn} fontSize="1.5rem" title="Pause timer" />
+              </div>
             </button>
           )}
           <button
@@ -505,15 +672,19 @@ function Timer({ authUser, darkMode }) {
             onClick={handleStopButton}
             title="Stop timer and log time"
             aria-label="Stop timer and log time"
+            style={{ background: 'none', border: 'none' }}
           >
-            <FaStopCircle
+            <div
               className={cs(
-                css.transitionColor,
-                isButtonDisabled && css.btnDisabled,
-                started && goal - remaining >= 60000 ? css.btn : css.btnDisabled,
+                css.iconWrapper,
+                isButtonDisabled ? css.btnDisabled : css.transitionColor,
               )}
-              fontSize="1.5rem"
-            />
+            >
+              <FaStopCircle
+                className={started && goal - remaining >= 60000 ? css.btn : css.btnDisabled}
+                fontSize="1.5rem"
+              />
+            </div>
           </button>
           <button
             type="button"
@@ -521,19 +692,27 @@ function Timer({ authUser, darkMode }) {
             onClick={() => setConfirmationResetModal(true)}
             title="Reset timer"
             aria-label="Reset timer"
+            style={{ background: 'none', border: 'none' }}
           >
-            <FaUndoAlt
-              className={cs(css.transitionColor, isButtonDisabled && css.btnDisabled, css.btn)}
-              fontSize="1.3rem"
-            />
+            <div
+              className={cs(
+                css.iconWrapper,
+                isButtonDisabled ? css.btnDisabled : css.transitionColor,
+              )}
+            >
+              <FaUndoAlt className={css.btn} fontSize="1.3rem" />
+            </div>
           </button>
+          {!realIsPopout && (
+            <TimerPopout authUser={authUser} darkMode={darkMode} TimerComponent={Timer} />
+          )}
         </div>
       )}
 
       {showTimer && (
-        <div className={css.timer}>
+        <div className={`${css.timer} ${css.smallTimer}`}>
           <div className={css.timerContent}>
-            {customReadyState === ReadyState.OPEN ? (
+            {customReadyState === ReadyState.OPEN && (
               <Countdown
                 message={message}
                 timerRange={{ MAX_HOURS, MIN_MINS }}
@@ -548,7 +727,8 @@ function Timer({ authUser, darkMode }) {
                 handleStopButton={handleStopButton}
                 toggleTimer={toggleTimer}
               />
-            ) : (
+            )}
+            {customReadyState !== ReadyState.OPEN && (
               <TimerStatus
                 readyState={customReadyState}
                 message={message}
@@ -650,7 +830,7 @@ function Timer({ authUser, darkMode }) {
         </ModalHeader>
         <ModalBody className={bodyBg}>{`You have worked for ${logHours ? `${logHours} hours` : ''}${
           logMinutes ? ` ${logMinutes} minutes` : ''
-        }. Click below if you’d like to add time or Log Time.`}</ModalBody>
+        }. Click below if you'd like to add time or Log Time.`}</ModalBody>
         <ModalFooter className={bodyBg}>
           <Button
             color="primary"
