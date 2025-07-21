@@ -671,11 +671,8 @@ export default (
         <ProtectedRoute path="/userprofile/:userId" fallback component={UserProfile} />
         <ProtectedRoute path="/userprofileedit/:userId" component={UserProfileEdit} />
         <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
-<<<<<<< HEAD
         <CPProtectedRoute path="/communityportal/reports/resourceusage" exact component={ResourceUsage}/>
-=======
         <ProtectedRoute path="/memberlist" exact component={MemberList} />
->>>>>>> 1eb6c10c4149386b4136cf088128fd13eee2826a
         <Route path="/Logout" component={Logout} />
         <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
 
