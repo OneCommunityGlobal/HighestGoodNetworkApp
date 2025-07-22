@@ -1,11 +1,11 @@
 import React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { connect, useSelector } from 'react-redux';
 import { boxStyle, boxStyleDark } from '~/styles';
 import '../Header/DarkMode.css';
-import { connect, useSelector } from 'react-redux';
 import hasPermission from '~/utils/permissions';
 
-export const DeleteTeamPopup = React.memo(props => {
+export const DeleteTeamPopup = React.memo(function DeleteTeamPopup(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const closePopup = () => {
