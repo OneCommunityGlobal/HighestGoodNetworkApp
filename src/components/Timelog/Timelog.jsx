@@ -560,6 +560,10 @@ useEffect(() => {
     };
   }, []);
 
+  useEffect(() => {
+  console.log('[Timelog] mounted or updated');
+}, []);
+
   const containerStyle = () => {
     if (darkMode) {
       return props.isDashboard ? {} : { padding: '0 15px 300px 15px' };

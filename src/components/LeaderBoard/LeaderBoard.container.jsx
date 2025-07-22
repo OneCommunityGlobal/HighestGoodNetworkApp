@@ -1,4 +1,5 @@
 import { connect } from 'react-redux';
+import { useEffect } from 'react';
 import { get, round, maxBy } from 'lodash';
 import { getLeaderboardData, postLeaderboardData, getOrgData } from '../../actions/leaderBoardData';
 import Leaderboard from './Leaderboard';
@@ -71,6 +72,7 @@ const mapStateToProps = state => {
     usersOnFutureTimeOff: state.timeOffRequests?.futureTimeOff,
   };
 };
+
 export default connect(mapStateToProps, {
   getLeaderboardData,
   postLeaderboardData,

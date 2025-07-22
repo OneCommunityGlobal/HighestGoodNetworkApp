@@ -123,7 +123,9 @@ function UpdateDocumentTitle() {
 
   useEffect(() => {
     // Find the first matching route and set the document title
+    console.log('📍 Location changed to:', location.pathname);
     const match = Routes.find(route => route.pattern.test(location.pathname));
+    console.log('🧾 Setting document title to:', match.title);
     document.title = match.title;
   }, [location, fullName]);
 
@@ -142,6 +144,7 @@ function UpdateDocumentTitle() {
 class App extends Component {
   constructor(props) {
     super(props);
+    console.log('🧱 App constructor initialized');
     this.state = {}; // Moving state initialization into constructor as per linting rule.
   }
 
@@ -150,6 +153,8 @@ class App extends Component {
   }
 
   render() {
+    console.log('🎬 App is rendering');
+    console.log('🗂️ Current Redux state:', store.getState());
     return (
       <Provider store={store}>
         <PersistGate loading={<Loading />} persistor={persistor}>

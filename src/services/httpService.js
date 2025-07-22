@@ -16,6 +16,11 @@ if (axios.interceptors && axios.interceptors.response && axios.interceptors.resp
   });
 }
 
+axios.interceptors.request.use(request => {
+  console.log(`[API CALL] ${request.method.toUpperCase()} ${request.url}`, request.data || '');
+  return request;
+});
+
 function setjwt(jwt) {
   if (jwt) {
     axios.defaults.headers.common.Authorization = jwt;

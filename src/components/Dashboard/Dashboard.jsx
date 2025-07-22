@@ -70,9 +70,13 @@ export function Dashboard(props) {
   }, []);
 
   useEffect(() => {
+    console.log("📊 summaryBarData changed, dispatching update:", summaryBarData);
     console.log(summaryBarData);
     dispatch(updateSummaryBarData({ summaryBarData }));
   }, [summaryBarData]);
+
+    console.log("🎨 Dashboard rendering; popup:", popup, "displayUserId:", displayUserId);
+
 
   return (
     <Container fluid className={darkMode ? 'bg-oxford-blue' : ''}>

@@ -415,6 +415,10 @@ const SummaryBar = React.forwardRef((props, ref) => {
     }
   }, []); // Run once when component mounts
 
+  useEffect(() => {
+    console.log('[Summary_Bar] mounted or updated');
+  }, []);
+
   const getContainerClass = () => {
     if (isAuthUser || canEditData()) {
       return darkMode
