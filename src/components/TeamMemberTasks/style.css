@@ -8,11 +8,18 @@
   font-size: 20px;
 }
 
+
 .task_table-container {
   overflow-x: auto;
-  overflow-y: hidden;
-  max-width: 100%;
+  overflow-y: visible;
 }
+
+.table-row td {
+  padding-right: 20px !important;
+  overflow: visible !important;
+  position: relative;
+}
+
 
 .task_table-container table {
   table-layout: fixed;
@@ -130,7 +137,7 @@
   font-size: 15px;
   width: 25px;
   top: 3px;
-  right: -11px;
+  right: 4px;
 }
 
 .team-clocks {
@@ -430,11 +437,6 @@
   grid-column: 1 / span 3;
   grid-row: 2 / span 1;
   margin-top: 2px;
-}
-
-.task_table-container {
-  width: 100%;
-  overflow-y: hidden;
 }
 
 .hours-btn-div {
