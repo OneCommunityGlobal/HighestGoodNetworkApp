@@ -13,7 +13,11 @@ import AddProject from './AddProject';
 import ProjectTableHeader from './ProjectTableHeader';
 import Project from './Project';
 import ModalTemplate from './../common/Modal';
-import { CONFIRM_ARCHIVE, PROJECT_INACTIVE_CONFIRMATION, PROJECT_ACTIVE_CONFIRMATION } from './../../languages/en/messages';
+import {
+  CONFIRM_ARCHIVE,
+  PROJECT_INACTIVE_CONFIRMATION,
+  PROJECT_ACTIVE_CONFIRMATION,
+} from './../../languages/en/messages';
 import './projects.css';
 import Loading from '../common/Loading';
 import hasPermission from '../../utils/permissions';
@@ -22,9 +26,9 @@ import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
 const Projects = function(props) {
   const { role } = props.state.userProfile;
   const { darkMode } = props.state.theme;
-  
-const allReduxProjects = useSelector(state => state.allProjects.projects);
-const projectFetchStatus = useSelector(state => state.allProjects.status);
+
+  const allReduxProjects = useSelector(state => state.allProjects.projects);
+  const projectFetchStatus = useSelector(state => state.allProjects.status);
   const numberOfProjects = props.state.allProjects.projects.length;
   const numberOfActive = props.state.allProjects.projects.filter(project => project.isActive)
     .length;
@@ -50,7 +54,6 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
   });
   const [projectList, setProjectList] = useState(null);
   const [searchName, setSearchName] = useState('');
-  const [allProjects, setAllProjects] = useState(null);
   const [isChangingStatus, setIsChangingStatus] = useState(false);
   const [isArchiving, setIsArchiving] = useState(false);
 
@@ -78,7 +81,9 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
     setProjectTarget(projectData);
     setModalData({
       showModal: true,
-      modalMessage: `<p style="${darkMode ? 'color: white' : 'color: black;'}">Do you want to archive ${projectData.projectName}?</p>`,
+      modalMessage: `<p style="${
+        darkMode ? 'color: white' : 'color: black;'
+      }">Do you want to archive ${projectData.projectName}?</p>`,
       modalTitle: CONFIRM_ARCHIVE,
       hasConfirmBtn: true,
       hasInactiveBtn: false,
@@ -86,13 +91,15 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
     });
   };
 
-  const onClickProjectStatusBtn = (projectData) => {
+  const onClickProjectStatusBtn = projectData => {
     setProjectTarget(projectData);
     if (projectData.isActive) {
       // If the project is archived, allow unarchiving
       setModalData({
         showModal: true,
-        modalMessage: `<p style="${darkMode ? 'color: white' : 'color: black'}">${PROJECT_INACTIVE_CONFIRMATION}</p>`,
+        modalMessage: `<p style="${
+          darkMode ? 'color: white' : 'color: black'
+        }">${PROJECT_INACTIVE_CONFIRMATION}</p>`,
         modalTitle: `Inactive Confirmation - ${projectData.projectName} `,
         hasConfirmBtn: false,
         hasInactiveBtn: true, // No need for inactive button
@@ -102,7 +109,9 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
       // If the project is inactive, allow setting it to active
       setModalData({
         showModal: true,
-        modalMessage: `<p style="${darkMode ? 'color: white' : 'color: black;'}">${PROJECT_ACTIVE_CONFIRMATION}</p>`,
+        modalMessage: `<p style="${
+          darkMode ? 'color: white' : 'color: black;'
+        }">${PROJECT_ACTIVE_CONFIRMATION}</p>`,
         modalTitle: `Active Confirmation - ${projectData.projectName} `,
         hasConfirmBtn: false,
         hasInactiveBtn: false, // No need for inactive button
@@ -161,7 +170,7 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
   const setProjectStatus = async () => {
     setIsChangingStatus(true);
     const updatedProject = { ...projectTarget, isActive: !projectTarget.isActive };
-    await onUpdateProject(updatedProject)
+    await onUpdateProject(updatedProject);
     setIsChangingStatus(false);
     // Close the modal after update
     onCloseModal();
@@ -172,21 +181,36 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
     refreshProjects(); // Refresh project list after adding a project
   };
 
-  const generateProjectList = (categorySelectedForSort, showStatus, sortedByName) => {
+  const prepareSearchText = params => {
+    return params
+      .toLowerCase()
+      .split('')
+      .filter(item => item !== ' ')
+      .join('');
+  };
+
+  const generateProjectList = (
+    categorySelectedForSort,
+    showStatus,
+    sortedByName,
+    teamNameSearch,
+  ) => {
     // const { projects } = props.state.allProjects;
     const activeMemberCounts = props.state.projectMembers?.activeMemberCounts || {};
-    const filteredProjects = allReduxProjects.filter(project => !project.isArchived).filter(project => {
-      if (categorySelectedForSort && showStatus){
-        return project.category === categorySelectedForSort && project.isActive === showStatus;
-      } else if (categorySelectedForSort) {
-        return project.category === categorySelectedForSort;
-      } else if (showStatus === 'Active') {
-        return project.isActive === true;
-      } else if (showStatus === 'Inactive') {
-        return project.isActive === false;
-      } else {
-        return true;
-      }
+    const filteredProjects = allReduxProjects
+      .filter(project => !project.isArchived)
+      .filter(project => {
+        if (categorySelectedForSort && showStatus) {
+          return project.category === categorySelectedForSort && project.isActive === showStatus;
+        } else if (categorySelectedForSort) {
+          return project.category === categorySelectedForSort;
+        } else if (showStatus === 'Active') {
+          return project.isActive === true;
+        } else if (showStatus === 'Inactive') {
+          return project.isActive === false;
+        } else {
+          return true;
+        }
       })
       .sort((a, b) => {
         if (sortedByName === 'Ascending') {
@@ -208,20 +232,29 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
         }
         return 0;
       })
-      .map((project, index) => (
-        <Project
-          // key={project._id}
-          key={`${project._id}-${project.isActive}`} 
-          index={index}
-          projectData={project}
-          onUpdateProject={onUpdateProject}
-          onClickArchiveBtn={onClickArchiveBtn}
-          onClickProjectStatusBtn={onClickProjectStatusBtn}
-          darkMode={darkMode}
-        />
-      ));
+      //prettier-ignore
+      .filter(project =>
+        prepareSearchText(project.projectName).includes(prepareSearchText(teamNameSearch)),
+      )
+      .map((project, index) => {
+        return (
+          <>
+            {index <= 10 && (
+              <Project
+                // key={project._id}
+                key={`${project._id}-${project.isActive}`}
+                index={index}
+                projectData={project}
+                onUpdateProject={onUpdateProject}
+                onClickArchiveBtn={onClickArchiveBtn}
+                onClickProjectStatusBtn={onClickProjectStatusBtn}
+                darkMode={darkMode}
+              />
+            )}
+          </>
+        );
+      });
     setProjectList(filteredProjects);
-    setAllProjects(filteredProjects);
   };
 
   const refreshProjects = async () => {
@@ -243,7 +276,7 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
     //   dataLength: allReduxProjects?.length || 0,
     //   status: props.state.allProjects.status
     // });
-    generateProjectList(categorySelectedForSort, showStatus, sortedByName);
+    generateProjectList(categorySelectedForSort, showStatus, sortedByName, '');
     if (status !== 200) {
       setModalData({
         showModal: true,
@@ -253,35 +286,22 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
         hasInactiveBtn: false,
       });
     }
-  }, [categorySelectedForSort, showStatus, sortedByName, allReduxProjects, props.state.theme.darkMode]);
+  }, [
+    categorySelectedForSort,
+    showStatus,
+    sortedByName,
+    allReduxProjects,
+    props.state.theme.darkMode,
+  ]);
   // }, [fetched, categorySelectedForSort, showStatus, sortedByName, props.state.theme.darkMode]);
-
-  useEffect(() => {
-    const fetchProjects = async () => {
-      if (debouncedSearchName) {
-        const projects = await props.getProjectsByUsersName(debouncedSearchName);
-        if (projects && allReduxProjects) {
-          const newProjectList = allProjects.filter(project => 
-            projects.some(p => p === project._id)
-          );
-          setProjectList(newProjectList);
-        } else {
-          setProjectList(allProjects);
-        }
-      } else {
-        setProjectList(allProjects);
-      }
-    };
-    fetchProjects();
-  }, [debouncedSearchName, allProjects, allReduxProjects]);
 
   const handleSearchName = searchNameInput => {
     setSearchName(searchNameInput);
+    generateProjectList(categorySelectedForSort, showStatus, sortedByName, searchNameInput);
   };
 
   return (
-
-    <div className={darkMode ? 'bg-oxford-blue text-light' : ''}>
+    <div className={darkMode ? 'bg-oxford-blue text-light h-100' : ''}>
       <div className={`container py-3 ${darkMode ? 'bg-yinmn-blue-light text-light' : ''}`}>
         {fetching || !fetched ? <Loading align="center" /> : null}
         <div className="d-flex align-items-center">
@@ -301,20 +321,30 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
 
         <SearchProjectByPerson onSearch={handleSearchName} />
 
-        <table className="table table-bordered table-responsive-sm">
-          <thead>
-            <ProjectTableHeader
-              onChange={onChangeCategory}
-              selectedValue={categorySelectedForSort}
-              showStatus={showStatus}
-              selectStatus={onSelectStatus}
-              sorted={sortedByName}
-              handleSort={handleSort}
-              darkMode={darkMode}
-            />
-          </thead>
-          <tbody className={darkMode ? 'bg-yinmn-blue dark-mode' : ''}>{projectList}</tbody>
-        </table>
+        {projectList && allReduxProjects.length > 0 && projectList.length > 0 ? (
+          <table className="table table-bordered table-responsive-sm">
+            <thead>
+              <ProjectTableHeader
+                onChange={onChangeCategory}
+                selectedValue={categorySelectedForSort}
+                showStatus={showStatus}
+                selectStatus={onSelectStatus}
+                sorted={sortedByName}
+                handleSort={handleSort}
+                darkMode={darkMode}
+              />
+            </thead>
+            <tbody className={darkMode ? 'bg-yinmn-blue dark-mode' : ''}>{projectList}</tbody>
+          </table>
+        ) : (
+          projectList &&
+          allReduxProjects.length > 0 &&
+          projectList.length === 0 && (
+            <h3 className={`text-center ${darkMode ? 'text-light' : 'text-dark'}`}>
+              No projects found
+            </h3>
+          )
+        )}
       </div>
 
       <ModalTemplate
