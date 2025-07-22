@@ -7,7 +7,7 @@
 .report-block-content {
   height: 100%;
   padding: 16px;
-  overflow: auto;
+  overflow: hidden;
 }
 
 .report-block-wrapper-dark {
