@@ -13,12 +13,25 @@ import { CONFIRM_ARCHIVE } from './../../../languages/en/messages';
 
 const Project = props => {
   const { darkMode, index } = props;
-  const [firstLoad, setFirstLoad] = useState(true);
   const [projectData, setProjectData] = useState(props.projectData);
   const { projectName, isActive, isArchived, _id: projectId } = projectData;
   const [displayName, setDisplayName] = useState(projectName);
 
-  const [category, setCategory] = useState(props.category || 'Unspecified'); // Initialize with props or default
+  const initialModalData = {
+    showModal: false,
+    modalMessage: "",
+    modalTitle: "",
+    hasConfirmBtn: false,
+    hasInactiveBtn: false,
+  };
+
+  const [modalData, setModalData] = useState(initialModalData);
+
+  const onCloseModal = () => {
+    setModalData(initialModalData);
+    props.clearError();
+  };  const [category, setCategory] = useState(props.projectData.category || 'Unspecified'); // Initialize with props or default
+
 
   const canPutProject = props.hasPermission('putProject');
   const canDeleteProject = props.hasPermission('deleteProject');
@@ -26,14 +39,11 @@ const Project = props => {
   const canSeeProjectManagementFullFunctionality = props.hasPermission('seeProjectManagement');
   const canEditCategoryAndStatus = props.hasPermission('editProject');
 
-  const updateProject = ({ updatedProject, status }) => async dispatch => {
-    try {
-      dispatch(updateProject({ updatedProject, status }));
-    } catch (err) {
-      const status = err?.response?.status || 500;
-      const error = err?.response?.data || { message: 'An error occurred' };
-      dispatch(updateProject({ status, error }));
-    }
+  const updateProject = (field, value) => {
+    const updatedProject = { ...projectData, [field]: value };
+    setProjectData(updatedProject);
+    props.modifyProject(updatedProject);
+
   };
 
   const onDisplayNameChange = (e) => {
@@ -55,7 +65,7 @@ const Project = props => {
   };
 
   const onUpdateProjectActive = () => {
-    updateProject('isActive', !isActive);
+    updateProject('isActive', !props.projectData.isActive);
   }
 
   const onUpdateProjectCategory = (e) => {
@@ -77,20 +87,7 @@ const Project = props => {
     onCloseModal();
   };
 
-  useEffect(() => {
-    const onUpdateProject = async () => {
-      if (firstLoad) {
-        setFirstLoad(false);
-      } else {
-        await props.modifyProject(projectData);
-      }
-      if (props.projectData.category) {
-        setCategory(props.projectData.category);
-      }
-    };
 
-    onUpdateProject();
-  }, [projectData]);
 
   return (
     <>
@@ -145,59 +142,59 @@ const Project = props => {
           </td>
           {/* <td className="projects__active--input" data-testid="project-active" onClick={canPutProject ? updateActive : null}>
         {props.active ? ( */}
-          <td className="projects__active--input" data-testid="project-active" onClick={canEditCategoryAndStatus || canPutProject ? onProjectStatusChange : null}>
-            {isActive ? (
-              <div className="isActive">
-                <i className="fa fa-circle" aria-hidden="true"></i>
-              </div>
-            ) : (
-              <div className="isNotActive">
-                <i className="fa fa-circle" aria-hidden="true" color='#dee2e6'></i>
-              </div>
-            )}
-          </td>
-          <td>
-            <NavItem tag={Link} to={`/inventory/${projectId}`}>
-              <button type="button" className="btn btn-outline-info" style={darkMode ? {} : boxStyle}>
-                {' '}
-                <i className="fa fa-archive" aria-hidden="true"></i>
-              </button>
-            </NavItem>
-          </td>
-          <td>
-            <NavItem tag={Link} to={`/project/members/${projectId}`}>
-              <button type="button" className="btn btn-outline-info" style={darkMode ? {} : boxStyle}>
-                {' '}
-                <i className="fa fa-users" aria-hidden="true"></i>
-              </button>
-            </NavItem>
-          </td>
+      <td className="projects__active--input" data-testid="project-active" onClick={canEditCategoryAndStatus || canPutProject ? onUpdateProjectActive : null}>
+        {projectData.isActive ? (
+          <div className="isActive">
+            <i className="fa fa-circle" aria-hidden="true"></i>
+          </div>
+        ) : (
+          <div className="isNotActive">
+            <i className="fa fa-circle" aria-hidden="true" color='#dee2e6'></i>
+          </div>
+        )}
+      </td>
+      <td>
+        <NavItem tag={Link} to={`/inventory/${projectId}`}>
+          <button type="button" className="btn btn-outline-info" style={darkMode ? {} : boxStyle}>
+            {' '}
+            <i className="fa fa-archive" aria-hidden="true"></i>
+          </button>
+        </NavItem>
+      </td>
+      <td>
+        <NavItem tag={Link} to={`/project/members/${projectId}`}>
+          <button type="button" className="btn btn-outline-info" style={darkMode ? {} : boxStyle}>
+            {' '}
+            <i className="fa fa-users" aria-hidden="true"></i>
+          </button>
+        </NavItem>
+      </td>
 
-          <td>
-            <NavItem tag={Link} to={`/project/wbs/${projectId}`}>
-              <button type="button" className="btn btn-outline-info" style={darkMode ? {} : boxStyle}>
-                <i className="fa fa-tasks" aria-hidden="true"></i>
-              </button>
-            </NavItem>
-          </td>
+      <td>
+        <NavItem tag={Link} to={`/project/wbs/${projectId}`}>
+          <button type="button" className="btn btn-outline-info" style={darkMode ? {} : boxStyle}>
+            <i className="fa fa-tasks" aria-hidden="true"></i>
+          </button>
+        </NavItem>
+      </td>
 
 
-          {(canDeleteProject) ? (
+      {(canDeleteProject) ? (
 
-            <td>
-              <button
-                data-testid="delete-button"
-                type="button"
-                className="btn btn-outline-danger"
-                onClick={onArchiveProject}
-                style={darkMode ? {} : boxStyle}
-                disabled={isArchived}
-              >
-                {ARCHIVE}
-              </button>
-            </td>
-          ) : null}
-        </tr>
+        <td>
+          <button
+            data-testid="delete-button"
+            type="button"
+            className="btn btn-outline-danger"
+            onClick={onArchiveProject}
+            style={darkMode ? {} : boxStyle}
+            disabled = {isArchived}
+          >
+            {ARCHIVE}
+          </button>
+        </td>
+      ) : null}
+    </tr>
     </>
   );
 };
