@@ -32,7 +32,7 @@ export default function SearchProjectByPerson({ onSearch, suggestions, onSelectS
         <div className="input-group-prepend">
           <span
             className={`input-group-text search-field-container ${
-              darkMode ? 'bg-yinmn-blue text-light' : ''
+              darkMode ? 'bg-light-grey' : ''
             }`}
           >
             Search
@@ -40,7 +40,7 @@ export default function SearchProjectByPerson({ onSearch, suggestions, onSelectS
         </div>
         <input
           type="text"
-          className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
+          className={`form-control ${darkMode ? 'bg-white' : ''}`}
           placeholder="Person's Name"
           value={inputValue}
           onChange={handleInputChange} // Trigger input change
