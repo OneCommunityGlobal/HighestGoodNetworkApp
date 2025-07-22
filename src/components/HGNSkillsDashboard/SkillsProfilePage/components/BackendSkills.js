@@ -6,11 +6,7 @@ import { Spinner } from 'reactstrap';
 import { ENDPOINTS } from 'utils/URL';
 import styles from '../styles/SkillsSection.module.css';
 
-function BackendSkills({ profileData }) {
-  const safeProfileData = profileData || {};
-  const skillInfo = safeProfileData.skillInfo || {};
-  const backend = skillInfo.backend || {};
-
+function BackendSkills() {
   const [userSkillsData, setUserSkillsData] = useState(null);
   const [skillsLoading, setSkillsLoading] = useState(true);
   const currentUser = useSelector(state => state.auth.user);
@@ -43,25 +39,20 @@ function BackendSkills({ profileData }) {
     }
   }, [currentUser]);
 
-  // Get the current skills data
-  const getCurrentSkillsData = () => {
-    if (userSkillsData?.backend) {
-      return userSkillsData.backend;
-    }
-    return backend;
-  };
-
   const getSkillsArray = () => {
-    const currentSkills = getCurrentSkillsData();
+    if (!userSkillsData) return [];
+
+    const backend = userSkillsData.backend || {};
+    const frontend = userSkillsData.frontend || {};
+    const general = userSkillsData.general || {};
 
     return [
-      { value: currentSkills.Overall, label: 'Overall Backend' },
-      { value: currentSkills.mern_skills, label: 'MERN Stack' },
-      { value: currentSkills.TestDrivenDev, label: 'Test Driven Development' },
-      { value: currentSkills.Database, label: 'Database Setup' },
-      { value: currentSkills.MongoDB, label: 'MongoDB' },
-      { value: currentSkills.MongoDB_Advanced, label: 'MongoDB Advanced' },
-      { value: currentSkills.UnitTest, label: 'Unit Testing' },
+      { value: general.mern_skills, label: 'MERN Stack' },
+      { value: backend.TestDrivenDev, label: 'Test-Driven Development' },
+      { value: backend.Database, label: 'Database Setup' },
+      { value: backend.Overall, label: 'Overall Backend' },
+      { value: frontend.UnitTest, label: 'Unit Testing' },
+      { value: backend.MongoDB, label: 'MongoDB' },
     ];
   };
 

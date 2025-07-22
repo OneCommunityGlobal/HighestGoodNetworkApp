@@ -38,32 +38,21 @@ function SoftwarePractices() {
     }
   }, [currentUser]);
 
-  const getCurrentSkillsData = () => {
-    if (userSkillsData?.backend) {
-      return userSkillsData.backend;
-    }
-    // Return default empty object instead of undefined 'deployment'
-    return {
-      Overall: 0,
-      CodeReview: 0,
-      AgileDevelopment: 0,
-      Documentation: 0,
-      leadership_experience: 0,
-      leadership_skills: 0,
-      AdvancedCoding: 0,
-    };
-  };
-
   const getSkillsArray = () => {
-    const currentSkills = getCurrentSkillsData();
+    if (!userSkillsData) return [];
+
+    const backend = userSkillsData.backend || {};
+    const frontend = userSkillsData.frontend || {};
+    const general = userSkillsData.general || {};
+
     return [
-      { value: currentSkills.Overall, label: 'Overall Software Practices' },
-      { value: currentSkills.CodeReview, label: 'Code Review' },
-      { value: currentSkills.AgileDevelopment, label: 'Agile Development' },
-      { value: currentSkills.Documentation, label: 'Documentation' },
-      { value: currentSkills.leadership_experience, label: 'Leadership / Management Experience' },
-      { value: currentSkills.leadership_skills, label: 'Leadership / Management Skills' },
-      { value: currentSkills.AdvancedCoding, label: 'Advanced Coding Skills' },
+      { value: backend.Overall, label: 'Overall Software Practices' },
+      { value: backend.CodeReview, label: 'Code Review' },
+      { value: backend.AgileDevelopment, label: 'Agile Development' },
+      { value: frontend.Documentation, label: 'Documentation' },
+      { value: general.leadership_experience, label: 'Leadership / Management Experience' },
+      { value: general.leadership_skills, label: 'Leadership / Management Skills' },
+      { value: backend.AdvancedCoding, label: 'Advanced Coding Skills' },
     ];
   };
 
