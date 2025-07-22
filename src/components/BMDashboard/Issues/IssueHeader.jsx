@@ -10,6 +10,7 @@ import { useRef } from 'react';
 
 export function IssueHeader(props) {
   const dispatch = useDispatch();
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const { profilePic, firstName } = props.auth;
   const projects = useSelector(state => state.bmProjects);
@@ -39,10 +40,10 @@ export function IssueHeader(props) {
   }, []);
 
   return (
-    <div className="issue-header-container">
+    <div className={`${darkMode ? 'issue-header-container-dark' : 'issue-header-container '}`}>
       <div className="top-row">
-        <div className="title-section">
-          <h1>Issues</h1>
+        <div className={`${darkMode ? 'title-section-dark' : 'title-section'}`}>
+          <h1 className={`${darkMode ? 'section-dark' : 'section'}`}>Issues</h1>
         </div>
 
         <div className="action-section">
@@ -65,8 +66,8 @@ export function IssueHeader(props) {
         </div>
       </div>
 
-      <div className="bottom-row">
-        <div className="project-tab">
+      <div className={`${darkMode ? 'bg-oxide-blue' : ''} 'top-row-dark'`}>
+        <div className={` project-tab`}>
           <button
             type="button"
             className={`tab-item ${activeTab === 'info' ? 'active' : ''}`}
