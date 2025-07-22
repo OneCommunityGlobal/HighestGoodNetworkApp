@@ -14,6 +14,7 @@ import RoleInfoCollections from 'components/UserProfile/EditableModal/RoleInfoMo
 import LessonList from 'components/BMDashboard/LessonList/LessonListForm';
 import ResourceUsage from 'components/CommunityPortal/ResourceUsage/ResourceUsage';
 import AddEquipmentType from 'components/BMDashboard/Equipment/Add/AddEquipmentType';
+import EDailyActivityLog from 'components/BMDashboard/Equipment/DailyActivityLog/EDailyActivityLog';
 import Announcements from 'components/Announcements';
 import JobCCDashboard from 'components/JobCCDashboard/JobCCDashboard';
 import WeeklyProjectSummary from 'components/BMDashboard/WeeklyProjectSummary/WeeklyProjectSummary';
@@ -531,6 +532,7 @@ export default (
         />
         <BMProtectedRoute path="/bmdashboard/materials/add" fallback component={AddMaterial} />
         <BMProtectedRoute path="/bmdashboard/equipment/add" component={AddEquipmentType} />
+        <BMProtectedRoute path="/bmdashboard/T/EDailyActivityLog" component={EDailyActivityLog} />
         <BMProtectedRoute
           path="/bmdashboard/consumables/purchase"
           fallback
