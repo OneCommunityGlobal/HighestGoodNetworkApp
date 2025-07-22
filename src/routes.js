@@ -22,7 +22,7 @@ import FaqManagement from 'components/Faq/FaqManagement';
 import FaqHistory from 'components/Faq/FaqHistory';
 import UnansweredFaqs from 'components/Faq/UnansweredFaqs';
 import HeaderRenderer from 'components/Header/HeaderRenderer';
-import IssueDashboard from 'components/BMDashboard/Issues/IssueDashboard';
+// import IssueDashboard from 'components/BMDashboard/Issues/IssueDashboard';
 import { ExperienceDonutChart } from 'components/ExperienceDonutChart';
 import LessonForm from 'components/BMDashboard/Lesson/LessonForm';
 
@@ -106,9 +106,10 @@ import AddTeamMember from './components/BMDashboard/AddTeamMember/AddTeamMember'
 import IssueChart from './components/BMDashboard/Issues/issueCharts';
 import BMTimeLogger from './components/BMDashboard/BMTimeLogger/BMTimeLogger';
 import Issue from './components/BMDashboard/Issue/Issue';
+import InjurySeverityChart from './components/BMDashboard/Injuries/InjurySeverityChart';
+
 import RentalChart from './components/BMDashboard/RentalChart/RentalChart';
 import CreateNewTeam from './components/BMDashboard/Team/CreateNewTeam/CreateNewTeam';
-
 
 // Community Portal
 import CPProtectedRoute from './components/common/CPDashboard/CPProtectedRoute';
@@ -579,11 +580,16 @@ export default (
           exact
           component={WeeklyProjectSummary}
         />
+         <BMProtectedRoute
+          path="/bmdashboard/injuries-severity"
+          fallback
+          exact
+          component={InjurySeverityChart}
+        />
 
         <BMProtectedRoute path="/bmdashboard/issuechart" component={IssueChart} />
 
         <BMProtectedRoute path="/bmdashboard/timelog/" component={BMTimeLogger} />
-        <BMProtectedRoute path="/bmdashboard/issues/" component={IssueDashboard} />
 
         <BMProtectedRoute
           path="/bmdashboard/timelog/:projectId"

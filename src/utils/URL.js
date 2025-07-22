@@ -259,7 +259,9 @@ export const ENDPOINTS = {
 
   BM_ISSUE_FORM: `${APIEndpoint}/bm/issue/add`,
   BM_INJURY_ISSUE: `${APIEndpoint}/bm/issues`,
+  BM_INJURY_SEVERITY: `${APIEndpoint}/bm/injuries/severity-by-project`,
   BM_RENTAL_CHART: `${APIEndpoint}/bm/rentalChart`,
+
 
   BM_TAGS: `${APIEndpoint}/bm/tags`,
   BM_TAG_ADD: `${APIEndpoint}/bm/tags`,

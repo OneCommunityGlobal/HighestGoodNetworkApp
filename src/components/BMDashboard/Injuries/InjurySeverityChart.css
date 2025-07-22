@@ -1,0 +1,54 @@
+
+.filter-select .ant-select-selector,
+.filter-select .ant-select-selection-item,
+.filter-select .ant-select-selection-placeholder {
+  color: black !important;
+}
+
+/* RangePicker placeholder */
+.filter-select .ant-picker-input > input::placeholder {
+  color: black !important;
+}
+
+.filter-select .ant-select-selector {
+  border-color: rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Light border for RangePicker */
+.filter-select .ant-picker {
+  border-color: rgba(0, 0, 0, 0.2) !important;
+}
+
+.oxide-dark{
+  background-color: #1B2A41;
+}
+
+/* Only in darkMode: target filter-select under .oxide-dark */
+.oxide-dark .filter-select .ant-select-selector {
+  background-color: #1c2541 !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+.oxide-dark .filter-select .ant-select-selection-item,
+.oxide-dark .filter-select .ant-select-selection-placeholder {
+  color: #f5f5f5 !important;
+}
+.oxide-dark .filter-select .ant-select-dropdown {
+  background-color: #1c2541 !important;
+}
+.oxide-dark .filter-select .ant-select-item-option-content {
+  color: #f5f5f5 !important;
+}
+
+.oxide-dark .filter-select.ant-picker {
+  background-color: #1c2541 !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.oxide-dark .filter-select.ant-picker .ant-picker-input > input,
+.oxide-dark .filter-select.ant-picker .ant-picker-input > input::placeholder {
+  color: #f5f5f5 !important;
+}
+.oxide-dark .filter-select .ant-picker-dropdown {
+  background-color: #1c2541 !important;
+  color: #f5f5f5 !important;
+}
