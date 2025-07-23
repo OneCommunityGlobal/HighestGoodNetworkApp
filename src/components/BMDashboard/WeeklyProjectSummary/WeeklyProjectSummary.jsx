@@ -2,6 +2,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
 import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
@@ -316,6 +318,94 @@ export default function WeeklyProjectSummary() {
     ],
     [quantityOfMaterialsUsedData],
   );
+
+  const handleSaveAsPDF = async () => {
+    const currentOpenSections = { ...openSections };
+
+    try {
+      const allSectionsOpen = {};
+      sections.forEach(section => {
+        allSectionsOpen[section.key] = true;
+      });
+      setOpenSections(allSectionsOpen);
+
+      // eslint-disable-next-line no-promise-executor-return
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      const contentElement = document.querySelector('.weekly-project-summary-container');
+      if (!contentElement) throw new Error('Weekly project summary container not found.');
+
+      const pdfContainer = document.createElement('div');
+      pdfContainer.id = 'pdf-export-container';
+      Object.assign(pdfContainer.style, {
+        width: '420mm',
+        padding: '10mm',
+        backgroundColor: '#fff',
+        position: 'absolute',
+        left: '-9999px',
+        boxSizing: 'border-box',
+      });
+
+      const clonedContent = contentElement.cloneNode(true);
+
+      // Remove buttons and controls not needed in PDF
+      clonedContent
+        .querySelectorAll(
+          'button, .weekly-project-summary-dropdown-icon, .no-print, .weekly-summary-header-controls',
+        )
+        .forEach(el => el.parentNode?.removeChild(el));
+
+      const styleElem = document.createElement('style');
+      styleElem.textContent = `
+          img, svg {
+          height: auto !important;
+          page-break-inside: avoid !important;
+        }
+      `;
+
+      clonedContent.prepend(styleElem);
+      pdfContainer.appendChild(clonedContent);
+      document.body.appendChild(pdfContainer);
+
+      const canvas = await html2canvas(pdfContainer, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#fff',
+        windowWidth: pdfContainer.scrollWidth,
+        windowHeight: pdfContainer.scrollHeight,
+        logging: false,
+      });
+
+      if (!canvas) throw new Error('Failed to capture content as image.');
+
+      const imgData = canvas.toDataURL('image/jpeg', 0.95);
+
+      const pdfWidth = 210;
+      const imgHeight = (canvas.height * pdfWidth) / canvas.width;
+
+      // eslint-disable-next-line new-cap
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: [pdfWidth, imgHeight],
+      });
+
+      pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, imgHeight);
+
+      const now = new Date();
+      const fileName = `weekly-project-summary-${now.toISOString().slice(0, 10)}.pdf`;
+
+      // Save the PDF
+      pdf.save(fileName);
+
+      document.body.removeChild(pdfContainer);
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('PDF generation failed:', err);
+    } finally {
+      setOpenSections(currentOpenSections);
+    }
+  };
 
   return (
     <div className={`${styles.weeklyProjectSummaryContainer} ${darkMode ? styles.darkMode : ''}`}>

@@ -1,8 +1,3 @@
-
-/*********************************************************************************
- * Component: TASK
- * Author: Henry Ng - 21/03/20 ≢
- ********************************************************************************/
 import React, { useState, useEffect, useRef } from 'react';
 import { connect, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
@@ -50,10 +45,10 @@ function WBSTasks(props) {
   const { tasks, isLoading, error, refresh } = useFetchWbsTasks(wbsId);
 
   useEffect(() => {
-    if (!isLoading) {
+    if(!isLoading){
       setPageLoadTime(Date.now());
     }
-  }, [tasks, isLoading]);
+  },[tasks, isLoading]);
 
   useEffect(() => {
     setLevelOneTasks(
@@ -85,62 +80,12 @@ function WBSTasks(props) {
     }
   };
 
-
+  
 
   const deleteWBSTask = (taskId, mother) => {
     props.deleteTask(taskId, mother);
     setIsDeleted(true);
   };
-
-  /**
-   * Drag and drop is not being used anywhere, and it seems to be replaced by the copy and paste functionality,
-   * so here comments it out for future reference if such functionality is desired again.  
-   */
-
-  // let drag = '';
-  // let dragParent = '';
-  // const dragTask = (taskIdFrom, parentId) => {
-  //   drag = taskIdFrom;
-  //   dragParent = parentId;
-  // };
-
-  // const dropTask = (taskIdTo, parentId) => {
-  //   const tasksClass = document.getElementsByClassName('taskDrop');
-  //   for (let i = 0; i < tasks.length; i++) {
-  //     tasksClass[i].style.display = 'none';
-  //   }
-
-  //   const list = [];
-  //   const target = tasks.find(task => task._id === taskIdTo);
-  //   const siblings = tasks.filter(task => task.parentId === dragParent);
-
-  //   let modifiedList = false;
-  //   if (dragParent === target._id) {
-  //     list.push({
-  //       id: drag,
-  //       num: siblings[0].num,
-  //     });
-  //     modifiedList = true;
-  //   }
-  //   for (let i = 0; i < siblings.length - 1; i++) {
-  //     if (siblings[i]._id === drag) {
-  //       modifiedList = false;
-  //     }
-  //     if (modifiedList) {
-  //       list.push({
-  //         id: siblings[i]._id,
-  //         num: siblings[i + 1].num,
-  //       });
-  //     }
-  //     if (siblings[i]._id === target._id) {
-  //       list.push({
-  //         id: drag,
-  //         num: siblings[i + 1].num,
-  //       });
-  //       modifiedList = true;
-  //     }
-  //   }
-  // };
 
   /*
   * -------------------------------- useEffects -------------------------------- 
@@ -210,7 +155,7 @@ function WBSTasks(props) {
               load={refresh}
               pageLoadTime={pageLoadTime}
               darkMode={darkMode}
-              tasks={tasks}
+              tasks={tasks} 
             />
           ) : null}
 
@@ -220,7 +165,7 @@ function WBSTasks(props) {
               projectId={projectId}
               // load={load}
               load={refresh}
-              setIsLoading={() => { }}
+              setIsLoading={() => {}}
               // setIsLoading={setIsLoading}
               darkMode={darkMode}
             />
@@ -345,7 +290,7 @@ function WBSTasks(props) {
                 tasks={tasks}
                 load={refresh}
                 pageLoadTime={pageLoadTime}
-                setIsLoading={() => { }}
+                setIsLoading={() => {}}
                 darkMode={darkMode}
               />
             ))}
