@@ -495,7 +495,7 @@ class ReportsPage extends Component {
 
     const isOxfordBlue = darkMode ? 'bg-oxford-blue' : '';
     const isYinmnBlue = darkMode ? 'bg-yinmn-blue' : '';
-    const textColor = darkMode ? 'text-light' : 'text-dark';
+    const textColor = darkMode ? 'text-blue-400' : 'text-dark';
     const boxStyling = darkMode ? boxStyleDark : boxStyle;
 
     return (
