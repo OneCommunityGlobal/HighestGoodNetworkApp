@@ -25,11 +25,13 @@ import {
   showStar,
   viewZeroHouraMembers,
 } from 'utils/leaderboardPermissions';
+import { calculateDurationBetweenDates, showTrophyIcon } from 'utils/anniversaryPermissions';
 import hasPermission from 'utils/permissions';
-import MouseoverTextTotalTimeEditButton from 'components/mouseoverText/MouseoverTextTotalTimeEditButton';
+// import MouseoverTextTotalTimeEditButton from 'components/mouseoverText/MouseoverTextTotalTimeEditButton';
 import { toast } from 'react-toastify';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import moment from 'moment-timezone';
+import { Tooltip } from 'reactstrap';
 import { boxStyle } from 'styles';
 import axios from 'axios';
 import { getUserProfile } from 'actions/userProfile';
@@ -70,8 +72,9 @@ function displayDaysLeft(lastDay) {
 
 function LeaderBoard({
   getLeaderboardData,
+  postLeaderboardData,
   getOrgData,
-  getMouseoverText,
+  // getMouseoverText,
   leaderBoardData,
   loggedInUser,
   organizationData,
@@ -84,17 +87,38 @@ function LeaderBoard({
   darkMode,
   getWeeklySummaries,
   setFilteredUserTeamIds,
+  userOnTimeOff,
+  usersOnFutureTimeOff,
 }) {
   const userId = displayUserId;
   const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
   const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon'); // ??? this permission doesn't exist?
+  const todaysDate = moment()
+    .tz('America/Los_Angeles')
+    .endOf('week')
+    .format('YYYY-MM-DD');
+
+  useEffect(() => {
+    for (let i = 0; i < leaderBoardData.length; i += 1) {
+      const startDate = leaderBoardData[i].startDate?.split('T')[0];
+      const showTrophy = showTrophyIcon(todaysDate, startDate);
+      if (!showTrophy && leaderBoardData[i].trophyFollowedUp) {
+        postLeaderboardData(leaderBoardData[i].personId, false);
+      }
+    }
+  }, []);
+
   const isOwner = ['Owner'].includes(loggedInUser.role);
+  const allowedRoles = ['Administrator', 'Manager', 'Mentor', 'Core Team', 'Assistant Manager'];
+  const isAllowedOtherThanOwner = allowedRoles.includes(loggedInUser.role);
+  const [currentTimeOfftooltipOpen, setCurrentTimeOfftooltipOpen] = useState({});
+  const [futureTimeOfftooltipOpen, setFutureTimeOfftooltipOpen] = useState({});
 
   const [mouseoverTextValue, setMouseoverTextValue] = useState(totalTimeMouseoverText);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    getMouseoverText();
+    // getMouseoverText();
     setMouseoverTextValue(totalTimeMouseoverText);
   }, [totalTimeMouseoverText]);
   const [teams, setTeams] = useState([]);
@@ -225,9 +249,9 @@ function LeaderBoard({
     } else renderTeamsList(usersSelectedTeam);
   };
 
-  const handleMouseoverTextUpdate = text => {
-    setMouseoverTextValue(text);
-  };
+  // const handleMouseoverTextUpdate = text => {
+  //   setMouseoverTextValue(text);
+  // };
   useDeepEffect(() => {
     getLeaderboardData(userId);
     getOrgData();
@@ -292,6 +316,34 @@ function LeaderBoard({
     showTimeOffRequestModal(request);
   };
 
+  // For Monthly and yearly anniversaries
+  const [modalOpen, setModalOpen] = useState(false);
+
+  // opening the modal
+  const trophyIconToggle = item => {
+    if (loggedInUser.role === 'Owner' || loggedInUser.role === 'Administrator') {
+      setModalOpen(item.personId);
+    }
+  };
+
+  // deleting the icon from only that user
+  const handleChangingTrophyIcon = async (item, trophyFollowedUp) => {
+    setModalOpen(false);
+    await postLeaderboardData(item.personId, trophyFollowedUp);
+    // Update leaderboard data after posting
+    await getLeaderboardData(displayUserId);
+  };
+
+  const handleIconContent = durationSinceStarted => {
+    if (durationSinceStarted.months >= 5.8 && durationSinceStarted.months <= 6.2) {
+      return '6M';
+    }
+    if (durationSinceStarted.years >= 0.9) {
+      return `${Math.round(durationSinceStarted.years)}Y`;
+    }
+    return 'N/A';
+  };
+
   const getTimeOffStatus = personId => {
     if (!allRequests || !allRequests[personId] || allRequests[personId].length === 0) {
       return { hasTimeOff: false, isCurrentlyOff: false, additionalWeeks: 0 };
@@ -323,6 +375,67 @@ function LeaderBoard({
       additionalWeeks = moment(mostRecentRequest.startingDate).diff(moment(), 'weeks') + 1;
     }
     return { hasTimeOff, isCurrentlyOff, additionalWeeks };
+  };
+
+  const currentTimeOfftoggle = personId => {
+    setCurrentTimeOfftooltipOpen(prevState => ({
+      ...prevState,
+      [personId]: !prevState[personId],
+    }));
+  };
+
+  const futureTimeOfftoggle = personId => {
+    setFutureTimeOfftooltipOpen(prevState => ({
+      ...prevState,
+      [personId]: !prevState[personId],
+    }));
+  };
+
+  const timeOffIndicator = personId => {
+    if (userOnTimeOff[personId]?.isInTimeOff === true) {
+      if (userOnTimeOff[personId]?.weeks > 0) {
+        return (
+          <>
+            <sup style={{ color: 'rgba(128, 128, 128, 0.5)' }} id={`currentTimeOff-${personId}`}>
+              {' '}
+              +{userOnTimeOff[personId].weeks}
+            </sup>
+            <Tooltip
+              placement="top"
+              isOpen={currentTimeOfftooltipOpen[personId]}
+              target={`currentTimeOff-${personId}`}
+              toggle={() => currentTimeOfftoggle(personId)}
+            >
+              Number with + indicates additional weeks the user will be on a time off excluding the
+              current week.
+            </Tooltip>
+          </>
+        );
+      }
+
+      return null;
+    }
+
+    if (usersOnFutureTimeOff[personId]?.weeks > 0) {
+      return (
+        <>
+          <sup style={{ color: '#007bff' }} id={`futureTimeOff-${personId}`}>
+            {' '}
+            {usersOnFutureTimeOff[personId].weeks}
+          </sup>
+          <Tooltip
+            placement="top"
+            isOpen={futureTimeOfftooltipOpen[personId]}
+            target={`futureTimeOff-${personId}`}
+            toggle={() => futureTimeOfftoggle(personId)}
+          >
+            This number indicates number of weeks from now user has scheduled a time off.
+          </Tooltip>
+        </>
+      );
+    }
+
+    return null;
   };
 
   const teamName = (name, maxLength) =>
@@ -590,26 +703,44 @@ function LeaderBoard({
                       <div style={{ textAlign: 'left' }}>
                         <span>{isAbbreviatedView ? 'Tot. Time' : 'Total Time'}</span>
                       </div>
-                      {isOwner && (
+                      {/*    {isOwner && (
                         <MouseoverTextTotalTimeEditButton onUpdate={handleMouseoverTextUpdate} />
-                      )}
+                      )} */}
                     </div>
                   </th>
                 </tr>
               </thead>
               <tbody className="my-custome-scrollbar responsive-font-size">
                 <tr className={darkMode ? 'dark-leaderboard-row' : 'light-leaderboard-row'}>
-                  <td aria-label="Placeholder" />
-                  <td className={`leaderboard-totals-container `}>
-                    <span>{stateOrganizationData.name}</span>
-                    {viewZeroHouraMembers(loggedInUser.role) && (
-                      <span className="leaderboard-totals-title">
-                        0 hrs Totals:{' '}
-                        {filteredUsers.filter(user => user.weeklycommittedHours === 0).length}{' '}
-                        Members
-                      </span>
-                    )}
-                  </td>
+                  {isAbbreviatedView ? (
+                    <td colSpan={2}>
+                      <div className="leaderboard-totals-container text-center">
+                        <span>{stateOrganizationData.name}</span>
+                        {viewZeroHouraMembers(loggedInUser.role) && (
+                          <span className="leaderboard-totals-title">
+                            0 hrs Totals:{' '}
+                            {filteredUsers.filter(user => user.weeklycommittedHours === 0).length}{' '}
+                            Members
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                  ) : (
+                    <>
+                      <td aria-label="Placeholder" />
+                      <td className="leaderboard-totals-container">
+                        <span>{stateOrganizationData.name}</span>
+                        {viewZeroHouraMembers(loggedInUser.role) && (
+                          <span className="leaderboard-totals-title">
+                            0 hrs Totals:{' '}
+                            {filteredUsers.filter(user => user.weeklycommittedHours === 0).length}{' '}
+                            Members
+                          </span>
+                        )}
+                      </td>
+                    </>
+                  )}
+
                   <td className="align-middle" aria-label="Description" />
                   <td className="align-middle">
                     <span title="Tangible time">
@@ -649,6 +780,10 @@ function LeaderBoard({
                   const { hasTimeOff, isCurrentlyOff, additionalWeeks } = getTimeOffStatus(
                     item.personId,
                   );
+                  const startDate = item?.startDate?.split('T')[0];
+                  const durationSinceStarted = calculateDurationBetweenDates(todaysDate, startDate);
+                  const iconContent = handleIconContent(durationSinceStarted);
+                  const showTrophy = showTrophyIcon(todaysDate, startDate);
 
                   return (
                     <tr
@@ -670,7 +805,9 @@ function LeaderBoard({
                               Jump to personal Dashboard
                             </ModalHeader>
                             <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
-                              <p>Are you sure you wish to view this {item.name} dashboard?</p>
+                              <p className={darkMode ? 'text-light' : ''}>
+                                Are you sure you wish to view this {item.name} dashboard?
+                              </p>
                             </ModalBody>
                             <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
                               <Button variant="primary" onClick={() => showDashboard(item)}>
@@ -765,17 +902,62 @@ function LeaderBoard({
                           to={`/userprofile/${item.personId}`}
                           title="View Profile"
                           style={{
-                            color: isCurrentlyOff
-                              ? 'rgba(128, 128, 128, 0.5)' // Gray out the name if on time off
-                              : '#007BFF', // Default color
+                            color:
+                              isCurrentlyOff ||
+                              ((isAllowedOtherThanOwner || isOwner || item.personId === userId) &&
+                                userOnTimeOff[item.personId]?.isInTimeOff === true)
+                                ? `${darkMode ? '#9499a4' : 'rgba(128, 128, 128, 0.5)'}` // Gray out the name if on time off
+                                : '#007BFF', // Default color
                           }}
                         >
                           {item.name}
                         </Link>
+                        {isAllowedOtherThanOwner || isOwner || item.personId === userId
+                          ? timeOffIndicator(item.personId)
+                          : null}
                         &nbsp;&nbsp;&nbsp;
                         {hasVisibilityIconPermission && !item.isVisible && (
                           <i className="fa fa-eye-slash" title="User is invisible" />
                         )}
+                        &nbsp;&nbsp;&nbsp;
+                        {hasLeaderboardPermissions(loggedInUser.role) && showTrophy && (
+                          <i
+                            role="button"
+                            tabIndex={0}
+                            className="fa fa-trophy"
+                            style={{
+                              fontSize: '18px',
+                              color: item?.trophyFollowedUp === false ? '#FF0800' : '#ffbb00',
+                            }}
+                            onClick={() => trophyIconToggle(item)}
+                            onKeyDown={() => trophyIconToggle(item)}
+                          >
+                            <p style={{ fontSize: '10px', marginLeft: '1px' }}>
+                              <strong>{iconContent}</strong>
+                            </p>
+                          </i>
+                        )}
+                        <div>
+                          <Modal isOpen={modalOpen === item.personId} toggle={trophyIconToggle}>
+                            <ModalHeader toggle={trophyIconToggle}>Followed Up?</ModalHeader>
+                            <ModalBody>
+                              <p>Are you sure you have followed up this icon?</p>
+                            </ModalBody>
+                            <ModalFooter>
+                              <Button variant="secondary" onClick={trophyIconToggle}>
+                                Cancel
+                              </Button>{' '}
+                              <Button
+                                color="primary"
+                                onClick={() => {
+                                  handleChangingTrophyIcon(item, true);
+                                }}
+                              >
+                                Confirm
+                              </Button>
+                            </ModalFooter>
+                          </Modal>
+                        </div>
                         {hasTimeOffIndicatorPermission && additionalWeeks > 0 && (
                           <span
                             style={{

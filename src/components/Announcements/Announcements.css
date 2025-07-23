@@ -1,6 +1,5 @@
 /* EmailUpdateComponent.css */
 
-
 h2,
 h3 {
   color: #4285f4;
@@ -23,7 +22,7 @@ label {
 
 .input-text-for-announcement,
 textarea {
-  margin-top: 5px;   /* Space above input fields */
+  margin-top: 5px; /* Space above input fields */
   width: 100%;
   padding: 12px; /* Increased padding */
   border: 1px solid #ccc;
@@ -73,7 +72,9 @@ button.send-button:hover {
   margin-top: 0;
   /* Remove top margin for the heading */
 }
-
+.editor h3 {
+  color: #4285f4;
+}
 .emails {
   margin-top: 65px;
   padding: 24px; /* Increased padding */
@@ -148,6 +149,7 @@ button.send-button:hover {
     box-sizing: border-box; /* Ensures padding is included in width */
   }
 }
+<<<<<<< HEAD
 
 
 /* Blogger Integration Styles */
@@ -203,3 +205,5 @@ button.send-button:hover {
   gap: 1rem;
   margin-top: 1rem;
 }
+=======
+>>>>>>> origin/development
