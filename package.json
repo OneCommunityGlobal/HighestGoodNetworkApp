@@ -87,11 +87,7 @@
     "reactjs-popup": "^2.0.5",
     "reactstrap": "^8.4.1",
     "read-excel-file": "^5.5.3",
-<<<<<<< HEAD
-    "recharts": "^2.12.7",
-=======
     "recharts": "^2.1.9",
->>>>>>> origin/development
     "redux": "^4.0.5",
     "redux-actions": "^2.6.5",
     "redux-concatenate-reducers": "^1.0.0",
@@ -104,11 +100,7 @@
     "prestart": "npm run test",
     "postinstall": "node ./postinstall.js",
     "start": "react-scripts start",
-<<<<<<< HEAD
-    "build": "npm run postinstall && set CI=false && react-scripts build",
-=======
     "build": "export NODE_OPTIONS=--max_old_space_size=12288 && npm run postinstall && CI=false GENERATE_SOURCEMAP=false react-scripts build",
->>>>>>> origin/development
     "test": "cross-env CI=true react-scripts test --env=jest-environment-jsdom-sixteen",
     "test:watch": " react-scripts test --env=jest-environment-jsdom-sixteen",
     "test:coverage": "cross-env CI=true react-scripts test --env=jest-environment-jsdom-sixteen --coverage",
