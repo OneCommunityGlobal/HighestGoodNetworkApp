@@ -1,0 +1,220 @@
+.header-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+  position: relative;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  color: #0095f6;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 8px 12px;
+  margin-right: auto;
+  transition: color 0.2s ease;
+  border-radius: 4px;
+}
+
+.back-button:hover {
+  color: #0074cc;
+  background-color: rgba(0, 149, 246, 0.1);
+}
+
+.create-post-container {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 30px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.create-post-container h1 {
+  margin: 0;
+  flex-grow: 1;
+  text-align: center;
+  color: #262626;
+  font-size: 24px;
+}
+
+.spacer {
+  width: 76px;
+}
+
+.tab-container {
+  display: flex;
+  margin-bottom: 24px;
+  border-bottom: 1px solid #dbdbdb;
+}
+
+.tab-button {
+  flex: 1;
+  background: none;
+  border: none;
+  padding: 12px 16px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #8e8e8e;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.tab-button.active {
+  color: #0095f6;
+}
+
+.tab-button.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #0095f6;
+}
+
+.tab-button:hover {
+  color: #262626;
+  background-color: #fafafa;
+}
+
+.selected-file {
+  margin-top: 8px;
+  font-size: 14px;
+  color: #262626;
+  background-color: #f3f3f3;
+  padding: 8px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+input[type="url"] {
+  padding: 12px;
+  border: 1px solid #dbdbdb;
+  border-radius: 4px;
+  font-size: 16px;
+  transition: border-color 0.3s ease;
+  background-color: #f8f9fa;
+  width: 100%;
+}
+
+input[type="url"]:focus {
+  border-color: #0095f6;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 149, 246, 0.2);
+}
+
+.create-post-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #262626;
+  font-size: 16px;
+}
+
+.form-group input[type="text"],
+.form-group textarea {
+  padding: 12px;
+  border: 1px solid #dbdbdb;
+  border-radius: 4px;
+  font-size: 16px;
+  transition: border-color 0.3s ease;
+  background-color: #f8f9fa;
+}
+
+.form-group input[type="text"]:focus,
+.form-group textarea:focus {
+  border-color: #0095f6;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 149, 246, 0.2);
+}
+
+.form-group textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.form-group .error {
+  color: #ed4956;
+  margin-top: 8px;
+  font-size: 14px;
+}
+
+.create-post-container button[type="submit"] {
+  background-color: #0095f6;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 10px;
+  align-self: center;
+}
+
+.create-post-container button[type="submit"]:hover {
+  background-color: #0074cc;
+}
+
+.create-post-container button[type="submit"]:disabled {
+  background-color: #b2dffc;
+  cursor: not-allowed;
+}
+
+/* Style for the selected image text */
+.form-group p {
+  margin: 8px 0;
+  font-size: 14px;
+  color: #262626;
+}
+
+/* Add some responsive styles */
+@media (max-width: 768px) {
+  .create-post-container {
+    padding: 20px;
+    margin: 20px;
+  }
+  
+  .form-group input[type="text"],
+  .form-group textarea {
+    font-size: 14px;
+  }
+  
+  .create-post-container button[type="submit"] {
+    width: 100%;
+  }
+
+  .header-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .back-button {
+    margin-right: 0;
+    align-self: flex-start;
+  }
+  
+  .spacer {
+    display: none;
+  }
+  
+  .create-post-container h1 {
+    font-size: 20px;
+  }
+}

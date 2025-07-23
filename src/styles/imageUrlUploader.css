@@ -1,0 +1,146 @@
+/* Image URL Uploader styles */
+.image-url-uploader {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+}
+
+.url-input-container {
+  position: relative;
+  margin-bottom: 15px;
+}
+
+.url-input {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  background-color: #f8f9fa;
+}
+
+.url-input:focus {
+  border-color: #0095f6;
+  outline: none;
+  box-shadow: 0 0 5px rgba(0, 149, 246, 0.3);
+}
+
+.clear-url-button {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #8e8e8e;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.clear-url-button:hover {
+  color: #262626;
+}
+
+/* New pre-loaded image box */
+.image-preview-box {
+  height: 250px;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  background-color: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.placeholder-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #8e8e8e;
+  text-align: center;
+  padding: 20px;
+}
+
+.image-icon {
+  font-size: 48px;
+  margin-bottom: 10px;
+  opacity: 0.6;
+}
+
+.image-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  color: #8e8e8e;
+  width: 100%;
+  height: 100%;
+}
+
+.loading-spinner {
+  width: 30px;
+  height: 30px;
+  border: 3px solid rgba(0, 149, 246, 0.2);
+  border-radius: 50%;
+  border-top-color: #0095f6;
+  animation: spin 1s linear infinite;
+  margin-bottom: 10px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.image-error {
+  padding: 12px;
+  background-color: rgba(237, 73, 86, 0.1);
+  border: 1px solid rgba(237, 73, 86, 0.2);
+  border-radius: 4px;
+  color: #ed4956;
+  margin: 10px;
+  width: calc(100% - 20px);
+}
+
+.image-preview-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-preview {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  padding: 10px;
+}
+
+.remove-image {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.remove-image:hover {
+  background-color: rgba(0, 0, 0, 0.9);
+}
