@@ -6,6 +6,8 @@ import { Editor } from '@tinymce/tinymce-react';
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
+import BloggerPostDetails from './BloggerPostDetails';
+import BloggerIcon from '../../assets/images/blogger-icon.png';
 
 function Announcements({ title, email: initialEmail }) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -159,17 +161,33 @@ function Announcements({ title, email: initialEmail }) {
     <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: '100%' }}>
       <div className="email-update-container">
         <div className="editor">
-          {title ? <h3> {title} </h3> : <h3>Weekly Progress Editor</h3>}
+          <div className="editor-header">
+            {title ? (
+              <h3> {title} </h3>
+            ) : (
+              <div className="header-with-icon">
+                <h3>Weekly Progress Editor</h3>
+                <button
+                  type="button"
+                  className="blogger-toggle"
+                  onClick={() => {
+                    setShowBlogger(!showBlogger);
+                    setShowEmailSection(!showEmailSection);
+                  }}
+                  style={darkMode ? boxStyleDark : boxStyle}
+                >
+                  <img src={BloggerIcon} alt="Blogger" className="blogger-icon" />
+                </button>
+              </div>
+            )}
+          </div>
 
-          <br />
-          {showEditor && (
-            <Editor
-              tinymceScriptSrc="/tinymce/tinymce.min.js"
-              id="email-editor"
-              initialValue="<p>This is the initial content of the editor</p>"
-              init={editorInit}
-              onEditorChange={content => {
-                setEmailContent(content);
+          {showEditor && showBlogger && (
+            <BloggerPostDetails
+              content={emailContent}
+              onClose={() => {
+                setShowBlogger(false);
+                setShowEmailSection(true);
               }}
               onInit={(evt, editor) => {
                 editorRef.current = editor;
@@ -199,9 +217,8 @@ function Announcements({ title, email: initialEmail }) {
               value={emailTo}
               onChange={handleEmailListChange}
               placeholder="Enter email addresses (comma-separated)"
-              className={`input-text-for-announcement ${
-                darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
-              }`}
+              className={`input-text-for-announcement ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+                }`}
             />
             <button
               type="button"
@@ -222,9 +239,8 @@ function Announcements({ title, email: initialEmail }) {
               value={headerContent}
               onChange={handleHeaderContentChange}
               placeholder="Enter header image URL"
-              className={`input-text-for-announcement ${
-                darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
-              }`}
+              className={`input-text-for-announcement ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+                }`}
             />
             <button
               type="button"
