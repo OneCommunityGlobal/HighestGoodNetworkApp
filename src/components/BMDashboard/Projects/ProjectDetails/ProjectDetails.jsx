@@ -9,6 +9,7 @@ import './ProjectDetails.css';
 
 function ProjectDetails() {
   const { projectId } = useParams();
+  const darkMode = useSelector(state => state.theme.darkMode);
   const projects = useSelector(state => state.bmProjects) || [];
   const currProject = projects.find(project => String(project._id) === String(projectId));
 
@@ -22,10 +23,14 @@ function ProjectDetails() {
   }
 
   return (
-    <Container fluid className="project-details py-4">
+    <Container fluid className={`${darkMode ? 'project-details-dark' : 'project-details'}  `}>
       <Row className="justify-content-center">
         <Col xs="12" lg="10">
-          <h1 className="mb-4">{currProject.name} Dashboard</h1>
+          <h1
+            className={`${darkMode ? 'project-details-title-dark' : 'project-details-title'} mb-2 `}
+          >
+            {currProject.name} Dashboard{' '}
+          </h1>
 
           <LogBar projectId={projectId} />
 

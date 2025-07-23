@@ -12,7 +12,9 @@ import RoutePermissions from 'utils/routePermissions';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import RoleInfoCollections from 'components/UserProfile/EditableModal/RoleInfoModal';
 import LessonList from 'components/BMDashboard/LessonList/LessonListForm';
+import ResourceUsage from 'components/CommunityPortal/ResourceUsage/ResourceUsage';
 import AddEquipmentType from 'components/BMDashboard/Equipment/Add/AddEquipmentType';
+import EDailyActivityLog from 'components/BMDashboard/Equipment/DailyActivityLog/EDailyActivityLog';
 import Announcements from 'components/Announcements';
 import JobCCDashboard from 'components/JobCCDashboard/JobCCDashboard';
 import WeeklyProjectSummary from 'components/BMDashboard/WeeklyProjectSummary/WeeklyProjectSummary';
@@ -45,6 +47,7 @@ import Timelog from './components/Timelog';
 // import LessonForm from './components/BMDashboard/Lesson/LessonForm';
 
 import UserProfileEdit from './components/UserProfile/UserProfileEdit';
+
 import Dashboard from './components/Dashboard';
 import Logout from './components/Logout/Logout';
 import Login from './components/Login';
@@ -140,6 +143,7 @@ import ActivityAgenda from './components/CommunityPortal/Activities/ActivityAgen
 
 // eslint-disable-next-line import/order, import/no-unresolved
 import LogTools from './components/BMDashboard/LogTools/LogTools';
+// import IssueDashboard from './components/BMDashboard/Issues/IssueDashboard';
 import EquipmentUpdate from './components/BMDashboard/Tools/EquipmentUpdate';
 // Social Architecture
 const ResourceManagement = lazy(() => import('./components/ResourceManagement/ResourceManagement'));
@@ -528,6 +532,7 @@ export default (
         />
         <BMProtectedRoute path="/bmdashboard/materials/add" fallback component={AddMaterial} />
         <BMProtectedRoute path="/bmdashboard/equipment/add" component={AddEquipmentType} />
+        <BMProtectedRoute path="/bmdashboard/T/EDailyActivityLog" component={EDailyActivityLog} />
         <BMProtectedRoute
           path="/bmdashboard/consumables/purchase"
           fallback
@@ -577,6 +582,7 @@ export default (
           exact
           component={WeeklyProjectSummary}
         />
+        <BMProtectedRoute path="/bmdashboard/issues/" component={IssueDashboard} />
 
         <BMProtectedRoute path="/bmdashboard/issuechart" component={IssueChart} />
 
@@ -669,6 +675,7 @@ export default (
         <ProtectedRoute path="/userprofile/:userId" fallback component={UserProfile} />
         <ProtectedRoute path="/userprofileedit/:userId" component={UserProfileEdit} />
         <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
+        <CPProtectedRoute path="/communityportal/reports/resourceusage" exact component={ResourceUsage}/>
         <ProtectedRoute path="/memberlist" exact component={MemberList} />
         <Route path="/Logout" component={Logout} />
         <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
