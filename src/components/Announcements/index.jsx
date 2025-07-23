@@ -16,16 +16,9 @@ function Announcements({ title, email: initialEmail }) {
   const [emailList, setEmailList] = useState([]);
   const [emailContent, setEmailContent] = useState('');
   const [headerContent, setHeaderContent] = useState('');
-<<<<<<< HEAD
-  const [showEditor, setShowEditor] = useState(true); // State to control rendering of the editor
-  const tinymce = useRef(null);
-  const [showBlogger, setShowBlogger] = useState(false);
-  const [showEmailSection, setShowEmailSection] = useState(true);
-=======
   const [showEditor, setShowEditor] = useState(true);
   const [isFileUploaded, setIsFileUploaded] = useState(false);
   const editorRef = useRef(null);
->>>>>>> origin/development
 
   useEffect(() => {
     setShowEditor(false);
@@ -201,53 +194,6 @@ function Announcements({ title, email: initialEmail }) {
               }}
             />
           )}
-<<<<<<< HEAD
-
-          {!showBlogger && (
-            <>
-              <Editor
-                tinymceScriptSrc="/tinymce/tinymce.min.js"
-                id="email-editor"
-                initialValue="<p>This is the initial content of the editor</p>"
-                init={editorInit}
-                onEditorChange={content => {
-                  setEmailContent(content);
-                }}
-              />
-
-              {!title && (
-                <button
-                  type="button"
-                  className="send-button"
-                  onClick={handleBroadcastEmails}
-                  style={darkMode ? boxStyleDark : boxStyle}
-                >
-                  Broadcast Weekly Update
-                </button>
-              )}
-            </>
-          )}
-        </div>
-
-        {showEmailSection && !showBlogger && (
-          <div
-            className={`emails ${darkMode ? 'bg-yinmn-blue' : ''}`}
-            style={darkMode ? boxStyleDark : boxStyle}
-          >
-            {title ? (
-              <p>Email</p>
-            ) : (
-              <label htmlFor="email-list-input" className={darkMode ? 'text-light' : 'text-dark'}>
-                Email List (comma-separated):
-              </label>
-            )}
-
-            <iput
-              type="text"
-              value={emailTo}
-              id="email-list-input"
-              onChange={handleEmailListChange}
-=======
           <div className="send-buttons" style={{ marginTop: '1rem' }}>
             <button type="button" onClick={handleBroadcastEmails} className="send-button">
               Broadcast Weekly Update
@@ -271,15 +217,9 @@ function Announcements({ title, email: initialEmail }) {
               value={emailTo}
               onChange={handleEmailListChange}
               placeholder="Enter email addresses (comma-separated)"
->>>>>>> origin/development
-              className={`input-text-for-announcement ${
-                darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
-              }`}
+              className={`input-text-for-announcement ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+                }`}
             />
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/development
             <button
               type="button"
               className="send-button"
@@ -288,31 +228,6 @@ function Announcements({ title, email: initialEmail }) {
             >
               {title ? 'Send Email' : 'Send mail to specific users'}
             </button>
-<<<<<<< HEAD
-            <hr />
-            <label htmlFor="header-content-input" className={darkMode ? 'text-light' : 'text-dark'}>
-              Insert header or image link:
-            </label>
-            <input
-              type="text"
-              id="header-content-input"
-              onChange={handleHeaderContentChange}
-              value={headerContent}
-              className={`input-text-for-announcement ${
-                darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
-              }`}
-            />
-            <button
-              type="button"
-              className="send-button"
-              onClick={addHeaderToEmailContent}
-              style={darkMode ? boxStyleDark : boxStyle}
-            >
-              Insert
-            </button>
-
-            <hr />
-=======
 
             <hr />
             <label htmlFor="header-content-input" className={darkMode ? 'text-light' : 'text-dark'}>
@@ -324,9 +239,8 @@ function Announcements({ title, email: initialEmail }) {
               value={headerContent}
               onChange={handleHeaderContentChange}
               placeholder="Enter header image URL"
-              className={`input-text-for-announcement ${
-                darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
-              }`}
+              className={`input-text-for-announcement ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+                }`}
             />
             <button
               type="button"
@@ -338,7 +252,6 @@ function Announcements({ title, email: initialEmail }) {
             </button>
 
             <hr />
->>>>>>> origin/development
             <label htmlFor="upload-header-input" className={darkMode ? 'text-light' : 'text-dark'}>
               Upload Header (or footer):
             </label>

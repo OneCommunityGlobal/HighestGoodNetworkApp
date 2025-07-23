@@ -405,8 +405,8 @@ function UserProfile(props) {
         createdDate: formatDateYYYYMMDD(newUserProfile?.createdDate),
         ...(newUserProfile?.endDate &&
           newUserProfile.endDate !== '' && {
-            endDate: formatDateYYYYMMDD(newUserProfile.endDate),
-          }),
+          endDate: formatDateYYYYMMDD(newUserProfile.endDate),
+        }),
       };
 
       setUserProfile(profileWithFormattedDates);
@@ -714,7 +714,7 @@ function UserProfile(props) {
     const helper = async () => {
       try {
         await updateProjetTouserProfile();
-      } catch (error) {}
+      } catch (error) { }
     };
     helper();
   }, [projects]);
@@ -939,14 +939,14 @@ function UserProfile(props) {
   const canSeeReports = props.hasPermission('getReports');
   const { role: userRole } = userProfile;
   const canResetPassword =
-    props.hasPermission('resetPassword') && !(userRole === 'Administrator' || userRole === 'Owner'); 
+    props.hasPermission('resetPassword') && !(userRole === 'Administrator' || userRole === 'Owner');
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
 
   const canEditUserProfile = targetIsDevAdminUneditable
     ? false
     : userProfile.role === 'Owner' || userProfile.role === 'Administrator'
-    ? canAddDeleteEditOwners
-    : canPutUserProfile;
+      ? canAddDeleteEditOwners
+      : canPutUserProfile;
 
   const canEdit = canEditUserProfile || isUserSelf;
 
@@ -1042,9 +1042,8 @@ function UserProfile(props) {
           Confirm Visibility Change
         </ModalHeader>
         <ModalBody>
-          {`Are you sure you want to change the user visibility to ${
-            userProfile.isVisible ? 'Invisible' : 'Visible'
-          }?`}
+          {`Are you sure you want to change the user visibility to ${userProfile.isVisible ? 'Invisible' : 'Visible'
+            }?`}
         </ModalBody>
         <ModalFooter>
           <Button color="primary" onClick={handleVisibilityChange}>
@@ -1267,7 +1266,7 @@ function UserProfile(props) {
               {showSelect ? 'Hide Team Weekly Summaries' : 'Show Team Weekly Summaries'}
             </Button>
             {(canGetProjectMembers && teams.length !== 0) ||
-            ['Owner', 'Administrator', 'Manager'].includes(requestorRole) ? (
+              ['Owner', 'Administrator', 'Manager'].includes(requestorRole) ? (
               <Button
                 onClick={() => {
                   navigator.clipboard.writeText(summaryIntro);
@@ -1534,8 +1533,8 @@ function UserProfile(props) {
                     if (targetIsDevAdminUneditable) {
                       alert(
                         'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. ' +
-                          'You shouldn’t even be using this account except to create your own accounts to use. ' +
-                          'Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now.',
+                        'You shouldn’t even be using this account except to create your own accounts to use. ' +
+                        'Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now.',
                       );
                       return `#`;
                     }
@@ -1551,11 +1550,7 @@ function UserProfile(props) {
                   </Button>
                 </Link>
               )}
-<<<<<<< HEAD
-              {canEdit && activeTab && (
-=======
               {((canEdit && activeTab) || canEditTeamCode) && (
->>>>>>> origin/development
                 <>
                   <SaveButton
                     className="mr-1 btn-bottom"
@@ -1580,9 +1575,8 @@ function UserProfile(props) {
                         setTasks(originalTasks);
                         setProjects(resetProjects);
                       }}
-                      className={`btn mr-1 btn-bottom ${
-                        darkMode ? 'btn-danger' : 'btn-outline-danger '
-                      }`}
+                      className={`btn mr-1 btn-bottom ${darkMode ? 'btn-danger' : 'btn-outline-danger '
+                        }`}
                       style={darkMode ? boxStyleDark : boxStyle}
                     >
                       Cancel
@@ -1614,9 +1608,8 @@ function UserProfile(props) {
                   Confirm Status Change
                 </ModalHeader>
                 <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
-                  {`Are you sure you want to change the user status to ${
-                    pendingRehireableStatus ? 'Rehireable' : 'Unrehireable'
-                  }?`}
+                  {`Are you sure you want to change the user status to ${pendingRehireableStatus ? 'Rehireable' : 'Unrehireable'
+                    }?`}
                 </ModalBody>
                 <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
                   <Button color="primary" onClick={handleConfirmChange}>
@@ -1671,8 +1664,8 @@ function UserProfile(props) {
                             if (targetIsDevAdminUneditable) {
                               alert(
                                 'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. ' +
-                                  'You shouldn’t even be using this account except to create your own accounts to use. ' +
-                                  'Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now.',
+                                'You shouldn’t even be using this account except to create your own accounts to use. ' +
+                                'Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now.',
                               );
                               return `#`;
                             }
@@ -1711,9 +1704,8 @@ function UserProfile(props) {
                               setTasks(originalTasks);
                               setProjects(resetProjects);
                             }}
-                            className={`btn mr-1 btn-bottom ${
-                              darkMode ? 'btn-danger' : 'btn-outline-danger '
-                            }`}
+                            className={`btn mr-1 btn-bottom ${darkMode ? 'btn-danger' : 'btn-outline-danger '
+                              }`}
                             style={darkMode ? boxStyleDark : boxStyle}
                           >
                             X
@@ -1791,9 +1783,8 @@ function UserProfile(props) {
                               setTasks(originalTasks);
                               setProjects(resetProjects);
                             }}
-                            className={`btn mr-1 btn-bottom ${
-                              darkMode ? 'btn-danger' : 'btn-outline-danger '
-                            }`}
+                            className={`btn mr-1 btn-bottom ${darkMode ? 'btn-danger' : 'btn-outline-danger '
+                              }`}
                             style={darkMode ? boxStyleDark : boxStyle}
                           >
                             X
@@ -1887,9 +1878,8 @@ function UserProfile(props) {
                               setTasks(originalTasks);
                               setProjects(resetProjects);
                             }}
-                            className={`btn mr-1 btn-bottom ${
-                              darkMode ? 'btn-danger' : 'btn-outline-danger '
-                            }`}
+                            className={`btn mr-1 btn-bottom ${darkMode ? 'btn-danger' : 'btn-outline-danger '
+                              }`}
                             style={darkMode ? boxStyleDark : boxStyle}
                           >
                             X
@@ -1973,9 +1963,8 @@ function UserProfile(props) {
                               setTasks(originalTasks);
                               setProjects(resetProjects);
                             }}
-                            className={`btn mr-1 btn-bottom ${
-                              darkMode ? 'btn-danger' : 'btn-outline-danger '
-                            }`}
+                            className={`btn mr-1 btn-bottom ${darkMode ? 'btn-danger' : 'btn-outline-danger '
+                              }`}
                             style={darkMode ? boxStyleDark : boxStyle}
                           >
                             X
@@ -2046,9 +2035,8 @@ function UserProfile(props) {
                               setTasks(originalTasks);
                               setProjects(resetProjects);
                             }}
-                            className={`btn mr-1 btn-bottom ${
-                              darkMode ? 'btn-danger' : 'btn-outline-danger '
-                            }`}
+                            className={`btn mr-1 btn-bottom ${darkMode ? 'btn-danger' : 'btn-outline-danger '
+                              }`}
                             style={darkMode ? boxStyleDark : boxStyle}
                           >
                             X

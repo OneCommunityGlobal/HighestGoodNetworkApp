@@ -64,15 +64,12 @@ import UnsubscribeForm from './components/EmailSubscribeForm/Unsubscribe';
 import NotFoundPage from './components/NotFound/NotFoundPage';
 import EmailSender from './components/common/EmailSender/EmailSender';
 import Collaboration from './components/Collaboration';
-<<<<<<< HEAD
-=======
 import MemberList from './components/QuestionnaireDashboard/MemberList';
 import EventPopularity from './components/EventPopularity/EventPopularity';
 import ApplicantsAgeChart from './components/ApplicantsChart';
 import ApplicationTimeChartPage from './components/ApplicationTimeChart';
 import ApplicationAnalyticsContainer from './components/ApplicationAnalytics';
 import UserSkillsProfile from './components/HGNSkillsDashboard/SkillsProfilePage/components/UserSkillsProfile';
->>>>>>> origin/development
 
 // LB Dashboard
 import LBProtectedRoute from './components/common/LBDashboard/LBProtectedRoute/LBProtectedRoute';
@@ -418,8 +415,6 @@ export default (
           routePermissions={RoutePermissions.teams}
         />
 
-<<<<<<< HEAD
-=======
         <ProtectedRoute path="/applicants-chart" exact component={ApplicantsAgeChart} fallback />
 
         <ProtectedRoute path="/application-time-chart" exact component={ApplicationTimeChartPage} fallback />
@@ -431,7 +426,6 @@ export default (
           fallback
         />
 
->>>>>>> origin/development
         <ProtectedRoute
           path="/announcements"
           exact
@@ -582,7 +576,7 @@ export default (
         {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
         <CPProtectedRoute path="/communityportal/reports/participation" component={NoshowViz} />
 
-        <CPProtectedRoute path="/communityportal/activities/:activityid/resources" exact component={Resources}/>
+        <CPProtectedRoute path="/communityportal/activities/:activityid/resources" exact component={Resources} />
         <CPProtectedRoute path="/communityportal/activities/:activityid" exact component={Activity} />
         <CPProtectedRoute path="/communityportal/reports/participation" exact component={EventParticipation} />
         <CPProtectedRoute path="/communityportal/reports/event/personalization" exact component={EventStats} />
@@ -650,7 +644,7 @@ export default (
         <ProtectedRoute path="/userprofile/:userId" fallback component={UserProfile} />
         <ProtectedRoute path="/userprofileedit/:userId" component={UserProfileEdit} />
         <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
-        <CPProtectedRoute path="/communityportal/reports/resourceusage" exact component={ResourceUsage}/>
+        <CPProtectedRoute path="/communityportal/reports/resourceusage" exact component={ResourceUsage} />
         <ProtectedRoute path="/memberlist" exact component={MemberList} />
         <Route path="/Logout" component={Logout} />
         <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />

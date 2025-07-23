@@ -27,16 +27,8 @@ import { useFetchWbsTasks } from './hook';
 import { FilterBar } from './FilterBar';
 
 function WBSTasks(props) {
-<<<<<<< HEAD
-  /*
-  * -------------------------------- variable declarations --------------------------------
-  */
-  // props from store
-  const { tasks, fetched, darkMode } = props;
-=======
   // const { tasks, fetched, darkMode } = props;
   const { fetched, darkMode } = props;
->>>>>>> origin/development
 
   const { wbsId } = props.match.params;
   const { projectId } = props.match.params;
@@ -58,10 +50,10 @@ function WBSTasks(props) {
   const { tasks, isLoading, error, refresh } = useFetchWbsTasks(wbsId);
 
   useEffect(() => {
-    if(!isLoading){
+    if (!isLoading) {
       setPageLoadTime(Date.now());
     }
-  },[tasks, isLoading]);
+  }, [tasks, isLoading]);
 
   useEffect(() => {
     setLevelOneTasks(
@@ -76,16 +68,6 @@ function WBSTasks(props) {
   const canPostTask = props.hasPermission('postTask');
   const filterTasks = (tasks, filterState) => {
     switch (filterState) {
-<<<<<<< HEAD
-      case 'all': return tasks
-      case 'assigned': return tasks.filter(task => task.isAssigned === true)
-      case 'unassigned': return tasks.filter(task => task.isAssigned === false)
-      case 'active': return tasks.filter(task => ['Active', 'Started'].includes(task.status))
-      case 'inactive': return tasks.filter(task => ['Not Started', 'Paused'].includes(task.status))
-      case 'complete': return tasks.filter(task => task.status === 'Complete')
-      case 'paused': return tasks.filter(task => task.status === 'Paused');
-
-=======
       case 'all':
         return tasks;
       case 'assigned':
@@ -100,11 +82,10 @@ function WBSTasks(props) {
         return tasks.filter(task => task.status === 'Complete');
       case 'paused':
         return tasks.filter(task => task.status === 'Paused');
->>>>>>> origin/development
     }
   };
 
-  
+
 
   const deleteWBSTask = (taskId, mother) => {
     props.deleteTask(taskId, mother);
@@ -229,7 +210,7 @@ function WBSTasks(props) {
               load={refresh}
               pageLoadTime={pageLoadTime}
               darkMode={darkMode}
-              tasks={tasks} 
+              tasks={tasks}
             />
           ) : null}
 
@@ -239,7 +220,7 @@ function WBSTasks(props) {
               projectId={projectId}
               // load={load}
               load={refresh}
-              setIsLoading={() => {}}
+              setIsLoading={() => { }}
               // setIsLoading={setIsLoading}
               darkMode={darkMode}
             />
@@ -321,17 +302,10 @@ function WBSTasks(props) {
             </tr>
           </thead>
           <tbody>
-<<<<<<< HEAD
-            {/* <tr className="taskDrop">   // Drag and drop functionality is deserted for now
-              <td colSpan={14} />
-            </tr> */}
-            {fetched && levelOneTasks.map((task, i) => (
-=======
             {filterTasks(
               tasks.filter(task => task.level === 1),
               filterState,
             ).map((task, i) => (
->>>>>>> origin/development
               <Task
                 copyCurrentTask={setCopiedTask}
                 key={`${task._id}${i}`}
@@ -371,7 +345,7 @@ function WBSTasks(props) {
                 tasks={tasks}
                 load={refresh}
                 pageLoadTime={pageLoadTime}
-                setIsLoading={() => {}}
+                setIsLoading={() => { }}
                 darkMode={darkMode}
               />
             ))}

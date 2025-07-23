@@ -100,13 +100,9 @@ export default function WeeklyProjectSummaryHeader() {
             ))}
           </Input>
 
-<<<<<<< HEAD
-          <Button className="weekly-summary-share-btn">Share PDF</Button>
-=======
           <Button className={`${styles.weeklySummaryShareBtn}`} onClick={handleSaveAsPDF}>
             Share PDF
           </Button>
->>>>>>> origin/development
         </div>
       </header>
     </div>

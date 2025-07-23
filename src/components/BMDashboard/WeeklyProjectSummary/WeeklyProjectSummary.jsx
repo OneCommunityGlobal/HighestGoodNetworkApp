@@ -318,17 +318,10 @@ export default function WeeklyProjectSummary() {
   );
 
   return (
-<<<<<<< HEAD
-    <div className={`weekly-project-summary-container ${darkMode ? 'dark-mode' : ''}`}>
-      <WeeklyProjectSummaryHeader />
-      <div className="weekly-project-summary-dashboard-container">
-        <div className="weekly-project-summary-dashboard-grid">
-=======
     <div className={`${styles.weeklyProjectSummaryContainer} ${darkMode ? styles.darkMode : ''}`}>
       <WeeklyProjectSummaryHeader handleSaveAsPDF={handleSaveAsPDF} />
       <div className={`${styles.weeklyProjectSummaryDashboardContainer}`}>
         <div className={`${styles.weeklyProjectSummaryDashboardGrid}`}>
->>>>>>> origin/development
           {sections.map(({ title, key, className, content }) => (
             <div
               key={key}
