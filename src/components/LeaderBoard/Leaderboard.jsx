@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import { useEffect, useState, useRef, useCallback } from 'react';
 import './Leaderboard.css';
 import { isEqual, debounce } from 'lodash';
@@ -16,9 +17,15 @@ import {
   DropdownItem,
   Spinner,
   Input,
+  Tooltip,
 } from 'reactstrap';
 import ReactTooltip from 'react-tooltip';
 import Alert from 'reactstrap/lib/Alert';
+import axios from 'axios';
+import moment from 'moment-timezone';
+import { toast } from 'react-toastify';
+// eslint-disable-next-line no-unused-vars
+import { useDispatch, useSelector } from 'react-redux';
 import {
   hasLeaderboardPermissions,
   assignStarDotColors,
@@ -28,13 +35,10 @@ import {
 import { calculateDurationBetweenDates, showTrophyIcon } from '~/utils/anniversaryPermissions';
 import hasPermission from '~/utils/permissions';
 // import MouseoverTextTotalTimeEditButton from '~/components/mouseoverText/MouseoverTextTotalTimeEditButton';
-import { toast } from 'react-toastify';
 import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
-import moment from 'moment-timezone';
 import { boxStyle } from '~/styles';
-import axios from 'axios';
+// import { boxStyle } from 'styles';
 import { getUserProfile } from '~/actions/userProfile';
-import { useDispatch, useSelector } from 'react-redux';
 import { boxStyleDark } from '../../styles';
 import '../Header/DarkMode.css';
 import '../UserProfile/TeamsAndProjects/autoComplete.css';
@@ -85,6 +89,8 @@ function LeaderBoard({
   darkMode,
   getWeeklySummaries,
   setFilteredUserTeamIds,
+  userOnTimeOff,
+  usersOnFutureTimeOff,
 }) {
   const userId = displayUserId;
   const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
@@ -104,7 +110,11 @@ function LeaderBoard({
     }
   }, []);
 
-  // const isOwner = ['Owner'].includes(loggedInUser.role);
+  const isOwner = ['Owner'].includes(loggedInUser.role);
+  const allowedRoles = ['Administrator', 'Manager', 'Mentor', 'Core Team', 'Assistant Manager'];
+  const isAllowedOtherThanOwner = allowedRoles.includes(loggedInUser.role);
+  const [currentTimeOfftooltipOpen, setCurrentTimeOfftooltipOpen] = useState({});
+  const [futureTimeOfftooltipOpen, setFutureTimeOfftooltipOpen] = useState({});
 
   const [mouseoverTextValue, setMouseoverTextValue] = useState(totalTimeMouseoverText);
   const dispatch = useDispatch();
@@ -369,6 +379,70 @@ function LeaderBoard({
     return { hasTimeOff, isCurrentlyOff, additionalWeeks };
   };
 
+  const currentTimeOfftoggle = personId => {
+    setCurrentTimeOfftooltipOpen(prevState => ({
+      ...prevState,
+      [personId]: !prevState[personId],
+    }));
+  };
+
+  const futureTimeOfftoggle = personId => {
+    setFutureTimeOfftooltipOpen(prevState => ({
+      ...prevState,
+      [personId]: !prevState[personId],
+    }));
+  };
+
+  const timeOffIndicator = personId => {
+    if (userOnTimeOff[personId]?.isInTimeOff === true) {
+      if (userOnTimeOff[personId]?.weeks > 0) {
+        return (
+          <>
+            <sup style={{ color: 'rgba(128, 128, 128, 0.5)' }} id={`currentTimeOff-${personId}`}>
+              {' '}
+              {/* eslint-disable-next-line prettier/prettier */}
+              {/* eslint-disable-next-line prettier/prettier */}
+              +
+              {userOnTimeOff[personId].weeks}
+            </sup>
+            <Tooltip
+              placement="top"
+              isOpen={currentTimeOfftooltipOpen[personId]}
+              target={`currentTimeOff-${personId}`}
+              toggle={() => currentTimeOfftoggle(personId)}
+            >
+              Number with + indicates additional weeks the user will be on a time off excluding the
+              current week.
+            </Tooltip>
+          </>
+        );
+      }
+
+      return null;
+    }
+
+    if (usersOnFutureTimeOff[personId]?.weeks > 0) {
+      return (
+        <>
+          <sup style={{ color: '#007bff' }} id={`futureTimeOff-${personId}`}>
+            {' '}
+            {usersOnFutureTimeOff[personId].weeks}
+          </sup>
+          <Tooltip
+            placement="top"
+            isOpen={futureTimeOfftooltipOpen[personId]}
+            target={`futureTimeOff-${personId}`}
+            toggle={() => futureTimeOfftoggle(personId)}
+          >
+            This number indicates number of weeks from now user has scheduled a time off.
+          </Tooltip>
+        </>
+      );
+    }
+
+    return null;
+  };
+
   const teamName = (name, maxLength) =>
     setSelectedTeamName(maxLength > 15 ? `${name.substring(0, 15)}...` : name);
 
@@ -464,72 +538,78 @@ function LeaderBoard({
           <section className="d-flex flex-row flex-wrap mb-3">
             <UncontrolledDropdown className=" mr-3">
               {/* Display selected team or default text */}
-              <DropdownToggle caret>{selectedTeamName} </DropdownToggle>
+              <DropdownToggle caret>{selectedTeamName}</DropdownToggle>
 
               {/* prettier-ignore */}
-              <DropdownMenu  style={{   width: '27rem'}} className={darkMode ? 'bg-dark' : ''}>
+              <DropdownMenu style={{   width: '27rem'}} className={darkMode ? 'bg-dark' : ''}>
 
-              <div className={`${darkMode ? 'text-white' : ''}`} style={{width: '100%' }}>
-                {teams.length === 0 ? (
-                  <p className={`${darkMode ? 'text-white' : ''}  text-center`}>
-                    Please, create a team to use the filter.
-                  </p>
-                ) : (
-                  <>
+                <div className={`${darkMode ? 'text-white' : ''}`} style={{width: '100%' }}>
+                  {teams.length === 0 ? (
+                    <p className={`${darkMode ? 'text-white' : ''}  text-center`}>
+                      Please, create a team to use the filter.
+                    </p>
+                  ) : (
+                    <>
 
-                  <div className='align-items-center d-flex flex-column'>
-                    <Input
-                      onChange={e => handleInputSearchTeams(e)}
-                      style={{ width: '90%', marginBottom: '1rem', backgroundColor: darkMode? '#e0e0e0' : 'white' }}
-                      placeholder="Search teams"
-                      autoFocus
-                      value={refInput.current}
-                    />
-                  </div>
+                      <div className='align-items-center d-flex flex-column'>
+                        <Input
+                          onChange={e => handleInputSearchTeams(e)}
+                          style={{ width: '90%', marginBottom: '1rem', backgroundColor: darkMode? '#e0e0e0' : 'white' }}
+                          placeholder="Search teams"
+                          autoFocus
+                          value={refInput.current}
+                        />
+                      </div>
 
-                    <div className='overflow-auto scrollAutoComplete border-bottom border-top border-light-subtle'
-                     style={{ height: teams.length > 8? '30rem' : 'auto', width: '100%' }}
-                     >
-                    <h5 className="text-center">My Teams</h5>
+                      <div
+                        className='overflow-auto scrollAutoComplete border-bottom border-top border-light-subtle'
+                        style={{ height: teams.length > 8? '30rem' : 'auto', width: '100%' }}
+                      >
+                        <h5 className="text-center">My Teams</h5>
 
-                    {teams.map(team => {
+                        {teams.map(team => {
                       return (
                         <div key={team._id}>
-                       { team._id !== 1?
-                       <DropdownItem key={`dropdown-${team._id}`} className={`${darkMode ? ' dropdown-item-hover' : ''}`}
-                        onClick={() => TeamSelected(team)}
-                       >
-                        <ul
-                          className={`${darkMode ? '  text-light' : ''}`}
-                        >
-                           <li>{dropdownName(team.teamName, team.teamName.length)}</li>
-                        </ul>
-                        </DropdownItem>
-                        :
-                        <div className='align-items-center d-flex flex-column'>
-                        <Alert color="danger"style={{ width: '90%' }} >
-                          {dropdownName(team.teamName, team.teamName.length)}
-                         </Alert>
-                        </div>
-                        }
+                          { team._id !== 1? (
+                            <DropdownItem
+                              key={`dropdown-${team._id}`}
+                              className={`${darkMode ? ' dropdown-item-hover' : ''}`}
+                              onClick={() => TeamSelected(team)}
+                            >
+                              <ul
+                                className={`${darkMode ? '  text-light' : ''}`}
+                              >
+                                <li>{dropdownName(team.teamName, team.teamName.length)}</li>
+                              </ul>
+                            </DropdownItem>
+                     )
+                        : (
+                          <div className='align-items-center d-flex flex-column'>
+                            <Alert color="danger" style={{ width: '90%' }}>
+                              {dropdownName(team.teamName, team.teamName.length)}
+                            </Alert>
+                          </div>
+                      )}
                         </div>
                       );
                     })}
-                    </div>
+                      </div>
 
-                    <h5 className="ml-4 text-center">All users</h5>
-                    <DropdownItem className={`${darkMode ? ' dropdown-item-hover' : ''}`}
-                      onClick={() => TeamSelected('Show all')}>
-                    <ul
-                      className={`${darkMode ? '  text-light' : ''}`}
-                    >
-                        <li>Show all</li>
-                    </ul>
-                    </DropdownItem>
-                  </>
+                      <h5 className="ml-4 text-center">All users</h5>
+                      <DropdownItem
+                        className={`${darkMode ? ' dropdown-item-hover' : ''}`}
+                        onClick={() => TeamSelected('Show all')}
+                      >
+                        <ul
+                          className={`${darkMode ? '  text-light' : ''}`}
+                        >
+                          <li>Show all</li>
+                        </ul>
+                      </DropdownItem>
+                    </>
                 )}
-              </div>
-            </DropdownMenu>
+                </div>
+              </DropdownMenu>
             </UncontrolledDropdown>
 
             {teams.length === 0 ? (
@@ -554,15 +634,21 @@ function LeaderBoard({
         <div>
           {isDisplayAlert && (
             <Alert color="danger">
-              This team has no members, please add members to this team by clicking{' '}
-              <Link to="/teams">here</Link>.
+              {/* eslint-disable-next-line prettier/prettier */}
+              This team has no members, please add members to this team by clicking
+              {' '}
+              {/* eslint-disable-next-line prettier/prettier */}
+              <Link to="/teams">here</Link>
             </Alert>
           )}
 
           {!isVisible && (
             <Alert color="warning">
               <div className="d-flex align-items-center">
-                Note: You are currently invisible to the team(s) you are on.{' '}
+                Note: You are currently invisible to the team(s) you are on.
+                {/* eslint-disable-next-line prettier/prettier */}
+                {/* eslint-disable-next-line prettier/prettier */}
+                {' '}
                 <EditableInfoModal
                   areaName="LeaderboardInvisibleInfoPoint"
                   areaTitle="Leaderboard settings"
@@ -649,8 +735,14 @@ function LeaderBoard({
                         <span>{stateOrganizationData.name}</span>
                         {viewZeroHouraMembers(loggedInUser.role) && (
                           <span className="leaderboard-totals-title">
-                            0 hrs Totals:{' '}
-                            {filteredUsers.filter(user => user.weeklycommittedHours === 0).length}{' '}
+                            0 hrs Totals:
+                            {/* eslint-disable-next-line prettier/prettier */}
+                            {/* eslint-disable-next-line prettier/prettier */}
+                            {' '}
+                            {filteredUsers.filter(user => user.weeklycommittedHours === 0).length}
+                            {/* eslint-disable-next-line prettier/prettier */}
+                            {/* eslint-disable-next-line prettier/prettier */}
+                            {' '}
                             Members
                           </span>
                         )}
@@ -663,8 +755,14 @@ function LeaderBoard({
                         <span>{stateOrganizationData.name}</span>
                         {viewZeroHouraMembers(loggedInUser.role) && (
                           <span className="leaderboard-totals-title">
-                            0 hrs Totals:{' '}
-                            {filteredUsers.filter(user => user.weeklycommittedHours === 0).length}{' '}
+                            0 hrs Totals:
+                            {/* eslint-disable-next-line prettier/prettier */}
+                            {/* eslint-disable-next-line prettier/prettier */}
+                            {' '}
+                            {filteredUsers.filter(user => user.weeklycommittedHours === 0).length}
+                            {/* eslint-disable-next-line prettier/prettier */}
+                            {/* eslint-disable-next-line prettier/prettier */}
+                            {' '}
                             Members
                           </span>
                         )}
@@ -700,8 +798,12 @@ function LeaderBoard({
                     <span title="Tangible + Intangible time = Total time">
                       {filteredUsers
                         .reduce((total, user) => total + parseFloat(user.totaltime), 0)
-                        .toFixed(2)}{' '}
-                      of{' '}
+                        .toFixed(2)}
+                      {/* eslint-disable-next-line prettier/prettier */}
+                      {/* eslint-disable-next-line prettier/prettier */}
+                      {' '}
+                      of
+                      {' '}
                       {filteredUsers
                         .reduce((total, user) => total + (user.weeklycommittedHours || 0), 0)
                         .toFixed(2)}
@@ -739,13 +841,20 @@ function LeaderBoard({
                             </ModalHeader>
                             <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                               <p className={darkMode ? 'text-light' : ''}>
-                                Are you sure you wish to view this {item.name} dashboard?
+                                Are you sure you wish to view this
+                                {/* eslint-disable-next-line prettier/prettier */}
+                                {/* eslint-disable-next-line prettier/prettier */}
+                                {' '}
+                                dashboard?
                               </p>
                             </ModalBody>
                             <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
                               <Button variant="primary" onClick={() => showDashboard(item)}>
                                 Ok
-                              </Button>{' '}
+                              </Button>
+                              {/* eslint-disable-next-line prettier/prettier */}
+                              {/* eslint-disable-next-line prettier/prettier */}
+                              {' '}
                               <Button variant="secondary" onClick={dashboardToggle}>
                                 Cancel
                               </Button>
@@ -835,13 +944,19 @@ function LeaderBoard({
                           to={`/userprofile/${item.personId}`}
                           title="View Profile"
                           style={{
-                            color: isCurrentlyOff
-                              ? `${darkMode ? '#9499a4' : 'rgba(128, 128, 128, 0.5)'}` // Gray out the name if on time off
-                              : '#007BFF', // Default color
+                            color:
+                              isCurrentlyOff ||
+                              ((isAllowedOtherThanOwner || isOwner || item.personId === userId) &&
+                                userOnTimeOff[item.personId]?.isInTimeOff === true)
+                                ? `${darkMode ? '#9499a4' : 'rgba(128, 128, 128, 0.5)'}` // Gray out the name if on time off
+                                : '#007BFF', // Default color
                           }}
                         >
                           {item.name}
                         </Link>
+                        {isAllowedOtherThanOwner || isOwner || item.personId === userId
+                          ? timeOffIndicator(item.personId)
+                          : null}
                         &nbsp;&nbsp;&nbsp;
                         {hasVisibilityIconPermission && !item.isVisible && (
                           <i className="fa fa-eye-slash" title="User is invisible" />
@@ -873,7 +988,10 @@ function LeaderBoard({
                             <ModalFooter>
                               <Button variant="secondary" onClick={trophyIconToggle}>
                                 Cancel
-                              </Button>{' '}
+                              </Button>
+                              {/* eslint-disable-next-line prettier/prettier */}
+                              {/* eslint-disable-next-line prettier/prettier */}
+                              {' '}
                               <Button
                                 color="primary"
                                 onClick={() => {

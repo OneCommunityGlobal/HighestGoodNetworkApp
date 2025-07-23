@@ -205,7 +205,7 @@ function Task(props) {
             <td
               id={`r_${props.num}_${props.taskId}`}
               scope="row"
-              className={`taskNum ${props.hasChildren ? 'has_children' : ''}`}
+              className={`taskNum ${props.hasChildren ? 'has_children' : ''} text-left`}
               onClick={openChild}
             >
               {props.num.replaceAll('.0', '')}

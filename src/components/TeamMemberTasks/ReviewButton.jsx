@@ -405,7 +405,11 @@ function ReviewButton({ user, task, updateTask }) {
             >
               Work Submitted and Awaiting Review
             </DropdownToggle>
-            <DropdownMenu className={darkMode ? 'bg-space-cadet' : ''}>
+            <DropdownMenu
+              className={
+                darkMode ? 'review-button-dropdown bg-space-cadet' : 'review-button-dropdown'
+              }
+            >
               {task.relatedWorkLinks &&
                 // eslint-disable-next-line no-shadow
                 task.relatedWorkLinks.map(link => (
@@ -444,7 +448,11 @@ function ReviewButton({ user, task, updateTask }) {
             >
               Ready for Review
             </DropdownToggle>
-            <DropdownMenu className={darkMode ? 'bg-space-cadet' : ''}>
+            <DropdownMenu
+              className={
+                darkMode ? 'review-button-dropdown bg-space-cadet' : 'review-button-dropdown'
+              }
+            >
               {task.relatedWorkLinks &&
                 task.relatedWorkLinks.map(dropLink => (
                   <DropdownItem

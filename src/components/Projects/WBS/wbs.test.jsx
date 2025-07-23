@@ -58,7 +58,7 @@ describe('WBS Component', () => {
           frontPermissions: ['deleteWbs', 'addWbs', 'fetchAllWBS'],
           backPermissions: [],
         },
-        role: 'Manager',
+        role: "Manager",
       },
     },
     role: { roles: [] },
@@ -85,11 +85,22 @@ describe('WBS Component', () => {
     expect(screen.getByText(/Return to Project List/i)).toBeInTheDocument();
   });
 
-  it('dispatches fetchAllWBS and getProjectDetail on mount', () => {
+  it('dispatches setWBSStart and setWBS when fetchAllWBS is called on mount', async () => {
+    const mockWBSData = [{ _id: 'wbs1', wbsName: 'WBS 1' }];
+    axios.get.mockResolvedValueOnce({ data: mockWBSData });
+
+  it('dispatches fetchAllWBS and getProjectDetail on mount', async () => {
     renderComponent();
+
+    expect(store.dispatch).toHaveBeenCalledWith(setWBSStart());
+
+    await waitFor(() => {
+      expect(store.dispatch).toHaveBeenCalledWith(setWBS(mockWBSData));
+    });
     expect(store.dispatch).toHaveBeenCalledWith(fetchAllWBS(projectId));
     expect(store.dispatch).toHaveBeenCalledWith(getProjectDetail(projectId));
   });
+
 
   it('renders AddWBS component', () => {
     renderComponent();
@@ -117,4 +128,6 @@ describe('WBS Component', () => {
     expect(screen.getByText('#')).toBeInTheDocument();
     expect(screen.getByText('Name')).toBeInTheDocument();
   });
-});
+  
+});}
+)

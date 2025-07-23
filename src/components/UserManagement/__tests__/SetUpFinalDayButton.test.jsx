@@ -1,3 +1,4 @@
+
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { toast } from 'react-toastify';
 import '@testing-library/jest-dom/extend-expect';
@@ -8,6 +9,11 @@ import { themeMock } from '../../../__tests__/mockStates';
 import SetUpFinalDayButton from '../SetUpFinalDayButton';
 import { SET_FINAL_DAY, CANCEL } from '../../../languages/en/ui';
 // import { updateUserFinalDayStatus } from '../../../actions/userManagement.js';
+jest.mock('react-toastify', () => ({
+  toast: {
+    success: jest.fn(),
+  },
+}));
 
 vi.mock('axios');
 
@@ -16,6 +22,11 @@ const mockToastSuccess = vi.fn();
 beforeAll(() => {
   vi.spyOn(toast, 'success').mockImplementation(mockToastSuccess);
 });
+// beforeAll(() => {
+//   jest.mock('react-toastify', () => ({
+//     toast: { success: mockToastSuccess },
+//   }));
+// });
 
 const mockStore = configureStore();
 

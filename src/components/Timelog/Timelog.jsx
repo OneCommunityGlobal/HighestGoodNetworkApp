@@ -55,6 +55,7 @@ import { getBadgeCount, resetBadgeCount } from '../../actions/badgeManagement';
 import TimeEntryForm from './TimeEntryForm';
 import TimeEntry from './TimeEntry';
 import EffortBar from './EffortBar';
+// eslint-disable-next-line import/no-named-as-default, import/namespace, import/default, import/no-named-as-default-member
 import SummaryBar from '../SummaryBar/SummaryBar';
 // eslint-disable-next-line import/no-named-as-default
 import WeeklySummary from '../WeeklySummary/WeeklySummary';
@@ -79,6 +80,7 @@ const startOfWeek = offset => {
 const endOfWeek = offset => {
   return moment()
     .tz('America/Los_Angeles')
+    .endOf('week')
     .subtract(offset, 'weeks')
     .format('YYYY-MM-DD');
 };
@@ -405,11 +407,9 @@ function Timelog(props) {
     }
     if (timeLogState.activeTab === 4) {
       return (
-        <p className={`ml-1 responsive-font-size ${darkMode ? 'text-light' : ''}`}>
-          Viewing time Entries from 
-          {' '}
+        <p className={`ml-1 responsive-font-size ${darkMode ? 'text-light' : ''}`} style={{textAlign: 'left'}}>
+          Viewing time Entries from
           <b>{formatDate(timeLogState.fromDate)}</b>
-          {' '}
           to
           {' '}
           <b>{formatDate(timeLogState.toDate)}</b>
@@ -417,11 +417,9 @@ function Timelog(props) {
       );
     }
     return (
-      <p className={`ml-1 responsive-font-size ${darkMode ? 'text-light' : ''}`}>
-        Viewing time Entries from 
-        {' '}
+      <p className={`ml-1 responsive-font-size ${darkMode ? 'text-light' : ''}`} style={{textAlign: 'left'}}>
+        Viewing time Entries from
         <b>{formatDate(startOfWeek(timeLogState.activeTab - 1))}</b>
-        {' '}
         to
         {' '}
         <b>{formatDate(endOfWeek(timeLogState.activeTab - 1))}</b>

@@ -281,21 +281,20 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
   };
 
   return (
-
-    <div className={darkMode ? 'bg-oxford-blue text-light' : ''}>
-      <div className={`container py-3 ${darkMode ? 'bg-yinmn-blue-light text-light' : ''}`}>
-        {fetching || !fetched ? <Loading align="center" /> : null}
-        <div className="d-flex align-items-center">
-          <h3 style={{ display: 'inline-block', marginRight: 10 }}>Projects</h3>
-          <EditableInfoModal
-            areaName="projectsInfoModal"
-            areaTitle="Projects"
-            fontSize={30}
-            isPermissionPage
-            role={role}
-            darkMode={darkMode}
-          />
-          <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
+    <>
+      <div className={darkMode ? 'bg-oxford-blue text-light' : ''}>
+        <div className="container py-3 border border-secondary rounded" style={darkMode ? { backgroundColor: '#1B2A41' } : {}}>
+          {fetching || !fetched ? <Loading align="center" /> : null}
+          <div className="d-flex justify-content-center align-items-center">
+            <h3 style={{ display: 'inline-block', marginRight: 10 }}>Projects</h3>
+            <EditableInfoModal
+              areaName="projectsInfoModal"
+              areaTitle="Projects"
+              fontSize={30}
+              isPermissionPage={true}
+              role={role}
+            />
+            <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
 
           {canPostProject ? <AddProject hasPermission={hasPermission} /> : null}
         </div>
@@ -335,6 +334,7 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
         isSetActiveDisabled={isChangingStatus}
       />
     </div>
+    </>
   );
 };
 

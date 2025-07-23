@@ -42,6 +42,7 @@ function BlueSquareStats({ isLoading, blueSquareStats, comparisonType }) {
   ];
 
   const hasData = data.every(item => item.value !== 0);
+  // eslint-disable-next-line no-unused-vars
   const pctChange = totalBlueSquares.comparisonPercentage ?? totalBlueSquares.percentageChange ?? 0;
   return (
     <section className="blue-square-stats">
@@ -49,7 +50,8 @@ function BlueSquareStats({ isLoading, blueSquareStats, comparisonType }) {
         <DonutChart
           title="TOTAL BLUE SQUARES"
           totalCount={totalBlueSquares.count}
-          percentageChange={pctChange}
+          percentageChange={totalBlueSquares.comparisonPercentage ?? 0}
+          // percentageChange={pctChange}
           data={data}
           colors={BLUE_SQUARE_STATS_COLORS}
           comparisonType={comparisonType}

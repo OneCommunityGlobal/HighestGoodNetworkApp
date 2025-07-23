@@ -179,17 +179,27 @@ const UserProjectsTable = React.memo(props => {
                       <td className="taskName">{project.projectName}</td>
                       {props.role && canPostTask && (
                         <td className='table-cell'>
-                          <NavItem tag={Link} to={`/project/wbs/${project._id}` } id={`wbs-tooltip-${project._id}`}>
-                            <button type="button" className="btn btn-outline-info" style={darkMode ? {} : boxStyle}>
+                          <Link to={`/project/wbs/${project._id}`}>
+                            <button
+                              id={`wbs-tooltip-${project._id}`}
+                              type="button"
+                              className="btn btn-outline-info"
+                              style={darkMode ? {} : boxStyle}
+                            >
                               <i className="fa fa-tasks" aria-hidden="true"></i>
                             </button>
-                          </NavItem>
-                          <UncontrolledTooltip placement="left" target={`wbs-tooltip-${project._id}`}>
+                          </Link>
+
+                          <UncontrolledTooltip
+                            placement="left"
+                            target={`wbs-tooltip-${project._id}`}
+                            delay={{ show: 250, hide: 100 }} // Optional: smoother UX
+                          >
                             Click to access the Work Breakdown Structures &#40;WBSs&#41; for this project
                           </UncontrolledTooltip>
                         </td>
                       )}
-                      {props.edit && props.role && canDeleteProjects &&(
+                      {props.edit && props.role && canDeleteProjects && (
                         <td className='table-cell'>
                           <Button
                             color="danger"
@@ -205,7 +215,6 @@ const UserProjectsTable = React.memo(props => {
                         </td>
                       )}
                     </tr>
-
                   ))
                 ) : (
                   <></>

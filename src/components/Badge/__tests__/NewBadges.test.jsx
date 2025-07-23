@@ -44,13 +44,13 @@ const mockPersonalBestMaxHrs = 10;
 
 // Test cases
 describe('NewBadges component', () => {
-  it('renders empty message when no new badges earned', () => {
+  it('renders empty message when no new badges earned', async () => {
     render(<NewBadges badges={[]} personalBestMaxHrs={mockPersonalBestMaxHrs} darkMode={false} />);
     expect(screen.getByText(/Get yourself a herd of new badges!/)).toBeInTheDocument();
     expect(screen.queryByRole('BadgeImage')).toBeNull();
   });
 
-  it('renders new badges correctly', () => {
+  it('renders new badges correctly', async () => {
     render(
       <NewBadges
         badges={mockBadges}
@@ -62,16 +62,21 @@ describe('NewBadges component', () => {
 
     expect(badgeImages).toHaveLength(mockBadges.length);
 
-    mockBadges.forEach(async (badge, index) => {
+    for (const [index, badge] of mockBadges.entries()) {
       fireEvent.mouseEnter(badgeImages[index]);
       await waitFor(() => {
-        expect(screen.getByText(badge.badge.badgeName)).toBeInTheDocument();
-        expect(screen.getByText(badge.badge.description)).toBeInTheDocument();
+        expect(
+          screen.getByText((text) => text.includes(badge.badge.badgeName))
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getByText((text) => text.includes(badge.badge.description))
+        ).toBeInTheDocument();
       });
-    });
+    }
   });
 
-  it('renders empty message when no new badges are earned', () => {
+  it('renders empty message when no new badges are earned', async () => {
     const oldMockBadges = [
       {
         lastModified: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
@@ -93,7 +98,7 @@ describe('NewBadges component', () => {
     expect(screen.queryByTestId('badge-image')).toBeNull();
   });
 
-  it('empty message not present when badges are present', () => {
+  it('empty message not present when badges are present', async () => {
     const presentBadges = [
       {
         lastModified: new Date().toISOString(),
@@ -119,7 +124,7 @@ describe('NewBadges component', () => {
     expect(screen.queryByText(/Get yourself a herd of new badges!/)).toBeNull();
   });
 
-  it('handles invalid badge data gracefully', () => {
+  it('handles invalid badge data gracefully', async () => {
     const invalidMockBadges = [{ lastModified: 'invalid-date', count: 1 }];
 
     const errorSpy = vi.spyOn(console, 'error');
@@ -147,7 +152,7 @@ describe('NewBadges component', () => {
         darkMode={false}
       />,
     );
-    const badgeImages = screen.getAllByRole('img');
+    const badgeImages = await screen.getAllByRole('img');
 
     expect(badgeImages).toHaveLength(3);
 
@@ -192,7 +197,7 @@ describe('NewBadges component', () => {
     expect(badgeImages).toHaveLength(2);
   });
 
-  it('sorting functionalitiies check', () => {
+  it('sorting functionalitiies check', async () => {
     const sortBadges = [
       {
         lastModified: new Date().toISOString(),
@@ -202,7 +207,7 @@ describe('NewBadges component', () => {
           badgeName: 'Challenge Conqueror3',
           type: 'Personal Max',
           imageUrl: 'url_for_challenge_conqueror3_badge',
-          description: 'description test',
+          description: 'Description 3',
         },
       },
       {
@@ -213,7 +218,7 @@ describe('NewBadges component', () => {
           badgeName: 'Challenge Conqueror2',
           type: 'Personal Max',
           imageUrl: 'url_for_challenge_conqueror2_badge',
-          description: 'description test',
+          description: 'Description 2',
         },
       },
       {
@@ -224,7 +229,7 @@ describe('NewBadges component', () => {
           badgeName: 'Challenge Conqueror1',
           type: 'Personal Max',
           imageUrl: 'url_for_challenge_conqueror1_badge',
-          description: 'description test',
+          description: 'Description 1',
         },
       },
     ];
@@ -250,16 +255,22 @@ describe('NewBadges component', () => {
       if (a.badge.badgeName < b.badge.badgeName) return -1;
     });
 
-    sortedBadges.forEach(async (badge, index) => {
+    for (const [index, badge] of sortedBadges.entries()) {
       fireEvent.mouseEnter(badgeImages[index]);
+
       await waitFor(() => {
-        expect(screen.getByText(badge.badge.badgeName)).toBeInTheDocument();
-        expect(screen.getByText(badge.badge.description)).toBeInTheDocument();
+        expect(
+          screen.getByText(badge.badge.badgeName)
+        ).toBeInTheDocument();
+
+        expect(
+          screen.getByText(badge.badge.description)
+        ).toBeInTheDocument();
       });
-    });
+    }
   });
 
-  it('should render correctly when large counts ', () => {
+  it('should render correctly when large counts ', async () => {
     const largeBadges = [
       {
         lastModified: new Date().toISOString(),

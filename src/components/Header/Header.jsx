@@ -1,10 +1,10 @@
+/* eslint-disable react/destructuring-assignment */
+/* eslint-disable no-undef */
 import { useState, useEffect, useMemo, React } from 'react';
-import { ENDPOINTS } from '~/utils/URL';
 import axios from 'axios';
-import { getWeeklySummaries } from '~/actions/weeklySummaries';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation , useHistory } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+
 import {
   Collapse,
   Navbar,
@@ -23,9 +23,12 @@ import {
   Button,
   Card,
 } from 'reactstrap';
+
+import { toast } from 'react-toastify';
+import { getWeeklySummaries } from '~/actions/weeklySummaries';
+import { ENDPOINTS } from '~/utils/URL';
 import PopUpBar from '~/components/PopUpBar';
 import { fetchTaskEditSuggestions } from '~/components/TaskEditSuggestions/thunks';
-import { toast } from 'react-toastify';
 import { getHeaderData } from '../../actions/authActions';
 import { getAllRoles } from '../../actions/role';
 import Timer from '../Timer/Timer';
@@ -62,6 +65,7 @@ import NotificationCard from '../Notification/notificationCard';
 import DarkModeButton from './DarkModeButton';
 import BellNotification from './BellNotification';
 import { getUserProfile } from '../../actions/userProfile';
+import PermissionWatcher from '../Auth/PermissionWatcher';
 
 export function Header(props) {
   const location = useLocation();
@@ -148,12 +152,12 @@ export function Header(props) {
   const [hasProfileLoaded, setHasProfileLoaded] = useState(false);
   const dismissalKey = `lastDismissed_${userId}`;
   const [lastDismissed, setLastDismissed] = useState(localStorage.getItem(dismissalKey));
+  // eslint-disable-next-line react/destructuring-assignment
   const unreadNotifications = props.notification?.unreadNotifications; // List of unread notifications
   const dispatch = useDispatch();
   const history = useHistory();
 
   const [showProjectDropdown, setShowProjectDropdown] = useState(false);
-  const [isAckLoading, setIsAckLoading] = useState(false);
 
   useEffect(() => {
     const handleStorageEvent = () => {
@@ -165,7 +169,9 @@ export function Header(props) {
         setIsAuthUser(false);
       } else {
         setDisplayUserId(user.userid);
+        // eslint-disable-next-line react/destructuring-assignment
         setFirstName(props.auth.firstName);
+        // eslint-disable-next-line react/destructuring-assignment
         setProfilePic(props.auth.profilePic);
         setIsAuthUser(true);
       }
@@ -181,20 +187,27 @@ export function Header(props) {
     return () => {
       window.removeEventListener('storage', handleStorageEvent);
     };
+    // eslint-disable-next-line react/destructuring-assignment
   }, [user.userid, props.auth.firstName]);
 
   useEffect(() => {
+    // eslint-disable-next-line react/destructuring-assignment
     if (props.auth.isAuthenticated) {
+      // eslint-disable-next-line react/destructuring-assignment
       props.getHeaderData(props.auth.user.userid);
+      // eslint-disable-next-line react/destructuring-assignment
       if (props.auth.user.role === 'Owner' || props.auth.user.role === 'Administrator') {
         dispatch(fetchTaskEditSuggestions());
       }
     }
+    // eslint-disable-next-line react/destructuring-assignment
   }, [props.auth.isAuthenticated]);
+  // eslint-disable-next-line react/destructuring-assignment
   const roles = props.role?.roles;
 
   useEffect(() => {
     if (roles.length === 0 && isAuthenticated) {
+      // eslint-disable-next-line react/destructuring-assignment
       props.getAllRoles();
     }
     // Fetch unread notification
@@ -204,10 +217,13 @@ export function Header(props) {
   }, []);
 
   useEffect(() => {
+      // eslint-disable-next-line react/destructuring-assignment
     if (props.notification?.error) {
+      // eslint-disable-next-line react/destructuring-assignment
       toast.error(props.notification.error.message);
       dispatch(resetNotificationError());
     }
+    // eslint-disable-next-line react/destructuring-assignment
   }, [props.notification?.error]);
 
   const toggle = () => {
@@ -218,34 +234,11 @@ export function Header(props) {
     setLogoutPopup(true);
   };
 
-  const handlePermissionChangeAck = async () => {
-    // handle setting the ack true
-    try {
-      setIsAckLoading(true);
-      const { firstName: name, lastName, personalLinks, adminLinks, _id } = props.userProfile;
-      axios
-        .put(ENDPOINTS.USER_PROFILE(_id), {
-          // req fields for updation
-          firstName: name,
-          lastName,
-          personalLinks,
-          adminLinks,
-
-          isAcknowledged: true,
-        })
-        .then(() => {
-          setIsAckLoading(false);
-          dispatch(getUserProfile(_id));
-        });
-    } catch (e) {
-      // console.log('update ack', e);
-    }
-  };
-
   const removeViewingUser = () => {
     setPopup(false);
     sessionStorage.removeItem('viewingUser');
     window.dispatchEvent(new Event('storage'));
+    // eslint-disable-next-line react/destructuring-assignment 
     props.getWeeklySummaries(user.userid);
     history.push('/dashboard');
   };
@@ -357,7 +350,10 @@ export function Header(props) {
                   <NavItem className="responsive-spacing">
                     <NavLink tag={Link} to="/taskeditsuggestions">
                       <div className="redBackGroupHeader">
-                        <span>{props.taskEditSuggestionCount}</span>
+                        <span>
+                          {/* eslint-disable-next-line react/destructuring-assignment */}
+                          {props.taskEditSuggestionCount}
+                        </span>
                       </div>
                     </NavLink>
                   </NavItem>
@@ -542,12 +538,15 @@ export function Header(props) {
                 <UncontrolledDropdown nav className="responsive-spacing">
                   <DropdownToggle nav caret>
                     <span className="dashboard-text-link">
-                      {WELCOME}, {firstName}
+                      {WELCOME}
+                      ,
+                      {firstName}
                     </span>
                   </DropdownToggle>
                   <DropdownMenu className={darkMode ? 'bg-yinmn-blue' : ''}>
                     <DropdownItem header className={darkMode ? 'text-custom-grey' : ''}>
-                      Hello {firstName}
+                      Hello
+                      {firstName}
                     </DropdownItem>
                     <DropdownItem divider />
                     <DropdownItem
@@ -558,7 +557,9 @@ export function Header(props) {
                       {VIEW_PROFILE}
                     </DropdownItem>
                     {!cantUpdateDevAdminDetails(
+                      {/* eslint-disable-next-line react/destructuring-assignment */},
                       props.userProfile.email,
+                      {/* eslint-disable-next-line react/destructuring-assignment */},
                       props.userProfile.email,
                     ) && (
                       <DropdownItem
@@ -591,16 +592,7 @@ export function Header(props) {
           onClickClose={() => setPopup(prevPopup => !prevPopup)}
         />
       )}
-      {props.auth.isAuthenticated && props.userProfile?.permissions?.isAcknowledged === false && (
-        <PopUpBar
-          firstName={viewingUser?.firstName || firstName}
-          lastName={viewingUser?.lastName}
-          message="Heads Up, there were permission changes made to this account"
-          onClickClose={handlePermissionChangeAck}
-          textColor="black_text"
-          isLoading={isAckLoading}
-        />
-      )}
+      <PermissionWatcher props={props} />
       <div>
         <Modal isOpen={popup} className={darkMode ? 'text-light' : ''}>
           <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>
@@ -612,13 +604,15 @@ export function Header(props) {
           <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
             <Button variant="primary" onClick={removeViewingUser}>
               Ok
-            </Button>{' '}
+            </Button>
+            {' '}
             <Button variant="secondary" onClick={() => setPopup(prevPopup => !prevPopup)}>
               Cancel
             </Button>
           </ModalFooter>
         </Modal>
       </div>
+      {/* eslint-disable-next-line react/destructuring-assignment */}
       {props.auth.isAuthenticated && isModalVisible && (
         <div className={`${darkMode ? 'bg-oxford-blue' : ''} card-wrapper`}>
           <Card color="primary" className="headerCard">
@@ -630,6 +624,7 @@ export function Header(props) {
         </div>
       )}
       {/* Only render one unread message at a time */}
+      {/* eslint-disable-next-line react/destructuring-assignment */}
       {props.auth.isAuthenticated && unreadNotifications?.length > 0 ? (
         <NotificationCard notification={unreadNotifications[0]} />
       ) : null}

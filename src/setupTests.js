@@ -1,3 +1,6 @@
+/* eslint-disable no-console */
+/* eslint-disable no-param-reassign */
+/* eslint-disable no-undef */
 // Used in vitest.config.js or test setup
 import '@testing-library/jest-dom';
 import { vi } from 'vitest';

@@ -30,7 +30,7 @@ const ProjectTableHeader = props => {
 
   return (
     <tr className={darkMode ? 'bg-space-cadet text-light' : ''}>
-      <th scope="col" id="projects__order" className='align-middle'>
+      <th scope="col" id="projects__order" style={{ textAlign: 'center' }}>
         #
       </th>
       {/* <th scope="col">{PROJECT_NAME}</th> */}

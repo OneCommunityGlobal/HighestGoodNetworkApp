@@ -15,7 +15,9 @@ import {
   deleteIssue,
   fetchAllIssues,
   renameIssue,
-} from '~/actions/bmdashboard/issueActions';
+} from 'actions/bmdashboard/issueActions';
+// eslint-disable-next-line import/no-named-as-default
+import IssueHeader from './IssueHeader';
 
 export default function IssueDashboard() {
   const dispatch = useDispatch();
@@ -100,6 +102,9 @@ export default function IssueDashboard() {
         darkMode ? 'bg-oxford-blue text-light' : ''
       }`}
     >
+      <div>
+        <IssueHeader />
+      </div>
       <Row className="mb-3">
         <Col>
           <h4 className="fw-semibold">Issue Dashboard</h4>
@@ -215,7 +220,11 @@ export default function IssueDashboard() {
         }`}
       >
         <div className="small">
-          Showing {currentItems.length} of {issues.length} issues
+          Showing
+          {currentItems.length}
+          of
+          {issues.length}
+          issues
         </div>
         <nav aria-label="Issue pagination">
           <ul className="pagination pagination-sm mb-0">
@@ -311,7 +320,10 @@ export default function IssueDashboard() {
             <div className={`modal-content p-3 ${darkMode ? 'bg-oxford-blue text-light' : ''}`}>
               <h5>Confirm Delete</h5>
               <p className={`${darkMode ? 'text-light' : ''}`}>
-                Are you sure you want to delete <strong>{selectedIssue.name}</strong>?
+                Are you sure you want to delete
+                {/* eslint-disable-next-line prettier/prettier */}
+                <strong>{selectedIssue.name}</strong>
+                ?
               </p>
               <div className="d-flex justify-content-end gap-2 mt-2">
                 <button
@@ -343,7 +355,10 @@ export default function IssueDashboard() {
             <div className={`modal-content p-3 ${darkMode ? 'bg-oxford-blue text-light' : ''}`}>
               <h5>Confirm Copy</h5>
               <p className={`${darkMode ? 'text-light' : ''}`}>
-                Are you sure you want to copy <strong>{selectedIssue.name}</strong>?
+                Are you sure you want to copy
+                {/* eslint-disable-next-line prettier/prettier */}
+                <strong>{selectedIssue.name}</strong>
+                ?
               </p>
               <div className="d-flex justify-content-end gap-2 mt-2">
                 <button

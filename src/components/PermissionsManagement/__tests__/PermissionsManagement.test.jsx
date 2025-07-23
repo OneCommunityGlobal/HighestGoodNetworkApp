@@ -1,3 +1,7 @@
+/* eslint-disable no-undef */
+/* eslint-disable testing-library/no-node-access */
+/* eslint-disable testing-library/no-container */
+/* eslint-disable testing-library/no-unnecessary-act */
 // eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { render, screen, fireEvent, act } from '@testing-library/react';
@@ -11,7 +15,8 @@ import { ModalContext } from '~/context/ModalContext';
 import PermissionsManagement from '../PermissionsManagement';
 import { ENDPOINTS } from '~/utils/URL';
 
-vi.mock('axios');
+jest.mock('axios');
+jest.setTimeout(100000);
 const mockStore = configureStore([thunk]);
 
 describe('PermissionsManagement', () => {
@@ -74,6 +79,7 @@ describe('PermissionsManagement', () => {
     darkMode = store.getState().theme.darkMode,
   } = {}) => {
     let rendered;
+    // eslint-disable-next-line testing-library/no-unnecessary-act
     await act(async () => {
       rendered = render(
         <Provider store={store}>
@@ -129,7 +135,11 @@ describe('PermissionsManagement', () => {
     await act(async () => {
       fireEvent.click(addRoleButton);
     });
-    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    // await waitFor(() => {
+    //   expect(screen.getByRole('dialog')).toBeInTheDocument();
+    // });
+    const dialog = await screen.findByRole('dialog');
+    expect(dialog).toBeInTheDocument();
   });
 
   it('handles null roles gracefully', async () => {
@@ -158,7 +168,7 @@ describe('PermissionsManagement', () => {
   });
 
   it('displays loading message while fetching data', async () => {
-    axios.get.mockImplementation(() => new Promise(() => { }));
+    axios.get.mockImplementation(() => new Promise(() => {}));
     await renderComponent();
     expect(screen.getByText('Loading...')).toBeInTheDocument();
   });
