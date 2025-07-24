@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { getUserProfileBasicInfo } from 'actions/userManagement';
 import Banner from '../questionpages/Banner';
 import QuestionnaireInfo from '../questionpages/QuestionnaireInfo';
@@ -8,8 +8,15 @@ import Progress from '../questionpages/Progress';
 import '../styles/hgnform.module.css';
 
 function Page1() {
+  const user = useSelector(state => state.auth.user);
   const dispatch = useDispatch();
-  dispatch(getUserProfileBasicInfo());
+
+  useEffect(() => {
+    if (user?.userid) {
+      dispatch(getUserProfileBasicInfo(user.userid));
+    }
+  }, [dispatch, user?.userid]);
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
