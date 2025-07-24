@@ -30,11 +30,36 @@ import httpService from '../../services/httpService';
 
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 
+// ErrorBoundary for function components
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+  componentDidCatch(error, errorInfo) {
+    if (window.logger) window.logger.logError(error, errorInfo);
+  }
+  render() {
+    if (this.state.hasError) {
+      return <div style={{ color: 'red', padding: 20 }}>Something went wrong in SummaryBar. Please refresh the page or contact support.</div>;
+    }
+    return this.props.children;
+  }
+}
+
 const SummaryBar = React.forwardRef((props, ref) => {
   // from parent
-  const { displayUserId, summaryBarData } = props;
+  const { displayUserId = '', summaryBarData = {} } = props;
   // from store
-  const { authUser, displayUserProfile, displayUserTask, darkMode } = props;
+  const { authUser = {}, displayUserProfile = {}, displayUserTask = [], darkMode = false } = props;
+
+  // Early return for missing critical props
+  if (!displayUserProfile || !authUser || !displayUserId) {
+    return <div style={{ padding: 20 }}>Loading summary bar data...</div>;
+  }
 
   const authId = authUser.userid;
   const isAuthUser = displayUserId === authId;
@@ -1075,10 +1100,16 @@ const SummaryBar = React.forwardRef((props, ref) => {
 });
 
 const mapStateToProps = state => ({
-  authUser: state.auth.user,
-  displayUserProfile: state.userProfile,
-  displayUserTask: state.userTask,
-  darkMode: state.theme.darkMode,
+  authUser: state?.auth?.user ?? {},
+  displayUserProfile: state?.userProfile ?? {},
+  displayUserTask: state?.userTask ?? [],
+  darkMode: state?.theme?.darkMode ?? false,
 });
 
-export default connect(mapStateToProps, { hasPermission })(React.memo(SummaryBar));
+const SummaryBarWithErrorBoundary = React.memo(props => (
+  <ErrorBoundary>
+    <SummaryBar {...props} />
+  </ErrorBoundary>
+));
+
+export default connect(mapStateToProps, { hasPermission })(SummaryBarWithErrorBoundary);

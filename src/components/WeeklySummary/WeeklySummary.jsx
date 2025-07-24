@@ -61,7 +61,7 @@ const customImageUploadHandler = () =>
     reject({ message: 'Pictures are not allowed here!', remove: true });
   });
 
-// Need this export here in order for automated testing to work.
+// Error boundary for class component
 export class WeeklySummary extends Component {
   // eslint-disable-next-line react/state-in-constructor
   state = {
@@ -638,7 +638,22 @@ export class WeeklySummary extends Component {
     this.props.setPopup(false);
   };
 
+  // Error boundary state
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+  componentDidCatch(error, errorInfo) {
+    if (window.logger) window.logger.logError(error, errorInfo);
+  }
+
   render() {
+    // Early return for missing critical props
+    if (!this.props.currentUser || !this.props.summaries) {
+      return <div style={{ padding: 20 }}>Loading weekly summary data...</div>;
+    }
+    if (this.state.hasError) {
+      return <div style={{ color: 'red', padding: 20 }}>Something went wrong in WeeklySummary. Please refresh the page or contact support.</div>;
+    }
     const {
       formElements,
       dueDate,

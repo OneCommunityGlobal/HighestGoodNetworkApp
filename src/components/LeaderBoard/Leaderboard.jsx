@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
+import React from 'react';
 import './Leaderboard.css';
 import { isEqual, debounce } from 'lodash';
 import { Link } from 'react-router-dom';
@@ -70,26 +71,51 @@ function displayDaysLeft(lastDay) {
   return null; // or any other appropriate default value
 }
 
-function LeaderBoard({
-  getLeaderboardData,
-  postLeaderboardData,
-  getOrgData,
-  // getMouseoverText,
-  leaderBoardData,
-  loggedInUser,
-  organizationData,
-  timeEntries,
-  isVisible,
-  displayUserId,
-  totalTimeMouseoverText,
-  allRequests,
-  showTimeOffRequestModal,
-  darkMode,
-  getWeeklySummaries,
-  setFilteredUserTeamIds,
-  userOnTimeOff,
-  usersOnFutureTimeOff,
-}) {
+// ErrorBoundary for function components
+export class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+  componentDidCatch(error, errorInfo) {
+    if (window.logger) window.logger.logError(error, errorInfo);
+  }
+  render() {
+    if (this.state.hasError) {
+      return <div style={{ color: 'red', padding: 20 }}>Something went wrong in Leaderboard. Please refresh the page or contact support.</div>;
+    }
+    return this.props.children;
+  }
+}
+
+function LeaderBoard(props) {
+  // Safe defaults for all expected props
+  const {
+    leaderBoardData = [],
+    loggedInUser = {},
+    displayUserId = '',
+    organizationData = {},
+    timeEntries = [],
+    isVisible = true,
+    totalTimeMouseoverText = '',
+    allRequests = {},
+    showTimeOffRequestModal = () => {},
+    darkMode = false,
+    getLeaderboardData = () => {},
+    postLeaderboardData = () => {},
+    getOrgData = () => {},
+    getWeeklySummaries = () => {},
+    setFilteredUserTeamIds = () => {},
+    userOnTimeOff = {},
+    usersOnFutureTimeOff = {},
+  } = props;
+  // Early return for missing critical props
+  if (!leaderBoardData || !loggedInUser) {
+    return <div style={{ padding: 20 }}>Loading leaderboard data...</div>;
+  }
   const userId = displayUserId;
   const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
   const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon'); // ??? this permission doesn't exist?
@@ -1062,4 +1088,10 @@ function LeaderBoard({
   );
 }
 
-export default LeaderBoard;
+const LeaderBoardWithErrorBoundary = props => (
+  <ErrorBoundary>
+    <LeaderBoard {...props} />
+  </ErrorBoundary>
+);
+
+export default LeaderBoardWithErrorBoundary;

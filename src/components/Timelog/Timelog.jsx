@@ -2,6 +2,7 @@
 /* eslint-disable no-alert */
 /* eslint-disable no-console */
 import { useState, useEffect } from 'react';
+import React from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import {
   Container,
@@ -82,22 +83,72 @@ const endOfWeek = offset => {
     .format('YYYY-MM-DD');
 };
 
+// ErrorBoundary for function components
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+  componentDidCatch(error, errorInfo) {
+    if (window.logger) window.logger.logError(error, errorInfo);
+  }
+  render() {
+    if (this.state.hasError) {
+      return <div style={{ color: 'red', padding: 20 }}>Something went wrong in Timelog. Please refresh the page or contact support.</div>;
+    }
+    return this.props.children;
+  }
+}
+
 function Timelog(props) {
+  // Safe defaults for all expected props
+  const {
+    authUser = {},
+    displayUserProfile = {},
+    timeEntries = { weeks: [[], [], []], period: [] },
+    roles = [],
+    displayUserProjects = [],
+    disPlayUserTasks = [],
+    userId = '',
+    badgeCount = 0,
+    filteredUserTeamIds = [],
+    getTimeEntriesForWeek = () => {},
+    getTimeEntriesForPeriod = () => {},
+    getUserProfile = () => {},
+    getUserProjects = () => {},
+    getUserTasks = () => {},
+    updateUserProfile = () => {},
+    getAllRoles = () => {},
+    hasPermission = () => false,
+    getBadgeCount = () => {},
+    resetBadgeCount = () => {},
+    isDashboard = false,
+    passSummaryBarData = () => {},
+  } = props;
+
+  // Early return for missing critical props
+  if (!authUser || !displayUserProfile) {
+    return <div style={{ padding: 20 }}>Loading timelog data...</div>;
+  }
+
   const darkMode = useSelector(state => state.theme.darkMode);
   const location = useLocation();
 
   // Main Function component
-  const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
+  const canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
 
   // access the store states
   const {
-    authUser,
-    displayUserProfile,
-    timeEntries,
-    roles,
-    displayUserProjects,
-    disPlayUserTasks,
-    userId,
+    authUser: authUserFromProps,
+    displayUserProfile: displayUserProfileFromProps,
+    timeEntries: timeEntriesFromProps,
+    roles: rolesFromProps,
+    displayUserProjects: displayUserProjectsFromProps,
+    disPlayUserTasks: disPlayUserTasksFromProps,
+    userId: userIdFromProps,
   } = props;
 
   const initialState = {
@@ -196,7 +247,7 @@ function Timelog(props) {
     }
 
     // Sets active tab to "Current Week Timelog" when the Progress bar in Leaderboard is clicked
-    if (!props.isDashboard) {
+    if (!isDashboard) {
       tab = 1;
     }
 
@@ -262,14 +313,14 @@ function Timelog(props) {
     setTimeLogState({ ...timeLogState, isTimeEntriesLoading: true });
     try {
       await Promise.all([
-        props.getUserProfile(uid),
-        props.getTimeEntriesForWeek(uid, 0),
-        props.getTimeEntriesForWeek(uid, 1),
-        props.getTimeEntriesForWeek(uid, 2),
-        props.getTimeEntriesForPeriod(uid, timeLogState.fromDate, timeLogState.toDate),
-        props.getAllRoles(),
-        props.getUserProjects(uid),
-        props.getUserTasks(uid),
+        getUserProfile(uid),
+        getTimeEntriesForWeek(uid, 0),
+        getTimeEntriesForWeek(uid, 1),
+        getTimeEntriesForWeek(uid, 2),
+        getTimeEntriesForPeriod(uid, timeLogState.fromDate, timeLogState.toDate),
+        getAllRoles(),
+        getUserProjects(uid),
+        getUserTasks(uid),
       ]);
 
       const url = ENDPOINTS.TASKS_BY_USERID(uid);
@@ -331,7 +382,7 @@ function Timelog(props) {
 
   const changeTab = tab => {
     if (tab === 6) {
-      props.resetBadgeCount(displayUserId);
+      resetBadgeCount(displayUserId);
     }
 
     // Clear the hash to trigger the useEffect on hash change
@@ -362,7 +413,7 @@ function Timelog(props) {
       alert('Invalid Date Range: the From Date must be before the To Date');
     } else {
       e.preventDefault();
-      props.getTimeEntriesForPeriod(displayUserId, timeLogState.fromDate, timeLogState.toDate);
+      getTimeEntriesForPeriod(displayUserId, timeLogState.fromDate, timeLogState.toDate);
     }
   };
 
@@ -400,8 +451,8 @@ function Timelog(props) {
     // pass the data to summary bar
     const weekEffort = calculateTotalTime(timeEntries.weeks[0], true);
     setTimeLogState({ ...timeLogState, currentWeekEffort: weekEffort });
-    if (props.isDashboard) {
-      props.passSummaryBarData({ personId: uid, tangibletime: weekEffort });
+    if (isDashboard) {
+      passSummaryBarData({ personId: uid, tangibletime: weekEffort });
     } else {
       setSummaryBarData({ personId: uid, tangibletime: weekEffort });
     }
@@ -528,8 +579,8 @@ useEffect(() => {
 }, [userprofileId, viewingUser]);
 
   useEffect(() => {
-    props.getBadgeCount(displayUserId);
-  }, [displayUserId, props]);
+    getBadgeCount(displayUserId);
+  }, [displayUserId, getBadgeCount]);
 
   useEffect(() => {
     changeTab(initialTab);
@@ -566,7 +617,7 @@ useEffect(() => {
 
   const containerStyle = () => {
     if (darkMode) {
-      return props.isDashboard ? {} : { padding: '0 15px 300px 15px' };
+      return isDashboard ? {} : { padding: '0 15px 300px 15px' };
     }
     return {};
   };
@@ -576,7 +627,7 @@ useEffect(() => {
       className={`container-timelog-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}
       style={containerStyle()}
     >
-      {!props.isDashboard ? (
+      {!isDashboard ? (
         <Container fluid>
           <SummaryBar
             displayUserId={displayUserId}
@@ -588,7 +639,7 @@ useEffect(() => {
         </Container>
       ) : (
         <Container style={{ textAlign: 'right', minWidth: '100%' }}>
-          {props.isDashboard ? null : (
+          {isDashboard ? null : (
             <EditableInfoModal
               areaName="DashboardTimelog"
               areaTitle="Timelog"
@@ -604,7 +655,7 @@ useEffect(() => {
       {timeLogState.isTimeEntriesLoading ? (
         <LoadingSkeleton template="Timelog" />
       ) : (
-        <div className={`${!props.isDashboard ? 'timelogPageContainer' : 'ml-3 min-width-100'}`}>
+        <div className={`${!isDashboard ? 'timelogPageContainer' : 'ml-3 min-width-100'}`}>
           {timeLogState.summary ? (
             <div className="my-2">
               <div id="weeklySum">
@@ -647,7 +698,7 @@ useEffect(() => {
                               isActive={displayUserProfile.isActive}
                               user={displayUserProfile}
                               onClick={() => {
-                                props.updateUserProfile({
+                                updateUserProfile({
                                   ...displayUserProfile,
                                   isActive: !displayUserProfile.isActive,
                                   endDate:
@@ -891,7 +942,7 @@ useEffect(() => {
                       >
                         Badges
                         <span className="badge badge-pill badge-danger ml-2">
-                          {props.badgeCount}
+                          {badgeCount}
                         </span>
                       </NavLink>
                     </NavItem>
@@ -994,7 +1045,7 @@ useEffect(() => {
                     )}
                     <TabPane tabId={0}>
                       <TeamMemberTasks 
-                      filteredUserTeamIds={props.filteredUserTeamIds} 
+                      filteredUserTeamIds={filteredUserTeamIds} 
                       />
                     </TabPane>
                     <TabPane tabId={1}>{currentWeekEntries}</TabPane>
@@ -1036,6 +1087,12 @@ const mapStateToProps = state => ({
   badgeCount: state.badge.badgeCount,
 });
 
+const TimelogWithErrorBoundary = props => (
+  <ErrorBoundary>
+    <Timelog {...props} />
+  </ErrorBoundary>
+);
+
 export default connect(mapStateToProps, {
   getTimeEntriesForWeek,
   getTimeEntriesForPeriod,
@@ -1047,4 +1104,4 @@ export default connect(mapStateToProps, {
   hasPermission,
   getBadgeCount,
   resetBadgeCount,
-})(Timelog);
+})(TimelogWithErrorBoundary);

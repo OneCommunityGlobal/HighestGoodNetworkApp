@@ -21,18 +21,46 @@ import {
 import { useDispatch } from 'react-redux';
 import { updateSummaryBarData } from 'actions/dashboardActions';
 
+// ErrorBoundary for function components
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+  componentDidCatch(error, errorInfo) {
+    if (window.logger) window.logger.logError(error, errorInfo);
+    // Optionally log to an error reporting service
+  }
+  render() {
+    if (this.state.hasError) {
+      return <div style={{ color: 'red', padding: 20 }}>Something went wrong. Please refresh the page or contact support.</div>;
+    }
+    return this.props.children;
+  }
+}
+
 export function Dashboard(props) {
+  // Safe state initialization with fallback values
   const [popup, setPopup] = useState(false);
   const [filteredUserTeamIds, setFilteredUserTeamIds] = useState([]);
   const [summaryBarData, setSummaryBarData] = useState(null);
-  const { match, authUser } = props;
-  const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
+  const { match = {}, authUser = {} } = props;
+  const checkSessionStorage = () => {
+    try {
+      return JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
+    } catch {
+      return false;
+    }
+  };
   const [viewingUser, setViewingUser] = useState(checkSessionStorage);
   const [displayUserId, setDisplayUserId] = useState(
-    match.params.userId || viewingUser?.userId || authUser.userid,
+    match?.params?.userId || viewingUser?.userId || authUser?.userid || ''
   );
-  const isNotAllowedToEdit = cantUpdateDevAdminDetails(viewingUser?.email, authUser.email);
-  const darkMode = useSelector(state => state.theme.darkMode);
+  const isNotAllowedToEdit = cantUpdateDevAdminDetails(viewingUser?.email, authUser?.email);
+  const darkMode = useSelector(state => state?.theme?.darkMode ?? false);
 
   const dispatch = useDispatch();
 
@@ -45,9 +73,7 @@ export function Dashboard(props) {
       alert(warningMessage);
       return;
     }
-
-    setPopup(!popup);
-
+    setPopup(p => !p);
     setTimeout(() => {
       const elem = document.getElementById('weeklySum');
       if (elem) {
@@ -59,7 +85,7 @@ export function Dashboard(props) {
   const handleStorageEvent = () => {
     const sessionStorageData = checkSessionStorage();
     setViewingUser(sessionStorageData || false);
-    setDisplayUserId(sessionStorageData ? sessionStorageData.userId : authUser.userid);
+    setDisplayUserId(sessionStorageData ? sessionStorageData.userId : authUser?.userid || '');
   };
 
   useEffect(() => {
@@ -70,13 +96,13 @@ export function Dashboard(props) {
   }, []);
 
   useEffect(() => {
-    console.log("📊 summaryBarData changed, dispatching update:", summaryBarData);
-    console.log(summaryBarData);
     dispatch(updateSummaryBarData({ summaryBarData }));
   }, [summaryBarData]);
 
-    console.log("🎨 Dashboard rendering; popup:", popup, "displayUserId:", displayUserId);
-
+  // Early return for missing critical props
+  if (!authUser || !authUser.userid) {
+    return <div style={{ padding: 20 }}>Loading user data...</div>;
+  }
 
   return (
     <Container fluid className={darkMode ? 'bg-oxford-blue' : ''}>
@@ -84,7 +110,7 @@ export function Dashboard(props) {
       <SummaryBar
         displayUserId={displayUserId}
         toggleSubmitForm={toggle}
-        role={authUser.role}
+        role={authUser?.role || ''}
         summaryBarData={summaryBarData}
         isNotAllowedToEdit={isNotAllowedToEdit}
       />
@@ -102,9 +128,9 @@ export function Dashboard(props) {
               <WeeklySummary
                 isDashboard
                 isPopup={popup}
-                userRole={authUser.role}
+                userRole={authUser?.role || ''}
                 displayUserId={displayUserId}
-                displayUserEmail={viewingUser?.email}
+                displayUserEmail={viewingUser?.email || ''}
                 isNotAllowedToEdit={isNotAllowedToEdit}
                 darkMode={darkMode}
               />
@@ -127,7 +153,7 @@ export function Dashboard(props) {
               <WeeklySummary
                 displayUserId={displayUserId}
                 setPopup={setPopup}
-                userRole={authUser.role}
+                userRole={authUser?.role || ''}
                 isNotAllowedToEdit={isNotAllowedToEdit}
                 darkMode={darkMode}
               />
@@ -149,8 +175,15 @@ export function Dashboard(props) {
 }
 
 const mapStateToProps = state => ({
-  authUser: state.auth.user,
-  displayUserProfile: state.userProfile,
+  authUser: state?.auth?.user ?? {},
+  displayUserProfile: state?.userProfile ?? {},
 });
 
-export default connect(mapStateToProps)(Dashboard);
+// Wrap Dashboard in ErrorBoundary
+const DashboardWithErrorBoundary = props => (
+  <ErrorBoundary>
+    <Dashboard {...props} />
+  </ErrorBoundary>
+);
+
+export default connect(mapStateToProps)(DashboardWithErrorBoundary);

@@ -1,31 +1,58 @@
 import { Modal, ModalHeader, ModalBody, Row, Col, Container } from 'reactstrap';
+import React from 'react';
 import moment from 'moment';
 import 'moment-timezone';
 import { useSelector, useDispatch } from 'react-redux';
 import { hideTimeOffRequestModal } from '../../actions/timeOffRequestAction';
 
+// ErrorBoundary for function components
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+  componentDidCatch(error, errorInfo) {
+    if (window.logger) window.logger.logError(error, errorInfo);
+  }
+  render() {
+    if (this.state.hasError) {
+      return <div style={{ color: 'red', padding: 20 }}>Something went wrong in TimeOffRequestDetailModal. Please refresh the page or contact support.</div>;
+    }
+    return this.props.children;
+  }
+}
+
 const TimeOffRequestDetailModal = () => {
-  const darkMode = useSelector(state => state.theme.darkMode);
-  const { isOpen, data } = useSelector(state => state.timeOffRequests.timeOffModal);
+  const darkMode = useSelector(state => state?.theme?.darkMode ?? false);
+  const { isOpen = false, data = null } = useSelector(state => state?.timeOffRequests?.timeOffModal ?? {});
   const dispatch = useDispatch();
   const detailModalClose = () => {
     dispatch(hideTimeOffRequestModal());
   };
 
   const getWeekIntervals = req => {
+    if (!req) return [[], null];
     const dateOfLeaveStr = moment(req.startingDate)
       .tz('America/Los_Angeles')
       .format()
       .split('T')[0];
     const intervals = [];
     let startDate = moment(dateOfLeaveStr);
-    for (let i = 0; i < req.duration; i++) {
+    for (let i = 0; i < (req.duration || 0); i++) {
       const endDate = startDate.clone().endOf('week');
       intervals.push([startDate.format('MM-DD-YYYY'), endDate.format('MM-DD-YYYY')]);
       startDate = startDate.add(1, 'week').startOf('week');
     }
     return [intervals, startDate];
   };
+
+  // Early return for missing critical data
+  if (!data) {
+    return <div style={{ padding: 20 }}>Loading time off request details...</div>;
+  }
 
   return (
     <div>
@@ -43,7 +70,7 @@ const TimeOffRequestDetailModal = () => {
             <>
               <Container>
                 <Row>
-                  <Col className="mb-1">{`${data?.name} has the following time off requests:`}</Col>
+                  <Col className="mb-1">{`${data?.name ?? ''} has the following time off requests:`}</Col>
                 </Row>
               </Container>
               {data.requests?.map(req => (
@@ -65,7 +92,7 @@ const TimeOffRequestDetailModal = () => {
                   </Row>
                   <Row className="pl-2">
                     <Col className="mb-2 font-italic">
-                      <li>{req?.reason}</li>
+                      <li>{req?.reason ?? ''}</li>
                     </Col>
                   </Row>
                   <Row>
@@ -75,7 +102,7 @@ const TimeOffRequestDetailModal = () => {
                     <Col className="mb-2 font-italic">
                       <li>
                         <b>{`On `}</b>
-                        {getWeekIntervals(req)[1].format('MM-DD-YYYY')}
+                        {getWeekIntervals(req)[1]?.format('MM-DD-YYYY')}
                       </li>
                     </Col>
                   </Row>
@@ -87,14 +114,14 @@ const TimeOffRequestDetailModal = () => {
               <Row>
                 <Col className="mb-1">
                   {data?.onVacation
-                    ? `${data?.name} Is Not Available this Week`
-                    : `${data?.name} Is Not Available Next Week`}
+                    ? `${data?.name ?? ''} Is Not Available this Week`
+                    : `${data?.name ?? ''} Is Not Available Next Week`}
                 </Col>
               </Row>
               <Row>
                 <Col>
                   {' '}
-                  {`${data?.name} is going to be absent for the following`}
+                  {`${data?.name ?? ''} is going to be absent for the following`}
                   {getWeekIntervals(data)[0]?.length > 1 ? ` weeks:` : ` week:`}
                 </Col>
               </Row>
@@ -115,7 +142,7 @@ const TimeOffRequestDetailModal = () => {
               </Row>
               <Row className="pl-2">
                 <Col className="mb-2 font-italic">
-                  <li>{data?.reason}</li>
+                  <li>{data?.reason ?? ''}</li>
                 </Col>
               </Row>
               <Row>
@@ -125,7 +152,7 @@ const TimeOffRequestDetailModal = () => {
                 <Col className="mb-2 font-italic">
                   <li>
                     <b>{`On `}</b>
-                    {getWeekIntervals(data)[1].format('MM-DD-YYYY')}
+                    {getWeekIntervals(data)[1]?.format('MM-DD-YYYY')}
                   </li>
                 </Col>
               </Row>
@@ -137,4 +164,10 @@ const TimeOffRequestDetailModal = () => {
   );
 };
 
-export default TimeOffRequestDetailModal;
+const TimeOffRequestDetailModalWithErrorBoundary = props => (
+  <ErrorBoundary>
+    <TimeOffRequestDetailModal {...props} />
+  </ErrorBoundary>
+);
+
+export default TimeOffRequestDetailModalWithErrorBoundary;
