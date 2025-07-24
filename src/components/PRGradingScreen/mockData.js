@@ -9,6 +9,24 @@ export const mockTeamData = {
   },
 };
 
+// Team 2: Small team
+export const mockTeamData2 = {
+  teamName: 'SmallTeam',
+  dateRange: {
+    start: '6/1/2025',
+    end: '6/8/2025',
+  },
+};
+
+// Team 3: Complex team
+export const mockTeamData3 = {
+  teamName: 'ComplexTeam',
+  dateRange: {
+    start: '6/15/2025',
+    end: '6/22/2025',
+  },
+};
+
 export const mockReviewers = [
   {
     id: '1',
@@ -99,6 +117,78 @@ export const mockReviewers = [
   },
 ];
 
+// Team 2: Small team reviewers
+export const mockReviewers2 = [
+  {
+    id: '1',
+    reviewer: 'Alice',
+    prsNeeded: 2,
+    prsReviewed: 1,
+    gradedPrs: [{ id: 'pr1', prNumbers: '100', grade: 'Okay' }],
+  },
+  {
+    id: '2',
+    reviewer: 'Bob',
+    prsNeeded: 1,
+    prsReviewed: 0,
+    gradedPrs: [],
+  },
+  {
+    id: '3',
+    reviewer: 'Charlie',
+    prsNeeded: 3,
+    prsReviewed: 3,
+    gradedPrs: [
+      { id: 'pr2', prNumbers: '200 + 300', grade: 'Exceptional' },
+      { id: 'pr3', prNumbers: '400', grade: 'Okay' },
+      { id: 'pr4', prNumbers: '500 + 600', grade: 'Unsatisfactory' },
+    ],
+  },
+];
+
+// Team 3: Complex team with edge cases
+export const mockReviewers3 = [
+  {
+    id: '1',
+    reviewer: 'David Williams-Johnson',
+    role: 'Senior Mentor',
+    prsNeeded: 20,
+    prsReviewed: 15,
+    gradedPrs: [
+      { id: 'pr1', prNumbers: '1000 + 2000', grade: 'Exceptional' },
+      { id: 'pr2', prNumbers: '3000', grade: 'Okay' },
+      { id: 'pr3', prNumbers: '4000 + 5000', grade: 'Cannot find image' },
+    ],
+  },
+  {
+    id: '2',
+    reviewer: 'Emma',
+    prsNeeded: 0,
+    prsReviewed: 0,
+    gradedPrs: [],
+  },
+  {
+    id: '3',
+    reviewer: 'Frank',
+    role: 'New Member',
+    prsNeeded: 50,
+    prsReviewed: 1,
+    gradedPrs: [{ id: 'pr6', prNumbers: '9000', grade: 'Okay' }],
+  },
+  {
+    id: '4',
+    reviewer: 'Grace',
+    prsNeeded: 5,
+    prsReviewed: 8,
+    gradedPrs: [
+      { id: 'pr7', prNumbers: '10000 + 11000', grade: 'Exceptional' },
+      { id: 'pr8', prNumbers: '12000', grade: 'Unsatisfactory' },
+      { id: 'pr9', prNumbers: '13000 + 14000', grade: 'Exceptional' },
+      { id: 'pr10', prNumbers: '15000', grade: 'Cannot find image' },
+    ],
+  },
+];
+
 // Additional mock data for testing edge cases
 export const mockEdgeCases = [
   {
@@ -126,6 +216,32 @@ export const getAllMockData = () => ({
   teamData: mockTeamData,
   reviewers: mockReviewers,
 });
+
+// Function to get team 2 data
+export const getTeam2Data = () => ({
+  teamData: mockTeamData2,
+  reviewers: mockReviewers2,
+});
+
+// Function to get team 3 data
+export const getTeam3Data = () => ({
+  teamData: mockTeamData3,
+  reviewers: mockReviewers3,
+});
+
+// Function to get data by team ID
+export const getDataByTeamId = teamId => {
+  switch (teamId) {
+    case 'team1':
+      return getAllMockData();
+    case 'team2':
+      return getTeam2Data();
+    case 'team3':
+      return getTeam3Data();
+    default:
+      return getAllMockData();
+  }
+};
 
 // Function to get a specific reviewer's data
 export const getReviewerById = id => {

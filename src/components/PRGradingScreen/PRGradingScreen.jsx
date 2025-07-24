@@ -3,9 +3,13 @@ import { Container, Row, Col, Card, Button } from 'react-bootstrap';
 import { getAllMockData } from './mockData';
 import './PRGradingScreen.css';
 
-const PRGradingScreen = () => {
-  const { teamData, reviewers } = getAllMockData();
-  const [reviewerData, setReviewerData] = useState(reviewers);
+const PRGradingScreen = ({ teamData, reviewers }) => {
+  // Use props if provided, otherwise fallback to mock data
+  const defaultData = getAllMockData();
+  const currentTeamData = teamData || defaultData.teamData;
+  const currentReviewers = reviewers || defaultData.reviewers;
+
+  const [reviewerData, setReviewerData] = useState(currentReviewers);
   const [activeInput, setActiveInput] = useState(null); // Track which reviewer is adding PR
   const [inputValue, setInputValue] = useState('');
   const [inputError, setInputError] = useState('');
@@ -120,7 +124,8 @@ const PRGradingScreen = () => {
                   <h1 className="pr-grading-screen-title">Weekly PR grading screen</h1>
                   <div className="pr-grading-screen-team-info-badge">
                     <h2 className="pr-grading-screen-team-info">
-                      {teamData.teamName} - {teamData.dateRange.start} to {teamData.dateRange.end}
+                      {currentTeamData.teamName} - {currentTeamData.dateRange.start} to{' '}
+                      {currentTeamData.dateRange.end}
                     </h2>
                   </div>
                 </div>
