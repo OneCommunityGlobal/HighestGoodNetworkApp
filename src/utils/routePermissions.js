@@ -36,5 +36,6 @@ const RoutePermissions = {
   announcements: ['sendEmails'],
   faq: [''],
   faqManagement: ['manageFAQs'],
+  meetings: ['scheduleMeetings'],
 };
 export default RoutePermissions;

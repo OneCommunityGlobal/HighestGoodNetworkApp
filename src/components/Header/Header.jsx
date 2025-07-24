@@ -1,4 +1,5 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
+// import { getUserProfile } from '../../actions/userProfile'
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import { getWeeklySummaries } from 'actions/weeklySummaries';
@@ -23,9 +24,12 @@ import {
   Button,
   Card,
 } from 'reactstrap';
+import DOMPurify from 'dompurify';
+import parse from 'html-react-parser';
 import PopUpBar from 'components/PopUpBar';
 import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
 import { toast } from 'react-toastify';
+import { boxStyle, boxStyleDark } from 'styles';
 import { getHeaderData } from '../../actions/authActions';
 import { getAllRoles } from '../../actions/role';
 import Timer from '../Timer/Timer';
@@ -48,7 +52,7 @@ import {
   PERMISSIONS_MANAGEMENT,
   SEND_EMAILS,
   TOTAL_ORG_SUMMARY,
-  TOTAL_CONSTRUCTION_SUMMARY,
+  SCHEDULE_MEETINGS,
 } from '../../languages/en/ui';
 import Logout from '../Logout/Logout';
 import '../../App.css';
@@ -58,10 +62,14 @@ import {
   getUnreadUserNotifications,
   resetNotificationError,
 } from '../../actions/notificationAction';
+import {
+  getUnreadMeetingNotification,
+  markMeetingNotificationAsRead,
+} from '../../actions/meetingNotificationAction';
 import NotificationCard from '../Notification/notificationCard';
 import DarkModeButton from './DarkModeButton';
-import BellNotification from './BellNotification';
 import { getUserProfile } from '../../actions/userProfile';
+import BellNotification from './BellNotification';
 
 export function Header(props) {
   const location = useLocation();
@@ -134,6 +142,9 @@ export function Header(props) {
     props.hasPermission('updatePopup', !isAuthUser && canInteractWithViewingUser);
   // SendEmails
   const canAccessSendEmails = props.hasPermission('sendEmails', !isAuthUser);
+  // ScheduleMeetings
+  const canAccessScheduleMeetings = props.hasPermission('scheduleMeetings', !isAuthUser);
+  // console.log("canAccessScheduleMeetings", canAccessScheduleMeetings);
   // Permissions
   const canAccessPermissionsManagement =
     props.hasPermission('postRole', !isAuthUser && canInteractWithViewingUser) ||
@@ -144,15 +155,26 @@ export function Header(props) {
   const userId = user.userid;
   const [isModalVisible, setModalVisible] = useState(false);
   const [modalContent, setModalContent] = useState('');
+  const [meetingContents, setMeetingContents] = useState([]);
+  const [meetingContentsNotification, setMeetingContentsNotification] = useState(false);
   const [userDashboardProfile, setUserDashboardProfile] = useState(undefined);
   const [hasProfileLoaded, setHasProfileLoaded] = useState(false);
   const dismissalKey = `lastDismissed_${userId}`;
   const [lastDismissed, setLastDismissed] = useState(localStorage.getItem(dismissalKey));
-  const unreadNotifications = props.notification?.unreadNotifications; // List of unread notifications
+  const [meetingModalOpen, setMeetingModalOpen] = useState(false);
+  const [meetingModalMessage, setMeetingModalMessage] = useState('');
+
+  // const unreadNotifications = props.unreadNotifications; // List of unread notifications
+  // eslint-disable-next-line no-unused-vars
+  const { allUserProfiles, unreadNotifications, unreadMeetingNotifications } = props;
+  // get the meeting notifications for the current user
+  console.log(unreadNotifications);
+  const userUnreadMeetings = unreadMeetingNotifications?.filter(
+    meeting => meeting.recipient === userId,
+  );
   const dispatch = useDispatch();
   const history = useHistory();
-
-  const [showProjectDropdown, setShowProjectDropdown] = useState(false);
+  const MeetingNotificationAudioRef = useRef(null);
   const [isAckLoading, setIsAckLoading] = useState(false);
 
   useEffect(() => {
@@ -200,6 +222,7 @@ export function Header(props) {
     // Fetch unread notification
     if (isAuthenticated && userId) {
       dispatch(getUnreadUserNotifications(userId));
+      dispatch(getUnreadMeetingNotification());
     }
   }, []);
 
@@ -210,6 +233,87 @@ export function Header(props) {
     }
   }, [props.notification?.error]);
 
+  // display the notification and enable the bell ring when there are unread meeting notifications
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'test') return;
+
+    const fetchMeetingDetails = async () => {
+      if (unreadMeetingNotifications && unreadMeetingNotifications.length > 0) {
+        const currMeeting = unreadMeetingNotifications[0];
+
+        const currentDate = new Date();
+        const meetingDate = new Date(currMeeting.dateTime);
+        const threeDaysLater = new Date();
+        threeDaysLater.setDate(currentDate.getDate() + 3);
+
+        if (meetingDate <= threeDaysLater) {
+          try {
+            const { data } = await axios.get(
+              `http://localhost:4500/api/meeting/${currMeeting.meetingId}/calendar`,
+            );
+
+            if (!meetingModalOpen) {
+              setMeetingModalOpen(true);
+
+              // Create downloadable ICS file
+              const icsBlob = new Blob([data.icsContent], { type: 'text/calendar' });
+              const icsUrl = URL.createObjectURL(icsBlob);
+
+              setMeetingModalMessage(`
+                <p>Reminder: You have an upcoming meeting! Please check the details and be prepared.</p>
+                <p><strong>Time:</strong> ${meetingDate.toLocaleString()}</p>
+                <p><strong>Organizer:</strong> ${data.organizerFullName}</p>
+                ${currMeeting.notes ? `<p><strong>Notes:</strong> ${currMeeting.notes}</p>` : ''}
+                <p><a href="${
+                  data.googleCalendarLink
+                }" target="_blank">Add to Google Calendar</a></p>
+                <p><button id="downloadButton"><strong>Download Calendar Event (.ics)</strong></button></p>
+              `);
+
+              // Delay to ensure DOM is updated before accessing the element
+              setTimeout(() => {
+                const downloadButton = document.getElementById('downloadButton');
+                if (downloadButton) {
+                  downloadButton.onclick = () => {
+                    const link = document.createElement('a');
+                    link.href = icsUrl;
+                    link.download = 'meeting.ics';
+                    link.click();
+                  };
+                }
+              }, 0);
+            }
+
+            if (MeetingNotificationAudioRef.current) {
+              MeetingNotificationAudioRef.current.play();
+            }
+          } catch (_) {
+            setMeetingModalOpen(false);
+            setMeetingModalMessage('');
+          }
+        }
+      } else {
+        if (meetingModalOpen) {
+          setMeetingModalOpen(false);
+          setMeetingModalMessage('');
+        }
+        if (MeetingNotificationAudioRef.current) {
+          MeetingNotificationAudioRef.current.pause();
+          MeetingNotificationAudioRef.current.currentTime = 0;
+        }
+      }
+    };
+
+    fetchMeetingDetails();
+  }, [unreadMeetingNotifications]);
+
+  const handleMeetingRead = () => {
+    setMeetingModalOpen(!meetingModalOpen);
+    if (userUnreadMeetings?.length > 0) {
+      dispatch(markMeetingNotificationAsRead(userUnreadMeetings[0]));
+    }
+  };
+
   const toggle = () => {
     setIsOpen(prevIsOpen => !prevIsOpen);
   };
@@ -217,28 +321,47 @@ export function Header(props) {
   const openModal = () => {
     setLogoutPopup(true);
   };
-  
+  const CloseMeetingContentsNotification = async (meetingId, recipient) => {
+    try {
+      const response = await fetch(`/api/meeting/markAsRead/${meetingId}/${recipient}`, {
+        method: 'PATCH',
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log('Success:', data.message);
+        // Close the notification
+      } else {
+        console.error('Failed:', data.error);
+      }
+    } catch (error) {
+      console.error('Error during request:', error);
+    }
+  };
   const handlePermissionChangeAck = async () => {
     // handle setting the ack true
     try {
-      setIsAckLoading(true)
-      const {firstName: name, lastName, personalLinks, adminLinks, _id} = props.userProfile
-      axios.put(ENDPOINTS.USER_PROFILE(_id), {
-        // req fields for updation
-        firstName: name, 
-        lastName, 
-        personalLinks,
-        adminLinks,
-        
-        isAcknowledged: true,
-      }).then(()=>{
-        setIsAckLoading(false);
-        dispatch(getUserProfile(_id));
-      });
+      setIsAckLoading(true);
+      const { firstName: name, lastName, personalLinks, adminLinks, _id } = props.userProfile;
+      axios
+        .put(ENDPOINTS.USER_PROFILE(_id), {
+          // req fields for updation
+          firstName: name,
+          lastName,
+          personalLinks,
+          adminLinks,
+
+          isAcknowledged: true,
+        })
+        .then(() => {
+          setIsAckLoading(false);
+          dispatch(getUserProfile(_id));
+        });
     } catch (e) {
       // console.log('update ack', e);
     }
-  }
+  };
 
   const removeViewingUser = () => {
     setPopup(false);
@@ -318,16 +441,59 @@ export function Header(props) {
       setModalVisible(false);
     }
   }, [lastDismissed, userId, userDashboardProfile]);
-
   useEffect(() => {
-    setShowProjectDropdown(location.pathname.startsWith('/bmdashboard/projects/'));
-  }, [location.pathname]);
+    if (process.env.NODE_ENV === 'test') return;
+
+    loadUserDashboardProfile();
+
+    const fetchUpcomingMeeting = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:4500/api/meetings/participant/${userId}`,
+        );
+        if (response.status === 200) {
+          console.log(response.data);
+          const { upComingMeetings } = response.data;
+          const upComingMeetingMsg = upComingMeetings.map(item => {
+            const formattedDate = new Date(item.dateTime).toLocaleString();
+            const cleanNotes = item.notes
+              ?.replace(/<[^>]*>/g, '')
+              .replace(/&nbsp;/gi, ' ')
+              .replace(/\s+/g, ' ')
+              .trim();
+            return `This is your upcoming meeting with ${
+              item.organizerName
+            } on ${formattedDate} regarding: ${cleanNotes}.
+              ${item.locationDetails ? `At Location: ${item.locationDetails}` : ''}`;
+          });
+          setMeetingContents(upComingMeetingMsg);
+          console.log(upComingMeetingMsg);
+          setMeetingContentsNotification(true);
+          // const { lastMeeting, organizerName } = response.data;
+          // const { dateTime, notes, locationDetails } = lastMeeting;
+
+          // setMeetingContents(
+          //   `This is your upcoming meeting with ${organizerName} on ${formattedDate} regarding: ${cleanNotes}.
+          //    ${locationDetails ? `At Location: ${locationDetails}` : ''}`,
+          // );
+          // setMeetingContentsNotification(true);
+        } else {
+          setMeetingContentsNotification(false);
+        }
+      } catch (err) {
+        setMeetingContentsNotification(false);
+        console.error('Error while loading meeting notifications:', err);
+      }
+    };
+
+    fetchUpcomingMeeting();
+  }, [userId]);
 
   const fontColor = darkMode ? 'text-white dropdown-item-hover' : '';
 
   if (location.pathname === '/login') return null;
 
-  const viewingUser = JSON.parse(window.sessionStorage.getItem('viewingUser'))
+  const viewingUser = JSON.parse(window.sessionStorage.getItem('viewingUser'));
   return (
     <div className="header-wrapper">
       <Navbar className="py-3 navbar" color="dark" dark expand="md">
@@ -370,59 +536,6 @@ export function Header(props) {
                     <span className="dashboard-text-link">{TIMELOG}</span>
                   </NavLink>
                 </NavItem>
-
-                {showProjectDropdown && (
-                  <UncontrolledDropdown nav inNavbar className="responsive-spacing">
-                    <DropdownToggle nav caret>
-                      <span className="dashboard-text-link">{PROJECTS}</span>
-                    </DropdownToggle>
-                    <DropdownMenu className={darkMode ? 'bg-yinmn-blue' : ''}>
-                      <DropdownItem
-                        tag={Link}
-                        to="/bmdashboard/materials/add"
-                        className={fontColor}
-                      >
-                        Add Material
-                      </DropdownItem>
-                      <DropdownItem tag={Link} to="/bmdashboard/logMaterial" className={fontColor}>
-                        Log Material
-                      </DropdownItem>
-                      <DropdownItem tag={Link} to="/bmdashboard/materials" className={fontColor}>
-                        Material List
-                      </DropdownItem>
-                      <DropdownItem
-                        tag={Link}
-                        to="/bmdashboard/equipment/add"
-                        className={fontColor}
-                      >
-                        Add Equipment/Tool
-                      </DropdownItem>
-                      <DropdownItem
-                        tag={Link}
-                        to="/bmdashboard/equipment/:equipmentId"
-                        className={fontColor}
-                      >
-                        Log Equipment/Tool
-                      </DropdownItem>
-                      <DropdownItem
-                        tag={Link}
-                        to="/bmdashboard/tools/:equipmentId/update"
-                        className={fontColor}
-                      >
-                        Update Equipment/Tool
-                      </DropdownItem>
-                      <DropdownItem tag={Link} to="/bmdashboard/equipment" className={fontColor}>
-                        Equipment/Tool List
-                      </DropdownItem>
-                      <DropdownItem tag={Link} to="/bmdashboard/Issue" className={fontColor}>
-                        Issue
-                      </DropdownItem>
-                      <DropdownItem tag={Link} to="/bmdashboard/lessonform/" className={fontColor}>
-                        Lesson
-                      </DropdownItem>
-                    </DropdownMenu>
-                  </UncontrolledDropdown>
-                )}
               </div>
               <div className="d-flex align-items-center justify-content-center">
                 {canGetReports || canGetWeeklySummaries || canGetWeeklyVolunteerSummary ? (
@@ -449,24 +562,27 @@ export function Header(props) {
                       <DropdownItem tag={Link} to="/teamlocations" className={fontColor}>
                         {TEAM_LOCATIONS}
                       </DropdownItem>
-                      <DropdownItem
-                        tag={Link}
-                        to="/bmdashboard/totalconstructionsummary"
-                        className={fontColor}
-                      >
-                        {TOTAL_CONSTRUCTION_SUMMARY}
-                      </DropdownItem>
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 ) : (
                   <NavItem className="responsive-spacing">
                     <NavLink tag={Link} to="/teamlocations">
-                      <span className="dashboard-text-link">{TEAM_LOCATIONS}</span>
+                      {TEAM_LOCATIONS}
                     </NavLink>
                   </NavItem>
                 )}
                 <NavItem className="responsive-spacing">
-                  <BellNotification userId={displayUserId}/>
+                  {/* <NavLink tag={Link} to={`/timelog/${displayUserId}`}> */}
+                  {/* <i className="fa fa-bell i-large">
+                      <i className="badge badge-pill badge-danger badge-notify">
+                        {/* Pull number of unread messages */}
+                  {/* </i>
+                      <span className="sr-only">unread messages</span>
+                    </i> */}
+
+                  {/* </NavLink> */}
+
+                  <BellNotification userId={displayUserId} />
                 </NavItem>
                 {(canAccessUserManagement ||
                   canAccessBadgeManagement ||
@@ -474,6 +590,7 @@ export function Header(props) {
                   canAccessTeams ||
                   canAccessPopups ||
                   canAccessSendEmails ||
+                  canAccessScheduleMeetings ||
                   canAccessPermissionsManagement) && (
                   <UncontrolledDropdown nav inNavbar className="responsive-spacing">
                     <DropdownToggle nav caret>
@@ -505,6 +622,11 @@ export function Header(props) {
                           {SEND_EMAILS}
                         </DropdownItem>
                       )}
+                      {canAccessScheduleMeetings && (
+                        <DropdownItem tag={Link} to="/schedulemeetings" className={fontColor}>
+                          {SCHEDULE_MEETINGS}
+                        </DropdownItem>
+                      )}
                       {canAccessPermissionsManagement && (
                         <>
                           <DropdownItem divider />
@@ -531,7 +653,7 @@ export function Header(props) {
                         backgroundImage: `url(${profilePic || '/pfp-default-header.png'})`,
                         backgroundSize: 'contain',
                         backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
+                        backgroundRepeat: 'no-repeat',
                       }}
                       className="dashboardimg"
                     />
@@ -587,9 +709,21 @@ export function Header(props) {
           lastName={viewingUser.lastName}
           message={`You are currently viewing the header for ${viewingUser.firstName} ${viewingUser.lastName}`}
           onClickClose={() => setPopup(prevPopup => !prevPopup)}
-          />
+        />
       )}
-      {props.auth.isAuthenticated && props.userProfile?.permissions?.isAcknowledged===false && (
+      {/* meeting notification */}
+      {meetingContentsNotification &&
+        meetingContents.map(item => (
+          <PopUpBar
+            key={item._id}
+            firstName={viewingUser?.firstName || firstName}
+            lastName={viewingUser?.lastName}
+            message={item}
+            onClickClose={CloseMeetingContentsNotification(item._id, item.participant)}
+          />
+        ))}
+
+      {props.auth.isAuthenticated && props.userProfile?.permissions?.isAcknowledged === false && (
         <PopUpBar
           firstName={viewingUser?.firstName || firstName}
           lastName={viewingUser?.lastName}
@@ -598,7 +732,6 @@ export function Header(props) {
           textColor="black_text"
           isLoading={isAckLoading}
         />
-
       )}
       <div>
         <Modal isOpen={popup} className={darkMode ? 'text-light' : ''}>
@@ -619,20 +752,63 @@ export function Header(props) {
         </Modal>
       </div>
       {props.auth.isAuthenticated && isModalVisible && (
-        <div className={`${darkMode ? 'bg-oxford-blue' : ''} card-wrapper`}>
-          <Card color="primary" className='headerCard'>
+        <Card color="primary">
+          <div className="close-button">
+            <Button close onClick={closeModal} />
+          </div>
+          <div className="card-content">{modalContent}</div>
+        </Card>
+      )}
+      {/* meeting notification */}
+      {/* <div>
+        {isModalVisible && (
+          <Card color="warning">
             <div className="close-button">
               <Button close onClick={closeModal} />
             </div>
-            <div className="card-content">{modalContent}</div>
+            <div className="card-contents">{modalContents}</div>
           </Card>
-        </div>
-      )}
+        )}
+      </div> */}
       {/* Only render one unread message at a time */}
       {props.auth.isAuthenticated && unreadNotifications?.length > 0 ? (
-        <NotificationCard notification={unreadNotifications[0]} />
+        <NotificationCard
+          key={unreadNotifications[0]._id || 'default-key'}
+          notification={unreadNotifications[0]}
+        />
       ) : null}
-      <div className={darkMode ? 'header-margin' : 'header-margin-light'} />
+      <audio
+        ref={MeetingNotificationAudioRef}
+        key="meetingNotificationAudio"
+        // loop
+        preload="auto"
+        src="https://bigsoundbank.com/UPLOAD/mp3/2554.mp3"
+      >
+        <track kind="captions" />
+      </audio>
+      <Modal
+        isOpen={meetingModalOpen}
+        toggle={handleMeetingRead}
+        className={darkMode ? 'text-light' : ''}
+      >
+        <ModalHeader toggle={handleMeetingRead} className={darkMode ? 'bg-space-cadet' : ''}>
+          Meeting Notification
+        </ModalHeader>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+          <div style={{ lineHeight: '2' }}>
+            <p>{parse(DOMPurify.sanitize(meetingModalMessage))}</p>
+          </div>
+        </ModalBody>
+        <ModalFooter className={darkMode ? 'bg-space-cadet' : ''}>
+          <Button
+            color="primary"
+            onClick={handleMeetingRead}
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
+            Close
+          </Button>
+        </ModalFooter>
+      </Modal>
     </div>
   );
 }
@@ -643,6 +819,9 @@ const mapStateToProps = state => ({
   taskEditSuggestionCount: state.taskEditSuggestions.count,
   role: state.role,
   notification: state.notification,
+  unreadNotifications: state.notification.unreadNotifications,
+  unreadMeetingNotifications: state.meetingNotification.unreadMeetingNotifications,
+  allUserProfiles: state.allUserProfiles.userProfiles,
   darkMode: state.theme.darkMode,
 });
 

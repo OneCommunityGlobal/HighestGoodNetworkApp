@@ -492,15 +492,15 @@ export function TeamReport({ match }) {
             ) : (
               <tbody>
                 <tr style={{ backgroundColor: darkMode ? '#3A506B' : 'white' }}>
-                  <td />
-                  <td />
-                  <td />
+                  <td aria-hidden="true" />
+                  <td aria-hidden="true" />
+                  <td aria-hidden="true" />
                   <td>
                     <strong className={darkMode ? 'text-light' : ''}>Loading...</strong>
                   </td>
-                  <td />
-                  <td />
-                  <td />
+                  <td aria-hidden="true" />
+                  <td aria-hidden="true" />
+                  <td aria-hidden="true" />
                 </tr>
               </tbody>
             )}
