@@ -235,6 +235,16 @@
   border: 1px solid #c3e6cb;
 }
 
+.pr-grading-screen-pr-clickable {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pr-grading-screen-pr-clickable:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
 .pr-grading-screen-grade {
   padding: 4px 8px;
   border-radius: 4px;
@@ -350,6 +360,130 @@
   text-align: center;
 }
 
+/* Grading Modal Styles */
+.pr-grading-screen-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.pr-grading-screen-modal {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  max-width: 800px;
+  width: 90%;
+  max-height: 80vh;
+  overflow: hidden;
+  position: relative;
+}
+
+.pr-grading-screen-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e9ecef;
+  background-color: #f8f9fa;
+}
+
+.pr-grading-screen-modal-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.pr-grading-screen-modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #6c757d;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.pr-grading-screen-modal-close:hover {
+  background-color: #e9ecef;
+  color: #495057;
+}
+
+.pr-grading-screen-modal-body {
+  padding: 24px;
+  overflow-y: auto;
+  max-height: calc(80vh - 120px);
+}
+
+/* Grading Table Styles */
+.pr-grading-screen-grading-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.pr-grading-screen-grading-table th {
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  padding: 12px 8px;
+  text-align: center;
+  font-weight: 600;
+  color: #495057;
+  font-size: 0.9rem;
+}
+
+.pr-grading-screen-grading-table td {
+  border: 1px solid #dee2e6;
+  padding: 12px 8px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.pr-grading-screen-grading-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.pr-grading-screen-modal-pr-number {
+  text-align: left !important;
+  padding-left: 16px !important;
+}
+
+.pr-grading-screen-checkbox-cell {
+  padding: 8px !important;
+}
+
+.pr-grading-screen-grade-checkbox {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #007bff;
+}
+
+.pr-grading-screen-modal-footer {
+  display: flex;
+  justify-content: center;
+  padding-top: 16px;
+  border-top: 1px solid #e9ecef;
+}
+
+.pr-grading-screen-done-btn {
+  padding: 8px 24px;
+  font-weight: 600;
+}
+
 
 
 /* Responsive adjustments */
@@ -410,5 +544,29 @@
     font-size: 0.8rem;
   }
 
+  /* Modal responsive styles */
+  .pr-grading-screen-modal {
+    width: 95%;
+    max-height: 90vh;
+  }
 
+  .pr-grading-screen-modal-header {
+    padding: 16px 20px;
+  }
+
+  .pr-grading-screen-modal-body {
+    padding: 16px;
+    max-height: calc(90vh - 100px);
+  }
+
+  .pr-grading-screen-grading-table th,
+  .pr-grading-screen-grading-table td {
+    padding: 8px 4px;
+    font-size: 0.8rem;
+  }
+
+  .pr-grading-screen-grade-checkbox {
+    width: 16px;
+    height: 16px;
+  }
 }

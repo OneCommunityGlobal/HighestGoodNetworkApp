@@ -9,6 +9,7 @@ const PRGradingScreen = () => {
   const [activeInput, setActiveInput] = useState(null); // Track which reviewer is adding PR
   const [inputValue, setInputValue] = useState('');
   const [inputError, setInputError] = useState('');
+  const [showGradingModal, setShowGradingModal] = useState(null); // Track which reviewer's grading modal is open
 
   const handlePRReviewedChange = (reviewerId, newValue) => {
     setReviewerData(prevData =>
@@ -59,7 +60,7 @@ const PRGradingScreen = () => {
           .toString(36)
           .substr(2, 9)}`,
         prNumbers: inputValue.trim(),
-        grade: 'Added', // Default grade for newly added PRs
+        grade: 'Okay', // Default grade for newly added PRs
       };
 
       setReviewerData(prevData =>
@@ -83,6 +84,29 @@ const PRGradingScreen = () => {
     setActiveInput(null);
     setInputValue('');
     setInputError('');
+  };
+
+  const handlePRNumberClick = reviewerId => {
+    setShowGradingModal(reviewerId);
+  };
+
+  const handleGradeChange = (reviewerId, prId, newGrade) => {
+    setReviewerData(prevData =>
+      prevData.map(reviewer =>
+        reviewer.id === reviewerId
+          ? {
+              ...reviewer,
+              gradedPrs: reviewer.gradedPrs.map(pr =>
+                pr.id === prId ? { ...pr, grade: newGrade } : pr,
+              ),
+            }
+          : reviewer,
+      ),
+    );
+  };
+
+  const handleCloseGradingModal = () => {
+    setShowGradingModal(null);
   };
 
   return (
@@ -160,7 +184,8 @@ const PRGradingScreen = () => {
                                   <span
                                     className={`pr-grading-screen-pr-number ${
                                       isBackendFrontendPair ? 'pr-grading-screen-pair' : ''
-                                    }`}
+                                    } pr-grading-screen-pr-clickable`}
+                                    onClick={() => handlePRNumberClick(reviewer.id)}
                                   >
                                     {pr.prNumbers}
                                   </span>
@@ -235,6 +260,106 @@ const PRGradingScreen = () => {
                   </tbody>
                 </table>
               </div>
+
+              {/* Grading Modal */}
+              {showGradingModal && (
+                <div className="pr-grading-screen-modal-overlay" onClick={handleCloseGradingModal}>
+                  <div className="pr-grading-screen-modal" onClick={e => e.stopPropagation()}>
+                    <div className="pr-grading-screen-modal-header">
+                      <h3>Grade PR Numbers</h3>
+                      <button
+                        className="pr-grading-screen-modal-close"
+                        onClick={handleCloseGradingModal}
+                      >
+                        ×
+                      </button>
+                    </div>
+                    <div className="pr-grading-screen-modal-body">
+                      <table className="pr-grading-screen-grading-table">
+                        <thead>
+                          <tr>
+                            <th>PR Number</th>
+                            <th>Exceptional</th>
+                            <th>Okay</th>
+                            <th>Unsatisfactory</th>
+                            <th>Cannot find image</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {reviewerData
+                            .find(r => r.id === showGradingModal)
+                            ?.gradedPrs.map(pr => (
+                              <tr key={pr.id}>
+                                <td className="pr-grading-screen-modal-pr-number">
+                                  <span
+                                    className={`pr-grading-screen-pr-number ${
+                                      pr.prNumbers.includes('+') ? 'pr-grading-screen-pair' : ''
+                                    }`}
+                                  >
+                                    {pr.prNumbers}
+                                  </span>
+                                </td>
+                                <td className="pr-grading-screen-checkbox-cell">
+                                  <input
+                                    type="checkbox"
+                                    checked={pr.grade === 'Exceptional'}
+                                    onChange={() =>
+                                      handleGradeChange(showGradingModal, pr.id, 'Exceptional')
+                                    }
+                                    className="pr-grading-screen-grade-checkbox"
+                                  />
+                                </td>
+                                <td className="pr-grading-screen-checkbox-cell">
+                                  <input
+                                    type="checkbox"
+                                    checked={pr.grade === 'Okay'}
+                                    onChange={() =>
+                                      handleGradeChange(showGradingModal, pr.id, 'Okay')
+                                    }
+                                    className="pr-grading-screen-grade-checkbox"
+                                  />
+                                </td>
+                                <td className="pr-grading-screen-checkbox-cell">
+                                  <input
+                                    type="checkbox"
+                                    checked={pr.grade === 'Unsatisfactory'}
+                                    onChange={() =>
+                                      handleGradeChange(showGradingModal, pr.id, 'Unsatisfactory')
+                                    }
+                                    className="pr-grading-screen-grade-checkbox"
+                                  />
+                                </td>
+                                <td className="pr-grading-screen-checkbox-cell">
+                                  <input
+                                    type="checkbox"
+                                    checked={pr.grade === 'Cannot find image'}
+                                    onChange={() =>
+                                      handleGradeChange(
+                                        showGradingModal,
+                                        pr.id,
+                                        'Cannot find image',
+                                      )
+                                    }
+                                    className="pr-grading-screen-grade-checkbox"
+                                  />
+                                </td>
+                              </tr>
+                            ))}
+                        </tbody>
+                      </table>
+                      <div className="pr-grading-screen-modal-footer">
+                        <Button
+                          variant="primary"
+                          onClick={handleCloseGradingModal}
+                          className="pr-grading-screen-done-btn"
+                        >
+                          Done
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </Card.Body>
           </Card>
         </Col>

@@ -31,7 +31,7 @@ export const mockReviewers = [
     gradedPrs: [
       { id: 'pr5', prNumbers: '1245', grade: 'Okay' },
       { id: 'pr6', prNumbers: '2876 + 3421', grade: 'Exceptional' },
-      { id: 'pr7', prNumbers: '1987', grade: 'No Correct Image' },
+      { id: 'pr7', prNumbers: '1987', grade: 'Cannot find image' },
     ],
   },
   {
@@ -73,7 +73,7 @@ export const mockReviewers = [
     gradedPrs: [
       { id: 'pr14', prNumbers: '9012', grade: 'Okay' },
       { id: 'pr15', prNumbers: '1234 + 5678', grade: 'Exceptional' },
-      { id: 'pr16', prNumbers: '9876', grade: 'No Correct Image' },
+      { id: 'pr16', prNumbers: '9876', grade: 'Cannot find image' },
       { id: 'pr17', prNumbers: '5432 + 1098', grade: 'Exceptional' },
     ],
   },
@@ -94,7 +94,7 @@ export const mockReviewers = [
       { id: 'pr20', prNumbers: '4680 + 1357', grade: 'Exceptional' },
       { id: 'pr21', prNumbers: '9753', grade: 'Unsatisfactory' },
       { id: 'pr22', prNumbers: '8642 + 7531', grade: 'Exceptional' },
-      { id: 'pr23', prNumbers: '6420', grade: 'No Correct Image' },
+      { id: 'pr23', prNumbers: '6420', grade: 'Cannot find image' },
     ],
   },
 ];
@@ -147,7 +147,7 @@ export const gradeOptions = [
   { value: 'Exceptional', label: 'Exceptional', color: 'success' },
   { value: 'Okay', label: 'Okay', color: 'primary' },
   { value: 'Unsatisfactory', label: 'Unsatisfactory', color: 'danger' },
-  { value: 'No Correct Image', label: 'No Correct Image', color: 'secondary' },
+  { value: 'Cannot find image', label: 'Cannot find image', color: 'secondary' },
 ];
 
 // Default data for new PR entries
