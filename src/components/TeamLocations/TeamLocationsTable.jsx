@@ -132,7 +132,7 @@ function TeamLocationsTable({ visible, filteredMapMarkers, setCurrentUser, darkM
         <tbody>
           {newfilteredMapMarkers.map((user, index) => (
             <tr
-              key={user.id}
+              key={user._id || user.id || index}
               onClick={() => setCurrentUser(user)}
               className={`team-locations-table-row ${
                 index % 2 === 0 ? 'team-locations-table-row-even' : ''

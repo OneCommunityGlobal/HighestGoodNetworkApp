@@ -47,6 +47,8 @@
 }
 
 .navbar {
+  z-index: 100;
+  white-space: nowrap;
   display: flex;
   flex-wrap: nowrap;
   justify-content: space-between;

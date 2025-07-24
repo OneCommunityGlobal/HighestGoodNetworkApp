@@ -5,7 +5,7 @@ import cs from 'classnames';
 import { Provider } from 'react-redux';
 import styles from './Timer.module.css';
 import './Countdown.module.css';
-import createStore from '../../store';
+import { store } from '../../store';
 
 function TimerPopout({ authUser, darkMode, TimerComponent }) {
   const popupRef = useRef(null);
@@ -53,28 +53,29 @@ function TimerPopout({ authUser, darkMode, TimerComponent }) {
       <html>
         <head>
           <title>Timer</title>
-          <link rel="stylesheet" href="${window.location.origin}/Timer.module.css">
-          ${darkMode ? '<style>body { background-color: #1a1a2e; color: white; }</style>' : ''}
-          <style>
-            [class^="Countdown_countdown__"], [class*=" Countdown_countdown__"] {
-              width: 90vw !important;
-              height: 90vw !important;
-              max-width: 480px !important;
-              max-height: 600px !important;
-              min-width: 180px !important;
-              min-height: 180px !important;
-            }
-          </style>
         </head>
         <body class="timer-popout-body">
-          <h1 style="text-align: center;">Timer</h1>
           <div id="timer-root"></div>
         </body>
       </html>
     `);
 
+    // Add all stylesheets from the main window to the popout window
+    Array.from(window.document.styleSheets).forEach(styleSheet => {
+      try {
+        const cssRules = Array.from(styleSheet.cssRules)
+          .map(rule => rule.cssText)
+          .join('');
+        const style = popup.document.createElement('style');
+        style.textContent = cssRules;
+        popup.document.head.appendChild(style);
+      } catch (e) {
+        // This can happen with CORS stylesheets
+        // Silently ignore CORS errors when copying stylesheets
+      }
+    });
+
     const root = popup.document.getElementById('timer-root');
-    const { store } = createStore();
     ReactDOM.render(
       <Provider store={store}>
         <TimerComponent authUser={authUser} darkMode={darkMode} isPopout />

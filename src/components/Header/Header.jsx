@@ -70,6 +70,7 @@ import NotificationCard from '../Notification/notificationCard';
 import DarkModeButton from './DarkModeButton';
 import { getUserProfile } from '../../actions/userProfile';
 import BellNotification from './BellNotification';
+import PermissionWatcher from '../Auth/PermissionWatcher';
 
 export function Header(props) {
   const location = useLocation();
@@ -175,7 +176,6 @@ export function Header(props) {
   const dispatch = useDispatch();
   const history = useHistory();
   const MeetingNotificationAudioRef = useRef(null);
-  const [isAckLoading, setIsAckLoading] = useState(false);
 
   useEffect(() => {
     const handleStorageEvent = () => {
@@ -495,7 +495,7 @@ export function Header(props) {
 
   const viewingUser = JSON.parse(window.sessionStorage.getItem('viewingUser'));
   return (
-    <div className="header-wrapper">
+    <div className={`header-wrapper ${darkMode ? ' dark-mode' : ''}`}>
       <Navbar className="py-3 navbar" color="dark" dark expand="md">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
         <div
