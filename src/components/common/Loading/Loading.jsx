@@ -1,5 +1,5 @@
 // eslint-disable-next-line react/function-component-definition
-const Loading = ({ align, darkMode }) => {
+const Loading = ({ align, darkMode, className }) => {
   let alignClassName = '';
   if (align === 'center') {
     alignClassName = 'd-flex justify-content-center align-items-center';
@@ -10,7 +10,7 @@ const Loading = ({ align, darkMode }) => {
   }
   return (
     <div className={`container-fluid ${alignClassName}`} data-testid="loading">
-      <div className="fa-5x">
+      <div className={className || 'fa-5x'}>
         <i
           className={`fa fa-spinner fa-pulse ${darkMode ? 'text-azure' : ''}`}
           data-testid="loading-spinner"

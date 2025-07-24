@@ -10,9 +10,14 @@ import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
+import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
+
+import { postLeaderboardData } from 'actions/leaderBoardData';
+import { calculateDurationBetweenDates, showTrophyIcon } from 'utils/anniversaryPermissions';
 import { toggleUserBio } from 'actions/weeklySummariesReport';
+
 import RoleInfoModal from 'components/UserProfile/EditableModal/RoleInfoModal';
 import {
   Input,
@@ -63,6 +68,7 @@ function FormattedReport({
   allRoleInfo,
   badges,
   loadBadges,
+  loadTrophies,
   canEditTeamCode,
   auth,
   canSeeBioHighlight,
@@ -70,33 +76,49 @@ function FormattedReport({
   handleTeamCodeChange,
   handleSpecialColorDotClick,
 }) {
-  const loggedInUserEmail = auth?.user?.email ? auth.user.email : '';
-
   const dispatch = useDispatch();
   const isEditCount = dispatch(hasPermission('totalValidWeeklySummaries'));
+
+  // Only proceed if summaries is valid
+  if (!summaries || !Array.isArray(summaries) || summaries.length === 0) {
+    return (
+      <div className="text-center py-4">
+        <p>No data available to display</p>
+      </div>
+    );
+  }
+
+  const loggedInUserEmail = auth?.user?.email ? auth.user.email : '';
 
   return (
     <>
       <ListGroup flush>
-        {summaries.map(summary => (
-          <ReportDetails
-            loggedInUserEmail={loggedInUserEmail}
-            key={summary._id}
-            summary={summary}
-            weekIndex={weekIndex}
-            bioCanEdit={bioCanEdit}
-            canEditSummaryCount={isEditCount}
-            allRoleInfo={allRoleInfo}
-            canEditTeamCode={canEditTeamCode}
-            badges={badges}
-            loadBzadges={loadBadges}
-            canSeeBioHighlight={canSeeBioHighlight}
-            darkMode={darkMode}
-            handleTeamCodeChange={handleTeamCodeChange}
-            auth={auth}
-            handleSpecialColorDotClick={handleSpecialColorDotClick}
-          />
-        ))}
+        {summaries.map(summary => {
+          // Add safety check for each summary
+          if (!summary || !summary.totalSeconds) {
+            return null;
+          }
+          return (
+            <ReportDetails
+              loggedInUserEmail={loggedInUserEmail}
+              key={summary._id}
+              summary={summary}
+              weekIndex={weekIndex}
+              bioCanEdit={bioCanEdit}
+              canEditSummaryCount={isEditCount}
+              allRoleInfo={allRoleInfo}
+              canEditTeamCode={canEditTeamCode}
+              badges={badges}
+              loadBadges={loadBadges}
+              loadTrophies={loadTrophies}
+              canSeeBioHighlight={canSeeBioHighlight}
+              darkMode={darkMode}
+              handleTeamCodeChange={handleTeamCodeChange}
+              auth={auth}
+              handleSpecialColorDotClick={handleSpecialColorDotClick}
+            />
+          );
+        })}
       </ListGroup>
       <EmailsList summaries={summaries} auth={auth} />
     </>
@@ -203,6 +225,7 @@ function ReportDetails({
   allRoleInfo,
   badges,
   loadBadges,
+  loadTrophies,
   canEditTeamCode,
   canSeeBioHighlight,
   loggedInUserEmail,
@@ -235,6 +258,7 @@ function ReportDetails({
             weekIndex={weekIndex}
             allRoleInfo={allRoleInfo}
             auth={auth}
+            loadTrophies={loadTrophies}
             handleSpecialColorDotClick={handleSpecialColorDotClick}
           />
         </ListGroupItem>
@@ -245,6 +269,7 @@ function ReportDetails({
                 canEditTeamCode={canEditTeamCode && !cantEditJaeRelatedRecord}
                 summary={summary}
                 handleTeamCodeChange={handleTeamCodeChange}
+                darkMode={darkMode}
               />
             </ListGroupItem>
             <ListGroupItem darkMode={darkMode}>
@@ -261,6 +286,7 @@ function ReportDetails({
               <TotalValidWeeklySummaries
                 summary={summary}
                 canEditSummaryCount={canEditSummaryCount && !cantEditJaeRelatedRecord}
+                darkMode={darkMode}
               />
             </ListGroupItem>
             <ListGroupItem darkMode={darkMode}>
@@ -352,7 +378,7 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
   );
 }
 
-function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange }) {
+function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange, darkMode }) {
   const [teamCode, setTeamCode] = useState(summary.teamCode);
   const [hasError, setHasError] = useState(false);
   const fullCodeRegex = /^.{5,7}$/;
@@ -405,6 +431,7 @@ function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange }) {
                 }
               }}
               placeholder="X-XXX"
+              className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
             />
           </div>
         ) : (
@@ -456,7 +483,7 @@ function MediaUrlLink({ summary }) {
   return <div style={{ paddingLeft: '5px' }}>Not provided!</div>;
 }
 
-function TotalValidWeeklySummaries({ summary, canEditSummaryCount }) {
+function TotalValidWeeklySummaries({ summary, canEditSummaryCount, darkMode }) {
   const style = {
     color: textColors[summary?.weeklySummaryOption] || textColors.Default,
   };
@@ -502,6 +529,7 @@ function TotalValidWeeklySummaries({ summary, canEditSummaryCount }) {
             step="1"
             value={weeklySummariesCount}
             onChange={e => handleWeeklySummaryCountChange(e)}
+            className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
             min="0"
           />
         </div>
@@ -641,10 +669,36 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
   );
 }
 
-function Index({ summary, weekIndex, allRoleInfo, auth, handleSpecialColorDotClick }) {
+function Index({
+  summary,
+  weekIndex,
+  allRoleInfo,
+  auth,
+  loadTrophies,
+  handleSpecialColorDotClick,
+}) {
+  const colors = ['purple', 'green', 'navy'];
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
   const currentDate = moment.tz('America/Los_Angeles').startOf('day');
-  const colors = ['purple', 'green', 'navy'];
+  const [setTrophyFollowedUp] = useState(summary?.trophyFollowedUp);
+  const dispatch = useDispatch();
+
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const trophyIconToggle = () => {
+    if (auth?.user?.role === 'Owner' || auth?.user?.role === 'Administrator') {
+      setModalOpen(prevState => (prevState ? false : summary._id));
+    }
+  };
+
+  const handleChangingTrophyIcon = async newTrophyStatus => {
+    setModalOpen(false);
+    await dispatch(postLeaderboardData(summary._id, newTrophyStatus));
+
+    setTrophyFollowedUp(newTrophyStatus);
+
+    toast.success('Trophy status updated successfully');
+  };
 
   const googleDocLink = summary.adminLinks?.reduce((targetLink, currentElement) => {
     if (currentElement.Name === 'Google Doc') {
@@ -653,6 +707,27 @@ function Index({ summary, weekIndex, allRoleInfo, auth, handleSpecialColorDotCli
     }
     return targetLink;
   }, undefined);
+
+  const summarySubmissionDate = moment()
+    .tz('America/Los_Angeles')
+    .endOf('week')
+    .subtract(weekIndex, 'week')
+    .format('YYYY-MM-DD');
+
+  const durationSinceStarted = calculateDurationBetweenDates(
+    summarySubmissionDate,
+    summary?.startDate?.split('T')[0] || null,
+  );
+
+  const handleIconContent = duration => {
+    if (duration.months >= 5.8 && duration.months <= 6.2) {
+      return '6M';
+    }
+    if (duration.years >= 0.9) {
+      return `${Math.round(duration.years)}Y`;
+    }
+    return null;
+  };
 
   return (
     <>
@@ -684,6 +759,42 @@ function Index({ summary, weekIndex, allRoleInfo, auth, handleSpecialColorDotCli
               auth={auth}
             />
           )}
+          {loadTrophies &&
+            showTrophyIcon(summarySubmissionDate, summary?.startDate?.split('T')[0] || null) && (
+              <i
+                className="fa fa-trophy"
+                style={{
+                  marginLeft: '10px',
+                  fontSize: '25px',
+                  cursor: 'pointer',
+                  color: summary?.trophyFollowedUp === true ? '#ffbb00' : '#FF0800',
+                }}
+                onClick={trophyIconToggle}
+              >
+                <p style={{ fontSize: '10px', marginLeft: '5px' }}>
+                  {handleIconContent(durationSinceStarted)}
+                </p>
+              </i>
+            )}
+          <Modal isOpen={modalOpen === summary._id} toggle={trophyIconToggle}>
+            <ModalHeader toggle={trophyIconToggle}>Followed Up?</ModalHeader>
+            <ModalBody>
+              <p>Are you sure you have followed up this icon?</p>
+            </ModalBody>
+            <ModalFooter>
+              <Button variant="secondary" onClick={trophyIconToggle}>
+                Cancel
+              </Button>{' '}
+              <Button
+                color="primary"
+                onClick={() => {
+                  handleChangingTrophyIcon(true);
+                }}
+              >
+                Confirm
+              </Button>
+            </ModalFooter>
+          </Modal>
         </div>
       </div>
 

@@ -21,14 +21,13 @@ import {
   MANAGE_FINAL_DAY,
   USER_START_DATE,
   USER_END_DATE,
-  REQUESTED_TIME_OFF,
 } from '../../languages/en/ui';
 
 /**
  * The header row of the user table.
  */
 const UserTableHeader = React.memo(
-  ({ authRole, roleSearchText, darkMode, editUser, enableEditUserInfo, disableEditUserInfo }) => {
+  ({ authRole, roleSearchText, darkMode, editUser, enableEditUserInfo, disableEditUserInfo, isMobile, mobileFontSize }) => {
     const dispatch = useDispatch();
     const [editFlag, setEditFlag] = useState(editUser);
     const updatedUserData = useSelector(state => state.userProfileEdit.newUserData);
@@ -62,7 +61,9 @@ const UserTableHeader = React.memo(
     };
 
     return (
-      <tr className={darkMode ? 'bg-space-cadet' : ''}>
+      <tr className={darkMode ? 'bg-space-cadet' : ''}
+          style={{fontSize: isMobile ? mobileFontSize : 'initial'}}
+      >
         <th scope="col" id="usermanagement_active" style={darkModeStyle}>
           {ACTIVE}
         </th>
@@ -231,7 +232,22 @@ const UserTableHeader = React.memo(
         </th>
 
         <th scope="col" id="usermanagement_requested_time_off" style={darkModeStyle}>
-          <div className="text-center m-auto">{REQUESTED_TIME_OFF}</div>
+        <div
+          className="text-center m-auto"
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}
+        >
+          <span>Req.</span>
+          <i
+            className="fa fa-clock-o"
+            aria-hidden="true"
+            title="time"
+            style={{
+              fontSize: '14px',
+              color: darkMode ? 'lightgray' : 'black',
+            }}
+          />
+          <span>off</span>
+        </div>
         </th>
 
         <th scope="col" id="usermanagement_finalday" style={darkModeStyle}>

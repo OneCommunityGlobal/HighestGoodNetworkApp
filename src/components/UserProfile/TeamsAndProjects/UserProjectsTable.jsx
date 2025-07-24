@@ -145,7 +145,7 @@ const UserProjectsTable = React.memo(props => {
               </Col>
             </div>
           </div>
-          <div className='table-container'>
+          <div className={`table-container ${darkMode ? 'bg-yinmn-blue' : ''}`}>
             <table className={`table table-bordered table-responsive-sm ${darkMode ? 'text-light' : ''}`}>
               <thead className={darkMode ? 'bg-space-cadet' : ''}>
                 {props.role && (
@@ -176,20 +176,30 @@ const UserProjectsTable = React.memo(props => {
                   tasksByProject?.map((project, index) => (
                     <tr key={project._id} className={darkMode ? 'bg-yinmn-blue' : ''}>
                       <td>{index + 1}</td>
-                      <td>{project.projectName}</td>
+                      <td className="taskName">{project.projectName}</td>
                       {props.role && canPostTask && (
                         <td className='table-cell'>
-                          <NavItem tag={Link} to={`/project/wbs/${project._id}` } id={`wbs-tooltip-${project._id}`}>
-                            <button type="button" className="btn btn-outline-info" style={darkMode ? {} : boxStyle}>
+                          <Link to={`/project/wbs/${project._id}`}>
+                            <button
+                              id={`wbs-tooltip-${project._id}`}
+                              type="button"
+                              className="btn btn-outline-info"
+                              style={darkMode ? {} : boxStyle}
+                            >
                               <i className="fa fa-tasks" aria-hidden="true"></i>
                             </button>
-                          </NavItem>
-                          <UncontrolledTooltip placement="left" target={`wbs-tooltip-${project._id}`}>
+                          </Link>
+
+                          <UncontrolledTooltip
+                            placement="left"
+                            target={`wbs-tooltip-${project._id}`}
+                            delay={{ show: 250, hide: 100 }} // Optional: smoother UX
+                          >
                             Click to access the Work Breakdown Structures &#40;WBSs&#41; for this project
                           </UncontrolledTooltip>
                         </td>
                       )}
-                      {props.edit && props.role && canDeleteProjects &&(
+                      {props.edit && props.role && canDeleteProjects && (
                         <td className='table-cell'>
                           <Button
                             color="danger"
@@ -205,7 +215,6 @@ const UserProjectsTable = React.memo(props => {
                         </td>
                       )}
                     </tr>
-
                   ))
                 ) : (
                   <></>
@@ -253,11 +262,11 @@ const UserProjectsTable = React.memo(props => {
                 </div>
               </Col>
             </div>
-            <div className='table-container' data-testid='userProjectTaskTest'>
+            <div className={`table-container ${darkMode ? 'bg-yinmn-blue' : ''}`} data-testid='userProjectTaskTest'>
               <table className={`table table-bordered table-responsive-sm ${darkMode ?'text-light' : ''}`}>
-                <thead>
+                <thead className={darkMode  ? 'bg-space-cadet' : ''}>
                   {props.role && (
-                    <tr>
+                    <tr className={darkMode  ? 'bg-space-cadet' : ''}>
                       <th className='table-header'>#</th>
                       <th>Task Name</th>
                       {canAssignProjectToUsers ? <th className='table-cell'>{}</th> : null}
@@ -274,10 +283,12 @@ const UserProjectsTable = React.memo(props => {
                         return (
                           <tr key={task._id}>
                             <td>{task.num}</td>
-                            <td>
+                            <td className='taskName'>
                               <span className='opacity-70'>{project.projectName} </span>
                               <br />
-                              <span className="fs-18">{task.taskName && `\u2003 ↳ ${task.taskName}`}</span>
+                              <a className="fs-18" href={`/wbs/tasks/${task._id}`}>
+                                {task.taskName && `\u2003 ↳ ${task.taskName}`}
+                              </a>
                             </td>
                             {!isCompletedTask && props.edit && props.role && canDeleteTasks && (
                               <td>
@@ -351,9 +362,9 @@ const UserProjectsTable = React.memo(props => {
             )}
             </Col>
           </div>
-          <div className='table-container'>
+          <div className={`table-container ${darkMode ? 'bg-yinmn-blue' : ''}`}>
             <table className={`table table-bordered ${darkMode ? 'text-light' : ''}`}>
-              <thead>
+              <thead className={darkMode ? 'bg-space-cadet' : ''}>
                 {props.role && (
                   <tr>
                     <th className={`table-header ${darkMode ? 'bg-space-cadet' : ''}`}>#</th>
@@ -367,7 +378,7 @@ const UserProjectsTable = React.memo(props => {
                   tasksByProject?.map((project, index) => (
                     <tr key={project._id}>
                       <td>{index + 1}</td>
-                      <td>{`${project.projectName}`}</td>
+                      <td className="taskName">{`${project.projectName}`}</td>
                       {props.edit && props.role && canDeleteProjects && (
                         <td className='table-cell'>
                           <Button
@@ -430,13 +441,13 @@ const UserProjectsTable = React.memo(props => {
                 </Col>
               </div>
             </div>
-            <div className='table-container'>
+            <div className={`table-container ${darkMode ? 'bg-yinmn-blue' : ''}`}>
               <table className="table table-bordered">
                 <thead className={darkMode ? 'text-light' : ''}>
                   {props.role && (
                     <tr>
                       <th className={`table-header ${darkMode ? 'bg-space-cadet' : ''}`}>#</th>
-                      <th className={darkMode ? 'bg-space-cadet' : ''}>Task Name</th>
+                      <th className={`taskName ${darkMode ? 'bg-space-cadet' : ''}`}>Task Name</th>
                       {canAssignProjectToUsers ? <th className={darkMode ? 'bg-space-cadet' : ''} style={{ width: '100px' }}>{}</th> : null}
                     </tr>
                   )}

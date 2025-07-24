@@ -1,6 +1,6 @@
 import axios from 'axios';
 import 'leaflet/dist/leaflet.css';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, forwardRef } from 'react';
 import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import { Button, Container, Spinner } from 'reactstrap';
@@ -26,7 +26,7 @@ function getUserName(profile) {
   return userName;
 }
 
-function TeamLocations() {
+const TeamLocations = forwardRef(() => {
   const [userProfiles, setUserProfiles] = useState([]);
   const [manuallyAddedProfiles, setManuallyAddedProfiles] = useState([]);
   const [addNewIsOpen, setAddNewIsOpen] = useState(false);
@@ -285,16 +285,18 @@ function TeamLocations() {
           <div className="d-flex align-center">
             <div className="d-flex align-center pr-5 flex-column flex-md-row  position-relative">
               <div className="input-group-prepend">
-                <span className="input-group-text">{SEARCH}</span>
+                <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
+                  {SEARCH}
+                </span>
               </div>
               <div>
                 <input
                   type="text"
-                  className="form-control"
                   aria-label="Search"
                   placeholder="Search by Location"
                   value={searchText}
                   onChange={searchHandler}
+                  className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
                 />
               </div>
               {dropdown && (
@@ -416,7 +418,9 @@ function TeamLocations() {
             zoom={3}
             scrollWheelZoom
             style={{ border: '1px solid grey' }}
-            ref={mapRef}
+            whenCreated={mapInstance => {
+              mapRef.current = mapInstance;
+            }}
           >
             <EventComponent
               setPopupsOpen={setPopupsOpen}
@@ -452,7 +456,7 @@ function TeamLocations() {
       </div>
     </Container>
   );
-}
+});
 
 function EventComponent({ setPopupsOpen, currentUser, setMarkerPopupVisible }) {
   const map = useMapEvents({
