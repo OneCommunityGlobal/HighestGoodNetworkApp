@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { toast } from 'react-toastify';
+import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import { ClipLoader } from 'react-spinners';
 import jwtDecode from 'jwt-decode';
@@ -10,6 +12,7 @@ function UserSkillsProfile() {
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const history = useHistory();
 
   // Fetch data from backend on component mount
   useEffect(() => {
@@ -37,10 +40,17 @@ function UserSkillsProfile() {
             },
           },
         );
-        // console.log('Profile Data:', response.data);
 
         const { data } = response;
         if (!data) throw new Error('Failed to fetch profile data');
+
+        if (data.isPlaceholder) {
+          toast.warn('Please complete the skills survey to access the HGN Skills dashboard.');
+
+          setTimeout(() => {
+            history.push('/hgnform');
+          }, 2500);
+        }
 
         setProfileData(data);
         setLoading(false);
