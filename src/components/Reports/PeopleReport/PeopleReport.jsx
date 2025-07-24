@@ -641,7 +641,7 @@ class PeopleReport extends Component {
           )} */}
             </ReportPage>
           </div>
-          <div className="people-report-right" xs="12" md="3" lg="3">
+          <div className={`people-report-right ${darkMode ? 'bg-oxford-blue' : ''}`} xs="12" md="3" lg="3">
             <ReportPage.ReportHeader
               src={profilePic}
               avatar={profilePic ? undefined : <FiUser />}
@@ -651,7 +651,7 @@ class PeopleReport extends Component {
 
               <div
                 // style={{ minHeight: '200px' }}
-                className={`report-stats ${darkMode ? 'text-light' : ''}`}
+                className={`report-stats ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
               >
                 <p>
                   <Link to={`/userProfile/${_id}`}
