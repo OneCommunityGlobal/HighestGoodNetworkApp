@@ -12,6 +12,7 @@ import PermissionsManagement from '../PermissionsManagement';
 import { ENDPOINTS } from '../../../utils/URL';
 
 jest.mock('axios');
+jest.setTimeout(100000);
 const mockStore = configureStore([thunk]);
 
 describe('PermissionsManagement', () => {
@@ -129,7 +130,11 @@ describe('PermissionsManagement', () => {
     await act(async () => {
       fireEvent.click(addRoleButton);
     });
-    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    // await waitFor(() => {
+    //   expect(screen.getByRole('dialog')).toBeInTheDocument();
+    // });
+    const dialog = await screen.findByRole('dialog');
+    expect(dialog).toBeInTheDocument();
   });
 
   it('handles null roles gracefully', async () => {

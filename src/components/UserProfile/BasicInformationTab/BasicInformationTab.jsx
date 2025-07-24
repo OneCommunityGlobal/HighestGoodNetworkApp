@@ -37,7 +37,7 @@ const Name = props => {
   if (canEdit) {
     return (
       <>
-        <Col md={desktopDisplay ? '3' : ''}>
+        <Col md={desktopDisplay ? '3' : ''} style={{paddingRight: 0}}>
           <FormGroup>
             <div style={{position: 'relative'}}>
             <Input
@@ -746,16 +746,16 @@ const BasicInformationTab = props => {
             <Label className={darkMode ? 'text-light' : ''}>Location</Label>
           </Col>
           {desktopDisplay ? (
-            <Col md="6">
+            <Col md="6" style={{paddingRight: 0}}>
               <Row className="ml-0">
-                <Col className="p-0" style={{ marginRight: '10px' }}>
+                <Col className="p-0">
                   <Input
                     onChange={handleLocation}
                     value={locationCheckValue(userProfile.location || '')}
                     className={`${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
                   />
                 </Col>
-                <Col>
+                <Col style={{paddingRight: 0}}>
                   <Button
                     color="secondary"
                     block

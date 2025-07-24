@@ -38,19 +38,6 @@ const UserProfileModal = props => {
     }
   }
 
-  const firstName = localStorage.getItem('userFirstName');
-  const lastName = localStorage.getItem('userLastName');
-
-  const getAssignedByText = () => {
-    const today = new Date();
-    const formattedDate = `${today.getMonth() + 1}/${today.getDate()}/${today.getFullYear()}`;
-    if (firstName && lastName) {
-      return `Assigned by ${firstName} ${lastName.charAt(0)} ${formattedDate}:`;
-    } else {
-      return `Assigned by HGN System:`;
-    }
-  };
-
   const darkMode = useSelector(state=>state.theme.darkMode);
 
   const canPutUserProfile = props.hasPermission('putUserProfile');
@@ -63,15 +50,25 @@ const UserProfileModal = props => {
   const [adminLinkName, setAdminLinkName] = useState('');
   const [adminLinkURL, setAdminLinkURL] = useState('');
 
+  const getCurrentDate = () => {
+    const today = new Date();
+    return today.toLocaleDateString('en-CA').split('T')[0]; 
+  };
 
-  const [dateStamp, setDateStamp] = useState(blueSquare[0]?.date || '');
-  //const [summary, setSummary] = useState(blueSquare[0]?.description || '');
-  const assignedText = getAssignedByText();
-  const [summary, setSummary] = useState(() => {
-    const initialDescription = blueSquare[0]?.description || '';
-    return assignedText + initialDescription;
-  });
+  // Fallback to a meaningful default if no data found
+  if (blueSquare.length === 0) {
+    blueSquare = [
+      {
+        date: getCurrentDate(),  
+        description: 'This is auto-generated text. You must save the document first before viewing newly created blue squares.',
+      },
+    ];
+  }
 
+  
+  const [dateStamp, setDateStamp] = useState(blueSquare[0]?.date || getCurrentDate());
+
+  const [summary, setSummary] = useState(blueSquare[0]?.description || '');
 
 
   const [addButton, setAddButton] = useState(false); 
@@ -141,14 +138,7 @@ const UserProfileModal = props => {
     } else if (event.target.id === 'linkURL') {
       setLinkURL(event.target.value.trim());
     } else if (event.target.id === 'summary') {
-      
-        const userInput = event.target.value;
-        if (!userInput.startsWith(assignedText)) {
-          setSummary(assignedText + userInput.slice(assignedText.length));
-        } else {
-          setSummary(userInput);
-        }
-      
+      setSummary(event.target.value);
       checkFields(dateStamp, summary);
       adjustTextareaHeight(event.target);
     } else if (event.target.id === 'date') {
@@ -345,16 +335,14 @@ const UserProfileModal = props => {
 
             <FormGroup hidden={summaryFieldView}>
               <Label className={fontColor} for="report">Summary</Label>
-              
-                <Input 
-                  type="textarea" 
-                  id="summary" 
-                  onChange={handleChange} 
-                  value={summary} 
-                  style={{ minHeight: '200px', overflow: 'hidden'}} 
-                  onInput={e => adjustTextareaHeight(e.target)} 
-                />
-              
+              <Input 
+                type="textarea" 
+                id="summary" 
+                onChange={handleChange} 
+                value={summary} 
+                style={{ minHeight: '200px', overflow: 'hidden'}} 
+                onInput={e => adjustTextareaHeight(e.target)} 
+              />
             </FormGroup>
           </>
         )}
