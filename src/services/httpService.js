@@ -16,10 +16,6 @@ if (axios.interceptors && axios.interceptors.response && axios.interceptors.resp
   });
 }
 
-axios.interceptors.request.use(request => {
-  return request;
-});
-
 function setjwt(jwt) {
   if (jwt) {
     axios.defaults.headers.common.Authorization = jwt;
