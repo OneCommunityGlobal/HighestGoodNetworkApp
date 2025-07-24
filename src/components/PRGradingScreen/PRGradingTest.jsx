@@ -16,29 +16,9 @@ const PRGradingTest = () => {
     setSelectedTeam(teamId);
   };
 
-  const handleBack = () => {
-    setSelectedTeam(null);
-  };
-
   if (selectedTeam) {
     const data = getDataByTeamId(selectedTeam);
-    return (
-      <div>
-        <Container style={{ marginBottom: '20px' }}>
-          <Row>
-            <Col>
-              <Button variant="secondary" onClick={handleBack}>
-                ← Back to Team Selection
-              </Button>
-              <span style={{ marginLeft: '20px', fontSize: '16px', color: '#666' }}>
-                Testing: {teams.find(t => t.id === selectedTeam)?.name}
-              </span>
-            </Col>
-          </Row>
-        </Container>
-        <PRGradingScreen teamData={data.teamData} reviewers={data.reviewers} />
-      </div>
-    );
+    return <PRGradingScreen teamData={data.teamData} reviewers={data.reviewers} />;
   }
 
   return (
