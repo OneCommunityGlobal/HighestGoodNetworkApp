@@ -277,7 +277,7 @@ export const ENDPOINTS = {
     `${APIEndpoint}/bm/timelogger/${projectId}/${memberId}/stop`,
   TIME_LOGGER_LOGS: (projectId, memberId) =>
     `${APIEndpoint}/bm/timelogger/${projectId}/${memberId}/logs`,
-
+  
   GET_TIME_OFF_REQUESTS: () => `${APIEndpoint}/getTimeOffRequests`,
   ADD_TIME_OFF_REQUEST: () => `${APIEndpoint}/setTimeOffRequest`,
   UPDATE_TIME_OFF_REQUEST: id => `${APIEndpoint}/updateTimeOffRequest/${id}`,
@@ -347,6 +347,11 @@ export const ENDPOINTS = {
   LB_LISTINGS: `${APIEndpoint}/lb/getListings`,
   LB_LISTINGS_BASE: `${APIEndpoint}/lb`,
   HELP_CATEGORIES: `${APIEndpoint}/help-categories`,
+    
+  // pr dashboard endpoints
+  PROMOTION_ELIGIBILITY: `${APIEndpoint}/promotion-eligibility`, 
+  PROMOTE_MEMBERS: `${APIEndpoint}/promote-members`,
+
 };
 
 export const ApiEndpoint = APIEndpoint;

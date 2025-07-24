@@ -1,58 +1,149 @@
-.promo-container {
-  padding: 2rem;
-  font-family: sans-serif;
+.promo-table-container {
+  max-width: 70vw;
+  background-color: #d1d5db;
+  margin: 0 auto;
+  padding: 1rem;
 }
 
-.promo-title {
-  font-size: 1.8rem;
-  font-weight: bold;
-  margin-bottom: 1rem;
+.promo-table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
 }
 
-.promo-subtitle {
-  font-size: 1.3rem;
+.promo-table-header span {
   font-weight: 600;
-  margin: 1rem 0;
+  font-size: 1.25rem;
+  color: #1f2937;
 }
 
-.promo-table-wrapper {
-  margin-bottom: 2rem;
-  overflow-x: auto;
+.review-btn,
+.process-promo-btn {
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  padding: 0.5rem 0.75rem;
+  margin-left: 0.5rem;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.review-btn:hover,
+.process-promo-btn:hover {
+  background-color: #1d4ed8;
 }
 
 .promo-table {
   width: 100%;
   border-collapse: collapse;
+  background-color: #fff;
+  border: 1px solid #d1d5db;
+  font-size: 0.95rem;
 }
 
 .promo-table th,
 .promo-table td {
-  border: 1px solid #ccc;
-  padding: 0.75rem;
-  text-align: left;
+  border: 1px solid;
+  padding: 0.5rem;
+  text-align: center;
 }
 
 .promo-table th {
-  background-color: #f0f0f0;
+  background-color: white;
+  border: none;
 }
 
-.promo-text-center {
-  text-align: center;
-}
-
-.promo-spinner {
-  animation: spin 1s linear infinite;
-  font-size: 2rem;
-}
-
-@keyframes spin {
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-.promo-error {
-  color: red;
+.section-row td {
+  border: none;
+  text-align: left;
   font-weight: bold;
-  text-align: center;
+  padding-top: 0.75rem;
+}
+
+.custom-circular-checkbox-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.custom-circular-checkbox {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid black;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  transition: background-color 0.2s ease;
+}
+
+.custom-circular-checkbox.checked {
+  background-color: black;
+}
+
+.check-icon {
+  color: white;
+  font-size: 12px;
+}
+
+/* smaller screens */
+@media screen and (max-width: 768px) {
+  .promo-table,
+  .promo-table thead,
+  .promo-table tbody,
+  .promo-table th,
+  .promo-table td,
+  .promo-table tr {
+    display: block;
+    width: 100%;
+  }
+
+  .promo-table thead {
+    display: none;
+  }
+
+  .promo-table tr {
+    margin-bottom: 1rem;
+    background-color: #fff;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 0.75rem;
+  }
+
+  .promo-table td {
+    text-align: left;
+    border: none;
+    padding: 0.5rem 0;
+    position: relative;
+  }
+
+  .promo-table td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: #374151;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .section-row td {
+    font-size: 1rem;
+    padding: 0.5rem 0;
+    border: none;
+    background-color: transparent;
+  }
+
+  .custom-circular-checkbox-wrapper {
+    justify-content: flex-start;
+  }
+
+  .promo-table-container {
+    max-width: 100%;
+    padding: 1rem;
+  }
 }
