@@ -8,6 +8,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setformData } from 'actions/hgnFormAction';
 import { Spinner } from 'reactstrap';
 import styles from '../styles/FollowupQuestions.module.css';
+import getWordCount from '../../../utils/getWordCount';
 
 function FollowupQuestions() {
   const navigate = useHistory();
@@ -201,12 +202,10 @@ function FollowupQuestions() {
   // TODO: Add logic to send groupedData to backend
   const handleFormSubmission = e => {
     e.preventDefault();
+    const mernWorkExp = newVolunteer.followup_mern_work_experience;
+    const mernWorkExpWordCount = getWordCount(mernWorkExp);
 
-    const wordCount = newVolunteer.followup_mern_work_experience
-      .trim()
-      .split(' ') // split by space
-      .filter(word => word !== '' && word !== '\n' && word !== '\t').length; // remove empty strings and tabs/newlines
-    if (wordCount < 20) {
+    if (mernWorkExpWordCount < 20) {
       toast.error('Please enter at least 20 words.');
       // Re-focus the textarea
       textareaRef.current?.focus();

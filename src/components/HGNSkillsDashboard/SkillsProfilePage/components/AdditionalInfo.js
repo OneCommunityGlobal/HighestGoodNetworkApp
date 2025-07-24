@@ -4,6 +4,7 @@ import '../styles/AdditionalInfo.css';
 import { useSelector, useDispatch } from 'react-redux';
 import { ENDPOINTS } from 'utils/URL';
 import { toast } from 'react-toastify';
+import getWordCount from '../../../../utils/getWordCount';
 import { updateFollowUpFields } from '../../../../actions/userSkillsActions';
 
 function checkIfupdateUserSkillsProfileFollowUp(permissions, role, requestorId, userid) {
@@ -25,6 +26,7 @@ function AdditionalInfo() {
     other_skills: profileData?.skillInfo?.followUp?.other_skills || '',
   });
   const textareaRef = useRef(null);
+
   const role = useSelector(state => state.auth.user.role);
 
   const permissions = useSelector(state => state.auth.user.permissions);
@@ -97,17 +99,15 @@ function AdditionalInfo() {
 
       if (isMissingRequiredField) return;
 
-      const wordCount = formData.mern_work_experience
-        .trim()
-        .split(' ') // split by space
-        .filter(word => word !== '' && word !== '\n' && word !== '\t').length; // remove empty strings and tabs/newlines
-      if (wordCount < 20) {
-        toast.error('Please enter at least 20 words');
+      const mernWorkExp = formData.mern_work_experience;
+      const mernWorkExpWordCount = getWordCount(mernWorkExp);
+
+      if (mernWorkExpWordCount < 20) {
+        toast.error('Mern Work Experience : Please enter at least 20 words.');
         // Re-focus the textarea
         textareaRef.current?.focus();
         return;
       }
-
       dispatch(updateFollowUpFields(profileData?.userId, formData));
     }
     setIsEditing(!isEditing);
