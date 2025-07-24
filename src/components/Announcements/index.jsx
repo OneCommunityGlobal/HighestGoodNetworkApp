@@ -2,7 +2,6 @@
 import { useState, useEffect, useRef } from 'react';
 import './Announcements.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { Editor } from '@tinymce/tinymce-react';
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
@@ -24,48 +23,6 @@ function Announcements({ title, email: initialEmail }) {
     setShowEditor(false);
     setTimeout(() => setShowEditor(true), 0);
   }, [darkMode]);
-
-  const editorInit = {
-    license_key: 'gpl',
-    selector: 'Editor#email-editor',
-    height: 500,
-    plugins: [
-      'advlist autolink lists link image paste',
-      'charmap print preview anchor help',
-      'searchreplace visualblocks code',
-      'insertdatetime media table paste wordcount',
-    ],
-    menubar: false,
-    branding: false,
-    image_title: true,
-    automatic_uploads: true,
-    file_picker_callback(cb) {
-      const input = document.createElement('input');
-      input.setAttribute('type', 'file');
-      input.setAttribute('accept', 'image/*');
-
-      input.onchange = () => {
-        const file = input.files[0];
-        const reader = new FileReader();
-        reader.onload = () => {
-          const id = `blobid${new Date().getTime()}`;
-          const { blobCache } = window.tinymce.activeEditor.editorUpload;
-          const base64 = reader.result.split(',')[1];
-          const blobInfo = blobCache.create(id, file, base64);
-          blobCache.add(blobInfo);
-          cb(blobInfo.blobUri(), { title: file.name });
-        };
-        reader.readAsDataURL(file);
-      };
-
-      input.click();
-    },
-    a11y_advanced_options: true,
-    toolbar:
-      'undo redo | bold italic | blocks fontfamily fontsize | image alignleft aligncenter alignright | bullist numlist outdent indent | removeformat | help',
-    skin: darkMode ? 'oxide-dark' : 'oxide',
-    content_css: darkMode ? 'dark' : 'default',
-  };
 
   useEffect(() => {
     if (initialEmail) {
@@ -217,8 +174,9 @@ function Announcements({ title, email: initialEmail }) {
               value={emailTo}
               onChange={handleEmailListChange}
               placeholder="Enter email addresses (comma-separated)"
-              className={`input-text-for-announcement ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
-                }`}
+              className={`input-text-for-announcement ${
+                darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+              }`}
             />
             <button
               type="button"
@@ -239,8 +197,9 @@ function Announcements({ title, email: initialEmail }) {
               value={headerContent}
               onChange={handleHeaderContentChange}
               placeholder="Enter header image URL"
-              className={`input-text-for-announcement ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
-                }`}
+              className={`input-text-for-announcement ${
+                darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+              }`}
             />
             <button
               type="button"
