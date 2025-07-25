@@ -1,6 +1,5 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Container } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { searchWithAccent } from 'utils/search';
 import lo from 'lodash';
@@ -25,7 +24,7 @@ import CreateNewTeamPopup from './CreateNewTeamPopup';
 import DeleteTeamPopup from './DeleteTeamPopup';
 import TeamStatusPopup from './TeamStatusPopup';
 import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
-import { Button } from 'reactstrap';
+import { Button, Container } from 'reactstrap';
 
 class Teams extends React.PureComponent {
   constructor(props) {
@@ -111,6 +110,24 @@ class Teams extends React.PureComponent {
     }
   }
 
+  toggleTeamActiveSort = () => {
+    let newSortState;
+    switch (this.state.sortTeamActiveState) {
+      case 'none':
+        newSortState = 'ascending';
+        break;
+      case 'ascending':
+        newSortState = 'descending';
+        break;
+      case 'descending':
+        newSortState = 'none';
+        break;
+      default:
+        throw new Error('Invalid sort state');
+    }
+    this.setState({ sortTeamActiveState: newSortState, sortTeamNameState: 'none' });
+  };
+
   render() {
     const { allTeams, fetching } = this.props.state.allTeamsData;
     const { darkMode } = this.props.state.theme;
@@ -174,11 +191,11 @@ class Teams extends React.PureComponent {
   }
 
   openCreateTeamModal = () => {
-    this.setState({
+    this.setState(prevState => ({
       isInputFilled: true,
-      nonexistentTeamName: this.state.wildCardSearchText,
+      nonexistentTeamName: prevState.wildCardSearchText,
       createNewTeamPopupOpen: true,
-    });
+    }));
   };
 
   /**
@@ -191,7 +208,7 @@ class Teams extends React.PureComponent {
       if (teamSearchData.length === 0) {
         // Se nenhum time for encontrado, retorna uma linha de mensagem
 
-        this.nonexistentTeamName = this.state.wildCardSearchText;
+        this.setState({ nonexistentTeamName: this.state.wildCardSearchText });
 
         return [
           <tr key="no-teams">
@@ -199,7 +216,7 @@ class Teams extends React.PureComponent {
               <div className="team-not-found-message-container">
                 <p className={`${darkMode ? 'text-light' : 'text-black'}`}>
                   No team found, but you can create this team by clicking the blue button named
-                  "Create Team".
+                  &quot;Create Team&quot;.
                 </p>
 
                 <Button onClick={this.openCreateTeamModal} color="primary">
@@ -286,7 +303,7 @@ class Teams extends React.PureComponent {
           fetching={fetching}
         />
         <CreateNewTeamPopup
-          nonexistentTeamName={this.nonexistentTeamName}
+          nonexistentTeamName={this.state.nonexistentTeamName}
           isInputFilled={this.state.isInputFilled}
           open={this.state.createNewTeamPopupOpen}
           onClose={this.onCreateNewTeamClose}
@@ -596,24 +613,6 @@ class Teams extends React.PureComponent {
         throw new Error('Invalid sort state');
     }
     this.setState({ sortTeamNameState: newSortState, sortTeamActiveState: 'none' });
-  };
-
-  toggleTeamActiveSort = () => {
-    let newSortState;
-    switch (this.state.sortTeamActiveState) {
-      case 'none':
-        newSortState = 'ascending';
-        break;
-      case 'ascending':
-        newSortState = 'descending';
-        break;
-      case 'descending':
-        newSortState = 'none';
-        break;
-      default:
-        throw new Error('Invalid sort state');
-    }
-    this.setState({ sortTeamActiveState: newSortState, sortTeamNameState: 'none' });
   };
 }
 export { Teams };
