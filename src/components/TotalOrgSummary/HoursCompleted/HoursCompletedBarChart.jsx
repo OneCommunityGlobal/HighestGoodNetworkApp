@@ -149,13 +149,14 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
             fontSize: '13px',
             fontWeight: 500,
             color: darkMode ? 'white' : '#222',
-            marginTop: 4,
-            marginBottom: 8,
             display: 'grid',
+            justifyItems: 'center',
           }}
         >
-          {`${data.hoursSubmittedToTasksPercentage *
-            100}% of Total Tangible Hours Submitted to Tasks`}
+          <span style={{ maxWidth: 200 }}>
+            {`${data.hoursSubmittedToTasksPercentage *
+              100}% of Total Tangible Hours Submitted to Tasks`}
+          </span>
           {(() => {
             const isPositive = data.hoursSubmittedToTasksComparisonPercentage >= 0;
             let color;
