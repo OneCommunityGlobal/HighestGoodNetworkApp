@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import './LBMessaging.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell, faLocationArrow, faSearch } from '@fortawesome/free-solid-svg-icons';
@@ -8,7 +8,6 @@ import {
   fetchUserPreferences,
   updateUserPreferences,
 } from '~/actions/lbdashboard/userPreferenceActions';
-import { useEffect, useRef } from 'react';
 import { toast } from 'react-toastify';
 import { fetchExistingChats, fetchMessages } from '~/actions/lbdashboard/messagingActions';
 import axios from 'axios';
@@ -218,8 +217,9 @@ export default function LBMessaging() {
     }
 
     return existingChats.map(user => (
-      <div
+      <button
         key={user.userId}
+        type="button"
         className="lb-messaging-contact"
         onClick={() => {
           updateSelection(user);
@@ -239,7 +239,7 @@ export default function LBMessaging() {
             {user.firstName} {user.lastName}
           </div>
         </div>
-      </div>
+      </button>
     ));
   };
 
@@ -323,13 +323,17 @@ export default function LBMessaging() {
                                 }
                               }}
                             />
-                            <div onClick={() => setShowContacts(prev => !prev)}>
+                            <button
+                              type="button"
+                              onClick={() => setShowContacts(prev => !prev)}
+                              className="lb-msg-icon-btn" // you can reuse or define styles here
+                            >
                               <img
                                 src="https://img.icons8.com/metro/26/multiply.png"
-                                alt="multiply"
+                                alt="Close"
                                 className="lb-msg-icon"
                               />
-                            </div>
+                            </button>
                           </div>
                         ) : (
                           <div className="lb-messaging-contacts-header-mobile">
@@ -346,8 +350,9 @@ export default function LBMessaging() {
                         <div className="lb-messaging-contacts-body active">
                           {showContacts
                             ? searchResults.map(user => (
-                                <div
-                                  key={user._id}
+                                <button
+                                  key={user.userId}
+                                  type="button"
                                   className="lb-messaging-contact"
                                   onClick={() => {
                                     updateSelection(user);
@@ -371,7 +376,7 @@ export default function LBMessaging() {
                                       {user.firstName} {user.lastName}
                                     </div>
                                   </div>
-                                </div>
+                                </button>
                               ))
                             : renderContacts()}
                         </div>
@@ -403,13 +408,17 @@ export default function LBMessaging() {
                         }
                       }}
                     />
-                    <div onClick={() => setShowContacts(prev => !prev)}>
+                    <button
+                      type="button"
+                      onClick={() => setShowContacts(prev => !prev)}
+                      className="lb-msg-icon-btn" // you can reuse or define styles here
+                    >
                       <img
                         src="https://img.icons8.com/metro/26/multiply.png"
-                        alt="multiply"
+                        alt="Close"
                         className="lb-msg-icon"
                       />
-                    </div>
+                    </button>
                   </div>
                 ) : (
                   <div className="lb-messaging-contacts-header">
@@ -426,8 +435,9 @@ export default function LBMessaging() {
                 <div className="lb-messaging-contacts-body active">
                   {showContacts
                     ? searchResults.map(user => (
-                        <div
+                        <button
                           key={user._id}
+                          type="button"
                           className="lb-messaging-contact"
                           onClick={() => updateSelection(user)}
                         >
@@ -444,7 +454,7 @@ export default function LBMessaging() {
                               {user.firstName} {user.lastName}
                             </div>
                           </div>
-                        </div>
+                        </button>
                       ))
                     : renderContacts()}
                 </div>

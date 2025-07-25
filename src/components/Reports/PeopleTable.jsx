@@ -11,7 +11,13 @@ function PeopleTable({ userProfiles, darkMode }) {
     PeopleList = userProfiles
       .sort((a, b) => a.firstName.localeCompare(b.firstName))
       .map((person, index) => (
-        <tr className="teams__tr" id={`tr_${person._id}`} key={person._id}>
+        <tr
+          className="teams__tr"
+          id={`tr_${person._id}`}
+          key={person._id}
+          data-testid={`tr_${person._id}`}
+        >
+          {' '}
           <th className={`teams__order--input ${darkMode ? 'text-light' : ''}`} scope="row">
             <div>{index + 1}</div>
           </th>
@@ -24,11 +30,11 @@ function PeopleTable({ userProfiles, darkMode }) {
           <td>
             {person.isActive ? (
               <div className="isActive">
-                <i className="fa fa-circle" aria-hidden="true" />
+                <i className="fa fa-circle" data-testid="status-icon" aria-hidden="true" />
               </div>
             ) : (
               <div className="isNotActive">
-                <i className="fa fa-circle-o" aria-hidden="true" />
+                <i className="fa fa-circle-o" data-testid="status-icon" aria-hidden="true" />
               </div>
             )}
           </td>
@@ -46,7 +52,10 @@ function PeopleTable({ userProfiles, darkMode }) {
 
   return (
     <div className="custom-scrollbar">
-      <table className={`table ${darkMode ? 'bg-yinmn-blue' : 'table-bordered'}`} style={darkMode ? boxStyleDark : boxStyle}>
+      <table
+        className={`table ${darkMode ? 'bg-yinmn-blue' : 'table-bordered'}`}
+        style={darkMode ? boxStyleDark : boxStyle}
+      >
         <thead>
           <tr className={darkMode ? 'bg-space-cadet text-light' : ''}>
             <th scope="col" id="projects__order">
@@ -56,12 +65,8 @@ function PeopleTable({ userProfiles, darkMode }) {
             <th scope="col" id="projects__active">
               Active
             </th>
-            <th scope="col">
-              Start Date
-            </th>
-            <th scope="col">
-              End Date
-            </th>
+            <th scope="col">Start Date</th>
+            <th scope="col">End Date</th>
           </tr>
         </thead>
         <tbody className={darkMode ? 'dark-mode' : ''}>{PeopleList}</tbody>

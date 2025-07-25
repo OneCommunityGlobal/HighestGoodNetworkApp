@@ -1,8 +1,6 @@
 // Import the functions to test
 import moment from 'moment-timezone'; // Import moment-timezone
 import axios from 'axios';
-
-
 import {
   setTimeEntriesForPeriod,
   setTimeEntriesForWeek,

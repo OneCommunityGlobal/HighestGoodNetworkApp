@@ -1,7 +1,6 @@
-// eslint-disable-next-line no-unused-vars
 import React from 'react';
-import CreateNewTeamPopup from '~/components/Teams/CreateNewTeamPopup';
 import { screen, fireEvent } from '@testing-library/react';
+import CreateNewTeamPopup from '~/components/Teams/CreateNewTeamPopup';
 import { renderWithProvider } from '../../../__tests__/utils';
 
 const defaultProps = {
@@ -139,6 +138,6 @@ describe('CreateNewTeamPopUp', () => {
     renderWithProvider(<CreateNewTeamPopup open teamName="Example Team" isEdit={false} />);
 
     const inputElement = screen.getByPlaceholderText('Please enter a new team name');
-    expect(document.activeElement).toBe(inputElement);
+    expect(inputElement).toHaveFocus();
   });
 });

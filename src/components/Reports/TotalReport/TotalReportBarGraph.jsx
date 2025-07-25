@@ -22,6 +22,7 @@ function TotalReportBarGraph({ barData, range }) {
     const maxValue = Math.max(...data.map(d => d.value));
 
     const svg = d3
+      // eslint-disable-next-line testing-library/no-node-access
       .select(`#${svgId}`)
       .attr('viewBox', `0 0 ${containerWidth} ${containerHeight}`) // Make SVG responsive
       .attr('preserveAspectRatio', 'xMidYMid meet') // Preserve aspect ratio

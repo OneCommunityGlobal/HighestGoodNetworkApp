@@ -6,9 +6,9 @@ import MarkerClusterGroup from '@changey/react-leaflet-markercluster';
 import { Button, Container, Spinner } from 'reactstrap';
 import './TeamLocations.css';
 
-import { SEARCH } from '~/languages/en/ui';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import { SEARCH } from '~/languages/en/ui';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { ApiEndpoint, ENDPOINTS } from '~/utils/URL';
 import AddOrEditPopup from './AddOrEditPopup';
@@ -267,7 +267,10 @@ function TeamLocations() {
       )}
       <div className="py-2 d-flex justify-content-between flex-column flex-md-row">
         <div className="text-and-table-icon-container">
-          <h5>Total Countries: {totalUniqueCountries}</h5>
+          <h5>
+            Total Countries:
+            {totalUniqueCountries}
+          </h5>
           <button
             type="button"
             id="toggle-table-button"
@@ -319,9 +322,11 @@ function TeamLocations() {
                             return (
                               <tr key={profile._id}>
                                 <td>{userName}</td>
-                                <td>{`${profile.location.city ? `${profile.location.city},` : ''} ${
-                                  profile.location.country
-                                }`}</td>
+                                <td>
+                                  {`${profile.location.city ? `${profile.location.city},` : ''} ${
+                                    profile.location.country
+                                  }`}
+                                </td>
                                 <td>
                                   <div
                                     style={{
@@ -399,8 +404,6 @@ function TeamLocations() {
         </div>
         {loading ? (
           <div
-            animation="border"
-            size="md"
             className="d-flex justify-content-center align-items-center"
             style={{ minHeight: '50vh' }}
           >

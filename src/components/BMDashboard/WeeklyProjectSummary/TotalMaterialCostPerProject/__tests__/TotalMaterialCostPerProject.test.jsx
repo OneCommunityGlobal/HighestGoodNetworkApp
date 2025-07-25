@@ -1,9 +1,10 @@
+/* eslint-disable testing-library/no-node-access */
 import { render, screen, waitFor, within, fireEvent } from '@testing-library/react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
-import configureStore from 'redux-mock-store';
+import { configureStore } from 'redux-mock-store';
 import TotalMaterialCostPerProject from '../TotalMaterialCostPerProject';
 
 // Mocks
@@ -54,12 +55,12 @@ describe('TotalMaterialCostPerProject', () => {
   });
 
   it('shows loading spinner on initial render and hide the spinner when data loads', async () => {
-    const { getByTestId } = render(
+    render(
       <Provider store={store}>
         <TotalMaterialCostPerProject />
       </Provider>,
     );
-    const loadingSpinner = getByTestId('loading');
+    const loadingSpinner = screen.getByTestId('loading');
     expect(loadingSpinner).toBeInTheDocument();
 
     await waitFor(() => expect(loadingSpinner).not.toBeInTheDocument());
@@ -104,7 +105,7 @@ describe('TotalMaterialCostPerProject', () => {
     });
 
     // Remove option Project A
-    userEvent.click(screen.getByRole('button', { name: 'Remove Project A' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Remove Project A' }));
     const barChart = screen.getByTestId('bar-chart');
     expect(within(barChart).queryByText(/Project A/)).not.toBeInTheDocument();
 
@@ -112,9 +113,9 @@ describe('TotalMaterialCostPerProject', () => {
     const mySelectComponent = screen.queryByTestId('select-projects-dropdown');
 
     fireEvent.keyDown(mySelectComponent.firstChild, { key: 'ArrowDown' });
-    await waitFor(() => screen.getByText('Project A'));
+    await screen.findByText('Project A');
     fireEvent.click(screen.getByText('Project A'));
-    expect(within(barChart).queryByText(/Project A/)).toBeInTheDocument();
+    expect(within(barChart).getByText(/Project A/)).toBeInTheDocument();
 
     // De-Select Project A in the dropdown
     fireEvent.keyDown(mySelectComponent.firstChild, { key: 'ArrowDown' });

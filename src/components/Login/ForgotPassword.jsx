@@ -9,7 +9,7 @@ import Joi from 'joi-browser';
 import { boxStyle, boxStyleDark } from '~/styles';
 import forgotPassword from '../../services/authorizationService';
 
-const ForgotPassword = React.memo(() => {
+function ForgotPasswordComponent() {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const [message, setMessage] = useState({});
@@ -140,7 +140,15 @@ const ForgotPassword = React.memo(() => {
         darkMode ? 'bg-oxford-blue' : ''
       }`}
     >
-      <form className="col-md-4 xs-12">
+      <form
+        className="col-md-4 xs-12"
+        data-testid="forgot-password-form"
+        onSubmit={e => {
+          e.preventDefault();
+          onForgotPassword();
+        }}
+      >
+        {' '}
         <label htmlFor="email" className={`mt-3 ${darkMode ? 'text-azure' : ''}`}>
           Email
         </label>
@@ -153,7 +161,6 @@ const ForgotPassword = React.memo(() => {
           onChange={handleInput}
         />
         {message.email && <div className="alert alert-danger">{message.email}</div>}
-
         <label htmlFor="firstName" className={`mt-3 ${darkMode ? 'text-azure' : ''}`}>
           First Name
         </label>
@@ -166,7 +173,6 @@ const ForgotPassword = React.memo(() => {
           onChange={handleInput}
         />
         {message.firstName && <div className="alert alert-danger">{message.firstName}</div>}
-
         <label htmlFor="lastName" className={`mt-3 ${darkMode ? 'text-azure' : ''}`}>
           Last Name
         </label>
@@ -179,7 +185,6 @@ const ForgotPassword = React.memo(() => {
           onChange={handleInput}
         />
         {message.lastName && <div className="alert alert-danger">{message.lastName}</div>}
-
         <div style={{ marginTop: '40px' }}>
           <Button
             color="primary"
@@ -202,6 +207,8 @@ const ForgotPassword = React.memo(() => {
       </form>
     </div>
   );
-});
+}
+const ForgotPassword = React.memo(ForgotPasswordComponent);
+ForgotPassword.displayName = 'ForgotPassword';
 
 export default ForgotPassword;

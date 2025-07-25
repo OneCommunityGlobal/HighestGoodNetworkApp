@@ -220,6 +220,7 @@ describe('SummaryBar Component', () => {
     } catch (error) {
       // If it errors, we consider this test still passing as it's an edge case
       // In real application, error boundaries would handle this
+      // eslint-disable-next-line no-console
       console.log('Error handled in test:', error.message);
     }
   });

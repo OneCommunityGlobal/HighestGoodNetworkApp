@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom/extend-expect';
+// eslint-disable-next-line import/named
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import mockState from '../../../__tests__/mockAdminState';

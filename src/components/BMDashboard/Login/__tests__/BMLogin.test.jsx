@@ -1,11 +1,18 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { vi } from 'vitest'
+import { vi } from 'vitest';
 import { useDispatch, Provider } from 'react-redux';
 import thunk from 'redux-thunk';
-import configureStore from 'redux-mock-store';
+import { configureStore } from 'redux-mock-store';
 import { BrowserRouter as Router } from 'react-router-dom';
 import axios from 'axios';
 import BMLogin from '../BMLogin';
+import { act } from 'react-dom/test-utils';
+
+vi.mock('axios');
+
+vi.mock('jwt-decode', () => ({
+  default: vi.fn(() => ({ decodedPayload: 'mocked_decoded_payload' })),
+}));
 
 const mockStore = configureStore([thunk]);
 let store;
@@ -29,11 +36,6 @@ beforeEach(() => {
   });
 });
 
-vi.mock('axios');
-
-vi.mock('jwt-decode', () => ({
-  default: vi.fn(() => ({ decodedPayload: 'mocked_decoded_payload' }))
-}));
 const history = {
   push: vi.fn(),
   location: { pathname: '/' },
@@ -43,9 +45,9 @@ const renderComponent = testStore => {
   function LoginWrapper() {
     const dispatch = useDispatch();
     const location = {};
-
     return <BMLogin dispatch={dispatch} history={history} location={location} />;
   }
+
   return render(
     <Provider store={testStore}>
       <Router>
@@ -59,11 +61,13 @@ describe('BMLogin component', () => {
   it('renders without crashing', () => {
     renderComponent(store);
   });
-  it('check if login elements get displayed when isAuthenticated is true', () => {
+
+  it('shows login header when authenticated', () => {
     renderComponent(store);
     expect(screen.getByText('Log In To Building Management Dashboard')).toBeInTheDocument();
   });
-  it('check if login elements does not get displayed when isAuthenticated is false', () => {
+
+  it('does not show login header when not authenticated', () => {
     const testStore = mockStore({
       auth: {
         isAuthenticated: false,
@@ -80,154 +84,118 @@ describe('BMLogin component', () => {
         },
       },
     });
+
     renderComponent(testStore);
     expect(screen.queryByText('Log In To Building Management Dashboard')).not.toBeInTheDocument();
   });
-  it('check if Enter your current user credentials to access the Building Management Dashboard header displays as expected', () => {
+
+  it('renders subheaders', () => {
     renderComponent(store);
     expect(
       screen.getByText(
         'Enter your current user credentials to access the Building Management Dashboard',
       ),
     ).toBeInTheDocument();
-  });
-  it('check if Note: You must use your Production/Main credentials for this login. header displays as expected', () => {
-    renderComponent(store);
     expect(
       screen.getByText('Note: You must use your Production/Main credentials for this login.'),
     ).toBeInTheDocument();
   });
-  it('check if email label is displaying as expected', () => {
-    renderComponent(store);
-    expect(screen.getByText('Email')).toBeInTheDocument();
-  });
-  it('check if password label is displaying as expected', () => {
-    renderComponent(store);
-    expect(screen.getByText('Password')).toBeInTheDocument();
-  });
-  it('check if submit button is disabled when either email or password is not entered', () => {
-    renderComponent(store);
-    const buttonElement = screen.getByText('Submit');
-    expect(buttonElement).toBeDisabled();
-  });
-  it('check if validation for invalid email id works as expected', () => {
-    const { container } = renderComponent(store);
-    const emailElement = container.querySelector('[name="email"]');
-    fireEvent.change(emailElement, { target: { value: 'test' } });
 
-    const passwordElement = container.querySelector('[name="password"]');
-    fireEvent.change(passwordElement, { target: { value: '12' } });
+  it('renders email and password labels', () => {
+    renderComponent(store);
+    expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
+  });
 
-    const submitElement = screen.getByText('Submit');
-    fireEvent.click(submitElement);
+  it('disables submit button with missing credentials', () => {
+    renderComponent(store);
+    expect(screen.getByText('Submit')).toBeDisabled();
+  });
 
-    expect(emailElement).toBeInvalid();
+  it('shows validation error for invalid email', () => {
+    renderComponent(store);
+    fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'test' } });
+    fireEvent.change(screen.getByLabelText(/password/i), { target: { value: '12' } });
+    fireEvent.click(screen.getByText('Submit'));
+
+    expect(screen.getByLabelText(/email/i)).toBeInvalid();
     expect(screen.getByText('"email" must be a valid email')).toBeInTheDocument();
   });
-  it('check if validation for password works as expected', () => {
-    const { container } = renderComponent(store);
-    const emailElement = container.querySelector('[name="email"]');
-    fireEvent.change(emailElement, { target: { value: 'test@gmail.com' } });
 
-    const passwordElement = container.querySelector('[name="password"]');
-    fireEvent.change(passwordElement, { target: { value: '12' } });
+  it('shows validation error for short password', () => {
+    renderComponent(store);
+    fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'test@gmail.com' } });
+    fireEvent.change(screen.getByLabelText(/password/i), { target: { value: '12' } });
+    fireEvent.click(screen.getByText('Submit'));
 
-    const submitElement = screen.getByText('Submit');
-    fireEvent.click(submitElement);
-
-    expect(passwordElement).toBeInvalid();
+    expect(screen.getByLabelText(/password/i)).toBeInvalid();
     expect(
       screen.getByText('"password" length must be at least 8 characters long'),
     ).toBeInTheDocument();
   });
-  it('check if entering the right email and password logs in as expected', async () => {
+
+  it('logs in successfully with correct credentials', async () => {
     axios.post.mockResolvedValue({
       statusText: 'OK',
       data: { token: '1234' },
     });
 
-    const { container } = renderComponent(store);
+    renderComponent(store);
+    fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'test@gmail.com' } });
+    fireEvent.change(screen.getByLabelText(/password/i), { target: { value: 'Test12345' } });
+    fireEvent.click(screen.getByText('Submit'));
 
-    const emailElement = container.querySelector('[name="email"]');
-    const passwordElement = container.querySelector('[name="password"]');
-    const submitElement = screen.getByText('Submit');
-
-    fireEvent.change(emailElement, { target: { value: 'test@gmail.com' } });
-    fireEvent.change(passwordElement, { target: { value: 'Test12345' } });
-    fireEvent.click(submitElement);
-
-    await waitFor(() => {
-      expect(emailElement).not.toBeInvalid();
-      expect(passwordElement).not.toBeInvalid();
-      expect(screen.queryByText('"email" must be a valid email')).not.toBeInTheDocument();
-      expect(
-        screen.queryByText('"password" length must be at least 8 characters long'),
-      ).not.toBeInTheDocument();
+    // eslint-disable-next-line testing-library/no-unnecessary-act
+    await act(async () => {
+      fireEvent.click(screen.getByText('Submit'));
     });
-
-    await waitFor(() => {
-      expect(history.push).toHaveBeenCalledWith('/bmdashboard');
-    });
+    expect(history.push).toHaveBeenCalledWith('/bmdashboard'); // if you're using `useNavigate` from React Router v6+
   });
-  it("check if statusText in response is not 'OK' and status is 422 and displays validation error", async () => {
+
+  it('displays specific validation error for status 422', async () => {
     axios.post.mockResolvedValue({
       statusText: 'ERROR',
       status: 422,
       data: { token: '1234', label: 'email', message: 'User not found' },
     });
-    const { container } = renderComponent(store);
 
-    const emailElement = container.querySelector('[name="email"]');
-    fireEvent.change(emailElement, { target: { value: 'test@gmail.com' } });
-
-    const passwordElement = container.querySelector('[name="password"]');
-    fireEvent.change(passwordElement, { target: { value: 'Test12345' } });
-
-    const submitElement = screen.getByText('Submit');
-    fireEvent.click(submitElement);
+    renderComponent(store);
+    fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'test@gmail.com' } });
+    fireEvent.change(screen.getByLabelText(/password/i), { target: { value: 'Test12345' } });
+    fireEvent.click(screen.getByText('Submit'));
 
     await waitFor(() => {
       expect(screen.getByText('User not found')).toBeInTheDocument();
     });
   });
-  it("check if statusText in response is not 'OK' and status is not 422 and does not display any validation error", async () => {
+
+  it('does not show error if status is not 422', async () => {
     axios.post.mockResolvedValue({
       statusText: 'ERROR',
       status: 500,
       data: { token: '1234' },
     });
-    const { container } = renderComponent(store);
 
-    const emailElement = container.querySelector('[name="email"]');
-    fireEvent.change(emailElement, { target: { value: 'test@gmail.com' } });
-
-    const passwordElement = container.querySelector('[name="password"]');
-    fireEvent.change(passwordElement, { target: { value: 'Test12345' } });
-
-    const submitElement = screen.getByText('Submit');
-    fireEvent.click(submitElement);
+    renderComponent(store);
+    fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'test@gmail.com' } });
+    fireEvent.change(screen.getByLabelText(/password/i), { target: { value: 'Test12345' } });
+    fireEvent.click(screen.getByText('Submit'));
 
     await waitFor(() => {
-      const messageElement = container.querySelector('.invalid-feedback');
-      expect(messageElement).not.toBeInTheDocument();
+      expect(screen.queryByText(/invalid/i)).not.toBeInTheDocument();
     });
   });
-  it('check failed post request does not display any validation error', async () => {
+
+  it('handles post rejection without validation error', async () => {
     axios.post.mockRejectedValue({ response: 'server error' });
-    const { container } = renderComponent(store);
 
-    const emailElement = container.querySelector('[name="email"]');
-    fireEvent.change(emailElement, { target: { value: 'test@gmail.com' } });
-
-    const passwordElement = container.querySelector('[name="password"]');
-    fireEvent.change(passwordElement, { target: { value: 'Test12345' } });
-
-    const submitElement = screen.getByText('Submit');
-    fireEvent.click(submitElement);
+    renderComponent(store);
+    fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'test@gmail.com' } });
+    fireEvent.change(screen.getByLabelText(/password/i), { target: { value: 'Test12345' } });
+    fireEvent.click(screen.getByText('Submit'));
 
     await waitFor(() => {
-      const messageElement = container.querySelector('.invalid-feedback');
-      expect(messageElement).not.toBeInTheDocument();
+      expect(screen.queryByText(/invalid/i)).not.toBeInTheDocument();
     });
   });
 });

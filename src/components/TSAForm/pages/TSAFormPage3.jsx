@@ -690,6 +690,7 @@ function TSAFormPage3() {
         }}
       >
         <label
+          htmlFor="question"
           style={{
             display: 'flex',
             justifyContent: 'space-between',
@@ -931,7 +932,10 @@ function TSAFormPage3() {
           fontSize: '16px',
         }}
       >
-        <label style={{ display: 'block', marginBottom: '20px', fontWeight: 'bold' }}>
+        <label
+          htmlFor="question"
+          style={{ display: 'block', marginBottom: '20px', fontWeight: 'bold' }}
+        >
           Anything else? (and your score for it)
         </label>
         <input
@@ -964,6 +968,7 @@ function TSAFormPage3() {
         }}
       >
         <label
+          htmlFor="question"
           style={{
             display: 'flex',
             justifyContent: 'space-between',

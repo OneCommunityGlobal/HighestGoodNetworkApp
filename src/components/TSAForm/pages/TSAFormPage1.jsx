@@ -214,6 +214,7 @@ function TSAFormPage1() {
         }}
       >
         <label
+          htmlFor="emailInput"
           style={{
             display: 'flex',
             justifyContent: 'space-between',
@@ -261,6 +262,7 @@ function TSAFormPage1() {
         }}
       >
         <label
+          htmlFor="fullNameInput"
           style={{
             display: 'flex',
             justifyContent: 'space-between',
@@ -309,6 +311,7 @@ function TSAFormPage1() {
         }}
       >
         <label
+          htmlFor="profTitle"
           style={{
             display: 'flex',
             justifyContent: 'space-between',
@@ -356,6 +359,7 @@ function TSAFormPage1() {
         }}
       >
         <label
+          htmlFor="YOE"
           style={{
             display: 'flex',
             justifyContent: 'space-between',

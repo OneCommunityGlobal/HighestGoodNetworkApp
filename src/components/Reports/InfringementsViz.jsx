@@ -1,3 +1,4 @@
+/* eslint-disable testing-library/no-node-access */
 import React from 'react';
 import * as d3 from 'd3';
 
@@ -260,9 +261,6 @@ function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
       });
     }
 
-    // eslint-disable-next-line no-console
-    // console.log('INFvalues', value);
-
     displayGraph(value, maxSquareCount);
   };
 
@@ -275,7 +273,7 @@ function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
       <Button onClick={handleModalShow} aria-expanded={graphVisible} style={darkMode ? boxStyleDark : boxStyle}>
         {graphVisible ? 'Hide Infringements Graph' : 'Show Infringements Graph'}
       </Button>
-      <div className={`kaitest ${darkMode ? 'bg-light mt-2' : ''}`} id="infplot" />
+      <div className={`kaitest ${darkMode ? 'bg-light mt-2' : ''}`} id="infplot" data-testid="infplot" />
 
       <Modal size="lg" show={modalVisible} onHide={handleModalClose}>
         <Modal.Header closeButton>

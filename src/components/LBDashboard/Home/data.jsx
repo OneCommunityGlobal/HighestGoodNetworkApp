@@ -115,11 +115,11 @@ export const fetchListings = async (page = 1, size = 12, filters = {}) => {
     const items = responseData.data?.items || responseData.items || [];
     const pagination = responseData.data?.pagination ||
       responseData.pagination || {
-      total: items.length,
-      totalPages: Math.ceil(items.length / size),
-      currentPage: page,
-      pageSize: size,
-    };
+        total: items.length,
+        totalPages: Math.ceil(items.length / size),
+        currentPage: page,
+        pageSize: size,
+      };
 
     const transformedItems = items.map(transformApiListing);
 
@@ -172,11 +172,11 @@ export const fetchBiddings = async (page = 1, size = 12, filters = {}) => {
     const items = responseData.data?.items || responseData.items || [];
     const pagination = responseData.data?.pagination ||
       responseData.pagination || {
-      total: items.length,
-      totalPages: Math.ceil(items.length / size),
-      currentPage: page,
-      pageSize: size,
-    };
+        total: items.length,
+        totalPages: Math.ceil(items.length / size),
+        currentPage: page,
+        pageSize: size,
+      };
 
     const transformedItems = items.map(item => {
       const transformedItem = transformApiListing(item);

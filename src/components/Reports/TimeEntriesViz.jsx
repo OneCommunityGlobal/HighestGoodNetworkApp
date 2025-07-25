@@ -1,4 +1,5 @@
-/* eslint-disable no-restricted-globals */
+/* eslint-disable no-console */
+/* eslint-disable testing-library/no-node-access */
 import React from 'react';
 import * as d3 from 'd3';
 import { Button } from 'react-bootstrap';
@@ -8,7 +9,6 @@ function TimeEntriesViz({ timeEntries, fromDate, toDate, darkMode }) {
   const [show, setShow] = React.useState(false);
 
   React.useEffect(() => {
-    // eslint-disable-next-line no-use-before-define
     generateGraph();
   }, [show, fromDate, toDate]);
 

@@ -1,17 +1,14 @@
 import React from 'react';
-import { vi } from 'vitest';                      // 1) import vi first
+import { vi } from 'vitest'; // 1) import vi first
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 vi.mock('../ReportCharts', () => ({
-  __esModule: true,                               // mark it as an ES module
-  default: (props) => (                           // this becomes the default export
-    <div
-      data-testid="report-chart"
-      data-props={JSON.stringify(props)}
-    />
-  ),
+  __esModule: true, // mark it as an ES module
+  default: (
+    props, // this becomes the default export
+  ) => <div data-testid="report-chart" data-props={JSON.stringify(props)} />,
 }));
-import TeamChartsGroup from '../TeamChartsGroup'; 
+import TeamChartsGroup from '../TeamChartsGroup';
 
 describe('Test Suite for TeamChartsGroup Component', () => {
   it('Test case 1 : Renders two ReportCharts components', () => {
@@ -20,11 +17,11 @@ describe('Test Suite for TeamChartsGroup Component', () => {
     expect(reportCharts).toHaveLength(2);
   });
 
-  it('Test case 2 : Renders divs with appropriate classNames', () => {
-    const { container } = render(<TeamChartsGroup />);
-    const divs = container.querySelectorAll('.team-chart-container');
-    expect(divs).toHaveLength(2);
-  });
+it('Test case 2 : Renders divs with appropriate classNames', () => {
+  render(<TeamChartsGroup />);
+  const divs = screen.getAllByTestId('team-chart-container');
+  expect(divs).toHaveLength(2);
+});
 
   it('Test case 3 : Passes correct props to ReportCharts components', () => {
     render(<TeamChartsGroup />);

@@ -136,24 +136,26 @@ function IssueChart() {
       <h2 className="issue-chart-event-title">Issues Chart</h2>
 
       <div>
-        <label className="issue-chart-label">Issue Type:</label>
+        <label className="issue-chart-label" htmlFor="issue-type-select">
+          Issue Type:
+        </label>
         <Select
+          inputId="issue-type-select"
           className="issue-chart-select"
           isMulti
           options={issueTypes}
           onChange={selectedOptions => handleFilterChange(selectedOptions, 'issueTypes')}
           value={issueTypes.filter(option => filters.issueTypes.includes(option.value))}
-          placeholder="Select Issue Type(s)"
         />
 
-        <label className="issue-chart-label">Year:</label>
+        <label className="issue-chart-label" htmlFor="year-select">
+          Year:
+        </label>
         <Select
+          inputId="year-select"
           className="issue-chart-select"
           isMulti
-          options={years}
-          onChange={selectedOptions => handleFilterChange(selectedOptions, 'years')}
-          value={years.filter(option => filters.years.includes(option.value))}
-          placeholder="Select Year(s)"
+          // other props...
         />
       </div>
 

@@ -1,7 +1,6 @@
-/* eslint-disable react/jsx-props-no-spreading */
 import * as reduxHooks from 'react-redux';
 import { render, screen } from '@testing-library/react';
-import { TaskEditSuggestionsModal } from '../TaskEditSuggestionsModal';
+import TaskEditSuggestionsModal from '../TaskEditSuggestionsModal';
 
 vi.mock('react-redux', () => ({
   useDispatch: vi.fn(),
@@ -47,8 +46,8 @@ describe('TaskEditSuggestionsModal Rendering', () => {
       },
     };
     const props = { ...defaultProps, taskEditSuggestion, isTaskEditSuggestionsModalOpen: true };
-    const { queryByText } = render(<TaskEditSuggestionsModal {...props} />);
-    expect(queryByText(/John Doe/i)).not.toBeInTheDocument();
+    render(<TaskEditSuggestionsModal {...props} />);
+    expect(screen.queryByText(/John Doe/i)).not.toBeInTheDocument();
   });
 });
 

@@ -1,4 +1,4 @@
-// Used in vitest.config.js or test setup
+/* eslint-disable no-console */
 import '@testing-library/jest-dom';
 import { vi } from 'vitest';
 

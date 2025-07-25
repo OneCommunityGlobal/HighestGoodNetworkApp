@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import TeamReportLogs from '../TeamReportLogs';
 
 describe('TeamReportLogs', () => {
@@ -10,48 +10,41 @@ describe('TeamReportLogs', () => {
     totalTeamWeeklyWorkedHours: 3,
   };
 
-  it('renders without crashing', () => {
-    const { container } = render(<TeamReportLogs {...props} />);
-    expect(container).toBeInTheDocument();
-  });
-
   it('renders the correct title', () => {
     render(<TeamReportLogs {...props} />);
     const heading = screen.getByRole('heading', { level: 2 });
     expect(heading).toHaveTextContent(props.title);
   });
 
-  it('renders the correct number of report blocks', () => {
-    const { container } = render(<TeamReportLogs {...props} />);
-    const blocks = container.getElementsByClassName('team-report-time-log-block');
-    expect(blocks.length).toBe(4);
+  it('renders Number of Members block correctly', () => {
+    render(<TeamReportLogs {...props} />);
+    const blocks = screen.getAllByTestId('log-block');
+    const { getByText } = within(blocks[0]);
+    expect(getByText(props.teamMembers.length.toString())).toBeInTheDocument();
+    expect(getByText('Number of Members')).toBeInTheDocument();
   });
 
-  it('renders the correct number of team members', () => {
-    const { container } = render(<TeamReportLogs {...props} />);
-    const blocks = container.getElementsByClassName('team-report-time-log-block');
-    expect(blocks[0].querySelector('h3').textContent).toBe(props.teamMembers.length.toString());
+  it('renders Total Team Blue Squares block correctly', () => {
+    render(<TeamReportLogs {...props} />);
+    const blocks = screen.getAllByTestId('log-block');
+    const { getByText } = within(blocks[1]);
+    expect(getByText(props.teamTotalBlueSquares.toString())).toBeInTheDocument();
+    expect(getByText('Total Team Blue Squares')).toBeInTheDocument();
   });
 
-  it('renders the correct number of total team blue squares', () => {
-    const { container } = render(<TeamReportLogs {...props} />);
-    const blocks = container.getElementsByClassName('team-report-time-log-block');
-    expect(blocks[1].querySelector('h3').textContent).toBe(props.teamTotalBlueSquares.toString());
+  it('renders Weekly Committed Hours block correctly', () => {
+    render(<TeamReportLogs {...props} />);
+    const blocks = screen.getAllByTestId('log-block');
+    const { getByText } = within(blocks[2]);
+    expect(getByText(props.teamWeeklyCommittedHours.toString())).toBeInTheDocument();
+    expect(getByText('Weekly Committed Hours')).toBeInTheDocument();
   });
 
-  it('renders the correct number of weekly committed hours', () => {
-    const { container } = render(<TeamReportLogs {...props} />);
-    const blocks = container.getElementsByClassName('team-report-time-log-block');
-    expect(blocks[2].querySelector('h3').textContent).toBe(
-      props.teamWeeklyCommittedHours.toString(),
-    );
-  });
-
-  it('renders the correct number of total worked hours this week', () => {
-    const { container } = render(<TeamReportLogs {...props} />);
-    const blocks = container.getElementsByClassName('team-report-time-log-block');
-    expect(blocks[3].querySelector('h3').textContent).toBe(
-      props.totalTeamWeeklyWorkedHours.toString(),
-    );
+  it('renders Total Worked Hours This Week block correctly', () => {
+    render(<TeamReportLogs {...props} />);
+    const blocks = screen.getAllByTestId('log-block');
+    const { getByText } = within(blocks[3]);
+    expect(getByText(props.totalTeamWeeklyWorkedHours.toString())).toBeInTheDocument();
+    expect(getByText('Total Worked Hours This Week')).toBeInTheDocument();
   });
 });

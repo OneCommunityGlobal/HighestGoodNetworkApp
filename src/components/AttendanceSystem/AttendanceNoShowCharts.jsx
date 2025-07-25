@@ -1,3 +1,5 @@
+/* eslint-disable react/jsx-one-expression-per-line */
+
 'use client';
 
 import { useState } from 'react';
@@ -335,7 +337,10 @@ function AttendanceNoShowCharts() {
                   color: '#111827',
                 }}
               >
-                {selectedEvent.overallRating} / 5
+                <p>
+                  {selectedEvent.overallRating}
+                  {' / 5'}
+                </p>
               </p>
             </div>
 
@@ -575,7 +580,8 @@ function AttendanceNoShowCharts() {
         </div>
       </div>
 
-      <style jsx>{`
+      <style>
+        {`
         @media (min-width: 768px) {
           .charts-container {
             flex-direction: row !important;
@@ -597,7 +603,8 @@ function AttendanceNoShowCharts() {
             font-size: 16px !important;
           }
         }
-      `}</style>
+      `}
+      </style>
     </div>
   );
 }

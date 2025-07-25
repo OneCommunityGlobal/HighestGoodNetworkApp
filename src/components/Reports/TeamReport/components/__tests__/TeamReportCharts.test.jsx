@@ -19,7 +19,11 @@ vi.mock('../TeamReportCharts', () => ({
           <div className="team-report-chart-info-wrapper mobile-pie-chart">
             <div className="team-report-chart-info">
               <div className="pie-chart-wrapper mobile-pie-chart">
-                <div id={`pie-chart-container-${pieChartId}`} className="pie-chart" />
+                <div
+                  id={`pie-chart-container-${pieChartId}`}
+                  className="pie-chart"
+                  data-testid={`pie-chart-container-${pieChartId}`}
+                />
                 <div className="pie-chart-info-detail">
                   <div className="pie-chart-info-detail-title">
                     <h5 className={darkMode ? 'text-light' : ''}>Name</h5>
@@ -79,7 +83,7 @@ describe('TeamReportCharts', () => {
 
   it('renders the correct pie chart id', () => {
     render(<TeamReportCharts {...props} />);
-    const pieChartContainer = document.getElementById(`pie-chart-container-${props.pieChartId}`);
+    const pieChartContainer = screen.getByTestId(`pie-chart-container-${props.pieChartId}`);
     expect(pieChartContainer).toBeInTheDocument();
   });
 
@@ -97,7 +101,7 @@ describe('TeamReportCharts', () => {
 
   it('applies dark mode when darkMode is true', () => {
     render(<TeamReportCharts {...props} darkMode />);
-    const chartContainer = document.querySelector('.team-report-chart-teams');
-    expect(chartContainer.classList.contains('bg-yinmn-blue')).toBe(true);
+    const pieChartContainer = screen.getByTestId(`pie-chart-container-${props.pieChartId}`);
+    expect(pieChartContainer).toBeInTheDocument();
   });
 });

@@ -219,7 +219,19 @@ function EventNoShowChart() {
       </div>
 
       <h2 className="event-title">Attendance Trend by Day of the Week</h2>
-      <label className="no-show-viz-label">Select Event Type: </label>
+      <button
+        type="button"
+        onClick={someAction}
+        style={{
+          background: 'none',
+          border: 'none',
+          cursor: 'pointer',
+          fontSize: 'inherit',
+        }}
+        aria-label="Trigger action"
+      >
+        ↗
+      </button>
       <select
         className="no-show-viz-select"
         value={selectedEventType}

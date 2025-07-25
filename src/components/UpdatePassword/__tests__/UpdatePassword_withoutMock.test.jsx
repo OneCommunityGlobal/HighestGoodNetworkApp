@@ -1,5 +1,6 @@
 import { Route } from 'react-router-dom';
 import { toast } from 'react-toastify';
+// eslint-disable-next-line import/named
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { screen, waitFor } from '@testing-library/react';
@@ -30,24 +31,17 @@ const successMessages = {
 const correctPassword = 'ABCdef@123';
 const non400Password = 'non400Password!';
 
-// Set up MSW server to intercept network requests
 const server = setupServer(
-  // Handle password update requests
   rest.patch(url, (req, res, ctx) => {
-    if (req.body.newpassword === correctPassword) {
-      return res(ctx.status(200));
-    }
-    if (req.body.newpassword === non400Password) {
-      return res(ctx.status(433));
-    }
+    if (req.body.newpassword === correctPassword) return res(ctx.status(200));
+    if (req.body.newpassword === non400Password) return res(ctx.status(433));
     return res(ctx.status(400), ctx.json({ error: errorMessages.error400Respnse }));
   }),
   rest.get('*', (req, res, ctx) => {
-    // eslint-disable-next-line no-unused-vars
-    const unused = `Unhandled request: ${req.url.toString()}`;
     return res(ctx.status(500), ctx.json({ error: 'You must add request handler.' }));
   }),
 );
+
 beforeAll(() => server.listen());
 afterAll(() => server.close());
 afterEach(() => {
@@ -59,13 +53,9 @@ beforeEach(() => {
   vi.clearAllMocks();
 
   axios.patch.mockImplementation((_, data) => {
-    if (data.newpassword === correctPassword) {
-      return Promise.resolve({ status: 200 });
-    }
-    if (data.newpassword === non400Password) {
-      return Promise.resolve({ status: 433 });
-    }
-    // For 400 errors, return a rejected promise with appropriate structure
+    if (data.newpassword === correctPassword) return Promise.resolve({ status: 200 });
+    if (data.newpassword === non400Password) return Promise.resolve({ status: 433 });
+
     const error = new Error('Bad Request');
     error.response = {
       status: 400,
@@ -75,101 +65,84 @@ beforeEach(() => {
   });
 });
 
+const renderPage = () => {
+  toast.success = vi.fn();
+  toast.error = vi.fn();
+
+  renderWithRouterMatch(
+    <Route path="/updatepassword/:userId">
+      {({ match, history, location }) => (
+        <UpdatePassword match={match} history={history} location={location} />
+      )}
+    </Route>,
+    {
+      route: `/updatepassword/${userID}`,
+      initialState: {
+        theme: { darkMode: false },
+        errors: {},
+      },
+    },
+  );
+};
+
+const getInputs = () => {
+  const currentPasswordInput = screen.getByLabelText(/current password/i);
+  const newPasswordInput = screen.getByLabelText(/new password/i);
+  const confirmPasswordInput = screen.getByLabelText(/confirm password/i);
+  return { currentPasswordInput, newPasswordInput, confirmPasswordInput };
+};
+
 describe("<UpdatePassword/>' behavior", () => {
-  beforeEach(() => {
-    toast.success = vi.fn();
-    toast.error = vi.fn();
-    renderWithRouterMatch(
-      <Route path="/updatepassword/:userId">
-        {({ match, history, location }) => (
-          <UpdatePassword match={match} history={history} location={location} />
-        )}
-      </Route>,
-      {
-        route: `/updatepassword/${userID}`,
-        initialState: {
-          theme: { darkMode: false },
-          errors: {},
-        },
-      },
-    );
+  it('should show error if API returned error', async () => {
+    renderPage();
+
+    const { currentPasswordInput, newPasswordInput, confirmPasswordInput } = getInputs();
+
+    await userEvent.type(currentPasswordInput, 'currentPassword1');
+    await userEvent.type(newPasswordInput, 'someRandom1!');
+    await userEvent.type(confirmPasswordInput, 'someRandom1!');
+
+    await userEvent.click(screen.getByRole('button', { name: /submit/i }));
+
+    await waitFor(() => {
+      const errorElement = screen.queryByText(content =>
+        content.includes(errorMessages.error400Respnse),
+      );
+      expect(errorElement).toBeInTheDocument();
+    });
   });
 
-  it('should show error if api returned error', async () => {
-    const newpassword = 'someRandom1!';
-    const confirmnewpassword = newpassword;
-    const currentpassword = 'currentPassword1';
-    await userEvent.type(screen.getByLabelText(/current password/i), currentpassword, {
-      allAtOnce: false,
-    });
-    await userEvent.type(screen.getByLabelText(/new password/i), newpassword, {
-      allAtOnce: false,
-    });
-    await userEvent.type(screen.getByLabelText(/confirm password/i), confirmnewpassword, {
-      allAtOnce: false,
-    });
+  it('should show a toast error if API response was not 200 or 400', async () => {
+    renderPage();
 
-    userEvent.click(screen.getByRole('button', { name: /submit/i }));
-    await waitFor(
-      () => {
-        const errorElement = screen.queryByText(content => {
-          return (
-            content.includes(errorMessages.error400Respnse) || content.includes('test 400 error')
-          );
-        });
-        expect(errorElement).toBeInTheDocument();
-      },
-      { timeout: 3000 },
-    );
+    const { currentPasswordInput, newPasswordInput, confirmPasswordInput } = getInputs();
+
+    await userEvent.type(currentPasswordInput, 'currentPassword1');
+    await userEvent.type(newPasswordInput, non400Password);
+    await userEvent.type(confirmPasswordInput, non400Password);
+
+    await userEvent.click(screen.getByRole('button', { name: /submit/i }));
+
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalledWith(errorMessages.errorNon400Response);
+    });
   });
 
-  it('should show a toastor error if API response was other than 200 and 400', async () => {
-    const newpassword = non400Password;
-    const confirmnewpassword = newpassword;
-    const currentpassword = 'currentPassword1';
-    await userEvent.type(screen.getByLabelText(/current password/i), currentpassword, {
-      allAtOnce: false,
-    });
-    await userEvent.type(screen.getByLabelText(/new password/i), newpassword, {
-      allAtOnce: false,
-    });
-    await userEvent.type(screen.getByLabelText(/confirm password/i), confirmnewpassword, {
-      allAtOnce: false,
-    });
+  it('should show toast success and trigger onClose logic on success', async () => {
+    renderPage();
 
-    userEvent.click(screen.getByRole('button', { name: /submit/i }));
-    await waitFor(
-      () => {
-        expect(toast.error).toHaveBeenCalledWith(errorMessages.errorNon400Response);
-      },
-      { timeout: 3000 },
-    );
-  });
+    const { currentPasswordInput, newPasswordInput, confirmPasswordInput } = getInputs();
 
-  it('should show call toastr success with correct message and onClose param on success', async () => {
-    const newpassword = correctPassword;
-    const confirmnewpassword = newpassword;
-    const currentpassword = 'currentPassword1';
-    await userEvent.type(screen.getByLabelText(/current password/i), currentpassword, {
-      allAtOnce: false,
-    });
-    await userEvent.type(screen.getByLabelText(/new password/i), newpassword, {
-      allAtOnce: false,
-    });
-    await userEvent.type(screen.getByLabelText(/confirm password/i), confirmnewpassword, {
-      allAtOnce: false,
-    });
-    userEvent.click(screen.getByRole('button', { name: /submit/i }));
+    await userEvent.type(currentPasswordInput, 'currentPassword1');
+    await userEvent.type(newPasswordInput, correctPassword);
+    await userEvent.type(confirmPasswordInput, correctPassword);
 
-    const message = successMessages.updatePasswordSuccessful;
-    const options = { onClose: expect.any(Function) };
-    const successParams = [message, options];
+    await userEvent.click(screen.getByRole('button', { name: /submit/i }));
 
-    await waitFor(
-      () => {
-        expect(toast.success).toHaveBeenCalledWith(...successParams);
-      },
-      { timeout: 3000 },
-    );
+    await waitFor(() => {
+      expect(toast.success).toHaveBeenCalledWith(successMessages.updatePasswordSuccessful, {
+        onClose: expect.any(Function),
+      });
+    });
   });
 });

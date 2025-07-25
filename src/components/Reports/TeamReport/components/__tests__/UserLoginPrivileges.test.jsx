@@ -1,4 +1,5 @@
-// src/components/Reports/TeamReport/components/__tests__/UserLoginPrivileges.test.jsx
+/* eslint-disable testing-library/no-node-access */
+/* eslint-disable testing-library/no-container */
 import { vi } from 'vitest'
 import React from 'react'
 

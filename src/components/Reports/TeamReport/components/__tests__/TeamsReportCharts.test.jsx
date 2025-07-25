@@ -30,7 +30,10 @@ vi.mock('../TeamsReportCharts', () => ({
 
     return (
       <section className="team-report-chart-wrapper" data-testid="team-report-chart">
-        <div className={`team-report-chart-teams ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
+        <div
+          className={`team-report-chart-teams ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
+          data-testid="chart-teams-container"
+        >
           <h4>{title}</h4>
           <div className="team-report-chart-info-wrapper">
             <div className="team-report-chart-info">
@@ -211,9 +214,7 @@ describe('TeamsReportCharts Component', () => {
       />,
     );
 
-    const chartContainer = screen
-      .getByTestId('team-report-chart')
-      .querySelector('.team-report-chart-teams');
+    const chartContainer = screen.getByTestId('chart-teams-container');
     expect(chartContainer).toHaveClass('bg-yinmn-blue');
     expect(chartContainer).toHaveClass('text-light');
   });

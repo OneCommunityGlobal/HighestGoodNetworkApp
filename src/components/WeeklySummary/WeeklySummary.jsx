@@ -126,67 +126,86 @@ export class WeeklySummary extends Component {
 
   // Minimum word count of 50 (handle words that also use non-ASCII characters by counting whitespace rather than word character sequences).
   regexPattern = /^\s*(?:\S+(?:\s+|$)){50,}$/;
-// individual rules, so we can validate one field at a time
+  // individual rules, so we can validate one field at a time
 
-fieldSchemas = {
-  mediaUrl: Joi.string().trim().uri().required().label('Media URL'),
+  fieldSchemas = {
+    mediaUrl: Joi.string()
+      .trim()
+      .uri()
+      .required()
+      .label('Media URL'),
 
-  // summary is optional, so we allow '' to bypass
-  summary: Joi.string().allow('').regex(this.regexPattern).label('Minimum 50 words'),
+    // summary is optional, so we allow '' to bypass
+    summary: Joi.string()
+      .allow('')
+      .regex(this.regexPattern)
+      .label('Minimum 50 words'),
 
-  // allow 0 so your default state (0) doesn’t error
-  wordCount: Joi.number().min(50).allow(0).label('word count must be greater than 50 words'),
+    // allow 0 so your default state (0) doesn’t error
+    wordCount: Joi.number()
+      .min(50)
+      .allow(0)
+      .label('word count must be greater than 50 words'),
 
-  summaryLastWeek: Joi.string().allow('').regex(this.regexPattern).label('Minimum 50 words'),
-  summaryBeforeLast: Joi.string().allow('').regex(this.regexPattern).label('Minimum 50 words'),
-  summaryThreeWeeksAgo: Joi.string().allow('').regex(this.regexPattern).label('Minimum 50 words'),
+    summaryLastWeek: Joi.string()
+      .allow('')
+      .regex(this.regexPattern)
+      .label('Minimum 50 words'),
+    summaryBeforeLast: Joi.string()
+      .allow('')
+      .regex(this.regexPattern)
+      .label('Minimum 50 words'),
+    summaryThreeWeeksAgo: Joi.string()
+      .allow('')
+      .regex(this.regexPattern)
+      .label('Minimum 50 words'),
 
-  // these three only accept `true`
-  mediaConfirm: Joi.boolean().invalid(false),
-  editorConfirm: Joi.boolean().invalid(false),
-  proofreadConfirm: Joi.boolean().invalid(false),
-};
+    // these three only accept `true`
+    mediaConfirm: Joi.boolean().invalid(false),
+    editorConfirm: Joi.boolean().invalid(false),
+    proofreadConfirm: Joi.boolean().invalid(false),
+  };
 
   // regexPattern = /^(?=(?:\S*\s){50,})\S*$/;
 
-schema = Joi.object({
-  mediaUrl: Joi.string()
-    .trim()
-    .uri()
-    .required()
-    .label('Media URL'),
+  schema = Joi.object({
+    mediaUrl: Joi.string()
+      .trim()
+      .uri()
+      .required()
+      .label('Media URL'),
 
-  summary: Joi.string()
-    .allow('')
-    .regex(this.regexPattern)
-    .label('Minimum 50 words'),
+    summary: Joi.string()
+      .allow('')
+      .regex(this.regexPattern)
+      .label('Minimum 50 words'),
 
-  wordCount: Joi.number()
-    .min(50)
-    .label('word count must be greater than 50 words'),
+    wordCount: Joi.number()
+      .min(50)
+      .label('word count must be greater than 50 words'),
 
-  summaryLastWeek: Joi.string()
-    .allow('')
-    .regex(this.regexPattern)
-    .label('Minimum 50 words'),
+    summaryLastWeek: Joi.string()
+      .allow('')
+      .regex(this.regexPattern)
+      .label('Minimum 50 words'),
 
-  summaryBeforeLast: Joi.string()
-    .allow('')
-    .regex(this.regexPattern)
-    .label('Minimum 50 words'),
+    summaryBeforeLast: Joi.string()
+      .allow('')
+      .regex(this.regexPattern)
+      .label('Minimum 50 words'),
 
-  summaryThreeWeeksAgo: Joi.string()
-    .allow('')
-    .regex(this.regexPattern)
-    .label('Minimum 50 words'),
+    summaryThreeWeeksAgo: Joi.string()
+      .allow('')
+      .regex(this.regexPattern)
+      .label('Minimum 50 words'),
 
-  weeklySummariesCount: Joi.any(),
+    weeklySummariesCount: Joi.any(),
 
-  // these three “invalid(false)” rules will fail if false
-  mediaConfirm: Joi.boolean().invalid(false),
-  editorConfirm: Joi.boolean().invalid(false),
-  proofreadConfirm: Joi.boolean().invalid(false),
-});
+    // these three “invalid(false)” rules will fail if false
+    mediaConfirm: Joi.boolean().invalid(false),
+    editorConfirm: Joi.boolean().invalid(false),
+    proofreadConfirm: Joi.boolean().invalid(false),
+  });
 
   async componentDidMount() {
     const { dueDate: _dueDate } = this.state;
@@ -396,9 +415,9 @@ schema = Joi.object({
     const options = { abortEarly: false };
     const { formElements } = this.state;
     const { error } = this.schema.validate(formElements, options);
-  
+
     if (!error) return {};
-  
+
     return error.details.reduce((errs, { path: [key], message }) => {
       let customMessage;
       // override for our three checkboxes
@@ -416,23 +435,22 @@ schema = Joi.object({
     }, {});
   };
 
-  
-  validateProperty = (inputOrEvent) => {
+  validateProperty = inputOrEvent => {
     // normalize: if someone passed the event, pull out currentTarget
     const input = inputOrEvent.currentTarget || inputOrEvent;
     const { name, type, checked, value } = input;
     const attr = type === 'checkbox' ? checked : value;
-  
+
     // get the individual Joi rule
     const rule = this.fieldSchemas[name];
     if (!rule) return null;
-  
+
     // build a one‐field schema and validate
     const singleSchema = Joi.object({ [name]: rule });
     const { error } = singleSchema.validate({ [name]: attr });
-  
+
     if (!error) return null;
-  
+
     // custom messages for your three checkboxes:
     if (name === 'mediaConfirm') {
       return 'Please confirm that you have provided the required media files.';
@@ -443,7 +461,7 @@ schema = Joi.object({
     if (name === 'proofreadConfirm') {
       return 'Please confirm that you have proofread your summary.';
     }
-  
+
     // otherwise, return Joi’s default
     return error.details[0].message;
   };
@@ -451,7 +469,7 @@ schema = Joi.object({
   validateEditorProperty = (value, name) => {
     const rule = this.fieldSchemas[name];
     if (!rule) return null;
-  
+
     const singleSchema = Joi.object({ [name]: rule });
     const { error } = singleSchema.validate({ [name]: value });
     return error ? error.details[0].message : null;
@@ -637,7 +655,10 @@ schema = Joi.object({
     const errors = this.validate();
 
     this.setState({ errors: errors || {} });
-    if (errors) this.state.moveConfirm = false;
+    if (errors) {
+      this.setState({ moveConfirm: false });
+      return;
+    }
     if (errors) return;
 
     const result = await this.handleChangeInSummary();
@@ -668,7 +689,7 @@ schema = Joi.object({
       event.preventDefault();
     }
     const { moveConfirm, moveSelect } = this.state;
-    this.state.moveConfirm = true;
+    this.setState({ moveConfirm: true });
     this.mainSaveHandler(false);
     if (moveConfirm) {
       this.toggleTab(moveSelect);
@@ -1028,7 +1049,9 @@ schema = Joi.object({
                 </Row>
                 <Row>
                   <Col>
-                   <FormGroup style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '12px' }}>
+                    <FormGroup
+                      style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '12px' }}
+                    >
                       <CustomInput
                         id="mediaConfirm"
                         data-testid="mediaConfirm"
@@ -1041,7 +1064,9 @@ schema = Joi.object({
                       />
                       <label
                         htmlFor="mediaConfirm"
-                        style={{ marginLeft: '10px', lineHeight: '1.5',cursor: 'pointer', }} className={darkMode ? 'text-light' : 'text-dark'}>
+                        style={{ marginLeft: '10px', lineHeight: '1.5', cursor: 'pointer' }}
+                        className={darkMode ? 'text-light' : 'text-dark'}
+                      >
                         I have provided a minimum of 4 screenshots (6-10 preferred) of this
                         week&apos;s work. (required)
                       </label>
@@ -1055,7 +1080,9 @@ schema = Joi.object({
                 </Row>
                 <Row>
                   <Col>
-                   <FormGroup style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '12px' }}>
+                    <FormGroup
+                      style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '12px' }}
+                    >
                       <CustomInput
                         id="editorConfirm"
                         data-testid="editorConfirm"
@@ -1068,8 +1095,10 @@ schema = Joi.object({
                       />
                       <label
                         htmlFor="editorConfirm"
-                        style={{ marginLeft: '10px', lineHeight: '1.5', cursor: 'pointer',}} className={darkMode ? 'text-light' : 'text-dark'}>
-                         I used GPT (or other AI editor) with the most current prompt.
+                        style={{ marginLeft: '10px', lineHeight: '1.5', cursor: 'pointer' }}
+                        className={darkMode ? 'text-light' : 'text-dark'}
+                      >
+                        I used GPT (or other AI editor) with the most current prompt.
                       </label>
                     </FormGroup>
                     {errors.editorConfirm && (
@@ -1081,7 +1110,9 @@ schema = Joi.object({
                 </Row>
                 <Row>
                   <Col>
-                   <FormGroup style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '12px' }}>
+                    <FormGroup
+                      style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '12px' }}
+                    >
                       <CustomInput
                         id="proofreadConfirm"
                         name="proofreadConfirm"
@@ -1094,8 +1125,10 @@ schema = Joi.object({
                       />
                       <label
                         htmlFor="proofreadConfirm"
-                        style={{ marginLeft: '10px', lineHeight: '1.5', cursor: 'pointer', }} className={darkMode ? 'text-light' : 'text-dark'}>
-                         I proofread my weekly summary.
+                        style={{ marginLeft: '10px', lineHeight: '1.5', cursor: 'pointer' }}
+                        className={darkMode ? 'text-light' : 'text-dark'}
+                      >
+                        I proofread my weekly summary.
                       </label>
                     </FormGroup>
                     {errors.proofreadConfirm && (

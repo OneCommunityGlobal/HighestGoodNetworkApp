@@ -85,19 +85,19 @@ describe('TimeEntriesViz component', () => {
   });
   it('check if Hide Time Entries Graph button is shown when show is set to true', () => {
     // Create a shallow render instead of using D3
-    const { getByText } = render(
+    render(
       <TimeEntriesViz timeEntries={timeEntries} fromDate={fromDate} toDate={toDate} />,
     );
 
     // Get and manually modify the component's state
-    const button = getByText('Show Time Entries Graph');
+    const button = screen.getByText('Show Time Entries Graph');
 
     // Use React Testing Library to simulate a click without triggering D3
     // This will only test the button's UI change
     fireEvent.click(button);
 
     // The button text should change after the click
-    expect(getByText('Hide Time Entries Graph')).toBeInTheDocument();
+    expect(screen.getByText('Hide Time Entries Graph')).toBeInTheDocument();
   });
   it('check if Show Time Entries Graph button is not shown when show is set to true', () => {
     // Create a shallow render instead of using D3
@@ -106,14 +106,14 @@ describe('TimeEntriesViz component', () => {
     );
 
     // Get and manually modify the component's state
-    const button = getByText('Show Time Entries Graph');
+    const button = screen.getByText('Show Time Entries Graph');
 
     // Use React Testing Library to simulate a click without triggering D3
     // This will only test the button's UI change
     fireEvent.click(button);
 
     // The "Show Time Entries Graph" button should no longer be visible
-    expect(queryByText('Show Time Entries Graph')).not.toBeInTheDocument();
+    expect(screen.queryByText('Show Time Entries Graph')).not.toBeInTheDocument();
   });
   it('check if Total Hours displays 0 when period key is not present in timeEntries', () => {
     // Use an empty object with a period property that's an empty array

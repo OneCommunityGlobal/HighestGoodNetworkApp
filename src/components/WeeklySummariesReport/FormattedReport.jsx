@@ -865,9 +865,8 @@ function Index({
               fontSize: '10px',
             }}
           >
-            +{Math.round((hoursLogged / summary.promisedHoursByWeek[weekIndex] - 1) * 100)}
-%
-</span>
+            +{Math.round((hoursLogged / summary.promisedHoursByWeek[weekIndex] - 1) * 100)}%
+          </span>
         </i>
       )}
     </>

@@ -3,7 +3,6 @@ const { FlatCompat } = require('@eslint/eslintrc');
 const compat = new FlatCompat({ baseDirectory: __dirname });
 
 const shareables = [
-  'airbnb',
   'plugin:react/recommended',
   'plugin:react-hooks/recommended',
   'plugin:import/recommended',

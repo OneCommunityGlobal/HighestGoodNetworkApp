@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { Stub } from '../Stub';
+import Stub from '../Stub';
 
 describe('Stub Component', () => {
   it('renders without crashing', () => {
@@ -9,13 +9,12 @@ describe('Stub Component', () => {
 
   it('contains the GiHollowCat icon', () => {
     render(<Stub />);
-    const icon = document.querySelector('svg'); // Directly select the svg element
-    expect(icon).toBeInTheDocument();
+    expect(screen.getByTestId('stub-icon')).toBeInTheDocument();
   });
 
   it('renders GiHollowCat icon with correct size', () => {
     render(<Stub />);
-    const icon = document.querySelector('svg');
+    const icon = screen.getByTestId('stub-icon');
     expect(icon).toHaveAttribute('width', '72');
     expect(icon).toHaveAttribute('height', '72');
   });
@@ -27,7 +26,6 @@ describe('Stub Component', () => {
 
   it('has the correct class name for the wrapper', () => {
     render(<Stub />);
-    const wrapper = document.querySelector('.stub-wrapper'); // Use querySelector to check for class
-    expect(wrapper).toBeInTheDocument();
+    expect(screen.getByTestId('stub-wrapper')).toBeInTheDocument();
   });
 });

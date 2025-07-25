@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import { Component } from 'react';
 import DatePicker from 'react-datepicker';
 import { Button } from 'reactstrap';

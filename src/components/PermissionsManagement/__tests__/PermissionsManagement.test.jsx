@@ -1,8 +1,9 @@
+/* eslint-disable testing-library/no-node-access */
 // eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import configureStore from 'redux-mock-store';
+import { configureStore } from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
@@ -74,29 +75,27 @@ describe('PermissionsManagement', () => {
     darkMode = store.getState().theme.darkMode,
   } = {}) => {
     let rendered;
-    await act(async () => {
-      rendered = render(
-        <Provider store={store}>
-          <Router history={history}>
-            <ModalContext.Provider value={modalContextValue}>
-              <PermissionsManagement
-                roles={roles}
-                auth={auth}
-                userProfile={userProfile}
-                darkMode={darkMode}
-                getInfoCollections={mockFunctions.getInfoCollections}
-                getAllRoles={mockFunctions.getAllRoles}
-                updateUserProfile={mockFunctions.updateUserProfile}
-                getAllUsers={mockFunctions.getAllUsers}
-                addNewRole={mockFunctions.addNewRole}
-                getUserRole={mockFunctions.getUserRole}
-                hasPermission={mockFunctions.hasPermission}
-              />
-            </ModalContext.Provider>
-          </Router>
-        </Provider>,
-      );
-    });
+    rendered = render(
+      <Provider store={store}>
+        <Router history={history}>
+          <ModalContext.Provider value={modalContextValue}>
+            <PermissionsManagement
+              roles={roles}
+              auth={auth}
+              userProfile={userProfile}
+              darkMode={darkMode}
+              getInfoCollections={mockFunctions.getInfoCollections}
+              getAllRoles={mockFunctions.getAllRoles}
+              updateUserProfile={mockFunctions.updateUserProfile}
+              getAllUsers={mockFunctions.getAllUsers}
+              addNewRole={mockFunctions.addNewRole}
+              getUserRole={mockFunctions.getUserRole}
+              hasPermission={mockFunctions.hasPermission}
+            />
+          </ModalContext.Provider>
+        </Router>
+      </Provider>,
+    );
     return rendered;
   };
 
@@ -117,18 +116,14 @@ describe('PermissionsManagement', () => {
   it('navigates to role details page when clicking role button', async () => {
     await renderComponent();
     const adminButton = screen.getByText('Admin');
-    await act(async () => {
-      fireEvent.click(adminButton);
-    });
+    fireEvent.click(adminButton);
     expect(history.location.pathname).toBe('/permissionsmanagement/admin');
   });
 
   it('opens new role popup when "Add New Role" button is clicked', async () => {
     await renderComponent();
     const addRoleButton = screen.getByText('Add New Role');
-    await act(async () => {
-      fireEvent.click(addRoleButton);
-    });
+    fireEvent.click(addRoleButton);
     expect(screen.getByRole('dialog')).toBeInTheDocument();
   });
 
@@ -144,9 +139,7 @@ describe('PermissionsManagement', () => {
     await renderComponent();
 
     const adminButton = screen.getByText('Admin');
-    await act(async () => {
-      fireEvent.click(adminButton);
-    });
+    fireEvent.click(adminButton);
 
     expect(history.location.pathname).toBe('/permissionsmanagement/admin');
   });
@@ -158,7 +151,7 @@ describe('PermissionsManagement', () => {
   });
 
   it('displays loading message while fetching data', async () => {
-    axios.get.mockImplementation(() => new Promise(() => { }));
+    axios.get.mockImplementation(() => new Promise(() => {}));
     await renderComponent();
     expect(screen.getByText('Loading...')).toBeInTheDocument();
   });
@@ -173,10 +166,13 @@ describe('PermissionsManagement', () => {
 
   describe('Style and Theme Integration', () => {
     it('applies button styles based on dark mode', async () => {
-      const { container } = await renderComponent({ darkMode: true });
-      const buttons = container.querySelectorAll('button');
+      await renderComponent({ darkMode: true });
+
+      // Use screen.getAllByRole instead of container.querySelectorAll
+      const buttons = screen.getAllByRole('button');
+
       buttons.forEach(button => {
-        if (button.classList.contains('role-btn')) {
+        if (button.className.includes('role-btn')) {
           expect(button).toHaveClass('text-light');
         }
       });

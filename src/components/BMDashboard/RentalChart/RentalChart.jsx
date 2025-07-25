@@ -6,7 +6,6 @@ import { Line } from 'react-chartjs-2';
 import DatePicker from 'react-datepicker';
 import './RentalChart.css';
 import { toast } from 'react-toastify';
-
 import {
   Chart as ChartJS,
   CategoryScale,

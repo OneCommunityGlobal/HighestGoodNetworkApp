@@ -3,7 +3,7 @@ import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { Provider } from 'react-redux';
-import configureStore from 'redux-mock-store';
+import { configureStore } from 'redux-mock-store';
 import { TasksTable } from '../TasksTable';
 
 describe('TasksTable component', () => {
@@ -22,8 +22,8 @@ describe('TasksTable component', () => {
   );
 
   it('renders the component', () => {
-    const { getByText } = renderComponent();
-    expect(getByText('Tasks')).toBeInTheDocument();
+    renderComponent();
+    expect(screen.getByText('Tasks')).toBeInTheDocument();
   });
 
   it('handles filter changes', () => {

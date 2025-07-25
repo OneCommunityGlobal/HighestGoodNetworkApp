@@ -220,14 +220,24 @@ function UserPermissionsPopUp({
                   <div
                     className="user__auto-complete"
                     key={user._id}
+                    role="button"
+                    tabIndex={0}
                     onClick={() => {
                       onInputChange(`${user.firstName} ${user.lastName}`);
                       setIsOpen(false);
                       setActualUserProfile(user);
                       getUserData(user._id);
                     }}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        onInputChange(`${user.firstName} ${user.lastName}`);
+                        setIsOpen(false);
+                        setActualUserProfile(user);
+                        getUserData(user._id);
+                      }
+                    }}
                   >
-                    {`${user.firstName} ${user.lastName}`}
+                    {user.firstName} {user.lastName}
                   </div>
                 ))}
             </div>

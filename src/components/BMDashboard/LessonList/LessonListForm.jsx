@@ -341,16 +341,17 @@ function LessonList(props) {
                 {showDropdown && inputValue && (
                   <div className={`${styles.tagDropdown}`}>
                     {getFilteredTags().map(tag => (
-                      <div
+                      <button
                         key={tag}
-                        className={`${styles.tagDropdownItem}`}
+                        type="button"
+                        className={styles.tagDropdownItem}
                         onClick={() => {
                           addTag(tag);
                           setShowDropdown(false);
                         }}
                       >
                         {tag}
-                      </div>
+                      </button>
                     ))}
                   </div>
                 )}
@@ -385,13 +386,14 @@ function LessonList(props) {
                 {showDeleteDropdown && deleteValue && (
                   <div className={`${styles.tagDropdown}`}>
                     {getFilteredTagsToDelete().map(tag => (
-                      <div
+                      <button
                         key={tag}
-                        className={`${styles.tagDropdownItem}`}
+                        type="button"
+                        className={styles.tagDropdownItem}
                         onClick={() => addDeleteTag(tag)}
                       >
                         {tag}
-                      </div>
+                      </button>
                     ))}
                   </div>
                 )}

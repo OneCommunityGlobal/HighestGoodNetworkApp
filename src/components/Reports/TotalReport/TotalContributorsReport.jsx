@@ -33,6 +33,7 @@ function TotalContributorsReport({ startDate, endDate, userProfiles, darkMode, u
       );
       setTimeEntries(response.data);
     } catch (error) {
+      // eslint-disable-next-line import/no-named-as-default-member
       if (!axios.isCancel(error)) {
         // Handle error silently or show user-friendly message
         setTimeEntries([]);

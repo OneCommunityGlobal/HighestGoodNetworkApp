@@ -65,4 +65,7 @@ export const DeleteTeamPopup = React.memo(props => {
     </Modal>
   );
 });
+
+DeleteTeamPopup.displayName = 'DeleteTeamPopup';
+
 export default connect(null, { hasPermission })(DeleteTeamPopup);

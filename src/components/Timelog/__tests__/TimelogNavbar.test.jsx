@@ -1,10 +1,9 @@
-// eslint-disable-next-line no-unused-vars
 import React from 'react';
 // eslint-disable-next-line no-unused-vars
 import { screen, render, fireEvent } from '@testing-library/react';
 // eslint-disable-next-line no-unused-vars
 import userEvent from '@testing-library/user-event';
-import configureStore from 'redux-mock-store';
+import { configureStore } from 'redux-mock-store';
 import { Route } from 'react-router-dom';
 import TimelogNavbar from '../TimelogNavbar';
 import { renderWithRouterMatch } from '../../../__tests__/utils';
@@ -21,21 +20,26 @@ describe('<TimelogNavbar/>', () => {
       timeEntries: timeEntryMock,
     });
     store.dispatch = vi.fn();
+  });
+
+  it('should render <TimelogNavbar/> without crashing', () => {
     renderWithRouterMatch(
       <Route>
         <TimelogNavbar userId={userId} />
       </Route>,
-      {
-        store,
-      },
+      { store },
     );
-  });
-
-  it('should render <TimelogNavbar/> without crashing', () => {
     const viewProfileLink = screen.getByRole('link', { name: /view profile/i });
     expect(viewProfileLink).toHaveAttribute('href', expect.stringContaining(userId));
   });
+
   it('should render <TimelogNavbar/> with the right user name', () => {
+    renderWithRouterMatch(
+      <Route>
+        <TimelogNavbar userId={userId} />
+      </Route>,
+      { store },
+    );
     const navBarTitle = screen.getByText(/.*'s Timelog/).textContent;
     expect(navBarTitle).toMatch(
       `${userProfileMock.firstName} ${userProfileMock.lastName}'s Timelog`,

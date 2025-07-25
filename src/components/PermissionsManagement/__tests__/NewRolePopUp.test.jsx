@@ -1,13 +1,9 @@
-// src/components/PermissionsManagement/__tests__/NewRolePopUp.test.jsx
-/**
- * @vitest-environment jsdom
- */
 import React from 'react';
 import '@testing-library/jest-dom';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import thunk from 'redux-thunk';
 import { Provider } from 'react-redux';
-import configureStore from 'redux-mock-store';
+import { configureStore } from 'redux-mock-store';
 import { ModalProvider } from '~/context/ModalContext';
 import axios from 'axios';
 import CreateNewRolePopup from '../NewRolePopUp';
@@ -73,10 +69,10 @@ describe('Render NewRolePopUp component', () => {
     expect(container).toBeInTheDocument();
   });
 
-  it('renders PermissionList child component', () => {
-    const { container } = renderComponent();
-    const permissionListElement = container.querySelector('.user-role-tab__permissionList');
-    expect(permissionListElement).toBeInTheDocument();
+  it('renders PermissionList child component(s)', () => {
+    renderComponent();
+    const permissionListElements = screen.getAllByTestId('permission-list');
+    expect(permissionListElements.length).toBeGreaterThan(0);
   });
 
   // Uncomment and fill in if you want to test dispatching ADD_NEW_ROLE:

@@ -482,7 +482,6 @@ function LeaderBoard({
                       onChange={e => handleInputSearchTeams(e)}
                       style={{ width: '90%', marginBottom: '1rem', backgroundColor: darkMode? '#e0e0e0' : 'white' }}
                       placeholder="Search teams"
-                      autoFocus
                       value={refInput.current}
                     />
                   </div>
@@ -587,6 +586,7 @@ function LeaderBoard({
               />
             </div>
             <Table
+              data-testid="dark-mode-table"
               className={`leaderboard table-fixed ${
                 darkMode ? 'text-light dark-mode bg-yinmn-blue' : ''
               } ${isAbbreviatedView ? 'abbreviated-mode' : ''}`}

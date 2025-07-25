@@ -240,6 +240,7 @@ function SetupProfileUserEntry({ token, userEmail }) {
   };
 
   const handleProfilePictureClick = () => {
+    // eslint-disable-next-line testing-library/no-node-access
     pictureInputRef.current.click();
   };
 

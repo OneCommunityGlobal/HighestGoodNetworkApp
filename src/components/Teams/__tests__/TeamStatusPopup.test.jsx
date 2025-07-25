@@ -1,8 +1,7 @@
-// eslint-disable-next-line no-unused-vars
 import React from 'react';
-import TeamStatusPopup from '~/components/Teams/TeamStatusPopup';
 import { renderWithProvider } from '__tests__/utils';
 import { screen, fireEvent } from '@testing-library/react';
+import TeamStatusPopup from '~/components/Teams/TeamStatusPopup';
 
 const mock = vi.fn();
 beforeEach(() => {
@@ -18,7 +17,7 @@ const defaultProps = {
 
 describe('TeamStatusPopup', () => {
   it('should render correctly', () => {
-    const { getByText, getByRole } = renderWithProvider(
+    renderWithProvider(
       <TeamStatusPopup
         open={defaultProps.open}
         selectedTeamName={defaultProps.selectedTeamName}
@@ -28,13 +27,15 @@ describe('TeamStatusPopup', () => {
       />,
     );
 
-    expect(getByText('Status Popup')).toBeInTheDocument();
+    expect(screen.getByText('Status Popup')).toBeInTheDocument();
 
     expect(
-      getByText('Are you sure you want to change the status of this team Team 1 to inactive?'),
+      screen.getByText(
+        'Are you sure you want to change the status of this team Team 1 to inactive?',
+      ),
     ).toBeInTheDocument();
 
-    expect(getByRole('button', { name: 'Confirm' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Confirm' })).toBeInTheDocument();
 
     const closeButtons = screen.getAllByRole('button', { name: 'Close' });
     expect(closeButtons[1]).toBeInTheDocument();
@@ -75,7 +76,7 @@ describe('TeamStatusPopup', () => {
   });
 
   it('should not re-render with the same props', () => {
-    const { rerender } = renderWithProvider(
+    const view = renderWithProvider(
       <TeamStatusPopup
         open={defaultProps.open}
         selectedTeamName={defaultProps.selectedTeamName}
@@ -84,9 +85,9 @@ describe('TeamStatusPopup', () => {
         onConfirmClick={defaultProps.onConfirmClick}
       />,
     );
-    const originalRenderCount = TeamStatusPopup.renderCount;
+    const { renderCount } = TeamStatusPopup;
 
-    rerender(
+    view.rerender(
       <TeamStatusPopup
         open={defaultProps.open}
         selectedTeamName={defaultProps.selectedTeamName}
@@ -96,11 +97,11 @@ describe('TeamStatusPopup', () => {
       />,
     );
 
-    expect(TeamStatusPopup.renderCount).toBe(originalRenderCount);
+    expect(TeamStatusPopup.renderCount).toBe(renderCount);
   });
 
   it('should render dynamic content', () => {
-    const { getByText } = renderWithProvider(
+    renderWithProvider(
       <TeamStatusPopup
         open={defaultProps.open}
         selectedTeamName="Team 2"
@@ -111,7 +112,7 @@ describe('TeamStatusPopup', () => {
     );
 
     expect(
-      getByText('Are you sure you want to change the status of this team Team 2 to active?'),
+      screen.getByText('Are you sure you want to change the status of this team Team 2 to active?'),
     ).toBeInTheDocument();
   });
 });

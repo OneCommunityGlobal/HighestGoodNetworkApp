@@ -98,7 +98,10 @@ export default function QuestionMaker({ data }) {
             />
           </div>
           <div>
-            <label className="form-check-label">Required</label>
+            <input type="checkbox" id="required" name="required" />
+            <label htmlFor="required" className="form-check-label">
+              Required
+            </label>
           </div>
         </div>
       </div>

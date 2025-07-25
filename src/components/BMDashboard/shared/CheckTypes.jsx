@@ -148,7 +148,7 @@ function CheckTypes({ type }) {
                 ))}
               </tbody>
             </Table>
-            <style jsx>{`
+            <style>{`
               tbody tr:nth-child(odd) {
                 background-color: ${darkMode ? '#1C2541' : '#ffffff'};
                 color: ${darkMode ? '#ffffff' : '#000000'};

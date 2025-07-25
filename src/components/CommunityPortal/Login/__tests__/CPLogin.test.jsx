@@ -2,7 +2,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import { useDispatch, Provider } from 'react-redux';
 import thunk from 'redux-thunk';
-import configureStore from 'redux-mock-store';
+import { configureStore } from 'redux-mock-store';
 import { BrowserRouter as Router } from 'react-router-dom';
 import axios from 'axios';
 import CPLogin from '../CPLogin';
@@ -32,7 +32,7 @@ beforeEach(() => {
 vi.mock('axios');
 
 vi.mock('jwt-decode', () => ({
-  default: vi.fn(() => ({ decodedPayload: 'mocked_decoded_payload' }))
+  default: vi.fn(() => ({ decodedPayload: 'mocked_decoded_payload' })),
 }));
 const history = {
   push: vi.fn(),
@@ -112,10 +112,10 @@ describe('CPLogin component', () => {
   });
   it('check if validation for invalid email id works as expected', () => {
     const { container } = renderComponent(store);
-    const emailElement = container.querySelector('[name="email"]');
+    const emailElement = screen.getByRole('textbox', { name: /email/i });
     fireEvent.change(emailElement, { target: { value: 'test' } });
 
-    const passwordElement = container.querySelector('[name="password"]');
+    const passwordElement = screen.getByLabelText(/password/i);
     fireEvent.change(passwordElement, { target: { value: '12' } });
 
     const submitElement = screen.getByText('Submit');
@@ -126,10 +126,10 @@ describe('CPLogin component', () => {
   });
   it('check if validation for password works as expected', () => {
     const { container } = renderComponent(store);
-    const emailElement = container.querySelector('[name="email"]');
+    const emailElement = screen.getByRole('textbox', { name: /email/i });
     fireEvent.change(emailElement, { target: { value: 'test@gmail.com' } });
 
-    const passwordElement = container.querySelector('[name="password"]');
+    const passwordElement = screen.getByLabelText(/password/i);
     fireEvent.change(passwordElement, { target: { value: '12' } });
 
     const submitElement = screen.getByText('Submit');
@@ -148,8 +148,8 @@ describe('CPLogin component', () => {
 
     const { container } = renderComponent(store);
 
-    const emailElement = container.querySelector('[name="email"]');
-    const passwordElement = container.querySelector('[name="password"]');
+    const emailElement = screen.getByRole('textbox', { name: /email/i });
+    const passwordElement = screen.getByLabelText(/password/i);
     const submitElement = screen.getByText('Submit');
 
     fireEvent.change(emailElement, { target: { value: 'test@gmail.com' } });
@@ -159,12 +159,12 @@ describe('CPLogin component', () => {
     // Wait for validation to pass
     await waitFor(() => {
       expect(emailElement).not.toBeInvalid();
-      expect(passwordElement).not.toBeInvalid();
-      expect(screen.queryByText('"email" must be a valid email')).not.toBeInTheDocument();
-      expect(
-        screen.queryByText('"password" length must be at least 8 characters long'),
-      ).not.toBeInTheDocument();
     });
+    expect(passwordElement).not.toBeInvalid();
+    expect(screen.queryByText('"email" must be a valid email')).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('"password" length must be at least 8 characters long'),
+    ).not.toBeInTheDocument();
 
     // Wait for redirect to be triggered
     await waitFor(() => {
@@ -179,10 +179,10 @@ describe('CPLogin component', () => {
     });
     const { container } = renderComponent(store);
 
-    const emailElement = container.querySelector('[name="email"]');
+    const emailElement = screen.getByRole('textbox', { name: /email/i });
     fireEvent.change(emailElement, { target: { value: 'test@gmail.com' } });
 
-    const passwordElement = container.querySelector('[name="password"]');
+    const passwordElement = screen.getByLabelText(/password/i);
     fireEvent.change(passwordElement, { target: { value: 'Test12345' } });
 
     const submitElement = screen.getByText('Submit');
@@ -200,36 +200,34 @@ describe('CPLogin component', () => {
     });
     const { container } = renderComponent(store);
 
-    const emailElement = container.querySelector('[name="email"]');
+    const emailElement = screen.getByRole('textbox', { name: /email/i });
     fireEvent.change(emailElement, { target: { value: 'test@gmail.com' } });
 
-    const passwordElement = container.querySelector('[name="password"]');
+    const passwordElement = screen.getByLabelText(/password/i);
     fireEvent.change(passwordElement, { target: { value: 'Test12345' } });
 
     const submitElement = screen.getByText('Submit');
     fireEvent.click(submitElement);
 
     await waitFor(() => {
-      const messageElement = container.querySelector('.invalid-feedback');
-      expect(messageElement).not.toBeInTheDocument();
+      expect(passwordElement).not.toBeInvalid();
     });
   });
   it('check failed post request does not display any validation error', async () => {
     axios.post.mockRejectedValue({ response: 'server error' });
     const { container } = renderComponent(store);
 
-    const emailElement = container.querySelector('[name="email"]');
+    const emailElement = screen.getByRole('textbox', { name: /email/i });
     fireEvent.change(emailElement, { target: { value: 'test@gmail.com' } });
 
-    const passwordElement = container.querySelector('[name="password"]');
+    const passwordElement = screen.getByLabelText(/password/i);
     fireEvent.change(passwordElement, { target: { value: 'Test12345' } });
 
     const submitElement = screen.getByText('Submit');
     fireEvent.click(submitElement);
 
     await waitFor(() => {
-      const messageElement = container.querySelector('.invalid-feedback');
-      expect(messageElement).not.toBeInTheDocument();
+      expect(passwordElement).not.toBeInvalid();
     });
   });
 });

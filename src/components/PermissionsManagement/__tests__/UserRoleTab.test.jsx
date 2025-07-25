@@ -5,7 +5,7 @@ import { render, screen, fireEvent, waitFor, act, wait } from '@testing-library/
 import '@testing-library/jest-dom/extend-expect';
 import thunk from 'redux-thunk';
 import mockAdminState from '__tests__/mockAdminState';
-import configureStore from 'redux-mock-store';
+import { configureStore } from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import axios from 'axios';
 import { Router } from 'react-router-dom';
@@ -67,7 +67,7 @@ describe('UserRoleTab component when the role does not exist', () => {
         </ModalProvider>
       </Provider>,
     );
-    expect(screen.queryByText('Error')).toBeInTheDocument();
+    expect(screen.getByText('Error')).toBeInTheDocument();
   });
   it('check if user role not existing header is displaying when the role is nor present', () => {
     axios.get.mockResolvedValue({
@@ -81,7 +81,7 @@ describe('UserRoleTab component when the role does not exist', () => {
         </ModalProvider>
       </Provider>,
     );
-    expect(screen.queryByText('User Role not existent')).toBeInTheDocument();
+    expect(screen.getByText('User Role not existent')).toBeInTheDocument();
   });
   it('check Back to permissions management link', () => {
     axios.get.mockResolvedValue({

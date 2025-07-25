@@ -1,9 +1,8 @@
-// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { screen, fireEvent } from '@testing-library/react';
-import Team from '~/components/Teams/Team';
-import configureStore from 'redux-mock-store';
+import { configureStore } from 'redux-mock-store';
 import thunk from 'redux-thunk';
+import Team from '~/components/Teams/Team';
 import { renderWithProvider } from '../../../__tests__/utils';
 import { authMock, userProfileMock, rolesMock, themeMock } from '../../../__tests__/mockStates';
 

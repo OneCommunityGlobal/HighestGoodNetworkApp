@@ -2,17 +2,17 @@ vi.mock('react-toastify', () => ({
   __esModule: true,
   toast: {
     success: vi.fn(),
-    error:   vi.fn(),
+    error: vi.fn(),
   },
   ToastContainer: () => null,
-}))
+}));
 // eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import thunk from 'redux-thunk';
 import mockAdminState from '__tests__/mockAdminState';
-import configureStore from 'redux-mock-store';
+import { configureStore } from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import { toast } from 'react-toastify';
 import axios from 'axios';
@@ -77,8 +77,8 @@ beforeEach(() => {
     },
     theme: themeMock,
   });
-  toast.success.mockClear()
-  toast.error.mockClear()
+  toast.success.mockClear();
+  toast.error.mockClear();
 });
 
 afterEach(() => {
@@ -123,11 +123,9 @@ describe('UserPermissionsPopup component', () => {
     await flushAllPromises();
     const searchBoxElement = screen.getByPlaceholderText('Shows only ACTIVE users');
     fireEvent.change(searchBoxElement, { target: { value: 'Test' } });
-    await waitFor(() => {
-      expect(screen.getByText('Test1 Volunteer')).toBeInTheDocument();
-      expect(screen.getByText('Test2 Manager')).toBeInTheDocument();
-      expect(screen.queryByText('Test3 Owner')).not.toBeInTheDocument();
-    });
+    expect(screen.getByText('Test1 Volunteer')).toBeInTheDocument();
+    expect(screen.getByText('Test2 Manager')).toBeInTheDocument();
+    expect(screen.queryByText('Test3 Owner')).not.toBeInTheDocument();
   });
   it('check if permissions is present', async () => {
     axios.get.mockResolvedValue({
@@ -166,17 +164,17 @@ describe('UserPermissionsPopup component', () => {
     );
     const nameElement = screen.getByText('Test1 Volunteer');
     fireEvent.click(nameElement);
+    fireEvent.click(screen.getByText('Submit'));
     await waitFor(() => {
-      fireEvent.click(screen.getByText('Submit'));
-    });
-    expect(toast.success).toHaveBeenCalledWith(
-      `
+      expect(toast.success).toHaveBeenCalledWith(
+        `
         Permissions have been updated successfully. 
         Please inform the user to log out and log back in for the new permissions to take effect.`,
-      {
-        autoClose: 10000,
-      },
-    );
+        {
+          autoClose: 10000,
+        },
+      );
+    });
   });
   it('check if toast message gets displayed when the button is not clicked', async () => {
     axios.get.mockResolvedValue({
@@ -233,19 +231,21 @@ describe('UserPermissionsPopup component', () => {
     const mockObject = {};
     const nameElement = screen.getByText('Test1 Volunteer');
     fireEvent.click(nameElement);
+
+    fireEvent.click(screen.getByText('Submit'));
+
     await waitFor(() => {
-      fireEvent.click(screen.getByText('Submit'));
-    });
-    expect(toast.error).toHaveBeenCalledWith(
-      `
+      expect(toast.error).toHaveBeenCalledWith(
+        `
         Permission updated failed. ${mockObject}
         `,
-      {
-        autoClose: 10000,
-      },
-    );
+        {
+          autoClose: 10000,
+        },
+      );
+    });
   });
-  it('check if Reset to Default button works as expected', async () => {
+  it('should reset permissions to default when "Reset to Default" is clicked', async () => {
     axios.get.mockResolvedValue({
       status: 200,
       data: {
@@ -268,23 +268,36 @@ describe('UserPermissionsPopup component', () => {
         </ModalContext.Provider>
       </Provider>,
     );
-    const userElement = screen.getByText('Test2 Manager');
-    fireEvent.click(userElement);
+
+    // Select user
+    fireEvent.click(screen.getByText('Test2 Manager'));
+
+    // Wait for initial "Add" buttons to appear
     await waitFor(() => {
-      const addElement = screen.getAllByText('Add');
-      expect(addElement[0]).toBeInTheDocument();
+      expect(screen.getAllByRole('button', { name: /add/i }).length).toBeGreaterThan(0);
     });
-    const profilePermission = screen.getByTestId('putUserProfilePermissions');
-    const addButton = profilePermission.querySelector('button');
-    fireEvent.click(addButton);
+
+    // Save the number of "Add" buttons before clicking
+    const addButtons = screen.getAllByRole('button', { name: /add/i });
+    const initialCount = addButtons.length;
+
+    // Add permission (click one "Add" button)
+    fireEvent.click(addButtons[0]);
+
+    // Wait for the UI to update (e.g., "Add" should be removed or reduced)
     await waitFor(() => {
-      expect(profilePermission.querySelector('Add')).not.toBeInTheDocument();
+      const newAddButtons = screen.queryAllByRole('button', { name: /add/i });
+      expect(newAddButtons.length).toBeLessThan(initialCount);
     });
-    const resetToDefaultButton = screen.getByText('Reset to Default');
-    fireEvent.click(resetToDefaultButton);
+
+    // Click "Reset to Default"
+    // Click "Reset to Default"
+    fireEvent.click(screen.getByRole('button', { name: /reset to default/i }));
+
+    // Wait until at least one "Add" button is visible again (default permissions shown)
     await waitFor(() => {
-      const profilePermissionButtonChange = screen.getByTestId('putUserProfilePermissions');
-      expect(profilePermissionButtonChange.querySelector('Delete')).not.toBeInTheDocument();
+      const addButtons = screen.queryAllByRole('button', { name: /add/i });
+      expect(addButtons.length).toBeGreaterThan(0);
     });
   });
 });

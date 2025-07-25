@@ -1,5 +1,4 @@
 import { ReportPage } from '~/components/Reports/sharedComponents/ReportPage';
-// eslint-disable-next-line no-unused-vars
 import React, { useState, useEffect } from 'react';
 
 import './ReportLogs.css';
@@ -12,9 +11,15 @@ function TeamsReportLogs({ title, selectedTeamsTotalValues, selectedTeamsWeeklyE
 
   return (
     <section>
-      <h2 style={{ textAlign: 'center', color: darkMode ? 'white' : 'black' }} className="teams-report-time-title">{title}</h2>
+      <h2
+        style={{ textAlign: 'center', color: darkMode ? 'white' : 'black' }}
+        className="teams-report-time-title"
+      >
+        {title}
+      </h2>
       <div className="teams-report-time-logs-wrapper">
         <ReportPage.ReportBlock
+          data-testid="log-block"
           firstColor="#ff5e82"
           secondColor="#e25cb2"
           className="team-report-time-log-block"
@@ -24,6 +29,7 @@ function TeamsReportLogs({ title, selectedTeamsTotalValues, selectedTeamsWeeklyE
           <p>Number of Members</p>
         </ReportPage.ReportBlock>
         <ReportPage.ReportBlock
+          data-testid="log-block"
           firstColor="#64b7ff"
           secondColor="#928aef"
           className="team-report-time-log-block"
@@ -33,6 +39,7 @@ function TeamsReportLogs({ title, selectedTeamsTotalValues, selectedTeamsWeeklyE
           <p>Total Team Blue Squares</p>
         </ReportPage.ReportBlock>
         <ReportPage.ReportBlock
+          data-testid="log-block"
           firstColor="#b368d2"
           secondColor="#831ec4"
           className="team-report-time-log-block"
@@ -42,6 +49,7 @@ function TeamsReportLogs({ title, selectedTeamsTotalValues, selectedTeamsWeeklyE
           <p>Weekly Committed Hours</p>
         </ReportPage.ReportBlock>
         <ReportPage.ReportBlock
+          data-testid="log-block"
           firstColor="#ffdb56"
           secondColor="#ff9145"
           className="team-report-time-log-block"

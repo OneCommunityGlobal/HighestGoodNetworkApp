@@ -1,7 +1,6 @@
-// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { vi } from 'vitest'
+import { vi } from 'vitest';
 import CheckboxCollection from '../CheckboxCollection'; // Adjust the import path accordingly.
 
 describe('CheckboxCollection', () => {

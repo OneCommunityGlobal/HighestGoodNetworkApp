@@ -148,6 +148,7 @@ function TSAFormPage2() {
         }}
       >
         <label
+          htmlFor="question"
           style={{
             display: 'flex',
             justifyContent: 'space-between',
@@ -209,6 +210,7 @@ function TSAFormPage2() {
         }}
       >
         <label
+          htmlFor="question"
           style={{
             display: 'flex',
             justifyContent: 'space-between',

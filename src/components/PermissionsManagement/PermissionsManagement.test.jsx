@@ -36,29 +36,28 @@ describe('permissions management page structure', () => {
     });
     store.dispatch = vi.fn();
 
-    await act(async () => {
-      renderWithRouterMatch(
-        <ModalProvider>
-          <Route path="/permissionsmanagement">
-            {props => (
-              <PermissionsManagement
-                history={props.history}
-                location={props.location}
-                match={props.match}
-                infoCollections={mockInfoCollections}
-                areaName="testInfo"
-                aria-label="Owner"
-                fontSiz={24}
-              />
-            )}
-          </Route>
-        </ModalProvider>,
-        {
-          route: `/permissionsmanagement`,
-          store,
-        },
-      );
-    });
+    // eslint-disable-next-line testing-library/no-render-in-lifecycle
+    renderWithRouterMatch(
+      <ModalProvider>
+        <Route path="/permissionsmanagement">
+          {props => (
+            <PermissionsManagement
+              history={props.history}
+              location={props.location}
+              match={props.match}
+              infoCollections={mockInfoCollections}
+              areaName="testInfo"
+              aria-label="Owner"
+              fontSiz={24}
+            />
+          )}
+        </Route>
+      </ModalProvider>,
+      {
+        route: `/permissionsmanagement`,
+        store,
+      },
+    );
   });
 
   it('should be rendered with one h1 User Roles', () => {
@@ -80,9 +79,7 @@ describe('permissions management page structure', () => {
     it('should fire newRole modal with a form to create a new Role', async () => {
       const addNewRoleButton = screen.queryByRole('button', { name: /add new role/i });
       if (addNewRoleButton) {
-        await act(async () => {
-          userEvent.click(addNewRoleButton);
-        });
+        await userEvent.click(addNewRoleButton);
         expect(screen.getByRole('dialog')).toBeInTheDocument();
         expect(screen.getByRole('button', { name: 'Close' })).toBeInTheDocument();
         expect(screen.getByRole('textbox')).toBeInTheDocument();

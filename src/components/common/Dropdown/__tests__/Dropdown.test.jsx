@@ -15,8 +15,8 @@ describe('Dropdown Component', () => {
   });
 
   test('displays a default option', () => {
-    const { getByText } = render(<Dropdown name="testDropdown" label="Test" options={[]} />);
-    expect(getByText(/Please select a Test/i)).toBeInTheDocument();
+    render(<Dropdown name="testDropdown" label="Test" options={[]} />);
+    expect(screen.getByText('Please select a Test')).toBeInTheDocument();
   });
 
   test('displays options from the passed array', () => {
@@ -32,9 +32,7 @@ describe('Dropdown Component', () => {
   });
 
   test('displays an error message if provided', () => {
-    const { getByText } = render(
-      <Dropdown name="testDropdown" label="Test" options={[]} error="Some error occurred" />,
-    );
-    expect(getByText(/Some error occurred/i)).toBeInTheDocument();
+    render(<Dropdown name="testDropdown" label="Test" options={[]} error="Some error occurred" />);
+    expect(screen.getByText(/Some error occurred/i)).toBeInTheDocument();
   });
 });

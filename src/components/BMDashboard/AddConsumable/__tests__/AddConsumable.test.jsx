@@ -44,7 +44,7 @@ const renderComponent = (customState = {}) => {
   return render(
     <Provider store={store}>
       <AddConsumable />
-    </Provider>
+    </Provider>,
   );
 };
 
@@ -73,7 +73,7 @@ describe('AddConsumable Component', () => {
       expect(screen.getByLabelText(/Size \(optional\)/i)).toBeInTheDocument();
       expect(screen.getByLabelText(/Measurement/i)).toBeInTheDocument();
       expect(
-        screen.getByLabelText(/Please check here if you want to enter a New Measurement/i)
+        screen.getByLabelText(/Please check here if you want to enter a New Measurement/i),
       ).toBeInTheDocument();
     });
 
@@ -102,8 +102,8 @@ describe('AddConsumable Component', () => {
       await userEvent.type(nameInput, 'abc');
       expect(
         screen.getByText(
-          /Consumable "name" length must be at least 4 characters that are not space/i
-        )
+          /Consumable "name" length must be at least 4 characters that are not space/i,
+        ),
       ).toBeInTheDocument();
     });
 
@@ -113,8 +113,8 @@ describe('AddConsumable Component', () => {
       await userEvent.type(descriptionInput, 'short');
       expect(
         screen.getByText(
-          /Consumable "description" length must be at least 10 characters that are not space/i
-        )
+          /Consumable "description" length must be at least 10 characters that are not space/i,
+        ),
       ).toBeInTheDocument();
     });
 
@@ -124,8 +124,8 @@ describe('AddConsumable Component', () => {
       await userEvent.type(sizeInput, '   ');
       expect(
         screen.getByText(
-          /Consumable "size" can not be space. Can be left blank if not applicable/i
-        )
+          /Consumable "size" can not be space. Can be left blank if not applicable/i,
+        ),
       ).toBeInTheDocument();
     });
   });
@@ -134,7 +134,7 @@ describe('AddConsumable Component', () => {
     it('shows new measurement input when checkbox is checked', async () => {
       renderComponent();
       const checkbox = screen.getByLabelText(
-        /Please check here if you want to enter a New Measurement/i
+        /Please check here if you want to enter a New Measurement/i,
       );
       await userEvent.click(checkbox);
       expect(screen.getByLabelText(/New Measurement Unit/i)).toBeInTheDocument();
@@ -144,7 +144,7 @@ describe('AddConsumable Component', () => {
     it('enables unit dropdown when new measurement checkbox is unchecked', async () => {
       renderComponent();
       const checkbox = screen.getByLabelText(
-        /Please check here if you want to enter a New Measurement/i
+        /Please check here if you want to enter a New Measurement/i,
       );
       await userEvent.click(checkbox);
       await userEvent.click(checkbox);
@@ -154,7 +154,7 @@ describe('AddConsumable Component', () => {
     it('allows entering a new unit when new measurement is enabled', async () => {
       renderComponent();
       const checkbox = screen.getByLabelText(
-        /Please check here if you want to enter a New Measurement/i
+        /Please check here if you want to enter a New Measurement/i,
       );
       await userEvent.click(checkbox);
       const newUnitInput = screen.getByPlaceholderText('New Unit');
@@ -173,7 +173,7 @@ describe('AddConsumable Component', () => {
       };
       renderComponent(successState);
       expect(toast.success).toHaveBeenCalledWith(
-        'Created a new Consumable Type "Test Consumable" successfully'
+        'Created a new Consumable Type "Test Consumable" successfully',
       );
       expect(fetchConsumableTypes).toHaveBeenCalled();
       expect(resetPostBuildingConsumableTypeResult).toHaveBeenCalled();

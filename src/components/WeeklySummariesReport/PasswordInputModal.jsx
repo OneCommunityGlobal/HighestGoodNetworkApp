@@ -87,7 +87,6 @@ export default function PasswordInputModal({
       <Modal
         isOpen={open}
         toggle={onClose}
-        autoFocus={false}
         size="md"
         className={darkMode ? 'text-light dark-mode' : ''}
       >
@@ -103,7 +102,6 @@ export default function PasswordInputModal({
           )}
           <FormGroup>
             <Input
-              autoFocus
               type={showPassword ? 'text' : 'password'}
               name="passwordField"
               id="passwordField"

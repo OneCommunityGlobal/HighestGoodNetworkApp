@@ -1,45 +1,49 @@
-import configureStore from 'redux-mock-store';
-import TeamMembersPopup from '~/components/Teams/TeamMembersPopup';
+import { configureStore } from 'redux-mock-store';
 import thunk from 'redux-thunk';
-// eslint-disable-next-line no-unused-vars
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
+import TeamMembersPopup from '~/components/Teams/TeamMembersPopup';
 import { authMock, userProfileMock, rolesMock, themeMock } from '../../../__tests__/mockStates';
 
 const mockStore = configureStore([thunk]);
 
-const mockProps = {
-  members: { teamMembers: [] },
-  usersdata: { userProfiles: [] },
+const mockOnClose = vi.fn();
+const mockOnDeleteClick = vi.fn();
+const mockHasPermission = vi.fn(() => true);
+
+const usersdata = {
+  userProfiles: [
+    {
+      _id: 'user1',
+      firstName: 'Alice',
+      lastName: 'Smith',
+      role: 'Manager',
+      addDateTime: new Date().toISOString(),
+      isActive: true,
+      isVisible: true,
+    },
+  ],
 };
 
-const renderComponent = props => {
-  const store = mockStore({
-    auth: authMock,
-    userProfile: userProfileMock,
-    role: rolesMock.role,
-    theme: themeMock,
-    ...props,
-  });
+const teamMembers = [
+  {
+    _id: 'user1',
+    firstName: 'Alice',
+    lastName: 'Smith',
+    role: 'Manager',
+    addDateTime: new Date().toISOString(),
+    isActive: true,
+    isVisible: true,
+  },
+];
 
-  render(
-    <Provider store={store}>
-      {/* eslint-disable-next-line react/jsx-props-no-spreading */}
-      <TeamMembersPopup {...props} />
-    </Provider>,
-  );
-};
-
-// eslint-disable-next-line no-unused-vars
-const initialState = {
+const initialProps = {
   open: true,
   selectedTeamName: 'Test Team',
-  hasPermission: vi.fn(),
+  hasPermission: mockHasPermission,
   members: {
-    teamMembers: {
-      toSorted: vi.fn(() => []),
-      reduce: vi.fn(() => { }),
-    },
+    teamMembers,
+    reduce: vi.fn(() => {}),
   },
   roles: [{}],
   auth: {
@@ -50,39 +54,76 @@ const initialState = {
       },
     },
   },
-  userProfile: { userProfiles: [] },
+  userProfile: { userProfiles: usersdata.userProfiles },
   requestorRole: '',
   userPermissions: [],
-  onClose: vi.fn(),
-  onDeleteClick: vi.fn(),
+  onClose: mockOnClose,
+  onDeleteClick: mockOnDeleteClick,
+  usersdata,
+  onAddUser: vi.fn(),
+  onUpdateTeamMemberVisibility: vi.fn(),
 };
 
-// eslint-disable-next-line no-unused-vars
-const usersdata = { userProfiles: [] };
-
-describe('TeamMembersPopup', () => {
-  it('should render correctly', () => {
-    renderComponent(mockProps);
+const renderComponent = (overrideProps = {}) => {
+  const store = mockStore({
+    auth: authMock,
+    userProfile: userProfileMock,
+    role: rolesMock.role,
+    theme: themeMock,
   });
 
-  // it('should render "Add" button', () => {
-  //   renderComponent({ ...initialState, usersdata });
-  //   expect(screen.getByRole('button', { name: 'Add' })).toBeInTheDocument();
-  // });
+  return render(
+    <Provider store={store}>
+      <TeamMembersPopup
+        open={overrideProps.open ?? initialProps.open}
+        selectedTeamName={overrideProps.selectedTeamName ?? initialProps.selectedTeamName}
+        hasPermission={overrideProps.hasPermission ?? initialProps.hasPermission}
+        members={overrideProps.members ?? initialProps.members}
+        roles={overrideProps.roles ?? initialProps.roles}
+        auth={overrideProps.auth ?? initialProps.auth}
+        userProfile={overrideProps.userProfile ?? initialProps.userProfile}
+        requestorRole={overrideProps.requestorRole ?? initialProps.requestorRole}
+        userPermissions={overrideProps.userPermissions ?? initialProps.userPermissions}
+        onClose={overrideProps.onClose ?? initialProps.onClose}
+        onDeleteClick={overrideProps.onDeleteClick ?? initialProps.onDeleteClick}
+        usersdata={overrideProps.usersdata ?? initialProps.usersdata}
+        onAddUser={overrideProps.onAddUser ?? initialProps.onAddUser}
+        onUpdateTeamMemberVisibility={
+          overrideProps.onUpdateTeamMemberVisibility ?? initialProps.onUpdateTeamMemberVisibility
+        }
+      />
+    </Provider>,
+  );
+};
 
-  // it('should render "Close" button', () => {
-  //   renderComponent({ ...initialState, usersdata });
-  //   expect(screen.getByText('Close')).toBeInTheDocument();
-  // });
+describe('TeamMembersPopup', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
 
-  // it('should call closePopup function', () => {
-  //   renderComponent({ ...initialState, usersdata });
-  //   fireEvent.click(screen.getByText('Close'));
-  //   expect(initialState.onClose).toHaveBeenCalledTimes(1);
-  // });
+  it('should render correctly', () => {
+    renderComponent();
+    expect(screen.getByText(`Members of ${initialProps.selectedTeamName}`)).toBeInTheDocument();
+  });
 
-  // it('displays the team name in the modal header', () => {
-  //   renderComponent({ ...initialState, usersdata });
-  //   expect(screen.getByText(`Members of ${initialState.selectedTeamName}`)).toBeInTheDocument();
-  // });
+  it('should render "Add" button', () => {
+    renderComponent();
+    expect(screen.getByRole('button', { name: 'Add' })).toBeInTheDocument();
+  });
+
+  it('should render "Close" button', () => {
+    renderComponent();
+    expect(screen.getByText('Close')).toBeInTheDocument();
+  });
+
+  it('should call onClose when "Close" button is clicked', () => {
+    renderComponent();
+    fireEvent.click(screen.getByText('Close'));
+    expect(mockOnClose).toHaveBeenCalledTimes(1);
+  });
+
+  it('displays the team name in the modal header', () => {
+    renderComponent();
+    expect(screen.getByText(`Members of ${initialProps.selectedTeamName}`)).toBeInTheDocument();
+  });
 });

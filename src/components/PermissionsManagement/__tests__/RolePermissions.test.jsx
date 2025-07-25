@@ -2,17 +2,17 @@ vi.mock('react-toastify', () => ({
   __esModule: true,
   toast: {
     success: vi.fn(),
-    error:   vi.fn(),
+    error: vi.fn(),
   },
   ToastContainer: () => null,
-}))
+}));
 // eslint-disable-next-line no-unused-vars
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import thunk from 'redux-thunk';
 import mockAdminState from '__tests__/mockAdminState';
-import configureStore from 'redux-mock-store';
+import { configureStore } from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import axios from 'axios';
 import { toast } from 'react-toastify';
@@ -193,7 +193,7 @@ describe('RolePermissions component', () => {
     renderComponent(store, history, roleName, roleId);
     const loadPresetButton = screen.getByText('Load Presets');
     fireEvent.click(loadPresetButton);
-    expect(screen.queryByText('Role Presets')).toBeInTheDocument();
+    expect(screen.getByText('Role Presets')).toBeInTheDocument();
   });
   it('check save button toast success message', async () => {
     axios.get.mockResolvedValue({
@@ -207,8 +207,8 @@ describe('RolePermissions component', () => {
     fireEvent.click(saveButton);
     await waitFor(() => {
       expect(toast.success).toHaveBeenCalledWith('Role updated successfully');
-      expect(history.location.pathname).toBe('/permissionsmanagement');
     });
+    expect(history.location.pathname).toBe('/permissionsmanagement');
   });
 
   it('check delete role button works as expected', async () => {
@@ -222,43 +222,50 @@ describe('RolePermissions component', () => {
     fireEvent.click(deleteRole);
     expect(screen.getByText(`Delete ${roleName} Role`)).toBeInTheDocument();
   });
-  it('check if delete role modal content displays as expected', () => {
-    axios.get.mockResolvedValue({
-      data: {},
-    });
+  it('check if delete role modal content displays as expected', async () => {
+    axios.get.mockResolvedValue({ data: {} });
 
     const history = createMemoryHistory();
     renderComponent(store, history, roleName, roleId);
+
     const deleteRole = screen.getByText('Delete Role');
     fireEvent.click(deleteRole);
 
-    const modalElement = screen.getByRole('dialog');
-    const modalDialog = modalElement.querySelector('.modal-dialog');
-    const modalContent = modalDialog.querySelector('.modal-content');
-    const modalBody = modalContent.querySelector('.modal-body');
+    await waitFor(() => {
+      const dialog = screen.getByRole('dialog');
 
-    expect(screen.getByText(`Delete ${roleName} Role`)).toBeInTheDocument();
-    expect(modalBody.textContent).toBe('Are you sure you want to delete Owner role?');
+      const matchingHeaders = within(dialog).getAllByText(
+        (_, el) => el.textContent?.replace(/\s+/g, ' ').trim() === `Delete ${roleName} Role`,
+      );
+      expect(matchingHeaders.length).toBeGreaterThan(0);
+
+      const matchingConfirm = within(dialog).getAllByText(
+        (_, el) =>
+          el.textContent?.replace(/\s+/g, ' ').trim() ===
+          `Are you sure you want to delete ${roleName} role?`,
+      );
+      // eslint-disable-next-line testing-library/no-wait-for-multiple-assertions
+      expect(matchingConfirm.length).toBeGreaterThan(0);
+    });
   });
   it('check if edit role modal content displays as expected', async () => {
-    axios.get.mockResolvedValue({
-      data: {},
-    });
-    const history = createMemoryHistory();
-    const { container } = renderComponent(store, history, roleName, roleId);
+    axios.get.mockResolvedValue({ data: {} });
 
-    const editRoleIcon = container.querySelector('.user-role-tab__icon.edit-icon');
-    expect(screen.queryByText('Edit Role Name')).not.toBeInTheDocument();
+    const history = createMemoryHistory();
+    renderComponent(store, history, roleName, roleId);
+
+    const editRoleIcon = screen.getByTestId('edit-role-icon');
     fireEvent.click(editRoleIcon);
 
-    const modalElement = screen.getByRole('dialog');
-    const modalDialog = modalElement.querySelector('.modal-dialog');
-    const modalContent = modalDialog.querySelector('.modal-content');
-    const modalBody = modalContent.querySelector('.modal-body');
+    const dialog = screen.getByRole('dialog');
 
-    expect(screen.queryByText('New Role Name')).toBeInTheDocument();
-    const searchBox = modalBody.querySelector('[name="editRoleName"]');
-    fireEvent.change(searchBox, { target: { value: 'manager' } });
-    expect(searchBox.value).toBe('manager');
+    const matchingTitles = within(dialog).getAllByText(
+      (_, el) => el.textContent?.trim() === 'Edit Role Name',
+    );
+    expect(matchingTitles.length).toBeGreaterThan(0);
+
+    const input = within(dialog).getByLabelText(/new role name/i);
+    fireEvent.change(input, { target: { value: 'Manager' } });
+    expect(input).toHaveValue('Manager');
   });
 });

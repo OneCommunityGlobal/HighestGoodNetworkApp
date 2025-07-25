@@ -1,10 +1,12 @@
+/* eslint-disable import/no-named-as-default */
+/* eslint-disable react/destructuring-assignment */
 /* eslint-disable react/sort-comp */
 import React from 'react';
 import { connect } from 'react-redux';
 import { Container } from 'reactstrap';
 import { toast } from 'react-toastify';
-import { searchWithAccent } from '~/utils/search';
 import lo from 'lodash';
+import { searchWithAccent } from '~/utils/search';
 import {
   getAllUserTeams,
   postNewTeam,

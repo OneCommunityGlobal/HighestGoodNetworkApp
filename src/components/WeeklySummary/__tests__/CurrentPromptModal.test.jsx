@@ -1,12 +1,11 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
-import configureStore from 'redux-mock-store';
+import { configureStore } from 'redux-mock-store';
 import axios from 'axios';
 
-// 1) Mock toast once, at top-level
 vi.mock('react-toastify', () => ({
   __esModule: true,
   toast: {
@@ -15,7 +14,6 @@ vi.mock('react-toastify', () => ({
   },
 }));
 import { toast } from 'react-toastify';
-
 vi.mock('axios');
 
 import CurrentPromptModal from '~/components/WeeklySummary/CurrentPromptModal';
@@ -29,7 +27,6 @@ describe('CurrentPromptModal component', () => {
   const mockToastSuccess = toast.success;
 
   beforeAll(() => {
-    // stub out the clipboard
     Object.defineProperty(navigator, 'clipboard', {
       value: { writeText: mockWriteText },
       writable: true,
@@ -41,57 +38,51 @@ describe('CurrentPromptModal component', () => {
     vi.clearAllMocks();
   });
 
-  it('renders without crashing', async () => {
+  it('renders without crashing', () => {
     axios.get.mockResolvedValue({ status: 200, data: [] });
 
-    await act(async () => {
-      render(
-        <Provider store={store}>
-          <CurrentPromptModal userId="abc123" userRole="Manager" darkMode={theme} />
-        </Provider>,
-      );
-    });
-
-    // no assertion needed—just verifies no errors
+    render(
+      <Provider store={store}>
+        <CurrentPromptModal userId="abc123" userRole="Manager" darkMode={theme} />
+      </Provider>,
+    );
   });
 
   it('opens the modal when "View and Copy Current AI Prompt" is clicked', async () => {
     axios.get.mockResolvedValue({ status: 200, data: [] });
 
-    await act(async () => {
-      const { container } = render(
-        <Provider store={store}>
-          <CurrentPromptModal userId="abc123" userRole="Manager" darkMode={theme} />
-        </Provider>,
-      );
+    render(
+      <Provider store={store}>
+        <CurrentPromptModal userId="abc123" userRole="Manager" darkMode={theme} />
+      </Provider>,
+    );
 
-      const btn = container.querySelector('button.p-1.mb-1.responsive-font-size.btn.btn-info');
-      expect(btn).toHaveTextContent('View and Copy Current AI Prompt');
-      fireEvent.click(btn);
+    const btn = screen.getByRole('button', { name: /view and copy current ai prompt/i });
+    fireEvent.click(btn);
 
-      expect(await screen.findByRole('dialog')).toBeInTheDocument();
-    });
+    expect(await screen.findByRole('dialog')).toBeInTheDocument();
   });
 
   it('shows tooltip on hover of info icon', async () => {
     axios.get.mockResolvedValue({ status: 200, data: [] });
 
-    await act(async () => {
-      const { container } = render(
-        <Provider store={store}>
-          <CurrentPromptModal userId="abc123" userRole="Manager" darkMode={theme} />
-        </Provider>,
-      );
+    render(
+      <Provider store={store}>
+        <CurrentPromptModal userId="abc123" userRole="Manager" darkMode={theme} />
+      </Provider>,
+    );
 
-      const icon = container.querySelector('.fa.fa-info-circle');
-      fireEvent.mouseEnter(icon);
-      await waitFor(() => {
-        expect(icon).toHaveAttribute('aria-describedby');
-      });
-      fireEvent.mouseLeave(icon);
-      await waitFor(() => {
-        expect(icon).not.toHaveAttribute('aria-describedby');
-      });
+    // Add a test ID to the icon in your real component for better querying
+    const icon = screen.getByTestId('ai-info-icon');
+
+    fireEvent.mouseEnter(icon);
+    await waitFor(() => {
+      expect(icon).toHaveAttribute('aria-describedby');
+    });
+
+    fireEvent.mouseLeave(icon);
+    await waitFor(() => {
+      expect(icon).not.toHaveAttribute('aria-describedby');
     });
   });
 
@@ -99,43 +90,33 @@ describe('CurrentPromptModal component', () => {
     const promptText = `Please edit the following summary…`;
     axios.get.mockResolvedValue({ data: { aIPromptText: promptText } });
 
-    await act(async () => {
-      const { container } = render(
-        <Provider store={store}>
-          <CurrentPromptModal userId="abc123" userRole="Manager" darkMode={theme} />
-        </Provider>,
-      );
+    render(
+      <Provider store={store}>
+        <CurrentPromptModal userId="abc123" userRole="Manager" darkMode={theme} />
+      </Provider>,
+    );
 
-      fireEvent.click(container.querySelector('button.p-1.mb-1.responsive-font-size.btn.btn-info'));
+    fireEvent.click(screen.getByRole('button', { name: /view and copy current ai prompt/i }));
 
-      // now wait for the async fetch & render
-      await waitFor(() => {
-        const dialog = screen.getByRole('document');
-        const body = dialog.querySelector('.modal-body');
-        expect(body).toHaveTextContent(promptText);
-      });
-    });
+    expect(await screen.findByText(promptText)).toBeInTheDocument();
   });
 
   it('closes the modal when the close button is clicked', async () => {
     axios.get.mockResolvedValue({ status: 200, data: [] });
 
-    await act(async () => {
-      const { container } = render(
-        <Provider store={store}>
-          <CurrentPromptModal userId="abc123" userRole="Manager" darkMode={theme} />
-        </Provider>,
-      );
+    render(
+      <Provider store={store}>
+        <CurrentPromptModal userId="abc123" userRole="Manager" darkMode={theme} />
+      </Provider>,
+    );
 
-      fireEvent.click(container.querySelector('button.p-1.mb-1.responsive-font-size.btn.btn-info'));
+    fireEvent.click(screen.getByRole('button', { name: /view and copy current ai prompt/i }));
+    expect(await screen.findByRole('dialog')).toBeInTheDocument();
 
-      const dialog = await screen.findByRole('document');
-      const closeBtn = dialog.querySelector('.close');
-      fireEvent.click(closeBtn);
+    fireEvent.click(screen.getByRole('button', { name: /close/i }));
 
-      await waitFor(() => {
-        expect(screen.queryByRole('document')).toBeNull();
-      });
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     });
   });
 
@@ -144,23 +125,18 @@ describe('CurrentPromptModal component', () => {
     axios.get.mockResolvedValue({ data: { aIPromptText: promptText } });
     axios.put.mockResolvedValue({ status: 200 });
 
-    await act(async () => {
-      const { container } = render(
-        <Provider store={store}>
-          <CurrentPromptModal userId="abc123" userRole="Manager" darkMode={theme} />
-        </Provider>,
-      );
+    render(
+      <Provider store={store}>
+        <CurrentPromptModal userId="abc123" userRole="Manager" darkMode={theme} />
+      </Provider>,
+    );
 
-      fireEvent.click(container.querySelector('button.p-1.mb-1.responsive-font-size.btn.btn-info'));
-      const copyBtn = await screen.findByRole('button', { name: 'Copy Prompt' });
+    fireEvent.click(screen.getByRole('button', { name: /view and copy current ai prompt/i }));
+    const copyBtn = await screen.findByRole('button', { name: /copy prompt/i });
 
-      fireEvent.click(copyBtn);
+    fireEvent.click(copyBtn);
 
-      // ensure clipboard.writeText was called with exactly that text
-      await waitFor(() => {
-        expect(mockWriteText).toHaveBeenCalledWith(promptText);
-        expect(mockToastSuccess).toHaveBeenCalledWith('Prompt Copied!');
-      });
-    });
+    await waitFor(() => expect(mockWriteText).toHaveBeenCalledWith(promptText));
+    expect(mockToastSuccess).toHaveBeenCalledWith('Prompt Copied!');
   });
 });

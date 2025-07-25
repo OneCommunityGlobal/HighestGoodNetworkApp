@@ -1,13 +1,11 @@
-// Version 1.0.0 - Updated tests for Login page structure, input handling, and login behavior
-import { render, fireEvent, waitFor } from '@testing-library/react';
+import { render, fireEvent, screen, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
-import configureStore from 'redux-mock-store';
+import { configureStore } from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { Login } from '../Login';
 
-// Mock required modules and actions
 vi.mock('../../../actions/authActions', () => ({
   loginUser: vi.fn(),
 }));
@@ -15,10 +13,8 @@ vi.mock('../../../actions/errorsActions', () => ({
   clearErrors: vi.fn(),
 }));
 
-// Create mock store
 const mockStore = configureStore([thunk]);
 
-// Custom render function with all required providers
 const renderWithProviders = (
   ui,
   {
@@ -48,141 +44,149 @@ const renderWithProviders = (
 };
 
 describe('Login page structure', () => {
-  let store;
-  let history;
-
-  beforeEach(() => {
-    // Set up store and history for each test
-    const initialState = {
-      auth: { isAuthenticated: false, user: {} },
-      errors: {},
-      theme: { darkMode: false },
-    };
-    store = mockStore(initialState);
-    history = createMemoryHistory();
-
-    // Render the Login component
-    const { container } = renderWithProviders(
+  it('should render two input fields', () => {
+    renderWithProviders(
       <Login
         auth={{ isAuthenticated: false, user: {} }}
         errors={{}}
         loginUser={vi.fn()}
         clearErrors={vi.fn()}
-        history={history}
+        history={createMemoryHistory()}
         location={{}}
       />,
-      { store, history },
     );
 
-    // Add container to global scope for tests that need to query it
-    global.container = container;
+    const inputs = screen.getAllByRole('textbox');
+    const passwordInput = screen.getByLabelText(/password/i);
+    expect(inputs.length).toBe(1); // Email field only
+    expect(passwordInput).toBeInTheDocument(); // Password uses type="password"
   });
 
-  afterEach(() => {
-    delete global.container;
+  it('should render one submit button', () => {
+    renderWithProviders(
+      <Login
+        auth={{}}
+        errors={{}}
+        loginUser={vi.fn()}
+        clearErrors={vi.fn()}
+        history={createMemoryHistory()}
+        location={{}}
+      />,
+    );
+    const button = screen.getByRole('button', { name: /submit/i });
+    expect(button).toBeInTheDocument();
   });
 
-  it('should be rendered with two input fields', () => {
-    // Use query selectors since the Input component might not have proper roles
-    const inputs = global.container.querySelectorAll('input');
-    expect(inputs.length).toBe(2);
-  });
-
-  it('should be rendered with one button', () => {
-    const button = global.container.querySelector('button');
-    expect(button).toBeTruthy();
-  });
-
-  it('should be rendered with one h2 labeled Please Sign In', () => {
-    const h2 = global.container.querySelector('h2');
-    expect(h2).toBeTruthy();
-    expect(h2.textContent).toContain('Please Sign in');
+  it('should render a heading with "Please Sign in"', () => {
+    renderWithProviders(
+      <Login
+        auth={{}}
+        errors={{}}
+        loginUser={vi.fn()}
+        clearErrors={vi.fn()}
+        history={createMemoryHistory()}
+        location={{}}
+      />,
+    );
+    const heading = screen.getByRole('heading', { name: /please sign in/i });
+    expect(heading).toBeInTheDocument();
   });
 });
 
-describe('When user tries to input data', () => {
-  let store;
-  let history;
+describe('When user types input', () => {
   let loginUserMock;
 
   beforeEach(() => {
-    // Reset all mocks
     vi.clearAllMocks();
-
-    // Create fresh mocks for each test
     loginUserMock = vi.fn();
-    const initialState = {
-      auth: { isAuthenticated: false, user: {} },
-      errors: {},
-      theme: { darkMode: false },
-    };
-    store = mockStore(initialState);
-    history = createMemoryHistory();
+  });
 
-    // Render the Login component with mocks
-    const { container } = renderWithProviders(
+  it('should allow typing in the email field', () => {
+    renderWithProviders(
       <Login
-        auth={{ isAuthenticated: false, user: {} }}
+        auth={{}}
         errors={{}}
         loginUser={loginUserMock}
         clearErrors={vi.fn()}
-        history={history}
+        history={createMemoryHistory()}
         location={{}}
       />,
-      { store, history },
     );
 
-    global.container = container;
-  });
-
-  afterEach(() => {
-    delete global.container;
-  });
-
-  // Use fireEvent instead of direct state manipulation
-  it('should allow typing in the email field', () => {
-    const emailInput = global.container.querySelector('input[name="email"]');
+    const emailInput = screen.getByLabelText(/email/i);
     fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
-    expect(emailInput.value).toBe('test@example.com');
+    expect(emailInput).toHaveValue('test@example.com');
   });
 
   it('should allow typing in the password field', () => {
-    const passwordInput = global.container.querySelector('input[name="password"]');
-    fireEvent.change(passwordInput, { target: { value: 'password123' } });
-    expect(passwordInput.value).toBe('password123');
-  });
+    renderWithProviders(
+      <Login
+        auth={{}}
+        errors={{}}
+        loginUser={loginUserMock}
+        clearErrors={vi.fn()}
+        history={createMemoryHistory()}
+        location={{}}
+      />,
+    );
 
-  it('should have disabled submit button initially (when form is invalid)', () => {
-    const button = global.container.querySelector('button');
-    expect(button.disabled).toBeTruthy();
+    const passwordInput = screen.getByLabelText(/password/i);
+    fireEvent.change(passwordInput, { target: { value: 'password123' } });
+    expect(passwordInput).toHaveValue('password123');
   });
 
   it('should enable submit button when form is valid', () => {
-    const emailInput = global.container.querySelector('input[name="email"]');
-    const passwordInput = global.container.querySelector('input[name="password"]');
+    renderWithProviders(
+      <Login
+        auth={{}}
+        errors={{}}
+        loginUser={loginUserMock}
+        clearErrors={vi.fn()}
+        history={createMemoryHistory()}
+        location={{}}
+      />,
+    );
 
-    // Fill in valid values
+    const emailInput = screen.getByLabelText(/email/i);
+    const passwordInput = screen.getByLabelText(/password/i);
+    const button = screen.getByRole('button', { name: /submit/i });
+
     fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
     fireEvent.change(passwordInput, { target: { value: 'password123' } });
 
-    // Button should now be enabled
-    const button = global.container.querySelector('button');
-    expect(button.disabled).toBeFalsy();
+    expect(button).not.toBeDisabled();
   });
+  it('should have disabled submit button initially when form is invalid', () => {
+    renderWithProviders(
+      <Login
+        auth={{}}
+        errors={{}}
+        loginUser={vi.fn()}
+        clearErrors={vi.fn()}
+        history={createMemoryHistory()}
+        location={{}}
+      />,
+    );
 
-  it('should call loginUser when form is submitted', async () => {
-    const emailInput = global.container.querySelector('input[name="email"]');
-    const passwordInput = global.container.querySelector('input[name="password"]');
-    const form = global.container.querySelector('form');
+    const button = screen.getByRole('button', { name: /submit/i });
+    expect(button).toBeDisabled();
+  });
+  it('should call loginUser on form submit', async () => {
+    renderWithProviders(
+      <Login
+        auth={{}}
+        errors={{}}
+        loginUser={loginUserMock}
+        clearErrors={vi.fn()}
+        history={createMemoryHistory()}
+        location={{}}
+      />,
+    );
 
-    // Fill in valid values
-    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
-    fireEvent.change(passwordInput, { target: { value: 'password123' } });
+    fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'TEST@Example.com' } });
+    fireEvent.change(screen.getByLabelText(/password/i), { target: { value: 'password123' } });
+    fireEvent.click(screen.getByRole('button', { name: /submit/i }));
 
-    // Submit the form
-    fireEvent.submit(form);
-
-    // Check if loginUser was called with correct data
     await waitFor(() => {
       expect(loginUserMock).toHaveBeenCalledWith({
         email: 'test@example.com',
@@ -192,8 +196,8 @@ describe('When user tries to input data', () => {
   });
 });
 
-describe('Login behavior', () => {
-  it('should redirect to homepage if user is authenticated', () => {
+describe('Login redirection logic', () => {
+  it('redirects to homepage if user is already authenticated', () => {
     const history = createMemoryHistory();
     const pushSpy = vi.spyOn(history, 'push');
 
@@ -206,60 +210,33 @@ describe('Login behavior', () => {
         history={history}
         location={{}}
       />,
-      {
-        initialState: {
-          auth: { isAuthenticated: true, user: {} },
-          errors: {},
-          theme: { darkMode: false },
-        },
-        history,
-      },
+      { history },
     );
 
-    // Check if history.push was called with '/'
     expect(pushSpy).toHaveBeenCalledWith('/');
   });
 
-  it('should redirect to /forcePasswordUpdate if user is new', () => {
+  it('redirects to /forcePasswordUpdate if user is new', () => {
     const history = createMemoryHistory();
     const pushSpy = vi.spyOn(history, 'push');
 
-    // First render with isAuthenticated: false
     const { rerender } = renderWithProviders(
       <Login
-        auth={{
-          isAuthenticated: false,
-          user: {},
-        }}
+        auth={{ isAuthenticated: false, user: {} }}
         errors={{}}
         loginUser={vi.fn()}
         clearErrors={vi.fn()}
         history={history}
         location={{}}
       />,
-      {
-        initialState: {
-          auth: {
-            isAuthenticated: false,
-            user: {},
-          },
-          errors: {},
-          theme: { darkMode: false },
-        },
-        history,
-      },
+      { history },
     );
 
-    // Clear previous history.push calls
     pushSpy.mockClear();
 
-    // Now rerender with isAuthenticated: true and user.new: true
     rerender(
       <Login
-        auth={{
-          isAuthenticated: true,
-          user: { new: true, userId: '123' },
-        }}
+        auth={{ isAuthenticated: true, user: { new: true, userId: '123' } }}
         errors={{}}
         loginUser={vi.fn()}
         clearErrors={vi.fn()}
@@ -268,49 +245,30 @@ describe('Login behavior', () => {
       />,
     );
 
-    // Now componentDidUpdate should be called, pushing to /forcePasswordUpdate/123
     expect(pushSpy).toHaveBeenCalledWith('/forcePasswordUpdate/123');
   });
-  it('should redirect to /dashboard when user becomes authenticated and is not new', () => {
+
+  it('redirects to /dashboard when authenticated and not new', () => {
     const history = createMemoryHistory();
     const pushSpy = vi.spyOn(history, 'push');
 
-    // First render with isAuthenticated: false
     const { rerender } = renderWithProviders(
       <Login
-        auth={{
-          isAuthenticated: false,
-          user: {},
-        }}
+        auth={{ isAuthenticated: false, user: {} }}
         errors={{}}
         loginUser={vi.fn()}
         clearErrors={vi.fn()}
         history={history}
         location={{}}
       />,
-      {
-        initialState: {
-          auth: {
-            isAuthenticated: false,
-            user: {},
-          },
-          errors: {},
-          theme: { darkMode: false },
-        },
-        history,
-      },
+      { history },
     );
 
-    // Clear previous history.push calls
     pushSpy.mockClear();
 
-    // Now rerender with isAuthenticated: true and regular user
     rerender(
       <Login
-        auth={{
-          isAuthenticated: true,
-          user: { new: false },
-        }}
+        auth={{ isAuthenticated: true, user: { new: false } }}
         errors={{}}
         loginUser={vi.fn()}
         clearErrors={vi.fn()}
@@ -319,8 +277,6 @@ describe('Login behavior', () => {
       />,
     );
 
-    // Should redirect to dashboard
     expect(pushSpy).toHaveBeenCalledWith('/dashboard');
   });
 });
-

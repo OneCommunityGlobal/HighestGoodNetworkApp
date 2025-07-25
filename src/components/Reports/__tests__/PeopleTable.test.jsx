@@ -1,19 +1,30 @@
-// eslint-disable-next-line no-unused-vars
 import React from 'react';
-// eslint-disable-next-line no-unused-vars
 import { render, screen, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { BrowserRouter } from 'react-router-dom';
 import moment from 'moment';
 import PeopleTable from '../PeopleTable';
 
-
 describe('PeopleTable component', () => {
   // Shengwei/Peter: Update createdDate to startDate due to changes in the Report and UserProfile component
   // Test case updated: renders the people details correctly
   const userProfiles = [
-    { firstName: 'Jane', lastName: 'Doe', _id: 1, isActive: true, startDate: '2023-02-02T20:00:22.224Z', endDate: null },
-    { firstName: 'John', lastName: 'Smith', _id: 2, isActive: false, startDate: '2023-03-02T20:00:22.224Z', endDate: '2024-03-02T20:00:22.224Z' },
+    {
+      firstName: 'Jane',
+      lastName: 'Doe',
+      _id: 1,
+      isActive: true,
+      startDate: '2023-02-02T20:00:22.224Z',
+      endDate: null,
+    },
+    {
+      firstName: 'John',
+      lastName: 'Smith',
+      _id: 2,
+      isActive: false,
+      startDate: '2023-03-02T20:00:22.224Z',
+      endDate: '2024-03-02T20:00:22.224Z',
+    },
   ];
 
   const renderWithRouter = (ui, { route = '/' } = {}) => {
@@ -30,11 +41,11 @@ describe('PeopleTable component', () => {
   it('renders the people details correctly', () => {
     renderWithRouter(<PeopleTable userProfiles={userProfiles} />);
     userProfiles.forEach(people => {
-      expect(screen.getByText(`${people.firstName  } ${  people.lastName}`)).toBeInTheDocument();
-      expect(screen.getByText(moment.utc(people.startDate).format('MM-DD-YY'))).toBeInTheDocument()
+      expect(screen.getByText(`${people.firstName} ${people.lastName}`)).toBeInTheDocument();
+      expect(screen.getByText(moment.utc(people.startDate).format('MM-DD-YY'))).toBeInTheDocument();
       if (people.endDate) {
         expect(screen.getByText(moment.utc(people.endDate).format('MM-DD-YY'))).toBeInTheDocument();
-      }else {
+      } else {
         expect(screen.getByText('N/A')).toBeInTheDocument();
       }
     });
@@ -43,16 +54,16 @@ describe('PeopleTable component', () => {
   it('row item links to the correct page', () => {
     renderWithRouter(<PeopleTable userProfiles={userProfiles} />);
     userProfiles.forEach(people => {
-      expect(screen.getByRole('link', { name: `${people.firstName  } ${  people.lastName}` })).toHaveAttribute('href', `/peoplereport/${people._id}`);
+      expect(
+        screen.getByRole('link', { name: `${people.firstName} ${people.lastName}` }),
+      ).toHaveAttribute('href', `/peoplereport/${people._id}`);
     });
   });
-
-
 
   it('renders user profiles in sorted order by first name', () => {
     renderWithRouter(<PeopleTable userProfiles={userProfiles} />);
     const firstNameElements = screen.getAllByRole('row');
-    expect(firstNameElements[1]).toHaveTextContent('Jane');// index 0 is for header row
+    expect(firstNameElements[1]).toHaveTextContent('Jane'); // index 0 is for header row
     expect(firstNameElements[2]).toHaveTextContent('John');
   });
 
@@ -67,13 +78,13 @@ describe('PeopleTable component', () => {
     expect(tableHeaders[4].textContent).toBe('End Date');
   });
 
-
   it('shows the correct active status indicator', () => {
-    const { container } = renderWithRouter(<PeopleTable userProfiles={userProfiles} />);
+    renderWithRouter(<PeopleTable userProfiles={userProfiles} />);
+
     userProfiles.forEach(people => {
-      const row = container.querySelector(`#tr_${people._id}`);
-      const activeIcon = people.isActive ? '.fa-circle' : '.fa-circle-o';
-      expect(row.querySelector(activeIcon)).toBeInTheDocument();
+      const row = screen.getByTestId(`tr_${people._id}`); // You'll need to add this in the component
+      const iconClass = people.isActive ? 'fa-circle' : 'fa-circle-o';
+      expect(within(row).getByTestId('status-icon')).toHaveClass(iconClass);
     });
   });
 });

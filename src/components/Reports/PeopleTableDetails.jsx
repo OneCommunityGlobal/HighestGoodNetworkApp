@@ -323,18 +323,20 @@ function PeopleTableDetails(props) {
         <div data-testid="ed" className="people-table-end-cell">End Date</div>
       </div>
       <div className="people-table">
-        {filteredTasks.map(value => (
-
-          // eslint-disable-next-line react/no-unstable-nested-components
-          <NewModal header="Task info" trigger={() => <> {(windowWidth <= 1020) ? renderMobileFilteredTask(value) : renderFilteredTask(value)}</>}>
-            <div>Why This Task is important</div>
-            <textarea className="rectangle" type="text" value={value.whyInfo} />
-            <div>Design Intent</div>
-            <textarea className="rectangle" type="text" value={value.intentInfo} />
-            <div>End State</div>
-            <textarea className="rectangle" type="text" value={value.endstateInfo} />
-          </NewModal>
-        ))}
+      {filteredTasks.map(value => (
+        <NewModal
+          key={value._id}
+          header="Task info"
+          trigger={() => <> {(windowWidth <= 1020) ? renderMobileFilteredTask(value) : renderFilteredTask(value)}</>}
+        >
+          <div>Why This Task is important</div>
+          <textarea className="rectangle" type="text" value={value.whyInfo} />
+          <div>Design Intent</div>
+          <textarea className="rectangle" type="text" value={value.intentInfo} />
+          <div>End State</div>
+          <textarea className="rectangle" type="text" value={value.endstateInfo} />
+        </NewModal>
+      ))}
       </div>
     </Container>
   );

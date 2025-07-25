@@ -1,10 +1,7 @@
-// eslint-disable-next-line no-unused-vars
 import React from 'react';
-import TeamsOverview from '~/components/Teams/TeamsOverview';
 import { renderWithProvider } from '__tests__/utils';
 import { screen } from '@testing-library/react';
-// eslint-disable-next-line no-unused-vars
-import { TOTAL_TEAMS, ACTIVE_TEAMS } from '../../../languages/en/ui';
+import TeamsOverview from '~/components/Teams/TeamsOverview';
 
 describe('TeamsOverview', () => {
   it('should render correctly', () => {

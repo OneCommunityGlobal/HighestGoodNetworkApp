@@ -1,4 +1,4 @@
-// eslint-disable-next-line no-unused-vars
+/* eslint-disable testing-library/no-node-access */
 import { React, useEffect } from 'react';
 import './ReportCharts.css';
 import * as d3 from 'd3';
@@ -76,7 +76,11 @@ function TeamReportCharts({
         >
           <div className="team-report-chart-info">
             <div className="pie-chart-wrapper mobile-pie-chart">
-              <div id={`pie-chart-container-${pieChartId}`} className="pie-chart" />
+              <div
+                id={`pie-chart-container-${pieChartId}`}
+                className="pie-chart"
+                data-testid={`pie-chart-container-${pieChartId}`}
+              />
               <div className="pie-chart-info-detail">
                 <div className="pie-chart-info-detail-title">
                   <h5 className={darkMode ? 'text-light' : ''}>Name</h5>

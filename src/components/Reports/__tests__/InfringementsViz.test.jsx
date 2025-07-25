@@ -9,7 +9,7 @@ vi.mock('react', async importOriginal => {
 });
 
 // now import everything else
-import { render, fireEvent } from '@testing-library/react';
+import { render, fireEvent, screen } from '@testing-library/react';
 import InfringementsViz from '../InfringementsViz';
 // Mock D3 module
 vi.mock('d3', () => {
@@ -77,45 +77,40 @@ describe('InfringementsViz component', () => {
   });
 
   it('renders button to show graph', () => {
-    const { getByText } = render(<InfringementsViz infringements={[]} />);
-    const showGraphButton = getByText('Show Infringements Graph');
+    render(<InfringementsViz infringements={[]} />);
+    const showGraphButton = screen.getByText('Show Infringements Graph');
     expect(showGraphButton).toBeInTheDocument();
   });
 
   it('does not display the modal initially', () => {
-    const { queryByRole } = render(<InfringementsViz infringements={[]} fromDate="" toDate="" />);
-    const modal = queryByRole('dialog');
+    render(<InfringementsViz infringements={[]} fromDate="" toDate="" />);
+    const modal = screen.queryByRole('dialog');
     expect(modal).not.toBeInTheDocument();
   });
 
   it('renders the graph when the "Show Infringements Graph" button is clicked', () => {
-    const { getByText, container } = render(
-      <InfringementsViz infringements={mockInfringements} fromDate="" toDate="" />,
-    );
+    render(<InfringementsViz infringements={mockInfringements} fromDate="" toDate="" />);
 
-    const showButton = getByText('Show Infringements Graph');
+    const showButton = screen.getByText('Show Infringements Graph');
     fireEvent.click(showButton);
 
     // After clicking, button text should change
-    expect(getByText('Hide Infringements Graph')).toBeInTheDocument();
+    expect(screen.getByText('Hide Infringements Graph')).toBeInTheDocument();
 
     // Check that the graph container exists
-    const graph = container.querySelector('#infplot');
-    expect(graph).toBeInTheDocument();
+    expect(screen.getByTestId('infplot')).toBeInTheDocument();
   });
 
   it('displays the modal when the "Show Infringements Graph" button is clicked', () => {
-    const { getByText } = render(
-      <InfringementsViz infringements={mockInfringements} fromDate="" toDate="" />,
-    );
+    render(<InfringementsViz infringements={mockInfringements} fromDate="" toDate="" />);
 
-    const showButton = getByText('Show Infringements Graph');
+    const showButton = screen.getByText('Show Infringements Graph');
     fireEvent.click(showButton);
 
     // Modal should now be visible (check for title or content)
     // This may not be accessible via queryByText if using Bootstrap Modal
     // so we'll check for button text change as a proxy
-    expect(getByText('Hide Infringements Graph')).toBeInTheDocument();
+    expect(screen.getByText('Hide Infringements Graph')).toBeInTheDocument();
   });
 
   it('displays close button in modal footer', () => {
@@ -124,33 +119,31 @@ describe('InfringementsViz component', () => {
     );
 
     // Open the modal
-    const showButton = getByText('Show Infringements Graph');
+    const showButton = screen.getByText('Show Infringements Graph');
     fireEvent.click(showButton);
 
     // Check for close buttons (may be multiple in Bootstrap modal)
-    const buttons = getAllByRole('button');
+    const buttons = screen.getAllByRole('button');
     const closeButton = Array.from(buttons).find(button => button.textContent === 'Close');
 
     expect(closeButton).toBeTruthy();
   });
 
   it('hides graph when button is clicked again', () => {
-    const { getByText } = render(
-      <InfringementsViz infringements={mockInfringements} fromDate="" toDate="" />,
-    );
+    render(<InfringementsViz infringements={mockInfringements} fromDate="" toDate="" />);
 
     // First click to show
-    const showButton = getByText('Show Infringements Graph');
+    const showButton = screen.getByText('Show Infringements Graph');
     fireEvent.click(showButton);
 
     // Button text should change
-    expect(getByText('Hide Infringements Graph')).toBeInTheDocument();
+    expect(screen.getByText('Hide Infringements Graph')).toBeInTheDocument();
 
     // Click again to hide
-    const hideButton = getByText('Hide Infringements Graph');
+    const hideButton = screen.getByText('Hide Infringements Graph');
     fireEvent.click(hideButton);
 
     // Button should be back to original text
-    expect(getByText('Show Infringements Graph')).toBeInTheDocument();
+    expect(screen.getByText('Show Infringements Graph')).toBeInTheDocument();
   });
 });

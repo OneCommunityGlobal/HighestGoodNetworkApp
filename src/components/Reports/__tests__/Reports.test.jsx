@@ -25,9 +25,10 @@ vi.mock('axios', () => {
 });
 import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import configureStore from 'redux-mock-store';
+import { default as configureMockStore } from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { setupServer } from 'msw/node';
+// eslint-disable-next-line import/named
 import { rest } from 'msw';
 import ReportsPage from '../Reports';
 
@@ -58,7 +59,7 @@ afterAll(() => server.close());
 describe('<ReportsPage/>', () => {
   // Create mock store with middleware
   const middlewares = [thunk];
-  const mockStore = configureStore(middlewares);
+  const mockStore = configureMockStore([]);
 
   it('should render without errors', () => {
     // Create a complete store with the required state structure

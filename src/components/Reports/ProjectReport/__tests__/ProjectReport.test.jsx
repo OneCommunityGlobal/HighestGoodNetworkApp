@@ -1,19 +1,14 @@
-// eslint-disable-next-line no-unused-vars
-import React from 'react';
-// eslint-disable-next-line no-unused-vars
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen} from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import thunk from 'redux-thunk';
-import configureStore from 'redux-mock-store';
+import { configureStore } from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import axios from 'axios';
-import { getProjectDetail } from '~/actions/project';
-// eslint-disable-next-line no-unused-vars
-import { fetchAllMembers, foundUsers, getProjectActiveUser } from '~/actions/projectMembers';
-import { fetchAllWBS } from '~/actions/wbs';
-import viewWBSpermissionsRequired from '~/utils/viewWBSpermissionsRequired';
 import { themeMock } from '__tests__/mockStates';
-import ProjectReport from '..';
+import { getProjectDetail } from '~/actions/project';
+import { fetchAllMembers, getProjectActiveUser } from '~/actions/projectMembers';
+import { fetchAllWBS } from '~/actions/wbs';
+import { ProjectReport } from '../ProjectReport';
 
 const mockStore = configureStore([thunk]);
 const store = mockStore({
@@ -41,7 +36,7 @@ afterEach(() => {
 });
 
 // Fixed: Replace setImmediate with setTimeout to avoid ReferenceError
-const flushAllPromises = () => new Promise(resolve => setTimeout(resolve, 0));
+const flushAllPromises = () => new Promise(resolve => {setTimeout(resolve, 0)});
 
 describe('ProjectReport component', () => {
   it('renders without crashing', () => {

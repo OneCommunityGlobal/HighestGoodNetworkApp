@@ -12,4 +12,6 @@ const QuestionnaireHeader = forwardRef((props, ref) => {
   );
 });
 
+QuestionnaireHeader.displayName = 'QuestionnaireHeader';
+
 export default QuestionnaireHeader;

@@ -1,16 +1,33 @@
-// eslint-disable-next-line no-unused-vars
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
+import { render, fireEvent, screen, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
-import { vi } from 'vitest'
-import CopyToClipboard from '../CopyToClipboard';
-import { themeMock } from '../../../../__tests__/mockStates';
+import { vi } from 'vitest';
 
-// Create a mock Redux store
 const mockStore = configureMockStore();
 
-// Mock the navigator.clipboard.writeText method
+vi.mock('react-toastify', () => {
+  const mockToastSuccess = vi.fn();
+  const mockToastError = vi.fn();
+
+  return {
+    __esModule: true,
+    toast: {
+      success: mockToastSuccess,
+      error: mockToastError,
+    },
+    __mocked_toast: {
+      success: mockToastSuccess,
+      error: mockToastError,
+    },
+  };
+});
+
+import CopyToClipboard from '../CopyToClipboard';
+import { themeMock } from '../../../../__tests__/mockStates';
+// eslint-disable-next-line import/named
+import { __mocked_toast } from 'react-toastify';
+
 const mockWriteText = vi.fn();
 
 beforeAll(() => {
@@ -35,19 +52,12 @@ describe('CopyToClipboard', () => {
       </Provider>,
     );
 
-    // Select the element using its class
-    const copyIcon = document.querySelector('.copy-to-clipboard');
+    fireEvent.click(screen.getByTestId('copy-icon'));
 
-    // Simulate a click event on the icon
-    fireEvent.click(copyIcon);
-
-    // Ensure that writeText was called with the correct text
     expect(mockWriteText).toHaveBeenCalledWith(writeText);
 
-    // Use setTimeout to give the component time to display the message
-    setTimeout(() => {
-      // Ensure that toast.success was called with the correct message
-      expect(mockToastSuccess).toHaveBeenCalledWith(message);
-    }, 1000);
+    await waitFor(() => {
+      expect(__mocked_toast.success).toHaveBeenCalledWith(message);
+    });
   });
 });

@@ -34,9 +34,12 @@ describe('<TeamTable />', () => {
     );
 
   it('renders header and one row per team', () => {
-    const { container } = renderTable();
-    expect(container.querySelectorAll('thead tr')).toHaveLength(1);
-    expect(container.querySelectorAll('tbody tr')).toHaveLength(2);
+    renderTable();
+
+    // Header row
+    const rows = screen.getAllByRole('row');
+    // First is header, others are team rows
+    expect(rows.length).toBe(3);
   });
 
   it('renders each team name as a link', () => {
@@ -46,9 +49,9 @@ describe('<TeamTable />', () => {
   });
 
   it('shows exactly one active and one inactive indicator', () => {
-    const { container } = renderTable();
-    expect(container.querySelectorAll('.isActive')).toHaveLength(1);
-    expect(container.querySelectorAll('.isNotActive')).toHaveLength(1);
+    renderTable();
+    expect(screen.getAllByTestId('team-is-active')).toHaveLength(1);
+    expect(screen.getAllByTestId('team-is-inactive')).toHaveLength(1);
   });
 
   it('renders a code input for each team when permitted', () => {
@@ -63,12 +66,12 @@ describe('<TeamTable />', () => {
     renderTable();
     const [firstInput] = screen.getAllByPlaceholderText('X-XXX');
 
-    // valid length (5–7 chars)
+    // valid
     fireEvent.change(firstInput, { target: { value: 'NEW01' } });
     expect(firstInput).toHaveValue('NEW01');
     expect(firstInput).not.toHaveClass('is-invalid');
 
-    // invalid length (<5 chars)
+    // invalid
     fireEvent.change(firstInput, { target: { value: 'AB' } });
     expect(firstInput).toHaveValue('AB');
     expect(firstInput).toHaveClass('is-invalid');

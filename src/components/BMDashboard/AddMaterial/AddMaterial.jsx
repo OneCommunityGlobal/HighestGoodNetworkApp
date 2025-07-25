@@ -298,7 +298,6 @@ export default function AddMaterialForm() {
             >
               <option value="">Select a Unit</option>
               {units.map((unit, index) => (
-                // eslint-disable-next-line react/no-array-index-key
                 <option key={index} value={unit.unit}>
                   {unit.unit}
                 </option>

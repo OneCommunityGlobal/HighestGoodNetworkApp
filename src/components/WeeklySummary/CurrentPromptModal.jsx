@@ -140,6 +140,7 @@ function CurrentPromptModal(props) {
             data-for="timeEntryTip"
             data-delay-hide="1000"
             aria-hidden="true"
+            data-testid="ai-info-icon"
             title=""
             style={{ paddingLeft: '.32rem' }}
           />
@@ -159,6 +160,7 @@ function CurrentPromptModal(props) {
             data-delay-hide="1000"
             aria-hidden="true"
             title=""
+            data-testid="ai-info-icon"
             style={{ paddingLeft: '.32rem' }}
           />
         </Button>

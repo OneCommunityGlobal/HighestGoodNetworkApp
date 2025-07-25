@@ -102,15 +102,15 @@ describe('AddTeamMember Component', () => {
       render(<AddTeamMember />);
 
       const submitButton = screen.getByText('Submit');
-      userEvent.click(submitButton);
+      await userEvent.click(submitButton);
 
       await waitFor(() => {
         expect(screen.getByText('First name is required')).toBeInTheDocument();
-        expect(screen.getByText('Last name is required')).toBeInTheDocument();
-        expect(screen.getByText('Role selection is required')).toBeInTheDocument();
-        expect(screen.getByText('Team selection is required')).toBeInTheDocument();
-        expect(screen.getByText('Email is required')).toBeInTheDocument();
       });
+      expect(screen.getByText('Last name is required')).toBeInTheDocument();
+      expect(screen.getByText('Role selection is required')).toBeInTheDocument();
+      expect(screen.getByText('Team selection is required')).toBeInTheDocument();
+      expect(screen.getByText('Email is required')).toBeInTheDocument();
     });
 
     it('shows validation error for invalid email format', async () => {
@@ -120,7 +120,7 @@ describe('AddTeamMember Component', () => {
       await userEvent.type(emailInput, 'invalid-email');
 
       const submitButton = screen.getByText('Submit');
-      userEvent.click(submitButton);
+      await userEvent.click(submitButton);
 
       await waitFor(() => {
         expect(screen.getByText('Please enter a valid email address')).toBeInTheDocument();
@@ -134,7 +134,7 @@ describe('AddTeamMember Component', () => {
       await userEvent.type(phoneInput, '123');
 
       const submitButton = screen.getByText('Submit');
-      userEvent.click(submitButton);
+      await userEvent.click(submitButton);
 
       await waitFor(() => {
         expect(screen.getByText('Please enter a valid 10-digit phone number')).toBeInTheDocument();
@@ -158,15 +158,15 @@ describe('AddTeamMember Component', () => {
       // Select role
       const roleSelect = screen.getAllByRole('combobox')[0]; // First combobox is roles
       fireEvent.keyDown(roleSelect, { key: 'ArrowDown' });
-      userEvent.click(screen.getByText('Carpenter'));
+      await userEvent.click(screen.getByText('Carpenter'));
 
       // Select team
       const teamSelect = screen.getAllByRole('combobox')[1]; // Second combobox is teams
       fireEvent.keyDown(teamSelect, { key: 'ArrowDown' });
-      userEvent.click(screen.getByText('XYZ Carpentry'));
+      await userEvent.click(screen.getByText('XYZ Carpentry'));
 
       const submitButton = screen.getByText('Submit');
-      userEvent.click(submitButton);
+      await userEvent.click(submitButton);
 
       await waitFor(() => {
         expect(mockedAxios.post).toHaveBeenCalledWith(
@@ -206,15 +206,15 @@ describe('AddTeamMember Component', () => {
       // Select role
       const roleSelect = screen.getAllByRole('combobox')[0];
       fireEvent.keyDown(roleSelect, { key: 'ArrowDown' });
-      userEvent.click(screen.getByText('Carpenter'));
+      await userEvent.click(screen.getByText('Carpenter'));
 
       // Select team
       const teamSelect = screen.getAllByRole('combobox')[1];
       fireEvent.keyDown(teamSelect, { key: 'ArrowDown' });
-      userEvent.click(screen.getByText('XYZ Carpentry'));
+      await userEvent.click(screen.getByText('XYZ Carpentry'));
 
       const submitButton = screen.getByText('Submit');
-      userEvent.click(submitButton);
+      await userEvent.click(submitButton);
 
       await waitFor(() => {
         expect(toast.error).toHaveBeenCalledWith('Failed to create team member. Please try again.');
@@ -233,7 +233,7 @@ describe('AddTeamMember Component', () => {
 
       // Click cancel
       const cancelButton = screen.getByText('Cancel');
-      userEvent.click(cancelButton);
+      await userEvent.click(cancelButton);
 
       // Check that fields are cleared
       expect(screen.getByLabelText('First Name')).toHaveValue('');
@@ -257,15 +257,15 @@ describe('AddTeamMember Component', () => {
       // Select role
       const roleSelect = screen.getAllByRole('combobox')[0];
       fireEvent.keyDown(roleSelect, { key: 'ArrowDown' });
-      userEvent.click(screen.getByText('Carpenter'));
+      await userEvent.click(screen.getByText('Carpenter'));
 
       // Select team
       const teamSelect = screen.getAllByRole('combobox')[1];
       fireEvent.keyDown(teamSelect, { key: 'ArrowDown' });
-      userEvent.click(screen.getByText('XYZ Carpentry'));
+      await userEvent.click(screen.getByText('XYZ Carpentry'));
 
       const submitButton = screen.getByText('Submit');
-      userEvent.click(submitButton);
+      await userEvent.click(submitButton);
 
       await waitFor(() => {
         expect(toast.success).toHaveBeenCalledWith('Team member created successfully!');

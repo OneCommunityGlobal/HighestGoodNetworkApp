@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
@@ -19,14 +18,13 @@ vi.mock('~/actions/weeklySummariesReport', () => ({
   updateOneSummaryReport: () => () => Promise.resolve({ status: 200 }),
 }));
 
-vi.mock(
-  'components/UserProfile/EditableModal/RoleInfoModal',
-  () =>
-    // eslint-disable-next-line func-names
-    function () {
-      return <div data-testid="role-info-modal">RoleInfoModal</div>;
-    },
-);
+vi.mock('components/UserProfile/EditableModal/RoleInfoModal', () => {
+  function RoleInfoModalMock() {
+    return <div data-testid="role-info-modal">RoleInfoModal</div>;
+  }
+  RoleInfoModalMock.displayName = 'RoleInfoModalMock';
+  return RoleInfoModalMock;
+});
 
 vi.mock('axios', () => {
   const mAxios = {

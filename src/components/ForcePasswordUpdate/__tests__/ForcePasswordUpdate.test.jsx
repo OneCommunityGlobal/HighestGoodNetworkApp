@@ -12,10 +12,11 @@ vi.mock('react-leaflet-cluster', () => ({
 }));
 import '@testing-library/jest-dom/extend-expect';
 import { setupServer } from 'msw/node';
+// eslint-disable-next-line import/named
 import { rest } from 'msw';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import configureStore from 'redux-mock-store';
+import { configureStore } from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { ENDPOINTS } from '~/utils/URL';
 import mockState from '../../../__tests__/mockAdminState';
@@ -201,16 +202,14 @@ describe('Force Password Update page structure', () => {
 });
 
 describe('When user tries to input data', () => {
-  beforeEach(() => {
-    renderComponent();
-  });
-
   it('should disable submit button if form is invalid', () => {
+    renderComponent();
     const submitButton = screen.getByRole('button', { name: /submit/i });
     expect(submitButton).toBeDisabled();
   });
 
   it('should enable submit button when valid passwords are entered', async () => {
+    renderComponent();
     const newPasswordInput = screen.getByLabelText(/new password/i);
     const confirmPasswordInput = screen.getByLabelText(/confirm password/i);
 
@@ -226,6 +225,7 @@ describe('When user tries to input data', () => {
   });
 
   it('should call forcePasswordUpdate with correct data on submit', async () => {
+    renderComponent();
     const newPasswordInput = screen.getByLabelText(/new password/i);
     const confirmPasswordInput = screen.getByLabelText(/confirm password/i);
 
@@ -324,7 +324,7 @@ describe('Force Password Update behaviour', () => {
         userId: '5edf141c78f1380017b829a6',
         newpassword: 'newPassword8',
       });
-      expect(passwordUpdated).toBeTruthy();
     });
+    expect(passwordUpdated).toBeTruthy();
   });
 });

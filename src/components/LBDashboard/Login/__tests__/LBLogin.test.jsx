@@ -4,7 +4,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import { useDispatch, Provider } from 'react-redux';
 import thunk from 'redux-thunk';
-import configureStore from 'redux-mock-store';
+import { configureStore } from 'redux-mock-store';
 import { BrowserRouter as Router } from 'react-router-dom';
 import axios from 'axios';
 import LBLogin from '..';
@@ -71,16 +71,17 @@ describe('LBLogin component', () => {
     axios.post.mockRejectedValue({ response: 'server error' });
     const { container } = renderComponent(store);
 
-    fireEvent.change(container.querySelector('[name="email"]'), {
+    fireEvent.change(screen.getByLabelText(/email/i), {
       target: { value: 'test@gmail.com' },
     });
-    fireEvent.change(container.querySelector('[name="password"]'), {
+    fireEvent.change(screen.getByLabelText(/password/i), {
       target: { value: 'Test12345' },
     });
-    fireEvent.click(screen.getByText('Login'));
+    fireEvent.click(screen.getByRole('button', { name: /login/i }));
 
     await waitFor(() => {
-      expect(container.querySelector('.invalid-feedback')).not.toBeInTheDocument();
+      const feedback = screen.queryByText(/invalid/i);
+      expect(feedback).not.toBeInTheDocument();
     });
   });
 });

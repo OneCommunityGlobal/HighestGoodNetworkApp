@@ -2,7 +2,7 @@
 import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import configureStore from 'redux-mock-store';
+import { configureStore } from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import NotificationCard from '../notificationCard';
 import * as actions from '../../../actions/notificationAction';
@@ -40,6 +40,7 @@ describe('NotificationCard', () => {
       screen.getByText((content, node) => {
         const hasText = thisnode => thisnode.textContent === 'This is a test message';
         const nodeHasText = hasText(node);
+        // eslint-disable-next-line testing-library/no-node-access
         const childrenDontHaveText = Array.from(node.children).every(child => !hasText(child));
         return nodeHasText && childrenDontHaveText;
       }),

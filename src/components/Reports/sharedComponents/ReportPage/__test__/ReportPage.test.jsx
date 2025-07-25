@@ -1,43 +1,45 @@
-// eslint-disable-next-line no-unused-vars
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { ReportPage } from '../ReportPage';
 
 describe('ReportPage component', () => {
   it('renders without crashing', () => {
-    render(<ReportPage renderProfile={() => null} />);
+    render(<ReportPage renderProfile={() => <div data-testid="profile" />} />);
+    expect(screen.getByTestId('profile')).toBeInTheDocument();
   });
 
   it('renders child components', () => {
-    const { container } = render(
-      <ReportPage renderProfile={() => null}>
-        <ReportPage.ReportHeader />
-        <ReportPage.ReportBlock />
-        <ReportPage.ReportCard />
-      </ReportPage>
+    render(
+      <ReportPage renderProfile={() => <div data-testid="profile" />}>
+        <div data-testid="header" className="report-header">
+          Header
+        </div>
+        <div data-testid="block" className="report-block-wrapper">
+          Block
+        </div>
+        <div data-testid="card" className="report-card">
+          Card
+        </div>
+      </ReportPage>,
     );
 
-    expect(container.querySelector('.report-page-profile')).toBeInTheDocument();
-    expect(container.querySelector('.report-page-content')).toBeInTheDocument();
-    expect(container.querySelector('.report-header')).toBeInTheDocument();
-    expect(container.querySelector('.report-block-wrapper')).toBeInTheDocument();
-    expect(container.querySelector('.report-card')).toBeInTheDocument();
+    expect(screen.getByTestId('profile')).toBeInTheDocument();
+    expect(screen.getByTestId('header')).toBeInTheDocument();
+    expect(screen.getByTestId('block')).toBeInTheDocument();
+    expect(screen.getByTestId('card')).toBeInTheDocument();
   });
 
   it('passes props correctly', () => {
-    const renderProfile = vi.fn();
+    const renderProfile = vi.fn(() => <div data-testid="profile" />);
     const contentClassName = 'custom-content-class';
 
     render(
       <ReportPage renderProfile={renderProfile} contentClassName={contentClassName}>
-        <ReportPage.ReportHeader />
-        <ReportPage.ReportBlock />
-        <ReportPage.ReportCard />
-      </ReportPage>
+        <div>Test content</div>
+      </ReportPage>,
     );
 
     expect(renderProfile).toHaveBeenCalled();
-    expect(document.querySelector('.report-page-content')).toHaveClass(contentClassName);
+    expect(screen.getByTestId('report-content')).toHaveClass(contentClassName);
   });
-
 });

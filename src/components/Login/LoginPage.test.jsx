@@ -1,6 +1,7 @@
 import { renderWithRouterMatch } from '../../__tests__/utils';
 import '@testing-library/jest-dom/extend-expect';
 import { createMemoryHistory } from 'history';
+// eslint-disable-next-line import/named
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { screen } from '@testing-library/react';
@@ -158,6 +159,7 @@ const server = setupServer(
   ),
   rest.get(userProjectsUrl, (req, res, ctx) => res(ctx.status(200), ctx.json([]))),
   rest.get('*', (req, res, ctx) => {
+    // eslint-disable-next-line no-console
     console.error(
       `Please add request handler for ${req.url.toString()} in your MSW server requests.`,
     );

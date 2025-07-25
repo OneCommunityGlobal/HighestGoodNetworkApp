@@ -1,4 +1,4 @@
-/* eslint-disable no-restricted-globals */
+/* eslint-disable testing-library/no-node-access */
 import { useEffect, useState } from 'react';
 import * as d3 from 'd3';
 

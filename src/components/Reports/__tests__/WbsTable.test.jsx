@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import configureMockStore from 'redux-mock-store';
@@ -21,15 +20,15 @@ describe('WbsTable Component', () => {
   });
 
   it('renders WbsTable component with WBS items', () => {
-    const { getByText } = render(
+    render(
       <Provider store={store}>
         <WbsTable wbs={mockWbsData} skip={0} take={5} />
-      </Provider>
+      </Provider>,
     );
 
     // Check if WBS items are rendered
-    const wbsItem1 = getByText('WBS Item 1');
-    const wbsItem2 = getByText('WBS Item 2');
+    const wbsItem1 = screen.getByText('WBS Item 1');
+    const wbsItem2 = screen.getByText('WBS Item 2');
     expect(wbsItem1).toBeInTheDocument();
     expect(wbsItem2).toBeInTheDocument();
   });
@@ -38,14 +37,14 @@ describe('WbsTable Component', () => {
     const { getByText } = render(
       <Provider store={store}>
         <WbsTable wbs={mockWbsData} skip={0} take={5} />
-      </Provider>
+      </Provider>,
     );
 
     // Check if table headers are rendered
-    const header1 = getByText('#');
-    const header2 = getByText('Name');
-    const header3 = getByText('Active');
-    const header4 = getByText('ID');
+    const header1 = screen.getByText('#');
+    const header2 = screen.getByText('Name');
+    const header3 = screen.getByText('Active');
+    const header4 = screen.getByText('ID');
 
     expect(header1).toBeInTheDocument();
     expect(header2).toBeInTheDocument();
@@ -67,17 +66,17 @@ describe('WbsTable Component', () => {
     const skip = 1;
     const take = 2;
 
-    const { queryByText } = render(
+    render(
       <Provider store={store}>
         <WbsTable wbs={mockWbsRangeData} skip={skip} take={take} />
-      </Provider>
+      </Provider>,
     );
 
     // Ensure WBS items within specified range are rendered
-    const wbsItem1 = queryByText('WBS Item 1');
-    const wbsItem2 = queryByText('WBS Item 2');
-    const wbsItem3 = queryByText('WBS Item 3');
-    const wbsItem4 = queryByText('WBS Item 4');
+    const wbsItem1 = screen.queryByText('WBS Item 1');
+    const wbsItem2 = screen.queryByText('WBS Item 2');
+    const wbsItem3 = screen.queryByText('WBS Item 3');
+    const wbsItem4 = screen.queryByText('WBS Item 4');
 
     expect(wbsItem1).toBeNull();
     expect(wbsItem2).toBeInTheDocument();
@@ -96,25 +95,25 @@ describe('WbsTable Component', () => {
       ],
     };
 
-    const { queryByText } = render(
+    render(
       <Provider store={store}>
         <WbsTable wbs={mockWbsPaginatedData} skip={1} take={2} />
-      </Provider>
+      </Provider>,
     );
 
     // Check that WBS item 'WBS 1' is not rendered (as it's skipped)
-    const wbsItem1 = queryByText('WBS 1');
+    const wbsItem1 = screen.queryByText('WBS 1');
     expect(wbsItem1).toBeNull();
 
     // Check for specific paginated WBS item text content
-    const wbsItem2 = queryByText('WBS 2');
+    const wbsItem2 = screen.queryByText('WBS 2');
     expect(wbsItem2).toBeInTheDocument();
 
-    const wbsItem3 = queryByText('WBS 3');
+    const wbsItem3 = screen.queryByText('WBS 3');
     expect(wbsItem3).toBeInTheDocument();
 
     // Check that WBS item 'WBS 4' is not rendered (as it's beyond the take limit)
-    const wbsItem4 = queryByText('WBS 4');
+    const wbsItem4 = screen.queryByText('WBS 4');
     expect(wbsItem4).toBeNull();
   });
 
@@ -132,7 +131,7 @@ describe('WbsTable Component', () => {
     render(
       <Provider store={store}>
         <WbsTable wbs={mockWbsTruncatedData} skip={0} take={5} />
-      </Provider>
+      </Provider>,
     );
 
     // Check if the IDs are truncated when window width is less than 1100
@@ -146,9 +145,9 @@ describe('WbsTable Component', () => {
     const { container } = render(
       <Provider store={store}>
         <WbsTable wbs={mockWbsData} skip={0} take={2} />
-      </Provider>
+      </Provider>,
     );
-    const tableRows = container.querySelectorAll('.wbs-table-row');
+    const tableRows = screen.getAllByTestId('wbs-table-row');
 
     expect(tableRows.length).toBe(2); // Ensure all WBS items are rendered
   });
@@ -157,9 +156,9 @@ describe('WbsTable Component', () => {
     const { container } = render(
       <Provider store={store}>
         <WbsTable wbs={mockWbsData} skip={0} take={2} />
-      </Provider>
+      </Provider>,
     );
-    const activeIcon = container.querySelector('.isActive');
+    const activeIcon = screen.getByTestId('wbs-active-icon');
 
     expect(activeIcon).toBeInTheDocument(); // Ensure the "Active" icon is rendered
   });
@@ -168,9 +167,9 @@ describe('WbsTable Component', () => {
     const { container } = render(
       <Provider store={store}>
         <WbsTable wbs={mockWbsData} skip={0} take={2} />
-      </Provider>
+      </Provider>,
     );
-    const inactiveIcon = container.querySelector('.isNotActive');
+    const inactiveIcon = screen.getByTestId('wbs-inactive-icon');
 
     expect(inactiveIcon).toBeInTheDocument(); // Ensure the "Inactive" icon is rendered
   });

@@ -445,7 +445,7 @@ const SummaryBar = React.forwardRef((props, ref) => {
         return (
           <div
             className="border-black col-4 bg-super-awesome no-gutters d-flex justify-content-center align-items-center"
-            align="center"
+            style={{ textAlign: 'center' }}
           >
             <font className="text-center text-light" size="3">
               SUMMARY
@@ -652,13 +652,16 @@ const SummaryBar = React.forwardRef((props, ref) => {
               style={{ border: '1px solid black' }}
             >
               <div className="m-auto p-2 text-center">
-                <font
+                <span
+                  role="button"
+                  tabIndex={0}
                   onClick={props.toggleSubmitForm}
-                  className="med_text_summary align-middle summary-toggle"
-                  size="3"
+                  onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && props.toggleSubmitForm()}
+                  className="summary-toggle"
+                  style={{ cursor: 'pointer', fontSize: '1.1rem' }}
                 >
                   {renderSummaryMessage()}
-                </font>
+                </span>
               </div>
             </div>
           </Row>
@@ -1089,5 +1092,7 @@ const mapStateToProps = state => ({
   displayUserTask: state.userTask,
   darkMode: state.theme.darkMode,
 });
+
+SummaryBar.displayName = 'SummaryBar';
 
 export default connect(mapStateToProps, { hasPermission })(React.memo(SummaryBar));

@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import configureStore from 'redux-mock-store';
+import { configureStore } from 'redux-mock-store';
 import { useDispatch } from 'react-redux';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
