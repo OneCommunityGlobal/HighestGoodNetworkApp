@@ -59,7 +59,7 @@ export default function TinyBarChart(props) {
   } = props;
 
   return (
-    <ResponsiveContainer maxWidth={600} maxHeight={600} minWidth={180} minHeight={340}>
+    <ResponsiveContainer maxWidth={600} maxHeight={400} minWidth={180} minHeight={340}>
       <BarChart
         data={chartData}
         margin={{

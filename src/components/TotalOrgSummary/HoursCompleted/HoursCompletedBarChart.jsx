@@ -136,8 +136,8 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
   return (
     <div
       style={{
-        height: '548px',
-        minHeight: '548px',
+        height: '380px',
+        minHeight: '300px',
         maxHeight: '548px',
         display: 'flex',
         flexDirection: 'column',
