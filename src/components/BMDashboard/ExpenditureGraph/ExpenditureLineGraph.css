@@ -14,10 +14,6 @@
   --button-bg: #e8a71c;
 }
 
-.body.dark-mode, .dark-mode body {
-  background-color: #1b2a41 !important;
-}
-
 .expenditure-chart-container {
     padding: 20px;
     background-color: #f9f9f9;
@@ -27,29 +23,50 @@
     min-height: 100vh;
   }
   
-  .expenditure-chart-container.dark-mode {
-    background-color: var(--bg-color, #1b2a41);
-    color: var(--text-color, #ffffff);
-    box-shadow: 0 2px 4px rgba(255,255,255,0.05);
-  }
-  
-  .expenditure-chart-container.dark-mode select,
-  .expenditure-chart-container.dark-mode input {
-    background-color: var(--section-bg, #253342);
-    color: var(--text-color, #ffffff);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-  }
-  
-  .expenditure-chart-container.dark-mode select:focus,
-  .expenditure-chart-container.dark-mode input:focus {
-    border-color: var(--button-bg, #e8a71c);
-    outline: none;
-  }
-  
-  .expenditure-chart-container.dark-mode .filter-controls {
-    background-color: var(--section-bg, #253342);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
+.expenditure-chart-container.dark-mode {
+  background-color: #1b2a41 !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+  padding: 0 !important; 
+  min-height: 100vh;
+  border-radius: 0 !important; 
+}
+
+.expenditure-chart-container.dark-mode .chart-inner-container {
+  background-color: #16213e !important;
+  border: 1px solid #233554 !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 20px;
+}
+
+.expenditure-chart-container.dark-mode .filter-controls,
+.expenditure-chart-container.dark-mode .project-filter,
+.expenditure-chart-container.dark-mode .filter-group {
+  background-color: #16213e !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+.expenditure-chart-container.dark-mode .error {
+  background-color: #2a3a5a !important;
+  color: #ff6b6b !important;
+  border: 1px solid #ff6b6b !important;
+}
+
+.expenditure-chart-container.dark-mode .chart-inner-container {
+  background-color: #16213e !important;
+  border: 1px solid #233554 !important;
+  box-shadow: none !important;
+}
+
+.expenditure-chart-container.dark-mode canvas {
+  background-color: #16213e !important;
+  border-radius: 8px;
+}
   
   .expenditure-chart-container h1 {
     font-size: 1.5rem;

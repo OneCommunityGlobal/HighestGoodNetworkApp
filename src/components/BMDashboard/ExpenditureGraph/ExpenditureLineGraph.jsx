@@ -341,198 +341,198 @@ export default function ExpenditureLineGraph() {
     }
   };
 
-return (
-  <div className={`expenditure-chart-container ${darkMode ? 'dark-mode' : ''}`}>
-    <h1
-      style={{
-        color: darkMode ? 'var(--text-color)' : 'inherit',
-        textAlign: 'center',
-        margin: '0 0 10px 0',
-      }}
-    >
-      Cost Breakdown by Type of Expenditures
-    </h1>
-    <div
-      className="filter-controls"
-      style={{
-        backgroundColor: darkMode ? 'var(--section-bg, #253342)' : '#f5f5f5',
-        display: 'flex',
-        flexDirection: 'column',
-        marginTop: 0,
-        paddingTop: 8,
-        paddingBottom: 8,
-        border: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : 'none',
-      }}
-    >
-      <div
+  return (
+    <div className={`expenditure-chart-container ${darkMode ? 'dark-mode' : ''}`}>
+      <h1
         style={{
+          color: darkMode ? 'var(--text-color)' : 'inherit',
+          textAlign: 'center',
+          margin: '0 0 10px 0',
+        }}
+      >
+        Cost Breakdown by Type of Expenditures
+      </h1>
+      <div
+        className="filter-controls"
+        style={{
+          backgroundColor: darkMode ? 'var(--section-bg, #253342)' : '#f5f5f5',
           display: 'flex',
-          justifyContent: 'flex-end',
-          width: '100%',
-          padding: '0 20px',
+          flexDirection: 'column',
+          marginTop: 0,
+          paddingTop: 8,
+          paddingBottom: 8,
+          border: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : 'none',
         }}
       >
         <div
           style={{
             display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'flex-end',
-            gap: '10px',
+            justifyContent: 'flex-end',
+            width: '100%',
+            padding: '0 20px',
           }}
         >
           <div
-            className="project-filter"
             style={{
               display: 'flex',
-              alignItems: 'center',
+              flexDirection: 'column',
+              alignItems: 'flex-end',
               gap: '10px',
             }}
           >
-            <label
+            <div
+              className="project-filter"
               style={{
-                color: darkMode ? 'var(--text-color)' : 'inherit',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
               }}
             >
-              Filter by project:
-            </label>
-            <select
-              id="project-select"
-              value={selectedProject}
-              onChange={handleProjectChange}
-              disabled={loading || projects.length === 0}
+              <label
+                style={{
+                  color: darkMode ? 'var(--text-color)' : 'inherit',
+                }}
+              >
+                Filter by project:
+              </label>
+              <select
+                id="project-select"
+                value={selectedProject}
+                onChange={handleProjectChange}
+                disabled={loading || projects.length === 0}
+                style={{
+                  padding: '6px 10px',
+                  borderRadius: '4px',
+                  border: darkMode ? '1px solid rgba(255, 255, 255, 0.2)' : '1px solid #ddd',
+                  backgroundColor: darkMode ? 'var(--section-bg, #253342)' : '#fff',
+                  color: darkMode ? 'var(--text-color, #ffffff)' : 'inherit',
+                }}
+              >
+                <option value="all">All Projects</option>
+                {projects.map(project => (
+                  <option key={project} value={project}>
+                    {project}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div
+              className="date-filters"
               style={{
-                padding: '6px 10px',
-                borderRadius: '4px',
-                border: darkMode ? '1px solid rgba(255, 255, 255, 0.2)' : '1px solid #ddd',
-                backgroundColor: darkMode ? 'var(--section-bg, #253342)' : '#fff',
-                color: darkMode ? 'var(--text-color, #ffffff)' : 'inherit',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
               }}
             >
-              <option value="all">All Projects</option>
-              {projects.map(project => (
-                <option key={project} value={project}>
-                  {project}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div
-            className="date-filters"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '10px',
-            }}
-          >
-            <label
-              htmlFor="start-date"
-              style={{ color: darkMode ? 'var(--text-color)' : 'inherit' }}
-            >
-              From:
-            </label>
-            <input
-              id="start-date"
-              type="date"
-              value={startDate}
-              onChange={handleStartDateChange}
-              disabled={loading}
-              style={{
-                padding: '6px 10px',
-                borderRadius: '4px',
-                border: darkMode ? '1px solid rgba(255, 255, 255, 0.2)' : '1px solid #ddd',
-                backgroundColor: darkMode ? 'var(--section-bg, #253342)' : '#fff',
-                color: darkMode ? 'var(--text-color, #ffffff)' : 'inherit',
-              }}
-            />
-            <label htmlFor="end-date" style={{ color: darkMode ? 'var(--text-color)' : 'inherit' }}>
-              To:
-            </label>
-            <input
-              id="end-date"
-              type="date"
-              value={endDate}
-              onChange={handleEndDateChange}
-              disabled={loading}
-              min={startDate}
-              style={{
-                padding: '6px 10px',
-                borderRadius: '4px',
-                border: darkMode ? '1px solid rgba(255, 255, 255, 0.2)' : '1px solid #ddd',
-                backgroundColor: darkMode ? 'var(--section-bg, #253342)' : '#fff',
-                color: darkMode ? 'var(--text-color, #ffffff)' : 'inherit',
-              }}
-            />
+              <label
+                htmlFor="start-date"
+                style={{ color: darkMode ? 'var(--text-color)' : 'inherit' }}
+              >
+                From:
+              </label>
+              <input
+                id="start-date"
+                type="date"
+                value={startDate}
+                onChange={handleStartDateChange}
+                disabled={loading}
+                style={{
+                  padding: '6px 10px',
+                  borderRadius: '4px',
+                  border: darkMode ? '1px solid rgba(255, 255, 255, 0.2)' : '1px solid #ddd',
+                  backgroundColor: darkMode ? 'var(--section-bg, #253342)' : '#fff',
+                  color: darkMode ? 'var(--text-color, #ffffff)' : 'inherit',
+                }}
+              />
+              <label
+                htmlFor="end-date"
+                style={{ color: darkMode ? 'var(--text-color)' : 'inherit' }}
+              >
+                To:
+              </label>
+              <input
+                id="end-date"
+                type="date"
+                value={endDate}
+                onChange={handleEndDateChange}
+                disabled={loading}
+                min={startDate}
+                style={{
+                  padding: '6px 10px',
+                  borderRadius: '4px',
+                  border: darkMode ? '1px solid rgba(255, 255, 255, 0.2)' : '1px solid #ddd',
+                  backgroundColor: darkMode ? 'var(--section-bg, #253342)' : '#fff',
+                  color: darkMode ? 'var(--text-color, #ffffff)' : 'inherit',
+                }}
+              />
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    {loading && (
-      <p
-        style={{
-          color: darkMode ? 'var(--text-color)' : 'inherit',
-          textAlign: 'center',
-        }}
-      >
-        Loading data...
-      </p>
-    )}
+      {loading && (
+        <p
+          style={{
+            color: darkMode ? 'var(--text-color)' : 'inherit',
+            textAlign: 'center',
+          }}
+        >
+          Loading data...
+        </p>
+      )}
 
-    {error && (
-      <p
-        className="error"
-        style={{
-          color: darkMode ? '#ff6b6b' : '#d32f2f',
-          backgroundColor: darkMode ? 'rgba(255, 107, 107, 0.1)' : 'rgba(211, 47, 47, 0.05)',
-          padding: '10px',
-          borderRadius: '4px',
-          border: darkMode ? '1px solid #ff6b6b' : '1px solid #d32f2f',
-          textAlign: 'center',
-          maxWidth: '800px',
-          margin: '0 auto 20px auto',
-        }}
-      >
-        Error: {error}
-      </p>
-    )}
+      {error && (
+        <p
+          className="error"
+          style={{
+            color: darkMode ? '#ff6b6b' : '#d32f2f',
+            backgroundColor: darkMode ? 'rgba(255, 107, 107, 0.1)' : 'rgba(211, 47, 47, 0.05)',
+            padding: '10px',
+            borderRadius: '4px',
+            border: darkMode ? '1px solid #ff6b6b' : '1px solid #d32f2f',
+            textAlign: 'center',
+            maxWidth: '800px',
+            margin: '0 auto 20px auto',
+          }}
+        >
+          Error: {error}
+        </p>
+      )}
 
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'center',
-        width: '100%',
-        padding: '0 20px',
-      }}
-    >
       <div
         style={{
-          backgroundColor: darkMode ? 'var(--card-bg, #1b2a41)' : '#ffffff',
-          borderRadius: '12px',
-          border: darkMode
-            ? '1px solid rgba(255, 255, 255, 0.1)'
-            : '1px solid rgba(0, 0, 0, 0.08)',
-          boxShadow: darkMode
-            ? '0 4px 12px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2)'
-            : '0 4px 12px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06)',
-          padding: '20px',
-          maxWidth: '800px',
+          display: 'flex',
+          justifyContent: 'center',
           width: '100%',
-          height: '400px',
-          position: 'relative',
-          transition: 'box-shadow 0.3s ease, border-color 0.3s ease',
+          padding: '0 20px',
         }}
       >
-        <canvas
-          ref={chartRef}
+        <div
+          className="chart-inner-container"
           style={{
-            maxHeight: '100%',
-            maxWidth: '100%',
-            backgroundColor: darkMode ? '#1b2a41' : 'transparent',
-            borderRadius: '8px',
+            backgroundColor: darkMode ? '#16213e' : '#ffffff',
+            borderRadius: '12px',
+            border: darkMode ? '1px solid #233554' : '1px solid rgba(0, 0, 0, 0.08)',
+            boxShadow: 'none',
+            padding: '20px',
+            maxWidth: '800px',
+            width: '100%',
+            height: '400px',
+            position: 'relative',
+            transition: 'box-shadow 0.3s ease, border-color 0.3s ease',
           }}
-        />
+        >
+          <canvas
+            ref={chartRef}
+            style={{
+              maxHeight: '100%',
+              maxWidth: '100%',
+              backgroundColor: darkMode ? '#16213e' : 'transparent',
+              borderRadius: '8px',
+            }}
+          />
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
 }
