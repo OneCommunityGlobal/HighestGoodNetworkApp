@@ -120,7 +120,7 @@ const WeeklySummariesReport = props => {
 
 
   const [bioStatusMap, setBioStatusMap] = useState({});
-const [rerenderKey, setRerenderKey] = useState(0);
+  const [rerenderKey, setRerenderKey] = useState(0);
 
   // Misc functionalities
   /**
@@ -487,7 +487,7 @@ const [rerenderKey, setRerenderKey] = useState(0);
         selectedSpecialColors,
       } = state;
 
-      
+
       // console.log('filterWeeklySummaries state:', {
       //   summariesLength: summaries?.length,
       //   tableDataExists: !!tableData,
@@ -505,6 +505,7 @@ const [rerenderKey, setRerenderKey] = useState(0);
         .map(([color]) => color);
 
       const temp = summaries.filter(summary => {
+        if (!summary || !summary._id) return false;
         const { activeTab } = state;
         const hoursLogged = (summary.totalSeconds[navItems.indexOf(activeTab)] || 0) / 3600;
         const currentBioStatus = state.bioStatusMap?.[summary._id] ?? summary.bioPosted;
@@ -787,13 +788,13 @@ const [rerenderKey, setRerenderKey] = useState(0);
   };
 
   const handleBioStatusToggleChange = () => {
-   setState(prev => {
-    const newValue = !prev.selectedBioStatus;
-    return {
-      ...prev,
-      selectedBioStatus: newValue,
-    };
-  });
+    setState(prev => {
+      const newValue = !prev.selectedBioStatus;
+      return {
+        ...prev,
+        selectedBioStatus: newValue,
+      };
+    });
   };
 
   const handleChartStatusToggleChange = () => {
@@ -936,9 +937,8 @@ const [rerenderKey, setRerenderKey] = useState(0);
           .filter(teamCode => !oldTeamCodes.includes(teamCode.value))
           .concat({
             value: replaceCode,
-            label: `${replaceCode} (${
-              updatedSummaries.filter(s => s.teamCode === replaceCode).length
-            })`,
+            label: `${replaceCode} (${updatedSummaries.filter(s => s.teamCode === replaceCode).length
+              })`,
             _ids: updatedSummaries.filter(s => s.teamCode === replaceCode).map(s => s._id),
           });
 
@@ -946,9 +946,8 @@ const [rerenderKey, setRerenderKey] = useState(0);
           .filter(code => !oldTeamCodes.includes(code.value))
           .concat({
             value: replaceCode,
-            label: `${replaceCode} (${
-              updatedSummaries.filter(s => s.teamCode === replaceCode).length
-            })`,
+            label: `${replaceCode} (${updatedSummaries.filter(s => s.teamCode === replaceCode).length
+              })`,
             _ids: updatedSummaries.filter(s => s.teamCode === replaceCode).map(s => s._id),
           });
 
@@ -1154,9 +1153,8 @@ const [rerenderKey, setRerenderKey] = useState(0);
   return (
     <Container
       fluid
-      className={`container-wsr-wrapper py-3 mb-5 ${
-        darkMode ? 'bg-oxford-blue text-light' : 'bg--white-smoke'
-      }`}
+      className={`container-wsr-wrapper py-3 mb-5 ${darkMode ? 'bg-oxford-blue text-light' : 'bg--white-smoke'
+        }`}
     >
       {passwordInputModalToggle()}
       {popUpElements()}
@@ -1180,18 +1178,18 @@ const [rerenderKey, setRerenderKey] = useState(0);
       </Row>
       {(authEmailWeeklySummaryRecipient === authorizedUser1 ||
         authEmailWeeklySummaryRecipient === authorizedUser2) && (
-        <Row className="d-flex justify-content-center mb-3">
-          <Button
-            color="primary"
-            className="permissions-management__button"
-            type="button"
-            onClick={() => onClickRecepients()}
-            style={darkMode ? boxStyleDark : boxStyle}
-          >
-            Weekly Summary Report Recipients
-          </Button>
-        </Row>
-      )}
+          <Row className="d-flex justify-content-center mb-3">
+            <Button
+              color="primary"
+              className="permissions-management__button"
+              type="button"
+              onClick={() => onClickRecepients()}
+              style={darkMode ? boxStyleDark : boxStyle}
+            >
+              Weekly Summary Report Recipients
+            </Button>
+          </Row>
+        )}
       <Row>
         <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }} xs={{ size: 6 }}>
           <div className="filter-container-teamcode">
@@ -1246,9 +1244,8 @@ const [rerenderKey, setRerenderKey] = useState(0);
             </>
           )}
           <MultiSelect
-            className={`multi-select-filter text-dark ${darkMode ? 'dark-mode' : ''} ${
-              state.teamCodeWarningUsers.length > 0 ? 'warning-border' : ''
-            }`}
+            className={`multi-select-filter text-dark ${darkMode ? 'dark-mode' : ''} ${state.teamCodeWarningUsers.length > 0 ? 'warning-border' : ''
+              }`}
             options={state.teamCodes.map(item => {
               const [code, count] = item.label.split(' (');
               return {

@@ -83,7 +83,7 @@ function FormattedReport({
 }) {
   const dispatch = useDispatch();
   const isEditCount = dispatch(hasPermission('totalValidWeeklySummaries'));
-  
+
 
   // Only proceed if summaries is valid
   if (!summaries || !Array.isArray(summaries) || summaries.length === 0) {
@@ -104,8 +104,8 @@ function FormattedReport({
             // Add safety check for each summary
             const currentStatus = bioStatusMap[summary._id] ?? summary.bioPosted; // for rerendering
             const isMeetCriteria = summary.totalTangibleHrs > 80 &&
-                                   summary.daysInTeam > 60 &&
-                                   currentStatus !== 'posted';
+              summary.daysInTeam > 60 &&
+              currentStatus !== 'posted';
 
             if (canSeeBioHighlight && selectedBioStatus && !isMeetCriteria) return false;
             if (!summary || !summary.totalSeconds) {
@@ -116,31 +116,32 @@ function FormattedReport({
             return weekIndex === summary.finalWeekIndex;
           })
           .map(summary => {
-            return(
-            <ReportDetails
-              loggedInUserEmail={loggedInUserEmail}
-              key={summary._id}
-              summary={summary}
-              weekIndex={weekIndex}
-              bioCanEdit={bioCanEdit}
-              canEditSummaryCount={isEditCount}
-              allRoleInfo={allRoleInfo}
-              canEditTeamCode={canEditTeamCode}
-              badges={badges}
-              loadBadges={loadBadges}
-              loadTrophies={loadTrophies}
-              canSeeBioHighlight={canSeeBioHighlight}
-              darkMode={darkMode}
-              handleTeamCodeChange={handleTeamCodeChange}
-              auth={auth}
-              handleSpecialColorDotClick={handleSpecialColorDotClick}
+            return (
+              <ReportDetails
+                loggedInUserEmail={loggedInUserEmail}
+                key={summary._id}
+                summary={summary}
+                weekIndex={weekIndex}
+                bioCanEdit={bioCanEdit}
+                canEditSummaryCount={isEditCount}
+                allRoleInfo={allRoleInfo}
+                canEditTeamCode={canEditTeamCode}
+                badges={badges}
+                loadBadges={loadBadges}
+                loadTrophies={loadTrophies}
+                canSeeBioHighlight={canSeeBioHighlight}
+                darkMode={darkMode}
+                handleTeamCodeChange={handleTeamCodeChange}
+                auth={auth}
+                handleSpecialColorDotClick={handleSpecialColorDotClick}
 
-              // for rerendering
-              setBioStatusMap={setBioStatusMap}
-              setRerenderKey={setRerenderKey}
-            />
-          ) })}
-          
+                // for rerendering
+                setBioStatusMap={setBioStatusMap}
+                setRerenderKey={setRerenderKey}
+              />
+            )
+          })}
+
       </ListGroup>
       <EmailsList summaries={summaries} auth={auth} />
     </>
@@ -255,7 +256,7 @@ function ReportDetails({
   handleTeamCodeChange,
   auth,
   handleSpecialColorDotClick,
-// to rerender the ddata
+  // to rerender the ddata
   setBioStatusMap,
   setRerenderKey
 }) {
@@ -275,14 +276,14 @@ function ReportDetails({
     setFilteredBadges(badges.filter(badge => badge.showReport === true));
   }, []);
 
-useEffect(() => {
-  setIsMeetCriteria(
-    canSeeBioHighlight &&
-    summary.totalTangibleHrs > 80 &&
-    summary.daysInTeam > 60 &&
-    bioStatus !== 'posted'
-  );
-}, [bioStatus, canSeeBioHighlight, summary.totalTangibleHrs, summary.daysInTeam]);
+  useEffect(() => {
+    setIsMeetCriteria(
+      canSeeBioHighlight &&
+      summary.totalTangibleHrs > 80 &&
+      summary.daysInTeam > 60 &&
+      bioStatus !== 'posted'
+    );
+  }, [bioStatus, canSeeBioHighlight, summary.totalTangibleHrs, summary.daysInTeam]);
 
   return (
     <li className={`list-group-item px-0 ${darkMode ? 'bg-yinmn-blue' : ''}`} ref={ref}>
@@ -312,9 +313,9 @@ useEffect(() => {
                 <Bio
                   bioCanEdit={bioCanEdit && !cantEditJaeRelatedRecord}
                   userId={summary._id}
-                  bioPosted={bioStatus} 
+                  bioPosted={bioStatus}
                   summary={summary}
-                  setBioStatus={setBioStatus} 
+                  setBioStatus={setBioStatus}
                   // for rerendering
                   notifyBioStatusChange={(id, status) => {
                     setBioStatusMap(prev => ({ ...prev, [id]: status }));
@@ -586,19 +587,19 @@ function Bio({ bioCanEdit, ...props }) {
   return bioCanEdit ? <BioSwitch {...props} /> : <BioLabel {...props} />;
 }
 
-function BioSwitch({ userId, bioPosted, summary, setBioStatus, notifyBioStatusChange  }) {
+function BioSwitch({ userId, bioPosted, summary, setBioStatus, notifyBioStatusChange }) {
   const dispatch = useDispatch();
   const style = { color: textColors[summary?.weeklySummaryOption] || textColors.Default };
 
   // eslint-disable-next-line no-shadow
-const handleChangeBioPosted = async (userId, bioStatus) => {
-  const res = await dispatch(toggleUserBio(userId, bioStatus));
-  if (res.status === 200) {
-    toast.success('You have changed the bio announcement status of this user.');
-    setBioStatus(bioStatus); // update local state
-    notifyBioStatusChange(userId, bioStatus); // for rerendering when thereis a change
-  }
-};
+  const handleChangeBioPosted = async (userId, bioStatus) => {
+    const res = await dispatch(toggleUserBio(userId, bioStatus));
+    if (res.status === 200) {
+      toast.success('You have changed the bio announcement status of this user.');
+      setBioStatus(bioStatus); // update local state
+      notifyBioStatusChange(userId, bioStatus); // for rerendering when thereis a change
+    }
+  };
 
 
 
@@ -795,7 +796,7 @@ function Index({
         style={{
           color:
             currentDate.isSameOrAfter(moment(summary.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ')) &&
-            currentDate.isBefore(moment(summary.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
+              currentDate.isBefore(moment(summary.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
               ? 'rgba(128, 128, 128, 0.5)'
               : '#007BFF',
         }}
