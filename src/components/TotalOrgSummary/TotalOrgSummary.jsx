@@ -318,7 +318,7 @@ function TotalOrgSummary(props) {
           overflow: hidden !important;
           text-overflow: ellipsis !important;
         }
-        .chart-title p {
+        .total-org-chart-title p {
           font-size: 1.5em !important;
           font-weight: bold !important;
           text-align: center !important;
@@ -571,7 +571,7 @@ function TotalOrgSummary(props) {
         <Row>
           <Col lg={{ size: 6 }}>
             <div className="component-container component-border">
-              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
+              <div className={`total-org-chart-title ${darkMode ? 'dark-mode' : ''}`}>
                 <p>Global Volunteer Network: Uniting Communities Worldwide</p>
               </div>
               <GlobalVolunteerMap isLoading={isLoading} locations={volunteerStats?.userLocations} />
@@ -579,7 +579,7 @@ function TotalOrgSummary(props) {
           </Col>
           <Col lg={{ size: 6 }}>
             <div className="component-container component-border">
-              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
+              <div className={`total-org-chart-title ${darkMode ? 'dark-mode' : ''}`}>
                 <p>Volunteer Status</p>
               </div>
               <VolunteerStatusChart
@@ -595,7 +595,7 @@ function TotalOrgSummary(props) {
         <Row>
           <Col lg={{ size: 6 }}>
             <div className="component-container component-border">
-              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
+              <div className={`total-org-chart-title ${darkMode ? 'dark-mode' : ''}`}>
                 <p>Volunteer Hours Distribution</p>
               </div>
               <div
@@ -621,7 +621,7 @@ function TotalOrgSummary(props) {
           </Col>
           <Col lg={{ size: 3 }}>
             <div className="component-container component-border">
-              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
+              <div className={`total-org-chart-title ${darkMode ? 'dark-mode' : ''}`}>
                 <p>Task Completed</p>
               </div>
               <div className="mt-4">
@@ -635,7 +635,7 @@ function TotalOrgSummary(props) {
           </Col>
           <Col lg={{ size: 3 }}>
             <div className="component-container component-border">
-              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
+              <div className={`total-org-chart-title ${darkMode ? 'dark-mode' : ''}`}>
                 <p>Hours Completed</p>
               </div>
               <div className="mt-4">
@@ -654,7 +654,7 @@ function TotalOrgSummary(props) {
         <Row>
           <Col lg={{ size: 7 }}>
             <div className="component-container component-border">
-              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
+              <div className={`total-org-chart-title ${darkMode ? 'dark-mode' : ''}`}>
                 <p>Volunteer Trends by Time</p>
               </div>
               <VolunteerTrendsLineChart darkMode={darkMode} />
@@ -662,7 +662,7 @@ function TotalOrgSummary(props) {
           </Col>
           <Col lg={{ size: 5 }}>
             <div className="component-container component-border">
-              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
+              <div className={`total-org-chart-title ${darkMode ? 'dark-mode' : ''}`}>
                 <p>Anniversary Celebrated</p>
               </div>
               <AnniversaryCelebrated
@@ -679,7 +679,7 @@ function TotalOrgSummary(props) {
         <Row>
           <Col lg={{ size: 7 }}>
             <div className="component-container component-border">
-              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
+              <div className={`total-org-chart-title ${darkMode ? 'dark-mode' : ''}`}>
                 <p>Work Distribution</p>
               </div>
               <WorkDistributionBarChart
@@ -691,7 +691,7 @@ function TotalOrgSummary(props) {
           </Col>
           <Col lg={{ size: 5 }}>
             <div className="component-container component-border">
-              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
+              <div className={`total-org-chart-title ${darkMode ? 'dark-mode' : ''}`}>
                 <p>Role Distribution</p>
               </div>
               <RoleDistributionPieChart
@@ -708,7 +708,7 @@ function TotalOrgSummary(props) {
         <Row>
           <Col lg={{ size: 6 }}>
             <div className="component-container component-border">
-              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
+              <div className={`total-org-chart-title ${darkMode ? 'dark-mode' : ''}`}>
                 <p>Team Stats</p>
               </div>
               <TeamStats
@@ -721,7 +721,7 @@ function TotalOrgSummary(props) {
           </Col>
           <Col lg={{ size: 6 }}>
             <div className="component-container component-border">
-              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
+              <div className={`total-org-chart-title ${darkMode ? 'dark-mode' : ''}`}>
                 <p>Blue Square Stats</p>
               </div>
               <BlueSquareStats

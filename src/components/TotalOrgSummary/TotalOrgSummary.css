@@ -15,7 +15,7 @@
   background-color: #1c2541;
 }
 
-.container-total-org-wrapper.bg-oxford-blue .chart-title p {
+.container-total-org-wrapper.bg-oxford-blue .total-org-chart-title p {
   color: #fff !important;
 }
 
@@ -183,7 +183,7 @@
   text-overflow: ellipsis;
 }
 
-.chart-title p {
+.total-org-chart-title p {
   font-size: 1.8rem !important;
   font-weight: bold;
   text-align: center;
@@ -225,6 +225,6 @@
   color: #fff !important;
 }
 
-.chart-title.dark-mode p {
+.total-org-chart-title.dark-mode p {
   color: white;
 }
