@@ -1,5 +1,6 @@
 // Mock data for PR Grading Screen
 // This file contains sample data for testing the PR grading functionality
+// Delete this file once we have the backend endpoint to get data
 
 export const mockTeamData = {
   teamName: '91NePRT',
