@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
 import { Container, Row, Col, Card, Button } from 'react-bootstrap';
-import { getAllMockData } from './mockData';
 import './PRGradingScreen.css';
 
 const PRGradingScreen = ({ teamData, reviewers }) => {
-  // Use props if provided, otherwise fallback to mock data
-  const defaultData = getAllMockData();
-  const currentTeamData = teamData || defaultData.teamData;
-  const currentReviewers = reviewers || defaultData.reviewers;
+  // Pure presentational component - requires teamData and reviewers as props
+  if (!teamData || !reviewers) {
+    return <div>Error: Missing required props (teamData, reviewers)</div>;
+  }
 
-  const [reviewerData, setReviewerData] = useState(currentReviewers);
+  const [reviewerData, setReviewerData] = useState(reviewers);
   const [activeInput, setActiveInput] = useState(null); // Track which reviewer is adding PR
   const [inputValue, setInputValue] = useState('');
   const [inputError, setInputError] = useState('');
@@ -124,8 +123,7 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                   <h1 className="pr-grading-screen-title">Weekly PR grading screen</h1>
                   <div className="pr-grading-screen-team-info-badge">
                     <h2 className="pr-grading-screen-team-info">
-                      {currentTeamData.teamName} - {currentTeamData.dateRange.start} to{' '}
-                      {currentTeamData.dateRange.end}
+                      {teamData.teamName} - {teamData.dateRange.start} to {teamData.dateRange.end}
                     </h2>
                   </div>
                 </div>

@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Container, Row, Col, Card, Button } from 'react-bootstrap';
-import PRGradingScreen from './PRGradingScreen';
-import { getDataByTeamId } from './mockData';
+import { useHistory } from 'react-router-dom';
 
 const PRGradingTest = () => {
-  const [selectedTeam, setSelectedTeam] = useState(null);
+  const history = useHistory();
 
   const teams = [
     { id: 'team1', name: '91NePRT (Original)', description: '8 reviewers, mixed completion' },
@@ -13,13 +12,8 @@ const PRGradingTest = () => {
   ];
 
   const handleTeamSelect = teamId => {
-    setSelectedTeam(teamId);
+    history.push('/pr-grading-screen', { teamId });
   };
-
-  if (selectedTeam) {
-    const data = getDataByTeamId(selectedTeam);
-    return <PRGradingScreen teamData={data.teamData} reviewers={data.reviewers} />;
-  }
 
   return (
     <Container style={{ padding: '40px 20px' }}>
