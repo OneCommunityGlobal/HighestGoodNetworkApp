@@ -75,14 +75,14 @@ function FormattedReport({
   darkMode,
   handleTeamCodeChange,
   handleSpecialColorDotClick,
+  bioStatusMap,
+  rerenderKey,
+  setBioStatusMap,
+  setRerenderKey,
 }) {
   const dispatch = useDispatch();
   const isEditCount = dispatch(hasPermission('totalValidWeeklySummaries'));
-
-
-// for rendering
-  const [bioStatusMap, setBioStatusMap] = useState({});
-  const [rerenderKey, setRerenderKey] = useState(0);
+  
 
   // Only proceed if summaries is valid
   if (!summaries || !Array.isArray(summaries) || summaries.length === 0) {
@@ -584,14 +584,15 @@ function BioSwitch({ userId, bioPosted, summary, setBioStatus, notifyBioStatusCh
   const dispatch = useDispatch();
   const style = { color: textColors[summary?.weeklySummaryOption] || textColors.Default };
 
-  const handleChangeBioPosted = async (userId, bioStatus) => {
-    const res = await dispatch(toggleUserBio(userId, bioStatus));
-    if (res.status === 200) {
-      toast.success('You have changed the bio announcement status of this user.');
-       summary.bioPosted = bioStatus;
-      setBioStatus(bioStatus); // updating parent state
-    }
-  };
+ const handleChangeBioPosted = async (userId, bioStatus) => {
+  const res = await dispatch(toggleUserBio(userId, bioStatus));
+  if (res.status === 200) {
+    toast.success('You have changed the bio announcement status of this user.');
+
+    setBioStatus(bioStatus); // update local state for highlight
+    notifyBioStatusChange(userId, bioStatus); // triggers update in FormattedReport via setBioStatusMap + rerender
+  }
+};
 
 
   return (
