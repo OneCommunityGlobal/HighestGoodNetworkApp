@@ -32,12 +32,15 @@
   width: 100%;
 }
 
-@media (max-width: 1300px) {
+@media (max-width: 1100px) {
   .report-page-wrapper {
     display: flex;
     flex-direction: column;
     padding: 40px;
     align-items: center;
+  }
+  .report-page-content {
+    padding: 24px;
   }
 }
 
