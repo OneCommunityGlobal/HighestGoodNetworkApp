@@ -146,6 +146,41 @@ class Teams extends React.PureComponent {
     this.setState({ sortTeamNameState: newSortState, sortTeamActiveState: 'none' });
   };
 
+  sortTeams = () => {
+    const { teams, sortTeamNameState, sortTeamActiveState } = this.state;
+
+    if (!Array.isArray(teams)) {
+      return;
+    }
+    const sortedTeams = [...teams]
+      .sort((a, b) => {
+        const dateA = new Date(a.props.team.modifiedDatetime);
+        const dateB = new Date(b.props.team.modifiedDatetime);
+        const nameA = a.props.name;
+        const nameB = b.props.name;
+        const activeA = a.props.active;
+        const activeB = b.props.active;
+        if (sortTeamNameState === 'ascending') {
+          return nameA.localeCompare(nameB);
+        }
+        if (sortTeamNameState === 'descending') {
+          return nameB.localeCompare(nameA);
+        }
+        if (sortTeamActiveState === 'ascending') {
+          return activeA - activeB;
+        }
+        if (sortTeamActiveState === 'descending') {
+          return activeB - activeA;
+        }
+        return dateB - dateA;
+      })
+      .map((team, index) => ({
+        ...team,
+        props: { ...team.props, index },
+      }));
+    this.setState({ sortedTeams });
+  };
+
   render() {
     const { allTeams, fetching } = this.props.state.allTeamsData;
     const { darkMode } = this.props.state.theme;
@@ -578,41 +613,6 @@ class Teams extends React.PureComponent {
    */
   onDeleteTeamMember = deletedUserId => {
     this.props.deleteTeamMember(this.state.selectedTeamId, deletedUserId);
-  };
-
-  sortTeams = () => {
-    const { teams, sortTeamNameState, sortTeamActiveState } = this.state;
-
-    if (!Array.isArray(teams)) {
-      return;
-    }
-    const sortedTeams = [...teams]
-      .sort((a, b) => {
-        const dateA = new Date(a.props.team.modifiedDatetime);
-        const dateB = new Date(b.props.team.modifiedDatetime);
-        const nameA = a.props.name;
-        const nameB = b.props.name;
-        const activeA = a.props.active;
-        const activeB = b.props.active;
-        if (sortTeamNameState === 'ascending') {
-          return nameA.localeCompare(nameB);
-        }
-        if (sortTeamNameState === 'descending') {
-          return nameB.localeCompare(nameA);
-        }
-        if (sortTeamActiveState === 'ascending') {
-          return activeA - activeB;
-        }
-        if (sortTeamActiveState === 'descending') {
-          return activeB - activeA;
-        }
-        return dateB - dateA;
-      })
-      .map((team, index) => ({
-        ...team,
-        props: { ...team.props, index },
-      }));
-    this.setState({ sortedTeams });
   };
 }
 export { Teams };
