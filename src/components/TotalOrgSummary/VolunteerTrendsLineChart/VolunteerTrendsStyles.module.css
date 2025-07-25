@@ -5,7 +5,8 @@
 .datePickerPostion {
   position: absolute !important;
   z-index: 1;
-  transform: translateX(25%);
+  left: 50%;
+  transform: translateX(-50%);
   height: min-content;
 }
 
