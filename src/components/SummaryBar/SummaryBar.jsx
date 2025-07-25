@@ -426,19 +426,6 @@ const SummaryBar = React.forwardRef((props, ref) => {
       : 'bg--bar disabled-bar text--black box-shadow-light';
   };
 
-  useEffect(() => {
-    if (displayUserProfile) {
-      // eslint-disable-next-line no-console
-      console.log('User First Name : ', displayUserProfile.firstName);
-      // eslint-disable-next-line no-console
-      console.log('User Last Name:', displayUserProfile.lastName);
-
-      // Save to localStorage
-      localStorage.setItem('userFirstName', displayUserProfile.firstName);
-      localStorage.setItem('userLastName', displayUserProfile.lastName);
-    }
-  }, [displayUserProfile]);
-
   const renderSummary = () => {
     if (!weeklySummary) {
       if (weeklySummaryNotReq) {

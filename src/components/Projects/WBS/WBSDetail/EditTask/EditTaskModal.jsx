@@ -96,6 +96,8 @@ function EditTaskModal(props) {
   const [dueDate, setDueDate] = useState();
   const [dateWarning, setDateWarning] = useState(false);
   const [currentMode, setCurrentMode] = useState('');
+  const [startDateError, setStartDateError] = useState(false);
+  const [endDateError, setEndDateError] = useState(false);
 
   const categoryOptions = [
     { value: 'Unspecified', label: 'Unspecified' },
@@ -180,16 +182,30 @@ function EditTaskModal(props) {
     }
   };
 
-  const changeDateStart = startDate => {
-    setStartedDate(startDate);
+  const changeDateStart = startedDate => {
+    setStartedDate(startedDate);
+    const endDateTime = dueDate ? dateFnsFormat(new Date(dueDate), FORMAT) : ''
+    if (endDateTime) {
+      if (startedDate > endDateTime) {
+        setStartDateError(true); 
+      } else {
+        setStartDateError(false); 
+      }
+    }
+    setEndDateError(false);
   };
 
   const changeDateEnd = dueDate => {
-    if (!startedDate) {
-      const newDate = dateFnsFormat(utcToZonedTime(new Date(), TIMEZONE), FORMAT);
-      setStartedDate(newDate);
-    }
     setDueDate(dueDate);
+    const startDateTime = startedDate ? dateFnsFormat(new Date(startedDate), FORMAT) : ''
+    if (startedDate) {
+      if (dueDate !== startDateTime && dueDate < startDateTime) {
+        setEndDateError(true);
+      } else {
+        setEndDateError(false);
+      }
+    }
+    setStartDateError(false); 
   };
 
   useEffect(() => {
@@ -201,22 +217,14 @@ function EditTaskModal(props) {
         : dateFnsParse(dueDate, FORMAT, new Date());
     }
     if (startedDate) {
-      parsedStartedDate = startedDate.includes('T')
-        ? parseISO(startedDate)
-        : dateFnsParse(startedDate, FORMAT, new Date());
-    }
-    if (dueDate && parsedDueDate < parsedStartedDate) {
-      setDateWarning(true);
-    } else {
-      setDateWarning(false);
+      if (dueDate < startedDate) {
+        setDateWarning(true);
+      } else {
+        setDateWarning(false);
+      }
     }
   }, [startedDate, dueDate]);
-
-  const formatDate = (date, format) => {
-    // consistent timezone handling
-    const zonedDate = utcToZonedTime(date, TIMEZONE);
-    return dateFnsFormat(zonedDate, format);
-  };
+  const formatDate = (date, format, locale) => dateFnsFormat(date, format, { locale });
   const parseDate = (str, format, locale) => {
     const parsed = dateFnsParse(str, format, new Date(), { locale });
     if (DateUtils.isDate(parsed)) {
@@ -228,6 +236,8 @@ function EditTaskModal(props) {
   const addLink = () => {
     setLinks([...links, link]);
     setLink('');
+    setStartDateError(false);
+    setEndDateError(false);
   };
   const removeLink = index => {
     setLinks([...links.splice(0, index), ...links.splice(index + 1)]);
@@ -344,6 +354,15 @@ function EditTaskModal(props) {
   }, [links]);
 
   useEffect(() => {
+    if (!modal) {
+      setStartedDate('');
+      setDueDate('');
+      setStartDateError(false);
+      setEndDateError(false);
+    }
+  }, [modal]);
+
+  useEffect(() => {
     let isMounted = true;
 
     if (isMounted && startedDate && dueDate) {
@@ -375,7 +394,7 @@ function EditTaskModal(props) {
         <ModalHeader toggle={toggle} className={darkMode ? 'bg-space-cadet' : ''}>
           {currentMode}
         </ModalHeader>
-        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue dark-mode no-hover' : ''}>
           <table
             className={`table table-bordered responsive
             ${canUpdateTask || canSuggestTask ? null : 'disable-div'} 
@@ -605,11 +624,11 @@ function EditTaskModal(props) {
                   Hours
                 </td>
                 <td id="edit-modal-td" scope="col" className="w-100">
-                  <div className="py-1 flex-responsive">
+                  <div className="py-2 flex-responsive">
                     <label
                       htmlFor="bestCase"
-                      style={{ width: '100px', marginRight: '2px' }}
-                      className={`text-nowrap ${darkMode ? 'text-light' : ''}`}
+                     
+                      className={`text-nowrap w-25 mr-4 ${darkMode ? 'text-light' : ''}`}
                     >
                       Best-case
                     </label>
@@ -631,16 +650,15 @@ function EditTaskModal(props) {
                       { componentOnly: true },
                     )}
                   </div>
-                  {hoursWarning && (
-                    <div className="warning mb-3">
+                    <div className="warning">
                       {hoursWarning ? 'The number of hours must be less than other cases' : ''}
                     </div>
-                  )}
-                  <div className="py-1 flex-responsive">
+                  
+                  <div className="py-2 flex-responsive">
                     <label
                       htmlFor="worstCase"
-                      style={{ width: '100px', marginRight: '2px' }}
-                      className={`text-nowrap ${darkMode ? 'text-light' : ''}`}
+                     
+                      className={`text-nowrap w-25 mr-4 ${darkMode ? 'text-light' : ''}`}
                     >
                       Worst-case
                     </label>
@@ -661,16 +679,15 @@ function EditTaskModal(props) {
                       { componentOnly: true },
                     )}
                   </div>
-                  {hoursWarning && (
-                    <div className="warning mb-3">
+                    <div className="warning">
                       {hoursWarning ? 'The number of hours must be higher than other cases' : ''}
                     </div>
-                  )}
-                  <div className="py-1 flex-responsive">
+                  
+                  <div className="py-2 flex-responsive">
                     <label
                       htmlFor="mostCase"
-                      style={{ width: '100px', marginRight: '2px' }}
-                      className={`text-nowrap ${darkMode ? 'text-light' : ''}`}
+                     
+                      className={`text-nowrap w-25 mr-4 ${darkMode ? 'text-light' : ''}`}
                     >
                       Most-case
                     </label>
@@ -691,18 +708,17 @@ function EditTaskModal(props) {
                       { componentOnly: true },
                     )}
                   </div>
-                  {hoursWarning && (
-                    <div className="warning mb-3">
+                    <div className="warning">
                       {hoursWarning
                         ? 'The number of hours must range between best and worst cases'
                         : ''}
                     </div>
-                  )}
-                  <div className="py-1 flex-responsive">
+                  
+                  <div className="py-2 flex-responsive">
                     <label
                       htmlFor="Estimated"
-                      style={{ width: '100px', marginRight: '2px' }}
-                      className={`text-nowrap ${darkMode ? 'text-light' : ''}`}
+                     
+                      className={`text-nowrap w-25 mr-4 ${darkMode ? 'text-light' : ''}`}
                     >
                       Estimated
                     </label>
@@ -926,9 +942,8 @@ function EditTaskModal(props) {
               <Button
                 color="primary"
                 onClick={updateTask}
-                style={darkMode ? boxStyleDark : boxStyle}
-                disabled={dateWarning}
-              >
+                disabled={startDateError || endDateError} style={darkMode ? boxStyleDark : boxStyle}
+               >
                 Update
               </Button>
             ) : null}

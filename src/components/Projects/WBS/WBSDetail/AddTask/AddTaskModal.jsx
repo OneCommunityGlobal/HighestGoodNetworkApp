@@ -74,7 +74,7 @@ function AddTaskModal(props) {
    * -------------------------------- variable declarations --------------------------------
    */
   // props from store
-  const { tasks, copiedTask, allMembers, allProjects, error, darkMode } = props;
+  const { copiedTask, allMembers, allProjects, error, darkMode, tasks } = props;
 
   const handleBestHoursChange = e => {
     setHoursBest(e.target.value);
@@ -167,9 +167,11 @@ function AddTaskModal(props) {
   };
 
   const getNewNum = () => {
+    if (!Array.isArray(props.tasks)) return '1';
     let newNum;
+    console.log(props)
     if (props.taskId) {
-      const numOfLastInnerLevelTask = tasks.reduce((num, task) => {
+      const numOfLastInnerLevelTask = props.tasks.reduce((num, task) => {
         if (task.mother === props.taskId) {
           const numIndexArray = task.num.split('.');
           const numOfInnerLevel = numIndexArray[props.level];
@@ -181,7 +183,7 @@ function AddTaskModal(props) {
       currentLevelIndexes[props.level] = `${numOfLastInnerLevelTask + 1}`;
       newNum = currentLevelIndexes.join('.');
     } else {
-      const numOfLastLevelOneTask = tasks.reduce((num, task) => {
+      const numOfLastLevelOneTask = props.tasks.reduce((num, task) => {
         if (task.level === 1) {
           const numIndexArray = task.num.split('.');
           const indexOfFirstNum = numIndexArray[0];
@@ -363,7 +365,10 @@ function AddTaskModal(props) {
    * -------------------------------- useEffects --------------------------------
    */
   useEffect(() => {
-    setNewTaskNum(getNewNum());
+    if (modal) {
+      setNewTaskNum(getNewNum());
+    }
+    // setNewTaskNum(getNewNum());
   }, [modal]);
 
   useEffect(() => {
@@ -819,11 +824,8 @@ function AddTaskModal(props) {
                   />
                 </div>
               </div>
-
-              <div className="d-flex border">
-                <span scope="col" className={`form-date p-1 ${fontColor}`}>
-                  Start Date
-                </span>
+              <div className="d-flex border add-modal-dt">
+                <span scope="col" className={`form-date p-1 ${fontColor}`}>Start Date</span>
                 <span scope="col" className="border-left p-1">
                   <div>
                     <DateInput
@@ -838,7 +840,7 @@ function AddTaskModal(props) {
                   </div>
                 </span>
               </div>
-              <div className="d-flex border align-items-center">
+              <div className="d-flex border align-items-center  add-modal-dt">
                 <label
                   htmlFor="end-date-input"
                   className={`form-date p-1 ${fontColor}`}
@@ -893,7 +895,7 @@ function AddTaskModal(props) {
 }
 
 const mapStateToProps = state => ({
-  tasks: state.tasks.taskItems,
+  // tasks: state.tasks.taskItems,
   copiedTask: state.tasks.copiedTask,
   allMembers: state.projectMembers.members,
   allProjects: state.allProjects,

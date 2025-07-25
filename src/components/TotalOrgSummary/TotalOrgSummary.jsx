@@ -39,7 +39,6 @@ import VolunteerStatusChart from './VolunteerStatus/VolunteerStatusChart';
 import BlueSquareStats from './BlueSquareStats/BlueSquareStats';
 import TeamStats from './TeamStats/TeamStats';
 import HoursCompletedBarChart from './HoursCompleted/HoursCompletedBarChart';
-import HoursWorkList from './HoursWorkList/HoursWorkList';
 import NumbersVolunteerWorked from './NumbersVolunteerWorked/NumbersVolunteerWorked';
 import AnniversaryCelebrated from './AnniversaryCelebrated/AnniversaryCelebrated';
 import RoleDistributionPieChart from './VolunteerRolesTeamDynamics/RoleDistributionPieChart';
@@ -605,17 +604,18 @@ function TotalOrgSummary(props) {
               <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
                 <p>Volunteer Hours Distribution</p>
               </div>
-              <div className="d-flex flex-row justify-content-center flex-wrap my-4">
-                <p>in progress...</p>
-                {/* <VolunteerHoursDistribution
+              <div
+                className="d-flex flex-column justify-content-center mt-4 gap-3"
+                style={{ gap: '20px' }}
+              >
+                <VolunteerHoursDistribution
                   isLoading={isLoading}
                   darkMode={darkMode}
                   hoursData={volunteerStats?.volunteerHoursStats}
                   totalHoursData={volunteerStats?.totalHoursWorked}
                   comparisonType={selectedComparison}
-                /> */}
+                />
                 <div className="d-flex flex-column align-items-center justify-content-center">
-                  <HoursWorkList />
                   <NumbersVolunteerWorked
                     isLoading={isLoading}
                     data={volunteerStats?.volunteersOverAssignedTime}

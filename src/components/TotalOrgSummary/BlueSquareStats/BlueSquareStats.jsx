@@ -53,7 +53,6 @@ function BlueSquareStats({ isLoading, blueSquareStats, comparisonType }) {
           data={data}
           colors={BLUE_SQUARE_STATS_COLORS}
           comparisonType={comparisonType}
-          hasData={hasData}
         />
       </div>
     </section>

@@ -1,4 +1,4 @@
-import { vi } from 'vitest'; // ← MUST be first
+import { vi } from 'vitest';
 import React from 'react';
 
 // 1) Mock out any child components that hit the network or DOM APIs

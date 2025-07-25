@@ -58,7 +58,7 @@ describe('WBS Component', () => {
           frontPermissions: ['deleteWbs', 'addWbs', 'fetchAllWBS'],
           backPermissions: [],
         },
-        role: 'Manager',
+        role: "Manager",
       },
     },
     role: { roles: [] },
@@ -91,6 +91,7 @@ describe('WBS Component', () => {
     expect(store.dispatch).toHaveBeenCalledWith(getProjectDetail(projectId));
   });
 
+
   it('renders AddWBS component', () => {
     renderComponent();
     expect(screen.getByTestId('add-wbs')).toBeInTheDocument();
@@ -117,4 +118,5 @@ describe('WBS Component', () => {
     expect(screen.getByText('#')).toBeInTheDocument();
     expect(screen.getByText('Name')).toBeInTheDocument();
   });
+  
 });

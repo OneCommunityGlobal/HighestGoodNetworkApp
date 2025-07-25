@@ -46,7 +46,7 @@ const WBS = props => {
   return (
     <React.Fragment>
       <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{minHeight: "100%"}}>
-        <div className={`container pt-2 ${darkMode ? 'bg-yinmn-blue-light text-light' : ''}`}>
+        <div className={`container pt-2 border border-secondary rounded ${darkMode ? 'text-light' : ''}`}style={darkMode ? { backgroundColor: '#1B2A41', alignItems: 'normal' } : { alignItems: 'normal' }}>
           <nav aria-label="breadcrumb">
             <div className={`d-flex align-items-center breadcrumb ${darkMode ? 'bg-space-cadet' : ''}`} 
               style={{ 
@@ -60,16 +60,16 @@ const WBS = props => {
                 <NavItem tag={Link} to={`/projects/`}>
                   <button type="button" className="btn btn-secondary" style={darkMode ? boxStyleDark : boxStyle}>
                     <i className="fa fa-chevron-circle-left" aria-hidden="true"></i>
-                    <span style={{ marginLeft: '8px' }}>Return to Project List</span>
                   </button>
+                  <span style={{ marginLeft: '8px' }}>Return to Project List</span>
                 </NavItem>
               </div>
               <div style={{ 
                 width: '100%',
                 textAlign: 'center',
                 fontWeight: 'bold',
-                fontSize: '1.5rem'  
-              }}>{projectName}</div>
+                fontSize: '1.0rem'  
+              }}>Proj Name: {projectName}</div>
             </div>
           </nav>
 
@@ -89,7 +89,7 @@ const WBS = props => {
             <table className={`table table-bordered table-responsive-sm ${darkMode ? 'bg-yinmn-blue text-light dark-mode' : '' }`}>
               <thead>
                 <tr className={darkMode ? 'bg-space-cadet' : ''}>
-                  <th scope="col" style={{ width: '150px' }}>#</th>
+                  <th scope="col" style={{ width: '150px', textAlign: 'center'}}>#</th>
                   <th scope="col" style={{ textAlign: 'left' }}>
                     Name
                     <span style={{ marginLeft: '8px', cursor: 'pointer' }}>

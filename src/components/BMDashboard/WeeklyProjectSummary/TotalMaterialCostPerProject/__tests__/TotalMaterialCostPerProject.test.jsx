@@ -87,6 +87,8 @@ describe('TotalMaterialCostPerProject', () => {
     await waitFor(() => {
       expect(screen.getByText('Project A')).toBeInTheDocument();
     });
+    // eslint-disable-next-line testing-library/no-debugging-utils
+    screen.debug();
 
     const control = document.querySelector('.select__control');
 
@@ -111,6 +113,7 @@ describe('TotalMaterialCostPerProject', () => {
 
     // Select Project A using the dropdown
     const mySelectComponent = screen.queryByTestId('select-projects-dropdown');
+    expect(mySelectComponent).toBeInTheDocument();
 
     fireEvent.keyDown(mySelectComponent.firstChild, { key: 'ArrowDown' });
     await screen.findByText('Project A');
