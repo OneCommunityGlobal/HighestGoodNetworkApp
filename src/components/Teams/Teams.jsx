@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { toast } from 'react-toastify';
 import { searchWithAccent } from 'utils/search';
 import lo from 'lodash';
+import { Button, Container } from 'reactstrap';
 import {
   getAllUserTeams,
   postNewTeam,
@@ -24,7 +25,6 @@ import CreateNewTeamPopup from './CreateNewTeamPopup';
 import DeleteTeamPopup from './DeleteTeamPopup';
 import TeamStatusPopup from './TeamStatusPopup';
 import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
-import { Button, Container } from 'reactstrap';
 
 class Teams extends React.PureComponent {
   constructor(props) {
@@ -128,6 +128,24 @@ class Teams extends React.PureComponent {
     this.setState({ sortTeamActiveState: newSortState, sortTeamNameState: 'none' });
   };
 
+  toggleTeamNameSort = () => {
+    let newSortState;
+    switch (this.state.sortTeamNameState) {
+      case 'none':
+        newSortState = 'ascending';
+        break;
+      case 'ascending':
+        newSortState = 'descending';
+        break;
+      case 'descending':
+        newSortState = 'none';
+        break;
+      default:
+        throw new Error('Invalid sort state');
+    }
+    this.setState({ sortTeamNameState: newSortState, sortTeamActiveState: 'none' });
+  };
+
   render() {
     const { allTeams, fetching } = this.props.state.allTeamsData;
     const { darkMode } = this.props.state.theme;
@@ -208,7 +226,7 @@ class Teams extends React.PureComponent {
       if (teamSearchData.length === 0) {
         // Se nenhum time for encontrado, retorna uma linha de mensagem
 
-        this.setState({ nonexistentTeamName: this.state.wildCardSearchText });
+        this.setState(prevState => ({ nonexistentTeamName: prevState.wildCardSearchText }));
 
         return [
           <tr key="no-teams">
@@ -595,24 +613,6 @@ class Teams extends React.PureComponent {
         props: { ...team.props, index },
       }));
     this.setState({ sortedTeams });
-  };
-
-  toggleTeamNameSort = () => {
-    let newSortState;
-    switch (this.state.sortTeamNameState) {
-      case 'none':
-        newSortState = 'ascending';
-        break;
-      case 'ascending':
-        newSortState = 'descending';
-        break;
-      case 'descending':
-        newSortState = 'none';
-        break;
-      default:
-        throw new Error('Invalid sort state');
-    }
-    this.setState({ sortTeamNameState: newSortState, sortTeamActiveState: 'none' });
   };
 }
 export { Teams };
