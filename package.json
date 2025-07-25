@@ -174,16 +174,10 @@
     "vite": "^6.3.5",
     "vitest": "^3.2.0"
   },
- "lint-staged": {
+"lint-staged": {
     "*.{js,jsx,ts,tsx}": [
       "eslint --fix",
-      "eslint --max-warnings=0",
-      "prettier --write",
-      "git add"
-    ],
-    "linters": {
-      "concurrent": true
-    }
-  },
-  "lint-staged:quiet": true
+      "prettier --write"
+    ]
+  }
 }

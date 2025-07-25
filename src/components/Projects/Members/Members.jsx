@@ -20,7 +20,7 @@ import hasPermission from '../../../utils/permissions';
 import { boxStyle, boxStyleDark } from '~/styles';
 import ToggleSwitch from '~/components/UserProfile/UserProfileEdit/ToggleSwitch';
 import Loading from '~/components/common/Loading';
-
+import { getProjectDetail } from '~/actions/project';
 
 const Members = props => {
   const darkMode = props.state.theme.darkMode;
