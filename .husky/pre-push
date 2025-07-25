@@ -2,7 +2,7 @@
 . "$(dirname "$0")/_/husky.sh"
 
 echo "🧪 Running tests before push..."
-npm run test -- --bail
+npm run test -- --bail=1
 test_status=$?
 
 echo "🧹 Running lint before push..."
