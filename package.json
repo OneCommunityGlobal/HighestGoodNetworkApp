@@ -173,5 +173,17 @@
     "typescript": "^4.8.4",
     "vite": "^6.3.5",
     "vitest": "^3.2.0"
-  }
+  },
+ "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "eslint --max-warnings=0",
+      "prettier --write",
+      "git add"
+    ],
+    "linters": {
+      "concurrent": true
+    }
+  },
+  "lint-staged:quiet": true
 }
