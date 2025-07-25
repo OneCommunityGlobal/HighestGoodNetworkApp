@@ -1,15 +1,15 @@
-.date-picker-container {
+.datePickerContainer {
   position: relative;
 }
 
-.react-datepicker {
+.datePickerPostion {
   position: absolute !important;
   z-index: 1;
-  transform: translateX(-50%);
-  box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.2);
+  transform: translateX(25%);
+  height: min-content;
 }
 
-.chart-container {
+.chartContainer {
   display: grid;
   justify-content: center;
   text-align: center;
@@ -18,28 +18,28 @@
   margin-top: 15px;
 }
 
-.custom-date-range {
+.customDateRange {
   margin-top: 8px;
 }
 
-.custom-date-range > span {
+.customDateRange > span {
   font-weight: bold;
 }
 
-.date-filter-container {
+.dateFilterContainer {
   display: flex;
   gap: 10px;
   align-items: center;
   justify-content: center;
 }
 
-.date-filter-container > select {
+.dateFilterContainer > select {
   margin-top: 0;
   width: min-content;
 }
 
 @media (max-width: 500px) {
-  .chart-container {
+  .chartContainer {
     justify-content: start;
     overflow: scroll;
   }
