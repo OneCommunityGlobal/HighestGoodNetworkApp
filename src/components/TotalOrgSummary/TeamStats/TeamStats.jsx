@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { ENDPOINTS } from '~/utils/URL';
 import axios from 'axios';
+import { ENDPOINTS } from '~/utils/URL';
 import Loading from '~/components/common/Loading';
 import TeamStatsBarChart from './TeamStatsBarChart';
 import './TeamStats.css';

@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { useHistory } from 'react-router-dom';
 import { useState } from 'react';
 
@@ -112,7 +113,9 @@ function TSAFormPage5() {
             good and valuable consideration and clarify the nature of the services you are to
             provide.
             <br />
-            <br /> Please complete all of the following sections and add your digital signature at
+            <br />
+            Please complete all of the following sections and add your digital signature at 
+            {/* eslint-disable-next-line prettier/prettier */}
             the end before completing any work with us.
           </p>
           <p
@@ -141,6 +144,7 @@ function TSAFormPage5() {
           fontSize: '16px',
         }}
       >
+        {/* eslint-disable jsx-a11y/label-has-associated-control */}
         <label
           htmlFor="certifications"
           style={{ display: 'block', marginBottom: '20px', fontWeight: 'bold' }}
@@ -153,12 +157,14 @@ function TSAFormPage5() {
         >
           1.1 As a consultant/volunteer with ONE COMMUNITY, and in the course of this engagement,
           you shall be under the supervision of your Project Team Leader and/or the Executive
-          Director. <br />
+          Director.
+          <br />
           <br />
           1.2 During the course of this engagement, every policy decision must only be taken in
           consultation with your Project Team Leader and/or the Executive Director.
           <br />
-          <br /> 1.3 One Community shall at all times, endeavor to facilitate a conducive working
+          <br />
+          1.3 One Community shall at all times, endeavor to facilitate a conducive working
           environment.
         </label>
       </div>
@@ -425,11 +431,13 @@ function TSAFormPage5() {
           4.1 At all times, either party shall have the right, with or without cause, to terminate
           this relationship by giving a written notice to the other party.
           <br />
-          <br /> 4.2 PROVIDED that One Community shall not be under any duty whatsoever to
-          recompense you, by whatever means, for anything you contribute to One Community during the
-          course of your participation and/or during the subsistence of this agreement.
           <br />
-          <br /> 4.3 You also agree that, in the event of termination, One Community will NOT be
+          4.2 PROVIDED that One Community shall not be under any duty whatsoever to recompense you,
+          by whatever means, for anything you contribute to One Community during the course of your
+          participation and/or during the subsistence of this agreement.
+          <br />
+          <br />
+          4.3 You also agree that, in the event of termination, One Community will NOT be
           under any obligation to remove or delete any part of its Open Source Creations for the
           reason that they contain images, voice, descriptions or anything whatsoever accredited to
           your contribution during the course of your participation or during the subsistence of

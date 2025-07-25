@@ -120,6 +120,7 @@ function TSAFormPage7() {
           Dispute Resolution & Agreement Of Terms
         </div>
         <div style={{ padding: '35px', fontSize: '16px', lineHeight: '1.6', textAlign: 'justify' }}>
+          {/* eslint-disable jsx-a11y/label-has-associated-control */}
           <label
             htmlFor="certifications"
             style={{ display: 'block', marginBottom: '20px', fontWeight: 'bold' }}
