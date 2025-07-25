@@ -1,0 +1,23 @@
+.chart-container {
+  padding: 20px;
+  font-family: sans-serif;
+}
+
+.filters-bar {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.filters-bar label {
+  margin-right: 5px;
+  font-weight: 600;
+}
+
+.scroll-container {
+  overflow-x: auto;
+  border: 1px solid #ddd;
+  padding: 10px;
+  background-color: #fff;
+}

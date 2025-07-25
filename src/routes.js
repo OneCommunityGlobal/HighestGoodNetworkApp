@@ -142,6 +142,7 @@ import ActivityAgenda from './components/CommunityPortal/Activities/ActivityAgen
 
 // HGN PR Dashboard
 import PRReviewTeamAnalytics from './components/HGNPRDashboard/PRReviewTeamAnalytics';
+import ReviewersStackedBarChart from './components/HGNPRDashboard/ReviewersStackedBarChart/ReviewersStackedBarChart';
 
 // eslint-disable-next-line import/order, import/no-unresolved
 import LogTools from './components/BMDashboard/LogTools/LogTools';
@@ -703,6 +704,11 @@ export default (
           path="/pr-team-analytics/popular-prs"
           exact
           component={PRReviewTeamAnalytics}
+        />
+        <ProtectedRoute
+          path="/pr-team-analytics/reviewers-stacked-bar-chart"
+          exact
+          component={ReviewersStackedBarChart}
         />
         <ProtectedRoute path="/ExperienceDonutChart" component={ExperienceDonutChart} fallback />
 
