@@ -50,14 +50,14 @@ export const getWeeklySummariesReport = (weekIndex = null) => {
     try {
       // Use the APIEndpoint from ENDPOINTS
       let url = ENDPOINTS.WEEKLY_SUMMARIES_REPORT();
-      
+
       // Add the week parameter if provided
       if (weekIndex !== null) {
         // Check if the URL already has parameters
         const separator = url.includes('?') ? '&' : '?';
         url = `${url}${separator}week=${weekIndex}`;
       }
-      
+
       const response = await axios.get(url);
       dispatch(fetchWeeklySummariesReportSuccess(response.data));
       return { status: response.status, data: response.data };
@@ -89,25 +89,18 @@ export const updateOneSummaryReport = (userId, updatedField) => {
 /**
  * Toggle the user's bio status (posted, requested, default).
  */
-export const toggleUserBio = (userId, bioPosted) => {
+export const toggleUserBio = (userId, bioPosted) => async dispatch => {
   const url = ENDPOINTS.TOGGLE_BIO_STATUS(userId);
-  return async dispatch => {
-    try {
-      const res = await axios.patch(url, { bioPosted });
-
-      if (res.status === 200) {
-        const updatedField = { bioPosted };
-
-        // Dispatch an action to update the store
-        dispatch(updateSummaryReport({ _id: userId, updatedField }));
-
-        toast.success(`Bio status updated to "${bioPosted}"`);
-      }
-
-      return res;
-    } catch (error) {
-      toast.error('An error occurred while updating bio status.');
-      throw error;
+  try {
+    const res = await axios.patch(url, { bioPosted });
+    if (res.status === 200) {
+      const updatedField = { bioPosted };
+      dispatch(updateSummaryReport({ _id: userId, updatedField }));
+      toast.success(`Bio status updated to "${bioPosted}"`);
     }
-  };
+    return res;
+  } catch (error) {
+    toast.error('An error occurred while updating bio status.');
+    throw error;
+  }
 };
