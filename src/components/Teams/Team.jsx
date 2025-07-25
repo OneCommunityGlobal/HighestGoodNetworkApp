@@ -1,8 +1,9 @@
+/* eslint-disable react/destructuring-assignment */
 import './Team.css';
-import hasPermission from 'utils/permissions';
-import { boxStyle, boxStyleDark } from 'styles';
 import { connect, useSelector } from 'react-redux';
 import { Button } from 'reactstrap';
+import hasPermission from '~/utils/permissions';
+import { boxStyle, boxStyleDark } from '~/styles';
 import { DELETE } from '../../languages/en/ui';
 
 export function Team(props) {

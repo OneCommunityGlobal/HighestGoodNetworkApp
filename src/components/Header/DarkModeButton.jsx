@@ -55,7 +55,7 @@ function DarkModeButton() {
       >
         {darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
       </Tooltip>
-      <div
+      <button
         type="button"
         className={`dark-mode-button ${darkMode ? 'dark-mode' : ''}`}
         onClick={toggleDarkMode}
@@ -76,7 +76,7 @@ function DarkModeButton() {
             <span className="darkModeHoverText">Dark Mode</span>
           </div>
         )}
-      </div>
+      </button>
     </>
   );
 }

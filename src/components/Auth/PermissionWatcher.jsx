@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
-import { ENDPOINTS } from 'utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import { startForceLogout } from '../../actions/authActions';
-import useCountdown from '../../hooks/useCountdown';
+import { useCountdown } from '../../hooks/useCountdown';
 import PopUpBar from '../PopUpBar/PopUpBar';
 import { getUserProfile } from '../../actions/userProfile';
 

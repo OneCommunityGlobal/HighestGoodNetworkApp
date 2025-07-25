@@ -15,7 +15,7 @@ import {
   deleteIssue,
   fetchAllIssues,
   renameIssue,
-} from 'actions/bmdashboard/issueActions';
+} from '~/actions/bmdashboard/issueActions';
 import IssueHeader from './IssueHeader';
 
 export default function IssueDashboard() {

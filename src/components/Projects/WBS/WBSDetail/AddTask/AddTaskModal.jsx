@@ -2,10 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Row, Col } from 'reactstrap';
 import { connect } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
-import DayPickerInput from 'react-day-picker/DayPickerInput';
+import { DayPicker, useInput } from 'react-day-picker';
+import 'react-day-picker/dist/style.css';
 import { Editor } from '@tinymce/tinymce-react';
 import dateFnsFormat from 'date-fns/format';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import { useMemo } from 'react';
 import { addNewTask } from '../../../../../actions/task';
 import { faPlusCircle, faMinusCircle } from '@fortawesome/free-solid-svg-icons';
@@ -14,18 +15,50 @@ import {
   START_DATE_ERROR_MESSAGE,
   END_DATE_ERROR_MESSAGE,
 } from '../../../../../languages/en/messages.js';
-import 'react-day-picker/lib/style.css';
 import '../../../../Header/DarkMode.css';
 import TagsSearch from '../components/TagsSearch';
 import './AddTaskModal.css';
-import { fetchAllMembers } from 'actions/projectMembers';
+import { fetchAllMembers } from '../../../../../actions/projectMembers';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
+/** small v8 DateInput: uses useInput + DayPicker under the hood **/
+function DateInput({ id, ariaLabel, placeholder, value, onChange, disabled }) {
+  const { inputProps, dayPickerProps, show, toggle } = useInput({
+    mode: 'single',
+    selected: value ? new Date(value) : undefined,
+    onDayChange(date) {
+      // format back to your MM/dd/yy
+      const f = dateFnsFormat(date, FORMAT);
+      onChange(f);
+      toggle(false);
+    },
+  });
+
+  return (
+    <div style={{ position: 'relative' }}>
+      <input
+        {...inputProps}
+        id={id}
+        aria-label={ariaLabel}
+        placeholder={placeholder}
+        onFocus={() => !disabled && toggle(true)}
+        readOnly
+        disabled={disabled}
+        className="form-control" /* or whatever styling you need */
+      />
+      {show && !disabled && (
+        <div style={{ position: 'absolute', zIndex: 10 }}>
+          <DayPicker {...dayPickerProps} />
+        </div>
+      )}
+    </div>
+  );
+}
 
 const TINY_MCE_INIT_OPTIONS = {
   license_key: 'gpl',
   menubar: false,
-  plugins: 'advlist autolink autoresize lists link charmap table paste help',
+  plugins: 'advlist autolink autoresize lists link charmap table help',
   toolbar:
     'bold italic  underline numlist   |  removeformat link bullist  outdent indent |\
                     styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
@@ -71,19 +104,17 @@ function AddTaskModal(props) {
   // states from hooks
 
   const defaultCategory = useMemo(() => {
-  if (props.taskId && Array.isArray(props.tasks)) {
-    const task = props.tasks.find(({ _id }) => _id === props.taskId);
-    return task?.category || 'Unspecified';
-  } 
-  if (props.projectId) {
-    const project = allProjects.projects.find(({ _id }) => _id === props.projectId);
-    return project?.category || 'Unspecified';
-  }
+    if (props.taskId) {
+      const task = tasks.find(({ _id }) => _id === props.taskId);
+      return task?.category || 'Unspecified';
+    }
+    if (props.projectId) {
+      const project = allProjects.projects.find(({ _id }) => _id === props.projectId);
+      return project?.category || 'Unspecified';
+    }
 
-  return 'Unspecified';
-}, [props.taskId, props.projectId, props.tasks, allProjects.projects]);
-
-
+    return 'Unspecified';
+  }, [props.taskId, props.projectId, tasks, allProjects.projects]);
 
   const [taskName, setTaskName] = useState('');
   const [priority, setPriority] = useState('Primary');
@@ -230,7 +261,7 @@ function AddTaskModal(props) {
     setDueDate(dueDate);
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     if (dueDate && dueDate < startedDate) {
       setEndDateError(true);
       setStartDateError(true);
@@ -797,12 +828,13 @@ function AddTaskModal(props) {
                 <span scope="col" className={`form-date p-1 ${fontColor}`}>Start Date</span>
                 <span scope="col" className="border-left p-1">
                   <div>
-                    <DayPickerInput
-                      format={FORMAT}
-                      formatDate={formatDate}
-                      placeholder={`${dateFnsFormat(new Date(), FORMAT)}`}
-                      onDayChange={(day, mod, input) => changeDateStart(input.state.value)}
+                    <DateInput
+                      id="start-date-input"
+                      ariaLabel="Start Date"
+                      placeholder={dateFnsFormat(new Date(), FORMAT)}
                       value={startedDate}
+                      onChange={changeDateStart}
+                      disabled={false} // always enabled here
                     />
                     <div className="warning">{startDateError ? START_DATE_ERROR_MESSAGE : ''}</div>
                   </div>
@@ -817,14 +849,13 @@ function AddTaskModal(props) {
                   End Date
                 </label>
                 <span scope="col" className="border-left p-1">
-                  <DayPickerInput
-                    id="end-date-input" // Add id to associate the label
-                    format={FORMAT}
-                    formatDate={formatDate}
-                    placeholder={`${dateFnsFormat(new Date(), FORMAT)}`}
-                    onDayChange={(day, mod, input) => changeDateEnd(input.state.value)}
+                  <DateInput
+                    id="end-date-input"
+                    ariaLabel="End Date"
+                    placeholder={dateFnsFormat(new Date(), FORMAT)}
                     value={dueDate}
-                    inputProps={{ 'aria-label': 'End Date' }} // Add aria-label for accessibility
+                    onChange={changeDateEnd}
+                    disabled={false}
                   />
                   <div className="warning">{endDateError ? END_DATE_ERROR_MESSAGE : ''}</div>
                 </span>
@@ -837,7 +868,12 @@ function AddTaskModal(props) {
             color="primary"
             onClick={addNewTask}
             disabled={
-              taskName === '' || hoursWarning || isLoading || startDateError || endDateError || hasNegativeHours
+              taskName === '' ||
+              hoursWarning ||
+              isLoading ||
+              startDateError ||
+              endDateError ||
+              hasNegativeHours
             }
             style={darkMode ? boxStyleDark : boxStyle}
           >
@@ -869,7 +905,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = {
   addNewTask,
-  fetchAllMembers, 
+  fetchAllMembers,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(AddTaskModal);

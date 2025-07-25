@@ -76,7 +76,7 @@ function TimerPopout({ authUser, darkMode, TimerComponent }) {
     });
 
     const root = popup.document.getElementById('timer-root');
-    ReactDOM.render(
+    render(
       <Provider store={store}>
         <TimerComponent authUser={authUser} darkMode={darkMode} isPopout />
       </Provider>,
@@ -84,7 +84,7 @@ function TimerPopout({ authUser, darkMode, TimerComponent }) {
     );
 
     popup.onbeforeunload = () => {
-      ReactDOM.unmountComponentAtNode(root);
+      unmountComponentAtNode(root);
     };
   };
 

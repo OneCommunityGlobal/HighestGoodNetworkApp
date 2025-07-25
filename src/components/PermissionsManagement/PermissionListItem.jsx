@@ -2,12 +2,9 @@
 /* eslint-disable no-nested-ternary */
 import { useState, useContext, useEffect } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import { connect } from 'react-redux';
-import { boxStyle, boxStyleDark } from 'styles';
-import { useSelector } from 'react-redux';
-// eslint-disable-next-line import/no-cycle
-import { ModalContext } from 'context/ModalContext';
-// eslint-disable-next-line import/no-cycle
+import { connect, useSelector } from 'react-redux';
+import { boxStyle, boxStyleDark } from '~/styles';
+import { ModalContext } from '~/context/ModalContext';
 import PermissionList from './PermissionList';
 import hasPermission from '../../utils/permissions';
 import './UserRoleTab.css';

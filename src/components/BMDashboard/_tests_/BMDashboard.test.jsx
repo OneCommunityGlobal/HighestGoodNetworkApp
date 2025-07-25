@@ -10,7 +10,7 @@ import BMDashboard from '../BMDashboard';
 // Import the fetchBMProjects action creator
 import { fetchBMProjects as mockFetchBMProjects } from '../../../actions/bmdashboard/projectActions';
 
-jest.mock('../../../actions/bmdashboard/projectActions');
+vi.mock('../../../actions/bmdashboard/projectActions');
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 

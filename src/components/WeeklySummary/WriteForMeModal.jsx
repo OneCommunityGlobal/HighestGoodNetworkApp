@@ -2,13 +2,13 @@
 // /* eslint-disable no-console */
 // import { useState, useRef } from 'react';
 // import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-// import { boxStyle, boxStyleDark } from 'styles';
-// import httpService from 'services/httpService';
+// import { boxStyle, boxStyleDark } from '~/styles';
+// import httpService from '~/services/httpService';
 // import { connect } from 'react-redux';
 // import moment from 'moment-timezone';
 // import axios from 'axios';
 // import { toast } from 'react-toastify';
-// import { ENDPOINTS } from '../../utils/URL';
+// import { ENDPOINTS } from '~/utils/URL';
 // // eslint-disable-next-line import/named
 // import { getUserInfo } from '../../utils/permissions';
 

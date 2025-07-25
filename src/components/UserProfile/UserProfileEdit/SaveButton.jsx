@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from 'reactstrap';
 import EditConfirmModal from '../UserProfileModal/EditConfirmModal';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 
 /**
  *
