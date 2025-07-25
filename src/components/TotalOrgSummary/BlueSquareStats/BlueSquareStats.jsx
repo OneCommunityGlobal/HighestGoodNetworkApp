@@ -41,8 +41,6 @@ function BlueSquareStats({ isLoading, blueSquareStats, comparisonType }) {
     { label: 'Other', value: other.count },
   ];
 
-  const hasData = data.every(item => item.value !== 0);
-
   return (
     <section className="blue-square-stats">
       <div className="blue-square-stats-pie-chart">
@@ -53,7 +51,6 @@ function BlueSquareStats({ isLoading, blueSquareStats, comparisonType }) {
           data={data}
           colors={BLUE_SQUARE_STATS_COLORS}
           comparisonType={comparisonType}
-          hasData={hasData}
         />
       </div>
     </section>
