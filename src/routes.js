@@ -140,6 +140,8 @@ import FeedbackModal from './components/HGNHelpSkillsDashboard/FeedbackModal';
 // import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
 import ActivityAgenda from './components/CommunityPortal/Activities/ActivityAgenda';
 
+// HGN PR Dashboard
+import PRReviewTeamAnalytics from './components/HGNPRDashboard/PRReviewTeamAnalytics';
 
 // eslint-disable-next-line import/order, import/no-unresolved
 import LogTools from './components/BMDashboard/LogTools/LogTools';
@@ -444,11 +446,7 @@ export default (
           routePermissions={RoutePermissions.projects}
         />
 
-        <ProtectedRoute
-          path="/faq"
-          exact
-          component={FaqSearch}
-        />
+        <ProtectedRoute path="/faq" exact component={FaqSearch} />
 
         <ProtectedRoute
           path="/faq-management"
@@ -693,14 +691,19 @@ export default (
         <ProtectedRoute path="/hgnform/page5" exact component={Page5} />
         <ProtectedRoute path="/hgnform/page6" exact component={Page6} />
         <ProtectedRoute path="/hgn/profile/skills" exact component={UserSkillsProfile} />
-        <ProtectedRoute path="/tsaformpage1" exact component={TSAFormPage1} />
-        <ProtectedRoute path="/tsaformpage2" exact component={TSAFormPage2} />
-        <ProtectedRoute path="/tsaformpage3" exact component={TSAFormPage3} />
-        <ProtectedRoute path="/tsaformpage4" exact component={TSAFormPage4} />
-        <ProtectedRoute path="/tsaformpage5" exact component={TSAFormPage5} />
-        <ProtectedRoute path="/tsaformpage6" exact component={TSAFormPage6} />
-        <ProtectedRoute path="/tsaformpage7" exact component={TSAFormPage7} />
-        <ProtectedRoute path="/tsaformpage8" exact component={TSAFormPage8} />
+        <ProtectedRoute path="/tsaformpage1" exact component={TSAFormPage1} /> 
+        <ProtectedRoute path="/tsaformpage2" exact component={TSAFormPage2} /> 
+        <ProtectedRoute path="/tsaformpage3" exact component={TSAFormPage3} /> 
+        <ProtectedRoute path="/tsaformpage4" exact component={TSAFormPage4} /> 
+        <ProtectedRoute path="/tsaformpage5" exact component={TSAFormPage5} /> 
+        <ProtectedRoute path="/tsaformpage6" exact component={TSAFormPage6} /> 
+        <ProtectedRoute path="/tsaformpage7" exact component={TSAFormPage7} /> 
+        <ProtectedRoute path="/tsaformpage8" exact component={TSAFormPage8} /> 
+        <ProtectedRoute
+          path="/pr-team-analytics/popular-prs"
+          exact
+          component={PRReviewTeamAnalytics}
+        />
         <ProtectedRoute path="/ExperienceDonutChart" component={ExperienceDonutChart} fallback />
 
         <ProtectedRoute path="/" exact component={Dashboard} />

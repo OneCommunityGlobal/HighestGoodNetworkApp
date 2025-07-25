@@ -466,7 +466,7 @@ class PeopleReport extends Component {
               ''
             )} */}
 
-            <div className="stats">
+            <div>
               <div>
                 <h5>{formatDate(startDate)}</h5>
                 <p>Start Date</p>
