@@ -1512,6 +1512,7 @@ const [rerenderKey, setRerenderKey] = useState(0);
                               rerenderKey={rerenderKey}
                               setBioStatusMap={setBioStatusMap}
                               setRerenderKey={setRerenderKey}
+                              selectedBioStatus={state.selectedBioStatus}
                             />
                           </Col>
                         </Row>

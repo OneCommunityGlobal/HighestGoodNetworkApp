@@ -76,9 +76,10 @@ function FormattedReport({
   handleTeamCodeChange,
   handleSpecialColorDotClick,
   bioStatusMap,
-  rerenderKey,
+
   setBioStatusMap,
   setRerenderKey,
+  selectedBioStatus
 }) {
   const dispatch = useDispatch();
   const isEditCount = dispatch(hasPermission('totalValidWeeklySummaries'));
@@ -102,7 +103,11 @@ function FormattedReport({
           .filter(summary => {
             // Add safety check for each summary
             const currentStatus = bioStatusMap[summary._id] ?? summary.bioPosted; // for rerendering
-            if (currentStatus === 'posted') return false;
+            const isMeetCriteria = summary.totalTangibleHrs > 80 &&
+                                   summary.daysInTeam > 60 &&
+                                   currentStatus !== 'posted';
+
+            if (canSeeBioHighlight && selectedBioStatus && !isMeetCriteria) return false;
             if (!summary || !summary.totalSeconds) {
               return false;
             }
@@ -110,11 +115,11 @@ function FormattedReport({
 
             return weekIndex === summary.finalWeekIndex;
           })
-          .map(summary => (
+          .map(summary => {
+            return(
             <ReportDetails
               loggedInUserEmail={loggedInUserEmail}
               key={summary._id}
-              // key={`${summary._id}_${summary._rerender || ''}`} // TESTING BY USING THIS
               summary={summary}
               weekIndex={weekIndex}
               bioCanEdit={bioCanEdit}
@@ -134,7 +139,8 @@ function FormattedReport({
               setBioStatusMap={setBioStatusMap}
               setRerenderKey={setRerenderKey}
             />
-          ))}
+          ) })}
+          
       </ListGroup>
       <EmailsList summaries={summaries} auth={auth} />
     </>
@@ -584,15 +590,16 @@ function BioSwitch({ userId, bioPosted, summary, setBioStatus, notifyBioStatusCh
   const dispatch = useDispatch();
   const style = { color: textColors[summary?.weeklySummaryOption] || textColors.Default };
 
- const handleChangeBioPosted = async (userId, bioStatus) => {
+  // eslint-disable-next-line no-shadow
+const handleChangeBioPosted = async (userId, bioStatus) => {
   const res = await dispatch(toggleUserBio(userId, bioStatus));
   if (res.status === 200) {
     toast.success('You have changed the bio announcement status of this user.');
-
-    setBioStatus(bioStatus); // update local state for highlight
-    notifyBioStatusChange(userId, bioStatus); // triggers update in FormattedReport via setBioStatusMap + rerender
+    setBioStatus(bioStatus); // update local state
+    notifyBioStatusChange(userId, bioStatus); // for rerendering when thereis a change
   }
 };
+
 
 
   return (
