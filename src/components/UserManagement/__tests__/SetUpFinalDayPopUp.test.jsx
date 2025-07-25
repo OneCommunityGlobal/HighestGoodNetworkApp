@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
@@ -10,10 +11,10 @@ const mockStore = configureStore([]);
 const onSaveMock = jest.fn();
 const onCloseMock = jest.fn();
 
-const renderComponent = (store, props) => {
+const renderComponent = (store, { open, onClose, onSave }) => {
   return render(
     <Provider store={store}>
-      <SetUpFinalDayPopUp {...props} />
+      <SetUpFinalDayPopUp open={open} onClose={onClose} onSave={onSave} />
     </Provider>
   );
 };
@@ -81,7 +82,7 @@ describe('SetUpFinalDayPopUp Component', () => {
 
 
 
-  ////////////////////////////
+  /// /////////////////////////
 
   it('should apply autoFocus to the date input field', () => {
     renderComponent(store, { open: true, onClose: onCloseMock, onSave: onSaveMock });

@@ -1,8 +1,8 @@
-import '../styles/Banner.css';
+import styles from '../styles/Banner.module.css';
 
 function Banner() {
   return (
-    <div className="banner">
+    <div className={`${styles.banner}`}>
       <img src="/header.png" alt="HGN Banner" />
     </div>
   );

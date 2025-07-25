@@ -3,10 +3,9 @@ import { setupServer } from 'msw/node';
 // eslint-disable-next-line no-unused-vars
 import { toast } from 'react-toastify';
 import { getWeeklySummaries, updateWeeklySummaries } from '../../../actions/weeklySummaries';
-import configureStore from '../../../store';
+import { store } from '../../../store';
 import { ENDPOINTS } from '../../../utils/URL';
 
-const { store } = configureStore();
 const url = ENDPOINTS.USER_PROFILE(':userId');
 
 const weeklySummariesMockData = {

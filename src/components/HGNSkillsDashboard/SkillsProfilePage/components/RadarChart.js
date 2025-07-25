@@ -8,7 +8,7 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
-import '../styles/RadarChart.css';
+import styles from '../styles/RadarChart.module.css';
 
 ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
 
@@ -86,7 +86,7 @@ function RadarChart({ profileData }) {
   };
 
   return (
-    <div className="radar-chart">
+    <div className={`${styles.radarChart}`}>
       <Radar data={chartData} options={chartOptions} />
     </div>
   );
