@@ -1,10 +1,9 @@
-/* eslint-disable react/sort-comp */
 import React from 'react';
 import { connect } from 'react-redux';
-import { Container } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { searchWithAccent } from 'utils/search';
 import lo from 'lodash';
+import { Button, Container } from 'reactstrap';
 import {
   getAllUserTeams,
   postNewTeam,
@@ -32,6 +31,8 @@ class Teams extends React.PureComponent {
     super(props);
     this.state = {
       teamNameSearchText: '',
+      nonexistentTeamName: '',
+      isInputFilled: false,
       teamMembersPopupOpen: false,
       deleteTeamPopupOpen: false,
       createNewTeamPopupOpen: false,
@@ -109,6 +110,77 @@ class Teams extends React.PureComponent {
     }
   }
 
+  toggleTeamActiveSort = () => {
+    let newSortState;
+    switch (this.state.sortTeamActiveState) {
+      case 'none':
+        newSortState = 'ascending';
+        break;
+      case 'ascending':
+        newSortState = 'descending';
+        break;
+      case 'descending':
+        newSortState = 'none';
+        break;
+      default:
+        throw new Error('Invalid sort state');
+    }
+    this.setState({ sortTeamActiveState: newSortState, sortTeamNameState: 'none' });
+  };
+
+  toggleTeamNameSort = () => {
+    let newSortState;
+    switch (this.state.sortTeamNameState) {
+      case 'none':
+        newSortState = 'ascending';
+        break;
+      case 'ascending':
+        newSortState = 'descending';
+        break;
+      case 'descending':
+        newSortState = 'none';
+        break;
+      default:
+        throw new Error('Invalid sort state');
+    }
+    this.setState({ sortTeamNameState: newSortState, sortTeamActiveState: 'none' });
+  };
+
+  sortTeams = () => {
+    const { teams, sortTeamNameState, sortTeamActiveState } = this.state;
+
+    if (!Array.isArray(teams)) {
+      return;
+    }
+    const sortedTeams = [...teams]
+      .sort((a, b) => {
+        const dateA = new Date(a.props.team.modifiedDatetime);
+        const dateB = new Date(b.props.team.modifiedDatetime);
+        const nameA = a.props.name;
+        const nameB = b.props.name;
+        const activeA = a.props.active;
+        const activeB = b.props.active;
+        if (sortTeamNameState === 'ascending') {
+          return nameA.localeCompare(nameB);
+        }
+        if (sortTeamNameState === 'descending') {
+          return nameB.localeCompare(nameA);
+        }
+        if (sortTeamActiveState === 'ascending') {
+          return activeA - activeB;
+        }
+        if (sortTeamActiveState === 'descending') {
+          return activeB - activeA;
+        }
+        return dateB - dateA;
+      })
+      .map((team, index) => ({
+        ...team,
+        props: { ...team.props, index },
+      }));
+    this.setState({ sortedTeams });
+  };
+
   render() {
     const { allTeams, fetching } = this.props.state.allTeamsData;
     const { darkMode } = this.props.state.theme;
@@ -171,12 +243,43 @@ class Teams extends React.PureComponent {
     );
   }
 
+  openCreateTeamModal = () => {
+    this.setState(prevState => ({
+      isInputFilled: true,
+      nonexistentTeamName: prevState.wildCardSearchText,
+      createNewTeamPopupOpen: true,
+    }));
+  };
+
   /**
    * Creates the table body elements after applying the search filter and return it.
    */
   teamTableElements = allTeams => {
+    const { darkMode } = this.props.state.theme;
     if (allTeams && allTeams.length > 0) {
       const teamSearchData = this.filteredTeamList(allTeams);
+      if (teamSearchData.length === 0) {
+        // Se nenhum time for encontrado, retorna uma linha de mensagem
+
+        this.setState(prevState => ({ nonexistentTeamName: prevState.wildCardSearchText }));
+
+        return [
+          <tr key="no-teams">
+            <td colSpan="100%" style={{ textAlign: 'center' }}>
+              <div className="team-not-found-message-container">
+                <p className={`${darkMode ? 'text-light' : 'text-black'}`}>
+                  No team found, but you can create this team by clicking the blue button named
+                  &quot;Create Team&quot;.
+                </p>
+
+                <Button onClick={this.openCreateTeamModal} color="primary">
+                  Create Team
+                </Button>
+              </div>
+            </td>
+          </tr>,
+        ];
+      }
       /*
        * Builiding the table body for teams returns
        * the rows for currently selected page .
@@ -253,6 +356,8 @@ class Teams extends React.PureComponent {
           fetching={fetching}
         />
         <CreateNewTeamPopup
+          nonexistentTeamName={this.state.nonexistentTeamName}
+          isInputFilled={this.state.isInputFilled}
           open={this.state.createNewTeamPopupOpen}
           onClose={this.onCreateNewTeamClose}
           onOkClick={this.addNewTeam}
@@ -357,6 +462,7 @@ class Teams extends React.PureComponent {
    */
   onCreateNewTeamShow = () => {
     this.setState({
+      isInputFilled: false,
       createNewTeamPopupOpen: true,
       selectedTeam: '',
     });
@@ -507,77 +613,6 @@ class Teams extends React.PureComponent {
    */
   onDeleteTeamMember = deletedUserId => {
     this.props.deleteTeamMember(this.state.selectedTeamId, deletedUserId);
-  };
-
-  sortTeams = () => {
-    const { teams, sortTeamNameState, sortTeamActiveState } = this.state;
-
-    if (!Array.isArray(teams)) {
-      return;
-    }
-    const sortedTeams = [...teams]
-      .sort((a, b) => {
-        const dateA = new Date(a.props.team.modifiedDatetime);
-        const dateB = new Date(b.props.team.modifiedDatetime);
-        const nameA = a.props.name;
-        const nameB = b.props.name;
-        const activeA = a.props.active;
-        const activeB = b.props.active;
-        if (sortTeamNameState === 'ascending') {
-          return nameA.localeCompare(nameB);
-        }
-        if (sortTeamNameState === 'descending') {
-          return nameB.localeCompare(nameA);
-        }
-        if (sortTeamActiveState === 'ascending') {
-          return activeA - activeB;
-        }
-        if (sortTeamActiveState === 'descending') {
-          return activeB - activeA;
-        }
-        return dateB - dateA;
-      })
-      .map((team, index) => ({
-        ...team,
-        props: { ...team.props, index },
-      }));
-    this.setState({ sortedTeams });
-  };
-
-  toggleTeamNameSort = () => {
-    let newSortState;
-    switch (this.state.sortTeamNameState) {
-      case 'none':
-        newSortState = 'ascending';
-        break;
-      case 'ascending':
-        newSortState = 'descending';
-        break;
-      case 'descending':
-        newSortState = 'none';
-        break;
-      default:
-        throw new Error('Invalid sort state');
-    }
-    this.setState({ sortTeamNameState: newSortState, sortTeamActiveState: 'none' });
-  };
-
-  toggleTeamActiveSort = () => {
-    let newSortState;
-    switch (this.state.sortTeamActiveState) {
-      case 'none':
-        newSortState = 'ascending';
-        break;
-      case 'ascending':
-        newSortState = 'descending';
-        break;
-      case 'descending':
-        newSortState = 'none';
-        break;
-      default:
-        throw new Error('Invalid sort state');
-    }
-    this.setState({ sortTeamActiveState: newSortState, sortTeamNameState: 'none' });
   };
 }
 export { Teams };
