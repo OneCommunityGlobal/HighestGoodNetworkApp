@@ -193,7 +193,7 @@
 }
 
 /* Report Header Styles */
-.report-header-row {
+.total-org-report-header-row {
   display: flex;
   justify-content: space-between;
   gap: 20px;
@@ -227,9 +227,4 @@
 
 .chart-title.dark-mode p {
   color: white;
-}
-
-.Collapsible {
-  margin-left: 20px !important;
-  margin-right: 20px !important;
 }

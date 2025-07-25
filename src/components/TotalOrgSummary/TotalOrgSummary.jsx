@@ -444,7 +444,7 @@ function TotalOrgSummary(props) {
         darkMode ? 'bg-oxford-blue text-light' : 'cbg--white-smoke'
       }`}
     >
-      <Row className="report-header-row">
+      <Row className="total-org-report-header-row">
         <div className="report-header-title">
           <h3 className="my-0">Total Org Summary</h3>
         </div>
