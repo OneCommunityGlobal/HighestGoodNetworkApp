@@ -2,6 +2,7 @@
   flex: 1;
   display: flex;
   justify-content: center;
+  width: '500px'
 }
 
 .radarChart canvas {
