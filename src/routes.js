@@ -147,6 +147,8 @@ import PRReviewTeamAnalytics from './components/HGNPRDashboard/PRReviewTeamAnaly
 import LogTools from './components/BMDashboard/LogTools/LogTools';
 // import IssueDashboard from './components/BMDashboard/Issues/IssueDashboard';
 import EquipmentUpdate from './components/BMDashboard/Tools/EquipmentUpdate';
+
+import AnalyticsDashboard from './components/JobCCDashboard/AnalyticsPage/JobAnalytics';
 // Social Architecture
 const ResourceManagement = lazy(() => import('./components/ResourceManagement/ResourceManagement'));
 const RequestResources = lazy(() => import('./components/SocialArchitecture/RequestResources'));
@@ -593,7 +595,13 @@ export default (
           component={BMTimeLogCard}
         />
 
-        {/* Community Portal Routes */}
+        {/* Community Portal Routes */} 
+        <ProtectedRoute
+          path="/application/analytics"
+          exact component={AnalyticsDashboard}
+          fallback
+          // allowedRoles={[UserRole.Administrator, UserRole.Owner]}
+        />
         <CPProtectedRoute path="/communityportal" exact component={CPDashboard} />
         <Route path="/communityportal/login" component={CPLogin} />
         <CPProtectedRoute path="/communityportal/activities" exact component={ActivityList} />
@@ -707,7 +715,7 @@ export default (
         <ProtectedRoute path="/ExperienceDonutChart" component={ExperienceDonutChart} fallback />
 
         <ProtectedRoute path="/" exact component={Dashboard} />
-        <Route path="*" component={NotFoundPage} />
+        <Route path="*" component={NotFoundPage} />       
       </Switch>
     </>
   </Switch>
