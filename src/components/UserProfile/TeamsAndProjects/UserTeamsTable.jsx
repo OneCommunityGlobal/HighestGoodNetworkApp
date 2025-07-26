@@ -2,11 +2,8 @@ import { React, useState, useEffect, useRef } from 'react';
 import { Button, Col, Input } from 'reactstrap';
 import './TeamsAndProjects.css';
 import hasPermission from '../../../utils/permissions';
-import styles from './UserTeamsTable.css';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle } from 'styles';
 import { connect } from 'react-redux';
-import Switch from './Switch';
-import './TeamsAndProjects.css';
 import './UserTeamsTable.css';
 
 import { AutoCompleteTeamCode } from './AutoCompleteTeamCode';
@@ -142,7 +139,7 @@ const UserTeamsTable = props => {
   };
 
   return (
-    <div className={`teamtable-container   ${darkMode ? 'bg-yinmn-blue' : ''}`}>
+    <div className={`teamtable-container   ${darkMode ? 'bg-yinmn-blue' : ''}`} data-testid='userTeamTest'>
       <TeamMember
         isOpenModalTeamMember={isOpenModalTeamMember}
         setIsOpenModalTeamMember={setIsOpenModalTeamMember}
