@@ -8,6 +8,7 @@ function PopUpBar({
   onClickClose,
   textColor = '#000',
   isLoading = false,
+  // eslint-disable-next-line no-unused-vars
   button = true,
 }) {
   const defaultTemplate =
