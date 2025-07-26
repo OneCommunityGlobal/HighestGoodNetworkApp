@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import {
   BarChart,
   Bar,
@@ -8,6 +9,8 @@ import {
   Legend,
   LabelList,
   ResponsiveContainer,
+  CartesianGrid,
+  Label,
 } from 'recharts';
 import './ReviewersStackedBarChart.css';
 
@@ -70,6 +73,9 @@ const COLORS = {
   'Did Not Review': '#DC3545',
 };
 
+const textDark = '#f8fafc';
+const axisLine = '#bfc7d1';
+
 // Transform data to suit Recharts
 const transformData = rawData =>
   rawData.map(item => ({
@@ -81,7 +87,7 @@ const transformData = rawData =>
     'Needs Changes': item.counts['Needs Changes'],
     'Did Not Review': item.counts['Did Not Review'],
   }));
-
+let transformed = [];
 const CustomYAxisTick = ({ x, y, payload }) => {
   const currentReviewer = payload.value;
   const isMentor = transformed.find(d => d.reviewer === currentReviewer)?.isMentor;
@@ -98,9 +104,21 @@ const CustomYAxisTick = ({ x, y, payload }) => {
   );
 };
 
-let transformed = [];
+function CustomXAxisTick(data) {
+  const max = Math.max(
+    ...data.map(d => d.Exceptional + d.Sufficient + d['Needs Changes'] + d['Did Not Review']),
+    0,
+  );
+  const upper = Math.ceil(max / 10) * 10;
+  const ticks = [];
+  for (let i = 0; i <= upper; i += 10) {
+    ticks.push(i);
+  }
+  return { domain: [0, upper], ticks };
+}
 
 const ReviewersStackedBarChart = () => {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [teamFilter, setTeamFilter] = useState('All');
   const [durationFilter, setDurationFilter] = useState('Last Week');
   const [sortFilter, setSortFilter] = useState('Ascending');
@@ -140,6 +158,11 @@ const ReviewersStackedBarChart = () => {
     }, 1000);
   };
 
+  const { domain, ticks } = CustomXAxisTick(transformed);
+
+  // Always use light mode colors for the chart itself
+  const axisLineColor = axisLine; // always #bfc7d1
+
   useEffect(() => {
     setTeams(MOCK_TEAMS);
     fetchData();
@@ -150,12 +173,12 @@ const ReviewersStackedBarChart = () => {
   }, [teamFilter, durationFilter, sortFilter]);
 
   return (
-    <div className="chart-container">
+    <div className={`chart-container ${darkMode ? 'dark-mode' : ''}`}>
       <h3>PR Quality by Reviewers</h3>
 
       <div className="filters-bar">
         <div>
-          <label>Team:</label>
+          <label className={`reviewers-label ${darkMode ? 'dark-mode' : ''}`}>Team:</label>
           <select value={teamFilter} onChange={e => setTeamFilter(e.target.value)}>
             {teams.map(team => (
               <option key={team} value={team}>
@@ -165,14 +188,14 @@ const ReviewersStackedBarChart = () => {
           </select>
         </div>
         <div>
-          <label>Sort:</label>
+          <label className={`reviewers-label ${darkMode ? 'dark-mode' : ''}`}>Sort:</label>
           <select value={sortFilter} onChange={e => setSortFilter(e.target.value)}>
             <option value="Ascending">Ascending</option>
             <option value="Descending">Descending</option>
           </select>
         </div>
         <div>
-          <label>Duration:</label>
+          <label className={`reviewers-label ${darkMode ? 'dark-mode' : ''}`}>Duration:</label>
           <select value={durationFilter} onChange={e => setDurationFilter(e.target.value)}>
             <option value="Last Week">Last Week</option>
             <option value="Last 2 weeks">Last 2 weeks</option>
@@ -183,19 +206,60 @@ const ReviewersStackedBarChart = () => {
       </div>
 
       {loading ? (
-        <p>Loading data...</p>
+        <div
+          className="reviewer-stackbar-loading"
+          style={{ color: darkMode ? textDark : undefined, justifyItems: 'center' }}
+        >
+          <div
+            className="loading-spinner"
+            style={darkMode ? { borderTop: '4px solid #f8fafc' } : {}}
+          />
+          <p style={{ color: darkMode ? textDark : undefined, justifyItems: 'center' }}>Loading Reviewers data...</p>
+        </div>
       ) : error ? (
-        <p style={{ color: 'red' }}>{error}</p>
+        <div
+          className="reviewers-stackbar-error"
+          style={{ color: darkMode ? textDark : undefined, justifyItems: 'center' }}
+        >
+          <div className="error-icon">⚠️</div>
+          <p style={{ color: darkMode ? textDark : undefined }}>{error}</p>
+          <button
+            type="button"
+            className="retry-button"
+            style={{ color: darkMode ? textDark : undefined, justifyItems: 'center' }}
+            onClick={() => window.location.reload()}
+          >
+            Retry
+          </button>
+        </div>
+      ) : reviewerData.length === 0 ? (
+        <div className="reviewer-data-empty" style={{ color: darkMode ? textDark : undefined }}>
+          <div className="empty-icon">📊</div>
+          <p style={{ color: darkMode ? textDark : undefined }}>No PR data available</p>
+        </div>
       ) : (
         <div className="scroll-container">
-          <ResponsiveContainer width={1200} height={600}>
+          <ResponsiveContainer width="100%" height={Math.max(400, reviewerData.length * 28)}>
+            <CartesianGrid
+              vertical
+              horizontal={false}
+              stroke={axisLineColor}
+              strokeDasharray="3 3"
+            />
             <BarChart
               layout="vertical"
               data={reviewerData}
               margin={{ top: 20, right: 30, left: 120, bottom: 20 }}
             >
-              <XAxis type="number" />
-              <YAxis dataKey="reviewer" type="category" tick={<CustomYAxisTick />} width={200} />
+              <XAxis type="number" domain={domain} ticks={ticks} />
+              <YAxis dataKey="reviewer" type="category" tick={<CustomYAxisTick />} width={200}>
+                <Label
+                  value="Top Reviewers"
+                  angle={-90}
+                  position="insideLeft"
+                  style={{ textAnchor: 'middle' }}
+                />
+              </YAxis>
               <Tooltip />
               <Legend />
               {Object.keys(COLORS).map(key => (

@@ -1,6 +1,18 @@
 .chart-container {
   padding: 20px;
   font-family: sans-serif;
+  height: auto;
+  width: 100%;
+  padding: 20px;
+}
+
+.chart-container.dark-mode {
+  background-color: #1B2A41;
+  color: #fff;
+}
+
+.dark-mode .reviewers-label {
+  color: #fdfdfd; /* Always use the light mode color */
 }
 
 .filters-bar {
@@ -20,4 +32,9 @@
   border: 1px solid #ddd;
   padding: 10px;
   background-color: #fff;
+}
+
+.dark-mode .scroll-container {
+  background-color: #324d77;
+  border-color: #444;
 }
