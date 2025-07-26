@@ -8,21 +8,32 @@ function Feedbackform() {
   const [userEmail, setUserEmail] = useState(email || ''); // Fixed: Separate email state
   const [feedback, setFeedback] = useState('');
   const [rating, setRating] = useState(0);
+  const [error, setError] = useState('');
 
   const handleSubmit = e => {
     e.preventDefault(); // Prevent page reload
+    // eslint-disable-next-line no-console
+    console.log({ name, userEmail, rating, feedback });
 
-    // console.log({ name, userEmail, rating, feedback });
-
-    // ✅ Reset all form fields
-    setName('');
-    setUserEmail('');
-    setRating(0);
-    setFeedback('');
+    if (rating === 0) {
+      const errorMsg = 'Please select a rating';
+      setError(errorMsg);
+      // eslint-disable-next-line no-alert
+    } else {
+      const emptyMsg = '';
+      setError(emptyMsg);
+      // ✅ Reset all form fields
+      setName('');
+      setUserEmail('');
+      setRating(0);
+      setFeedback('');
+    }
   };
 
   // ✅ Reset form fields when Cancel is clicked
   const handleCancel = () => {
+    const emptyMsg = '';
+    setError(emptyMsg);
     setName('');
     setUserEmail(email || '');
     setFeedback('');
@@ -75,7 +86,7 @@ function Feedbackform() {
             </span>
           ))}
         </div>
-
+        {error && <div style={{ color: 'red', marginBottom: '8px' }}>{error}</div>}
         <label>
           Comments
           <textarea
