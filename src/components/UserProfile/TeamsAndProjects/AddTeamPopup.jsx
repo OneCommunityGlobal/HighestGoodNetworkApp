@@ -8,7 +8,7 @@ import '../../Header/DarkMode.css';
 import { postNewTeam, getAllUserTeams } from '../../../../src/actions/allTeamsAction';
 import axios from 'axios';
 const AddTeamPopup = React.memo(props => {
-  const { darkMode } = props;
+  const { darkMode, isEdit, teamName, teamId, teamCode, isActive, onUpdateTeam } = props;
 
   const dispatch = useDispatch();
 
@@ -156,12 +156,53 @@ const AddTeamPopup = React.memo(props => {
   };
 
   useEffect(() => {
+    if (isEdit && teamName) {
+      setSearchText(teamName);
+    } else {
+      setSearchText('');
+    }
     onValidation(true);
     onNewTeamValidation(true);
     setDuplicateTeam(false);
     setIsNotDisplayAlert(true);
-    setSearchText('');
-  }, [props.open]);
+  }, [props.open, isEdit, teamName]);
+
+  const onEditTeam = async () => {
+    if (searchText !== '' && searchText.trim() !== '') {
+      // Client-side duplicate check (ignore current team name)
+      const trimmedTeamName = searchText.trim();
+      const existingTeam = props.teamsData.allTeams.find(
+        team => team.teamName.toLowerCase().trim() === trimmedTeamName.toLowerCase() && team._id !== teamId
+      );
+      if (existingTeam) {
+        setDuplicateTeam(true);
+        setIsLoading(false);
+        return;
+      }
+      setIsLoading(true);
+      setDuplicateTeam(false);
+      const response = await onUpdateTeam(trimmedTeamName, teamId, isActive, teamCode);
+      setIsLoading(false);
+      if (response && response.status === 200) {
+        toast.success('Team updated successfully');
+        closePopup();
+      } else if (response && response.status === 403) {
+        setDuplicateTeam(true);
+      } else if (response) {
+        toast.error(response.data?.message || 'Error updating team');
+      }
+    } else {
+      onNewTeamValidation(false);
+    }
+  };
+
+  const handleConfirm = () => {
+    if (isEdit) {
+      onEditTeam();
+    } else {
+      onCreateTeam();
+    }
+  };
 
   return (
     <Modal
@@ -171,30 +212,38 @@ const AddTeamPopup = React.memo(props => {
       className={darkMode ? 'text-light dark-mode' : ''}
     >
       <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closePopup}>
-        Add Team
+        {isEdit ? 'Update Team Name' : 'Add Team'}
       </ModalHeader>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''} style={{ textAlign: 'center' }}>
-        <label className={darkMode ? 'text-light' : ''} style={{ textAlign: 'left' }}>
-          Add to Team 
+        <label className={darkMode ? 'text-light' : ''} style={{ textAlign: 'left', fontWeight: 'bold' }}>
+          Name of the Team<span className="red-asterisk">* </span>
         </label>
         <div className="input-group-prepend" style={{ marginBottom: '10px' }}>
-          <AddTeamsAutoComplete
-            teamsData={props.teamsData}
-            onCreateNewTeam={onCreateTeam}
-            searchText={searchText}
-            setInputs={onSelectTeam}
-            setSearchText={handleSearchTextChange} // Use the new handler
-          />
+          {isEdit ? (
+            <input
+              type="text"
+              className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
+              value={searchText}
+              onChange={e => handleSearchTextChange(e.target.value)}
+              placeholder="Enter new team name"
+              autoFocus
+            />
+          ) : (
+            <AddTeamsAutoComplete
+              teamsData={props.teamsData}
+              onCreateNewTeam={onCreateTeam}
+              searchText={searchText}
+              setInputs={onSelectTeam}
+              setSearchText={handleSearchTextChange}
+            />
+          )}
           <Button
             color="primary"
             style={{ marginLeft: '5px' }}
-            onClick={() => {
-              if (!searchText) onValidation(false);
-              else IfTheUserNotSelectedSuggestionAutoComplete();
-            }}
+            onClick={handleConfirm}
             disabled={isLoading}
           >
-            {isLoading ? <Spinner color="light" size="sm" /> : 'Confirm'}
+            {isLoading ? <Spinner color="light" size="sm" /> : 'OK'}
           </Button>
         </div>
         {!isNotDisplayAlert && (

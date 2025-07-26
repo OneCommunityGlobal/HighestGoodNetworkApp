@@ -44,6 +44,7 @@ class Teams extends React.PureComponent {
       sortTeamNameState: 'none', // 'none', 'ascending', 'descending'
       sortTeamActiveState: 'none', // 'none', 'ascending', 'descending'
       addTeamPopupOpen: false,
+      isEdit: false,
     };
   }
 
@@ -285,8 +286,12 @@ class Teams extends React.PureComponent {
                 addTeamPopupOpen: false,
                 wildCardSearchText: '',
                 teamNameSearchText: '',
+                isEdit: false,
+                selectedTeam: '',
+                selectedTeamId: undefined,
+                selectedTeamCode: '',
+                isActive: '',
               });
-
               // Refresh the data from the server
               await this.props.getAllUserTeams();
               await this.props.getAllUserProfile();
@@ -298,6 +303,12 @@ class Teams extends React.PureComponent {
           userProfile={{}}
           darkMode={this.props.state.theme.darkMode}
           isTeamManagement
+          isEdit={this.state.isEdit}
+          teamName={this.state.selectedTeam}
+          teamId={this.state.selectedTeamId}
+          teamCode={this.state.selectedTeamCode}
+          isActive={this.state.isActive}
+          onUpdateTeam={this.props.updateTeam}
         />
         <DeleteTeamPopup
           open={this.state.deleteTeamPopupOpen}
@@ -394,7 +405,11 @@ class Teams extends React.PureComponent {
   onCreateNewTeamShow = () => {
     this.setState({
       addTeamPopupOpen: true,
+      isEdit: false,
       selectedTeam: '',
+      selectedTeamId: undefined,
+      selectedTeamCode: '',
+      isActive: '',
     });
   };
 
@@ -407,6 +422,8 @@ class Teams extends React.PureComponent {
 
   onEditTeam = (teamName, teamId, status, teamCode) => {
     this.setState({
+      addTeamPopupOpen: true,
+      isEdit: true,
       selectedTeam: teamName,
       selectedTeamId: teamId,
       selectedTeamCode: teamCode,
