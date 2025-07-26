@@ -16,6 +16,7 @@ import {
   fetchAllIssues,
   renameIssue,
 } from 'actions/bmdashboard/issueActions';
+import IssueHeader from './IssueHeader';
 
 export default function IssueDashboard() {
   const dispatch = useDispatch();
@@ -100,6 +101,9 @@ export default function IssueDashboard() {
         darkMode ? 'bg-oxford-blue text-light' : ''
       }`}
     >
+      <div>
+        <IssueHeader />
+      </div>
       <Row className="mb-3">
         <Col>
           <h4 className="fw-semibold">Issue Dashboard</h4>
@@ -139,7 +143,7 @@ export default function IssueDashboard() {
                   <td>{assignedTo}</td>
                   <td>{cost}</td>
                   <td className="text-end position-relative">
-                    <div className={`dropdown  ${darkMode ? 'bg-oxide-blue' : ''}`}>
+                    <div className={`issue-dashboard-dropdown  ${darkMode ? 'bg-oxide-blue' : ''}`}>
                       <button
                         type="button"
                         aria-label="Actions menu"
@@ -151,7 +155,7 @@ export default function IssueDashboard() {
 
                       {menuOpen === issue._id && (
                         <div
-                          className={`dropdown-menu show action-menu${
+                          className={`issue-dashboard-dropdown-menu show action-menu${
                             currentItems.indexOf(issue) === currentItems.length - 1
                               ? ' last-row-menu'
                               : ''
@@ -159,7 +163,7 @@ export default function IssueDashboard() {
                         >
                           <button
                             type="button"
-                            className="dropdown-item"
+                            className="issue-dashboard-dropdown-item"
                             onClick={() => {
                               openRenameModal(issue);
                               setMenuOpen(null);
@@ -170,7 +174,7 @@ export default function IssueDashboard() {
                           </button>
                           <button
                             type="button"
-                            className="dropdown-item"
+                            className="issue-dashboard-dropdown-item"
                             onClick={() => {
                               openCopyModal(issue);
                               setMenuOpen(null);
@@ -181,7 +185,7 @@ export default function IssueDashboard() {
                           </button>
                           <button
                             type="button"
-                            className="dropdown-item text-danger"
+                            className="issue-dashboard-dropdown-item text-danger"
                             onClick={() => {
                               openDeleteModal(issue);
                               setMenuOpen(null);
