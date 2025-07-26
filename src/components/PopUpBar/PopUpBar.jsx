@@ -8,6 +8,7 @@ function PopUpBar({
   onClickClose,
   textColor = '#000',
   isLoading = false,
+  button = true,
 }) {
   const defaultTemplate =
     `You are currently functioning as ${firstName} ${lastName}, ` +

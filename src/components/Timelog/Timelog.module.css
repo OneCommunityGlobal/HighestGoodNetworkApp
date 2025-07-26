@@ -15,12 +15,12 @@
 }
 
 .cardBodyShadowDark {
-  box-shadow: 2px 2px 4px 1px black;
+  box-shadow: 2px 2px 4px 1px #000 !important;
 }
 
 .cardHeaderShadowDark {
-  box-shadow: 2px 2px 4px 1px black;
-  margin-bottom: 1px;
+  box-shadow: 2px 2px 4px 1px #000 !important;
+  margin-bottom: 1px !important;
 }
 
 .timeEntryContainer {
@@ -96,11 +96,59 @@
   width: 100%;
   padding: 0 17%;
 }
+.navLink {
+  color: #007bff;
+  background-color: transparent;
+  border: 1px solid transparent;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
 
-.active.darkMode.navLink {
+.activeLightMode {
+  color: #495057 !important;
+  background-color: #fff !important;
+  border-color: #dee2e6 #dee2e6 #fff !important;
+}
+
+.tabContentLight {
+  margin-top: -4px !important;
+  background-color: #fff !important;
+  border: 1px solid transparent !important;
+  border-color: #fff #dee2e6 #dee2e6 !important;
+}
+
+.tabContentDark {
+  margin-top: -4px !important;
+  background-color: #1c2541 !important;/* or your dark background */
+  border: 1px solid transparent !important;
+  border-color: #1C1C1C #dee2e6 #dee2e6 !important; /* optional */
+}
+
+.navLink {
+  padding: 10px;
+  display: inline-block;
+  text-decoration: none;
+}
+
+/* Dark mode default for inactive tabs */
+.darkMode {
+  background-color: #2b3e59;
+  color: #007bff;
+}
+
+/* Active tab in light mode */
+.active {
+  background-color: #e0e0e0;
+  color: #000;
+}
+
+/* ✅ Active + Dark Mode combination */
+.activeDarkMode {
   background-color: #1C1C1C !important;
   color: #fff !important;
   border-bottom: 0 !important;
+  border-color: #dee2e6 #dee2e6 #fff !important;
 }
 
 .notesTextLight p{

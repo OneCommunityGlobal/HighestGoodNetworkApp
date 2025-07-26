@@ -77,6 +77,7 @@ const startOfWeek = offset => {
 const endOfWeek = offset => {
   return moment()
     .tz('America/Los_Angeles')
+    .endOf('week')
     .subtract(offset, 'weeks')
     .format('YYYY-MM-DD');
 };
@@ -381,14 +382,14 @@ function Timelog(props) {
     }
     if (timeLogState.activeTab === 4) {
       return (
-        <p className={`ml-1 responsive-font-size ${darkMode ? 'text-light' : ''}`}>
+        <p className={`ml-1 responsive-font-size ${darkMode ? 'text-light' : ''}`} style={{textAlign: 'left'}} >
           Viewing time Entries from <b>{formatDate(timeLogState.fromDate)}</b> to{' '}
           <b>{formatDate(timeLogState.toDate)}</b>
         </p>
       );
     }
     return (
-      <p className={`ml-1 responsive-font-size ${darkMode ? 'text-light' : ''}`}>
+      <p className={`ml-1 responsive-font-size ${darkMode ? 'text-light' : ''}`} style={{textAlign: 'left'}}>
         Viewing time Entries from <b>{formatDate(startOfWeek(timeLogState.activeTab - 1))}</b> to{' '}
         <b>{formatDate(endOfWeek(timeLogState.activeTab - 1))}</b>
       </p>
@@ -792,9 +793,14 @@ useEffect(() => {
                   <Nav tabs className={`${styles.taskAndTimelogCardNav} mb-1 ${styles.responsiveFontSize}`}>
                     <NavItem>
                       <NavLink
-                        className={`${classnames({ active: timeLogState.activeTab === 0 })} ${
-                          darkMode ? 'dark-mode' : ''
-                        }`}
+                        className={classnames(
+                          styles.navLink,
+                          {
+                            [styles.darkMode]: darkMode && timeLogState.activeTab !== 0,
+                            [styles.activeLightMode]: !darkMode && timeLogState.activeTab === 0,
+                            [styles.activeDarkMode]: darkMode && timeLogState.activeTab === 0
+                          }
+                        )}
                         onClick={() => {
                           changeTab(0);
                         }}
@@ -805,9 +811,14 @@ useEffect(() => {
                       </NavLink>
                     </NavItem>
                     <NavLink
-                      className={`${classnames({ active: timeLogState.activeTab === 1 })} ${
-                        darkMode ? 'dark-mode' : ''
-                      }`}
+                      className={classnames(
+                        styles.navLink,
+                        {
+                          [styles.darkMode]: darkMode && timeLogState.activeTab !== 1,
+                          [styles.activeLightMode]: !darkMode && timeLogState.activeTab === 1,
+                          [styles.activeDarkMode]: darkMode && timeLogState.activeTab === 1
+                        }
+                      )}
                       onClick={() => {
                         changeTab(1);
                       }}
@@ -819,9 +830,14 @@ useEffect(() => {
 
                     <NavItem>
                       <NavLink
-                        className={`${classnames({ active: timeLogState.activeTab === 2 })} ${
-                          darkMode ? 'dark-mode' : ''
-                        }`}
+                        className={classnames(
+                          styles.navLink,
+                          {
+                            [styles.darkMode]: darkMode && timeLogState.activeTab !== 2,
+                            [styles.activeLightMode]: !darkMode && timeLogState.activeTab === 2,
+                            [styles.activeDarkMode]: darkMode && timeLogState.activeTab === 2
+                          }
+                        )}
                         onClick={() => {
                           changeTab(2);
                         }}
@@ -833,9 +849,14 @@ useEffect(() => {
                     </NavItem>
                     <NavItem>
                       <NavLink
-                        className={`${classnames({ active: timeLogState.activeTab === 3 })} ${
-                          darkMode ? 'dark-mode' : ''
-                        }`}
+                        className={classnames(
+                          styles.navLink,
+                          {
+                            [styles.darkMode]: darkMode && timeLogState.activeTab !== 3,
+                            [styles.activeLightMode]: !darkMode && timeLogState.activeTab === 3,
+                            [styles.activeDarkMode]: darkMode && timeLogState.activeTab === 3
+                          }
+                        )}
                         onClick={() => {
                           changeTab(3);
                         }}
@@ -847,9 +868,14 @@ useEffect(() => {
                     </NavItem>
                     <NavItem>
                       <NavLink
-                        className={`${classnames({ active: timeLogState.activeTab === 4 })} ${
-                          darkMode ? 'dark-mode' : ''
-                        }`}
+                        className={classnames(
+                          styles.navLink,
+                          {
+                            [styles.darkMode]: darkMode && timeLogState.activeTab !== 4,
+                            [styles.activeLightMode]: !darkMode && timeLogState.activeTab === 4,
+                            [styles.activeDarkMode]: darkMode && timeLogState.activeTab === 4
+                          }
+                        )}
                         onClick={() => {
                           changeTab(4);
                         }}
@@ -861,9 +887,14 @@ useEffect(() => {
                     </NavItem>
                     <NavItem>
                       <NavLink
-                        className={`${classnames({ active: timeLogState.activeTab === 5 })} ${
-                          darkMode ? 'dark-mode' : ''
-                        }`}
+                        className={classnames(
+                          styles.navLink,
+                          {
+                            [styles.darkMode]: darkMode && timeLogState.activeTab !== 5,
+                            [styles.activeLightMode]: !darkMode && timeLogState.activeTab === 5,
+                            [styles.activeDarkMode]: darkMode && timeLogState.activeTab === 5
+                          }
+                        )}
                         onClick={() => {
                           changeTab(5);
                         }}
@@ -875,9 +906,14 @@ useEffect(() => {
                     </NavItem>
                     <NavItem>
                       <NavLink
-                        className={`${classnames({ active: timeLogState.activeTab === 6 })} ${
-                          darkMode ? 'dark-mode' : ''
-                        }`}
+                        className={classnames(
+                          styles.navLink,
+                          {
+                            [styles.darkMode]: darkMode && timeLogState.activeTab !== 6,
+                            [styles.activeLightMode]: !darkMode && timeLogState.activeTab === 6,
+                            [styles.activeDarkMode]: darkMode && timeLogState.activeTab === 6
+                          }
+                        )}
                         onClick={() => {
                           changeTab(6);
                         }}
@@ -894,7 +930,9 @@ useEffect(() => {
 
                   <TabContent
                     activeTab={timeLogState.activeTab}
-                    className={darkMode ? 'bg-space-cadet' : ''}
+                    className={
+                      darkMode ? styles.tabContentDark : styles.tabContentLight
+                    }
                   >
                     {renderViewingTimeEntriesFrom()}
                     {timeLogState.activeTab === 4 && (
