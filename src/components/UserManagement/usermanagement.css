@@ -138,9 +138,7 @@ thead {
 #usermanagement_role,
 #user_role,
 td#usermanagement_role {
-  width: 125px !important; 
-  max-width: 125px !important;
-  min-width:125px !important;
+  width: 100%;
   overflow: hidden;
   text-align: center;
   white-space: nowrap;
