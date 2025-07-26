@@ -1,50 +1,50 @@
-.bg--white-smoke {
+.bg-WhiteSmoke {
   background-color: #f6f6f3;
 }
 
-.nav-tabs .nav-link {
+.navTabs .navLink {
   cursor: pointer;
 }
 
-.tab-content {
+.tabContent {
   background-color: #fff;
   border: 1px solid transparent;
   border-color: #fff #dee2e6 #dee2e6;
 }
 
-.report-wrapper {
+.reportWrapper {
   padding: 20px 0;
   margin-top: 5px;
   border-bottom: 1px solid #828282;
 }
 
-.bio-toggle {
+.bioToggle {
   display: inline-block;
 }
 
-.name-info {
+.nameInfo {
   display: flex;
 }
-.total-valid-wrapper {
+.totalValidWrapper {
   display: flex;
   align-items: center;
   flex-direction: row;
   white-space: nowrap;
 }
 
-.badge-tr {
+.badgeTr {
   margin-left: 20px;
   display: block;
 }
 
-.badge-td > img {
+.badgeTd > img {
   float: left;
   height: 45px;
   width: 45px;
   margin: 5px;
 }
 
-.nonsummary-wrapper {
+.nonsummaryWrapper {
   display: flex;
   flex-direction: row;
 }
@@ -53,7 +53,7 @@
 } */
 
 /**  switch toggle*/
-.switch-toggle-control{
+.switchToggleControl{
   position: relative;
   width: 25px;
   display: inline-block;
@@ -62,10 +62,10 @@
   margin-left: 5px;
   margin-right: 5px;
 }
-.switch-toggle{
+.switchToggle{
   display: none;
 }
-.switch-toggle-label{
+.switchToggleLabel{
   display: block;
   overflow: hidden;
   cursor: pointer;
@@ -74,14 +74,14 @@
   margin-bottom: 0.5rem;
 }
 
-.switch-toggle-inner {
+.switchToggleInner {
   display: block;
   width: 200%;
   margin-left: -100%;
   transition: margin 0.3s ease-in 0s;
 }
-.switch-toggle-inner:before,
-.switch-toggle-inner:after {
+.switchToggleInner:before,
+.switchToggleInner:after {
   float: left;
   width: 50%;
   height: 13px;
@@ -91,18 +91,18 @@
   font-weight: bold;
   box-sizing: border-box;
 }
-.switch-toggle-inner:before {
+.switchToggleInner:before {
   content: "";
   padding-left: 2px;
   background-color: #2ba6ed;
 }
-.switch-toggle-inner:after {
+.switchToggleInner:after {
   content: "";
   padding-right: 2px;
   text-align: right;
   background-color: white;
 }
-.switch-toggle-switch {
+.switchToggleSwitch {
   display: block;
   width: 9px;
   margin: 3px;
@@ -115,99 +115,99 @@
   border-radius: 25px;
   transition: all 0.3s ease-in 0s;
 }
-.switch-toggle:checked + .switch-toggle-label .switch-toggle-inner {
+.switchToggle:checked + .switchToggleLabel .switchToggleInner {
   margin-left: 0;
 }
-.switch-toggle:checked + .switch-toggle-label .switch-toggle-switch {
+.switchToggle:checked + .switchToggleLabel .switchToggleSwitch {
   right: 0px;
   background: white;
 }
 
-.weekly-summary-report-container {
+.weeklySummaryReportContainer {
   display: flex;
   flex-direction: row;
 }
-.weekly-summary-text {
+.weeklySummaryText {
   max-width: 100%;
   margin-right: 5px;
 }
 
-.copy-icon {
+.copyIcon {
   cursor: pointer;
   margin: 2px 2px;
 }
 
-.filter-container {
+.filterContainer {
   display: flex;
   justify-content: flex-end;
 }
-.filter-container-teamcode {
+.filterContainerTeamcode {
   display: flex;
   justify-content: space-between;
 }
 
 
-.filter-style {
+.filterStyle {
   font-size: 0.7em;
   display: flex;
   align-items: center;
 }
 
 
-.margin-right {
+.marginRight {
   margin-right: 20px;
 }
 
 
-.container-wsr-wrapper {
+.containerWsrWrapper {
   min-height: 100%;
   min-width: 100vw;
 }
-.hours-not-fulfilled {
+.hoursNotFulfilled {
   color: red;
 }
 
 @media screen and (max-width: 544px) {
-  .responsive-font-size {
+  .responsiveFontSize {
     font-size: 0.75rem !important;
   }
-  .switch-toggle-control{
+  .switchToggleControl{
     margin-left: -6px;
   }
 }
 @media screen and (max-width: 490px) {
-  .responsive-font-size {
+  .responsiveFontSize {
     font-size: 0.5rem !important;
   }
-  .switch-toggle-control{
+  .switchToggleControl{
     width: 33px;
   }
   
 }
 
 @media screen and (max-width: 400px) {
-  .responsive-font-size {
+  .responsiveFontSize {
     font-size: 0.3rem !important;
   }  
-  .switch-toggle-control{
+  .switchToggleControl{
     width: 40px;
   }
 }
 
 @media (min-width: 482px) {
-  .teamcode-wrapper {
+  .teamcodeWrapper {
     display: flex;
     white-space: nowrap;
     align-items: center;
   }
 }
 
-.code-alert {
+.codeAlert {
   margin: 10px 0 0 0;
   padding: 8px;
 }
 
-.multi-select-filter {
+.multiSelectFilter {
   .options {
     max-height: 570px;
     overflow-y: auto;
@@ -227,12 +227,12 @@
     border-radius: 8px;
   }
 
-  .select-item {
+  .selectItem {
     padding: 5px 10px;
     margin-bottom: 0.25rem;
   }
 
-  .dropdown-container {
+  .dropdownContainer {
     z-index: 2;
   }
 
