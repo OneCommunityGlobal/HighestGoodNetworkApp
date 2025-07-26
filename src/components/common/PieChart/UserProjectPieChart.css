@@ -193,7 +193,8 @@
     /* color: inherit; */
   }
   .pie-chart-legend-table-dark tr{
-    background-color: white;
+    background-color: #1f2a40; 
+    color: white;
   }
 
   #project-chart-legend{

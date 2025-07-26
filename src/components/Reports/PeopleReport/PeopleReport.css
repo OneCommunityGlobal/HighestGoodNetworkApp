@@ -222,16 +222,6 @@ body {
   min-width: 180px;
 }
 
-/* .box-count-4 .people-report-time-log-block {
-  width: calc(25% - 0.75rem);
-}
-
-/* 3 boxes: fill the row equally */
-/* .box-count-3 .people-report-time-log-block {
-  width: calc(33.33% - 0.75rem);
-} */ 
-
-
 @media (min-width: 850px) {
   .people-report-time-logs-wrapper {
     display: flex;
@@ -387,7 +377,7 @@ body {
   color: #ffffff !important;
 }
 
-@media (max-width: 850px) {
+@media (max-width: 960px) {
   .people-report-flex-layout {
     flex-direction: column;
     flex-wrap: wrap;
@@ -404,7 +394,7 @@ body {
   }
 }
 
-@media (max-width: 850px) {
+@media (max-width: 960px) {
   .people-report-time-logs-wrapper {
     flex-direction: column;
     align-items: center; 

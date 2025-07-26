@@ -490,7 +490,9 @@ class PeopleReport extends Component {
             <ReportPage darkMode={darkMode}>
 
 
-              <div className={`people-report-time-logs-wrapper`} style={boxCount === 3 ? { width: '68vw' } : { width: '100%' }}>
+              <div className={`people-report-time-logs-wrapper`} 
+              // style={boxCount === 3 ? { height: '68vw' } : { width: '100%' }}
+              >
                 <ReportPage.ReportBlock
                   firstColor="#ff5e82"
                   secondColor="#e25cb2"
