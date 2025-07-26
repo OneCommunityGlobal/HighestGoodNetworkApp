@@ -39,7 +39,7 @@ import { BlueSquareEmailAssignment } from './blueSquareEmailBcc';
 import { userProjectsByUserNameReducer } from './userProjectsByUserNameReducer';
 import teamCodesReducer from './teamCodesReducer';
 import { projectByIdReducer } from './projectByIdReducer';
-
+import { optStatusBreakdownReducer } from './optStatusBreakdownReducer';
 // bm dashboard
 import { materialsReducer } from './bmdashboard/materialsReducer';
 import { reusablesReducer } from './bmdashboard/reusablesReducer';
@@ -132,6 +132,7 @@ const localReducers = {
   // lbdashboard
   lbmessaging: messageReducer,
   lbuserpreferences: userPreferencesReducer,
+  optStatus: optStatusBreakdownReducer,
 };
 
 const sessionReducers = {

@@ -1,10 +1,10 @@
 //alisha
-import GET_OPT_STATUS_BREAKDOWN from "constants/optStatusBreakdownConstants";
+import { GET_OPT_STATUS_BREAKDOWN } from 'constants/optStatusBreakdownConstants';
 
 const initialState = {
   optStatusBreakdown: [],
   loading: false,
-  error: null
+  error: null,
 };
 
 export const optStatusBreakdownReducer = (state = initialState, action) => {
@@ -14,7 +14,7 @@ export const optStatusBreakdownReducer = (state = initialState, action) => {
         ...state,
         optStatusBreakdown: action.payload,
         loading: false,
-        error: null
+        error: null,
       };
     default:
       return state;

@@ -1,3 +1,3 @@
-const GET_OPT_STATUS_BREAKDOWN = 'GET_OPT_STATUS_BREAKDOWN';
-export default GET_OPT_STATUS_BREAKDOWN;
-//alisha
+/* eslint-disable prettier/prettier */
+/* eslint-disable import/prefer-default-export */
+export const GET_OPT_STATUS_BREAKDOWN = 'GET_OPT_STATUS_BREAKDOWN';

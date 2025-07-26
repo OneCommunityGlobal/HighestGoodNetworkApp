@@ -204,6 +204,8 @@ export const ENDPOINTS = {
 
   SET_USER_FOLLOWUP: (userId, taskId) => `${APIEndpoint}/followup/${userId}/${taskId}`,
   GET_PROJECT_BY_PERSON: searchName => `${APIEndpoint}/userProfile/projects/${searchName}`,
+  OPT_STATUS_BREAKDOWN: (startDate = "", endDate = "", role = "") =>
+    `${APIEndpoint}/analytics/opt-status?startDate=${startDate}&endDate=${endDate}&role=${role}`,
 
   FAQS: `${APIEndpoint}/faqs`,
   FAQ_BY_ID: faqId => `${APIEndpoint}/faqs/${faqId}`,
@@ -347,12 +349,6 @@ export const ENDPOINTS = {
   LB_LISTINGS: `${APIEndpoint}/lb/getListings`,
   LB_LISTINGS_BASE: `${APIEndpoint}/lb`,
   HELP_CATEGORIES: `${APIEndpoint}/help-categories`,
-
-  //alisha
-  OPT_STATUS_BREAKDOWN: (startDate = "", endDate = "", role = "") =>
-    `${APIEndpoint}/analytics/opt-status?startDate=${startDate}&endDate=${endDate}&role=${role}`
-
-
 };
 
 export const ApiEndpoint = APIEndpoint;

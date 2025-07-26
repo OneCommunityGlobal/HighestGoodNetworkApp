@@ -26,19 +26,5 @@ export const fetchOptStatusBreakdown = (startDate = "", endDate = "", role = "")
     }
   };
 };
-// export const fetchOptStatusBreakdown = () => {
-//   const url = ENDPOINTS.OPT_STATUS_BREAKDOWN;
-//   return async dispatch => {
-//     axios
-//       .get(url)
-//       .then(response => {
-//         dispatch(setOptStatusBreakdown(response.data));
-//       })
-//       .catch(error => {
-//         console.log(error);
-//       });
-//   };
-// };
-//alisha
 
 export default fetchOptStatusBreakdown;

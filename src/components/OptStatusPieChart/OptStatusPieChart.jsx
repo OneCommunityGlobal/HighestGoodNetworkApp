@@ -1,24 +1,27 @@
-import React, { useEffect, useState } from 'react';
+/* eslint-disable object-shorthand */
+/* eslint-disable func-names */
+/* eslint-disable prettier/prettier */
+/* eslint-disable react/function-component-definition */
+import { useEffect, useState } from 'react';
 import { Pie } from 'react-chartjs-2';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchOptStatusBreakdown } from 'redux/actions/optStatusBreakdownActions';
-import { roleOptions } from './filters';
+import { fetchOptStatusBreakdown } from '../../actions/optStatusBreakdownAction';
+import { roleOptions } from './filter';
 import 'chart.js/auto';
 import './OptStatusPieChart.css';
 
 const COLORS = {
-  'OPT started': '#4caf50',
-  'CPT (Not Eligible)': '#f44336',
-  'OPT not yet started': '#ff9800',
-  'Just want to volunteer': '#2196f3',
-  'Citizen': '#9c27b0',
-  'N/A': '#bdbdbd'
+  'OPT started': '#f44336',
+  'CPT (Not Eligible)': '#f4e34cfc',
+  'OPT not yet started': '#2196f3',
+  'Just want to volunteer': '#e91e63',
+  'Citizen': '#4caf50', 
+  'N/A': '#ff9800'
 };
 
 const OptStatusPieChart = () => {
   const dispatch = useDispatch();
   const { optStatusBreakdown } = useSelector(state => state.optStatus);
-  
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [role, setRole] = useState('');
@@ -27,10 +30,10 @@ const OptStatusPieChart = () => {
     dispatch(fetchOptStatusBreakdown(startDate, endDate, role));
   }, [startDate, endDate, role, dispatch]);
 
-  const labels = optStatusBreakdown.map(d => d.status);
+  const labels = optStatusBreakdown.map(d => d.optStatus);
   const dataCounts = optStatusBreakdown.map(d => d.count);
   const total = dataCounts.reduce((sum, value) => sum + value, 0);
-  const backgroundColors = labels.map(label => COLORS[label]);
+  const backgroundColors = labels.map(label => COLORS[label] || '#ccc');
 
   const chartData = {
     labels: labels.map((label, index) =>
@@ -45,10 +48,10 @@ const OptStatusPieChart = () => {
   };
 
   const options = {
+    responsive: true,
+    maintainAspectRatio: false,
     plugins: {
-      legend: {
-        display: false
-      },
+      legend: { display: false },
       tooltip: {
         callbacks: {
           label: function (context) {
@@ -75,7 +78,9 @@ const OptStatusPieChart = () => {
         </select>
       </div>
 
-      <Pie data={chartData} options={options} />
+      <div className="pie-chart-wrapper h-96">
+        <Pie data={chartData} options={options} />
+      </div>
     </div>
   );
 };

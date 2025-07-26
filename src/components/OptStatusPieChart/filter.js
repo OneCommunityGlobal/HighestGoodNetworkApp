@@ -1,6 +1,9 @@
+/* eslint-disable prettier/prettier */
+/* eslint-disable import/prefer-default-export */
 export const roleOptions = [
   { label: "All", value: "" },
-  { label: "Software Engineer", value: "Software Engineer" },
-  { label: "Data Analyst", value: "Data Analyst" },
-  { label: "Product Manager", value: "Product Manager" }
+  { label: "Analyst", value: "Analyst" },
+  { label: "Developer", value: "Developer" },
+  { label: "QA", value: "QA" },
+  { label: "Intern", value: "Intern" }
 ];
