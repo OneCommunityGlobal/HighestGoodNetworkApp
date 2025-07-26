@@ -1,19 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import { datetimeToDate } from 'components/TeamMemberTasks/components/TaskDifferenceModal';
-import { Link } from 'react-router-dom';
+import { datetimeToDate } from '../../TeamMemberTasks/components/TaskDifferenceModal';
 
-export const TaskEditSuggestionRow = ({
+// eslint-disable-next-line import/prefer-default-export
+export function TaskEditSuggestionRow({
   taskEditSuggestion,
   handleToggleTaskEditSuggestionModal,
   darkMode,
-}) => {
-  const handleButtonClick = (event) => {
+}) {
+  const handleButtonClick = event => {
     event.stopPropagation(); // This stops the click event from bubbling up to the parent <tr>
     handleToggleTaskEditSuggestionModal(taskEditSuggestion);
   };
 
   return (
-    <tr 
+    <tr
       onClick={() => handleToggleTaskEditSuggestionModal(taskEditSuggestion)}
       className={darkMode ? 'text-light' : ''}
     >
@@ -22,6 +21,7 @@ export const TaskEditSuggestionRow = ({
       <td>{taskEditSuggestion.oldTask.taskName}</td>
       <td>
         <button
+          type="button"
           onClick={handleButtonClick}
           style={{
             backgroundColor: '#007bff',
@@ -35,4 +35,4 @@ export const TaskEditSuggestionRow = ({
       </td>
     </tr>
   );
-};
+}

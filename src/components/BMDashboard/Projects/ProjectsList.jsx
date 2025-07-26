@@ -5,7 +5,7 @@ import Select from 'react-select';
 import ProjectSummary from './ProjectSummary';
 
 function ProjectsList() {
-  const projects = useSelector(state => state.bmProjects);
+  const projects = useSelector(state => state.bmProjects) || [];
   const [selectedProjects, setSelectedProjects] = useState([]);
 
   const projectOptions = projects.map(project => ({
@@ -22,7 +22,7 @@ function ProjectsList() {
     : projects;
 
   return (
-    <Row className="ml-0 text-center">
+    <Row className="ml-0 text-center mt-5">
       <Select
         isMulti
         options={projectOptions}

@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Input, Button, Table, Form, FormGroup, Label } from 'reactstrap';
-import './LogTools.css';
 import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
 import Select from 'react-select';
@@ -11,6 +10,7 @@ import {
   resetPostToolsLog,
 } from '../../../actions/bmdashboard/invTypeActions';
 import { fetchBMProjects } from '../../../actions/bmdashboard/projectActions';
+import styles from './LogTools.module.css';
 
 function LogTools() {
   const toolTypes = useSelector(state => state.bmInvTypes.list);
@@ -225,21 +225,21 @@ function LogTools() {
   };
 
   return (
-    <div className="page">
-      <div className="log-form-container">
-        <div className="title-label">
+    <div className={`${styles.page}`}>
+      <div className={`${styles.logFormContainer}`}>
+        <div className={`${styles.titleLabel}`}>
           <span>TOOL/EQUIPMENT DAILY ACTIVITIES LOG</span>
         </div>
 
-        <Form className="selectors">
-          <FormGroup className="select_input">
-            <Label htmlFor="dateSelect" className="selector_label">
+        <Form className={`${styles.selectors}`}>
+          <FormGroup className={`${styles.selectInput}`}>
+            <Label htmlFor="dateSelect" className={`${styles.selectorLabel}`}>
               Date:
             </Label>
             <Input type="date" defaultValue={today} disabled />
           </FormGroup>
-          <FormGroup className="select_input">
-            <Label htmlFor="projectSelect" className="selector_label">
+          <FormGroup className={`${styles.selectInput}`}>
+            <Label htmlFor="projectSelect" className={`${styles.selectorLabel}`}>
               Project:
             </Label>
             <Input
@@ -253,8 +253,8 @@ function LogTools() {
               ))}
             </Input>
           </FormGroup>
-          <FormGroup className="select_input">
-            <Label htmlFor="projectSelect" className="selector_label">
+          <FormGroup className={`${styles.selectInput}`}>
+            <Label htmlFor="projectSelect" className={`${styles.selectorLabel}`}>
               Check In or Out:
             </Label>
             <Input
@@ -272,15 +272,17 @@ function LogTools() {
 
         <Table>
           <thead>
-            <tr className="subtitle-row">
+            <tr className={`${styles.subtitleRow}`}>
               <td colSpan="6">
-                <span className="table-subtitle">Item</span>
-                <span className="table-subtitle">Quantity</span>
-                <span className="table-subtitle subtitle-highlight">Daily Log Input</span>
+                <span className={`${styles.tableSubtitle}`}>Item</span>
+                <span className={`${styles.tableSubtitle}`}>Quantity</span>
+                <span className={`${styles.tableSubtitle} ${styles.subtitleHighlight}`}>
+                  Daily Log Input
+                </span>
               </td>
             </tr>
 
-            <tr className="tool-type-head">
+            <tr className={`${styles.toolTypeHead}`}>
               <td>ID </td>
               <td>Name </td>
               <td>Working </td>
@@ -293,7 +295,7 @@ function LogTools() {
           <tbody>
             {relevantToolTypes.length > 0 ? (
               relevantToolTypes.map((toolType, index) => (
-                <tr key={toolType._id} className="tool-type-row">
+                <tr key={toolType._id} className={`${styles.toolTypeRow}`}>
                   <td>{index + 1}</td>
                   <td>{toolType.toolName}</td>
                   <td>{toolType.available + toolType.using}</td>
@@ -320,12 +322,12 @@ function LogTools() {
             )}
           </tbody>
         </Table>
-        <div className="action-buttons">
-          <Button className="log-form-cancel-button" onClick={handleCancel}>
+        <div className={`${styles.actionButtons}`}>
+          <Button className={`${styles.logFormCancelButton}`} onClick={handleCancel}>
             Cancel
           </Button>
           <Button
-            className="log-form-submit-button"
+            className={`${styles.logFormSubmitButton}`}
             onClick={handleSubmit}
             disabled={postObject.typesArray.length === 0}
           >

@@ -123,10 +123,11 @@ function PermissionChangeLogTable({ changeLogs, darkMode }) {
                 <td
                   className={`permission-change-log-table--cell ${bgYinmnBlue}`}
                   style={{
-                    fontWeight: log.name.startsWith('INDIVIDUAL:') ? 'bold' : 'normal',
+                    // Uncommented lines below and in formatName, using individualName for users, and roleName for role changes
+                    fontWeight: log?.individualName ? 'bold' : 'normal',
                   }}
                 >
-                  {formatName(log.name)}
+                  {log?.individualName ? formatName(log.individualName) : log.roleName}
                 </td>
                 <td className={`permission-change-log-table--cell permissions ${bgYinmnBlue}`}>
                   {renderPermissions(log.permissions, log._id)}

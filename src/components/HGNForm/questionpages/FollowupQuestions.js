@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import '../styles/FollowupQuestions.css';
 import { FaEdit, FaRegSave } from 'react-icons/fa';
 import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
@@ -8,6 +7,7 @@ import { toast } from 'react-toastify';
 import { useSelector, useDispatch } from 'react-redux';
 import { setformData } from 'actions/hgnFormAction';
 import { Spinner } from 'reactstrap';
+import styles from '../styles/FollowupQuestions.module.css';
 
 function FollowupQuestions() {
   const navigate = useHistory();
@@ -234,14 +234,14 @@ function FollowupQuestions() {
   if (loading) {
     return (
       <div>
-        <Spinner color="primary" className="spinner-hgnform" />;
+        <Spinner color="primary" className={`${styles.spinnerHgnform}`} />;
       </div>
     );
   }
 
   return (
-    <div className="followup-questions">
-      <h3 className="blue-strip">Follow-up Questions</h3>
+    <div className={`${styles.followupQuestions}`}>
+      <h3 className={`${styles.blueStrip}`}>Follow-up Questions</h3>
       <form onSubmit={handleFormSubmission}>
         {questions.map((question, index) => {
           // Dynamically map formData field names to questions
@@ -263,31 +263,31 @@ function FollowupQuestions() {
           const fieldName = fieldNames[index] || 'followup_additional_info';
 
           return (
-            <div className="follow-up" key={question._id || index}>
-              <div className="question-container">
+            <div className={`${styles.followUp}`} key={question._id || index}>
+              <div className={`${styles.questionContainer}`}>
                 {editingIndex === index && isOwner ? (
-                  <div className="edit-question-container">
-                    <p className="edit-title">Edit Question</p>
-                    <div className="edit-question">
+                  <div className={`${styles.editQuestionContainer}`}>
+                    <p className={`${styles.editTitle}`}>Edit Question</p>
+                    <div className={`${styles.editQuestion}`}>
                       <input
                         type="text"
                         value={editedText}
                         onChange={e => setEditedText(e.target.value)}
-                        className="edit-input"
+                        className={`${styles.editInput}`}
                       />
                       <FaRegSave
                         title="Save"
-                        className="save-icon"
+                        className={`${styles.saveIcon}`}
                         onClick={() => handleSaveClick(index)}
                       />
                     </div>
                   </div>
                 ) : (
-                  <p className="question">
+                  <p className={`${styles.question}`}>
                     {searchQuestion(5, index + 1)}
                     {isOwner && (
                       <FaEdit
-                        className="edit-icon"
+                        className={`${styles.editIcon}`}
                         onClick={() => handleEditClick(index)}
                         title="Edit"
                       />
@@ -307,14 +307,14 @@ function FollowupQuestions() {
           );
         })}
 
-        <div className="final-button-container">
-          <button type="button" className="hgn-return-button" onClick={handleBack}>
+        <div className={`${styles.finalButtonContainer}`}>
+          <button type="button" className={`${styles.hgnReturnButton}`} onClick={handleBack}>
             Back
           </button>
-          <button type="button" className="edit-button" onClick={handleEdit}>
+          <button type="button" className={`${styles.editButton}`} onClick={handleEdit}>
             Edit My Response
           </button>
-          <button type="submit" className="submit-button">
+          <button type="submit" className={`${styles.submitButton}`}>
             Submit
           </button>
         </div>

@@ -50,16 +50,18 @@ describe('App Initialization Token Checks', () => {
     // Override the store so that we can inspect dispatch calls.
     jest.doMock('../../store', () => ({
       __esModule: true,
-      default: () => ({
-        persistor: {
-          subscribe: jest.fn(),
-          dispatch: jest.fn(),
-          getState: jest.fn(() => ({ bootstrapped: true })), // Ensure bootstrapping state is true.
-          persist: jest.fn(),
-          flush: jest.fn(),
-        },
-        store: { dispatch: dispatchSpy },
-      }),
+      store: {
+        dispatch: dispatchSpy,
+        getState: jest.fn(),
+        subscribe: jest.fn(),
+      },
+      persistor: {
+        subscribe: jest.fn(),
+        dispatch: jest.fn(),
+        getState: jest.fn(() => ({ bootstrapped: true })), // Ensure bootstrapping state is true.
+        persist: jest.fn(),
+        flush: jest.fn(),
+      },
     }));
 
     // --- Mock httpService ---

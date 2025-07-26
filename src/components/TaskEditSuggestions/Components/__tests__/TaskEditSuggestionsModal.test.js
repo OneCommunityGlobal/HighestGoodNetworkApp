@@ -1,15 +1,13 @@
-import React from 'react';
-import { TaskEditSuggestionsModal } from 'components/TaskEditSuggestions/Components/TaskEditSuggestionsModal';  
+/* eslint-disable react/jsx-props-no-spreading */
 import * as reduxHooks from 'react-redux';
-import { waitFor, render, fireEvent, screen } from '@testing-library/react';
-import { act } from 'react-dom/test-utils';
+import { render, screen } from '@testing-library/react';
+import { TaskEditSuggestionsModal } from '../TaskEditSuggestionsModal';
 
 jest.mock('react-redux', () => ({
   useDispatch: jest.fn(),
   useSelector: jest.fn(),
   useStore: jest.fn(),
 }));
-
 
 const mockDispatch = jest.fn();
 const mockGetState = jest.fn();
@@ -24,7 +22,6 @@ beforeEach(() => {
   jest.clearAllMocks();
   reduxHooks.useDispatch.mockReturnValue(mockDispatch);
   reduxHooks.useStore.mockReturnValue({ getState: mockGetState });
-
 });
 
 describe('TaskEditSuggestionsModal Rendering', () => {
@@ -43,7 +40,7 @@ describe('TaskEditSuggestionsModal Rendering', () => {
     const taskEditSuggestion = {
       user: 'John Doe',
       oldTask: {
-        taskName: 'Old Task Name',       
+        taskName: 'Old Task Name',
       },
       newTask: {
         taskName: 'New Task Name',
@@ -52,16 +49,12 @@ describe('TaskEditSuggestionsModal Rendering', () => {
     const props = { ...defaultProps, taskEditSuggestion, isTaskEditSuggestionsModalOpen: true };
     const { queryByText } = render(<TaskEditSuggestionsModal {...props} />);
     expect(queryByText(/John Doe/i)).not.toBeInTheDocument();
-    
   });
 });
-
-
 
 describe('TaskEditSuggestionsModal Redux Integration', () => {
   it('uses useDispatch hook', () => {
     render(<TaskEditSuggestionsModal {...defaultProps} />);
     expect(reduxHooks.useDispatch).toHaveBeenCalled();
   });
-
 });

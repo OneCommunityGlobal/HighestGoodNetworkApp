@@ -21,23 +21,27 @@ function PermissionList(props) {
     setPermissions = () => {},
     // runs when permission is added or removed
     onChange = () => {},
+
+    removedDefaultPermissions = [],
+
+    setRemovedDefaultPermissions = () => {},
   } = props;
   return (
     <ul className="user-role-tab__permissionList">
-      {permissionsList.map(permission => (
+      {permissionsList.map((permission, index) => (
         <PermissionListItem
-          key={permission.label}
+          key={`${permission.label}-${permission.key || index}`}
           rolePermissions={rolePermissions}
           immutablePermissions={immutablePermissions}
+          removedDefaultPermissions={removedDefaultPermissions}
+          setRemovedDefaultPermissions={setRemovedDefaultPermissions}
           label={permission.label}
           permission={permission.key}
           subperms={permission.subperms}
           description={permission.description}
           editable={editable}
           depth={depth}
-          // eslint-disable-next-line react/destructuring-assignment
           darkMode={props.darkMode}
-          // functions
           setPermissions={setPermissions}
           onChange={onChange}
         />
