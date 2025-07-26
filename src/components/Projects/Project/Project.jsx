@@ -17,20 +17,8 @@ const Project = props => {
   const [projectData, setProjectData] = useState(props.projectData);
   const { projectName, isActive,isArchived, _id: projectId } = projectData;
   const [displayName, setDisplayName] = useState(projectName);
-  const initialModalData = {
-    showModal: false,
-    modalMessage: "",
-    modalTitle: "",
-    hasConfirmBtn: false,
-    hasInactiveBtn: false,
-  };
-
-  const [modalData, setModalData] = useState(initialModalData);
-
-  const onCloseModal = () => {
-    setModalData(initialModalData);
-    props.clearError();
-  };  const [category, setCategory] = useState(props.category || 'Unspecified'); // Initialize with props or default
+  
+  const [category, setCategory] = useState(props.category || 'Unspecified'); // Initialize with props or default
 
   const canPutProject = props.hasPermission('putProject');
   const canDeleteProject = props.hasPermission('deleteProject');
@@ -38,12 +26,14 @@ const Project = props => {
   const canSeeProjectManagementFullFunctionality = props.hasPermission('seeProjectManagement');
   const canEditCategoryAndStatus = props.hasPermission('editProject');
 
-
-  const updateProject = (key, value) => {
-    setProjectData({
-      ...projectData,
-      [key]: value,
-    });
+   const updateProject = ({ updatedProject, status }) => async dispatch => {
+    try {
+      dispatch(updateProject({ updatedProject, status }));
+    } catch (err) {
+      const status = err?.response?.status || 500;
+      const error = err?.response?.data || { message: 'An error occurred' };
+      dispatch(updateProject({ status, error }));
+    }
   };
 
   const onDisplayNameChange = (e) => {
@@ -59,6 +49,11 @@ const Project = props => {
     } 
   };
 
+  const onProjectStatusChange = () => {
+    // Trigger the modal from Projects component via props
+    props.onClickProjectStatusBtn(projectData); // This will open the modal
+  };
+
   const onUpdateProjectActive = () => {
     updateProject('isActive', !isActive);
   }
@@ -69,13 +64,7 @@ const Project = props => {
   };
 
   const onArchiveProject = () => {
-    setModalData({
-      showModal: true,
-      modalMessage: `<p>Do you want to archive ${projectData.projectName}?</p>`,
-      modalTitle: CONFIRM_ARCHIVE,
-      hasConfirmBtn: true,
-      hasInactiveBtn: isActive,
-    });
+    props.onClickArchiveBtn(projectData);
   }
   
   const setProjectInactive = () => {
@@ -94,6 +83,9 @@ const Project = props => {
         setFirstLoad(false);
       } else {
         await props.modifyProject(projectData);
+      }
+      if (props.projectData.category) {
+        setCategory(props.projectData.category);
       }
     };
 
@@ -135,7 +127,7 @@ const Project = props => {
             onChange={e => {
               onUpdateProjectCategory(e);
             }}
-
+            className={darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}
           >
             <option value="Unspecified">Unspecified</option>
             <option value="Food">Food</option>
@@ -153,7 +145,7 @@ const Project = props => {
       </td>
       {/* <td className="projects__active--input" data-testid="project-active" onClick={canPutProject ? updateActive : null}>
         {props.active ? ( */}
-          <td className="projects__active--input" data-testid="project-active" onClick={canEditCategoryAndStatus || canPutProject ? onUpdateProjectActive : null}>
+          <td className="projects__active--input" data-testid="project-active" onClick={canEditCategoryAndStatus || canPutProject ? onProjectStatusChange : null}>
               {isActive ? (
           <div className="isActive">
             <i className="fa fa-circle" aria-hidden="true"></i>
@@ -206,17 +198,8 @@ const Project = props => {
         </td>
       ) : null}
     </tr>
-      <ModalTemplate
-          isOpen={modalData.showModal}
-          closeModal={onCloseModal}
-          confirmModal={modalData.hasConfirmBtn ? confirmArchive : null}
-          setInactiveModal={modalData.hasInactiveBtn ? setProjectInactive : null}
-          modalMessage={modalData.modalMessage}
-          modalTitle={modalData.modalTitle}
-        />
     </>
   );
 };
 const mapStateToProps = state => state;
 export default connect(mapStateToProps, { hasPermission, modifyProject, clearError })(Project);
-
