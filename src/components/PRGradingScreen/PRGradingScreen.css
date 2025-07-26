@@ -619,3 +619,293 @@
   margin-right: 0;
   width: 100%;
 }
+
+/* ===== DARK MODE STYLES ===== */
+
+/* Container and Card */
+.pr-grading-screen-container.dark-mode {
+  background-color: #1b2a41;
+}
+
+.pr-grading-screen-container.dark-mode .container-fluid {
+  background-color: #1b2a41;
+  min-height: 100vh;
+}
+
+.pr-grading-screen-container.dark-mode .row {
+  background-color: #1b2a41;
+  min-height: 100vh;
+}
+
+.pr-grading-screen-card.dark-mode {
+  background-color: #1b2a41;
+  box-shadow: 0 4px 6px rgba(255, 255, 255, 0.1);
+}
+
+.pr-grading-screen-header.dark-mode {
+  background-color: #1b2a41;
+  border-bottom: 1px solid #3a506b;
+}
+
+.pr-grading-screen-title.dark-mode {
+  color: #ffffff;
+}
+
+.pr-grading-screen-team-info-badge.dark-mode {
+  background-color: #1b2a41;
+  border: 1px solid #4a5a77;
+}
+
+.pr-grading-screen-team-info.dark-mode {
+  color: #e8a71c;
+}
+
+.pr-grading-screen-done-button.dark-mode {
+  background-color: #4a5a77;
+  border-color: #5a6b88;
+  color: #ffffff;
+}
+
+.pr-grading-screen-done-button.dark-mode:hover {
+  background-color: #5a6b88;
+  border-color: #6a7b98;
+}
+
+.pr-grading-screen-active-members-title.dark-mode {
+  color: #e8a71c;
+}
+
+.card-body.dark-mode {
+  background-color: #1b2a41;
+  color: #ffffff;
+}
+
+/* Table */
+.pr-grading-screen-table-container.dark-mode {
+  box-shadow: 0 1px 3px rgba(255, 255, 255, 0.1);
+}
+
+.pr-grading-screen-table.dark-mode {
+  background-color: #1b2a41;
+  color: #ffffff;
+}
+
+.pr-grading-screen-table.dark-mode thead th {
+  background-color: #2d4059;
+  border-bottom: 2px solid #4a5a77;
+  color: #ffffff;
+}
+
+.pr-grading-screen-table.dark-mode tbody tr {
+  border-bottom: 1px solid #4a5a77;
+}
+
+.pr-grading-screen-table.dark-mode tbody tr:hover {
+  background-color: #2d4059;
+}
+
+.pr-grading-screen-table-row.dark-mode td {
+  color: #ffffff;
+}
+
+.pr-grading-screen-reviewer-name {
+  color: inherit;
+}
+
+.pr-grading-screen-reviewer-role {
+  color: #b0b8c4;
+}
+
+.pr-grading-screen-table.dark-mode .pr-grading-screen-pr-input {
+  background-color: #2d4059;
+  border-color: #5a6b88;
+  color: #ffffff;
+}
+
+.pr-grading-screen-table.dark-mode .pr-grading-screen-pr-input:focus {
+  border-color: #e8a71c;
+  box-shadow: 0 0 0 2px rgba(232, 167, 28, 0.25);
+}
+
+.pr-grading-screen-table.dark-mode .pr-grading-screen-pr-input:hover {
+  border-color: #6a7b98;
+}
+
+/* PR Number Pills */
+.pr-grading-screen-table.dark-mode .pr-grading-screen-pr-number {
+  background-color: #2d4059;
+  color: #ffffff;
+  border-color: #5a6b88;
+}
+
+.pr-grading-screen-table.dark-mode .pr-grading-screen-pr-number.pr-grading-screen-pair {
+  background-color: #3a5f4a;
+  color: #a7f3d0;
+  border-color: #4a6f5a;
+}
+
+.pr-grading-screen-table.dark-mode .pr-grading-screen-pr-clickable:hover {
+  background-color: #3a506b;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(255, 255, 255, 0.1);
+}
+
+/* Buttons */
+.pr-grading-screen-add-btn.dark-mode {
+  background-color: #28a745;
+  border-color: #28a745;
+}
+
+.pr-grading-screen-add-btn.dark-mode:hover {
+  background-color: #218838;
+  border-color: #1e7e34;
+}
+
+/* Modal */
+.pr-grading-screen-modal-overlay.dark-mode {
+  background-color: rgba(27, 42, 65, 0.8);
+}
+
+.pr-grading-screen-modal.dark-mode {
+  background-color: #1b2a41;
+  border: 1px solid #4a5a77;
+  box-shadow: 0 4px 6px rgba(255, 255, 255, 0.1);
+}
+
+.pr-grading-screen-modal-header.dark-mode {
+  background-color: #2d4059;
+  border-bottom: 1px solid #4a5a77;
+  color: #ffffff;
+}
+
+.pr-grading-screen-modal-header.dark-mode h3 {
+  color: #ffffff;
+}
+
+.pr-grading-screen-modal-close.dark-mode {
+  background-color: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 24px;
+}
+
+.pr-grading-screen-modal-close.dark-mode:hover {
+  color: #e8a71c;
+}
+
+.pr-grading-screen-modal-body.dark-mode {
+  background-color: #1b2a41;
+  color: #ffffff;
+}
+
+.pr-grading-screen-grading-table.dark-mode {
+  background-color: #1b2a41;
+  color: #ffffff;
+}
+
+.pr-grading-screen-grading-table.dark-mode th {
+  background-color: #2d4059;
+  border-bottom: 1px solid #4a5a77;
+  color: #ffffff;
+}
+
+.pr-grading-screen-grading-table.dark-mode td {
+  border-bottom: 1px solid #4a5a77;
+  color: #ffffff;
+}
+
+.pr-grading-screen-grading-table.dark-mode tr:hover {
+  background-color: #2d4059;
+}
+
+/* Input and Form Elements */
+.pr-grading-screen-pr-number-input.dark-mode {
+  background-color: #2d4059;
+  border-color: #5a6b88;
+  color: #ffffff;
+}
+
+.pr-grading-screen-pr-number-input.dark-mode:focus {
+  border-color: #e8a71c;
+  box-shadow: 0 0 0 2px rgba(232, 167, 28, 0.25);
+}
+
+.pr-grading-screen-input-error.dark-mode {
+  border-color: #dc3545;
+}
+
+.pr-grading-screen-error-message {
+  color: #f8d7da;
+}
+
+.pr-grading-screen-pair-message {
+  color: #a7f3d0;
+}
+
+/* Modal Buttons */
+.pr-grading-screen-done-btn.dark-mode {
+  background-color: #007bff;
+  border-color: #007bff;
+  color: #ffffff;
+}
+
+.pr-grading-screen-done-btn.dark-mode:hover {
+  background-color: #0056b3;
+  border-color: #004085;
+}
+
+/* Input Container */
+.pr-grading-screen-input-container.dark-mode {
+  background-color: transparent;
+}
+
+/* Button variants for dark mode */
+.btn.dark-mode {
+  border: 1px solid #5a6b88;
+}
+
+.btn-primary.dark-mode {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.btn-primary.dark-mode:hover {
+  background-color: #0056b3;
+  border-color: #004085;
+}
+
+.btn-secondary.dark-mode {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  color: #ffffff;
+}
+
+.btn-secondary.dark-mode:hover {
+  background-color: #545b62;
+  border-color: #4e555b;
+}
+
+/* Grade badges in dark mode */
+.dark-mode .pr-grading-screen-grade-exceptional {
+  background-color: #155724;
+  color: #d4edda;
+  border-color: #c3e6cb;
+}
+
+.dark-mode .pr-grading-screen-grade-okay {
+  background-color: #0c5460;
+  color: #d1ecf1;
+  border-color: #bee5eb;
+}
+
+.dark-mode .pr-grading-screen-grade-unsatisfactory {
+  background-color: #721c24;
+  color: #f8d7da;
+  border-color: #f5c6cb;
+}
+
+.dark-mode .pr-grading-screen-grade-no-correct-image {
+  background-color: #383d41;
+  color: #e2e3e5;
+  border-color: #d6d8db;
+}

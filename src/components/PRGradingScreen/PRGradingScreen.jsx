@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { Container, Row, Col, Card, Button } from 'react-bootstrap';
+import { useSelector } from 'react-redux';
 import './PRGradingScreen.css';
 
 const PRGradingScreen = ({ teamData, reviewers }) => {
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   // Pure presentational component - requires teamData and reviewers as props
   if (!teamData || !reviewers) {
     return <div>Error: Missing required props (teamData, reviewers)</div>;
@@ -113,34 +116,47 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
   };
 
   return (
-    <Container fluid className="pr-grading-screen-container">
+    <Container fluid className={`pr-grading-screen-container ${darkMode ? 'dark-mode' : ''}`}>
       <Row className="justify-content-center">
         <Col md={12}>
-          <Card className="pr-grading-screen-card">
-            <Card.Header className="pr-grading-screen-header">
+          <Card className={`pr-grading-screen-card ${darkMode ? 'dark-mode' : ''}`}>
+            <Card.Header className={`pr-grading-screen-header ${darkMode ? 'dark-mode' : ''}`}>
               <div className="pr-grading-screen-header-content">
                 <div className="pr-grading-screen-header-left">
-                  <h1 className="pr-grading-screen-title">Weekly PR grading screen</h1>
-                  <div className="pr-grading-screen-team-info-badge">
-                    <h2 className="pr-grading-screen-team-info">
+                  <h1 className={`pr-grading-screen-title ${darkMode ? 'dark-mode' : ''}`}>
+                    Weekly PR grading screen
+                  </h1>
+                  <div
+                    className={`pr-grading-screen-team-info-badge ${darkMode ? 'dark-mode' : ''}`}
+                  >
+                    <h2 className={`pr-grading-screen-team-info ${darkMode ? 'dark-mode' : ''}`}>
                       {teamData.teamName} - {teamData.dateRange.start} to {teamData.dateRange.end}
                     </h2>
                   </div>
                 </div>
                 <div className="pr-grading-screen-header-right">
-                  <Button variant="outline-dark" className="pr-grading-screen-done-button">
+                  <Button
+                    variant="outline-dark"
+                    className={`pr-grading-screen-done-button ${darkMode ? 'dark-mode' : ''}`}
+                  >
                     Done
                   </Button>
                 </div>
               </div>
             </Card.Header>
-            <Card.Body>
+            <Card.Body className={darkMode ? 'dark-mode' : ''}>
               <div className="pr-grading-screen-active-members-section">
-                <h3 className="pr-grading-screen-active-members-title">Active Members</h3>
+                <h3
+                  className={`pr-grading-screen-active-members-title ${
+                    darkMode ? 'dark-mode' : ''
+                  }`}
+                >
+                  Active Members
+                </h3>
               </div>
 
-              <div className="pr-grading-screen-table-container">
-                <table className="pr-grading-screen-table">
+              <div className={`pr-grading-screen-table-container ${darkMode ? 'dark-mode' : ''}`}>
+                <table className={`pr-grading-screen-table ${darkMode ? 'dark-mode' : ''}`}>
                   <thead>
                     <tr>
                       <th className="pr-grading-screen-th-name">Reviewer Name</th>
@@ -151,7 +167,10 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                   </thead>
                   <tbody>
                     {reviewerData.map(reviewer => (
-                      <tr key={reviewer.id} className="pr-grading-screen-table-row">
+                      <tr
+                        key={reviewer.id}
+                        className={`pr-grading-screen-table-row ${darkMode ? 'dark-mode' : ''}`}
+                      >
                         <td className="pr-grading-screen-td-name">
                           <div className="pr-grading-screen-reviewer-info">
                             <div className="pr-grading-screen-reviewer-name">
@@ -171,7 +190,7 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                               handlePRReviewedChange(reviewer.id, Number(e.target.value) || 0)
                             }
                             onFocus={e => e.target.select()}
-                            className="pr-grading-screen-pr-input"
+                            className={`pr-grading-screen-pr-input ${darkMode ? 'dark-mode' : ''}`}
                             min="0"
                           />
                         </td>
@@ -209,7 +228,11 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
 
                             {/* PR Number Input */}
                             {activeInput === reviewer.id && (
-                              <div className="pr-grading-screen-input-container">
+                              <div
+                                className={`pr-grading-screen-input-container ${
+                                  darkMode ? 'dark-mode' : ''
+                                }`}
+                              >
                                 <div className="pr-grading-screen-input-wrapper">
                                   <input
                                     type="text"
@@ -227,7 +250,9 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                                       isBackendFrontendPair(inputValue)
                                         ? 'pr-grading-screen-pair-input'
                                         : ''
-                                    } ${inputError ? 'pr-grading-screen-input-error' : ''}`}
+                                    } ${inputError ? 'pr-grading-screen-input-error' : ''} ${
+                                      darkMode ? 'dark-mode' : ''
+                                    }`}
                                     autoFocus
                                   />
                                   <div className="pr-grading-screen-input-buttons">
@@ -236,21 +261,35 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                                       size="sm"
                                       onClick={handleInputSubmit}
                                       disabled={!inputValue.trim()}
+                                      className={darkMode ? 'dark-mode' : ''}
                                     >
                                       Add
                                     </Button>
-                                    <Button variant="secondary" size="sm" onClick={handleCancel}>
+                                    <Button
+                                      variant="secondary"
+                                      size="sm"
+                                      onClick={handleCancel}
+                                      className={darkMode ? 'dark-mode' : ''}
+                                    >
                                       Cancel
                                     </Button>
                                   </div>
                                 </div>
                                 {inputError && (
-                                  <div className="pr-grading-screen-error-message">
+                                  <div
+                                    className={`pr-grading-screen-error-message ${
+                                      darkMode ? 'dark-mode' : ''
+                                    }`}
+                                  >
                                     {inputError}
                                   </div>
                                 )}
                                 {isBackendFrontendPair(inputValue) && !inputError && (
-                                  <div className="pr-grading-screen-pair-message">
+                                  <div
+                                    className={`pr-grading-screen-pair-message ${
+                                      darkMode ? 'dark-mode' : ''
+                                    }`}
+                                  >
                                     Frontend-Backend Pair Detected
                                   </div>
                                 )}
@@ -266,19 +305,29 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
 
               {/* Grading Modal */}
               {showGradingModal && (
-                <div className="pr-grading-screen-modal-overlay" onClick={handleCloseGradingModal}>
-                  <div className="pr-grading-screen-modal" onClick={e => e.stopPropagation()}>
-                    <div className="pr-grading-screen-modal-header">
+                <div
+                  className={`pr-grading-screen-modal-overlay ${darkMode ? 'dark-mode' : ''}`}
+                  onClick={handleCloseGradingModal}
+                >
+                  <div
+                    className={`pr-grading-screen-modal ${darkMode ? 'dark-mode' : ''}`}
+                    onClick={e => e.stopPropagation()}
+                  >
+                    <div
+                      className={`pr-grading-screen-modal-header ${darkMode ? 'dark-mode' : ''}`}
+                    >
                       <h3>Grade PR Numbers</h3>
                       <button
-                        className="pr-grading-screen-modal-close"
+                        className={`pr-grading-screen-modal-close ${darkMode ? 'dark-mode' : ''}`}
                         onClick={handleCloseGradingModal}
                       >
                         ×
                       </button>
                     </div>
-                    <div className="pr-grading-screen-modal-body">
-                      <table className="pr-grading-screen-grading-table">
+                    <div className={`pr-grading-screen-modal-body ${darkMode ? 'dark-mode' : ''}`}>
+                      <table
+                        className={`pr-grading-screen-grading-table ${darkMode ? 'dark-mode' : ''}`}
+                      >
                         <thead>
                           <tr>
                             <th>PR Number</th>
@@ -354,7 +403,7 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                         <Button
                           variant="primary"
                           onClick={handleCloseGradingModal}
-                          className="pr-grading-screen-done-btn"
+                          className={`pr-grading-screen-done-btn ${darkMode ? 'dark-mode' : ''}`}
                         >
                           Done
                         </Button>
