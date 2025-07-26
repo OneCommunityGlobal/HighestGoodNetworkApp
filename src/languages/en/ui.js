@@ -86,7 +86,7 @@ export const PARTICIPATION = "Participation";
 export const CALENDAR = "Calendar";
 export const EVENT_PERSONALIZATION = "Event Personalization";
 export const REGISTRATION = "Registration";
-
+export const PR_PROMOTIONS = 'PR Promotions';
 
 
 export const SEND_EMAILS = 'Send Emails';

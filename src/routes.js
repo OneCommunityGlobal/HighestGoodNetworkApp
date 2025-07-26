@@ -25,6 +25,7 @@ import UnansweredFaqs from 'components/Faq/UnansweredFaqs';
 import HeaderRenderer from 'components/Header/HeaderRenderer';
 import IssueDashboard from 'components/BMDashboard/Issues/IssueDashboard';
 import { ExperienceDonutChart } from 'components/ExperienceDonutChart';
+import PRPromotionsPage from 'components/PRPromotions/PRPromotionsPage';
 import LessonForm from 'components/BMDashboard/Lesson/LessonForm';
 
 // hgnform routes
@@ -705,6 +706,7 @@ export default (
           component={PRReviewTeamAnalytics}
         />
         <ProtectedRoute path="/ExperienceDonutChart" component={ExperienceDonutChart} fallback />
+        <ProtectedRoute path="/prPromotionsPage" component={PRPromotionsPage} fallback />
 
         <ProtectedRoute path="/" exact component={Dashboard} />
         <Route path="*" component={NotFoundPage} />
