@@ -1,16 +1,21 @@
+import React from 'react';
 import hasPermission from 'utils/permissions';
 import { boxStyle, boxStyleDark } from 'styles';
 import { connect } from 'react-redux';
 import { useEffect } from 'react';
 import { useRef } from 'react';
 import { SEARCH, CREATE_NEW_TEAM } from '../../languages/en/ui';
-
 /**
  * The search panel stateless component for  Teams grid
  */
 export function TeamTableSearchPanelBase(props) {
   const { darkMode } = props;
-  const canPostTeam = props.hasPermission('postTeam');
+
+  const [canPostTeam, setCanPostTeam] = React.useState(props.hasPermission('postTeam'));
+
+  // prettier-ignore
+  if (canPostTeam === false) setTimeout(() => setCanPostTeam(props.hasPermission('postTeam')), 1000);
+
   const inputRef = useRef(null);
 
   useEffect(() => {
