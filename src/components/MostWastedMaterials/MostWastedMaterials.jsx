@@ -46,7 +46,7 @@ const mockData = {
 };
 
 // Custom Dropdown Component
-const CustomDropdown = ({ options, selected, onSelect }) => {
+function CustomDropdown({ options, selected, onSelect }) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -63,6 +63,7 @@ const CustomDropdown = ({ options, selected, onSelect }) => {
   return (
     <div style={{ position: 'relative' }} ref={dropdownRef}>
       <button
+        type="button"
         onClick={() => setIsOpen(!isOpen)}
         style={{
           width: '100%',
@@ -96,6 +97,7 @@ const CustomDropdown = ({ options, selected, onSelect }) => {
         >
           {options.map(option => (
             <button
+              type="button"
               key={option.id}
               onClick={() => {
                 onSelect(option);
@@ -109,8 +111,12 @@ const CustomDropdown = ({ options, selected, onSelect }) => {
                 border: 'none',
                 cursor: 'pointer',
               }}
-              onMouseEnter={e => (e.target.style.backgroundColor = '#f3f4f6')}
-              onMouseLeave={e => (e.target.style.backgroundColor = 'transparent')}
+              onMouseEnter={e => {
+                e.target.style.backgroundColor = '#f3f4f6';
+              }}
+              onMouseLeave={e => {
+                e.target.style.backgroundColor = 'transparent';
+              }}
             >
               {option.name}
             </button>
@@ -119,10 +125,10 @@ const CustomDropdown = ({ options, selected, onSelect }) => {
       )}
     </div>
   );
-};
+}
 
 // Custom Label component for displaying percentages on bars
-const CustomLabel = props => {
+function CustomLabel(props) {
   const { x, y, width, value } = props;
   return (
     <text
@@ -136,10 +142,10 @@ const CustomLabel = props => {
       {`${value}%`}
     </text>
   );
-};
+}
 
 // Custom Tooltip Component
-const CustomTooltip = ({ active, payload, label }) => {
+function CustomTooltip({ active, payload, label }) {
   if (active && payload && payload.length) {
     return (
       <div
@@ -159,7 +165,7 @@ const CustomTooltip = ({ active, payload, label }) => {
     );
   }
   return null;
-};
+}
 
 export default function MostWastedMaterialsDashboard() {
   const [selectedProject, setSelectedProject] = useState(mockProjects[0]);
@@ -171,7 +177,7 @@ export default function MostWastedMaterialsDashboard() {
 
   // Get data based on selected project and sort by waste percentage (descending)
   useEffect(() => {
-    const data = mockData[selectedProject.id] || mockData['all'];
+    const data = mockData[selectedProject.id] || mockData.all;
     const sortedData = [...data].sort((a, b) => b.wastePercentage - a.wastePercentage);
     setChartData(sortedData);
   }, [selectedProject, dateRange]);
