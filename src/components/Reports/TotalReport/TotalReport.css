@@ -1,59 +1,85 @@
-.total-container{
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    background-color:#f1ebf7;
-    border-radius: 16px;
-    padding: 20px 40px;
-    margin-bottom: 30px;
+.total-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: #f1ebf7;
+  border-radius: 16px;
+  padding: 20px 40px;
+  margin-bottom: 30px;
 }
 
-.total-title{
-    font-size: 32px;
-    font-weight: 600;
-    text-align: center;
-    color:steelblue;
+.tables {
+  max-height: 450px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
-.total-number{
-    font-size: 32px;
-    font-weight: 700;
-    margin-right: 30px;
+.total-title {
+  font-size: 32px;
+  font-weight: 600;
+  text-align: center;
+  color: steelblue;
 }
 
-.total-text{
-    padding-top: 15px;
+.total-number {
+  font-size: 32px;
+  font-weight: 700;
+  margin-right: 5px;
 }
 
-.total-item{
-    display: flex;
-    flex-direction: row;
+.total-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
-.total-period{
-    font-size: 24px;
-    font-weight: 400;
+.total-period {
+  font-size: 24px;
+  font-weight: 400;
 }
 
-.total-detail{
-    margin-top: 20px;
+.total-detail {
+  margin-top: 20px;
 }
 
-.total-detail Button{
-    background-color:steelblue;
+.total-detail button {
+  background-color: steelblue;
 }
 
-.teams_child{
-    background-color:antiquewhite;
-    display: none;
+.teams_child {
+  background-color: antiquewhite;
+  display: none;
 }
 
-.team_table{
-    border-collapse: collapse;
+.team_table {
+  border-collapse: collapse;
+}
+
+@media screen and (max-width: 1100px) {
+  .total-title,
+  .total-number,
+  .total-period {
+    font-size: 20px;
+  }
+
+  .total-text {
+    font-size: 12px;
+  }
+}
+@media screen and (max-width: 700px) {
+  .total-title,
+  .total-number,
+  .total-period {
+    font-size: 28px;
+  }
+
+  .total-text {
+    font-size: 14px;
+  }
 }
 
 @media screen and (max-width: 550px) {
-    .total-container{
-        padding: 15px 15px;
-    }
+  .total-container {
+    padding: 15px 15px;
+  }
 }

@@ -44,6 +44,7 @@ function PauseAndResumeButton(props) {
       toast.success('Your Changes were saved successfully.');
     } catch (error) {
       toast.error('Failed to update the user status.');
+      // eslint-disable-next-line no-console
       console.error(error);
     } finally {
       setIsLoading(false); // Stop loading indicator
@@ -65,6 +66,7 @@ function PauseAndResumeButton(props) {
         toast.success('Your Changes were saved successfully.');
       } catch (error) {
         toast.error('Failed to update the user status.');
+        // eslint-disable-next-line no-console
         console.error(error);
       } finally {
         setIsLoading(false); // Stop loading indicator
@@ -94,7 +96,9 @@ function PauseAndResumeButton(props) {
         style={darkMode ? boxStyleDark : boxStyle}
         data-testid="pause-resume-button"
       >
+        {/* eslint-disable-next-line no-nested-ternary */}
         {isLoading ? PROCESSING : isActive ? PAUSE : RESUME} {/* Show loading state */}
+        
       </Button>
     </>
   );

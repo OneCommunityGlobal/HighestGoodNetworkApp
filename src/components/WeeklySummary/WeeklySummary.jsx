@@ -740,7 +740,7 @@ export class WeeklySummary extends Component {
           <Col className="pl-0">
             Total submitted: {summariesCountShowing || formElements.weeklySummariesCount}
           </Col>
-          <Col className="text-right pr-0">
+          <Col className="text-right">
             <Button
               className="btn--dark-sea-green responsive-font-size"
               onClick={this.handleClose}
