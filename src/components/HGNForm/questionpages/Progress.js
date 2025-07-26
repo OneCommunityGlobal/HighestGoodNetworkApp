@@ -1,11 +1,11 @@
-import '../styles/Progress.css';
+import styles from '../styles/Progress.module.css';
 
 function Progress({ progressValue }) {
   return (
-    <div className="progress-hgn-container">
-      <div className="progress-hgn-bar">
+    <div className={`${styles.progressHgnContainer}`}>
+      <div className={`${styles.progressHgnBar}`}>
         <div
-          className="progress-hgn"
+          className={`${styles.progressHgn}`}
           style={{ width: `${progressValue}%` }} // Dynamic width based on progress value (page number)
         />
       </div>

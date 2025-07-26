@@ -3,7 +3,7 @@ import './BlueSquareStats.css';
 import Loading from 'components/common/Loading';
 import DonutChart from '../DonutChart/DonutChart';
 
-function BlueSquareStats({ isLoading, blueSquareStats }) {
+function BlueSquareStats({ isLoading, blueSquareStats, comparisonType }) {
   if (isLoading) {
     return (
       <div className="d-flex justify-content-center align-items-center">
@@ -41,18 +41,16 @@ function BlueSquareStats({ isLoading, blueSquareStats }) {
     { label: 'Other', value: other.count },
   ];
 
-  const hasData = data.every(item => item.value !== 0);
-
   return (
     <section className="blue-square-stats">
       <div className="blue-square-stats-pie-chart">
         <DonutChart
           title="TOTAL BLUE SQUARES"
           totalCount={totalBlueSquares.count}
-          percentageChange={totalBlueSquares.comparisonPercentage}
+          percentageChange={totalBlueSquares.comparisonPercentage ?? 0}
           data={data}
           colors={BLUE_SQUARE_STATS_COLORS}
-          hasData={hasData}
+          comparisonType={comparisonType}
         />
       </div>
     </section>

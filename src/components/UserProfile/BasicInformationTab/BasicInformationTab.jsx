@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Row, Label, Input, Col, FormFeedback, FormGroup, Button } from 'reactstrap';
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import moment from 'moment';
 import PhoneInput from 'react-phone-input-2';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCopy } from '@fortawesome/free-solid-svg-icons';
 // import 'react-phone-input-2/lib/style.css';
 import PauseAndResumeButton from 'components/UserManagement/PauseAndResumeButton';
 import TimeZoneDropDown from '../TimeZoneDropDown';
@@ -35,8 +37,9 @@ const Name = props => {
   if (canEdit) {
     return (
       <>
-        <Col md={desktopDisplay ? '3' : ''}>
+        <Col md={desktopDisplay ? '3' : ''} style={{paddingRight: 0}}>
           <FormGroup>
+            <div style={{position: 'relative'}}>
             <Input
               type="text"
               name="firstName"
@@ -55,11 +58,30 @@ const Name = props => {
               placeholder="First Name"
               invalid={!formValid.firstName}
             />
+            <FontAwesomeIcon
+              icon={faCopy}
+              title="Copy first name"
+              onClick={() => {
+                navigator.clipboard.writeText(firstName);
+                toast.success('First Name copied!');
+              }}
+              style={{
+                position: 'absolute',
+                cursor: 'pointer',
+                fontSize: '1rem',
+                color: darkMode ? '#fff' : '#000',
+                top: '50%',
+                right: '10px', 
+                transform: 'translateY(-50%)',
+              }}
+            />
+            </div>
             <FormFeedback>First Name Can&apos;t be empty</FormFeedback>
           </FormGroup>
         </Col>
         <Col md={desktopDisplay ? '3' : ''}>
           <FormGroup>
+          <div style={{position: 'relative'}}>
             <Input
               type="text"
               name="lastName"
@@ -81,6 +103,24 @@ const Name = props => {
               placeholder="Last Name"
               invalid={!formValid.lastName}
             />
+            <FontAwesomeIcon
+              icon={faCopy}
+              title="Copy last name"
+              onClick={() => {
+                navigator.clipboard.writeText(lastName);
+                toast.success('Last Name copied!');
+              }}
+              style={{
+                position: 'absolute',
+                cursor: 'pointer',
+                fontSize: '1rem',
+                color: darkMode ? '#fff' : '#000',
+                top: '50%',
+                right: '10px', 
+                transform: 'translateY(-50%)',
+              }}
+            />
+            </div>
             <FormFeedback>Last Name Can&apos;t have less than 2 characters</FormFeedback>
           </FormGroup>
         </Col>
@@ -107,6 +147,7 @@ const Title = props => {
       <>
         <Col md={desktopDisplay ? '6' : ''}>
           <FormGroup>
+            <div style={{position: 'relative', width: '100%'}}>
             <Input
               type="text"
               name="title"
@@ -117,7 +158,26 @@ const Title = props => {
                 setUserProfile({ ...userProfile, jobTitle: e.target.value });
               }}
               placeholder="Job Title"
+              style={{ paddingRight: '2.5rem' }}
             />
+            <FontAwesomeIcon
+              icon={faCopy}
+              title="Copy title"
+              onClick={() => {
+                navigator.clipboard.writeText(jobTitle);
+                toast.success('Title copied!');
+              }}
+              style={{
+                position: 'absolute',
+                cursor: 'pointer',
+                fontSize: '1rem',
+                color: darkMode ? '#fff' : '#000',
+                top: '50%',
+                right: '10px', 
+                transform: 'translateY(-50%)',
+              }}
+            />
+            </div>
           </FormGroup>
         </Col>
       </>
@@ -152,6 +212,7 @@ const Email = props => {
       <>
         <Col md={desktopDisplay ? '6' : ''}>
           <FormGroup>
+            <div style={{position: 'relative', width: '100%' }}>
             <Input
               type="email"
               name="email"
@@ -165,7 +226,24 @@ const Email = props => {
               placeholder="Email"
               invalid={!formValid.email}
             />
-
+            <FontAwesomeIcon
+              icon={faCopy}
+              title="Copy email"
+              onClick={() => {
+                navigator.clipboard.writeText(email);
+                toast.success('Email copied!');
+              }}
+              style={{
+                position: 'absolute',
+                cursor: 'pointer',
+                fontSize: '1rem',
+                color: darkMode ? '#fff' : '#000',
+                top: '50%',
+                right: '10px', 
+                transform: 'translateY(-50%)',
+              }}
+            />
+            </div>
             <ToggleSwitch
               switchType="email"
               state={privacySettings?.email}
@@ -237,11 +315,13 @@ const Phone = props => {
     darkMode,
   } = props;
   const { phoneNumber, privacySettings } = userProfile;
+  const phoneInputWrapperRef = useRef(null);
   if (canEdit) {
     return (
       <>
         <Col md={desktopDisplay ? '6' : ''}>
           <FormGroup>
+          <div style={{ position: 'relative' }} ref={phoneInputWrapperRef}>
             <PhoneInput
               buttonClass={`${darkMode ? 'bg-darkmode-liblack' : ''}`}
               inputClass={`phone-input-style ${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
@@ -251,6 +331,28 @@ const Phone = props => {
                 setUserProfile({ ...userProfile, phoneNumber: phoneNumber.trim() });
               }}
             />
+            <FontAwesomeIcon
+              icon={faCopy}
+              onClick={() => {
+                const input = phoneInputWrapperRef.current?.querySelector('input');
+                if (input) {
+                  navigator.clipboard.writeText(input.value);
+                  toast.success('Phone number copied!');
+                }
+              }}
+              title="Copy phone number"
+              style={{
+                position: 'absolute',
+                right: '12px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                cursor: 'pointer',
+                fontSize: '1rem',
+                color: darkMode ? '#fff' : '#000',
+                zIndex: 2,
+              }}
+            />
+          </div>
             <ToggleSwitch
               switchType="phone"
               state={privacySettings?.phoneNumber}
@@ -644,16 +746,16 @@ const BasicInformationTab = props => {
             <Label className={darkMode ? 'text-light' : ''}>Location</Label>
           </Col>
           {desktopDisplay ? (
-            <Col md="6">
+            <Col md="6" style={{paddingRight: 0}}>
               <Row className="ml-0">
-                <Col className="p-0" style={{ marginRight: '10px' }}>
+                <Col className="p-0">
                   <Input
                     onChange={handleLocation}
                     value={locationCheckValue(userProfile.location || '')}
                     className={`${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
                   />
                 </Col>
-                <Col>
+                <Col style={{paddingRight: 0}}>
                   <Button
                     color="secondary"
                     block
@@ -730,36 +832,89 @@ const BasicInformationTab = props => {
   );
 
   const endDateComponent = (
-    <>
-      <Col md={desktopDisplay ? '8' : ''} className={desktopDisplay ? 'mr-5' : ''}>
-        <Label className={`mr-1 ${darkMode ? 'text-light' : ''}`}>
-          {userProfile.endDate
-            ? 'End Date ' + formatDateLocal(userProfile.endDate)
-            : 'End Date ' + 'N/A'}
-        </Label>
-        {canEdit && canEditEndDate &&!desktopDisplay && (
-          <SetUpFinalDayButton
-            loadUserProfile={loadUserProfile}
-            setUserProfile={setUserProfile}
-            isBigBtn={true}
-            userProfile={userProfile}
-            darkMode={darkMode}
-          />
-        )}
-      </Col>
-      {desktopDisplay && canEdit && canEditEndDate && (
-        <Col>
-          <SetUpFinalDayButton
-            loadUserProfile={loadUserProfile}
-            setUserProfile={setUserProfile}
-            isBigBtn={true}
-            userProfile={userProfile}
-            darkMode={darkMode}
-          />
+  <>
+    {desktopDisplay ? (
+      <Row
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          paddingLeft: '15px',
+        }}
+      >
+        <Col
+          md="7"
+          className="mr-5"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
+          <Label style={{ margin: '0' }} className={`mr-1 ${darkMode ? 'text-light' : ''}`}>
+            {userProfile.endDate
+              ? 'End Date ' + userProfile.endDate.substring(0, 10)
+              : 'End Date ' + 'N/A'}
+          </Label>
         </Col>
-      )}
-    </>
-  );
+        {canEdit && canEditEndDate && (
+          <Col
+            style={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+              alignItems: 'center',
+            }}
+          >
+            <SetUpFinalDayButton
+              loadUserProfile={loadUserProfile}
+              setUserProfile={setUserProfile}
+              isBigBtn={true}
+              userProfile={userProfile}
+              darkMode={darkMode}
+              onFinalDaySave={(updatedUser) => {
+                setUserProfile(updatedUser);
+                loadUserProfile();
+              }}
+            />
+          </Col>
+        )}
+      </Row>
+    ) : (
+      <>
+        <Col md={desktopDisplay ? '8' : ''} className={desktopDisplay ? 'mr-5' : ''}>
+          <Label className={`mr-1 ${darkMode ? 'text-light' : ''}`}>
+            {userProfile.endDate
+              ? 'End Date ' + userProfile.endDate.substring(0, 10)
+              : 'End Date ' + 'N/A'}
+          </Label>
+          {canEdit && canEditEndDate && !desktopDisplay && (
+            <SetUpFinalDayButton
+              loadUserProfile={loadUserProfile}
+              setUserProfile={setUserProfile}
+              isBigBtn={true}
+              userProfile={userProfile}
+              darkMode={darkMode}
+            />
+          )}
+        </Col>
+        {desktopDisplay && canEdit && canEditEndDate && (
+          <Col>
+            <SetUpFinalDayButton
+              loadUserProfile={loadUserProfile}
+              setUserProfile={setUserProfile}
+              isBigBtn={true}
+              userProfile={userProfile}
+              darkMode={darkMode}
+              onFinalDaySave={(updatedUser) => {
+                setUserProfile(updatedUser);
+                loadUserProfile();
+              }}
+            />
+          </Col>
+        )}
+      </>
+    )}
+  </>
+);
 
   const statusComponent = (
     <>
