@@ -59,7 +59,6 @@ import UnsubscribeForm from './components/EmailSubscribeForm/Unsubscribe';
 import NotFoundPage from './components/NotFound/NotFoundPage';
 import EmailSender from './components/common/EmailSender/EmailSender';
 import Collaboration from './components/Collaboration';
-import EventRegistration from './components/EventRegistration/EventRegistration';
 import TestEventRegistration from './components/EventRegistration/TestEventRegistration';
 
 import ApplicantsAgeChart from './components/ApplicantsChart';
