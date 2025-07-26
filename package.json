@@ -7,7 +7,6 @@
   },
   "private": true,
   "dependencies": {
-    "@babel/runtime-corejs3": "^7.28.2",
     "@date-io/dayjs": "^3.2.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
@@ -30,7 +29,6 @@
     "chart.js": "^3.9.1",
     "chartjs-plugin-datalabels": "^2.2.0",
     "classnames": "^2.2.6",
-    "core-js": "^3.0.0",
     "d3": "^7.8.5",
     "date-fns": "^2.14.0",
     "date-fns-tz": "^2.0.1",
@@ -53,7 +51,6 @@
     "lz-string": "^1.5.0",
     "moment": "^2.30.1",
     "moment-timezone": "^0.5.33",
-    "npm": "^6.14.18",
     "object-hash": "^3.0.0",
     "pdfmake": "^0.1.65",
     "prop-types": "^15.7.2",
@@ -78,6 +75,7 @@
     "react-router": "^5.3.4",
     "react-router-dom": "^5.2.0",
     "react-router-hash-link": "^2.3.1",
+    "react-scripts": "^4.0.3",
     "react-select": "^5.7.2",
     "react-spinners": "^0.15.0",
     "react-sticky": "^6.0.3",
@@ -123,7 +121,7 @@
     "@babel/helper-validator-identifier": "^7.12.11",
     "@babel/plugin-proposal-optional-chaining": "^7.21.0",
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-    "@jest/globals": "27.5.1",
+    "@jest/globals": "29.7.0",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^10.4.9",
     "@testing-library/user-event": "^12.0.14",
@@ -144,30 +142,15 @@
     "eslint-plugin-testing-library": "^3.6.0",
     "expect": "27.5.1",
     "husky": "^7.0.4",
-    "jest": "27.5.1",
-    "jest-environment-jsdom": "27.5.1",
     "jest-environment-jsdom-sixteen": "^2.0.0",
     "msw": "^0.19.5",
     "node-fetch": "^3.1.1",
     "node-sass": "^8.0.0",
     "prettier": "^1.19.1",
-    "pretty-format": "27.5.1",
     "react-error-overlay": "^6.0.9",
     "react-scripts": "^4.0.3",
     "redux-mock-store": "^1.5.4",
     "sinon": "^7.3.2",
     "surge": "^0.24.6"
-  },
-  "resolutions": {
-    "expect": "27.5.1",
-    "pretty-format": "27.5.1",
-    "**/expect": "27.5.1",
-    "**/pretty-format": "27.5.1"
-},
-"overrides": {
-    "expect": "27.5.1",
-    "pretty-format": "27.5.1",
-    "**/expect": "27.5.1",
-    "**/pretty-format": "27.5.1"
-}
+  }
 }
