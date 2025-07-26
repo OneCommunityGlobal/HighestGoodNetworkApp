@@ -1,36 +1,37 @@
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import './PromotionEligibility.css';
 import { FaCheck } from 'react-icons/fa';
 import { getPromotionEligibility, postPromotionEligibility } from 'actions/promotionActions';
+import './PromotionEligibility.css';
 
-function PromotionEligibility() {
+function PromotionEligibility({ currentUser }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [reviewers, setReviewers] = useState([]);
 
   const [selectedForPromotion, setSelectedForPromotion] = useState(new Set());
   const [processing, setProcessing] = useState(false);
-  const [processError, setProcessError] = useState(null);
 
   useEffect(() => {
     (async () => {
       try {
         const data = await getPromotionEligibility();
 
-        const enriched = data.map(r => ({
+        const mappedData = data.map(r => ({
           ...r,
           requiredPRs: r.requiredPRs ?? r.pledgedHours / 2,
-          promoteEligible: r.weeklyRequirementsMet && r.remainingWeeks <= 0,
-          id: r.reviewerName,
+          promoteEligible: r.remainingWeeks <= 0,
+          id: r.reviewerId,
+          reviewerName: r.reviewerName,
+          isNewMember: r.isNewMember,
         }));
 
-        setReviewers(enriched);
+        setReviewers(mappedData);
         setLoading(false);
       } catch (e) {
-        const message = 'Failed to load promotion data.';
-        setError(message);
-        toast.error(message);
+        const msg = 'Failed to load Reviewers.';
+        setError(msg);
+        toast.error(msg);
         setLoading(false);
       }
     })();
@@ -42,17 +43,10 @@ function PromotionEligibility() {
   const toggleSelectPromotion = id => {
     setSelectedForPromotion(prev => {
       const newSet = new Set(prev);
-      if (newSet.has(id)) {
-        newSet.delete(id);
-      } else {
-        newSet.add(id);
-      }
+      if (newSet.has(id)) newSet.delete(id);
+      else newSet.add(id);
       return newSet;
     });
-  };
-
-  const handleReviewWeekly = () => {
-    toast.info('Review Weekly clicked. Logic not implemented yet.');
   };
 
   const handleProcessPromotions = async () => {
@@ -60,51 +54,45 @@ function PromotionEligibility() {
       toast.info('No reviewers selected for promotion.');
       return;
     }
-
     setProcessing(true);
-    setProcessError(null);
 
     try {
-      await postPromotionEligibility(Array.from(selectedForPromotion));
-
+      await postPromotionEligibility(Array.from(selectedForPromotion), currentUser);
       toast.success(`Successfully processed promotions for ${selectedForPromotion.size} user(s).`);
+
+      setReviewers(prev => prev.filter(r => !selectedForPromotion.has(r.id)));
       setSelectedForPromotion(new Set());
     } catch (err) {
-      const message = 'Failed to process promotions.';
-      setProcessError(message);
-      toast.error(message);
+      const msg = 'Failed to process promotions.';
+      toast.error(msg);
     } finally {
       setProcessing(false);
     }
   };
 
-  if (error) return <div style={{ color: 'red' }}>{error}</div>;
-
   return (
     <div className="promo-table-container">
       <div className="promo-table-header">
-        <span>Promotion Eligibility</span>
+        Promotion Eligibility
         <div>
           <button
             type="button"
-            onClick={handleReviewWeekly}
-            className="review-btn"
+            onClick={() => toast.info('Review Weekly clicked. Logic not implemented yet.')}
             disabled={processing}
+            className="review-btn"
           >
             Review for this week
           </button>
           <button
             type="button"
             onClick={handleProcessPromotions}
-            className="process-promo-btn"
             disabled={processing}
+            className="process-promo-btn"
           >
             {processing ? 'Processing...' : 'Process Promotions'}
           </button>
         </div>
       </div>
-
-      {processError && <div style={{ color: 'red', marginBottom: 10 }}>{processError}</div>}
 
       <table className="promo-table">
         <thead>
@@ -118,13 +106,31 @@ function PromotionEligibility() {
           </tr>
         </thead>
         <tbody>
-          {loading ? (
+          {loading && (
             <tr>
               <td colSpan="6" style={{ textAlign: 'center' }}>
                 Loading...
               </td>
             </tr>
-          ) : (
+          )}
+
+          {!loading && error && (
+            <tr>
+              <td colSpan="6" style={{ textAlign: 'center', color: 'red' }}>
+                {error}
+              </td>
+            </tr>
+          )}
+
+          {!loading && !error && reviewers.length === 0 && (
+            <tr>
+              <td colSpan="6" style={{ textAlign: 'center' }}>
+                No reviewers found.
+              </td>
+            </tr>
+          )}
+
+          {!loading && !error && (
             <>
               {newMembers.length > 0 && (
                 <>
@@ -246,14 +252,6 @@ function PromotionEligibility() {
                     ),
                   )}
                 </>
-              )}
-
-              {newMembers.length === 0 && existingMembers.length === 0 && (
-                <tr>
-                  <td colSpan="6" style={{ textAlign: 'center' }}>
-                    No reviewers found.
-                  </td>
-                </tr>
               )}
             </>
           )}

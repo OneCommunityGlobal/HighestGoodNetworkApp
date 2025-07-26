@@ -1,21 +1,20 @@
 .promo-table-container {
   max-width: 70vw;
-  background-color: #d1d5db;
+  background-color: rgb(241, 241, 241);
   margin: 0 auto;
   padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);;
 }
 
 .promo-table-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  font-size: 2.5rem;
   padding: 0.75rem 1rem;
-}
-
-.promo-table-header span {
-  font-weight: 600;
-  font-size: 1.25rem;
-  color: #1f2937;
+  font-weight: 500;
+  margin-bottom: 10pt;
 }
 
 .review-btn,
@@ -23,12 +22,11 @@
   background-color: #2563eb;
   color: white;
   border: none;
-  padding: 0.5rem 0.75rem;
+  padding: 0.5rem 1rem;
   margin-left: 0.5rem;
-  border-radius: 4px;
-  font-weight: 600;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 1.25rem;
 }
 
 .review-btn:hover,
@@ -40,27 +38,26 @@
   width: 100%;
   border-collapse: collapse;
   background-color: #fff;
-  border: 1px solid #d1d5db;
   font-size: 0.95rem;
 }
 
 .promo-table th,
 .promo-table td {
-  border: 1px solid;
   padding: 0.5rem;
   text-align: center;
+  border: none;
 }
 
 .promo-table th {
-  background-color: white;
-  border: none;
+  background-color: rgb(224, 237, 250);
+  font-weight: 400;
 }
 
 .section-row td {
-  border: none;
   text-align: left;
   font-weight: bold;
   padding-top: 0.75rem;
+  background-color:antiquewhite;
 }
 
 .custom-circular-checkbox-wrapper {
