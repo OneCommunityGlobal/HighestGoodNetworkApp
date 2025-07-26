@@ -387,3 +387,58 @@ body {
   color: #ffffff !important;
 }
 
+@media (max-width: 850px) {
+  .people-report-flex-layout {
+    flex-direction: column;
+    flex-wrap: wrap;
+  }
+
+  .people-report-left,
+  .people-report-right {
+    width: 100% !important;
+  }
+
+  .people-report-right {
+    margin-top: 1rem;
+    height: auto !important; /* override the 140vh */
+  }
+}
+
+@media (max-width: 850px) {
+  .people-report-time-logs-wrapper {
+    flex-direction: column;
+    align-items: center; 
+    gap: 1rem;
+    width: 100%;
+  }
+
+  .people-report-time-log-block {
+    width: 40% !important;     
+    height: 110px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    border-radius: 10px;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+  }
+
+  .people-report-time-log-block h3,
+  .people-report-time-log-block p {
+    margin: 0;
+    padding: 4px 0;
+    text-align: center;
+    color: white !important;
+  }
+
+  .people-report-time-log-block > div {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+}
