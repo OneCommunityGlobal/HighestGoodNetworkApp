@@ -6,6 +6,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addSelectBadge, removeSelectBadge } from '../../actions/badgeManagement';
 
 function AssignTableRow({ badge, index, existBadges }) {
+  // console.log('AssignTableRow\n badge : ', badge);
+  // console.log('index : ', index);
+  // console.log('\nexistBadges : ', existBadges);
   const [isOpen, setOpen] = useState(false);
   const [isSelect, setSelect] = useState(false);
   const dispatch = useDispatch();
@@ -22,6 +25,7 @@ function AssignTableRow({ badge, index, existBadges }) {
   const toggle = () => setOpen(prevIsOpen => !prevIsOpen);
 
   const handleCheckBoxChange = e => {
+    console.log('handleCheckBoxChange\n cheked : ', e.target.checked);
     const isChecked = e.target.checked;
     setSelect(isChecked);
     if (isChecked) {
