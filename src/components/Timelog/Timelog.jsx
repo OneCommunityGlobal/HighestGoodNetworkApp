@@ -27,7 +27,6 @@ import {
   ModalBody,
   ModalFooter,
 } from 'reactstrap';
-import './Timelog.css';
 import classnames from 'classnames';
 import { connect, useSelector } from 'react-redux';
 import moment from 'moment';
@@ -61,6 +60,7 @@ import hasPermission from '../../utils/permissions';
 import WeeklySummaries from './WeeklySummaries';
 import Badge from '../Badge';
 import { ENDPOINTS } from '../../utils/URL';
+import styles from './Timelog.module.css';
 
 // startOfWeek returns the date of the start of the week based on offset. Offset is the number of weeks before.
 // For example, if offset is 0, returns the start of this week. If offset is 1, returns the start of last week.
@@ -410,7 +410,7 @@ function Timelog(props) {
   const buildOptions = () => {
     const projectsObject = {};
     const options = [
-      <option className="responsive-font-size" value="all" key="TimeLogDefaultProjectOrTask">
+      <option className={`${styles.responsiveFontSize}`} value="all" key="TimeLogDefaultProjectOrTask">
         Select Project/Task (all)
       </option>,
     ];
@@ -452,7 +452,7 @@ function Timelog(props) {
 
       // Add project option
       options.push(
-        <option className="responsive-font-size" value={projectId} key={`TimeLog_${projectId}`}>
+        <option className={`${styles.responsiveFontSize}`} value={projectId} key={`TimeLog_${projectId}`}>
           {projectName}
         </option>,
       );
@@ -477,7 +477,7 @@ function Timelog(props) {
 
           // Add task option
           options.push(
-            <option className="responsive-font-size" value={taskId} key={`TimeLog_${taskId}`}>
+            <option className={`${styles.responsiveFontSize}`} value={taskId} key={`TimeLog_${taskId}`}>
               {`\u2003\u2003 ↳ ${taskName}`}
             </option>,
           );
@@ -600,7 +600,7 @@ useEffect(() => {
       {timeLogState.isTimeEntriesLoading ? (
         <LoadingSkeleton template="Timelog" />
       ) : (
-        <div className={`${!props.isDashboard ? 'timelogPageContainer' : 'ml-3 min-width-100'}`}>
+        <div className={`${!props.isDashboard ? styles.timelogPageContainer : 'ml-3 min-width-100'}`}>
           {timeLogState.summary ? (
             <div className="my-2">
               <div id="weeklySum">
@@ -618,15 +618,15 @@ useEffect(() => {
                 <CardHeader
                   className={
                     darkMode
-                      ? 'card-header-shadow-dark bg-space-cadet text-light'
-                      : 'card-header-shadow'
+                    ? `${styles.cardHeaderShadowDark} bg-space-cadet text-light`
+                    : styles.cardHeaderShadow
                   }
                 >
                   <Row style={{ minWidth: '100%' }} className="px-0 mx-0">
                     <Col style={{ minWidth: '100%' }} className="px-0 mx-0">
                       <CardTitle tag="h4">
                         <div className="d-flex align-items-center">
-                          <span className="taskboard-header-title mb-1 mr-2">
+                          <span className={`${styles.taskboardHeaderTitle} mb-1 mr-2`}>
                             Tasks and Timelogs
                           </span>
                           <EditableInfoModal
@@ -669,7 +669,7 @@ useEffect(() => {
                     </Col>
                     <Col className="px-0">
                       {isAuthUser ? (
-                        <div className="tasks-and-timelog-header-add-time-div mt-2">
+                        <div className={`${styles.tasksAndTimelogHeaderAddTimeDiv} mt-2`}>
                           <div>
                             <div className="followup-tooltip-container">
                               <Button
@@ -678,9 +678,9 @@ useEffect(() => {
                                 style={darkMode ? boxStyleDark : boxStyle}
                               >
                                 Add Intangible Time Entry
-                                <div className="followup-tooltip-button">
+                                <div className={`${styles.followupTooltipButton}`}>
                                   <i
-                                    className="fa fa-info-circle"
+                                    className={`fa fa-info-circle ${styles.customStyle}`}
                                     data-tip
                                     data-for="timeEntryTip"
                                     aria-hidden="true"
@@ -738,7 +738,7 @@ useEffect(() => {
                           authUser.role !== 'Owner'
                         ) &&
                         canPutUserProfileImportantInfo && (
-                          <div className="tasks-and-timelog-header-add-time-div">
+                          <div className={`${styles.tasksAndTimelogHeaderAddTimeDiv}`}>
                             <div>
                               <Button color="warning" onClick={toggle} style={boxStyle}>
                                 Add Time Entry {!isAuthUser && `for ${fullName}`}
@@ -790,12 +790,17 @@ useEffect(() => {
                     darkMode ? 'card-header-shadow-dark bg-space-cadet' : 'card-header-shadow'
                   }
                 >
-                  <Nav tabs className="task-and-timelog-card-nav mb-1 responsive-font-size">
+                  <Nav tabs className={`${styles.taskAndTimelogCardNav} mb-1 ${styles.responsiveFontSize}`}>
                     <NavItem>
                       <NavLink
-                        className={`${classnames({ active: timeLogState.activeTab === 0 })} ${
-                          darkMode ? 'dark-mode' : ''
-                        }`}
+                        className={classnames(
+                          styles.navLink,
+                          {
+                            [styles.darkMode]: darkMode && timeLogState.activeTab !== 0,
+                            [styles.activeLightMode]: !darkMode && timeLogState.activeTab === 0,
+                            [styles.activeDarkMode]: darkMode && timeLogState.activeTab === 0
+                          }
+                        )}
                         onClick={() => {
                           changeTab(0);
                         }}
@@ -806,9 +811,14 @@ useEffect(() => {
                       </NavLink>
                     </NavItem>
                     <NavLink
-                      className={`${classnames({ active: timeLogState.activeTab === 1 })} ${
-                        darkMode ? 'dark-mode' : ''
-                      }`}
+                      className={classnames(
+                        styles.navLink,
+                        {
+                          [styles.darkMode]: darkMode && timeLogState.activeTab !== 1,
+                          [styles.activeLightMode]: !darkMode && timeLogState.activeTab === 1,
+                          [styles.activeDarkMode]: darkMode && timeLogState.activeTab === 1
+                        }
+                      )}
                       onClick={() => {
                         changeTab(1);
                       }}
@@ -820,9 +830,14 @@ useEffect(() => {
 
                     <NavItem>
                       <NavLink
-                        className={`${classnames({ active: timeLogState.activeTab === 2 })} ${
-                          darkMode ? 'dark-mode' : ''
-                        }`}
+                        className={classnames(
+                          styles.navLink,
+                          {
+                            [styles.darkMode]: darkMode && timeLogState.activeTab !== 2,
+                            [styles.activeLightMode]: !darkMode && timeLogState.activeTab === 2,
+                            [styles.activeDarkMode]: darkMode && timeLogState.activeTab === 2
+                          }
+                        )}
                         onClick={() => {
                           changeTab(2);
                         }}
@@ -834,9 +849,14 @@ useEffect(() => {
                     </NavItem>
                     <NavItem>
                       <NavLink
-                        className={`${classnames({ active: timeLogState.activeTab === 3 })} ${
-                          darkMode ? 'dark-mode' : ''
-                        }`}
+                        className={classnames(
+                          styles.navLink,
+                          {
+                            [styles.darkMode]: darkMode && timeLogState.activeTab !== 3,
+                            [styles.activeLightMode]: !darkMode && timeLogState.activeTab === 3,
+                            [styles.activeDarkMode]: darkMode && timeLogState.activeTab === 3
+                          }
+                        )}
                         onClick={() => {
                           changeTab(3);
                         }}
@@ -848,9 +868,14 @@ useEffect(() => {
                     </NavItem>
                     <NavItem>
                       <NavLink
-                        className={`${classnames({ active: timeLogState.activeTab === 4 })} ${
-                          darkMode ? 'dark-mode' : ''
-                        }`}
+                        className={classnames(
+                          styles.navLink,
+                          {
+                            [styles.darkMode]: darkMode && timeLogState.activeTab !== 4,
+                            [styles.activeLightMode]: !darkMode && timeLogState.activeTab === 4,
+                            [styles.activeDarkMode]: darkMode && timeLogState.activeTab === 4
+                          }
+                        )}
                         onClick={() => {
                           changeTab(4);
                         }}
@@ -862,9 +887,14 @@ useEffect(() => {
                     </NavItem>
                     <NavItem>
                       <NavLink
-                        className={`${classnames({ active: timeLogState.activeTab === 5 })} ${
-                          darkMode ? 'dark-mode' : ''
-                        }`}
+                        className={classnames(
+                          styles.navLink,
+                          {
+                            [styles.darkMode]: darkMode && timeLogState.activeTab !== 5,
+                            [styles.activeLightMode]: !darkMode && timeLogState.activeTab === 5,
+                            [styles.activeDarkMode]: darkMode && timeLogState.activeTab === 5
+                          }
+                        )}
                         onClick={() => {
                           changeTab(5);
                         }}
@@ -876,9 +906,14 @@ useEffect(() => {
                     </NavItem>
                     <NavItem>
                       <NavLink
-                        className={`${classnames({ active: timeLogState.activeTab === 6 })} ${
-                          darkMode ? 'dark-mode' : ''
-                        }`}
+                        className={classnames(
+                          styles.navLink,
+                          {
+                            [styles.darkMode]: darkMode && timeLogState.activeTab !== 6,
+                            [styles.activeLightMode]: !darkMode && timeLogState.activeTab === 6,
+                            [styles.activeDarkMode]: darkMode && timeLogState.activeTab === 6
+                          }
+                        )}
                         onClick={() => {
                           changeTab(6);
                         }}
@@ -895,12 +930,14 @@ useEffect(() => {
 
                   <TabContent
                     activeTab={timeLogState.activeTab}
-                    className={darkMode ? 'bg-space-cadet' : ''}
+                    className={
+                      darkMode ? styles.tabContentDark : styles.tabContentLight
+                    }
                   >
                     {renderViewingTimeEntriesFrom()}
                     {timeLogState.activeTab === 4 && (
                       <Form inline className="mb-2">
-                        <FormGroup className="mr-2 date-selector-form">
+                        <FormGroup className={`mr-2 ${styles.dateSelectorForm}`}>
                           <Label
                             for="fromDate"
                             className={`responsive-font-size mr-2 ml-1 ${
@@ -937,7 +974,7 @@ useEffect(() => {
                         <Button
                           color="primary"
                           onClick={handleSearch}
-                          className="search-time-entries-btn"
+                          className={`${styles.searchTimeEntriesBtn}`}
                           style={darkMode ? boxStyleDark : boxStyle}
                         >
                           Search
@@ -947,7 +984,7 @@ useEffect(() => {
                     {timeLogState.activeTab === 0 ||
                     timeLogState.activeTab === 5 ||
                     timeLogState.activeTab === 6 ? null : (
-                      <Form className="mb-2 responsive-font-size">
+                      <Form className={`mb-2 ${styles.responsiveFontSize}`}>
                         <FormGroup>
                           <Label
                             htmlFor="projectSelected"
