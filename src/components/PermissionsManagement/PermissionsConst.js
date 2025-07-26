@@ -96,6 +96,11 @@ export const permissionLabels = [
         description:
           'Gives the user permission to edit 4-digit team codes on profile page and weekly summaries report page.',
       },
+      {
+        label: 'Edit Header Message',
+        key: 'editHeaderMessage',
+        description: 'Gives the user permission to edit the message displayed in the header.',
+      },
     ],
   },
   {
