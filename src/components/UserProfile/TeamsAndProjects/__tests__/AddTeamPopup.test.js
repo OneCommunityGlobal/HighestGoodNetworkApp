@@ -153,7 +153,7 @@ describe('AddTeamPopup component', () => {
       allTeams: store.getState().allTeams,
     };
     renderComponent(true, teamsData, userTeams);
-    expect(screen.queryByText('Add to Team')).toBeInTheDocument();
+    expect(screen.queryByText('Name of the Team')).toBeInTheDocument();
     const modalFadeElement = screen.getByRole('document');
     const modalContentElement = modalFadeElement.querySelector('.modal-content');
     const modalBodyElement = modalContentElement.querySelector('.modal-body');
@@ -161,12 +161,18 @@ describe('AddTeamPopup component', () => {
 
     fireEvent.change(searchElement, { target: { value: 'team111' } });
     await waitFor(() => {});
+    // Check that the "Create new team" option appears in dropdown
+    expect(screen.getByText('Create new team: team111')).toBeInTheDocument();
+    
     const nextDivElement = modalBodyElement.querySelector('.input-group-prepend');
     fireEvent.click(nextDivElement.querySelector('.btn.btn-primary'));
-    expect(
-      screen.getByText('Oops, this team does not exist! Create it if you want it.'),
-    ).toBeInTheDocument();
+    
+    // The button should be in loading state after clicking
+    await waitFor(() => {
+      expect(nextDivElement.querySelector('.btn.btn-primary')).toBeDisabled();
+    });
   });
+  
   it('check searched value results', async () => {
     axios.get.mockResolvedValue({
       status: 200,
@@ -179,7 +185,7 @@ describe('AddTeamPopup component', () => {
       allTeams: store.getState().allTeams,
     };
     renderComponent(true, teamsData, userTeams);
-    expect(screen.queryByText('Add to Team')).toBeInTheDocument();
+    expect(screen.queryByText('Name of the Team')).toBeInTheDocument();
     const modalFadeElement = screen.getByRole('document');
     const modalContentElement = modalFadeElement.querySelector('.modal-content');
     const modalBodyElement = modalContentElement.querySelector('.modal-body');
@@ -192,6 +198,7 @@ describe('AddTeamPopup component', () => {
     expect(screen.getByText('team13')).toBeInTheDocument();
     expect(screen.queryByText('team24')).not.toBeInTheDocument();
   });
+  
   it('check results without team name', async () => {
     axios.get.mockResolvedValue({
       status: 200,
@@ -204,7 +211,7 @@ describe('AddTeamPopup component', () => {
       allTeams: store.getState().allTeams,
     };
     renderComponent(true, teamsData, userTeams);
-    expect(screen.queryByText('Add to Team')).toBeInTheDocument();
+    expect(screen.queryByText('Name of the Team')).toBeInTheDocument();
     const modalFadeElement = screen.getByRole('document');
     const modalContentElement = modalFadeElement.querySelector('.modal-content');
     const modalBodyElement = modalContentElement.querySelector('.modal-body');
@@ -214,7 +221,7 @@ describe('AddTeamPopup component', () => {
     await waitFor(() => {});
     const nextDivElement = modalBodyElement.querySelector('.input-group-prepend');
     fireEvent.click(nextDivElement.querySelector('.btn.btn-primary'));
-    expect(screen.queryByText('Hey, You need to pick a team first!')).toBeInTheDocument();
+    expect(screen.queryByText('Please enter a team name.')).toBeInTheDocument();
   });
   it('check if postNewTeam action works as expected', async () => {
     const responseData = { teamName: 'New Team', isActive: true };
