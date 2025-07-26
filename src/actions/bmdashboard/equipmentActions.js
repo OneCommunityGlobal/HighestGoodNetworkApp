@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { toast } from 'react-toastify';
 import { SET_EQUIPMENTS } from '../../constants/bmdashboard/equipmentConstants';
 import { GET_ERRORS } from '../../constants/errors';
 import { ENDPOINTS } from '../../utils/URL';
@@ -72,3 +73,21 @@ export const purchaseEquipment = async body => {
       return err.message;
     });
 };
+
+export const updateMultipleEquipmentLogs = (projectId, bulkArr) => dispatch => {
+  axios
+    .put(
+      `${ENDPOINTS.BM_EQUIPMENT_LOGS}?project=${projectId}`, 
+      bulkArr
+    )
+    .then(res => {
+      dispatch(setEquipments(res.data)); 
+      toast.success('Equipment logs updated successfully!');  
+      return res.data;
+    })
+    .catch(err => {
+      dispatch(setErrors(err));
+      toast.error('Failed to update equipment logs.');
+      throw err;
+    });
+}
