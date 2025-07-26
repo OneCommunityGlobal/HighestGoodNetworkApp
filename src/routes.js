@@ -28,6 +28,7 @@ import { ExperienceDonutChart } from 'components/ExperienceDonutChart';
 import LessonForm from 'components/BMDashboard/Lesson/LessonForm';
 
 // hgnform routes
+import EquipmentUpdateLog from 'components/BMDashboard/Equipment/EHistory';
 import Page1 from './components/HGNForm/pages/Page1';
 import Page2 from './components/HGNForm/pages/Page2';
 import Page3 from './components/HGNForm/pages/Page3';
@@ -580,7 +581,11 @@ export default (
           exact
           component={WeeklyProjectSummary}
         />
+<<<<<<< HEAD
+        <BMProtectedRoute path="/bmdashboard/equipment-history" exact component={EquipmentUpdateLog} />
+=======
         <BMProtectedRoute path="/bmdashboard/issues/" component={IssueDashboard} />
+>>>>>>> 6db253c3fa6400b8ea5505b5ce8351a2f9dfe7c1
 
         <BMProtectedRoute path="/bmdashboard/issuechart" component={IssueChart} />
 
