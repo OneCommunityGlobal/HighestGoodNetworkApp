@@ -62,7 +62,7 @@ const AddTeamPopup = React.memo(props => {
     //  prettier-ignore
     if (!searchText || searchText.trim() === '') {onValidation(false);  return;} /* when the user typed nothing  */
 
-    const idToCheck = result ? result._id : selectedTeam._id;
+    const idToCheck = result ? result._id : (selectedTeam ? selectedTeam._id : null);
 
     const some = !props.userTeamsById.some(x => x._id === idToCheck);
 
