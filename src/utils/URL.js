@@ -347,6 +347,12 @@ export const ENDPOINTS = {
   LB_LISTINGS: `${APIEndpoint}/lb/getListings`,
   LB_LISTINGS_BASE: `${APIEndpoint}/lb`,
   HELP_CATEGORIES: `${APIEndpoint}/help-categories`,
+
+  //alisha
+  OPT_STATUS_BREAKDOWN: (startDate = "", endDate = "", role = "") =>
+    `${APIEndpoint}/analytics/opt-status?startDate=${startDate}&endDate=${endDate}&role=${role}`
+
+
 };
 
 export const ApiEndpoint = APIEndpoint;
