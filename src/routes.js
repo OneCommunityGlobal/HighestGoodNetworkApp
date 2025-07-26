@@ -188,7 +188,6 @@ export default (
     <Route path="/form" component={FormEditor} />
     <Route path="/formviewer" component={FormViewer} />
     <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
-    <Route path="/EventRegistration" component={EventRegistration} />
     <Route path="/TestEventReg" component={TestEventRegistration} />
     <>
       {/* Comment out the Header component and its import during phase 2 development. */}
