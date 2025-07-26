@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
-import { mockProjects, mockMaterialData, chartColors } from './Data.js';
+import { mockProjects, mockMaterialData, chartColors } from './Data';
 
 // Register ChartJS components
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -13,17 +13,6 @@ export default function MaterialUsageDashboard() {
   const [chartData, setChartData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [increasePercentage, setIncreasePercentage] = useState(0);
-
-  // Update chart data when filters change
-  useEffect(() => {
-    setLoading(true);
-
-    // Simulate API call delay
-    setTimeout(() => {
-      updateChartData();
-      setLoading(false);
-    }, 800);
-  }, [selectedProject, selectedMaterial, showIncreaseOnly]);
 
   // Update the updateChartData function to handle the new material types with appropriate colors
   const updateChartData = () => {
@@ -91,14 +80,25 @@ export default function MaterialUsageDashboard() {
     });
   };
 
+  // Update chart data when filters change
+  useEffect(() => {
+    setLoading(true);
+
+    // Simulate API call delay
+    setTimeout(() => {
+      updateChartData();
+      setLoading(false);
+    }, 800);
+  }, [selectedProject, selectedMaterial, showIncreaseOnly]);
+
   // Function to add a title in the center of the donut chart
   const plugins = [
     {
       id: 'donutTitle',
       beforeDraw: chart => {
-        const width = chart.width;
-        const height = chart.height;
-        const ctx = chart.ctx;
+        const { width } = chart;
+        const { height } = chart;
+        const { ctx } = chart;
 
         ctx.restore();
         const fontSize = (height / 240).toFixed(2); // Smaller font size
@@ -159,7 +159,7 @@ export default function MaterialUsageDashboard() {
                     outline: 'none',
                   }}
                   value={selectedProject}
-                  onChange={e => setSelectedProject(Number.parseInt(e.target.value))}
+                  onChange={e => setSelectedProject(Number.parseInt(e.target.value, 10))}
                 >
                   {mockProjects.map(project => (
                     <option key={project.id} value={project.id}>
@@ -283,7 +283,7 @@ export default function MaterialUsageDashboard() {
                 minHeight: '220px',
               }}
             >
-              {loading ? (
+              {loading && (
                 <div
                   style={{
                     display: 'flex',
@@ -301,10 +301,12 @@ export default function MaterialUsageDashboard() {
                       borderBottom: '2px solid #3b82f6',
                       marginBottom: '8px',
                     }}
-                  ></div>
+                  />
                   <p>Loading data...</p>
                 </div>
-              ) : chartData ? (
+              )}
+
+              {!loading && chartData && (
                 <div style={{ width: '100%', maxWidth: '300px' }}>
                   <Pie
                     data={chartData}
@@ -337,9 +339,9 @@ export default function MaterialUsageDashboard() {
                     plugins={plugins}
                   />
                 </div>
-              ) : (
-                <p>No data available</p>
               )}
+
+              {!loading && !chartData && <p>No data available</p>}
             </div>
             {/* Material Breakdown List */}
             {chartData && !loading && (
@@ -361,7 +363,7 @@ export default function MaterialUsageDashboard() {
                     const color = chartData.datasets[0].backgroundColor[index];
                     return (
                       <div
-                        key={index}
+                        key={`${chartData.labels[index]}-${value}`}
                         style={{
                           display: 'flex',
                           alignItems: 'center',
@@ -378,7 +380,7 @@ export default function MaterialUsageDashboard() {
                             borderRadius: '50%',
                             backgroundColor: color,
                           }}
-                        ></div>
+                        />
                         <div>
                           <p style={{ fontWeight: '500' }}>{label}</p>
                           <p style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
