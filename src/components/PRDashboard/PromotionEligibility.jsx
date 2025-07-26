@@ -1,15 +1,14 @@
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import './PromotionEligibility.css';
-import mockUserData from './UserData';
 import { FaCheck } from 'react-icons/fa';
-// import { getPromotionEligibility, postPromotionEligibility } from 'actions/promotionActions';
+import { getPromotionEligibility, postPromotionEligibility } from 'actions/promotionActions';
 
-const PromotionEligibility = () => {
+function PromotionEligibility() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [reviewers, setReviewers] = useState([]);
-  
+
   const [selectedForPromotion, setSelectedForPromotion] = useState(new Set());
   const [processing, setProcessing] = useState(false);
   const [processError, setProcessError] = useState(null);
@@ -17,10 +16,9 @@ const PromotionEligibility = () => {
   useEffect(() => {
     (async () => {
       try {
-        // const data = await getPromotionEligibility();
-        const data = mockUserData;
+        const data = await getPromotionEligibility();
 
-        const enriched = data.map((r) => ({
+        const enriched = data.map(r => ({
           ...r,
           requiredPRs: r.requiredPRs ?? r.pledgedHours / 2,
           promoteEligible: r.weeklyRequirementsMet && r.remainingWeeks <= 0,
@@ -38,11 +36,11 @@ const PromotionEligibility = () => {
     })();
   }, []);
 
-  const newMembers = reviewers.filter((r) => r.isNewMember);
-  const existingMembers = reviewers.filter((r) => !r.isNewMember);
+  const newMembers = reviewers.filter(r => r.isNewMember);
+  const existingMembers = reviewers.filter(r => !r.isNewMember);
 
-  const toggleSelectPromotion = (id) => {
-    setSelectedForPromotion((prev) => {
+  const toggleSelectPromotion = id => {
+    setSelectedForPromotion(prev => {
       const newSet = new Set(prev);
       if (newSet.has(id)) {
         newSet.delete(id);
@@ -67,9 +65,7 @@ const PromotionEligibility = () => {
     setProcessError(null);
 
     try {
-      // Simulate API call - replace with your actual API call like:
-      // await postPromotionEligibility(Array.from(selectedForPromotion));
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      await postPromotionEligibility(Array.from(selectedForPromotion));
 
       toast.success(`Successfully processed promotions for ${selectedForPromotion.size} user(s).`);
       setSelectedForPromotion(new Set());
@@ -83,14 +79,18 @@ const PromotionEligibility = () => {
   };
 
   if (error) return <div style={{ color: 'red' }}>{error}</div>;
-  if (loading) return <div>Loading...</div>;
 
   return (
     <div className="promo-table-container">
       <div className="promo-table-header">
         <span>Promotion Eligibility</span>
         <div>
-          <button type="button" onClick={handleReviewWeekly} className="review-btn" disabled={processing}>
+          <button
+            type="button"
+            onClick={handleReviewWeekly}
+            className="review-btn"
+            disabled={processing}
+          >
             Review for this week
           </button>
           <button
@@ -117,86 +117,150 @@ const PromotionEligibility = () => {
             <th>Promote?</th>
           </tr>
         </thead>
-
         <tbody>
-          {newMembers.length > 0 && (
+          {loading ? (
+            <tr>
+              <td colSpan="6" style={{ textAlign: 'center' }}>
+                Loading...
+              </td>
+            </tr>
+          ) : (
             <>
-              <tr className="section-row">
-                <td colSpan="6">New Members</td>
-              </tr>
-              {newMembers.map(({ id, reviewerName, weeklyRequirementsMet, requiredPRs, totalReviews, remainingWeeks, promoteEligible }) => (
-                <tr key={id}>
-                  <td data-label="Reviewer Name">{reviewerName}</td>
-                  <td data-label="Weekly Requirements">{weeklyRequirementsMet ? '✔️' : '❌'}</td>
-                  <td data-label="Required PRs">{requiredPRs}</td>
-                  <td data-label="Total Reviews Done">{totalReviews}</td>
-                  <td data-label="Remaining Weeks">{remainingWeeks}</td>
-                  <td data-label="Promote?">
-                    <div
-                      role="checkbox"
-                      tabIndex={promoteEligible ? 0 : -1} // focusable only if enabled
-                      aria-checked={selectedForPromotion.has(id)}
-                      onClick={() => promoteEligible && !processing && toggleSelectPromotion(id)}
-                      onKeyDown={(e) => {
-                        if ((e.key === 'Enter' || e.key === ' ') && promoteEligible && !processing) {
-                          e.preventDefault();
-                          toggleSelectPromotion(id);
-                        }
-                      }}
-                      className={`custom-circular-checkbox-wrapper ${!promoteEligible || processing ? 'disabled' : ''}`}
-                      style={{ cursor: promoteEligible && !processing ? 'pointer' : 'not-allowed' }}
-                    >
-                      <div className={`custom-circular-checkbox ${selectedForPromotion.has(id) ? 'checked' : ''}`}>
-                        {selectedForPromotion.has(id) && <FaCheck className="check-icon" />}
-                      </div>
-                    </div>
+              {newMembers.length > 0 && (
+                <>
+                  <tr className="section-row">
+                    <td colSpan="6">New Members</td>
+                  </tr>
+                  {newMembers.map(
+                    ({
+                      id,
+                      reviewerName,
+                      weeklyRequirementsMet,
+                      requiredPRs,
+                      totalReviews,
+                      remainingWeeks,
+                      promoteEligible,
+                    }) => (
+                      <tr key={id}>
+                        <td>{reviewerName}</td>
+                        <td>{weeklyRequirementsMet ? '✔️' : '❌'}</td>
+                        <td>{requiredPRs}</td>
+                        <td>{totalReviews}</td>
+                        <td>{remainingWeeks}</td>
+                        <td>
+                          <div
+                            role="checkbox"
+                            tabIndex={promoteEligible ? 0 : -1}
+                            aria-checked={selectedForPromotion.has(id)}
+                            onClick={() =>
+                              promoteEligible && !processing && toggleSelectPromotion(id)
+                            }
+                            onKeyDown={e => {
+                              if (
+                                (e.key === 'Enter' || e.key === ' ') &&
+                                promoteEligible &&
+                                !processing
+                              ) {
+                                e.preventDefault();
+                                toggleSelectPromotion(id);
+                              }
+                            }}
+                            className={`custom-circular-checkbox-wrapper ${
+                              !promoteEligible || processing ? 'disabled' : ''
+                            }`}
+                            style={{
+                              cursor: promoteEligible && !processing ? 'pointer' : 'not-allowed',
+                            }}
+                          >
+                            <div
+                              className={`custom-circular-checkbox ${
+                                selectedForPromotion.has(id) ? 'checked' : ''
+                              }`}
+                            >
+                              {selectedForPromotion.has(id) && <FaCheck className="check-icon" />}
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    ),
+                  )}
+                </>
+              )}
+
+              {existingMembers.length > 0 && (
+                <>
+                  <tr className="section-row">
+                    <td colSpan="6">Existing Members</td>
+                  </tr>
+                  {existingMembers.map(
+                    ({
+                      id,
+                      reviewerName,
+                      weeklyRequirementsMet,
+                      requiredPRs,
+                      totalReviews,
+                      remainingWeeks,
+                      promoteEligible,
+                    }) => (
+                      <tr key={id}>
+                        <td>{reviewerName}</td>
+                        <td>{weeklyRequirementsMet ? '✔️' : '❌'}</td>
+                        <td>{requiredPRs}</td>
+                        <td>{totalReviews}</td>
+                        <td>{remainingWeeks}</td>
+                        <td>
+                          <div
+                            role="checkbox"
+                            tabIndex={promoteEligible ? 0 : -1}
+                            aria-checked={selectedForPromotion.has(id)}
+                            onClick={() =>
+                              promoteEligible && !processing && toggleSelectPromotion(id)
+                            }
+                            onKeyDown={e => {
+                              if (
+                                (e.key === 'Enter' || e.key === ' ') &&
+                                promoteEligible &&
+                                !processing
+                              ) {
+                                e.preventDefault();
+                                toggleSelectPromotion(id);
+                              }
+                            }}
+                            className={`custom-circular-checkbox-wrapper ${
+                              !promoteEligible || processing ? 'disabled' : ''
+                            }`}
+                            style={{
+                              cursor: promoteEligible && !processing ? 'pointer' : 'not-allowed',
+                            }}
+                          >
+                            <div
+                              className={`custom-circular-checkbox ${
+                                selectedForPromotion.has(id) ? 'checked' : ''
+                              }`}
+                            >
+                              {selectedForPromotion.has(id) && <FaCheck className="check-icon" />}
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    ),
+                  )}
+                </>
+              )}
+
+              {newMembers.length === 0 && existingMembers.length === 0 && (
+                <tr>
+                  <td colSpan="6" style={{ textAlign: 'center' }}>
+                    No reviewers found.
                   </td>
                 </tr>
-              ))}
-            </>
-          )}
-
-          {existingMembers.length > 0 && (
-            <>
-              <tr className="section-row">
-                <td colSpan="6">Existing Members</td>
-              </tr>
-              {existingMembers.map(({ id, reviewerName, weeklyRequirementsMet, requiredPRs, totalReviews, remainingWeeks, promoteEligible }) => (
-                <tr key={id}>
-                  <td data-label="Reviewer Name">{reviewerName}</td>
-                  <td data-label="Weekly Requirements">{weeklyRequirementsMet ? '✔️' : '❌'}</td>
-                  <td data-label="Required PRs">{requiredPRs}</td>
-                  <td data-label="Total Reviews Done">{totalReviews}</td>
-                  <td data-label="Remaining Weeks">{remainingWeeks}</td>
-                  <td data-label="Promote?">
-                    <div
-                      role="checkbox"
-                      tabIndex={promoteEligible ? 0 : -1} // focusable only if enabled
-                      aria-checked={selectedForPromotion.has(id)}
-                      onClick={() => promoteEligible && !processing && toggleSelectPromotion(id)}
-                      onKeyDown={(e) => {
-                        if ((e.key === 'Enter' || e.key === ' ') && promoteEligible && !processing) {
-                          e.preventDefault();
-                          toggleSelectPromotion(id);
-                        }
-                      }}
-                      className={`custom-circular-checkbox-wrapper ${!promoteEligible || processing ? 'disabled' : ''}`}
-                      style={{ cursor: promoteEligible && !processing ? 'pointer' : 'not-allowed' }}
-                    >
-                      <div className={`custom-circular-checkbox ${selectedForPromotion.has(id) ? 'checked' : ''}`}>
-                        {selectedForPromotion.has(id) && <FaCheck className="check-icon" />}
-                      </div>
-                    </div>
-                  </td>
-
-                </tr>
-              ))}
+              )}
             </>
           )}
         </tbody>
       </table>
     </div>
   );
-};
+}
 
 export default PromotionEligibility;
