@@ -115,6 +115,40 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
     setShowGradingModal(null);
   };
 
+  const handleDoneClick = () => {
+    // Format data for POST /api/weekly-grading/save
+    const formattedData = {
+      teamCode: teamData.teamName,
+      date: {
+        start: teamData.dateRange.start,
+        end: teamData.dateRange.end,
+      },
+      reviewerGradings: reviewerData.map(reviewer => ({
+        reviewer: reviewer.reviewer,
+        prsReviewed: reviewer.prsReviewed,
+        prsNeeded: reviewer.prsNeeded,
+        prNumbersAndGrades: reviewer.gradedPrs.map(pr => ({
+          prNumbers: pr.prNumbers,
+          grade: pr.grade,
+        })),
+        ...(reviewer.role && { role: reviewer.role }), // Include role if it exists
+      })),
+    };
+
+    console.log('Weekly PR Grading Data to be saved:', formattedData);
+    console.log('POST /api/weekly-grading/save');
+    console.log('Request Body:', JSON.stringify(formattedData, null, 2));
+
+    // TODO: Replace with actual API call when backend is implemented
+    // fetch('/api/weekly-grading/save', {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //   },
+    //   body: JSON.stringify(formattedData),
+    // });
+  };
+
   return (
     <Container fluid className={`pr-grading-screen-container ${darkMode ? 'dark-mode' : ''}`}>
       <Row className="justify-content-center">
@@ -138,6 +172,7 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                   <Button
                     variant="outline-dark"
                     className={`pr-grading-screen-done-button ${darkMode ? 'dark-mode' : ''}`}
+                    onClick={handleDoneClick}
                   >
                     Done
                   </Button>
