@@ -21,8 +21,8 @@ const mockStore = configureMockStore(middlewares);
 
 // Mock functions for resource management
 const mockFunctions = mockResourceItems => {
-  const addResources = jest.fn((userID, firstName, lastName) => {
-    mockResourceItems.push({ userID, name: `${firstName} ${lastName}` });
+  const addResources = jest.fn((userID, firstName, lastName, profilePic) => {
+    mockResourceItems.push({ userID, name: `${firstName} ${lastName}`, profilePic });
   });
 
   const removeResources = jest.fn(userID => {
@@ -118,10 +118,12 @@ describe('TagsSearch Component', () => {
       fireEvent.mouseDown(ownerOption);
     });
 
-    /** await waitFor(() => {
-      expect(addResources).toHaveBeenCalledWith('aaa123', 'aaa', 'volunteer', 'pic1.jpg');
-      expect(addResources).toHaveBeenCalledWith('aaa067', 'aaa', 'owner', 'pic4.jpg');
-    }); */
+    // Check if addResources was called with the correct arguments
+    await waitFor(() => {
+      expect(addResources).toHaveBeenCalledWith('aaa123', 'aaa', 'volunteer', undefined);
+      expect(addResources).toHaveBeenCalledWith('aaa067', 'aaa', 'owner', undefined);
+    });
+    
   });
 
   it('does not add resource if no member is clicked', async () => {
