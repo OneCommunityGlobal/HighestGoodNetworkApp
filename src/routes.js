@@ -103,13 +103,15 @@ import AddTool from './components/BMDashboard/Tools/AddTool';
 import AttendanceNoShow from './components/AttendanceSystem/AttendanceNoShowCharts';
 
 import AddTeamMember from './components/BMDashboard/AddTeamMember/AddTeamMember';
+
+import MostWastedMaterials from './components/MostWastedMaterials/MostWastedMaterials'
+
 // eslint-disable-next-line import/order
 import IssueChart from './components/BMDashboard/Issues/issueCharts';
 import BMTimeLogger from './components/BMDashboard/BMTimeLogger/BMTimeLogger';
 import Issue from './components/BMDashboard/Issue/Issue';
 import RentalChart from './components/BMDashboard/RentalChart/RentalChart';
 import CreateNewTeam from './components/BMDashboard/Team/CreateNewTeam/CreateNewTeam';
-
 
 // Community Portal
 import CPProtectedRoute from './components/common/CPDashboard/CPProtectedRoute';
@@ -256,7 +258,11 @@ export default (
     <Route path="/form" component={FormEditor} />
     <Route path="/formviewer" component={FormViewer} />
     <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
+
+    <Route path="/mostwastedmaterials" component={MostWastedMaterials} />
+
     <Route path="/logattendance" component={AttendanceNoShow} />
+
     <>
       {/* Comment out the Header component and its import during phase 2 development. */}
       {/* Uncomment BMHeader and its import during phase 2 development. */}
