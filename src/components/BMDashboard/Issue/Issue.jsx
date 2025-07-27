@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button, Label, Input, Form, FormGroup, Row, Col } from 'reactstrap';
 import { toast } from 'react-toastify';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import { useEffect } from 'react';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
@@ -20,6 +20,7 @@ function Issue() {
   const defaultOption = 'Safety';
   const maxDescriptionCharacterLimit = 500;
   const history = useHistory();
+  const { projectId } = useParams();
 
   const dropdownOptions = ['Safety', 'METs quality / functionality', 'Labor', 'Weather', 'Other'];
   const userData = localStorage.getItem('token');
@@ -157,6 +158,7 @@ function Issue() {
       issueResolved: formData.resolved === 'Yes',
       issueDescription: formData.description,
       createdBy: userId,
+      projectId,
     };
     if (!isDataValid) {
       return false;
