@@ -1,0 +1,1 @@
+// This file is intentionally left blank to avoid 404 errors when the service worker is not registered
