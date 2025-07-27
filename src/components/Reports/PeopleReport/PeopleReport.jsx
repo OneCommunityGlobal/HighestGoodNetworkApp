@@ -15,7 +15,6 @@ import {
 } from '../../../actions/userProfile';
 import { getUserProjects } from '../../../actions/userProjects';
 import { getWeeklySummaries, updateWeeklySummaries } from '../../../actions/weeklySummaries';
-import 'react-input-range/lib/css/index.css';
 import { getTimeEntriesForPeriod } from '../../../actions/timeEntries';
 import InfringementsViz from '../InfringementsViz';
 import TimeEntriesViz from '../TimeEntriesViz';
@@ -343,7 +342,7 @@ class PeopleReport extends Component {
       }
       if (props.infringements.length > 0) {
         props.infringements.map((current, index) => (
-          <tr className="teams__tr">
+          <tr className="teams__tr" key={index}>
             <td>{index + 1}</td>
             <td>{current.date}</td>
             <td>{current.description}</td>

@@ -146,6 +146,7 @@ function DateRangePicker({ dateRange, setDateRange }) {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
             <div>
               <label
+                htmlFor="start-date"
                 style={{
                   display: 'block',
                   fontSize: '14px',
@@ -169,6 +170,7 @@ function DateRangePicker({ dateRange, setDateRange }) {
             </div>
             <div>
               <label
+                htmlFor="end-date"
                 style={{
                   display: 'block',
                   fontSize: '14px',
@@ -309,6 +311,7 @@ export default function SimpleToolChart() {
         {/* Project Filter */}
         <div style={{ width: '100%' }}>
           <label
+            htmlFor="project-filter"
             style={{ display: 'block', fontSize: '14px', fontWeight: '500', marginBottom: '4px' }}
           >
             Project
@@ -335,6 +338,7 @@ export default function SimpleToolChart() {
         {/* Date Range Filter */}
         <div style={{ width: '100%' }}>
           <label
+            htmlFor="date-filter"
             style={{ display: 'block', fontSize: '14px', fontWeight: '500', marginBottom: '4px' }}
           >
             Date Range

@@ -1,17 +1,16 @@
 import { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, connect } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
-import { connect } from 'react-redux';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
-import { boxStyle, boxStyleDark } from 'styles';
-import { getPresetsByRole, createNewPreset } from 'actions/rolePermissionPresets';
+import { boxStyle, boxStyleDark } from '~/styles';
+import { getPresetsByRole, createNewPreset } from '~/actions/rolePermissionPresets';
 import PermissionsPresetsModal from './PermissionsPresetsModal';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import { updateRole, getAllRoles } from '../../actions/role';
 import PermissionList from './PermissionList';
 import permissionLabel from './PermissionsConst';
@@ -194,6 +193,7 @@ function RolePermissions(props) {
                 icon={faEdit}
                 size="lg"
                 className={`user-role-tab__icon edit-icon ${darkMode ? 'text-light' : ''}`}
+                data-testid="edit-role-icon"
                 onClick={toggleEditRoleNameModal}
               />
             )}

@@ -2,26 +2,27 @@ import { Fragment } from 'react';
 import { faClock } from '@fortawesome/free-solid-svg-icons';
 import { Table, Row, Col } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import axios from 'axios';
-import moment from 'moment';
+import { fetchTeamMembersTask, deleteTaskNotification } from '~/actions/task';
 import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch, useSelector, connect } from 'react-redux';
-import { toast } from 'react-toastify';
 import { MultiSelect } from 'react-multi-select-component';
-import { FaCalendarAlt, FaClock } from 'react-icons/fa';
-import { ENDPOINTS } from '../../utils/URL';
-import { fetchTeamMembersTask, deleteTaskNotification } from '../../actions/task';
-import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
 import SkeletonLoading from '../common/SkeletonLoading';
 import { TaskDifferenceModal } from './components/TaskDifferenceModal';
 import './style.css';
 import TaskCompletedModal from './components/TaskCompletedModal';
+import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
+import axios from 'axios';
+import moment from 'moment';
 import TeamMemberTask from './TeamMemberTask';
 import TimeEntry from '../Timelog/TimeEntry';
+import { hrsFilterBtnColorMap } from '~/constants/colors';
+import { toast } from 'react-toastify';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 import { fetchAllFollowUps } from '../../actions/followUpActions';
 import { fetchTeamMembersTaskSuccess } from './actions';
-import { hrsFilterBtnColorMap } from '../../constants/colors';
+
+import { ENDPOINTS } from '~/utils/URL';
+import { FaCalendarAlt, FaClock } from 'react-icons/fa';
 
 const TeamMemberTasks = React.memo(props => {
   // props from redux store

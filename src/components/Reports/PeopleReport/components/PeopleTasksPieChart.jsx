@@ -5,7 +5,7 @@ import { UserProjectPieChart } from '../../../common/PieChart/ProjectPieChart';
 import { peopleTasksPieChartViewData } from '../selectors';
 import { ReportPage } from '../../sharedComponents/ReportPage';
 import './PeopleTasksPieChart.css';
-// import { ProjectPieChart } from 'components/Reports/ProjectReport/ProjectPieChart/ProjectPieChart';
+// import { ProjectPieChart } from '~/components/Reports/ProjectReport/ProjectPieChart/ProjectPieChart';
 
 export function PeopleTasksPieChart({ darkMode }) {
   const {

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAllReusables } from 'actions/bmdashboard/reusableActions';
+import { fetchAllReusables } from '~/actions/bmdashboard/reusableActions';
 import ItemListView from '../ItemList/ItemListView';
 import UpdateReusableModal from '../UpdateReusables/UpdateReusableModal';
 

@@ -1,5 +1,5 @@
-import { teamMemberTasksReducer } from 'components/TeamMemberTasks/reducer';
-import { taskEditSuggestionsReducer } from 'components/TaskEditSuggestions/reducer';
+import { teamMemberTasksReducer } from '~/components/TeamMemberTasks/reducer';
+import { taskEditSuggestionsReducer } from '~/components/TaskEditSuggestions/reducer';
 import { userProfileByIdReducer, userTaskByIdReducer } from './userProfileByIdReducer';
 import { authReducer } from './authReducer';
 import { allUserProfilesBasicInfoReducer } from './allUserProfilesBasicInfoReducer';
@@ -9,8 +9,8 @@ import {
   enableUserInfoEditReducer,
 } from './allUserProfilesReducer';
 import { leaderboardDataReducer, orgDataReducer } from './leaderboardDataReducer';
-import weeklySummariesReducer from './weeklySummariesReducer';
-import weeklySummariesReportReducer from './weeklySummariesReportReducer';
+import { weeklySummariesReducer } from './weeklySummariesReducer';
+import { weeklySummariesReportReducer } from './weeklySummariesReportReducer';
 import { allProjectsReducer } from './allProjectsReducer';
 import { projectReportReducer } from './projectReportReducer';
 import userProjectsReducer from './userProjectsReducer';
@@ -31,7 +31,7 @@ import { rolePresetReducer } from './rolePresetReducer';
 import { ownerMessageReducer } from './ownerMessageReducer';
 import warningsByUserIdReducer from './warningsReducer';
 import { infoCollectionsReducer } from './informationReducer';
-import mouseoverTextReducer from './mouseoverTextReducer';
+import { mouseoverTextReducer } from './mouseoverTextReducer';
 import notificationReducer from './notificationReducer';
 import weeklySummaryRecipientsReducer from './weeklySummaryRecipientsReducer';
 import { followUpReducer } from './followUpReducer';
@@ -65,10 +65,10 @@ import issueReducer from './bmdashboard/issueReducer';
 import HGNFormReducer from './hgnFormReducers';
 import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
 import messageReducer from './lbdashboard/messagingReducer';
-import userPreferencesReducer from './lbdashboard/userPreferencesReducer';
+import { userPreferencesReducer } from './lbdashboard/userPreferencesReducer';
 
 // community portal
-import noShowVizReducer from './communityPortal/noShowVizReducer';
+import { noShowVizReducer } from './communityPortal/noShowVizReducer';
 
 // lbdashboard
 import wishListReducer from './lbdashboard/wishListItemReducer';
