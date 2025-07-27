@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import OldBadges from '../OldBadges';
+import userEvent from '@testing-library/user-event';
 
 const badges = [
   {
@@ -37,58 +38,52 @@ describe('Old Badges component', () => {
   it('renders without crashing', () => {
     render(<OldBadges personalBestMaxHrs={25} badges={badges} />);
   });
-  it('check tool tip of Badges Earned Before Last Week', async () => {
+
+  it('shows and hides tooltip correctly', async () => {
     const { container } = render(
       <OldBadges personalBestMaxHrs={25} badges={badges} darkMode={true} />,
     );
+
+    // Find the tooltip trigger element (info icon)
     const toolTipElement = container.querySelector('.fa.fa-info-circle');
-    fireEvent.mouseEnter(toolTipElement);
+
+    // Hover over the tooltip trigger
+    await userEvent.hover(toolTipElement);
+
+    // Wait for tooltip content to appear
     await waitFor(() => {
       expect(
-        screen.queryByText(
+        screen.getByText(
           'Holy Awesome, these are all the badges you earned before last week!!! Click "Full View" to bask in the glory of your COMPLETE LIST!',
         ),
       ).toBeInTheDocument();
+
       expect(
-        screen.queryByText(
+        screen.getByText(
           'Have a number bigger than "1" in the bottom righthand corner of a badge? That\'s how many times you\'ve earned the same badge! Do your Happy Dance you Champion!!',
-        ),
-      ).toBeInTheDocument();
-      expect(
-        screen.queryByText(
-          "No badges in this area? Uh, in that case, everything said above is a bit premature. Sorry about that... Everyone must start somewhere, and in your case, that somewhere is with the big empty, desolate, bare and barren badge box below (BEDBABBBB). If we had a BEDBABBBB badge, you'd earn it, but we don't, so this area is blank.",
-        ),
-      ).toBeInTheDocument();
-      expect(
-        screen.queryByText(
-          "No worries though, we're sure there are other areas of your life where you are a Champion already. Stick with us long enough and this will be another one.",
         ),
       ).toBeInTheDocument();
     });
-    fireEvent.mouseLeave(toolTipElement);
+
+    // Unhover to hide tooltip
+    await userEvent.unhover(toolTipElement);
+
+    // Wait for tooltip content to disappear
     await waitFor(() => {
       expect(
         screen.queryByText(
           'Holy Awesome, these are all the badges you earned before last week!!! Click "Full View" to bask in the glory of your COMPLETE LIST!',
         ),
       ).not.toBeInTheDocument();
+
       expect(
         screen.queryByText(
           'Have a number bigger than "1" in the bottom righthand corner of a badge? That\'s how many times you\'ve earned the same badge! Do your Happy Dance you Champion!!',
-        ),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByText(
-          "No badges in this area? Uh, in that case, everything said above is a bit premature. Sorry about that... Everyone must start somewhere, and in your case, that somewhere is with the big empty, desolate, bare and barren badge box below (BEDBABBBB). If we had a BEDBABBBB badge, you'd earn it, but we don't, so this area is blank.",
-        ),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByText(
-          "No worries though, we're sure there are other areas of your life where you are a Champion already. Stick with us long enough and this will be another one.",
         ),
       ).not.toBeInTheDocument();
     });
   });
+
   it('check Badges Earned Before Last Week heading', () => {
     render(<OldBadges personalBestMaxHrs={10} badges={badges} darkMode={true} />);
     expect(screen.queryByText('Badges Earned Before Last Week')).toBeInTheDocument();

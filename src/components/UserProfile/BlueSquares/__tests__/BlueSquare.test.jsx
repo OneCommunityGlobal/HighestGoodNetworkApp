@@ -111,7 +111,7 @@ describe('BlueSquare component', () => {
     );
     expect(screen.queryByText('+')).toBeInTheDocument();
   });
-  it('check if handleBlueSquare is called when user clicks on the button', () => {
+  it('check if handleBlueSquare is called when user clicks on the button', async () => {
     const { container } = render(
       <Provider store={store}>
         <BlueSquare
@@ -120,10 +120,25 @@ describe('BlueSquare component', () => {
         />
       </Provider>,
     );
+
+    // Wait for the component to render completely
+    await waitFor(() => {
+      const blueSquareButtonElement = container.querySelector('.blueSquareButton');
+      expect(blueSquareButtonElement).toBeInTheDocument();
+    });
     const blueSquareButtonElement = container.querySelector('.blueSquareButton');
-    fireEvent.click(blueSquareButtonElement);
-    expect(handleBlueSquare).toHaveBeenCalled();
+  
+    // Use act to wrap the click event
+    await act(async () => {
+      fireEvent.click(blueSquareButtonElement);
+    });
+    
+    // Wait for the handler to be called
+    await waitFor(() => {
+      expect(handleBlueSquare).toHaveBeenCalled();
+    });
   });
+
   it('check if handleBlueSquare is not called when user does not click on the button', () => {
     render(
       <Provider store={store}>
@@ -135,6 +150,7 @@ describe('BlueSquare component', () => {
     );
     expect(handleBlueSquare).not.toHaveBeenCalled();
   });
+  
   it('check hasPermission function returns false if permission is not present', () => {
     const mockInitialState = JSON.parse(JSON.stringify(initialState));
     mockInitialState.auth.user.permissions.frontPermissions = [];

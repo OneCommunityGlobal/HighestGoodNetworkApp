@@ -78,7 +78,7 @@ export function PieChart({
           ? `${displayValue.toFixed(2)}% of ${calculateTotalHours(projectsData, tasksData).toFixed(
               2,
             )}`
-          : totalValue.toFixed(2),
+          : `${totalValue.toFixed(2)} Hrs`,
       );
 
     svg
@@ -199,7 +199,7 @@ export function PieChart({
             <thead>
               <tr>
                 <th>Color</th>
-                <th>Project Name</th>
+                <th>Task Name</th>
                 <th>Hours</th>
               </tr>
             </thead>
