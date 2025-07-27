@@ -417,12 +417,13 @@ export default function WeeklyProjectSummary() {
               key={key}
               className={`${styles.weeklyProjectSummaryDashboardSection} ${styles[className]}`}
             >
-              <div
-                className={`${styles.weeklyProjectSummaryDashboardCategoryTitle}`}
+              <button
+                type="button"
+                className={styles.weeklyProjectSummaryDashboardCategoryTitle}
                 onClick={() => toggleSection(key)}
               >
                 {title} <span>{openSections[key] ? '∧' : '∨'}</span>
-              </div>
+              </button>
               {openSections[key] && (
                 <div className={`${styles.weeklyProjectSummaryDashboardCategoryContent}`}>
                   {content}
