@@ -146,7 +146,7 @@ function FormattedReport({
           .filter(summary => {
             // Add safety check for each summary
             if (!summary || !summary._id) return false;
-            const currentStatus = bioStatusMap[summary._id] ?? summary.bioPosted; // for rerendering
+            const currentStatus = (bioStatusMap?.[summary._id]) ?? summary.bioPosted; // for rerendering
             const isMeetCriteria = summary.totalTangibleHrs > 80 &&
               summary.daysInTeam > 60 &&
               currentStatus !== 'posted';
