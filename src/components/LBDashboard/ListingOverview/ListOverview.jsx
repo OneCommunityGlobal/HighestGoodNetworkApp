@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import './Listoverview.css';
+import Carousel from 'react-bootstrap/Carousel';
 import logo from '../../../assets/images/logo2.png';
 import mapIcon from '../../../assets/images/mapIcon.png';
-import ImageCarousel from './ImageCarousel';
 
 function ListOverview() {
   const [listing, setListing] = React.useState({});
@@ -37,12 +37,19 @@ function ListOverview() {
               <h1>{listing.title}</h1>
             </div>
             <div className="image-carousel">
-              <ImageCarousel images={listing.images} />
+              <Carousel>
+                {listing.images?.map((image, index) => (
+                  <Carousel.Item key={image}>
+                    <img className="d-block w-100" src={image} alt={`Slide ${index + 1}`} />
+                  </Carousel.Item>
+                ))}
+              </Carousel>
             </div>
+
             <div className="amenities">
               <div>
                 <h2>Available amenities in this unit:</h2>
-                <ol>
+                <ol className="amenities-list">
                   {listing.unitAmenities?.map(amenity => (
                     <li key={amenity}>{amenity}</li>
                   ))}
@@ -50,7 +57,7 @@ function ListOverview() {
               </div>
               <div>
                 <h2>Village level amenities:</h2>
-                <ol>
+                <ol className="amenities-list">
                   {listing.villageAmenities?.map(amenity => (
                     <li key={amenity}>{amenity}</li>
                   ))}
