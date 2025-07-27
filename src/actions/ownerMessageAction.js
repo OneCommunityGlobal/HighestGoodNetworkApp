@@ -1,6 +1,6 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import axios from 'axios';
 import { ENDPOINTS } from '../utils/URL';
-
 import * as types from '../constants/ownerMessageConstants';
 
 // action creator
@@ -21,7 +21,7 @@ export const getOwnerMessage = () => {
       dispatch(updateOwnerMessageAction(ownerMessage));
       return response;
     } catch (error) {
-      return error.response.data.error;
+      return error.response?.data?.error || error.message;
     }
   };
 };
@@ -35,7 +35,7 @@ export const updateOwnerMessage = newMessage => {
       dispatch(updateOwnerMessageAction(ownerMessage));
       return response;
     } catch (error) {
-      return error.response.data.error;
+      return error.response?.data?.error || error.message;
     }
   };
 };
@@ -49,7 +49,7 @@ export const deleteOwnerMessage = () => {
       dispatch(updateOwnerMessageAction(ownerMessage));
       return response;
     } catch (error) {
-      return error.response.data.error;
+      return error.response?.data?.error || error.message;
     }
   };
 };

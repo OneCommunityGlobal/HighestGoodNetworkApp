@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import {
@@ -198,14 +199,15 @@ const mockSkillsData = {
   ],
 };
 
-function CustomTooltip({ active, payload }) {
+function CustomTooltip({ active, payload, darkMode }) {
   if (active && payload && payload.length) {
     return (
       <div
         className="custom-tooltip"
         style={{
-          backgroundColor: '#ffffff',
-          border: '1px solid #ddd',
+          backgroundColor: darkMode ? '#22304a' : '#ffffff',
+          color: darkMode ? '#fff' : '#222',
+          border: darkMode ? '1px solid #2d4263' : '1px solid #ddd',
           borderRadius: '8px',
           padding: '6px 8px',
           fontSize: '12px',
@@ -270,7 +272,7 @@ function SkillItem({ item }) {
 }
 
 // Separate Skills Tabbed Section component
-function SkillsTabbedSection({ skillsData }) {
+function SkillsTabbedSection({ skillsData, darkMode }) {
   const [activeTab, setActiveTab] = useState('Dashboard');
   const allSkills = [
     ...skillsData.Frontend,
@@ -305,12 +307,12 @@ function SkillsTabbedSection({ skillsData }) {
   const renderRadarChart = () => {
     return (
       <ResponsiveContainer width="100%" height="100%">
-        <RadarChart outerRadius={160} data={radarData}>
+        <RadarChart outerRadius={160} data={radarData} darkMode={darkMode}>
           <PolarGrid />
           <PolarAngleAxis dataKey="name" tick={{ fontSize: 9 }} />
           <PolarRadiusAxis angle={30} domain={[0, 10]} />
           <Radar name="Skills" dataKey="value" stroke="#ff4d6d" fill="#ff4d6d" fillOpacity={0.6} />
-          <Tooltip content={<CustomTooltip />} />
+          <Tooltip content={<CustomTooltip darkMode={darkMode} />} />
         </RadarChart>
       </ResponsiveContainer>
     );
@@ -380,6 +382,7 @@ function SkillsTabbedSection({ skillsData }) {
 }
 
 function UserProfilePage() {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const { userId } = useParams();
   const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -389,7 +392,6 @@ function UserProfilePage() {
   useEffect(() => {
     const loadUserProfile = async () => {
       if (!userId) return;
-
       try {
         setLoading(true);
         const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
@@ -418,7 +420,7 @@ function UserProfilePage() {
 
       {/* Skills tabbed section */}
       <div className={`${styles.skillsSection}`}>
-        <SkillsTabbedSection skillsData={mockSkillsData} />
+        <SkillsTabbedSection skillsData={mockSkillsData} darkMode />{' '}
       </div>
     </div>
   );
