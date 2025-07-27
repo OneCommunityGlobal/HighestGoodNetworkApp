@@ -11,7 +11,6 @@ const AddTeamPopup = React.memo(props => {
   const { darkMode, isEdit, teamName, teamId, teamCode, isActive, onUpdateTeam } = props;
 
   const dispatch = useDispatch();
-
   const [selectedTeam, onSelectTeam] = useState(undefined);
   const [isValidTeam, onValidation] = useState(true);
   const [isValidNewTeam, onNewTeamValidation] = useState(true);
@@ -167,6 +166,17 @@ const AddTeamPopup = React.memo(props => {
     setIsNotDisplayAlert(true);
   }, [props.open, isEdit, teamName]);
 
+  const generateValidTeamCode = (teamName) => {
+    if (!teamName || teamName.trim() === '') {
+      return 'TEAM-1';
+    }
+    
+    // Take first letter and create a format like A-AAAA
+    const firstLetter = teamName.charAt(0).toUpperCase();
+    const remainingLetters = teamName.slice(1, 5).toUpperCase().padEnd(4, 'A');
+    return `${firstLetter}-${remainingLetters}`;
+  };
+
   const onEditTeam = async () => {
     if (searchText !== '' && searchText.trim() !== '') {
       // Client-side duplicate check (ignore current team name)
@@ -179,17 +189,48 @@ const AddTeamPopup = React.memo(props => {
         setIsLoading(false);
         return;
       }
+      
+      // Use existing teamCode or generate a new one if it's missing
+      const validTeamCode = teamCode && teamCode.trim() !== '' ? teamCode : generateValidTeamCode(trimmedTeamName);
+      
       setIsLoading(true);
       setDuplicateTeam(false);
-      const response = await onUpdateTeam(trimmedTeamName, teamId, isActive, teamCode);
-      setIsLoading(false);
-      if (response && response.status === 200) {
-        toast.success('Team updated successfully');
-        closePopup();
-      } else if (response && response.status === 403) {
-        setDuplicateTeam(true);
-      } else if (response) {
-        toast.error(response.data?.message || 'Error updating team');
+      
+      try {
+        // Call the action creator directly (it's already connected via mapDispatchToProps)
+        const result = await onUpdateTeam(trimmedTeamName, teamId, isActive, validTeamCode);
+        setIsLoading(false);
+        
+        // Check if the action was successful
+        if (result && result.status === 200) {
+          toast.success('Team updated successfully');
+          // Reset state and close popup
+          setSearchText('');
+          setDuplicateTeam(false);
+          setIsLoading(false);
+          closePopup();
+        } else if (result && result.status === 403) {
+          setDuplicateTeam(true);
+          toast.error('A team with this name already exists');
+        } else if (result && result.status === 400) {
+          // Handle validation errors
+          if (result.data && result.data.errors && result.data.errors.teamCode) {
+            toast.error(result.data.errors.teamCode.message);
+          } else {
+            toast.error(result.data?.message || 'Invalid team data');
+          }
+        } else if (result && typeof result === 'string') {
+          // Handle error response from the action creator
+          toast.error(result);
+        } else if (result) {
+          toast.error(result.message || 'Error updating team');
+        } else {
+          toast.error('Failed to update team. Please try again.');
+        }
+      } catch (error) {
+        setIsLoading(false);
+        console.error('Error updating team:', error);
+        toast.error('An unexpected error occurred while updating the team');
       }
     } else {
       onNewTeamValidation(false);

@@ -170,7 +170,7 @@ describe('AddTeamPopup component', () => {
     // The button should be in loading state after clicking
     await waitFor(() => {
       expect(nextDivElement.querySelector('.btn.btn-primary')).toBeDisabled();
-    });
+  });
   });
   
   it('check searched value results', async () => {
