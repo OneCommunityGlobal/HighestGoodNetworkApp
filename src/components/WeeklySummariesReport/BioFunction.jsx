@@ -1,4 +1,5 @@
 /* eslint-disable no-nested-ternary */
+/* eslint-disable prettier/prettier, no-console */
 import { useState } from 'react';
 import styles from './WeeklySummariesReport.module.scss';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';

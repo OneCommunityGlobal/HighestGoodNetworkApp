@@ -108,7 +108,8 @@
     "stream-browserify": "^3.0.0",
     "tinymce": "^7.2.0",
     "util": "^0.12.5",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "webpack": "^5.100.2"
   },
   "packageManager": "yarn@1.22.22",
   "scripts": {
