@@ -142,9 +142,9 @@ describe('AddTeamMember Component', () => {
   });
 
   afterEach(() => {
-  jest.clearAllMocks();
+    jest.clearAllMocks();
   });
-  
+
   describe('Form Submission', () => {
     it('submits form successfully with valid data', async () => {
       jest.setTimeout(15000);
