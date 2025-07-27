@@ -1,3 +1,8 @@
+.page-wrapper {
+  min-height: 100vh;
+  background-color: inherit;
+}
+
 .promo-table-container {
   max-width: 70vw;
   background-color: rgb(241, 241, 241);
@@ -89,7 +94,65 @@
   font-size: 12px;
 }
 
-/* smaller screens */
+/* dark mode */
+.page-wrapper.dark {
+  background-color: #121212;
+}
+
+.promo-table-container.dark .promo-table tr:hover {
+  background-color: #555555;
+}
+
+.promo-table-container.dark {
+  background-color: #1f1f1f;
+  color: #f5f5f5;
+  box-shadow: 0 2px 5px rgba(255, 255, 255, 0.1);
+}
+
+.promo-table-container.dark .promo-table {
+  background-color: #2a2a2a;
+}
+
+.promo-table-container.dark .promo-table th {
+  background-color: #3b3b3b;
+  color: #ddd;
+}
+
+.promo-table-container.dark .promo-table td {
+  color: #eaeaea;
+}
+
+.promo-table-container.dark .section-row td {
+  background-color: #333;
+  color: #f0f0f0;
+}
+
+.promo-table-container.dark .review-btn,
+.promo-table-container.dark .process-promo-btn {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.promo-table-container.dark .review-btn:hover,
+.promo-table-container.dark .process-promo-btn:hover {
+  background-color: #2563eb;
+}
+
+.promo-table-container.dark .custom-circular-checkbox {
+  border: 2px solid #ccc;
+  background-color: #1a1a1a;
+}
+
+.promo-table-container.dark .custom-circular-checkbox.checked {
+  background-color: #00cc66;
+}
+
+.promo-table-container.dark .check-icon {
+  color: white;
+}
+
+/* mobile */
+
 @media screen and (max-width: 768px) {
   .promo-table,
   .promo-table thead,
@@ -142,5 +205,24 @@
   .promo-table-container {
     max-width: 100%;
     padding: 1rem;
+  }
+
+  /* mobile dark mode */
+  .promo-table-container.dark .promo-table tr {
+    background-color: #2a2a2a;
+    border-color: #444;
+  }
+
+  .promo-table-container.dark .promo-table td::before {
+    color: #ccc;
+  }
+
+  .promo-table-container.dark .promo-table td {
+    color: #eaeaea;
+  }
+
+  .promo-table-container.dark .section-row td {
+    background-color: transparent;
+    color: #f0f0f0;
   }
 }
