@@ -110,6 +110,9 @@ import AddTeamMember from './components/BMDashboard/AddTeamMember/AddTeamMember'
 import IssueChart from './components/BMDashboard/Issues/issueCharts';
 import BMTimeLogger from './components/BMDashboard/BMTimeLogger/BMTimeLogger';
 import Issue from './components/BMDashboard/Issue/Issue';
+
+import ToolsCostRentals from './components/ToolsCostRentals/ToolsCostRentals'
+
 import RentalChart from './components/BMDashboard/RentalChart/RentalChart';
 import CreateNewTeam from './components/BMDashboard/Team/CreateNewTeam/CreateNewTeam';
 
@@ -259,7 +262,10 @@ export default (
     <Route path="/form" component={FormEditor} />
     <Route path="/formviewer" component={FormViewer} />
     <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
+
+    <Route path="/toolscostrentals" component={ToolsCostRentals} />
     <Route path="/logattendance" component={AttendanceNoShow} />
+
     <>
       {/* Comment out the Header component and its import during phase 2 development. */}
       {/* Uncomment BMHeader and its import during phase 2 development. */}
