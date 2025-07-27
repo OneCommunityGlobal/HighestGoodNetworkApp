@@ -12,6 +12,9 @@ function PromotionEligibility({ currentUser }) {
   const [selectedForPromotion, setSelectedForPromotion] = useState(new Set());
   const [processing, setProcessing] = useState(false);
 
+  const [showNew, setShowNew] = useState(true);
+  const [showExisting, setShowExisting] = useState(true);
+
   useEffect(() => {
     (async () => {
       try {
@@ -20,7 +23,7 @@ function PromotionEligibility({ currentUser }) {
         const mappedData = data.map(r => ({
           ...r,
           requiredPRs: r.requiredPRs ?? r.pledgedHours / 2,
-          promoteEligible: r.remainingWeeks <= 0,
+          promoteEligible: true,
           id: r.reviewerId,
           reviewerName: r.reviewerName,
           isNewMember: r.isNewMember,
@@ -69,6 +72,50 @@ function PromotionEligibility({ currentUser }) {
       setProcessing(false);
     }
   };
+
+  const renderRow = ({
+    id,
+    reviewerName,
+    weeklyRequirementsMet,
+    requiredPRs,
+    totalReviews,
+    remainingWeeks,
+    promoteEligible,
+  }) => (
+    <tr key={id}>
+      <td>{reviewerName}</td>
+      <td>{weeklyRequirementsMet ? '✔️' : '❌'}</td>
+      <td>{requiredPRs}</td>
+      <td>{totalReviews}</td>
+      <td>{remainingWeeks}</td>
+      <td>
+        <div
+          role="checkbox"
+          tabIndex={promoteEligible ? 0 : -1}
+          aria-checked={selectedForPromotion.has(id)}
+          onClick={() => promoteEligible && !processing && toggleSelectPromotion(id)}
+          onKeyDown={e => {
+            if ((e.key === 'Enter' || e.key === ' ') && promoteEligible && !processing) {
+              e.preventDefault();
+              toggleSelectPromotion(id);
+            }
+          }}
+          className={`custom-circular-checkbox-wrapper ${
+            !promoteEligible || processing ? 'disabled' : ''
+          }`}
+          style={{
+            cursor: promoteEligible && !processing ? 'pointer' : 'not-allowed',
+          }}
+        >
+          <div
+            className={`custom-circular-checkbox ${selectedForPromotion.has(id) ? 'checked' : ''}`}
+          >
+            {selectedForPromotion.has(id) && <FaCheck className="check-icon" />}
+          </div>
+        </div>
+      </td>
+    </tr>
+  );
 
   return (
     <div className="promo-table-container">
@@ -132,125 +179,35 @@ function PromotionEligibility({ currentUser }) {
 
           {!loading && !error && (
             <>
+              {/* New Members Section */}
               {newMembers.length > 0 && (
                 <>
-                  <tr className="section-row">
-                    <td colSpan="6">New Members</td>
+                  <tr
+                    className="section-row"
+                    onClick={() => setShowNew(prev => !prev)}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <td colSpan="6">
+                      <strong>New Members</strong> {showNew ? '▲' : '▼'}
+                    </td>
                   </tr>
-                  {newMembers.map(
-                    ({
-                      id,
-                      reviewerName,
-                      weeklyRequirementsMet,
-                      requiredPRs,
-                      totalReviews,
-                      remainingWeeks,
-                      promoteEligible,
-                    }) => (
-                      <tr key={id}>
-                        <td>{reviewerName}</td>
-                        <td>{weeklyRequirementsMet ? '✔️' : '❌'}</td>
-                        <td>{requiredPRs}</td>
-                        <td>{totalReviews}</td>
-                        <td>{remainingWeeks}</td>
-                        <td>
-                          <div
-                            role="checkbox"
-                            tabIndex={promoteEligible ? 0 : -1}
-                            aria-checked={selectedForPromotion.has(id)}
-                            onClick={() =>
-                              promoteEligible && !processing && toggleSelectPromotion(id)
-                            }
-                            onKeyDown={e => {
-                              if (
-                                (e.key === 'Enter' || e.key === ' ') &&
-                                promoteEligible &&
-                                !processing
-                              ) {
-                                e.preventDefault();
-                                toggleSelectPromotion(id);
-                              }
-                            }}
-                            className={`custom-circular-checkbox-wrapper ${
-                              !promoteEligible || processing ? 'disabled' : ''
-                            }`}
-                            style={{
-                              cursor: promoteEligible && !processing ? 'pointer' : 'not-allowed',
-                            }}
-                          >
-                            <div
-                              className={`custom-circular-checkbox ${
-                                selectedForPromotion.has(id) ? 'checked' : ''
-                              }`}
-                            >
-                              {selectedForPromotion.has(id) && <FaCheck className="check-icon" />}
-                            </div>
-                          </div>
-                        </td>
-                      </tr>
-                    ),
-                  )}
+                  {showNew && newMembers.map(renderRow)}
                 </>
               )}
 
+              {/* Existing Members Section */}
               {existingMembers.length > 0 && (
                 <>
-                  <tr className="section-row">
-                    <td colSpan="6">Existing Members</td>
+                  <tr
+                    className="section-row"
+                    onClick={() => setShowExisting(prev => !prev)}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <td colSpan="6">
+                      <strong>Existing Members</strong> {showExisting ? '▲' : '▼'}
+                    </td>
                   </tr>
-                  {existingMembers.map(
-                    ({
-                      id,
-                      reviewerName,
-                      weeklyRequirementsMet,
-                      requiredPRs,
-                      totalReviews,
-                      remainingWeeks,
-                      promoteEligible,
-                    }) => (
-                      <tr key={id}>
-                        <td>{reviewerName}</td>
-                        <td>{weeklyRequirementsMet ? '✔️' : '❌'}</td>
-                        <td>{requiredPRs}</td>
-                        <td>{totalReviews}</td>
-                        <td>{remainingWeeks}</td>
-                        <td>
-                          <div
-                            role="checkbox"
-                            tabIndex={promoteEligible ? 0 : -1}
-                            aria-checked={selectedForPromotion.has(id)}
-                            onClick={() =>
-                              promoteEligible && !processing && toggleSelectPromotion(id)
-                            }
-                            onKeyDown={e => {
-                              if (
-                                (e.key === 'Enter' || e.key === ' ') &&
-                                promoteEligible &&
-                                !processing
-                              ) {
-                                e.preventDefault();
-                                toggleSelectPromotion(id);
-                              }
-                            }}
-                            className={`custom-circular-checkbox-wrapper ${
-                              !promoteEligible || processing ? 'disabled' : ''
-                            }`}
-                            style={{
-                              cursor: promoteEligible && !processing ? 'pointer' : 'not-allowed',
-                            }}
-                          >
-                            <div
-                              className={`custom-circular-checkbox ${
-                                selectedForPromotion.has(id) ? 'checked' : ''
-                              }`}
-                            >
-                              {selectedForPromotion.has(id) && <FaCheck className="check-icon" />}
-                            </div>
-                          </div>
-                        </td>
-                      </tr>
-                    ),
-                  )}
+                  {showExisting && existingMembers.map(renderRow)}
                 </>
               )}
             </>
