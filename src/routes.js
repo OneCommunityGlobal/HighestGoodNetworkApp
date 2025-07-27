@@ -69,7 +69,11 @@ import NotFoundPage from './components/NotFound/NotFoundPage';
 import EmailSender from './components/common/EmailSender/EmailSender';
 import Collaboration from './components/Collaboration';
 
+
 import AttendanceStats from './components/AttendanceStats/AttendanceDashboard'
+
+
+import TestEventRegistration from './components/EventRegistration/TestEventRegistration';
 
 import MemberList from './components/QuestionnaireDashboard/MemberList';
 import EventPopularity from './components/EventPopularity/EventPopularity';
@@ -264,7 +268,11 @@ export default (
     <Route path="/formviewer" component={FormViewer} />
     <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
 
+
     <Route path="/Participation" component={AttendanceStats} />
+
+    <Route path="/TestEventReg" component={TestEventRegistration} />
+
 
     <Route path="/logattendance" component={AttendanceNoShow} />
 
