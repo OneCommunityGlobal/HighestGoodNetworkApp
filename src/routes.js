@@ -115,6 +115,7 @@ import Issue from './components/BMDashboard/Issue/Issue';
 import RentalChart from './components/BMDashboard/RentalChart/RentalChart';
 import CreateNewTeam from './components/BMDashboard/Team/CreateNewTeam/CreateNewTeam';
 
+import PromotionEligibility from './components/PRDashboard/PromotionEligibility';
 
 // Community Portal
 import CPProtectedRoute from './components/common/CPDashboard/CPProtectedRoute';
@@ -697,6 +698,8 @@ export default (
         <Route path="/Logout" component={Logout} />
         <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
 
+        <ProtectedRoute path="/pr-dashboard/promotion-eligibility" exact component={PromotionEligibility} />
+        
         {/* ----- HGN Help Community Skills Dashboard Routes ----- */}
         <ProtectedRoute path="/hgnhelp" exact component={LandingPage} />
         <ProtectedRoute path="/hgnhelp/skills-overview" exact component={SkillsOverviewPage} />
@@ -726,6 +729,7 @@ export default (
         <ProtectedRoute path="/ExperienceDonutChart" component={ExperienceDonutChart} fallback />
 
         <ProtectedRoute path="/" exact component={Dashboard} />
+
         <Route path="*" component={NotFoundPage} />
       </Switch>
     </>
