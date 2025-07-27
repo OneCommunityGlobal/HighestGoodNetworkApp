@@ -61,6 +61,65 @@
   color: #fff;
 }
 
+/* ===== Dark mode ===== */
+
+/* Change card background & shadow */
+.dark-mode .chart-container {
+  background-color: #1b2a41;
+  box-shadow: 0 1px 3px var(--card-shadow);
+}
+
+/* Text color in dark mode */
+.dark-mode .chart-title {
+  color: var(--text-color);
+}
+
+/* Dark background for react-datepicker input */
+.dark-mode .datepicker {
+  background-color: #233a5b!important;
+  color: #fff !important;
+  border-color: #e3e1e1 !important;
+}
+
+
+
+/* Dark mode for multi select*/
+.dark-mode .custom-select__control, .dark-mode .custom-select__menu {
+  background-color: #2b3e59!important;
+  border-color: #666!important;
+  color: #fff!important;
+}
+
+.dark-mode .custom-select__multi-value {
+  background-color: #1c2541!important;
+}
+
+.dark-mode .custom-select__multi-value__label {
+  color: #fff!important;
+}
+
+.dark-mode .custom-select__multi-value__remove {
+  color: #fff!important;
+}
+
+.dark-mode .custom-select__multi-value__remove:hover {
+  background-color: #ff6b6b!important;
+  color: #fff!important;
+}
+
+.dark-mode .custom-select__option {
+  background-color: #2b3e59!important;
+  color: #fff!important;
+}
+
+.dark-mode .custom-select__option--is-focused {
+  background-color: #6c757d!important;
+}
+
+.dark-mode .custom-select__option--is-selected {
+  background-color: #007bff!important;
+}
+
 /* Stack filters on narrow screens */
 @media (max-width: 768px) {
   .chart-wrapper {
@@ -80,61 +139,4 @@
   .chart-wrapper {
     max-height: 250px;
   }
-}
-
-/* ===== Dark mode ===== */
-
-/* Change card background & shadow */
-.dark-mode .chart-container {
-  background-color: var(--card-bg);
-  box-shadow: 0 1px 3px var(--card-shadow);
-}
-
-/* Text color in dark mode */
-.dark-mode .chart-title {
-  color: var(--text-color);
-}
-
-/* Dark background for react-datepicker input */
-.dark-theme .datepicker-dark {
-  background-color: #2b3e59 !important;
-  color: #fff !important;
-  border-color: #6b6767 !important;
-}
-
-/* Dark mode for multi select*/
-.dark-theme .custom-select__control, .dark-theme .custom-select__menu {
-  background-color: #2b3e59!important;
-  border-color: #666!important;
-  color: #fff!important;
-}
-
-.dark-theme .custom-select__multi-value {
-  background-color: #1c2541!important;
-}
-
-.dark-theme .custom-select__multi-value__label {
-  color: #fff!important;
-}
-
-.dark-theme .custom-select__multi-value__remove {
-  color: #fff!important;
-}
-
-.dark-theme .custom-select__multi-value__remove:hover {
-  background-color: #ff6b6b!important;
-  color: #fff!important;
-}
-
-.dark-theme .custom-select__option {
-  background-color: #2b3e59!important;
-  color: #fff!important;
-}
-
-.dark-theme .custom-select__option--is-focused {
-  background-color: #6c757d!important;
-}
-
-.dark-theme .custom-select__option--is-selected {
-  background-color: #007bff!important;
 }

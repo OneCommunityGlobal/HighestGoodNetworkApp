@@ -156,7 +156,7 @@ export default function MostExpensiveOpenIssuesChart() {
   }), [darkMode]);
 
   return (
-    <div className="chart-container">
+    <div className={`chart-container ${darkMode ? 'dark-mode' : ''}`}>
       <h2 className="chart-title">Most Expensive Open Issues</h2>
 
       <Row className="mb-3 align-items-center">
@@ -172,10 +172,21 @@ export default function MostExpensiveOpenIssuesChart() {
                 const [newStartDate, newEndDate] = update;
                 fetchIssuesWithFilters(selectedProjects, newStartDate, newEndDate);
               }}
+              isClearable
               placeholderText="Filter by Date Range"
-              className={`form-control ${darkMode ? 'datepicker-dark' : ''}`}
+              className={`datepicker ${darkMode ? 'dark-mode' : ''}`}
               value={dateRangeLabel}
             />
+            {dateRangeLabel &&
+            <span>
+              <button type="button"
+                style={{color: darkMode ? 'white' : 'black', paddingLeft: '8px'}}
+                onClick={() => {
+                setDateRange([null, null]);
+                fetchIssuesWithFilters(selectedProjects, null, null);
+              }}>x</button>
+            </span>
+            }
           </div>
         </Col>
         <Col md={6}>
