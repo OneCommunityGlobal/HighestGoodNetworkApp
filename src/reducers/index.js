@@ -36,6 +36,9 @@ import notificationReducer from './notificationReducer';
 import weeklySummaryRecipientsReducer from './weeklySummaryRecipientsReducer';
 import { followUpReducer } from './followUpReducer';
 import { BlueSquareEmailAssignment } from './blueSquareEmailBcc';
+
+import WeeklySummaryEmailAssignment from './WeeklySummaryEmailAssignment';
+
 import { userProjectsByUserNameReducer } from './userProjectsByUserNameReducer';
 import teamCodesReducer from './teamCodesReducer';
 import { projectByIdReducer } from './projectByIdReducer';
@@ -60,10 +63,15 @@ import { totalOrgSummaryReducer } from './totalOrgSummaryReducer';
 import { allUsersTimeEntriesReducer } from './allUsersTimeEntriesReducer';
 import issueReducer from './bmdashboard/issueReducer';
 import HGNFormReducer from './hgnFormReducers';
-// import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
+import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
+import messageReducer from './lbdashboard/messagingReducer';
+import userPreferencesReducer from './lbdashboard/userPreferencesReducer';
 
 // community portal
 import noShowVizReducer from './communityPortal/noShowVizReducer';
+
+// lbdashboard
+import wishListReducer from './lbdashboard/wishListItemReducer';
 
 const localReducers = {
   auth: authReducer,
@@ -94,6 +102,7 @@ const localReducers = {
   userProjectsByUserNameReducer,
   teamCodes: teamCodesReducer,
   blueSquareEmailAssignment: BlueSquareEmailAssignment,
+  weeklySummaryEmailAssignment: WeeklySummaryEmailAssignment,
   totalOrgSummary: totalOrgSummaryReducer,
   allUsersTimeEntries: allUsersTimeEntriesReducer,
   allUserProfilesBasicInfo: allUserProfilesBasicInfoReducer,
@@ -109,15 +118,24 @@ const localReducers = {
   project: bmProjectByIdReducer,
   bmTools: toolReducer,
   bmEquipments: equipmentReducer,
+  bmIssues: issueReducer,
   bmInvUnits: bmInvUnitReducer,
   bmConsumables: consumablesReducer,
   bmReusables: reusablesReducer,
   dashboard: dashboardReducer,
+  weeklyProjectSummary: weeklyProjectSummaryReducer,
+
+  // lbdashboard
+  wishlistItem: wishListReducer,
+
   bmissuechart: issueReducer,
   noShowViz: noShowVizReducer,
 
   bmProjectMembers: bmProjectMemberReducer,
   bmTimeLogger: bmTimeLoggerReducer,
+  // lbdashboard
+  lbmessaging: messageReducer,
+  lbuserpreferences: userPreferencesReducer,
 };
 
 const sessionReducers = {

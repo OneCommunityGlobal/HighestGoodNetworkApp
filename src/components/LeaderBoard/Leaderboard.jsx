@@ -31,6 +31,7 @@ import hasPermission from 'utils/permissions';
 import { toast } from 'react-toastify';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import moment from 'moment-timezone';
+import { Tooltip } from 'reactstrap';
 import { boxStyle } from 'styles';
 import axios from 'axios';
 import { getUserProfile } from 'actions/userProfile';
@@ -86,6 +87,8 @@ function LeaderBoard({
   darkMode,
   getWeeklySummaries,
   setFilteredUserTeamIds,
+  userOnTimeOff,
+  usersOnFutureTimeOff,
 }) {
   const userId = displayUserId;
   const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
@@ -105,7 +108,11 @@ function LeaderBoard({
     }
   }, []);
 
-  // const isOwner = ['Owner'].includes(loggedInUser.role);
+  const isOwner = ['Owner'].includes(loggedInUser.role);
+  const allowedRoles = ['Administrator', 'Manager', 'Mentor', 'Core Team', 'Assistant Manager'];
+  const isAllowedOtherThanOwner = allowedRoles.includes(loggedInUser.role);
+  const [currentTimeOfftooltipOpen, setCurrentTimeOfftooltipOpen] = useState({});
+  const [futureTimeOfftooltipOpen, setFutureTimeOfftooltipOpen] = useState({});
 
   const [mouseoverTextValue, setMouseoverTextValue] = useState(totalTimeMouseoverText);
   const dispatch = useDispatch();
@@ -368,6 +375,67 @@ function LeaderBoard({
       additionalWeeks = moment(mostRecentRequest.startingDate).diff(moment(), 'weeks') + 1;
     }
     return { hasTimeOff, isCurrentlyOff, additionalWeeks };
+  };
+
+  const currentTimeOfftoggle = personId => {
+    setCurrentTimeOfftooltipOpen(prevState => ({
+      ...prevState,
+      [personId]: !prevState[personId],
+    }));
+  };
+
+  const futureTimeOfftoggle = personId => {
+    setFutureTimeOfftooltipOpen(prevState => ({
+      ...prevState,
+      [personId]: !prevState[personId],
+    }));
+  };
+
+  const timeOffIndicator = personId => {
+    if (userOnTimeOff[personId]?.isInTimeOff === true) {
+      if (userOnTimeOff[personId]?.weeks > 0) {
+        return (
+          <>
+            <sup style={{ color: 'rgba(128, 128, 128, 0.5)' }} id={`currentTimeOff-${personId}`}>
+              {' '}
+              +{userOnTimeOff[personId].weeks}
+            </sup>
+            <Tooltip
+              placement="top"
+              isOpen={currentTimeOfftooltipOpen[personId]}
+              target={`currentTimeOff-${personId}`}
+              toggle={() => currentTimeOfftoggle(personId)}
+            >
+              Number with + indicates additional weeks the user will be on a time off excluding the
+              current week.
+            </Tooltip>
+          </>
+        );
+      }
+
+      return null;
+    }
+
+    if (usersOnFutureTimeOff[personId]?.weeks > 0) {
+      return (
+        <>
+          <sup style={{ color: '#007bff' }} id={`futureTimeOff-${personId}`}>
+            {' '}
+            {usersOnFutureTimeOff[personId].weeks}
+          </sup>
+          <Tooltip
+            placement="top"
+            isOpen={futureTimeOfftooltipOpen[personId]}
+            target={`futureTimeOff-${personId}`}
+            toggle={() => futureTimeOfftoggle(personId)}
+          >
+            This number indicates number of weeks from now user has scheduled a time off.
+          </Tooltip>
+        </>
+      );
+    }
+
+    return null;
   };
 
   const teamName = (name, maxLength) =>
@@ -737,7 +805,9 @@ function LeaderBoard({
                               Jump to personal Dashboard
                             </ModalHeader>
                             <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
-                              <p>Are you sure you wish to view this {item.name} dashboard?</p>
+                              <p className={darkMode ? 'text-light' : ''}>
+                                Are you sure you wish to view this {item.name} dashboard?
+                              </p>
                             </ModalBody>
                             <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
                               <Button variant="primary" onClick={() => showDashboard(item)}>
@@ -832,13 +902,19 @@ function LeaderBoard({
                           to={`/userprofile/${item.personId}`}
                           title="View Profile"
                           style={{
-                            color: isCurrentlyOff
-                              ? 'rgba(128, 128, 128, 0.5)' // Gray out the name if on time off
-                              : '#007BFF', // Default color
+                            color:
+                              isCurrentlyOff ||
+                              ((isAllowedOtherThanOwner || isOwner || item.personId === userId) &&
+                                userOnTimeOff[item.personId]?.isInTimeOff === true)
+                                ? `${darkMode ? '#9499a4' : 'rgba(128, 128, 128, 0.5)'}` // Gray out the name if on time off
+                                : '#007BFF', // Default color
                           }}
                         >
                           {item.name}
                         </Link>
+                        {isAllowedOtherThanOwner || isOwner || item.personId === userId
+                          ? timeOffIndicator(item.personId)
+                          : null}
                         &nbsp;&nbsp;&nbsp;
                         {hasVisibilityIconPermission && !item.isVisible && (
                           <i className="fa fa-eye-slash" title="User is invisible" />

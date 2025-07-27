@@ -4,7 +4,7 @@ import logo from '../../../../assets/images/logo2.png';
 import mastermap from '../../../../assets/images/masterMap.png';
 import mapRouter from '../../../../assets/images/routeMarker.png';
 import pin from '../../../../assets/images/pin-point.png';
-import './MasterPlan.css';
+import styles from './MasterPlan.module.css';
 
 const villages = [
   {
@@ -103,17 +103,17 @@ function MasterPlan() {
   };
 
   return (
-    <div className="main-container" onClick={handleOutsideClick}>
-      <div className="logo-container">
+    <div className={`${styles.mainContainer}`} onClick={handleOutsideClick}>
+      <div className={`${styles.logoContainer}`}>
         <img src={logo} alt="One Community Logo" />
       </div>
-      <div className="content-container">
-        <div className="container-top" />
-        <div className="container-main">
-          <div className="container-map">
-            <div className="map-details">
-              <div className="map">
-                <div className="image-wrapper">
+      <div className={`${styles.contentContainer}`}>
+        <div className={`${styles.containerTop}`} />
+        <div className={`${styles.containerMain}`}>
+          <div className={`${styles.containerMap}`}>
+            <div className={`${styles.mapDetails}`}>
+              <div className={`${styles.map}`}>
+                <div className={`${styles.imageWrapper}`}>
                   <img src={mastermap} alt="Master Map" />
                   {villages.map(v => (
                     <button
@@ -122,7 +122,7 @@ function MasterPlan() {
                         '--top': v.position.top,
                         '--left': v.position.left,
                       }}
-                      className="village-marker"
+                      className={`${styles.villageMarker}`}
                       type="button"
                       aria-label={`Marker for ${v.name}`}
                       onClick={e => {
@@ -134,7 +134,7 @@ function MasterPlan() {
                   <img
                     src={pin}
                     alt="Pin Point"
-                    className="pin-point"
+                    className={`${styles.pinPoint}`}
                     style={{
                       '--top': selectedVillage ? selectedVillage.position.top : '0%',
                       '--left': selectedVillage ? selectedVillage.position.left : '0%',
@@ -143,7 +143,7 @@ function MasterPlan() {
                   />
                 </div>
               </div>
-              <div className="route">
+              <div className={`${styles.route}`}>
                 <img src={mapRouter} alt="Route Marker" />
                 <p>
                   Click on the village marker or on the village to select a village and view more
@@ -152,11 +152,13 @@ function MasterPlan() {
                 <p>Double Click to view the village Page.</p>
               </div>
             </div>
-            <div className="villages">
+            <div className={`${styles.villages}`}>
               {villages.map(v => (
                 <div
                   key={v.id}
-                  className={`${selectedVillage === v ? 'selected ' : ''} village`}
+                  className={`${selectedVillage === v ? `${styles.selected} ` : ''}${
+                    styles.village
+                  }`}
                   style={{ cursor: 'pointer', padding: '0 10px', textAlign: 'center' }}
                   onClick={e => {
                     e.stopPropagation();
@@ -168,7 +170,7 @@ function MasterPlan() {
               ))}
             </div>
           </div>
-          <div className="village-details">
+          <div className={`${styles.villageDetails}`}>
             {selectedVillage && (
               <div className="village-details-content">
                 <h3>{selectedVillage.name}</h3>
