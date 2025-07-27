@@ -305,7 +305,7 @@ export function Header(props) {
 
   if (location.pathname === '/login') return null;
 
-  const viewingUser = JSON.parse(window.sessionStorage.getItem('viewingUser'))
+  const viewingUser = JSON.parse(window.sessionStorage.getItem('viewingUser'));
   return (
     <div className={`header-wrapper ${darkMode ? ' dark-mode' : ''}`}>
       <Navbar className="py-3 navbar" color="dark" dark expand="md">
@@ -444,7 +444,7 @@ export function Header(props) {
                   </NavItem>
                 )}
                 <NavItem className="responsive-spacing">
-                  <BellNotification userId={displayUserId}/>
+                  <BellNotification userId={displayUserId} />
                 </NavItem>
                 {(canAccessUserManagement ||
                   canAccessBadgeManagement ||
@@ -495,6 +495,10 @@ export function Header(props) {
                           </DropdownItem>
                         </>
                       )}
+                      <DropdownItem divider />
+                      <DropdownItem tag={Link} to="/pr-dashboard/overview" className={fontColor}>
+                        PR Team Analytics
+                      </DropdownItem>
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 )}
@@ -509,7 +513,7 @@ export function Header(props) {
                         backgroundImage: `url(${profilePic || '/pfp-default-header.png'})`,
                         backgroundSize: 'contain',
                         backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
+                        backgroundRepeat: 'no-repeat',
                       }}
                       className="dashboardimg"
                     />
@@ -565,9 +569,9 @@ export function Header(props) {
           lastName={viewingUser.lastName}
           message={`You are currently viewing the header for ${viewingUser.firstName} ${viewingUser.lastName}`}
           onClickClose={() => setPopup(prevPopup => !prevPopup)}
-          />
+        />
       )}
-      <PermissionWatcher props={props}/>
+      <PermissionWatcher props={props} />
       <div>
         <Modal isOpen={popup} className={darkMode ? 'text-light' : ''}>
           <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>
@@ -588,7 +592,7 @@ export function Header(props) {
       </div>
       {props.auth.isAuthenticated && isModalVisible && (
         <div className={`${darkMode ? 'bg-oxford-blue' : ''} card-wrapper`}>
-          <Card color="primary" className='headerCard'>
+          <Card color="primary" className="headerCard">
             <div className="close-button">
               <Button close onClick={closeModal} />
             </div>

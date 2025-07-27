@@ -110,14 +110,13 @@ import Issue from './components/BMDashboard/Issue/Issue';
 import RentalChart from './components/BMDashboard/RentalChart/RentalChart';
 import CreateNewTeam from './components/BMDashboard/Team/CreateNewTeam/CreateNewTeam';
 
-
 // Community Portal
 import CPProtectedRoute from './components/common/CPDashboard/CPProtectedRoute';
 import CPLogin from './components/CommunityPortal/Login';
 import CPDashboard from './components/CommunityPortal';
 import ActivityList from './components/CommunityPortal/Activities/ActivityList';
 import ActivityAttendance from './components/CommunityPortal/Activities/ActivityAttendance';
-import Activity from './components/CommunityPortal/Activities/activityId/Activity'
+import Activity from './components/CommunityPortal/Activities/activityId/Activity';
 import NoshowViz from './components/CommunityPortal/Attendence/NoshowViz';
 // import AddActivities from './components/CommunityPortal/Activities/AddActivities';
 // import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
@@ -142,6 +141,10 @@ import ActivityAgenda from './components/CommunityPortal/Activities/ActivityAgen
 
 // HGN PR Dashboard
 import PRReviewTeamAnalytics from './components/HGNPRDashboard/PRReviewTeamAnalytics';
+import PRDashboardOverview from './components/HGNPRDashboard/PRDashboardOverview';
+import PRDashboardPromotionEligibility from './components/HGNPRDashboard/PRDashboardPromotionEligibility';
+import PRDashboardTopReviewedPRs from './components/HGNPRDashboard/PRDashboardTopReviewedPRs';
+import PRDashboardDetails from './components/HGNPRDashboard/PRDashboardDetails';
 
 // eslint-disable-next-line import/order, import/no-unresolved
 import LogTools from './components/BMDashboard/LogTools/LogTools';
@@ -423,7 +426,12 @@ export default (
 
         <ProtectedRoute path="/applicants-chart" exact component={ApplicantsAgeChart} fallback />
 
-        <ProtectedRoute path="/application-time-chart" exact component={ApplicationTimeChartPage} fallback />
+        <ProtectedRoute
+          path="/application-time-chart"
+          exact
+          component={ApplicationTimeChartPage}
+          fallback
+        />
 
         <ProtectedRoute
           path="/application-analytics"
@@ -605,12 +613,27 @@ export default (
         {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
         <CPProtectedRoute path="/communityportal/reports/participation" component={NoshowViz} />
 
-        <CPProtectedRoute path="/communityportal/activities/:activityid/resources" exact component={Resources}/>
-        <CPProtectedRoute path="/communityportal/activities/:activityid" exact component={Activity} />
-        <CPProtectedRoute path="/communityportal/reports/participation" exact component={EventParticipation} />
-        <CPProtectedRoute path="/communityportal/reports/event/personalization" exact component={EventStats} />
+        <CPProtectedRoute
+          path="/communityportal/activities/:activityid/resources"
+          exact
+          component={Resources}
+        />
+        <CPProtectedRoute
+          path="/communityportal/activities/:activityid"
+          exact
+          component={Activity}
+        />
+        <CPProtectedRoute
+          path="/communityportal/reports/participation"
+          exact
+          component={EventParticipation}
+        />
+        <CPProtectedRoute
+          path="/communityportal/reports/event/personalization"
+          exact
+          component={EventStats}
+        />
         <CPProtectedRoute path="/communityportal/ActivitiesPage" exact component={ActivitiesPage} />
-
 
         <CPProtectedRoute
           path="/communityportal/Activities/Register/:activityId"
@@ -673,7 +696,11 @@ export default (
         <ProtectedRoute path="/userprofile/:userId" fallback component={UserProfile} />
         <ProtectedRoute path="/userprofileedit/:userId" component={UserProfileEdit} />
         <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
-        <CPProtectedRoute path="/communityportal/reports/resourceusage" exact component={ResourceUsage}/>
+        <CPProtectedRoute
+          path="/communityportal/reports/resourceusage"
+          exact
+          component={ResourceUsage}
+        />
         <ProtectedRoute path="/memberlist" exact component={MemberList} />
         <Route path="/Logout" component={Logout} />
         <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
@@ -691,19 +718,31 @@ export default (
         <ProtectedRoute path="/hgnform/page5" exact component={Page5} />
         <ProtectedRoute path="/hgnform/page6" exact component={Page6} />
         <ProtectedRoute path="/hgn/profile/skills" exact component={UserSkillsProfile} />
-        <ProtectedRoute path="/tsaformpage1" exact component={TSAFormPage1} /> 
-        <ProtectedRoute path="/tsaformpage2" exact component={TSAFormPage2} /> 
-        <ProtectedRoute path="/tsaformpage3" exact component={TSAFormPage3} /> 
-        <ProtectedRoute path="/tsaformpage4" exact component={TSAFormPage4} /> 
-        <ProtectedRoute path="/tsaformpage5" exact component={TSAFormPage5} /> 
-        <ProtectedRoute path="/tsaformpage6" exact component={TSAFormPage6} /> 
-        <ProtectedRoute path="/tsaformpage7" exact component={TSAFormPage7} /> 
-        <ProtectedRoute path="/tsaformpage8" exact component={TSAFormPage8} /> 
+        <ProtectedRoute path="/tsaformpage1" exact component={TSAFormPage1} />
+        <ProtectedRoute path="/tsaformpage2" exact component={TSAFormPage2} />
+        <ProtectedRoute path="/tsaformpage3" exact component={TSAFormPage3} />
+        <ProtectedRoute path="/tsaformpage4" exact component={TSAFormPage4} />
+        <ProtectedRoute path="/tsaformpage5" exact component={TSAFormPage5} />
+        <ProtectedRoute path="/tsaformpage6" exact component={TSAFormPage6} />
+        <ProtectedRoute path="/tsaformpage7" exact component={TSAFormPage7} />
+        <ProtectedRoute path="/tsaformpage8" exact component={TSAFormPage8} />
         <ProtectedRoute
           path="/pr-team-analytics/popular-prs"
           exact
           component={PRReviewTeamAnalytics}
         />
+        <ProtectedRoute path="/pr-dashboard/overview" exact component={PRDashboardOverview} />
+        <ProtectedRoute
+          path="/pr-dashboard/promotion-eligibility"
+          exact
+          component={PRDashboardPromotionEligibility}
+        />
+        <ProtectedRoute
+          path="/pr-dashboard/top-reviewed-prs"
+          exact
+          component={PRDashboardTopReviewedPRs}
+        />
+        <ProtectedRoute path="/pr-dashboard/details/:prId" exact component={PRDashboardDetails} />
         <ProtectedRoute path="/ExperienceDonutChart" component={ExperienceDonutChart} fallback />
 
         <ProtectedRoute path="/" exact component={Dashboard} />
