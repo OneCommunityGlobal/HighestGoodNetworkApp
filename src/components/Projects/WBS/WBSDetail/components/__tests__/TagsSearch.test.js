@@ -10,10 +10,16 @@ import { findProjectMembers } from 'actions/projectMembers';
 
 // Mock member data
 const allMembers = [
-  { firstName: 'aaa', isActive: true, lastName: 'volunteer', _id: 'aaa123' },
-  { firstName: 'bbb', isActive: true, lastName: 'test', _id: 'bbb456' },
-  { firstName: 'ccc', isActive: false, lastName: 'manager', _id: 'ccc789' },
-  { firstName: 'aaa', isActive: true, lastName: 'owner', _id: 'aaa067' },
+  {
+    firstName: 'aaa',
+    isActive: true,
+    lastName: 'volunteer',
+    _id: 'aaa123',
+    profilePic: 'pic1.jpg',
+  },
+  { firstName: 'bbb', isActive: true, lastName: 'test', _id: 'bbb456', profilePic: 'pic2.jpg' },
+  { firstName: 'ccc', isActive: false, lastName: 'manager', _id: 'ccc789', profilePic: 'pic3.jpg' },
+  { firstName: 'aaa', isActive: true, lastName: 'owner', _id: 'aaa067', profilePic: 'pic4.jpg' },
 ];
 
 const middlewares = [thunk];
@@ -41,7 +47,10 @@ const mockFoundProjectMembers = searchQuery => {
 
 const renderTagsSearchComponent = props => {
   const store = mockStore({
-    projectMembers: { foundProjectMembers: mockFoundProjectMembers('') }, // Initial empty search
+    projectMembers: {
+      foundProjectMembers: mockFoundProjectMembers(''),
+      members: allMembers, // Add members to the store state
+    },
   });
 
   return render(

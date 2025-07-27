@@ -29,3 +29,9 @@
 .user-team-head tr th {
   text-align: center;
 }
+.table-header {
+  text-align: center !important;
+  vertical-align: middle !important;
+  width: auto !important;
+  white-space: nowrap !important;
+}
