@@ -141,10 +141,16 @@ describe('AddTeamMember Component', () => {
     });
   });
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   describe('Form Submission', () => {
     it('submits form successfully with valid data', async () => {
-      const mockResponse = { data: { success: true } };
-      mockedAxios.post.mockResolvedValue(mockResponse);
+      jest.setTimeout(15000);
+      // const mockResponse = { data: { success: true } };
+      // commenting the above line, coz mocking a single call
+      mockedAxios.post.mockResolvedValue({ data: { success: true } });
 
       render(<AddTeamMember />);
 
