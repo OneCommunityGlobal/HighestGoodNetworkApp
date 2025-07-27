@@ -87,7 +87,9 @@ export const clearError = () => ({
  * Call API to get all projects
  */
 export const fetchAllProjects = () => {
-  return async dispatch => {
+  return async (dispatch, getState) => {
+    const { fetched } = getState().allProjects;
+    if (fetched) return;
     const url = ENDPOINTS.PROJECTS;
     let status;
     let error;
@@ -126,8 +128,7 @@ export const postNewProject = (projectName, projectCategory) => {
         category: projectCategory,
         isActive: true,
       };
-      dispatch(addNewProject({ newProject, status }));
-      await dispatch(fetchAllProjects());
+      dispatch(addNewProject({ newProject, status: 201 }));
       return _id;
     } catch (err) {
       const errorInfo = {

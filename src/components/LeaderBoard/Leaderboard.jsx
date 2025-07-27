@@ -1,14 +1,10 @@
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef, useCallback, lazy, Suspense } from 'react';
 import './Leaderboard.css';
 import { isEqual, debounce } from 'lodash';
 import { Link } from 'react-router-dom';
 import {
   Table,
   Progress,
-  Modal,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
   Button,
   UncontrolledDropdown,
   DropdownToggle,
@@ -16,6 +12,9 @@ import {
   DropdownItem,
   Spinner,
   Input,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
 } from 'reactstrap';
 import ReactTooltip from 'react-tooltip';
 import Alert from 'reactstrap/lib/Alert';
@@ -29,7 +28,6 @@ import { calculateDurationBetweenDates, showTrophyIcon } from 'utils/anniversary
 import hasPermission from 'utils/permissions';
 // import MouseoverTextTotalTimeEditButton from 'components/mouseoverText/MouseoverTextTotalTimeEditButton';
 import { toast } from 'react-toastify';
-import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import moment from 'moment-timezone';
 import { Tooltip } from 'reactstrap';
 import { boxStyle } from 'styles';
@@ -40,24 +38,12 @@ import { boxStyleDark } from '../../styles';
 import '../Header/DarkMode.css';
 import '../UserProfile/TeamsAndProjects/autoComplete.css';
 import { ENDPOINTS } from '../../utils/URL';
-import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
+import useLeaderboardData from '../../hooks/useLeaderboardData';
 
-function useDeepEffect(effectFunc, deps) {
-  const isFirst = useRef(true);
-  const prevDeps = useRef(deps);
-  useEffect(() => {
-    const isSame = prevDeps.current.every((obj, index) => {
-      const isItEqual = isEqual(obj, deps[index]);
-      return isItEqual;
-    });
-    if (isFirst.current || !isSame) {
-      effectFunc();
-    }
+const EditableInfoModal = lazy(() => import('../UserProfile/EditableModal/EditableInfoModal'));
+const Modal = lazy(() => import('reactstrap/lib/Modal'));
 
-    isFirst.current = false;
-    prevDeps.current = deps;
-  }, deps);
-}
+
 
 function displayDaysLeft(lastDay) {
   if (lastDay) {
@@ -71,13 +57,9 @@ function displayDaysLeft(lastDay) {
 }
 
 function LeaderBoard({
-  getLeaderboardData,
   postLeaderboardData,
-  getOrgData,
   // getMouseoverText,
-  leaderBoardData,
   loggedInUser,
-  organizationData,
   timeEntries,
   isVisible,
   displayUserId,
@@ -90,6 +72,7 @@ function LeaderBoard({
   userOnTimeOff,
   usersOnFutureTimeOff,
 }) {
+  const { leaderboardData, organizationData, isLoading, error, getLeaderboardData, getOrgData } = useLeaderboardData(displayUserId, timeEntries);
   const userId = displayUserId;
   const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
   const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon'); // ??? this permission doesn't exist?
@@ -99,11 +82,11 @@ function LeaderBoard({
     .format('YYYY-MM-DD');
 
   useEffect(() => {
-    for (let i = 0; i < leaderBoardData.length; i += 1) {
-      const startDate = leaderBoardData[i].startDate?.split('T')[0];
+    for (let i = 0; i < leaderboardData.length; i += 1) {
+      const startDate = leaderboardData[i].startDate?.split('T')[0];
       const showTrophy = showTrophyIcon(todaysDate, startDate);
-      if (!showTrophy && leaderBoardData[i].trophyFollowedUp) {
-        postLeaderboardData(leaderBoardData[i].personId, false);
+      if (!showTrophy && leaderboardData[i].trophyFollowedUp) {
+        postLeaderboardData(leaderboardData[i].personId, false);
       }
     }
   }, []);
@@ -165,8 +148,8 @@ function LeaderBoard({
 
   useEffect(() => {
     //  eslint-disable-next-line
-    leaderBoardData.length > 0 && teamsUsers.length === 0 && setTeamsUsers(leaderBoardData);
-  }, [leaderBoardData]);
+    leaderboardData.length > 0 && teamsUsers.length === 0 && setTeamsUsers(leaderboardData);
+  }, [leaderboardData]);
   // prettier-ignore
 
   useEffect(() => {
@@ -216,7 +199,7 @@ function LeaderBoard({
       setStateOrganizationData(organizationData);
 
       setTimeout(() => {
-        setTeamsUsers(leaderBoardData);
+        setTeamsUsers(leaderboardData);
         setIsLoadingTeams(false);
       }, 1000);
     } else {
@@ -224,7 +207,7 @@ function LeaderBoard({
         setIsLoadingTeams(true);
         const response = await axios.get(ENDPOINTS.TEAM_MEMBERS(team._id));
         const idUsers = response.data.map(item => item._id);
-        const usersTaks = leaderBoardData.filter(item => idUsers.includes(item.personId));
+        const usersTaks = leaderboardData.filter(item => idUsers.includes(item.personId));
         // eslint-disable-next-line no-unused-expressions
         usersTaks.length === 0
           ? // eslint-disable-next-line no-unused-expressions
@@ -252,12 +235,9 @@ function LeaderBoard({
   // const handleMouseoverTextUpdate = text => {
   //   setMouseoverTextValue(text);
   // };
-  useDeepEffect(() => {
-    getLeaderboardData(userId);
-    getOrgData();
-  }, [timeEntries, userId]);
+  
 
-  useDeepEffect(() => {
+  useEffect(() => {
     try {
       if (window.screen.width < 540) {
         const scrollWindow = document.getElementById('leaderboard');
@@ -272,10 +252,8 @@ function LeaderBoard({
     } catch (error) {
       throw new Error(error);
     }
-  }, [leaderBoardData]);
+  }, [leaderboardData]);
 
-  const [isLoading, setIsLoading] = useState(false);
-  // add state hook for the popup the personal's dashboard from leaderboard
   const [isDashboardOpen, setIsDashboardOpen] = useState(false);
   const dashboardToggle = item => setIsDashboardOpen(item.personId);
   const dashboardClose = () => setIsDashboardOpen(false);
@@ -300,10 +278,9 @@ function LeaderBoard({
 
   const updateLeaderboardHandler = async () => {
     setIsLoading(true);
-    if (isEqual(leaderBoardData, teamsUsers)) {
-      await dispatch(getAllTimeOffRequests());
+    if (isEqual(leaderboardData, teamsUsers)) {
       await getLeaderboardData(userId);
-      setTeamsUsers(leaderBoardData);
+      setTeamsUsers(leaderboardData);
     } else {
       await getLeaderboardData(userId);
       renderTeamsList(usersSelectedTeam);
@@ -483,11 +460,11 @@ function LeaderBoard({
     toast.error('Please wait for the users to appear in the Leaderboard table.');
 
   useEffect(() => {
-    setFilteredUsers(leaderBoardData);
+    setFilteredUsers(leaderboardData);
     return () => {
       setSearchInput('');
     };
-  }, [leaderBoardData]);
+  }, [leaderboardData]);
 
   const debouncedFilterUsers = useCallback(
     debounce(query => {
@@ -518,14 +495,16 @@ function LeaderBoard({
             onClick={updateLeaderboardHandler}
           />
           &nbsp;
-          <EditableInfoModal
-            areaName="LeaderboardOrigin"
-            areaTitle="Leaderboard"
-            role={loggedInUser.role}
-            fontSize={24}
-            darkMode={darkMode}
-            isPermissionPage
-          />
+          <Suspense fallback={<div>Loading...</div>}>
+            <EditableInfoModal
+              areaName="LeaderboardOrigin"
+              areaTitle="Leaderboard"
+              role={loggedInUser.role}
+              fontSize={24}
+              darkMode={darkMode}
+              isPermissionPage
+            />
+          </Suspense>
         </div>
       </h3>
       {userRole === 'Administrator' ||
@@ -619,7 +598,7 @@ function LeaderBoard({
             )}
           </section>
         ))}
-      {leaderBoardData.length !== 0 ? (
+      {leaderboardData.length !== 0 ? (
         <div>
           {isDisplayAlert && (
             <Alert color="danger">
@@ -632,14 +611,16 @@ function LeaderBoard({
             <Alert color="warning">
               <div className="d-flex align-items-center">
                 Note: You are currently invisible to the team(s) you are on.{' '}
-                <EditableInfoModal
-                  areaName="LeaderboardInvisibleInfoPoint"
-                  areaTitle="Leaderboard settings"
-                  role={loggedInUser.role}
-                  fontSize={24}
-                  darkMode={darkMode}
-                  isPermissionPage
-                />
+                <Suspense fallback={<div>Loading...</div>}>
+                  <EditableInfoModal
+                    areaName="LeaderboardInvisibleInfoPoint"
+                    areaTitle="Leaderboard settings"
+                    role={loggedInUser.role}
+                    fontSize={24}
+                    darkMode={darkMode}
+                    isPermissionPage
+                  />
+                </Suspense>
               </div>
             </Alert>
           )}
@@ -668,15 +649,17 @@ function LeaderBoard({
                   <th style={darkModeStyle}>
                     <div className="d-flex align-items-center">
                       <span>{isAbbreviatedView ? 'Name' : 'Name'}</span>
-                      <EditableInfoModal
-                        areaName="Leaderboard"
-                        areaTitle="Team Members Navigation"
-                        role={loggedInUser.role}
-                        fontSize={18}
-                        isPermissionPage
-                        darkMode={darkMode}
-                        className="p-2"
-                      />
+                      <Suspense fallback={<div>Loading...</div>}>
+                        <EditableInfoModal
+                          areaName="Leaderboard"
+                          areaTitle="Team Members Navigation"
+                          role={loggedInUser.role}
+                          fontSize={18}
+                          isPermissionPage
+                          darkMode={darkMode}
+                          className="p-2"
+                        />
+                      </Suspense>
                     </div>
                   </th>
                   <th style={darkModeStyle}>
@@ -792,32 +775,34 @@ function LeaderBoard({
                     >
                       <td className="align-middle">
                         <div>
-                          <Modal
-                            isOpen={isDashboardOpen === item.personId}
-                            toggle={dashboardToggle}
-                            className={darkMode ? 'text-light dark-mode' : ''}
-                            style={darkMode ? boxStyleDark : {}}
-                          >
-                            <ModalHeader
+                          <Suspense fallback={<div>Loading...</div>}>
+                            <Modal
+                              isOpen={isDashboardOpen === item.personId}
                               toggle={dashboardToggle}
-                              className={darkMode ? 'bg-space-cadet' : ''}
+                              className={darkMode ? 'text-light dark-mode' : ''}
+                              style={darkMode ? boxStyleDark : {}}
                             >
-                              Jump to personal Dashboard
-                            </ModalHeader>
-                            <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
-                              <p className={darkMode ? 'text-light' : ''}>
-                                Are you sure you wish to view this {item.name} dashboard?
-                              </p>
-                            </ModalBody>
-                            <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-                              <Button variant="primary" onClick={() => showDashboard(item)}>
-                                Ok
-                              </Button>{' '}
-                              <Button variant="secondary" onClick={dashboardToggle}>
-                                Cancel
-                              </Button>
-                            </ModalFooter>
-                          </Modal>
+                              <ModalHeader
+                                toggle={dashboardToggle}
+                                className={darkMode ? 'bg-space-cadet' : ''}
+                              >
+                                Jump to personal Dashboard
+                              </ModalHeader>
+                              <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+                                <p className={darkMode ? 'text-light' : ''}>
+                                  Are you sure you wish to view this {item.name} dashboard?
+                                </p>
+                              </ModalBody>
+                              <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+                                <Button variant="primary" onClick={() => showDashboard(item)}>
+                                  Ok
+                                </Button>{' '}
+                                <Button variant="secondary" onClick={dashboardToggle}>
+                                  Cancel
+                                </Button>
+                              </ModalFooter>
+                            </Modal>
+                          </Suspense>
                         </div>
                         <div
                           style={{
@@ -938,25 +923,27 @@ function LeaderBoard({
                           </i>
                         )}
                         <div>
-                          <Modal isOpen={modalOpen === item.personId} toggle={trophyIconToggle}>
-                            <ModalHeader toggle={trophyIconToggle}>Followed Up?</ModalHeader>
-                            <ModalBody>
-                              <p>Are you sure you have followed up this icon?</p>
-                            </ModalBody>
-                            <ModalFooter>
-                              <Button variant="secondary" onClick={trophyIconToggle}>
-                                Cancel
-                              </Button>{' '}
-                              <Button
-                                color="primary"
-                                onClick={() => {
-                                  handleChangingTrophyIcon(item, true);
-                                }}
-                              >
-                                Confirm
-                              </Button>
-                            </ModalFooter>
-                          </Modal>
+                          <Suspense fallback={<div>Loading...</div>}>
+                            <Modal isOpen={modalOpen === item.personId} toggle={trophyIconToggle}>
+                              <ModalHeader toggle={trophyIconToggle}>Followed Up?</ModalHeader>
+                              <ModalBody>
+                                <p>Are you sure you have followed up this icon?</p>
+                              </ModalBody>
+                              <ModalFooter>
+                                <Button variant="secondary" onClick={trophyIconToggle}>
+                                  Cancel
+                                </Button>{' '}
+                                <Button
+                                  color="primary"
+                                  onClick={() => {
+                                    handleChangingTrophyIcon(item, true);
+                                  }}
+                                >
+                                  Confirm
+                                </Button>
+                              </ModalFooter>
+                            </Modal>
+                          </Suspense>
                         </div>
                         {hasTimeOffIndicatorPermission && additionalWeeks > 0 && (
                           <span

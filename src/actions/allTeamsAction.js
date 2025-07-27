@@ -116,8 +116,10 @@ export const updateVisibilityAction = (visibility, userId, teamId) => ({
  * fetching all user teams
  */
 export const getAllUserTeams = () => {
-  const userTeamsPromise = axios.get(ENDPOINTS.TEAM);
-  return async dispatch => {
+  return async (dispatch, getState) => {
+    const { fetched } = getState().allTeams;
+    if (fetched) return;
+    const userTeamsPromise = axios.get(ENDPOINTS.TEAM);
     return userTeamsPromise
       .then(res => {
         dispatch(teamMembersFectchACtion(res.data));

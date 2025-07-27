@@ -49,8 +49,10 @@ export const getUserAutocompleteActionCreator = data => ({
 });
 
 export const getUserProfile = userId => {
-  const url = ENDPOINTS.USER_PROFILE(userId);
-  return async dispatch => {
+  return async (dispatch, getState) => {
+    const { userProfile } = getState();
+    if (userProfile.fetched && userProfile.userId === userId) return;
+    const url = ENDPOINTS.USER_PROFILE(userId);
     let loggedOut = false;
     const res = await axios.get(url).catch(error => {
       if (error.status === 401) {
