@@ -34,6 +34,7 @@ function UserPermissionsPopUp({
   const [searchText, onInputChange] = useState('');
   const [actualUserProfile, setActualUserProfile] = useState();
   const [userPermissions, setUserPermissions] = useState();
+  const [userRemovedDefaultPermissions, setUserRemovedDefaultPermissions] = useState(); // defulat perms taht were deleted
   const [isOpen, setIsOpen] = useState(false);
   const [isInputFocus, setIsInputFocus] = useState(false);
   const [actualUserRolePermission, setActualUserRolePermission] = useState();
@@ -46,6 +47,9 @@ function UserPermissionsPopUp({
 
   useEffect(() => {
     setUserPermissions(actualUserProfile?.permissions?.frontPermissions);
+    setUserRemovedDefaultPermissions(
+      actualUserProfile?.permissions?.removedDefaultPermissions || [],
+    );
   }, [actualUserProfile]);
 
   const refInput = useRef();
@@ -82,7 +86,13 @@ function UserPermissionsPopUp({
 
     const url = ENDPOINTS.USER_PROFILE(userId);
     const allUserInfo = await axios.get(url).then(res => res.data);
-    const newUserInfo = { ...allUserInfo, permissions: { frontPermissions: userPermissions } };
+    const newUserInfo = {
+      ...allUserInfo,
+      permissions: {
+        frontPermissions: userPermissions,
+        removedDefaultPermissions: userRemovedDefaultPermissions,
+      },
+    };
 
     axios
       .put(url, newUserInfo)
@@ -134,6 +144,7 @@ function UserPermissionsPopUp({
         onSubmit={e => {
           updateProfileOnSubmit(e);
         }}
+        autoComplete="off"
       >
         <div
           className={darkMode ? 'text-space-cadet' : ''}
@@ -163,7 +174,7 @@ function UserPermissionsPopUp({
           style={{ width: '100%', marginRight: '5px' }}
         >
           <Input
-            type="text"
+            type="search"
             value={searchText}
             innerRef={refInput}
             // eslint-disable-next-line no-unused-vars
@@ -177,6 +188,8 @@ function UserPermissionsPopUp({
             }}
             placeholder="Shows only ACTIVE users"
             className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+            autoComplete="off"
+            name="user-search"
           />
           {isInputFocus || (searchText !== '' && allUserProfiles && allUserProfiles.length > 0) ? (
             <div
@@ -233,6 +246,8 @@ function UserPermissionsPopUp({
               immutablePermissions={actualUserRolePermission}
               editable={!!actualUserProfile}
               setPermissions={setUserPermissions}
+              removedDefaultPermissions={userRemovedDefaultPermissions}
+              setRemovedDefaultPermissions={setUserRemovedDefaultPermissions}
             />
           </ul>
         </div>

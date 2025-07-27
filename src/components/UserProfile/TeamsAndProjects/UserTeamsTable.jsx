@@ -256,7 +256,7 @@ const UserTeamsTable = props => {
       </div>
       <div style={{ maxHeight: '300px', overflow: 'auto' }}>
         <table className={`table table-bordered ${darkMode ? 'text-light' : ''}`}>
-          <thead>
+          <thead className="user-team-head">
             {props.role && (
               <tr>
                 <th className={darkMode ? 'bg-space-cadet' : ''}>#</th>
@@ -272,7 +272,7 @@ const UserTeamsTable = props => {
               </tr>
             )}
           </thead>
-          <tbody className={darkMode ? 'text-light' : ''}>
+          <tbody className={`user-team-body ${darkMode ? 'text-light' : ''}`}>
             {props.userTeamsById.length > 0 ? (
               props.userTeamsById.map((team, index) => (
                 <tr key={index} className={`tr ${darkMode ? 'dark-mode' : ''}`}>
