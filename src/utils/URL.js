@@ -20,6 +20,7 @@ export const ENDPOINTS = {
   USERS_UPDATE_PROFILE_FROM_WEBSITE: `${APIEndpoint}/userProfile/profileImage/imagefromwebsite`,
   USER_PROFILE_BASIC_INFO: `${APIEndpoint}/userProfile/basicInfo`,
   USER_AUTOCOMPLETE: searchText => `${APIEndpoint}/userProfile/autocomplete/${searchText}`,
+  SEARCH_USER: `${APIEndpoint}/users/search`,
   TOGGLE_BIO_STATUS: userId => `${APIEndpoint}/userProfile/${userId}/toggleBio`,
 
   INFO_COLLECTIONS: `${APIEndpoint}/informations`,
@@ -38,6 +39,8 @@ export const ENDPOINTS = {
   USER_PROJECTS: userId => `${APIEndpoint}/projects/user/${userId}`,
   PROJECT: `${APIEndpoint}/project/`,
   PROJECT_BY_ID: projectId => `${APIEndpoint}/project/${projectId}`,
+  PROJECT_MEMBER_SEARCH: (projectId, query) =>
+    `${APIEndpoint}/projects/${projectId}/users/search/${encodeURIComponent(query)}`,
   BADGE_COUNT: userId => `${APIEndpoint}/badge/badgecount/${userId}`,
   BADGE_COUNT_RESET: userId => `${APIEndpoint}/badge/badgecount/reset/${userId}`,
   PROJECT_MEMBER: projectId => `${APIEndpoint}/project/${projectId}/users`,
@@ -48,8 +51,18 @@ export const ENDPOINTS = {
   FORCE_PASSWORD: `${APIEndpoint}/forcepassword`,
   LEADER_BOARD: userId => `${APIEndpoint}/dashboard/leaderboard/${userId}`,
   ORG_DATA: `${APIEndpoint}/dashboard/leaderboard/org/data`,
+  TROPHY_ICON: (userId, trophyFollowedUp) =>
+    `${APIEndpoint}/dashboard/leaderboard/trophyIcon/${userId}/${trophyFollowedUp}`,
+
+  // Questionnaire endpoints
+  QUESTIONNAIRE_FEEDBACK_REQUEST: () => `${APIEndpoint}/dashboard/questionaire/feedbackrequest`,
+  QUESTIONNAIRE_CLOSE_PERMANENTLY: () =>
+    `${APIEndpoint}/dashboard/questionaire/checkUserFoundHelpSomewhere`,
+  QUESTIONNAIRE_USER_NAMES_LIST: () => `${APIEndpoint}/dashboard/questionaire/userNamesList`,
+
   TIME_ENTRIES_PERIOD: (userId, fromDate, toDate) =>
     `${APIEndpoint}/TimeEntry/user/${userId}/${fromDate}/${toDate}`,
+  TIME_ENTRIES_USERS_HOURS_PERIOD: `${APIEndpoint}/TimeEntry/users/totalHours`,
   TIME_ENTRIES_USER_LIST: `${APIEndpoint}/TimeEntry/users`,
   TIME_ENTRIES_REPORTS: `${APIEndpoint}/TimeEntry/reports`,
   TIME_ENTRIES_REPORTS_TOTAL_PROJECT_REPORT: `${APIEndpoint}/TimeEntry/reports/projects`,
@@ -93,7 +106,11 @@ export const ENDPOINTS = {
   AUTHORIZE_WEEKLY_SUMMARY_REPORTS: () =>
     `${APIEndpoint}/userProfile/authorizeUser/weeeklySummaries`,
   TOTAL_ORG_SUMMARY: (startDate, endDate, comparisonStartDate, comparisonEndDate) =>
-    `${APIEndpoint}/reports/volunteerstats?startDate=${startDate}&endDate=${endDate}&comparisonStartDate=${comparisonStartDate}&comparisonEndDate=${comparisonEndDate}`,
+    `${APIEndpoint}/reports/volunteerstats?startDate=${startDate}&endDate=${endDate}&comparisonStartDate=${comparisonStartDate ||
+      ''}&comparisonEndDate=${comparisonEndDate || ''}`,
+  VOLUNTEER_TRENDS: (timeFrame, offset, customStartDate, customEndDate) =>
+    `${APIEndpoint}/reports/volunteertrends?timeFrame=${timeFrame}&offset=${offset}${customStartDate ? `&customStartDate=${customStartDate}` : ''
+    }${customEndDate ? `&customEndDate=${customEndDate}` : ''}`,
   HOURS_TOTAL_ORG_SUMMARY: (startDate, endDate) =>
     `${APIEndpoint}/reports/overviewsummaries/taskandprojectstats?startDate=${startDate}&endDate=${endDate}`,
   VOLUNTEER_ROLES_TEAM_STATS: (endDate, activeMembersMinimum) =>
@@ -188,6 +205,17 @@ export const ENDPOINTS = {
   SET_USER_FOLLOWUP: (userId, taskId) => `${APIEndpoint}/followup/${userId}/${taskId}`,
   GET_PROJECT_BY_PERSON: searchName => `${APIEndpoint}/userProfile/projects/${searchName}`,
 
+  FAQS: `${APIEndpoint}/faqs`,
+  FAQ_BY_ID: faqId => `${APIEndpoint}/faqs/${faqId}`,
+  SEARCH_FAQS: searchQuery => `${APIEndpoint}/faqs/search?q=${searchQuery}`,
+  LOG_UNANSWERED_QUESTION: `${APIEndpoint}/faqs/log-unanswered`,
+  ADD_FAQ: `${APIEndpoint}/faqs`,
+  EDIT_FAQ: faqId => `${APIEndpoint}/faqs/${faqId}`,
+  DELETE_FAQ: faqId => `${APIEndpoint}/faqs/${faqId}`,
+  FAQ_HISTORY: faqId => `${APIEndpoint}/faqs/${faqId}/history`,
+  UNANSWERED_FAQS: `${APIEndpoint}/faqs/unanswered`,
+  DELETE_UNANSWERED_FAQ: faqId => `${APIEndpoint}/faqs/unanswered/${faqId}`,
+
   // bm dashboard endpoints
   BM_LOGIN: `${APIEndpoint}/bm/login`,
   BM_MATERIAL_TYPES: `${APIEndpoint}/bm/invtypes/materials`,
@@ -202,8 +230,12 @@ export const ENDPOINTS = {
   BM_PURCHASE_REUSABLES: `${APIEndpoint}/bm/reusables/purchase`,
   BM_EQUIPMENT_TYPES: `${APIEndpoint}/bm/invtypes/equipments`,
   BM_EQUIPMENT_PURCHASE: `${APIEndpoint}/bm/equipment/purchase`,
+  BM_EQUIPMENT_LOGS: `${APIEndpoint}/bm/equipments/logRecords`,
   BM_PROJECTS: `${APIEndpoint}/bm/projects`,
-  BM_PROJECT_BY_ID: projectId => `${APIEndpoint}/project/${projectId}`,
+  BM_PROJECT_EXPENSE_BY_ID: projectId => `${APIEndpoint}/bm/project/${projectId}/expenses`,
+  BM_PROJECT_BY_ID: projectId => `${APIEndpoint}/bm/project/${projectId}`,
+  BM_PROJECTS_LIST_FOR_MATERIALS_COST: `${APIEndpoint}/totalProjects `,
+  BM_PROJECT_MATERIALS_COST: `${APIEndpoint}/material-costs`,
   BM_UPDATE_MATERIAL: `${APIEndpoint}/bm/updateMaterialRecord`,
   BM_UPDATE_MATERIAL_BULK: `${APIEndpoint}/bm/updateMaterialRecordBulk`,
   BM_UPDATE_MATERIAL_STATUS: `${APIEndpoint}/bm/updateMaterialStatus`,
@@ -224,10 +256,27 @@ export const ENDPOINTS = {
   BM_EQUIPMENT_BY_ID: singleEquipmentId => `${APIEndpoint}/bm/equipment/${singleEquipmentId}`,
   BM_EQUIPMENTS: `${APIEndpoint}/bm/equipments`,
   BM_INVTYPE_TYPE: type => `${APIEndpoint}/bm/invtypes/${type}`,
+  BM_ISSUE_CHART: `${APIEndpoint}/bm/issue/issue-chart`,
+
+  BM_ISSUE_FORM: `${APIEndpoint}/bm/issue/add`,
+  BM_INJURY_ISSUE: `${APIEndpoint}/bm/issues`,
+  BM_RENTAL_CHART: `${APIEndpoint}/bm/rentalChart`,
 
   BM_TAGS: `${APIEndpoint}/bm/tags`,
   BM_TAG_ADD: `${APIEndpoint}/bm/tags`,
   BM_TAGS_DELETE: `${APIEndpoint}/bm/tags`,
+
+  BM_PROJECT_MEMBERS: projectId => `${APIEndpoint}/bm/project/${projectId}/users`,
+
+  // bm time logger endpoints
+  TIME_LOGGER_START: (projectId, memberId) =>
+    `${APIEndpoint}/bm/timelogger/${projectId}/${memberId}/start`,
+  TIME_LOGGER_PAUSE: (projectId, memberId) =>
+    `${APIEndpoint}/bm/timelogger/${projectId}/${memberId}/pause`,
+  TIME_LOGGER_STOP: (projectId, memberId) =>
+    `${APIEndpoint}/bm/timelogger/${projectId}/${memberId}/stop`,
+  TIME_LOGGER_LOGS: (projectId, memberId) =>
+    `${APIEndpoint}/bm/timelogger/${projectId}/${memberId}/logs`,
 
   GET_TIME_OFF_REQUESTS: () => `${APIEndpoint}/getTimeOffRequests`,
   ADD_TIME_OFF_REQUEST: () => `${APIEndpoint}/setTimeOffRequest`,
@@ -235,6 +284,10 @@ export const ENDPOINTS = {
   DELETE_TIME_OFF_REQUEST: id => `${APIEndpoint}/deleteTimeOffRequest/${id}`,
   BLUE_SQUARE_EMAIL_BCC: () => `${APIEndpoint}/AssignBlueSquareEmail`,
   DELETE_BLUE_SQUARE_EMAIL_BCC: id => `${APIEndpoint}/AssignBlueSquareEmail/${id}`,
+
+  WEEKLY_SUMMARY_EMAIL_BCC: () => `${APIEndpoint}/AssignWeeklySummaryEmail`,
+  DELETE_WEEKLY_SUMMARY_EMAIL_BCC: id => `${APIEndpoint}/AssignWeeklySummaryEmail/${id}`,
+  UPDATE_WEEKLY_SUMMARY_EMAIL_BCC: id => `${APIEndpoint}/AssignWeeklySummaryEmail/${id}`,
 
   HGN_FORM_GET_QUESTION: `${APIEndpoint}/questions`,
   HGN_FORM_UPDATE_QUESTION: id => `${APIEndpoint}/questions/${id}`,
@@ -246,10 +299,58 @@ export const ENDPOINTS = {
   GET_ALL_JOB_FORMS: `${APIEndpoint}/jobforms/all`,
   GET_FORM_RESPONSES: formID => `${APIEndpoint}/jobforms/${formID}/responses`,
 
+  ADD_QUESTION: formId => `${APIEndpoint}/jobforms/${formId}/questions`,
+  UPDATE_QUESTION: (formId, questionIndex) => `${APIEndpoint}/jobforms/${formId}/questions/${questionIndex}`,
+  DELETE_QUESTION: (formId, questionIndex) => `${APIEndpoint}/jobforms/${formId}/questions/${questionIndex}`,
+  REORDER_QUESTIONS: formId => `${APIEndpoint}/jobforms/${formId}/questions/reorder`,
+
+  GET_ALL_TEMPLATES: `${APIEndpoint}/templates`,
+  CREATE_TEMPLATE: `${APIEndpoint}/templates`,
+  GET_TEMPLATE_BY_ID: id => `${APIEndpoint}/templates/${id}`,
+  UPDATE_TEMPLATE: id => `${APIEndpoint}/templates/${id}`,
+  DELETE_TEMPLATE: id => `${APIEndpoint}/templates/${id}`,
+
   JOB_NOTIFICATION_LIST: `${APIEndpoint}/job-notification-list/`,
+
+  MESSAGING_SERVICE: new URL('/messaging-service', APIEndpoint.replace('http', 'ws')).toString(),
   // lb dashboard endpoints
   LB_REGISTER: `${APIEndpoint}/lbdashboard/register`,
   LB_LOGIN: `${APIEndpoint}/lbdashboard/login`,
+  LB_SEND_MESSAGE: `${APIEndpoint}/lb/messages`,
+  LB_READ_MESSAGE: `${APIEndpoint}/lb/messages/conversation`,
+  LB_UPDATE_MESSAGE_STATUS: `${APIEndpoint}/lb/messages/statuses`,
+  LB_EXISTING_CHATS: `${APIEndpoint}/lb/messages/existing-chats`,
+  LB_SEARCH_USERS: `${APIEndpoint}/lb/messages/search-users`,
+  LB_GET_USER_PREFERENCES: `${APIEndpoint}/lb/preferences`,
+  LB_UPDATE_USER_PREFERENCES: `${APIEndpoint}/lb/preferences`,
+  LB_MARK_MESSAGES_AS_READ: `${APIEndpoint}/lb/messages/mark-as-read`,
+
+  NOTIFICATIONS: `${APIEndpoint}/notification`,
+  MSG_NOTIFICATION: `${APIEndpoint}/lb/notifications`,
+
+  DROPBOX_DELETE: `${APIEndpoint}/dropbox/delete-folder`,
+  GITHUB_REMOVE: `${APIEndpoint}/github/remove`,
+  SENTRY_REMOVE: `${APIEndpoint}/sentry/remove`,
+
+  SENTRY_ADD: `${APIEndpoint}/sentry/invite`,
+  GITHUB_ADD: `${APIEndpoint}/github/invite`,
+  DROPBOX_ADD: `${APIEndpoint}/dropbox/invite`,
+  SLACK_ADD: `${APIEndpoint}/slack/invite`,
+  DROPBOX_CREATE_ADD: `${APIEndpoint}/dropbox/create-folder-and-invite`,
+  ACCESS_MANAGEMENT: `${APIEndpoint}/accessManagement`,
+
+
+  // community portal
+  CP_NOSHOW_VIZ_LOCATION: `${APIEndpoint}/communityportal/reports/participation/location`,
+  CP_NOSHOW_VIZ_AGEGROUP: `${APIEndpoint}/communityportal/reports/participation/age-group`,
+  CP_NOSHOW_VIZ_PROPORTION: `${APIEndpoint}/communityportal/reports/participation/proportions`,
+  CP_NOSHOW_VIZ_PERIOD: `${APIEndpoint}/communityportal/reports/participation/data`,
+  CP_ATTENDENCE_VIZ_DAY: `${APIEndpoint}/communityportal/reports/participation/by-day`,
+  CP_NOSHOW_VIZ_UNIQUE_EVENTTYPES: `${APIEndpoint}/communityportal/reports/participation/unique-eventTypes`,
+
+  LB_LISTINGS: `${APIEndpoint}/lb/getListings`,
+  LB_LISTINGS_BASE: `${APIEndpoint}/lb`,
+  HELP_CATEGORIES: `${APIEndpoint}/help-categories`,
 };
 
 export const ApiEndpoint = APIEndpoint;
