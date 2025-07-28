@@ -24,6 +24,7 @@ function UserSearchPanel({
   onSearch,
   onActiveFiter,
   darkMode,
+  selectText,
 }) {
   const canCreateUsers = hasPermission('postUserProfile');
   const [tooltipCreateNewUserOpen, setTooltipCreateNewUserOpen] = useState(false);
@@ -78,7 +79,9 @@ function UserSearchPanel({
       </button>
 
       <div className="input-group-prepend">
-        <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>{SEARCH}</span>
+        <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
+          {SEARCH}
+        </span>
       </div>
       <input
         // autoFocus
@@ -91,16 +94,19 @@ function UserSearchPanel({
         onChange={e => {
           onSearch(e.target.value);
         }}
-        style={{marginRight: "5px"}}
+        style={{ marginRight: '5px' }}
       />
       <div className="input-group-prepend">
-        <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>{SHOW}</span>
+        <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
+          {SHOW}
+        </span>
         <select
           id="active-filter-dropdown"
-          style={{marginBottom: "0px"}}
+          style={{ marginBottom: '0px' }}
           onChange={e => {
             onActiveFiter(e.target.value);
           }}
+          value={selectText}
           className={darkMode ? 'bg-darkmode-liblack text-light' : ''}
         >
           <option value="all">All</option>
