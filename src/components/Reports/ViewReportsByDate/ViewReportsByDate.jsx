@@ -33,11 +33,19 @@ class ViewReportByDate extends Component {
   }
 
   clearDates() {
-    this.setState({
+    try {
+       this.setState({
       startDate: new Date(this.props.minDate),
       endDate: new Date(),
     });
     this.props.onClearFilters();
+    } catch (error) {
+      this.setState({
+      startDate: new Date(this.props.minDate),
+      endDate: new Date(),
+    });
+    }
+   
   }
 
   render() {
