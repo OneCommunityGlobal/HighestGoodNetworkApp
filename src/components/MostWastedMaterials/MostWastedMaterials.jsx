@@ -175,7 +175,6 @@ export default function MostWastedMaterialsDashboard() {
   });
   const [chartData, setChartData] = useState([]);
 
-  // Get data based on selected project and sort by waste percentage (descending)
   useEffect(() => {
     const data = mockData[selectedProject.id] || mockData.all;
     const sortedData = [...data].sort((a, b) => b.wastePercentage - a.wastePercentage);
@@ -193,7 +192,6 @@ export default function MostWastedMaterialsDashboard() {
         minHeight: '100vh',
       }}
     >
-      {/* Title */}
       <div style={{ textAlign: 'center', marginBottom: '32px' }}>
         <h1
           style={{
@@ -207,7 +205,6 @@ export default function MostWastedMaterialsDashboard() {
         </h1>
       </div>
 
-      {/* Filters */}
       <div
         style={{
           backgroundColor: '#ffffff',
@@ -228,6 +225,7 @@ export default function MostWastedMaterialsDashboard() {
           {/* Project Filter */}
           <div>
             <label
+              htmlFor="project-filter"
               style={{
                 display: 'block',
                 fontSize: '14px',
@@ -248,6 +246,7 @@ export default function MostWastedMaterialsDashboard() {
           {/* Date Range Filter */}
           <div>
             <label
+              htmlFor="date-filter"
               style={{
                 display: 'block',
                 fontSize: '14px',
@@ -260,17 +259,11 @@ export default function MostWastedMaterialsDashboard() {
             </label>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
               <div>
-                <label
-                  style={{
-                    display: 'block',
-                    fontSize: '12px',
-                    color: '#6b7280',
-                    marginBottom: '4px',
-                  }}
-                >
+                <label htmlFor="date-from" style={{ fontSize: '12px', color: '#6b7280' }}>
                   From
                 </label>
                 <input
+                  id="date-from"
                   type="date"
                   value={dateRange.from}
                   onChange={e => setDateRange(prev => ({ ...prev, from: e.target.value }))}
@@ -284,17 +277,11 @@ export default function MostWastedMaterialsDashboard() {
                 />
               </div>
               <div>
-                <label
-                  style={{
-                    display: 'block',
-                    fontSize: '12px',
-                    color: '#6b7280',
-                    marginBottom: '4px',
-                  }}
-                >
+                <label htmlFor="date-to" style={{ fontSize: '12px', color: '#6b7280' }}>
                   To
                 </label>
                 <input
+                  id="date-to"
                   type="date"
                   value={dateRange.to}
                   onChange={e => setDateRange(prev => ({ ...prev, to: e.target.value }))}
