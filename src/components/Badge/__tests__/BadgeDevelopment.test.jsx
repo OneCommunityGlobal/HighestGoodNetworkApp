@@ -13,7 +13,7 @@ vi.mock('components/Badge/CreateNewBadgePopup', () => () => <div>CreateNewBadgeP
 
 describe('BadgeDevelopment Component', () => {
   const mockStore = configureStore([thunk]);
- 
+
   const renderComponent = () => {
     const store = mockStore({
       allProjects: {
@@ -40,13 +40,13 @@ describe('BadgeDevelopment Component', () => {
         roles: ['Owner'],
       },
       theme: themeMock,
-            badge: {
+      badge: {
         message: '',
         alertVisible: false,
         color: '',
       },
     });
-  
+
     return render(
       <Provider store={store}>
         <BadgeDevelopment />

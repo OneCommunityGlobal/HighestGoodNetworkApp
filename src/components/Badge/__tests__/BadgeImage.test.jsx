@@ -7,14 +7,14 @@ describe('BadgeImage Component', () => {
     imageUrl: 'test_image_url',
     badgeName: 'Test Badge',
     description: 'This is a test description.',
-    type: 'Personal Max'
+    type: 'Personal Max',
   };
   const mockProps = {
     badgeData: mockBadgeData,
     time: '123',
     index: 1,
     personalBestMaxHrs: 50,
-    count: 10
+    count: 10,
   };
 
   test('renders badge image with correct source', () => {
@@ -28,5 +28,4 @@ describe('BadgeImage Component', () => {
     const badgeCount = screen.getByText('50');
     expect(badgeCount).toBeInTheDocument();
   });
-
 });
