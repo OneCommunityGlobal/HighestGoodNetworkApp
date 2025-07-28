@@ -62,7 +62,6 @@ const TeamMemberTasks = React.memo(props => {
 
   const [teamRoles, setTeamRoles] = useState();
   const [usersSelectedTeam] = useState([]);
-  const [, setLoading] = useState(false);
   const [, setInnerWidth] = useState();
   const [controlUseEfffect] = useState(false);
 
@@ -285,7 +284,6 @@ const TeamMemberTasks = React.memo(props => {
   const renderTeamsList = async team => {
     if (!team) {
       if (usersWithTasks.length > 0) {
-        setLoading(true);
         // sort all users by their name
 
         usersWithTasks.sort((a, b) => (a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1));
@@ -298,11 +296,7 @@ const TeamMemberTasks = React.memo(props => {
           // conditional variable for moving current user up front.
           usersWithTasks.unshift(...usersWithTasks.splice(currentUserIndex, 1));
         }
-
-        setTimeout(() => {
-          setLoading(false);
-          setTeamList([...usersWithTasks]);
-        }, 3000);
+        setTeamList([...usersWithTasks]);
       }
     } else {
       if (selectedTeamNames.length > 0 || selectedCodes.length > 0 || selectedColors.length > 0) {
@@ -310,11 +304,8 @@ const TeamMemberTasks = React.memo(props => {
         setSelectedCodes([]);
         setSelectedColors([]);
       }
-
-      setLoading(true);
       const usersTask = usersWithTasks.filter(item => filteredUserTeamIds.includes(item.personId));
       setTeamList(usersTask);
-      setLoading(false);
     }
   };
 
@@ -425,7 +416,6 @@ const TeamMemberTasks = React.memo(props => {
   useEffect(() => {
     // TeamMemberTasks is only imported in TimeLog component, in which userId is already definitive
     const initialFetching = async () => {
-      dispatch(fetchTeamMembersTaskSuccess({ usersWithTasks: [] }));
       await dispatch(fetchTeamMembersTask(displayUser._id));
     };
     initialFetching();
@@ -438,7 +428,7 @@ const TeamMemberTasks = React.memo(props => {
   }, [currentUserId]);
 
   useEffect(() => {
-    if (!isLoading) {
+    if (usersWithTasks.length > 0) {
       renderTeamsList(
         !controlUseEfffect || usersSelectedTeam.length === 0 ? null : usersSelectedTeam,
       );
@@ -760,7 +750,7 @@ const TeamMemberTasks = React.memo(props => {
             </tr>
           </thead>
           <tbody className={darkMode ? 'bg-yinmn-blue dark-mode' : ''}>
-            {isLoading && usersWithTasks.length === 0 ? (
+            {teamList.length === 0 ? (
               <SkeletonLoading template="TeamMemberTasks" />
             ) : (
               teamList
