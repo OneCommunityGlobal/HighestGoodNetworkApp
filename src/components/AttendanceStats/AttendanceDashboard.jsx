@@ -16,6 +16,8 @@ import {
 
 export default function AttendanceStatistics() {
   const [selectedMonth, setSelectedMonth] = useState('January');
+  const [expandedEvents, setExpandedEvents] = useState({});
+
   const attendanceData = {
     January: {
       virtual: 120,
@@ -154,8 +156,6 @@ export default function AttendanceStatistics() {
     },
   };
 
-  const [expandedEvents, setExpandedEvents] = useState({});
-
   const currentData = attendanceData[selectedMonth];
   const totalValue = currentData.breakdown.reduce((sum, entry) => sum + entry.value, 0);
 
@@ -176,16 +176,20 @@ export default function AttendanceStatistics() {
   return (
     <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
       <h2>Attendance Statistics</h2>
-      <label>Select Month: </label>
-      <select onChange={e => setSelectedMonth(e.target.value)} value={selectedMonth}>
+      <label htmlFor="monthSelect">Select Month: </label>
+      <select
+        id="monthSelect"
+        onChange={e => setSelectedMonth(e.target.value)}
+        value={selectedMonth}
+      >
         {Object.keys(attendanceData).map(month => (
           <option key={month} value={month}>
             {month}
           </option>
         ))}
       </select>
+
       <div style={{ display: 'flex', justifyContent: 'space-between', gap: '20px' }}>
-        {/* Peak Attendance Times */}
         <div
           style={{
             flex: 1,
@@ -207,8 +211,8 @@ export default function AttendanceStatistics() {
                 outerRadius={80}
                 label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
               >
-                {currentData.breakdown.map(entry => (
-                  <Cell key={`cell-${entry}`} fill={entry.color} />
+                {currentData.breakdown.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
                 ))}
               </Pie>
               <Tooltip />
@@ -221,7 +225,6 @@ export default function AttendanceStatistics() {
           </div>
         </div>
 
-        {/* Class Type Preferences */}
         <div style={{ flex: 1, padding: '20px', border: '1px solid #ddd', borderRadius: '10px' }}>
           <h3>Class type preferences</h3>
           <ResponsiveContainer width="100%" height={250}>
@@ -230,14 +233,15 @@ export default function AttendanceStatistics() {
               <YAxis />
               <Tooltip />
               <Bar dataKey="value">
-                {barData.map(entry => (
-                  <Cell key={`cell-${entry}`} fill={entry.color} />
+                {barData.map((entry, index) => (
+                  <Cell key={`cell-bar-${index}`} fill={entry.color} />
                 ))}
               </Bar>
             </BarChart>
           </ResponsiveContainer>
         </div>
       </div>
+
       <div
         style={{
           marginTop: '20px',
@@ -265,6 +269,7 @@ export default function AttendanceStatistics() {
           Total Attendance: <strong>{mostPopularEvent.total}</strong>
         </p>
       </div>
+
       <div
         style={{
           marginTop: '20px',
@@ -278,7 +283,7 @@ export default function AttendanceStatistics() {
         <ul style={{ listStyle: 'none', padding: 0 }}>
           {currentData.events.map((event, index) => (
             <li
-              key={event}
+              key={event.name}
               style={{
                 padding: '10px',
                 marginBottom: '5px',
@@ -286,12 +291,21 @@ export default function AttendanceStatistics() {
                 background: '#f1f1f1',
               }}
             >
-              <div
-                style={{ fontWeight: 'bold', cursor: 'pointer' }}
+              <button
+                type="button"
+                style={{
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  background: 'none',
+                  border: 'none',
+                  padding: 0,
+                  font: 'inherit',
+                  textAlign: 'left',
+                }}
                 onClick={() => setExpandedEvents(prev => ({ ...prev, [index]: !prev[index] }))}
               >
                 {event.name} {expandedEvents[index] ? '▲' : '▼'}
-              </div>
+              </button>
               {expandedEvents[index] && (
                 <div style={{ marginTop: '10px', fontSize: '0.9em' }}>
                   <p>Date: {event.date}</p>
