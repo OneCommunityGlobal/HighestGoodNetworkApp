@@ -168,7 +168,7 @@ function QuestionEditModal({ question, onSave, onCancel }) {
           {/* Options for dropdown, radio, and checkbox types */}
           {['dropdown', 'radio', 'checkbox'].includes(editedQuestion.type) && (
             <div className="form-group options-group">
-              <label>Options:</label>
+              <p className="options-label">Options:</p>
               {(editedQuestion.options || []).map((option, index) => (
                 <div key={uuidv4()} className="option-row">
                   <input

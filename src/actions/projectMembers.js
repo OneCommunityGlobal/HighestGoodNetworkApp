@@ -7,7 +7,7 @@
  ******************************************************************************* */
 import axios from 'axios';
 import * as types from '../constants/projectMembership';
-import { ENDPOINTS } from '../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 /** *****************************************
  * ACTION CREATORS
  ****************************************** */

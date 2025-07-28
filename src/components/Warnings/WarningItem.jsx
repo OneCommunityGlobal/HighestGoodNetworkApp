@@ -1,7 +1,7 @@
 /* eslint-disable no-shadow */
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import hasPermission from 'utils/permissions';
+import hasPermission from '~/utils/permissions';
 import './Warnings.css';
 import WarningIcons from './WarningIcons';
 // import WarningsModal from './WarningsModal';

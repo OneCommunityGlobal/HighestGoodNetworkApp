@@ -1,7 +1,8 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import { Component } from 'react';
 import DatePicker from 'react-datepicker';
 import { Button } from 'reactstrap';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import 'react-datepicker/dist/react-datepicker.css';
 import '../../Header/DarkMode.css';
 

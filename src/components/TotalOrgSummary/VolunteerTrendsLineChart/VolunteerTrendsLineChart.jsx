@@ -1,9 +1,9 @@
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
 import { useEffect, useState } from 'react';
-import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
-import Loading from 'components/common/Loading';
 import DatePicker from 'react-datepicker';
+import { ENDPOINTS } from '~/utils/URL';
+import Loading from '~/components/common/Loading';
 import styles from './VolunteerTrendsStyles.module.css';
 import 'react-datepicker/dist/react-datepicker.css';
 
@@ -161,9 +161,15 @@ export default function VolunteerTrendsLineChart({ darkMode }) {
         >
           <h6 style={{ color: 'black' }}>
             {interval === 'week' ? 'Week ' : ''}
-            {label}, {year}
+            {label}
+            {`, `}
+            {year}
           </h6>
-          <h6 style={{ color: '#328D1B' }}>{payload[0].value} hours</h6>
+
+          <h6 style={{ color: '#328D1B' }}>
+            {payload[0].value}
+            {' hours'}
+          </h6>
         </div>
       );
     }
@@ -241,7 +247,8 @@ export default function VolunteerTrendsLineChart({ darkMode }) {
       {/* CUSTOM DATE RANGE */}
       {customDateRange.every(date => date) && (
         <div className={styles.customDateRange}>
-          <span>{dateToYYYYMMDD(customDateRange[0])}</span> to{' '}
+          <span>{dateToYYYYMMDD(customDateRange[0])}</span>
+          <span> to </span>
           <span>{dateToYYYYMMDD(customDateRange[1])}</span>
         </div>
       )}
