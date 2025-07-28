@@ -1,9 +1,5 @@
-/* eslint-disable react/destructuring-assignment */
-/* eslint-disable no-shadow */
-/* eslint-disable react/require-default-props */
-/* eslint-disable react/forbid-prop-types */
-import { useEffect } from 'react';
-import { useState } from 'react';
+/* eslint-disable jsx-a11y/label-has-associated-control */
+import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {
@@ -23,12 +19,12 @@ import {
 import ReactTooltip from 'react-tooltip';
 import { MultiSelect } from 'react-multi-select-component';
 import moment from 'moment';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import 'moment-timezone';
 import axios from 'axios';
 
-import { ENDPOINTS } from 'utils/URL';
-import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+import { ENDPOINTS } from '~/utils/URL';
+import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
 import { getAllUserTeams, getAllTeamCode } from '../../actions/allTeamsAction';
 import TeamChart from './TeamChart';
 import SkeletonLoading from '../common/SkeletonLoading';
@@ -466,6 +462,33 @@ const WeeklySummariesReport = props => {
     }
   };
 
+  // const isLastWeekReport = (startDate, endDate) => {
+  //   const today = new Date();
+  //   const oneWeekAgo = new Date(today);
+  //   oneWeekAgo.setDate(today.getDate() - 7);
+  //   return new Date(startDate) <= oneWeekAgo && new Date(endDate) >= oneWeekAgo;
+  // };
+  const isLastWeekReport = (startDateStr, endDateStr) => {
+    // Parse the summary’s start and end dates
+    const summaryStart = new Date(startDateStr);
+    const summaryEnd = new Date(endDateStr);
+
+    // Use the user's timezone: America/Los_Angeles
+    const weekStartLA = moment()
+      .tz('America/Los_Angeles')
+      .startOf('week')
+      .subtract(1, 'week')
+      .toDate();
+    const weekEndLA = moment()
+      .tz('America/Los_Angeles')
+      .endOf('week')
+      .subtract(1, 'week')
+      .toDate();
+
+    // Check if the summary overlaps any portion of last week
+    return summaryStart <= weekEndLA && summaryEnd >= weekStartLA;
+  };
+
   const filterWeeklySummaries = () => {
     try {
       const {
@@ -499,6 +522,30 @@ const WeeklySummariesReport = props => {
       const temp = summaries.filter(summary => {
         const { activeTab } = state;
         const hoursLogged = (summary.totalSeconds[navItems.indexOf(activeTab)] || 0) / 3600;
+
+        // 🛑 Add this block at the very top inside the filter
+        // if (summary?.isActive === false) {
+        //   const lastWeekStart = moment()
+        //     .tz('America/Los_Angeles')
+        //     .startOf('week')
+        //     .subtract(1, 'week')
+        //     .toDate();
+        //   const lastWeekEnd = moment()
+        //     .tz('America/Los_Angeles')
+        //     .endOf('week')
+        //     .subtract(1, 'week')
+        //     .toDate();
+        //   const summaryStart = new Date(summary.startDate);
+        //   const summaryEnd = new Date(summary.endDate);
+        //   const isLastWeek = summaryStart <= lastWeekEnd && summaryEnd >= lastWeekStart;
+
+        //   if (!isLastWeek) {
+        //     return false; // Skip inactive members unless their summary is from last week
+        //   }
+        // }
+        if (summary?.isActive === false && !isLastWeekReport(summary.startDate, summary.endDate)) {
+          return false;
+        }
         const isMeetCriteria =
           summary.totalTangibleHrs > 80 &&
           summary.daysInTeam > 60 &&
