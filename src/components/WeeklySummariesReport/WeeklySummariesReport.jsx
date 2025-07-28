@@ -1,4 +1,5 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
+/* eslint-disable prettier/prettier, no-console */
 import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -97,6 +98,8 @@ const initialState = {
     green: false,
     navy: false,
   },
+
+  bioStatusMap: {},
 };
 
 const intialPermissionState = {
@@ -111,6 +114,11 @@ const WeeklySummariesReport = props => {
   const weekDates = getWeekDates();
   const [state, setState] = useState(initialState);
   const [permissionState, setPermissionState] = useState(intialPermissionState);
+
+
+  const [bioStatusMap, setBioStatusMap] = useState({});
+  const [rerenderKey, setRerenderKey] = useState(0);
+
   // Misc functionalities
   /**
    * Sort the summaries in alphabetixal order
@@ -503,6 +511,7 @@ const WeeklySummariesReport = props => {
         selectedSpecialColors,
       } = state;
 
+
       // console.log('filterWeeklySummaries state:', {
       //   summariesLength: summaries?.length,
       //   tableDataExists: !!tableData,
@@ -520,8 +529,10 @@ const WeeklySummariesReport = props => {
         .map(([color]) => color);
 
       const temp = summaries.filter(summary => {
+        if (!summary || !summary._id) return false;
         const { activeTab } = state;
         const hoursLogged = (summary.totalSeconds[navItems.indexOf(activeTab)] || 0) / 3600;
+        const currentBioStatus = state.bioStatusMap?.[summary._id] ?? summary.bioPosted;
 
         // 🛑 Add this block at the very top inside the filter
         // if (summary?.isActive === false) {
@@ -549,7 +560,7 @@ const WeeklySummariesReport = props => {
         const isMeetCriteria =
           summary.totalTangibleHrs > 80 &&
           summary.daysInTeam > 60 &&
-          summary.bioPosted !== 'posted';
+          currentBioStatus !== 'posted';
         const isBio = !selectedBioStatus || isMeetCriteria;
         const isOverHours =
           !selectedOverTime ||
@@ -660,6 +671,7 @@ const WeeklySummariesReport = props => {
       }));
       return chartData;
     } catch (error) {
+      console.log(error);
       return null;
     }
   };
@@ -824,10 +836,13 @@ const WeeklySummariesReport = props => {
   };
 
   const handleBioStatusToggleChange = () => {
-    setState(prev => ({
-      ...prev,
-      selectedBioStatus: !prev.selectedBioStatus,
-    }));
+    setState(prev => {
+      const newValue = !prev.selectedBioStatus;
+      return {
+        ...prev,
+        selectedBioStatus: newValue,
+      };
+    });
   };
 
   const handleChartStatusToggleChange = () => {
@@ -970,9 +985,8 @@ const WeeklySummariesReport = props => {
           .filter(teamCode => !oldTeamCodes.includes(teamCode.value))
           .concat({
             value: replaceCode,
-            label: `${replaceCode} (${
-              updatedSummaries.filter(s => s.teamCode === replaceCode).length
-            })`,
+            label: `${replaceCode} (${updatedSummaries.filter(s => s.teamCode === replaceCode).length
+              })`,
             _ids: updatedSummaries.filter(s => s.teamCode === replaceCode).map(s => s._id),
           });
 
@@ -980,9 +994,8 @@ const WeeklySummariesReport = props => {
           .filter(code => !oldTeamCodes.includes(code.value))
           .concat({
             value: replaceCode,
-            label: `${replaceCode} (${
-              updatedSummaries.filter(s => s.teamCode === replaceCode).length
-            })`,
+            label: `${replaceCode} (${updatedSummaries.filter(s => s.teamCode === replaceCode).length
+              })`,
             _ids: updatedSummaries.filter(s => s.teamCode === replaceCode).map(s => s._id),
           });
 
@@ -1188,9 +1201,8 @@ const WeeklySummariesReport = props => {
   return (
     <Container
       fluid
-      className={`container-wsr-wrapper py-3 mb-5 ${
-        darkMode ? 'bg-oxford-blue text-light' : 'bg--white-smoke'
-      }`}
+      className={`container-wsr-wrapper py-3 mb-5 ${darkMode ? 'bg-oxford-blue text-light' : 'bg--white-smoke'
+        }`}
     >
       {passwordInputModalToggle()}
       {popUpElements()}
@@ -1214,18 +1226,18 @@ const WeeklySummariesReport = props => {
       </Row>
       {(authEmailWeeklySummaryRecipient === authorizedUser1 ||
         authEmailWeeklySummaryRecipient === authorizedUser2) && (
-        <Row className="d-flex justify-content-center mb-3">
-          <Button
-            color="primary"
-            className="permissions-management__button"
-            type="button"
-            onClick={() => onClickRecepients()}
-            style={darkMode ? boxStyleDark : boxStyle}
-          >
-            Weekly Summary Report Recipients
-          </Button>
-        </Row>
-      )}
+          <Row className="d-flex justify-content-center mb-3">
+            <Button
+              color="primary"
+              className="permissions-management__button"
+              type="button"
+              onClick={() => onClickRecepients()}
+              style={darkMode ? boxStyleDark : boxStyle}
+            >
+              Weekly Summary Report Recipients
+            </Button>
+          </Row>
+        )}
       <Row>
         <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }} xs={{ size: 6 }}>
           <div className="filter-container-teamcode">
@@ -1280,9 +1292,8 @@ const WeeklySummariesReport = props => {
             </>
           )}
           <MultiSelect
-            className={`multi-select-filter text-dark ${darkMode ? 'dark-mode' : ''} ${
-              state.teamCodeWarningUsers.length > 0 ? 'warning-border' : ''
-            }`}
+            className={`multi-select-filter text-dark ${darkMode ? 'dark-mode' : ''} ${state.teamCodeWarningUsers.length > 0 ? 'warning-border' : ''
+              }`}
             options={state.teamCodes.map(item => {
               const [code, count] = item.label.split(' (');
               return {
@@ -1542,6 +1553,11 @@ const WeeklySummariesReport = props => {
                               handleTeamCodeChange={handleTeamCodeChange}
                               loadTrophies={state.loadTrophies}
                               handleSpecialColorDotClick={handleSpecialColorDotClick}
+                              bioStatusMap={bioStatusMap}
+                              rerenderKey={rerenderKey}
+                              setBioStatusMap={setBioStatusMap}
+                              setRerenderKey={setRerenderKey}
+                              selectedBioStatus={state.selectedBioStatus}
                             />
                           </Col>
                         </Row>

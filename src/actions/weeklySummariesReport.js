@@ -89,25 +89,18 @@ export const updateOneSummaryReport = (userId, updatedField) => {
 /**
  * Toggle the user's bio status (posted, requested, default).
  */
-export const toggleUserBio = (userId, bioPosted) => {
+export const toggleUserBio = (userId, bioPosted) => async dispatch => {
   const url = ENDPOINTS.TOGGLE_BIO_STATUS(userId);
-  return async dispatch => {
-    try {
-      const res = await axios.patch(url, { bioPosted });
-
-      if (res.status === 200) {
-        const updatedField = { bioPosted };
-
-        // Dispatch an action to update the store
-        dispatch(updateSummaryReport({ _id: userId, updatedField }));
-
-        toast.success(`Bio status updated to "${bioPosted}"`);
-      }
-
-      return res;
-    } catch (error) {
-      toast.error('An error occurred while updating bio status.');
-      throw error;
+  try {
+    const res = await axios.patch(url, { bioPosted });
+    if (res.status === 200) {
+      const updatedField = { bioPosted };
+      dispatch(updateSummaryReport({ _id: userId, updatedField }));
+      toast.success(`Bio status updated to "${bioPosted}"`);
     }
-  };
+    return res;
+  } catch (error) {
+    toast.error('An error occurred while updating bio status.');
+    throw error;
+  }
 };

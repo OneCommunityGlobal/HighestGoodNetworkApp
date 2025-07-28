@@ -1,4 +1,5 @@
 /* eslint-disable no-nested-ternary */
+/* eslint-disable prettier/prettier, no-console */
 import { useState } from 'react';
 import styles from './WeeklySummariesReport.module.scss';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
@@ -17,7 +18,7 @@ function BioFunction(props) {
 
   const [bioStatus, setBioStatus] = useState(bioPosted);
 
-  const isMeetCriteria = totalTangibleHrs > 80 && daysInTeam > 60 && bioPosted !== 'posted';
+  const isMeetCriteria = totalTangibleHrs > 80 && daysInTeam > 60 && bioStatus !== 'posted';
   const style = {
     color: textColors[summary?.weeklySummaryOption] || textColors.Default,
   };
@@ -36,9 +37,10 @@ function BioFunction(props) {
           switchType="bio"
           state={bioStatus}
           handleUserProfile={bio => {
-            setBioStatus(bio);
-            handleProfileChange(userId, bio, 'bio');
-          }}
+  console.log('New bio value:', bio); // Add this to debug
+  setBioStatus(bio);
+  handleProfileChange(userId, bio, 'bio');
+}}
         />
       </div>
     </div>
