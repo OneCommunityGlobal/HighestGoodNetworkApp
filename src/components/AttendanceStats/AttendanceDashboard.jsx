@@ -60,16 +60,6 @@ export default function AttendanceStatistics() {
           endTime: '22:00',
           date: '2023-01-29',
         },
-        {
-          name: 'Evening Games',
-          inPerson: 80,
-          virtual: 5,
-          rating: 4.9,
-          location: 'Office Lobby',
-          startTime: '17:00',
-          endTime: '20:00',
-          date: '2023-01-28',
-        }
       ],
     },
     February: {
