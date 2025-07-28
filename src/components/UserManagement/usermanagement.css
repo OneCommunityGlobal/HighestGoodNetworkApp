@@ -146,6 +146,8 @@ td#usermanagement_role {
 
 td#usermanagement_role svg {
   font-size: 14px; /* Ensures icon fits within 20px */
+  width: 14px;
+  height: 14px;
 }
 
 #user_role{
@@ -167,8 +169,8 @@ td#usermanagement_role svg {
   top: 0;
   right: 0;
   margin: 2px 2px;
-  height: 100%;
-  max-height: 31px;
+  width: 16px;
+  height: 16px;
 }
 
 .usermanagement__order--input div {
