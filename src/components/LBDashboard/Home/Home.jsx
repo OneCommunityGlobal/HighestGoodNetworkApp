@@ -1,3 +1,6 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable no-console */
 /* eslint-disable no-shadow */
 /* eslint-disable no-unused-vars */
@@ -338,22 +341,16 @@ function Home() {
 
             {/* Tabs Section */}
             <div className={`${styles.lbTabsSection}`}>
-              <span
-                className={`${styles.lbTab} ${
-                  activeTab === 'listings' ? styles.lbActiveTab : styles.lbInactiveTab
-                }`}
+              <button className={styles.lbTab} onClick={() => setActiveTab('listings')}>
+                Listings
+              </button>
+              <button
+                type="button"
+                className={styles.lbTab}
                 onClick={() => setActiveTab('listings')}
               >
                 Listings
-              </span>
-              <span
-                className={`${styles.lbTab} ${
-                  activeTab === 'bidding' ? styles.lbActiveTab : styles.lbInactiveTab
-                }`}
-                onClick={() => setActiveTab('bidding')}
-              >
-                Biddings
-              </span>
+              </button>
             </div>
 
             {/* View Toggle */}

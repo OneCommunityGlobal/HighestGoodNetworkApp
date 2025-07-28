@@ -6,12 +6,12 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { addNewWBS } from './../../../../actions/wbs';
-import hasPermission from 'utils/permissions';
+import hasPermission from '~/utils/permissions';
 
 const AddWBS = (props) => {
   const darkMode = props.state.theme.darkMode;
   const [taskTitle, setTaskTitle] = useState('');
-  const canPostWBS = props.hasPermission('postWbs');
+  const canPostWBS = hasPermission('postWbs');
 
   const handleSubmit = () => {
     if (!taskTitle.trim()) return;
@@ -68,5 +68,4 @@ const mapStateToProps = state => {
 };
 export default connect(mapStateToProps, {
   addNewWBS,
-  hasPermission,
 })(AddWBS);

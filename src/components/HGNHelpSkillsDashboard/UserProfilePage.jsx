@@ -24,7 +24,7 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from 'recharts';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import styles from './style/UserCard.module.css';
 
 // Sample data for skills

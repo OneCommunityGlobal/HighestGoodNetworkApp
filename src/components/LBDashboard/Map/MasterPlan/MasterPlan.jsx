@@ -103,7 +103,18 @@ function MasterPlan() {
   };
 
   return (
-    <div className={`${styles.mainContainer}`} onClick={handleOutsideClick}>
+    <div
+      className={styles.mainContainer}
+      onClick={handleOutsideClick}
+      role="button"
+      tabIndex={0}
+      onKeyDown={e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          handleOutsideClick();
+        }
+      }}
+    >
+      {' '}
       <div className={`${styles.logoContainer}`}>
         <img src={logo} alt="One Community Logo" />
       </div>
@@ -154,19 +165,27 @@ function MasterPlan() {
             </div>
             <div className={`${styles.villages}`}>
               {villages.map(v => (
-                <div
+                <button
                   key={v.id}
+                  type="button"
+                  aria-label={`Select ${v.name}`}
                   className={`${selectedVillage === v ? `${styles.selected} ` : ''}${
                     styles.village
                   }`}
-                  style={{ cursor: 'pointer', padding: '0 10px', textAlign: 'center' }}
                   onClick={e => {
                     e.stopPropagation();
                     handleVillageClick(v);
                   }}
+                  style={{
+                    padding: '0 10px',
+                    textAlign: 'center',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                  }}
                 >
                   <img src={v.url} alt={v.name} />
-                </div>
+                </button>
               ))}
             </div>
           </div>

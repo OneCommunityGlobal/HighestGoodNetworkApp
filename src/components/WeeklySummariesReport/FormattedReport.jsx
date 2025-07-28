@@ -6,21 +6,17 @@ import PropTypes from 'prop-types';
 // import moment from 'moment';
 // import 'moment-timezone';
 import moment from 'moment-timezone';
-import ReactHtmlParser from 'react-html-parser';
+import parse from 'html-react-parser';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-import { faCopy } from '@fortawesome/free-solid-svg-icons';
-import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
-
-import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
-
-import { postLeaderboardData } from 'actions/leaderBoardData';
-import { calculateDurationBetweenDates, showTrophyIcon } from 'utils/anniversaryPermissions';
-import { toggleUserBio } from 'actions/weeklySummariesReport';
-
-import RoleInfoModal from 'components/UserProfile/EditableModal/RoleInfoModal';
+import { faCopy, faMailBulk } from '@fortawesome/free-solid-svg-icons';
 import {
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
   Input,
   ListGroup,
   ListGroupItem as LGI,
@@ -35,15 +31,21 @@ import {
   Col,
   Alert,
 } from 'reactstrap';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMailBulk } from '@fortawesome/free-solid-svg-icons';
-import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
+import { assignStarDotColors, showStar } from '~/utils/leaderboardPermissions';
+
+import { postLeaderboardData } from '~/actions/leaderBoardData';
+import { calculateDurationBetweenDates, showTrophyIcon } from '~/utils/anniversaryPermissions';
+import { toggleUserBio } from '~/actions/weeklySummariesReport';
+
+import RoleInfoModal from '~/components/UserProfile/EditableModal/RoleInfoModal';
+import CopyToClipboard from '~/components/common/Clipboard/CopyToClipboard';
 import styles from './WeeklySummariesReport.module.scss';
-import hasPermission from '../../utils/permissions';
-import { ENDPOINTS } from '../../utils/URL';
+import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
+import { ENDPOINTS } from '~/utils/URL';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 import GoogleDocIcon from '../common/GoogleDocIcon';
-import { cantUpdateDevAdminDetails } from '../../utils/permissions';
 
 const textColors = {
   Default: '#000000',
@@ -398,7 +400,7 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
 
       return (
         <div style={style} className={styles.weeklySummaryReportContainer}>
-          <div className={styles.weeklySummaryText}>{ReactHtmlParser(summaryText)}</div>
+          <div className={styles.weeklySummaryText}>{parse(summaryText)}</div>
           <FontAwesomeIcon
             icon={faCopy}
             className={styles.copyIcon}
@@ -586,7 +588,10 @@ function TotalValidWeeklySummaries({ summary, canEditSummaryCount, darkMode }) {
           />
         </div>
       ) : (
-        <div>&nbsp;{weeklySummariesCount || 'No valid submissions yet!'}</div>
+        <div>
+          &nbsp;
+          {weeklySummariesCount || 'No valid submissions yet!'}
+        </div>
       )}
     </div>
   );
@@ -822,7 +827,10 @@ function Index({
         <div style={{ display: 'flex' }}>
           <GoogleDocIcon link={googleDocLink} />
           <span>
-            <b>&nbsp;&nbsp;{summary.role !== 'Volunteer' && `(${summary.role})`}</b>
+            <b>
+              &nbsp;&nbsp;
+              {summary.role !== 'Volunteer' && `(${summary.role})`}
+            </b>
           </span>
           {summary.role !== 'Volunteer' && (
             <RoleInfoModal

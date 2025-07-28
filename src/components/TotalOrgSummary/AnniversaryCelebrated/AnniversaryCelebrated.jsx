@@ -1,6 +1,6 @@
 import { useHistory } from 'react-router-dom';
 import { SiGmail } from 'react-icons/si';
-import Loading from 'components/common/Loading';
+import Loading from '~/components/common/Loading';
 import sixMonthsAward from '../images/sixMonthsAward.svg';
 import oneYearAward from '../images/oneYearAward.svg';
 

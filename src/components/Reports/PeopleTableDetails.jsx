@@ -338,7 +338,7 @@ function PeopleTableDetails(props) {
           </div>
           <div className="people-table people-table-scrollable">
             {filteredTasks.map(value => (
-              <NewModal header="Task info" trigger={() => renderFilteredTask(value)} darkMode={darkMode}>
+              <NewModal key={value._id} header="Task info" trigger={() => renderFilteredTask(value)} darkMode={darkMode}>
                 {renderModalContent(value)}
               </NewModal>
             ))}
@@ -347,7 +347,7 @@ function PeopleTableDetails(props) {
       ) : (
         <div className="people-table">
           {filteredTasks.map(value => (
-            <NewModal header="Task info" trigger={() => renderMobileFilteredTask(value)} darkMode={darkMode}>
+            <NewModal key={value._id} header="Task info" trigger={() => renderMobileFilteredTask(value)} darkMode={darkMode}>
               {renderModalContent(value)}
             </NewModal>
           ))}

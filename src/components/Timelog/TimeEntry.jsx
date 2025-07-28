@@ -1,14 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Card, Row, Col } from 'reactstrap';
 import { useDispatch, connect } from 'react-redux';
-import ReactHtmlParser from 'react-html-parser';
+import parse from 'html-react-parser';
 import moment from 'moment-timezone';
 import './Timelog.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
-import hasPermission from 'utils/permissions';
-import { hrsFilterBtnColorMap } from 'constants/colors';
-import { cantUpdateDevAdminDetails } from 'utils/permissions';
+import hasPermission, { cantUpdateDevAdminDetails } from '~/utils/permissions';
+import { hrsFilterBtnColorMap } from '~/constants/colors';
 import { toast } from 'react-toastify';
 import TimeEntryForm from './TimeEntryForm';
 import DeleteModal from './DeleteModal';
@@ -175,7 +174,7 @@ function TimeEntry(props) {
             <div className="time-entry-container">
               <div className={`notes-section ${darkMode ? 'notes-text-light' : ''}`}>
                 <div className={darkMode ? "dark-text-muted" : "text-muted"}>Notes:</div>
-                {ReactHtmlParser(notes)}
+                {parse(notes)}
               </div>
               <div className="d-flex justify-content-end">
                 {(hasATimeEntryEditPermission || isAuthUserAndSameDayEntry) &&

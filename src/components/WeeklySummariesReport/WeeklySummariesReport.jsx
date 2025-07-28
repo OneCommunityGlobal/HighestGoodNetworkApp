@@ -1,9 +1,5 @@
-/* eslint-disable react/destructuring-assignment */
-/* eslint-disable no-shadow */
-/* eslint-disable react/require-default-props */
-/* eslint-disable react/forbid-prop-types */
-import { useEffect } from 'react';
-import { useState } from 'react';
+/* eslint-disable jsx-a11y/label-has-associated-control */
+import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {
@@ -23,12 +19,12 @@ import {
 import ReactTooltip from 'react-tooltip';
 import { MultiSelect } from 'react-multi-select-component';
 import moment from 'moment';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import 'moment-timezone';
 import axios from 'axios';
 
-import { ENDPOINTS } from 'utils/URL';
-import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+import { ENDPOINTS } from '~/utils/URL';
+import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
 import { getAllUserTeams, getAllTeamCode } from '../../actions/allTeamsAction';
 import TeamChart from './TeamChart';
 import SkeletonLoading from '../common/SkeletonLoading';

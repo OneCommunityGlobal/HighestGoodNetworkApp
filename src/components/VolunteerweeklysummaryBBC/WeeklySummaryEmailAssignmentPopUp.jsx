@@ -18,7 +18,7 @@ import {
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashAlt, faPencilAlt, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import {
   getAllWeeklySummaryEmailAssignments,
   setWeeklySummaryEmailAssignment,
@@ -273,5 +273,7 @@ const WeeklySummaryEmailAssignmentPopUp = React.memo(props => {
     </Modal>
   );
 });
+
+WeeklySummaryEmailAssignmentPopUp.displayName = 'WeeklySummaryEmailAssignmentPopUp';
 
 export default WeeklySummaryEmailAssignmentPopUp;

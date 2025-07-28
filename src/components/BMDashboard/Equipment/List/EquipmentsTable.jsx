@@ -6,7 +6,7 @@ import { BiPencil } from 'react-icons/bi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons';
 import ReactTooltip from 'react-tooltip';
-import { fetchAllEquipments } from 'actions/bmdashboard/equipmentActions';
+import { fetchAllEquipments } from '~/actions/bmdashboard/equipmentActions';
 import EquipmentListModal from './EquipmentListModal';
 import styles from './Equipments.module.css';
 

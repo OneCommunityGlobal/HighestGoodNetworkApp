@@ -318,7 +318,7 @@ export default function EventDashboard() {
           </div>
         </div>
       </div>
-      <style jsx>{`
+      <style>{`
         @media (max-width: 768px) {
           div {
             grid-template-columns: 1fr !important;
