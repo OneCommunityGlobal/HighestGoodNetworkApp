@@ -12,8 +12,8 @@ import {
   FormFeedback,
   Button,
 } from 'reactstrap';
-import httpService from 'services/httpService';
-import { ENDPOINTS } from 'utils/URL';
+import httpService from '~/services/httpService';
+import { ENDPOINTS } from '~/utils/URL';
 import RequirementModal from './requirementModal';
 
 function HomeCountryModal({ isOpen, toggle, setLocation, token }) {
