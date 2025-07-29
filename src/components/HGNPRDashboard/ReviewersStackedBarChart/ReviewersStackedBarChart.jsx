@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import Select from 'react-select';
 import {
   BarChart,
   Bar,
@@ -87,8 +88,9 @@ const transformData = rawData =>
     'Needs Changes': item.counts['Needs Changes'],
     'Did Not Review': item.counts['Did Not Review'],
   }));
+
 let transformed = [];
-const CustomYAxisTick = ({ x, y, payload }) => {
+function CustomYAxisTick({ x, y, payload }) {
   const currentReviewer = payload.value;
   const isMentor = transformed.find(d => d.reviewer === currentReviewer)?.isMentor;
   return (
@@ -102,7 +104,7 @@ const CustomYAxisTick = ({ x, y, payload }) => {
       {payload.value}
     </text>
   );
-};
+}
 
 function CustomXAxisTick(data) {
   const max = Math.max(
@@ -117,7 +119,25 @@ function CustomXAxisTick(data) {
   return { domain: [0, upper], ticks };
 }
 
-const ReviewersStackedBarChart = () => {
+function CustomTooltip({ active, payload, label }) {
+  if (!active || !payload || !payload.length) return null;
+
+  return (
+    <div className="custom-tooltip">
+      <p className="tooltip-title">{label}</p>
+      {payload.map(entry => (
+        <div key={entry.name} className="tooltip-entry">
+          <span className="tooltip-label" style={{ color: entry.color }}>
+            {entry.name}:
+          </span>
+          <span>{entry.value}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ReviewersStackedBarChart() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const [teamFilter, setTeamFilter] = useState('All');
   const [durationFilter, setDurationFilter] = useState('Last Week');
@@ -173,35 +193,47 @@ const ReviewersStackedBarChart = () => {
   }, [teamFilter, durationFilter, sortFilter]);
 
   return (
-    <div className={`chart-container ${darkMode ? 'dark-mode' : ''}`}>
+    <div className={`reviewers-chart-container ${darkMode ? 'dark-mode' : ''}`}>
       <h3>PR Quality by Reviewers</h3>
 
-      <div className="filters-bar">
+      <div className="reviewers-filters-bar">
         <div>
           <label className={`reviewers-label ${darkMode ? 'dark-mode' : ''}`}>Team:</label>
-          <select value={teamFilter} onChange={e => setTeamFilter(e.target.value)}>
-            {teams.map(team => (
-              <option key={team} value={team}>
-                {team}
-              </option>
-            ))}
-          </select>
+          <Select
+            options={teams.map(team => ({ label: team, value: team }))}
+            value={{ label: teamFilter, value: teamFilter }}
+            onChange={selected => setTeamFilter(selected.value)}
+            className="reviewers-select-container"
+            classNamePrefix="reviewers-select"
+          />
         </div>
         <div>
           <label className={`reviewers-label ${darkMode ? 'dark-mode' : ''}`}>Sort:</label>
-          <select value={sortFilter} onChange={e => setSortFilter(e.target.value)}>
-            <option value="Ascending">Ascending</option>
-            <option value="Descending">Descending</option>
-          </select>
+          <Select
+            options={[
+              { label: 'Ascending', value: 'Ascending' },
+              { label: 'Descending', value: 'Descending' },
+            ]}
+            value={{ label: sortFilter, value: sortFilter }}
+            onChange={selected => setSortFilter(selected.value)}
+            className="reviewers-select-container"
+            classNamePrefix="reviewers-select"
+          />
         </div>
         <div>
           <label className={`reviewers-label ${darkMode ? 'dark-mode' : ''}`}>Duration:</label>
-          <select value={durationFilter} onChange={e => setDurationFilter(e.target.value)}>
-            <option value="Last Week">Last Week</option>
-            <option value="Last 2 weeks">Last 2 weeks</option>
-            <option value="Last Month">Last Month</option>
-            <option value="All Time">All Time</option>
-          </select>
+          <Select
+            options={[
+              { label: 'Last Week', value: 'Last Week' },
+              { label: 'Last 2 weeks', value: 'Last 2 weeks' },
+              { label: 'Last Month', value: 'Last Month' },
+              { label: 'All Time', value: 'All Time' },
+            ]}
+            value={{ label: durationFilter, value: durationFilter }}
+            onChange={selected => setDurationFilter(selected.value)}
+            className="reviewers-select-container"
+            classNamePrefix="reviewers-select"
+          />
         </div>
       </div>
 
@@ -214,7 +246,9 @@ const ReviewersStackedBarChart = () => {
             className="loading-spinner"
             style={darkMode ? { borderTop: '4px solid #f8fafc' } : {}}
           />
-          <p style={{ color: darkMode ? textDark : undefined, justifyItems: 'center' }}>Loading Reviewers data...</p>
+          <p style={{ color: darkMode ? textDark : undefined, justifyItems: 'center' }}>
+            Loading Reviewers data...
+          </p>
         </div>
       ) : error ? (
         <div
@@ -233,12 +267,15 @@ const ReviewersStackedBarChart = () => {
           </button>
         </div>
       ) : reviewerData.length === 0 ? (
-        <div className="reviewer-data-empty" style={{ color: darkMode ? textDark : undefined }}>
+        <div
+          className="reviewer-data-empty"
+          style={{ color: darkMode ? textDark : undefined, justifyItems: 'center' }}
+        >
           <div className="empty-icon">📊</div>
           <p style={{ color: darkMode ? textDark : undefined }}>No PR data available</p>
         </div>
       ) : (
-        <div className="scroll-container">
+        <div className="reviewers-scroll-container">
           <ResponsiveContainer width="100%" height={Math.max(400, reviewerData.length * 28)}>
             <CartesianGrid
               vertical
@@ -260,8 +297,13 @@ const ReviewersStackedBarChart = () => {
                   style={{ textAnchor: 'middle' }}
                 />
               </YAxis>
-              <Tooltip />
-              <Legend />
+              <Tooltip
+                cursor={{
+                  fill: darkMode ? 'rgb(50, 73, 105)' : '#e0e0e0',
+                }}
+                content={<CustomTooltip />}
+              />
+              <Legend wrapperStyle={{ color: darkMode ? 'white' : 'black' }}/>
               {Object.keys(COLORS).map(key => (
                 <Bar key={key} dataKey={key} stackId="a" fill={COLORS[key]}>
                   <LabelList dataKey={key} position="insideRight" fill="black" />
@@ -273,6 +315,6 @@ const ReviewersStackedBarChart = () => {
       )}
     </div>
   );
-};
+}
 
 export default ReviewersStackedBarChart;
