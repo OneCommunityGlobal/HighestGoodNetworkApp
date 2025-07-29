@@ -56,7 +56,7 @@ function LogBar(props) {
                     </Button>
                   </Link>
                 ) : (
-                  <Link to="/bmdashboard/issues/add">
+                  <Link to={`/bmdashboard/issues/add/${projectId}`}>
                     <Button type="button" className="button button--maroon">
                       Log Issue
                     </Button>

@@ -156,7 +156,7 @@ function Issue() {
       issueType: formData.dropdown,
       issueConsequences,
       issueResolved: formData.resolved === 'Yes',
-      issueDescription: formData.description,
+      issueText: formData.description,
       createdBy: userId,
       projectId,
     };
@@ -167,6 +167,7 @@ function Issue() {
       .post(`${ENDPOINTS.BM_ISSUE_FORM}`, currentFormData)
       .then(() => {
         toast.success('Issue Form Submitted Successfully');
+        history.push(`/bmdashboard/projects/${projectId}`);
         return true;
       })
       .catch(() => {
