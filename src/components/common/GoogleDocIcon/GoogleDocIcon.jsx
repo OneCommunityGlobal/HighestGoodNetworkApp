@@ -3,11 +3,10 @@ import googleDocIconPng from '../../../assets/images/google_doc_icon.png';
 import './style.css';
 
 export default function GoogleDocIcon({ link }) {
-  const handleGoogleDocClick = () => {
+  const handleGoogleDocClick = e => {
     const toastGoogleLinkDoesNotExist = 'toast-on-click';
-    if (link) {
-      window.open(link);
-    } else {
+    if (!link) {
+      e.preventDefault();
       toast.error(
         'Uh oh, no Google Doc is present for this user! Please contact an Admin to find out why.',
         {
@@ -20,22 +19,18 @@ export default function GoogleDocIcon({ link }) {
   };
 
   return (
-    <span
+    <a
+      href={link || '#'}
       onClick={handleGoogleDocClick}
-      onKeyDown={event => {
-        if (event.key === 'Enter' || event.key === ' ') {
-          handleGoogleDocClick();
-        }
-      }}
-      tabIndex={0}
-      role="button"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="team-member-tasks-user-report-link"
     >
-      {/* inactive: image will be grey if no Google Doc link present */}
       <img
         className={`google-doc-icon ${link ? '' : 'inactive'}`}
         src={googleDocIconPng}
         alt="google_doc"
       />
-    </span>
+    </a>
   );
 }
