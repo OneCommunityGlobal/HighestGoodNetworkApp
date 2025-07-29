@@ -2,32 +2,17 @@ import React from 'react';
 import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { Provider } from 'react-redux';
-import { configureStore } from 'redux-mock-store';
+import configureStore from 'redux-mock-store';
 import QuickSetupModal from '../QuickSetupModal';
 import { getAllTitle } from '../../../../actions/title';
-import {
-  mockTeamsData,
-  mockUserProfile,
-  mockTitles,
-  mockUserPermissions,
-} from '../__mock__/mockData';
-import hasPermission from '~/utils/permissions';
-import { vi } from 'vitest';
+import { mockTeamsData, mockUserProfile, mockTitles, mockUserPermissions } from '../__mock__/mockData';
 
-vi.mock('react-redux', async importOriginal => {
-  const actual = await importOriginal();
-  return {
-    ...actual,
-    connect: () => Component => Component,
-  };
-});
-vi.mock('../../../../actions/title', () => ({
-  getAllTitle: vi.fn(),
+jest.mock('../../../../actions/title', () => ({
+  getAllTitle: jest.fn()
 }));
 
-vi.mock('../../../../utils/permissions', () => ({
-  __esModule: true,
-  default: vi.fn(permission => mockUserPermissions[permission]),
+jest.mock('../../../../utils/permissions', () => ({
+  hasPermission: jest.fn(permission => mockUserPermissions[permission])
 }));
 
 const mockStore = configureStore([]);
@@ -47,7 +32,7 @@ describe('QuickSetupModal Component', () => {
       render(
         <Provider store={store}>
           <QuickSetupModal userProfile={mockUserProfile} hasPermission={() => true} />
-        </Provider>,
+        </Provider>
       );
     });
 
@@ -60,12 +45,12 @@ describe('QuickSetupModal Component', () => {
     await act(async () => {
       render(
         <Provider store={store}>
-          <QuickSetupModal
-            userProfile={mockUserProfile}
-            hasPermission={() => true}
-            teamsData={mockTeamsData}
+          <QuickSetupModal 
+            userProfile={mockUserProfile} 
+            hasPermission={() => true} 
+            teamsData={mockTeamsData} 
           />
-        </Provider>,
+        </Provider>
       );
     });
 
@@ -81,7 +66,7 @@ describe('QuickSetupModal Component', () => {
       render(
         <Provider store={store}>
           <QuickSetupModal userProfile={mockUserProfile} hasPermission={() => true} />
-        </Provider>,
+        </Provider>
       );
     });
 
