@@ -34,7 +34,9 @@ const TeamsTab = props => {
   const [removedTeams, setRemovedTeams] = useState([]);
 
   useEffect(() => {
-    fetchTeamCodeAllUsers(); 
+    if (typeof fetchTeamCodeAllUsers === 'function') {
+      fetchTeamCodeAllUsers();
+    }
   }, []);
 
   useEffect(() => {
