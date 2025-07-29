@@ -2,7 +2,6 @@ import NewBadges from '~/components/Badge/NewBadges';
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 
-
 // modifications and changes based on last pr #1783
 const mockBadges = [
   {
@@ -65,12 +64,10 @@ describe('NewBadges component', () => {
     for (const [index, badge] of mockBadges.entries()) {
       fireEvent.mouseEnter(badgeImages[index]);
       await waitFor(() => {
-        expect(
-          screen.getByText((text) => text.includes(badge.badge.badgeName))
-        ).toBeInTheDocument();
+        expect(screen.getByText(text => text.includes(badge.badge.badgeName))).toBeInTheDocument();
 
         expect(
-          screen.getByText((text) => text.includes(badge.badge.description))
+          screen.getByText(text => text.includes(badge.badge.description)),
         ).toBeInTheDocument();
       });
     }
@@ -128,7 +125,7 @@ describe('NewBadges component', () => {
     const invalidMockBadges = [{ lastModified: 'invalid-date', count: 1 }];
 
     const errorSpy = vi.spyOn(console, 'error');
-    errorSpy.mockImplementation(() => { });
+    errorSpy.mockImplementation(() => {});
 
     render(
       <NewBadges
@@ -259,13 +256,9 @@ describe('NewBadges component', () => {
       fireEvent.mouseEnter(badgeImages[index]);
 
       await waitFor(() => {
-        expect(
-          screen.getByText(badge.badge.badgeName)
-        ).toBeInTheDocument();
+        expect(screen.getByText(badge.badge.badgeName)).toBeInTheDocument();
 
-        expect(
-          screen.getByText(badge.badge.description)
-        ).toBeInTheDocument();
+        expect(screen.getByText(badge.badge.description)).toBeInTheDocument();
       });
     }
   });

@@ -15,8 +15,8 @@ import {
   DropdownItem,
   UncontrolledTooltip,
 } from 'reactstrap';
-import pdfMake from "pdfmake/build/pdfmake";
-import "pdfmake/build/vfs_fonts";
+import pdfMake from 'pdfmake/build/pdfmake';
+import 'pdfmake/build/vfs_fonts';
 import htmlToPdfmake from 'html-to-pdfmake';
 import moment from 'moment';
 import 'moment-timezone';
@@ -88,14 +88,14 @@ function BadgeReport(props) {
         props.lastName
       }</h4></div>
         <div style="color:#DEE2E6; margin:10px 0px 20px 0px; text-align:center;">_______________________________________________________________________________________________</div>`;
-  
+
       const badgePromises = badges.map((badge, i) => {
         const imageUrl = badge.badge?.imageUrl || ''; // Fallback to empty string if imageUrl is missing
         const badgeName = badge.badge?.badgeName || 'Unknown Badge'; // Fallback for missing badgeName
         const description = badge.badge?.description || 'No description available'; // Fallback for missing description
-  
-        return new Promise((resolve) => {
-          imageToUri(imageUrl, (uri) => {
+
+        return new Promise(resolve => {
+          imageToUri(imageUrl, uri => {
             const badgeHtml = `
               <table>
                 <thead>
@@ -121,7 +121,7 @@ function BadgeReport(props) {
                 (i + 1) % 4 === 0 && i + 1 !== badges.length
                   ? `</br></br></br>
               <h3>Badge Report (Page ${1 + Math.ceil((i + 1) / 4)} of ${Math.ceil(
-                      badges.length / 4
+                      badges.length / 4,
                     )})</h3>
               <div style="margin-bottom: 20px; color: orange;"><h4>For ${props.firstName} ${
                       props.lastName
@@ -134,10 +134,10 @@ function BadgeReport(props) {
           });
         });
       });
-  
+
       const badgeHtmlArray = await Promise.all(badgePromises);
       bgReport.push(...badgeHtmlArray);
-  
+
       callback(bgReport.join('\n'));
     } catch (error) {
       console.error('Error generating badge report:', error);

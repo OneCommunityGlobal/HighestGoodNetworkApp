@@ -19,7 +19,6 @@ beforeEach(() => {
   toggleMock.mockClear();
 });
 
-
 const onApproveMock = vi.fn();
 const toggleMock = vi.fn();
 const taskNotifications = [

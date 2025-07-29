@@ -4,7 +4,6 @@ import BadgeReport from '../BadgeReport';
 import { UncontrolledTooltip } from 'reactstrap';
 import { formatDate } from '~/utils/formatDate';
 
-
 vi.mock('react-redux', () => ({
   connect: () => component => component,
 }));

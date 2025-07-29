@@ -6,7 +6,6 @@ import thunk from 'redux-thunk';
 import configureMockStore from 'redux-mock-store';
 import { createNewBadge } from '../../../actions/badgeManagement';
 
-
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 vi.mock('../../../actions/badgeManagement', () => ({
@@ -32,7 +31,7 @@ describe('CreateNewBadgePopup component', () => {
     render(
       <Provider store={store}>
         <CreateNewBadgePopup />
-      </Provider>
+      </Provider>,
     );
     expect(screen.getByLabelText('Name')).toBeInTheDocument();
     expect(screen.getByLabelText('Image URL')).toBeInTheDocument();
@@ -46,7 +45,7 @@ describe('CreateNewBadgePopup component', () => {
     render(
       <Provider store={store}>
         <CreateNewBadgePopup />
-      </Provider>
+      </Provider>,
     );
     const badgeTypeSelect = screen.getByLabelText('Type');
 
@@ -72,7 +71,7 @@ describe('CreateNewBadgePopup component', () => {
     render(
       <Provider store={store}>
         <CreateNewBadgePopup />
-      </Provider>
+      </Provider>,
     );
     const createButton = screen.getByText('Create');
 
@@ -94,8 +93,8 @@ describe('CreateNewBadgePopup component', () => {
   it('calls createNewBadge with the correct data on form submission', () => {
     render(
       <Provider store={store}>
-        <CreateNewBadgePopup toggle={toggleMock}/>
-      </Provider>
+        <CreateNewBadgePopup toggle={toggleMock} />
+      </Provider>,
     );
     const badgeNameInput = screen.getByLabelText('Name');
     const imageUrlInput = screen.getByLabelText('Image URL');

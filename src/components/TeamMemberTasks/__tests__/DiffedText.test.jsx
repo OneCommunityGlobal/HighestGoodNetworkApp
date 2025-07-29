@@ -44,6 +44,8 @@ describe('DiffedText Component', () => {
         <DiffedText oldText="Hello world" newText="Hello" />
       </Provider>,
     );
-    expect(getByText('world')).toHaveStyle('textDecorationLine: line-through; color: rgb(255, 0, 0)');
+    expect(getByText('world')).toHaveStyle(
+      'textDecorationLine: line-through; color: rgb(255, 0, 0)',
+    );
   });
 });

@@ -1,5 +1,5 @@
 import { render, fireEvent, screen } from '@testing-library/react';
-import TaskCompletedModal from '../components/TaskCompletedModal'; 
+import TaskCompletedModal from '../components/TaskCompletedModal';
 
 import { toast } from 'react-toastify';
 

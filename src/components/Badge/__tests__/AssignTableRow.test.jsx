@@ -1,6 +1,6 @@
 import { vi } from 'vitest';
 
-vi.mock('react-redux', async (importOriginal) => {
+vi.mock('react-redux', async importOriginal => {
   const actual = await importOriginal();
   return {
     ...actual,
@@ -27,7 +27,7 @@ function renderComponent(props, initialState = {}) {
           <AssignTableRow {...props} />
         </tbody>
       </table>
-    </Provider>
+    </Provider>,
   );
 }
 
@@ -60,7 +60,7 @@ describe('AssignTableRow', () => {
 
     fireEvent.click(cb);
     expect(dispatch).toHaveBeenCalledWith(
-      expect.objectContaining({ type: 'ADD_SELECT_BADGE', badgeId: 'assign-badge-1' })
+      expect.objectContaining({ type: 'ADD_SELECT_BADGE', badgeId: 'assign-badge-1' }),
     );
   });
 
@@ -75,7 +75,7 @@ describe('AssignTableRow', () => {
 
     fireEvent.click(cb);
     expect(dispatch).toHaveBeenCalledWith(
-      expect.objectContaining({ type: 'REMOVE_SELECT_BADGE', badgeId: 'assign-badge-1' })
+      expect.objectContaining({ type: 'REMOVE_SELECT_BADGE', badgeId: 'assign-badge-1' }),
     );
   });
 

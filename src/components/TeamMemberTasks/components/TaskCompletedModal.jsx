@@ -1,7 +1,7 @@
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import React, { useState } from 'react';
 import { boxStyle, boxStyleDark } from '~/styles';
-import '../../Header/DarkMode.css'
+import '../../Header/DarkMode.css';
 import { toast } from 'react-toastify';
 import '../../Header/DarkMode.css';
 
