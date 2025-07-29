@@ -895,16 +895,6 @@ const WeeklySummariesReport = props => {
           })
           .filter(Boolean);
 
-        if (!selectedCodes.find(code => code.value === newTeamCode)) {
-          const ids = teamCodeWithUserId[newTeamCode];
-          if (newTeamCode !== undefined && newTeamCode.length > 0) {
-            selectedCodes.push({
-              label: `${newTeamCode} (${teamCodeCounts[newTeamCode]})`,
-              value: newTeamCode,
-              _ids: ids,
-            });
-          }
-        }
         // Sort teamCodes by label
         teamCodes
           .sort((a, b) => a.label.localeCompare(b.label))
