@@ -202,18 +202,40 @@ function TimeEntryForm(props) {
     Do you wish to continue?`;
   };
 
-  const handleInputChange = event => {
-    event.persist();
+  const allowOnlyNumbersKeyDown = (e) => {
+    const allowedKeys = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'];
+
+    if (e.ctrlKey || e.metaKey) {
+      if (['a', 'c', 'v', 'x'].includes(e.key.toLowerCase())) return;
+    }
+
+    if (!allowedKeys.includes(e.key) && !/^\d$/.test(e.key)) {
+      e.preventDefault();
+    }
+  };
+
+  const handleInputChange = (event) => {
     const { name, value, checked } = event.target;
 
     const updateFormValues = (key, val) => {
-      setFormValues(fv => ({ ...fv, [key]: val }));
+      setFormValues((prev) => ({ ...prev, [key]: val }));
     };
 
     if (name === 'hours' || name === 'minutes') {
-      const numValue = +value;
+      if (value === '') {
+        updateFormValues(name, '');
+        return;
+      }
+
+      const digitsOnly = value.replace(/\D/g, '');
+      const cleaned = digitsOnly.replace(/^0+(?=\d)/, '');
+      const numValue = cleaned === '' ? '' : Number(cleaned);
+
       const isValid =
-        name === 'hours' ? numValue >= 0 && numValue <= 40 : numValue >= 0 && numValue <= 59;
+        name === 'hours'
+          ? numValue >= 0 && numValue <= 40
+          : numValue >= 0 && numValue <= 59;
+
       if (isValid) {
         updateFormValues(name, numValue);
       }
@@ -223,7 +245,7 @@ function TimeEntryForm(props) {
       updateFormValues(name, value);
     }
   };
-
+  
   const handleProjectOrTaskChange = event => {
     const optionValue = event.target.value;
     const ids = optionValue.split('/');
@@ -671,6 +693,12 @@ function TimeEntryForm(props) {
                     placeholder="Hours"
                     value={formValues.hours}
                     onChange={handleInputChange}
+                    onFocus={(e) => {
+                      if (e.target.value === '0') {
+                        setFormValues((prev) => ({ ...prev, hours: '' }));
+                      }
+                    }}
+                    onKeyDown={allowOnlyNumbersKeyDown}
                     disabled={!canChangeTime}
                     className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                   />
@@ -685,6 +713,12 @@ function TimeEntryForm(props) {
                     placeholder="Minutes"
                     value={formValues.minutes}
                     onChange={handleInputChange}
+                    onFocus={(e) => {
+                      if (e.target.value === '0') {
+                        setFormValues((prev) => ({ ...prev, minutes: '' }));
+                      }
+                    }}
+                    onKeyDown={allowOnlyNumbersKeyDown}
                     disabled={!canChangeTime}
                     className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                   />
