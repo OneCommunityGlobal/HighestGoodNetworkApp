@@ -462,7 +462,7 @@ const SummaryBar = React.forwardRef((props, ref) => {
           ) : (
             <p className="text-center summary-toggle large_text_summary text-danger">!</p>
           )}
-          <font className="text-center" size="3">
+          <font className="text-center summary-label" size="3">
             SUMMARY
           </font>
           <div className="py-2"> </div>
