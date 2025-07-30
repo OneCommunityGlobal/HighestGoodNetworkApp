@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import Select from 'react-select';
 import {
@@ -14,57 +14,10 @@ import {
   Label,
 } from 'recharts';
 import './ReviewersStackedBarChart.css';
+import MOCK_REVIEWERS_DATA from './reviewersMockData';
 
 // Dummy data
 const MOCK_TEAMS = ['All', 'Alpha', 'Beta', 'Gamma', 'Delta'];
-
-const MOCK_DATA = [
-  {
-    reviewer: 'Anoushka - Alpha',
-    isMentor: false,
-    team: 'Alpha',
-    counts: {
-      Exceptional: 4,
-      Sufficient: 2,
-      'Needs Changes': 1,
-      'Did Not Review': 0,
-    },
-  },
-  {
-    reviewer: 'Neerharika - Delta',
-    isMentor: true,
-    team: 'Delta',
-    counts: {
-      Exceptional: 10,
-      Sufficient: 9,
-      'Needs Changes': 7,
-      'Did Not Review': 10,
-    },
-  },
-  {
-    reviewer: 'Reddy - Delta',
-    isMentor: true,
-    team: 'Delta',
-    counts: {
-      Exceptional: 9,
-      Sufficient: 10,
-      'Needs Changes': 8,
-      'Did Not Review': 5,
-    },
-  },
-  {
-    reviewer: 'Mrinalini - Gamma',
-    isMentor: false,
-    team: 'Gamma',
-    counts: {
-      Exceptional: 8,
-      Sufficient: 3,
-      'Needs Changes': 6,
-      'Did Not Review': 1,
-    },
-  },
-  // Add more if needed
-];
 
 // Chart segment colors
 const COLORS = {
@@ -137,11 +90,61 @@ function CustomTooltip({ active, payload, label }) {
   );
 }
 
+function CustomLabel({ x, y, width, height, value }) {
+  // Don't show zero values
+  if (value === 0) return null;
+
+  return (
+    <text
+      x={x + width / 2}
+      y={y + height / 2}
+      fill="#fff"
+      textAnchor="middle"
+      dominantBaseline="middle"
+      fontSize="12"
+    >
+      {value}
+    </text>
+  );
+}
+
+function getDateRange(option) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  switch (option) {
+    case 'Last Week': {
+      const end = new Date(today);
+      end.setDate(end.getDate() - 1);
+      const start = new Date(end);
+      start.setDate(start.getDate() - 6);
+      return { start, end };
+    }
+    case 'Last 2 weeks': {
+      const end = new Date(today);
+      end.setDate(end.getDate() - 1);
+      const start = new Date(end);
+      start.setDate(start.getDate() - 13);
+      return { start, end };
+    }
+    case 'Last Month': {
+      const end = new Date(today);
+      end.setDate(end.getDate() - 1);
+      const start = new Date(end.getFullYear(), end.getMonth() - 1, 1);
+      return { start, end };
+    }
+    case 'All Time':
+    default:
+      return { start: null, end: null };
+  }
+}
+
 function ReviewersStackedBarChart() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const [teamFilter, setTeamFilter] = useState('All');
-  const [durationFilter, setDurationFilter] = useState('Last Week');
+  const [durationFilter, setDurationFilter] = useState({ label: 'Last Week', value: 'Last Week' });
   const [sortFilter, setSortFilter] = useState('Ascending');
+  const { start: filterStartDate, end: filterEndDate } = getDateRange(durationFilter.value);
   const [reviewerData, setReviewerData] = useState([]);
   const [teams, setTeams] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -154,10 +157,20 @@ function ReviewersStackedBarChart() {
 
     setTimeout(() => {
       try {
-        let filtered = [...MOCK_DATA];
+        let filtered = [...MOCK_REVIEWERS_DATA];
 
         if (teamFilter !== 'All') {
           filtered = filtered.filter(item => item.team === teamFilter);
+        }
+
+        if (durationFilter.value !== 'All Time') {
+          filtered = filtered.filter(item => {
+            const prDate = new Date(item.prSubmittedDate);
+            return (
+              prDate >= filterStartDate &&
+              prDate <= filterEndDate
+            );
+          });
         }
 
         transformed = transformData(filtered);
@@ -229,8 +242,8 @@ function ReviewersStackedBarChart() {
               { label: 'Last Month', value: 'Last Month' },
               { label: 'All Time', value: 'All Time' },
             ]}
-            value={{ label: durationFilter, value: durationFilter }}
-            onChange={selected => setDurationFilter(selected.value)}
+            value={{ label: durationFilter.label, value: durationFilter.value }}
+            onChange={selected => setDurationFilter(selected)}
             className="reviewers-select-container"
             classNamePrefix="reviewers-select"
           />
@@ -306,7 +319,7 @@ function ReviewersStackedBarChart() {
               <Legend wrapperStyle={{ color: darkMode ? 'white' : 'black' }}/>
               {Object.keys(COLORS).map(key => (
                 <Bar key={key} dataKey={key} stackId="a" fill={COLORS[key]}>
-                  <LabelList dataKey={key} position="insideRight" fill="black" />
+                  <LabelList dataKey={key} content={<CustomLabel />} />
                 </Bar>
               ))}
             </BarChart>

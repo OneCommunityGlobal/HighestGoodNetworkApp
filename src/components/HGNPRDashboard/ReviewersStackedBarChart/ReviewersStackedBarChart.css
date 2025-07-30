@@ -117,10 +117,57 @@
   color: #f8fafc;
 }
 
-.dark-mode .reviewers-select__option--is-focused, .reviewers-select__option:hover {
-  background-color: #2f4a73;
+/* Light mode option hover and focus */
+.reviewers-select__option--is-focused,
+.reviewers-select__option:hover {
+  background-color: #eef0f2;
+  color: #000;
 }
 
-.reviewers-select__option--is-focused, .reviewers-select__option:hover {
-  background-color: #eef0f2;
+/* Dark mode option hover and focus */
+.dark-mode .reviewers-select__option--is-focused,
+.dark-mode .reviewers-select__option:hover {
+  background-color: #2f4a73;
+  color: #fff;
+}
+
+/* Optional: Highlight selected option */
+.reviewers-select__option--is-selected {
+  background-color: #cbd5e1;
+  color: #000;
+}
+
+.dark-mode .reviewers-select__option--is-selected {
+  background-color: #3a5a84;
+  color: #fff;
+}
+
+/* Responsive Typography */
+@media (max-width: 768px) {
+  .reviewers-chart-container h3 {
+    font-size: 1.25rem;
+  }
+
+  .reviewers-filters-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .reviewers-filters-bar > div {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .reviewers-chart-container h3 {
+    font-size: 1.1rem;
+  }
+
+  .reviewers-label {
+    font-size: 0.9rem;
+  }
+
+  .reviewers-select-container {
+    font-size: 0.85rem;
+  }
 }
