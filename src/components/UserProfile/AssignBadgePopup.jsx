@@ -4,10 +4,10 @@ import { connect } from 'react-redux';
 import axios from 'axios';
 import AssignTableRow from '../Badge/AssignTableRow';
 import { assignBadgesByUserID, clearNameAndSelected, addSelectBadge } from '../../actions/badgeManagement';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import { boxStyle, boxStyleDark } from '../../styles';
 import { toast } from 'react-toastify';
-import { PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE } from 'utils/constants';
+import { PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE } from '~/utils/constants';
 
 function AssignBadgePopup(props) {
   const {darkMode} = props;
@@ -55,14 +55,13 @@ function AssignBadgePopup(props) {
     } catch (error) {}
   };
 
-  const filterBadges = allBadges => {
-    let filteredList = allBadges.filter(badge => {
-      if (badge.badgeName.toLowerCase().indexOf(searchedName.toLowerCase()) > -1) {
-        return badge;
-      }
-    });
-    return filteredList;
-  };
+ const filterBadges = (allBadges = []) => {
+   // guard against non-array inputs
+   if (!Array.isArray(allBadges)) return [];
+   return allBadges.filter(({ badgeName }) =>
+     badgeName.toLowerCase().includes(searchedName.toLowerCase())
+   );
+ };
 
   let filteredBadges = filterBadges(badgeList);
 
