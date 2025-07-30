@@ -277,7 +277,7 @@ const WeeklySummariesReport = props => {
       // Shallow copy and sort
       let summariesCopy = [...summaries];
       summariesCopy = alphabetize(summariesCopy);
-
+      summariesCopy = summariesCopy.filter(summary => summary?.isActive !== false);
       // Add new key of promised hours by week
       summariesCopy = summariesCopy.map(summary => {
         const promisedHoursByWeek = weekDates.map(weekDate =>
@@ -1538,6 +1538,7 @@ const WeeklySummariesReport = props => {
                               darkMode={darkMode}
                               handleTeamCodeChange={handleTeamCodeChange}
                               loadTrophies={state.loadTrophies}
+                              getWeeklySummariesReport={getWeeklySummariesReport}
                               handleSpecialColorDotClick={handleSpecialColorDotClick}
                             />
                           </Col>
