@@ -531,7 +531,7 @@ class ReportsPage extends Component {
                 </div>
               )}
               <div className="d-flex align-items-center">
-                <span className={`mr-2 ${textColor}`}>Reports Page</span>
+                <span className={`mr-2 `}>Reports Page</span>
                 <EditableInfoModal
                   areaName="ReportsPage"
                   areaTitle="Reports Page"
@@ -544,7 +544,7 @@ class ReportsPage extends Component {
               </div>
             </h2>
             <div>
-              <p className={textColor}>Select a Category</p>
+              <p >Select a Category</p>
             </div>
             <div className='report-container-data'>
               <div className='data-container' style={this.state.showCharts ? {width: '50%'} : {width: '100%'}}>
