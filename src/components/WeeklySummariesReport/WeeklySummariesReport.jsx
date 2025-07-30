@@ -277,7 +277,7 @@ const WeeklySummariesReport = props => {
       // Shallow copy and sort
       let summariesCopy = [...summaries];
       summariesCopy = alphabetize(summariesCopy);
-
+      summariesCopy = summariesCopy.filter(summary => summary?.isActive !== false);
       // Add new key of promised hours by week
       summariesCopy = summariesCopy.map(summary => {
         const promisedHoursByWeek = weekDates.map(weekDate =>
@@ -895,16 +895,6 @@ const WeeklySummariesReport = props => {
           })
           .filter(Boolean);
 
-        if (!selectedCodes.find(code => code.value === newTeamCode)) {
-          const ids = teamCodeWithUserId[newTeamCode];
-          if (newTeamCode !== undefined && newTeamCode.length > 0) {
-            selectedCodes.push({
-              label: `${newTeamCode} (${teamCodeCounts[newTeamCode]})`,
-              value: newTeamCode,
-              _ids: ids,
-            });
-          }
-        }
         // Sort teamCodes by label
         teamCodes
           .sort((a, b) => a.label.localeCompare(b.label))
@@ -1548,6 +1538,7 @@ const WeeklySummariesReport = props => {
                               darkMode={darkMode}
                               handleTeamCodeChange={handleTeamCodeChange}
                               loadTrophies={state.loadTrophies}
+                              getWeeklySummariesReport={getWeeklySummariesReport}
                               handleSpecialColorDotClick={handleSpecialColorDotClick}
                             />
                           </Col>
