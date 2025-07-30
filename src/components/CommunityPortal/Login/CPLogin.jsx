@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import { Form, FormGroup, FormText, Input, Label, Button, FormFeedback } from 'reactstrap';
-import Joi from 'joi';
+import Joi from 'joi-browser';
 
-import { loginBMUser } from 'actions/authActions';
+import { loginBMUser } from '~/actions/authActions';
 
 function CPLogin(props) {
   const { dispatch, auth, history, location } = props;
@@ -93,6 +93,7 @@ function CPLogin(props) {
         <FormText>
           Enter your current user credentials to access the Community Portal Dashboard
         </FormText>
+        <p>Note: You must use your Production/Main credentials for this login.</p>
         <FormGroup>
           <Label for="email">Email</Label>
           <Input

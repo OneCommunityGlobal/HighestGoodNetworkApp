@@ -1,6 +1,6 @@
 import '../TotalOrgSummary.css';
 
-export default function NumbersVolunteerWorked({ usersTimeEntries, darkMode }) {
+export default function NumbersVolunteerWorked({ isLoading, data, darkMode }) {
   return (
     <div>
       <p
@@ -8,7 +8,7 @@ export default function NumbersVolunteerWorked({ usersTimeEntries, darkMode }) {
           darkMode ? 'text-light' : 'text-dark'
         } component-border component-pie-chart-label p-2`}
       >
-        {usersTimeEntries.length} Volunteers worked over assigned time
+        {isLoading ? '...' : data.count} Volunteers worked 1+ hours over assigned time
       </p>
     </div>
   );

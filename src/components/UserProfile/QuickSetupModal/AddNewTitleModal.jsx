@@ -11,6 +11,7 @@ import {
   Input,
 } from 'reactstrap';
 import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 import { addTitle, editTitle } from '../../../actions/title';
 import AssignProjectField from './AssignProjectField';
 import AssignTeamField from './AssignTeamField';
@@ -31,7 +32,7 @@ function AddNewTitleModal({
 }) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const teamCodes = useSelector(state => state.teamCodes?.teamCodes || []);
-
+  
   const [titleData, setTitleData] = useState(() => {
     if (editMode && Object.keys(title).length !== 0) {
       return {
@@ -192,6 +193,7 @@ function AddNewTitleModal({
           } else {
             setIsOpen(false);
             refreshModalTitles();
+            toast.success('Title updated successfully');
           }
         })
         .catch(e => {
@@ -206,11 +208,13 @@ function AddNewTitleModal({
           } else {
             setIsOpen(false);
             refreshModalTitles();
+            toast.success('Title added successfully');
           }
         })
         .catch(e => {
           console.log(e);
         });
+      
     }
   };
 
@@ -317,7 +321,7 @@ function AddNewTitleModal({
               Team Code<span className="qsm-modal-required">*</span>:
             </Label>
             <AssignTeamCodeField
-              teamCodeData={QSTTeamCodes}
+              teamCodeData={QSTTeamCodes} 
               onDropDownSelect={selectTeamCode}
               selectedTeamCode={selectedTeamCode}
               cleanTeamCodeAssign={cleanTeamCodeAssign}

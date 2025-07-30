@@ -1,7 +1,28 @@
 import axios from 'axios';
-import GET_TOOL_BY_ID, { GET_TOOLS } from '../../constants/bmdashboard/toolsConstants';
+import { GET_TOOL_BY_ID, GET_TOOLS } from '../../constants/bmdashboard/toolsConstants';
 import { GET_ERRORS } from '../../constants/errors';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
+
+export const setTools = payload => {
+  return {
+    type: GET_TOOLS,
+    payload,
+  };
+};
+
+export const setTool = payload => {
+  return {
+    type: GET_TOOL_BY_ID,
+    payload,
+  };
+};
+
+export const setErrors = payload => {
+  return {
+    type: GET_ERRORS,
+    payload,
+  };
+};
 
 export const fetchTools = () => {
   const url = ENDPOINTS.BM_TOOLS;
@@ -9,13 +30,10 @@ export const fetchTools = () => {
     axios
       .get(url)
       .then(res => {
-        // eslint-disable-next-line no-use-before-define
         dispatch(setTools(res.data));
       })
       .catch(error => {
-        // eslint-disable-next-line no-console
-        console.log('err: ', error.response.data.message);
-        // eslint-disable-next-line no-use-before-define
+        // console.log('err: ', error.response.data.message);
         dispatch(setErrors(error));
       });
   };
@@ -44,25 +62,4 @@ export const purchaseTools = async body => {
       if (err.request) return err.request;
       return err.message;
     });
-};
-
-export const setTools = payload => {
-  return {
-    type: GET_TOOLS,
-    payload,
-  };
-};
-
-export const setTool = payload => {
-  return {
-    type: GET_TOOL_BY_ID,
-    payload,
-  };
-};
-
-export const setErrors = payload => {
-  return {
-    type: GET_ERRORS,
-    payload,
-  };
 };

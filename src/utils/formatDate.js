@@ -20,6 +20,7 @@ export const formatDate = date =>
     .startOf('day')
     .format('MMM-DD-YY');
 export const formatDateLocal = date => moment.utc(date).format('MMM-DD-YY');
+export const formatDateUtcYYYYMMDD = date => moment.utc(date).format('YYYY-MM-DD');
 
 /**
  *
