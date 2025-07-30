@@ -31,7 +31,7 @@ const BlueSquare = (props) => {
       <div className={`blueSquares ${blueSquares?.length ? '' : 'NoBlueSquares'}`}>
         {blueSquares?.length ? (
           blueSquares
-            .sort((a, b) => (a.date < b.date ? 1 : -1))
+            .sort((a, b) => (a.date > b.date ? 1 : -1)) // sorting by most recent date(awareded) last
             .map((blueSquare, index) => (
               <div
                 key={index}
