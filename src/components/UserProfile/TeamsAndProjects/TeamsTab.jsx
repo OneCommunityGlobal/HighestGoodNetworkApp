@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { addTeamMember, deleteTeamMember } from '~/actions/allTeamsAction';
+import { toast } from 'react-toastify';
 import AddTeamPopup from './AddTeamPopup';
 import UserTeamsTable from './UserTeamsTable';
-import { addTeamMember, deleteTeamMember } from 'actions/allTeamsAction';
 
-const TeamsTab = props => {
+function TeamsTab(props) {
   const {
     teamsData,
     userTeams,
@@ -23,7 +24,6 @@ const TeamsTab = props => {
     codeValid,
     setCodeValid,
     saved,
-    isTeamSaved,
     inputAutoComplete,
     inputAutoStatus,
     isLoading,
@@ -33,6 +33,12 @@ const TeamsTab = props => {
   const [addTeamPopupOpen, setaddTeamPopupOpen] = useState(false);
   const [renderedOn, setRenderedOn] = useState(0);
   const [removedTeams, setRemovedTeams] = useState([]);
+
+  useEffect(() => {
+    if (typeof fetchTeamCodeAllUsers === 'function') {
+      fetchTeamCodeAllUsers();
+    }
+  }, []);
 
   useEffect(() => {
     if (saved && removedTeams.length > 0) {
@@ -49,26 +55,38 @@ const TeamsTab = props => {
 
   const onAddTeamPopupClose = () => {
     setaddTeamPopupOpen(false);
-    if (isTeamSaved) isTeamSaved(true);
   };
+
   const onSelectDeleteTeam = teamId => {
-    setRemovedTeams([...removedTeams, teamId]);
-    onDeleteTeam(teamId);
-    if (isTeamSaved) isTeamSaved(false);
+    try {
+      if (userProfile._id) {
+        deleteTeamMember(teamId, userProfile._id);
+      }
+      toast.success('Team Deleted successfully');
+      onDeleteTeam(teamId);
+    } catch (error) {
+      console.error('Error deleting team:', error);
+      toast.error('Failed to delete team');
+    }
   };
 
   const onSelectAssignTeam = team => {
-    if (userProfile?._id) {
-      addTeamMember(team._id, userProfile._id, userProfile.firstName, userProfile.lastName);
-      if (isTeamSaved) isTeamSaved(false);
+    try {
+      if (userProfile?._id) {
+        addTeamMember(team._id, userProfile._id, userProfile.firstName, userProfile.lastName);
+      }
+      onAssignTeam(team);
+      toast.success('Team assigned successfully');
+    } catch (error) {
+      console.error('Error assigning team:', error);
+      toast.error('Failed to assign team');
     }
-    onAssignTeam(team);
-    setRenderedOn(Date.now());
   };
 
   return (
-    <React.Fragment>
+    <>
       <AddTeamPopup
+        data-testid="add-team-popup"
         open={addTeamPopupOpen}
         onClose={onAddTeamPopupClose}
         teamsData={teamsData}
@@ -79,6 +97,7 @@ const TeamsTab = props => {
         darkMode={darkMode}
       />
       <UserTeamsTable
+        data-testid="user-teams-table"
         userTeamsById={userTeams}
         onButtonClick={onAddTeamPopupShow}
         onDeleteClick={onSelectDeleteTeam}
@@ -101,7 +120,7 @@ const TeamsTab = props => {
         fetchTeamCodeAllUsers={() => fetchTeamCodeAllUsers()}
         darkMode={darkMode}
       />
-    </React.Fragment>
+    </>
   );
-};
+}
 export default TeamsTab;

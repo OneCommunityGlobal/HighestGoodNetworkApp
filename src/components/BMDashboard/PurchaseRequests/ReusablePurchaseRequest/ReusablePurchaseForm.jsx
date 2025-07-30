@@ -1,12 +1,11 @@
-import { fetchBMProjects } from 'actions/bmdashboard/projectActions';
-import { fetchReusableTypes } from 'actions/bmdashboard/invTypeActions';
-import { purchaseReusable } from 'actions/bmdashboard/reusableActions';
+import { fetchBMProjects } from '~/actions/bmdashboard/projectActions';
+import { fetchReusableTypes } from '~/actions/bmdashboard/invTypeActions';
+import { purchaseReusable } from '~/actions/bmdashboard/reusableActions';
 import PurchaseForm from '../PurchaseForm';
 
 const formLabels = {
   headerText: 'Purchase Request: Reusable Items',
-  headerSubText:
-    'Important: This form initiates a purchase request for reusable items for approval/action by project admins.',
+  headerSubText: 'Important: This form initiates a purchase request...',
   primarySelectLabel: 'Project',
   primarySelectDefaultOption: 'Select Project...',
   secondarySelectLabel: 'Reusable Item',
@@ -22,8 +21,8 @@ function ReusablePurchaseForm() {
       fetchPrimaryDataAction={fetchBMProjects}
       fetchSecondaryDataAction={fetchReusableTypes}
       submitFormAction={purchaseReusable}
-      primaryDataSelector={state => state.bmProjects}
-      secondaryDataSelector={state => state.bmInvTypes.list}
+      primaryDataSelector={state => state.bmProjects || []}
+      secondaryDataSelector={state => state.bmInvTypes.list || []}
       errorSelector={state => state.errors}
       formLabels={formLabels}
     />

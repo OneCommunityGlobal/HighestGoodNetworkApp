@@ -6,7 +6,6 @@ import ControllerRow from '../ControllerRow';
 import {
   moveTasks,
   deleteTask,
-  copyTask,
   deleteChildrenTasks,
 } from '../../../../../actions/task.js';
 import './tagcolor.css';
@@ -14,18 +13,8 @@ import './task.css';
 import '../../../../Header/DarkMode.css'
 import { Editor } from '@tinymce/tinymce-react';
 import { getPopupById } from './../../../../../actions/popupEditorAction';
-import { boxStyle, boxStyleDark } from 'styles';
-import { formatDate } from 'utils/formatDate';
-
-const TINY_MCE_INIT_OPTIONS = {
-  license_key: 'gpl',
-  menubar: false,
-  toolbar: false,
-  branding: false,
-  min_height: 80,
-  max_height: 300,
-  autoresize_bottom_margin: 1,
-};
+import { boxStyle, boxStyleDark } from '~/styles';
+import { formatDate } from '~/utils/formatDate';
 
 function Task(props) {
   /*
@@ -33,6 +22,20 @@ function Task(props) {
    */
   // props from store
   const { tasks, darkMode } = props;
+
+  const { copyCurrentTask } = props;
+
+  const TINY_MCE_INIT_OPTIONS = {
+    license_key: 'gpl',
+    menubar: false,
+    toolbar: false,
+    branding: false,
+    min_height: 80,
+    max_height: 300,
+    autoresize_bottom_margin: 1,
+    skin: darkMode ? 'oxide-dark' : 'oxide',
+    content_css: darkMode ? 'dark' : 'default',
+  };
 
   const names = props.resources.map(element => element.name);
   const colors_objs = assignColorsToInitials(names);
@@ -49,6 +52,11 @@ function Task(props) {
   const [children, setChildren] = useState([]);
   const [showMoreResources, setShowMoreResources] = useState(false);
   const tableRowRef = useRef();
+  const [currentTask, setCurrentTask] = useState(undefined);
+
+  useEffect(() => {
+    setCurrentTask(tasks.find(t => t._id === props.taskId));
+  }, [tasks])
 
   /*
    * -------------------------------- functions --------------------------------
@@ -197,7 +205,7 @@ function Task(props) {
             <td
               id={`r_${props.num}_${props.taskId}`}
               scope="row"
-              className={`taskNum ${props.hasChildren ? 'has_children' : ''}`}
+              className={`taskNum ${props.hasChildren ? 'has_children' : ''} text-left`}
               onClick={openChild}
             >
               {props.num.replaceAll('.0', '')}
@@ -374,6 +382,8 @@ function Task(props) {
           </tr>
           {controllerRow ? (
             <ControllerRow
+              currentTask={currentTask}
+              copyCurrentTask={copyCurrentTask}
               tableColNum={tableColNum}
               num={props.num}
               taskId={props.taskId}
@@ -390,7 +400,6 @@ function Task(props) {
               siblings={props.siblings}
               load={props.load}
               pageLoadTime={props.pageLoadTime}
-              setIsLoading={props.setIsLoading}
             />
           ) : null}
         </>
@@ -400,6 +409,8 @@ function Task(props) {
         isOpen && children.length
           ? children.map((task, i) => (
             <ConnectedTask
+              copyCurrentTask={copyCurrentTask}
+              tasks={tasks}
               key={`${task._id}${i}`}
               taskId={task._id}
               level={task.level}
@@ -446,14 +457,13 @@ function Task(props) {
 }
 
 const mapStateToProps = state => ({
-  tasks: state.tasks.taskItems,
+  // tasks: state.tasks.taskItems,
   darkMode: state.theme.darkMode,
 });
 
 const ConnectedTask = connect(mapStateToProps, {
   moveTasks,
   deleteTask,
-  copyTask,
   getPopupById,
   deleteChildrenTasks,
 })(Task);

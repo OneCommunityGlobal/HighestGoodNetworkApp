@@ -1,6 +1,6 @@
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import BlueSquare from '../BlueSquares/BlueSquare';
-import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
 import './BlueSquaresTable.css';
 
 const BlueSquaresTable = ({ userProfile ,canEdit, isPrivate , handleUserProfile , handleBlueSquare, darkMode}) => {
@@ -8,7 +8,7 @@ const BlueSquaresTable = ({ userProfile ,canEdit, isPrivate , handleUserProfile 
     <div className="user-profile-blue-square-section">
       <div className={`user-profile-blue-square-div-header ${darkMode ? 'bg-space-cadet' : ''}`}>
         <div className="user-profile-blue-square-div-header-title">
-          <div>BLUE SQUARES</div>
+          <div className='blue-squares' data-testid='blue-squares'>BLUE SQUARES</div>
           <div>
             <EditableInfoModal
               areaName="blueSquares_info"

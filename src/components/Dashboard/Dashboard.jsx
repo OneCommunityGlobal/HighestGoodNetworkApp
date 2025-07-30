@@ -1,42 +1,40 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Container } from 'reactstrap';
 import { connect, useSelector } from 'react-redux';
+import { cantUpdateDevAdminDetails } from '~/utils/permissions';
+import {
+  DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
+  DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
+  PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
+} from '~/utils/constants';
+import { useDispatch } from 'react-redux';
+import { updateSummaryBarData } from '~/actions/dashboardActions';
 import Leaderboard from '../LeaderBoard';
 import WeeklySummary from '../WeeklySummary/WeeklySummary';
 import Badge from '../Badge';
 import Timelog from '../Timelog/Timelog';
 import SummaryBar from '../SummaryBar/SummaryBar';
-import './Dashboard.css';
+import styles from './Dashboard.module.css';
 import '../../App.css';
 import TimeOffRequestDetailModal from './TimeOffRequestDetailModal';
-import { cantUpdateDevAdminDetails } from 'utils/permissions';
-import { ENDPOINTS } from 'utils/URL';
-import './Dashboard.css';
-import axios from 'axios';
-import { Modal, ModalHeader, ModalBody, Button } from 'reactstrap';
-import {
-  DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
-  DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
-  PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
-} from 'utils/constants';
+import FeedbackModal from '../FeedbackModal/FeedbackModal';
 
 export function Dashboard(props) {
   const [popup, setPopup] = useState(false);
+  const [filteredUserTeamIds, setFilteredUserTeamIds] = useState([]);
   const [summaryBarData, setSummaryBarData] = useState(null);
-  const { authUser } = props;
-
-  const [actualUserProfile, setActualUserProfile] = useState(null);
-  const [showModal, setShowModal] = useState(false);
-
+  const { match, authUser } = props;
   const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
   const [viewingUser, setViewingUser] = useState(checkSessionStorage);
   const [displayUserId, setDisplayUserId] = useState(
-    viewingUser ? viewingUser.userId : authUser.userid,
+    match.params.userId || viewingUser?.userId || authUser.userid,
   );
   const isNotAllowedToEdit = cantUpdateDevAdminDetails(viewingUser?.email, authUser.email);
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const toggle = (forceOpen = null) => {
+  const dispatch = useDispatch();
+
+  const toggle = () => {
     if (isNotAllowedToEdit) {
       const warningMessage =
         viewingUser?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY
@@ -45,10 +43,9 @@ export function Dashboard(props) {
       alert(warningMessage);
       return;
     }
-  
-    const shouldOpen = forceOpen !== null ? forceOpen : !popup;
-    setPopup(shouldOpen);
-  
+
+    setPopup(!popup);
+
     setTimeout(() => {
       const elem = document.getElementById('weeklySum');
       if (elem) {
@@ -56,7 +53,6 @@ export function Dashboard(props) {
       }
     }, 150);
   };
-  
 
   const handleStorageEvent = () => {
     const sessionStorageData = checkSessionStorage();
@@ -71,70 +67,14 @@ export function Dashboard(props) {
     };
   }, []);
 
-  const getUserData = async () => {
-
-    try {
-      const url = ENDPOINTS.USER_PROFILE(authUser.userid);
-      const allUserInfo = await axios.get(url).then(res => res.data);
-
-      const userType = authUser.role.toLowerCase();
-      const permissionsKey = `permissions_${userType}`;
-      const storedPermissions = JSON.parse(localStorage.getItem(permissionsKey)) || [];
-      const currentPermissions = allUserInfo.permissions.frontPermissions;
-      const hasPermissionsChanged = JSON.stringify(storedPermissions) !== JSON.stringify(currentPermissions);
-
-
-      if (currentPermissions.includes('showModal') && hasPermissionsChanged) {
-        setShowModal(true);
-        setActualUserProfile(allUserInfo);
-        localStorage.setItem(permissionsKey, JSON.stringify(currentPermissions));
-      }
-
-    } catch (error) {
-      console.error("Error", error);
-    }
-  };
-
-  const handleCloseModal = async () => {
-    if (actualUserProfile) {
-
-      try {
-        const userId = actualUserProfile?._id;
-        const url = ENDPOINTS.USER_PROFILE(userId);
-
-        const FilteredPermission = actualUserProfile.permissions.frontPermissions.filter(permission => permission !== 'showModal');
-        const newUserInfo = { ...actualUserProfile, permissions: { frontPermissions: FilteredPermission } };
-
-        await axios.put(url, newUserInfo);
-
-        setActualUserProfile(null);
-      } catch (error) {
-        console.error("Error", error);
-      }
-    }
-    setShowModal(false);
-  };
-
   useEffect(() => {
-    getUserData()
-  }, [authUser.userid]);
-
-
+    console.log(summaryBarData);
+    dispatch(updateSummaryBarData({ summaryBarData }));
+  }, [summaryBarData]);
 
   return (
     <Container fluid className={darkMode ? 'bg-oxford-blue' : ''}>
-      <Modal isOpen={showModal} toggle={handleCloseModal} id="modal-content__new-role">
-        <ModalHeader
-          toggle={handleCloseModal}
-          cssModule={{ 'modal-title': 'w-100 text-center my-auto' }}
-        >
-          Important Notification
-        </ModalHeader>
-        <ModalBody id="modal-body_new-role--padding">
-          Your permissions have been updated. Please log out and log back in for the changes to take effect.
-          <Button color="primary" className="mt-3" onClick={handleCloseModal}>Close</Button>
-        </ModalBody>
-      </Modal>
+      {/* <FeedbackModal /> */}
       <SummaryBar
         displayUserId={displayUserId}
         toggleSubmitForm={toggle}
@@ -142,7 +82,6 @@ export function Dashboard(props) {
         summaryBarData={summaryBarData}
         isNotAllowedToEdit={isNotAllowedToEdit}
       />
-
       <Row className="w-100 ml-1">
         <Col lg={7}></Col>
         <Col lg={5}>
@@ -173,6 +112,7 @@ export function Dashboard(props) {
             displayUserId={displayUserId}
             isNotAllowedToEdit={isNotAllowedToEdit}
             darkMode={darkMode}
+            setFilteredUserTeamIds={setFilteredUserTeamIds}
           />
         </Col>
         <Col lg={7} className="left-col-dashboard order-lg-1 order-1">
@@ -192,6 +132,7 @@ export function Dashboard(props) {
               isDashboard
               passSummaryBarData={setSummaryBarData}
               isNotAllowedToEdit={isNotAllowedToEdit}
+              filteredUserTeamIds={filteredUserTeamIds}
             />
           </div>
         </Col>

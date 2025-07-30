@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Form, FormGroup, FormFeedback, Label, Input, Button } from 'reactstrap';
-import Joi from 'joi';
+import Joi from 'joi-browser';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
 
-import { addEquipmentType } from 'actions/bmdashboard/equipmentActions';
+import { addEquipmentType } from '~/actions/bmdashboard/equipmentActions';
 
 const FuelTypes = {
   dies: 'Diesel',
@@ -30,6 +30,13 @@ export default function AddTypeForm() {
   const [fuel, setFuel] = useState(FuelTypes.dies);
   const [errInput, setErrInput] = useState('');
   const [errType, setErrType] = useState('');
+  const [isRedirected, setIsRedirected] = useState(false);
+
+  useEffect(() => {
+    if (isRedirected) {
+      history.push('/bmdashboard/equipment');
+    }
+  }, [isRedirected, history]);
 
   const handleChange = event => {
     setErrInput('');
@@ -55,6 +62,7 @@ export default function AddTypeForm() {
     const response = await addEquipmentType({ name, desc, fuel });
     if (response.status === 201) {
       toast.success('Success: new equipment type added.');
+      setIsRedirected(true);
     } else if (response.status === 409) {
       toast.error(`Error: that type already exists.`);
     } else if (response.status >= 400) {
@@ -96,7 +104,7 @@ export default function AddTypeForm() {
           invalid={errInput === 'desc'}
           onChange={handleChange}
         />
-        <div class="form-footer" style={{ color: desc.length > 150 ? '#dc3545' : 'black' }}>
+        <div className="form-footer" style={{ color: desc.length > 150 ? '#dc3545' : 'black' }}>
           Character {desc.length}/150
         </div>
         {/* {!errInput && <FormText>Max 150 characters</FormText>} */}

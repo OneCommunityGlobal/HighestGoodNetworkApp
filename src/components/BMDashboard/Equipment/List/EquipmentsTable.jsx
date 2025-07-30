@@ -5,10 +5,10 @@ import { Table, Button } from 'reactstrap';
 import { BiPencil } from 'react-icons/bi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons';
-import './Equipments.css';
 import ReactTooltip from 'react-tooltip';
-import { fetchAllEquipments } from 'actions/bmdashboard/equipmentActions';
+import { fetchAllEquipments } from '~/actions/bmdashboard/equipmentActions';
 import EquipmentListModal from './EquipmentListModal';
+import styles from './Equipments.module.css';
 
 function EquipmentsTable({ equipment, project }) {
   // Data fetched in the parent component : EquipmentsView
@@ -18,8 +18,18 @@ function EquipmentsTable({ equipment, project }) {
   const [recordType, setRecordType] = useState(null);
   const [modal, setModal] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
-  const [sortOrder, setSortOrder] = useState({ project: 'asc', itemType: 'asc' });
-  const [iconToDisplay, setIconToDisplay] = useState({ project: faSortUp, itemType: faSortUp });
+  const [sortOrder, setSortOrder] = useState({
+    project: 'asc',
+    itemType: 'asc',
+    rentedOn: 'asc',
+    rentedDue: 'asc',
+  });
+  const [iconToDisplay, setIconToDisplay] = useState({
+    project: faSortUp,
+    itemType: faSortUp,
+    rentedOn: faSortUp,
+    rentedDue: faSortUp,
+  });
   const [equipmentsViewData, setEquipmentsViewData] = useState(null);
 
   useEffect(() => {
@@ -73,6 +83,32 @@ function EquipmentsTable({ equipment, project }) {
         setEquipmentsViewData(_equipmentsViewData);
         break;
       }
+      case 'rentedOn': {
+        setSortOrder({ ...sortOrder, rentedOn: sortOrder.rentedOn === 'asc' ? 'desc' : 'asc' });
+        setIconToDisplay({
+          ...iconToDisplay,
+          rentedOn: iconToDisplay.rentedOn === faSortUp ? faSortDown : faSortUp,
+        });
+        const factor = sortOrder.rentedOn === 'asc' ? 1 : -1;
+        _equipmentsViewData = [..._equipments].sort((a, b) => {
+          return factor * (new Date(b.rentedOnDate) - new Date(a.rentedOnDate));
+        });
+        setEquipmentsViewData(_equipmentsViewData);
+        break;
+      }
+      case 'rentedDue': {
+        setSortOrder({ ...sortOrder, rentedDue: sortOrder.rentedDue === 'asc' ? 'desc' : 'asc' });
+        setIconToDisplay({
+          ...iconToDisplay,
+          rentedDue: iconToDisplay.rentedDue === faSortUp ? faSortDown : faSortUp,
+        });
+        const factor = sortOrder.rentedDue === 'asc' ? 1 : -1;
+        _equipmentsViewData = [..._equipments].sort((a, b) => {
+          return factor * (new Date(b.rentalDueDate) - new Date(a.rentalDueDate));
+        });
+        setEquipmentsViewData(_equipmentsViewData);
+        break;
+      }
       default: {
         break;
       }
@@ -93,7 +129,6 @@ function EquipmentsTable({ equipment, project }) {
       setEquipmentsViewData([...equipments]);
     }
   }, [project]);
-
   useEffect(() => {
     let _equipments;
     if (project.value === '0' && equipment.value === '0') {
@@ -122,12 +157,12 @@ function EquipmentsTable({ equipment, project }) {
           record={selectedRow}
         />
         <Table responsive>
-          <thead className="BuildingTableHeaderLine">
+          <thead className={`${styles.BuildingTableHeaderLine}`}>
             <tr>
               <th onClick={() => handleSort('project')}>
                 <div
                   data-tip={`Sort project ${sortOrder.project}`}
-                  className="d-flex  align-self-stretch cusorpointer"
+                  className={`d-flex align-self-stretch ${styles.cusorpointer}`}
                 >
                   <div>Project</div>
                   <FontAwesomeIcon icon={iconToDisplay.project} size="lg" />
@@ -137,7 +172,7 @@ function EquipmentsTable({ equipment, project }) {
               <th onClick={() => handleSort('itemType')}>
                 <div
                   data-tip={`Sort name ${sortOrder.itemType}`}
-                  className="d-flex align-items-stretch cusorpointer"
+                  className={`d-flex align-items-stretch ${styles.cusorpointer}`}
                 >
                   <div>Name</div>
                   <FontAwesomeIcon icon={iconToDisplay.itemType} size="lg" />
@@ -146,8 +181,26 @@ function EquipmentsTable({ equipment, project }) {
               </th>
               <th>Bought</th>
               <th>Rental</th>
-              <th>Rented On</th>
-              <th>Rental Due</th>
+              <th onClick={() => handleSort('rentedOn')}>
+                <div
+                  data-tip={`Sort Rented On ${sortOrder.rentedOn}`}
+                  className={`d-flex align-items-stretch ${styles.cusorpointer}`}
+                >
+                  <div>Rented On</div>
+                  <FontAwesomeIcon icon={iconToDisplay.rentedOn} size="lg" />
+                </div>
+                <ReactTooltip />
+              </th>
+              <th onClick={() => handleSort('rentedDue')}>
+                <div
+                  data-tip={`Sort Rental Due ${sortOrder.rentedDue}`}
+                  className={`d-flex align-items-stretch ${styles.cusorpointer}`}
+                >
+                  <div>Rental Due</div>
+                  <FontAwesomeIcon icon={iconToDisplay.rentedDue} size="lg" />
+                </div>
+                <ReactTooltip />
+              </th>
               <th>Updates</th>
               <th>Purchases</th>
             </tr>
@@ -207,5 +260,4 @@ function EquipmentsTable({ equipment, project }) {
     </div>
   );
 }
-
 export default EquipmentsTable;
