@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Button, Alert } from 'react-bootstrap';
-import hasPermission from 'utils/permissions';
+import hasPermission from '~/utils/permissions';
 import {
   getWarningsByUserId,
   postWarningByUserId,
@@ -31,6 +31,8 @@ export default function Warning({ personId, username, userRole, displayUser }) {
     dispatch(hasPermission('addWarningTracker')) ||
     dispatch(hasPermission('deactivateWarningTracker')) ||
     dispatch(hasPermission('deleteWarningTracker'));
+
+  const canEditWarning = dispatch(hasPermission('setTrackingManagement'));
 
   const fetchUsersWarningsById = async () => {
     dispatch(getWarningsByUserId(personId)).then(res => {
@@ -110,15 +112,17 @@ export default function Warning({ personId, username, userRole, displayUser }) {
     isAllowedToTracking && (
       <div className="warnings-container">
         <div className="button__container">
-          <Button
-            className="btn btn-warning warning-btn tracking__btn"
-            size="sm"
-            onClick={handleToggle}
-          >
-            {toggle ? 'Hide' : 'Tracking'}
-          </Button>
-
           {canViewTrackerButton && (
+            <Button
+              className="btn btn-warning warning-btn tracking__btn"
+              size="sm"
+              onClick={handleToggle}
+            >
+              {toggle ? 'Hide' : 'Tracking'}
+            </Button>
+          )}
+
+          {canEditWarning && (
             <Button
               className="btn"
               size="sm"

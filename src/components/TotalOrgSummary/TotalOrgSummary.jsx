@@ -1,16 +1,31 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable new-cap */
+/* eslint-disable testing-library/no-node-access */
 import { connect } from 'react-redux';
 import { useEffect, useState } from 'react';
-import { Alert, Col, Container, Row, Button } from 'reactstrap';
+import {
+  Alert,
+  Col,
+  Container,
+  Row,
+  Dropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+} from 'reactstrap';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import 'moment-timezone';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 
-import hasPermission from 'utils/permissions';
+import hasPermission from '~/utils/permissions';
 
 // actions
-import { getTotalOrgSummary } from 'actions/totalOrgSummary';
+import { getTotalOrgSummary } from '~/actions/totalOrgSummary';
 
 import '../Header/DarkMode.css';
 import './TotalOrgSummary.css';
@@ -24,7 +39,6 @@ import VolunteerStatusChart from './VolunteerStatus/VolunteerStatusChart';
 import BlueSquareStats from './BlueSquareStats/BlueSquareStats';
 import TeamStats from './TeamStats/TeamStats';
 import HoursCompletedBarChart from './HoursCompleted/HoursCompletedBarChart';
-import HoursWorkList from './HoursWorkList/HoursWorkList';
 import NumbersVolunteerWorked from './NumbersVolunteerWorked/NumbersVolunteerWorked';
 import AnniversaryCelebrated from './AnniversaryCelebrated/AnniversaryCelebrated';
 import RoleDistributionPieChart from './VolunteerRolesTeamDynamics/RoleDistributionPieChart';
@@ -53,25 +67,48 @@ function calculateEndDate() {
   return currentDate.toISOString().split('T')[0];
 }
 
-function calculateComparisonStartDate() {
-  // returns a string date in YYYY-MM-DD format of the start of the second to last week
-  const currentDate = new Date();
-  currentDate.setHours(0, 0, 0, 0);
-  const dayOfWeek = currentDate.getDay();
-  const daysToSubtract = dayOfWeek === 0 ? 0 : dayOfWeek;
-  currentDate.setDate(currentDate.getDate() - daysToSubtract - 14);
-  return currentDate.toISOString().split('T')[0];
+function calculateComparisonDates(comparisonType, fromDate, toDate) {
+  const start = new Date(fromDate);
+  const end = new Date(toDate);
+  const diffTime = Math.abs(end - start);
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+  switch (comparisonType) {
+    case 'Week Over Week':
+      return {
+        comparisonStartDate: new Date(start.setDate(start.getDate() - diffDays))
+          .toISOString()
+          .split('T')[0],
+        comparisonEndDate: new Date(end.setDate(end.getDate() - diffDays))
+          .toISOString()
+          .split('T')[0],
+      };
+    case 'Month Over Month':
+      return {
+        comparisonStartDate: new Date(start.setMonth(start.getMonth() - 1))
+          .toISOString()
+          .split('T')[0],
+        comparisonEndDate: new Date(end.setMonth(end.getMonth() - 1)).toISOString().split('T')[0],
+      };
+    case 'Year Over Year':
+      return {
+        comparisonStartDate: new Date(start.setFullYear(start.getFullYear() - 1))
+          .toISOString()
+          .split('T')[0],
+        comparisonEndDate: new Date(end.setFullYear(end.getFullYear() - 1))
+          .toISOString()
+          .split('T')[0],
+      };
+    default:
+      return {
+        comparisonStartDate: null,
+        comparisonEndDate: null,
+      };
+  }
 }
 
-function calculateComparisonEndDate() {
-  // returns a string date in YYYY-MM-DD format of the end of the second to last week
-  const currentDate = new Date();
-  currentDate.setHours(0, 0, 0, 0);
-  const dayOfWeek = currentDate.getDay();
-  const daysToAdd = dayOfWeek === 6 ? 0 : -8 - dayOfWeek;
-  currentDate.setDate(currentDate.getDate() + daysToAdd);
-  return currentDate.toISOString().split('T')[0];
-}
+const fromDate = calculateStartDate();
+const toDate = calculateEndDate();
 
 function TotalOrgSummary(props) {
   const { darkMode, error } = props;
@@ -79,12 +116,41 @@ function TotalOrgSummary(props) {
   const [volunteerStats, setVolunteerStats] = useState(null);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [dateRangeDropdownOpen, setDateRangeDropdownOpen] = useState(false);
+  const [comparisonDropdownOpen, setComparisonDropdownOpen] = useState(false);
+  const [selectedDateRange, setSelectedDateRange] = useState('Current Week');
+  const [selectedComparison, setSelectedComparison] = useState('No Comparison');
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [currentFromDate, setCurrentFromDate] = useState(fromDate);
+  const [currentToDate, setCurrentToDate] = useState(toDate);
 
-  // default dates
-  const startDate = calculateStartDate();
-  const endDate = calculateEndDate();
-  const comparisonStartDate = calculateComparisonStartDate();
-  const comparisonEndDate = calculateComparisonEndDate();
+  useEffect(() => {
+    const fetchVolunteerStats = async () => {
+      try {
+        const { comparisonStartDate, comparisonEndDate } = calculateComparisonDates(
+          selectedComparison,
+          currentFromDate,
+          currentToDate,
+        );
+
+        const volunteerStatsResponse = await props.getTotalOrgSummary(
+          currentFromDate,
+          currentToDate,
+          comparisonStartDate,
+          comparisonEndDate,
+        );
+        setVolunteerStats(volunteerStatsResponse.data);
+        await props.hasPermission('');
+        setIsLoading(false);
+      } catch (catchFetchError) {
+        setIsVolunteerFetchingError(true);
+      }
+    };
+
+    fetchVolunteerStats();
+  }, [currentFromDate, currentToDate, selectedComparison]);
 
   const handleSaveAsPDF = async () => {
     if (isGeneratingPDF) return;
@@ -251,7 +317,7 @@ function TotalOrgSummary(props) {
           overflow: hidden !important;
           text-overflow: ellipsis !important;
         }
-        .chart-title p {
+        .total-org-chart-title p {
           font-size: 1.5em !important;
           font-weight: bold !important;
           text-align: center !important;
@@ -321,25 +387,38 @@ function TotalOrgSummary(props) {
     }
   };
 
-  useEffect(() => {
-    const fetchVolunteerStats = async () => {
-      try {
-        const volunteerStatsResponse = await props.getTotalOrgSummary(
-          startDate,
-          endDate,
-          comparisonStartDate,
-          comparisonEndDate,
-        );
-        setVolunteerStats(volunteerStatsResponse.data);
-        await props.hasPermission('');
-        setIsLoading(false);
-      } catch (catchFetchError) {
-        setIsVolunteerFetchingError(true);
-      }
-    };
+  const handleDateRangeSelect = option => {
+    if (option === 'Select Date Range') {
+      setShowDatePicker(true);
+    } else {
+      setSelectedDateRange(option);
+      setShowDatePicker(false);
+      setSelectedComparison('No Comparison');
 
-    fetchVolunteerStats();
-  }, [startDate, endDate, props]);
+      if (option === 'Current Week') {
+        setCurrentFromDate(fromDate);
+        setCurrentToDate(toDate);
+      } else if (option === 'Previous Week') {
+        const prevWeekStart = new Date(fromDate);
+        const prevWeekEnd = new Date(toDate);
+        prevWeekStart.setDate(prevWeekStart.getDate() - 7);
+        prevWeekEnd.setDate(prevWeekEnd.getDate() - 7);
+        setCurrentFromDate(prevWeekStart.toISOString().split('T')[0]);
+        setCurrentToDate(prevWeekEnd.toISOString().split('T')[0]);
+      }
+    }
+  };
+
+  const handleDatePickerSubmit = () => {
+    if (startDate && endDate) {
+      setSelectedDateRange(`${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`);
+      setShowDatePicker(false);
+      setSelectedComparison('No Comparison');
+
+      setCurrentFromDate(startDate.toISOString().split('T')[0]);
+      setCurrentToDate(endDate.toISOString().split('T')[0]);
+    }
+  };
 
   if (error || isVolunteerFetchingError) {
     return (
@@ -364,16 +443,108 @@ function TotalOrgSummary(props) {
         darkMode ? 'bg-oxford-blue text-light' : 'cbg--white-smoke'
       }`}
     >
-      <Row className="report-header-row">
-        <Col lg={{ size: 6 }} className="report-header-title">
+      <Row className="total-org-report-header-row">
+        <div className="report-header-title">
           <h3 className="my-0">Total Org Summary</h3>
-        </Col>
-        <Col lg={{ size: 6 }} className="report-header-actions">
+        </div>
+        <div className="report-header-actions">
+          <Dropdown
+            isOpen={dateRangeDropdownOpen}
+            toggle={() => setDateRangeDropdownOpen(!dateRangeDropdownOpen)}
+          >
+            <DropdownToggle caret>{selectedDateRange}</DropdownToggle>
+            <DropdownMenu>
+              <DropdownItem onClick={() => handleDateRangeSelect('Current Week')}>
+                Current Week
+              </DropdownItem>
+              <DropdownItem onClick={() => handleDateRangeSelect('Previous Week')}>
+                Previous Week
+              </DropdownItem>
+              <DropdownItem onClick={() => handleDateRangeSelect('Select Date Range')}>
+                Select Date Range
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+          <Dropdown
+            isOpen={comparisonDropdownOpen}
+            toggle={() => setComparisonDropdownOpen(!comparisonDropdownOpen)}
+          >
+            <DropdownToggle caret>{selectedComparison}</DropdownToggle>
+            <DropdownMenu>
+              <DropdownItem onClick={() => setSelectedComparison('No Comparison')}>
+                No Comparison
+              </DropdownItem>
+              <DropdownItem onClick={() => setSelectedComparison('Week Over Week')}>
+                Week Over Week
+              </DropdownItem>
+              <DropdownItem onClick={() => setSelectedComparison('Month Over Month')}>
+                Month Over Month
+              </DropdownItem>
+              <DropdownItem onClick={() => setSelectedComparison('Year Over Year')}>
+                Year Over Year
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
           <Button className="share-pdf-btn" onClick={handleSaveAsPDF} disabled={isGeneratingPDF}>
             {isGeneratingPDF ? 'Generating PDF...' : 'Save as PDF'}
           </Button>
-        </Col>
+        </div>
       </Row>
+
+      <Modal isOpen={showDatePicker} toggle={() => setShowDatePicker(!showDatePicker)}>
+        <ModalHeader toggle={() => setShowDatePicker(!showDatePicker)}>
+          Select Date Range
+        </ModalHeader>
+        <ModalBody>
+          <div className="d-flex flex-column gap-4">
+            <div>
+              <label htmlFor="start-date" style={{ display: 'block', marginBottom: '1rem' }}>
+                Start Date
+              </label>
+              <div style={{ padding: '0.5rem 0' }}>
+                <DatePicker
+                  id="start-date"
+                  selected={startDate}
+                  onChange={date => setStartDate(date)}
+                  className="form-control"
+                  dateFormat="MM/dd/yyyy"
+                  placeholderText="Select start date"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="end-date" style={{ display: 'block', marginBottom: '1rem' }}>
+                End Date
+              </label>
+              <div style={{ padding: '0.5rem 0' }}>
+                <DatePicker
+                  id="end-date"
+                  selected={endDate}
+                  onChange={date => setEndDate(date)}
+                  className="form-control"
+                  dateFormat="MM/dd/yyyy"
+                  placeholderText="Select end date"
+                  minDate={startDate}
+                />
+              </div>
+            </div>
+          </div>
+        </ModalBody>
+        <ModalFooter>
+          <Button color="secondary" onClick={() => setShowDatePicker(false)}>
+            Cancel
+          </Button>
+          <Button
+            color="primary"
+            onClick={handleDatePickerSubmit}
+            disabled={!startDate || !endDate}
+          >
+            Apply
+          </Button>
+        </ModalFooter>
+      </Modal>
+
       <hr />
       <AccordianWrapper title="Volunteer Status">
         <Row>
@@ -382,6 +553,7 @@ function TotalOrgSummary(props) {
               isLoading={isLoading}
               volunteerNumberStats={volunteerStats?.volunteerNumberStats}
               totalHoursWorked={volunteerStats?.totalHoursWorked}
+              comparisonType={selectedComparison}
             />
           </Col>
         </Row>
@@ -396,6 +568,7 @@ function TotalOrgSummary(props) {
               totalBadgesAwarded={volunteerStats?.totalBadgesAwarded}
               tasksStats={volunteerStats?.tasksStats}
               totalActiveTeams={volunteerStats?.totalActiveTeams}
+              comparisonType={selectedComparison}
             />
           </Col>
         </Row>
@@ -404,7 +577,7 @@ function TotalOrgSummary(props) {
         <Row>
           <Col lg={{ size: 6 }}>
             <div className="component-container component-border">
-              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
+              <div className={`total-org-chart-title ${darkMode ? 'dark-mode' : ''}`}>
                 <p>Global Volunteer Network: Uniting Communities Worldwide</p>
               </div>
               <GlobalVolunteerMap isLoading={isLoading} locations={volunteerStats?.userLocations} />
@@ -412,12 +585,13 @@ function TotalOrgSummary(props) {
           </Col>
           <Col lg={{ size: 6 }}>
             <div className="component-container component-border">
-              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
+              <div className={`total-org-chart-title ${darkMode ? 'dark-mode' : ''}`}>
                 <p>Volunteer Status</p>
               </div>
               <VolunteerStatusChart
                 isLoading={isLoading}
                 volunteerNumberStats={volunteerStats?.volunteerNumberStats}
+                comparisonType={selectedComparison}
               />
             </div>
           </Col>
@@ -427,19 +601,21 @@ function TotalOrgSummary(props) {
         <Row>
           <Col lg={{ size: 6 }}>
             <div className="component-container component-border">
-              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
+              <div className={`total-org-chart-title ${darkMode ? 'dark-mode' : ''}`}>
                 <p>Volunteer Hours Distribution</p>
               </div>
-              <div className="d-flex flex-row justify-content-center flex-wrap my-4">
-                <p>in progress...</p>
-                {/* <VolunteerHoursDistribution
+              <div
+                className="d-flex flex-column justify-content-center mt-4 gap-3"
+                style={{ gap: '20px' }}
+              >
+                <VolunteerHoursDistribution
                   isLoading={isLoading}
                   darkMode={darkMode}
                   hoursData={volunteerStats?.volunteerHoursStats}
                   totalHoursData={volunteerStats?.totalHoursWorked}
-                /> */}
+                  comparisonType={selectedComparison}
+                />
                 <div className="d-flex flex-column align-items-center justify-content-center">
-                  <HoursWorkList />
                   <NumbersVolunteerWorked
                     isLoading={isLoading}
                     data={volunteerStats?.volunteersOverAssignedTime}
@@ -451,7 +627,7 @@ function TotalOrgSummary(props) {
           </Col>
           <Col lg={{ size: 3 }}>
             <div className="component-container component-border">
-              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
+              <div className={`total-org-chart-title ${darkMode ? 'dark-mode' : ''}`}>
                 <p>Task Completed</p>
               </div>
               <div className="mt-4">
@@ -465,7 +641,7 @@ function TotalOrgSummary(props) {
           </Col>
           <Col lg={{ size: 3 }}>
             <div className="component-container component-border">
-              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
+              <div className={`total-org-chart-title ${darkMode ? 'dark-mode' : ''}`}>
                 <p>Hours Completed</p>
               </div>
               <div className="mt-4">
@@ -473,6 +649,7 @@ function TotalOrgSummary(props) {
                   isLoading={isLoading}
                   data={volunteerStats?.taskAndProjectStats}
                   darkMode={darkMode}
+                  comparisonType={selectedComparison}
                 />
               </div>
             </div>
@@ -483,7 +660,7 @@ function TotalOrgSummary(props) {
         <Row>
           <Col lg={{ size: 7 }}>
             <div className="component-container component-border">
-              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
+              <div className={`total-org-chart-title ${darkMode ? 'dark-mode' : ''}`}>
                 <p>Volunteer Trends by Time</p>
               </div>
               <VolunteerTrendsLineChart darkMode={darkMode} />
@@ -491,13 +668,14 @@ function TotalOrgSummary(props) {
           </Col>
           <Col lg={{ size: 5 }}>
             <div className="component-container component-border">
-              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
+              <div className={`total-org-chart-title ${darkMode ? 'dark-mode' : ''}`}>
                 <p>Anniversary Celebrated</p>
               </div>
               <AnniversaryCelebrated
                 isLoading={isLoading}
                 data={volunteerStats?.anniversaryStats}
                 darkMode={darkMode}
+                comparisonType={selectedComparison}
               />
             </div>
           </Col>
@@ -507,24 +685,26 @@ function TotalOrgSummary(props) {
         <Row>
           <Col lg={{ size: 7 }}>
             <div className="component-container component-border">
-              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
+              <div className={`total-org-chart-title ${darkMode ? 'dark-mode' : ''}`}>
                 <p>Work Distribution</p>
               </div>
               <WorkDistributionBarChart
                 isLoading={isLoading}
                 workDistributionStats={volunteerStats?.workDistributionStats}
+                comparisonType={selectedComparison}
               />
             </div>
           </Col>
           <Col lg={{ size: 5 }}>
             <div className="component-container component-border">
-              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
+              <div className={`total-org-chart-title ${darkMode ? 'dark-mode' : ''}`}>
                 <p>Role Distribution</p>
               </div>
               <RoleDistributionPieChart
                 isLoading={isLoading}
                 roleDistributionStats={volunteerStats?.roleDistributionStats}
                 darkMode={darkMode}
+                comparisonType={selectedComparison}
               />
             </div>
           </Col>
@@ -534,24 +714,26 @@ function TotalOrgSummary(props) {
         <Row>
           <Col lg={{ size: 6 }}>
             <div className="component-container component-border">
-              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
+              <div className={`total-org-chart-title ${darkMode ? 'dark-mode' : ''}`}>
                 <p>Team Stats</p>
               </div>
               <TeamStats
                 isLoading={isLoading}
                 usersInTeamStats={volunteerStats?.usersInTeamStats}
-                endDate={endDate}
+                endDate={currentToDate}
+                comparisonType={selectedComparison}
               />
             </div>
           </Col>
           <Col lg={{ size: 6 }}>
             <div className="component-container component-border">
-              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
+              <div className={`total-org-chart-title ${darkMode ? 'dark-mode' : ''}`}>
                 <p>Blue Square Stats</p>
               </div>
               <BlueSquareStats
                 isLoading={isLoading}
                 blueSquareStats={volunteerStats?.blueSquareStats}
+                comparisonType={selectedComparison}
               />
             </div>
           </Col>

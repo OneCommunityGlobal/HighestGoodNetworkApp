@@ -12,7 +12,7 @@ import {
   UPDATE_MATERIAL_STATUS_END,
   UPDATE_MATERIAL_STATUS_ERROR,
   UPDATE_MATERIAL_STATUS_START,
-} from 'constants/bmdashboard/materialsConstants';
+} from '~/constants/bmdashboard/materialsConstants';
 
 const defaultState = {
   materialslist: [],

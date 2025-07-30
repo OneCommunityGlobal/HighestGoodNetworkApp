@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useEffect, useState, useMemo, useCallback } from 'react';
-import { ENDPOINTS } from 'utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import axios from 'axios';
 import './TotalReport.css';
 import { Button } from 'reactstrap';
@@ -193,11 +193,8 @@ function TotalProjectReport(props) {
   const onClickTotalProjectDetail = () => setShowTotalProjectTable(prevState => !prevState);
 
   const totalProjectTable = totalProject => (
-    <table className="table table-bordered table-responsive-sm">
-      <thead
-        className={darkMode ? 'bg-space-cadet text-light' : ''}
-        style={{ pointerEvents: 'none' }}
-      >
+    <table className="details-table table table-bordered table-responsive-sm">
+      <thead className={darkMode ? 'bg-space-cadet text-light' : ''} style={{ pointerEvents: 'none' }}>
         <tr>
           <th scope="col" id="projects__order">
             #
@@ -263,12 +260,12 @@ function TotalProjectReport(props) {
           :
         </div>
         <div className="total-item">
-          <div className="total-number">{allProject.length}</div>
-          <div className="total-text">projects have been worked on more than 1 hours.</div>
+          <span className="total-number">{allProject.length}</span>
+          <span className="total-text">projects have been worked on more than 1 hours.</span>
         </div>
         <div className="total-item">
-          <div className="total-number">{totalTangibleTime.toFixed(2)}</div>
-          <div className="total-text">hours of tangible time have been logged.</div>
+          <span className="total-number">{totalTangibleTime.toFixed(2)}</span>
+          <span className="total-text">hours of tangible time have been logged.</span>
         </div>
         <div>
           {showMonthly && projectInMonth.length > 0 ? (
@@ -324,7 +321,7 @@ function TotalProjectReport(props) {
       ) : (
         <div>
           <div>{totalProjectInfo(allProject)}</div>
-          <div>{showTotalProjectTable ? totalProjectTable(allProject) : null}</div>
+          <div className='tables'>{showTotalProjectTable ? totalProjectTable(allProject) : null}</div>
         </div>
       )}
     </div>
