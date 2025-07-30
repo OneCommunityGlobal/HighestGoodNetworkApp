@@ -430,7 +430,11 @@ export default (
         />
 
         <ProtectedRoute path="/applicants-chart" exact component={ApplicantsAgeChart} fallback />
-        <ProtectedRoute path="/applicant-volunteer-ratio" exact component={ApplicantVolunteerRatio} />
+        <ProtectedRoute
+          path="/applicant-volunteer-ratio"
+          exact
+          component={ApplicantVolunteerRatio}
+        />
 
         <ProtectedRoute
           path="/application-time-chart"

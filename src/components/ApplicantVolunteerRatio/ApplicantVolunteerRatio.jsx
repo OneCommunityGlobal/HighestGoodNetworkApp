@@ -71,8 +71,11 @@ function ApplicantVolunteerRatio() {
       <h2>Number of People Hired vs. Total Applications</h2>
       <div style={{ display: 'flex', gap: 16, marginBottom: 24, flexWrap: 'wrap' }}>
         <div>
-          <label style={{ fontWeight: 500 }}>Date Range: </label>
+          <label htmlFor="start-date" style={{ fontWeight: 500 }}>
+            Date Range:{' '}
+          </label>
           <DatePicker
+            id="start-date"
             selected={startDate}
             onChange={date => setStartDate(date)}
             selectsStart
@@ -84,6 +87,7 @@ function ApplicantVolunteerRatio() {
           />
           <span> to </span>
           <DatePicker
+            id="end-date"
             selected={endDate}
             onChange={date => setEndDate(date)}
             selectsEnd
@@ -95,8 +99,11 @@ function ApplicantVolunteerRatio() {
           />
         </div>
         <div style={{ minWidth: 220 }}>
-          <label style={{ fontWeight: 500 }}>Role: </label>
+          <label htmlFor="role-select" style={{ fontWeight: 500 }}>
+            Role:{' '}
+          </label>
           <Select
+            id="role-select"
             isMulti
             options={roleOptions}
             value={selectedRoles}
