@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faInfo } from '@fortawesome/free-solid-svg-icons';
+import { faCircleInfo } from '@fortawesome/free-solid-svg-icons';
 import './FollowUpInfoModal.css';
 import { useSelector } from 'react-redux';
 
@@ -25,7 +25,7 @@ function FollowUpInfoModal() {
       <button className="followup-tooltip-button" aria-label="Tooltip button" type="button">
         <FontAwesomeIcon
           className="followup-tooltip-button-icon"
-          icon={faInfo}
+          icon={faCircleInfo}
           style={{ color: darkMode ? 'silver' : 'black' }}
         />
       </button>
