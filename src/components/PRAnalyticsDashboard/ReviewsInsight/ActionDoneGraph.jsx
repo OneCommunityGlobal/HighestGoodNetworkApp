@@ -16,22 +16,24 @@ function ActionDoneGraph({ duration, selectedTeams, teamData }) {
       {
         label: 'Approved',
         data: isAllTeams
-          ? Object.keys(teamData).map((team) => teamData[team]?.actionSummary?.Approved || 0)
-          : selectedTeams.map((team) => teamData[team]?.actionSummary?.Approved || 0),
+          ? Object.keys(teamData).map(team => teamData[team]?.actionSummary?.Approved || 0)
+          : selectedTeams.map(team => teamData[team]?.actionSummary?.Approved || 0),
         backgroundColor: '#28A745',
       },
       {
         label: 'Changes Requested',
         data: isAllTeams
-          ? Object.keys(teamData).map((team) => teamData[team]?.actionSummary?.['Changes Requested'] || 0)
-          : selectedTeams.map((team) => teamData[team]?.actionSummary?.['Changes Requested'] || 0),
+          ? Object.keys(teamData).map(
+              team => teamData[team]?.actionSummary?.['Changes Requested'] || 0,
+            )
+          : selectedTeams.map(team => teamData[team]?.actionSummary?.['Changes Requested'] || 0),
         backgroundColor: '#DC3545',
       },
       {
         label: 'Commented',
         data: isAllTeams
-          ? Object.keys(teamData).map((team) => teamData[team]?.actionSummary?.Commented || 0)
-          : selectedTeams.map((team) => teamData[team]?.actionSummary?.Commented || 0),
+          ? Object.keys(teamData).map(team => teamData[team]?.actionSummary?.Commented || 0)
+          : selectedTeams.map(team => teamData[team]?.actionSummary?.Commented || 0),
         backgroundColor: '#6C757D',
       },
     ],

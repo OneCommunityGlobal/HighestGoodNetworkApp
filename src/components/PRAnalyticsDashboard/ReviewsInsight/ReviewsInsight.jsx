@@ -11,17 +11,17 @@ function ReviewsInsight() {
   const [teamData, setTeamData] = useState({});
   const [qualityData, setQualityData] = useState({});
   const dispatch = useDispatch();
-  const { loading, data, error } = useSelector((state) => state.reviewsInsights);
-  const darkMode = useSelector((state) => state.theme.darkMode);
+  const { loading, data, error } = useSelector(state => state.reviewsInsights);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const teams = ['Team A', 'Team B', 'Team C', 'Team D'];
 
-  const handleDurationChange = (event) => {
+  const handleDurationChange = event => {
     setDuration(event.target.value);
   };
 
-  const handleTeamChange = (event) => {
-    const options = Array.from(event.target.selectedOptions, (option) => option.value);
+  const handleTeamChange = event => {
+    const options = Array.from(event.target.selectedOptions, option => option.value);
     setSelectedTeams(options.includes('All') ? ['All'] : options);
   };
 
@@ -42,36 +42,44 @@ function ReviewsInsight() {
     dispatch(fetchReviewsInsights(queryParams, token));
   }, [duration, selectedTeams, dispatch]);
 
-useEffect(() => {
-  if (data && data.teams) {
-    const formattedTeamData = {};
-    const formattedQualityData = {};
+  useEffect(() => {
+    if (data && data.teams) {
+      const formattedTeamData = {};
+      const formattedQualityData = {};
 
-    data.teams.forEach((team) => {
-      // Ensure actionSummary and qualityDistribution are arrays
-      const actionSummary = Array.isArray(team.actionSummary) ? team.actionSummary : [];
-      const qualityDistribution = Array.isArray(team.qualityDistribution) ? team.qualityDistribution : [];
+      data.teams.forEach(team => {
+        // Ensure actionSummary and qualityDistribution are arrays
+        const actionSummary = Array.isArray(team.actionSummary) ? team.actionSummary : [];
+        const qualityDistribution = Array.isArray(team.qualityDistribution)
+          ? team.qualityDistribution
+          : [];
 
-      formattedTeamData[team._id] = {
-        actionSummary: {
-          Approved: actionSummary.find((action) => action.actionTaken === 'Approved')?.count || 0,
-          'Changes Requested': actionSummary.find((action) => action.actionTaken === 'Changes Requested')?.count || 0,
-          Commented: actionSummary.find((action) => action.actionTaken === 'Commented')?.count || 0,
-        },
-      };
+        formattedTeamData[team._id] = {
+          actionSummary: {
+            Approved: actionSummary.find(action => action.actionTaken === 'Approved')?.count || 0,
+            'Changes Requested':
+              actionSummary.find(action => action.actionTaken === 'Changes Requested')?.count || 0,
+            Commented: actionSummary.find(action => action.actionTaken === 'Commented')?.count || 0,
+          },
+        };
 
-      formattedQualityData[team._id] = {
-        NotApproved: qualityDistribution.find((quality) => quality.qualityLevel === 'Not approved')?.count || 0,
-        LowQuality: qualityDistribution.find((quality) => quality.qualityLevel === 'Low Quality')?.count || 0,
-        Sufficient: qualityDistribution.find((quality) => quality.qualityLevel === 'Sufficient')?.count || 0,
-        Exceptional: qualityDistribution.find((quality) => quality.qualityLevel === 'Exceptional')?.count || 0,
-      };
-    });
+        formattedQualityData[team._id] = {
+          NotApproved:
+            qualityDistribution.find(quality => quality.qualityLevel === 'Not approved')?.count ||
+            0,
+          LowQuality:
+            qualityDistribution.find(quality => quality.qualityLevel === 'Low Quality')?.count || 0,
+          Sufficient:
+            qualityDistribution.find(quality => quality.qualityLevel === 'Sufficient')?.count || 0,
+          Exceptional:
+            qualityDistribution.find(quality => quality.qualityLevel === 'Exceptional')?.count || 0,
+        };
+      });
 
-    setTeamData(formattedTeamData);
-    setQualityData(formattedQualityData);
-  }
-}, [data]);
+      setTeamData(formattedTeamData);
+      setQualityData(formattedQualityData);
+    }
+  }, [data]);
 
   return (
     <div className={`reviews-insight-container ${darkMode ? 'dark-mode' : ''}`}>
@@ -92,7 +100,7 @@ useEffect(() => {
           <label htmlFor="team-filter">Team Code:</label>
           <select id="team-filter" multiple value={selectedTeams} onChange={handleTeamChange}>
             <option value="All">All Teams</option>
-            {teams.map((team) => (
+            {teams.map(team => (
               <option key={team} value={team}>
                 {team}
               </option>
@@ -118,7 +126,11 @@ useEffect(() => {
       {!loading && !error && (
         <div className="graphs">
           <ActionDoneGraph duration={duration} selectedTeams={selectedTeams} teamData={teamData} />
-          <PRQualityGraph duration={duration} selectedTeams={selectedTeams} qualityData={qualityData} />
+          <PRQualityGraph
+            duration={duration}
+            selectedTeams={selectedTeams}
+            qualityData={qualityData}
+          />
         </div>
       )}
     </div>

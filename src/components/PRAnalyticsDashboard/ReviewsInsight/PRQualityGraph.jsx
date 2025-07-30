@@ -10,7 +10,7 @@ function PRQualityGraph({ duration, selectedTeams, qualityData }) {
   const isAllTeams = selectedTeams.includes('All');
   const teamsToDisplay = isAllTeams ? Object.keys(qualityData) : selectedTeams;
 
-  const generateChartData = (team) => {
+  const generateChartData = team => {
     const teamQualityData = qualityData[team] || {};
     return {
       labels: ['Not Approved', 'Low Quality', 'Sufficient', 'Exceptional'],
@@ -49,7 +49,7 @@ function PRQualityGraph({ duration, selectedTeams, qualityData }) {
 
   return (
     <div className="charts">
-      {teamsToDisplay.map((team) => (
+      {teamsToDisplay.map(team => (
         <div key={team} className="chart">
           <h2>PR Quality: {team}</h2>
           <Pie data={generateChartData(team)} options={options} />
