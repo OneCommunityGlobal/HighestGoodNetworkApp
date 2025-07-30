@@ -12,6 +12,8 @@ export default function ExpenditureLineGraph() {
   const [expenditureData, setExpenditureData] = useState([]);
   const [projects, setProjects] = useState([]);
   const [selectedProject, setSelectedProject] = useState('all');
+  const [dateError, setDateError] = useState(null); 
+  const [noDataError, setNoDataError] = useState(null); 
 
   // date filters
   const [startDate, setStartDate] = useState('');
@@ -92,7 +94,6 @@ export default function ExpenditureLineGraph() {
     const textColor = darkMode ? '#ffffff' : '#666666';
     const chartBackgroundColor = darkMode ? '#1b2a41' : '#ffffff';
 
-    // Destroy existing chart if it exists
     if (chartInstance) {
       chartInstance.destroy();
     }
@@ -248,9 +249,31 @@ export default function ExpenditureLineGraph() {
       return months.indexOf(monthA) - months.indexOf(monthB);
     });
 
+    if (labels.length === 1) {
+      const [month, year] = labels[0].split(' ');
+      const months = [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec',
+      ];
+      const monthIndex = months.indexOf(month);
+      const nextMonthIndex = (monthIndex + 1) % 12;
+      const nextYear = nextMonthIndex === 0 ? parseInt(year) + 1 : parseInt(year);
+      labels.push(`${months[nextMonthIndex]} ${nextYear}`);
+    }
+
     const datasets = Array.from(categories).map((category, index) => {
       const colors = ['#6293CC', '#C55151', '#E8D06B', '#94B66F'];
-      const data = labels.map(month => groupedByMonth[month][category] || 0);
+      const data = labels.map(month => groupedByMonth[month]?.[category] || 0);
 
       return {
         label: category,
@@ -270,6 +293,20 @@ export default function ExpenditureLineGraph() {
   // handle chart changes when filters change
   useEffect(() => {
     if (expenditureData.length > 0 && chartRef.current) {
+      // Reset error states
+      setDateError(null);
+      setNoDataError(null);
+
+      // Validate dates
+      if (dateRange.start && dateRange.end && dateRange.start > dateRange.end) {
+        setDateError('Start date cannot be greater than end date');
+        if (chartInstance) {
+          chartInstance.destroy();
+          setChartInstance(null);
+        }
+        return;
+      }
+
       let filteredData = expenditureData;
 
       // if not all data, filter by requested filtered title project
@@ -287,6 +324,7 @@ export default function ExpenditureLineGraph() {
 
       // if data after filter?
       if (filteredData.length === 0) {
+        setNoDataError('No data available for the selected date range and project');
         if (chartInstance) {
           chartInstance.destroy();
           setChartInstance(null);
@@ -313,7 +351,6 @@ export default function ExpenditureLineGraph() {
         start: newStartDateTime,
       }));
     } else {
-      // if date cleared, use earliest date
       const dates = expenditureData.map(item => new Date(item.date));
       setDateRange(prev => ({
         ...prev,
@@ -332,7 +369,6 @@ export default function ExpenditureLineGraph() {
         end: newEndDateTime,
       }));
     } else {
-      // if date cleared, use earliest date
       const dates = expenditureData.map(item => new Date(item.date));
       setDateRange(prev => ({
         ...prev,
@@ -496,6 +532,41 @@ export default function ExpenditureLineGraph() {
           }}
         >
           Error: {error}
+        </p>
+      )}
+      {dateError && (
+        <p
+          className="error"
+          style={{
+            color: darkMode ? '#ff6b6b' : '#d32f2f',
+            backgroundColor: darkMode ? 'rgba(255, 107, 107, 0.1)' : 'rgba(211, 47, 47, 0.05)',
+            padding: '10px',
+            borderRadius: '4px',
+            border: darkMode ? '1px solid #ff6b6b' : '1px solid #d32f2f',
+            textAlign: 'center',
+            maxWidth: '800px',
+            margin: '0 auto 20px auto',
+          }}
+        >
+          {dateError}
+        </p>
+      )}
+
+      {noDataError && (
+        <p
+          className="error"
+          style={{
+            color: darkMode ? '#ff6b6b' : '#d32f2f',
+            backgroundColor: darkMode ? 'rgba(255, 107, 107, 0.1)' : 'rgba(211, 47, 47, 0.05)',
+            padding: '10px',
+            borderRadius: '4px',
+            border: darkMode ? '1px solid #ff6b6b' : '1px solid #d32f2f',
+            textAlign: 'center',
+            maxWidth: '800px',
+            margin: '0 auto 20px auto',
+          }}
+        >
+          {noDataError}
         </p>
       )}
 
