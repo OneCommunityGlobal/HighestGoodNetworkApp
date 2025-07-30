@@ -8,15 +8,16 @@ import {
   faExpandArrowsAlt,
   faCompressArrowsAlt,
 } from '@fortawesome/free-solid-svg-icons';
-import moment from 'moment-timezone';
-import { useDispatch, useSelector } from 'react-redux';
+import CopyToClipboard from '~/components/common/Clipboard/CopyToClipboard';
 import { Table, Progress } from 'reactstrap';
 
 import { Link } from 'react-router-dom';
-import hasPermission from '../../utils/permissions';
-import CopyToClipboard from '../common/Clipboard/CopyToClipboard';
+import hasPermission from '~/utils/permissions';
 import './style.css';
-import Warning from '../Warnings/Warnings';
+
+import Warning from '~/components/Warnings/Warnings';
+import { useDispatch, useSelector } from 'react-redux';
+import moment from 'moment-timezone';
 
 import ReviewButton from './ReviewButton';
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
@@ -89,7 +90,7 @@ const TeamMemberTask = React.memo(
     const canSeeReports =
       rolesAllowedToResolveTasks.includes(userRole) || dispatch(hasPermission('getReports'));
     const canUpdateTask = dispatch(hasPermission('updateTask'));
-    const canRemoveUserFromTask = dispatch(hasPermission('removeUserFromTask'));
+    const canDeleteTask = dispatch(hasPermission('canDeleteTask'));
     const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
 
     const colorsObjs = {
@@ -118,16 +119,7 @@ const TeamMemberTask = React.memo(
       }
     };
 
-    /** 
-    const handleReportClick = (event, to) => {
-      if (event.metaKey || event.ctrlKey || event.button === 1) {
-        return;
-      }
-
-      event.preventDefault(); // prevent full reload
-      history.push(`/peoplereport/${to}`);
-    };
-    */
+    /**    const handleReportClick = (event, to) => {      if (event.metaKey || event.ctrlKey || event.button === 1) {        return;      }      event.preventDefault(); // prevent full reload    };    */
 
     const openDetailModal = request => {
       dispatch(showTimeOffRequestModal(request));
@@ -200,17 +192,31 @@ const TeamMemberTask = React.memo(
                     <div style={{ display: 'flex', flexWrap: 'wrap', flexDirection: 'column' }}>
                       <div className="member-links-wrapper">
                         <div className="committed-hours-circle">
-                          <FontAwesomeIcon
-                            style={{
-                              color:
-                                user.totaltangibletime_hrs >= user.weeklycommittedHours
-                                  ? 'green'
-                                  : 'red',
-                            }}
-                            icon={faCircle}
-                            data-testid="icon"
-                          >{`${user.name}`}</FontAwesomeIcon>
+                          <div className="icon-row">
+                            <FontAwesomeIcon
+                              style={{
+                                color:
+                                  user.totaltangibletime_hrs >= user.weeklycommittedHours
+                                    ? 'green'
+                                    : 'red',
+                              }}
+                              icon={faCircle}
+                              data-testid="icon"
+                            />
 
+                            <Link to={`/timelog/${user.personId}`} className="timelog-info">
+                              <i
+                                className="fa fa-clock-o"
+                                aria-hidden="true"
+                                style={{
+                                  fontSize: 24,
+                                  cursor: 'pointer',
+                                  color: darkMode ? 'lightgray' : 'black',
+                                }}
+                                title="Click to see user's timelog"
+                              />
+                            </Link>
+                          </div>
                           {user.role !== 'Volunteer' && (
                             <div
                               className="user-role"
@@ -220,30 +226,25 @@ const TeamMemberTask = React.memo(
                             </div>
                           )}
                         </div>
-                        <Link to={`/timelog/${user.personId}`} className="timelog-info">
-                          <i
-                            className="fa fa-clock-o"
-                            aria-hidden="true"
-                            style={{
-                              fontSize: 24,
-                              cursor: 'pointer',
-                              color: darkMode ? 'lightgray' : 'black',
-                            }}
-                            title="Click to see user's timelog"
-                          />
-                        </Link>
                       </div>
                       {canUpdateTask && teamRoles && (
                         <div className="name-wrapper">
                           {['Manager', 'Assistant Manager', 'Mentor'].map(role => {
-                            return teamRoles[role]?.map(elm => {
-                              const { name } = elm; // Getting initials and formatting them here
+                            const seenIds = new Set();
+                            const uniqueRoleMembers = (teamRoles[role] || []).filter(elm => {
+                              const key = `${elm.id}-${elm.name}`;
+                              if (seenIds.has(key)) return false;
+                              seenIds.add(key);
+                              return true;
+                            });
+
+                            return uniqueRoleMembers.map(elm => {
+                              const { name } = elm;
                               const initials = getInitials(name);
-                              // Getting background color dynamically based on the role
                               const bg = colorsObjs[role];
                               return (
                                 <a
-                                  key={elm.id}
+                                  key={`${role}-${elm.id}-${elm.name}`}
                                   title={`${role} : ${name}`}
                                   className="name"
                                   href={`/userprofile/${elm.id}`}
@@ -415,7 +416,7 @@ const TeamMemberTask = React.memo(
                                           data-testid={`tick-${task.taskName}`}
                                         />
                                       )}
-                                      {(canUpdateTask || canRemoveUserFromTask) && (
+                                      {(canUpdateTask || canDeleteTask) && (
                                         <FontAwesomeIcon
                                           className="team-member-task-remove"
                                           icon={faTimes}

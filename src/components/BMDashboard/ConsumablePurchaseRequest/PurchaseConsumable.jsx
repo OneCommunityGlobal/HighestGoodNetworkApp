@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchBMProjects } from 'actions/bmdashboard/projectActions';
-import { fetchConsumableTypes } from 'actions/bmdashboard/invTypeActions';
+import { fetchBMProjects } from '~/actions/bmdashboard/projectActions';
+import { fetchConsumableTypes } from '~/actions/bmdashboard/invTypeActions';
 import { BsInfoCircle } from 'react-icons/bs';
 import BMError from '../shared/BMError';
 import PurchaseForm from './PurchaseForm';
