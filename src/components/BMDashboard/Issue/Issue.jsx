@@ -1,10 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button, Label, Input, Form, FormGroup, Row, Col } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
-import { useEffect } from 'react';
 import axios from 'axios';
-import { ENDPOINTS } from '../../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import styles from './Issue.module.css';
 
 function Issue() {
