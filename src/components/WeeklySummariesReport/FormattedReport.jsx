@@ -331,7 +331,15 @@ function ReportDetails({
               />
             </ListGroupItem>
             <ListGroupItem darkMode={darkMode}>
-              <div style={{ width: '200%', backgroundColor: isMeetCriteria ? 'yellow' : 'none' }}>
+              {/* <div style={{ width: '200%', backgroundColor: isMeetCriteria ? 'yellow' : 'none' }}> */}
+              <div
+                style={{
+                  width: '200%',
+                  backgroundColor: summary.bioPosted === 'requested' ? 'yellow' : 'transparent',
+                  padding: summary.bioPosted === 'requested' ? '8px' : '0',
+                  borderRadius: summary.bioPosted === 'requested' ? '4px' : '0',
+                }}
+              >
                 <Bio
                   bioCanEdit={bioCanEdit && !cantEditJaeRelatedRecord}
                   userId={summary._id}
@@ -340,6 +348,7 @@ function ReportDetails({
                 />
               </div>
             </ListGroupItem>
+
             <ListGroupItem darkMode={darkMode}>
               <TotalValidWeeklySummaries
                 summary={summary}
@@ -450,12 +459,12 @@ function TeamCodeRow({
 
   const handleOnChange = async (userProfileSummary, newStatus) => {
     const url = ENDPOINTS.USERS_ALLTEAMCODE_CHANGE;
+
     try {
       await axios.patch(url, { userIds: [userProfileSummary._id], replaceCode: newStatus });
       handleTeamCodeChange(userProfileSummary.teamCode, newStatus, {
         [userProfileSummary._id]: true,
       }); // Update the team code dynamically
-      await dispatch(getWeeklySummariesReport());
     } catch (err) {
       // eslint-disable-next-line no-alert
       alert(
@@ -487,7 +496,7 @@ function TeamCodeRow({
     <>
       <div className={styles.teamcodeWrapper}>
         {canEditTeamCode ? (
-          <div style={{ width: '107px', paddingRight: '5px' }}>
+          <div style={{ width: '107px', paddingRight: '5px', position: 'relative' }}>
             <Input
               id="codeInput"
               value={teamCode}
@@ -628,7 +637,15 @@ function BioSwitch({ userId, bioPosted, summary }) {
   };
 
   return (
-    <div>
+    // <div>
+    <div
+      style={{
+        backgroundColor: bioStatus === 'requested' ? 'yellow' : 'transparent',
+        padding: bioStatus === 'requested' ? '8px' : '0',
+        borderRadius: bioStatus === 'requested' ? '4px' : '0',
+        width: '100%',
+      }}
+    >
       <div className={styles.bioToggle}>
         <b style={style}>Bio announcement:</b>
       </div>
@@ -660,7 +677,14 @@ function BioLabel({ bioPosted, summary }) {
     text = 'Requested';
   }
   return (
-    <div>
+    <div
+      style={{
+        backgroundColor: bioPosted === 'requested' ? 'yellow' : 'transparent',
+        padding: bioPosted === 'requested' ? '8px' : '0',
+        borderRadius: bioPosted === 'requested' ? '4px' : '0',
+        width: '100%',
+      }}
+    >
       <b style={style}>Bio announcement: </b>
       {text}
     </div>
