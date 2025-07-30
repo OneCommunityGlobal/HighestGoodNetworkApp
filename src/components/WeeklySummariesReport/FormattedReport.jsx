@@ -97,6 +97,7 @@ function FormattedReport({
   darkMode,
   handleTeamCodeChange,
   handleSpecialColorDotClick,
+  getWeeklySummariesReport,
 }) {
   const dispatch = useDispatch();
   const isEditCount = dispatch(hasPermission('totalValidWeeklySummaries'));
@@ -168,6 +169,7 @@ function FormattedReport({
               auth={auth}
               handleSpecialColorDotClick={handleSpecialColorDotClick}
               isFinalWeek={isFinalWeek}
+              getWeeklySummariesReport={getWeeklySummariesReport}
             />
           );
         })}
@@ -285,6 +287,7 @@ function ReportDetails({
   handleTeamCodeChange,
   auth,
   handleSpecialColorDotClick,
+  getWeeklySummariesReport,
   isFinalWeek, // new prop
 }) {
   const [filteredBadges, setFilteredBadges] = useState([]);
@@ -324,6 +327,7 @@ function ReportDetails({
                 summary={summary}
                 handleTeamCodeChange={handleTeamCodeChange}
                 darkMode={darkMode}
+                getWeeklySummariesReport={getWeeklySummariesReport}
               />
             </ListGroupItem>
             <ListGroupItem darkMode={darkMode}>
@@ -432,10 +436,17 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
   );
 }
 
-function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange, darkMode }) {
+function TeamCodeRow({
+  canEditTeamCode,
+  summary,
+  handleTeamCodeChange,
+  darkMode,
+  getWeeklySummariesReport,
+}) {
   const [teamCode, setTeamCode] = useState(summary.teamCode);
   const [hasError, setHasError] = useState(false);
   const fullCodeRegex = /^.{5,7}$/;
+  const dispatch = useDispatch();
 
   const handleOnChange = async (userProfileSummary, newStatus) => {
     const url = ENDPOINTS.USERS_ALLTEAMCODE_CHANGE;
@@ -444,6 +455,7 @@ function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange, darkMode 
       handleTeamCodeChange(userProfileSummary.teamCode, newStatus, {
         [userProfileSummary._id]: true,
       }); // Update the team code dynamically
+      await dispatch(getWeeklySummariesReport());
     } catch (err) {
       // eslint-disable-next-line no-alert
       alert(
