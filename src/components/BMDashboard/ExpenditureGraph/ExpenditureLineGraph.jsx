@@ -12,8 +12,8 @@ export default function ExpenditureLineGraph() {
   const [expenditureData, setExpenditureData] = useState([]);
   const [projects, setProjects] = useState([]);
   const [selectedProject, setSelectedProject] = useState('all');
-  const [dateError, setDateError] = useState(null); 
-  const [noDataError, setNoDataError] = useState(null); 
+  const [dateError, setDateError] = useState(null);
+  const [noDataError, setNoDataError] = useState(null);
 
   // date filters
   const [startDate, setStartDate] = useState('');
@@ -267,10 +267,9 @@ export default function ExpenditureLineGraph() {
       ];
       const monthIndex = months.indexOf(month);
       const nextMonthIndex = (monthIndex + 1) % 12;
-      const nextYear = nextMonthIndex === 0 ? parseInt(year) + 1 : parseInt(year);
+      const nextYear = nextMonthIndex === 0 ? parseInt(year, 10) + 1 : parseInt(year, 10);
       labels.push(`${months[nextMonthIndex]} ${nextYear}`);
     }
-
     const datasets = Array.from(categories).map((category, index) => {
       const colors = ['#6293CC', '#C55151', '#E8D06B', '#94B66F'];
       const data = labels.map(month => groupedByMonth[month]?.[category] || 0);
