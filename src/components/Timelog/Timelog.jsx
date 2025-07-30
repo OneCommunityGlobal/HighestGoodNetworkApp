@@ -267,22 +267,6 @@ const generateAllTimeEntryItems = () => {
     ));
   };
 
-  const generateAllTimeEntryItems = () => {
-    const currentWeekEntry = generateTimeEntries(timeEntries.weeks[0], 0);
-    const lastWeekEntry = generateTimeEntries(timeEntries.weeks[1], 1);
-    const beforeLastEntry = generateTimeEntries(timeEntries.weeks[2], 2);
-    const periodEntry = generateTimeEntries(timeEntries.period, 3);
-    return [currentWeekEntry, lastWeekEntry, beforeLastEntry, periodEntry];
-  };
-
-  const updateTimeEntryItems = () => {
-    const allTimeEntryItems = generateAllTimeEntryItems();
-    setCurrentWeekEntries(allTimeEntryItems[0]);
-    setLastWeekEntries(allTimeEntryItems[1]);
-    setBeforeLastEntries(allTimeEntryItems[2]);
-    setPeriodEntries(allTimeEntryItems[3]);
-  };
-
   const loadAsyncData = async uid => {
     // load the timelog data
     setTimeLogState({ ...timeLogState, isTimeEntriesLoading: true });
