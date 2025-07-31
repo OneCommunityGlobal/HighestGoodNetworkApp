@@ -55,6 +55,7 @@ describe('SummaryBar Component', () => {
       missedHours: 5,
       infringements: [],
       badgeCollection: [],
+      badgeCount: badgeCollection.length,
       weeklySummaryOption: 'Required',
       permissions: {
         frontPermissions: [],
