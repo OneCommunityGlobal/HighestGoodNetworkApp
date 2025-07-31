@@ -1,14 +1,14 @@
-import hasPermission from 'utils/permissions';
-import { boxStyle, boxStyleDark } from 'styles';
+/* eslint-disable react/destructuring-assignment */
 import { connect } from 'react-redux';
-import { useEffect } from 'react';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
+import { boxStyle, boxStyleDark } from '~/styles';
+import hasPermission from '~/utils/permissions';
 import { SEARCH, CREATE_NEW_TEAM } from '../../languages/en/ui';
 
 /**
  * The search panel stateless component for  Teams grid
  */
-export function TeamTablesearchPanel(props) {
+export function TeamTableSearchPanelBase(props) {
   const { darkMode } = props;
   const canPostTeam = props.hasPermission('postTeam');
   const inputRef = useRef(null);
@@ -50,5 +50,4 @@ export function TeamTablesearchPanel(props) {
     </div>
   );
 }
-
-export default connect(null, { hasPermission })(TeamTablesearchPanel);
+export default connect(null, { hasPermission })(TeamTableSearchPanelBase);

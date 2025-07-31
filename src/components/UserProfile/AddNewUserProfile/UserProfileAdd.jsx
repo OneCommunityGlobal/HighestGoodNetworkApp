@@ -13,8 +13,8 @@ import {
   TabPane,
   TabContent,
 } from 'reactstrap';
-import CommonInput from 'components/common/Input';
-import DuplicateNamePopup from 'components/UserManagement/DuplicateNamePopup';
+import CommonInput from '~/components/common/Input';
+import DuplicateNamePopup from '~/components/UserManagement/DuplicateNamePopup';
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import './UserProfileAdd.scss';
 import { createUser } from '../../../services/userProfileService';
@@ -31,19 +31,19 @@ import {
   addTeamMember,
 } from '../../../actions/allTeamsAction';
 
-import { fetchAllProjects } from 'actions/projects';
+import { fetchAllProjects } from '~/actions/projects';
 
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import TimeZoneDropDown from '../TimeZoneDropDown';
-import hasPermission from 'utils/permissions';
-import { boxStyle, boxStyleDark } from 'styles';
+import hasPermission from '~/utils/permissions';
+import { boxStyle, boxStyleDark } from '~/styles';
 import WeeklySummaryOptions from './WeeklySummaryOptions';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { isValidGoogleDocsUrl, isValidMediaUrl } from 'utils/checkValidURL';
+import { isValidGoogleDocsUrl, isValidMediaUrl } from '~/utils/checkValidURL';
 import axios from 'axios';
-import { ENDPOINTS } from 'utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 
 const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
 const DATE_PICKER_MIN_DATE = '01/01/2010';
@@ -123,28 +123,28 @@ class UserProfileAdd extends Component {
   componentDidMount() {
     this.state.showphone = true;
     this.onCreateNewUser();
-    this.fetchTeamCodeAllUsers(); 
+    this.fetchTeamCodeAllUsers();
   }
 
   // Replace fetchTeamCodeAllUsers with a method that dispatches getAllTeamCode
-  fetchTeamCodeAllUsers = async() => {
+  fetchTeamCodeAllUsers = async () => {
     const url = ENDPOINTS.WEEKLY_SUMMARIES_REPORT();
     try {
-      this.setState({isLoading:true})
-     
+      this.setState({ isLoading: true })
+
       const response = await axios.get(url);
       const stringWithValue = response.data.map(item => item.teamCode).filter(Boolean);
       const stringNoRepeat = stringWithValue
         .map(item => item)
         .filter((item, index, array) => array.indexOf(item) === index);
-      this.setState({inputAutoComplete:stringNoRepeat})
-      
-      this.setState({inputAutoStatus:response.status})
-      this.setState({isLoading:false})
-      
+      this.setState({ inputAutoComplete: stringNoRepeat })
+
+      this.setState({ inputAutoStatus: response.status })
+      this.setState({ isLoading: false })
+
     } catch (error) {
       console.log(error);
-      this.setState({isLoading:false})
+      this.setState({ isLoading: false })
       toast.error(`It was not possible to retrieve the team codes. 
       Please try again by clicking the icon inside the input auto complete.`);
     }
@@ -199,11 +199,11 @@ class UserProfileAdd extends Component {
                         invalid={!!(this.state.formSubmitted && this.state.formErrors.firstName)}
                         className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                       />
-                       {this.state.formSubmitted && this.state.formErrors.firstName && (
-    <FormFeedback className={fontWeight}>
-      {this.state.formErrors.firstName}
-    </FormFeedback>
-  )}
+                      {this.state.formSubmitted && this.state.formErrors.firstName && (
+                        <FormFeedback className={fontWeight}>
+                          {this.state.formErrors.firstName}
+                        </FormFeedback>
+                      )}
                     </FormGroup>
                   </Col>
                   <Col md="3">
@@ -219,10 +219,10 @@ class UserProfileAdd extends Component {
                         className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                       />
                       {this.state.formSubmitted && this.state.formErrors.lastName && (
-    <FormFeedback className={fontWeight}>
-      {this.state.formErrors.lastName}
-    </FormFeedback>
-  )}
+                        <FormFeedback className={fontWeight}>
+                          {this.state.formErrors.lastName}
+                        </FormFeedback>
+                      )}
                     </FormGroup>
                   </Col>
                 </Row>
@@ -243,9 +243,9 @@ class UserProfileAdd extends Component {
                         className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                       />
                       {this.state.formSubmitted && this.state.formErrors.jobTitle && (
-    <FormFeedback className={fontWeight}>
-      {this.state.formErrors.jobTitle}
-    </FormFeedback>)}
+                        <FormFeedback className={fontWeight}>
+                          {this.state.formErrors.jobTitle}
+                        </FormFeedback>)}
                     </FormGroup>
                   </Col>
                 </Row>
@@ -266,9 +266,9 @@ class UserProfileAdd extends Component {
                         className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                       />
                       {this.state.formSubmitted && this.state.formErrors.email && (
-    <FormFeedback className={fontWeight}>
-      {this.state.formErrors.email}
-    </FormFeedback>)}
+                        <FormFeedback className={fontWeight}>
+                          {this.state.formErrors.email}
+                        </FormFeedback>)}
                       <ToggleSwitch
                         switchType="email"
                         state={this.state.userProfile.privacySettings?.email}
@@ -686,7 +686,7 @@ class UserProfileAdd extends Component {
     }
 
     axios.get(ENDPOINTS.TIMEZONE_LOCATION(location)).then(res => {
-      if(res.status === 200) {
+      if (res.status === 200) {
         const { timezone, currentLocation } = res.data;
         this.setState({
           ...this.state,
@@ -704,17 +704,34 @@ class UserProfileAdd extends Component {
   };
 
   fieldsAreValid = () => {
-    const firstLength = this.state.userProfile.firstName !== '';
-    const lastLength = this.state.userProfile.lastName !== '';
-    const phone = this.state.userProfile.phoneNumber;
-    
-    if (phone === null) {
+    const { firstName, lastName, email, phoneNumber, jobTitle, weeklyCommittedHours } = this.state.userProfile;
+    const emailPattern = /^[\w.%+-]+@[a-zA-Z\d]+(\.[a-zA-Z]{2,})+$/i;
+
+    if (!firstName.trim()) {
+      toast.error('First Name is required');
+      return false;
+    } else if (!lastName.trim()) {
+      toast.error('Last Name is required');
+      return false;
+    } else if (!jobTitle.trim()) {
+      toast.error('Job Title is required');
+      return false;
+    } else if (!email) {
+      toast.error('Email is required');
+      return false;
+    } else if (!email.match(emailPattern)) {
+      toast.error('Email format is invalid');
+      return false;
+    } else if (!phoneNumber) {
       toast.error('Phone Number is required');
+      return false;
+    } else if (!weeklyCommittedHours) {
+      toast.error('Weekly Committed Hours is required');
       return false;
     } else if (this.state.teamCode && !this.state.codeValid) {
       toast.error('Team Code is invalid');
       return false;
-    } else if (firstLength && lastLength && phone.length >= 9) {
+    } else if (firstName.trim() && lastName.trim() && phoneNumber.length >= 9) {
       return true;
     } else {
       toast.error('Please fill all the required fields');
@@ -781,6 +798,7 @@ class UserProfileAdd extends Component {
       allowsDuplicateName: allowsDuplicateName,
       createdDate: createdDate,
       teamCode: this.state.teamCode,
+      trophyFollowedUp: false,
       actualEmail: actualEmail,
       actualPassword: actualPassword,
       startDate: startDate,
@@ -917,7 +935,7 @@ class UserProfileAdd extends Component {
             }
             toast.error(
               err.response?.data?.error ||
-                'An unknown error occurred while attempting to create this user.',
+              'An unknown error occurred while attempting to create this user.',
             );
           });
       }
@@ -1109,7 +1127,7 @@ class UserProfileAdd extends Component {
           val = 168
         } else if (val < 0) {
           val = 0
-        } 
+        }
         this.setState({
           userProfile: {
             ...userProfile,

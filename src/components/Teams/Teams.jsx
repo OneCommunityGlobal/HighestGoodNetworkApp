@@ -1,10 +1,12 @@
+/* eslint-disable import/no-named-as-default */
+/* eslint-disable react/destructuring-assignment */
 /* eslint-disable react/sort-comp */
 import React from 'react';
 import { connect } from 'react-redux';
 import { Container } from 'reactstrap';
 import { toast } from 'react-toastify';
-import { searchWithAccent } from 'utils/search';
 import lo from 'lodash';
+import { searchWithAccent } from '~/utils/search';
 import {
   getAllUserTeams,
   postNewTeam,
@@ -199,7 +201,7 @@ class Teams extends React.PureComponent {
             onMembersClick={this.onTeamMembersPopupShow}
             onDeleteClick={this.onDeleteTeamPopupShow}
             onStatusClick={this.onTeamStatusShow}
-            onEditTeam={this.onEidtTeam}
+            onEditTeam={this.onEditTeam}
             onClickActive={this.onClickActive}
             team={team}
           />
@@ -237,6 +239,7 @@ class Teams extends React.PureComponent {
     const selectedTeamData = allTeams
       ? allTeams.filter(team => team.teamName === this.state.selectedTeam)
       : [];
+
     return (
       <>
         <TeamMembersPopup
@@ -373,7 +376,7 @@ class Teams extends React.PureComponent {
     });
   };
 
-  onEidtTeam = (teamName, teamId, status, teamCode) => {
+  onEditTeam = (teamName, teamId, status, teamCode) => {
     this.setState({
       isEdit: true,
       createNewTeamPopupOpen: true,

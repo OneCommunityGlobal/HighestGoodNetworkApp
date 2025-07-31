@@ -7,7 +7,7 @@ import { formatDate } from '../../utils/formatDate';
 import UserTableFooter from './UserTableFooter';
 import '../Header/DarkMode.css';
 import { boxStyle, boxStyleDark } from '../../styles';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import httpService from '../../services/httpService';
 
 const baseUrl = window.location.origin;
@@ -51,6 +51,7 @@ function TableFilter({
           type="text"
           value={emailFilter}
           onChange={e => setEmailFilter(e.target.value)}
+          placeholder='Your Email'
           className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
         />
       </td>

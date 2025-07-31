@@ -2,11 +2,11 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Button, Col, Tooltip } from 'reactstrap';
 import './TeamsAndProjects.css';
 import hasPermission from '../../../utils/permissions';
-import styles from './UserProjectsTable.css';
-import { boxStyle, boxStyleDark } from 'styles';
+// import styles from './UserProjectsTable.css';
+import { boxStyle, boxStyleDark } from '~/styles';
 import { useLocation } from 'react-router-dom';
 import { connect } from 'react-redux';
-import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
 import { NavItem, UncontrolledTooltip } from 'reactstrap';
 import { Link } from 'react-router-dom';
 
@@ -176,20 +176,30 @@ const UserProjectsTable = React.memo(props => {
                   tasksByProject?.map((project, index) => (
                     <tr key={project._id} className={darkMode ? 'bg-yinmn-blue' : ''}>
                       <td>{index + 1}</td>
-                      <td>{project.projectName}</td>
+                      <td className="taskName">{project.projectName}</td>
                       {props.role && canPostTask && (
                         <td className='table-cell'>
-                          <NavItem tag={Link} to={`/project/wbs/${project._id}` } id={`wbs-tooltip-${project._id}`}>
-                            <button type="button" className="btn btn-outline-info" style={darkMode ? {} : boxStyle}>
+                          <Link to={`/project/wbs/${project._id}`}>
+                            <button
+                              id={`wbs-tooltip-${project._id}`}
+                              type="button"
+                              className="btn btn-outline-info"
+                              style={darkMode ? {} : boxStyle}
+                            >
                               <i className="fa fa-tasks" aria-hidden="true"></i>
                             </button>
-                          </NavItem>
-                          <UncontrolledTooltip placement="left" target={`wbs-tooltip-${project._id}`}>
+                          </Link>
+
+                          <UncontrolledTooltip
+                            placement="left"
+                            target={`wbs-tooltip-${project._id}`}
+                            delay={{ show: 250, hide: 100 }} // Optional: smoother UX
+                          >
                             Click to access the Work Breakdown Structures &#40;WBSs&#41; for this project
                           </UncontrolledTooltip>
                         </td>
                       )}
-                      {props.edit && props.role && canDeleteProjects &&(
+                      {props.edit && props.role && canDeleteProjects && (
                         <td className='table-cell'>
                           <Button
                             color="danger"
@@ -205,7 +215,6 @@ const UserProjectsTable = React.memo(props => {
                         </td>
                       )}
                     </tr>
-
                   ))
                 ) : (
                   <></>
@@ -274,10 +283,12 @@ const UserProjectsTable = React.memo(props => {
                         return (
                           <tr key={task._id}>
                             <td>{task.num}</td>
-                            <td>
+                            <td className='taskName'>
                               <span className='opacity-70'>{project.projectName} </span>
                               <br />
-                              <span className="fs-18">{task.taskName && `\u2003 ↳ ${task.taskName}`}</span>
+                              <a className="fs-18" href={`/wbs/tasks/${task._id}`}>
+                                {task.taskName && `\u2003 ↳ ${task.taskName}`}
+                              </a>
                             </td>
                             {!isCompletedTask && props.edit && props.role && canDeleteTasks && (
                               <td>
@@ -367,7 +378,7 @@ const UserProjectsTable = React.memo(props => {
                   tasksByProject?.map((project, index) => (
                     <tr key={project._id}>
                       <td>{index + 1}</td>
-                      <td>{`${project.projectName}`}</td>
+                      <td className="taskName">{`${project.projectName}`}</td>
                       {props.edit && props.role && canDeleteProjects && (
                         <td className='table-cell'>
                           <Button
@@ -436,7 +447,7 @@ const UserProjectsTable = React.memo(props => {
                   {props.role && (
                     <tr>
                       <th className={`table-header ${darkMode ? 'bg-space-cadet' : ''}`}>#</th>
-                      <th className={darkMode ? 'bg-space-cadet' : ''}>Task Name</th>
+                      <th className={`taskName ${darkMode ? 'bg-space-cadet' : ''}`}>Task Name</th>
                       {canAssignProjectToUsers ? <th className={darkMode ? 'bg-space-cadet' : ''} style={{ width: '100px' }}>{}</th> : null}
                     </tr>
                   )}

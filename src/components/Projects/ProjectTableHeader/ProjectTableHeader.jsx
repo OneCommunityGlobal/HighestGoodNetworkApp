@@ -9,28 +9,28 @@ import {
   INVENTORY,
   ARCHIVE,
 } from './../../../languages/en/ui';
-import hasPermission from 'utils/permissions';
+import hasPermission from '~/utils/permissions';
 import { connect } from 'react-redux';
-import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faArrowUp, faArrowDown, faSortDown} from '@fortawesome/free-solid-svg-icons';
-import { Dropdown,DropdownButton, Divider } from 'react-bootstrap';
+import { Dropdown,DropdownButton } from 'react-bootstrap';
 
 // import DropdownButton from 'react-bootstrap/DropdownButton';
-import { boxStyle } from 'styles';
+import { boxStyle } from '~/styles';
 import { Button } from 'reactstrap';
 
 
 const ProjectTableHeader = props => {
   const { role, darkMode } = props;
-  const canDeleteProject = props.hasPermission('deleteProject');
+  const canDeleteProject = hasPermission('deleteProject')
 
   const categoryList = ['Unspecified', 'Food', 'Energy', 'Housing', 'Education', 'Society', 'Economics', 'Stewardship', 'Other'];
   const statusList = ['Active', 'Inactive'];
 
   return (
     <tr className={darkMode ? 'bg-space-cadet text-light' : ''}>
-      <th scope="col" id="projects__order" className='align-middle'>
+      <th scope="col" id="projects__order" style={{ textAlign: 'center' }}>
         #
       </th>
       {/* <th scope="col">{PROJECT_NAME}</th> */}
@@ -70,16 +70,27 @@ const ProjectTableHeader = props => {
       <th scope="col" id="projects__inv" className='align-middle'>
         <span className='d-flex justify-content-between'>
           {INVENTORY}
+          <Button size="sm" className="ml-2" id="SortingByRecentEditedInventory" onClick={props.handleSort}>
+          <FontAwesomeIcon
+            icon={props.sorted === "SortingByRecentEditedInventory" ? faSort : faSortDown}
+            pointerEvents="none"
+          />
+          </Button>
         </span> 
       </th>
       <th scope="col" id="projects__members" className='align-middle'>
         <span className='d-flex'>
           {MEMBERS}
-          <Button size='sm' className='ml-2' id='SortingByRecentEditedMembers' onClick={props.handleSort}>
-          <FontAwesomeIcon 
-            icon={props.sorted === 'SortingByRecentEditedMembers' ? faSort : faSortDown} 
-            pointerEvents="none"
-          />
+          <Button
+            size='sm'
+            className={`ml-2 ${props.sorted === 'SortingByMostActiveMembers' ? 'btn-info' : ''}`}
+            id='SortingByMostActiveMembers'
+            onClick={props.handleSort}
+            title={props.sorted === 'SortingByMostActiveMembers' ? "Sorted: Most active members first" : "Sort by most active members"}>
+            <FontAwesomeIcon
+              icon={props.sorted === 'SortingByMostActiveMembers' ? faArrowDown : faSortDown}
+              pointerEvents="none"
+            />
           </Button>
         </span>
       </th>
@@ -110,5 +121,5 @@ const mapStateToProps = state => ({
   role: state.userProfile.role, // Map 'role' from Redux state to 'role' prop
 });
 
-export default connect(mapStateToProps, { hasPermission })(ProjectTableHeader);
+export default connect(mapStateToProps)(ProjectTableHeader)
 

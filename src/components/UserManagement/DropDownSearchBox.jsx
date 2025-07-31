@@ -32,9 +32,14 @@ class DropDownSearchBox extends React.PureComponent {
         <option value="" style={{ color: '#9b9b9b' }}>
           {this.props.placeholder}
         </option>
+
+        {/* eslint-disable-next-line no-unused-vars */}
         {this.props.items.map((item, index) => {
           return (
-            <option value={item} key={`${item}-${index}`}>
+            // <option value={item} key={`${item}-${index}`}>
+            //  {item}
+            // </option>
+            <option value={item} key={item}>
               {item}
             </option>
           );

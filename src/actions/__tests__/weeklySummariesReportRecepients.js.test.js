@@ -1,16 +1,27 @@
 import axios from 'axios'; // Import axios for making HTTP requests
 import configureMockStore from 'redux-mock-store'; // Import redux-mock-store for creating a mock store
 import thunk from 'redux-thunk'; // Import redux-thunk for handling asynchronous actions
+
+
 import * as actions from '../../constants/weeklySummariesReport'; // Import the action type constants
-import { authorizeWeeklySummaries, authorizeWeeklySummariesReportError, getRecepients, getRecepientsError, addSummaryRecipient, deleteRecipient, deleteSummaryRecipient, getSummaryRecipients } from '../weeklySummariesReportRecepients'; // Import the action creators
-import { ENDPOINTS } from '../../utils/URL'; // Import the endpoints
+import {
+  authorizeWeeklySummaries,
+  authorizeWeeklySummariesReportError,
+  getRecepients,
+  getRecepientsError,
+  addSummaryRecipient,
+  deleteRecipient,
+  deleteSummaryRecipient,
+  getSummaryRecipients,
+} from '../weeklySummariesReportRecepients'; // Import the action creators
+import { ENDPOINTS } from '~/utils/URL'; // Import the endpoints
 
 // Mock axios to control its behavior in tests
-jest.mock('axios');
+vi.mock('axios');
 
 // Mock console.log to suppress log messages during testing
 beforeAll(() => {
-  jest.spyOn(console, 'log').mockImplementation(() => {});
+  vi.spyOn(console, 'log').mockImplementation(() => { });
 });
 
 // Define middlewares to be used in the mock store
@@ -27,7 +38,7 @@ describe('authorizeWeeklySummaries action creator', () => {
     // Define the expected action object
     const expectedAction = {
       type: actions.AUTHORIZE_WEEKLY_SUMMARY_REPORTS,
-      payload: message
+      payload: message,
     };
 
     // Assert that the action creator returns the expected action object
@@ -44,7 +55,7 @@ describe('authorizeWeeklySummariesReportError action creator', () => {
     // Define the expected action object
     const expectedAction = {
       type: actions.AUTHORIZE_WEEKLYSUMMARIES_REPORTS_ERROR,
-      payload: errorMsg
+      payload: errorMsg,
     };
 
     // Assert that the action creator returns the expected action object
@@ -61,7 +72,7 @@ describe('getRecepients action creator', () => {
     // Define the expected action object
     const expectedAction = {
       type: actions.GET_SUMMARY_RECIPIENTS,
-      recepientsArr
+      recepientsArr,
     };
 
     // Assert that the action creator returns the expected action object
@@ -78,7 +89,7 @@ describe('getRecepientsError action creator', () => {
     // Define the expected action object
     const expectedAction = {
       type: actions.GET_SUMMARY_RECIPIENTS_ERROR,
-      payload: err
+      payload: err,
     };
 
     // Assert that the action creator returns the expected action object
@@ -128,7 +139,7 @@ describe('addSummaryRecipient action creator', () => {
     const actionsDispatched = store.getActions();
     expect(actionsDispatched).toContainEqual({
       type: actions.AUTHORIZE_WEEKLYSUMMARIES_REPORTS_ERROR,
-      payload: new Error(errorMessage)
+      payload: new Error(errorMessage),
     });
   });
 });
@@ -142,7 +153,7 @@ describe('deleteRecipient action creator', () => {
     // Define the expected action object
     const expectedAction = {
       type: actions.DELETE_WEEKLY_SUMMARIES_RECIPIENTS,
-      payload: { userid }
+      payload: { userid },
     };
 
     // Assert that the action creator returns the expected action object
@@ -175,7 +186,7 @@ describe('deleteSummaryRecipient action creator', () => {
     const actionsDispatched = store.getActions();
     expect(actionsDispatched).toContainEqual({
       type: actions.DELETE_WEEKLY_SUMMARIES_RECIPIENTS,
-      payload: { userid }
+      payload: { userid },
     });
   });
 
@@ -198,7 +209,7 @@ describe('deleteSummaryRecipient action creator', () => {
     const actionsDispatched = store.getActions();
     expect(actionsDispatched).toContainEqual({
       type: actions.AUTHORIZE_WEEKLYSUMMARIES_REPORTS_ERROR,
-      payload: new Error(errorMessage)
+      payload: new Error(errorMessage),
     });
   });
 });
@@ -226,7 +237,7 @@ describe('getSummaryRecipients action creator', () => {
     const actionsDispatched = store.getActions();
     expect(actionsDispatched).toContainEqual({
       type: actions.GET_SUMMARY_RECIPIENTS,
-      recepientsArr: responseData
+      recepientsArr: responseData,
     });
   });
 
@@ -247,7 +258,7 @@ describe('getSummaryRecipients action creator', () => {
     const actionsDispatched = store.getActions();
     expect(actionsDispatched).toContainEqual({
       type: actions.GET_SUMMARY_RECIPIENTS_ERROR,
-      payload: new Error(errorMessage)
+      payload: new Error(errorMessage),
     });
   });
 });
