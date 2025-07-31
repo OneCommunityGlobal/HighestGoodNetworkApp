@@ -55,7 +55,6 @@ describe('SummaryBar Component', () => {
       missedHours: 5,
       infringements: [],
       badgeCollection: [],
-      badgeCount: 0,
       weeklySummaryOption: 'Required',
       permissions: {
         frontPermissions: [],
@@ -74,6 +73,9 @@ describe('SummaryBar Component', () => {
           permissions: ['putUserProfileImportantInfo'],
         },
       },
+    },
+    badge: {
+      badgeCount: 0,
     },
   };
 
