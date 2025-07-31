@@ -25,6 +25,9 @@ import HeaderRenderer from '~/components/Header/HeaderRenderer';
 import IssueDashboard from '~/components/BMDashboard/Issues/IssueDashboard';
 import { ExperienceDonutChart } from '~/components/ExperienceDonutChart';
 import LessonForm from '~/components/BMDashboard/Lesson/LessonForm';
+
+// hgnform routes
+import EquipmentUpdateLog from '~/components/BMDashboard/Equipment/EHistory';
 import Page1 from './components/HGNForm/pages/Page1';
 import Page2 from './components/HGNForm/pages/Page2';
 import Page3 from './components/HGNForm/pages/Page3';
@@ -592,7 +595,11 @@ export default (
           exact
           component={WeeklyProjectSummary}
         />
-        <BMProtectedRoute path="/bmdashboard/issues/" component={IssueDashboard} />
+        <BMProtectedRoute
+          path="/bmdashboard/equipment-history"
+          exact
+          component={EquipmentUpdateLog}
+        />
 
         <BMProtectedRoute path="/bmdashboard/issuechart" component={IssueChart} />
 
@@ -696,6 +703,12 @@ export default (
         <ProtectedRoute path="/userprofile/:userId" fallback component={UserProfile} />
         <ProtectedRoute path="/userprofileedit/:userId" component={UserProfileEdit} />
         <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
+        <CPProtectedRoute
+          path="/communityportal/reports/resourceusage"
+          exact
+          component={ResourceUsage}
+        />
+        <ProtectedRoute path="/memberlist" exact component={MemberList} />
         <Route path="/Logout" component={Logout} />
         <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
         <ProtectedRoute path="/hgnform" exact component={Page1} />
@@ -704,6 +717,7 @@ export default (
         <ProtectedRoute path="/hgnform/page4" exact component={Page4} />
         <ProtectedRoute path="/hgnform/page5" exact component={Page5} />
         <ProtectedRoute path="/hgnform/page6" exact component={Page6} />
+        <ProtectedRoute path="/hgn/profile/skills" exact component={UserSkillsProfile} />
         <ProtectedRoute path="/tsaformpage1" exact component={TSAFormPage1} />
         <ProtectedRoute path="/tsaformpage2" exact component={TSAFormPage2} />
         <ProtectedRoute path="/tsaformpage3" exact component={TSAFormPage3} />
@@ -712,6 +726,13 @@ export default (
         <ProtectedRoute path="/tsaformpage6" exact component={TSAFormPage6} />
         <ProtectedRoute path="/tsaformpage7" exact component={TSAFormPage7} />
         <ProtectedRoute path="/tsaformpage8" exact component={TSAFormPage8} />
+        <ProtectedRoute
+          path="/pr-team-analytics/popular-prs"
+          exact
+          component={PRReviewTeamAnalytics}
+        />
+        <ProtectedRoute path="/ExperienceDonutChart" component={ExperienceDonutChart} fallback />
+
         <ProtectedRoute path="/" exact component={Dashboard} />
         <Route path="*" component={NotFoundPage} />
       </Switch>

@@ -103,6 +103,15 @@ function UserProfile(props) {
     try {
       setIsLoading(true);
       const response = await axios.get(url);
+      
+      // Check if response.data exists and is an array
+      if (!response.data || !Array.isArray(response.data)) {
+        console.warn('Invalid response format from weekly summaries endpoint:', response.data);
+        setInputAutoComplete([]);
+        setIsLoading(false);
+        return [];
+      }
+      
       const stringWithValue = response.data.map(item => item.teamCode).filter(Boolean);
       const stringNoRepeat = stringWithValue
         .map(item => item)
@@ -197,7 +206,6 @@ function UserProfile(props) {
   const canEditTeamCode = props.hasPermission('editTeamCode');
   const [titleOnSet, setTitleOnSet] = useState(false);
 
- 
   const updateProjetTouserProfile = () => {
     return new Promise(resolve => {
       checkIsProjectsEqual();
@@ -257,7 +265,7 @@ function UserProfile(props) {
 
     if (!teamId) {
       setSummaryIntro(
-        `This week’s summary was managed by ${currentManager.firstName} ${currentManager.lastName} and includes .
+        `This week's summary was managed by ${currentManager.firstName} ${currentManager.lastName} and includes .
          These people did NOT provide a summary .
          <Insert the proofread and single-paragraph summary created by ChatGPT>`,
       );
@@ -1537,8 +1545,8 @@ function UserProfile(props) {
                   onClick={() => {
                     if (targetIsDevAdminUneditable) {
                       alert(
-                        'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. ' +
-                          'You shouldn’t even be using this account except to create your own accounts to use. ' +
+                        'STOP! YOU SHOULDN\'T BE TRYING TO CHANGE THIS PASSWORD. ' +
+                          'You shouldn\'t even be using this account except to create your own accounts to use. ' +
                           'Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now.',
                       );
                       return `#`;
@@ -1670,8 +1678,8 @@ function UserProfile(props) {
                           onClick={() => {
                             if (targetIsDevAdminUneditable) {
                               alert(
-                                'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. ' +
-                                  'You shouldn’t even be using this account except to create your own accounts to use. ' +
+                                'STOP! YOU SHOULDN\'T BE TRYING TO CHANGE THIS PASSWORD. ' +
+                                  'You shouldn\'t even be using this account except to create your own accounts to use. ' +
                                   'Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now.',
                               );
                               return `#`;
