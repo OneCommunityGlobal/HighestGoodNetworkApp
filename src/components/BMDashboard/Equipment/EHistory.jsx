@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './EHistory.css';
-import { fetchBMProjects } from 'actions/bmdashboard/projectActions';
-import { fetchAllEquipments } from 'actions/bmdashboard/equipmentActions';
+import { fetchBMProjects } from '~/actions/bmdashboard/projectActions';
+import { fetchAllEquipments } from '~/actions/bmdashboard/equipmentActions';
 import { useDispatch, useSelector } from 'react-redux';
 import Select from 'react-select';
 import { Link } from 'react-router-dom';
@@ -73,8 +73,11 @@ export default function EquipmentUpdateLog() {
 
         <div className="row align-items-center mb-4">
           <div className="col-auto d-flex align-items-center">
-            <label className="me-2 mb-0 mr-3">Project: </label>
+            <label htmlFor="project-select" className="me-2 mb-0 mr-3">
+              Project:{' '}
+            </label>
             <Select
+              id="project-select"
               value={selectedProject}
               onChange={option => setSelectedProject(option)}
               options={bmProjects.map(p => ({ label: p.name, value: p._id }))}

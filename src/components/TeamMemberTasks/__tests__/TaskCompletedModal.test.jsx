@@ -11,7 +11,7 @@ vi.mock('react-toastify', () => ({
 
 // Mock window.scrollTo
 Object.defineProperty(window, 'scrollTo', {
-  value: jest.fn(),
+  value: vi.fn(),
   writable: true,
 });
 
@@ -30,7 +30,7 @@ describe('TaskCompletedModal Component', () => {
   };
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('renders without crashing', () => {

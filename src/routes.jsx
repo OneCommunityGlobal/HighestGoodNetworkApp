@@ -27,7 +27,7 @@ import { ExperienceDonutChart } from '~/components/ExperienceDonutChart';
 import LessonForm from '~/components/BMDashboard/Lesson/LessonForm';
 
 // hgnform routes
-import EquipmentUpdateLog from 'components/BMDashboard/Equipment/EHistory';
+import EquipmentUpdateLog from '~/components/BMDashboard/Equipment/EHistory';
 import Page1 from './components/HGNForm/pages/Page1';
 import Page2 from './components/HGNForm/pages/Page2';
 import Page3 from './components/HGNForm/pages/Page3';
@@ -595,7 +595,11 @@ export default (
           exact
           component={WeeklyProjectSummary}
         />
-        <BMProtectedRoute path="/bmdashboard/equipment-history" exact component={EquipmentUpdateLog} />
+        <BMProtectedRoute
+          path="/bmdashboard/equipment-history"
+          exact
+          component={EquipmentUpdateLog}
+        />
 
         <BMProtectedRoute path="/bmdashboard/issuechart" component={IssueChart} />
 
@@ -699,7 +703,11 @@ export default (
         <ProtectedRoute path="/userprofile/:userId" fallback component={UserProfile} />
         <ProtectedRoute path="/userprofileedit/:userId" component={UserProfileEdit} />
         <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
-        <CPProtectedRoute path="/communityportal/reports/resourceusage" exact component={ResourceUsage} />
+        <CPProtectedRoute
+          path="/communityportal/reports/resourceusage"
+          exact
+          component={ResourceUsage}
+        />
         <ProtectedRoute path="/memberlist" exact component={MemberList} />
         <Route path="/Logout" component={Logout} />
         <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
