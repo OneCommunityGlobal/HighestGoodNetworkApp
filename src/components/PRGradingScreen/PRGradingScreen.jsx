@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Button } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
 import './PRGradingScreen.css';
@@ -6,16 +6,34 @@ import './PRGradingScreen.css';
 const PRGradingScreen = ({ teamData, reviewers }) => {
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  // Pure presentational component - requires teamData and reviewers as props
-  if (!teamData || !reviewers) {
-    return <div>Error: Missing required props (teamData, reviewers)</div>;
-  }
-
-  const [reviewerData, setReviewerData] = useState(reviewers);
+  // All useState hooks must be called before any early returns
+  const [reviewerData, setReviewerData] = useState(reviewers || []);
   const [activeInput, setActiveInput] = useState(null); // Track which reviewer is adding PR
   const [inputValue, setInputValue] = useState('');
   const [inputError, setInputError] = useState('');
   const [showGradingModal, setShowGradingModal] = useState(null); // Track which reviewer's grading modal is open
+
+  // Handle Escape key to close modal
+  useEffect(() => {
+    const handleKeyDown = event => {
+      if (event.key === 'Escape' && showGradingModal) {
+        handleCloseGradingModal();
+      }
+    };
+
+    if (showGradingModal) {
+      document.addEventListener('keydown', handleKeyDown);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [showGradingModal]);
+
+  // Pure presentational component - requires teamData and reviewers as props
+  if (!teamData || !reviewers) {
+    return <div>Error: Missing required props (teamData, reviewers)</div>;
+  }
 
   const handlePRReviewedChange = (reviewerId, newValue) => {
     setReviewerData(prevData =>
@@ -135,10 +153,6 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
       })),
     };
 
-    console.log('Weekly PR Grading Data to be saved:', formattedData);
-    console.log('POST /api/weekly-grading/save');
-    console.log('Request Body:', JSON.stringify(formattedData, null, 2));
-
     // TODO: Replace with actual API call when backend is implemented
     // fetch('/api/weekly-grading/save', {
     //   method: 'POST',
@@ -224,7 +238,6 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                             onChange={e =>
                               handlePRReviewedChange(reviewer.id, Number(e.target.value) || 0)
                             }
-                            onFocus={e => e.target.select()}
                             className={`pr-grading-screen-pr-input ${darkMode ? 'dark-mode' : ''}`}
                             min="0"
                           />
@@ -243,6 +256,14 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                                       isBackendFrontendPair ? 'pr-grading-screen-pair' : ''
                                     } pr-grading-screen-pr-clickable`}
                                     onClick={() => handlePRNumberClick(reviewer.id)}
+                                    onKeyDown={e => {
+                                      if (e.key === 'Enter' || e.key === ' ') {
+                                        e.preventDefault();
+                                        handlePRNumberClick(reviewer.id);
+                                      }
+                                    }}
+                                    role="button"
+                                    tabIndex={0}
                                   >
                                     {pr.prNumbers}
                                   </span>
@@ -273,8 +294,9 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                                     type="text"
                                     value={inputValue}
                                     onChange={e => handleInputChange(e.target.value)}
-                                    onKeyPress={e => {
+                                    onKeyDown={e => {
                                       if (e.key === 'Enter') {
+                                        e.preventDefault();
                                         handleInputSubmit();
                                       } else if (e.key === 'Escape') {
                                         handleCancel();
@@ -288,7 +310,6 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                                     } ${inputError ? 'pr-grading-screen-input-error' : ''} ${
                                       darkMode ? 'dark-mode' : ''
                                     }`}
-                                    autoFocus
                                   />
                                   <div className="pr-grading-screen-input-buttons">
                                     <Button
@@ -342,19 +363,22 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
               {showGradingModal && (
                 <div
                   className={`pr-grading-screen-modal-overlay ${darkMode ? 'dark-mode' : ''}`}
-                  onClick={handleCloseGradingModal}
+                  role="presentation"
                 >
                   <div
                     className={`pr-grading-screen-modal ${darkMode ? 'dark-mode' : ''}`}
-                    onClick={e => e.stopPropagation()}
+                    role="dialog"
+                    aria-modal="true"
+                    tabIndex={-1}
                   >
                     <div
                       className={`pr-grading-screen-modal-header ${darkMode ? 'dark-mode' : ''}`}
                     >
-                      <h3>Grade PR Numbers</h3>
+                      <h4>Grade PR</h4>
                       <button
                         className={`pr-grading-screen-modal-close ${darkMode ? 'dark-mode' : ''}`}
                         onClick={handleCloseGradingModal}
+                        aria-label="Close modal"
                       >
                         ×
                       </button>
