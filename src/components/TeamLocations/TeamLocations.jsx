@@ -2,15 +2,15 @@ import axios from 'axios';
 import 'leaflet/dist/leaflet.css';
 import { useEffect, useRef, useState, forwardRef } from 'react';
 import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
-import MarkerClusterGroup from 'react-leaflet-cluster';
+import MarkerClusterGroup from '@changey/react-leaflet-markercluster';
 import { Button, Container, Spinner } from 'reactstrap';
 import './TeamLocations.css';
 
-import { SEARCH } from 'languages/en/ui';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import { boxStyle, boxStyleDark } from 'styles';
-import { ApiEndpoint, ENDPOINTS } from '../../utils/URL';
+import { SEARCH } from '~/languages/en/ui';
+import { boxStyle, boxStyleDark } from '~/styles';
+import { ApiEndpoint, ENDPOINTS } from '~/utils/URL';
 import AddOrEditPopup from './AddOrEditPopup';
 import ListUsersPopUp from './ListUsersPopUp';
 import MarkerPopup from './MarkerPopup';
@@ -267,7 +267,10 @@ const TeamLocations = forwardRef(() => {
       )}
       <div className="py-2 d-flex justify-content-between flex-column flex-md-row">
         <div className="text-and-table-icon-container">
-          <h5>Total Countries: {totalUniqueCountries}</h5>
+          <h5>
+            Total Countries:
+            {totalUniqueCountries}
+          </h5>
           <button
             type="button"
             id="toggle-table-button"
@@ -319,9 +322,11 @@ const TeamLocations = forwardRef(() => {
                             return (
                               <tr key={profile._id}>
                                 <td>{userName}</td>
-                                <td>{`${profile.location.city ? `${profile.location.city},` : ''} ${
-                                  profile.location.country
-                                }`}</td>
+                                <td>
+                                  {`${profile.location.city ? `${profile.location.city},` : ''} ${
+                                    profile.location.country
+                                  }`}
+                                </td>
                                 <td>
                                   <div
                                     style={{
@@ -399,8 +404,6 @@ const TeamLocations = forwardRef(() => {
         </div>
         {loading ? (
           <div
-            animation="border"
-            size="md"
             className="d-flex justify-content-center align-items-center"
             style={{ minHeight: '50vh' }}
           >
@@ -479,4 +482,5 @@ function EventComponent({ setPopupsOpen, currentUser, setMarkerPopupVisible }) {
   return null;
 }
 
+TeamLocations.displayName = 'TeamLocations';
 export default TeamLocations;
