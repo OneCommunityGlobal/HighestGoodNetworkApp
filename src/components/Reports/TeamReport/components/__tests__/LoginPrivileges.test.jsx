@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
@@ -25,7 +26,7 @@ describe('LoginPrivileges Component', () => {
   });
 
   test('test_handle_input_change_called', () => {
-    const handleInputChange = jest.fn();
+    const handleInputChange = vi.fn();
     render(<LoginPrivileges selectedInput="isManager" handleInputChange={handleInputChange} />);
 
     const adminRadio = screen.getByLabelText('Admin');

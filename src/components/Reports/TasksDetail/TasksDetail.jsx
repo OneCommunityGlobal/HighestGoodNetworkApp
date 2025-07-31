@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from 'react';
+/* eslint-disable import/prefer-default-export */
+import { useState, useEffect } from 'react';
 import { Button } from 'react-bootstrap';
-import EditTaskModal from '../../Projects/WBS/WBSDetail/EditTask/EditTaskModal';
-import 'react-table/react-table.css';
 import Collapse from 'react-bootstrap/Collapse';
+import EditTaskModal from '../../Projects/WBS/WBSDetail/EditTask/EditTaskModal';
 import './TasksDetail.css';
 
 
-const ShowCollapse = (props) => {
+
+function ShowCollapse(props) {
   const [open, setOpen] = useState(false);
+
 
   return (
     <>
@@ -34,7 +36,7 @@ const ShowCollapse = (props) => {
       </Button>
     </>
   );
-};
+}
 
 const formatDate = (datetime) => {
   if(datetime){
@@ -45,12 +47,12 @@ const formatDate = (datetime) => {
 };
 
 const truncate = (str, n) => {
-  return str.length > n ? str.substring(0, n - 1) + '...' : str;
+  return str.length > n ? `${str.substring(0, n - 1)  }...` : str;
 };
 
-export const TasksDetail = (props) => {
+export function TasksDetail(props) {
   const [filteredTasks, setFilteredTasks] = useState(props.tasks_filter);
-  const darkMode = props.darkMode;
+  const {darkMode} = props;
 
   useEffect(() => {
     let tasks = props.tasks_filter;
@@ -89,10 +91,10 @@ export const TasksDetail = (props) => {
       </td>
       <td className="tasks-detail-center-cells">
   {task.resources.length <= 2 ? (
-    task.resources.map((resource, index) => (
+    task.resources.map((resource, innerIndex) => (
       <span key={resource._id}>
         {resource.name}
-        {index < task.resources.length - 1 && ', '}
+        {innerIndex < task.resources.length - 1 && ', '}
       </span>
     ))
   ) : (
@@ -119,6 +121,7 @@ export const TasksDetail = (props) => {
             parentId3={task.parentId3}
             mother={task.mother}
             level={task.level}
+            projectId={props.projectId}
           />
         )}
       </td>
@@ -149,4 +152,4 @@ export const TasksDetail = (props) => {
       </table>
     </div>
   );
-};
+}

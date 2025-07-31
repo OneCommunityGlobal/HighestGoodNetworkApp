@@ -33,16 +33,16 @@ import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 import { Editor } from '@tinymce/tinymce-react';
 import moment from 'moment';
 import 'moment-timezone';
-import Joi from 'joi';
+import Joi from 'joi-browser';
 import { toast } from 'react-toastify';
 import classnames from 'classnames';
-import { getUserProfile } from 'actions/userProfile';
-import { boxStyle, boxStyleDark } from 'styles';
+import { getUserProfile } from '~/actions/userProfile';
+import { boxStyle, boxStyleDark } from '~/styles';
 import {
   DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
   DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
   PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
-} from 'utils/constants';
+} from '../../utils/constants';
 import { WeeklySummaryContentTooltip, MediaURLTooltip } from './WeeklySummaryTooltips';
 import SkeletonLoading from '../common/SkeletonLoading';
 import DueDateTime from './DueDateTime';
@@ -59,21 +59,6 @@ const customImageUploadHandler = () =>
     // eslint-disable-next-line prefer-promise-reject-errors
     reject({ message: 'Pictures are not allowed here!', remove: true });
   });
-
-const TINY_MCE_INIT_OPTIONS = {
-  license_key: 'gpl',
-  menubar: false,
-  placeholder: `Did you: Write it in 3rd person with a minimum of 50-words? Remember to run it through ChatGPT or other AI editor using the “Current AI Editing Prompt” from above? Remember to read and do a final edit before hitting Save?`,
-  plugins: 'advlist autolink autoresize lists link charmap table paste help wordcount',
-  toolbar:
-    'bold italic underline link removeformat | bullist numlist outdent indent | styleselect fontsizeselect | table| strikethrough forecolor backcolor | subscript superscript charmap | help',
-  branding: false,
-  min_height: 180,
-  max_height: 500,
-  autoresize_bottom_margin: 1,
-  content_style: 'body { font-size: 14px; }',
-  images_upload_handler: customImageUploadHandler,
-};
 
 // Need this export here in order for automated testing to work.
 export class WeeklySummary extends Component {
@@ -141,22 +126,27 @@ export class WeeklySummary extends Component {
 
   // Minimum word count of 50 (handle words that also use non-ASCII characters by counting whitespace rather than word character sequences).
   regexPattern = /^\s*(?:\S+(?:\s+|$)){50,}$/;
+  // individual rules, so we can validate one field at a time
 
-  // regexPattern = /^(?=(?:\S*\s){50,})\S*$/;
-
-  schema = {
+  fieldSchemas = {
     mediaUrl: Joi.string()
       .trim()
       .uri()
       .required()
       .label('Media URL'),
+
+    // summary is optional, so we allow '' to bypass
     summary: Joi.string()
       .allow('')
       .regex(this.regexPattern)
-      .label('Minimum 50 words'), // Allow empty string OR the minimum word count of 50.
+      .label('Minimum 50 words'),
+
+    // allow 0 so your default state (0) doesn’t error
     wordCount: Joi.number()
       .min(50)
+      .allow(0)
       .label('word count must be greater than 50 words'),
+
     summaryLastWeek: Joi.string()
       .allow('')
       .regex(this.regexPattern)
@@ -169,17 +159,53 @@ export class WeeklySummary extends Component {
       .allow('')
       .regex(this.regexPattern)
       .label('Minimum 50 words'),
-    weeklySummariesCount: Joi.optional(),
-    mediaConfirm: Joi.boolean()
-      .invalid(false)
-      .label('Media Confirm'),
-    editorConfirm: Joi.boolean()
-      .invalid(false)
-      .label('Editor Confirm'),
-    proofreadConfirm: Joi.boolean()
-      .invalid(false)
-      .label('Proofread Confirm'),
+
+    // these three only accept `true`
+    mediaConfirm: Joi.boolean().invalid(false),
+    editorConfirm: Joi.boolean().invalid(false),
+    proofreadConfirm: Joi.boolean().invalid(false),
   };
+
+  // regexPattern = /^(?=(?:\S*\s){50,})\S*$/;
+
+  schema = Joi.object({
+    mediaUrl: Joi.string()
+      .trim()
+      .uri()
+      .required()
+      .label('Media URL'),
+
+    summary: Joi.string()
+      .allow('')
+      .regex(this.regexPattern)
+      .label('Minimum 50 words'),
+
+    wordCount: Joi.number()
+      .min(50)
+      .label('word count must be greater than 50 words'),
+
+    summaryLastWeek: Joi.string()
+      .allow('')
+      .regex(this.regexPattern)
+      .label('Minimum 50 words'),
+
+    summaryBeforeLast: Joi.string()
+      .allow('')
+      .regex(this.regexPattern)
+      .label('Minimum 50 words'),
+
+    summaryThreeWeeksAgo: Joi.string()
+      .allow('')
+      .regex(this.regexPattern)
+      .label('Minimum 50 words'),
+
+    weeklySummariesCount: Joi.any(),
+
+    // these three “invalid(false)” rules will fail if false
+    mediaConfirm: Joi.boolean().invalid(false),
+    editorConfirm: Joi.boolean().invalid(false),
+    proofreadConfirm: Joi.boolean().invalid(false),
+  });
 
   async componentDidMount() {
     const { dueDate: _dueDate } = this.state;
@@ -388,26 +414,64 @@ export class WeeklySummary extends Component {
   validate = () => {
     const options = { abortEarly: false };
     const { formElements } = this.state;
-    const result = Joi.validate(formElements, this.schema, options);
-    return result?.error?.details.reduce((pre, cur) => {
-      // eslint-disable-next-line no-param-reassign
-      pre[cur.path[0]] = cur.message;
-      return pre;
+    const { error } = this.schema.validate(formElements, options);
+
+    if (!error) return {};
+
+    return error.details.reduce((errs, { path: [key], message }) => {
+      let customMessage;
+      // override for our three checkboxes
+      if (key === 'mediaConfirm') {
+        customMessage = 'Please confirm that you have provided the required media files.';
+      } else if (key === 'editorConfirm') {
+        customMessage = 'Please confirm that you used an AI editor to write your summary.';
+      } else if (key === 'proofreadConfirm') {
+        customMessage = 'Please confirm that you have proofread your summary.';
+      } else {
+        // leave Joi’s default message for everything else
+        customMessage = message;
+      }
+      return { ...errs, [key]: customMessage };
     }, {});
   };
 
-  validateProperty = ({ name, value, type, checked }) => {
+  validateProperty = inputOrEvent => {
+    // normalize: if someone passed the event, pull out currentTarget
+    const input = inputOrEvent.currentTarget || inputOrEvent;
+    const { name, type, checked, value } = input;
     const attr = type === 'checkbox' ? checked : value;
-    const obj = { [name]: attr };
-    const schema = { [name]: this.schema[name] };
-    const { error } = Joi.validate(obj, schema);
-    return error ? error.details[0].message : null;
+
+    // get the individual Joi rule
+    const rule = this.fieldSchemas[name];
+    if (!rule) return null;
+
+    // build a one‐field schema and validate
+    const singleSchema = Joi.object({ [name]: rule });
+    const { error } = singleSchema.validate({ [name]: attr });
+
+    if (!error) return null;
+
+    // custom messages for your three checkboxes:
+    if (name === 'mediaConfirm') {
+      return 'Please confirm that you have provided the required media files.';
+    }
+    if (name === 'editorConfirm') {
+      return 'Please confirm that you used an AI editor to write your summary.';
+    }
+    if (name === 'proofreadConfirm') {
+      return 'Please confirm that you have proofread your summary.';
+    }
+
+    // otherwise, return Joi’s default
+    return error.details[0].message;
   };
 
-  validateEditorProperty = (content, name) => {
-    const obj = { [name]: content };
-    const schema = { [name]: this.schema[name] };
-    const { error } = Joi.validate(obj, schema);
+  validateEditorProperty = (value, name) => {
+    const rule = this.fieldSchemas[name];
+    if (!rule) return null;
+
+    const singleSchema = Joi.object({ [name]: rule });
+    const { error } = singleSchema.validate({ [name]: value });
     return error ? error.details[0].message : null;
   };
 
@@ -591,7 +655,10 @@ export class WeeklySummary extends Component {
     const errors = this.validate();
 
     this.setState({ errors: errors || {} });
-    if (errors) this.state.moveConfirm = false;
+    if (errors) {
+      this.setState({ moveConfirm: false });
+      return;
+    }
     if (errors) return;
 
     const result = await this.handleChangeInSummary();
@@ -622,7 +689,7 @@ export class WeeklySummary extends Component {
       event.preventDefault();
     }
     const { moveConfirm, moveSelect } = this.state;
-    this.state.moveConfirm = true;
+    this.setState({ moveConfirm: true });
     this.mainSaveHandler(false);
     if (moveConfirm) {
       this.toggleTab(moveSelect);
@@ -692,6 +759,24 @@ export class WeeklySummary extends Component {
     const headerBg = darkMode ? 'bg-space-cadet' : '';
     const bodyBg = darkMode ? 'bg-yinmn-blue' : '';
     const boxStyling = darkMode ? boxStyleDark : boxStyle;
+
+    const TINY_MCE_INIT_OPTIONS = {
+      license_key: 'gpl',
+      menubar: false,
+      placeholder: `Did you: Write it in 3rd person with a minimum of 50-words? Remember to run it through ChatGPT or other AI editor using the “Current AI Editing Prompt” from above? Remember to read and do a final edit before hitting Save?`,
+      plugins: 'advlist autolink autoresize lists link charmap table help wordcount',
+      toolbar:
+        'bold italic underline link removeformat | bullist numlist outdent indent | styleselect fontsizeselect | table| strikethrough forecolor backcolor | subscript superscript charmap | help',
+      branding: false,
+      min_height: 180,
+      max_height: 500,
+      autoresize_bottom_margin: 1,
+      content_style: 'body { font-size: 14px; }',
+      images_upload_handler: customImageUploadHandler,
+      skin: darkMode ? 'oxide-dark' : 'oxide',
+      content_css: darkMode ? 'dark' : 'default',
+    };
+
     if (fetchError) {
       return (
         <Container>
@@ -737,7 +822,7 @@ export class WeeklySummary extends Component {
           <Col className="pl-0">
             Total submitted: {summariesCountShowing || formElements.weeklySummariesCount}
           </Col>
-          <Col className="text-right pr-0">
+          <Col className="text-right">
             <Button
               className="btn--dark-sea-green responsive-font-size"
               onClick={this.handleClose}
@@ -889,7 +974,9 @@ export class WeeklySummary extends Component {
                     <Row>
                       <FormGroup>
                         <Input
-                          className="responsive-font-size"
+                          className={`responsive-font-size ${
+                            darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''
+                          }`}
                           type="url"
                           name="mediaUrl"
                           id="mediaUrl"
@@ -962,7 +1049,9 @@ export class WeeklySummary extends Component {
                 </Row>
                 <Row>
                   <Col>
-                    <FormGroup className="d-flex responsive-font-size">
+                    <FormGroup
+                      style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '12px' }}
+                    >
                       <CustomInput
                         id="mediaConfirm"
                         data-testid="mediaConfirm"
@@ -973,10 +1062,14 @@ export class WeeklySummary extends Component {
                         valid={formElements.mediaConfirm}
                         onChange={this.handleCheckboxChange}
                       />
-                      <div className={darkMode ? 'text-light' : 'text-dark'}>
+                      <label
+                        htmlFor="mediaConfirm"
+                        style={{ marginLeft: '10px', lineHeight: '1.5', cursor: 'pointer' }}
+                        className={darkMode ? 'text-light' : 'text-dark'}
+                      >
                         I have provided a minimum of 4 screenshots (6-10 preferred) of this
                         week&apos;s work. (required)
-                      </div>
+                      </label>
                     </FormGroup>
                     {errors.mediaConfirm && (
                       <Alert color="danger">
@@ -987,7 +1080,9 @@ export class WeeklySummary extends Component {
                 </Row>
                 <Row>
                   <Col>
-                    <FormGroup className="d-flex responsive-font-size">
+                    <FormGroup
+                      style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '12px' }}
+                    >
                       <CustomInput
                         id="editorConfirm"
                         data-testid="editorConfirm"
@@ -998,9 +1093,13 @@ export class WeeklySummary extends Component {
                         valid={formElements.editorConfirm}
                         onChange={this.handleCheckboxChange}
                       />
-                      <div className={darkMode ? 'text-light' : 'text-dark'}>
+                      <label
+                        htmlFor="editorConfirm"
+                        style={{ marginLeft: '10px', lineHeight: '1.5', cursor: 'pointer' }}
+                        className={darkMode ? 'text-light' : 'text-dark'}
+                      >
                         I used GPT (or other AI editor) with the most current prompt.
-                      </div>
+                      </label>
                     </FormGroup>
                     {errors.editorConfirm && (
                       <Alert color="danger">
@@ -1011,7 +1110,9 @@ export class WeeklySummary extends Component {
                 </Row>
                 <Row>
                   <Col>
-                    <FormGroup className="d-flex responsive-font-size">
+                    <FormGroup
+                      style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '12px' }}
+                    >
                       <CustomInput
                         id="proofreadConfirm"
                         name="proofreadConfirm"
@@ -1022,9 +1123,13 @@ export class WeeklySummary extends Component {
                         valid={formElements.proofreadConfirm}
                         onChange={this.handleCheckboxChange}
                       />
-                      <div className={darkMode ? 'text-light' : 'text-dark'}>
+                      <label
+                        htmlFor="proofreadConfirm"
+                        style={{ marginLeft: '10px', lineHeight: '1.5', cursor: 'pointer' }}
+                        className={darkMode ? 'text-light' : 'text-dark'}
+                      >
                         I proofread my weekly summary.
-                      </div>
+                      </label>
                     </FormGroup>
                     {errors.proofreadConfirm && (
                       <Alert color="danger">
@@ -1038,7 +1143,7 @@ export class WeeklySummary extends Component {
                     <FormGroup className="mt-2">
                       <Button
                         className="px-5 btn--dark-sea-green"
-                        disabled={Boolean(this.validate())}
+                        disabled={Object.keys(this.validate()).length > 0}
                         onClick={this.handleSave}
                         style={boxStyling}
                       >

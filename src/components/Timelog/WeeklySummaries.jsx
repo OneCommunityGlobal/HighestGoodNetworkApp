@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import parse from 'html-react-parser';
 import './Timelog.css';
-import { getUserProfile, updateUserProfile } from 'actions/userProfile';
-import hasPermission from 'utils/permissions';
+import { getUserProfile, updateUserProfile } from '~/actions/userProfile';
+import hasPermission from '~/utils/permissions';
 import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react';
 import Spinner from 'react-bootstrap/Spinner';
@@ -107,7 +107,7 @@ function WeeklySummaries({ userProfile }) {
   const TINY_MCE_INIT_OPTIONS = {
     license_key: 'gpl',
     menubar: false,
-    plugins: 'advlist autolink autoresize lists link charmap table paste help wordcount',
+    plugins: 'advlist autolink autoresize lists link charmap table help wordcount',
     toolbar:
       'bold italic underline link removeformat | bullist numlist outdent indent | styleselect fontsizeselect | table| strikethrough forecolor backcolor | subscript superscript charmap | help',
     branding: false,
@@ -115,6 +115,8 @@ function WeeklySummaries({ userProfile }) {
     max_height: 500,
     autoresize_bottom_margin: 1,
     images_upload_handler: customImageUploadHandler,
+    skin: darkMode ? 'oxide-dark' : 'oxide',
+    content_css: darkMode ? 'dark' : 'default',
   };
 
   const renderSummary = (title, summary, index) => {
@@ -156,7 +158,7 @@ function WeeklySummaries({ userProfile }) {
     if (summary && (canEdit || currentUserID === loggedInUserId)) {
       // Display the summary with an "Edit" button
       return (
-        <div>
+        <div className={darkMode ? 'bg-yinmn-blue summary-text-light' : ''}>
           <h3>{title}</h3>
           {parse(editedSummaries[index])}
           <button type="button" className="button edit-button" onClick={() => toggleEdit(index)}>
@@ -168,7 +170,7 @@ function WeeklySummaries({ userProfile }) {
     if (summary) {
       // Display the summary with an "Edit" button
       return (
-        <div>
+        <div className={darkMode ? 'bg-yinmn-blue summary-text-light' : ''}>
           <h3>{title}</h3>
           {parse(editedSummaries[index])}
         </div>
@@ -178,7 +180,7 @@ function WeeklySummaries({ userProfile }) {
     return (
       <div>
         <h3>{title}</h3>
-        <p>
+        <p className={darkMode ? 'bg-yinmn-blue text-light' : ''}>
           {userProfile.firstName} {userProfile.lastName} did not submit a summary.
         </p>
       </div>

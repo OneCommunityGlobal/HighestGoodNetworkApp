@@ -13,8 +13,8 @@ import {
   TabPane,
   TabContent,
 } from 'reactstrap';
-import CommonInput from 'components/common/Input';
-import DuplicateNamePopup from 'components/UserManagement/DuplicateNamePopup';
+import CommonInput from '~/components/common/Input';
+import DuplicateNamePopup from '~/components/UserManagement/DuplicateNamePopup';
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import './UserProfileAdd.scss';
 import { createUser } from '../../../services/userProfileService';
@@ -31,19 +31,19 @@ import {
   addTeamMember,
 } from '../../../actions/allTeamsAction';
 
-import { fetchAllProjects } from 'actions/projects';
+import { fetchAllProjects } from '~/actions/projects';
 
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import TimeZoneDropDown from '../TimeZoneDropDown';
-import hasPermission from 'utils/permissions';
-import { boxStyle, boxStyleDark } from 'styles';
+import hasPermission from '~/utils/permissions';
+import { boxStyle, boxStyleDark } from '~/styles';
 import WeeklySummaryOptions from './WeeklySummaryOptions';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { isValidGoogleDocsUrl, isValidMediaUrl } from 'utils/checkValidURL';
+import { isValidGoogleDocsUrl, isValidMediaUrl } from '~/utils/checkValidURL';
 import axios from 'axios';
-import { ENDPOINTS } from 'utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 
 const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
 const DATE_PICKER_MIN_DATE = '01/01/2010';
@@ -126,28 +126,28 @@ class UserProfileAdd extends Component {
   componentDidMount() {
     this.state.showphone = true;
     this.onCreateNewUser();
-    this.fetchTeamCodeAllUsers(); 
+    this.fetchTeamCodeAllUsers();
   }
 
   // Replace fetchTeamCodeAllUsers with a method that dispatches getAllTeamCode
-  fetchTeamCodeAllUsers = async() => {
+  fetchTeamCodeAllUsers = async () => {
     const url = ENDPOINTS.WEEKLY_SUMMARIES_REPORT();
     try {
-      this.setState({isLoading:true})
-     
+      this.setState({ isLoading: true })
+
       const response = await axios.get(url);
       const stringWithValue = response.data.map(item => item.teamCode).filter(Boolean);
       const stringNoRepeat = stringWithValue
         .map(item => item)
         .filter((item, index, array) => array.indexOf(item) === index);
-      this.setState({inputAutoComplete:stringNoRepeat})
-      
-      this.setState({inputAutoStatus:response.status})
-      this.setState({isLoading:false})
-      
+      this.setState({ inputAutoComplete: stringNoRepeat })
+
+      this.setState({ inputAutoStatus: response.status })
+      this.setState({ isLoading: false })
+
     } catch (error) {
       console.log(error);
-      this.setState({isLoading:false})
+      this.setState({ isLoading: false })
       toast.error(`It was not possible to retrieve the team codes. 
       Please try again by clicking the icon inside the input auto complete.`);
     }
@@ -201,12 +201,13 @@ class UserProfileAdd extends Component {
                         onChange={(e) => this.handleUserProfile(e)}
                         placeholder="First Name"
                         invalid={!!(this.state.formSubmitted && this.state.formErrors.firstName)}
+                        className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                       />
-                       {this.state.formSubmitted && this.state.formErrors.firstName && (
-    <FormFeedback className={fontWeight}>
-      {this.state.formErrors.firstName}
-    </FormFeedback>
-  )}
+                      {this.state.formSubmitted && this.state.formErrors.firstName && (
+                        <FormFeedback className={fontWeight}>
+                          {this.state.formErrors.firstName}
+                        </FormFeedback>
+                      )}
                     </FormGroup>
                   </Col>
                   <Col md="3">
@@ -219,12 +220,13 @@ class UserProfileAdd extends Component {
                         onChange={(e) => this.handleUserProfile(e)}
                         placeholder="Last Name"
                         invalid={!!(this.state.formSubmitted && this.state.formErrors.lastName)}
+                        className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                       />
                       {this.state.formSubmitted && this.state.formErrors.lastName && (
-    <FormFeedback className={fontWeight}>
-      {this.state.formErrors.lastName}
-    </FormFeedback>
-  )}
+                        <FormFeedback className={fontWeight}>
+                          {this.state.formErrors.lastName}
+                        </FormFeedback>
+                      )}
                     </FormGroup>
                   </Col>
                 </Row>
@@ -242,11 +244,12 @@ class UserProfileAdd extends Component {
                         onChange={(e) => this.handleUserProfile(e)}
                         placeholder="Job Title"
                         invalid={!!(this.state.formSubmitted && this.state.formErrors.jobTitle)}
+                        className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                       />
                       {this.state.formSubmitted && this.state.formErrors.jobTitle && (
-    <FormFeedback className={fontWeight}>
-      {this.state.formErrors.jobTitle}
-    </FormFeedback>)}
+                        <FormFeedback className={fontWeight}>
+                          {this.state.formErrors.jobTitle}
+                        </FormFeedback>)}
                     </FormGroup>
                   </Col>
                 </Row>
@@ -264,11 +267,12 @@ class UserProfileAdd extends Component {
                         onChange={(e) => this.handleUserProfile(e)}
                         placeholder="Email"
                         invalid={!!(this.state.formSubmitted && this.state.formErrors.email)}
+                        className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                       />
                       {this.state.formSubmitted && this.state.formErrors.email && (
-    <FormFeedback className={fontWeight}>
-      {this.state.formErrors.email}
-    </FormFeedback>)}
+                        <FormFeedback className={fontWeight}>
+                          {this.state.formErrors.email}
+                        </FormFeedback>)}
                       <ToggleSwitch
                         switchType="email"
                         state={this.state.userProfile.privacySettings?.email}
@@ -341,6 +345,7 @@ class UserProfileAdd extends Component {
                             ? false
                             : !this.state.formValid.weeklyCommittedHours
                         }
+                        className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                       />
                       <FormFeedback className={fontWeight}>{this.state.formErrors.weeklyCommittedHours}</FormFeedback>
                     </FormGroup>
@@ -358,6 +363,7 @@ class UserProfileAdd extends Component {
                         id="role"
                         defaultValue="Volunteer"
                         onChange={(e) => this.handleUserProfile(e)}
+                        className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                       >
                         {this.props.role.roles.map(({ roleName }, index) => {
                           if (roleName === 'Owner') return;
@@ -407,6 +413,7 @@ class UserProfileAdd extends Component {
                             onChange={(e) => this.handleUserProfile(e)}
                             placeholder="Actual Email"
                             invalid={!!this.state.formErrors.actualEmail}
+                            className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                           />
                           <FormFeedback className={fontWeight}>{this.state.formErrors.actualEmail}</FormFeedback>
                         </FormGroup>
@@ -473,6 +480,7 @@ class UserProfileAdd extends Component {
                         value={this.state.userProfile.collaborationPreference}
                         onChange={(e) => this.handleUserProfile(e)}
                         placeholder="Skype, Zoom, etc."
+                        className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                       />
                     </FormGroup>
                   </Col>
@@ -490,6 +498,7 @@ class UserProfileAdd extends Component {
                         value={this.state.userProfile.googleDoc}
                         onChange={(e) => this.handleUserProfile(e)}
                         placeholder="Google Doc"
+                        className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                       />
                     </FormGroup>
                   </Col>
@@ -507,6 +516,7 @@ class UserProfileAdd extends Component {
                         value={this.state.userProfile.dropboxDoc}
                         onChange={(e) => this.handleUserProfile(e)}
                         placeholder="DropBox Folder"
+                        className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                       />
                     </FormGroup>
                   </Col>
@@ -518,7 +528,7 @@ class UserProfileAdd extends Component {
                   <Col md="6">
                     <Row>
                       <Col md="6">
-                        <Input id="location" onChange={this.handleLocation} />
+                        <Input id="location" onChange={this.handleLocation} className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}/>
                       </Col>
                       <Col md="6">
                         <div className="w-100 pt-1 mb-2 mx-auto">
@@ -569,7 +579,7 @@ class UserProfileAdd extends Component {
                               },
                             })
                           }
-                          className="form-control"
+                          className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
                         />
                       </div>
                     </FormGroup>
@@ -699,7 +709,7 @@ class UserProfileAdd extends Component {
     }
 
     axios.get(ENDPOINTS.TIMEZONE_LOCATION(location)).then(res => {
-      if(res.status === 200) {
+      if (res.status === 200) {
         const { timezone, currentLocation } = res.data;
         this.setState({
           ...this.state,
@@ -725,6 +735,9 @@ class UserProfileAdd extends Component {
     
     if (phone === null) {
       toast.error('Phone Number is required');
+      return false;
+    } else if (!weeklyCommittedHours) {
+      toast.error('Weekly Committed Hours is required');
       return false;
     } else if (this.state.teamCode && !this.state.codeValid) {
       toast.error('Team Code is invalid');
@@ -935,7 +948,7 @@ class UserProfileAdd extends Component {
             }
             toast.error(
               err.response?.data?.error ||
-                'An unknown error occurred while attempting to create this user.',
+              'An unknown error occurred while attempting to create this user.',
             );
           });
       }
@@ -1127,7 +1140,7 @@ class UserProfileAdd extends Component {
           val = 168
         } else if (val < 0) {
           val = 0
-        } 
+        }
         this.setState({
           userProfile: {
             ...userProfile,

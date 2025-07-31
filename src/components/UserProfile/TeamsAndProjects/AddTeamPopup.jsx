@@ -67,7 +67,7 @@ const AddTeamPopup = React.memo(props => {
       setSearchText('');
 
       selectedTeam && (onSelectTeam(undefined), onValidation(false));
-      closePopup() // automatically closes the popup after team assigned
+      closePopup(); // automatically closes the popup after team assigned
     } else
       toast.error(
         'Your user has been found in this team. Please select another team to add your user.',
@@ -95,6 +95,8 @@ const AddTeamPopup = React.memo(props => {
         await dispatch(getAllUserTeams());
         toast.success('Team created successfully');
         const newTeam = response.data; // Assuming response contains the new team data
+        const updatedTeams = [...props.teamsData.allTeams, newTeam];
+        props.teamsData.allTeams = updatedTeams;
         setIsLoading(false);
         onAssignTeam(newTeam);
       } else {
@@ -134,6 +136,7 @@ const AddTeamPopup = React.memo(props => {
             teamsData={props.teamsData}
             onCreateNewTeam={onCreateTeam}
             searchText={searchText}
+            setInputs={onSelectTeam}
             setSearchText={setSearchText} // Added setSearchText prop
           />
           <Button

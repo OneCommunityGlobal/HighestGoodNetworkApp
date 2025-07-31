@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { ENDPOINTS } from 'utils/URL';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
+import { ENDPOINTS } from '~/utils/URL';
 import axios from 'axios';
 
 const EditTitlesModal = ({ isOpen, toggle, titles, refreshModalTitles, darkMode }) => {
@@ -91,7 +91,7 @@ const EditTitlesModal = ({ isOpen, toggle, titles, refreshModalTitles, darkMode 
                         cursor: 'grab'
                       }}
                     >
-                      {title?.titleCode ? title.titleCode : title?.titleName?.substring(0, 5)}
+                      {title?.titleCode ? title.titleCode : title?.titleName?.substring(0, 7)}
                     </div>
                   )}
                   </Draggable>

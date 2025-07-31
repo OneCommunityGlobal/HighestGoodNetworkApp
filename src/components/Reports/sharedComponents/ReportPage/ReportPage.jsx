@@ -6,8 +6,12 @@ import './ReportPage.css';
 export function ReportPage({ children, renderProfile, contentClassName, darkMode }) {
   return (
     <section className={`report-page-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
-      <div className={`${darkMode ? "report-page-profile-dark" : "report-page-profile"}`}>{renderProfile()}</div>
-      <div className={`report-page-content ${contentClassName}`}>{children}</div>
+      {renderProfile && (
+        <div className={`${darkMode ? 'report-page-profile-dark' : 'report-page-profile'}`}>
+          {renderProfile()}
+        </div>
+      )}
+      <div className={`report-page-content ${contentClassName}`} data-testid="report-content">{children}</div>
     </section>
   );
 }
