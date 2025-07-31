@@ -36,6 +36,6 @@ const RoutePermissions = {
   announcements: ['sendEmails'],
   faq: [''],
   faqManagement: ['manageFAQs'],
-  accessHGNSkillsDashboard: ['accessHGNSkillsDashboard'],
+  accessHgnSkillsDashboard: ['accessHgnSkillsDashboard'],
 };
 export default RoutePermissions;

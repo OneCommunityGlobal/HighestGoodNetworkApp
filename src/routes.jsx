@@ -716,7 +716,7 @@ export default (
           fallback
           component={UserSkillsProfile}
           allowedRoles={[UserRole.Administrator, UserRole.CoreTeam, UserRole.Owner]}
-          routePermissions={RoutePermissions.accessHGNSkillsDashboard}
+          routePermissions={RoutePermissions.accessHgnSkillsDashboard}
         />
         <ProtectedRoute path="/tsaformpage1" exact component={TSAFormPage1} />
         <ProtectedRoute path="/tsaformpage2" exact component={TSAFormPage2} />

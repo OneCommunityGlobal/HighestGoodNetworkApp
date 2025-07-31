@@ -598,7 +598,7 @@ export const permissionLabels = [
       },
       {
         label: 'Access HGN Skills Dashboard',
-        key: 'accessHGNSkillsDashboard',
+        key: 'accessHgnSkillsDashboard',
         description:
           'Lets the user access the HGN skills dashboard, which provides insights into user skills and competencies.',
       },
