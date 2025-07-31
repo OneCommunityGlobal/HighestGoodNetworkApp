@@ -1,7 +1,7 @@
 import './BlueSquare.css';
-import hasPermission from 'utils/permissions';
+import hasPermission from '~/utils/permissions';
 import { connect } from 'react-redux';
-import { formatCreatedDate, formatDate } from 'utils/formatDate';
+import { formatCreatedDate, formatDate } from '~/utils/formatDate';
 import { useEffect } from 'react';
 
 

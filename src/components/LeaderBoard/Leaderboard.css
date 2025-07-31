@@ -15,7 +15,8 @@
   border-top-color: rgb(222, 226, 230);
 }
 
-.leaderboard tbody tr td, thead tr th {
+.leaderboard tbody tr td, 
+.leaderboard thead tr th {
   text-align: left !important;
 }
 

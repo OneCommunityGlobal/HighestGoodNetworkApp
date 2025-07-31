@@ -16,9 +16,9 @@ import {
 } from 'reactstrap';
 import { connect } from 'react-redux';
 import './SummaryBar.css';
-import { ENDPOINTS, ApiEndpoint } from 'utils/URL';
+import { ENDPOINTS, ApiEndpoint } from '~/utils/URL';
 import axios from 'axios';
-import hasPermission from 'utils/permissions';
+import hasPermission from '~/utils/permissions';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
 import { updateUserProfile } from '../../actions/userProfile';
@@ -420,7 +420,7 @@ const SummaryBar = React.forwardRef((props, ref) => {
         return (
           <div
             className="border-black col-4 bg-super-awesome no-gutters d-flex justify-content-center align-items-center"
-            align="center"
+            style={{ textAlign: 'center' }}
           >
             <font className="text-center text-light" size="3">
               SUMMARY
@@ -627,13 +627,16 @@ const SummaryBar = React.forwardRef((props, ref) => {
               style={{ border: '1px solid black' }}
             >
               <div className="m-auto p-2 text-center">
-                <font
+                <span
+                  role="button"
+                  tabIndex={0}
                   onClick={props.toggleSubmitForm}
-                  className="med_text_summary align-middle summary-toggle"
-                  size="3"
+                  onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && props.toggleSubmitForm()}
+                  className="summary-toggle"
+                  style={{ cursor: 'pointer', fontSize: '1.1rem' }}
                 >
                   {renderSummaryMessage()}
-                </font>
+                </span>
               </div>
             </div>
           </Row>
@@ -1114,6 +1117,8 @@ const mapStateToProps = state => ({
   darkMode: state.theme.darkMode,
   badgeCount: state.badge.badgeCount,
 });
+
+SummaryBar.displayName = 'SummaryBar';
 
 export default connect(mapStateToProps, {
   hasPermission,
