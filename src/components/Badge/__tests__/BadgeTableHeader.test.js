@@ -14,13 +14,23 @@ describe('BadgeTableHeader', () => {
   it('should render correctly', () => {
     renderWithProvider(
       <Provider store={store}>
-        <BadgeTableHeader />
+        <table>
+          <thead>
+            <BadgeTableHeader />
+          </thead>
+        </table>
       </Provider>,
     );
   });
 
   it('displays column name correctly', () => {
-    const { getByText } = renderWithProvider(<BadgeTableHeader />);
+    const { getByText } = renderWithProvider(
+      <table>
+        <thead>
+          <BadgeTableHeader />
+        </thead>
+      </table>
+    );
     expect(getByText('Badge')).toBeInTheDocument();
     expect(getByText('Name')).toBeInTheDocument();
     expect(getByText('Description')).toBeInTheDocument();
@@ -32,7 +42,13 @@ describe('BadgeTableHeader', () => {
   });
 
   it('should render tooltip properly', () => {
-    const { getByText } = renderWithProvider(<BadgeTableHeader />);
+    const { getByText } = renderWithProvider(
+      <table>
+        <thead>
+          <BadgeTableHeader />
+        </thead>
+      </table>
+    );
     const ranking = getByText('Ranking');
     if (ranking) {
       const rankingInfo = ranking.querySelector('#SortRankingInfo');

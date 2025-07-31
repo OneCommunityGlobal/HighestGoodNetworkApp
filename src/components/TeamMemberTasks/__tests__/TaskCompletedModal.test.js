@@ -7,9 +7,19 @@ jest.mock('react-toastify', () => ({
   },
 }));
 
+// Mock window.scrollTo
+Object.defineProperty(window, 'scrollTo', {
+  value: jest.fn(),
+  writable: true,
+});
+
 describe('TaskCompletedModal Component', () => {
   const mockCloseFunction = jest.fn();
   const mockUpdateTask = jest.fn();
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
   it('renders without crashing', () => {
     render(

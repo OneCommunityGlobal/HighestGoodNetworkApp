@@ -18,6 +18,7 @@ describe('UserProfileModal', () => {
     modalMessage: '',
     userProfile: userProfileMock,
     isOpen: true,
+    disabled: false,
   };
   beforeEach(() => {
     render(

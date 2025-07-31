@@ -581,11 +581,7 @@ export default (
           exact
           component={WeeklyProjectSummary}
         />
-<<<<<<< HEAD
         <BMProtectedRoute path="/bmdashboard/equipment-history" exact component={EquipmentUpdateLog} />
-=======
-        <BMProtectedRoute path="/bmdashboard/issues/" component={IssueDashboard} />
->>>>>>> 6db253c3fa6400b8ea5505b5ce8351a2f9dfe7c1
 
         <BMProtectedRoute path="/bmdashboard/issuechart" component={IssueChart} />
 
@@ -610,7 +606,7 @@ export default (
         {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
         <CPProtectedRoute path="/communityportal/reports/participation" component={NoshowViz} />
 
-        <CPProtectedRoute path="/communityportal/activities/:activityid/resources" exact component={Resources}/>
+        <CPProtectedRoute path="/communityportal/activities/:activityid/resources" exact component={Resources} />
         <CPProtectedRoute path="/communityportal/activities/:activityid" exact component={Activity} />
         <CPProtectedRoute path="/communityportal/reports/participation" exact component={EventParticipation} />
         <CPProtectedRoute path="/communityportal/reports/event/personalization" exact component={EventStats} />
@@ -678,7 +674,7 @@ export default (
         <ProtectedRoute path="/userprofile/:userId" fallback component={UserProfile} />
         <ProtectedRoute path="/userprofileedit/:userId" component={UserProfileEdit} />
         <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
-        <CPProtectedRoute path="/communityportal/reports/resourceusage" exact component={ResourceUsage}/>
+        <CPProtectedRoute path="/communityportal/reports/resourceusage" exact component={ResourceUsage} />
         <ProtectedRoute path="/memberlist" exact component={MemberList} />
         <Route path="/Logout" component={Logout} />
         <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
@@ -696,14 +692,14 @@ export default (
         <ProtectedRoute path="/hgnform/page5" exact component={Page5} />
         <ProtectedRoute path="/hgnform/page6" exact component={Page6} />
         <ProtectedRoute path="/hgn/profile/skills" exact component={UserSkillsProfile} />
-        <ProtectedRoute path="/tsaformpage1" exact component={TSAFormPage1} /> 
-        <ProtectedRoute path="/tsaformpage2" exact component={TSAFormPage2} /> 
-        <ProtectedRoute path="/tsaformpage3" exact component={TSAFormPage3} /> 
-        <ProtectedRoute path="/tsaformpage4" exact component={TSAFormPage4} /> 
-        <ProtectedRoute path="/tsaformpage5" exact component={TSAFormPage5} /> 
-        <ProtectedRoute path="/tsaformpage6" exact component={TSAFormPage6} /> 
-        <ProtectedRoute path="/tsaformpage7" exact component={TSAFormPage7} /> 
-        <ProtectedRoute path="/tsaformpage8" exact component={TSAFormPage8} /> 
+        <ProtectedRoute path="/tsaformpage1" exact component={TSAFormPage1} />
+        <ProtectedRoute path="/tsaformpage2" exact component={TSAFormPage2} />
+        <ProtectedRoute path="/tsaformpage3" exact component={TSAFormPage3} />
+        <ProtectedRoute path="/tsaformpage4" exact component={TSAFormPage4} />
+        <ProtectedRoute path="/tsaformpage5" exact component={TSAFormPage5} />
+        <ProtectedRoute path="/tsaformpage6" exact component={TSAFormPage6} />
+        <ProtectedRoute path="/tsaformpage7" exact component={TSAFormPage7} />
+        <ProtectedRoute path="/tsaformpage8" exact component={TSAFormPage8} />
         <ProtectedRoute
           path="/pr-team-analytics/popular-prs"
           exact
