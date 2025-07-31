@@ -31,16 +31,39 @@ export const weeklySummariesReportReducer = (state = initialState, action) => {
       };
 
     case actions.UPDATE_SUMMARY_REPORT: {
-      // Wrap this block in braces to fix the lexical declaration issue
       const { _id, updatedField } = action.payload;
       const newSummaries = [...state.summaries];
-      const summaryIndex = newSummaries.findIndex(summary => summary._id === _id);
-      newSummaries[summaryIndex] = { ...newSummaries[summaryIndex], ...updatedField };
+      console.log(newSummaries)
+      for (let i = 0; i < newSummaries.length; i++) {
+        if (newSummaries[i]._id === _id) {
+          console.log(newSummaries[i]._id);
+          console.log(newSummaries[i]);
+          // update top-level fields
+          newSummaries[i] = { ...newSummaries[i], ...updatedField };
+
+          // update only matching weeklySummaries entries
+          if (Array.isArray(newSummaries[i].weeklySummaries)) {
+            newSummaries[i].weeklySummaries = newSummaries[i].weeklySummaries.map(summary => {
+              if (!summary) return summary; // preserve null slots
+
+              // match by week (we assume same bioPosted for all weeks)
+              return {
+                ...summary,
+                bioPosted: updatedField.bioPosted ?? summary.bioPosted,
+              };
+            });
+          }
+        }
+      }
+
       return {
         ...state,
         summaries: newSummaries,
       };
     }
+
+
+
 
     default:
       return state;

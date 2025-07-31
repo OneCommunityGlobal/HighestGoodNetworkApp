@@ -10,6 +10,7 @@
     "@babel/runtime": "^7.27.6",
     "@babel/runtime-corejs3": "^7.27.6",
     "@changey/react-leaflet-markercluster": "^4.0.0-rc1",
+    "@craco/craco": "^7.1.0",
     "@date-io/dayjs": "^3.2.0",
     "@emotion/react": "^11.8.1",
     "@emotion/styled": "^11.14.0",
@@ -122,7 +123,7 @@
     "test:coverage": "cross-env CI=true vitest --coverage --reporter=verbose",
     "test:changed": "vitest --changed origin/development --reporter=verbose",
     "eject": "react-scripts eject",
-    "start:local": "react-scripts start",
+    "start:local": "vite",
     "lint": "eslint \"**/*.{js,jsx}\"",
     "lint:fix": "eslint --fix \"**/*.{js,jsx}\"",
     "prepare": "husky install"

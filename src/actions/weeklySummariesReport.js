@@ -91,12 +91,22 @@ export const updateOneSummaryReport = (userId, updatedField) => {
  */
 export const toggleUserBio = (userId, bioPosted) => async dispatch => {
   const url = ENDPOINTS.TOGGLE_BIO_STATUS(userId);
+  console.log("reached here");
   try {
     const res = await axios.patch(url, { bioPosted });
     if (res.status === 200) {
+      toast.success(`Bio status updated to "${bioPosted}"`);
       const updatedField = { bioPosted };
       dispatch(updateSummaryReport({ _id: userId, updatedField }));
-      toast.success(`Bio status updated to "${bioPosted}"`);
+      console.log("Dispatching bio status update for", userId, updatedField);
+      // await dispatch(getWeeklySummariesReport(0)); // This week
+      // await dispatch(getWeeklySummariesReport(1)); // Last week
+      // await dispatch(getWeeklySummariesReport(2)); // Week before last
+      // await dispatch(getWeeklySummariesReport(3));
+
+      console.log(res);
+
+      console.log("reached here");
     }
     return res;
   } catch (error) {
