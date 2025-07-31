@@ -1,9 +1,11 @@
 import axios from "axios";
+
+
 import * as actions from '../../constants/weeklySummariesReport';
 import * as weeklySummaryReport from '../weeklySummariesReport';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 
-jest.mock('axios');
+vi.mock('axios');
 
 describe('Weekly Summaries Report Actions', () => {
 
@@ -50,10 +52,10 @@ describe('Weekly Summaries Report Actions', () => {
 
 describe('Weekly Summary Report', () => {
 
-  const dispatch = jest.fn();
+  const dispatch = vi.fn();
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('Get Weekly Summaries Report', () => {

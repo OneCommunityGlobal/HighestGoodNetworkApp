@@ -1,5 +1,4 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable new-cap */
+/* eslint-disable testing-library/no-node-access */
 import { connect } from 'react-redux';
 import { useEffect, useState } from 'react';
 import {
@@ -23,10 +22,10 @@ import 'moment-timezone';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 
-import hasPermission from 'utils/permissions';
+import hasPermission from '~/utils/permissions';
 
 // actions
-import { getTotalOrgSummary } from 'actions/totalOrgSummary';
+import { getTotalOrgSummary } from '~/actions/totalOrgSummary';
 
 import '../Header/DarkMode.css';
 import './TotalOrgSummary.css';
@@ -499,9 +498,12 @@ function TotalOrgSummary(props) {
         <ModalBody>
           <div className="d-flex flex-column gap-4">
             <div>
-              <label style={{ display: 'block', marginBottom: '1rem' }}>Start Date</label>
+              <label htmlFor="start-date" style={{ display: 'block', marginBottom: '1rem' }}>
+                Start Date
+              </label>
               <div style={{ padding: '0.5rem 0' }}>
                 <DatePicker
+                  id="start-date"
                   selected={startDate}
                   onChange={date => setStartDate(date)}
                   className="form-control"
@@ -510,10 +512,14 @@ function TotalOrgSummary(props) {
                 />
               </div>
             </div>
+
             <div>
-              <label style={{ display: 'block', marginBottom: '1rem' }}>End Date</label>
+              <label htmlFor="end-date" style={{ display: 'block', marginBottom: '1rem' }}>
+                End Date
+              </label>
               <div style={{ padding: '0.5rem 0' }}>
                 <DatePicker
+                  id="end-date"
                   selected={endDate}
                   onChange={date => setEndDate(date)}
                   className="form-control"
