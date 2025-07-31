@@ -12,9 +12,9 @@ import {
   Card,
   Col,
 } from 'reactstrap';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import '../../Header/DarkMode.css'
-import hasPermission from 'utils/permissions';
+import hasPermission from '~/utils/permissions';
 import { connect, useSelector } from 'react-redux';
 
 const UserProfileModal = props => {
