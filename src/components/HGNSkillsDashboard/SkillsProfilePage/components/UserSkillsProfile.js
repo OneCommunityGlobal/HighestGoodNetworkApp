@@ -4,7 +4,7 @@ import { ClipLoader } from 'react-spinners';
 import jwtDecode from 'jwt-decode';
 import LeftSection from './LeftSection';
 import RightSection from './RightSection';
-import '../styles/UserSkillsProfile.css';
+import styles from '../styles/UserSkillsProfile.module.css';
 
 function UserSkillsProfile() {
   const [profileData, setProfileData] = useState(null);
@@ -55,7 +55,7 @@ function UserSkillsProfile() {
 
   if (loading) {
     return (
-      <div className="skills-loader">
+      <div className={`${styles.skillsLoader}`}>
         <ClipLoader color="#007bff" size={70} />
         <p>Loading Profile...</p>
       </div>
@@ -64,7 +64,7 @@ function UserSkillsProfile() {
 
   if (error) {
     return (
-      <div className="skills-error">
+      <div className={`${styles.skillsError}`}>
         <p>Error: {error}</p>
       </div>
     );
@@ -72,17 +72,17 @@ function UserSkillsProfile() {
 
   if (!profileData) {
     return (
-      <div className="skills-error">
+      <div className={`${styles.skillsError}`}>
         <p>No profile data available</p>
       </div>
     );
   }
 
   return (
-    <div className="user-profile-home">
-      <div className="dashboard-container">
+    <div className={`${styles.userProfileHome}`}>
+      <div className={`${styles.dashboardContainer}`}>
         <LeftSection profileData={profileData} />
-        <div className="vertical-separator" />
+        <div className={`${styles.verticalSeparator}`} />
         <RightSection profileData={profileData} />
       </div>
     </div>

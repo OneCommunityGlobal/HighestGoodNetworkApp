@@ -3,7 +3,7 @@ import DatePicker from 'react-datepicker';
 import Select from 'react-select';
 import axios from 'axios';
 import 'react-datepicker/dist/react-datepicker.css';
-import { Table, Button, Dropdown, Form, Row, Col, Container } from 'react-bootstrap';
+import { Table, Button, Dropdown, Form, Row, Col } from 'react-bootstrap';
 import './IssuesList.css';
 import { useSelector } from 'react-redux';
 import { ENDPOINTS } from '../../../utils/URL';
@@ -55,7 +55,12 @@ export default function IssuesList() {
   }, []);
 
   useEffect(() => {
-    fetchIssuesWithFilters();
+    const fetchAndResetPagination = async () => {
+      await fetchIssuesWithFilters();
+      setCurrentPage(1);
+      setPageGroupStart(1);
+    };
+    fetchAndResetPagination();
   }, [tagFilter, selectedProjects, startDate, endDate]);
 
   // Memoize the mapped issues to avoid unnecessary recalculations
@@ -135,10 +140,10 @@ export default function IssuesList() {
     startDate && endDate ? `${formatDate(startDate)} - ${formatDate(endDate)}` : '';
 
   return (
-    <Container className={darkMode ? 'dark-theme' : ''}>
+    <div className={`custom-container ${darkMode ? 'dark-theme' : ''}`}>
       <h4 className="mb-4">A List of Issues</h4>
       <Row className="mb-3 align-items-center">
-        <Col md={4}>
+        <Col xs={12} md={5}>
           <div className="datepicker-wrapper">
             <DatePicker
               selectsRange
@@ -164,7 +169,7 @@ export default function IssuesList() {
             </Button>
           </div>
         </Col>
-        <Col md={4}>
+        <Col xs={12} md={4}>
           <Select
             isMulti
             classNamePrefix="custom-select"
@@ -175,7 +180,7 @@ export default function IssuesList() {
             placeholder="Filter by Projects"
           />
         </Col>
-        <Col md={2}>
+        <Col xs={12} md={2}>
           <Button
             variant="danger"
             onClick={() => {
@@ -184,7 +189,7 @@ export default function IssuesList() {
               setDateRange([null, null]);
             }}
           >
-            Reset All
+            Reset
           </Button>
         </Col>
       </Row>
@@ -261,7 +266,7 @@ export default function IssuesList() {
                       className="dropdown-item-custom"
                       onClick={() => handleCloseIssue(issue.id)}
                     >
-                      Close Issue
+                      Close
                     </Dropdown.Item>
                   </Dropdown.Menu>
                 </Dropdown>
@@ -270,7 +275,6 @@ export default function IssuesList() {
           ))}
         </tbody>
       </Table>
-
       <div className="pagination-container">
         <Button
           variant="outline-secondary"
@@ -312,6 +316,6 @@ export default function IssuesList() {
           &raquo;
         </Button>
       </div>
-    </Container>
+    </div>
   );
 }
