@@ -7,8 +7,6 @@ import 'react-datepicker/dist/react-datepicker.css';
 import './ApplicantSourceDonutChart.css';
 
 const COLORS = ['#FF4D4F', '#FFC107', '#1890FF', '#00C49F', '#8884D8'];
-
-// Helper to convert date to YYYY-MM-DD
 const toDateOnlyString = date => (date ? date.toISOString().split('T')[0] : null);
 
 const ApplicantSourceDonutChart = () => {
@@ -21,7 +19,6 @@ const ApplicantSourceDonutChart = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Helper to fetch data with given filters
   const fetchDataWithFilters = async ({
     startDate: filterStartDate,
     endDate: filterEndDate,
@@ -38,18 +35,12 @@ const ApplicantSourceDonutChart = () => {
       const url = 'http://localhost:4500/api/analytics/applicant-sources';
       const params = {};
 
-      if (filterStartDate) {
-        params.startDate = toDateOnlyString(filterStartDate);
-      }
-      if (filterEndDate) {
-        params.endDate = toDateOnlyString(filterEndDate);
-      }
-
-      if (filterRoles && filterRoles.length > 0) {
-        const roleValues = filterRoles.map(role => (typeof role === 'object' ? role.value : role));
+      if (filterStartDate) params.startDate = toDateOnlyString(filterStartDate);
+      if (filterEndDate) params.endDate = toDateOnlyString(filterEndDate);
+      if (filterRoles?.length > 0) {
+        const roleValues = filterRoles.map(r => (typeof r === 'object' ? r.value : r));
         params.roles = roleValues.join(',');
       }
-
       if (filterComparisonType && filterComparisonType !== '') {
         params.comparisonType = filterComparisonType;
       }
@@ -62,6 +53,7 @@ const ApplicantSourceDonutChart = () => {
       const result = response.data;
       setData(result.sources || []);
       setComparisonText(result.comparisonText || '');
+      console.log('Comparison Text from backend:', result.comparisonText);
     } catch (err) {
       console.error('Error fetching data:', err);
       setError(err.response?.data?.message || err.message || 'Error fetching data.');
@@ -79,35 +71,20 @@ const ApplicantSourceDonutChart = () => {
   const handleStartDateChange = date => {
     setStartDate(date);
     if (comparisonType === '') {
-      fetchDataWithFilters({
-        startDate: date,
-        endDate,
-        roles: selectedRoles,
-        comparisonType,
-      });
+      fetchDataWithFilters({ startDate: date, endDate, roles: selectedRoles, comparisonType });
     }
   };
 
   const handleEndDateChange = date => {
     setEndDate(date);
     if (comparisonType === '') {
-      fetchDataWithFilters({
-        startDate,
-        endDate: date,
-        roles: selectedRoles,
-        comparisonType,
-      });
+      fetchDataWithFilters({ startDate, endDate: date, roles: selectedRoles, comparisonType });
     }
   };
 
   const handleRoleChange = roles => {
     setSelectedRoles(roles);
-    fetchDataWithFilters({
-      startDate,
-      endDate,
-      roles,
-      comparisonType,
-    });
+    fetchDataWithFilters({ startDate, endDate, roles, comparisonType });
   };
 
   const handleComparisonTypeChange = option => {
@@ -115,32 +92,51 @@ const ApplicantSourceDonutChart = () => {
     setComparisonType(newComparisonType);
 
     if (newComparisonType !== '') {
-      setStartDate(null);
-      setEndDate(null);
-    }
+      const today = new Date();
+      const pastDate = new Date(today);
 
-    fetchDataWithFilters({
-      startDate: newComparisonType === '' ? startDate : null,
-      endDate: newComparisonType === '' ? endDate : null,
-      roles: selectedRoles,
-      comparisonType: newComparisonType,
-    });
+      if (newComparisonType === 'week') {
+        pastDate.setDate(today.getDate() - 7);
+      } else if (newComparisonType === 'month') {
+        pastDate.setMonth(today.getMonth() - 1);
+      } else if (newComparisonType === 'year') {
+        pastDate.setFullYear(today.getFullYear() - 1);
+      }
+
+      fetchDataWithFilters({
+        startDate: pastDate,
+        endDate: today,
+        roles: selectedRoles,
+        comparisonType: newComparisonType,
+      });
+    } else {
+      fetchDataWithFilters({
+        startDate,
+        endDate,
+        roles: selectedRoles,
+        comparisonType: '',
+      });
+    }
   };
 
   const total = data.reduce((sum, item) => sum + item.value, 0);
 
-  const renderCenterText = () => (
-    <text
-      x="50%"
-      y="50%"
-      textAnchor="middle"
-      dominantBaseline="middle"
-      fontSize={12}
-      fontWeight="bold"
-    >
-      {comparisonText}
-    </text>
-  );
+  const renderCenterText = ({ viewBox }) => {
+    const { cx, cy } = viewBox;
+    return (
+      <text
+        x={cx}
+        y={cy}
+        textAnchor="middle"
+        dominantBaseline="middle"
+        fontSize={16}
+        fontWeight="bold"
+        fill="#333"
+      >
+        {comparisonText}
+      </text>
+    );
+  };
 
   return (
     <div className="applicant-chart-container">
@@ -172,23 +168,23 @@ const ApplicantSourceDonutChart = () => {
         <div className="filter-input">
           <Select
             isMulti
-            options={[
-              { label: 'Project Manager', value: 'Project Manager' },
-              { label: 'Frontend Developer', value: 'Frontend Developer' },
-              { label: 'Backend Developer', value: 'Backend Developer' },
-              { label: 'Full Stack Developer', value: 'Full Stack Developer' },
-              { label: 'DevOps Engineer', value: 'DevOps Engineer' },
-              { label: 'API Engineer', value: 'API Engineer' },
-              { label: 'QA Engineer', value: 'QA Engineer' },
-              { label: 'Test Analyst', value: 'Test Analyst' },
-              { label: 'Support Engineer', value: 'Support Engineer' },
-              { label: 'Tech Lead', value: 'Tech Lead' },
-              { label: 'Architect', value: 'Architect' },
-              { label: 'Junior Developer', value: 'Junior Developer' },
-              { label: 'Intern', value: 'Intern' },
-            ]}
             value={selectedRoles}
             onChange={handleRoleChange}
+            options={[
+              'Project Manager',
+              'Frontend Developer',
+              'Backend Developer',
+              'Full Stack Developer',
+              'DevOps Engineer',
+              'API Engineer',
+              'QA Engineer',
+              'Test Analyst',
+              'Support Engineer',
+              'Tech Lead',
+              'Architect',
+              'Junior Developer',
+              'Intern',
+            ].map(label => ({ label, value: label }))}
             placeholder="Select Roles"
           />
         </div>
@@ -200,23 +196,23 @@ const ApplicantSourceDonutChart = () => {
               { label: 'This same year', value: 'year' },
               { label: 'Custom Dates (no comparison)', value: '' },
             ]}
-            value={(() => {
-              if (!comparisonType) return null;
-              const options = [
-                { label: 'This same week last year', value: 'week' },
-                { label: 'This same month last year', value: 'month' },
-                { label: 'This same year', value: 'year' },
-                { label: 'Custom Dates (no comparison)', value: '' },
-              ];
-              return options.find(option => option.value === comparisonType) || null;
-            })()}
+            value={
+              comparisonType
+                ? [
+                    { label: 'This same week last year', value: 'week' },
+                    { label: 'This same month last year', value: 'month' },
+                    { label: 'This same year', value: 'year' },
+                    { label: 'Custom Dates (no comparison)', value: '' },
+                  ].find(opt => opt.value === comparisonType)
+                : null
+            }
             onChange={handleComparisonTypeChange}
             placeholder="Comparison Type"
           />
         </div>
       </div>
 
-      {/* Chart Display */}
+      {/* Chart */}
       <div className="chart-wrapper">
         {loading && <p style={{ textAlign: 'center' }}>Loading data...</p>}
         {!loading && error && <p style={{ textAlign: 'center', color: 'red' }}>{error}</p>}
@@ -241,7 +237,7 @@ const ApplicantSourceDonutChart = () => {
                 {data.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
-                <Label content={renderCenterText} position="center" />
+                {comparisonText && <Label content={renderCenterText} />}
               </Pie>
               <Tooltip />
               <Legend />
