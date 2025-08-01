@@ -38,7 +38,6 @@ const ApplicantSourceDonutChart = () => {
       const url = 'http://localhost:4500/api/analytics/applicant-sources';
       const params = {};
 
-      // Use YYYY-MM-DD format
       if (filterStartDate) {
         params.startDate = toDateOnlyString(filterStartDate);
       }
@@ -54,8 +53,6 @@ const ApplicantSourceDonutChart = () => {
       if (filterComparisonType && filterComparisonType !== '') {
         params.comparisonType = filterComparisonType;
       }
-
-      console.log('Making request with params:', params);
 
       const response = await axios.get(url, {
         headers: { Authorization: token },
