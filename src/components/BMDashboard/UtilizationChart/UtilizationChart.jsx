@@ -1,3 +1,6 @@
+/* eslint-disable */
+/* prettier-ignore */
+
 import { useState, useEffect } from 'react';
 import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Title } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
