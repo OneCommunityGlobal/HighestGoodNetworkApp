@@ -11,6 +11,7 @@ import {
   LISTING_BOOK_RESET,
 } from '../../constants/lbDashboard/listOverviewConstants';
 
+
 const initialState = {
   loading: false,
   listing: null,
