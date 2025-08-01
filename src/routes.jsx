@@ -513,7 +513,6 @@ export default (
 
         <Route path="/UtilizationChart" component={UtilizationChart} />
 
-
         <BMProtectedRoute
           path="/bmdashboard/materials/purchase"
           fallback
@@ -723,6 +722,4 @@ export default (
       </Switch>
     </>
   </Switch>
-
 );
-
