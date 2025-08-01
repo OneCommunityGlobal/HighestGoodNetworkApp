@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import { Form, FormGroup, FormText, Input, Label, Button, FormFeedback } from 'reactstrap';
-import Joi from 'joi';
+import Joi from 'joi-browser';
 
-import { loginBMUser } from 'actions/authActions';
+import { loginBMUser } from '~/actions/authActions';
 
 function EPLogin(props) {
   const { dispatch, auth, history, location } = props;

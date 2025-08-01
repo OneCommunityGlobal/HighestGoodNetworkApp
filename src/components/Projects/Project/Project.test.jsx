@@ -39,9 +39,10 @@ describe('Project Component', () => {
     projectData: sampleProjectData,
     index: 0,
     darkMode: false,
-    hasPermission: jest.fn((permission) => true),
-    onUpdateProject: jest.fn(),
-    onClickArchiveBtn: jest.fn(),
+    hasPermission: vi.fn((permission) => true),
+    onUpdateProject: vi.fn(),
+    onClickArchiveBtn: vi.fn(),
+    onClickProjectStatusBtn: vi.fn(),
   };
 
   it('renders correctly with props', () => {
@@ -84,7 +85,7 @@ describe('Project Component', () => {
   });
 
   it('triggers delete action on button click', () => {
-    const mockOnClickArchiveBtn = jest.fn();
+    const mockOnClickArchiveBtn = vi.fn();
     const { getByTestId } = renderProject({
       ...sampleProps,
       onClickArchiveBtn: mockOnClickArchiveBtn,

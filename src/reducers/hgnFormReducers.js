@@ -1,4 +1,4 @@
-import { FETCH_FORM_DATA, SET_FORM_DATA, SUBMIT_FORM_DATA } from 'constants/hgnFormConstants';
+import { FETCH_FORM_DATA, SET_FORM_DATA, SUBMIT_FORM_DATA } from '~/constants/hgnFormConstants';
 
 const formState = {
   loading: false, // Add loading state

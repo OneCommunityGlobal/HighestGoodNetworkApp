@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import * as actions from '../constants/weeklySummariesReport';
-import { ENDPOINTS } from '../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 
 /**
  * Action to set the 'loading' flag to true.
@@ -44,17 +44,26 @@ export const updateSummaryReport = ({ _id, updatedField }) => ({
  * Gets all active users' summaries + a few other selected fields from the userProfile that
  * might be useful for the weekly summary report.
  */
-export const getWeeklySummariesReport = () => {
-  const url = ENDPOINTS.WEEKLY_SUMMARIES_REPORT();
+export const getWeeklySummariesReport = (weekIndex = null) => {
   return async dispatch => {
     dispatch(fetchWeeklySummariesReportBegin());
     try {
+      // Use the APIEndpoint from ENDPOINTS
+      let url = ENDPOINTS.WEEKLY_SUMMARIES_REPORT();
+
+      // Add the week parameter if provided
+      if (weekIndex !== null) {
+        // Check if the URL already has parameters
+        const separator = url.includes('?') ? '&' : '?';
+        url = `${url}${separator}week=${weekIndex}`;
+      }
+
       const response = await axios.get(url);
       dispatch(fetchWeeklySummariesReportSuccess(response.data));
       return { status: response.status, data: response.data };
     } catch (error) {
       dispatch(fetchWeeklySummariesReportError(error));
-      return error.response.status;
+      return error.response ? error.response.status : 500;
     }
   };
 };

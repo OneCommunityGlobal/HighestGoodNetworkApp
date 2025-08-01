@@ -18,7 +18,7 @@ describe("AddProject component", () => {
 
   beforeEach(() => {
     store = mockStore(initialState);
-    store.dispatch = jest.fn();
+    store.dispatch = vi.fn();
   });
 
   const renderComponent = (props = {}) => {
@@ -78,7 +78,7 @@ const typeIntoInput = ({ input }) => {
   test("adds project on form submission", async () => {
     renderComponent();
     userEvent.click(screen.getByText("Add New Project"));
-    userEvent.type(screen.getByLabelText("Project Name (required)"), "Test Project");
+    userEvent.type(screen.getByLabelText("Project Name"), "Test Project");
     userEvent.selectOptions(screen.getByLabelText("Select Category"), "Food");
     userEvent.click(screen.getByText("Add Project"));
     
@@ -92,7 +92,7 @@ const typeIntoInput = ({ input }) => {
   
 //   //mock the onAddNewProject function
 
-//   const mockAddNewProject = jest.fn();
+//   const mockAddNewProject = vi.fn();
 
 //   beforeEach(() => {
 //     render(<AddProject onAddNewProject={mockAddNewProject} />)

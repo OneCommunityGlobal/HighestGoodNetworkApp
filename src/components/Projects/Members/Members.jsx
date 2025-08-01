@@ -3,10 +3,10 @@
  * Author: Henry Ng - 01/25/20
  * Display members of the project
  ********************************************************************************/
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { NavItem } from 'reactstrap';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import {
   fetchAllMembers,
   findUserProfiles,
@@ -17,14 +17,13 @@ import Member from './Member';
 import FoundUser from './FoundUser';
 import './members.css';
 import hasPermission from '../../../utils/permissions';
-import { boxStyle, boxStyleDark } from 'styles';
-import ToggleSwitch from 'components/UserProfile/UserProfileEdit/ToggleSwitch';
-import Loading from 'components/common/Loading';
-
+import { boxStyle, boxStyleDark } from '~/styles';
+import ToggleSwitch from '~/components/UserProfile/UserProfileEdit/ToggleSwitch';
+import Loading from '~/components/common/Loading';
+import { getProjectDetail } from '~/actions/project';
 
 const Members = props => {
   const darkMode = props.state.theme.darkMode;
-
   const projectId = props.match.params.projectId;
   const [showFindUserList, setShowFindUserList] = useState(false);
   const [membersList, setMembersList] = useState(props.state.projectMembers.members);
@@ -34,11 +33,14 @@ const Members = props => {
   const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers');
   const canUnassignUserInProject = props.hasPermission('unassignUserInProject');
 
+  const projectName = useSelector(state => state.projectById?.projectName || '');
+
   useEffect(() => {
     const fetchMembers = async () => {
       setIsLoading(true);
       setMembersList([]);
       await props.fetchAllMembers(projectId);
+      props.getProjectDetail(projectId);
       setIsLoading(false);
     };
     fetchMembers();
@@ -64,11 +66,13 @@ const Members = props => {
   }, [props.state.projectMembers.members, isLoading]);
 
   // ADDED: State for toggling display of active members only
-  const [showActiveMembersOnly, setShowActiveMembersOnly] = useState(false);
+  const [showActiveMembersOnly, setShowActiveMembersOnly] = useState(true);
 
-  const displayedMembers = showActiveMembersOnly
-    ? membersList.filter(member => member.isActive)
-    : membersList;
+  // avoid re-filtering the netire list on every render
+  const displayedMembers = useMemo(
+    () => (showActiveMembersOnly ? membersList?.filter(member => member.isActive) : membersList),
+    [membersList, showActiveMembersOnly]
+  );
 
   const handleToggle = async () => {
     setShowActiveMembersOnly(prevState => !prevState);
@@ -98,17 +102,52 @@ const Members = props => {
   return (
     <React.Fragment>
       <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{minHeight: "100%"}}>
-        <div className={`container pt-2 ${darkMode ? 'bg-yinmn-blue-light text-light' : ''}`}>
-          <nav aria-label="breadcrumb">
-            <ol className={`breadcrumb ${darkMode ? 'bg-space-cadet' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>
-              <NavItem tag={Link} to={`/projects/`}>
-                <button type="button" className="btn btn-secondary" style={darkMode ? {} : boxStyle}>
-                  <i className="fa fa-chevron-circle-left" aria-hidden="true"></i>
-                </button>
-              </NavItem>
+        <div className={`container pt-2 ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
+          <nav aria-label="breadcrumb" className="w-100">
+            <div
+              className={`d-flex align-items-center justify-content-center breadcrumb ${darkMode ? 'bg-space-cadet' : ''}`}
+              style={{
+                ...darkMode ? boxStyleDark : boxStyle,
+                backgroundColor: darkMode ? '' : '#E9ECEF',
+                margin: '0 0 16px',
+                padding: '12px 16px',
+                position: 'relative',
+                flexWrap: 'wrap', 
+              }}
+            >
+            
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+              >
+                <NavItem tag={Link} to={`/projects/`}>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    style={darkMode ? boxStyleDark : boxStyle}
+                  >
+                    <i className="fa fa-chevron-circle-left" aria-hidden="true"></i>
+                  </button>
+                </NavItem>
+              </div>
 
-              <div id="member_project__name">PROJECTS {props.projectId}</div>
-            </ol>
+              <div
+                
+                style={{
+                  textAlign: 'center',
+                  fontWeight: 'bold',
+                  fontSize: '1.5rem',
+                  wordBreak: 'break-word', 
+                  flexGrow: 1, 
+                  whiteSpace: 'normal', 
+                }}
+              >
+                {projectName}
+              </div>
+            </div>
+
           </nav>
           {canAssignProjectToUsers ? (
             <div className="input-group" id="new_project">
@@ -240,4 +279,5 @@ export default connect(mapStateToProps, {
   getAllUserProfiles,
   assignProject,
   hasPermission,
+  getProjectDetail,
 })(Members);
