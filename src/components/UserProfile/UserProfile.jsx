@@ -562,7 +562,7 @@ function UserProfile(props) {
 
     if (type === 'addBlueSquare') {
       setModalTitle('Blue Square');
-    } else if (type === 'viewBlueSquare' || type === 'modBlueSquare') {
+    } else if (type === 'viewBlueSquare' || type === 'modBlueSquare' || type === 'handleBlueSquare' || type === 'editBlueSquare' || type === 'deleteBlueSquare') {
       setModalTitle('Blue Square');
       setId(blueSquareID);
     } else if (blueSquareID === 'none') {
