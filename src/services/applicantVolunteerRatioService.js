@@ -4,7 +4,7 @@ import { ENDPOINTS } from '../utils/URL';
 const ApiUri = ENDPOINTS.APPLICANT_VOLUNTEER_RATIO;
 
 export function getAllApplicantVolunteerRatios() {
-  return httpService.get(ApiUri);
+  return httpService.get(`${ApiUri}/analytics`);
 }
 
 export function getApplicantVolunteerRatioById(id) {
