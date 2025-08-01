@@ -44,48 +44,54 @@ function UtilizationChart() {
   };
 
   const chartData = {
-    labels: toolsData.map(tool => tool.name),
-    datasets: [
-      {
-        label: 'Utilization Rate (%)',
-        data: toolsData.map(tool => tool.utilizationRate),
-        backgroundColor: '#a0e7e5',
-        borderRadius: 6,
-      },
-    ],
-  };
+  labels: toolsData.map(tool => tool.name),
+  datasets: [
+    {
+      label: 'Utilization (%)',
+      data: toolsData.map(tool => tool.utilizationRate),
+      backgroundColor: '#a0e7e5',
+      borderRadius: 6,
+    },
+    {
+      label: 'Downtime (%)',
+      data: toolsData.map(tool => 100 - tool.utilizationRate),
+      backgroundColor: '#f9c74f',
+      borderRadius: 6,
+    },
+  ],
+};
 
-  const options = {
-    indexAxis: 'y',
-    plugins: {
-      tooltip: {
-        callbacks: {
-          label: context => {
-            const tool = toolsData[context.dataIndex];
-            return [`Utilization: ${tool.utilizationRate}%`, `Downtime: ${tool.downtime} hrs`];
-          },
+const options = {
+  indexAxis: 'y',
+  plugins: {
+    tooltip: {
+      callbacks: {
+        label: context => {
+          const tool = toolsData[context.dataIndex];
+          if (context.dataset.label === 'Utilization (%)') {
+            return `Utilization: ${tool.utilizationRate}%`;
+          } else {
+            return `Downtime: ${tool.downtime} hrs`;
+          }
         },
       },
     },
-    onClick: (evt, elements) => {
-      if (elements.length > 0) {
-        const [{ index }] = elements;
-        const selectedTool = toolsData[index];
-        window.location.href = `/tools/${selectedTool.id}/details`;
-      }
+  },
+  scales: {
+    x: {
+      stacked: true,
+      title: { display: true, text: 'Time (%)' },
+      max: 100,
     },
-    scales: {
-      x: {
-        title: { display: true, text: 'Utilization Rate (%)' },
-        max: 100,
-      },
-      y: {
-        ticks: {
-          autoSkip: false,
-        },
+    y: {
+      stacked: true,
+      ticks: {
+        autoSkip: false,
       },
     },
-  };
+  },
+};
+
 
   return (
     <div className="utilization-chart-container">
