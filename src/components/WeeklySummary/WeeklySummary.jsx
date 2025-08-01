@@ -49,6 +49,7 @@ import DueDateTime from './DueDateTime';
 import {
   getWeeklySummaries as getUserWeeklySummaries,
   updateWeeklySummaries,
+  updateWeeklySummarySubmissionDate
 } from '../../actions/weeklySummaries';
 import CurrentPromptModal from './CurrentPromptModal';
 // import WriteItForMeModal from './WriteForMeModal';
@@ -662,8 +663,10 @@ export class WeeklySummary extends Component {
     if (errors) return;
 
     const result = await this.handleChangeInSummary();
-
+    const { displayUserId, currentUser } = this.props;
+     
     if (result === 200) {
+      updateWeeklySummarySubmissionDate(displayUserId || currentUser.userid,Number(this.state.activeTab))
       await this.handleSaveSuccess(toastIdOnSave);
       if (closeAfterSave) {
         this.handleClose();
