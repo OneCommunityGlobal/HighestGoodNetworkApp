@@ -6,17 +6,21 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 function AddLessons() {
+  const defaultProject = 'Building 1';
   const [content, setContent] = useState('');
-  const [tags, setTags] = useState(['Building 1']);
+  const [project, setProject] = useState(defaultProject);
+  const [tags, setTags] = useState([defaultProject]);
   const [tagInput, setTagInput] = useState('');
-  const [project, setProject] = useState('Building 1');
   const [viewBy, setViewBy] = useState('All');
   const [file, setFile] = useState(null);
 
   const handleTagKeyPress = e => {
     if (e.key === 'Enter' && tagInput.trim() !== '') {
       e.preventDefault();
-      setTags([...tags, tagInput.trim()]);
+      const newTag = tagInput.trim();
+      if (!tags.includes(newTag)) {
+        setTags([...tags, newTag]);
+      }
       setTagInput('');
     }
   };
@@ -30,18 +34,15 @@ function AddLessons() {
     if (!content.trim()) {
       toast.error('Please write a lesson');
       count += 1;
-      // return;
     }
-    if (tags.length === 1 && tags[0] === 'Building 1') {
-      // if the only tag available is the default tag
+    if (tags.length === 0) {
       toast.error('Please enter a tag');
       count += 1;
-      // return;
     }
     if (count === 0) {
       const lessonData = {
         content,
-        tags: [...tags], // include project as tag
+        tags: [...tags],
         project,
         viewBy,
         file,
@@ -49,17 +50,34 @@ function AddLessons() {
       console.log('lesson posted');
       console.log(lessonData);
       toast.success('Lesson submitted successfully!');
+      handleReset();
     }
-
-    // Implement actual API call here
   };
 
   const handleReset = () => {
     setContent('');
-    setTags(['Building 1']); // default project name should be set here
-    setProject('Building 1'); // default project name should be set here
+    setProject(defaultProject);
+    setTags([defaultProject]);
     setViewBy('All');
     setFile(null);
+  };
+
+  const handleProjectChange = newProject => {
+    setProject(newProject);
+    // Remove all building tags
+    const buildingTags = [
+      'Building 1',
+      'Building 2',
+      'Building 3',
+      'Commercial Test - Project',
+      'Residential Test - Project',
+    ];
+    const filteredTags = tags.filter(tag => !buildingTags.includes(tag));
+    // Add the selected project
+    if (!filteredTags.includes(newProject)) {
+      filteredTags.push(newProject);
+    }
+    setTags(filteredTags);
   };
 
   return (
@@ -118,7 +136,7 @@ function AddLessons() {
             <DropdownButton
               variant="outline-secondary"
               title={project}
-              onSelect={val => setProject(val)}
+              onSelect={handleProjectChange}
               className="w-100"
             >
               <Dropdown.Item eventKey="Building 1">Building 1</Dropdown.Item>
