@@ -45,38 +45,38 @@ function UtilizationChart() {
 
   const chartData = {
   labels: toolsData.map(tool => tool.name),
-  datasets: [
-    {
-      label: 'Utilization (%)',
-      data: toolsData.map(tool => tool.utilizationRate),
-      backgroundColor: '#a0e7e5',
-      borderRadius: 6,
-    },
-    {
-      label: 'Downtime (%)',
-      data: toolsData.map(tool => 100 - tool.utilizationRate),
-      backgroundColor: '#f9c74f',
-      borderRadius: 6,
-    },
-  ],
-};
+    datasets: [
+      {
+        label: 'Utilization (%)',
+        data: toolsData.map(tool => tool.utilizationRate),
+        backgroundColor: '#a0e7e5',
+        borderRadius: 6,
+      },
+      {
+        label: 'Downtime (%)',
+        data: toolsData.map(tool => 100 - tool.utilizationRate),
+        backgroundColor: '#f9c74f',
+        borderRadius: 6,
+      },
+    ],
+  };
 
 const options = {
   indexAxis: 'y',
-  plugins: {
-    tooltip: {
-      callbacks: {
-        label: context => {
-          const tool = toolsData[context.dataIndex];
-          if (context.dataset.label === 'Utilization (%)') {
-            return `Utilization: ${tool.utilizationRate}%`;
-          } else {
-            return `Downtime: ${tool.downtime} hrs`;
-          }
+    plugins: {
+      tooltip: {
+        callbacks: {
+          label: context => {
+            const tool = toolsData[context.dataIndex];
+            if (context.dataset.label === 'Utilization (%)') {
+              return `Utilization: ${tool.utilizationRate}%`;
+            } else {
+              return `Downtime: ${tool.downtime} hrs`;
+            }
+          },
         },
       },
     },
-  },
   scales: {
     x: {
       stacked: true,
