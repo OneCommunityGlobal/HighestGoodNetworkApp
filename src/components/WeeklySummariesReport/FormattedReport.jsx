@@ -98,6 +98,7 @@ function FormattedReport({
   handleTeamCodeChange,
   handleSpecialColorDotClick,
   getWeeklySummariesReport,
+  updateBioPostedStatus,
 }) {
   const dispatch = useDispatch();
   const isEditCount = dispatch(hasPermission('totalValidWeeklySummaries'));
@@ -170,6 +171,7 @@ function FormattedReport({
               handleSpecialColorDotClick={handleSpecialColorDotClick}
               isFinalWeek={isFinalWeek}
               getWeeklySummariesReport={getWeeklySummariesReport}
+              updateBioPostedStatus={updateBioPostedStatus}
             />
           );
         })}
@@ -289,17 +291,28 @@ function ReportDetails({
   handleSpecialColorDotClick,
   getWeeklySummariesReport,
   isFinalWeek, // new prop
+  updateBioPostedStatus,
 }) {
   const [filteredBadges, setFilteredBadges] = useState([]);
   const ref = useRef(null);
   const cantEditJaeRelatedRecord = cantUpdateDevAdminDetails(summary.email, loggedInUserEmail);
+  const [bioStatus, setBioStatus] = useState(summary.bioPosted);
 
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
-  const isMeetCriteria =
+  const [isMeetCriteria, setIsMeetCriteria] = useState(
     canSeeBioHighlight &&
-    summary.totalTangibleHrs > 80 &&
-    summary.daysInTeam > 60 &&
-    summary.bioPosted !== 'posted';
+      summary.totalTangibleHrs > 80 &&
+      summary.daysInTeam > 60 &&
+      bioStatus !== 'posted',
+  );
+  useEffect(() => {
+    setIsMeetCriteria(
+      canSeeBioHighlight &&
+        summary.totalTangibleHrs > 80 &&
+        summary.daysInTeam > 60 &&
+        bioStatus !== 'posted',
+    );
+  }, [bioStatus, canSeeBioHighlight, summary.totalTangibleHrs, summary.daysInTeam]);
 
   useEffect(() => {
     setFilteredBadges(badges.filter(badge => badge.showReport === true));
@@ -331,12 +344,19 @@ function ReportDetails({
               />
             </ListGroupItem>
             <ListGroupItem darkMode={darkMode}>
-              <div style={{ width: '200%', backgroundColor: isMeetCriteria ? 'yellow' : 'none' }}>
+              <div
+                style={{
+                  width: '200%',
+                  backgroundColor: isMeetCriteria ? 'yellow' : 'transparent',
+                }}
+              >
                 <Bio
                   bioCanEdit={bioCanEdit && !cantEditJaeRelatedRecord}
                   userId={summary._id}
-                  bioPosted={summary.bioPosted}
+                  bioPosted={bioStatus}
                   summary={summary}
+                  setBioStatus={setBioStatus}
+                  updateBioPostedStatus={updateBioPostedStatus}
                 />
               </div>
             </ListGroupItem>
@@ -615,8 +635,8 @@ function Bio({ bioCanEdit, ...props }) {
   return bioCanEdit ? <BioSwitch {...props} /> : <BioLabel {...props} />;
 }
 
-function BioSwitch({ userId, bioPosted, summary }) {
-  const [bioStatus, setBioStatus] = useState(bioPosted);
+function BioSwitch({ userId, bioPosted, summary, setBioStatus, updateBioPostedStatus }) {
+  // const [bioStatus, setBioStatus] = useState(bioPosted);
   const dispatch = useDispatch();
   const style = { color: textColors[summary?.weeklySummaryOption] || textColors.Default };
 
@@ -625,6 +645,7 @@ function BioSwitch({ userId, bioPosted, summary }) {
     const res = await dispatch(toggleUserBio(userId, bioStatus));
     if (res.status === 200) {
       toast.success('You have changed the bio announcement status of this user.');
+      updateBioPostedStatus(userId, bioStatus);
     }
   };
 
@@ -636,7 +657,7 @@ function BioSwitch({ userId, bioPosted, summary }) {
       <div className={styles.bioToggle}>
         <ToggleSwitch
           switchType="bio"
-          state={bioStatus}
+          state={bioPosted}
           handleUserProfile={bio => {
             setBioStatus(bio);
             handleChangeBioPosted(userId, bio);
