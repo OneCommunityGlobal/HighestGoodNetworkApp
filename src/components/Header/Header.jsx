@@ -1,10 +1,9 @@
-import { useState, useEffect, useMemo } from 'react';
-import { ENDPOINTS } from 'utils/URL';
+import { useState, useEffect, useMemo, React } from 'react';
+import { ENDPOINTS } from '~/utils/URL';
 import axios from 'axios';
-import { getWeeklySummaries } from 'actions/weeklySummaries';
-import { Link, useLocation } from 'react-router-dom';
+import { getWeeklySummaries } from '~/actions/weeklySummaries';
+import { Link, useLocation, useHistory } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 import {
   Collapse,
   Navbar,
@@ -23,8 +22,8 @@ import {
   Button,
   Card,
 } from 'reactstrap';
-import PopUpBar from 'components/PopUpBar';
-import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
+import PopUpBar from '~/components/PopUpBar';
+import { fetchTaskEditSuggestions } from '~/components/TaskEditSuggestions/thunks';
 import { toast } from 'react-toastify';
 import { getHeaderData } from '../../actions/authActions';
 import { getAllRoles } from '../../actions/role';
@@ -218,6 +217,30 @@ export function Header(props) {
     setLogoutPopup(true);
   };
 
+  const handlePermissionChangeAck = async () => {
+    // handle setting the ack true
+    try {
+      setIsAckLoading(true);
+      const { firstName: name, lastName, personalLinks, adminLinks, _id } = props.userProfile;
+      axios
+        .put(ENDPOINTS.USER_PROFILE(_id), {
+          // req fields for updation
+          firstName: name,
+          lastName,
+          personalLinks,
+          adminLinks,
+
+          isAcknowledged: true,
+        })
+        .then(() => {
+          setIsAckLoading(false);
+          dispatch(getUserProfile(_id));
+        });
+    } catch (e) {
+      // console.log('update ack', e);
+    }
+  };
+
   const removeViewingUser = () => {
     setPopup(false);
     sessionStorage.removeItem('viewingUser');
@@ -307,7 +330,7 @@ export function Header(props) {
 
   const viewingUser = JSON.parse(window.sessionStorage.getItem('viewingUser'));
   return (
-    <div className={`header-wrapper ${darkMode ? ' dark-mode' : ''}`}>
+    <div className={`header-wrapper${darkMode ? ' dark-mode' : ''}`} data-testid="header">
       <Navbar className="py-3 navbar" color="dark" dark expand="md">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
         <div
@@ -572,6 +595,16 @@ export function Header(props) {
         />
       )}
       <PermissionWatcher props={props} />
+      {props.auth.isAuthenticated && props.userProfile?.permissions?.isAcknowledged === false && (
+        <PopUpBar
+          firstName={viewingUser?.firstName || firstName}
+          lastName={viewingUser?.lastName}
+          message="Heads Up, there were permission changes made to this account"
+          onClickClose={handlePermissionChangeAck}
+          textColor="black_text"
+          isLoading={isAckLoading}
+        />
+      )}
       <div>
         <Modal isOpen={popup} className={darkMode ? 'text-light' : ''}>
           <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>
