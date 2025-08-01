@@ -4,7 +4,7 @@ import { FaLinkedin, FaInstagram, FaFacebook } from 'react-icons/fa';
 import companyLogo from '../../../assets/images/logo2.png';
 
 function FollowUpEmailTemplate() {
-  const { email } = useParams() || { email: '' };
+  const { eventId = 'event1234', email = '' } = useParams(); // || { email: '' };
 
   return (
     <div className="email-template-container">
@@ -21,7 +21,7 @@ function FollowUpEmailTemplate() {
         Please take a moment to share your thoughts:
         <br />
         <Link
-          to={`/communityportal/activities/FeedbackForm/${email || 'no-email'}`}
+          to={`/communityportal/activities/FeedbackForm/${eventId}/${email || 'no-email'}`}
           className="feedback-link"
         >
           Survey Form

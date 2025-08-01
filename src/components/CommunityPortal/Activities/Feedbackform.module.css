@@ -32,6 +32,19 @@
   margin-top: 15px;
 }
 
+.modal-button-group {
+  display: flex;
+  justify-content: center;
+  gap:25px;
+  margin-bottom: 15px;
+}
+
+.Modal-container .modal-content{
+  display: flex;
+  border-radius: 12px;
+  padding: 20px;
+}
+
 .submit-button {
   flex: 1;
   margin-right: 10px;
@@ -76,11 +89,18 @@
 }
 
 .star {
+  cursor: pointer;
+  font-size: 24px;
   color: lightgray;
 }
 
-.star.selected {
+.selected {
   color: gold;
+}
+
+.star:focus {
+  outline: 2px solid #ffa500;
+  outline-offset: 2px;
 }
 
 .required {
@@ -93,4 +113,9 @@
   color: red;
   font-size: 0.8em;
   vertical-align: super; 
+}
+.error-text {
+  color: red;
+  font-size: 0.85em;
+  margin-top: 4px;
 }

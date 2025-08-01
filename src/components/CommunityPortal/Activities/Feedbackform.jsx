@@ -1,47 +1,177 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import './Feedbackform.css';
+import { useDispatch } from 'react-redux';
+import { v4 as uuidv4 } from 'uuid';
+import { addEventFeedback } from '../../../actions/communityPortal/eventFeedback';
+import styles from './Feedbackform.module.css';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Spinner } from 'reactstrap';
+import { toast } from 'react-toastify';
+const isValidName = name => {
+  if (!name || name.trim() === '') return false;
+  const allowedChars = new Set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ -'");
+  for (let chr of name) {
+    if (!allowedChars.has(chr)) return false;
+  }
+  return true;
+};
 
+const isValidEmail = email => {
+  if (!email || email.includes(' ')) return false;
+  const emailParts = email.split('@');
+  if (emailParts.length !== 2) return false;
+  const [localPart, domainPart] = emailParts;
+  if (!localPart || !domainPart) return false;
+  if (!domainPart.includes('.')) return false;
+  const domainSections = domainPart.split('.');
+  if (domainSections.some(section => section.length === 0)) return false;
+  return true;
+};
 function Feedbackform() {
-  const { email } = useParams();
-  const [name, setName] = useState(''); // Fixed: Start with empty state
-  const [userEmail, setUserEmail] = useState(email || ''); // Fixed: Separate email state
-  const [feedback, setFeedback] = useState('');
-  const [rating, setRating] = useState(0);
-  const [error, setError] = useState('');
+  const dispatch = useDispatch();
+  const { eventId, email } = useParams();
+  const initialFormState = { eventId: eventId, name: '', email: '', rating: 0, comments: '' };
 
-  const handleSubmit = e => {
-    e.preventDefault(); // Prevent page reload
-    // eslint-disable-next-line no-console
-    console.log({ name, userEmail, rating, feedback });
+  const [formData, setFormData] = useState({
+    ...initialFormState,
+  });
+  const [errors, setErrors] = useState({});
+  const [modal, setModal] = useState(false);
+  const [acceptCommentsEmpty, setAcceptCommentsEmpty] = useState(false);
 
-    if (rating === 0) {
-      const errorMsg = 'Please select a rating';
-      setError(errorMsg);
-      // eslint-disable-next-line no-alert
-    } else {
-      const emptyMsg = '';
-      setError(emptyMsg);
-      // ✅ Reset all form fields
-      setName('');
-      setUserEmail('');
-      setRating(0);
-      setFeedback('');
-    }
+  const handleToggle = () => {
+    setModal(!modal);
   };
 
-  // ✅ Reset form fields when Cancel is clicked
+  const handleModalNoLetMeEnter = () => {
+    setModal(false);
+    setAcceptCommentsEmpty(false);
+  };
+
+  const handleModalYesLeaveEmpty = () => {
+    setModal(false);
+    setAcceptCommentsEmpty(true);
+  };
+
+  // Reset override when comment changes
+  useEffect(() => {
+    setAcceptCommentsEmpty(false);
+  }, [formData.comments]);
+
+  useEffect(() => {
+    if (acceptCommentsEmpty) {
+      handleSubmit();
+    }
+  }, [acceptCommentsEmpty]);
+
+  const handleSubmit = e => {
+    if (e && e.preventDefault) {
+      e.preventDefault(); // Prevent page reload
+    }
+    const newErrors = {};
+
+    // eslint-disable-next-line no-console
+    // console.log(formData);
+
+    if (!formData.name.trim()) {
+      newErrors.name = 'Name is required';
+    }
+    // eslint-disable-next-line no-console
+    console.log('isValidName(formData.name)');
+
+    // eslint-disable-next-line no-console
+    console.log(isValidName(formData.name));
+
+    // eslint-disable-next-line no-console
+    console.log('isValidEmail(formData.email)');
+
+    // eslint-disable-next-line no-console
+    console.log(isValidEmail(formData.email));
+
+    if (!isValidName(formData.name)) {
+      newErrors.name =
+        'Name is required and can only contain letters, spaces, hyphens, or apostrophes.';
+    } else {
+      delete newErrors.name;
+      setErrors(newErrors);
+    }
+    if (!isValidEmail(formData.email)) {
+      newErrors.email = 'Enter a valid Email address';
+    } else {
+      delete newErrors.email;
+      setErrors(newErrors);
+    }
+
+    if (formData.rating === 0) {
+      const errorMsg = 'Please select a rating';
+      newErrors.rating = errorMsg;
+    }
+    // eslint-disable-next-line no-console
+    console.log('newErrors');
+
+    // eslint-disable-next-line no-console
+    console.log(newErrors);
+
+    // eslint-disable-next-line no-console
+    console.log(Object.keys(newErrors).length);
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+    // eslint-disable-next-line no-console
+    console.log('acceptCommentsEmpty');
+    // eslint-disable-next-line no-console
+    console.log(acceptCommentsEmpty);
+
+    // eslint-disable-next-line no-console
+    console.log('!acceptCommentsEmpty');
+    // eslint-disable-next-line no-console
+    console.log(!acceptCommentsEmpty);
+
+    if (!formData.comments.trim() && !acceptCommentsEmpty) {
+      // eslint-disable-next-line no-console
+      console.log(modal);
+      setModal(true);
+      return;
+    }
+
+    const eventFeedback = {
+      ...formData,
+      createdBy: 'anonymous',
+      createdAt: new Date().toString(),
+      _id: uuidv4(),
+    };
+    dispatch(addEventFeedback(eventFeedback));
+    toast.success('Event feedback submitted');
+    // add api
+    toast.info('calling api');
+
+    toast.success('Added Event feedback successfully!!!');
+
+    // replace toast
+    setFormData({ ...initialFormState });
+    // setShouldSaveAnyway(false);
+    const emptyMsg = '';
+    setErrors([]);
+    setAcceptCommentsEmpty(false);
+  };
+
+  // Reset form fields when Cancel is clicked
   const handleCancel = () => {
     const emptyMsg = '';
-    setError(emptyMsg);
-    setName('');
-    setUserEmail(email || '');
-    setFeedback('');
-    setRating(0);
+    setErrors(emptyMsg);
+    setFormData({ ...initialFormState });
+    setAcceptCommentsEmpty(false);
+  };
+  const handleChange = e => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+  const handleRating = star => {
+    setFormData(prev => ({ ...prev, rating: star }));
   };
 
   return (
-    <div className="Feedback-form-container">
+    <div className={styles['Feedback-form-container']}>
       <h2>Event Feedback</h2>
       <p>
         We appreciate your participation in our event. Please provide your feedback to help us
@@ -49,62 +179,103 @@ function Feedbackform() {
       </p>
       <form onSubmit={handleSubmit}>
         <label>
-          <span className="required">Name</span>
+          <span className={styles.required}>Name</span>
           <input
+            name="name"
             type="text"
             placeholder="Enter full name"
-            value={name}
-            onChange={e => setName(e.target.value)}
+            onChange={handleChange}
+            value={formData.name}
             required
           />
         </label>
+        {errors.name && <div className={styles['error-text']}> {errors.name} </div>}
 
         <label>
-          <span className="required">Email Address</span>
+          <span className={styles.required}>Email Address</span>
           <input
+            name="email"
             type="email"
             placeholder="abc@gmail.com"
-            value={userEmail}
-            onChange={e => setUserEmail(e.target.value)}
+            onChange={handleChange}
+            value={formData.email}
             required
           />
         </label>
+        {errors.email && <div className={styles['error-text']}> {errors.email} </div>}
 
-        <label>
-          <span className="required">Rate your experience </span>
-        </label>
+        <strong>
+          <span className={styles.required}>Rate your experience </span>
+        </strong>
 
-        <div className="star-rating">
+        <div className={styles['star-rating']} role="radiogroup" aria-label="Star rating">
           {[1, 2, 3, 4, 5].map(star => (
             <span
               key={star}
-              onClick={() => setRating(star)}
-              className={star <= rating ? 'star selected' : 'star'}
-              style={{ cursor: 'pointer' }} // Ensure it remains clickable
+              role="radio"
+              aria-checked={formData.rating === star}
+              onClick={() => handleRating(star)}
+              tabIndex={
+                formData.rating === 0 ? (star === 1 ? 0 : -1) : formData.rating === star ? 0 : -1
+              }
+              onKeyDown={e => {
+                if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
+                  e.preventDefault();
+                  handleRating(Math.max(1, formData.rating - 1));
+                } else if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
+                  e.preventDefault();
+                  handleRating(Math.min(5, formData.rating + 1));
+                } else if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  handleRating(star);
+                }
+              }}
+              className={`${styles.star} ${star <= formData.rating ? styles.selected : ''}`}
+              aria-label={`Rate ${star} star${star > 1 ? 's' : ''}`}
             >
               ★
             </span>
           ))}
         </div>
-        {error && <div style={{ color: 'red', marginBottom: '8px' }}>{error}</div>}
+        {errors.rating && <div className={styles['error-text']}>{errors.rating}</div>}
         <label>
           Comments
           <textarea
+            name="comments"
             placeholder="Add your extra thoughts.."
-            value={feedback}
-            onChange={e => setFeedback(e.target.value)}
+            onChange={handleChange}
+            value={formData.comments}
           />
         </label>
 
-        <div className="button-group">
-          <button type="submit" className="submit-button">
+        <div className={styles['button-group']}>
+          <button type="submit" className={styles['submit-button']}>
             Submit Feedback
           </button>
-          <button type="button" className="cancel-button" onClick={handleCancel}>
+          <button type="button" className={styles['cancel-button']} onClick={handleCancel}>
             Cancel
           </button>
         </div>
       </form>
+      {modal && (
+        <Modal className="Modal-container" isOpen={modal} toggle={handleToggle}>
+          <ModalHeader toggle={handleToggle}> Missing Comments </ModalHeader>
+          <ModalBody>
+            Oops, it looks like you haven&#39;t entered any comments. We&#39;d really appreciate
+            your feedback! Are you sure you want to leave it empty?
+          </ModalBody>
+          <ModalFooter>
+            <div className={styles['modal-button-group']}>
+              <Button color="primary" onClick={handleModalNoLetMeEnter}>
+                No, Let me Enter
+              </Button>
+              <Button color="secondary" onClick={handleModalYesLeaveEmpty}>
+                Yes, Leave Empty
+              </Button>
+            </div>
+          </ModalFooter>
+        </Modal>
+      )}
     </div>
   );
 }
