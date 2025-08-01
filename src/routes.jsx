@@ -102,7 +102,9 @@ import AddTeamMember from './components/BMDashboard/AddTeamMember/AddTeamMember'
 import IssueChart from './components/BMDashboard/Issues/issueCharts';
 import BMTimeLogger from './components/BMDashboard/BMTimeLogger/BMTimeLogger';
 import Issue from './components/BMDashboard/Issue/Issue';
+
 import UtilizationChart from './components/BMDashboard/UtilizationChart/UtilizationChart';
+
 import RentalChart from './components/BMDashboard/RentalChart/RentalChart';
 import CreateNewTeam from './components/BMDashboard/Team/CreateNewTeam/CreateNewTeam';
 
@@ -508,7 +510,9 @@ export default (
         {/* ----- BEGIN BM Dashboard Routing ----- */}
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
         <Route path="/bmdashboard/login" component={BMLogin} />
+
         <Route path="/UtilizationChart" component={UtilizationChart} />
+
 
         <BMProtectedRoute
           path="/bmdashboard/materials/purchase"
@@ -719,4 +723,6 @@ export default (
       </Switch>
     </>
   </Switch>
+
 );
+
