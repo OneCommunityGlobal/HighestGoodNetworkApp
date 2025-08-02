@@ -1040,6 +1040,7 @@ function BioSwitch({ userId, bioPosted, summary, getWeeklySummariesReport, handl
   // }, [bioPosted]);
 
   return (
+
     // <div>
     // <div
     //   style={{
@@ -1060,7 +1061,7 @@ function BioSwitch({ userId, bioPosted, summary, getWeeklySummariesReport, handl
         // border: shouldShowYellowBar(bioStatus, summary) ? '1px solid #f0d000' : 'none',
       }}
     >
-      {/* <div> */}
+    <div>
       <div className={styles.bioToggle}>
         <b style={style}>Bio announcement:</b>
       </div>
@@ -1105,7 +1106,7 @@ function BioLabel({ bioPosted, summary }) {
         // border: shouldShowYellowBar(bioPosted, summary) ? '1px solid #f0d000' : 'none',
       }}
     >
-      {/* <div> */}
+    <div>
       <b style={style}>Bio announcement: </b>
       {text}
     </div>
