@@ -113,11 +113,54 @@ const projectStatusButtons = [
   },
 ];
 
-export default function WeeklyProjectSummary() {
+export function WeeklyProjectSummaryContent() {
   const dispatch = useDispatch();
   const materials = useSelector(state => state.materials?.materialslist || []);
   const [openSections, setOpenSections] = useState({});
 
+  const getColorScheme = percentage => {
+    if (percentage === '-') return 'neutral';
+    if (percentage > 0) return 'positive';
+    if (percentage < 0) return 'negative';
+    return 'neutral';
+  };
+
+  const colorScheme = getColorScheme(monthOverMonth);
+
+  const titleClass = title.replace(/\s+/g, '-').toLowerCase();
+
+  return (
+    <div
+      className={`financial-card ${colorScheme} custom-box-shadow financial-card-background-${titleClass}`}
+      onMouseEnter={() => setShowTooltip(true)}
+      onMouseLeave={() => setShowTooltip(false)}
+    >
+      <div className="financial-card-title">{title}</div>
+      <div className={`financial-card-ellipse financial-card-ellipse-${titleClass}`} />
+      <div className="financial-card-value">{value === '-' ? '-' : value.toLocaleString()}</div>
+      <div className={`financial-card-month-over-month ${colorScheme}`}>
+        {monthOverMonth === '-'
+          ? '-'
+          : `${monthOverMonth > 0 ? '+' : ''}${monthOverMonth}% month over month`}
+      </div>
+
+      {/* Tooltip for Additional Info */}
+      {showTooltip && Object.keys(additionalInfo).length > 0 && (
+        <div className="financial-card-tooltip">
+          {Object.entries(additionalInfo).map(([key]) => (
+            <div key={key} className="financial-card-tooltip-item">
+              <span className="tooltip-key">{key}:</span>
+              <span className="tooltip-value">{value}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function WeeklyProjectSummary() {
+  const [openSections, setOpenSections] = useState({});
   const darkMode = useSelector(state => state.theme.darkMode);
 
   useEffect(() => {
@@ -429,3 +472,5 @@ export default function WeeklyProjectSummary() {
     </div>
   );
 }
+
+export default WeeklyProjectSummary;
