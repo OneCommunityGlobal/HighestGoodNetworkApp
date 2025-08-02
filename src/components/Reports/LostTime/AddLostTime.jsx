@@ -32,6 +32,19 @@ function AddLostTime(props) {
     isTangible: true,
   };
 
+  const formatText = result =>{
+     try {
+        return result
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, '');
+     } catch (error) {
+      console.log(error);
+      return "null";
+     }
+  }
+    
+
   const TINY_MCE_INIT_OPTIONS = {
     license_key: 'gpl',
     menubar: false,
@@ -60,6 +73,7 @@ function AddLostTime(props) {
   const [selectedProject, setSelectProject] = useState(undefined);
   const [searchText, setSearchText] = useState('');
   const [searchTeamText, setSearchTeamText] = useState('');
+  const [isUserIsNotSelectedAutoComplete, isSetUserIsNotSelectedAutoComplete] = useState(false);
   const [newTeamName, setNewTeamName] = useState('');
 
   const [errors, setErrors] = useState({});
@@ -79,16 +93,16 @@ function AddLostTime(props) {
   }
 
   useEffect(() => {
-    if (inputs.personId && props.userProfile._id !== inputs.personId) {
-      props.getUserProfile(inputs.personId);
-    }
-  });
+   if (inputs.personId && props.userProfile._id !== inputs.personId) {
+    props.getUserProfile(inputs.personId);
+   }
+ }, [inputs.personId, props.userProfile._id]);
 
   useEffect(() => {
     if (!props.isOpen && entryType !== '') {
       resetForm();
     }
-  });
+  },[]);
 
   const selectProject = project => {
     setInputs(prevInputs => ({
@@ -131,6 +145,10 @@ function AddLostTime(props) {
             projectsData={props.projects}
             onDropDownSelect={selectProject}
             selectedProject={selectedProject}
+            searchText={searchText}
+            formatText={formatText}
+            onInputChange={setSearchText}
+            isSetUserIsNotSelectedAutoComplete={isSetUserIsNotSelectedAutoComplete}
           />
           {'projectId' in errors && (
             <div className="text-danger">
