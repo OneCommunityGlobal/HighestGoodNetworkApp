@@ -1,14 +1,22 @@
-import React from 'react';
 import { Pie } from 'react-chartjs-2';
 import './ReviewsInsight.css';
+import { useSelector } from 'react-redux';
 
-function PRQualityGraph({ duration, selectedTeams, qualityData }) {
-  if (!qualityData || Object.keys(qualityData).length === 0) {
-    return <div>No data available for Quality Graph.</div>;
+function PRQualityGraph({ selectedTeams, qualityData }) {
+  const darkMode = useSelector(state => state.theme.darkMode);
+
+  if (!selectedTeams || selectedTeams.length === 0) {
+    return <div> </div>;
   }
 
-  const isAllTeams = selectedTeams.includes('All');
-  const teamsToDisplay = isAllTeams ? Object.keys(qualityData) : selectedTeams;
+  if (!qualityData || Object.keys(qualityData).length === 0) {
+    return <div className="no-data-ri">No data available for Quality Graph.</div>;
+  }
+
+  const isAllTeams = selectedTeams.some(team => team.value === 'All');
+  const teamsToDisplay = isAllTeams
+    ? Object.keys(qualityData)
+    : selectedTeams.map(team => team.value);
 
   const generateChartData = team => {
     const teamQualityData = qualityData[team] || {};
@@ -39,6 +47,7 @@ function PRQualityGraph({ duration, selectedTeams, qualityData }) {
           font: {
             size: 12,
           },
+          color: !darkMode ? '#333' : '#fff',
         },
       },
       tooltip: {
@@ -48,13 +57,16 @@ function PRQualityGraph({ duration, selectedTeams, qualityData }) {
   };
 
   return (
-    <div className="charts">
-      {teamsToDisplay.map(team => (
-        <div key={team} className="chart">
-          <h2>PR Quality: {team}</h2>
-          <Pie data={generateChartData(team)} options={options} />
-        </div>
-      ))}
+    <div className="ri-quality-graph">
+      <h2>PR Quality Distribution</h2>
+      <div className="ri-charts">
+        {teamsToDisplay.map(team => (
+          <div key={team} className="ri-chart">
+            <h3>{team}</h3>
+            <Pie data={generateChartData(team)} options={options} />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

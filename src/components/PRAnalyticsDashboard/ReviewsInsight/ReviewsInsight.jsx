@@ -1,29 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import Select from 'react-select';
 import './ReviewsInsight.css';
 import ActionDoneGraph from './ActionDoneGraph';
 import PRQualityGraph from './PRQualityGraph';
 import { fetchReviewsInsights } from '../../../actions/prAnalytics/reviewsInsightsAction';
+import { getAllTeamCode } from '../../../actions/allTeamsAction';
 
 function ReviewsInsight() {
   const [duration, setDuration] = useState('Last Week');
-  const [selectedTeams, setSelectedTeams] = useState(['All']);
+  const [selectedTeams, setSelectedTeams] = useState([]);
   const [teamData, setTeamData] = useState({});
   const [qualityData, setQualityData] = useState({});
   const dispatch = useDispatch();
+
   const { loading, data, error } = useSelector(state => state.reviewsInsights);
+  const teamCodes = useSelector(state => state.allTeamsData.allTeamCode.distinctTeamCodes);
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const teams = ['Team A', 'Team B', 'Team C', 'Team D'];
-
-  const handleDurationChange = event => {
-    setDuration(event.target.value);
-  };
-
-  const handleTeamChange = event => {
-    const options = Array.from(event.target.selectedOptions, option => option.value);
-    setSelectedTeams(options.includes('All') ? ['All'] : options);
-  };
+  useEffect(() => {
+    dispatch(getAllTeamCode());
+  }, [dispatch]);
 
   useEffect(() => {
     const durationMapping = {
@@ -35,7 +32,10 @@ function ReviewsInsight() {
 
     const queryParams = {
       duration: durationMapping[duration],
-      teams: selectedTeams.includes('All') ? '' : selectedTeams.join(','),
+      teams:
+        selectedTeams.length === 0 || selectedTeams.some(team => team.value === 'All')
+          ? ''
+          : selectedTeams.map(team => team.value).join(','),
     };
 
     const token = localStorage.getItem('token');
@@ -48,7 +48,6 @@ function ReviewsInsight() {
       const formattedQualityData = {};
 
       data.teams.forEach(team => {
-        // Ensure actionSummary and qualityDistribution are arrays
         const actionSummary = Array.isArray(team.actionSummary) ? team.actionSummary : [];
         const qualityDistribution = Array.isArray(team.qualityDistribution)
           ? team.qualityDistribution
@@ -75,20 +74,32 @@ function ReviewsInsight() {
             qualityDistribution.find(quality => quality.qualityLevel === 'Exceptional')?.count || 0,
         };
       });
-
       setTeamData(formattedTeamData);
       setQualityData(formattedQualityData);
     }
   }, [data]);
 
+  const handleDurationChange = event => {
+    setDuration(event.target.value);
+  };
+
+  const handleTeamChange = selectedOptions => {
+    setSelectedTeams(selectedOptions || []);
+  };
+
+  const teamOptions = [
+    { value: 'All', label: 'All Teams' },
+    ...(teamCodes || []).map(team => ({ value: team, label: team })),
+  ];
+
   return (
     <div className={`reviews-insight-container ${darkMode ? 'dark-mode' : ''}`}>
       <h1>PR Reviews Insights</h1>
 
-      <div className="filters">
-        <div className="filter-item">
-          <label htmlFor="duration-filter">Duration:</label>
-          <select id="duration-filter" value={duration} onChange={handleDurationChange}>
+      <div className="ri-filters">
+        <div className="ri-filter-item">
+          <label htmlFor="ri-duration-filter">Duration:</label>
+          <select id="ri-duration-filter" value={duration} onChange={handleDurationChange}>
             <option value="Last Week">Last Week</option>
             <option value="Last 2 weeks">Last 2 weeks</option>
             <option value="Last Month">Last Month</option>
@@ -96,41 +107,90 @@ function ReviewsInsight() {
           </select>
         </div>
 
-        <div className="filter-item">
+        <div className="ri-filter-item">
           <label htmlFor="team-filter">Team Code:</label>
-          <select id="team-filter" multiple value={selectedTeams} onChange={handleTeamChange}>
-            <option value="All">All Teams</option>
-            {teams.map(team => (
-              <option key={team} value={team}>
-                {team}
-              </option>
-            ))}
-          </select>
+          <Select
+            id="team-filter"
+            isMulti
+            options={teamOptions}
+            value={selectedTeams}
+            onChange={handleTeamChange}
+            placeholder="Search and select teams..."
+            styles={{
+              control: base => ({
+                ...base,
+                backgroundColor: darkMode ? '#1c2541' : '#fff',
+                boxShadow: '2px 2px 4px 1px black',
+                border: 'none',
+                color: darkMode ? '#f1f1f1' : '#000',
+                minHeight: '40px',
+              }),
+              placeholder: base => ({
+                ...base,
+                color: darkMode ? '#f1f1f1' : '#000',
+              }),
+              input: base => ({
+                ...base,
+                color: darkMode ? '#f1f1f1' : '#000',
+              }),
+              multiValue: base => ({
+                ...base,
+                backgroundColor: darkMode ? '#1c2541' : '#e0e0e0',
+                color: darkMode ? '#f1f1f1' : '#000',
+              }),
+              multiValueLabel: base => ({
+                ...base,
+                color: darkMode ? '#f1f1f1' : '#000',
+              }),
+              multiValueRemove: base => ({
+                ...base,
+                color: darkMode ? '#f1f1f1' : '#000',
+                ':hover': {
+                  backgroundColor: '#dc3545',
+                  color: '#fff',
+                },
+              }),
+              dropdownIndicator: base => ({
+                ...base,
+                color: darkMode ? '#f1f1f1' : '#000',
+              }),
+              menu: base => ({
+                ...base,
+                backgroundColor: darkMode ? '#1c2541' : '#fff',
+                color: darkMode ? '#f1f1f1' : '#000',
+              }),
+              option: (base, state) => ({
+                ...base,
+                backgroundColor: state.isFocused
+                  ? darkMode
+                    ? '#34495e'
+                    : '#e0e0e0'
+                  : darkMode
+                  ? '#1c2541'
+                  : '#fff',
+                color: darkMode ? '#f1f1f1' : '#000',
+              }),
+            }}
+          />
         </div>
       </div>
 
-      {/* Display Selected Teams */}
-      <div className="selected-teams">
-        {selectedTeams.includes('All') ? (
+      <div className="ri-selected-teams">
+        {selectedTeams.length === 0 ? (
+          <p>No teams selected</p>
+        ) : selectedTeams.some(team => team.value === 'All') ? (
           <p>Selected Teams: All Teams</p>
-        ) : selectedTeams.length === 1 ? (
-          <p>Selected Team: {selectedTeams[0]}</p>
         ) : (
-          <p>Selected Teams: {selectedTeams.join(', ')}</p>
+          <p>Selected Teams: {selectedTeams.map(team => team.label).join(', ')}</p>
         )}
       </div>
 
-      {/* Loading, Error, and Graphs Section */}
-      {loading && <div className="loading">Loading...</div>}
-      {error && <div className="error">{error}</div>}
+      {loading && <div className="ri-loading">Loading...</div>}
+      {error && <div className="ri-error">{error}</div>}
       {!loading && !error && (
-        <div className="graphs">
-          <ActionDoneGraph duration={duration} selectedTeams={selectedTeams} teamData={teamData} />
-          <PRQualityGraph
-            duration={duration}
-            selectedTeams={selectedTeams}
-            qualityData={qualityData}
-          />
+        <div className="ri-graphs">
+          <ActionDoneGraph selectedTeams={selectedTeams} teamData={teamData} />
+          <PRQualityGraph selectedTeams={selectedTeams} qualityData={qualityData} />
         </div>
       )}
     </div>

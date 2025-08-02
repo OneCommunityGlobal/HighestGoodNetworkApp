@@ -1,50 +1,55 @@
-import React from 'react';
 import { Bar } from 'react-chartjs-2';
 import './ReviewsInsight.css';
+import { useSelector } from 'react-redux';
 
-function ActionDoneGraph({ duration, selectedTeams, teamData }) {
-  if (!teamData || Object.keys(teamData).length === 0) {
-    return <div>No data available for Action Done Graph.</div>;
+function ActionDoneGraph({ selectedTeams, teamData }) {
+  const darkMode = useSelector(state => state.theme.darkMode);
+
+  if (!selectedTeams || selectedTeams.length === 0) {
+    return <div> </div>;
   }
 
-  const isAllTeams = selectedTeams.includes('All');
+  if (!teamData || Object.keys(teamData).length === 0) {
+    return <div className="no-data-ri">No data available for Action Done Graph.</div>;
+  }
 
-  // Prepare data for the graph
+  const isAllTeams = selectedTeams.some(team => team.value === 'All');
+  const teamsToDisplay = isAllTeams ? Object.keys(teamData) : selectedTeams.map(team => team.value);
+
   const data = {
-    labels: isAllTeams ? Object.keys(teamData) : selectedTeams, // Y-axis labels
+    labels: teamsToDisplay,
     datasets: [
       {
         label: 'Approved',
-        data: isAllTeams
-          ? Object.keys(teamData).map(team => teamData[team]?.actionSummary?.Approved || 0)
-          : selectedTeams.map(team => teamData[team]?.actionSummary?.Approved || 0),
+        data: teamsToDisplay.map(team => teamData[team]?.actionSummary?.Approved || 0),
         backgroundColor: '#28A745',
       },
       {
         label: 'Changes Requested',
-        data: isAllTeams
-          ? Object.keys(teamData).map(
-              team => teamData[team]?.actionSummary?.['Changes Requested'] || 0,
-            )
-          : selectedTeams.map(team => teamData[team]?.actionSummary?.['Changes Requested'] || 0),
+        data: teamsToDisplay.map(team => teamData[team]?.actionSummary?.['Changes Requested'] || 0),
         backgroundColor: '#DC3545',
       },
       {
         label: 'Commented',
-        data: isAllTeams
-          ? Object.keys(teamData).map(team => teamData[team]?.actionSummary?.Commented || 0)
-          : selectedTeams.map(team => teamData[team]?.actionSummary?.Commented || 0),
+        data: teamsToDisplay.map(team => teamData[team]?.actionSummary?.Commented || 0),
         backgroundColor: '#6C757D',
       },
     ],
   };
 
   const options = {
-    indexAxis: 'y', // Horizontal bar graph
+    indexAxis: 'y',
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         display: true,
+        labels: {
+          font: {
+            size: 12,
+          },
+          color: darkMode ? '#fff' : '#000',
+        },
       },
       tooltip: {
         enabled: true,
@@ -55,6 +60,10 @@ function ActionDoneGraph({ duration, selectedTeams, teamData }) {
         title: {
           display: true,
           text: 'Count of PRs',
+          color: darkMode ? '#fff' : '#000',
+        },
+        ticks: {
+          color: darkMode ? '#fff' : '#000',
         },
         beginAtZero: true,
       },
@@ -62,15 +71,21 @@ function ActionDoneGraph({ duration, selectedTeams, teamData }) {
         title: {
           display: true,
           text: 'Teams',
+          color: darkMode ? '#fff' : '#000',
+        },
+        ticks: {
+          color: darkMode ? '#fff' : '#000',
         },
       },
     },
   };
 
   return (
-    <div className="graph">
+    <div className="ri-action-done-graph">
       <h2>PR: Action Done</h2>
-      <Bar data={data} options={options} />
+      <div className="ri-graph">
+        <Bar data={data} options={options} />
+      </div>
     </div>
   );
 }

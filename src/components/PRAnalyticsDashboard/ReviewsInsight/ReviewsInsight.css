@@ -3,7 +3,15 @@
   font-family: Arial, sans-serif;
   background-color: #ffffff;
   color: #000000;
+  min-height: 100vh;
   transition: background-color 0.3s, color 0.3s;
+}
+
+.reviews-insight-container h1 {
+ color: #000000;
+}
+.dark-mode h1 {
+  color: #f1f1f1;
 }
 
 .reviews-insight-container.dark-mode {
@@ -11,13 +19,33 @@
   color: #f1f1f1;
 }
 
-.filters {
+@media screen and (max-width: 1080px) {
+  .ri-graphs {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .ri-action-done-graph{
+    width: 100% !important;
+    height: 500px;
+  }
+
+  .ri-quality-graph {
+    width: 100% !important;
+  }
+
+  .ri-graph{
+    min-height: 300px;
+  }
+}
+
+.ri-filters {
   display: flex;
   justify-content: space-between;
   margin-bottom: 20px;
 }
 
-.dark-mode .filters {
+.dark-mode .ri-filters {
   background-color: #1c2541;
   color: #f1f1f1;
   box-shadow: 2px 2px 4px 1px black;
@@ -25,42 +53,72 @@
   border-radius: 8px;
 }
 
-.filter-item {
+.ri-filter-item {
   display: flex;
   flex-direction: column;
   margin-right: 20px;
 }
 
-.filter-item label {
+.dark-mode #ri-duration-filter {
+  background-color: #1c2541;
+  box-shadow: 2px 2px 4px 1px black;
+  border: none;
+  color: #f1f1f1;
+}
+
+.ri-filter-item label {
   margin-bottom: 5px;
   font-weight: bold;
 }
 
-.dark-mode .filter-item label {
+.dark-mode .ri-filter-item label {
   color: #f1f1f1;
 }
 
-.selected-teams {
+.ri-selected-teams p{
   margin-bottom: 20px;
   font-style: italic;
+  text-align: center;
+  font-size: 24px;
 }
 
-.dark-mode .selected-teams {
+.no-data-ri {
+  text-align: center;
+  font-size: 18px;
+  margin-top: 20px;
+}
+
+.dark-mode .ri-selected-teams p {
   color: #f1f1f1;
 }
 
-.graphs {
+.ri-graphs {
   display: flex;
   justify-content: space-around;
 }
 
-.charts {
+.ri-quality-graph {
+  width: 50%;
   display: flex;
-  flex-wrap: wrap;
-  justify-content: space-evenly
+  flex-direction: column;
 }
 
-.chart {
+.ri-quality-graph h2 {
+  color: #000000;
+}
+
+.dark-mode .ri-quality-graph h2 {
+  color: #f1f1f1;
+}
+
+.ri-charts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: space-evenly;
+}
+
+.ri-chart {
   width: 250px;
   text-align: center;
   border: 1px solid #ccc;
@@ -72,11 +130,38 @@
   transition: background-color 0.3s, color 0.3s;
 }
 
-.graph {
+.dark-mode .ri-chart {
+  background-color: #1c2541;
+  color: #f1f1f1;
+  box-shadow: 2px 2px 4px 1px black;
+  border: none;
+}
+
+.ri-chart h3 {
+  color: #000000;
+}
+
+.dark-mode .ri-chart h3 {
+  color: #f1f1f1;
+}
+
+.ri-action-done-graph {
   width: 50%;
-  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+}
+
+.ri-action-done-graph h2 {
+  color: #000000;
+}
+.dark-mode .ri-action-done-graph h2 {
+  color: #f1f1f1;
+}
+
+.ri-graph {
   border: 1px solid #ccc;
   padding: 10px;
+  height: 100%;
   border-radius: 5px;
   text-align: center;
   background-color: #ffffff;
@@ -84,14 +169,18 @@
   transition: background-color 0.3s, color 0.3s;
 }
 
-.dark-mode .graph {
+.dark-mode .ri-graph {
   background-color: #1c2541;
   color: #f1f1f1;
   box-shadow: 2px 2px 4px 1px black;
   border: none;
 }
 
-.graph-placeholder {
+.ri-graph canvas{
+  height: auto !important;
+}
+
+.ri-graph-placeholder {
   height: 300px;
   background-color: #f0f0f0;
   display: flex;
@@ -101,28 +190,28 @@
   font-size: 14px;
 }
 
-.dark-mode .graph-placeholder {
+.dark-mode .ri-graph-placeholder {
   background-color: #1c1c1c;
   color: #f1f1f1;
 }
 
-.team-name {
+.ri-team-name {
   font-weight: bold;
   margin-bottom: 10px;
   text-align: center;
 }
 
-.dark-mode .team-name {
+.dark-mode .ri-team-name {
   color: #f1f1f1;
 }
 
-.loading {
+.ri-loading {
   text-align: center;
   font-size: 18px;
   color: #888;
 }
 
-.error {
+.ri-error {
   text-align: center;
   color: #dc3545;
   font-weight: bold;
