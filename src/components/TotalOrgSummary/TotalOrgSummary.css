@@ -15,7 +15,7 @@
   background-color: #1c2541;
 }
 
-.container-total-org-wrapper.bg-oxford-blue .chart-title p {
+.container-total-org-wrapper.bg-oxford-blue .total-org-chart-title p {
   color: #fff !important;
 }
 
@@ -133,7 +133,6 @@
 
 /* PDF button styles */
 .share-pdf-btn {
-  margin-left: auto;
   padding: 8px 16px !important;
   height: 36px !important;
   display: flex !important;
@@ -184,30 +183,22 @@
   text-overflow: ellipsis;
 }
 
-.chart-title p {
-  font-size: 1.5em !important;
+.total-org-chart-title p {
+  font-size: 1.8rem !important;
   font-weight: bold;
   text-align: center;
   margin: 10px;
   color: #333;
+  line-height: 1.3 !important;
 }
 
 /* Report Header Styles */
-.report-header-row {
+.total-org-report-header-row {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-  width: 100%;
-  padding: 0 15px;
-  position: relative;
-  min-height: 60px;
-  padding-bottom: 1rem;
-}
-
-.report-header-title {
-  display: flex;
-  align-items: center;
+  gap: 20px;
+  margin: 0 !important;
+  padding: 0px 20px;
 }
 
 .report-header-title h3 {
@@ -219,7 +210,14 @@
 
 .report-header-actions {
   display: flex;
-  justify-content: flex-end;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 600px) {
+  .container {
+    flex-direction: column;
+  }
 }
 
 .container-total-org-wrapper.bg-oxford-blue .component-container p.m-0,
@@ -227,6 +225,6 @@
   color: #fff !important;
 }
 
-.chart-title.dark-mode p {
+.total-org-chart-title.dark-mode p {
   color: white;
 }

@@ -4,8 +4,8 @@ import PropTypes from 'prop-types';
 import { Modal, Button } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import axios from 'axios';
-import { ENDPOINTS } from '../../utils/URL';
-import './HelpModal.css';
+import { ENDPOINTS } from '~/utils/URL';
+import styles from './HelpModal.module.css';
 
 function HelpModal({ show, onHide, auth }) {
   const [selectedOption, setSelectedOption] = useState('');
@@ -52,7 +52,7 @@ function HelpModal({ show, onHide, auth }) {
     return (
       <>
         <div
-          className="select-button"
+          className={`${styles.selectButton}`}
           onClick={() => setIsOpen(!isOpen)}
           role="button"
           tabIndex={0}
@@ -68,11 +68,11 @@ function HelpModal({ show, onHide, auth }) {
           <span className={`select-button-arrow ${isOpen ? 'open' : ''}`} />
         </div>
         {isOpen && (
-          <div className="select-options" role="listbox">
+          <div className={`${styles.selectOptions}`} role="listbox">
             {options.map(option => (
               <div
                 key={option}
-                className="select-option"
+                className={`${styles.selectOption}`}
                 onClick={() => handleSelect(option)}
                 role="option"
                 tabIndex={0}
@@ -95,18 +95,18 @@ function HelpModal({ show, onHide, auth }) {
   const isOwner = auth.user && auth.user.role === 'Owner';
 
   return (
-    <Modal show={show} onHide={onHide} className="help-modal" centered>
+    <Modal show={show} onHide={onHide} className={`${styles.helpModal}`} centered>
       <Modal.Header closeButton>
         <Modal.Title>What do you need help with?</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <div className="select-container">{renderContent()}</div>
+        <div className={`${styles.selectContainer}`}>{renderContent()}</div>
         {!isOwner && (
           <div className="alert alert-warning mt-3">
             Only members from the software development team can seek help
           </div>
         )}
-        <p className="text-muted">
+        <p className={`${styles.textMuted}`}>
           If you have any suggestions please click
           <button
             type="button"

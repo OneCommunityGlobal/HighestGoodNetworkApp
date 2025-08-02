@@ -6,7 +6,7 @@
   z-index: 1000;
 }
 
-.dropdown-menu {
+.review-button-dropdown {
   overflow-y: auto; /* enable scrolling if the dropdown is too long*/
   z-index: 1000;
 
@@ -30,7 +30,7 @@
     padding: 5px !important;
     font-size: 0.75rem !important;
   }
-  .dropdown-menu{
+  .review-button-dropdown{
     max-height: 200px;
   }
   .edit-link-btn {
@@ -44,7 +44,7 @@
     padding: 2px !important;
     font-size: 0.75rem !important;
   }
-  .dropdown-menu{
+  .review-button-dropdown{
     max-height: 150px;
     width: 100%
   }
@@ -59,7 +59,7 @@
     font-size: 0.75rem !important;
     width: 100%
   }
-  .dropdown-menu{
+  .review-button-dropdown{
     max-height: 150px;
     width: 100%
   }
@@ -74,7 +74,7 @@
     padding: 2px !important;
     font-size: 0.65rem !important;
   }
-  .dropdown-menu{
+  .review-button-dropdown{
     max-height: 120px;
     width: 100%
   }

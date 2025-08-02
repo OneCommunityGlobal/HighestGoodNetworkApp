@@ -40,6 +40,7 @@ function FileUpload({ name, accept, label, className, maxSizeinKB, error, onUplo
         title={label}
       />
       <input
+        data-testid="file-input"
         id={name}
         name={name}
         className={className}
