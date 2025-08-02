@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
 import { GET_ERRORS } from 'constants/errors';
@@ -20,8 +21,10 @@ export const fetchOptStatusBreakdown = (startDate = "", endDate = "", role = "")
   return async dispatch => {
     try {
       const response = await axios.get(url);
-      dispatch(setOptStatusBreakdown(response.data));
+      console.log('OPT Status Breakdown API response:', response.data);
+      dispatch(setOptStatusBreakdown(response.data.breakDown));
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error("Error fetching OPT status breakdown:", error);
     }
   };

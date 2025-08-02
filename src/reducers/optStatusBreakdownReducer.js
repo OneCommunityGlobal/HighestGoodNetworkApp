@@ -1,4 +1,5 @@
-//alisha
+/* eslint-disable default-param-last */
+/* eslint-disable import/prefer-default-export */
 import { GET_OPT_STATUS_BREAKDOWN } from 'constants/optStatusBreakdownConstants';
 
 const initialState = {
