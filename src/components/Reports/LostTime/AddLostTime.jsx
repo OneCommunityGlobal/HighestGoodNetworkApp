@@ -74,6 +74,7 @@ function AddLostTime(props) {
   const [searchText, setSearchText] = useState('');
   const [searchTeamText, setSearchTeamText] = useState('');
   const [isUserIsNotSelectedAutoComplete, isSetUserIsNotSelectedAutoComplete] = useState(false);
+  const [isOpenDropdown, setIsOpenDropdown] = useState(false);
   const [newTeamName, setNewTeamName] = useState('');
 
   const [errors, setErrors] = useState({});
@@ -145,10 +146,11 @@ function AddLostTime(props) {
             projectsData={props.projects}
             onDropDownSelect={selectProject}
             selectedProject={selectedProject}
+            setIsOpenDropdown = {setIsOpenDropdown}
             searchText={searchText}
-            formatText={formatText}
             onInputChange={setSearchText}
             isSetUserIsNotSelectedAutoComplete={isSetUserIsNotSelectedAutoComplete}
+            formatText={formatText}
           />
           {'projectId' in errors && (
             <div className="text-danger">
