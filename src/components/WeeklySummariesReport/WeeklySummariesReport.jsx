@@ -489,6 +489,17 @@ const WeeklySummariesReport = props => {
     return summaryStart <= weekEndLA && summaryEnd >= weekStartLA;
   };
 
+  //Updates the status when there is a change in Bio Announcement Status
+  const updateBioPostedStatus = (userId, newStatus) => {
+    setState(prev => {
+      const updatedSummaries = prev.summaries.map(summary =>
+        summary._id === userId ? { ...summary, bioPosted: newStatus } : summary,
+      );
+      return { ...prev, summaries: updatedSummaries };
+    });
+    filterWeeklySummaries();
+  };
+
   const filterWeeklySummaries = () => {
     try {
       const {
@@ -1540,6 +1551,7 @@ const WeeklySummariesReport = props => {
                               loadTrophies={state.loadTrophies}
                               getWeeklySummariesReport={getWeeklySummariesReport}
                               handleSpecialColorDotClick={handleSpecialColorDotClick}
+                              updateBioPostedStatus={updateBioPostedStatus}
                             />
                           </Col>
                         </Row>
