@@ -11,6 +11,8 @@ import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { faCopy, faMailBulk } from '@fortawesome/free-solid-svg-icons';
+// eslint-disable-next-line no-unused-vars
+import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
 import {
   Modal,
   ModalHeader,
@@ -99,6 +101,14 @@ function FormattedReport({
   handleSpecialColorDotClick,
   getWeeklySummariesReport,
 }) {
+  // Add local state to manage summaries
+  const [localSummaries, setLocalSummaries] = useState(summaries);
+
+  // Update local state when props change
+  useEffect(() => {
+    setLocalSummaries(summaries);
+  }, [summaries]);
+
   const dispatch = useDispatch();
   const isEditCount = dispatch(hasPermission('totalValidWeeklySummaries'));
 
@@ -112,6 +122,21 @@ function FormattedReport({
   }
 
   const loggedInUserEmail = auth?.user?.email ? auth.user.email : '';
+
+  // Add local state to manage summaries
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+
+  // Update local state when props change
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+
+  // Add this function to handle bio updates
+  const handleBioUpdate = (userId, newBioStatus) => {
+    setLocalSummaries(prevSummaries =>
+      prevSummaries.map(summary =>
+        summary._id === userId ? { ...summary, bioPosted: newBioStatus } : summary,
+      ),
+    );
+  };
 
   // Determining if it's the final week:
   // const isFinalWeek =
@@ -137,7 +162,7 @@ function FormattedReport({
   return (
     <>
       <ListGroup flush>
-        {summaries.map(summary => {
+        {localSummaries.map(summary => {
           // Add safety check for each summary
           if (!summary || !summary.totalSeconds) {
             return null;
@@ -170,6 +195,7 @@ function FormattedReport({
               handleSpecialColorDotClick={handleSpecialColorDotClick}
               isFinalWeek={isFinalWeek}
               getWeeklySummariesReport={getWeeklySummariesReport}
+              handleBioUpdate={handleBioUpdate}
             />
           );
         })}
@@ -271,6 +297,45 @@ function getTextColorForHoursLogged(hoursLogged, promisedHours) {
   return 'black';
 }
 
+const shouldShowYellowBar = (bioPosted, summary) => {
+  // Not show yellow bar for Owner or Promoted Review roles
+  // if (summary?.role === 'Owner' || summary?.role === 'Promoted Review') {
+  //   return false;
+  // }
+  // Show yellow bar for 'requested' or if user qualifies for bio posting
+  // const weeklySummaryCount =
+  //   summary.weeklySummariesCount ||
+  //   summary.weeklySubmissionCount ||
+  //   summary.summaryCount ||
+  //   summary.totalWeeklySummaries ||
+  //   0;
+  const isMeetCriteria =
+    summary.totalTangibleHrs > 80 && summary.daysInTeam > 60 && summary.bioPosted !== 'posted';
+  // weeklySummaryCount > 8;
+
+  return bioPosted === 'requested' || (bioPosted === 'default' && isMeetCriteria);
+};
+
+const getBioBackgroundColor = (bioPosted, summary) => {
+  const weeklySummaryCount =
+    summary.weeklySummariesCount ||
+    summary.weeklySubmissionCount ||
+    summary.summaryCount ||
+    summary.totalWeeklySummaries ||
+    0;
+
+  const isMeetCriteria =
+    summary.totalTangibleHrs > 80 && summary.daysInTeam > 60 && summary.bioPosted !== 'posted';
+  // weeklySummaryCount > 8;
+
+  if (bioPosted === 'requested') {
+    return '#fffacd'; //Light yellow (lemon chiffon)
+  } else if (bioPosted === 'default' && isMeetCriteria) {
+    return '#ffff99'; // Bright yellow for requested for neutral but qualified
+  }
+  return 'transparent';
+};
+
 function ReportDetails({
   summary,
   weekIndex,
@@ -288,6 +353,7 @@ function ReportDetails({
   auth,
   handleSpecialColorDotClick,
   getWeeklySummariesReport,
+  handleBioUpdate,
   isFinalWeek, // new prop
 }) {
   const [filteredBadges, setFilteredBadges] = useState([]);
@@ -295,11 +361,18 @@ function ReportDetails({
   const cantEditJaeRelatedRecord = cantUpdateDevAdminDetails(summary.email, loggedInUserEmail);
 
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
+  const weeklySummaryCount =
+    summary.weeklySummariesCount ||
+    summary.weeklySubmissionCount ||
+    summary.summaryCount ||
+    summary.totalWeeklySummaries ||
+    0;
   const isMeetCriteria =
     canSeeBioHighlight &&
     summary.totalTangibleHrs > 80 &&
     summary.daysInTeam > 60 &&
     summary.bioPosted !== 'posted';
+  // weeklySummaryCount > 8;
 
   useEffect(() => {
     setFilteredBadges(badges.filter(badge => badge.showReport === true));
@@ -334,17 +407,29 @@ function ReportDetails({
               {/* <div style={{ width: '200%', backgroundColor: isMeetCriteria ? 'yellow' : 'none' }}> */}
               <div
                 style={{
-                  width: '200%',
-                  backgroundColor: summary.bioPosted === 'requested' ? 'yellow' : 'transparent',
-                  padding: summary.bioPosted === 'requested' ? '8px' : '0',
-                  borderRadius: summary.bioPosted === 'requested' ? '4px' : '0',
+                  width: '250%',
+                  maxWidth: '220%',
+                  // display: 'block',
+                  // backgroundColor: summary.bioPosted === 'requested' ? 'yellow' : 'transparent',
+                  // padding: summary.bioPosted === 'requested' ? '8px' : '0',
+                  // borderRadius: summary.bioPosted === 'requested' ? '4px' : '0',
+                  backgroundColor: getBioBackgroundColor(summary.bioPosted, summary),
+                  padding: shouldShowYellowBar(summary.bioPosted, summary) ? '0px' : '0', // Reduced padding for thinner bar
+                  // borderRadius: shouldShowYellowBar(summary.bioPosted, summary) ? '4px' : '0',
+                  // border: shouldShowYellowBar(summary.bioPosted, summary)
+                  //   ? '1px solid #f0d000'
+                  //   : 'none', // Added subtle border for better definition
+                  // marginBottom: shouldShowYellowBar(summary.bioPosted, summary) ? '2px' : '0',
                 }}
               >
+                {/* <div style={{ width: '200%', backgroundColor: isMeetCriteria ? 'yellow' : 'none' }}> */}
                 <Bio
                   bioCanEdit={bioCanEdit && !cantEditJaeRelatedRecord}
                   userId={summary._id}
                   bioPosted={summary.bioPosted}
                   summary={summary}
+                  getWeeklySummariesReport={getWeeklySummariesReport}
+                  handleBioUpdate={handleBioUpdate}
                 />
               </div>
             </ListGroupItem>
@@ -618,34 +703,364 @@ function TotalValidWeeklySummaries({ summary, canEditSummaryCount, darkMode }) {
   );
 }
 
-function Bio({ bioCanEdit, ...props }) {
+function Bio({ bioCanEdit, getWeeklySummariesReport, handleBioUpdate, ...props }) {
   // eslint-disable-next-line react/jsx-props-no-spreading
-  return bioCanEdit ? <BioSwitch {...props} /> : <BioLabel {...props} />;
+  return bioCanEdit ? (
+    <BioSwitch
+      {...props}
+      getWeeklySummariesReport={getWeeklySummariesReport}
+      handleBioUpdate={handleBioUpdate}
+    />
+  ) : (
+    <BioLabel {...props} />
+  );
+  // return bioCanEdit ? (
+  //   <BioSwitch {...props} getWeeklySummariesReport={getWeeklySummariesReport} />
+  // ) : (
+  //   <BioLabel {...props} />
+  // );
 }
 
-function BioSwitch({ userId, bioPosted, summary }) {
+function BioSwitch({ userId, bioPosted, summary, getWeeklySummariesReport, handleBioUpdate }) {
   const [bioStatus, setBioStatus] = useState(bioPosted);
+  // const [isUpdating, setIsUpdating] = useState(false);
+  const [hasLocalChange, setHasLocalChange] = useState(false);
   const dispatch = useDispatch();
   const style = { color: textColors[summary?.weeklySummaryOption] || textColors.Default };
 
+  // useEffect(() => {
+  //   // eslint-disable-next-line no-console
+  //   if (!isUpdating) {
+  //     // eslint-disable-next-line no-console
+  //     console.log('🔍 bioPosted prop changed:', bioPosted);
+  //     setBioStatus(bioPosted);
+  //   }
+  // }, [bioPosted, isUpdating]);
+
+  // useEffect(() => {
+  //   // eslint-disable-next-line no-console
+  //   console.log('🔍 PARENT IS SENDING:', { bioPosted, summaryBioPosted: summary.bioPosted });
+  // }, [bioPosted, summary.bioPosted]);
   // eslint-disable-next-line no-shadow
-  const handleChangeBioPosted = async (userId, bioStatus) => {
-    const res = await dispatch(toggleUserBio(userId, bioStatus));
+  //old
+  // useEffect(() => {
+  //   if (!hasLocalChange) {
+  //     // eslint-disable-next-line no-console
+  //     console.log('🔍 bioPosted prop changed:', bioPosted);
+  //     setBioStatus(bioPosted);
+  //   }
+  // }, [bioPosted, hasLocalChange]);
+  // old working
+  // const handleChangeBioPosted = async (userId, bioStatus) => {
+  //   // eslint-disable-next-line no-console
+  //   // console.log('🎯 Changing from', bioStatus, 'to', bioStatus);
+  //   // setIsUpdating(true);
+  //   // setBioStatus(bioStatus);
+  //   // setHasLocalChange(true); // Lock against prop updates
+  //   setBioStatus(bioStatus); // Update local state
+
+  //   // Update parent immediately
+  //   // if (handleBioUpdate) {
+  //   //   handleBioUpdate(userId, bioStatus);
+  //   // }
+  //   // setBioStatus(bioStatus);
+
+  //   const res = await dispatch(toggleUserBio(userId, bioStatus));
+  //   // try {
+  //   //   const res = await dispatch(toggleUserBio(userId, bioStatus));
+  //   if (res.status === 200) {
+  //     toast.success('You have changed the bio announcement status of this user.');
+
+  //     // try {
+  //     //   // Refresh parent data
+  //     //   setTimeout(async () => {
+  //     //     const { getWeeklySummariesReport } = await import('../../actions/weeklySummariesReport');
+  //     //     await dispatch(getWeeklySummariesReport());
+  //     //     // eslint-disable-next-line no-console
+  //     //     console.log('🔄 Delayed refresh completed');
+  //     //   }, 2000);
+
+  //     //   // Small delay to let parent update
+  //     //   // setTimeout(() => {
+  //     //   //   setIsUpdating(false);
+  //     //   // }, 1000);
+  //     // } catch (error) {
+  //     //   // eslint-disable-next-line no-console
+  //     //   console.error('❌ Failed to refresh:', error);
+  //     //   // setBioStatus(bioPosted); // Revert
+  //     //   // setIsUpdating(false);
+  //     //   // Revert on error
+  //     //   if (handleBioUpdate) {
+  //     //     handleBioUpdate(userId, bioPosted);
+  //     //   }
+  //     // }
+  //     // Reset the lock after a delay
+  //     // setTimeout(() => {
+  //     //   setHasLocalChange(false);
+  //     // }, 3000);
+  //   } else {
+  //     // // Revert on failure
+  //     // setBioStatus(bioPosted);
+  //     // setIsUpdating(false);
+  //     // setHasLocalChange(false);
+  //     setBioStatus(bioPosted);
+  //     // Revert on API failure
+  //     // if (handleBioUpdate) {
+  //     //   handleBioUpdate(userId, bioPosted);
+  //     // }
+  //     // setBioStatus(bioPosted);
+  //   }
+
+  //   // } catch (error) {
+  //   //   // eslint-disable-next-line no-console
+  //   //   console.error('❌ Failed to update:', error);
+  //   //   setBioStatus(bioPosted); // Revert
+  //   //   setIsUpdating(false);
+  //   // }
+  //   // const res = await dispatch(toggleUserBio(userId, bioStatus));
+  //   // if (res.status === 200) {
+  //   //   toast.success('You have changed the bio announcement status of this user.');
+
+  //   //   // Update local state immediately for instant feedback
+  //   //   setBioStatus(bioStatus);
+
+  //   //   try {
+  //   //     const { getWeeklySummariesReport } = await import('../../actions/weeklySummariesReport');
+  //   //     await dispatch(getWeeklySummariesReport());
+
+  //   //     // Call the parent's refresh function
+  //   //     if (getWeeklySummariesReport) {
+  //   //       await getWeeklySummariesReport(); // This should update parent's data
+  //   //     }
+  //   //   } catch (error) {
+  //   //     // eslint-disable-next-line no-console
+  //   //     console.error('❌ Failed to refresh:', error);
+  //   //   }
+  //   // Check what the weekly summaries endpoint returns AFTER update
+  //   // eslint-disable-next-line no-console
+  //   // console.log('🔍 getWeeklySummariesReport function exists?', typeof getWeeklySummariesReport);
+  //   // // eslint-disable-next-line no-console
+  //   // console.log('🔍 Function content:', getWeeklySummariesReport.toString());
+
+  //   // // CRITICAL FIX: Update the parent data
+  //   // if (getWeeklySummariesReport) {
+  //   //   // eslint-disable-next-line no-console
+  //   //   console.log('🔄 Calling refresh...');
+  //   //   await getWeeklySummariesReport();
+  //   //   // eslint-disable-next-line no-console
+  //   //   console.log('✅ Refresh completed! Data should now be updated.');
+  //   // }
+  //   // CORRECT WAY: Dispatch the action to actually make the API call
+
+  //   // try {
+  //   //   // eslint-disable-next-line no-console
+  //   //   console.log('🔄 Refreshing weekly summaries data...');
+  //   //   const refreshResult = await dispatch(getWeeklySummariesReport());
+  //   //   // eslint-disable-next-line no-console
+  //   //   console.log('✅ Weekly summaries refreshed:', refreshResult);
+  //   // } catch (error) {
+  //   //   // eslint-disable-next-line no-console
+  //   //   console.error('❌ Failed to refresh weekly summaries:', error);
+  //   // }
+  //   // SIMPLE FIX: Just dispatch the action creator
+  //   // try {
+  //   //   // eslint-disable-next-line no-console
+  //   //   console.log('🔄 Refreshing weekly summaries data...');
+  //   //   const { getWeeklySummariesReport } = await import('../../actions/weeklySummariesReport');
+  //   //   // eslint-disable-next-line no-console
+  //   //   console.log('🔍 Import check:', { getWeeklySummariesReport });
+  //   //   const refreshResult = await dispatch(getWeeklySummariesReport());
+  //   //   // eslint-disable-next-line no-console
+  //   //   console.log('✅ Weekly summaries refreshed:', refreshResult);
+  //   //   // DEBUG: Check Redux state after refresh
+  //   //   const currentState = store.getState(); // You'll need to import store
+  //   //   // eslint-disable-next-line no-console
+  //   //   console.log('🏪 Redux state after refresh:', currentState.weeklySummariesReport);
+  //   //   // eslint-disable-next-line no-console
+  //   //   // console.log('🌐 Check network tab - you should see the API call now');
+  //   // } catch (error) {
+  //   //   // eslint-disable-next-line no-console
+  //   //   console.error('❌ Failed to refresh weekly summaries:', error);
+  //   // }
+  //   // // Clear existing data first
+  //   // dispatch(fetchWeeklySummariesReportBegin()); // This should clear current data
+
+  //   // // Then fetch fresh data
+  //   // await dispatch(getWeeklySummariesReport());
+  // };
+
+  const handleChangeBioPosted = async (userId, bioStatusValue) => {
+    // eslint-disable-next-line no-console
+    console.log('🎯 handleChangeBioPosted called with:', bioStatusValue);
+    // eslint-disable-next-line no-console
+    // console.log('🎯 Current bioStatus before update:', bioStatus);
+
+    //  SET THE LOCK FIRST!
+    setHasLocalChange(true);
+    // Force immediate state update
+    setBioStatus(bioStatusValue);
+    // eslint-disable-next-line no-console
+    // console.log('🎯 setBioStatus called with:', bioStatusValue);
+    // Update parent
+    if (handleBioUpdate) {
+      handleBioUpdate(userId, bioStatusValue);
+    }
+    // Force re-render to make sure state sticks
+    // setTimeout(() => {
+    //   // eslint-disable-next-line no-console
+    //   console.log('🎯 bioStatus after timeout:', bioStatus);
+    // }, 100);
+
+    // Update parent optimistically
+    // if (handleBioUpdate) {
+    //   handleBioUpdate(userId, bioStatusValue);
+    // }
+    const res = await dispatch(toggleUserBio(userId, bioStatusValue));
     if (res.status === 200) {
       toast.success('You have changed the bio announcement status of this user.');
     }
+    // try {
+    //   const res = await dispatch(toggleUserBio(userId, bioStatusValue));
+    //   if (res.status === 200) {
+    //     toast.success('You have changed the bio announcement status of this user.');
+    //   } else {
+    //     // Revert on failure
+    //     setBioStatus(bioPosted);
+    //   }
+    // } catch (error) {
+    //   // eslint-disable-next-line no-console
+    //   console.error('❌ Failed to update:', error);
+    //   setBioStatus(bioPosted); // Revert
+    // }
   };
+  // Prevent prop updates during our update
+  // useEffect(() => {
+  //   if (!isUpdating) {
+  //     setBioStatus(bioPosted);
+  //   }
+  // }, [bioPosted, isUpdating]);
+  // setTimeout(() => {
+  //   window.location.reload();
+  // }, 1000);
+  // };
+
+  //debugging version
+  // const handleChangeBioPosted = async (userId, bioStatus) => {
+  //   // eslint-disable-next-line no-console
+  //   console.log('🔄 Sending request:', { userId, bioStatus });
+
+  //   try {
+  //     const res = await dispatch(toggleUserBio(userId, bioStatus));
+
+  //     // Log the FULL response
+  //     // eslint-disable-next-line no-console
+  //     console.log('📦 Full response object:', res);
+  //     // eslint-disable-next-line no-console
+  //     console.log('📦 Response status:', res?.status);
+  //     // eslint-disable-next-line no-console
+  //     console.log('📦 Response data:', res?.data);
+  //     // eslint-disable-next-line no-console
+  //     console.log('📦 Response payload:', res?.payload);
+
+  //     if (res.status === 200) {
+  //       toast.success('You have changed the bio announcement status of this user.');
+
+  //       // Don't refresh - let's see what the server actually returned
+  //       // eslint-disable-next-line no-console
+  //       console.log("✅ Server said 200, but let's verify the actual data was saved");
+  //     } else {
+  //       // eslint-disable-next-line no-console
+  //       console.log('❌ Server returned non-200 status:', res);
+  //       toast.error('Failed to update bio status.');
+  //     }
+  //   } catch (error) {
+  //     // eslint-disable-next-line no-console
+  //     console.error('❌ Error occurred:', error);
+  //     toast.error('Error updating bio status.');
+  //   }
+  // };
+  // const handleChangeBioPosted = async (userId, bioStatus) => {
+  //   // eslint-disable-next-line no-console
+  //   console.log('🔄 Attempting to update bio status:', { userId, bioStatus });
+  //   try {
+  //     const res = await dispatch(toggleUserBio(userId, bioStatus));
+  //     // eslint-disable-next-line no-console
+  //     console.log('📊 Full API Response:', res);
+  //     if (res && (res.status === 200 || res.type)) {
+  //       // eslint-disable-next-line no-console
+  //       console.log('✅ Bio status updated successfully');
+  //       toast.success('You have changed the bio announcement status of this user.');
+
+  //       // SOLUTION: Refresh the weekly summaries data after successful update
+  //       if (getWeeklySummariesReport && typeof getWeeklySummariesReport === 'function') {
+  //         // eslint-disable-next-line no-console
+  //         console.log('🔄 Refreshing weekly summaries data...');
+  //         try {
+  //           await getWeeklySummariesReport();
+  //           // eslint-disable-next-line no-console
+  //           console.log('✅ Data refreshed successfully');
+  //         } catch (refreshError) {
+  //           // eslint-disable-next-line no-console
+  //           console.error('❌ Error refreshing data:', refreshError);
+  //         }
+  //       } else {
+  //         // eslint-disable-next-line no-console
+  //         console.log('⚠️ getWeeklySummariesReport function not available', res);
+  //         // throw new Error(`Unexpected response: ${JSON.stringify(res)}`);
+  //       }
+  //     } else {
+  //       // eslint-disable-next-line no-console
+  //       console.log('❌ Unexpected response structure:', res);
+  //       toast.error('Failed to update bio status. Please try again.');
+  //       setBioStatus(bioPosted); // Revert on failure
+  //     }
+  //   } catch (error) {
+  //     // eslint-disable-next-line no-console
+  //     console.error('❌ Error updating bio status:', error);
+  //     toast.error('Failed to update bio status. Please try again.');
+  //     setBioStatus(bioPosted); // Revert local state if API call failed
+  //   }
+  // };
+  // const handleChangeBioPosted = async (userId, bioStatus) => {
+  //   // eslint-disable-next-line no-console
+  //   console.log('🔄 Attempting to update bio status:', { userId, bioStatus });
+
+  //   const res = await dispatch(toggleUserBio(userId, bioStatus));
+  //   // eslint-disable-next-line no-console
+  //   console.log('📊 API Response:', res);
+
+  //   if (res.status === 200) {
+  //     toast.success('You have changed the bio announcement status of this user.');
+  //   }
+  // };
+
+  // Sync local state with props when data is refreshed
+  // useEffect(() => {
+  //   setBioStatus(bioPosted);
+  // }, [bioPosted]);
 
   return (
     // <div>
+    // <div
+    //   style={{
+    //     backgroundColor: bioStatus === 'requested' ? 'yellow' : 'transparent',
+    //     padding: bioStatus === 'requested' ? '1px' : '0',
+    //     // borderRadius: bioStatus === 'requested' ? '2px' : '0',
+    //     width: '100vw',
+    //     maxWidth: '200%',
+    //     margin: '0 auto',
+    //   }}
+    // >
     <div
       style={{
-        backgroundColor: bioStatus === 'requested' ? 'yellow' : 'transparent',
-        padding: bioStatus === 'requested' ? '8px' : '0',
-        borderRadius: bioStatus === 'requested' ? '4px' : '0',
+        backgroundColor: getBioBackgroundColor(bioStatus, summary),
+        padding: shouldShowYellowBar(bioStatus, summary) ? '2px 12px' : '0',
+        borderRadius: shouldShowYellowBar(bioStatus, summary) ? '4px' : '0',
         width: '100%',
+        // border: shouldShowYellowBar(bioStatus, summary) ? '1px solid #f0d000' : 'none',
       }}
     >
+      {/* <div> */}
       <div className={styles.bioToggle}>
         <b style={style}>Bio announcement:</b>
       </div>
@@ -654,7 +1069,11 @@ function BioSwitch({ userId, bioPosted, summary }) {
           switchType="bio"
           state={bioStatus}
           handleUserProfile={bio => {
-            setBioStatus(bio);
+            // eslint-disable-next-line no-console
+            console.log('🎛️ Toggle clicked, bio=', bio);
+            // eslint-disable-next-line no-console
+            console.log('🎛️ Current bioStatus=', bioStatus);
+            // setBioStatus(bio);
             handleChangeBioPosted(userId, bio);
           }}
         />
@@ -680,11 +1099,13 @@ function BioLabel({ bioPosted, summary }) {
     <div
       style={{
         backgroundColor: bioPosted === 'requested' ? 'yellow' : 'transparent',
-        padding: bioPosted === 'requested' ? '8px' : '0',
-        borderRadius: bioPosted === 'requested' ? '4px' : '0',
-        width: '100%',
+        padding: bioPosted === 'requested' ? '2px' : '0',
+        // borderRadius: bioPosted === 'requested' ? '2px' : '0',
+        width: '100vw',
+        // border: shouldShowYellowBar(bioPosted, summary) ? '1px solid #f0d000' : 'none',
       }}
     >
+      {/* <div> */}
       <b style={style}>Bio announcement: </b>
       {text}
     </div>
