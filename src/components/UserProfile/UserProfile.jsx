@@ -580,7 +580,7 @@ function UserProfile(props) {
    * @param {String} lastName last name of the blue square author
    * @param {String} operation 'add' | 'update' | 'delete'
    */
-  const modifyBlueSquares = async (id, dateStamp, summary, firstName, lastName, operation) => {
+  const modifyBlueSquares = async (id, dateStamp, summary, first, last, operation) => {
     setShowModal(false);
     if (operation === 'add') {
       /* peizhou: check that the date of the blue square is not future or empty. */
@@ -602,10 +602,8 @@ function UserProfile(props) {
           //   .toISOString()
           //   .split('T')[0],
           createdDate: moment().format('YYYY-MM-DD'),
-          author: {
-            firstName,
-            lastName
-          }
+          firstName: first,
+          lastName: last
         };
         setModalTitle('Blue Square');
         axios
@@ -1044,6 +1042,7 @@ function UserProfile(props) {
           id={id}
           handleLinkModel={props.handleLinkModel}
           role={requestorRole}
+          auth={props.auth}
         />
       )}
       <Modal isOpen={showToggleVisibilityModal} toggle={handleCloseConfirmVisibilityModal}>
