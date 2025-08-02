@@ -51,7 +51,9 @@ export class ForcePasswordUpdate extends Form {
     // Clear errors when unmounting
     this.props.clearErrors();
     // Important: dismiss all toasts to prevent DOM manipulation after unmount
-    toast.dismiss();
+    if (toast.dismiss && typeof toast.dismiss === 'function') {
+      toast.dismiss();
+    }
   }
 
   schema = {
