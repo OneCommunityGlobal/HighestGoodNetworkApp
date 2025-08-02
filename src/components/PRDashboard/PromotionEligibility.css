@@ -164,10 +164,6 @@
     width: 100%;
   }
 
-  .promo-table thead {
-    display: none;
-  }
-
   .promo-table tr {
     margin-bottom: 1rem;
     background-color: #fff;

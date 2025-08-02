@@ -99,21 +99,21 @@ function PromotionEligibility({ currentUser }) {
   };
 
   const renderRow = ({
-    id,
-    reviewerName,
-    weeklyRequirementsMet,
-    requiredPRs,
-    totalReviews,
-    remainingWeeks,
-    promoteEligible,
+  id,
+  reviewerName,
+  weeklyRequirementsMet,
+  requiredPRs,
+  totalReviews,
+  remainingWeeks,
+  promoteEligible,
   }) => (
     <tr key={id}>
-      <td>{reviewerName}</td>
-      <td>{weeklyRequirementsMet ? '✔️' : '❌'}</td>
-      <td>{requiredPRs}</td>
-      <td>{totalReviews}</td>
-      <td>{remainingWeeks}</td>
-      <td>
+      <td data-label="Reviewer Name">{reviewerName}</td>
+      <td data-label="Weekly Requirements">{weeklyRequirementsMet ? '✔️' : '❌'}</td>
+      <td data-label="Required PRs">{requiredPRs}</td>
+      <td data-label="Total Reviews Done">{totalReviews}</td>
+      <td data-label="Remaining Weeks">{remainingWeeks}</td>
+      <td data-label="Promote?">
         <div
           role="checkbox"
           tabIndex={promoteEligible ? 0 : -1}
@@ -139,6 +139,7 @@ function PromotionEligibility({ currentUser }) {
       </td>
     </tr>
   );
+
 
   return (
     <div className={`page-wrapper ${darkMode ? 'dark' : ''}`}>
