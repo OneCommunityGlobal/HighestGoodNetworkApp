@@ -55,45 +55,52 @@ function UtilizationChart() {
           backgroundColor: '#a0e7e5',
           borderRadius: 6,
         },
-        {
-          label: 'Downtime (%)',
-          data: toolsData.map(tool => 100 - tool.utilizationRate),
-          backgroundColor: '#f9c74f',
-          borderRadius: 6,
-        },
       ],
     };
 
-  const options = {
-    indexAxis: 'y',
+    const options = {
+      indexAxis: 'y',
+      responsive: true,
       plugins: {
+        datalabels: {
+          color: '#333',
+          anchor: 'end',
+          align: 'end',
+          font: {
+            weight: 'bold',
+            size: 12,
+          },
+          formatter: (_, context) => {
+            const tool = toolsData[context.dataIndex];
+            return `${tool.downtime} hrs`;
+          },
+        },
         tooltip: {
           callbacks: {
-            label: context => {
+            label: (context) => {
               const tool = toolsData[context.dataIndex];
-              if (context.dataset.label === 'Utilization (%)') {
-                return `Utilization: ${tool.utilizationRate}%`;
-              } else {
-                return `Downtime: ${tool.downtime} hrs`;
-              }
+              return `Utilization: ${tool.utilizationRate}%, Downtime: ${tool.downtime} hrs`;
             },
           },
         },
       },
-    scales: {
-      x: {
-        stacked: true,
-        title: { display: true, text: 'Time (%)' },
-        max: 100,
-      },
-      y: {
-        stacked: true,
-        ticks: {
-          autoSkip: false,
+      scales: {
+        x: {
+          max: 100,
+          title: {
+            display: true,
+            text: 'Time (%)',
+          },
+        },
+        y: {
+          ticks: {
+            autoSkip: false,
+          },
         },
       },
-    },
-  };
+    };
+
+  
 
 
   return (
