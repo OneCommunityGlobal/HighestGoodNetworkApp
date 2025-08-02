@@ -9,8 +9,8 @@ import {
   Alert,
   Spinner,
 } from 'reactstrap';
-import hasPermission from 'utils/permissions';
-import { boxStyle, boxStyleDark } from 'styles';
+import hasPermission from '~/utils/permissions';
+import { boxStyle, boxStyleDark } from '~/styles';
 import '../Header/DarkMode.css';
 import moment from 'moment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';

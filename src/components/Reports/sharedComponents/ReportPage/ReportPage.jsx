@@ -1,4 +1,3 @@
-/* eslint-disable import/prefer-default-export */
 import { ReportHeader } from './components/ReportHeader';
 import { ReportBlock } from './components/ReportBlock';
 import { ReportCard } from './components/ReportCard';
@@ -8,9 +7,11 @@ export function ReportPage({ children, renderProfile, contentClassName, darkMode
   return (
     <section className={`report-page-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
       {renderProfile && (
-        <div className={`${darkMode ? "report-page-profile-dark" : "report-page-profile"}`}>{renderProfile()}</div>
+        <div className={`${darkMode ? 'report-page-profile-dark' : 'report-page-profile'}`}>
+          {renderProfile()}
+        </div>
       )}
-      <div className={`report-page-content ${contentClassName}`}>{children}</div>
+      <div className={`report-page-content ${contentClassName}`} data-testid="report-content">{children}</div>
     </section>
   );
 }

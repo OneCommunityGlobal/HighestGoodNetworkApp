@@ -32,19 +32,19 @@ import classnames from 'classnames';
 import { connect, useSelector } from 'react-redux';
 import moment from 'moment';
 import ReactTooltip from 'react-tooltip';
-import ActiveCell from 'components/UserManagement/ActiveCell';
-import ProfileNavDot from 'components/UserManagement/ProfileNavDot';
-import TeamMemberTasks from 'components/TeamMemberTasks';
-import { boxStyle, boxStyleDark } from 'styles';
-import { formatDate } from 'utils/formatDate';
-import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
-import { cantUpdateDevAdminDetails } from 'utils/permissions';
+import ActiveCell from '~/components/UserManagement/ActiveCell';
+import ProfileNavDot from '~/components/UserManagement/ProfileNavDot';
+import TeamMemberTasks from '~/components/TeamMemberTasks';
+import { boxStyle, boxStyleDark } from '~/styles';
+import { formatDate } from '~/utils/formatDate';
+import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
+import { cantUpdateDevAdminDetails } from '~/utils/permissions';
 import axios from 'axios';
 import {
   DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
   DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
   PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
-} from 'utils/constants';
+} from '~/utils/constants';
 import PropTypes from 'prop-types';
 import { getTimeEntriesForWeek, getTimeEntriesForPeriod } from '../../actions/timeEntries';
 import { getUserProfile, updateUserProfile, getUserTasks } from '../../actions/userProfile';
@@ -60,7 +60,7 @@ import LoadingSkeleton from '../common/SkeletonLoading';
 import hasPermission from '../../utils/permissions';
 import WeeklySummaries from './WeeklySummaries';
 import Badge from '../Badge';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 
 // startOfWeek returns the date of the start of the week based on offset. Offset is the number of weeks before.
 // For example, if offset is 0, returns the start of this week. If offset is 1, returns the start of last week.
@@ -184,17 +184,20 @@ function Timelog(props) {
     Accounts assigned with tasks with no wbs return and empty array.
     Accounts assigned with tasks with wbs return an array with that wbs data.
     The problem: even after unassigning tasks the array keeps the wbs data.
-    That breaks this feature. Necessary to check if this array should keep data or be reset when unassinging tasks. */
+    That breaks this feature. Necessary to check if this array should keep data or be reset when unassinging tasks.*/
 
-    // if user role is volunteer or core team and they don't have tasks assigned, then default tab is timelog.
-    if (role === 'Volunteer' && userHaveTask.length > 0) {
-      tab = 0;
-    } else if (role === 'Volunteer' && userHaveTask.length === 0) {
-      tab = 1;
-    } else {
-      tab = null;
-    }
+    // That breaks this feature. Necessary to check if this array should keep data or be reset when unassigning tasks.
 
+// if user role is volunteer or core team and they don't have tasks assigned, then default tab is timelog.
+if (role === 'Volunteer' && userHaveTask.length > 0) {
+  tab = 0;
+} else if (role === 'Volunteer' && userHaveTask.length === 0) {
+  tab = 1;
+} else {
+  tab = null;
+}
+
+ 
     // Sets active tab to "Current Week Timelog" when the Progress bar in Leaderboard is clicked
     if (!props.isDashboard) {
       tab = 1;
@@ -209,7 +212,30 @@ function Timelog(props) {
     return tab;
   };
 
-  /* ---------------- methods -------------- */
+useEffect(() => {
+  const tab = tabMapping[location.hash];
+  if (tab !== undefined) {
+    changeTab(tab);
+  }
+}, [location.hash]);  // This effect will run whenever the hash changes
+
+/* ---------------- methods -------------- */
+const updateTimeEntryItems = () => {
+  const allTimeEntryItems = generateAllTimeEntryItems();
+  setCurrentWeekEntries(allTimeEntryItems[0]);
+  setLastWeekEntries(allTimeEntryItems[1]);
+  setBeforeLastEntries(allTimeEntryItems[2]);
+  setPeriodEntries(allTimeEntryItems[3]);
+};
+
+const generateAllTimeEntryItems = () => {
+  const currentWeekEntries = generateTimeEntries(timeEntries.weeks[0], 0);
+  const lastWeekEntries = generateTimeEntries(timeEntries.weeks[1], 1);
+  const beforeLastEntries = generateTimeEntries(timeEntries.weeks[2], 2);
+  const periodEntries = generateTimeEntries(timeEntries.period, 3);
+  return [currentWeekEntries, beforeLastEntries, beforeLastEntries, periodEntries];
+};
+
 
   const generateTimeEntries = (data, tab) => {
     if (!timeLogState.projectsOrTasksSelected.includes('all')) {
@@ -239,22 +265,6 @@ function Timelog(props) {
         tab={tab}
       />
     ));
-  };
-
-  const generateAllTimeEntryItems = () => {
-    const currentWeekEntry = generateTimeEntries(timeEntries.weeks[0], 0);
-    const lastWeekEntry = generateTimeEntries(timeEntries.weeks[1], 1);
-    const beforeLastEntry = generateTimeEntries(timeEntries.weeks[2], 2);
-    const periodEntry = generateTimeEntries(timeEntries.period, 3);
-    return [currentWeekEntry, lastWeekEntry, beforeLastEntry, periodEntry];
-  };
-
-  const updateTimeEntryItems = () => {
-    const allTimeEntryItems = generateAllTimeEntryItems();
-    setCurrentWeekEntries(allTimeEntryItems[0]);
-    setLastWeekEntries(allTimeEntryItems[1]);
-    setBeforeLastEntries(allTimeEntryItems[2]);
-    setPeriodEntries(allTimeEntryItems[3]);
   };
 
   const loadAsyncData = async uid => {
@@ -513,19 +523,19 @@ function Timelog(props) {
     }
   }, [urlId]);
 
-/**
-   * made a change here to reset the user viewing to current user and not the displayed user id we were testing
-   * component reloads when we click the x icon to close the current viewing
-  */
+  /**
+     * made a change here to reset the user viewing to current user and not the displayed user id we were testing
+     * component reloads when we click the x icon to close the current viewing
+    */
 
-useEffect(() => {
-  // Reset displayUserId when switching btw users
-  const newUserId = getUserId();
-  if (displayUserId !== newUserId) {
-    setDisplayUserId(newUserId);
-    loadAsyncData(newUserId); // Reload data for the prev viewing user
-  }
-}, [userprofileId, viewingUser]);
+  useEffect(() => {
+    // Reset displayUserId when switching btw users
+    const newUserId = getUserId();
+    if (displayUserId !== newUserId) {
+      setDisplayUserId(newUserId);
+      loadAsyncData(newUserId); // Reload data for the prev viewing user
+    }
+  }, [userprofileId, viewingUser]);
 
   useEffect(() => {
     props.getBadgeCount(displayUserId);
@@ -567,11 +577,12 @@ useEffect(() => {
     return {};
   };
 
-  return (
-    <div
-      className={`container-timelog-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}
-      style={containerStyle()}
-    >
+return (
+  <div
+    className={`container-timelog-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}
+    style={darkMode ? (!props.isDashboard ? { padding: "0 15px 300px 15px" } : {}) : {}}
+  >
+
       {!props.isDashboard ? (
         <Container fluid>
           <SummaryBar

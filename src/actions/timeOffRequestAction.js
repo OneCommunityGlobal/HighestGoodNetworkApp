@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-unresolved
-import httpService from 'services/httpService';
+import httpService from '~/services/httpService';
 import { toast } from 'react-toastify';
 import moment from 'moment';
 import {
@@ -14,7 +14,7 @@ import {
   TIME_OFF_REQUEST_DETAIL_MODAL_OPEN,
   TIME_OFF_REQUEST_DETAIL_MODAL_CLOSE,
 } from '../constants/timeOffRequestConstants';
-import { ENDPOINTS } from '../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import 'moment-timezone';
 
 /**

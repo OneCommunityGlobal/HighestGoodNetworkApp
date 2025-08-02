@@ -23,13 +23,13 @@ import classnames from 'classnames';
 import moment from 'moment';
 import Alert from 'reactstrap/lib/Alert';
 import axios from 'axios';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import hasPermission, {
   cantDeactivateOwner,
   cantUpdateDevAdminDetails,
 } from '../../utils/permissions';
 import ActiveCell from '../UserManagement/ActiveCell';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import SkeletonLoading from '../common/SkeletonLoading';
 import UserProfileModal from './UserProfileModal';
 import './UserProfile.scss';
@@ -56,7 +56,7 @@ import { UserStatus } from '../../utils/enums';
 import BlueSquareLayout from './BlueSquareLayout';
 import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
 import { connect, useDispatch, useSelector } from 'react-redux';
-import { formatDateLocal } from 'utils/formatDate';
+import { formatDateLocal } from '~/utils/formatDate';
 import EditableInfoModal from './EditableModal/EditableInfoModal';
 import { fetchAllProjects } from '../../actions/projects';
 import { getAllUserTeams } from '../../actions/allTeamsAction';
@@ -68,7 +68,7 @@ import {
   DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
   DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
   PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
-} from 'utils/constants';
+} from '~/utils/constants';
 
 import {
   getTimeEndDateEntriesByPeriod,
@@ -76,7 +76,7 @@ import {
   getTimeEntriesForWeek,
 } from '../../actions/timeEntries.js';
 import ConfirmRemoveModal from './UserProfileModal/confirmRemoveModal';
-import { formatDateYYYYMMDD, CREATED_DATE_CRITERIA } from 'utils/formatDate.js';
+import { formatDateYYYYMMDD, CREATED_DATE_CRITERIA } from '~/utils/formatDate.js';
 import AccessManagementModal from './UserProfileModal/AccessManagementModal';
 
 function UserProfile(props) {
@@ -90,6 +90,35 @@ function UserProfile(props) {
   const roles = props?.role.roles;
   const dispatch = useDispatch();
   const history = useHistory();
+
+
+   // TO-DO Performance Optimization: Replace fetchTeamCodeAllUsers with getAllTeamCode(), a leener version API to retrieve all team codes (reduce data payload and response time)
+  //        Also, replace passing inputAutoComplete, inputAutoStatus, and isLoading to the
+  //        child component with access global redux store data (complexity)
+  // Explaination:
+  //        fetchTeamCodeAllUsers get all weekly summaries and filter out the team codes. (~800ms - 1 sec res time)
+  //        getAllTeamCode() will get all team codes from the database directly with distinct teamcode value (~15ms res time cache enabled).
+  const fetchTeamCodeAllUsers = async () => {
+    const url = ENDPOINTS.WEEKLY_SUMMARIES_REPORT();
+    try {
+      setIsLoading(true);
+      const response = await axios.get(url);
+      const stringWithValue = response.data.map(item => item.teamCode).filter(Boolean);
+      const stringNoRepeat = stringWithValue
+        .map(item => item)
+        .filter((item, index, array) => array.indexOf(item) === index);
+      setInputAutoComplete(stringNoRepeat);
+      setInputAutoStatus(response.status);
+      setIsLoading(false);
+      return stringNoRepeat;
+    } catch (error) {
+      console.log(error);
+      setIsLoading(false);
+      toast.error(`It was not possible to retrieve the team codes.
+      Please try again by clicking the icon inside the input auto complete.`);
+    }
+  };
+
 
   /* Hooks */
   const [showLoading, setShowLoading] = useState(true);
@@ -168,33 +197,7 @@ function UserProfile(props) {
   const canEditTeamCode = props.hasPermission('editTeamCode');
   const [titleOnSet, setTitleOnSet] = useState(false);
 
-  // TO-DO Performance Optimization: Replace fetchTeamCodeAllUsers with getAllTeamCode(), a leener version API to retrieve all team codes (reduce data payload and response time)
-  //        Also, replace passing inputAutoComplete, inputAutoStatus, and isLoading to the
-  //        child component with access global redux store data (complexity)
-  // Explaination:
-  //        fetchTeamCodeAllUsers get all weekly summaries and filter out the team codes. (~800ms - 1 sec res time)
-  //        getAllTeamCode() will get all team codes from the database directly with distinct teamcode value (~15ms res time cache enabled).
-  const fetchTeamCodeAllUsers = async () => {
-    const url = ENDPOINTS.WEEKLY_SUMMARIES_REPORT();
-    try {
-      setIsLoading(true);
-      const response = await axios.get(url);
-      const stringWithValue = response.data.map(item => item.teamCode).filter(Boolean);
-      const stringNoRepeat = stringWithValue
-        .map(item => item)
-        .filter((item, index, array) => array.indexOf(item) === index);
-      setInputAutoComplete(stringNoRepeat);
-      setInputAutoStatus(response.status);
-      setIsLoading(false);
-      return stringNoRepeat;
-    } catch (error) {
-      console.log(error);
-      setIsLoading(false);
-      toast.error(`It was not possible to retrieve the team codes.
-      Please try again by clicking the icon inside the input auto complete.`);
-    }
-  };
-
+ 
   const updateProjetTouserProfile = () => {
     return new Promise(resolve => {
       checkIsProjectsEqual();
@@ -1138,6 +1141,7 @@ function UserProfile(props) {
             titleOnSet={titleOnSet}
             setTitleOnSet={setTitleOnSet}
             updateUserProfile={props.updateUserProfile}
+            fetchTeamCodeAllUsers = {fetchTeamCodeAllUsers}
           />
         </div>
 

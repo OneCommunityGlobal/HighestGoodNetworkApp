@@ -1,12 +1,11 @@
 import { useRef, useEffect, useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
-import { ENDPOINTS } from 'utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import { Line } from 'react-chartjs-2';
 import DatePicker from 'react-datepicker';
 import './RentalChart.css';
 import { toast } from 'react-toastify';
-
 import {
   Chart as ChartJS,
   CategoryScale,
