@@ -95,10 +95,10 @@ function createStaticDotRenderer(category) {
 }
 
 // Pre-defined dot renderers for different categories
-const LaborDotRenderer = createStaticDotRenderer('Labor');
-const MaterialsDotRenderer = createStaticDotRenderer('Materials');
-const EquipmentDotRenderer = createStaticDotRenderer('Equipment');
-const TotalDotRenderer = createStaticDotRenderer('Total');
+const laborDot = createStaticDotRenderer('Labor');
+const materialsDot = createStaticDotRenderer('Materials');
+const equipmentDot = createStaticDotRenderer('Equipment');
+const totalDot = createStaticDotRenderer('Total');
 
 // Calculate last predicted values for reference lines
 const getLastPredictedValues = costData => {
@@ -291,15 +291,15 @@ function CostPredictionChart({ darkMode, isFullPage = false, projectId }) {
   const getDotRenderer = category => {
     switch (category) {
       case 'Labor':
-        return LaborDotRenderer;
+        return laborDot;
       case 'Materials':
-        return MaterialsDotRenderer;
+        return materialsDot;
       case 'Equipment':
-        return EquipmentDotRenderer;
+        return equipmentDot;
       case 'Total':
-        return TotalDotRenderer;
+        return totalDot;
       default:
-        return LaborDotRenderer;
+        return laborDot;
     }
   };
 
