@@ -921,7 +921,11 @@ return (
                             From
                           </Label>
                           <Input
-                            className={`responsive-font-size ${darkMode ? "bg-darkmode-liblack text-light border-0 calendar-icon-dark" : ''}`}
+                            className={`responsive-font-size ${
+                              darkMode
+                                ? 'bg-darkmode-liblack text-light border-0 calendar-icon-dark'
+                                : ''
+                            }`}
                             type="date"
                             name="fromDate"
                             id="fromDate"
@@ -937,7 +941,11 @@ return (
                             To
                           </Label>
                           <Input
-                            className={`responsive-font-size ${darkMode ? "bg-darkmode-liblack text-light border-0 calendar-icon-dark" : ''}`}
+                            className={`responsive-font-size ${
+                              darkMode
+                                ? 'bg-darkmode-liblack text-light border-0 calendar-icon-dark'
+                                : ''
+                            }`}
                             type="date"
                             name="toDate"
                             id="toDate"
