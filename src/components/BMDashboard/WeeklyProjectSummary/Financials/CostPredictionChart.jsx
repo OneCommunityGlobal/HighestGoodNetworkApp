@@ -95,10 +95,10 @@ function createStaticDotRenderer(category) {
 }
 
 // Pre-defined dot renderers for different categories
-const laborDotUtils = createStaticDotRenderer('Labor');
-const materialsDotUtils = createStaticDotRenderer('Materials');
-const equipmentDotUtils = createStaticDotRenderer('Equipment');
-const totalDotUtils = createStaticDotRenderer('Total');
+const LaborDotRenderer = createStaticDotRenderer('Labor');
+const MaterialsDotRenderer = createStaticDotRenderer('Materials');
+const EquipmentDotRenderer = createStaticDotRenderer('Equipment');
+const TotalDotRenderer = createStaticDotRenderer('Total');
 
 // Calculate last predicted values for reference lines
 const getLastPredictedValues = costData => {
@@ -182,16 +182,13 @@ const processDataForChart = costData => {
     }
 
     // For the last actual data point of each category, also add it as the first predicted point
-    // This ensures the lines connect without a gap
     if (costData.predicted) {
       actualCategories.forEach(category => {
-        // Find the last actual data point for this category
         const actualItems = costData.actual[category];
         if (actualItems && actualItems.length > 0) {
           const lastActualItem = actualItems[actualItems.length - 1];
           const lastActualDateStr = moment(lastActualItem.date).format('MMM YYYY');
 
-          // If this is the last actual data point, also set it as the predicted value
           if (dateStr === lastActualDateStr) {
             dataPoint[`${category}Predicted`] = lastActualItem.cost;
           }
@@ -219,7 +216,6 @@ function CustomTooltip({ active, payload, label, currency }) {
       <p className="tooltip-type">{isPrediction ? 'Predicted' : 'Actual'}</p>
       {payload.map(entry => {
         let costLabel = '';
-
         if (entry.dataKey === 'Labor') costLabel = 'Labor Cost';
         else if (entry.dataKey === 'Materials') costLabel = 'Materials Cost';
         else if (entry.dataKey === 'Equipment') costLabel = 'Equipment Cost';
@@ -245,93 +241,69 @@ function CostPredictionChart({ darkMode, isFullPage = false, projectId }) {
   ]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [currency] = useState('$'); // Currency symbol
+  const [currency] = useState('$');
   const [availableProjects, setAvailableProjects] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
   const [lastPredictedValues, setLastPredictedValues] = useState({});
   const history = useHistory();
 
-  // Fetch available projects on component mount
   useEffect(() => {
     const fetchProjects = async () => {
       try {
         const projectIds = await getProjectIds();
         setAvailableProjects(projectIds.map(id => ({ value: id, label: id })));
-
-        // Select the first project by default or use the provided projectId
         if (projectIds.length > 0) {
           const initialProject = projectId || projectIds[0];
           setSelectedProject({ value: initialProject, label: initialProject });
         }
-      } catch (err) {
+      } catch {
         setError('Failed to load projects');
       }
     };
-
     fetchProjects();
   }, [projectId]);
 
-  // Fetch cost data when selected project changes
   useEffect(() => {
     const fetchData = async () => {
       if (!selectedProject) return;
-
       setLoading(true);
       try {
         const costData = await getProjectCosts(selectedProject.value);
-
-        // Process the data for the chart
-        const processedData = processDataForChart(costData);
-        setData(processedData);
-
-        // Calculate and store last predicted values for reference lines
-        const lastValues = getLastPredictedValues(costData);
-        setLastPredictedValues(lastValues);
-
+        setData(processDataForChart(costData));
+        setLastPredictedValues(getLastPredictedValues(costData));
         setLoading(false);
-      } catch (err) {
+      } catch {
         setError('Failed to load cost data');
         setLoading(false);
       }
     };
-
     fetchData();
   }, [selectedProject]);
 
   const handleCardClick = () => {
-    if (!isFullPage) {
-      // This would navigate to the full page view
-      history.push('/bmdashboard/cost-prediction');
-    }
+    if (!isFullPage) history.push('/bmdashboard/cost-prediction');
   };
 
-  // Handle cost category selection
-  const handleCostChange = selected => {
-    setSelectedCosts(selected || []);
-  };
+  const handleCostChange = selected => setSelectedCosts(selected || []);
+  const handleProjectChange = selected => setSelectedProject(selected);
 
-  // Handle project selection
-  const handleProjectChange = selected => {
-    setSelectedProject(selected);
-  };
-
-  // Get appropriate dot renderer for the category
+  // Pick the right dot renderer by name
   const getDotRenderer = category => {
     switch (category) {
       case 'Labor':
-        return laborDotUtils;
+        return LaborDotRenderer;
       case 'Materials':
-        return materialsDotUtils;
+        return MaterialsDotRenderer;
       case 'Equipment':
-        return equipmentDotUtils;
+        return EquipmentDotRenderer;
       case 'Total':
-        return totalDotUtils;
+        return TotalDotRenderer;
       default:
-        return laborDotUtils; // fallback
+        return LaborDotRenderer;
     }
   };
 
-  // Render a simplified chart for card view
+  // Card view …
   if (!isFullPage) {
     return (
       <div
@@ -417,19 +389,16 @@ function CostPredictionChart({ darkMode, isFullPage = false, projectId }) {
                 />
 
                 {/* Reference Lines for Last Predicted Values */}
-                {['Labor', 'Materials'].map(category => {
-                  if (lastPredictedValues[category]) {
-                    return (
-                      <ReferenceLine
-                        key={`ref-${category}`}
-                        y={lastPredictedValues[category]}
-                        stroke={costColors[category]}
-                        strokeWidth={1.5}
-                      />
-                    );
-                  }
-                  return null;
-                })}
+                {['Labor', 'Materials'].map(category =>
+                  lastPredictedValues[category] ? (
+                    <ReferenceLine
+                      key={`ref-${category}`}
+                      y={lastPredictedValues[category]}
+                      stroke={costColors[category]}
+                      strokeWidth={1.5}
+                    />
+                  ) : null,
+                )}
 
                 {/* Only show Labor and Materials cost in card view */}
                 <Line
@@ -492,7 +461,7 @@ function CostPredictionChart({ darkMode, isFullPage = false, projectId }) {
     );
   }
 
-  // Full page view
+  // Full page view …
   return (
     <div
       className={`cost-prediction-chart-container full-page ${darkMode ? 'dark-mode' : ''}`}
@@ -521,7 +490,7 @@ function CostPredictionChart({ darkMode, isFullPage = false, projectId }) {
         Planned v Actual Costs Tracking
       </h3>
 
-      {/* Simple Filters */}
+      {/* Filters… */}
       <div
         className="filters-container"
         style={{
@@ -679,16 +648,8 @@ function CostPredictionChart({ darkMode, isFullPage = false, projectId }) {
               }
             `}
           </style>
-          <ResponsiveContainer
-            width="100%"
-            height={600}
-            style={{ backgroundColor: darkMode ? '#1e2736' : 'transparent' }}
-          >
-            <LineChart
-              data={data}
-              margin={{ top: 20, right: 60, left: 60, bottom: 40 }}
-              style={{ backgroundColor: darkMode ? '#1e2736' : 'transparent' }}
-            >
+          <ResponsiveContainer width="100%" height={600}>
+            <LineChart data={data} margin={{ top: 20, right: 60, left: 60, bottom: 40 }}>
               <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#364156' : '#ccc'} />
               <XAxis
                 dataKey="date"
@@ -741,50 +702,46 @@ function CostPredictionChart({ darkMode, isFullPage = false, projectId }) {
                 }}
               />
 
-              {/* Reference Lines for Last Predicted Values */}
+              {/* Reference Lines */}
               {selectedCosts.map(cost => {
-                const category = cost.value;
-                if (lastPredictedValues[category]) {
-                  return (
-                    <ReferenceLine
-                      key={`ref-${category}`}
-                      y={lastPredictedValues[category]}
-                      stroke={costColors[category]}
-                      strokeWidth={2}
-                    />
-                  );
-                }
-                return null;
+                const cat = cost.value;
+                return lastPredictedValues[cat] ? (
+                  <ReferenceLine
+                    key={`ref-${cat}`}
+                    y={lastPredictedValues[cat]}
+                    stroke={costColors[cat]}
+                    strokeWidth={2}
+                  />
+                ) : null;
               })}
 
+              {/* Lines and predicted dots */}
               {selectedCosts.map(cost => {
-                const dataKey = cost.value;
+                const key = cost.value;
                 return (
-                  <>
+                  <Fragment key={key}>
                     <Line
-                      key={dataKey}
                       type="linear"
-                      dataKey={dataKey}
+                      dataKey={key}
                       name={cost.label}
-                      stroke={costColors[dataKey]}
+                      stroke={costColors[key]}
                       strokeWidth={2}
                       dot={{ r: 4 }}
                       activeDot={{ r: 6 }}
                       isAnimationActive={false}
                     />
                     <Line
-                      key={`${dataKey}Predicted`}
                       type="linear"
-                      dataKey={`${dataKey}Predicted`}
+                      dataKey={`${key}Predicted`}
                       name={`${cost.label} (Predicted)`}
-                      stroke={costColors[dataKey]}
+                      stroke={costColors[key]}
                       strokeWidth={2}
                       strokeDasharray="8 4"
-                      dot={getDotRenderer(dataKey)}
+                      dot={getDotRenderer(key)}
                       activeDot={{ r: 6 }}
                       isAnimationActive={false}
                     />
-                  </>
+                  </Fragment>
                 );
               })}
             </LineChart>
@@ -807,17 +764,13 @@ function CostPredictionChart({ darkMode, isFullPage = false, projectId }) {
                   strokeDasharray="3 3"
                 />
               </svg>
-              <span className="legend-label" style={{ color: darkMode ? '#e0e0e0' : 'inherit' }}>
-                Projected Values
-              </span>
+              <span className="legend-label">Projected Values</span>
             </div>
             <div className="chart-legend-item" style={{ display: 'inline-block' }}>
               <svg width="16" height="16" style={{ display: 'inline-block', marginRight: '4px' }}>
                 <line x1="2" y1="8" x2="14" y2="8" stroke="#999" strokeWidth={1.5} />
               </svg>
-              <span className="legend-label" style={{ color: darkMode ? '#e0e0e0' : 'inherit' }}>
-                Final Prediction Targets
-              </span>
+              <span className="legend-label">Final Prediction Targets</span>
             </div>
           </div>
         </div>
