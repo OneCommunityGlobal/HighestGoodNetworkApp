@@ -654,16 +654,15 @@ export class WeeklySummary extends Component {
     const toastIdOnSave = 'toast-on-save';
     const errors = this.validate();
 
-    this.setState({ errors: errors || {} });
-    if (errors) {
+    this.setState({ errors: errors });
+    if (Object.keys(errors).length > 0) {
       this.setState({ moveConfirm: false });
       return;
     }
-    if (errors) return;
 
     const result = await this.handleChangeInSummary();
 
-    if (result === 200) {
+    if (result === 200 || result?.status === 200) {
       await this.handleSaveSuccess(toastIdOnSave);
       if (closeAfterSave) {
         this.handleClose();
