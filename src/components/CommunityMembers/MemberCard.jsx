@@ -24,11 +24,10 @@ const MemberCard = ({
   const darkModeFromRedux = useSelector(state => state.theme.darkMode);
   const darkMode = darkModeProp !== undefined ? darkModeProp : darkModeFromRedux;
 
-  // Determine score color based on value (red if less than 3, yellow if 3, green if more than 3)
+  // Determine score color based on value (red if less than 5, green if 5 or above)
   const getScoreColor = score => {
-    if (score < 3) return darkMode ? '#FF6B6B' : '#FF4D4D'; // Lighter red for dark mode
-    if (score === 3 || (score > 2.9 && score < 3.1)) return darkMode ? '#FFC107' : '#FFC107'; // Yellow/amber for both modes
-    return darkMode ? '#4CAF50' : '#4CAF50'; // Same green for both modes (already visible in dark mode)
+    if (score < 5) return darkMode ? '#FF6B6B' : '#FF4D4D'; // Red for scores below 5
+    return darkMode ? '#4CAF50' : '#4CAF50'; // Green for scores 5 and above
   };
 
   const scoreColor = isNotApplicable ? (darkMode ? '#c0c0c0' : '#666666') : getScoreColor(score);
@@ -59,8 +58,8 @@ const MemberCard = ({
     }
     e.preventDefault();
     e.stopPropagation();
-    // This would ideally open Slack with the user's profile - for now just show an alert
-    alert(`Redirect to Slack for user: ${slackId}`);
+    // This would ideally open Slack with the user's profile - for now just log
+    console.log(`Redirect to Slack for user: ${slackId}`);
   };
 
   const handleGithubClick = e => {
@@ -69,7 +68,7 @@ const MemberCard = ({
     window.open(github, '_blank');
   };
 
-  // Text color for the "/ 5" part - should be black in light mode, light gray in dark mode
+  // Text color for the "/ 10" part - should be black in light mode, light gray in dark mode
   const defaultTextColor = darkMode ? '#e0e0e0' : '#000000';
 
   return (
@@ -94,6 +93,15 @@ const MemberCard = ({
         <div
           className={`member-card__email ${!isContactPublic ? 'private-contact' : ''}`}
           onClick={handleEmailClick}
+          onKeyDown={e => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              handleEmailClick(e);
+            }
+          }}
+          role="button"
+          tabIndex={0}
+          aria-label={`Email ${name}`}
         >
           <i className="fa fa-envelope"></i> {isContactPublic ? email : 'Private'}
           {!isContactPublic && <span className="custom-tooltip">No ID found</span>}
@@ -101,6 +109,15 @@ const MemberCard = ({
         <div
           className={`member-card__slack ${!isContactPublic ? 'private-contact' : ''}`}
           onClick={handleSlackClick}
+          onKeyDown={e => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              handleSlackClick(e);
+            }
+          }}
+          role="button"
+          tabIndex={0}
+          aria-label={`Slack ${name}`}
         >
           <i className="fa fa-slack"></i> {isContactPublic ? slackId : 'Private'}
           {!isContactPublic && <span className="custom-tooltip">No ID found</span>}
@@ -109,6 +126,15 @@ const MemberCard = ({
           <div
             className="member-card__github"
             onClick={handleGithubClick}
+            onKeyDown={e => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                handleGithubClick(e);
+              }
+            }}
+            role="button"
+            tabIndex={0}
+            aria-label={`View ${name}'s GitHub profile`}
             title="View GitHub profile"
           >
             <i className="fa fa-github"></i> GitHub
@@ -120,14 +146,14 @@ const MemberCard = ({
         <div className="member-card__score-label">Skill Rating:</div>
         <div className="member-card__score">
           <span style={{ color: scoreColor }}>{formattedScore}</span>
-          {!isNotApplicable && <span style={{ color: defaultTextColor }}> / 5</span>}
+          {!isNotApplicable && <span style={{ color: defaultTextColor }}> / 10</span>}
         </div>
       </div>
 
       <div className="member-card__skills-container">
         <div className="member-card__skills-label">Top Skills:</div>
         <div className="member-card__skills">
-          {skills.length > 0 ? skills.join(', ') : 'No skills rated above 3'}
+          {skills.length > 0 ? skills.join(', ') : 'No skills rated above 7'}
         </div>
       </div>
     </div>

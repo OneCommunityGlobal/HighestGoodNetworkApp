@@ -115,7 +115,7 @@ const CommunityMembers = () => {
         parseInt(member.skillInfo.general.leadership_experience, 10),
       ];
 
-      // Calculate average score with decimal precision (keeping original 1-5 scale)
+      // Calculate average score with decimal precision (on 1-10 scale)
       const allScores = [...frontendScores, ...backendScores, ...generalScores];
       const sum = allScores.reduce((acc, score) => acc + score, 0);
       return parseFloat((sum / allScores.length).toFixed(1)); // Keep one decimal place
@@ -157,13 +157,13 @@ const CommunityMembers = () => {
 
   // Extract top skills from a member
   const getTopSkills = member => {
-    // Get skills with highest scores
+    // Get skills with highest scores (8+ out of 10)
     const frontendSkills = Object.entries(member.skillInfo.frontend)
-      .filter(([key, value]) => key !== 'overall' && parseInt(value, 10) >= 4)
+      .filter(([key, value]) => key !== 'overall' && parseInt(value, 10) >= 8)
       .map(([key]) => key);
 
     const backendSkills = Object.entries(member.skillInfo.backend)
-      .filter(([key, value]) => key !== 'Overall' && parseInt(value, 10) >= 4)
+      .filter(([key, value]) => key !== 'Overall' && parseInt(value, 10) >= 8)
       .map(([key]) => key);
 
     // Add other skills if mentioned
@@ -492,8 +492,8 @@ const CommunityMembers = () => {
             </span>
           ) : matchingSkill ? (
             <span>
-              Showing members with "{matchingSkill}" skill. The score displayed is the exact skill
-              rating on a scale of 1-5.
+              Showing members with &quot;{matchingSkill}&quot; skill. The score displayed is the
+              exact skill rating on a scale of 1-10.
             </span>
           ) : filteredMembers.length > 0 ? (
             <span>
@@ -502,8 +502,8 @@ const CommunityMembers = () => {
             </span>
           ) : (
             <span>
-              No members found matching "{searchTerm}". Try a different search term or select skills
-              from the filter.
+              No members found matching &quot;{searchTerm}&quot;. Try a different search term or
+              select skills from the filter.
             </span>
           )}
         </div>
