@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { Component } from 'react';
 import PropTypes from 'prop-types';
 import {
@@ -623,10 +622,14 @@ export class WeeklySummary extends Component {
 
   // Updates user profile and weekly summaries
   updateUserData = async userId => {
-    // eslint-disable-next-line no-shadow
     const { getUserProfile, getWeeklySummaries } = this.props;
-    await getUserProfile(userId);
-    await getWeeklySummaries(userId);
+    if (typeof getUserProfile === 'function') {
+      await getUserProfile(userId);
+    }
+    // always refresh summaries if that exists
+    if (typeof getWeeklySummaries === 'function') {
+      await getWeeklySummaries(userId);
+    }
   };
 
   // Handler for success scenario after save
@@ -654,7 +657,7 @@ export class WeeklySummary extends Component {
     const toastIdOnSave = 'toast-on-save';
     const errors = this.validate();
 
-    this.setState({ errors: errors || {} });
+    this.setState({ errors: errors });
     if (Object.keys(errors).length > 0) {
       this.setState({ moveConfirm: false });
       return;
@@ -662,7 +665,7 @@ export class WeeklySummary extends Component {
 
     const result = await this.handleChangeInSummary();
 
-    if (result === 200) {
+    if (result === 200 || result?.status === 200) {
       await this.handleSaveSuccess(toastIdOnSave);
       if (closeAfterSave) {
         this.handleClose();
@@ -712,10 +715,10 @@ export class WeeklySummary extends Component {
     }
     this.mainSaveHandler(true);
   };
-
   handleClose = () => {
-    // eslint-disable-next-line react/destructuring-assignment
-    this.props.setPopup(false);
+    if (typeof this.props.setPopup === 'function') {
+      this.props.setPopup(false);
+    }
   };
 
   render() {
