@@ -621,7 +621,6 @@ export class WeeklySummary extends Component {
   };
 
   // Updates user profile and weekly summaries
-  // replace your existing updateUserData with this guard:
   updateUserData = async userId => {
     const { getUserProfile, getWeeklySummaries } = this.props;
     if (typeof getUserProfile === 'function') {
@@ -659,7 +658,7 @@ export class WeeklySummary extends Component {
     const errors = this.validate();
 
     this.setState({ errors: errors });
-    if (Object.keys(errors).length > 0) {
+    if (Object.keys(Object.keys(errors).length > 0).length > 0) {
       this.setState({ moveConfirm: false });
       return;
     }
