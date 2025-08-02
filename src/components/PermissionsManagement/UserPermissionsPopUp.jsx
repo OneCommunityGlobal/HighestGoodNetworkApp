@@ -1,5 +1,14 @@
 import { useEffect, useState, useRef } from 'react';
-import { Button, Dropdown, Form, Input } from 'reactstrap';
+import {
+  Button,
+  Dropdown,
+  Form,
+  Input,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+} from 'reactstrap';
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
 import { getAllUserProfile } from '~/actions/userManagement';
@@ -17,6 +26,7 @@ import PermissionList from './PermissionList';
 import { addNewRole, getAllRoles } from '../../actions/role';
 import { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import ReminderModal from './ReminderModal';
+import { permissionLabelKeyMappingObj, getAllPermissionKeys } from './PermissionsConst';
 
 function UserPermissionsPopUp({
   allUserProfiles,
@@ -40,9 +50,12 @@ function UserPermissionsPopUp({
   const [actualUserRolePermission, setActualUserRolePermission] = useState();
   const [selectedAccount, setSelectedAccount] = useState('');
   const [toastShown, setToastShown] = useState(false);
+  const [infoRoleModal, setinfoRoleModal] = useState(false);
+  const [modalContent, setContent] = useState(null);
 
   const setToDefault = () => {
     setUserPermissions([]);
+    setUserRemovedDefaultPermissions([]); // Added this so reset to default also undoes removed default permissions
   };
 
   useEffect(() => {
@@ -91,6 +104,7 @@ function UserPermissionsPopUp({
       permissions: {
         frontPermissions: userPermissions,
         removedDefaultPermissions: userRemovedDefaultPermissions,
+        defaultPermissions: actualUserRolePermission,
       },
     };
 
@@ -119,6 +133,34 @@ function UserPermissionsPopUp({
         });
       });
   };
+
+  const handleModalOpen = () => {
+    if (userPermissions?.length > 0 || userRemovedDefaultPermissions?.length > 0) {
+      const matchingPermissions = [
+        ...new Set(
+          getAllPermissionKeys().filter(
+            key => userPermissions.includes(key) || userRemovedDefaultPermissions.includes(key),
+          ),
+        ),
+      ];
+
+      const permissionNames = matchingPermissions.map(key => permissionLabelKeyMappingObj[key]);
+
+      const description = `Clicking reset to default will return the user to the default permissions of this role: ${
+        actualUserProfile?.role
+      }.\n
+      The following permissions that had been changed (also indicated by a Star icon below) are: ${permissionNames.join(
+        ', ',
+      )}`;
+      setContent(description);
+      setinfoRoleModal(true);
+    }
+  };
+
+  const toggleInfoRoleModal = () => {
+    setinfoRoleModal(!infoRoleModal);
+  };
+
   useEffect(() => {
     refInput.current.focus();
   }, []);
@@ -153,6 +195,23 @@ function UserPermissionsPopUp({
           <h4 className="user-permissions-pop-up__title">
             User name<span className="red-asterisk">* </span>:
           </h4>
+          <div className="infos">
+            <i
+              data-toggle="tooltip"
+              data-placement="center"
+              title="Click for more information"
+              aria-hidden="true"
+              className="fa fa-info-circle"
+              onClick={() => {
+                handleModalOpen();
+              }}
+              style={{
+                color: darkMode ? 'white' : 'black',
+                fontSize: '25px',
+                marginRight: '10px',
+              }}
+            />
+          </div>
           <Button
             type="button"
             color="success"
@@ -272,6 +331,25 @@ function UserPermissionsPopUp({
           Submit
         </Button>
       </Form>
+      <Modal
+        isOpen={infoRoleModal}
+        toggle={toggleInfoRoleModal}
+        id="#modal2-body_new-role--padding"
+        className={darkMode ? 'text-light dark-mode' : ''}
+      >
+        <ModalHeader toggle={toggleInfoRoleModal} className={darkMode ? 'bg-space-cadet' : ''}>
+          Reset to Default Info
+        </ModalHeader>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+          <p style={{ whiteSpace: 'pre-line' }}>{modalContent}</p>
+        </ModalBody>
+        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+          <Button onClick={toggleInfoRoleModal} color="secondary" className="float-left">
+            {' '}
+            Ok{' '}
+          </Button>
+        </ModalFooter>
+      </Modal>
     </>
   );
 }
