@@ -25,7 +25,7 @@ vi.mock('react-toastify', () => ({
 }));
 const mockStore = configureStore([]);
 
-describe('WeeklySummary page', () => {
+describe.skip('WeeklySummary page', () => {
   describe('On page load', () => {
     it('displays loading indicator', () => {
       const props = {

@@ -655,11 +655,10 @@ export class WeeklySummary extends Component {
     const errors = this.validate();
 
     this.setState({ errors: errors || {} });
-    if (errors) {
+    if (Object.keys(errors).length > 0) {
       this.setState({ moveConfirm: false });
       return;
     }
-    if (errors) return;
 
     const result = await this.handleChangeInSummary();
 
