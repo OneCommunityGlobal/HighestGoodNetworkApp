@@ -1,12 +1,10 @@
 import { Search, MoreHorizontal, ChevronDown } from 'lucide-react';
 import './IssueHeader.css';
 import { connect, useDispatch, useSelector } from 'react-redux';
-import { getHeaderData } from 'actions/authActions';
+import { getHeaderData } from '~/actions/authActions';
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
-import { fetchBMProjects } from 'actions/bmdashboard/projectActions';
-import { useEffect } from 'react';
-import { useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { fetchBMProjects } from '~/actions/bmdashboard/projectActions';
 
 export function IssueHeader(props) {
   const dispatch = useDispatch();
