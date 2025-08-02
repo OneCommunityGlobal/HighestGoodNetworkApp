@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo, useCallback } from 'react';
-import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
+import { ENDPOINTS } from '~/utils/URL';
 import './TotalReport.css';
 import TotalReportBarGraph from './TotalReportBarGraph';
 import Loading from '../../common/Loading';
@@ -33,6 +33,7 @@ function TotalContributorsReport({ startDate, endDate, userProfiles, darkMode, u
       );
       setTimeEntries(response.data);
     } catch (error) {
+      // eslint-disable-next-line import/no-named-as-default-member
       if (!axios.isCancel(error)) {
         // Handle error silently or show user-friendly message
         setTimeEntries([]);

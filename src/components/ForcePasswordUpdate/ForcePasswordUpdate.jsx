@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import Joi from 'joi';
+import Joi from 'joi-browser';
 import { toast } from 'react-toastify';
 import { forcePasswordUpdate } from '../../actions/updatePassword';
 import { clearErrors } from '../../actions/errorsActions';
@@ -172,7 +172,19 @@ export class ForcePasswordUpdate extends Form {
 
         {/* Message display for tests to interact with */}
         {successMessage && (
-          <div className="alert alert-success mt-3" onClick={this.handleLoginRedirect}>
+          <div
+            className="alert alert-success mt-3"
+            onClick={this.handleLoginRedirect}
+            onKeyDown={e => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                this.handleLoginRedirect();
+              }
+            }}
+            role="button"
+            tabIndex={0}
+            aria-label="Click to redirect to login page"
+          >
             {successMessage}
           </div>
         )}
