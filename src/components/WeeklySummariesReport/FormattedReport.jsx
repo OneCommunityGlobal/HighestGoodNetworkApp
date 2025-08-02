@@ -1040,7 +1040,6 @@ function BioSwitch({ userId, bioPosted, summary, getWeeklySummariesReport, handl
   // }, [bioPosted]);
 
   return (
-
     // <div>
     // <div
     //   style={{
@@ -1061,7 +1060,7 @@ function BioSwitch({ userId, bioPosted, summary, getWeeklySummariesReport, handl
         // border: shouldShowYellowBar(bioStatus, summary) ? '1px solid #f0d000' : 'none',
       }}
     >
-    <div>
+      {/* <div> */}
       <div className={styles.bioToggle}>
         <b style={style}>Bio announcement:</b>
       </div>
@@ -1106,45 +1105,21 @@ function BioLabel({ bioPosted, summary }) {
         // border: shouldShowYellowBar(bioPosted, summary) ? '1px solid #f0d000' : 'none',
       }}
     >
-    <div>
-      <b style={style}>Bio announcement: </b>
-      {text}
+      {/* <div> */}
+      <div>
+        <b style={style}>Bio announcement:</b> {text}
+      </div>
     </div>
   );
 }
-
 function WeeklyBadge({ summary, weekIndex, badges }) {
-  const badgeEndDate = moment()
-    .tz('America/Los_Angeles')
-    .endOf('week')
-    .subtract(weekIndex, 'week')
-    .format('YYYY-MM-DD');
-  const badgeStartDate = moment()
-    .tz('America/Los_Angeles')
-    .startOf('week')
-    .subtract(weekIndex, 'week')
-    .format('YYYY-MM-DD');
-  const badgeIdThisWeek = [];
   const badgeThisWeek = [];
-  summary.badgeCollection.forEach(badge => {
-    if (badge.earnedDate) {
-      const { length } = badge.earnedDate;
-      const earnedDate = moment(badge.earnedDate[length - 1]);
-      if (earnedDate.isBetween(badgeStartDate, badgeEndDate, 'days', '[]')) {
-        badgeIdThisWeek.push(badge.badge);
+  if (summary.badgeCollection) {
+    summary.badgeCollection.forEach(badge => {
+      if (moment(badge.earnDate).isSame(weekIndex, 'week')) {
+        // badgeIds.push(badge.badgeId);
+        badgeThisWeek.push(badge);
       }
-    } else {
-      const modifiedDate = badge.lastModified.substring(0, 10);
-      if (modifiedDate <= badgeEndDate && modifiedDate >= badgeStartDate) {
-        badgeIdThisWeek.push(badge.badge);
-      }
-    }
-  });
-  if (badgeIdThisWeek.length > 0) {
-    badgeIdThisWeek.forEach(badgeId => {
-      // eslint-disable-next-line no-shadow
-      const badge = badges.find(badge => badge._id === badgeId);
-      badgeThisWeek.push(badge);
     });
   }
   return (
