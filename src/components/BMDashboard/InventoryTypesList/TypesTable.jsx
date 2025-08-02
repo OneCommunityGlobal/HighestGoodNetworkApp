@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Table, Button, Form } from 'react-bootstrap';
 import { connect } from 'react-redux';
-import { addInvType } from 'actions/bmdashboard/invTypeActions';
+import { addInvType } from '../../../actions/bmdashboard/invTypeActions';
 import TypeRow from './TypeRow';
 import styles from './TypesList.module.css';
 

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import styles from './TypesList.module.css';
 import { connect } from 'react-redux';
-import { deleteInvType, updateInvType } from 'actions/bmdashboard/invTypeActions';
+import { deleteInvType, updateInvType } from '../../../actions/bmdashboard/invTypeActions';
 
 function TypeRow(props) {
   const { itemType, id, category, dispatch, requiresUnit } = props;
