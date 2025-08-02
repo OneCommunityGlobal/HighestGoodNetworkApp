@@ -1,8 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 // import { getUserProfile } from '../../actions/userProfile'
 import { ENDPOINTS } from 'utils/URL';
-import { useState, useEffect, useMemo, React } from 'react';
-import { ENDPOINTS } from '~/utils/URL';
 import axios from 'axios';
 import { getWeeklySummaries } from '~/actions/weeklySummaries';
 import { Link, useLocation, useHistory } from 'react-router-dom';
@@ -29,8 +27,6 @@ import DOMPurify from 'dompurify';
 import parse from 'html-react-parser';
 import PopUpBar from 'components/PopUpBar';
 import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
-import PopUpBar from '~/components/PopUpBar';
-import { fetchTaskEditSuggestions } from '~/components/TaskEditSuggestions/thunks';
 import { toast } from 'react-toastify';
 import { boxStyle, boxStyleDark } from 'styles';
 import { getHeaderData } from '../../actions/authActions';
@@ -366,29 +362,6 @@ export function Header(props) {
     }
   };
 
-  const handlePermissionChangeAck = async () => {
-    // handle setting the ack true
-    try {
-      setIsAckLoading(true);
-      const { firstName: name, lastName, personalLinks, adminLinks, _id } = props.userProfile;
-      axios
-        .put(ENDPOINTS.USER_PROFILE(_id), {
-          // req fields for updation
-          firstName: name,
-          lastName,
-          personalLinks,
-          adminLinks,
-
-          isAcknowledged: true,
-        })
-        .then(() => {
-          setIsAckLoading(false);
-          dispatch(getUserProfile(_id));
-        });
-    } catch (e) {
-      // console.log('update ack', e);
-    }
-  };
 
   const removeViewingUser = () => {
     setPopup(false);
