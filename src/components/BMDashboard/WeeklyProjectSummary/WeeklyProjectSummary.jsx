@@ -9,8 +9,10 @@ import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
 import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
 import ExpenseBarChart from './Financials/ExpenseBarChart';
+import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
 import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
 import styles from './WeeklyProjectSummary.module.css';
+import IssueCharts from '../Issues/openIssueCharts';
 
 const projectStatusButtons = [
   {
@@ -199,9 +201,11 @@ export default function WeeklyProjectSummary() {
       {
         title: 'Issue Tracking',
         key: 'Issue Tracking',
-        className: 'small',
+        className: 'full',
         content: (
-          <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>📊 Card</div>
+          <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+            <IssueCharts />
+          </div>
         ),
       },
       {
@@ -287,6 +291,19 @@ export default function WeeklyProjectSummary() {
               className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
             >
               {index === 1 ? <PaidLaborCost /> : '📊 Card'}
+            </div>
+          );
+        }),
+      },
+      {
+        title: 'Financials Tracking',
+        key: 'Financials Tracking',
+        className: 'full',
+        content: [1, 2, 3, 4].map((_, index) => {
+          const uniqueId = uuidv4();
+          return (
+            <div key={uniqueId} className="weekly-project-summary-card normal-card">
+              {index === 3 ? <ActualVsPlannedCost /> : '📊 Card'}
             </div>
           );
         }),
@@ -393,12 +410,13 @@ export default function WeeklyProjectSummary() {
               key={key}
               className={`${styles.weeklyProjectSummaryDashboardSection} ${styles[className]}`}
             >
-              <div
-                className={`${styles.weeklyProjectSummaryDashboardCategoryTitle}`}
+              <button
+                type="button"
+                className={styles.weeklyProjectSummaryDashboardCategoryTitle}
                 onClick={() => toggleSection(key)}
               >
                 {title} <span>{openSections[key] ? '∧' : '∨'}</span>
-              </div>
+              </button>
               {openSections[key] && (
                 <div className={`${styles.weeklyProjectSummaryDashboardCategoryContent}`}>
                   {content}

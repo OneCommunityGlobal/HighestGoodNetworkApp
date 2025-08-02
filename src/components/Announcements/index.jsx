@@ -1,11 +1,11 @@
 /* eslint-disable no-undef */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import './Announcements.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import { toast } from 'react-toastify';
-import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
+import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails.jsx';
 
 function Announcements({ title, email: initialEmail }) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -28,10 +28,10 @@ function Announcements({ title, email: initialEmail }) {
     selector: 'Editor#email-editor',
     height: 500,
     plugins: [
-      'advlist autolink lists link image paste',
+      'advlist autolink lists link image',
       'charmap print preview anchor help',
       'searchreplace visualblocks code',
-      'insertdatetime media table paste wordcount',
+      'insertdatetime media table wordcount',
     ],
     menubar: false,
     branding: false,
