@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { Component } from 'react';
 import PropTypes from 'prop-types';
 import {
@@ -622,11 +621,16 @@ export class WeeklySummary extends Component {
   };
 
   // Updates user profile and weekly summaries
+  // replace your existing updateUserData with this guard:
   updateUserData = async userId => {
-    // eslint-disable-next-line no-shadow
     const { getUserProfile, getWeeklySummaries } = this.props;
-    await getUserProfile(userId);
-    await getWeeklySummaries(userId);
+    if (typeof getUserProfile === 'function') {
+      await getUserProfile(userId);
+    }
+    // always refresh summaries if that exists
+    if (typeof getWeeklySummaries === 'function') {
+      await getWeeklySummaries(userId);
+    }
   };
 
   // Handler for success scenario after save
@@ -712,10 +716,10 @@ export class WeeklySummary extends Component {
     }
     this.mainSaveHandler(true);
   };
-
   handleClose = () => {
-    // eslint-disable-next-line react/destructuring-assignment
-    this.props.setPopup(false);
+    if (typeof this.props.setPopup === 'function') {
+      this.props.setPopup(false);
+    }
   };
 
   render() {
