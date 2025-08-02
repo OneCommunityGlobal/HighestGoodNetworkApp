@@ -60,6 +60,7 @@ import UnsubscribeForm from './components/EmailSubscribeForm/Unsubscribe';
 import NotFoundPage from './components/NotFound/NotFoundPage';
 import EmailSender from './components/common/EmailSender/EmailSender';
 import Collaboration from './components/Collaboration';
+import AddLessons from './components/BMDashboard/Lessons/AddLessons';
 
 import TestEventRegistration from './components/EventRegistration/TestEventRegistration';
 import MemberList from './components/QuestionnaireDashboard/MemberList';
@@ -580,6 +581,7 @@ export default (
         <BMProtectedRoute path="/bmdashboard/tools/:toolId" component={ToolDetailPage} />
         <BMProtectedRoute path="/bmdashboard/lessonform/:projectId" component={LessonForm} />
         <BMProtectedRoute path="/bmdashboard/lessonform/" component={LessonForm} />
+        <BMProtectedRoute path="/bmdashboard/lessons/add" component={AddLessons} />
         <BMProtectedRoute
           path="/bmdashboard/inventorytypes"
           fallback
@@ -698,12 +700,22 @@ export default (
         <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
         <Route path="/Logout" component={Logout} />
         <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
+
+        {/* ----- HGN Help Community Skills Dashboard Routes ----- */}
+        <ProtectedRoute path="/hgnhelp" exact component={LandingPage} />
+        <ProtectedRoute path="/hgnhelp/skills-overview" exact component={SkillsOverviewPage} />
+        <ProtectedRoute path="/hgnhelp/community" exact component={CommunityMembersPage} />
+        <ProtectedRoute path="/hgnhelp/profile/:userId" exact component={UserProfilePage} />
+        <ProtectedRoute path="/hgnhelp/feedback" exact component={FeedbackModal} />
         <ProtectedRoute path="/hgnform" exact component={Page1} />
         <ProtectedRoute path="/hgnform/page2" exact component={Page2} />
         <ProtectedRoute path="/hgnform/page3" exact component={Page3} />
         <ProtectedRoute path="/hgnform/page4" exact component={Page4} />
         <ProtectedRoute path="/hgnform/page5" exact component={Page5} />
         <ProtectedRoute path="/hgnform/page6" exact component={Page6} />
+
+        <ProtectedRoute path="/hgn/profile/skills" exact component={UserSkillsProfile} />
+
         <ProtectedRoute path="/tsaformpage1" exact component={TSAFormPage1} />
         <ProtectedRoute path="/tsaformpage2" exact component={TSAFormPage2} />
         <ProtectedRoute path="/tsaformpage3" exact component={TSAFormPage3} />

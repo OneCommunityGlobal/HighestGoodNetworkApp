@@ -95,6 +95,7 @@ function UpdateDocumentTitle() {
     { pattern: /^\/forcePasswordUpdate\/[^/]+$/, title: 'Force Password Update' },
     { pattern: /^\/$/, title: `Dashboard - ${fullName}` },
     { pattern: /.*/, title: 'HGN APP' }, // Default case
+    { pattern: /^\/bmdashboard\/lessons\/add$/, title: 'Add Lessons' },
   ];
 
   useEffect(() => {
