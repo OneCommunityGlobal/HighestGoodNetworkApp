@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 import { ENDPOINTS } from '~/utils/URL';
 import {
@@ -43,20 +44,37 @@ export const fetchInvUnits = () => {
         dispatch(setInvUnits(res.data));
       })
       .catch(err => {
-        dispatch(setErrors(err));
+        // Don't show toast for internal refresh calls
       });
   };
 };
 
 export const postBuildingInventoryUnit = payload => {
   return async dispatch => {
-    axios
-      .post(ENDPOINTS.BM_INVENTORY_UNITS, payload)
-      .then(res => {
-        dispatch(setPostInvUnitResult(res.data));
-      })
-      .catch(err => {
-        dispatch(setErrors(err));
-      });
+    const toastId = `add-unit-${Date.now()}`;
+    try {
+      await axios.post(ENDPOINTS.BM_INVENTORY_UNITS, payload);
+      // Refresh the data after successful addition
+      dispatch(fetchInvUnits());
+      toast.success('Unit added successfully!', { toastId });
+    } catch (err) {
+      const errorMessage = err.response?.data?.error || err.response?.data?.message || 'Failed to add unit. Please try again.';
+      toast.error(errorMessage, { toastId: `add-unit-error-${Date.now()}` });
+    }
+  };
+};
+
+export const deleteInvUnit = (unitName) => {
+  return async dispatch => {
+    const toastId = `delete-unit-${Date.now()}`;
+    try {
+      await axios.delete(ENDPOINTS.BM_INVENTORY_UNITS, { data: { unit: unitName } });
+      // Refresh the data after successful deletion
+      dispatch(fetchInvUnits());
+      toast.success('Unit deleted successfully!', { toastId });
+    } catch (err) {
+      const errorMessage = err.response?.data?.error || err.response?.data?.message || 'Failed to delete unit. Please try again.';
+      toast.error(errorMessage, { toastId: `delete-unit-error-${Date.now()}` });
+    }
   };
 };
