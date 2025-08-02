@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useState, useEffect, useRef } from 'react';
 import '../styles/AdditionalInfo.css';
 import { useSelector, useDispatch } from 'react-redux';
-import { ENDPOINTS } from 'utils/URL';
+import { ENDPOINTS } from '../../../../utils/URL';
 import { toast } from 'react-toastify';
 import getWordCount from '../../../../utils/getWordCount';
 import { updateFollowUpFields } from '../../../../actions/userSkillsActions';

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ENDPOINTS } from 'utils/URL';
+import { ENDPOINTS } from '../utils/URL';
 import {toast} from 'react-toastify';
 
 // eslint-disable-next-line import/prefer-default-export
