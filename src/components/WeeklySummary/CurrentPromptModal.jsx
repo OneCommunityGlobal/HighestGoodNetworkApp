@@ -13,6 +13,7 @@ import {
   getCopiedDateOfPrompt,
 } from '../../actions/weeklySummariesAIPrompt';
 import iconNew from '../../assets/images/New-HGN-Icon-11kb-200x160px.png';
+import { sanitizeText } from '../../utils/xssProtection';
 
 function CurrentPromptModal(props) {
   const [modal, setModal] = useState(false);
@@ -110,7 +111,8 @@ function CurrentPromptModal(props) {
   };
 
   const handleEditPrompt = event => {
-    setPrompt(event.target.value);
+    const sanitizedValue = sanitizeText(event.target.value);
+    setPrompt(sanitizedValue);
   };
 
   const renderModalContent = () => {

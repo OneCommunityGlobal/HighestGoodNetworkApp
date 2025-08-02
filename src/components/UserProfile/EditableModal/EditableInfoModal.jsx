@@ -13,6 +13,7 @@ import Select from 'react-select'
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
 import { getInfoCollections, addInfoCollection, updateInfoCollection, deleteInfoCollectionById } from '../../../actions/information';
+import { sanitizeHTML } from '../../../utils/xssProtection';
 import { boxStyle, boxStyleDark } from 'styles';
 import RichTextEditor from './RichTextEditor';
 
@@ -208,9 +209,9 @@ export class EditableInfoModal extends Component {
     } = this.state;
 
     const { darkMode } = this.props;
-    const sanitizedContent = darkMode
+    const sanitizedContent = sanitizeHTML(darkMode
       ? infoContent.replace(/color\s*:\s*[^;"']+;?/gi, '')
-      : infoContent;
+      : infoContent);
     return (
       (CanRead) && (
         <div>

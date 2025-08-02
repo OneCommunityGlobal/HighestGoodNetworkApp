@@ -27,7 +27,7 @@
     "date-fns": "^2.14.0",
     "date-fns-tz": "^2.0.1",
     "diff": "^5.0.0",
-    "dompurify": "^3.2.5",
+    "dompurify": "^3.2.6",
     "font-awesome": "^4.7.0",
     "fs-extra": "^11.2.0",
     "history": "^4.10.1",

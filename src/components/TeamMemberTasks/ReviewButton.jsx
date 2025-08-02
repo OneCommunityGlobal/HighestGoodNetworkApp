@@ -12,6 +12,7 @@ import {
   Input,
   Spinner,
 } from 'reactstrap';
+import DOMPurify from 'dompurify';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import './style.css';
@@ -24,6 +25,12 @@ import { boxStyle, boxStyleDark } from '../../styles';
 import { ApiEndpoint } from '../../utils/URL';
 import hasPermission from '../../utils/permissions';
 import httpService from '../../services/httpService';
+import { sanitizeURL } from '../../utils/xssProtection';
+
+// Legacy function - now uses centralized sanitizeURL from xssProtection
+const sanitizeUrl = raw => {
+  return sanitizeURL(raw);
+};
 
 function ReviewButton({ user, task, updateTask }) {
   const dispatch = useDispatch();
@@ -128,26 +135,27 @@ function ReviewButton({ user, task, updateTask }) {
     return 'Update Link';
   };
 
-  const validURL = url => {
-    try {
-      if (url === '') return false;
+  // const validURL = url => {
+  //   try {
+  //     if (url === '') return false;
 
-      const pattern = /^(?=.{20,})(?:https?:\/\/)?[\w.-]+\.[a-zA-Z]{2,}(?:\/\S*)?$/;
-      return pattern.test(url);
-    } catch (err) {
-      return false;
-    }
-  };
+  //     const pattern = /^(?=.{20,})(?:https?:\/\/)?[\w.-]+\.[a-zA-Z]{2,}(?:\/\S*)?$/;
+  //     return pattern.test(url);
+  //   } catch (err) {
+  //     return false;
+  //   }
+  // };
 
   const handleLink = e => {
-    const url = e.target.value.trim();
-    setLink(url);
-    if (!url) {
+    const raw = e.target.value;
+    const cleaned = sanitizeUrl(raw);
+    setLink(raw);
+    if (!raw) {
       setEditLinkState(prev => ({ ...prev, error: 'A valid URL is required for review' }));
-    } else if (!validURL(url)) {
+    } else if (!cleaned) {
       setEditLinkState(prev => ({
         ...prev,
-        error: "Please enter a valid URL starting with 'https://'.",
+        error: "Please enter a valid URL starting with 'http://' or 'https://'.",
       }));
     } else {
       setEditLinkState(prev => ({ ...prev, error: null }));
@@ -237,8 +245,9 @@ function ReviewButton({ user, task, updateTask }) {
     }
 
     if (newStatus === 'Submitted' && link) {
-      if (validURL(link)) {
-        updatedTask = { ...updatedTask, relatedWorkLinks: [...taskRelatedWorkLinks, link] };
+      const cleaned = sanitizeUrl(link);
+      if (cleaned) {
+        updatedTask = { ...updatedTask, relatedWorkLinks: [...taskRelatedWorkLinks, cleaned] };
         setLink('');
       } else {
         setIsSubmitting(false);
@@ -253,7 +262,8 @@ function ReviewButton({ user, task, updateTask }) {
   const submitReviewRequest = event => {
     event.preventDefault();
 
-    if (!validURL(link)) {
+    const cleaned = sanitizeUrl(link);
+    if (!cleaned) {
       setEditLinkState(prev => ({
         ...prev,
         error: 'Please enter a valid URL of at least 20 characters',
@@ -273,8 +283,8 @@ function ReviewButton({ user, task, updateTask }) {
   const sendReviewReq = () => {
     const data = {};
     data.myUserId = myUserId;
-    data.name = user.name;
-    data.taskName = task.taskName;
+    data.name = DOMPurify.sanitize(user.name);
+    data.taskName = DOMPurify.sanitize(task.taskName);
     httpService.post(`${ApiEndpoint}/tasks/reviewreq/${myUserId}`, data);
   };
 
@@ -288,17 +298,18 @@ function ReviewButton({ user, task, updateTask }) {
   const sendEditLinkNotification = () => {
     const data = {};
     data.myUserId = myUserId;
-    data.name = user.name;
-    data.taskName = task.taskName;
+    data.name = DOMPurify.sanitize(user.name);
+    data.taskName = DOMPurify.sanitize(task.taskName);
     data.isLinkUpdate = true;
     httpService.post(`${ApiEndpoint}/tasks/reviewreq/${myUserId}`, data);
   };
 
   const handleEditLink = () => {
-    if (!validURL(editLinkState.link)) {
+    const cleanedUrl = sanitizeUrl(editLinkState.link);
+    if (!cleanedUrl) {
       setEditLinkState(prev => ({
         ...prev,
-        error: 'Please enter a valid URL of at least 20 characters',
+        error: 'Please enter a valid URL starting with "http://" or "https://".',
       }));
       return;
     }
@@ -411,7 +422,7 @@ function ReviewButton({ user, task, updateTask }) {
                 task.relatedWorkLinks.map(link => (
                   <DropdownItem
                     key={link}
-                    href={link}
+                    href={sanitizeURL(link)}
                     target="_blank"
                     className={darkMode ? 'text-light dark-mode-btn' : ''}
                   >
@@ -449,7 +460,7 @@ function ReviewButton({ user, task, updateTask }) {
                 task.relatedWorkLinks.map(dropLink => (
                   <DropdownItem
                     key={dropLink}
-                    href={dropLink}
+                    href={sanitizeURL(dropLink)}
                     target="_blank"
                     className={darkMode ? 'text-light dark-mode-btn' : ''}
                   >
@@ -543,8 +554,8 @@ function ReviewButton({ user, task, updateTask }) {
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           You are about to submit the following link for review:
           <div className="mt-2" style={{ wordWrap: 'break-word', wordBreak: 'break-all' }}>
-            <a href={link} target="_blank" rel="noopener noreferrer">
-              {link}
+            <a href={sanitizeURL(link)} target="_blank" rel="noopener noreferrer">
+              {sanitizeURL(link)}
             </a>
           </div>
           Please confirm if this is the correct link.
@@ -582,15 +593,16 @@ function ReviewButton({ user, task, updateTask }) {
           <Button
             onClick={e => {
               e.preventDefault();
-              if (!link || !validURL(link)) {
+              const cleaned = sanitizeUrl(link);
+              if (!link || !cleaned) {
                 setEditLinkState(prev => ({
                   ...prev,
-                  error: "Please enter a valid URL starting with 'https://'.",
+                  error: "Please enter a valid URL starting with 'http://' or 'https://'.",
                 }));
                 return;
               }
 
-              const validationResult = validateAllowedDomainTypes(link);
+              const validationResult = validateAllowedDomainTypes(cleaned);
               if (!validationResult.isValid) {
                 toggleInvalidDomainModal(validationResult.errorType);
                 return;

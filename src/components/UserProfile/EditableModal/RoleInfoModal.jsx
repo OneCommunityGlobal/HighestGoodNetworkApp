@@ -8,6 +8,7 @@ import { boxStyle, boxStyleDark } from 'styles';
 import { useEffect } from 'react';
 import { toast } from 'react-toastify';
 import RichTextEditor from './RichTextEditor';
+import { sanitizeHTML } from '../../../utils/xssProtection';
 
 const RoleInfoModal = ({ info, auth}) => {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -92,7 +93,7 @@ const RoleInfoModal = ({ info, auth}) => {
                 <RichTextEditor disabled={!isEditing} value={infoContentModal} onEditorChange={handleInputChange} darkMode={darkMode}/> :
                 <div
                   style={{ paddingLeft: '20px' }}
-                  dangerouslySetInnerHTML={{ __html: infoContentModal }}
+                  dangerouslySetInnerHTML={{ __html: sanitizeHTML(infoContentModal) }}
                   onClick={() => setIsEditing(true)}
                 />}
             </ModalBody>

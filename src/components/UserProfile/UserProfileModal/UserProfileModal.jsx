@@ -16,6 +16,7 @@ import { boxStyle, boxStyleDark } from 'styles';
 import '../../Header/DarkMode.css'
 import hasPermission from 'utils/permissions';
 import { connect, useSelector } from 'react-redux';
+import { sanitizeText } from '../../../utils/xssProtection';
 
 const UserProfileModal = props => {
   const {
@@ -137,12 +138,12 @@ const UserProfileModal = props => {
     event.preventDefault();
 
     if (event.target.id === 'linkName') {
-      setLinkName(event.target.value.trim());
+      setLinkName(sanitizeText(event.target.value.trim()));
     } else if (event.target.id === 'linkURL') {
-      setLinkURL(event.target.value.trim());
+      setLinkURL(sanitizeText(event.target.value.trim()));
     } else if (event.target.id === 'summary') {
       
-        const userInput = event.target.value;
+        const userInput = sanitizeText(event.target.value);
         if (!userInput.startsWith(assignedText)) {
           setSummary(assignedText + userInput.slice(assignedText.length));
         } else {
@@ -152,7 +153,7 @@ const UserProfileModal = props => {
       checkFields(dateStamp, summary);
       adjustTextareaHeight(event.target);
     } else if (event.target.id === 'date') {
-      setDateStamp(event.target.value);
+      setDateStamp(sanitizeText(event.target.value));
       setSummaryFieldView(false);
       checkFields(dateStamp, summary);
     }

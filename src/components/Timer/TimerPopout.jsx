@@ -48,13 +48,17 @@ function TimerPopout({ authUser, darkMode, TimerComponent }) {
 
     popupRef.current = popup;
 
-    popup.document.write(`
+    // Use innerHTML instead of document.write for better security
+    const safeOrigin = window.location.origin.replace(/[<>"']/g, '');
+    const safeStyles = darkMode ? 'body { background-color: #1a1a2e; color: white; }' : '';
+
+    popup.document.documentElement.innerHTML = `
       <!DOCTYPE html>
       <html>
         <head>
           <title>Timer</title>
-          <link rel="stylesheet" href="${window.location.origin}/Timer.module.css">
-          ${darkMode ? '<style>body { background-color: #1a1a2e; color: white; }</style>' : ''}
+          <link rel="stylesheet" href="${safeOrigin}/Timer.module.css">
+          <style>${safeStyles}</style>
           <style>
             [class^="Countdown_countdown__"], [class*=" Countdown_countdown__"] {
               width: 90vw !important;
@@ -71,7 +75,7 @@ function TimerPopout({ authUser, darkMode, TimerComponent }) {
           <div id="timer-root"></div>
         </body>
       </html>
-    `);
+    `;
 
     const root = popup.document.getElementById('timer-root');
     ReactDOM.render(
