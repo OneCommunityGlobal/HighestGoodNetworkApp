@@ -164,7 +164,9 @@ export function WeeklyProjectSummaryContent() {
 }
 
 function WeeklyProjectSummary() {
+  const dispatch = useDispatch();
   const [openSections, setOpenSections] = useState({});
+  const materials = useSelector(state => state.materials?.materialslist || []);
   const darkMode = useSelector(state => state.theme.darkMode);
 
   useEffect(() => {

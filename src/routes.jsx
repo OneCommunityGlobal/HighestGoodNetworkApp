@@ -6,8 +6,8 @@ import { Route, Switch } from 'react-router-dom';
 import SetupProfile from '~/components/SetupProfile/SetupProfile';
 import { ToastContainer } from 'react-toastify';
 
-import ToolsAvailabilityPage from 'components/BMDashboard/WeeklyProjectSummary/Tools/ToolsAvailabilityPage';
-import { CostPredictionPage } from 'components/BMDashboard/WeeklyProjectSummary/Financials';
+import ToolsAvailabilityPage from '~/components/BMDashboard/WeeklyProjectSummary/Tools/ToolsAvailabilityPage';
+import { CostPredictionPage } from '~/components/BMDashboard/WeeklyProjectSummary/Financials';
 
 // hgnform routes
 import AutoUpdate from '~/components/AutoUpdate';
