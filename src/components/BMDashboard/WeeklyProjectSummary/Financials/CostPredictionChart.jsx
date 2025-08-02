@@ -95,10 +95,10 @@ function createStaticDotRenderer(category) {
 }
 
 // Pre-defined dot renderers for different categories
-const renderLaborFullPageDot = createStaticDotRenderer('Labor');
-const renderMaterialsFullPageDot = createStaticDotRenderer('Materials');
-const renderEquipmentFullPageDot = createStaticDotRenderer('Equipment');
-const renderTotalFullPageDot = createStaticDotRenderer('Total');
+const laborDotRenderer = createStaticDotRenderer('Labor');
+const materialsDotRenderer = createStaticDotRenderer('Materials');
+const equipmentDotRenderer = createStaticDotRenderer('Equipment');
+const totalDotRenderer = createStaticDotRenderer('Total');
 
 // Calculate last predicted values for reference lines
 const getLastPredictedValues = costData => {
@@ -319,15 +319,15 @@ function CostPredictionChart({ darkMode, isFullPage = false, projectId }) {
   const getDotRenderer = category => {
     switch (category) {
       case 'Labor':
-        return renderLaborFullPageDot;
+        return laborDotRenderer;
       case 'Materials':
-        return renderMaterialsFullPageDot;
+        return materialsDotRenderer;
       case 'Equipment':
-        return renderEquipmentFullPageDot;
+        return equipmentDotRenderer;
       case 'Total':
-        return renderTotalFullPageDot;
+        return totalDotRenderer;
       default:
-        return renderLaborFullPageDot; // fallback
+        return laborDotRenderer; // fallback
     }
   };
 
@@ -337,6 +337,15 @@ function CostPredictionChart({ darkMode, isFullPage = false, projectId }) {
       <div
         className={`cost-prediction-chart-container ${darkMode ? 'dark-mode' : ''}`}
         onClick={handleCardClick}
+        onKeyDown={e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            handleCardClick();
+          }
+        }}
+        role="button"
+        tabIndex={0}
+        aria-label="Click to view full page cost prediction chart"
         style={{
           cursor: 'pointer',
           height: '100%',
@@ -529,10 +538,14 @@ function CostPredictionChart({ darkMode, isFullPage = false, projectId }) {
           className="filter-item"
           style={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: '150px' }}
         >
-          <label style={{ marginBottom: '6px', ...(darkMode ? { color: '#e0e0e0' } : {}) }}>
+          <label
+            htmlFor="project-select"
+            style={{ marginBottom: '6px', ...(darkMode ? { color: '#e0e0e0' } : {}) }}
+          >
             Project
           </label>
           <Select
+            id="project-select"
             classNamePrefix="select"
             value={selectedProject}
             onChange={handleProjectChange}
@@ -577,10 +590,14 @@ function CostPredictionChart({ darkMode, isFullPage = false, projectId }) {
           className="filter-item"
           style={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: '200px' }}
         >
-          <label style={{ marginBottom: '6px', ...(darkMode ? { color: '#e0e0e0' } : {}) }}>
+          <label
+            htmlFor="cost-categories-select"
+            style={{ marginBottom: '6px', ...(darkMode ? { color: '#e0e0e0' } : {}) }}
+          >
             Cost Categories
           </label>
           <Select
+            id="cost-categories-select"
             classNamePrefix="select"
             value={selectedCosts}
             onChange={handleCostChange}

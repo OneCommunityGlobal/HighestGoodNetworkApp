@@ -276,6 +276,15 @@ function ToolsHorizontalBarChart({ darkMode, isFullPage = false, projectId, star
       <div
         className={`tools-horizontal-chart-container ${darkMode ? 'dark-mode' : ''}`}
         onClick={handleCardClick}
+        onKeyDown={e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            handleCardClick();
+          }
+        }}
+        role="button"
+        tabIndex={0}
+        aria-label="Click to view full page tools availability chart"
         style={{
           cursor: 'pointer',
           height: '100%',

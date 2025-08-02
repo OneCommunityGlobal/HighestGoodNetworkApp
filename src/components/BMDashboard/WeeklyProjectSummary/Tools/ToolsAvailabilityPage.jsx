@@ -171,7 +171,9 @@ function ToolsAvailabilityPage() {
             {renderProjectSelection()}
           </div>
           <div className="filter-group">
-            <label style={darkMode ? { color: '#e0e0e0' } : {}}>Date Range (Optional)</label>
+            <label htmlFor="date-range-label" style={darkMode ? { color: '#e0e0e0' } : {}}>
+              Date Range (Optional)
+            </label>
             <div className="date-picker-group">
               <input
                 type="date"
