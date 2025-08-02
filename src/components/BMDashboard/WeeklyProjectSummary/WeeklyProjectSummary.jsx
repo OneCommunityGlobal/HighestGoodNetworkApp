@@ -293,7 +293,7 @@ function WeeklyProjectSummary() {
         className: 'large',
         content: (
           <>
-            {Array.from({ length: 3 }).map(() => {
+            {/* {Array.from({ length: 3 }).map(() => {
               const uniqueId = uuidv4();
               return (
                 <div
@@ -303,19 +303,19 @@ function WeeklyProjectSummary() {
                   📊 Card
                 </div>
               );
-            })}
+            })} */}
 
             <div className={`${styles.weeklyProjectSummaryCard} ${styles.financialBig}`}>
               <CostPredictionChart darkMode={darkMode} />
             </div>
-
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.financialSmall}`}>
+              <ExpenseBarChart />
+            </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
               <div className={`${styles.weeklyProjectSummaryCard} ${styles.financialSmall}`}>
                 📊 Card
               </div>
-              <div className={`${styles.weeklyProjectSummaryCard} ${styles.financialSmall}`}>
-                <ExpenseBarChart />
-              </div>
+
               <div className={`${styles.weeklyProjectSummaryCard} ${styles.financialSmall}`}>
                 📊 Card
               </div>
