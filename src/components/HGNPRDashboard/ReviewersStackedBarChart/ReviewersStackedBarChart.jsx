@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import Select from 'react-select';
 import {
@@ -43,6 +43,8 @@ const transformData = rawData =>
   }));
 
 let transformed = [];
+
+// Custom tick components for Y-axis
 function CustomYAxisTick({ x, y, payload }) {
   const currentReviewer = payload.value;
   const isMentor = transformed.find(d => d.reviewer === currentReviewer)?.isMentor;
@@ -59,6 +61,7 @@ function CustomYAxisTick({ x, y, payload }) {
   );
 }
 
+// Custom X-axis tick component
 function CustomXAxisTick(data) {
   const max = Math.max(
     ...data.map(d => d.Exceptional + d.Sufficient + d['Needs Changes'] + d['Did Not Review']),
@@ -72,6 +75,7 @@ function CustomXAxisTick(data) {
   return { domain: [0, upper], ticks };
 }
 
+// Custom tooltip component
 function CustomTooltip({ active, payload, label }) {
   if (!active || !payload || !payload.length) return null;
 
@@ -90,6 +94,7 @@ function CustomTooltip({ active, payload, label }) {
   );
 }
 
+// Custom label for each bar segment
 function CustomLabel({ x, y, width, height, value }) {
   // Don't show zero values
   if (value === 0) return null;
@@ -108,6 +113,7 @@ function CustomLabel({ x, y, width, height, value }) {
   );
 }
 
+// Function to get date range based on selected duration
 function getDateRange(option) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -166,10 +172,7 @@ function ReviewersStackedBarChart() {
         if (durationFilter.value !== 'All Time') {
           filtered = filtered.filter(item => {
             const prDate = new Date(item.prSubmittedDate);
-            return (
-              prDate >= filterStartDate &&
-              prDate <= filterEndDate
-            );
+            return prDate >= filterStartDate && prDate <= filterEndDate;
           });
         }
 
@@ -316,7 +319,7 @@ function ReviewersStackedBarChart() {
                 }}
                 content={<CustomTooltip />}
               />
-              <Legend wrapperStyle={{ color: darkMode ? 'white' : 'black' }}/>
+              <Legend wrapperStyle={{ color: darkMode ? 'white' : 'black' }} />
               {Object.keys(COLORS).map(key => (
                 <Bar key={key} dataKey={key} stackId="a" fill={COLORS[key]}>
                   <LabelList dataKey={key} content={<CustomLabel />} />

@@ -142,6 +142,10 @@
   color: #fff;
 }
 
+.dark-mode .recharts-legend-item-text {
+  color : black!important;
+}
+
 /* Responsive Typography */
 @media (max-width: 768px) {
   .reviewers-chart-container h3 {
