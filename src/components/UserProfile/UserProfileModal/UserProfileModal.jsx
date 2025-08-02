@@ -1,4 +1,4 @@
-import React, { useState, useReducer } from 'react';
+import React, { useEffect, useState, useReducer } from 'react';
 import {
   Button,
   Modal,
@@ -16,6 +16,8 @@ import { boxStyle, boxStyleDark } from '~/styles';
 import '../../Header/DarkMode.css'
 import hasPermission from '~/utils/permissions';
 import { connect, useSelector } from 'react-redux';
+import axios from 'axios';
+import { ENDPOINTS } from '~/utils/URL';
 
 const UserProfileModal = props => {
   const {
@@ -28,6 +30,7 @@ const UserProfileModal = props => {
     type,
     userProfile,
     id,
+    auth
   } = props;
   let blueSquare = [
   ];
@@ -52,27 +55,27 @@ const UserProfileModal = props => {
 
   const getCurrentDate = () => {
     const today = new Date();
-    return today.toLocaleDateString('en-CA').split('T')[0]; 
+    return today.toLocaleDateString('en-CA').split('T')[0];
   };
 
   // Fallback to a meaningful default if no data found
   if (blueSquare.length === 0) {
     blueSquare = [
       {
-        date: getCurrentDate(),  
+        date: getCurrentDate(),
         description: 'This is auto-generated text. You must save the document first before viewing newly created blue squares.',
       },
     ];
   }
 
-  
+
   const [dateStamp, setDateStamp] = useState(blueSquare[0]?.date || getCurrentDate());
 
   const [summary, setSummary] = useState(blueSquare[0]?.description || '');
 
 
-  const [addButton, setAddButton] = useState(false); 
-  const [summaryFieldView, setSummaryFieldView] = useState(false); 
+  const [addButton, setAddButton] = useState(false);
+  const [summaryFieldView, setSummaryFieldView] = useState(false);
 
   const [personalLinks, dispatchPersonalLinks] = useReducer(
     (personalLinks, { type, value, passedIndex }) => {
@@ -148,14 +151,23 @@ const UserProfileModal = props => {
     }
   };
 
-    function checkFields(field1, field2) { 
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  useEffect(() => {
+    axios.get(ENDPOINTS.USER_PROFILE(auth.user.userid)).then(response => {
+      setFirstName(response.data.firstName);
+      setLastName(response.data.lastName);
+    });
+  }, []);
+
+    function checkFields(field1, field2) {
       if (field1.trim() && field2.trim()) {
         setAddButton(false);
       } else {
         setAddButton(true);
       }
     }
-    
+
 
   const adjustTextareaHeight = (textarea) => {
     textarea.style.height = 'auto';
@@ -335,13 +347,18 @@ const UserProfileModal = props => {
 
             <FormGroup hidden={summaryFieldView}>
               <Label className={fontColor} for="report">Summary</Label>
-              <Input 
-                type="textarea" 
-                id="summary" 
-                onChange={handleChange} 
-                value={summary} 
-                style={{ minHeight: '200px', overflow: 'hidden'}} 
-                onInput={e => adjustTextareaHeight(e.target)} 
+              <Input
+                id="asignment"
+                readOnly
+                value={`Assigned by ${firstName} ${lastName} on ${dateStamp}`}
+              />
+              <Input
+                type="textarea"
+                id="summary"
+                onChange={handleChange}
+                value={summary}
+                style={{ minHeight: '200px', overflow: 'hidden'}}
+                onInput={e => adjustTextareaHeight(e.target)}
               />
             </FormGroup>
           </>
@@ -362,11 +379,16 @@ const UserProfileModal = props => {
             </FormGroup>
             <FormGroup>
               <Label className={fontColor} for="report">Summary</Label>
-              {canEditInfringements ? <Input 
-                type="textarea" 
-                id="summary" 
-                onChange={handleChange} 
-                value={summary} 
+              <Input
+                id="asignment"
+                readOnly
+                value={`Assigned by ${blueSquare[0]?.firstName} ${blueSquare[0]?.lastName} on ${dateStamp}`}
+              />
+              {canEditInfringements ? <Input
+                type="textarea"
+                id="summary"
+                onChange={handleChange}
+                value={summary}
                 style={{ minHeight: '200px', overflow: 'hidden'}} // 4x taller than usual
                 onInput={e => adjustTextareaHeight(e.target)} // auto-adjust height
               />
@@ -379,7 +401,7 @@ const UserProfileModal = props => {
           <>
             <FormGroup>
               <Label className={fontColor} for="date">
-                Date: 
+                Date:
                 <span>{blueSquare[0]?.date}</span>
               </Label>
             </FormGroup>
@@ -410,7 +432,7 @@ const UserProfileModal = props => {
             id="addBlueSquare"
             disabled={addButton}
             onClick={() => {
-              modifyBlueSquares('', dateStamp, summary, 'add');
+              modifyBlueSquares('', dateStamp, summary, firstName, lastName, 'add');
             }}
             style={boxStyling}
           >
@@ -420,7 +442,7 @@ const UserProfileModal = props => {
 
         {type === 'modBlueSquare' && (
             <>
-            {canEditInfringements && 
+            {canEditInfringements &&
               <Button
                 color="info"
                 onClick={() => {
