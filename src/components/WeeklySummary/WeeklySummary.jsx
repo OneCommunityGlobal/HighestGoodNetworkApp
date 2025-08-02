@@ -658,7 +658,7 @@ export class WeeklySummary extends Component {
     const errors = this.validate();
 
     this.setState({ errors: errors });
-    if (Object.keys(Object.keys(errors).length > 0).length > 0) {
+    if (Object.keys(errors).length > 0) {
       this.setState({ moveConfirm: false });
       return;
     }
