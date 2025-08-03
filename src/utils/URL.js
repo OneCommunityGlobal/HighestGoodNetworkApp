@@ -351,6 +351,11 @@ export const ENDPOINTS = {
   LB_LISTINGS: `${APIEndpoint}/lb/getListings`,
   LB_LISTINGS_BASE: `${APIEndpoint}/lb`,
   HELP_CATEGORIES: `${APIEndpoint}/help-categories`,
+
+
+  //pull requests analysis
+  PR_REVIEWS_INSIGHTS: `${APIEndpoint}/analytics/pr-review-insights`,
+
 };
 
 export const ApiEndpoint = APIEndpoint;
