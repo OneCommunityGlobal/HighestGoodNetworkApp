@@ -511,7 +511,6 @@ export default (
         <Route path="/bmdashboard/login" component={BMLogin} />
         <Route path="/LessonsLearntChart" component={LessonsLearntChart} />
 
-        
         <BMProtectedRoute
           path="/bmdashboard/materials/purchase"
           fallback
