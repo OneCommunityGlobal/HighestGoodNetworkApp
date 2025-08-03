@@ -98,7 +98,7 @@ import Toolslist from './components/BMDashboard/Tools/ToolsList';
 import AddTool from './components/BMDashboard/Tools/AddTool';
 import AttendanceNoShow from './components/AttendanceSystem/AttendanceNoShowCharts.jsx';
 import AddTeamMember from './components/BMDashboard/AddTeamMember/AddTeamMember';
-import LessonsLearntChart from 'components/BMDashboard/LessonsLearnt/LessonsLearntChart';
+import LessonsLearntChart from './components/BMDashboard/LessonsLearnt/LessonsLearntChart';
 
 // eslint-disable-next-line import/order
 import IssueChart from './components/BMDashboard/Issues/issueCharts';
