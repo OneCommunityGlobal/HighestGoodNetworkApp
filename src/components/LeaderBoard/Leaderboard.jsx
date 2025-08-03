@@ -150,7 +150,7 @@ function LeaderBoard({ displayUserId, darkMode, isNotAllowedToEdit, setFilteredU
   const allRequests = useSelector(selectAllRequests);
   const userOnTimeOff = useSelector(selectUserOnTimeOff);
   const usersOnFutureTimeOff = useSelector(selectUsersOnFutureTimeOff);
-  const isVisible = useSelector(state => state.userProfile.isVisible);
+  const isVisible = useSelector(state => state.userProfile?.isVisible);
 
   // Cache control
   const lastFetchRef = useRef({});

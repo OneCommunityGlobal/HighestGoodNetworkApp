@@ -199,18 +199,18 @@
 
 //   // Get infringement count from userProfile
 //   const getInfringements = () => {
-//     return displayUserProfile && displayUserProfile.infringements
-//       ? displayUserProfile.infringements.length
+//     return displayUserProfile && displayUserProfile?.infringements
+//       ? displayUserProfile?.infringements.length
 //       : 0;
 //   };
 
 //   // Get badges count from userProfile
 //   const getBadges = () => {
-//     if (!displayUserProfile || !displayUserProfile.badgeCollection) {
+//     if (!displayUserProfile || !displayUserProfile?.badgeCollection) {
 //       return 0;
 //     }
 //     let totalBadges = 0;
-//     displayUserProfile.badgeCollection.forEach(badge => {
+//     displayUserProfile?.badgeCollection.forEach(badge => {
 //       if (badge?.badge?.badgeName === 'Personal Max' || badge?.badge?.type === 'Personal Max') {
 //         totalBadges += 1;
 //       } else {
@@ -267,11 +267,11 @@
 //   const sendBugReport = event => {
 //     event.preventDefault();
 //     const data = readFormData('bugReportForm');
-//     data.firstName = displayUserProfile.firstName;
-//     data.lastName = displayUserProfile.lastName;
-//     data.email = displayUserProfile.email;
+//     data.firstName = displayUserProfile?.firstName;
+//     data.lastName = displayUserProfile?.lastName;
+//     data.email = displayUserProfile?.email;
 //     httpService
-//       .post(`${ApiEndpoint}/dashboard/bugreport/${displayUserProfile._id}`, data)
+//       .post(`${ApiEndpoint}/dashboard/bugreport/${displayUserProfile?._id}`, data)
 //       .catch(() => {});
 //     openReport();
 //   };
@@ -311,7 +311,7 @@
 //       setExtraFieldForSuggestionForm('');
 //       setEditType('');
 //       httpService
-//         .post(`${ApiEndpoint}/dashboard/suggestionoption/${displayUserProfile._id}`, data)
+//         .post(`${ApiEndpoint}/dashboard/suggestionoption/${displayUserProfile?._id}`, data)
 //         .catch(() => {});
 //     } else {
 //       toast.error('Please fill all fields with valid values.');
@@ -321,13 +321,13 @@
 //   const sendUserSuggestion = async event => {
 //     event.preventDefault();
 //     const data = readFormData('suggestionForm');
-//     data.firstName = displayUserProfile.firstName;
-//     data.lastName = displayUserProfile.lastName;
-//     data.email = displayUserProfile.email;
+//     data.firstName = displayUserProfile?.firstName;
+//     data.lastName = displayUserProfile?.lastName;
+//     data.email = displayUserProfile?.email;
 //     if (data) {
 //       setShowSuggestionModal(prev => !prev);
 //       const res = await httpService
-//         .post(`${ApiEndpoint}/dashboard/makesuggestion/${displayUserProfile._id}`, data)
+//         .post(`${ApiEndpoint}/dashboard/makesuggestion/${displayUserProfile?._id}`, data)
 //         .catch(() => {});
 //       if (res.status === 200) {
 //         toast.success('Email sent successfully!');
@@ -343,7 +343,7 @@
 //     if (!showSuggestionModal) {
 //       try {
 //         const res = await httpService.get(
-//           `${ApiEndpoint}/dashboard/suggestionoption/${displayUserProfile._id}`,
+//           `${ApiEndpoint}/dashboard/suggestionoption/${displayUserProfile?._id}`,
 //         );
 //         if (res && res.status === 200) {
 //           setSuggestionCategory(res.data.suggestion);
@@ -378,7 +378,7 @@
 //   };
 
 //   const canEditData = () =>
-//     !(displayUserProfile.role === 'Owner' && authUser.role !== 'Owner') &&
+//     !(displayUserProfile?.role === 'Owner' && authUser.role !== 'Owner') &&
 //     canPutUserProfileImportantInfo;
 
 //   useEffect(() => {
@@ -557,24 +557,24 @@
 //               <div className="font-weight-bold">
 //                 <span
 //                   className="name-segment"
-//                   title={userProfile?.firstName || displayUserProfile.firstName}
+//                   title={userProfile?.firstName || displayUserProfile?.firstName}
 //                 >
-//                   {(userProfile?.firstName || displayUserProfile.firstName).split(' ')[0]}
+//                   {(userProfile?.firstName || displayUserProfile?.firstName).split(' ')[0]}
 //                 </span>
 //                 <span
 //                   className="name-segment"
-//                   title={userProfile?.firstName || displayUserProfile.firstName}
+//                   title={userProfile?.firstName || displayUserProfile?.firstName}
 //                 >
-//                   {(userProfile?.firstName || displayUserProfile.firstName)
+//                   {(userProfile?.firstName || displayUserProfile?.firstName)
 //                     .split(' ')
 //                     .slice(1)
 //                     .join(' ')}
 //                 </span>
 //                 <span
 //                   className="name-segment"
-//                   title={userProfile?.lastName || displayUserProfile.lastName}
+//                   title={userProfile?.lastName || displayUserProfile?.lastName}
 //                 >
-//                   {userProfile?.lastName || displayUserProfile.lastName}
+//                   {userProfile?.lastName || displayUserProfile?.lastName}
 //                 </span>
 //               </div>
 //             </CardTitle>
@@ -697,7 +697,7 @@
 //             &nbsp;&nbsp;
 //             <div className="image_frame">
 //               {isAuthUser || canEditData() ? (
-//                 <Link to={`/userprofile/${displayUserProfile._id}#bluesquare`}>
+//                 <Link to={`/userprofile/${displayUserProfile?._id}#bluesquare`}>
 //                   <img className="sum_img" src={BlueScoreIcon} alt="" />
 //                   <div className="redBackgroup">
 //                     <span>{infringements}</span>
@@ -752,7 +752,7 @@
 //         >
 //           <ModalHeader className={headerBg}>User Suggestion</ModalHeader>
 //           <ModalBody className={bodyBg}>
-//             {displayUserProfile.role === 'Owner' && !extraFieldForSuggestionForm && (
+//             {displayUserProfile?.role === 'Owner' && !extraFieldForSuggestionForm && (
 //               <FormGroup>
 //                 <Button
 //                   onClick={() => setExtraFieldForSuggestionForm('suggestion')}
@@ -1323,7 +1323,7 @@ const SummaryBar = React.forwardRef((props, ref) => {
   const getBadges = useCallback(() => {
     if (!displayUserProfile?.badgeCollection) return 0;
 
-    return displayUserProfile.badgeCollection.reduce((total, badge) => {
+    return displayUserProfile?.badgeCollection.reduce((total, badge) => {
       if (badge?.badge?.badgeName === 'Personal Max' || badge?.badge?.type === 'Personal Max') {
         return total + 1;
       }
@@ -1376,11 +1376,11 @@ const SummaryBar = React.forwardRef((props, ref) => {
   const sendBugReport = event => {
     event.preventDefault();
     const data = readFormData('bugReportForm');
-    data.firstName = displayUserProfile.firstName;
-    data.lastName = displayUserProfile.lastName;
-    data.email = displayUserProfile.email;
+    data.firstName = displayUserProfile?.firstName;
+    data.lastName = displayUserProfile?.lastName;
+    data.email = displayUserProfile?.email;
     httpService
-      .post(`${ApiEndpoint}/dashboard/bugreport/${displayUserProfile._id}`, data)
+      .post(`${ApiEndpoint}/dashboard/bugreport/${displayUserProfile?._id}`, data)
       .catch(() => {});
     openReport();
   };
@@ -1421,7 +1421,7 @@ const SummaryBar = React.forwardRef((props, ref) => {
       setExtraFieldForSuggestionForm('');
       setEditType('');
       httpService
-        .post(`${ApiEndpoint}/dashboard/suggestionoption/${displayUserProfile._id}`, data)
+        .post(`${ApiEndpoint}/dashboard/suggestionoption/${displayUserProfile?._id}`, data)
         .catch(() => {});
     } else {
       toast.error('Please fill all fields with valid values.');
@@ -1431,13 +1431,13 @@ const SummaryBar = React.forwardRef((props, ref) => {
   const sendUserSuggestion = async event => {
     event.preventDefault();
     const data = readFormData('suggestionForm');
-    data.firstName = displayUserProfile.firstName;
-    data.lastName = displayUserProfile.lastName;
-    data.email = displayUserProfile.email;
+    data.firstName = displayUserProfile?.firstName;
+    data.lastName = displayUserProfile?.lastName;
+    data.email = displayUserProfile?.email;
     if (data) {
       setShowSuggestionModal(prev => !prev);
       const res = await httpService
-        .post(`${ApiEndpoint}/dashboard/makesuggestion/${displayUserProfile._id}`, data)
+        .post(`${ApiEndpoint}/dashboard/makesuggestion/${displayUserProfile?._id}`, data)
         .catch(() => {});
       if (res.status === 200) {
         toast.success('Email sent successfully!');
@@ -1454,7 +1454,7 @@ const SummaryBar = React.forwardRef((props, ref) => {
     if (!showSuggestionModal) {
       try {
         const res = await httpService.get(
-          `${ApiEndpoint}/dashboard/suggestionoption/${displayUserProfile._id}`,
+          `${ApiEndpoint}/dashboard/suggestionoption/${displayUserProfile?._id}`,
         );
         if (res && res.status === 200) {
           setSuggestionCategory(res.data.suggestion);
@@ -1467,7 +1467,7 @@ const SummaryBar = React.forwardRef((props, ref) => {
       }
     }
     setShowSuggestionModal(prev => !prev);
-  }, [displayUserProfile._id, showSuggestionModal]);
+  }, [displayUserProfile?._id, showSuggestionModal]);
 
   const onTaskClick = () => {
     window.location.hash = '#tasks';
@@ -1488,9 +1488,9 @@ const SummaryBar = React.forwardRef((props, ref) => {
   // Memoized function to check if user can edit data
   const canEditData = useCallback(
     () =>
-      !(displayUserProfile.role === 'Owner' && authUser.role !== 'Owner') &&
+      !(displayUserProfile?.role === 'Owner' && authUser.role !== 'Owner') &&
       canPutUserProfileImportantInfo,
-    [displayUserProfile.role, authUser.role, canPutUserProfileImportantInfo],
+    [displayUserProfile?.role, authUser.role, canPutUserProfileImportantInfo],
   );
 
   // Load user profile and tasks
@@ -1670,24 +1670,24 @@ const SummaryBar = React.forwardRef((props, ref) => {
               <div className="font-weight-bold">
                 <span
                   className="name-segment"
-                  title={userProfile?.firstName || displayUserProfile.firstName}
+                  title={userProfile?.firstName || displayUserProfile?.firstName}
                 >
-                  {(userProfile?.firstName || displayUserProfile.firstName).split(' ')[0]}
+                  {(userProfile?.firstName || displayUserProfile?.firstName).split(' ')[0]}
                 </span>
                 <span
                   className="name-segment"
-                  title={userProfile?.firstName || displayUserProfile.firstName}
+                  title={userProfile?.firstName || displayUserProfile?.firstName}
                 >
-                  {(userProfile?.firstName || displayUserProfile.firstName)
+                  {(userProfile?.firstName || displayUserProfile?.firstName)
                     .split(' ')
                     .slice(1)
                     .join(' ')}
                 </span>
                 <span
                   className="name-segment"
-                  title={userProfile?.lastName || displayUserProfile.lastName}
+                  title={userProfile?.lastName || displayUserProfile?.lastName}
                 >
-                  {userProfile?.lastName || displayUserProfile.lastName}
+                  {userProfile?.lastName || displayUserProfile?.lastName}
                 </span>
               </div>
             </CardTitle>
@@ -1810,7 +1810,7 @@ const SummaryBar = React.forwardRef((props, ref) => {
             &nbsp;&nbsp;
             <div className="image_frame">
               {isAuthUser || canEditData() ? (
-                <Link to={`/userprofile/${displayUserProfile._id}#bluesquare`}>
+                <Link to={`/userprofile/${displayUserProfile?._id}#bluesquare`}>
                   <img className="sum_img" src={BlueScoreIcon} alt="" />
                   <div className="redBackgroup">
                     <span>{infringements}</span>
@@ -1868,7 +1868,7 @@ const SummaryBar = React.forwardRef((props, ref) => {
           <ModalHeader className={headerBg}>User Suggestion</ModalHeader>
           <ModalBody className={bodyBg}>
             {/* Modal body content */}
-            {displayUserProfile.role === 'Owner' && !extraFieldForSuggestionForm && (
+            {displayUserProfile?.role === 'Owner' && !extraFieldForSuggestionForm && (
               <FormGroup>
                 <Button
                   onClick={() => setExtraFieldForSuggestionForm('suggestion')}
