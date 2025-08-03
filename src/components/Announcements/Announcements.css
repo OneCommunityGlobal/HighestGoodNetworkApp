@@ -13,21 +13,26 @@ label {
 }
 
 .text-light {
-  color: #fff; /* White text for dark mode */
+  color: #fff;
+  /* White text for dark mode */
 }
 
 .text-dark {
-  color: #333; /* Default dark text for light mode */
+  color: #333;
+  /* Default dark text for light mode */
 }
 
 .input-text-for-announcement,
 textarea {
-  margin-top: 5px; /* Space above input fields */
+  margin-top: 5px;
+  /* Space above input fields */
   width: 100%;
-  padding: 12px; /* Increased padding */
+  padding: 12px;
+  /* Increased padding */
   border: 1px solid #ccc;
   border-radius: 4px;
-  box-sizing: border-box; /* Ensures padding is included in width */
+  box-sizing: border-box;
+  /* Ensures padding is included in width */
 }
 
 .input-file-upload {
@@ -39,10 +44,12 @@ button.send-button {
   color: white;
   border: none;
   border-radius: 4px;
-  padding: 12px 24px; /* Increased padding */
+  padding: 12px 24px;
+  /* Increased padding */
   cursor: pointer;
   margin-top: 20px;
-  box-sizing: border-box; /* Ensures padding is included in width */
+  box-sizing: border-box;
+  /* Ensures padding is included in width */
 }
 
 button.send-button:hover {
@@ -58,7 +65,8 @@ button.send-button:hover {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  box-sizing: border-box; /* Ensures padding is included in width */
+  box-sizing: border-box;
+  /* Ensures padding is included in width */
 }
 
 .editor {
@@ -72,16 +80,20 @@ button.send-button:hover {
   margin-top: 0;
   /* Remove top margin for the heading */
 }
+
 .editor h3 {
   color: #4285f4;
 }
+
 .emails {
   margin-top: 65px;
-  padding: 24px; /* Increased padding */
+  padding: 24px;
+  /* Increased padding */
   border: solid 1px #cacaca;
   border-radius: 20px;
   width: 300px;
-  box-sizing: border-box; /* Ensures padding is included in width */
+  box-sizing: border-box;
+  /* Ensures padding is included in width */
   /* Set a fixed width for the email inputs container */
 }
 
@@ -117,35 +129,101 @@ button.send-button:hover {
     /* Reduce margin top on smaller screens */
   }
 }
+
 /* Responsive design: Adjust the layout for smaller screens */
 @media (max-width: 800px) {
   .email-update-container {
     display: flex;
     flex-direction: column;
     padding: 20px;
-    box-sizing: border-box; /* Ensures padding is included in width */
+    box-sizing: border-box;
+    /* Ensures padding is included in width */
   }
+
   .editor {
     width: 100%;
     margin-right: 0;
     margin-bottom: 20px;
   }
+
   .emails {
     width: 100%;
     margin-top: 20px;
-    padding: 20px 12px; /* Adjust padding for smaller screens */
-    box-sizing: border-box; /* Ensures padding is included in width */
+    padding: 20px 12px;
+    /* Adjust padding for smaller screens */
+    box-sizing: border-box;
+    /* Ensures padding is included in width */
   }
+
   .send-button {
     width: 100%;
     margin-bottom: 10px;
-    padding: 12px; /* Ensures padding is consistent */
-    box-sizing: border-box; /* Ensures padding is included in width */
+    padding: 12px;
+    /* Ensures padding is consistent */
+    box-sizing: border-box;
+    /* Ensures padding is included in width */
   }
+
   .input-text-for-announcement,
   textarea {
     width: 100%;
-    padding: 12px; /* Ensures padding is consistent */
-    box-sizing: border-box; /* Ensures padding is included in width */
+    padding: 12px;
+    /* Ensures padding is consistent */
+    box-sizing: border-box;
+    /* Ensures padding is included in width */
   }
+}
+
+/* Blogger Integration Styles */
+.editor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.header-with-icon {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding-bottom: 20px;
+}
+
+.header-with-icon h3 {
+  margin: 0;
+}
+
+.blogger-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+.blogger-icon {
+  width: 50px;
+  height: 50px;
+}
+
+.blogger-post-details {
+  margin-bottom: 2rem;
+  padding: 1rem;
+  border-radius: 4px;
+  background-color: #f5f5f5;
+}
+
+.blogger-post-details.dark {
+  background-color: #2a2a2a;
+}
+
+.blogger-header {
+  margin-bottom: 1.5rem;
+}
+
+.post-form {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
 }
