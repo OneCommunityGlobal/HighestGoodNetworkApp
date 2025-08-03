@@ -1,6 +1,6 @@
 import FormEditor from '~/components/Forms/FormEditor';
 import FormViewer from '~/components/Forms/FormViewer';
-
+import ExperienceBreakdownChart from '~/components/ExperienceBreakdownChart';
 import { lazy } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import SetupProfile from '~/components/SetupProfile/SetupProfile';
@@ -697,6 +697,8 @@ export default (
         <ProtectedRoute path="/userprofileedit/:userId" component={UserProfileEdit} />
         <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
         <Route path="/Logout" component={Logout} />
+        <Route path="/experience-breakdown" exact component={ExperienceBreakdownChart} />
+
         <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
         <ProtectedRoute path="/hgnform" exact component={Page1} />
         <ProtectedRoute path="/hgnform/page2" exact component={Page2} />
