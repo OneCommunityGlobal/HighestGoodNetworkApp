@@ -277,6 +277,8 @@ export const ENDPOINTS = {
     `${APIEndpoint}/bm/timelogger/${projectId}/${memberId}/stop`,
   TIME_LOGGER_LOGS: (projectId, memberId) =>
     `${APIEndpoint}/bm/timelogger/${projectId}/${memberId}/logs`,
+  OPT_STATUS_BREAKDOWN: (startDate = "", endDate = "", role = "") =>
+    `${APIEndpoint}/analytics/opt-status?startDate=${startDate}&endDate=${endDate}&role=${role}`,
 
   GET_TIME_OFF_REQUESTS: () => `${APIEndpoint}/getTimeOffRequests`,
   ADD_TIME_OFF_REQUEST: () => `${APIEndpoint}/setTimeOffRequest`,
@@ -352,8 +354,6 @@ export const ENDPOINTS = {
   LB_LISTINGS_BASE: `${APIEndpoint}/lb`,
   HELP_CATEGORIES: `${APIEndpoint}/help-categories`,
 
-  OPT_STATUS_BREAKDOWN: (startDate = "", endDate = "", role = "") =>
-    `${APIEndpoint}/analytics/opt-status?startDate=${startDate}&endDate=${endDate}&role=${role}`,
 };
 
 export const ApiEndpoint = APIEndpoint;

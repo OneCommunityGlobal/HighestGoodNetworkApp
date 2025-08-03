@@ -146,7 +146,7 @@ import PRReviewTeamAnalytics from './components/HGNPRDashboard/PRReviewTeamAnaly
 import LogTools from './components/BMDashboard/LogTools/LogTools';
 // import IssueDashboard from './components/BMDashboard/Issues/IssueDashboard';
 import EquipmentUpdate from './components/BMDashboard/Tools/EquipmentUpdate';
-import OptStatusPieChart from 'components/OptStatusPieChart/OptStatusPieChart';
+import OptStatusPieChart from './components/OptStatusPieChart/OptStatusPieChart';
 // Social Architecture
 const ResourceManagement = lazy(() => import('./components/ResourceManagement/ResourceManagement'));
 const RequestResources = lazy(() => import('./components/SocialArchitecture/RequestResources'));

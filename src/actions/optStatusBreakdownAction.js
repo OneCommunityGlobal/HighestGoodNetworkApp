@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
 import axios from 'axios';
-import { ENDPOINTS } from 'utils/URL';
-import { GET_ERRORS } from 'constants/errors';
-import { GET_OPT_STATUS_BREAKDOWN } from 'constants/optStatusBreakdownConstants';
+import { ENDPOINTS } from '~/utils/URL';
+import { GET_ERRORS } from '../constants/errors';
+import { GET_OPT_STATUS_BREAKDOWN } from '../constants/optStatusBreakdownConstants';
 
 export const setOptStatusBreakdown = payload => {
   return {
