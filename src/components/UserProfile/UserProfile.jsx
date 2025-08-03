@@ -602,8 +602,8 @@ function UserProfile(props) {
           //   .toISOString()
           //   .split('T')[0],
           createdDate: moment().format('YYYY-MM-DD'),
-          firstName: first,
-          lastName: last
+          authorFirstName: first,
+          authorLastName: last
         };
         setModalTitle('Blue Square');
         axios

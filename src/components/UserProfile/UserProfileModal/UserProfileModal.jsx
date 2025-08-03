@@ -151,13 +151,15 @@ const UserProfileModal = props => {
     }
   };
 
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+  const [firstName, setFirstName] = useState(blueSquare[0]?.authorFirstName || ""); // Default to the first name of the author of the blue square
+  const [lastName, setLastName] = useState(blueSquare[0]?.authorLastName || ""); // Default to the last name of the author of the blue square
   useEffect(() => {
-    axios.get(ENDPOINTS.USER_PROFILE(auth.user.userid)).then(response => {
-      setFirstName(response.data.firstName);
-      setLastName(response.data.lastName);
-    });
+    if (type === 'addBlueSquare') {
+      axios.get(ENDPOINTS.USER_PROFILE(auth.user.userid)).then(response => {
+        setFirstName(response.data.firstName); // Set first name to logged in user's first name if adding a new blue square
+        setLastName(response.data.lastName); // Set last name to logged in user's first name if adding a new blue square
+      });
+    }
   }, []);
 
     function checkFields(field1, field2) {
@@ -382,7 +384,7 @@ const UserProfileModal = props => {
               <Input
                 id="asignment"
                 readOnly
-                value={`Assigned by ${blueSquare[0]?.firstName} ${blueSquare[0]?.lastName} on ${dateStamp}`}
+                value={`Assigned by ${firstName} ${lastName} on ${dateStamp}`}
               />
               {canEditInfringements ? <Input
                 type="textarea"
@@ -413,6 +415,11 @@ const UserProfileModal = props => {
             </FormGroup>
             <FormGroup>
               <Label className={fontColor} for="description">Summary</Label>
+              <Input
+                id="asignment"
+                readOnly
+                value={`Assigned by ${firstName} ${lastName} on ${dateStamp}`}
+              />
               <p className={fontColor}>{blueSquare[0]?.description}</p>
             </FormGroup>
           </>
@@ -446,7 +453,7 @@ const UserProfileModal = props => {
               <Button
                 color="info"
                 onClick={() => {
-                  modifyBlueSquares(id, dateStamp, summary, 'update');
+                  modifyBlueSquares(id, dateStamp, summary, firstName, lastName, 'update');
                 }}
                 style={boxStyling}
               >
@@ -457,7 +464,7 @@ const UserProfileModal = props => {
               <Button
                 color="danger"
                 onClick={() => {
-                  modifyBlueSquares(id, dateStamp, summary, 'delete');
+                  modifyBlueSquares(id, dateStamp, summary, firstName, lastName, 'delete');
                 }}
                 style={boxStyling}
               >
