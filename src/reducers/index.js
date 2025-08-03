@@ -66,7 +66,7 @@ import HGNFormReducer from './hgnFormReducers';
 import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
 import messageReducer from './lbdashboard/messagingReducer';
 import { userPreferencesReducer } from './lbdashboard/userPreferencesReducer';
-
+import { optStatusBreakdownReducer } from './optStatusBreakdownReducer';
 // community portal
 import { noShowVizReducer } from './communityPortal/noShowVizReducer';
 
@@ -136,6 +136,8 @@ const localReducers = {
   // lbdashboard
   lbmessaging: messageReducer,
   lbuserpreferences: userPreferencesReducer,
+
+  optStatus: optStatusBreakdownReducer,
 };
 
 const sessionReducers = {
