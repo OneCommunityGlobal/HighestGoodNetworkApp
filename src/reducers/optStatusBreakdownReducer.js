@@ -1,4 +1,4 @@
-import { GET_OPT_STATUS_BREAKDOWN } from 'constants/optStatusBreakdownConstants';
+import { GET_OPT_STATUS_BREAKDOWN } from '../constants/optStatusBreakdownConstants';
 
 const initialState = {
   optStatusBreakdown: [],
