@@ -1,5 +1,5 @@
-// eslint-disable-next-line
-// prettier-ignore
+/* eslint-disable */
+/* prettier-ignore */
 
 import { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
