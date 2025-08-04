@@ -98,6 +98,8 @@ import Toolslist from './components/BMDashboard/Tools/ToolsList';
 import AddTool from './components/BMDashboard/Tools/AddTool';
 import AttendanceNoShow from './components/AttendanceSystem/AttendanceNoShowCharts.jsx';
 import AddTeamMember from './components/BMDashboard/AddTeamMember/AddTeamMember';
+import LessonsLearntChart from './components/BMDashboard/LessonsLearnt/LessonsLearntChart';
+
 // eslint-disable-next-line import/order
 import IssueChart from './components/BMDashboard/Issues/issueCharts';
 import BMTimeLogger from './components/BMDashboard/BMTimeLogger/BMTimeLogger';
@@ -510,6 +512,7 @@ export default (
         {/* ----- BEGIN BM Dashboard Routing ----- */}
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
         <Route path="/bmdashboard/login" component={BMLogin} />
+        <Route path="/LessonsLearntChart" component={LessonsLearntChart} />
 
         <Route path="/UtilizationChart" component={UtilizationChart} />
 
