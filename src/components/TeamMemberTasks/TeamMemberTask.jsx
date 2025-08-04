@@ -3,8 +3,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faBell,
   faCircle,
-  faCheck,
-  faTimes,
+  faCheckCircle,
+  faTimesCircle,
   faExpandArrowsAlt,
   faCompressArrowsAlt,
 } from '@fortawesome/free-solid-svg-icons';
@@ -407,7 +407,7 @@ const TeamMemberTask = React.memo(
                                       {isAllowedToResolveTasks && (
                                         <FontAwesomeIcon
                                           className="team-member-tasks-done"
-                                          icon={faCheck}
+                                          icon={faCheckCircle}
                                           title="Mark as Done"
                                           onClick={() => {
                                             handleMarkAsDoneModal(user.personId, task);
@@ -419,7 +419,7 @@ const TeamMemberTask = React.memo(
                                       {(canUpdateTask || canDeleteTask) && (
                                         <FontAwesomeIcon
                                           className="team-member-task-remove"
-                                          icon={faTimes}
+                                          icon={faTimesCircle}
                                           title="Remove User from Task"
                                           onClick={() => {
                                             handleRemoveFromTaskModal(user.personId, task);
