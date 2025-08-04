@@ -20,6 +20,7 @@ function ListingForm() {
 
   const [errors, setErrors] = useState({});
   const [uploadProgress, setUploadProgress] = useState({});
+  const [skippedFiles, setSkippedFiles] = useState([]);
 
   const handleChange = e => {
     const { name, value } = e.target;
@@ -28,11 +29,15 @@ function ListingForm() {
   };
 
   const processFiles = files => {
-    const validFiles = files.filter(file => file.size <= 5 * 1024 * 1024); // Limit to 5MB
-    const newErrors = {};
-
-    if (files.some(file => file.size > 5 * 1024 * 1024)) {
-      newErrors.propertyImages = 'Some files exceed 5MB and were not uploaded.';
+    const validFiles = files.filter(file => file.size <= 5 * 1024 * 1024);
+    const invalidFiles = files.filter(file => file.size > 5 * 1024 * 1024);
+  
+    if (invalidFiles.length > 0) {
+      setSkippedFiles(invalidFiles.map(file => file.name));
+      setErrors(prev => ({ ...prev, propertyImages: 'Some files exceed 5MB and were not uploaded.' }));
+    } else {
+      setSkippedFiles([]);
+      setErrors(prev => ({ ...prev, propertyImages: '' }));
     }
 
     if (validFiles.length > 0) {
@@ -45,10 +50,11 @@ function ListingForm() {
       });
 
       setUploadProgress(prev => ({ ...prev, ...newUploadProgress }));
-      setFormData({ ...formData, propertyImages: [...formData.propertyImages, ...validFiles] });
+      setFormData(prev => ({
+        ...prev,
+        propertyImages: [...prev.propertyImages, ...validFiles]
+      }));
     }
-
-    setErrors({ ...errors, propertyImages: newErrors.propertyImages || '' });
   };
 
   const handleFileChange = e => {
@@ -139,51 +145,49 @@ function ListingForm() {
               className="form-control"
             />
             <div className="invalid-feedback">{errors.propertyImages}</div>
-          </div>
-
-          {/* Image Previews */}
-          <div className="mb-3">
-            {formData.propertyImages.length > 0 && (
-              <div>
-                <h5>Uploaded Images</h5>
-                <div className="d-flex flex-wrap">
-                  {formData.propertyImages.map((file, index) => (
-                    <div key={index} className="me-2 mb-2 position-relative">
-                      <img
-                        src={URL.createObjectURL(file)}
-                        alt="preview"
-                        width="80"
-                        height="80"
-                        className="border rounded"
-                        style={{ cursor: "pointer" }}
-                        onClick={() => reorderImages(index, formData.propertyImages.length - 1)}
-                      />
-                      <button
-                        type="button"
-                        className="btn btn-danger btn-sm position-absolute top-0 start-100 translate-middle"
-                        onClick={() => removeImage(index)}
-                      >
-                        ✕
-                      </button>
-                      {uploadProgress[file.name] < 100 && (
-                        <div className="progress mt-1" style={{ height: "5px" }}>
-                          <div
-                            className="progress-bar bg-success"
-                            role="progressbar"
-                            aria-valuenow={uploadProgress[file.name]}
-                            aria-valuemin="0"
-                            aria-valuemax="100"
-                            aria-label={`Upload progress: ${uploadProgress[file.name]}%`}
-                            style={{ width: `${uploadProgress[file.name]}%` }}
-                          ></div>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
+            {skippedFiles.length > 0 && (
+              <div className="text-danger mt-2">
+              <small>Files not uploaded due to size limit: {skippedFiles.join(', ')}</small>
               </div>
             )}
           </div>
+
+          {/* Image Previews */}
+          <div key={index} className="me-2 mb-2 position-relative text-center">
+            <img
+              src={URL.createObjectURL(file)}
+              alt="preview"
+              width="80"
+              height="80"
+              className="border rounded"
+            />
+            <div className="btn-group mt-1">
+              <button
+                type="button"
+                className="btn btn-outline-secondary btn-sm"
+                disabled={index === 0}
+                onClick={() => reorderImages(index, index - 1)}
+            >
+              ↑
+             </button>
+             <button
+                type="button"
+                className="btn btn-outline-secondary btn-sm"
+                disabled={index === formData.propertyImages.length - 1}
+                onClick={() => reorderImages(index, index + 1)}
+            >
+              ↓
+            </button>
+          </div>
+          <button
+            type="button"
+            className="btn btn-danger btn-sm position-absolute top-0 start-100 translate-middle"
+            onClick={() => removeImage(index)}
+          >
+            ✕
+          </button>
+        </div>
+
 
           {/* Submit Button */}
           <button type="submit" className="btn btn-success w-100 fw-bold">
