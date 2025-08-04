@@ -37,9 +37,18 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
 
   const handlePRReviewedChange = (reviewerId, newValue) => {
     setReviewerData(prevData =>
-      prevData.map(reviewer =>
-        reviewer.id === reviewerId ? { ...reviewer, prsReviewed: newValue } : reviewer,
-      ),
+      prevData.map(reviewer => {
+        if (reviewer.id !== reviewerId) return reviewer;
+        let sanitizedValue = newValue;
+        if (typeof newValue === 'string') {
+          sanitizedValue = newValue.replace(/\D/g, '');
+          sanitizedValue = sanitizedValue === '' ? null : Number(sanitizedValue);
+        }
+        if (sanitizedValue === null) {
+          sanitizedValue = reviewer.prsReviewed;
+        }
+        return { ...reviewer, prsReviewed: sanitizedValue };
+      }),
     );
   };
 
@@ -133,7 +142,8 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
     setShowGradingModal(null);
   };
 
-  const handleDoneClick = () => {
+  const handleDoneClick = e => {
+    e.preventDefault();
     // Format data for POST /api/weekly-grading/save
     const formattedData = {
       teamCode: teamData.teamName,
@@ -152,7 +162,7 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
         ...(reviewer.role && { role: reviewer.role }), // Include role if it exists
       })),
     };
-
+    // onSave(formattedData);
     // TODO: Replace with actual API call when backend is implemented
     // fetch('/api/weekly-grading/save', {
     //   method: 'POST',
@@ -234,12 +244,26 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                         <td className="pr-grading-screen-td-reviewed">
                           <input
                             type="number"
-                            value={reviewer.prsReviewed}
-                            onChange={e =>
-                              handlePRReviewedChange(reviewer.id, Number(e.target.value) || 0)
-                            }
-                            className={`pr-grading-screen-pr-input ${darkMode ? 'dark-mode' : ''}`}
                             min="0"
+                            value={reviewer.prsReviewed}
+                            onFocus={e => {
+                              e.target.value = '';
+                            }}
+                            onChange={e => handlePRReviewedChange(reviewer.id, e.target.value)}
+                            onBlur={e => {
+                              if (e.target.value === '') {
+                                handlePRReviewedChange(reviewer.id, reviewer.prsReviewed);
+                              }
+                            }}
+                            onKeyDown={e => {
+                              if (
+                                (e.key.length === 1 && /[a-zA-Z]/.test(e.key)) ||
+                                ['e', 'E', '+', '-'].includes(e.key)
+                              ) {
+                                e.preventDefault();
+                              }
+                            }}
+                            className={`pr-grading-screen-pr-input ${darkMode ? 'dark-mode' : ''}`}
                           />
                         </td>
 

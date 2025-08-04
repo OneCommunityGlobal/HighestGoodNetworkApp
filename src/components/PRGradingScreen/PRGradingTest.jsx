@@ -11,6 +11,11 @@ const PRGradingTest = () => {
     { id: 'team3', name: 'ComplexTeam', description: '4 reviewers, edge cases' },
   ];
 
+  // const handleUpdates = NewValues => {
+  //   console.log(NewValues);
+  //   //Api Calls
+  // };
+
   const handleTeamSelect = teamId => {
     history.push('/pr-grading-screen', { teamId });
   };
@@ -32,6 +37,7 @@ const PRGradingTest = () => {
                     variant="outline-primary"
                     size="lg"
                     onClick={() => handleTeamSelect(team.id)}
+                    onSave={handleUpdates}
                     className="text-start"
                   >
                     <div>
