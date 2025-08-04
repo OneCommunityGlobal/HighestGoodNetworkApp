@@ -24,6 +24,15 @@ const isValidEmail = email => {
   if (!domainPart.includes('.')) return false;
   const domainSections = domainPart.split('.');
   if (domainSections.some(section => section.length === 0)) return false;
+
+  // Only allow specific TLDs
+  const allowedTLDs = ['com', 'org', 'net', 'edu', 'co.in']; // add/remove as needed
+  const tld =
+    domainSections.slice(-2).join('.') === 'co.in'
+      ? 'co.in'
+      : domainSections[domainSections.length - 1];
+
+  if (!allowedTLDs.includes(tld)) return false;
   return true;
 };
 function Feedbackform() {
@@ -141,12 +150,7 @@ function Feedbackform() {
       _id: uuidv4(),
     };
     dispatch(addEventFeedback(eventFeedback));
-    toast.success('Event feedback submitted');
-    // add api
-    toast.info('calling api');
-
-    toast.success('Added Event feedback successfully!!!');
-
+    // toast.success('Event feedback submitted');
     // replace toast
     setFormData({ ...initialFormState });
     // setShouldSaveAnyway(false);
