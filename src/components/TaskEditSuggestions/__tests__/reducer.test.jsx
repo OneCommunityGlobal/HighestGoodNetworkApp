@@ -100,6 +100,52 @@ describe('taskEditSuggestionsReducer', () => {
   });
 
   // test for TOGGLE_DATE_SUGGESTED_SORT_DIRECTION
+  // it('should handle TOGGLE_DATE_SUGGESTED_SORT_DIRECTION', () => {
+  //   const currentState = {
+  //     taskEditSuggestions: [
+  //       { _id: '1', dateSuggested: '2023-01-02' },
+  //       { _id: '2', dateSuggested: '2023-01-01' },
+  //     ],
+  //     dateSuggestedSortDirection: 'asc',
+  //   };
+  //   const toggleDateAction = {
+  //     type: 'TOGGLE_DATE_SUGGESTED_SORT_DIRECTION',
+  //   };
+  //   expect(taskEditSuggestionsReducer(currentState, toggleDateAction)).toEqual({
+  //     ...currentState,
+  //     dateSuggestedSortDirection: 'desc',
+  //     taskEditSuggestions: currentState.taskEditSuggestions.sort((a, b) =>
+  //       b.dateSuggested.localeCompare(a.dateSuggested),
+  //     ),
+  //     userSortDirection: null,
+  //   });
+  // });
+
+  // // Test for TOGGLE_USER_SORT_DIRECTION
+  // it('should handle TOGGLE_USER_SORT_DIRECTION', () => {
+  //   const currentState = {
+  //     isLoading: false,
+  //     userSortDirection: null,
+  //     taskEditSuggestions: [
+  //       { _id: '1', user: 'UserA' },
+  //       { _id: '2', user: 'UserB' },
+  //     ],
+  //     // eslint-disable-next-line no-dupe-keys
+  //     userSortDirection: 'asc',
+  //   };
+  //   const toggleUserAction = {
+  //     type: 'TOGGLE_USER_SORT_DIRECTION',
+  //   };
+  //   expect(taskEditSuggestionsReducer(currentState, toggleUserAction)).toEqual({
+  //     ...currentState,
+  //     userSortDirection: 'desc',
+  //     taskEditSuggestions: currentState.taskEditSuggestions.sort((a, b) =>
+  //       b.user.localeCompare(a.user),
+  //     ),
+  //     dateSuggestedSortDirection: null,
+  //   });
+  // });
+  // test for TOGGLE_DATE_SUGGESTED_SORT_DIRECTION
   it('should handle TOGGLE_DATE_SUGGESTED_SORT_DIRECTION', () => {
     const currentState = {
       taskEditSuggestions: [
@@ -125,12 +171,10 @@ describe('taskEditSuggestionsReducer', () => {
   it('should handle TOGGLE_USER_SORT_DIRECTION', () => {
     const currentState = {
       isLoading: false,
-      userSortDirection: null,
       taskEditSuggestions: [
         { _id: '1', user: 'UserA' },
         { _id: '2', user: 'UserB' },
       ],
-      // eslint-disable-next-line no-dupe-keys
       userSortDirection: 'asc',
     };
     const toggleUserAction = {
