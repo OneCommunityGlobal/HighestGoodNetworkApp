@@ -1,6 +1,6 @@
 import { useHistory } from 'react-router-dom';
 import { SiGmail } from 'react-icons/si';
-import Loading from 'components/common/Loading';
+import Loading from '~/components/common/Loading';
 import sixMonthsAward from '../images/sixMonthsAward.svg';
 import oneYearAward from '../images/oneYearAward.svg';
 
@@ -119,7 +119,7 @@ export default function AnniversaryCelebrated({ isLoading, data, darkMode }) {
       )}
 
       {/* List of anniversaries */}
-      <ul className="w-90 overflow-auto" style={{ maxHeight: '220px' }}>
+      <ul className="w-90 overflow-auto" style={{ maxHeight: '410px' }}>
         {sixMonthsData.users.map(item => getAnniversaryListItem(item, 6))}
         {oneYearData.users.map(item => getAnniversaryListItem(item, 12))}
       </ul>

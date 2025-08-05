@@ -14,7 +14,7 @@ import {
 import PhoneInput from 'react-phone-input-2';
 import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
-import Joi from 'joi';
+import Joi from 'joi-browser';
 import {
   fetchMaterialTypes,
   postBuildingInventoryType,
@@ -298,7 +298,6 @@ export default function AddMaterialForm() {
             >
               <option value="">Select a Unit</option>
               {units.map((unit, index) => (
-                // eslint-disable-next-line react/no-array-index-key
                 <option key={index} value={unit.unit}>
                   {unit.unit}
                 </option>

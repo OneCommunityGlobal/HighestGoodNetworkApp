@@ -126,7 +126,7 @@
     width: 120px;
   }
   
-  select {
+  .rental-char-select {
     padding: 6px 10px;
     border: 1px solid #ccc;
     border-radius: 4px;

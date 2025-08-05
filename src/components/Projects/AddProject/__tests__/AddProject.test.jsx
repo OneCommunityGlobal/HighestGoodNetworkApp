@@ -18,7 +18,7 @@ describe("AddProject component", () => {
 
   beforeEach(() => {
     store = mockStore(initialState);
-    store.dispatch = jest.fn();
+    store.dispatch = vi.fn();
   });
 
   const renderComponent = (props = {}) => {
@@ -92,7 +92,7 @@ const typeIntoInput = ({ input }) => {
   
 //   //mock the onAddNewProject function
 
-//   const mockAddNewProject = jest.fn();
+//   const mockAddNewProject = vi.fn();
 
 //   beforeEach(() => {
 //     render(<AddProject onAddNewProject={mockAddNewProject} />)

@@ -31,16 +31,14 @@ export default function SearchProjectByPerson({ onSearch, suggestions, onSelectS
       <form className="input-group mb-2" onSubmit={e => e.preventDefault()}>
         <div className="input-group-prepend">
           <span
-            className={`input-group-text search-field-container ${
-              darkMode ? 'bg-yinmn-blue text-light' : ''
-            }`}
+            className={`input-group-text search-field-container ${darkMode ? 'bg-light-grey' : ''}`}
           >
             Search
           </span>
         </div>
         <input
           type="text"
-          className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
+          className={`form-control ${darkMode ? 'bg-white' : ''}`}
           placeholder="Person's Name"
           value={inputValue}
           onChange={handleInputChange} // Trigger input change

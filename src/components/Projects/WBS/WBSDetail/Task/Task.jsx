@@ -13,8 +13,8 @@ import './task.css';
 import '../../../../Header/DarkMode.css'
 import { Editor } from '@tinymce/tinymce-react';
 import { getPopupById } from './../../../../../actions/popupEditorAction';
-import { boxStyle, boxStyleDark } from 'styles';
-import { formatDate } from 'utils/formatDate';
+import { boxStyle, boxStyleDark } from '~/styles';
+import { formatDate } from '~/utils/formatDate';
 
 function Task(props) {
   /*
@@ -205,7 +205,7 @@ function Task(props) {
             <td
               id={`r_${props.num}_${props.taskId}`}
               scope="row"
-              className={`taskNum ${props.hasChildren ? 'has_children' : ''}`}
+              className={`taskNum ${props.hasChildren ? 'has_children' : ''} text-left`}
               onClick={openChild}
             >
               {props.num.replaceAll('.0', '')}

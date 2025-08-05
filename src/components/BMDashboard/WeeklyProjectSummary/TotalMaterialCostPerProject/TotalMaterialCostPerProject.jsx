@@ -14,8 +14,8 @@ import { Bar } from 'react-chartjs-2';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import './TotalMaterialCostPerProject.css';
-import { ENDPOINTS } from 'utils/URL';
-import Loading from 'components/common/Loading';
+import { ENDPOINTS } from '~/utils/URL';
+import Loading from '~/components/common/Loading';
 
 // Register required components
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);

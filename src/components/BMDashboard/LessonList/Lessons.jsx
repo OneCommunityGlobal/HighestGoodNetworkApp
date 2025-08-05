@@ -1,5 +1,5 @@
-import { updateBMLesson, deleteBMLesson } from 'actions/bmdashboard/lessonsAction';
-import { likeLessonAction } from 'actions/bmdashboard/lessonLikesActions';
+import { updateBMLesson, deleteBMLesson } from '~/actions/bmdashboard/lessonsAction';
+import { likeLessonAction } from '~/actions/bmdashboard/lessonLikesActions';
 import LessonCard from './LessonCard';
 
 function Lessons({ filteredLessons, setFilteredLessons, dispatch }) {

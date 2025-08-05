@@ -1,10 +1,9 @@
-import { useState } from 'react';
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, Table } from 'reactstrap';
 import { toast } from 'react-toastify';
 import moment from 'moment';
-import { fetchAllMaterials, postMaterialUpdateBulk } from 'actions/bmdashboard/materialsActions';
+import { fetchAllMaterials, postMaterialUpdateBulk } from '~/actions/bmdashboard/materialsActions';
 import UpdateMaterial from '../UpdateMaterial';
 import styles from './UpdateMaterialsBulk.module.css';
 

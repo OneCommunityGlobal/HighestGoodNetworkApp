@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import './Collaboration.css';
 import { toast } from 'react-toastify';
-import { ApiEndpoint } from 'utils/URL';
+import { ApiEndpoint } from '~/utils/URL';
 import { useSelector } from 'react-redux';
 import OneCommunityImage from '../../assets/images/logo2.png';
 
@@ -142,7 +142,7 @@ function Collaboration() {
 
   if (summaries) {
     return (
-      <div className={`job-landing ${darkMode ? 'dark-mode' : ''}`}>
+      <div className={`job-landing ${darkMode ? 'user-collaboration-dark-mode' : ''}`}>
         <div className="job-header">
           <a
             href="https://www.onecommunityglobal.org/collaboration/"
@@ -152,7 +152,7 @@ function Collaboration() {
             <img src={OneCommunityImage} alt="One Community Logo" />
           </a>
         </div>
-        <div className="container">
+        <div className="user-collaboration-container">
           <nav className="job-navbar">
             <div className="job-navbar-left">
               <form className="search-form">
@@ -282,7 +282,7 @@ function Collaboration() {
   }
 
   return (
-    <div className={`job-landing ${darkMode ? 'dark-mode' : ''}`}>
+    <div className={`job-landing ${darkMode ? 'user-collaboration-dark-mode' : ''}`}>
       <div className="job-header">
         <a
           href="https://www.onecommunityglobal.org/collaboration/"
@@ -292,7 +292,7 @@ function Collaboration() {
           <img src={OneCommunityImage} alt="One Community Logo" />
         </a>
       </div>
-      <div className="container">
+      <div className="user-collaboration-container">
         <nav className="job-navbar">
           <div className="job-navbar-left">
             <form className="search-form">
@@ -456,7 +456,7 @@ function Collaboration() {
             </div>
           </div>
         ) : (
-          <div className={`job-headings ${darkMode ? ' dark-mode' : ''}`}>
+          <div className={`job-headings ${darkMode ? ' user-collaboration-dark-mode' : ''}`}>
             <h1 className="job-head">Like to Work With Us? Apply Now!</h1>
             <p className="job-intro"> Learn about who we are and who we want to work with!</p>
           </div>

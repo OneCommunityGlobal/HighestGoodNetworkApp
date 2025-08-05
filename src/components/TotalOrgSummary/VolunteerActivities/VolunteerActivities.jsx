@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
-import { normalizeVolunteerActivities } from 'utils/totalOrgSummary';
-import Loading from 'components/common/Loading';
+import { normalizeVolunteerActivities } from '~/utils/totalOrgSummary';
+import Loading from '~/components/common/Loading';
 import StatisticsTab from '../StatisticsTab/StatisticsTab';
 
 function VolunteerActivities({

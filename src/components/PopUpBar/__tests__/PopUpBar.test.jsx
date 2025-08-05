@@ -34,7 +34,7 @@ describe('Test Suite for PopUpBar', () => {
   });
 
   it('Test Case 3: Closes on button click', () => {
-    const onClickClose = jest.fn();
+    const onClickClose = vi.fn();
     renderComponent({ onClickClose });
 
     const closeButton = screen.getByText('X');

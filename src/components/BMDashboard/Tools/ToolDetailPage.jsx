@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchToolById } from 'actions/bmdashboard/toolActions';
+import { fetchToolById } from '~/actions/bmdashboard/toolActions';
 import { Container, Button } from 'reactstrap';
 import { v4 as uuidv4 } from 'uuid';
 import ToolModal from './ToolModal';

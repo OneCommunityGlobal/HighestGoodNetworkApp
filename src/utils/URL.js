@@ -51,7 +51,8 @@ export const ENDPOINTS = {
   FORCE_PASSWORD: `${APIEndpoint}/forcepassword`,
   LEADER_BOARD: userId => `${APIEndpoint}/dashboard/leaderboard/${userId}`,
   ORG_DATA: `${APIEndpoint}/dashboard/leaderboard/org/data`,
-  TROPHY_ICON: (userId, trophyFollowedUp) => `${APIEndpoint}/dashboard/leaderboard/trophyIcon/${userId}/${trophyFollowedUp}`,
+  TROPHY_ICON: (userId, trophyFollowedUp) =>
+    `${APIEndpoint}/dashboard/leaderboard/trophyIcon/${userId}/${trophyFollowedUp}`,
 
   // Questionnaire endpoints
   QUESTIONNAIRE_FEEDBACK_REQUEST: () => `${APIEndpoint}/dashboard/questionaire/feedbackrequest`,
@@ -105,7 +106,8 @@ export const ENDPOINTS = {
   AUTHORIZE_WEEKLY_SUMMARY_REPORTS: () =>
     `${APIEndpoint}/userProfile/authorizeUser/weeeklySummaries`,
   TOTAL_ORG_SUMMARY: (startDate, endDate, comparisonStartDate, comparisonEndDate) =>
-    `${APIEndpoint}/reports/volunteerstats?startDate=${startDate}&endDate=${endDate}&comparisonStartDate=${comparisonStartDate || ''}&comparisonEndDate=${comparisonEndDate || ''}`,
+    `${APIEndpoint}/reports/volunteerstats?startDate=${startDate}&endDate=${endDate}&comparisonStartDate=${comparisonStartDate ||
+      ''}&comparisonEndDate=${comparisonEndDate || ''}`,
   VOLUNTEER_TRENDS: (timeFrame, offset, customStartDate, customEndDate) =>
     `${APIEndpoint}/reports/volunteertrends?timeFrame=${timeFrame}&offset=${offset}${
       customStartDate ? `&customStartDate=${customStartDate}` : ''
@@ -229,7 +231,9 @@ export const ENDPOINTS = {
   BM_PURCHASE_REUSABLES: `${APIEndpoint}/bm/reusables/purchase`,
   BM_EQUIPMENT_TYPES: `${APIEndpoint}/bm/invtypes/equipments`,
   BM_EQUIPMENT_PURCHASE: `${APIEndpoint}/bm/equipment/purchase`,
+  BM_EQUIPMENT_LOGS: `${APIEndpoint}/bm/equipments/logRecords`,
   BM_PROJECTS: `${APIEndpoint}/bm/projects`,
+  BM_PROJECT_EXPENSE_BY_ID: projectId => `${APIEndpoint}/bm/project/${projectId}/expenses`,
   BM_PROJECT_BY_ID: projectId => `${APIEndpoint}/bm/project/${projectId}`,
   BM_PROJECTS_LIST_FOR_MATERIALS_COST: `${APIEndpoint}/totalProjects `,
   BM_PROJECT_MATERIALS_COST: `${APIEndpoint}/material-costs`,
@@ -253,13 +257,11 @@ export const ENDPOINTS = {
   BM_EQUIPMENT_BY_ID: singleEquipmentId => `${APIEndpoint}/bm/equipment/${singleEquipmentId}`,
   BM_EQUIPMENTS: `${APIEndpoint}/bm/equipments`,
   BM_INVTYPE_TYPE: type => `${APIEndpoint}/bm/invtypes/${type}`,
-
   BM_ISSUE_CHART: `${APIEndpoint}/bm/issue/issue-chart`,
 
   BM_ISSUE_FORM: `${APIEndpoint}/bm/issue/add`,
   BM_INJURY_ISSUE: `${APIEndpoint}/bm/issues`,
   BM_RENTAL_CHART: `${APIEndpoint}/bm/rentalChart`,
-
 
   BM_TAGS: `${APIEndpoint}/bm/tags`,
   BM_TAG_ADD: `${APIEndpoint}/bm/tags`,
@@ -284,6 +286,10 @@ export const ENDPOINTS = {
   BLUE_SQUARE_EMAIL_BCC: () => `${APIEndpoint}/AssignBlueSquareEmail`,
   DELETE_BLUE_SQUARE_EMAIL_BCC: id => `${APIEndpoint}/AssignBlueSquareEmail/${id}`,
 
+  WEEKLY_SUMMARY_EMAIL_BCC: () => `${APIEndpoint}/AssignWeeklySummaryEmail`,
+  DELETE_WEEKLY_SUMMARY_EMAIL_BCC: id => `${APIEndpoint}/AssignWeeklySummaryEmail/${id}`,
+  UPDATE_WEEKLY_SUMMARY_EMAIL_BCC: id => `${APIEndpoint}/AssignWeeklySummaryEmail/${id}`,
+
   HGN_FORM_GET_QUESTION: `${APIEndpoint}/questions`,
   HGN_FORM_UPDATE_QUESTION: id => `${APIEndpoint}/questions/${id}`,
   HGN_FORM_SUBMIT: `${APIEndpoint}/hgnform`,
@@ -293,6 +299,19 @@ export const ENDPOINTS = {
   GET_JOB_FORM: formId => `${APIEndpoint}/jobforms/${formId}`,
   GET_ALL_JOB_FORMS: `${APIEndpoint}/jobforms/all`,
   GET_FORM_RESPONSES: formID => `${APIEndpoint}/jobforms/${formID}/responses`,
+
+  ADD_QUESTION: formId => `${APIEndpoint}/jobforms/${formId}/questions`,
+  UPDATE_QUESTION: (formId, questionIndex) =>
+    `${APIEndpoint}/jobforms/${formId}/questions/${questionIndex}`,
+  DELETE_QUESTION: (formId, questionIndex) =>
+    `${APIEndpoint}/jobforms/${formId}/questions/${questionIndex}`,
+  REORDER_QUESTIONS: formId => `${APIEndpoint}/jobforms/${formId}/questions/reorder`,
+
+  GET_ALL_TEMPLATES: `${APIEndpoint}/templates`,
+  CREATE_TEMPLATE: `${APIEndpoint}/templates`,
+  GET_TEMPLATE_BY_ID: id => `${APIEndpoint}/templates/${id}`,
+  UPDATE_TEMPLATE: id => `${APIEndpoint}/templates/${id}`,
+  DELETE_TEMPLATE: id => `${APIEndpoint}/templates/${id}`,
 
   JOB_NOTIFICATION_LIST: `${APIEndpoint}/job-notification-list/`,
 
@@ -312,6 +331,16 @@ export const ENDPOINTS = {
   NOTIFICATIONS: `${APIEndpoint}/notification`,
   MSG_NOTIFICATION: `${APIEndpoint}/lb/notifications`,
 
+  DROPBOX_DELETE: `${APIEndpoint}/dropbox/delete-folder`,
+  GITHUB_REMOVE: `${APIEndpoint}/github/remove`,
+  SENTRY_REMOVE: `${APIEndpoint}/sentry/remove`,
+
+  SENTRY_ADD: `${APIEndpoint}/sentry/invite`,
+  GITHUB_ADD: `${APIEndpoint}/github/invite`,
+  DROPBOX_ADD: `${APIEndpoint}/dropbox/invite`,
+  SLACK_ADD: `${APIEndpoint}/slack/invite`,
+  DROPBOX_CREATE_ADD: `${APIEndpoint}/dropbox/create-folder-and-invite`,
+  ACCESS_MANAGEMENT: `${APIEndpoint}/accessManagement`,
 
   // community portal
   CP_NOSHOW_VIZ_LOCATION: `${APIEndpoint}/communityportal/reports/participation/location`,
@@ -329,8 +358,8 @@ export const ENDPOINTS = {
   SAVED_FILTERS: () => `${APIEndpoint}/savedFilters`,
   SAVED_FILTER_BY_ID: filterId => `${APIEndpoint}/savedFilters/${filterId}`,
   UPDATE_SAVED_FILTERS_TEAM_CODES: () => `${APIEndpoint}/savedFilters/updateTeamCodes`,
-  UPDATE_SAVED_FILTERS_INDIVIDUAL_TEAM_CODE: () => `${APIEndpoint}/savedFilters/updateIndividualTeamCode`,
-
+  UPDATE_SAVED_FILTERS_INDIVIDUAL_TEAM_CODE: () =>
+    `${APIEndpoint}/savedFilters/updateIndividualTeamCode`,
 };
 
 export const ApiEndpoint = APIEndpoint;
