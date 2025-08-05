@@ -1,5 +1,4 @@
 /* eslint-disable testing-library/no-render-in-lifecycle */
-// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import moment from 'moment';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
@@ -19,10 +18,18 @@ vi.mock('../CurrentPromptModal', () => ({
   default: () => <div data-testid="current-prompt-modal">Mocked Prompt Modal</div>,
 }));
 const wrapper = props => render(<CurrentPromptModal {...props} />);
-vi.mock('react-toastify', () => ({
-  toast: vi.fn(),
-  ToastContainer: () => <div data-testid="toast-container" />,
-}));
+
+vi.mock('react-toastify', () => {
+  const toast = vi.fn();
+  toast.success = vi.fn();
+  toast.error = vi.fn();
+
+  return {
+    toast,
+    ToastContainer: () => <div data-testid="toast-container" />,
+  };
+});
+
 const mockStore = configureStore([]);
 
 describe('WeeklySummary page', () => {
