@@ -3,8 +3,18 @@ import { ENDPOINTS } from '../utils/URL';
 
 const ApiUri = ENDPOINTS.APPLICANT_VOLUNTEER_RATIO;
 
-export function getAllApplicantVolunteerRatios() {
-  return httpService.get(`${ApiUri}/analytics`);
+export function getAllApplicantVolunteerRatios(filters = {}) {
+  const { roles, startDate, endDate } = filters;
+  const params = new URLSearchParams();
+
+  if (roles) params.append('roles', roles);
+  if (startDate) params.append('startDate', startDate);
+  if (endDate) params.append('endDate', endDate);
+
+  const queryString = params.toString();
+  const url = queryString ? `${ApiUri}/analytics?${queryString}` : `${ApiUri}/analytics`;
+
+  return httpService.get(url);
 }
 
 export function getApplicantVolunteerRatioById(id) {

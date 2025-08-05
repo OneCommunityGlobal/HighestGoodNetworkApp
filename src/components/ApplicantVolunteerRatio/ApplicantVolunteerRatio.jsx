@@ -7,38 +7,81 @@ import 'react-datepicker/dist/react-datepicker.css';
 
 function ApplicantVolunteerRatio() {
   const [data, setData] = useState([]);
+  const [allRoles, setAllRoles] = useState([]); // Store all available roles
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedRoles, setSelectedRoles] = useState([]);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
 
-  // Fetch data from API
+  // Fetch all available roles (without filtering)
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchAllRoles = async () => {
+      try {
+        const response = await getAllApplicantVolunteerRatios({});
+        const apiData = response.data;
+
+        // Get all unique roles
+        const uniqueRoles = [...new Set(apiData.map(item => item.role))];
+        const roleOptions = uniqueRoles.map(role => ({ label: role, value: role }));
+
+        setAllRoles(roleOptions);
+
+        // Set all roles as selected by default
+        setSelectedRoles(roleOptions);
+      } catch (err) {
+        console.error('Error fetching all roles:', err);
+        setError('Failed to load roles. Please try again.');
+      }
+    };
+
+    fetchAllRoles();
+  }, []);
+
+  // Fetch filtered data based on selected roles and date range
+  useEffect(() => {
+    const fetchFilteredData = async () => {
+      if (selectedRoles.length === 0) {
+        setData([]);
+        return;
+      }
+
       try {
         setLoading(true);
-        const response = await getAllApplicantVolunteerRatios();
+
+        // Prepare filters
+        const filters = {};
+        if (startDate) {
+          filters.startDate = startDate.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+        }
+        if (endDate) {
+          filters.endDate = endDate.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+        }
+        if (selectedRoles.length > 0) {
+          filters.roles = selectedRoles.map(role => role.value).join(',');
+        }
+
+        const response = await getAllApplicantVolunteerRatios(filters);
         const apiData = response.data;
+
         // Transform API data to match chart format
         const transformedData = apiData.map(item => ({
           role: item.role,
           applicants: item.totalApplicants,
           hired: item.totalHired,
         }));
+
         setData(transformedData);
-        // Set all roles as selected by default
-        const roleOptions = transformedData.map(d => ({ label: d.role, value: d.role }));
-        setSelectedRoles(roleOptions);
       } catch (err) {
+        console.error('Error fetching applicant volunteer ratio data:', err);
         setError('Failed to load data. Please try again.');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchData();
-  }, []);
+    fetchFilteredData();
+  }, [startDate, endDate, selectedRoles]); // Re-fetch when date range or selected roles change
 
   // Filter and transform data for chart
   const chartData = useMemo(
@@ -63,8 +106,6 @@ function ApplicantVolunteerRatio() {
       </div>
     );
   }
-
-  const roleOptions = data.map(d => ({ label: d.role, value: d.role }));
 
   return (
     <div style={{ maxWidth: 900, margin: '0 auto', padding: 24 }}>
@@ -105,7 +146,7 @@ function ApplicantVolunteerRatio() {
           <Select
             id="role-select"
             isMulti
-            options={roleOptions}
+            options={allRoles} // Use allRoles for the dropdown
             value={selectedRoles}
             onChange={setSelectedRoles}
             placeholder="Select roles..."
