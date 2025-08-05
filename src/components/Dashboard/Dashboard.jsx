@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Row, Col, Container } from 'reactstrap';
 import { connect, useSelector } from 'react-redux';
 import { cantUpdateDevAdminDetails } from '~/utils/permissions';
-import hasPermission from '~/utils/permissions';
 import {
   DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
   DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
@@ -114,7 +113,6 @@ export function Dashboard(props) {
             isNotAllowedToEdit={isNotAllowedToEdit}
             darkMode={darkMode}
             setFilteredUserTeamIds={setFilteredUserTeamIds}
-            hasPermission={hasPermission}
           />
         </Col>
         <Col lg={7} className="left-col-dashboard order-lg-1 order-1">
