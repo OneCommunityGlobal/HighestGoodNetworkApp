@@ -430,7 +430,7 @@ const TeamMemberTask = React.memo(
                                       )}
                                       <TeamMemberTaskIconsInfo />
                                     </div>
-                                    <div>
+                                    <div className="team-member-task-review-button">
                                       <ReviewButton
                                         user={user}
                                         userId={userId}
