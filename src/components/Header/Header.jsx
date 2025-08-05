@@ -48,6 +48,7 @@ import {
   SEND_EMAILS,
   TOTAL_ORG_SUMMARY,
   TOTAL_CONSTRUCTION_SUMMARY,
+  BLUE_SQUARE_EMAIL_MANAGEMENT,
 } from '../../languages/en/ui';
 import Logout from '../Logout/Logout';
 import '../../App.css';
@@ -140,6 +141,9 @@ export function Header(props) {
     props.hasPermission('putRole', !isAuthUser && canInteractWithViewingUser) ||
     props.hasPermission('deleteRole', !isAuthUser && canInteractWithViewingUser) ||
     props.hasPermission('putUserProfilePermissions', !isAuthUser && canInteractWithViewingUser);
+  
+  // Blue Square Email Management
+  const canAccessBlueSquareEmailManagement = props.hasPermission('resendBlueSquareAndSummaryEmails', !isAuthUser);
 
   const userId = user.userid;
   const [isModalVisible, setModalVisible] = useState(false);
@@ -153,6 +157,7 @@ export function Header(props) {
   const history = useHistory();
 
   const [showProjectDropdown, setShowProjectDropdown] = useState(false);
+  const [isAckLoading, setIsAckLoading] = useState(false);
 
   useEffect(() => {
     const handleStorageEvent = () => {
@@ -475,7 +480,8 @@ export function Header(props) {
                   canAccessTeams ||
                   canAccessPopups ||
                   canAccessSendEmails ||
-                  canAccessPermissionsManagement) && (
+                  canAccessPermissionsManagement ||
+                  canAccessBlueSquareEmailManagement) && (
                   <UncontrolledDropdown nav inNavbar className="responsive-spacing">
                     <DropdownToggle nav caret>
                       <span className="dashboard-text-link">{OTHER_LINKS}</span>
@@ -517,6 +523,15 @@ export function Header(props) {
                             {PERMISSIONS_MANAGEMENT}
                           </DropdownItem>
                         </>
+                      )}
+                      {canAccessBlueSquareEmailManagement && (
+                        <DropdownItem
+                          tag={Link}
+                          to="/bluesquare-email-management"
+                          className={fontColor}
+                        >
+                          {BLUE_SQUARE_EMAIL_MANAGEMENT}
+                        </DropdownItem>
                       )}
                     </DropdownMenu>
                   </UncontrolledDropdown>
