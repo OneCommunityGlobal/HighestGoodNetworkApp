@@ -552,7 +552,7 @@ class PeopleReport extends Component {
               <p>Weekly Committed Hours</p>
             </ReportPage.ReportBlock>
 
-                {/*{(userProfile.isActive) && (
+                {(userProfile.isActive) && (
 
                   <ReportPage.ReportBlock
                     firstColor="#b368d2"
@@ -563,7 +563,7 @@ class PeopleReport extends Component {
                     <h3 className="text-light">{tangibleHoursReportedThisWeek}</h3>
                     <p>Hours Logged This Week</p>
                   </ReportPage.ReportBlock>
-                )}*/}
+                )}
                 <ReportPage.ReportBlock
                   firstColor="#64b7ff"
                   secondColor="#928aef"
