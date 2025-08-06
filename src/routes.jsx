@@ -84,7 +84,8 @@ import LBBidOverview from './components/LBDashboard/BiddingOverview/BiddingOverv
 import BiddingHomepage from './components/LBDashboard/BiddingHomepage/BiddingHomepage';
 import WishList from './components/LBDashboard/WishList/WishList';
 import WishListItem from './components/LBDashboard/WishList/ItemOverview';
-
+import LBShowReview from './components/LBDashboard/Review/ShowReviews';
+import LBLeaveReview from './components/LBDashboard/Review/ReviewForm';
 // BM Dashboard
 import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
 import BMDashboard from './components/BMDashboard';
@@ -670,7 +671,8 @@ export default (
         />
         <Route path="/lbdashboard/bidoverview" exact component={LBBidOverview} />
         <LBProtectedRoute path="/lbdashboard/bidding" exact component={BiddingHomepage} />
-
+        <Route path="/lbdashboard/leavereview" component={LBLeaveReview} />
+        <Route path="/lbdashboard/showreview" component={LBShowReview} />
         <CPProtectedRoute
           path="/communityportal/reports/participation"
           exact

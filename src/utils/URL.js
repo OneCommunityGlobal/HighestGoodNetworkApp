@@ -324,7 +324,8 @@ export const ENDPOINTS = {
   LB_GET_USER_PREFERENCES: `${APIEndpoint}/lb/preferences`,
   LB_UPDATE_USER_PREFERENCES: `${APIEndpoint}/lb/preferences`,
   LB_MARK_MESSAGES_AS_READ: `${APIEndpoint}/lb/messages/mark-as-read`,
-
+  LB_REVIEWS_SUBMIT: `${APIEndpoint}/lbdashboard/reviews/submit`,
+  LB_REVIEWS_BY_UNIT_ID: unitId => `${APIEndpoint}/lbdashboard/reviews/${unitId}`,
   NOTIFICATIONS: `${APIEndpoint}/notification`,
   MSG_NOTIFICATION: `${APIEndpoint}/lb/notifications`,
 
