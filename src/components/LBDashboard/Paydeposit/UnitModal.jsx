@@ -1,18 +1,18 @@
-import React, { useState } from "react";
-import { Modal } from "react-bootstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronLeft, faChevronRight , faMapMarkerAlt} from "@fortawesome/free-solid-svg-icons";
-import "./UnitModal.css";
+import React, { useState } from 'react';
+import { Modal } from 'react-bootstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronLeft, faChevronRight, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
+import styles from './UnitModal.module.css';
 
 const ImageModal = ({ isOpen, onClose, images }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const nextImage = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
+    setCurrentIndex(prevIndex => (prevIndex + 1) % images.length);
   };
 
   const prevImage = () => {
-    setCurrentIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length);
+    setCurrentIndex(prevIndex => (prevIndex - 1 + images.length) % images.length);
   };
 
   return (
@@ -23,33 +23,35 @@ const ImageModal = ({ isOpen, onClose, images }) => {
       size="xl" // <-- custom class to reduce width
     >
       {/* HEADER */}
-      <Modal.Header className="modal-header-custom">
-        <h2 className="modal-title">More on this unit</h2>
+      <Modal.Header className={styles.modalHeaderCustom}>
+        <h2 className={styles.modalTitle}>More on this unit</h2>
         <span>
-        <button onClick={onClose} className="close-button">X</button>
+          <button onClick={onClose} className={styles.closeButton}>
+            X
+          </button>
         </span>
       </Modal.Header>
 
       {/* BODY */}
-      <Modal.Body className="modal-body-custom">
-        <div className="modal-content-wrapper">
+      <Modal.Body className={styles.modalBodyCustom}>
+        <div className={styles.modalContentWrapper}>
           {/* LEFT: IMAGE CAROUSEL */}
-          <div className="carousel-container">
-            <img 
-              src={images[currentIndex]} 
-              alt={`Slide ${currentIndex + 1}`} 
-              className="carousel-image" 
+          <div className={styles.carouselContainer}>
+            <img
+              src={images[currentIndex]}
+              alt={`Slide ${currentIndex + 1}`}
+              className={styles.carouselImage}
             />
-            <button onClick={prevImage} className="carousel-button left">
+            <button onClick={prevImage} className={`${styles.carouselButton} ${styles.left}`}>
               <FontAwesomeIcon icon={faChevronLeft} />
             </button>
-            <button onClick={nextImage} className="carousel-button right">
+            <button onClick={nextImage} className={`${styles.carouselButton} ${styles.right}`}>
               <FontAwesomeIcon icon={faChevronRight} />
             </button>
           </div>
 
           {/* RIGHT: AMENITIES TEXT */}
-          <div className="text-section">
+          <div className={styles.textSection}>
             <h4>Available amenities in this Unit:</h4>
             <ol>
               <li>Artistic Interiors</li>
@@ -72,8 +74,16 @@ const ImageModal = ({ isOpen, onClose, images }) => {
       </Modal.Body>
 
       {/* FOOTER */}
-      <Modal.Footer className="modal-footer-custom">
-      <FontAwesomeIcon icon={faMapMarkerAlt} style={{ color: "red" }} /> <a href="#" className="property-map-link">View on Property Map</a>
+      <Modal.Footer className={styles.modalFooterCustom}>
+        <FontAwesomeIcon icon={faMapMarkerAlt} style={{ color: 'red' }} />{' '}
+        <button
+          className={styles.propertyMapLink}
+          onClick={() => {
+            /* Add your map view logic here */
+          }}
+        >
+          View on Property Map
+        </button>
       </Modal.Footer>
     </Modal>
   );

@@ -2,14 +2,14 @@
   Force the modal to be ~60% width
   and center it horizontally. 
 */
-.modal-dialog{
+.modalDialog{
     width : 45vw !important
 }
-.modal-header {
+.modalHeader {
     padding: 10px !important;
 }
   /* GREEN HEADER */
-  .modal-header-custom {
+  .modalHeaderCustom {
     /* Remove or keep position: relative if you need it elsewhere */
     position: relative;
   
@@ -23,7 +23,7 @@
     border-bottom: none;
   }
   
-  .modal-title {
+  .modalTitle {
     color: black;
     font-weight: bold;
     font-size: 20px;
@@ -31,7 +31,7 @@
   }
   
   /* RED CLOSE BUTTON (top-right) */
-  .close-button {
+  .closeButton {
     display: inline-flex;
     align-items: center;      /* Center X vertically */
     justify-content: center;  /* Center X horizontally */
@@ -49,12 +49,12 @@
   }
   
   /* BODY LAYOUT */
-  .modal-body-custom {
+  .modalBodyCustom {
     padding: 20px;
   }
   
   /* WRAPPER FOR IMAGE (LEFT) + TEXT (RIGHT) */
-  .modal-content-wrapper {
+  .modalContentWrapper {
     display: flex;
     justify-content: space-between;
     gap: 20px;
@@ -62,20 +62,23 @@
   }
   
   /* CAROUSEL CONTAINER */
-  .carousel-container {
+  .carouselContainer {
     position: relative;
     width: 45%;
     min-width: 300px;
+    display: flex; /* Add flex display */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
   }
   
-  .carousel-image {
-    width: 100%;
+  .carouselImage {
+    max-width: 100%; /* Change to max-width to prevent stretching */
     height: auto;
     border-radius: 8px;
   }
   
   /* NAV BUTTONS */
-  .carousel-button {
+  .carouselButton {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
@@ -87,34 +90,34 @@
     font-size: 18px;
   }
   
-  .carousel-button.left {
+  .carouselButton.left {
     left: 5px;
   }
   
-  .carousel-button.right {
+  .carouselButton.right {
     right: 5px;
   }
   
   /* TEXT SECTION */
-  .text-section {
+  .textSection {
     width: 50%;
     min-width: 250px;
   }
   
-  .text-section h4 {
+  .textSection h4 {
     font-weight: bold;
     margin-bottom: 10px;
   }
   
   /* FOOTER */
-  .modal-footer-custom {
+  .modalFooterCustom {
     display: flex;
     justify-content: flex-end;
     padding: 15px 20px;
     border-top: none;
   }
   
-  .property-map-link {
+  .propertyMapLink {
     color: blue;
     text-decoration: underline;
     font-size: 14px;
@@ -122,12 +125,12 @@
   
   /* RESPONSIVE: stack content if screen too narrow */
   @media (max-width: 768px) {
-    .modal-content-wrapper {
+    .modalContentWrapper {
       flex-direction: column;
       gap: 15px;
     }
-    .carousel-container,
-    .text-section {
+    .carouselContainer,
+    .textSection {
       width: 100% !important;
     }
   }

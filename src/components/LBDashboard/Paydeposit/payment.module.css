@@ -1,29 +1,30 @@
 /* Payment Main Container */
-.payment-main-container {
+.paymentMainContainer {
   display: flex;
   flex-direction: column;
   align-items: center;
   background-color: #e0e0e0;
   width: 100%;
-  min-height: 100vh;
+  min-height: 100%;
   padding: 20px;
+  margin-top: -20px;
   overflow: hidden;
 }
 
 /* Logo Container */
-.payment-logo-container {
+.paymentLogoContainer {
   text-align: center;
   margin-bottom: 20px;
 }
 
-.payment-logo-container img {
+.paymentLogoContainer img {
   max-width: 30%;
   height: auto;
   min-width: 250px;
 }
 
 /* Card Container */
-.payment-card-container {
+.paymentCardContainer {
   width: 85%;
   background-color: #fff;
   border: 1px solid #ccc;
@@ -34,13 +35,13 @@
 }
 
 /* Card Header (Green bar) */
-.payment-card-header {
+.paymentCardHeader {
   height: 60px;
   background-color: #9dd425;
 }
 
 /* Card Content */
-.payment-card-content {
+.paymentCardContent {
   /* padding: 20px 40px 40px 40px; */
   width: auto;
   background-color: #e0e0e0;
@@ -49,28 +50,30 @@
 }
 
 /* Form Container */
-.payment-form-container {
+.paymentFormContainer {
   width: 100%;
 }
 
-.payment-form-container h2 {
+.paymentFormContainer h2 {
   font-size: 28px;
   text-align: center;
   padding-top: 10px;
   color: #202020;
 }
 
-/* Image Section */
-.payment-image-section {
+/* Image Description */
+.paymentImageDescription {
   text-align: center;
 }
 
-.payment-image-section img {
-  width: 30vw;
-  height: 25vh;
+.paymentImageSection img {
+  display: block;
+  margin: 0 auto;
+  width: 33vw;
+  height: 28vh;
 }
 
-.payment-image-description {
+.paymentImageDescription {
   margin-top: 8px;
   font-size: 15px;
   color: #333;
@@ -78,26 +81,26 @@
 }
 
 /* Booking Details */
-.payment-booking-details {
+.paymentBookingDetails {
   padding-left: 15%;
   padding-bottom: 20px;
 }
 
-.payment-booking-section {
+.paymentBookingSection {
   display: flex;
   justify-content: space-between;
   color: #000;
   width: 80%;
 }
 
-.payment-booking-section h3 {
+.paymentBookingSection h3 {
   font-size: 1rem;
   font-weight: 700;
   color: #000;
 }
 
 /* Due Container */
-.payment-due-container {
+.paymentDueContainer {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -105,7 +108,7 @@
 }
 
 /* Row Layout for form inputs */
-.payment-row-layout {
+.paymentRowLayout {
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
@@ -113,14 +116,14 @@
 }
 
 /* Form Row */
-.payment-form-row {
+.paymentFormRow {
   display: flex;
   flex-direction: column;
   width: 200px;
   margin-bottom: 10px;
 }
 
-.payment-form-row input {
+.paymentFormRow input {
   padding: 8px;
   font-size: 14px;
   border: 1px solid #ccc;
@@ -128,7 +131,7 @@
 }
 
 /* Payment Action Column */
-.payment-action-column {
+.paymentActionColumn {
   display: flex;
   align-items: flex-end;
   justify-content: flex-end;
@@ -136,7 +139,7 @@
 }
 
 /* Proceed Button */
-#paymentForm button.payment-proceed-button {
+.paymentProceedButton {
   margin-top: 10px;
   background-color: #28a745;
   color: white;
@@ -148,37 +151,37 @@
   max-width: fit-content;
 }
 
-#paymentForm button.payment-proceed-button:hover {
+.paymentProceedButton:hover {
   background-color: #218838 !important;
 }
 
 /* Responsive Styles */
 @media (max-width: 990px) {
-  .payment-main-container {
+  .paymentMainContainer {
     padding: 0;
   }
-  .payment-card-content {
+  .paymentCardContent {
     flex-direction: column;
     align-items: center;
   }
-  .payment-row-layout {
+  .paymentRowLayout {
     width: 98%;
   }
 }
 
 @media (max-width: 580px) {
-  .payment-card-content {
+  .paymentCardContent {
     padding: 10px;
     margin: 10px;
   }
-  .payment-row-layout {
+  .paymentRowLayout {
     flex-direction: column;
     align-items: center;
   }
-  .payment-form-row input {
+  .paymentFormRow input {
     width: 90%;
   }
-  .payment-action-column {
+  .paymentActionColumn {
     width: 100%;
     justify-content: center;
   }

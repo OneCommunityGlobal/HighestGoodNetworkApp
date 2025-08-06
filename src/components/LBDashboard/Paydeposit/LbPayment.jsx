@@ -1,95 +1,96 @@
 import React, { useState, useRef } from 'react';
 import logo from '../../../assets/images/logo2.png';
-import sampleUnit from '../../../assets/images/sample.jpg';
-import './payment.css';
+import styles from './payment.module.css';
 import ImageModal from './UnitModal';
 import BiddingInfoModal from './BiddingInfoModal';
-import PaypalCardFields from './Paypal';  // Import the PaypalCardFields component
 
 function PaymentPage() {
+  const mockUnitData = {
+    unitName: 'Unit 405, Earthbag Village',
+    images: [
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/TEIDE.JPG/1280px-TEIDE.JPG',
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_of_Mount_Fuji_from_Motosu_Lake.jpg/1280px-Image_of_Mount_Fuji_from_Motosu_Lake.jpg',
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/0/02/OSM_Japan_-_Mount_Fuji.png/1280px-OSM_Japan_-_Mount_Fuji.png',
+    ],
+  };
   const [modal, setModal] = useState(false);
   const [infoModal, setInfoModal] = useState(false);
+  const [paymentDue, setPaymentDue] = useState(0);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
+    startDate: '',
+    endDate: '',
   });
-  // Use simple date string values for the HTML date inputs
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
-  // Payment due value (can be updated from backend later)
-  const [paymentDue, setPaymentDue] = useState(70);
 
-  // Reference for the PaypalCardFields to trigger its submission
-  const paypalRef = useRef(null);
+  const { startDate, endDate } = formData;
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+  const handleChange = e => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
+  const paypalRef = useRef();
+
+  const handleSubmit = async e => {
     e.preventDefault();
-    if (!startDate || !endDate) {
-      alert('Please select both start and end dates.');
-      return;
-    }
+    // You can add your form submission logic here
     try {
-      const payload = await paypalRef.current.submit();
-      console.log('Payment authorized!', payload);
-      setInfoModal(true);
-    } catch (err) {
-      console.error('Error submitting payment:', err);
+      const order = await paypalRef.current.createOrder();
+      // Handle successful order creation (e.g., capture payment)
+    } catch (error) {
+      // Handle error
     }
   };
 
   return (
-    <div className="payment-main-container">
-      <ImageModal
-        isOpen={modal}
-        onClose={() => setModal(false)}
-        images={[sampleUnit]}
-      />
-      <BiddingInfoModal
-        isOpen={infoModal}
-        onClose={() => setInfoModal(false)}
-      />
+    <div className={styles.paymentMainContainer}>
+      <ImageModal isOpen={modal} onClose={() => setModal(false)} images={mockUnitData.images} />
+      <BiddingInfoModal isOpen={infoModal} onClose={() => setInfoModal(false)} />
 
-      <div className="payment-logo-container">
+      <div className={styles.paymentLogoContainer}>
         <img src={logo} alt="One Community Logo" />
       </div>
 
-      <div className="payment-card-container">
-        <div className="payment-card-header"></div>
-        <div className="payment-card-content">
-          <div className="payment-form-container">
+      <div className={styles.paymentCardContainer}>
+        <div className={styles.paymentCardHeader}></div>
+        <div className={styles.paymentCardContent}>
+          <div className={styles.paymentFormContainer}>
             <h2>Bid and Pay</h2>
-            <div className="payment-image-section">
+            <div className={styles.paymentImageSection}>
               {/* Increase image size by roughly 10% */}
-              <img 
-                src={sampleUnit} 
-                alt="Bidding Unit" 
-                style={{ width: '33vw', height: '28vh' }} 
-              />
-              <p className="payment-image-description">
-                Unit 405, Earthbag Village -{' '}
-                <a
-                  style={{ textDecoration: 'underline', cursor: 'pointer' }}
-                  href="#"
+              <img src={mockUnitData.images[0]} alt="Bidding Unit" />
+              <p className={styles.paymentImageDescription}>
+                {mockUnitData.unitName} -{' '}
+                <button
+                  style={{
+                    textDecoration: 'underline',
+                    cursor: 'pointer',
+                    background: 'none',
+                    border: 'none',
+                    padding: 0,
+                    color: 'blue',
+                  }}
                   onClick={() => setModal(true)}
                 >
                   Click for more photos
-                </a>
+                </button>
               </p>
             </div>
 
-            <div className="payment-booking-details">
+            <div className={styles.paymentBookingDetails}>
               <form id="paymentForm" onSubmit={handleSubmit}>
                 {/* Booking Details Heading */}
-                <h3 style={{ marginBottom: '10px' }}>Booking Details</h3>
+                <h3 style={{ marginBottom: '10px', color: '#000' }}>Booking Details</h3>
                 {/* Flex row for date inputs and payment due */}
-                <div 
-                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '80%', marginBottom: '20px' }}
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    width: '80%',
+                    marginBottom: '20px',
+                  }}
                 >
                   <div style={{ display: 'flex', gap: '20px' }}>
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -97,8 +98,9 @@ function PaymentPage() {
                       <input
                         type="date"
                         id="from"
+                        name="startDate"
                         value={startDate}
-                        onChange={(e) => setStartDate(e.target.value)}
+                        onChange={handleChange}
                       />
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -106,18 +108,19 @@ function PaymentPage() {
                       <input
                         type="date"
                         id="to"
+                        name="endDate"
                         value={endDate}
-                        onChange={(e) => setEndDate(e.target.value)}
+                        onChange={handleChange}
                       />
                     </div>
                   </div>
-                  <div className="payment-due-container">
-                    <p style={{ margin: 0 }}>{`Payment Due - $${paymentDue}`}</p>
+                  <div className={styles.paymentDueContainer}>
+                    <p style={{ margin: 0 }}>{`Payment Due - ${paymentDue}`}</p>
                   </div>
                 </div>
 
-                <div className="payment-row-layout">
-                  <div className="payment-form-row">
+                <div className={styles.paymentRowLayout}>
+                  <div className={styles.paymentFormRow}>
                     <input
                       id="name"
                       name="name"
@@ -128,7 +131,7 @@ function PaymentPage() {
                       required
                     />
                   </div>
-                  <div className="payment-form-row">
+                  <div className={styles.paymentFormRow}>
                     <input
                       id="email"
                       name="email"
@@ -139,7 +142,7 @@ function PaymentPage() {
                       required
                     />
                   </div>
-                  <div className="payment-form-row">
+                  <div className={styles.paymentFormRow}>
                     <input
                       id="phone"
                       name="phone"
@@ -153,11 +156,44 @@ function PaymentPage() {
                 </div>
 
                 {/* Integrate the Paypal card fields component */}
-                <PaypalCardFields ref={paypalRef} />
+                <div>
+                  <div className={styles.paymentFormRow}>
+                    <input
+                      name="cardNumber"
+                      type="tel"
+                      placeholder="Card Number"
+                      value={formData.cardNumber}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <div className={styles.paymentFormRow}>
+                    <input
+                      name="expiryDate"
+                      type="text"
+                      placeholder="MM/YY"
+                      value={formData.expiryDate}
+                      onChange={handleChange}
+                      pattern="^(0[1-9]|1[0-2])\/([0-9]{2})$"
+                      maxLength="5"
+                      required
+                    />
+                  </div>
+                  <div className={styles.paymentFormRow}>
+                    <input
+                      name="cvv"
+                      type="tel"
+                      placeholder="CVV"
+                      value={formData.cvv}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                </div>
 
-                <div className="payment-action-column">
+                <div className={styles.paymentActionColumn}>
                   {/* Use the existing button */}
-                  <button type="submit" className="payment-proceed-button">
+                  <button type="submit" className={styles.paymentProceedButton}>
                     Proceed to book with details
                   </button>
                 </div>
