@@ -161,6 +161,8 @@ export function WeeklyProjectSummaryContent() {
 }
 
 function WeeklyProjectSummary() {
+  const dispatch = useDispatch();
+  const materials = useSelector(state => state.materials?.materialslist || []);
   const [openSections, setOpenSections] = useState({});
   const darkMode = useSelector(state => state.theme.darkMode);
 
@@ -257,12 +259,9 @@ function WeeklyProjectSummary() {
         key: 'Tools and Equipment Tracking',
         className: 'half',
         content: (
-          <>
-            <div className="weekly-project-summary-card normal-card">
-              <ToolsHorizontalBarChart darkMode={darkMode} />
-            </div>
-            <div className="weekly-project-summary-card normal-card">📊 Card</div>
-          </>
+          <div className="weekly-project-summary-card normal-card" style={{ minHeight: '300px' }}>
+            <ToolsHorizontalBarChart darkMode={darkMode} />
+          </div>
         ),
       },
       {

@@ -15,7 +15,7 @@ import axios from 'axios';
 import { ENDPOINTS } from '../../../../utils/URL';
 import './ToolsHorizontalBarChart.css';
 
-// Empty state data (only used if API fails)
+// Empty data fallback
 const emptyData = [];
 
 // Define tooltip component separately to avoid nested component definition
@@ -122,27 +122,35 @@ const FullPageTooltip = <CustomTooltip isCardView={false} />;
 
 function ToolsHorizontalBarChart({ darkMode, isFullPage = false, projectId, startDate, endDate }) {
   const [data, setData] = useState(emptyData);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [allProjects, setAllProjects] = useState([]);
+  const [selectedProjectId, setSelectedProjectId] = useState(projectId);
   const history = useHistory();
 
-  // Fetch all projects for potential aggregate view
+  // Fetch all projects and select a random one if none provided
   useEffect(() => {
     const fetchProjects = async () => {
-      if (!isFullPage || (isFullPage && !projectId)) {
-        try {
-          const response = await axios.get(ENDPOINTS.TOOLS_AVAILABILITY_PROJECTS);
-          setAllProjects(response.data);
-        } catch (err) {
-          // eslint-disable-next-line no-console
-          console.error('Error fetching projects:', err);
+      try {
+        const response = await axios.get(ENDPOINTS.TOOLS_AVAILABILITY_PROJECTS);
+        setAllProjects(response.data);
+
+        // If no projectId provided and we have projects, select a random one
+        if (!projectId && response.data && response.data.length > 0) {
+          const randomIndex = Math.floor(Math.random() * response.data.length);
+          const randomProject = response.data[randomIndex];
+          setSelectedProjectId(randomProject._id || randomProject.id);
         }
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error('Error fetching projects:', err);
+        setError('Failed to load projects');
+        setLoading(false);
       }
     };
 
     fetchProjects();
-  }, [isFullPage, projectId]);
+  }, [projectId]);
 
   // Fetch tools data for a specific project or for all projects
   useEffect(() => {
@@ -158,9 +166,10 @@ function ToolsHorizontalBarChart({ darkMode, isFullPage = false, projectId, star
           return;
         }
 
-        // If we have a specific project ID, fetch data for that project
-        if (projectId) {
-          const url = ENDPOINTS.TOOLS_AVAILABILITY_BY_PROJECT(projectId, startDate, endDate);
+        // If we have a specific project ID (either passed or randomly selected), fetch data for that project
+        if (projectId || selectedProjectId) {
+          const currentProjectId = projectId || selectedProjectId;
+          const url = ENDPOINTS.TOOLS_AVAILABILITY_BY_PROJECT(currentProjectId, startDate, endDate);
           const response = await axios.get(url);
           const responseData = response.data;
 
@@ -228,7 +237,7 @@ function ToolsHorizontalBarChart({ darkMode, isFullPage = false, projectId, star
     };
 
     fetchToolsData();
-  }, [projectId, startDate, endDate, isFullPage, allProjects]);
+  }, [projectId, selectedProjectId, startDate, endDate, isFullPage, allProjects]);
 
   const handleCardClick = () => {
     if (!isFullPage) {
@@ -243,8 +252,22 @@ function ToolsHorizontalBarChart({ darkMode, isFullPage = false, projectId, star
     }
 
     return (
-      <div className="tools-chart-empty" style={{ color: darkMode ? '#e0e0e0' : 'inherit' }}>
-        <p>No data available</p>
+      <div
+        className="tools-chart-empty"
+        style={{
+          color: darkMode ? '#e0e0e0' : 'inherit',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '200px',
+          fontSize: '16px',
+          textAlign: 'center',
+        }}
+      >
+        <div>
+          <p>📊 Tools Chart</p>
+          <p style={{ fontSize: '14px', opacity: 0.7 }}>No tools data available</p>
+        </div>
       </div>
     );
   };
@@ -255,6 +278,13 @@ function ToolsHorizontalBarChart({ darkMode, isFullPage = false, projectId, star
       <div
         className={`tools-horizontal-chart-container ${darkMode ? 'dark-mode' : ''}`}
         onClick={handleCardClick}
+        onKeyDown={e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            handleCardClick();
+          }
+        }}
+        role="button"
+        tabIndex={0}
         style={{
           cursor: 'pointer',
           height: '100%',
@@ -539,7 +569,7 @@ function ToolsHorizontalBarChart({ darkMode, isFullPage = false, projectId, star
         </div>
       )}
 
-      {!loading && projectId && data.length === 0 && (
+      {!loading && (projectId || selectedProjectId) && data.length === 0 && (
         <div className="tools-chart-empty" style={{ color: darkMode ? '#e0e0e0' : 'inherit' }}>
           <p>No data available for the selected filters.</p>
         </div>
