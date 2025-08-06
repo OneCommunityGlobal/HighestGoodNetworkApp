@@ -95,6 +95,8 @@ const AddTeamPopup = React.memo(props => {
         await dispatch(getAllUserTeams());
         toast.success('Team created successfully');
         const newTeam = response.data; // Assuming response contains the new team data
+        const updatedTeams = [...props.teamsData.allTeams, newTeam];
+        props.teamsData.allTeams = updatedTeams;
         setIsLoading(false);
         onAssignTeam(newTeam);
       } else {
