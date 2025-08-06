@@ -1,8 +1,8 @@
 import axios from "axios";
-import { SET_ISSUES } from "constants/bmdashboard/issueConstants";
-import { GET_ERRORS } from "constants/errors";
+import { SET_ISSUES } from "~/constants/bmdashboard/issueConstants";
+import { GET_ERRORS } from "~/constants/errors";
 import { toast } from "react-toastify";
-import { ENDPOINTS } from "utils/URL";
+import { ENDPOINTS } from "~/utils/URL";
 
 export const setIssues = payload => {
   return {
