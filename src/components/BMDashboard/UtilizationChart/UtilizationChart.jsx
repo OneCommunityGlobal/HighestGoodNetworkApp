@@ -123,7 +123,11 @@ function UtilizationChart() {
         </button>
       </div>
 
-      {error ? <p>{error}</p> : <Bar data={chartData} options={options} />}
+      {error ? (
+        <p className="utilization-chart-error">{error}</p>
+      ) : (
+        <Bar data={chartData} options={options} />
+      )}
     </div>
   );
 }

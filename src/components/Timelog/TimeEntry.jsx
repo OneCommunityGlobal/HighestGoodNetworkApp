@@ -147,11 +147,15 @@ function TimeEntry(props) {
               {hours}h {minutes}m
             </h4>
             <div className={darkMode ? "dark-text-muted" : "text-muted"}>Project/Task:</div>
-            <p className={darkMode ? 'text-light' : ''}>
-              {projectName}
-              <br />
-              {taskName && `\u2003 ↳ ${taskName}`}
-            </p>
+            <p
+  className={darkMode ? 'text-light' : 'text-dark'}
+  style={{ margin: 0 }}
+>
+  {projectName}
+  <br />
+  {taskName && `\u2003 ↳ ${taskName}`}
+</p>
+
             <div className="mb-3">
               {canEditTangibility ? (
                 <>

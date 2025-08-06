@@ -555,7 +555,7 @@ export default (
           fallback
           component={PurchaseConsumable}
         />
-        <BMProtectedRoute path="/bmdashboard/issue" fallback component={Issue} />
+
         <BMProtectedRoute path="/bmdashboard/rentalchart" component={RentalChart} />
         <BMProtectedRoute path="/bmdashboard/inventory/types" component={CheckTypes} />
         <BMProtectedRoute path="/bmdashboard/equipment" fallback exact component={EquipmentList} />
@@ -599,8 +599,8 @@ export default (
           exact
           component={WeeklyProjectSummary}
         />
-        <BMProtectedRoute path="/bmdashboard/issues/" component={IssueDashboard} />
 
+        <BMProtectedRoute path="/bmdashboard/issues/add/:projectId" component={Issue} />
         <BMProtectedRoute path="/bmdashboard/issuechart" component={IssueChart} />
 
         <BMProtectedRoute path="/bmdashboard/timelog/" component={BMTimeLogger} />
