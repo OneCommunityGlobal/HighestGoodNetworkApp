@@ -5,7 +5,7 @@ import './Collaboration.css';
 import { toast } from 'react-toastify';
 import { ApiEndpoint } from 'utils/URL';
 import { useSelector } from 'react-redux';
-import WhatWeDoSection from 'components/WhatWeDo/WhatWeDo';
+import WhatWeDoSection from '../WhatWeDo/WhatWeDo';
 import OneCommunityImage from '../../assets/images/logo2.png';
 
 function Collaboration() {
