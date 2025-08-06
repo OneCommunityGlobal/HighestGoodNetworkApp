@@ -41,7 +41,7 @@
     background-color: #72d6d3;
   }
   
-  p {
+  .utilization-chart-error {
     color: red;
     text-align: center;
   }

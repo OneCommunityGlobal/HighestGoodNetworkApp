@@ -21,11 +21,15 @@ const startEndDateValidation = props => {
 
 const StartDate = props => {
   const { darkMode, startDateAlert } = props;
+  //determine which date to display
+  const displayDate = props.userProfile.isStartDateManuallyModified
+    ? props.userProfile.startDate
+    : (props.calculatedStartDate || props.userProfile.startDate);
 
   if (!props.canEdit) {
     return (
       <p className={darkMode ? 'text-azure' : ''}>
-        {!props.userProfile.startDate ? 'N/A' : formatDate(props.userProfile.startDate)}
+        {!displayDate ? 'N/A' : formatDate(displayDate)}
       </p>
     );
   }
@@ -36,7 +40,7 @@ const StartDate = props => {
         name="StartDate"
         id="startDate"
         className={`${startEndDateValidation(props) ? 'border-error-validation' : ''} ${darkMode ? "bg-darkmode-liblack text-light border-0 calendar-icon-dark" : ''}`}
-        value={props.userProfile.startDate}
+        value={displayDate}
         min={props.userProfile.createdDate < CREATED_DATE_CRITERIA ? '' : props.userProfile.createdDate}
         onChange={e => {
           props.setUserProfile({ ...props.userProfile, startDate: e.target.value });
@@ -389,41 +393,18 @@ const ViewTab = props => {
       <Row className="volunteering-time-row">
         <Col md="6">
           <Label className={`hours-label ${darkMode ? 'text-light' : ''}`}>Start Date</Label>
-          {canEdit && props.toggleStartDateMode && (
-            <div>
-              <small className={`text-muted ${darkMode ? 'text-light' : ''}`}>
-                {props.startDateMode === 'manual' ? 'Manual Entry' : 'Calculated from Time Entries'}
-              </small>
-            </div>
-          )}
         </Col>
         <Col md="6">
-          <div className="d-flex align-items-center">
-            <div className="flex-grow-1">
-              <StartDate
-                role={role}
-                userProfile={userProfile}
-                setUserProfile={setUserProfile}
-                canEdit={canEdit}
-                onStartDateComponent={handleStartDates}
-                darkMode={darkMode}
-                startDateAlert={startDateAlert}
-              />
-            </div>
-            {canEdit && props.toggleStartDateMode && (
-              <Button
-                size="sm"
-                color="info"
-                className="ml-2 start-date-toggle-btn"
-                onClick={props.toggleStartDateMode}
-                style={darkMode ? boxStyleDark : boxStyle}
-              >
-                {props.startDateMode === 'manual'
-                  ? 'Switch to Auto'
-                  : 'Switch to Manual'}
-              </Button>
-            )}
-          </div>
+         <StartDate
+           role={role}
+           userProfile={userProfile}
+           setUserProfile={setUserProfile}
+           canEdit={canEdit}
+           onStartDateComponent={handleStartDates}
+           darkMode={darkMode}
+           startDateAlert={startDateAlert}
+           calculatedStartDate={props.calculatedStartDate}
+         />
         </Col>
       </Row>
 
