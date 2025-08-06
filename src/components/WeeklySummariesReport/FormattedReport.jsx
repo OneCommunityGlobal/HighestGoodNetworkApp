@@ -97,6 +97,7 @@ function FormattedReport({
   darkMode,
   handleTeamCodeChange,
   handleSpecialColorDotClick,
+  getWeeklySummariesReport,
 }) {
   const dispatch = useDispatch();
   const isEditCount = dispatch(hasPermission('totalValidWeeklySummaries'));
@@ -168,6 +169,7 @@ function FormattedReport({
               auth={auth}
               handleSpecialColorDotClick={handleSpecialColorDotClick}
               isFinalWeek={isFinalWeek}
+              getWeeklySummariesReport={getWeeklySummariesReport}
             />
           );
         })}
@@ -285,6 +287,7 @@ function ReportDetails({
   handleTeamCodeChange,
   auth,
   handleSpecialColorDotClick,
+  getWeeklySummariesReport,
   isFinalWeek, // new prop
 }) {
   const [filteredBadges, setFilteredBadges] = useState([]);
@@ -324,6 +327,7 @@ function ReportDetails({
                 summary={summary}
                 handleTeamCodeChange={handleTeamCodeChange}
                 darkMode={darkMode}
+                getWeeklySummariesReport={getWeeklySummariesReport}
               />
             </ListGroupItem>
             <ListGroupItem darkMode={darkMode}>
@@ -336,6 +340,7 @@ function ReportDetails({
                 />
               </div>
             </ListGroupItem>
+
             <ListGroupItem darkMode={darkMode}>
               <TotalValidWeeklySummaries
                 summary={summary}
@@ -432,13 +437,21 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
   );
 }
 
-function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange, darkMode }) {
+function TeamCodeRow({
+  canEditTeamCode,
+  summary,
+  handleTeamCodeChange,
+  darkMode,
+  getWeeklySummariesReport,
+}) {
   const [teamCode, setTeamCode] = useState(summary.teamCode);
   const [hasError, setHasError] = useState(false);
   const fullCodeRegex = /^.{5,7}$/;
+  const dispatch = useDispatch();
 
   const handleOnChange = async (userProfileSummary, newStatus) => {
     const url = ENDPOINTS.USERS_ALLTEAMCODE_CHANGE;
+
     try {
       await axios.patch(url, { userIds: [userProfileSummary._id], replaceCode: newStatus });
       handleTeamCodeChange(userProfileSummary.teamCode, newStatus, {
@@ -475,7 +488,7 @@ function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange, darkMode 
     <>
       <div className={styles.teamcodeWrapper}>
         {canEditTeamCode ? (
-          <div style={{ width: '107px', paddingRight: '5px' }}>
+          <div style={{ width: '107px', paddingRight: '5px', position: 'relative' }}>
             <Input
               id="codeInput"
               value={teamCode}
