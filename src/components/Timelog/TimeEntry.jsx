@@ -14,6 +14,7 @@ import DeleteModal from './DeleteModal';
 
 import { editTimeEntry, getTimeEntriesForWeek } from '../../actions/timeEntries';
 import { editTeamMemberTimeEntry } from '../../actions/task';
+import { updateIndividualTaskTime } from '../TeamMemberTasks/actions';
 
 /**
  * This component can be imported in TimeLog component's week tabs and Tasks tab
@@ -92,6 +93,13 @@ function TimeEntry(props) {
       } else if (from === 'WeeklyTab') {
         await dispatch(editTimeEntry(timeEntryId, newData));
         await dispatch(getTimeEntriesForWeek(timeEntryUserId, tab));
+        dispatch(
+            updateIndividualTaskTime({
+              newTime: { hours: newData.isTangible ? newData.hours : -newData.hours, minutes: newData.isTangible ? newData.minutes : -newData.minutes },
+              taskId: newData.taskId,
+              personId: newData.personId,
+            }),
+          );
       }
     } catch (error) {
       toast.error(`Error: ${error.message}`);
