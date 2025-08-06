@@ -102,3 +102,90 @@
 .user-collaboration-dark-mode .what-we-do-item:hover {
   background-color: #444; /* Darker background on hover in dark mode */
 }
+
+/* Enhanced mobile styles */
+@media (max-width: 768px) {
+  .what-we-do-container {
+    padding: 16px; /* Reduce padding on tablets */
+  }
+  
+  .what-we-do-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px; /* Slightly smaller gap */
+  }
+  
+  .what-we-do-container h2 {
+    font-size: 1.75rem; /* Slightly smaller heading */
+  }
+}
+
+@media (max-width: 480px) {
+  .what-we-do-container {
+    padding: 12px; /* More compact padding */
+  }
+  
+  .what-we-do-grid {
+    grid-template-columns: 1fr;
+    gap: 16px; /* More space between items when stacked */
+  }
+  
+  .what-we-do-container h2 {
+    font-size: 1.5rem; /* Smaller heading for phones */
+    text-align: center; /* Center the main heading */
+    margin-bottom: 20px;
+  }
+  
+  .what-we-do-item {
+    flex-direction: column;
+    align-items: center; /* Center everything on mobile */
+    text-align: center;
+    padding: 12px;
+  }
+  
+  .what-we-do-item img {
+    width: 80px; /* Slightly smaller images on mobile */
+    margin-bottom: 12px;
+  }
+  
+  .what-we-do-text h3 {
+    font-size: 1rem; /* Adjust heading size */
+    margin-bottom: 6px;
+  }
+  
+  .what-we-do-text p {
+    font-size: 0.8rem; /* Slightly smaller text */
+    line-height: 1.5; /* Better readability */
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 320px) {
+  .what-we-do-container {
+    padding: 8px;
+  }
+  
+  .what-we-do-item img {
+    width: 70px; /* Even smaller images for very small screens */
+  }
+  
+  .what-we-do-text h3 {
+    font-size: 0.95rem;
+  }
+  
+  .what-we-do-text p {
+    font-size: 0.75rem;
+  }
+}
+
+/* Optional: Add touch-friendly hover states */
+@media (hover: none) and (pointer: coarse) {
+  .what-we-do-item:hover {
+    background-color: transparent; /* Remove hover on touch devices */
+    box-shadow: none;
+  }
+  
+  .what-we-do-item:active {
+    background-color: #f0f0f0; /* Add active state for touch */
+  }
+}
+
