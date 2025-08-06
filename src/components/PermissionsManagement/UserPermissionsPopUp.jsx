@@ -128,6 +128,26 @@ function UserPermissionsPopUp({
     }
   }, [modalStatus]);
 
+  //prettier-ignore
+  const normalizeSearchInput = text => text.toLowerCase().split('').filter(char => char !== ' ').join('');
+
+  const filteredUsers = allUserProfiles
+    // eslint-disable-next-line array-callback-return, consistent-return
+    .filter(user => {
+      if (
+        //prettier-ignore
+        normalizeSearchInput(user.firstName).includes(normalizeSearchInput(searchText)) ||
+        //prettier-ignore
+        normalizeSearchInput(user.lastName).includes(normalizeSearchInput(searchText)) ||
+        //prettier-ignore
+        normalizeSearchInput(`${user.firstName} ${user.lastName}`).includes(normalizeSearchInput(searchText))
+      ) {
+        if (user.isActive) {
+          return user;
+        }
+      }
+    });
+
   return (
     <>
       {modalStatus && (
@@ -201,22 +221,8 @@ function UserPermissionsPopUp({
               }`}
               style={{ marginTop: '0px', width: '100%' }}
             >
-              {allUserProfiles
-                // eslint-disable-next-line array-callback-return, consistent-return
-                .filter(user => {
-                  if (
-                    user.firstName.toLowerCase().includes(searchText.toLowerCase()) ||
-                    user.lastName.toLowerCase().includes(searchText.toLowerCase()) ||
-                    `${user.firstName} ${user.lastName}`
-                      .toLowerCase()
-                      .includes(searchText.toLowerCase())
-                  ) {
-                    if (user.isActive) {
-                      return user;
-                    }
-                  }
-                })
-                .map(user => (
+              {filteredUsers.length > 0 ? (
+                filteredUsers.map(user => (
                   <div
                     className="user__auto-complete"
                     key={user._id}
@@ -239,7 +245,10 @@ function UserPermissionsPopUp({
                   >
                     {user.firstName} {user.lastName}
                   </div>
-                ))}
+                ))
+              ) : (
+                <div className="user__auto-complete">No users found</div>
+              )}
             </div>
           ) : (
             // eslint-disable-next-line react/jsx-no-useless-fragment
