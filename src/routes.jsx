@@ -62,7 +62,9 @@ import EmailSender from './components/common/EmailSender/EmailSender';
 import Collaboration from './components/Collaboration';
 
 import TestEventRegistration from './components/EventRegistration/TestEventRegistration';
+// Questionnaire Dashboard
 import MemberList from './components/QuestionnaireDashboard/MemberList';
+import PromotionTable from './components/QuestionnaireDashboard/PromotionTable';
 import EventPopularity from './components/EventPopularity/EventPopularity';
 import ApplicantsAgeChart from './components/ApplicantsChart';
 import ApplicationTimeChartPage from './components/ApplicationTimeChart';
@@ -704,6 +706,7 @@ export default (
         <ProtectedRoute path="/userprofile/:userId" fallback component={UserProfile} />
         <ProtectedRoute path="/userprofileedit/:userId" component={UserProfileEdit} />
         <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
+        <ProtectedRoute path="/promotiontable" exact component={PromotionTable} />
         <Route path="/Logout" component={Logout} />
         <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
         {/* ----- HGN Help Community Skills Dashboard Routes ----- */}
