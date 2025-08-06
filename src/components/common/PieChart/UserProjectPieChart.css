@@ -1,6 +1,8 @@
 .pie-chart-wrapper {
     display: flex;
     align-items: center;
+    height: 40vh;
+    /* overflow: hidden; */
   }
   
   .pie-chart {
@@ -140,7 +142,7 @@
   }
   
   .pie-chart-legend-table-wrapper {
-    max-height: 350px;
+    height: 27vh;
     width: 100%;
     /* border: 1px solid rgba(0, 0, 0, 0.1); */
     overflow-y: auto;
@@ -191,7 +193,8 @@
     /* color: inherit; */
   }
   .pie-chart-legend-table-dark tr{
-    background-color: white;
+    background-color: #1f2a40; 
+    color: white;
   }
 
   #project-chart-legend{

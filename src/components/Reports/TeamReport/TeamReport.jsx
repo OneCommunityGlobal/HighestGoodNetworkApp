@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import React, { useRef, useEffect, useState, useMemo, useCallback } from 'react';
 import { debounce } from 'lodash';
 import { useDispatch, useSelector, connect } from 'react-redux';
 import moment from 'moment';
@@ -7,8 +7,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { FiUsers } from 'react-icons/fi';
 import axios from 'axios';
-import { ENDPOINTS } from 'utils/URL';
-import { useRef } from 'react';
+import { ENDPOINTS } from '~/utils/URL';
 import {
   getAllUserTeams,
   postNewTeam,

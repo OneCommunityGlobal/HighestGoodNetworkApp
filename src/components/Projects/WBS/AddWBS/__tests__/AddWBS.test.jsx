@@ -8,8 +8,8 @@ import thunk from 'redux-thunk'
 
 const mockStore = configureMockStore([thunk]);
 
-jest.mock('utils/permissions', () => ({
-  canPostWBS: jest.fn((a) => true),
+vi.mock('utils/permissions', () => ({
+  canPostWBS: vi.fn((a) => true),
 }));
 
 const renderAddWBS = (addWBSProps) => {
@@ -51,7 +51,7 @@ describe("AddWBS component structure", () => {
     const sampleProps = {
       role: 'Owner',
     };
-    const hasPermission = jest.fn((a) => true)
+    const hasPermission = vi.fn((a) => true)
     sampleProps.hasPermission = hasPermission;
     renderAddWBS(sampleProps);
   });
@@ -83,7 +83,7 @@ describe("AddWBS component structure", () => {
 describe('AddWBS component state handlers', () => {
 
   // Mock the addNewWBS function
-  const mockAddNewWBS = jest.fn();
+  const mockAddNewWBS = vi.fn();
   const mockProjectId = '123';
 
 
@@ -93,7 +93,7 @@ describe('AddWBS component state handlers', () => {
       addWBS: mockAddNewWBS,
       projectId: mockProjectId,
     };
-    const hasPermission = jest.fn((a) => true)
+    const hasPermission = vi.fn((a) => true)
     sampleProps.hasPermission = hasPermission;
     renderAddWBS(sampleProps);
 

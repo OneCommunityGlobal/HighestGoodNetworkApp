@@ -1,6 +1,5 @@
 /* eslint-disable import/no-unresolved */
 import { useEffect, useMemo, useState } from 'react';
-import './WeeklyProjectSummary.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import html2canvas from 'html2canvas';
@@ -9,6 +8,11 @@ import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
 import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
 import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
+import ExpenseBarChart from './Financials/ExpenseBarChart';
+import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
+import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
+import styles from './WeeklyProjectSummary.module.css';
+import IssueCharts from '../Issues/openIssueCharts';
 
 const projectStatusButtons = [
   {
@@ -109,11 +113,54 @@ const projectStatusButtons = [
   },
 ];
 
-export default function WeeklyProjectSummary() {
+export function WeeklyProjectSummaryContent() {
   const dispatch = useDispatch();
   const materials = useSelector(state => state.materials?.materialslist || []);
   const [openSections, setOpenSections] = useState({});
 
+  const getColorScheme = percentage => {
+    if (percentage === '-') return 'neutral';
+    if (percentage > 0) return 'positive';
+    if (percentage < 0) return 'negative';
+    return 'neutral';
+  };
+
+  const colorScheme = getColorScheme(monthOverMonth);
+
+  const titleClass = title.replace(/\s+/g, '-').toLowerCase();
+
+  return (
+    <div
+      className={`financial-card ${colorScheme} custom-box-shadow financial-card-background-${titleClass}`}
+      onMouseEnter={() => setShowTooltip(true)}
+      onMouseLeave={() => setShowTooltip(false)}
+    >
+      <div className="financial-card-title">{title}</div>
+      <div className={`financial-card-ellipse financial-card-ellipse-${titleClass}`} />
+      <div className="financial-card-value">{value === '-' ? '-' : value.toLocaleString()}</div>
+      <div className={`financial-card-month-over-month ${colorScheme}`}>
+        {monthOverMonth === '-'
+          ? '-'
+          : `${monthOverMonth > 0 ? '+' : ''}${monthOverMonth}% month over month`}
+      </div>
+
+      {/* Tooltip for Additional Info */}
+      {showTooltip && Object.keys(additionalInfo).length > 0 && (
+        <div className="financial-card-tooltip">
+          {Object.entries(additionalInfo).map(([key]) => (
+            <div key={key} className="financial-card-tooltip-item">
+              <span className="tooltip-key">{key}:</span>
+              <span className="tooltip-value">{value}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function WeeklyProjectSummary() {
+  const [openSections, setOpenSections] = useState({});
   const darkMode = useSelector(state => state.theme.darkMode);
 
   useEffect(() => {
@@ -142,21 +189,21 @@ export default function WeeklyProjectSummary() {
         key: 'Project Status',
         className: 'full',
         content: (
-          <div className="project-status-grid">
+          <div className={`${styles.projectStatusGrid}`}>
             {projectStatusButtons.map(button => {
               const uniqueId = uuidv4();
               return (
                 <div
                   key={uniqueId}
-                  className="weekly-project-summary-card status-card"
+                  className={`${styles.weeklyProjectSummaryCard} ${styles.statusCard}`}
                   style={{ backgroundColor: button.bgColor }} // Dynamic Background
                 >
-                  <div className="weekly-card-title">{button.title}</div>
+                  <div className={`${styles.weeklyCardTitle}`}>{button.title}</div>
                   <div
-                    className="weekly-status-button"
+                    className={`${styles.weeklyStatusButton}`}
                     style={{ backgroundColor: button.buttonColor }} // Dynamic Oval Color
                   >
-                    <span className="weekly-status-value">{button.value}</span>
+                    <span className={`${styles.weeklyStatusValue}`}>{button.value}</span>
                   </div>
                   <div
                     className="weekly-status-change"
@@ -175,14 +222,21 @@ export default function WeeklyProjectSummary() {
         key: 'Material Consumption',
         className: 'large',
         content: [1, 2, 3].map((_, index) => {
+          let content;
+          if (index === 1) {
+            content = <QuantityOfMaterialsUsed data={quantityOfMaterialsUsedData} />;
+          } else if (index === 2) {
+            content = <TotalMaterialCostPerProject />;
+          } else {
+            content = <p>📊 Card</p>;
+          }
           const uniqueId = uuidv4();
           return (
-            <div key={uniqueId} className="weekly-project-summary-card normal-card">
-              {index === 1 ? (
-                <QuantityOfMaterialsUsed data={quantityOfMaterialsUsedData} />
-              ) : (
-                '📊 Card'
-              )}
+            <div
+              key={uniqueId}
+              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+            >
+              {content}
             </div>
           );
         }),
@@ -190,8 +244,12 @@ export default function WeeklyProjectSummary() {
       {
         title: 'Issue Tracking',
         key: 'Issue Tracking',
-        className: 'small',
-        content: <div className="weekly-project-summary-card normal-card">📊 Card</div>,
+        className: 'full',
+        content: (
+          <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+            <IssueCharts />
+          </div>
+        ),
       },
       {
         title: 'Tools and Equipment Tracking',
@@ -200,7 +258,10 @@ export default function WeeklyProjectSummary() {
         content: [1, 2].map(() => {
           const uniqueId = uuidv4();
           return (
-            <div key={uniqueId} className="weekly-project-summary-card normal-card">
+            <div
+              key={uniqueId}
+              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+            >
               📊 Card
             </div>
           );
@@ -213,7 +274,10 @@ export default function WeeklyProjectSummary() {
         content: [1, 2].map(() => {
           const uniqueId = uuidv4();
           return (
-            <div key={uniqueId} className="weekly-project-summary-card normal-card">
+            <div
+              key={uniqueId}
+              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+            >
               📊 Card
             </div>
           );
@@ -224,25 +288,24 @@ export default function WeeklyProjectSummary() {
         key: 'Financials',
         className: 'large',
         content: (
-          <>
-            {Array.from({ length: 4 }).map(() => {
-              const uniqueId = uuidv4();
-              return (
-                <div key={uniqueId} className="weekly-project-summary-card financial-small">
-                  📊 Card
-                </div>
-              );
-            })}
-
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
+            <div className="weekly-project-summary-card financial-small">📊 Card</div>
+            <div className="weekly-project-summary-card financial-small financial-chart">
+              <ExpenseBarChart />
+            </div>
+            <div className="weekly-project-summary-card financial-small">📊 Card</div>
+            <div className="weekly-project-summary-card financial-small">📊 Card</div>
             <div className="weekly-project-summary-card financial-big">📊 Big Card</div>
-          </>
+          </div>
         ),
       },
       {
         title: 'Loss Tracking',
         key: 'Loss Tracking',
         className: 'small',
-        content: <div className="weekly-project-summary-card normal-card">📊 Card</div>,
+        content: (
+          <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>📊 Card</div>
+        ),
       },
       {
         title: 'Global Distribution and Project Status',
@@ -250,8 +313,12 @@ export default function WeeklyProjectSummary() {
         className: 'half',
         content: (
           <>
-            <div className="weekly-project-summary-card wide-card">📊 Wide Card</div>
-            <div className="weekly-project-summary-card normal-card">📊 Normal Card</div>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.wideCard}`}>
+              📊 Wide Card
+            </div>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+              📊 Normal Card
+            </div>
           </>
         ),
       },
@@ -262,8 +329,24 @@ export default function WeeklyProjectSummary() {
         content: [1, 2].map((_, index) => {
           const uniqueId = uuidv4();
           return (
-            <div key={uniqueId} className="weekly-project-summary-card normal-card">
+            <div
+              key={uniqueId}
+              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+            >
               {index === 1 ? <PaidLaborCost /> : '📊 Card'}
+            </div>
+          );
+        }),
+      },
+      {
+        title: 'Financials Tracking',
+        key: 'Financials Tracking',
+        className: 'full',
+        content: [1, 2, 3, 4].map((_, index) => {
+          const uniqueId = uuidv4();
+          return (
+            <div key={uniqueId} className="weekly-project-summary-card normal-card">
+              {index === 3 ? <ActualVsPlannedCost /> : '📊 Card'}
             </div>
           );
         }),
@@ -361,23 +444,26 @@ export default function WeeklyProjectSummary() {
   };
 
   return (
-    <div className={`weekly-project-summary-container ${darkMode ? 'dark-mode' : ''}`}>
+    <div className={`${styles.weeklyProjectSummaryContainer} ${darkMode ? styles.darkMode : ''}`}>
       <WeeklyProjectSummaryHeader handleSaveAsPDF={handleSaveAsPDF} />
-      <div className="weekly-project-summary-dashboard-container">
-        <div className="weekly-project-summary-dashboard-grid">
+      <div className={`${styles.weeklyProjectSummaryDashboardContainer}`}>
+        <div className={`${styles.weeklyProjectSummaryDashboardGrid}`}>
           {sections.map(({ title, key, className, content }) => (
-            <div key={key} className={`weekly-project-summary-dashboard-section ${className}`}>
-              <div
-                className="weekly-project-summary-dashboard-category-title"
+            <div
+              key={key}
+              className={`${styles.weeklyProjectSummaryDashboardSection} ${styles[className]}`}
+            >
+              <button
+                type="button"
+                className={styles.weeklyProjectSummaryDashboardCategoryTitle}
                 onClick={() => toggleSection(key)}
               >
-                {title}{' '}
-                <span className="weekly-project-summary-dropdown-icon">
-                  {openSections[key] ? '∧' : '∨'}
-                </span>
-              </div>
+                {title} <span>{openSections[key] ? '∧' : '∨'}</span>
+              </button>
               {openSections[key] && (
-                <div className="weekly-project-summary-dashboard-category-content">{content}</div>
+                <div className={`${styles.weeklyProjectSummaryDashboardCategoryContent}`}>
+                  {content}
+                </div>
               )}
             </div>
           ))}
@@ -386,3 +472,5 @@ export default function WeeklyProjectSummary() {
     </div>
   );
 }
+
+export default WeeklyProjectSummary;

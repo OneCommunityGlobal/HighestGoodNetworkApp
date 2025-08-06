@@ -1,7 +1,6 @@
 // eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect'; // for the "toBeInTheDocument" matcher
 import Dropdown from '../Dropdown'; // adjust the path as needed
 
 describe('Dropdown Component', () => {
@@ -16,8 +15,8 @@ describe('Dropdown Component', () => {
   });
 
   test('displays a default option', () => {
-    const { getByText } = render(<Dropdown name="testDropdown" label="Test" options={[]} />);
-    expect(getByText(/Please select a Test/i)).toBeInTheDocument();
+    render(<Dropdown name="testDropdown" label="Test" options={[]} />);
+    expect(screen.getByText('Please select a Test')).toBeInTheDocument();
   });
 
   test('displays options from the passed array', () => {
@@ -33,9 +32,7 @@ describe('Dropdown Component', () => {
   });
 
   test('displays an error message if provided', () => {
-    const { getByText } = render(
-      <Dropdown name="testDropdown" label="Test" options={[]} error="Some error occurred" />,
-    );
-    expect(getByText(/Some error occurred/i)).toBeInTheDocument();
+    render(<Dropdown name="testDropdown" label="Test" options={[]} error="Some error occurred" />);
+    expect(screen.getByText(/Some error occurred/i)).toBeInTheDocument();
   });
 });

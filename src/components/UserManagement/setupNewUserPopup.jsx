@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import _ from 'lodash';
 import httpService from '../../services/httpService';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import '../Header/DarkMode.css';
 
 const SetupNewUserPopup = React.memo(props => {
@@ -95,7 +95,7 @@ const SetupNewUserPopup = React.memo(props => {
             htmlFor="email"
             className={`setup-new-user-popup-label ${darkMode ? 'text-light' : ''}`}
           >
-            Email{<span className="red-asterisk">* </span>}
+            Email<span className="red-asterisk">* </span>
           </label>
           <input
             type="email"
