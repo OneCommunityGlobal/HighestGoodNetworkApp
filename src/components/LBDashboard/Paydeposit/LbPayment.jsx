@@ -8,9 +8,9 @@ function PaymentPage() {
   const mockUnitData = {
     unitName: 'Unit 405, Earthbag Village',
     images: [
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/TEIDE.JPG/1280px-TEIDE.JPG',
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_of_Mount_Fuji_from_Motosu_Lake.jpg/1280px-Image_of_Mount_Fuji_from_Motosu_Lake.jpg',
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/0/02/OSM_Japan_-_Mount_Fuji.png/1280px-OSM_Japan_-_Mount_Fuji.png',
+      'https://i.ytimg.com/vi/9vYywX-54y0/maxresdefault.jpg',
+      'https://onecommunityglobal.org/wp-content/uploads/2018/02/City-Center-Main-Render_v042018_640x360.jpg',
+      'https://i.ytimg.com/vi/8Y_uQlKie2k/maxresdefault.jpg',
     ],
   };
   const [modal, setModal] = useState(false);
