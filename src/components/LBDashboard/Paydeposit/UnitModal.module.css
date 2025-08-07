@@ -1,0 +1,136 @@
+/* 
+  Force the modal to be ~60% width
+  and center it horizontally. 
+*/
+.modalDialog{
+    width : 45vw !important
+}
+.modalHeader {
+    padding: 10px !important;
+}
+  /* GREEN HEADER */
+  .modalHeaderCustom {
+    /* Remove or keep position: relative if you need it elsewhere */
+    position: relative;
+  
+    background-color: #9dd425;
+    display: flex;
+    align-items: center;
+    
+    /* Reduced top/bottom padding from 15px to 10px => ~33% smaller */
+    padding: 10px 20px;
+    
+    border-bottom: none;
+  }
+  
+  .modalTitle {
+    color: black;
+    font-weight: bold;
+    font-size: 20px;
+    margin: 0;
+  }
+  
+  /* RED CLOSE BUTTON (top-right) */
+  .closeButton {
+    display: inline-flex;
+    align-items: center;      /* Center X vertically */
+    justify-content: center;  /* Center X horizontally */
+    width: 30px !important;              /* Force a fixed width */
+    height: 30px;             /* Force a fixed height */
+    background-color: red;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    border: 2px solid black;
+    border-radius: 8px;
+    cursor: pointer;
+    margin: 0;
+    padding: 0; /* No extra padding since we're using a fixed width/height */
+  }
+  
+  /* BODY LAYOUT */
+  .modalBodyCustom {
+    padding: 20px;
+  }
+  
+  /* WRAPPER FOR IMAGE (LEFT) + TEXT (RIGHT) */
+  .modalContentWrapper {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: nowrap;
+  }
+  
+  /* CAROUSEL CONTAINER */
+  .carouselContainer {
+    position: relative;
+    width: 45%;
+    min-width: 300px;
+    display: flex; /* Add flex display */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+  }
+  
+  .carouselImage {
+    max-width: 100%; /* Change to max-width to prevent stretching */
+    height: auto;
+    border-radius: 8px;
+  }
+  
+  /* NAV BUTTONS */
+  .carouselButton {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 18px;
+  }
+  
+  .carouselButton.left {
+    left: 5px;
+  }
+  
+  .carouselButton.right {
+    right: 5px;
+  }
+  
+  /* TEXT SECTION */
+  .textSection {
+    width: 50%;
+    min-width: 250px;
+  }
+  
+  .textSection h4 {
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  /* FOOTER */
+  .modalFooterCustom {
+    display: flex;
+    justify-content: flex-end;
+    padding: 15px 20px;
+    border-top: none;
+  }
+  
+  .propertyMapLink {
+    color: blue;
+    text-decoration: underline;
+    font-size: 14px;
+  }
+  
+  /* RESPONSIVE: stack content if screen too narrow */
+  @media (max-width: 768px) {
+    .modalContentWrapper {
+      flex-direction: column;
+      gap: 15px;
+    }
+    .carouselContainer,
+    .textSection {
+      width: 100% !important;
+    }
+  }
