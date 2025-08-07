@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { Bar } from 'react-chartjs-2';
 import Select from 'react-select';
 import { fetchIssues } from '../../../actions/bmdashboard/issueChartActions';
+import 'chart.js/auto'; // Ensures chart.js globals are set up
 import './issueChart.css';
 
 function IssueChart() {
@@ -25,28 +26,26 @@ function IssueChart() {
             .map(year => parseInt(year, 10)),
         ),
       ].sort((a, b) => a - b);
-
       setFilters({ issueTypes: allIssueTypes, years: allYears });
     }
   }, [issues]);
 
+  // Dropdown options
   const extractDropdownOptions = () => {
-    const issueTypes = [...new Set(Object.keys(issues))].map(issue => ({
+    const issueTypes = [...new Set(Object.keys(issues || {}))].map(issue => ({
       label: issue,
       value: issue,
     }));
-
     const years = [
       ...new Set(
-        Object.values(issues)
+        Object.values(issues || {})
           .flatMap(issueData => Object.keys(issueData))
-          .map(year => parseInt(year, 10)),
+          .map(y => parseInt(y, 10)),
       ),
     ]
       .sort((a, b) => a - b)
       .map(year => ({ label: year.toString(), value: year }));
-
-    const addAll = options => [{ label: 'All', value: 'All' }, ...options];
+    const addAll = opts => [{ label: 'All', value: 'All' }, ...opts];
     return {
       issueTypes: addAll(issueTypes),
       years: addAll(years),
@@ -54,87 +53,104 @@ function IssueChart() {
   };
 
   const { issueTypes, years } = extractDropdownOptions();
+  const uniqueYears = years.filter(y => y.value !== 'All').map(y => y.value);
 
-  const generateColor = index => {
-    const hue = (index * 60) % 360;
-    return `hsl(${hue}, 70%, 50%)`;
-  };
-
-  const uniqueYears = years.filter(year => year.value !== 'All').map(year => year.value);
-  const yearColorMap = uniqueYears.reduce((acc, year, index) => {
-    acc[year] = generateColor(year, index);
+  // Assign colors for each year
+  const generateColor = idx => `hsl(${(idx * 60) % 360}, 70%, 50%)`;
+  const yearColorMap = uniqueYears.reduce((acc, year, idx) => {
+    acc[year] = generateColor(idx);
     return acc;
   }, {});
 
-  const handleFilterChange = (selectedOptions, field) => {
-    if (selectedOptions.some(option => option.value === 'All')) {
-      const allValues = field === 'issueTypes' ? Object.keys(issues) : uniqueYears;
+  // Filter change handler
+  const handleFilterChange = (selected, field) => {
+    if (selected.some(option => option.value === 'All')) {
       setFilters({
         ...filters,
-        [field]: allValues,
+        [field]: field === 'issueTypes' ? Object.keys(issues) : uniqueYears,
       });
     } else {
       setFilters({
         ...filters,
-        [field]: selectedOptions.map(option => option.value),
+        [field]: selected.map(option => option.value),
       });
     }
   };
 
-  const processData = () => {
-    if (!issues || Object.keys(issues).length === 0) return [{ issueType: 'No Data' }];
-
-    if (filters.issueTypes.length === 0 && filters.years.length >= 0) {
-      return [{ issueType: 'No Issues Selected' }];
-    }
-
-    const groupedData = {};
-    const allYears = [...filters.years].sort((a, b) => a - b);
-
+  // Processed data for chart.js
+  const chartData = useMemo(() => {
+    if (!issues || Object.keys(issues).length === 0) return { labels: [], datasets: [] };
     const filteredIssueTypes = filters.issueTypes.length ? filters.issueTypes : Object.keys(issues);
+    const filteredYears = filters.years.length ? filters.years : uniqueYears;
+    // X-axis labels: issue types
+    const labels = filteredIssueTypes;
+    // Prepare one dataset per year (for grouped bars)
+    const datasets = filteredYears.map((year, idx) => ({
+      label: year.toString(),
+      data: labels.map(issueType => issues[issueType]?.[year] || 0),
+      backgroundColor: yearColorMap[year],
+      borderWidth: 1,
+      borderRadius: 6,
+    }));
+    return { labels, datasets };
+  }, [issues, filters, uniqueYears, yearColorMap]);
 
-    filteredIssueTypes.forEach(issueType => {
-      if (!issues[issueType]) return;
-
-      const issueData = issues[issueType];
-      groupedData[issueType] = { issueType };
-
-      allYears.forEach(year => {
-        groupedData[issueType][year] = 0;
-      });
-
-      Object.keys(issueData).forEach(year => {
-        const yearNum = parseInt(year, 10);
-        if (filters.years.includes(yearNum)) {
-          groupedData[issueType][yearNum] = issueData[year] || 0;
-        }
-      });
-    });
-
-    return Object.values(groupedData);
-  };
-
-  const processedData = processData();
-
-  const allYValues = processedData.flatMap(data =>
-    Object.values(data).filter(val => typeof val === 'number'),
+  const chartOptions = useMemo(
+    () => ({
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: true,
+          position: 'top',
+          labels: {
+            font: { size: 13 },
+            usePointStyle: true,
+          },
+        },
+        title: {
+          display: true,
+          text: 'Number of Issues Reported by Type',
+          font: { size: 17 },
+        },
+        tooltip: {
+          enabled: true,
+          mode: 'index',
+          intersect: false,
+          callbacks: {
+            label: ctx => `${ctx.dataset.label}: ${ctx.formattedValue}`,
+          },
+        },
+      },
+      scales: {
+        x: {
+          title: { display: true, text: 'Issue Type', font: { size: 14 } },
+          grid: { display: false },
+        },
+        y: {
+          title: { display: true, text: 'No. of Issues', font: { size: 14 } },
+          beginAtZero: true,
+          ticks: { stepSize: 1 },
+          grid: { color: '#efefef' },
+        },
+      },
+      // Group bars by year
+      barPercentage: 0.9,
+      categoryPercentage: 0.8,
+    }),
+    [],
   );
 
-  const yTicks = [...new Set(allYValues.map(val => Math.floor(val)))].sort((a, b) => a - b);
-
-  const sortedProcessedData = processedData.sort((a, b) => {
-    const issueTypeA = a.issueType;
-    const issueTypeB = b.issueType;
-    return (
-      issueTypes.findIndex(option => option.value === issueTypeA) -
-      issueTypes.findIndex(option => option.value === issueTypeB)
-    );
-  });
-
   return (
-    <div className="issue-chart-event-container">
-      <h2 className="issue-chart-event-title">Issues Chart</h2>
-
+    <div
+      className="issue-chart-event-container"
+      style={{ minHeight: 500 }}
+      role="region"
+      aria-label="Grouped bar chart showing number of issues reported by type and year"
+    >
+      <h2 className="issue-chart-event-title" id="chart-title">
+        Issues Chart
+      </h2>
       <div>
         <label className="issue-chart-label" htmlFor="issue-type-select">
           Issue Type:
@@ -144,10 +160,10 @@ function IssueChart() {
           className="issue-chart-select"
           isMulti
           options={issueTypes}
-          onChange={selectedOptions => handleFilterChange(selectedOptions, 'issueTypes')}
+          onChange={selected => handleFilterChange(selected, 'issueTypes')}
           value={issueTypes.filter(option => filters.issueTypes.includes(option.value))}
+          aria-label="Filter by issue type"
         />
-
         <label className="issue-chart-label" htmlFor="year-select">
           Year:
         </label>
@@ -155,26 +171,18 @@ function IssueChart() {
           inputId="year-select"
           className="issue-chart-select"
           isMulti
-          // other props...
+          options={years}
+          onChange={selected => handleFilterChange(selected, 'years')}
+          value={years.filter(option => filters.years.includes(option.value))}
+          aria-label="Filter by year"
         />
       </div>
-
       {loading && <p>Loading...</p>}
       {error && <p>Error: {error}</p>}
       {!loading && !error && (
-        <ResponsiveContainer width="100%" height={400}>
-          <BarChart data={sortedProcessedData} margin={{ top: 60, right: 30, left: 20, bottom: 5 }}>
-            <XAxis dataKey="issueType" />
-            <YAxis ticks={yTicks} tickFormatter={tick => tick} />
-            <Tooltip />
-            <Legend />
-            {(filters.years.length ? filters.years : uniqueYears)
-              .sort((a, b) => a - b)
-              .map(year => (
-                <Bar key={year} dataKey={year} fill={yearColorMap[year]} />
-              ))}
-          </BarChart>
-        </ResponsiveContainer>
+        <div style={{ width: '100%', minHeight: 400, height: 420 }}>
+          <Bar data={chartData} options={chartOptions} aria-labelledby="chart-title" />
+        </div>
       )}
     </div>
   );
