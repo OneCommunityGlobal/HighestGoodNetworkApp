@@ -23,6 +23,9 @@ if (process.env.NODE_ENV === 'test') {
     el.textContent = message;
     document.body.appendChild(el);
   };
+  toast.dismiss = () => {
+    // No-op for tests - just a stub to prevent errors
+  };
 }
 
 export class ForcePasswordUpdate extends Form {
@@ -51,7 +54,9 @@ export class ForcePasswordUpdate extends Form {
     // Clear errors when unmounting
     this.props.clearErrors();
     // Important: dismiss all toasts to prevent DOM manipulation after unmount
-    toast.dismiss();
+    if (toast.dismiss && typeof toast.dismiss === 'function') {
+      toast.dismiss();
+    }
   }
 
   schema = {
