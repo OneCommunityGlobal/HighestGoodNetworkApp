@@ -833,62 +833,54 @@ const BasicInformationTab = props => {
     </>
   );
 
-  const endDateComponent = (
-  <>
-    {desktopDisplay ? (
-      <Row
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          paddingLeft: '15px',
-        }}
-      >
-        <Col
-          md="7"
-          className="mr-5"
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-          }}
-        >
-          <Label style={{ margin: '0' }} className={`mr-1 ${darkMode ? 'text-light' : ''}`}>
-            {userProfile.endDate
-              ? 'End Date ' + userProfile.endDate.substring(0, 10)
-              : 'End Date ' + 'N/A'}
-          </Label>
-        </Col>
-        {canEdit && canEditEndDate && (
-          <Col
-            style={{
-              display: 'flex',
-              justifyContent: 'flex-end',
-              alignItems: 'center',
-            }}
+  const statusComponent = (
+    <>
+      <Col md={desktopDisplay ? '5' : ''}>
+        <Label className={darkMode ? 'text-light' : ''}>
+          Status
+        </Label>
+      </Col>
+      <Col md={desktopDisplay ? '7' : ''}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Label
+            style={{ margin: '0' }}
+            className={darkMode ? 'text-light label-with-icon' : 'label-with-icon'}
           >
-            <SetUpFinalDayButton
-              loadUserProfile={loadUserProfile}
+            {userProfile.isActive
+              ? 'Active'
+              : userProfile.reactivationDate
+              ? 'Paused until ' + formatDateLocal(userProfile.reactivationDate)
+              : 'Inactive'}
+          </Label>
+          {canEdit && canEditStatus && (
+            <PauseAndResumeButton
               setUserProfile={setUserProfile}
+              loadUserProfile={loadUserProfile}
               isBigBtn={true}
               userProfile={userProfile}
               darkMode={darkMode}
-              onFinalDaySave={(updatedUser) => {
-                setUserProfile(updatedUser);
-                loadUserProfile();
-              }}
             />
-          </Col>
-        )}
-      </Row>
-    ) : (
-      <>
-        <Col md={desktopDisplay ? '8' : ''} className={desktopDisplay ? 'mr-5' : ''}>
-          <Label className={`mr-1 ${darkMode ? 'text-light' : ''}`}>
+          )}
+        </div>
+      </Col>
+    </>
+  );
+
+  const endDateComponent = (
+    <>
+      <Col md={desktopDisplay ? '5' : ''}>
+        <Label className={darkMode ? 'text-light' : ''}>
+          End Date
+        </Label>
+      </Col>
+      <Col md={desktopDisplay ? '7' : ''}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Label className={darkMode ? 'text-light' : ''} style={{ margin: '0' }}>
             {userProfile.endDate
-              ? 'End Date ' + userProfile.endDate.substring(0, 10)
-              : 'End Date ' + 'N/A'}
+              ? formatDateLocal(userProfile.endDate)
+              : 'N/A'}
           </Label>
-          {canEdit && canEditEndDate && !desktopDisplay && (
+          {canEdit && canEditEndDate && (
             <SetUpFinalDayButton
               loadUserProfile={loadUserProfile}
               setUserProfile={setUserProfile}
@@ -897,107 +889,60 @@ const BasicInformationTab = props => {
               darkMode={darkMode}
             />
           )}
-        </Col>
-        {desktopDisplay && canEdit && canEditEndDate && (
-          <Col>
+        </div>
+      </Col>
+    </>
+  );
+
+  const statusComponentMobile = (
+    <>
+      <Col>
+        <Label className={darkMode ? 'text-light' : ''}>Status</Label>
+        <div>
+          <Label style={{ fontWeight: 'normal' }} className={darkMode ? 'text-light' : ''}>
+            {userProfile.isActive
+              ? 'Active'
+              : userProfile.reactivationDate
+              ? 'Paused until ' + formatDateLocal(userProfile.reactivationDate)
+              : 'Inactive'}
+          </Label>
+          &nbsp;
+          {canEdit && canEditStatus && (
+            <PauseAndResumeButton
+              setUserProfile={setUserProfile}
+              loadUserProfile={loadUserProfile}
+              isBigBtn={true}
+              userProfile={userProfile}
+              darkMode={darkMode}
+            />
+          )}
+        </div>
+      </Col>
+    </>
+  );
+
+  const endDateComponentMobile = (
+    <>
+      <Col>
+        <Label className={darkMode ? 'text-light' : ''}>End Date</Label>
+        <div>
+          <Label style={{ fontWeight: 'normal' }} className={darkMode ? 'text-light' : ''}>
+            {userProfile.endDate
+              ? formatDateLocal(userProfile.endDate)
+              : 'N/A'}
+          </Label>
+          &nbsp;
+          {canEdit && canEditEndDate && (
             <SetUpFinalDayButton
               loadUserProfile={loadUserProfile}
               setUserProfile={setUserProfile}
               isBigBtn={true}
               userProfile={userProfile}
               darkMode={darkMode}
-              onFinalDaySave={(updatedUser) => {
-                setUserProfile(updatedUser);
-                loadUserProfile();
-              }}
             />
-          </Col>
-        )}
-      </>
-    )}
-  </>
-);
-
-  const statusComponent = (
-    <>
-      {desktopDisplay ? (
-        <Row
-          style={{
-            display: 'flex',
-            alignItems: 'center', // Ensures vertical alignment of all items
-            justifyContent: 'space-between', // Space between the columns
-          }}
-        >
-          <Col
-            md="2"
-            className="mr-5"
-            style={{
-              display: 'flex',
-              alignItems: 'center', // Align label vertically
-            }}
-          >
-            <Label className={darkMode ? 'text-light' : ''} style={{ margin: '0' }}>
-              Status
-            </Label>
-          </Col>
-
-          <Col
-            style={{
-              display: 'flex',
-              alignItems: 'center', // Align label and button vertically
-              justifyContent: 'flex-end', // Align button to the far right
-            }}
-          >
-            <Label
-              style={{ margin: '0' }}
-              className={darkMode ? 'text-light label-with-icon' : 'label-with-icon'}
-            >
-              {userProfile.isActive
-                ? 'Active'
-                : userProfile.reactivationDate
-                ? 'Paused until ' + formatDateLocal(userProfile.reactivationDate)
-                : 'Inactive'}
-            </Label>
-            &nbsp;
-            {canEdit && canEditStatus && (
-              <PauseAndResumeButton
-                setUserProfile={setUserProfile}
-                loadUserProfile={loadUserProfile}
-                isBigBtn={true}
-                userProfile={userProfile}
-                darkMode={darkMode}
-              />
-            )}
-          </Col>
-        </Row>
-      ) : (
-        // Non-desktop view
-        <>
-          <Col>
-            <Label className={darkMode ? 'text-light' : ''}>Status</Label>
-            <div>
-              <Label style={{ fontWeight: 'normal' }} className={darkMode ? 'text-light' : ''}>
-                {userProfile.isActive
-                  ? 'Active'
-                  : userProfile.reactivationDate
-                  ? 'Paused until ' + formatDateLocal(userProfile.reactivationDate)
-                  : 'Inactive'}
-              </Label>
-              &nbsp;
-              {canEdit && canEditStatus && (
-                <PauseAndResumeButton
-                  setUserProfile={setUserProfile}
-                  loadUserProfile={loadUserProfile}
-                  isBigBtn={true}
-                  userProfile={userProfile}
-                  darkMode={darkMode}
-                />
-              )}
-            </div>
-          </Col>
-          {endDateComponent}
-        </>
-      )}
+          )}
+        </div>
+      </Col>
     </>
   );
 
@@ -1038,9 +983,9 @@ const BasicInformationTab = props => {
               {timeZoneComponent}
               <Col md="1"></Col>
             </Row>
-            <Row>{timeZoneDifferenceComponent}</Row>
-            <Row className='custom-row' style={{ marginBottom: '10px' }}>{statusComponent}</Row>
-            <Row className='custom-row' style={{ marginBottom: '10px' }}>{endDateComponent}</Row>
+            <Row style={{ marginBottom: '10px' }}>{timeZoneDifferenceComponent}</Row>
+            <Row style={{ marginBottom: '10px' }}>{statusComponent}</Row>
+            <Row style={{ marginBottom: '10px' }}>{endDateComponent}</Row>
           </>
         ) : (
           <>
@@ -1055,7 +1000,10 @@ const BasicInformationTab = props => {
             <Col className="cols">{timeZoneDifferenceComponent}</Col>
             <hr />
             <Row xs="2" style={{ marginLeft: '1rem' }}>
-              {statusComponent}
+              {statusComponentMobile}
+            </Row>
+            <Row xs="2" style={{ marginLeft: '1rem' }}>
+              {endDateComponentMobile}
             </Row>
           </>
         )}
