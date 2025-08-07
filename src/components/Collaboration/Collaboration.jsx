@@ -23,11 +23,16 @@ class Collaboration extends Component {
   componentDidMount() {
     this.fetchJobAds();
     this.fetchCategories();
+    window.addEventListener('resize', this.handleResize);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.handleResize);
   }
 
   fetchJobAds = async () => {
     const { searchTerm, selectedCategory, currentPage } = this.state;
-    const adsPerPage = 18;
+    const adsPerPage = this.calculateAdsPerPage();
 
     try {
       const response = await fetch(
@@ -130,6 +135,26 @@ class Collaboration extends Component {
     } catch (error) {
       toast.error('Error fetching summaries');
     }
+  };
+
+  calculateAdsPerPage = () => {
+    const width = window.innerWidth;
+
+    // Estimate number of columns based on screen width
+    const columns =
+      width >= 1600 ? 6 :
+      width >= 1300 ? 5 :
+      width >= 1024 ? 4 :
+      width >= 768 ? 3 :
+      width >= 480 ? 2 : 1;
+
+    const rows = 5; 
+    return columns * rows;
+  };
+
+
+  handleResize = () => {
+    this.fetchJobAds();
   };
 
   render() {

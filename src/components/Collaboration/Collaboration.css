@@ -4,6 +4,10 @@
   max-width: 1000px;
   display: flex;
 }
+.container, .job-landing {
+  height: auto;
+  min-height: 100vh;
+}
 .headings,
 .job-ad {
   text-align: center;
@@ -69,6 +73,9 @@ select {
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 20px;
   width: 100%;
+  margin-top: 20px;
+  justify-content: center;
+  align-items: stretch; /* ensure rows fill vertically */
 }
 .job-ad {
   border: 1px solid #ddd;
