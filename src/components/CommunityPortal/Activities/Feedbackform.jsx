@@ -16,29 +16,61 @@ const isValidName = name => {
 };
 
 const isValidEmail = email => {
+  const validTLDs = new Set([
+    'com',
+    'org',
+    'net',
+    'edu',
+    'gov',
+    'io',
+    'co',
+    'uk',
+    'us',
+    'ca',
+    'de',
+    'jp',
+    'fr',
+    'au',
+    'in',
+    'cn',
+    'br',
+    'es',
+    'it',
+    'info',
+    'biz',
+    'xyz',
+    'me',
+    'tv',
+    'online',
+    'store',
+    'ai',
+  ]);
+
+  if (typeof email !== 'string') return false;
   if (!email || email.includes(' ')) return false;
-  const emailParts = email.split('@');
-  if (emailParts.length !== 2) return false;
-  const [localPart, domainPart] = emailParts;
-  if (!localPart || !domainPart) return false;
-  if (!domainPart.includes('.')) return false;
-  const domainSections = domainPart.split('.');
-  if (domainSections.some(section => section.length === 0)) return false;
+  const trimmed = email.trim();
+  // Reject control/invisible characters
+  if (/[\x00-\x1F\x7F\u200B-\u200F]/.test(trimmed)) return false;
 
-  // Only allow specific TLDs
-  const allowedTLDs = ['com', 'org', 'net', 'edu', 'co.in']; // add/remove as needed
-  const tld =
-    domainSections.slice(-2).join('.') === 'co.in'
-      ? 'co.in'
-      : domainSections[domainSections.length - 1];
+  // Basic structure check
+  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!regex.test(trimmed)) return false;
 
-  if (!allowedTLDs.includes(tld)) return false;
-  return true;
+  // Extract TLD
+  const domain = trimmed.split('@')[1];
+  const domainParts = domain.split('.');
+  if (domainParts.length < 2) return false;
+
+  const TLD = domainParts[domainParts.length - 1].toLowerCase();
+
+  return validTLDs.has(TLD);
 };
 function Feedbackform() {
   const dispatch = useDispatch();
   const { eventId, email } = useParams();
   const initialFormState = { eventId: eventId, name: '', email: '', rating: 0, comments: '' };
+  // eslint-disable-next-line no-console
+  console.log(`eventId is${eventId}`);
 
   const [formData, setFormData] = useState({
     ...initialFormState,
@@ -145,10 +177,12 @@ function Feedbackform() {
 
     const eventFeedback = {
       ...formData,
-      createdBy: 'anonymous',
-      createdAt: new Date().toString(),
-      _id: uuidv4(),
+      // createdBy: 'anonymous',
+      // createdAt: new Date().toString(),
+      // _id: uuidv4(),
     };
+    // eslint-disable-next-line no-console
+    console.log(eventFeedback);
     dispatch(addEventFeedback(eventFeedback));
     // toast.success('Event feedback submitted');
     // replace toast
