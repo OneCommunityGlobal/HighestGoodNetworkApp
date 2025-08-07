@@ -331,15 +331,7 @@ function ReportDetails({
               />
             </ListGroupItem>
             <ListGroupItem darkMode={darkMode}>
-              {/* <div style={{ width: '200%', backgroundColor: isMeetCriteria ? 'yellow' : 'none' }}> */}
-              <div
-                style={{
-                  width: '200%',
-                  backgroundColor: summary.bioPosted === 'requested' ? 'yellow' : 'transparent',
-                  padding: summary.bioPosted === 'requested' ? '8px' : '0',
-                  borderRadius: summary.bioPosted === 'requested' ? '4px' : '0',
-                }}
-              >
+              <div style={{ width: '200%', backgroundColor: isMeetCriteria ? 'yellow' : 'none' }}>
                 <Bio
                   bioCanEdit={bioCanEdit && !cantEditJaeRelatedRecord}
                   userId={summary._id}
@@ -637,15 +629,7 @@ function BioSwitch({ userId, bioPosted, summary }) {
   };
 
   return (
-    // <div>
-    <div
-      style={{
-        backgroundColor: bioStatus === 'requested' ? 'yellow' : 'transparent',
-        padding: bioStatus === 'requested' ? '8px' : '0',
-        borderRadius: bioStatus === 'requested' ? '4px' : '0',
-        width: '100%',
-      }}
-    >
+    <div>
       <div className={styles.bioToggle}>
         <b style={style}>Bio announcement:</b>
       </div>
@@ -677,14 +661,7 @@ function BioLabel({ bioPosted, summary }) {
     text = 'Requested';
   }
   return (
-    <div
-      style={{
-        backgroundColor: bioPosted === 'requested' ? 'yellow' : 'transparent',
-        padding: bioPosted === 'requested' ? '8px' : '0',
-        borderRadius: bioPosted === 'requested' ? '4px' : '0',
-        width: '100%',
-      }}
-    >
+    <div>
       <b style={style}>Bio announcement: </b>
       {text}
     </div>

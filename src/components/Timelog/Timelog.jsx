@@ -233,7 +233,7 @@ const generateAllTimeEntryItems = () => {
   const lastWeekEntries = generateTimeEntries(timeEntries.weeks[1], 1);
   const beforeLastEntries = generateTimeEntries(timeEntries.weeks[2], 2);
   const periodEntries = generateTimeEntries(timeEntries.period, 3);
-  return [currentWeekEntries, beforeLastEntries, beforeLastEntries, periodEntries];
+  return [currentWeekEntries, lastWeekEntries, beforeLastEntries, periodEntries];
 };
 
 
@@ -392,17 +392,19 @@ const generateAllTimeEntryItems = () => {
     }
     if (timeLogState.activeTab === 4) {
       return (
-        <p className={`ml-1 responsive-font-size ${darkMode ? 'text-light' : ''}`} style={{textAlign: 'left'}} >
-          Viewing time Entries from <b>{formatDate(timeLogState.fromDate)}</b> to{' '}
-          <b>{formatDate(timeLogState.toDate)}</b>
-        </p>
+        <p className="ml-1 responsive-font-size text-dark" style={{ textAlign: 'left' }}>
+  Viewing time Entries from <b>{formatDate(timeLogState.fromDate)}</b> to{' '}
+  <b>{formatDate(timeLogState.toDate)}</b>
+</p>
+
       );
     }
     return (
-      <p className={`ml-1 responsive-font-size ${darkMode ? 'text-light' : ''}`} style={{textAlign: 'left'}}>
-        Viewing time Entries from <b>{formatDate(startOfWeek(timeLogState.activeTab - 1))}</b> to{' '}
-        <b>{formatDate(endOfWeek(timeLogState.activeTab - 1))}</b>
-      </p>
+      <p className="ml-1 responsive-font-size text-dark" style={{ textAlign: 'left' }}>
+  Viewing time Entries from <b>{formatDate(startOfWeek(timeLogState.activeTab - 1))}</b> to{' '}
+  <b>{formatDate(endOfWeek(timeLogState.activeTab - 1))}</b>
+</p>
+
     );
   };
 
