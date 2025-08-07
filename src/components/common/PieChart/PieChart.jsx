@@ -12,12 +12,62 @@ export const PieChart = ({
   darkMode,
 }) => {
   const [totalHours, setTotalHours] = useState(0);
-  
+
   // Custom vibrant color palette
   const customColors = [
-    '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFBE0B',
-    '#FF006E', '#8338EC', '#3A86FF', '#FB5607', '#38B000',
-    '#7209B7', '#F72585', '#4CC9F0', '#80ED99', '#F15BB5',
+    // Original 15 Colors (Top)
+    '#FF6B6B',
+    '#4ECDC4',
+    '#45B7D1',
+    '#FFBE0B',
+    '#118AB2',
+    '#FF006E',
+    '#8338EC',
+    '#3A86FF',
+    '#FB5607',
+    '#38B000',
+    '#7209B7',
+    '#F72585',
+    '#4CC9F0',
+    '#80ED99',
+    '#F15BB5',
+
+    // New 35 Colors (Below)
+    '#96CEB4',
+    '#FFD166', // Mellow Yellow
+    '#06D6A0', // Bright Mint
+    '#073B4C', // Midnight Blue
+    '#F94144', // Tomato Red
+    '#F3722C', // Persimmon
+    '#F9C74F', // Saffron
+    '#90BE6D', // Pistachio
+    '#43AA8B', // Zomp
+    '#577590', // Slate Gray
+    '#EF476F', // Paradise Pink
+    '#FAD02C', // Bumblebee
+    '#2A9D8F', // Persian Green
+    '#E9C46A', // Jute
+    '#F4A261', // Sandy Brown
+    '#E76F51', // Burnt Sienna
+    '#264653', // Charcoal
+    '#A01A58', // Mulberry
+    '#B5E48C', // Mindaro
+    '#3D405B', // Gunmetal
+    '#81B29A', // Cambridge Blue
+    '#F2CC8F', // Buff
+    '#E07A5F', // Terra Cotta
+    '#D81159', // Ruby
+    '#218380', // Viridian Green
+    '#FFBC42', // Macaroni and Cheese
+    '#6A057F', // Palatinate Purple
+    '#00A896', // Green Munsell
+    '#5E2B78', // Russian Violet
+    '#E85D04', // Tangerine
+    '#6411AD', // Veronica
+    '#B9E769', // June Bud
+    '#26547C', // Lapiz Lazuli
+    '#00C49F', // Caribbean Green
+    '#FFC658', // Goldenrod
   ];
 
   let color = d3.scaleOrdinal().range(customColors);
@@ -49,10 +99,8 @@ export const PieChart = ({
     color = d3.scaleOrdinal().range(customColors);
     const data_ready = pie(Object.entries(data));
 
-    const totalValue = data_ready
-      .map(obj => obj.value)
-      .reduce((a, c) => a + c, 0);
-    
+    const totalValue = data_ready.map(obj => obj.value).reduce((a, c) => a + c, 0);
+
     setTotalHours(totalValue);
 
     let div = d3.select('.tooltip-donut');
@@ -85,7 +133,7 @@ export const PieChart = ({
           .duration('50')
           .attr('opacity', '.7')
           .style('filter', 'brightness(1.2)');
-          
+
         div
           .transition()
           .duration(50)
@@ -97,7 +145,7 @@ export const PieChart = ({
           .map(e => e)
           .indexOf(d.data[0]);
         const legendInfo = taskName[index].toString();
-        
+
         div
           .html(legendInfo)
           .style('left', `${event.pageX + 10}px`)
@@ -109,7 +157,7 @@ export const PieChart = ({
           .duration('50')
           .attr('opacity', '1')
           .style('filter', 'brightness(1.1)');
-          
+
         div
           .transition()
           .duration(50)
@@ -134,12 +182,12 @@ export const PieChart = ({
         </div>
         {Object.keys(dataLegend).map(key => (
           <div key={key} className="pie-chart-legend-item">
-            <div 
-              className="data-legend-color" 
-              style={{ 
-                backgroundColor: color(key),
-                filter: 'brightness(1.1)'
-              }} 
+            <div
+              className="data-legend-color"
+              style={{
+                backgroundColor: dataLegend[key][0].includes('other') ? 'white' : color(key),
+                filter: 'brightness(1.1)',
+              }}
             />
             <div className="data-legend-info">
               {dataLegend[key].map((legendPart, index) => (

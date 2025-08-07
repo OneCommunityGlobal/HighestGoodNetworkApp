@@ -164,7 +164,7 @@ class PeopleReport extends Component {
     });
 
     try {
-      await updateRehireableStatus(userProfile, rehireValue);
+      updateRehireableStatus(userProfile, rehireValue);
       toast.success(`You have changed the rehireable status of this user to ${rehireValue}`);
     } catch (err) {
       // eslint-disable-next-line no-alert
@@ -542,7 +542,7 @@ class PeopleReport extends Component {
                 className="people-report-time-log-block"
                 darkMode={darkMode}
               >
-                <h3 className="text-light">{tangibleHoursReportedThisWeek}</h3>
+                <h3 className="text-light">{tangibleHoursReportedThisWeek ? tangibleHoursReportedThisWeek : 0}</h3>
                 <p>Hours Logged This Week</p>
               </ReportPage.ReportBlock>
             )}
@@ -572,12 +572,12 @@ class PeopleReport extends Component {
           <div className="mobile-people-table">
             <ReportPage.ReportBlock darkMode={darkMode}>
               {this.state.isLoading ? (
-                <p
+                <div
                   className={`${darkMode ? 'text-light' : ''}
                    d-flex align-items-center flex-row justify-content-center`}
                 >
                   Loading tasks: &nbsp; <Spinner color={`${darkMode ? 'light' : 'dark'}`} />
-                </p>
+                </div>
               ) : activeTasks.length > 0 ? (
                 <>
                   <div className={`intro_date ${darkMode ? 'text-light' : ''}`}>

@@ -35,7 +35,7 @@ class DropDownSearchBox extends React.PureComponent {
         {this.props.items.map(item => {
           return (
             // <option value={item} key={`search-dropdown-${  index}`}>
-            <option value={item} key={item.id}>
+            <option value={item} key={item}>
               {item}
             </option>
           );
