@@ -7,12 +7,12 @@ import '../../Teams/Team.css';
 import 'react-datepicker/dist/react-datepicker.css';
 import './TasksTable.css';
 import Select from 'react-select';
-import { Checkbox } from 'components/common/Checkbox';
-import TextSearchBox from 'components/UserManagement/TextSearchBox';
-import { boxStyle, boxStyleDark } from 'styles';
+import { Checkbox } from '~/components/common/Checkbox';
+import TextSearchBox from '~/components/UserManagement/TextSearchBox';
+import { boxStyle, boxStyleDark } from '~/styles';
 import { TasksDetail } from '../TasksDetail';
 
-export function TasksTable({ darkMode, tasks }) {
+export function TasksTable({ darkMode, tasks, projectId }) {
   const [isActive, setActive] = useState(true);
   const [isAssigned, setAssigned] = useState(true);
   const [toggleEditTasks, setToggleEditTasks] = useState(false);
@@ -149,6 +149,7 @@ export function TasksTable({ darkMode, tasks }) {
         status={filters.status}
         classification={filters.classification}
         users={filters.users}
+        projectId={projectId}
       />
     </div>
   );

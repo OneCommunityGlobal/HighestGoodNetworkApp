@@ -1,7 +1,10 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import { Component } from 'react';
 import DatePicker from 'react-datepicker';
+import { Button } from 'reactstrap';
+import { boxStyle, boxStyleDark } from '~/styles';
 import 'react-datepicker/dist/react-datepicker.css';
-import '../../Header/DarkMode.css'
+import '../../Header/DarkMode.css';
 
 class ViewReportByDate extends Component {
   constructor(props) {
@@ -13,6 +16,7 @@ class ViewReportByDate extends Component {
 
     this.onStartDateChange = this.onStartDateChange.bind(this);
     this.onEndDateChange = this.onEndDateChange.bind(this);
+    this.clearDates = this.clearDates.bind(this);
   }
 
   onStartDateChange(date) {
@@ -27,6 +31,14 @@ class ViewReportByDate extends Component {
       this.setState({ endDate: date });
       this.props.onDateChange({ startDate: this.state.startDate, endDate: date });
     }
+  }
+
+  clearDates() {
+    this.setState({
+      startDate: new Date(this.props.minDate),
+      endDate: new Date(),
+    });
+    this.props.onClearFilters();
   }
 
   render() {
@@ -59,6 +71,16 @@ class ViewReportByDate extends Component {
             className={`form-control ${darkMode ? "bg-darkmode-liblack text-light border-0" : ''}`}
             popperPlacement="top"
           />
+        </div>
+        <div id="task_EndDate" className="date-picker-item">
+          <label htmlFor="task_EndDate" className={`date-picker-label ${textColor}`} />
+          <Button
+            onClick={this.clearDates}
+            color="danger"
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
+            Clear
+          </Button>
         </div>
       </div>
     );

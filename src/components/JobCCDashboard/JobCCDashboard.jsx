@@ -3,10 +3,10 @@ import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { Table, Button, FormGroup, Label, Input } from 'reactstrap';
-import './JobCCDashboard.css';
-import { ENDPOINTS } from 'utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import JobCCModal from './JobCCModal'; // Modal for managing CC list
 import JobCategoryCCModal from './JobCategoryCCModal';
+import styles from './JobCCDashboard.module.css';
 
 function JobCCDashboard() {
   const [jobs, setJobs] = useState([]);
@@ -53,12 +53,19 @@ function JobCCDashboard() {
 
   const handleSearchChange = e => setSearch(e.target.value);
 
+  const formatTextSearch = text =>
+    text
+      .toLowerCase()
+      .split('')
+      .filter(item => item !== ' ')
+      .join('');
+
   const filteredJobs = jobs.filter(job => {
     const matchesFilter = filter ? job.category === filter : true;
     const matchesSearch =
       search.length === 0 ||
-      job.title.toLowerCase().includes(search.toLowerCase()) ||
-      job.ccList.some(entry => entry.email.toLowerCase().includes(search.toLowerCase()));
+      formatTextSearch(job.title).includes(formatTextSearch(search)) ||
+      job.ccList.some(entry => formatTextSearch(entry.email).includes(formatTextSearch(search)));
     return matchesFilter && matchesSearch;
   });
 
@@ -82,10 +89,10 @@ function JobCCDashboard() {
 
   return (
     <div
-      className={`job-cc-dashboard ${darkMode ? 'dark-mode-job-cc-dashboard' : ''}`}
+      className={`${styles.jobCcDashboard} ${darkMode ? styles.darkModeJobCcDashboard : ''}`}
       style={{ height: '100%' }}
     >
-      <h1 className="dashboard-title">Job CC Dashboard</h1>
+      <h1 className={`${styles.dashboardTitle}`}>Job CC Dashboard</h1>
       <div className="filters-container">
         <FormGroup>
           <Label for="filter" className={`${darkMode ? 'text-light' : 'text-dark'}`}>
@@ -137,7 +144,7 @@ function JobCCDashboard() {
         </div>
       </div>
 
-      <Table striped bordered hover className="job-cc-dashboard-table">
+      <Table striped bordered hover className={`${styles.jobCcDashboardTable}`}>
         <thead>
           <tr>
             <th>Job Title</th>
@@ -148,23 +155,29 @@ function JobCCDashboard() {
           </tr>
         </thead>
         <tbody>
-          {filteredJobs.map(job => (
-            <tr key={job._id}>
-              <td className={`${darkMode ? 'text-light' : 'text-dark'}`}>{job.title}</td>
-              <td className={`${darkMode ? 'text-light' : 'text-dark'}`}>{job.category}</td>
-              <td className={`${darkMode ? 'text-light' : 'text-dark'}`}>
-                {new Date(job.datePosted).toLocaleDateString()}
-              </td>
-              <td className={`${darkMode ? 'text-light' : 'text-dark'}`}>
-                {job.ccList.map(entry => entry.email).join(', ') || 'No CCs'}
-              </td>
-              <td className={`${darkMode ? 'text-light' : 'text-dark'}`}>
-                <Button color="info" size="sm" onClick={() => handleOpenModal(job)}>
-                  Manage CCs
-                </Button>
-              </td>
-            </tr>
-          ))}
+          {filteredJobs.length === 0 ? (
+            <h4 className={`${darkMode ? 'text-light' : 'text-dark'} text-center`}>
+              No title or email were found.
+            </h4>
+          ) : (
+            filteredJobs.map(job => (
+              <tr key={job._id}>
+                <td className={`${darkMode ? 'text-light' : 'text-dark'}`}>{job.title}</td>
+                <td className={`${darkMode ? 'text-light' : 'text-dark'}`}>{job.category}</td>
+                <td className={`${darkMode ? 'text-light' : 'text-dark'}`}>
+                  {new Date(job.datePosted).toLocaleDateString()}
+                </td>
+                <td className={`${darkMode ? 'text-light' : 'text-dark'}`}>
+                  {job.ccList.map(entry => entry.email).join(', ') || 'No CCs'}
+                </td>
+                <td className={`${darkMode ? 'text-light' : 'text-dark'}`}>
+                  <Button color="info" size="sm" onClick={() => handleOpenModal(job)}>
+                    Manage CCs
+                  </Button>
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </Table>
 

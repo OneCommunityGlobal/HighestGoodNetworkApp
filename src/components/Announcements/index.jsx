@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import { useState, useEffect, useRef } from 'react';
 import './Announcements.css';
 import { useDispatch, useSelector } from 'react-redux';
@@ -18,24 +19,25 @@ import {
   ssendFbPost,
 } from '../../actions/sendSocialMediaPosts';
 
-function Announcements({ title, email }) {
+function Announcements({ title, email: initialEmail }) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const dispatch = useDispatch();
   const [emailTo, setEmailTo] = useState('');
   const [emailList, setEmailList] = useState([]);
- // const [accessToken, setAccessToken] = useState('');
+  // const [accessToken, setAccessToken] = useState('');
   const [emailContent, setEmailContent] = useState('');
   const [dateContent, setDateContent] = useState('');
   const [timeContent, setTimeContent] = useState('');
   //const [errors, setErrors] = useState({});
   const errors = {};
   const [headerContent, setHeaderContent] = useState('');
-  const [showEditor, setShowEditor] = useState(true); // State to control rendering of the editor
+  const [showEditor, setShowEditor] = useState(true);
+  const [isFileUploaded, setIsFileUploaded] = useState(false);
   const [posts, setPosts] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [platform, setPlatform] = useState('');
   const [selectedPlatform, setSelectedPlatform] = useState('');
-  const tinymce = useRef(null);
+  const editorRef = useRef(null);
   const maxLength = 280;
 
   useEffect(() => {
@@ -43,15 +45,55 @@ function Announcements({ title, email }) {
     setTimeout(() => setShowEditor(true), 0);
   }, [darkMode]);
 
-  
+  const editorInit = {
+    license_key: 'gpl',
+    selector: 'Editor#email-editor',
+    height: 500,
+    plugins: [
+      'advlist autolink lists link image',
+      'charmap print preview anchor help',
+      'searchreplace visualblocks code',
+      'insertdatetime media table wordcount',
+    ],
+    menubar: false,
+    branding: false,
+    image_title: true,
+    automatic_uploads: true,
+    file_picker_callback(cb) {
+      const input = document.createElement('input');
+      input.setAttribute('type', 'file');
+      input.setAttribute('accept', 'image/*');
+
+      input.onchange = () => {
+        const file = input.files[0];
+        const reader = new FileReader();
+        reader.onload = () => {
+          const id = `blobid${new Date().getTime()}`;
+          const { blobCache } = window.tinymce.activeEditor.editorUpload;
+          const base64 = reader.result.split(',')[1];
+          const blobInfo = blobCache.create(id, file, base64);
+          blobCache.add(blobInfo);
+          cb(blobInfo.blobUri(), { title: file.name });
+        };
+        reader.readAsDataURL(file);
+      };
+
+      input.click();
+    },
+    a11y_advanced_options: true,
+    toolbar:
+      'undo redo | bold italic | blocks fontfamily fontsize | image alignleft aligncenter alignright | bullist numlist outdent indent | removeformat | help',
+    skin: darkMode ? 'oxide-dark' : 'oxide',
+    content_css: darkMode ? 'dark' : 'default',
+  };
 
   useEffect(() => {
-    if (email) {
-      const trimmedEmail = email.trim();
-      setEmailTo(email);
+    if (initialEmail) {
+      const trimmedEmail = initialEmail.trim();
+      setEmailTo(initialEmail);
       setEmailList(trimmedEmail.split(','));
     }
-  }, [email]);
+  }, [initialEmail]);
 
   const getAllPosts = async () => {
     const data = await fetchPosts();
@@ -71,7 +113,7 @@ function Announcements({ title, email }) {
   const addHeaderToEmailContent = () => {
     if (!headerContent) return;
     const imageTag = `<img src="${headerContent}" alt="Header Image" style="width: 100%; max-width: 100%; height: auto;">`;
-    const editor = tinymce.get('email-editor');
+    const editor = window.tinymce.get('email-editor');
     if (editor) {
       editor.insertContent(imageTag);
       setEmailContent(editor.getContent());
@@ -89,10 +131,11 @@ function Announcements({ title, email }) {
 
   const addImageToEmailContent = e => {
     const imageFile = document.querySelector('input[type="file"]').files[0];
+    setIsFileUploaded(true);
     convertImageToBase64(imageFile, base64Image => {
       const imageTag = `<img src="${base64Image}" alt="Header Image" style="width: 100%; max-width: 100%; height: auto;">`;
       setHeaderContent(prevContent => `${imageTag}${prevContent}`);
-      const editor = tinymce.current.get('email-editor');
+      const editor = window.tinymce.get('email-editor');
       if (editor) {
         editor.insertContent(imageTag);
         setEmailContent(editor.getContent());
@@ -101,9 +144,9 @@ function Announcements({ title, email }) {
     e.target.value = '';
   };
 
-  const validateEmail = e => {
+  const validateEmail = email => {
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    return emailPattern.test(e);
+    return emailPattern.test(email);
   };
 
   const handleSendEmails = () => {
@@ -114,7 +157,11 @@ function Announcements({ title, email }) {
       return;
     }
 
-    const invalidEmails = emailList.filter(e => !validateEmail(e.trim()));
+    if (!isFileUploaded) {
+      toast.error('Error: Please upload a file.');
+      return;
+    }
+    const invalidEmails = emailList.filter(email => !validateEmail(email.trim()));
 
     if (invalidEmails.length > 0) {
       toast.error(`Error: Invalid email addresses: ${invalidEmails.join(', ')}`);
@@ -180,7 +227,6 @@ function Announcements({ title, email }) {
 
   const loadFacebookSDK = () => {
     return new Promise((resolve, reject) => {
-      
       if (window.FB) {
         resolve(window.FB);
         return;
@@ -193,7 +239,7 @@ function Announcements({ title, email }) {
       script.onload = () => {
         window.fbAsyncInit = function fbAsyncInit() {
           window.FB.init({
-            appId: '1335318524566163', 
+            appId: '1335318524566163',
             cookie: true,
             xfbml: true,
             version: 'v15.0',
@@ -212,14 +258,12 @@ function Announcements({ title, email }) {
     loadFacebookSDK();
   }, []);
 
- 
-
   const handleCreateFbPost = () => {
     if (!emailContent || emailContent.trim() === '') {
       toast.error('Error: No content to post. Please add some content in Weekly progress editor');
       return;
     }
- 
+
     window.FB.login(
       response => {
         if (response.authResponse) {
@@ -340,7 +384,7 @@ function Announcements({ title, email }) {
       }
     }
 
-    if (platforms=== 'facebook') {
+    if (platforms === 'facebook') {
       handlePostScheduledFbPost(postId, textContent, base64Srcs, platforms);
     } else if (platforms === 'twitter') {
       handlePostScheduledTweets(postId, textContent, base64Srcs, platforms);
@@ -461,67 +505,71 @@ function Announcements({ title, email }) {
           <br />
           <br />
         </div>
-        <div
-          className={`emails ${darkMode ? 'bg-yinmn-blue' : ''}`}
-          style={darkMode ? boxStyleDark : boxStyle}
-        >
-          {title ? (
-            <p>Email</p>
-          ) : (
+
+        {title ? (
+          ''
+        ) : (
+          <div
+            className={`emails${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
             <label htmlFor="email-list-input" className={darkMode ? 'text-light' : 'text-dark'}>
               Email List (comma-separated)<span className="red-asterisk">* </span>:
             </label>
-          )}
-          <input
-            type="text"
-            value={emailTo}
-            id="email-list-input"
-            onChange={handleEmailListChange}
-            className={`input-text-for-announcement ${
-              darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
-            }`}
-          />
-          <button
-            type="button"
-            className="send-button"
-            onClick={handleSendEmails}
-            style={darkMode ? boxStyleDark : boxStyle}
-          >
-            {title ? 'Send Email' : 'Send mail to specific users'}
-          </button>
+            <input
+              type="text"
+              id="email-list-input"
+              value={emailTo}
+              onChange={handleEmailListChange}
+              placeholder="Enter email addresses (comma-separated)"
+              className={`input-text-for-announcement ${
+                darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+              }`}
+            />
+            <button
+              type="button"
+              className="send-button"
+              onClick={handleSendEmails}
+              style={darkMode ? boxStyleDark : boxStyle}
+            >
+              {title ? 'Send Email' : 'Send mail to specific users'}
+            </button>
 
-          <hr />
-          <label htmlFor="header-content-input" className={darkMode ? 'text-light' : 'text-dark'}>
-            Insert header or image link:
-          </label>
-          <input
-            type="text"
-            id="header-content-input"
-            onChange={handleHeaderContentChange}
-            value={headerContent}
-            className={`input-text-for-announcement ${
-              darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
-            }`}
-          />
-          <button
-            type="button"
-            className="send-button"
-            onClick={addHeaderToEmailContent}
-            style={darkMode ? boxStyleDark : boxStyle}
-          >
-            Insert
-          </button>
-          <hr />
-          <label htmlFor="upload-header-input" className={darkMode ? 'text-light' : 'text-dark'}>
-            Upload Header (or footer):
-          </label>
-          <input
-            type="file"
-            id="upload-header-input"
-            onChange={addImageToEmailContent}
-            className="input-file-upload"
-          />
-        </div>
+            <hr />
+            <label htmlFor="header-content-input" className={darkMode ? 'text-light' : 'text-dark'}>
+              Insert header or image link:
+            </label>
+            <input
+              type="text"
+              id="header-content-input"
+              value={headerContent}
+              onChange={handleHeaderContentChange}
+              placeholder="Enter header image URL"
+              className={`input-text-for-announcement ${
+                darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+              }`}
+            />
+            <button
+              type="button"
+              className="send-button"
+              onClick={addHeaderToEmailContent}
+              style={darkMode ? boxStyleDark : boxStyle}
+            >
+              Insert
+            </button>
+
+            <hr />
+            <label htmlFor="upload-header-input" className={darkMode ? 'text-light' : 'text-dark'}>
+              Upload Header (or footer):
+            </label>
+            <input
+              type="file"
+              id="upload-header-input"
+              onChange={addImageToEmailContent}
+              className="input-file-upload"
+            />
+          </div>
+        )}
       </div>
       <div className="social-media-container">
         <div className="social-media">

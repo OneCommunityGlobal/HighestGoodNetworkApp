@@ -1,22 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Container } from 'reactstrap';
 import { connect, useSelector } from 'react-redux';
+import { cantUpdateDevAdminDetails } from '~/utils/permissions';
+import {
+  DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
+  DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
+  PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
+} from '~/utils/constants';
+import { useDispatch } from 'react-redux';
+import { updateSummaryBarData } from '~/actions/dashboardActions';
 import Leaderboard from '../LeaderBoard';
 import WeeklySummary from '../WeeklySummary/WeeklySummary';
 import Badge from '../Badge';
 import Timelog from '../Timelog/Timelog';
 import SummaryBar from '../SummaryBar/SummaryBar';
-import './Dashboard.css';
+import styles from './Dashboard.module.css';
 import '../../App.css';
 import TimeOffRequestDetailModal from './TimeOffRequestDetailModal';
-import { cantUpdateDevAdminDetails } from 'utils/permissions';
-import {
-  DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
-  DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
-  PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
-} from 'utils/constants';
-import { useDispatch } from 'react-redux';
-import { updateSummaryBarData } from 'actions/dashboardActions';
+import FeedbackModal from '../FeedbackModal/FeedbackModal';
 
 export function Dashboard(props) {
   const [popup, setPopup] = useState(false);
@@ -73,6 +74,7 @@ export function Dashboard(props) {
 
   return (
     <Container fluid className={darkMode ? 'bg-oxford-blue' : ''}>
+      {/* <FeedbackModal /> */}
       <SummaryBar
         displayUserId={displayUserId}
         toggleSubmitForm={toggle}
@@ -80,7 +82,6 @@ export function Dashboard(props) {
         summaryBarData={summaryBarData}
         isNotAllowedToEdit={isNotAllowedToEdit}
       />
-
       <Row className="w-100 ml-1">
         <Col lg={7}></Col>
         <Col lg={5}>

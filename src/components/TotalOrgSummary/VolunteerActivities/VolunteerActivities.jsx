@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
-import { normalizeVolunteerActivities } from 'utils/totalOrgSummary';
-import Loading from 'components/common/Loading';
+import { normalizeVolunteerActivities } from '~/utils/totalOrgSummary';
+import Loading from '~/components/common/Loading';
 import StatisticsTab from '../StatisticsTab/StatisticsTab';
 
 function VolunteerActivities({
@@ -10,6 +10,7 @@ function VolunteerActivities({
   totalBadgesAwarded,
   tasksStats,
   totalActiveTeams,
+  comparisonType,
 }) {
   const volunteerActivitiesTabs = useMemo(
     () =>
@@ -54,6 +55,7 @@ function VolunteerActivities({
           isIncreased={tab.isIncreased}
           type={tab.type}
           tabBackgroundColor={tab.tabBackgroundColor}
+          comparisonType={comparisonType}
         />
       ))}
     </div>
