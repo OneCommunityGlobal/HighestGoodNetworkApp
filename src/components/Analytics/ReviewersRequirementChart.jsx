@@ -19,7 +19,7 @@ const ReviewersRequirementChart = ({ duration }) => {
     const fetchAPIData = async () => {
       try {
         const token = localStorage.getItem('token');
-        const res = await fetch(`http://localhost:4500/api/analytics/github-reviews?duration=lastWeek&sort=asc`, {
+        const res = await fetch(`http://localhost:4500/api/analytics/github-reviews?duration=${duration}&sort=asc`, {
           headers: {
             Authorization: `${token}`,
             'Content-Type': 'application/json',
@@ -32,6 +32,7 @@ const ReviewersRequirementChart = ({ duration }) => {
         }
 
         const result = await res.json();
+        console.log(result);
         const processed = result.map(item => ({
           ...item,
           total:
@@ -48,7 +49,7 @@ const ReviewersRequirementChart = ({ duration }) => {
     };
 
     fetchAPIData();
-  }, []);
+  }, [duration]);
 
   const sortedData = [...data]
   .map(item => ({

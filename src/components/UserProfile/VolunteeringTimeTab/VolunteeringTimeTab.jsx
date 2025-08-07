@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Row, Label, Input, Col, Button, FormGroup, FormFeedback } from 'reactstrap';
 import moment from 'moment-timezone';
 import { capitalize } from 'lodash';
-import { ENDPOINTS } from 'utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import axios from 'axios';
 import HistoryModal from './HistoryModal';
 import './timeTab.css';
-import { boxStyle, boxStyleDark } from 'styles';
-import { formatDate, formatDateYYYYMMDD, formatDateMMDDYYYY, CREATED_DATE_CRITERIA } from 'utils/formatDate';
+import { boxStyle, boxStyleDark } from '~/styles';
+import { formatDate, formatDateYYYYMMDD, formatDateMMDDYYYY, CREATED_DATE_CRITERIA } from '~/utils/formatDate';
 
 const MINIMUM_WEEK_HOURS = 0;
 const MAXIMUM_WEEK_HOURS = 168;
@@ -383,7 +383,7 @@ const ViewTab = props => {
           <Label className={`hours-label ${darkMode ? 'text-light' : ''}`}>Account Created Date</Label>
         </Col>
         <Col md="6">
-          <p className={darkMode ? 'text-azure' : ''}>{formatDateMMDDYYYY(userProfile.createdDate)}</p>
+        <p className={darkMode ? 'text-azure' : ''} style={{ textAlign: 'left' }}>{formatDateMMDDYYYY(userProfile.createdDate)}</p>
         </Col>
       </Row>
       <Row className="volunteering-time-row">
@@ -451,7 +451,7 @@ const ViewTab = props => {
           </Label>
         </Col>
         <Col md="6">
-          <p className={`hours-totalTangible-thisWeek ${darkMode ? 'text-azure' : ''}`}>
+          <p className={`hours-totalTangible-thisWeek ${darkMode ? 'text-azure' : ''}`} style={{textAlign: 'left'}}>
             {totalTangibleHoursThisWeek}
           </p>
         </Col>
