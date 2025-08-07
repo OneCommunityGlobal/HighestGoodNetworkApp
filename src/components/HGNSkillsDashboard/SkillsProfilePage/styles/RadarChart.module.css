@@ -2,15 +2,18 @@
   flex: 1;
   display: flex;
   justify-content: center;
+  align-items: flex-start; 
+  margin-top: -40px; 
 }
 
 .radarChart canvas {
-  max-width: 500px;
-  max-height: 500px;
+  max-width: 700px; 
+  max-height: 700px;
 }
 
-@media (max-width: 768px) {
-  .radarChart {
-    margin-top: 0px;
+@media (max-width: 900px) {
+  .radarChart canvas {
+    max-width: 95vw;
+    max-height: 95vw;
   }
 }

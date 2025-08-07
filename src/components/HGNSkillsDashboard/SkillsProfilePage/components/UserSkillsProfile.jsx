@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { toast } from 'react-toastify';
-import { useHistory } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { ClipLoader } from 'react-spinners';
 import jwtDecode from 'jwt-decode';
@@ -12,9 +11,9 @@ function UserSkillsProfile() {
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const history = useHistory();
 
-  // Fetch data from backend on component mount
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -23,34 +22,20 @@ function UserSkillsProfile() {
           throw new Error('No token found. Please log in.');
         }
 
-        // Decode the token to get the user ID
         const decodedToken = jwtDecode(token);
-        // console.log('Decoded Token:', decodedToken);
         const userId = decodedToken.userid;
         if (!userId) {
           throw new Error('User ID not found in token.');
         }
 
-        const response = await axios.get(
-          // 'http://localhost:4500/api/skills/profile/665524c257ca141fe8921b41',
-          `http://localhost:4500/api/skills/profile/${userId}`,
-          {
-            headers: {
-              Authorization: `${token}`,
-            },
+        const response = await axios.get(`http://localhost:4500/api/skills/profile/${userId}`, {
+          headers: {
+            Authorization: `${token}`,
           },
-        );
+        });
 
         const { data } = response;
         if (!data) throw new Error('Failed to fetch profile data');
-
-        if (data.isPlaceholder) {
-          toast.warn('Please complete the skills survey to access the HGN Skills dashboard.');
-
-          setTimeout(() => {
-            history.push('/hgnform');
-          }, 2500);
-        }
 
         setProfileData(data);
         setLoading(false);
@@ -61,12 +46,18 @@ function UserSkillsProfile() {
     };
 
     fetchData();
-  }, []); // Empty dependency array - runs only once on mount
+  }, []);
 
   if (loading) {
     return (
-      <div className={`${styles.skillsLoader}`}>
-        <ClipLoader color="#007bff" size={70} />
+      <div
+        className={`${styles.skillsLoader} ${darkMode ? styles.dark : ''}`}
+        style={{
+          background: darkMode ? '#3a506b' : '#fff',
+          color: darkMode ? '#f7fafc' : '#2d3748',
+        }}
+      >
+        <ClipLoader color={darkMode ? '#90cdf4' : '#007bff'} size={70} />
         <p>Loading Profile...</p>
       </div>
     );
@@ -74,7 +65,13 @@ function UserSkillsProfile() {
 
   if (error) {
     return (
-      <div className={`${styles.skillsError}`}>
+      <div
+        className={`${styles.skillsError} ${darkMode ? styles.dark : ''}`}
+        style={{
+          background: darkMode ? '#3a506b' : '#fff',
+          color: darkMode ? '#f7fafc' : '#2d3748',
+        }}
+      >
         <p>Error: {error}</p>
       </div>
     );
@@ -82,18 +79,32 @@ function UserSkillsProfile() {
 
   if (!profileData) {
     return (
-      <div className={`${styles.skillsError}`}>
+      <div
+        className={`${styles.skillsError} ${darkMode ? styles.dark : ''}`}
+        style={{
+          background: darkMode ? '#3a506b' : '#fff',
+          color: darkMode ? '#f7fafc' : '#2d3748',
+        }}
+      >
         <p>No profile data available</p>
       </div>
     );
   }
 
   return (
-    <div className={`${styles.userProfileHome}`}>
+    <div
+      className={`${styles.userProfileHome} ${darkMode ? styles.dark : ''}`}
+      style={{
+        background: darkMode ? '#1B2A41' : '#fff',
+        color: darkMode ? '#f7fafc' : '#2d3748',
+        minHeight: '100vh',
+        transition: 'background 0.3s, color 0.3s',
+      }}
+    >
       <div className={`${styles.dashboardContainer}`}>
-        <LeftSection profileData={profileData} />
+        <LeftSection profileData={profileData} darkMode={darkMode} />
         <div className={`${styles.verticalSeparator}`} />
-        <RightSection profileData={profileData} />
+        <RightSection profileData={profileData} darkMode={darkMode} />
       </div>
     </div>
   );
