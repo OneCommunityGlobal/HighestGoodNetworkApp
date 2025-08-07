@@ -71,6 +71,22 @@
   height: 100% !important;
 }
 
+/* Dark mode support */
+.dark-mode .chart-container {
+  background-color: #1b2a41;
+  box-shadow: 0 1px 3px var(--card-shadow);
+}
+.dark-mode .chart-title,
+.dark-mode .filter-group label {
+  color: var(--text-color);
+}
+.dark-mode .filter-select,
+.dark-mode .filter-input {
+  background-color: var(--section-bg);
+  border-color: var(--section-title-bg);
+  color: var(--text-color);
+}
+
 
 /* Responsive tweaks */
 @media (max-width: 768px) {
@@ -101,20 +117,4 @@
   .chart-wrapper {
     height: 200px;
   }
-}
-
-/* Dark mode support */
-.dark-mode .chart-container {
-  background-color: var(--card-bg);
-  box-shadow: 0 1px 3px var(--card-shadow);
-}
-.dark-mode .chart-title,
-.dark-mode .filter-group label {
-  color: var(--text-color);
-}
-.dark-mode .filter-select,
-.dark-mode .filter-input {
-  background-color: var(--section-bg);
-  border-color: var(--section-title-bg);
-  color: var(--text-color);
 }

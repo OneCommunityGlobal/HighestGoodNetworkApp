@@ -183,10 +183,16 @@ export default function ToolsMostInNeedReplacementChartJS() {
             <div className="filter-group">
               <label>Start Date:</label>
               <input type="date" className="filter-input" value={dates.startDate} onChange={onStartDateChange} />
+              <button type="button" className="reset-date-btn" onClick={() => setDates((d) => ({ ...d, startDate: '' }))}>
+                X
+              </button>
             </div>
             <div className="filter-group">
               <label>End Date:</label>
               <input type="date" className="filter-input" value={dates.endDate} onChange={onEndDateChange} />
+              <button type="button" className="reset-date-btn" onClick={() => setDates((d) => ({ ...d, endDate: '' }))}>
+                X
+              </button>
             </div>
           </>
         )}
