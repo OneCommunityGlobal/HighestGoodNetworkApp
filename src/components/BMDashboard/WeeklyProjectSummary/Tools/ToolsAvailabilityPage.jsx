@@ -169,9 +169,10 @@ function ToolsAvailabilityPage() {
             {renderProjectSelection()}
           </div>
           <div className="filter-group">
-            <label>Date Range (Optional)</label>
+            <label htmlFor="tools-start-date">Date Range (Optional)</label>
             <div className="date-picker-group">
               <input
+                id="tools-start-date"
                 type="date"
                 className="date-picker"
                 value={startDate}

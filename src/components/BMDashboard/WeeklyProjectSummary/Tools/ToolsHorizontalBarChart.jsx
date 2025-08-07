@@ -65,7 +65,6 @@ function ToolsHorizontalBarChart({ darkMode }) {
           setSelectedProject(projectOptions[0]);
         }
       } catch (err) {
-        console.error('Error fetching projects:', err);
         setError('Failed to load projects');
       }
     };
@@ -126,7 +125,6 @@ function ToolsHorizontalBarChart({ darkMode }) {
           setData([]);
         }
       } catch (err) {
-        console.error('Error fetching tools data:', err);
         setError('Failed to load tools data');
         setData([]);
       } finally {
