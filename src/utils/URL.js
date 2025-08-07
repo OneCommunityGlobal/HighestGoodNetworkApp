@@ -109,7 +109,8 @@ export const ENDPOINTS = {
     `${APIEndpoint}/reports/volunteerstats?startDate=${startDate}&endDate=${endDate}&comparisonStartDate=${comparisonStartDate ||
       ''}&comparisonEndDate=${comparisonEndDate || ''}`,
   VOLUNTEER_TRENDS: (timeFrame, offset, customStartDate, customEndDate) =>
-    `${APIEndpoint}/reports/volunteertrends?timeFrame=${timeFrame}&offset=${offset}${customStartDate ? `&customStartDate=${customStartDate}` : ''
+    `${APIEndpoint}/reports/volunteertrends?timeFrame=${timeFrame}&offset=${offset}${
+      customStartDate ? `&customStartDate=${customStartDate}` : ''
     }${customEndDate ? `&customEndDate=${customEndDate}` : ''}`,
   HOURS_TOTAL_ORG_SUMMARY: (startDate, endDate) =>
     `${APIEndpoint}/reports/overviewsummaries/taskandprojectstats?startDate=${startDate}&endDate=${endDate}`,
@@ -309,8 +310,10 @@ export const ENDPOINTS = {
   GET_FORM_RESPONSES: formID => `${APIEndpoint}/jobforms/${formID}/responses`,
 
   ADD_QUESTION: formId => `${APIEndpoint}/jobforms/${formId}/questions`,
-  UPDATE_QUESTION: (formId, questionIndex) => `${APIEndpoint}/jobforms/${formId}/questions/${questionIndex}`,
-  DELETE_QUESTION: (formId, questionIndex) => `${APIEndpoint}/jobforms/${formId}/questions/${questionIndex}`,
+  UPDATE_QUESTION: (formId, questionIndex) =>
+    `${APIEndpoint}/jobforms/${formId}/questions/${questionIndex}`,
+  DELETE_QUESTION: (formId, questionIndex) =>
+    `${APIEndpoint}/jobforms/${formId}/questions/${questionIndex}`,
   REORDER_QUESTIONS: formId => `${APIEndpoint}/jobforms/${formId}/questions/reorder`,
 
   GET_ALL_TEMPLATES: `${APIEndpoint}/templates`,
@@ -348,7 +351,6 @@ export const ENDPOINTS = {
   DROPBOX_CREATE_ADD: `${APIEndpoint}/dropbox/create-folder-and-invite`,
   ACCESS_MANAGEMENT: `${APIEndpoint}/accessManagement`,
 
-
   // community portal
   CP_NOSHOW_VIZ_LOCATION: `${APIEndpoint}/communityportal/reports/participation/location`,
   CP_NOSHOW_VIZ_AGEGROUP: `${APIEndpoint}/communityportal/reports/participation/age-group`,
@@ -360,6 +362,13 @@ export const ENDPOINTS = {
   LB_LISTINGS: `${APIEndpoint}/lb/getListings`,
   LB_LISTINGS_BASE: `${APIEndpoint}/lb`,
   HELP_CATEGORIES: `${APIEndpoint}/help-categories`,
+
+  // Saved Filters endpoints
+  SAVED_FILTERS: () => `${APIEndpoint}/savedFilters`,
+  SAVED_FILTER_BY_ID: filterId => `${APIEndpoint}/savedFilters/${filterId}`,
+  UPDATE_SAVED_FILTERS_TEAM_CODES: () => `${APIEndpoint}/savedFilters/updateTeamCodes`,
+  UPDATE_SAVED_FILTERS_INDIVIDUAL_TEAM_CODE: () =>
+    `${APIEndpoint}/savedFilters/updateIndividualTeamCode`,
 };
 
 export const ApiEndpoint = APIEndpoint;
