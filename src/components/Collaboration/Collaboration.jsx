@@ -51,7 +51,7 @@ function Collaboration() {
       }
 
       const data = await response.json();
-      
+
       const sortedJobs = data.jobs.sort((a, b) => {
         if (a.displayOrder !== b.displayOrder) {
           return a.displayOrder - b.displayOrder;
@@ -61,7 +61,7 @@ function Collaboration() {
         }
         return new Date(b.datePosted) - new Date(a.datePosted);
       });
-      
+
       setJobAds(sortedJobs);
       setTotalPages(data.pagination.totalPages);
     } catch (error) {
