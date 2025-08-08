@@ -1,5 +1,5 @@
 import React from 'react';
-import * as d3 from 'd3/dist/d3.min';
+import * as d3 from 'd3'
 import { Button, Modal } from 'react-bootstrap';
 import './PeopleReport/PeopleReport.css';
 import { boxStyle, boxStyleDark } from '../../styles';

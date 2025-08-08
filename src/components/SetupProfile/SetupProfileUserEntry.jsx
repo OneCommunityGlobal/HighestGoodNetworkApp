@@ -28,7 +28,6 @@ import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useDispatch } from 'react-redux';
 import jwtDecode from 'jwt-decode';
-import { tokenKey } from '../../config.json';
 import { setCurrentUser } from '../../actions/authActions';
 import HomeCountryModal from './homeCountryModal';
 import ProfilePictureModal from './profilePictureModal';
@@ -39,7 +38,9 @@ import 'react-phone-input-2/lib/style.css';
 import './SetupProfileUserEntry.css';
 import { toast } from 'react-toastify';
 
+
 const SetupProfileUserEntry = ({ token, userEmail }) => {
+  const { tokenKey } = tokenUtils;
   const dispatch = useDispatch();
   const history = useHistory();
   const containSpecialCar = RegExp(/[!@#$%^&*(),.?":{}|<>]/);
