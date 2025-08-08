@@ -23,8 +23,9 @@ function Announcements({ title, email: initialEmail }) {
     padding: '10px 16px',
     cursor: 'pointer',
     borderBottom: activeTab === tabId ? '2px solid #007bff' : '2px solid transparent',
-    backgroundColor: activeTab === tabId ? '#eef6ff' : '#f9f9f9',
-    color: activeTab === tabId ? '#007bff' : '#444',
+    backgroundColor:
+      activeTab === tabId ? (darkMode ? '#1e2d44' : '#eef6ff') : darkMode ? '#14233a' : '#f9f9f9',
+    color: activeTab === tabId ? '#007bff' : darkMode ? '#ddd' : '#444',
     fontWeight: activeTab === tabId ? 'bold' : 'normal',
   });
 
@@ -204,7 +205,7 @@ function Announcements({ title, email: initialEmail }) {
           paddingTop: '1rem',
           display: 'flex',
           flexWrap: 'wrap',
-          borderBottom: '1px solid #ccc',
+          borderBottom: darkMode ? '1px solid #2b3b50' : '1px solid #ccc',
         }}
       >
         {[
@@ -297,131 +298,136 @@ function Announcements({ title, email: initialEmail }) {
         ))}
       </Nav>
       <ReactTooltip place="bottom" type="dark" effect="solid" />
-      <TabContent activeTab={activeTab}>
-        <TabPane tabId="email">
-          <div className="email-update-container">
-            <div className="editor">
-              {title ? <h3>{title}</h3> : <h3>Weekly Progress Editor</h3>}
-              <br />
-              {showEditor && (
-                <Editor
-                  tinymceScriptSrc="/tinymce/tinymce.min.js"
-                  id="email-editor"
-                  initialValue="<p>This is the initial content of the editor</p>"
-                  init={editorInit}
-                  onEditorChange={content => {
-                    setEmailContent(content);
-                  }}
-                  onInit={(evt, editor) => {
-                    editorRef.current = editor;
-                  }}
-                />
+      <div style={{ backgroundColor: darkMode ? '#14233a' : '#fff', padding: '1rem' }}>
+        <TabContent activeTab={activeTab}>
+          <TabPane tabId="email">
+            <div className="email-update-container">
+              <div className="editor">
+                {title ? <h3>{title}</h3> : <h3>Weekly Progress Editor</h3>}
+                <br />
+                {showEditor && (
+                  <Editor
+                    tinymceScriptSrc="/tinymce/tinymce.min.js"
+                    id="email-editor"
+                    initialValue="<p>This is the initial content of the editor</p>"
+                    init={editorInit}
+                    onEditorChange={content => {
+                      setEmailContent(content);
+                    }}
+                    onInit={(evt, editor) => {
+                      editorRef.current = editor;
+                    }}
+                  />
+                )}
+                <div className="send-buttons" style={{ marginTop: '1rem' }}>
+                  <button type="button" onClick={handleBroadcastEmails} className="send-button">
+                    Broadcast Weekly Update
+                  </button>
+                </div>
+              </div>
+
+              {title ? null : (
+                <div
+                  className={`emails${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
+                  style={darkMode ? boxStyleDark : boxStyle}
+                >
+                  <label
+                    htmlFor="email-list-input"
+                    className={darkMode ? 'text-light' : 'text-dark'}
+                  >
+                    Email List (comma-separated)<span className="red-asterisk">* </span>:
+                  </label>
+                  <input
+                    type="text"
+                    id="email-list-input"
+                    value={emailTo}
+                    onChange={handleEmailListChange}
+                    placeholder="Enter email addresses (comma-separated)"
+                    className={`input-text-for-announcement ${
+                      darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+                    }`}
+                  />
+                  <button
+                    type="button"
+                    className="send-button"
+                    onClick={handleSendEmails}
+                    style={darkMode ? boxStyleDark : boxStyle}
+                  >
+                    Send mail to specific users
+                  </button>
+
+                  <hr />
+                  <label
+                    htmlFor="header-content-input"
+                    className={darkMode ? 'text-light' : 'text-dark'}
+                  >
+                    Insert header or image link:
+                  </label>
+                  <input
+                    type="text"
+                    id="header-content-input"
+                    value={headerContent}
+                    onChange={handleHeaderContentChange}
+                    placeholder="Enter header image URL"
+                    className={`input-text-for-announcement ${
+                      darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+                    }`}
+                  />
+                  <button
+                    type="button"
+                    className="send-button"
+                    onClick={addHeaderToEmailContent}
+                    style={darkMode ? boxStyleDark : boxStyle}
+                  >
+                    Insert
+                  </button>
+
+                  <hr />
+                  <label
+                    htmlFor="upload-header-input"
+                    className={darkMode ? 'text-light' : 'text-dark'}
+                  >
+                    Upload Header (or footer):
+                  </label>
+                  <input
+                    type="file"
+                    id="upload-header-input"
+                    onChange={addImageToEmailContent}
+                    className="input-file-upload"
+                  />
+                </div>
               )}
-              <div className="send-buttons" style={{ marginTop: '1rem' }}>
-                <button type="button" onClick={handleBroadcastEmails} className="send-button">
-                  Broadcast Weekly Update
-                </button>
-              </div>
             </div>
-
-            {title ? null : (
-              <div
-                className={`emails${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
-                style={darkMode ? boxStyleDark : boxStyle}
-              >
-                <label htmlFor="email-list-input" className={darkMode ? 'text-light' : 'text-dark'}>
-                  Email List (comma-separated)<span className="red-asterisk">* </span>:
-                </label>
-                <input
-                  type="text"
-                  id="email-list-input"
-                  value={emailTo}
-                  onChange={handleEmailListChange}
-                  placeholder="Enter email addresses (comma-separated)"
-                  className={`input-text-for-announcement ${
-                    darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
-                  }`}
-                />
-                <button
-                  type="button"
-                  className="send-button"
-                  onClick={handleSendEmails}
-                  style={darkMode ? boxStyleDark : boxStyle}
-                >
-                  Send mail to specific users
-                </button>
-
-                <hr />
-                <label
-                  htmlFor="header-content-input"
-                  className={darkMode ? 'text-light' : 'text-dark'}
-                >
-                  Insert header or image link:
-                </label>
-                <input
-                  type="text"
-                  id="header-content-input"
-                  value={headerContent}
-                  onChange={handleHeaderContentChange}
-                  placeholder="Enter header image URL"
-                  className={`input-text-for-announcement ${
-                    darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
-                  }`}
-                />
-                <button
-                  type="button"
-                  className="send-button"
-                  onClick={addHeaderToEmailContent}
-                  style={darkMode ? boxStyleDark : boxStyle}
-                >
-                  Insert
-                </button>
-
-                <hr />
-                <label
-                  htmlFor="upload-header-input"
-                  className={darkMode ? 'text-light' : 'text-dark'}
-                >
-                  Upload Header (or footer):
-                </label>
-                <input
-                  type="file"
-                  id="upload-header-input"
-                  onChange={addImageToEmailContent}
-                  className="input-file-upload"
-                />
-              </div>
-            )}
-          </div>
-        </TabPane>
-        {[
-          'x',
-          'facebook',
-          'linkedin',
-          'pinterest',
-          'instagram',
-          'threads',
-          'mastodon',
-          'bluesky',
-          'youtube',
-          'reddit',
-          'tumblr',
-          'imgur',
-          'diigo',
-          'myspace',
-          'medium',
-          'plurk',
-          'bitily',
-          'livejournal',
-          'slashdot',
-          'blogger',
-          'truthsocial',
-        ].map(platform => (
-          <TabPane tabId={platform} key={platform}>
-            <SocialMediaComposer platform={platform} />
           </TabPane>
-        ))}
-      </TabContent>
+          {[
+            'x',
+            'facebook',
+            'linkedin',
+            'pinterest',
+            'instagram',
+            'threads',
+            'mastodon',
+            'bluesky',
+            'youtube',
+            'reddit',
+            'tumblr',
+            'imgur',
+            'diigo',
+            'myspace',
+            'medium',
+            'plurk',
+            'bitily',
+            'livejournal',
+            'slashdot',
+            'blogger',
+            'truthsocial',
+          ].map(platform => (
+            <TabPane tabId={platform} key={platform}>
+              <SocialMediaComposer platform={platform} />
+            </TabPane>
+          ))}
+        </TabContent>
+      </div>
     </div>
   );
 }
