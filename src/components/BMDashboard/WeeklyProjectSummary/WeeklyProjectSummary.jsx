@@ -14,6 +14,7 @@ import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
 import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
 import styles from './WeeklyProjectSummary.module.css';
 import IssueCharts from '../Issues/openIssueCharts';
+import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
 
 const projectStatusButtons = [
   {
@@ -465,6 +466,7 @@ function WeeklyProjectSummary() {
             </div>
           ))}
         </div>
+        <SupplierPerformanceGraph />
       </div>
     </div>
   );
