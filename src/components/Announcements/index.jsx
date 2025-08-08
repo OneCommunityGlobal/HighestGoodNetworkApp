@@ -28,6 +28,19 @@ function Announcements({ title, email: initialEmail }) {
     fontWeight: activeTab === tabId ? 'bold' : 'normal',
   });
 
+  const getIconColor = id => {
+    switch (id) {
+      case 'facebook':
+        return '#1877F2';
+      case 'linkedin':
+        return '#0077B5';
+      case 'medium':
+        return '#00ab6c';
+      default:
+        return undefined;
+    }
+  };
+
   const toggleTab = tab => {
     if (activeTab !== tab) {
       setActiveTab(tab);
@@ -270,7 +283,10 @@ function Announcements({ title, email: initialEmail }) {
                     }}
                   />
                 ) : (
-                  <FontAwesomeIcon icon={icon} style={{ width: '100%', height: '100%' }} />
+                  <FontAwesomeIcon
+                    icon={icon}
+                    style={{ width: '100%', height: '100%', color: getIconColor(id) }}
+                  />
                 )}
               </div>
               <div style={{ fontSize: '0.75rem', lineHeight: '1rem', textAlign: 'center' }}>
