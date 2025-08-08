@@ -21,7 +21,7 @@ export const fetchOptStatusBreakdown = (startDate = "", endDate = "", role = "")
   return async dispatch => {
     try {
       const response = await axios.get(url);
-      console.log('OPT Status Breakdown API response:', response.data);
+      console.log("fetchOptStatusBreakdown: response:", response);
       dispatch(setOptStatusBreakdown(response.data.breakDown));
     } catch (error) {
       // eslint-disable-next-line no-console
