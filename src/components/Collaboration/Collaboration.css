@@ -287,3 +287,101 @@ select {
     font-size: 14px;
   }
 }
+/* DARK MODE */
+.dark-mode {
+  background-color: #1c2541;
+  color: #f1f1f1;
+}
+
+.dark-mode .container {
+  background-color: #2e3b55;
+  color: #f1f1f1;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
+  padding: 20px;
+}
+
+.dark-mode .navbar,
+.dark-mode select,
+.dark-mode input,
+.dark-mode .search-button,
+.dark-mode .show-summaries,
+.dark-mode .pagination button,
+.dark-mode .summary-item,
+.dark-mode .job-ad {
+  background-color: #343a40 !important;
+  color: #ffffff;
+  border: 1px solid #444;
+}
+
+.dark-mode .search-button,
+.dark-mode .show-summaries,
+.dark-mode .pagination button {
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-weight: 500;
+}
+
+.dark-mode a {
+  color: #7db4ff;
+}
+
+.dark-mode a:hover {
+  color: #a6ceff;
+  text-decoration: underline;
+}
+
+.dark-mode .pagination button {
+  margin: 0 3px;
+}
+
+.dark-mode .summary-item {
+  box-shadow: 0 2px 6px rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+
+.dark-mode .navbar {
+  background-color: #1c2541 !important;
+  border-radius: 6px;
+  padding: 1rem;
+}
+
+.dark-mode .job-ad {
+  background: none !important;
+  background-color: #1c2541 !important;
+  color: #ffffff !important;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(255, 255, 255, 0.05);
+  border: 1px solid #444;
+  padding: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+
+.dark-mode .job-ad:hover {
+  background-color: #3f4a58;
+}
+
+.dark-mode .job-ad h3 {
+  color: #f1f1f1 !important;
+}
+
+.dark-mode .navbar input,
+.dark-mode .navbar select,
+.dark-mode .search-button,
+.dark-mode .show-summaries,
+.dark-mode .navbar button {
+  background-color: #3f4a58 !important;  
+  color: white !important;
+  border: none !important;
+}
+
+.dark-mode .pagination button {
+  background-color: #3f4a58 !important;   
+  color: white !important;
+  border: none !important;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-weight: bold;
+}

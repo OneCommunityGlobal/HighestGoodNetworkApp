@@ -5,6 +5,7 @@ import { ApiEndpoint } from 'utils/URL';
 import OneCommunityImage from './One-Community-Horizontal-Homepage-Header-980x140px-2.png';
 
 import 'leaflet/dist/leaflet.css';
+import { connect } from 'react-redux';
 
 class Collaboration extends Component {
   constructor(props) {
@@ -170,7 +171,7 @@ class Collaboration extends Component {
 
     if (summaries) {
       return (
-        <div className="job-landing">
+        <div className={`job-landing ${this.props.darkMode ? 'dark-mode' : ''}`}>
           <div className="header">
             <a
               href="https://www.onecommunityglobal.org/collaboration/"
@@ -180,8 +181,8 @@ class Collaboration extends Component {
               <img src={OneCommunityImage} alt="One Community Logo" className="responsive-img" />
             </a>
           </div>
-          <div className="container">
-            <nav className="navbar">
+          <div className={`container ${this.props.darkMode ? 'bg-dark-gray text-light' : ''}`}>
+            <nav className={`navbar ${this.props.darkMode ? 'bg-dark-gray text-light' : ''}`}>
               <div className="navbar-left">
                 <form className="search-form">
                   <input
@@ -225,7 +226,7 @@ class Collaboration extends Component {
               <h1>Summaries</h1>
               {summaries && summaries.jobs && summaries.jobs.length > 0 ? (
                 summaries.jobs.map(summary => (
-                  <div key={summary._id} className="summary-item">
+                  <div key={summary._id} className={`summary-item ${this.props.darkMode ? 'bg-dark text-light' : ''}`}>
                     <h3>
                       <a href={summary.jobDetailsLink}>{summary.title}</a>
                     </h3>
@@ -243,7 +244,7 @@ class Collaboration extends Component {
     }
 
     return (
-      <div className="job-landing">
+      <div className={`job-landing ${this.props.darkMode ? 'dark-mode' : ''}`}>
         <div className="header">
           <a
             href="https://www.onecommunityglobal.org/collaboration/"
@@ -253,7 +254,7 @@ class Collaboration extends Component {
             <img src={OneCommunityImage} alt="One Community Logo" />
           </a>
         </div>
-        <div className="container">
+        <div className={`container ${this.props.darkMode ? 'text-light' : ''}`}>
           <nav className="navbar">
             <div className="navbar-left">
               <form className="search-form">
@@ -294,7 +295,7 @@ class Collaboration extends Component {
 
           <div className="job-list">
             {jobAds.map(ad => (
-              <div key={ad._id} className="job-ad">
+              <div key={ad._id} className={`job-ad ${this.props.darkMode ? 'text-light' : ''}`}>
                 <img src={ad.imageUrl} alt={`${ad.title}`} />
                 <a
                   href={`https://www.onecommunityglobal.org/collaboration/seeking-${ad.category.toLowerCase()}`}
@@ -314,6 +315,7 @@ class Collaboration extends Component {
                 key={i}
                 onClick={() => this.setPage(i + 1)}
                 disabled={currentPage === i + 1}
+                className={this.props.darkMode ? 'bg-space-cadet text-light border-0' : ''}
               >
                 {i + 1}
               </button>
@@ -325,4 +327,8 @@ class Collaboration extends Component {
   }
 }
 
-export default Collaboration;
+const mapStateToProps = state => ({
+  darkMode: state.theme.darkMode,
+});
+
+export default connect(mapStateToProps)(Collaboration);
