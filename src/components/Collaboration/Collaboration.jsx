@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import hasPermission from '~/utils/permissions';
 import './Collaboration.css';
 import { toast } from 'react-toastify';
 import { ApiEndpoint } from '~/utils/URL';
-import { useSelector } from 'react-redux';
 import OneCommunityImage from '../../assets/images/logo2.png';
+import JobReorderModal from './JobReorderModal';
 
 function Collaboration() {
   const [query, setQuery] = useState('');
@@ -18,8 +20,12 @@ function Collaboration() {
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
   const [tooltipPosition, setTooltipPosition] = useState(null);
+  const [isReorderModalOpen, setIsReorderModalOpen] = useState(false);
 
   const darkMode = useSelector(state => state.theme.darkMode);
+  const dispatch = useDispatch();
+  const userHasPermission = permission => dispatch(hasPermission(permission));
+  const canReorderJobs = userHasPermission('reorderJobs');
 
   useEffect(() => {
     const tooltipDismissed = localStorage.getItem('tooltipDismissed');
@@ -45,7 +51,18 @@ function Collaboration() {
       }
 
       const data = await response.json();
-      setJobAds(data.jobs);
+
+      const sortedJobs = data.jobs.sort((a, b) => {
+        if (a.displayOrder !== b.displayOrder) {
+          return a.displayOrder - b.displayOrder;
+        }
+        if (a.featured !== b.featured) {
+          return b.featured - a.featured; // Featured jobs first
+        }
+        return new Date(b.datePosted) - new Date(a.datePosted);
+      });
+
+      setJobAds(sortedJobs);
       setTotalPages(data.pagination.totalPages);
     } catch (error) {
       toast.error('Error fetching jobs');
@@ -135,6 +152,15 @@ function Collaboration() {
     setTooltipPosition('category');
   };
 
+  const toggleReorderModal = () => {
+    setIsReorderModalOpen(prevState => !prevState);
+  };
+
+  const handleJobsReordered = () => {
+    // Refresh job listings after reordering
+    fetchJobAds(query, category);
+  };
+
   useEffect(() => {
     fetchJobAds(query, category);
     fetchCategories();
@@ -165,6 +191,17 @@ function Collaboration() {
                 <button className="btn btn-secondary" type="submit" onClick={handleSubmit}>
                   Go
                 </button>
+
+                {/* Only show reorder button for users with permission */}
+                {canReorderJobs && (
+                  <button
+                    className="btn btn-secondary reorder-button"
+                    type="button"
+                    onClick={toggleReorderModal}
+                  >
+                    Edit to Reorder
+                  </button>
+                )}
               </form>
               {showTooltip && tooltipPosition === 'search' && (
                 <div className="job-tooltip">
@@ -277,6 +314,14 @@ function Collaboration() {
             )}
           </div>
         </div>
+
+        {/* Reorder Modal */}
+        <JobReorderModal
+          isOpen={isReorderModalOpen}
+          toggle={toggleReorderModal}
+          onJobsReordered={handleJobsReordered}
+          darkMode={darkMode}
+        />
       </div>
     );
   }
@@ -305,6 +350,17 @@ function Collaboration() {
               <button className="btn btn-secondary" type="submit" onClick={handleSubmit}>
                 Go
               </button>
+
+              {/* Only show reorder button for users with permission */}
+              {canReorderJobs && (
+                <button
+                  className="btn btn-secondary reorder-button"
+                  type="button"
+                  onClick={toggleReorderModal}
+                >
+                  Edit to Reorder
+                </button>
+              )}
             </form>
             {showTooltip && tooltipPosition === 'search' && (
               <div className="job-tooltip">
@@ -462,6 +518,14 @@ function Collaboration() {
           </div>
         )}
       </div>
+
+      {/* Reorder Modal */}
+      <JobReorderModal
+        isOpen={isReorderModalOpen}
+        toggle={toggleReorderModal}
+        onJobsReordered={handleJobsReordered}
+        darkMode={darkMode}
+      />
     </div>
   );
 }
