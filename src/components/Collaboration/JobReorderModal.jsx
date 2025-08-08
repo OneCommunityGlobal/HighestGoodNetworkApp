@@ -2,10 +2,10 @@ import { useState, useEffect } from 'react';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Alert } from 'reactstrap';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import axios from 'axios';
-import { ApiEndpoint } from 'utils/URL';
+import { ApiEndpoint } from '~/utils/URL';
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
-import hasPermission from 'utils/permissions';
+import hasPermission from '~/utils/permissions';
 import './JobReorderModal.css';
 
 function JobReorderModal({ isOpen, toggle, onJobsReordered, darkMode, checkPermission }) {
