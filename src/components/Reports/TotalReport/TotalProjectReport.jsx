@@ -25,37 +25,46 @@ function TotalProjectReport(props) {
   const userList = useMemo(() => userProfiles.map(user => user._id), [userProfiles]);
   const projectList = useMemo(() => projects.map(proj => proj._id), [projects]);
 
-  const loadTimeEntriesForPeriod = useCallback(async (controller) => {
-    try {
-      const url = ENDPOINTS.TIME_ENTRIES_REPORTS;
-      const timeEntries = await axios.post(url, { users: userList, fromDate, toDate }, { signal: controller.signal })
-        .then(res => res.data.map(entry => ({
-          projectId: entry.projectId,
-          projectName: entry.projectName,
-          hours: entry.hours,
-          minutes: entry.minutes,
-          isTangible: entry.isTangible,
-          date: entry.dateOfWork,
-        })));
-  
-      const projUrl = ENDPOINTS.TIME_ENTRIES_LOST_PROJ_LIST;
-      const projTimeEntries = await axios.post(projUrl, { projects: projectList, fromDate, toDate }, { signal: controller.signal })
-        .then(res => res.data.map(entry => ({
-          projectId: entry.projectId,
-          projectName: entry.projectName,
-          hours: entry.hours,
-          minutes: entry.minutes,
-          isTangible: entry.isTangible,
-          date: entry.dateOfWork,
-        })));
-  
-      if (!controller.signal.aborted) {
-        setAllTimeEntries([...timeEntries, ...projTimeEntries]);
+  const loadTimeEntriesForPeriod = useCallback(
+    async controller => {
+      try {
+        const url = ENDPOINTS.TIME_ENTRIES_REPORTS;
+        const timeEntries = await axios
+          .post(url, { users: userList, fromDate, toDate }, { signal: controller.signal })
+          .then(res =>
+            res.data.map(entry => ({
+              projectId: entry.projectId,
+              projectName: entry.projectName,
+              hours: entry.hours,
+              minutes: entry.minutes,
+              isTangible: entry.isTangible,
+              date: entry.dateOfWork,
+            })),
+          );
+
+        const projUrl = ENDPOINTS.TIME_ENTRIES_LOST_PROJ_LIST;
+        const projTimeEntries = await axios
+          .post(projUrl, { projects: projectList, fromDate, toDate }, { signal: controller.signal })
+          .then(res =>
+            res.data.map(entry => ({
+              projectId: entry.projectId,
+              projectName: entry.projectName,
+              hours: entry.hours,
+              minutes: entry.minutes,
+              isTangible: entry.isTangible,
+              date: entry.dateOfWork,
+            })),
+          );
+
+        if (!controller.signal.aborted) {
+          setAllTimeEntries([...timeEntries, ...projTimeEntries]);
+        }
+      } catch (err) {
+        // console.log(err);
       }
-    } catch (err) {
-      // console.log(err);
-    }
-  }, [fromDate, toDate, userList, projectList]);
+    },
+    [fromDate, toDate, userList, projectList],
+  );
 
   const sumByProject = useCallback((objectArray, property) => {
     return objectArray.reduce((acc, obj) => {
@@ -92,7 +101,7 @@ function TotalProjectReport(props) {
 
   const filterOneHourProject = useCallback(projectTimeList => {
     return projectTimeList
-      .filter(element => (element.hours + element.minutes / 60.0) >= 1)
+      .filter(element => element.hours + element.minutes / 60.0 >= 1)
       .map(element => ({
         projectId: element.projectId,
         projectName: element.projectName,
@@ -101,35 +110,41 @@ function TotalProjectReport(props) {
       }));
   }, []);
 
-  const summaryOfTimeRange = useCallback(timeRange => {
-    const groupedEntries = Object.entries(groupByTimeRange(allTimeEntries, timeRange));
-    return groupedEntries.map(([key, entries]) => {
-      const groupedProjectsOfTime = Object.values(sumByProject(entries, 'projectId'));
-      return { timeRange: key, projectsOfTime: filterOneHourProject(groupedProjectsOfTime) };
-    });
-  }, [allTimeEntries, groupByTimeRange, sumByProject, filterOneHourProject]);
+  const summaryOfTimeRange = useCallback(
+    timeRange => {
+      const groupedEntries = Object.entries(groupByTimeRange(allTimeEntries, timeRange));
+      return groupedEntries.map(([key, entries]) => {
+        const groupedProjectsOfTime = Object.values(sumByProject(entries, 'projectId'));
+        return { timeRange: key, projectsOfTime: filterOneHourProject(groupedProjectsOfTime) };
+      });
+    },
+    [allTimeEntries, groupByTimeRange, sumByProject, filterOneHourProject],
+  );
 
-  const generateBarData = useCallback((groupedDate, isYear = false) => {
-    if (isYear) {
-      const startMonth = startDate.getMonth();
-      const endMonth = endDate.getMonth();
-      const sumData = groupedDate.map(range => ({
+  const generateBarData = useCallback(
+    (groupedDate, isYear = false) => {
+      if (isYear) {
+        const startMonth = startDate.getMonth();
+        const endMonth = endDate.getMonth();
+        const sumData = groupedDate.map(range => ({
+          label: range.timeRange,
+          value: range.projectsOfTime.length,
+          months: 12,
+        }));
+        if (sumData.length > 1) {
+          sumData[0].months = 12 - startMonth;
+          sumData[sumData.length - 1].months = endMonth + 1;
+        }
+        const filteredData = sumData.filter(data => data.value > 0);
+        return filteredData;
+      }
+      return groupedDate.map(range => ({
         label: range.timeRange,
         value: range.projectsOfTime.length,
-        months: 12,
       }));
-      if (sumData.length > 1) {
-        sumData[0].months = 12 - startMonth;
-        sumData[sumData.length - 1].months = endMonth + 1;
-      }
-      const filteredData = sumData.filter(data => data.value > 0);
-      return filteredData;
-    }
-    return groupedDate.map(range => ({
-      label: range.timeRange,
-      value: range.projectsOfTime.length,
-    }));
-  }, [startDate, endDate]);
+    },
+    [startDate, endDate],
+  );
 
   const checkPeriodForSummary = useCallback(() => {
     const oneMonth = 1000 * 60 * 60 * 24 * 31;
@@ -142,19 +157,17 @@ function TotalProjectReport(props) {
     }
   }, [endDate, startDate, generateBarData, summaryOfTimeRange]);
 
-
   useEffect(() => {
     setTotalProjectReportDataReady(false);
     const controller = new AbortController();
-    
-    loadTimeEntriesForPeriod(controller)
-      .then(() => {
-        if (!controller.signal.aborted) {
-          setTotalProjectReportDataLoading(false);
-          setTotalProjectReportDataReady(true);
-        }
-      })
-    
+
+    loadTimeEntriesForPeriod(controller).then(() => {
+      if (!controller.signal.aborted) {
+        setTotalProjectReportDataLoading(false);
+        setTotalProjectReportDataReady(true);
+      }
+    });
+
     return () => {
       controller.abort();
     };
@@ -168,7 +181,14 @@ function TotalProjectReport(props) {
       setAllProject(filterOneHourProject(groupedProjects));
       checkPeriodForSummary();
     }
-  }, [totalProjectReportDataLoading, totalProjectReportDataReady, sumByProject, filterOneHourProject, allTimeEntries, checkPeriodForSummary]);
+  }, [
+    totalProjectReportDataLoading,
+    totalProjectReportDataReady,
+    sumByProject,
+    filterOneHourProject,
+    allTimeEntries,
+    checkPeriodForSummary,
+  ]);
 
   const onClickTotalProjectDetail = () => setShowTotalProjectTable(prevState => !prevState);
 
@@ -176,27 +196,43 @@ function TotalProjectReport(props) {
     <table className="details-table table table-bordered table-responsive-sm">
       <thead className={darkMode ? 'bg-space-cadet text-light' : ''} style={{ pointerEvents: 'none' }}>
         <tr>
-          <th scope="col" id="projects__order">#</th>
+          <th scope="col" id="projects__order">
+            #
+          </th>
           <th scope="col">Project Name</th>
-          <th scope="col">Total Logged Time (Hrs)</th>
+          <th scope="col">Total Tangible Logged Time (Hrs)</th>
         </tr>
       </thead>
       <tbody className={darkMode ? 'bg-yinmn-blue text-light' : ''}>
-        {totalProject.sort((a, b) => a.projectName.localeCompare(b.projectName)).map((project, index) => (
-          <tr className={darkMode ? 'teams__tr hover-effect-reports-page-dark-mode text-light' : 'teams__tr'} id={`tr_${project.projectId}`} key={project.projectId}>
-            <th className="teams__order--input" scope="row">
-              <div>{index + 1}</div>
-            </th>
-            <td>
-              {project.projectId ? (
-                <Link to={`/projectReport/${project.projectId}`} className={darkMode ? 'text-light' : ''}>
-                  {project.projectName}
-                </Link>
-              ) : 'Unrecorded Project'}
-            </td>
-            <td>{project.totalTime}</td>
-          </tr>
-        ))}
+        {totalProject
+          .sort((a, b) => a.projectName.localeCompare(b.projectName))
+          .filter(project => project.tangibleTime > 0) // Filters out projects that have 0 tangible time
+          .map((project, index) => (
+            <tr
+              className={
+                darkMode ? 'teams__tr hover-effect-reports-page-dark-mode text-light' : 'teams__tr'
+              }
+              id={`tr_${project.projectId}`}
+              key={project.projectId}
+            >
+              <th className="teams__order--input" scope="row">
+                <div>{index + 1}</div>
+              </th>
+              <td>
+                {project.projectId ? (
+                  <Link
+                    to={`/projectReport/${project.projectId}`}
+                    className={darkMode ? 'text-light' : ''}
+                  >
+                    {project.projectName}
+                  </Link>
+                ) : (
+                  'Unrecorded Project'
+                )}
+              </td>
+              <td>{project.tangibleTime}</td>
+            </tr>
+          ))}
       </tbody>
     </table>
   );
@@ -209,7 +245,19 @@ function TotalProjectReport(props) {
       <div className={`total-container ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
         <div className={`total-title ${darkMode ? 'text-azure' : ''}`}>Total Project Report</div>
         <div className="total-period">
-          In the period from {startDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })} to {endDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })}:
+          In the period from{' '}
+          {startDate.toLocaleDateString('en-US', {
+            month: '2-digit',
+            day: '2-digit',
+            year: 'numeric',
+          })}{' '}
+          to{' '}
+          {endDate.toLocaleDateString('en-US', {
+            month: '2-digit',
+            day: '2-digit',
+            year: 'numeric',
+          })}
+          :
         </div>
         <div className="total-item">
           <span className="total-number">{allProject.length}</span>
