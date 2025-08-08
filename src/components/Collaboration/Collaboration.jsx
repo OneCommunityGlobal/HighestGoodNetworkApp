@@ -91,9 +91,11 @@ class Collaboration extends Component {
 
   handleResetFilters = async () => {
     try {
-      const response = await fetch(`${ApiEndpoint}/jobs/reset-filters`, {
-        method: 'GET',
-      });
+      const adsPerPage = this.calculateAdsPerPage();
+      const response = await fetch(
+      `${ApiEndpoint}/jobs/reset-filters?page=1&limit=${adsPerPage}`,
+      { method: 'GET' }
+    );
 
       if (!response.ok) {
         throw new Error(`Failed to reset filters: ${response.statusText}`);
@@ -294,7 +296,8 @@ class Collaboration extends Component {
           </div>
 
           <div className="job-list">
-            {jobAds.map(ad => (
+            { jobAds.length > 0 ? (
+            jobAds.map(ad => (
               <div key={ad._id} className={`job-ad ${this.props.darkMode ? 'text-light' : ''}`}>
                 <img src={ad.imageUrl} alt={`${ad.title}`} />
                 <a
@@ -305,7 +308,9 @@ class Collaboration extends Component {
                   </h3>
                 </a>
               </div>
-            ))}
+            )) ) : (
+              <p className={`no-jobads ${this.props.darkMode ? 'text-light' : ''}`}>No matching jobs found.</p>
+            ) }
           </div>
 
           <div className="pagination">

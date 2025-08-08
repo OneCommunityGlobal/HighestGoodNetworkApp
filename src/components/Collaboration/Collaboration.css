@@ -4,6 +4,16 @@
   max-width: 1000px;
   display: flex;
 }
+
+.header a {
+  display: inline-block;
+  margin: 0 auto;
+}
+.header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 .container, .job-landing {
   height: auto;
   min-height: 100vh;
@@ -309,7 +319,7 @@ select {
 .dark-mode .pagination button,
 .dark-mode .summary-item,
 .dark-mode .job-ad {
-  background-color: #343a40 !important;
+  background-color: #1c2541 !important;
   color: #ffffff;
   border: 1px solid #444;
 }
@@ -384,4 +394,35 @@ select {
   border-radius: 6px;
   padding: 8px 12px;
   font-weight: bold;
+}
+
+.no-jobads {
+  text-align: center;
+  font-size: 1.2em;
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.dark-mode .no-jobads {
+  background-color: #1c2541; 
+  border: 1px solid #555; 
+  color: #fff; 
+}
+
+@media screen and (max-width: 1020px) {
+  .job-list {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+}
+
+@media screen and (max-width: 800px) {
+  .navbar-right select {
+    margin-top: -5px; 
+  }
 }
