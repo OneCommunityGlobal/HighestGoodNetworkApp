@@ -8,6 +8,7 @@ import './issueChart.css';
 
 function IssueChart() {
   const dispatch = useDispatch();
+  const darkMode = useSelector(state => state.theme.darkMode);
   const { loading, issues, error } = useSelector(state => state.bmissuechart);
 
   const [filters, setFilters] = useState({ issueTypes: [], years: [] });
@@ -55,7 +56,7 @@ function IssueChart() {
   const { issueTypes, years } = extractDropdownOptions();
   const uniqueYears = years.filter(y => y.value !== 'All').map(y => y.value);
 
-  // Assign colors for each year
+  // Color generation (same for both modes)
   const generateColor = idx => `hsl(${(idx * 60) % 360}, 70%, 50%)`;
   const yearColorMap = uniqueYears.reduce((acc, year, idx) => {
     acc[year] = generateColor(idx);
@@ -77,14 +78,13 @@ function IssueChart() {
     }
   };
 
-  // Processed data for chart.js
+  // Prepare chart data (memoized)
   const chartData = useMemo(() => {
     if (!issues || Object.keys(issues).length === 0) return { labels: [], datasets: [] };
     const filteredIssueTypes = filters.issueTypes.length ? filters.issueTypes : Object.keys(issues);
     const filteredYears = filters.years.length ? filters.years : uniqueYears;
-    // X-axis labels: issue types
     const labels = filteredIssueTypes;
-    // Prepare one dataset per year (for grouped bars)
+
     const datasets = filteredYears.map((year, idx) => ({
       label: year.toString(),
       data: labels.map(issueType => issues[issueType]?.[year] || 0),
@@ -92,9 +92,11 @@ function IssueChart() {
       borderWidth: 1,
       borderRadius: 6,
     }));
+
     return { labels, datasets };
   }, [issues, filters, uniqueYears, yearColorMap]);
 
+  // Chart.js options with dark mode colors
   const chartOptions = useMemo(
     () => ({
       responsive: true,
@@ -106,17 +108,22 @@ function IssueChart() {
           labels: {
             font: { size: 13 },
             usePointStyle: true,
+            color: darkMode ? '#cfd7e3' : '#232323',
           },
         },
         title: {
           display: true,
           text: 'Number of Issues Reported by Type',
           font: { size: 17 },
+          color: darkMode ? '#cfd7e3' : '#232323',
         },
         tooltip: {
           enabled: true,
           mode: 'index',
           intersect: false,
+          backgroundColor: darkMode ? '#232323' : '#fff',
+          titleColor: darkMode ? '#fff' : '#232323',
+          bodyColor: darkMode ? '#fff' : '#232323',
           callbacks: {
             label: ctx => `${ctx.dataset.label}: ${ctx.formattedValue}`,
           },
@@ -124,66 +131,134 @@ function IssueChart() {
       },
       scales: {
         x: {
-          title: { display: true, text: 'Issue Type', font: { size: 14 } },
+          title: {
+            display: true,
+            text: 'Issue Type',
+            font: { size: 14 },
+            color: darkMode ? '#cfd7e3' : '#232323',
+          },
           grid: { display: false },
+
+          barPercentage: 0.9,
+          categoryPercentage: 0.8,
         },
         y: {
-          title: { display: true, text: 'No. of Issues', font: { size: 14 } },
+          title: {
+            display: true,
+            text: 'No. of Issues',
+            font: { size: 14 },
+            color: darkMode ? '#cfd7e3' : '#232323',
+          },
           beginAtZero: true,
-          ticks: { stepSize: 1 },
-          grid: { color: '#efefef' },
+          ticks: { stepSize: 1, color: darkMode ? '#cfd7e3' : '#232323' },
+          grid: { color: darkMode ? '#353535' : '#efefef' },
         },
       },
-      // Group bars by year
-      barPercentage: 0.9,
-      categoryPercentage: 0.8,
     }),
-    [],
+    [darkMode],
   );
+
+  // React-select style overrides for dark mode
+  const selectStyles = useMemo(() => {
+    if (!darkMode) return {};
+    return {
+      control: provided => ({
+        ...provided,
+        backgroundColor: '#22272e',
+        borderColor: '#3d444d',
+        color: '#cfd7e3',
+      }),
+      menu: provided => ({
+        ...provided,
+        backgroundColor: '#1e1e1e',
+        color: '#cfd7e3',
+      }),
+      input: provided => ({
+        ...provided,
+        color: '#cfd7e3',
+      }),
+      singleValue: provided => ({
+        ...provided,
+        color: '#cfd7e3',
+      }),
+      multiValue: provided => ({
+        ...provided,
+        backgroundColor: '#3d444d',
+      }),
+      multiValueLabel: provided => ({
+        ...provided,
+        color: '#cfd7e3',
+      }),
+      option: (provided, state) => ({
+        ...provided,
+        backgroundColor: state.isFocused ? '#4caf50' : '#1e1e1e',
+        color: state.isFocused ? '#fff' : '#cfd7e3',
+      }),
+      placeholder: provided => ({
+        ...provided,
+        color: '#aab1bf',
+      }),
+    };
+  }, [darkMode]);
 
   return (
     <div
-      className="issue-chart-event-container"
-      style={{ minHeight: 500 }}
-      role="region"
-      aria-label="Grouped bar chart showing number of issues reported by type and year"
+      className={darkMode ? 'bg-oxford-blue text-light dark' : ''}
+      style={{ minHeight: '100vh' }}
     >
-      <h2 className="issue-chart-event-title" id="chart-title">
-        Issues Chart
-      </h2>
-      <div>
-        <label className="issue-chart-label" htmlFor="issue-type-select">
-          Issue Type:
-        </label>
-        <Select
-          inputId="issue-type-select"
-          className="issue-chart-select"
-          isMulti
-          options={issueTypes}
-          onChange={selected => handleFilterChange(selected, 'issueTypes')}
-          value={issueTypes.filter(option => filters.issueTypes.includes(option.value))}
-          aria-label="Filter by issue type"
-        />
-        <label className="issue-chart-label" htmlFor="year-select">
-          Year:
-        </label>
-        <Select
-          inputId="year-select"
-          className="issue-chart-select"
-          isMulti
-          options={years}
-          onChange={selected => handleFilterChange(selected, 'years')}
-          value={years.filter(option => filters.years.includes(option.value))}
-          aria-label="Filter by year"
-        />
-      </div>
-      {loading && <p>Loading...</p>}
-      {error && <p>Error: {error}</p>}
-      {!loading && !error && (
-        <div style={{ width: '100%', minHeight: 400, height: 420 }}>
-          <Bar data={chartData} options={chartOptions} aria-labelledby="chart-title" />
+      <div
+        className={`issue-chart-event-container${darkMode ? ' dark' : ''}`}
+        role="region"
+        aria-label="Issues bar chart"
+      >
+        <h2 className="issue-chart-event-title">Issues Chart</h2>
+        <div
+          className="select-container"
+          style={{ justifyContent: 'center', gap: '20px', flexWrap: 'wrap' }}
+        >
+          <div style={{ minWidth: 200 }}>
+            <label htmlFor="issue-type-select" className="issue-chart-label">
+              Issue Type:
+            </label>
+            <Select
+              inputId="issue-type-select"
+              className="issue-chart-select"
+              isMulti
+              options={issueTypes}
+              onChange={selected => handleFilterChange(selected, 'issueTypes')}
+              value={issueTypes.filter(option => filters.issueTypes.includes(option.value))}
+              styles={selectStyles}
+              aria-label="Filter issues by type"
+              placeholder="Select issue types"
+            />
+          </div>
+          <div style={{ minWidth: 200 }}>
+            <label htmlFor="year-select" className="issue-chart-label">
+              Year:
+            </label>
+            <Select
+              inputId="year-select"
+              className="issue-chart-select"
+              isMulti
+              options={years}
+              onChange={selected => handleFilterChange(selected, 'years')}
+              value={years.filter(option => filters.years.includes(option.value))}
+              styles={selectStyles}
+              aria-label="Filter issues by year"
+              placeholder="Select years"
+            />
+          </div>
         </div>
-      )}
+
+        {loading && <p>Loading...</p>}
+        {error && <p>Error: {error}</p>}
+
+        {!loading && !error && (
+          <div className="chart-container" style={{ minHeight: 400 }}>
+            <Bar data={chartData} options={chartOptions} aria-labelledby="chart-title" />
+          </div>
+        )}
+      </div>
     </div>
   );
 }
