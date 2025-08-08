@@ -1,8 +1,11 @@
+/* eslint-disable react/no-unescaped-entities */
+import styles from './PRDashboard.module.css';
+
 function PRDashboard() {
   return (
-    <div style={{ padding: '2rem' }}>
+    <div className={styles.container}>
       <h1>PR Team Dashboard</h1>
-      <p>This is the PR Team’s dashboard view. Add content here as needed.</p>
+      <p>This is the PR Team's dashboard view. Add content here as needed.</p>
     </div>
   );
 }
