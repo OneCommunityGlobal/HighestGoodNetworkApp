@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import styles from './PromotionTable.module.css';
 
 const names = ['Alice', 'Bob', 'Charlie'];
 const dummyMembers = Array.from({ length: 45 }, (_, i) => ({
@@ -33,20 +34,20 @@ function PromotionTable() {
   if (loading) return <div>Loading promotions...</div>;
 
   return (
-    <div className="container">
-      <div className="header">
+    <div className={styles.container}>
+      <div className={styles.header}>
         <h1>Promotion Eligibility</h1>
-        <div className="actions">
-          <button type="button" className="btn btn-secondary">
+        <div className={styles.actions}>
+          <button type="button" className={`${styles.btn} ${styles.btnSecondary}`}>
             Review for this week
           </button>
-          <button type="button" className="btn btn-primary">
+          <button type="button" className={`${styles.btn} ${styles.btnPrimary}`}>
             Process Promotions
           </button>
         </div>
       </div>
 
-      <table className="promotion-table">
+      <table className={styles.promotionTable}>
         <thead>
           <tr>
             <th style={{ width: '15%' }}>Existing member/ New member</th>
@@ -60,43 +61,51 @@ function PromotionTable() {
         </thead>
         <tbody>
           {/* --- New Members Section --- */}
-          <tr className="section-header">
+          <tr className={styles.sectionHeader}>
             <td colSpan="7">New Members</td>
           </tr>
           {newMembers.map(user => (
             <tr key={user.id}>
               <td />
               <td>{user.reviewer}</td>
-              <td className={user.hasMetWeekly ? 'status-met' : 'status-not-met'}>
-                <span className="status-icon">{user.hasMetWeekly ? '✓' : '✗'}</span>
+              <td className={user.hasMetWeekly ? styles.statusMet : styles.statusNotMet}>
+                <span className={styles.statusIcon}>{user.hasMetWeekly ? '✓' : '✗'}</span>
                 {user.hasMetWeekly ? 'Has Met' : 'Has not Met'}
               </td>
               <td>{user.requiredPRs}</td>
               <td>{user.totalReviews}</td>
               <td>{user.remainingWeeks}</td>
               <td>
-                <input className="promote-checkbox" type="checkbox" defaultChecked={user.promote} />
+                <input
+                  className={styles.promoteCheckbox}
+                  type="checkbox"
+                  defaultChecked={user.promote}
+                />
               </td>
             </tr>
           ))}
 
           {/* --- Existing Members Section --- */}
-          <tr className="section-header">
+          <tr className={styles.sectionHeader}>
             <td colSpan="7">Existing Members</td>
           </tr>
           {existingMembers.map(user => (
             <tr key={user.id}>
               <td />
               <td>{user.reviewer}</td>
-              <td className={user.hasMetWeekly ? 'status-met' : 'status-not-met'}>
-                <span className="status-icon">{user.hasMetWeekly ? '✓' : '✗'}</span>
+              <td className={user.hasMetWeekly ? styles.statusMet : styles.statusNotMet}>
+                <span className={styles.statusIcon}>{user.hasMetWeekly ? '✓' : '✗'}</span>
                 {user.hasMetWeekly ? 'Has Met' : 'Has not Met'}
               </td>
               <td>{user.requiredPRs}</td>
               <td>{user.totalReviews}</td>
               <td>{user.remainingWeeks}</td>
               <td>
-                <input className="promote-checkbox" type="checkbox" defaultChecked={user.promote} />
+                <input
+                  className={styles.promoteCheckbox}
+                  type="checkbox"
+                  defaultChecked={user.promote}
+                />
               </td>
             </tr>
           ))}
