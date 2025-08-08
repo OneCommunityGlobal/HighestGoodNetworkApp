@@ -149,3 +149,11 @@ button.send-button:hover {
     box-sizing: border-box; /* Ensures padding is included in width */
   }
 }
+
+summary {
+  list-style: none;
+}
+
+summary::-webkit-details-marker {
+  display: none;
+}

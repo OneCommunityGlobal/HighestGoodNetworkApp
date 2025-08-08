@@ -6,8 +6,34 @@ import { Editor } from '@tinymce/tinymce-react';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { toast } from 'react-toastify';
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails.jsx';
+import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
+import classnames from 'classnames';
+import SocialMediaComposer from './SocialMediaComposer';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
+import { faFacebook, faLinkedin, faMedium } from '@fortawesome/free-brands-svg-icons';
+import ReactTooltip from 'react-tooltip';
 
 function Announcements({ title, email: initialEmail }) {
+  const [activeTab, setActiveTab] = useState('email');
+
+  const iconTabStyle = tabId => ({
+    flex: 1,
+    textAlign: 'center',
+    padding: '10px 16px',
+    cursor: 'pointer',
+    borderBottom: activeTab === tabId ? '2px solid #007bff' : '2px solid transparent',
+    backgroundColor: activeTab === tabId ? '#eef6ff' : '#f9f9f9',
+    color: activeTab === tabId ? '#007bff' : '#444',
+    fontWeight: activeTab === tabId ? 'bold' : 'normal',
+  });
+
+  const toggleTab = tab => {
+    if (activeTab !== tab) {
+      setActiveTab(tab);
+    }
+  };
+
   const darkMode = useSelector(state => state.theme.darkMode);
   const dispatch = useDispatch();
   const [emailTo, setEmailTo] = useState('');
@@ -157,97 +183,229 @@ function Announcements({ title, email: initialEmail }) {
 
   return (
     <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: '100%' }}>
-      <div className="email-update-container">
-        <div className="editor">
-          {title ? <h3> {title} </h3> : <h3>Weekly Progress Editor</h3>}
-
-          <br />
-          {showEditor && (
-            <Editor
-              tinymceScriptSrc="/tinymce/tinymce.min.js"
-              id="email-editor"
-              initialValue="<p>This is the initial content of the editor</p>"
-              init={editorInit}
-              onEditorChange={content => {
-                setEmailContent(content);
+      <Nav
+        tabs
+        className="mb-3 flex-wrap"
+        style={{
+          paddingLeft: '1rem',
+          paddingTop: '1rem',
+          display: 'flex',
+          flexWrap: 'wrap',
+          borderBottom: '1px solid #ccc',
+        }}
+      >
+        {[
+          { id: 'email', icon: faEnvelope, label: 'Email' },
+          { id: 'x', label: 'X', customIconSrc: 'social-media-logos/x_icon.png' },
+          { id: 'facebook', icon: faFacebook, label: 'Facebook' },
+          { id: 'linkedin', icon: faLinkedin, label: 'LinkedIn' },
+          {
+            id: 'pinterest',
+            label: 'Pinterest',
+            customIconSrc: 'social-media-logos/pinterest_icon.png',
+          },
+          {
+            id: 'instagram',
+            label: 'Instagram',
+            customIconSrc: 'social-media-logos/insta_icon.png',
+          },
+          { id: 'threads', label: 'Threads', customIconSrc: 'social-media-logos/threads_icon.png' },
+          {
+            id: 'mastodon',
+            label: 'Mastodon',
+            customIconSrc: 'social-media-logos/mastodon_icon.png',
+          },
+          { id: 'bluesky', label: 'BlueSky', customIconSrc: 'social-media-logos/bluesky_icon.png' },
+          { id: 'youtube', label: 'Youtube', customIconSrc: 'social-media-logos/youtube_icon.png' },
+          { id: 'reddit', label: 'Reddit', customIconSrc: 'social-media-logos/reddit_icon.png' },
+          { id: 'tumblr', label: 'Tumblr', customIconSrc: 'social-media-logos/tumblr_icon.png' },
+          { id: 'imgur', label: 'Imgur', customIconSrc: 'social-media-logos/imgur_icon.png' },
+          { id: 'diigo', label: 'Diigo', customIconSrc: 'social-media-logos/diigo_icon.png' },
+          { id: 'myspace', label: 'Myspace', customIconSrc: 'social-media-logos/myspace_icon.png' },
+          { id: 'medium', icon: faMedium, label: 'Medium' },
+          { id: 'plurk', label: 'Plurk', customIconSrc: 'social-media-logos/plurk_icon.png' },
+          { id: 'bitily', label: 'Bitily', customIconSrc: 'social-media-logos/bitily_icon.png' },
+          {
+            id: 'livejournal',
+            label: 'LiveJournal',
+            customIconSrc: 'social-media-logos/liveJournal_icon.png',
+          },
+          {
+            id: 'slashdot',
+            label: 'Slashdot',
+            customIconSrc: 'social-media-logos/slashdot_icon.png',
+          },
+          { id: 'blogger', label: 'Blogger', customIconSrc: 'social-media-logos/blogger_icon.png' },
+          {
+            id: 'truthsocial',
+            label: 'Truth Social',
+            customIconSrc: 'social-media-logos/truthsocial_icon.png',
+          },
+        ].map(({ id, icon, label, customIconSrc }) => (
+          <NavItem key={id} style={{ flex: 1 }}>
+            <NavLink
+              data-tip={label}
+              className={classnames({ active: activeTab === id })}
+              onClick={() => toggleTab(id)}
+              style={{
+                ...iconTabStyle(id),
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '8px',
+                gap: '4px',
+                minWidth: '70px',
               }}
-              onInit={(evt, editor) => {
-                editorRef.current = editor;
-              }}
-            />
-          )}
-          <div className="send-buttons" style={{ marginTop: '1rem' }}>
-            <button type="button" onClick={handleBroadcastEmails} className="send-button">
-              Broadcast Weekly Update
-            </button>
-          </div>
-        </div>
-
-        {title ? (
-          ''
-        ) : (
-          <div
-            className={`emails${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
-            style={darkMode ? boxStyleDark : boxStyle}
-          >
-            <label htmlFor="email-list-input" className={darkMode ? 'text-light' : 'text-dark'}>
-              Email List (comma-separated)<span className="red-asterisk">* </span>:
-            </label>
-            <input
-              type="text"
-              id="email-list-input"
-              value={emailTo}
-              onChange={handleEmailListChange}
-              placeholder="Enter email addresses (comma-separated)"
-              className={`input-text-for-announcement ${
-                darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
-              }`}
-            />
-            <button
-              type="button"
-              className="send-button"
-              onClick={handleSendEmails}
-              style={darkMode ? boxStyleDark : boxStyle}
             >
-              {title ? 'Send Email' : 'Send mail to specific users'}
-            </button>
+              <div style={{ width: '24px', height: '24px' }}>
+                {customIconSrc ? (
+                  <img
+                    src={customIconSrc}
+                    alt={`${label} icon`}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'contain',
+                    }}
+                  />
+                ) : (
+                  <FontAwesomeIcon icon={icon} style={{ width: '100%', height: '100%' }} />
+                )}
+              </div>
+              <div style={{ fontSize: '0.75rem', lineHeight: '1rem', textAlign: 'center' }}>
+                {label}
+              </div>
+            </NavLink>
+          </NavItem>
+        ))}
+      </Nav>
+      <ReactTooltip place="bottom" type="dark" effect="solid" />
+      <TabContent activeTab={activeTab}>
+        <TabPane tabId="email">
+          <div className="email-update-container">
+            <div className="editor">
+              {title ? <h3>{title}</h3> : <h3>Weekly Progress Editor</h3>}
+              <br />
+              {showEditor && (
+                <Editor
+                  tinymceScriptSrc="/tinymce/tinymce.min.js"
+                  id="email-editor"
+                  initialValue="<p>This is the initial content of the editor</p>"
+                  init={editorInit}
+                  onEditorChange={content => {
+                    setEmailContent(content);
+                  }}
+                  onInit={(evt, editor) => {
+                    editorRef.current = editor;
+                  }}
+                />
+              )}
+              <div className="send-buttons" style={{ marginTop: '1rem' }}>
+                <button type="button" onClick={handleBroadcastEmails} className="send-button">
+                  Broadcast Weekly Update
+                </button>
+              </div>
+            </div>
 
-            <hr />
-            <label htmlFor="header-content-input" className={darkMode ? 'text-light' : 'text-dark'}>
-              Insert header or image link:
-            </label>
-            <input
-              type="text"
-              id="header-content-input"
-              value={headerContent}
-              onChange={handleHeaderContentChange}
-              placeholder="Enter header image URL"
-              className={`input-text-for-announcement ${
-                darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
-              }`}
-            />
-            <button
-              type="button"
-              className="send-button"
-              onClick={addHeaderToEmailContent}
-              style={darkMode ? boxStyleDark : boxStyle}
-            >
-              Insert
-            </button>
+            {title ? null : (
+              <div
+                className={`emails${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
+                style={darkMode ? boxStyleDark : boxStyle}
+              >
+                <label htmlFor="email-list-input" className={darkMode ? 'text-light' : 'text-dark'}>
+                  Email List (comma-separated)<span className="red-asterisk">* </span>:
+                </label>
+                <input
+                  type="text"
+                  id="email-list-input"
+                  value={emailTo}
+                  onChange={handleEmailListChange}
+                  placeholder="Enter email addresses (comma-separated)"
+                  className={`input-text-for-announcement ${
+                    darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+                  }`}
+                />
+                <button
+                  type="button"
+                  className="send-button"
+                  onClick={handleSendEmails}
+                  style={darkMode ? boxStyleDark : boxStyle}
+                >
+                  Send mail to specific users
+                </button>
 
-            <hr />
-            <label htmlFor="upload-header-input" className={darkMode ? 'text-light' : 'text-dark'}>
-              Upload Header (or footer):
-            </label>
-            <input
-              type="file"
-              id="upload-header-input"
-              onChange={addImageToEmailContent}
-              className="input-file-upload"
-            />
+                <hr />
+                <label
+                  htmlFor="header-content-input"
+                  className={darkMode ? 'text-light' : 'text-dark'}
+                >
+                  Insert header or image link:
+                </label>
+                <input
+                  type="text"
+                  id="header-content-input"
+                  value={headerContent}
+                  onChange={handleHeaderContentChange}
+                  placeholder="Enter header image URL"
+                  className={`input-text-for-announcement ${
+                    darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+                  }`}
+                />
+                <button
+                  type="button"
+                  className="send-button"
+                  onClick={addHeaderToEmailContent}
+                  style={darkMode ? boxStyleDark : boxStyle}
+                >
+                  Insert
+                </button>
+
+                <hr />
+                <label
+                  htmlFor="upload-header-input"
+                  className={darkMode ? 'text-light' : 'text-dark'}
+                >
+                  Upload Header (or footer):
+                </label>
+                <input
+                  type="file"
+                  id="upload-header-input"
+                  onChange={addImageToEmailContent}
+                  className="input-file-upload"
+                />
+              </div>
+            )}
           </div>
-        )}
-      </div>
+        </TabPane>
+        {[
+          'x',
+          'facebook',
+          'linkedin',
+          'pinterest',
+          'instagram',
+          'threads',
+          'mastodon',
+          'bluesky',
+          'youtube',
+          'reddit',
+          'tumblr',
+          'imgur',
+          'diigo',
+          'myspace',
+          'medium',
+          'plurk',
+          'bitily',
+          'livejournal',
+          'slashdot',
+          'blogger',
+          'truthsocial',
+        ].map(platform => (
+          <TabPane tabId={platform} key={platform}>
+            <SocialMediaComposer platform={platform} />
+          </TabPane>
+        ))}
+      </TabContent>
     </div>
   );
 }
