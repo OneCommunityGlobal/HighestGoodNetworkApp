@@ -1,7 +1,6 @@
 .pie-chart-wrapper {
     display: flex;
     align-items: center;
-    height: 40vh;
     /* overflow: hidden; */
   }
   
@@ -142,7 +141,7 @@
   }
   
   .pie-chart-legend-table-wrapper {
-    height: 27vh;
+    max-height: 35vh;
     width: 100%;
     /* border: 1px solid rgba(0, 0, 0, 0.1); */
     overflow-y: auto;

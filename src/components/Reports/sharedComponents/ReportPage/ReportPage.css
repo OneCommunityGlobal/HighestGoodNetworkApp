@@ -6,8 +6,8 @@
   min-height: 100vh;
   background-color: #faf7fd;
   padding: 40px 0 0 24px;
-  align-items: stretch;
-
+  align-items: start;
+  padding: 2vh 7vw;
 }
 
 .report-page-content {
@@ -31,12 +31,15 @@
   width: 100%;
 }
 
-@media (max-width: 1300px) {
+@media (max-width: 1100px) {
   .report-page-wrapper {
     display: flex;
     flex-direction: column;
     padding: 40px;
     align-items: center;
+  }
+  .report-page-content {
+    padding: 24px;
   }
 }
 
