@@ -2,17 +2,17 @@ import { useEffect, useState, useRef } from 'react';
 import { Button, Dropdown, Form, Input } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
-import { getAllUserProfile } from 'actions/userManagement';
+import { getAllUserProfile } from '~/actions/userManagement';
 import './PermissionsManagement.css';
 import axios from 'axios';
-import { ENDPOINTS } from 'utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 // eslint-disable-next-line no-unused-vars
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import {
   DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
   DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
   PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
-} from 'utils/constants';
+} from '~/utils/constants';
 import PermissionList from './PermissionList';
 import { addNewRole, getAllRoles } from '../../actions/role';
 import { cantUpdateDevAdminDetails } from '../../utils/permissions';
@@ -34,6 +34,7 @@ function UserPermissionsPopUp({
   const [searchText, onInputChange] = useState('');
   const [actualUserProfile, setActualUserProfile] = useState();
   const [userPermissions, setUserPermissions] = useState();
+  const [userRemovedDefaultPermissions, setUserRemovedDefaultPermissions] = useState(); // defulat perms taht were deleted
   const [isOpen, setIsOpen] = useState(false);
   const [isInputFocus, setIsInputFocus] = useState(false);
   const [actualUserRolePermission, setActualUserRolePermission] = useState();
@@ -46,6 +47,9 @@ function UserPermissionsPopUp({
 
   useEffect(() => {
     setUserPermissions(actualUserProfile?.permissions?.frontPermissions);
+    setUserRemovedDefaultPermissions(
+      actualUserProfile?.permissions?.removedDefaultPermissions || [],
+    );
   }, [actualUserProfile]);
 
   const refInput = useRef();
@@ -82,7 +86,13 @@ function UserPermissionsPopUp({
 
     const url = ENDPOINTS.USER_PROFILE(userId);
     const allUserInfo = await axios.get(url).then(res => res.data);
-    const newUserInfo = { ...allUserInfo, permissions: { frontPermissions: userPermissions } };
+    const newUserInfo = {
+      ...allUserInfo,
+      permissions: {
+        frontPermissions: userPermissions,
+        removedDefaultPermissions: userRemovedDefaultPermissions,
+      },
+    };
 
     axios
       .put(url, newUserInfo)
@@ -134,12 +144,15 @@ function UserPermissionsPopUp({
         onSubmit={e => {
           updateProfileOnSubmit(e);
         }}
+        autoComplete="off"
       >
         <div
           className={darkMode ? 'text-space-cadet' : ''}
           style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '5px' }}
         >
-          <h4 className="user-permissions-pop-up__title">User name:</h4>
+          <h4 className="user-permissions-pop-up__title">
+            User name<span className="red-asterisk">* </span>:
+          </h4>
           <Button
             type="button"
             color="success"
@@ -161,7 +174,7 @@ function UserPermissionsPopUp({
           style={{ width: '100%', marginRight: '5px' }}
         >
           <Input
-            type="text"
+            type="search"
             value={searchText}
             innerRef={refInput}
             // eslint-disable-next-line no-unused-vars
@@ -175,6 +188,8 @@ function UserPermissionsPopUp({
             }}
             placeholder="Shows only ACTIVE users"
             className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+            autoComplete="off"
+            name="user-search"
           />
           {isInputFocus || (searchText !== '' && allUserProfiles && allUserProfiles.length > 0) ? (
             <div
@@ -205,14 +220,24 @@ function UserPermissionsPopUp({
                   <div
                     className="user__auto-complete"
                     key={user._id}
+                    role="button"
+                    tabIndex={0}
                     onClick={() => {
                       onInputChange(`${user.firstName} ${user.lastName}`);
                       setIsOpen(false);
                       setActualUserProfile(user);
                       getUserData(user._id);
                     }}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        onInputChange(`${user.firstName} ${user.lastName}`);
+                        setIsOpen(false);
+                        setActualUserProfile(user);
+                        getUserData(user._id);
+                      }
+                    }}
                   >
-                    {`${user.firstName} ${user.lastName}`}
+                    {user.firstName} {user.lastName}
                   </div>
                 ))}
             </div>
@@ -231,6 +256,8 @@ function UserPermissionsPopUp({
               immutablePermissions={actualUserRolePermission}
               editable={!!actualUserProfile}
               setPermissions={setUserPermissions}
+              removedDefaultPermissions={userRemovedDefaultPermissions}
+              setRemovedDefaultPermissions={setUserRemovedDefaultPermissions}
             />
           </ul>
         </div>

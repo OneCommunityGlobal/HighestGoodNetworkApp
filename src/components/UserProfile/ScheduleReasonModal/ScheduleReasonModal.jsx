@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Form from 'react-bootstrap/Form';
 import moment from 'moment-timezone';
 import DatePicker from 'react-datepicker';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import ScheduleReasonModalCard from './ScheduleReasonModalCard';
 import {
   addTimeOffRequestThunk,
@@ -415,6 +415,7 @@ const ScheduleReasonModal = ({
                 <Form.Label className={`mt-1 ${darkMode ? 'text-light' : ''}`}>
                   What is your reason for requesting this time off?
                 </Form.Label>
+                <span className="red-asterisk">* </span>
                 <Form.Control
                   as="textarea"
                   rows={2}
@@ -504,8 +505,9 @@ const ScheduleReasonModal = ({
                 </ModalBody>
                 <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
                   <Button variant="primary" onClick={()=>{
-                    handelConfirmReason()
                     handleStartWeekConfirmationModal()
+                    handelConfirmReason()
+                    handleClose()
                   }}>
                     Confirm
                   </Button>
