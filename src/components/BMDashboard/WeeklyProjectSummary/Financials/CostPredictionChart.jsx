@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Fragment } from 'react';
 import {
   LineChart,
   Line,
@@ -95,10 +95,14 @@ function createStaticDotRenderer(category) {
 }
 
 // Pre-defined dot renderers for different categories
-const laborDot = createStaticDotRenderer('Labor');
-const materialsDot = createStaticDotRenderer('Materials');
-const equipmentDot = createStaticDotRenderer('Equipment');
-const totalDot = createStaticDotRenderer('Total');
+// eslint-disable-next-line testing-library/render-result-naming-convention
+const laborUtils = createStaticDotRenderer('Labor');
+// eslint-disable-next-line testing-library/render-result-naming-convention
+const materialsUtils = createStaticDotRenderer('Materials');
+// eslint-disable-next-line testing-library/render-result-naming-convention
+const equipmentUtils = createStaticDotRenderer('Equipment');
+// eslint-disable-next-line testing-library/render-result-naming-convention
+const totalUtils = createStaticDotRenderer('Total');
 
 // Calculate last predicted values for reference lines
 const getLastPredictedValues = costData => {
@@ -291,15 +295,15 @@ function CostPredictionChart({ darkMode, isFullPage = false, projectId }) {
   const getDotRenderer = category => {
     switch (category) {
       case 'Labor':
-        return laborDot;
+        return laborUtils;
       case 'Materials':
-        return materialsDot;
+        return materialsUtils;
       case 'Equipment':
-        return equipmentDot;
+        return equipmentUtils;
       case 'Total':
-        return totalDot;
+        return totalUtils;
       default:
-        return laborDot;
+        return laborUtils;
     }
   };
 
