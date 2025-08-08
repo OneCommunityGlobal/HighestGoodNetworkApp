@@ -15,8 +15,8 @@ import {
   CHANGE_USER_PROFILE_PAGE,
   START_USER_INFO_UPDATE,
 } from '../constants/userManagement';
-import { ENDPOINTS } from '../utils/URL';
-import { UserStatus } from '../utils/enums';
+import { ENDPOINTS } from '~/utils/URL';
+import { UserStatus } from '~/utils/enums';
 import { getTimeEndDateEntriesByPeriod } from './timeEntries';
 
 /**
@@ -261,9 +261,7 @@ export const updateUserFinalDayStatusIsSet = (user, status, finalDayDate, isSet)
       const patchData = {
         status,
         endDate: finalDayDate
-          ? moment(finalDayDate)
-              .add(1, 'days')
-              .format('YYYY-MM-DD')
+          ? moment.utc(finalDayDate).format('YYYY-MM-DD')
           : undefined,
         isSet,
       };

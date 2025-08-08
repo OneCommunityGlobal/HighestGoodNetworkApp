@@ -14,7 +14,7 @@ import {
   ModalHeader,
 } from 'reactstrap';
 import './Badge.css';
-import BadgeSummaryViz from 'components/Reports/BadgeSummaryViz';
+import BadgeSummaryViz from '~/components/Reports/BadgeSummaryViz';
 import NewBadges from './NewBadges';
 import OldBadges from './OldBadges';
 import { WEEK_DIFF } from '../../constants/badge';
@@ -51,10 +51,7 @@ function Badge(props) {
     if (!totalBadges) return 'You have no badges. ';
 
     const newBadges = badgeCollection.filter(
-      value =>
-        value &&
-        value.lastModified &&
-        Date.now() - new Date(value.lastModified).getTime() <= WEEK_DIFF,
+      value => Date.now() - new Date(value.lastModified).getTime() <= WEEK_DIFF,
     );
 
     const roundedHours = Math.floor(personalBestMaxHrs);
