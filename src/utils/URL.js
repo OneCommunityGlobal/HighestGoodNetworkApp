@@ -257,7 +257,8 @@ export const ENDPOINTS = {
   BM_EQUIPMENTS: `${APIEndpoint}/bm/equipments`,
   BM_INVTYPE_TYPE: type => `${APIEndpoint}/bm/invtypes/${type}`,
   BM_ISSUE_CHART: `${APIEndpoint}/bm/issue/issue-chart`,
-
+  BM_EQUIPMENT_INVTYPE: `${APIEndpoint}/bm/invtypes/equipment`,
+  BM_REUSABLES_INVTYPE: `${APIEndpoint}/bm/invtypes/reusables`,
   BM_ISSUE_FORM: `${APIEndpoint}/bm/issue/add`,
   TOOLS_AVAILABILITY_PROJECTS: `${APIEndpoint}/bm/tools-availability/projects`,
   TOOLS_AVAILABILITY_BY_PROJECT: (projectId, startDate, endDate) => {
