@@ -33,10 +33,10 @@ function PermissionListItem(props) {
 
   // Get current user permissions for specific restriction check
   const currentUserPermissions = useSelector(
-    state => state.auth.user?.permissions?.frontPermissions || [],
+    state => state.auth?.user?.permissions?.frontPermissions || [],
   );
 
-  // Only restrict the specific Blue Square Email Management permission
+  // Only restrict the specific Blue Square Email Management permissio
   const isRestrictedPermission = permission === 'resendBlueSquareAndSummaryEmails';
   const userHasRestrictedPermission = currentUserPermissions.includes(
     'resendBlueSquareAndSummaryEmails',
