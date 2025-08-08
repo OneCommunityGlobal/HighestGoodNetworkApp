@@ -301,7 +301,7 @@ function WeeklyProjectSummary() {
             })} */}
 
             <div className={`${styles.weeklyProjectSummaryCard} ${styles.financialBig}`}>
-              <CostPredictionChart darkMode={darkMode} />
+              <CostPredictionChart />
             </div>
             <div className={`${styles.weeklyProjectSummaryCard} ${styles.financialSmall}`}>
               <ExpenseBarChart />

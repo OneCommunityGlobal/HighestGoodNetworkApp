@@ -7,7 +7,6 @@ import SetupProfile from '~/components/SetupProfile/SetupProfile';
 import { ToastContainer } from 'react-toastify';
 
 import ToolsAvailabilityPage from '~/components/BMDashboard/WeeklyProjectSummary/Tools/ToolsAvailabilityPage';
-import { CostPredictionPage } from '~/components/BMDashboard/WeeklyProjectSummary/Financials';
 
 // hgnform routes
 import AutoUpdate from '~/components/AutoUpdate';
@@ -623,17 +622,6 @@ export default (
           fallback
           exact
           component={ToolsAvailabilityPage}
-        />
-
-        <BMProtectedRoute
-          path="/bmdashboard/cost-prediction"
-          exact
-          component={CostPredictionPage}
-        />
-        <BMProtectedRoute
-          path="/bmdashboard/cost-prediction/:projectId"
-          exact
-          component={CostPredictionPage}
         />
 
         {/* Community Portal Routes */}
