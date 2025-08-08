@@ -165,46 +165,29 @@ function ToolsAvailabilityPage() {
       <div className="tools-availability-content" style={darkModeStyles}>
         <div className="tools-chart-filters">
           <div className="filter-group">
-            <label htmlFor="project-select" style={darkMode ? { color: '#e0e0e0' } : {}}>
-              Project
-            </label>
+            <label htmlFor="project-select">Project</label>
             {renderProjectSelection()}
           </div>
           <div className="filter-group">
-            <label htmlFor="date-range-label" style={darkMode ? { color: '#e0e0e0' } : {}}>
-              Date Range (Optional)
-            </label>
+            <label htmlFor="tools-start-date">Date Range (Optional)</label>
             <div className="date-picker-group">
               <input
+                id="tools-start-date"
                 type="date"
                 className="date-picker"
                 value={startDate}
                 onChange={handleStartDateChange}
-                style={
-                  darkMode
-                    ? {
-                        backgroundColor: '#2c3344',
-                        color: '#e0e0e0',
-                        borderColor: '#364156',
-                      }
-                    : {}
-                }
+                placeholder="Start date"
+                aria-label="Start date"
               />
-              <span style={darkMode ? { color: '#e0e0e0' } : {}}>to</span>
+              <span>to</span>
               <input
                 type="date"
                 className="date-picker"
                 value={endDate}
                 onChange={handleEndDateChange}
-                style={
-                  darkMode
-                    ? {
-                        backgroundColor: '#2c3344',
-                        color: '#e0e0e0',
-                        borderColor: '#364156',
-                      }
-                    : {}
-                }
+                placeholder="End date"
+                aria-label="End date"
               />
               {(startDate || endDate) && (
                 <button
@@ -212,14 +195,7 @@ function ToolsAvailabilityPage() {
                   className="clear-dates-btn"
                   onClick={handleClearDates}
                   aria-label="Clear date filters"
-                  style={
-                    darkMode
-                      ? {
-                          backgroundColor: '#364156',
-                          color: '#e0e0e0',
-                        }
-                      : {}
-                  }
+                  title="Clear date filters"
                 >
                   ×
                 </button>

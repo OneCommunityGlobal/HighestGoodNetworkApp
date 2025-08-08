@@ -26,34 +26,23 @@ if (process.env.NODE_ENV === 'test') {
 }
 
 export class ForcePasswordUpdate extends Form {
-  _isMounted = false;
-
   state = {
     data: { newpassword: '', confirmnewpassword: '' },
     errors: {},
-    successMessage: '',
-    errorMessage: '',
   };
 
   componentDidMount() {
     // document.title = "Force Update Password";
-    this._isMounted = true;
   }
 
   componentDidUpdate(prevProps) {
-    if (this._isMounted && prevProps.errors.error !== this.props.errors.error) {
+    if (prevProps.errors.error !== this.props.errors.error) {
       this.setState({ errors: this.props.errors });
     }
   }
 
   componentWillUnmount() {
-    this._isMounted = false;
-    // Clear errors when unmounting
     this.props.clearErrors();
-    // Important: dismiss all toasts to prevent DOM manipulation after unmount
-    if (toast.dismiss && typeof toast.dismiss === 'function') {
-      toast.dismiss();
-    }
   }
 
   schema = {
@@ -78,74 +67,30 @@ export class ForcePasswordUpdate extends Form {
       .label('Confirm Password'),
   };
 
-  safeSetState = newState => {
-    if (this._isMounted) {
-      this.setState(newState);
-    }
-  };
-
   doSubmit = async () => {
-    if (!this._isMounted) return;
-
-    // Clear any previous messages
-    this.setState({ successMessage: '', errorMessage: '' });
-
     const { newpassword } = {
       ...this.state.data,
     };
 
     const { userId } = this.props.match.params;
     const data = { userId, newpassword };
-
-    try {
-      const status = await this.props.forcePasswordUpdate(data);
-
-      if (!this._isMounted) return;
-
-      if (status === 200) {
-        // For tests to interact with this message
-        const successMessage =
-          'You will now be directed to the login page where you can login with your new password.';
-
-        // Set in state so the test can find it
-        this.setState({ successMessage });
-
-        // Show toast and handle navigation
-        toast.success(successMessage, {
-          onClose: () => {
-            if (this._isMounted) {
-              this.props.history.replace('/login');
-            }
-          },
-        });
-      } else if (status === 400) {
-        const errorMessage =
-          'Please select a new password. New password cannot be default password.';
-        this.setState({ errorMessage });
-        toast.error(errorMessage);
-      } else {
-        const errorMessage = 'Something went wrong. Please contact your administrator.';
-        this.setState({ errorMessage });
-        toast.error(errorMessage);
-      }
-    } catch (error) {
-      if (this._isMounted) {
-        const errorMessage = 'An error occurred. Please try again later.';
-        this.setState({ errorMessage });
-        toast.error(errorMessage);
-      }
-    }
-  };
-
-  handleLoginRedirect = () => {
-    if (this._isMounted) {
-      this.props.history.replace('/login');
+    const status = await this.props.forcePasswordUpdate(data);
+    if (status === 200) {
+      toast.success(
+        'You will now be directed to the login page where you can login with your new password.',
+        {
+          onClose: () => this.props.history.replace('/login'),
+        },
+      );
+    } else if (status === 400) {
+      toast.error('Please select a new password. New password cannot be default password.');
+    } else {
+      toast.error('Something went wrong. Please contact your administrator.');
     }
   };
 
   render() {
     const { darkMode } = this.props;
-    const { successMessage, errorMessage } = this.state;
 
     return (
       <div
@@ -171,26 +116,6 @@ export class ForcePasswordUpdate extends Form {
           })}
           {this.renderButton({ label: 'Submit', darkMode })}
         </form>
-
-        {/* Message display for tests to interact with */}
-        {successMessage && (
-          <div
-            className="alert alert-success mt-3"
-            onClick={this.handleLoginRedirect}
-            onKeyDown={e => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                this.handleLoginRedirect();
-              }
-            }}
-            role="button"
-            tabIndex={0}
-            aria-label="Click to redirect to login page"
-          >
-            {successMessage}
-          </div>
-        )}
-        {errorMessage && <div className="alert alert-danger mt-3">{errorMessage}</div>}
       </div>
     );
   }

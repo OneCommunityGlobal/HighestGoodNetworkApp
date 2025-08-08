@@ -11,7 +11,6 @@ import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMateria
 
 import ToolsHorizontalBarChart from './Tools/ToolsHorizontalBarChart';
 import { CostPredictionChart } from './Financials';
-
 import ExpenseBarChart from './Financials/ExpenseBarChart';
 import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
 import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
@@ -261,14 +260,10 @@ function WeeklyProjectSummary() {
         title: 'Tools and Equipment Tracking',
         key: 'Tools and Equipment Tracking',
         className: 'half',
-
         content: (
-          <>
-            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
-              <ToolsHorizontalBarChart darkMode={darkMode} />
-            </div>
-            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>📊 Card</div>
-          </>
+          <div className="weekly-project-summary-card normal-card" style={{ minHeight: '300px' }}>
+            <ToolsHorizontalBarChart darkMode={darkMode} />
+          </div>
         ),
       },
       {

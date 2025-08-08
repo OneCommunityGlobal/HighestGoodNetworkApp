@@ -1,290 +1,235 @@
-.tools-horizontal-chart-container {
-  background-color: var(--card-bg);
+/* Tools Horizontal Bar Chart Card Component */
+.tools-horizontal-bar-chart-card {
+  background-color: var(--card-bg, #ffffff);
   border-radius: 8px;
-  padding: 20px;
+  padding: 16px;
   height: 100%;
-  box-shadow: 0 2px 5px var(--card-shadow);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
   transition: transform 0.2s ease;
+  min-height: 280px;
 }
 
-.tools-horizontal-chart-container:not(.full-page):hover {
+.tools-horizontal-bar-chart-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px var(--card-shadow);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
-.tools-horizontal-chart-container.dark-mode {
-  background-color: var(--section-bg);
+.tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode {
+  background-color: var(--section-bg, #2c2c2c);
   color: white;
 }
 
-.tools-chart-title {
-  font-size: 20px;
+.tools-horizontal-bar-chart-title {
+  font-size: 16px;
   font-weight: 600;
-  margin-bottom: 24px;
-  color: var(--text-color);
+  margin: 0 0 16px 0;
+  color: var(--text-color, #333);
+  text-align: center;
+  flex-shrink: 0;
 }
 
-.full-page .tools-chart-title {
-  font-size: 24px;
-  margin-bottom: 32px;
+.tools-horizontal-bar-chart-dark-mode .tools-horizontal-bar-chart-title {
+  color: #ffffff;
 }
 
-.tools-chart-filters {
-  display: flex;
-  gap: 16px;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-}
-
-.filter-group {
+.tools-horizontal-bar-chart-content {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  min-width: 200px;
+  min-height: 0;
 }
 
-.filter-group label {
-  font-size: 13px;
-  color: var(--text-color);
-  font-weight: 500;
-}
-
-.project-select {
-  width: 100%;
-}
-
-.date-picker-group {
+.tools-horizontal-bar-chart-loading {
   display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 8px;
+  height: 200px;
+  font-size: 14px;
+  color: var(--text-color, #666);
+  opacity: 0.7;
 }
 
-.date-picker {
-  width: 110px;
-  padding: 6px;
-  border: 1px solid #ccc;
+.tools-horizontal-bar-chart-error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  font-size: 14px;
+  color: #f44336;
+  background-color: rgba(244, 67, 54, 0.05);
   border-radius: 4px;
-  font-size: 13px;
-  background-color: var(--card-bg);
-  color: var(--text-color);
+  padding: 12px;
+  text-align: center;
 }
 
-.dark-mode .date-picker {
-  background-color: var(--section-bg);
-  border-color: #555;
-  color: #e0e0e0;
+.tools-horizontal-bar-chart-empty {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  font-size: 14px;
+  color: var(--text-color, #666);
+  opacity: 0.7;
+  text-align: center;
 }
 
-.date-picker-group span {
-  color: var(--text-color);
-  font-size: 13px;
-}
-
-/* React-Select Custom Styles */
-.select__control {
-  background-color: var(--card-bg) !important;
-  border-color: #ccc !important;
-}
-
-.dark-mode .select__control {
-  background-color: var(--section-bg) !important;
-  border-color: #555 !important;
-}
-
-.select__single-value {
-  color: var(--text-color) !important;
-}
-
-.select__menu {
-  background-color: var(--card-bg) !important;
-  border: 1px solid #ccc;
-}
-
-.dark-mode .select__menu {
-  background-color: var(--section-bg) !important;
-  border-color: #555;
-}
-
-.select__option {
-  background-color: var(--card-bg) !important;
-  color: var(--text-color) !important;
-}
-
-.select__option:hover {
-  background-color: rgba(0, 0, 0, 0.1) !important;
-}
-
-.dark-mode .select__option:hover {
-  background-color: rgba(255, 255, 255, 0.1) !important;
-}
-
-.tools-chart-tooltip {
-  background-color: white;
+.tools-horizontal-bar-chart-tooltip {
+  background-color: rgba(255, 255, 255, 0.95);
   border: 1px solid #ccc;
   border-radius: 4px;
   padding: 8px 12px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  font-size: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  max-width: 200px;
 }
 
-.dark-mode .tools-chart-tooltip {
-  background-color: #333;
+.tools-horizontal-bar-chart-tooltip-label {
+  font-weight: 600;
+  margin: 0 0 4px 0;
+  color: #333;
+}
+
+.tools-horizontal-bar-chart-tooltip-total {
+  font-weight: 600;
+  margin: 4px 0 0 0;
+  padding-top: 4px;
+  border-top: 1px solid #eee;
+  color: #333;
+}
+
+.tools-horizontal-bar-chart-dark-mode .tools-horizontal-bar-chart-tooltip {
+  background-color: rgba(45, 45, 45, 0.95);
   border-color: #555;
+}
+
+.tools-horizontal-bar-chart-dark-mode .tools-horizontal-bar-chart-tooltip-label,
+.tools-horizontal-bar-chart-dark-mode .tools-horizontal-bar-chart-tooltip-total {
   color: #e0e0e0;
 }
 
-.tool-name {
-  font-weight: bold;
-  margin: 0 0 5px;
+/* Filters Styling */
+.tools-horizontal-bar-chart-filters {
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  margin-bottom: 12px;
 }
 
-.tool-usage {
-  margin: 0;
-  font-size: 13px;
+.tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode .tools-horizontal-bar-chart-filters {
+  border-bottom-color: rgba(255, 255, 255, 0.2);
+}
+
+.tools-horizontal-bar-chart-filter-group {
+  margin-bottom: 12px;
+}
+
+.tools-horizontal-bar-chart-filter-group:last-child {
+  margin-bottom: 0;
+}
+
+.tools-horizontal-bar-chart-filter-group label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  margin-bottom: 4px;
+  color: #555;
+}
+
+.tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode .tools-horizontal-bar-chart-filter-group label {
+  color: #e0e0e0;
+}
+
+.tools-horizontal-bar-chart-project-select {
+  max-width: 100%;
+}
+
+.tools-horizontal-bar-chart-date-picker-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tools-horizontal-bar-chart-date-picker {
+  padding: 4px 6px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 12px;
+  background-color: #fff;
+  color: #333;
+  min-width: 120px;
+}
+
+.tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode .tools-horizontal-bar-chart-date-picker {
+  background-color: #2c3344;
+  border-color: #364156;
+  color: #e0e0e0;
+}
+
+.tools-horizontal-bar-chart-date-picker:focus {
+  outline: none;
+  border-color: #2196F3;
+  box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+}
+
+.tools-horizontal-bar-chart-date-picker-group span {
+  font-size: 12px;
+  color: #666;
+  white-space: nowrap;
+}
+
+.tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode .tools-horizontal-bar-chart-date-picker-group span {
+  color: #aaa;
+}
+
+.tools-horizontal-bar-chart-clear-dates-btn {
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 12px;
+  cursor: pointer;
+  color: #666;
+  transition: all 0.2s ease;
+}
+
+.tools-horizontal-bar-chart-clear-dates-btn:hover {
+  background: #e0e0e0;
+  border-color: #ccc;
+}
+
+.tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode .tools-horizontal-bar-chart-clear-dates-btn {
+  background: #364156;
+  border-color: #4a5568;
+  color: #e0e0e0;
+}
+
+.tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode .tools-horizontal-bar-chart-clear-dates-btn:hover {
+  background: #4a5568;
+  border-color: #5a6578;
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-  .tools-horizontal-chart-container {
-    padding: 16px;
+  .tools-horizontal-bar-chart-card {
+    padding: 12px;
+    min-height: 250px;
   }
   
-  .tools-chart-title {
-    font-size: 18px;
-    margin-bottom: 20px;
+  .tools-horizontal-bar-chart-title {
+    font-size: 14px;
+    margin-bottom: 12px;
   }
   
-  .full-page .tools-chart-title {
-    font-size: 20px;
-    margin-bottom: 24px;
+  .tools-horizontal-bar-chart-date-picker-group {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
   }
   
-  .filter-group {
-    min-width: 100%;
-  }
-  
-  .date-picker-group {
-    flex-wrap: wrap;
-  }
-  
-  .date-picker {
+  .tools-horizontal-bar-chart-date-picker {
+    min-width: 100px;
     width: 100%;
   }
-}
-
-.tools-chart-loading {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  min-height: 200px;
-  font-size: 16px;
-  color: var(--text-color);
-  opacity: 0.7;
-}
-
-.tools-chart-error {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  min-height: 100px;
-  font-size: 16px;
-  color: #ff5555;
-  background-color: rgba(255, 85, 85, 0.05);
-  border-radius: 4px;
-  padding: 12px;
-  margin-bottom: 16px;
-  text-align: center;
-}
-
-.tools-chart-empty {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  min-height: 200px;
-  font-size: 16px;
-  color: var(--text-color);
-  opacity: 0.7;
-  text-align: center;
-}
-
-.tools-chart-placeholder {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 300px;
-  border: 2px dashed #ddd;
-  border-radius: 8px;
-  color: var(--text-color);
-  font-size: 16px;
-  opacity: 0.7;
-  text-align: center;
-  margin-top: 20px;
-}
-
-.dark-mode .tools-chart-placeholder {
-  border-color: #555;
-}
-
-.select-loading, .select-error {
-  padding: 8px;
-  font-size: 14px;
-  border-radius: 4px;
-}
-
-.select-loading {
-  color: var(--text-color);
-  background-color: rgba(0, 0, 0, 0.05);
-}
-
-.select-error {
-  color: #ff5555;
-  background-color: rgba(255, 85, 85, 0.05);
-}
-
-.dark-mode .select-loading {
-  background-color: rgba(255, 255, 255, 0.05);
-}
-
-.clear-dates-btn {
-  background-color: rgba(0, 0, 0, 0.1);
-  border: none;
-  border-radius: 50%;
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-size: 16px;
-  color: var(--text-color);
-  transition: background-color 0.2s;
-}
-
-.clear-dates-btn:hover {
-  background-color: rgba(0, 0, 0, 0.2);
-}
-
-.dark-mode .clear-dates-btn {
-  background-color: rgba(255, 255, 255, 0.1);
-  color: #e0e0e0;
-}
-
-.dark-mode .clear-dates-btn:hover {
-  background-color: rgba(255, 255, 255, 0.2);
-}
-
-/* Tool name label styling */
-.recharts-yAxis .recharts-cartesian-axis-tick-value {
-  font-weight: 500;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.dark-mode .recharts-yAxis .recharts-cartesian-axis-tick-value {
-  fill: #e0e0e0;
 } 

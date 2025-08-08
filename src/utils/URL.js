@@ -109,7 +109,8 @@ export const ENDPOINTS = {
     `${APIEndpoint}/reports/volunteerstats?startDate=${startDate}&endDate=${endDate}&comparisonStartDate=${comparisonStartDate ||
       ''}&comparisonEndDate=${comparisonEndDate || ''}`,
   VOLUNTEER_TRENDS: (timeFrame, offset, customStartDate, customEndDate) =>
-    `${APIEndpoint}/reports/volunteertrends?timeFrame=${timeFrame}&offset=${offset}${customStartDate ? `&customStartDate=${customStartDate}` : ''
+    `${APIEndpoint}/reports/volunteertrends?timeFrame=${timeFrame}&offset=${offset}${
+      customStartDate ? `&customStartDate=${customStartDate}` : ''
     }${customEndDate ? `&customEndDate=${customEndDate}` : ''}`,
   HOURS_TOTAL_ORG_SUMMARY: (startDate, endDate) =>
     `${APIEndpoint}/reports/overviewsummaries/taskandprojectstats?startDate=${startDate}&endDate=${endDate}`,
@@ -259,7 +260,6 @@ export const ENDPOINTS = {
   BM_ISSUE_CHART: `${APIEndpoint}/bm/issue/issue-chart`,
 
   BM_ISSUE_FORM: `${APIEndpoint}/bm/issue/add`,
-
   TOOLS_AVAILABILITY_PROJECTS: `${APIEndpoint}/bm/tools-availability/projects`,
   TOOLS_AVAILABILITY_BY_PROJECT: (projectId, startDate, endDate) => {
     let url = `${APIEndpoint}/bm/projects/${projectId}/tools-availability`;
@@ -323,8 +323,10 @@ export const ENDPOINTS = {
   GET_FORM_RESPONSES: formID => `${APIEndpoint}/jobforms/${formID}/responses`,
 
   ADD_QUESTION: formId => `${APIEndpoint}/jobforms/${formId}/questions`,
-  UPDATE_QUESTION: (formId, questionIndex) => `${APIEndpoint}/jobforms/${formId}/questions/${questionIndex}`,
-  DELETE_QUESTION: (formId, questionIndex) => `${APIEndpoint}/jobforms/${formId}/questions/${questionIndex}`,
+  UPDATE_QUESTION: (formId, questionIndex) =>
+    `${APIEndpoint}/jobforms/${formId}/questions/${questionIndex}`,
+  DELETE_QUESTION: (formId, questionIndex) =>
+    `${APIEndpoint}/jobforms/${formId}/questions/${questionIndex}`,
   REORDER_QUESTIONS: formId => `${APIEndpoint}/jobforms/${formId}/questions/reorder`,
 
   GET_ALL_TEMPLATES: `${APIEndpoint}/templates`,
@@ -361,7 +363,6 @@ export const ENDPOINTS = {
   SLACK_ADD: `${APIEndpoint}/slack/invite`,
   DROPBOX_CREATE_ADD: `${APIEndpoint}/dropbox/create-folder-and-invite`,
   ACCESS_MANAGEMENT: `${APIEndpoint}/accessManagement`,
-
 
   // community portal
   CP_NOSHOW_VIZ_LOCATION: `${APIEndpoint}/communityportal/reports/participation/location`,

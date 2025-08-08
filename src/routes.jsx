@@ -103,10 +103,15 @@ import Toolslist from './components/BMDashboard/Tools/ToolsList';
 import AddTool from './components/BMDashboard/Tools/AddTool';
 import AttendanceNoShow from './components/AttendanceSystem/AttendanceNoShowCharts.jsx';
 import AddTeamMember from './components/BMDashboard/AddTeamMember/AddTeamMember';
+import LessonsLearntChart from './components/BMDashboard/LessonsLearnt/LessonsLearntChart';
+
 // eslint-disable-next-line import/order
 import IssueChart from './components/BMDashboard/Issues/issueCharts';
 import BMTimeLogger from './components/BMDashboard/BMTimeLogger/BMTimeLogger';
 import Issue from './components/BMDashboard/Issue/Issue';
+
+import UtilizationChart from './components/BMDashboard/UtilizationChart/UtilizationChart';
+
 import RentalChart from './components/BMDashboard/RentalChart/RentalChart';
 import CreateNewTeam from './components/BMDashboard/Team/CreateNewTeam/CreateNewTeam';
 
@@ -512,6 +517,9 @@ export default (
         {/* ----- BEGIN BM Dashboard Routing ----- */}
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
         <Route path="/bmdashboard/login" component={BMLogin} />
+        <Route path="/LessonsLearntChart" component={LessonsLearntChart} />
+
+        <Route path="/UtilizationChart" component={UtilizationChart} />
 
         <BMProtectedRoute
           path="/bmdashboard/materials/purchase"
@@ -553,7 +561,7 @@ export default (
           fallback
           component={PurchaseConsumable}
         />
-        <BMProtectedRoute path="/bmdashboard/issue" fallback component={Issue} />
+
         <BMProtectedRoute path="/bmdashboard/rentalchart" component={RentalChart} />
         <BMProtectedRoute path="/bmdashboard/inventory/types" component={CheckTypes} />
         <BMProtectedRoute path="/bmdashboard/equipment" fallback exact component={EquipmentList} />
@@ -597,8 +605,8 @@ export default (
           exact
           component={WeeklyProjectSummary}
         />
-        <BMProtectedRoute path="/bmdashboard/issues/" component={IssueDashboard} />
 
+        <BMProtectedRoute path="/bmdashboard/issues/add/:projectId" component={Issue} />
         <BMProtectedRoute path="/bmdashboard/issuechart" component={IssueChart} />
 
         <BMProtectedRoute path="/bmdashboard/timelog/" component={BMTimeLogger} />
@@ -702,7 +710,6 @@ export default (
           exact
           component={EventStats}
         />
-
         {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
         <CPProtectedRoute path="/communityportal/ActivityAgenda" exact component={ActivityAgenda} />
 
@@ -722,12 +729,26 @@ export default (
         <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
         <Route path="/Logout" component={Logout} />
         <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
+        {/* ----- HGN Help Community Skills Dashboard Routes ----- */}
+        <ProtectedRoute path="/hgnhelp" exact component={LandingPage} />
+        <ProtectedRoute path="/hgnhelp/skills-overview" exact component={SkillsOverviewPage} />
+        <ProtectedRoute path="/hgnhelp/community" exact component={CommunityMembersPage} />
+        <ProtectedRoute path="/hgnhelp/profile/:userId" exact component={UserProfilePage} />
+        <ProtectedRoute path="/hgnhelp/feedback" exact component={FeedbackModal} />
         <ProtectedRoute path="/hgnform" exact component={Page1} />
         <ProtectedRoute path="/hgnform/page2" exact component={Page2} />
         <ProtectedRoute path="/hgnform/page3" exact component={Page3} />
         <ProtectedRoute path="/hgnform/page4" exact component={Page4} />
         <ProtectedRoute path="/hgnform/page5" exact component={Page5} />
         <ProtectedRoute path="/hgnform/page6" exact component={Page6} />
+        <ProtectedRoute
+          path="/hgn/profile/skills"
+          exact
+          fallback
+          component={UserSkillsProfile}
+          allowedRoles={[UserRole.Administrator, UserRole.CoreTeam, UserRole.Owner]}
+          routePermissions={RoutePermissions.accessHgnSkillsDashboard}
+        />
         <ProtectedRoute path="/tsaformpage1" exact component={TSAFormPage1} />
         <ProtectedRoute path="/tsaformpage2" exact component={TSAFormPage2} />
         <ProtectedRoute path="/tsaformpage3" exact component={TSAFormPage3} />
