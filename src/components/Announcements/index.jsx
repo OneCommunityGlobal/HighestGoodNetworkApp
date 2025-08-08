@@ -301,17 +301,24 @@ function Announcements({ title, email: initialEmail }) {
     const htmlContent = `${emailContent}`;
     const scheduleDate = `${dateContent}`;
     const scheduleTime = `${timeContent}`;
+
+    const [hours, minutes] = scheduleTime.split(':');
+    let hour = parseInt(hours, 10);
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    hour = hour % 12 || 12; // Convert 0 to 12 for 12 AM
+    const formattedTime = `${hour}:${minutes} ${ampm} PST`;
+
     if (!htmlContent) {
       toast.error('Error: Missing Text content');
       return;
     }
     switch (platform) {
       case 'twitter':
-        dispatch(scheduleTweet(scheduleDate, scheduleTime, htmlContent));
+        dispatch(scheduleTweet(scheduleDate, formattedTime, htmlContent));
         break;
 
       case 'facebook':
-        dispatch(scheduleFbPost(scheduleDate, scheduleTime, htmlContent));
+        dispatch(scheduleFbPost(scheduleDate, formattedTime, htmlContent));
         break;
 
       default:
