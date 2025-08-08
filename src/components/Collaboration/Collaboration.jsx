@@ -17,7 +17,11 @@ class Collaboration extends Component {
       jobAds: [],
       totalPages: 0,
       categories: [],
-      summaries: '', // Add this line
+      summaries: null, // Add this line
+      summariesAll: [],
+      summariesPage: 1,
+      summariesPageSize: 8,
+      summariesTotalPages: 0,
     };
   }
 
@@ -93,9 +97,9 @@ class Collaboration extends Component {
     try {
       const adsPerPage = this.calculateAdsPerPage();
       const response = await fetch(
-      `${ApiEndpoint}/jobs/reset-filters?page=1&limit=${adsPerPage}`,
-      { method: 'GET' }
-    );
+        `${ApiEndpoint}/jobs/reset-filters?page=1&limit=${adsPerPage}`,
+        { method: 'GET' }
+      );
 
       if (!response.ok) {
         throw new Error(`Failed to reset filters: ${response.statusText}`);
@@ -109,6 +113,9 @@ class Collaboration extends Component {
         jobAds: data.jobs,
         totalPages: data.pagination.totalPages,
         summaries: null,
+        summariesAll: [],
+        summariesPage: 1,
+        summariesTotalPages: 0,
       });
     } catch (error) {
       toast.error('Error resetting filters');
@@ -120,7 +127,7 @@ class Collaboration extends Component {
   };
 
   handleShowSummaries = async () => {
-    const { searchTerm, selectedCategory } = this.state;
+    const { searchTerm, selectedCategory, summariesPageSize } = this.state;
     try {
       const response = await fetch(
         `${ApiEndpoint}/jobs/summaries?search=${searchTerm}&category=${selectedCategory}`,
@@ -134,10 +141,24 @@ class Collaboration extends Component {
       }
 
       const data = await response.json();
-      this.setState({ summaries: data });
+      const summariesData = Array.isArray(data?.jobs) ? data.jobs : [];
+      this.setState({
+        summaries: { jobs: summariesData },                         // keep existing shape for safety
+        summariesAll: summariesData,
+        summariesPage: 1,
+        summariesTotalPages: Math.max(1, Math.ceil(summariesData.length / summariesPageSize)),
+      });
     } catch (error) {
       toast.error('Error fetching summaries');
     }
+  };
+
+  setSummariesPage = (page) => {
+    this.setState(prev => ({
+      summariesPage: page < 1 ? 1
+        : page > prev.summariesTotalPages ? prev.summariesTotalPages
+          : page
+    }));
   };
 
   calculateAdsPerPage = () => {
@@ -146,12 +167,12 @@ class Collaboration extends Component {
     // Estimate number of columns based on screen width
     const columns =
       width >= 1600 ? 6 :
-      width >= 1300 ? 5 :
-      width >= 1024 ? 4 :
-      width >= 768 ? 3 :
-      width >= 480 ? 2 : 1;
+        width >= 1300 ? 5 :
+          width >= 1024 ? 4 :
+            width >= 768 ? 3 :
+              width >= 480 ? 2 : 1;
 
-    const rows = 5; 
+    const rows = 5;
     return columns * rows;
   };
 
@@ -169,6 +190,11 @@ class Collaboration extends Component {
       totalPages,
       categories,
       summaries,
+      summariesAll,
+      summariesPage,
+      summariesPageSize,
+      summariesTotalPages,
+
     } = this.state;
 
     if (summaries) {
@@ -226,19 +252,38 @@ class Collaboration extends Component {
 
             <div className="summaries-list">
               <h1>Summaries</h1>
-              {summaries && summaries.jobs && summaries.jobs.length > 0 ? (
-                summaries.jobs.map(summary => (
+              {summaries && summariesAll.length > 0 ? (() => {
+                const start = (summariesPage - 1) * summariesPageSize;
+                const end = start + summariesPageSize;
+                const pageItems = summariesAll.slice(start, end);
+                return pageItems.map(summary => (
                   <div key={summary._id} className={`summary-item ${this.props.darkMode ? 'bg-dark text-light' : ''}`}>
-                    <h3>
-                      <a href={summary.jobDetailsLink}>{summary.title}</a>
-                    </h3>
+                    <h3><a href={summary.jobDetailsLink}>{summary.title}</a></h3>
                     <p>{summary.description}</p>
                     <p>Date Posted: {new Date(summary.datePosted).toLocaleDateString()}</p>
                   </div>
-                ))
-              ) : (
+                ));
+              })() : (
                 <p>No summaries found.</p>
               )}
+
+              {summariesAll.length > 0 && (
+                <div className="pagination">
+                  {Array.from({ length: summariesTotalPages }, (_, i) => (
+                    <button
+                      type="button"
+                      key={`summaries-${i}`}
+                      onClick={() => this.setSummariesPage(i + 1)}
+                      disabled={summariesPage === i + 1}
+                      className={this.props.darkMode ? 'bg-space-cadet text-light border-0' : ''}
+                    >
+                      {i + 1}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+
             </div>
           </div>
         </div>
@@ -296,21 +341,21 @@ class Collaboration extends Component {
           </div>
 
           <div className="job-list">
-            { jobAds.length > 0 ? (
-            jobAds.map(ad => (
-              <div key={ad._id} className={`job-ad ${this.props.darkMode ? 'text-light' : ''}`}>
-                <img src={ad.imageUrl} alt={`${ad.title}`} />
-                <a
-                  href={`https://www.onecommunityglobal.org/collaboration/seeking-${ad.category.toLowerCase()}`}
-                >
-                  <h3>
-                    {ad.title} - {ad.category}
-                  </h3>
-                </a>
-              </div>
-            )) ) : (
+            {jobAds.length > 0 ? (
+              jobAds.map(ad => (
+                <div key={ad._id} className={`job-ad ${this.props.darkMode ? 'text-light' : ''}`}>
+                  <img src={ad.imageUrl} alt={`${ad.title}`} />
+                  <a
+                    href={`https://www.onecommunityglobal.org/collaboration/seeking-${ad.category.toLowerCase()}`}
+                  >
+                    <h3>
+                      {ad.title} - {ad.category}
+                    </h3>
+                  </a>
+                </div>
+              ))) : (
               <p className={`no-jobads ${this.props.darkMode ? 'text-light' : ''}`}>No matching jobs found.</p>
-            ) }
+            )}
           </div>
 
           <div className="pagination">
