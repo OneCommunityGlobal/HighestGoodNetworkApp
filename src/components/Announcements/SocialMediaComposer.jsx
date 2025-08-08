@@ -11,16 +11,21 @@ export default function SocialMediaComposer({ platform }) {
     { id: 'details', label: '🧩 Details' },
   ];
 
-  const tabStyle = tabId => ({
-    padding: '10px 16px',
-    cursor: 'pointer',
-    borderBottom: activeSubTab === tabId ? '2px solid #007bff' : '2px solid transparent',
-    backgroundColor: activeSubTab === tabId ? '#eef6ff' : '#f9f9f9',
-    color: activeSubTab === tabId ? '#007bff' : '#444',
-    fontWeight: activeSubTab === tabId ? 'bold' : 'normal',
-    flex: 1,
-    textAlign: 'center',
-  });
+  const tabStyle = tabId => {
+    const isActive = activeSubTab === tabId;
+
+    return {
+      padding: '10px 16px',
+      cursor: 'pointer',
+      borderBottom: isActive ? '3px solid #007bff' : '3px solid transparent',
+      backgroundColor: isActive ? '#dbeeff' : '#dedede', // ACTIVE vs INACTIVE
+      color: isActive ? '#007bff' : '#333',
+      fontWeight: isActive ? 'bold' : 'normal',
+      flex: 1,
+      textAlign: 'center',
+      transition: 'all 0.2s ease-in-out',
+    };
+  };
 
   return (
     <div style={{ padding: '1rem' }}>
@@ -33,7 +38,6 @@ export default function SocialMediaComposer({ platform }) {
             onClick={() => setActiveSubTab(id)}
             style={{
               ...tabStyle(id),
-              background: 'none',
               border: 'none',
               outline: 'none',
               font: 'inherit',
