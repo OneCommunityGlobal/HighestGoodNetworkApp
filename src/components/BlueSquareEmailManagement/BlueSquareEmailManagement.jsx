@@ -30,7 +30,6 @@ const BlueSquareEmailManagement = ({
       await resendBlueSquareEmails();
     } catch (error) {
       // Error is already handled in the action
-      console.error('Blue Square email resend failed:', error);
     } finally {
       setIsLoading(false);
     }
@@ -44,7 +43,6 @@ const BlueSquareEmailManagement = ({
       await resendWeeklySummaryEmails();
     } catch (error) {
       // Error is already handled in the action
-      console.error('Weekly summary email resend failed:', error);
     } finally {
       setIsLoading(false);
     }
@@ -97,7 +95,7 @@ const BlueSquareEmailManagement = ({
             <div className="card-body d-flex flex-column">
               <h5 className="card-title mb-3">Resend Blue Square Emails</h5>
               <p className="card-text mb-3 flex-grow-1">
-                Triggers resend of Blue Square emails for users with last week's infringements.
+                Triggers resend of Blue Square emails for users with last week&apos;s infringements.
                 Emails will be sent to affected users and BCC list.
               </p>
               <button
@@ -162,14 +160,13 @@ const BlueSquareEmailManagement = ({
           Confirm Blue Square Email Resend
         </ModalHeader>
         <ModalBody>
-          <p>Are you sure you want to resend Blue Square emails for last week's infringements?</p>
+          <p>
+            Are you sure you want to resend Blue Square emails for last week&apos;s infringements?
+          </p>
           <p className="text-muted">
             <strong>This will:</strong>
           </p>
-          <ul
-            className="text-muted"
-            style={{ marginLeft: '20px', marginBottom: '10px' }}
-          >
+          <ul className="text-muted" style={{ marginLeft: '20px', marginBottom: '10px' }}>
             <li>Send emails to all users with infringements from last week</li>
             <li>Include all emails in the BCC list</li>
           </ul>
@@ -193,16 +190,13 @@ const BlueSquareEmailManagement = ({
         </ModalHeader>
         <ModalBody>
           <p>
-            Are you sure you want to trigger resend of last week's summary report to all admin
+            Are you sure you want to trigger resend of last week&apos;s summary report to all admin
             recipients?
           </p>
           <p className="text-muted">
             <strong>This will:</strong>
           </p>
-          <ul
-            className="text-muted"
-            style={{ marginLeft: '20px', marginBottom: '10px' }}
-          >
+          <ul className="text-muted" style={{ marginLeft: '20px', marginBottom: '10px' }}>
             <li>Send the weekly summary report to all configured recipients</li>
             <li>Include missed entries and weekly summaries</li>
           </ul>

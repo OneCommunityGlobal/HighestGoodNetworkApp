@@ -1,1 +1,1 @@
-export { default } from './BlueSquareEmailManagement'; 
+export { default } from './BlueSquareEmailManagement';
