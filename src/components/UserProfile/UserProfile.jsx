@@ -627,14 +627,15 @@ function UserProfile(props) {
           //   .toISOString()
           //   .split('T')[0],
           createdDate: moment().format('YYYY-MM-DD'),
+          manuallyAssigned: true,
+          manuallyAssignedBy: props?.auth?.user?.userid, 
         };
         setModalTitle('Blue Square');
         axios
           .post(ENDPOINTS.ADD_BLUE_SQUARE(userProfile._id), {
             blueSquare: newBlueSquare,
-          })
-          .then(res => {
-            const newBlueSqrs = [
+          }).then(async(res) => {
+            let newBlueSqrs = [
               ...userProfile.infringements,
               {
                 _id: res.data._id,
@@ -649,32 +650,43 @@ function UserProfile(props) {
             setUserProfile({
               ...userProfile,
               infringements: newBlueSqrs,
-            });
-          })
-          .catch(error => {
-            console.log('error in modifying bluequare', error);
+            })
+            await loadUserProfile(); 
+          }).catch(error => {
+            console.log("error in modifying bluequare", error);
             toast.error('Failed to add Blue Square!');
           });
       }
     } else if (operation === 'update') {
       const currentBlueSquares = [...userProfile?.infringements] || [];
-      if (dateStamp != null && currentBlueSquares.length !== 0) {
-        currentBlueSquares.find(blueSquare => blueSquare._id === id).date = dateStamp;
-      }
-      if (summary != null && currentBlueSquares.length !== 0) {
-        currentBlueSquares.find(blueSquare => blueSquare._id === id).description = summary;
+      if (currentBlueSquares.length !== 0) {
+        const blueSquare = currentBlueSquares.find(blueSquare => blueSquare._id === id);
+        if (blueSquare) {
+          if (dateStamp != null) {
+            blueSquare.date = dateStamp;
+          }
+          if (summary != null) {
+            blueSquare.description = summary;
+          }
+          blueSquare.editedBy = props?.auth?.user?.userid;
+        }
       }
       await axios
         .put(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id), {
           dateStamp,
           summary,
+          editedBy: props?.auth?.user?.userid,
+        })
+        .then(async () => {
+          toast.success('Blue Square Updated!');
+          setUserProfile({ ...userProfile, infringements: currentBlueSquares });
+          setOriginalUserProfile({ ...userProfile, infringements: currentBlueSquares });
+          await loadUserProfile(); 
         })
         .catch(error => {
           toast.error('Failed to update Blue Square!');
         });
-      toast.success('Blue Square Updated!');
-      setUserProfile({ ...userProfile, infringements: currentBlueSquares });
-      setOriginalUserProfile({ ...userProfile, infringements: currentBlueSquares });
+      
     } else if (operation === 'delete') {
       let newInfringements = [...userProfile?.infringements] || [];
       if (newInfringements.length !== 0) {
