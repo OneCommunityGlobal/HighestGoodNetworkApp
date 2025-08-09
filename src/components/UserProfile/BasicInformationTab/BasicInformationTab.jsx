@@ -14,6 +14,7 @@ import SetUpFinalDayButton from '~/components/UserManagement/SetUpFinalDayButton
 import './BasicInformationTab.css';
 import { boxStyle, boxStyleDark } from '~/styles';
 import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
+import RoleChangePermissionsModal from '~/components/UserProfile/RoleChangePermissionsModal';
 import { formatDateLocal } from '~/utils/formatDate';
 import { ENDPOINTS } from '~/utils/URL';
 import axios from 'axios';
@@ -459,6 +460,7 @@ const BasicInformationTab = props => {
   const [timeZoneFilter, setTimeZoneFilter] = useState('');
   const [desktopDisplay, setDesktopDisplay] = useState(window.innerWidth > 1024);
   const [errorOccurred, setErrorOccurred] = useState(false);
+  const [showRolePermsModal, setShowRolePermsModal] = useState(false);
   const dispatch = useDispatch();
   const rolesAllowedToEditStatusFinalDay = ['Administrator', 'Owner'];
   const canEditStatus =
@@ -687,35 +689,44 @@ const BasicInformationTab = props => {
       </Col>
       <Col md={desktopDisplay ? '6' : ''}>
         {canEditRole ? (
-          <FormGroup>
-            <select
-              value={userProfile.role}
-              onChange={e => {
-                setUserProfile({
-                  ...userProfile,
-                  role: e.target.value,
-                  permissions: { ...userProfile.permissions, frontPermissions: [] },
-                });
-              }}
-              id="role"
-              name="role"
-              className={`form-control ${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
-            >
-              {roles.map(({ roleName }) => {
-                if (roleName === 'Owner') return;
-                return (
-                  <option key={roleName} value={roleName}>
-                    {roleName}
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <FormGroup style={{ flex: 1, marginBottom: 0 }}>
+              <select
+                value={userProfile.role}
+                onChange={e => {
+                  setUserProfile({
+                    ...userProfile,
+                    role: e.target.value,
+                    permissions: { ...userProfile.permissions, frontPermissions: [] },
+                  });
+                }}
+                id="role"
+                name="role"
+                className={`form-control ${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
+              >
+                {roles.map(({ roleName }) => {
+                  if (roleName === 'Owner') return null;
+                  return (
+                    <option key={roleName} value={roleName}>
+                      {roleName}
+                    </option>
+                  );
+                })}
+                {canAddDeleteEditOwners && (
+                  <option value="Owner" style={desktopDisplay ? { marginLeft: '5px' } : {}}>
+                    Owner
                   </option>
-                );
-              })}
-              {canAddDeleteEditOwners && (
-                <option value="Owner" style={desktopDisplay ? { marginLeft: '5px' } : {}}>
-                  Owner
-                </option>
-              )}
-            </select>
-          </FormGroup>
+                )}
+              </select>
+            </FormGroup>
+            <Button
+              color="primary"
+              style={darkMode ? boxStyleDark : boxStyle}
+              onClick={() => setShowRolePermsModal(true)}
+            >
+              Manage Role & Permissions
+            </Button>
+          </div>
         ) : (
           `${userProfile.role}`
         )}
@@ -1058,6 +1069,14 @@ const BasicInformationTab = props => {
           </>
         )}
       </div>
+      <RoleChangePermissionsModal
+        isOpen={showRolePermsModal}
+        onClose={() => setShowRolePermsModal(false)}
+        roles={roles}
+        userProfile={userProfile}
+        setUserProfile={setUserProfile}
+        loadUserProfile={loadUserProfile}
+      />
     </div>
   );
 };
