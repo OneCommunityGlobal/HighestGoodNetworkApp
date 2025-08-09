@@ -6,6 +6,7 @@ import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import { configureStore } from 'redux-mock-store';
 import { rolesMock } from '__tests__/mockStates';
+import { formatYYYYMMDDToMMDDYY } from '~/utils/formatDate';
 
 const mockStore = configureStore([thunk]);
 
@@ -55,14 +56,6 @@ const renderComponent = (testStore,type,isOpen) =>{
     id="user123"
     /></Provider>)
 }
-
-  function convertDateFormat(dateStr) { // converts from YYYY-MM-DD to MM-DD-YY
-    if (!dateStr) return '';
-    const [year, month, day] = dateStr.split("-");
-    const shortYear = year.slice(-2);
-    return `${month}/${day}/${shortYear}`;
-  }
-
 
 describe('UserProfileModal component', () => {
   it('renders without crashing', () => {
@@ -195,10 +188,10 @@ describe('UserProfileModal component', () => {
   it('check if view blue square works as expected whe type is set to viewBlueSquare',()=>{
     renderComponent(store,'viewBlueSquare',true)
     expect(screen.getByText('Date:')).toBeInTheDocument();
-    expect(screen.getByText(convertDateFormat(userProfile.infringements[0].date))).toBeInTheDocument();
+    expect(screen.getByText(formatYYYYMMDDToMMDDYY(userProfile.infringements[0].date))).toBeInTheDocument();
 
     expect(screen.getByText('Created Date:')).toBeInTheDocument();
-    expect(screen.getByText(convertDateFormat(userProfile.infringements[0].createdDate))).toBeInTheDocument();
+    expect(screen.getByText(formatYYYYMMDDToMMDDYY(userProfile.infringements[0].createdDate))).toBeInTheDocument();
 
     expect(screen.getByText('Summary')).toBeInTheDocument();
     expect(screen.getByText(userProfile.infringements[0].description)).toBeInTheDocument();

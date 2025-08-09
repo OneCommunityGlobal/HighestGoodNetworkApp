@@ -18,6 +18,7 @@ import hasPermission from '~/utils/permissions';
 import { connect, useSelector } from 'react-redux';
 import axios from 'axios';
 import { ENDPOINTS } from '~/utils/URL';
+import { formatYYYYMMDDToMMDDYY } from '~/utils/formatDate';
 
 const UserProfileModal = props => {
   const {
@@ -57,13 +58,6 @@ const UserProfileModal = props => {
     const today = new Date();
     return today.toLocaleDateString('en-CA').split('T')[0];
   };
-
-  function convertDateFormat(dateStr) { // converts from YYYY-MM-DD to MM-DD-YY
-    if (!dateStr) return '';
-    const [year, month, day] = dateStr.split("-");
-    const shortYear = year.slice(-2);
-    return `${month}/${day}/${shortYear}`;
-  }
 
   function getLastInitial(lastName) { // Returns last initial unless last name is "System"
     return lastName != "System" ? lastName.charAt(0).toUpperCase() : lastName;
@@ -363,7 +357,7 @@ const UserProfileModal = props => {
               <Input
                 id="asignment"
                 readOnly
-                value={`Assigned by ${firstName} ${getLastInitial(lastName)} ${convertDateFormat(dateStamp)}:`}
+                value={`Assigned by ${firstName} ${getLastInitial(lastName)} ${formatYYYYMMDDToMMDDYY(dateStamp)}:`}
               />
               <Input
                 type="textarea"
@@ -388,14 +382,14 @@ const UserProfileModal = props => {
               <Label className={fontColor} for="createdDate">
                 Created Date:
               </Label>
-                <span> {convertDateFormat(blueSquare[0]?.createdDate)}</span>
+                <span> {formatYYYYMMDDToMMDDYY(blueSquare[0]?.createdDate)}</span>
             </FormGroup>
             <FormGroup>
               <Label className={fontColor} for="report">Summary</Label>
               <Input
                 id="asignment"
                 readOnly
-                value={`Assigned by ${firstName} ${getLastInitial(lastName)} ${convertDateFormat(dateStamp)}:`}
+                value={`Assigned by ${firstName} ${getLastInitial(lastName)} ${formatYYYYMMDDToMMDDYY(dateStamp)}:`}
               />
               {canEditInfringements ? <Input
                 type="textarea"
@@ -415,18 +409,18 @@ const UserProfileModal = props => {
             <FormGroup>
               <Label className={fontColor} for="date">
                 Date:
-                <span> {convertDateFormat(blueSquare[0]?.date)}</span>
+                <span> {formatYYYYMMDDToMMDDYY(blueSquare[0]?.date)}</span>
               </Label>
             </FormGroup>
             <FormGroup>
               <Label className={fontColor} for="createdDate">
                 Created Date:
               </Label>
-                <span> {convertDateFormat(blueSquare[0]?.createdDate)}</span>
+                <span> {formatYYYYMMDDToMMDDYY(blueSquare[0]?.createdDate)}</span>
             </FormGroup>
             <FormGroup>
               <Label className={fontColor} for="description">Summary</Label>
-              <p>{`Assigned by ${firstName} ${getLastInitial(lastName)} ${convertDateFormat(dateStamp)}:`}</p>
+              <p>{`Assigned by ${firstName} ${getLastInitial(lastName)} ${formatYYYYMMDDToMMDDYY(dateStamp)}:`}</p>
               <p className={fontColor}>{blueSquare[0]?.description}</p>
             </FormGroup>
           </>
