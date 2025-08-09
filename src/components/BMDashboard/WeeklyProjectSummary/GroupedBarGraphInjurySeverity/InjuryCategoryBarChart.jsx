@@ -137,8 +137,9 @@ function InjuryCategoryBarChart() {
 
         <div className="injury-chart-filters">
           <div className="filter">
-            <label>Projects</label>
+            <label htmlFor="project-names-select">Projects</label>
             <Select
+              inputId="project-names-select"
               classNamePrefix="injury-select"
               isMulti
               options={projectNameOptions}
@@ -149,8 +150,9 @@ function InjuryCategoryBarChart() {
           </div>
 
           <div className="filter">
-            <label>Severities</label>
+            <label htmlFor="severities-select">Severities</label>
             <Select
+              inputId="severities-select"
               classNamePrefix="injury-select"
               isMulti
               options={severityOptions}
@@ -161,8 +163,9 @@ function InjuryCategoryBarChart() {
           </div>
 
           <div className="filter">
-            <label>Injury types</label>
+            <label htmlFor="injury-types-select">Injury types</label>
             <Select
+              inputId="injury-types-select"
               classNamePrefix="injury-select"
               isMulti
               options={typeOptions}
@@ -173,8 +176,9 @@ function InjuryCategoryBarChart() {
           </div>
 
           <div className="filter">
-            <label>Start date</label>
+            <label htmlFor="start-date">Start date</label>
             <DatePicker
+              id="start-date"
               selected={startDate}
               onChange={setStartDate}
               selectsStart
@@ -186,8 +190,9 @@ function InjuryCategoryBarChart() {
           </div>
 
           <div className="filter">
-            <label>End date</label>
+            <label htmlFor="end-date">End date</label>
             <DatePicker
+              id="end-date"
               selected={endDate}
               onChange={setEndDate}
               selectsEnd
