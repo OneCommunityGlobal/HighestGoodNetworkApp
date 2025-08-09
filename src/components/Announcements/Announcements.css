@@ -157,3 +157,66 @@ summary {
 summary::-webkit-details-marker {
   display: none;
 }
+
+.tab-nav-container {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: -1px;
+  position: relative;
+  z-index: 1;
+}
+
+.tab-nav-item {
+  border: 1px solid #ccc;
+  border-bottom: none;
+  background: linear-gradient(to bottom, #f3f3f3, #ddd);
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  margin-right: 4px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 12px 10px;
+  min-height: 70px;
+}
+
+.tab-nav-item.active {
+  background: white;
+  border-color: #aaa;
+  color: #222;
+  top: 0;
+  z-index: 10;
+  border-bottom: 1px solid white;
+}
+
+.tab-icon {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  margin: 0 auto;
+  display: block;
+}
+
+.tab-label {
+  font-size: 0.75rem;
+  text-align: center;
+  margin-top: 6px;
+  line-height: 1rem;
+}
+
+.tab-nav-item.dark {
+  background: #1e2d44;
+  color: #ddd;
+  border-color: #2b3b50;
+}
+
+.tab-nav-item.active.dark {
+  background: #14233a;
+  color: #fff;
+  border-bottom: 1px solid #14233a;
+}

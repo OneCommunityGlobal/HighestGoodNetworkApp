@@ -197,17 +197,7 @@ function Announcements({ title, email: initialEmail }) {
 
   return (
     <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: '100%' }}>
-      <Nav
-        tabs
-        className="mb-3 flex-wrap"
-        style={{
-          paddingLeft: '1rem',
-          paddingTop: '1rem',
-          display: 'flex',
-          flexWrap: 'wrap',
-          borderBottom: darkMode ? '1px solid #2b3b50' : '1px solid #ccc',
-        }}
-      >
+      <Nav className="tab-nav-container">
         {[
           { id: 'email', icon: faEnvelope, label: 'Email' },
           { id: 'x', label: 'X', customIconSrc: 'social-media-logos/x_icon.png' },
@@ -256,33 +246,15 @@ function Announcements({ title, email: initialEmail }) {
             customIconSrc: 'social-media-logos/truthsocial_icon.png',
           },
         ].map(({ id, icon, label, customIconSrc }) => (
-          <NavItem key={id} style={{ flex: 1 }}>
+          <NavItem key={id}>
             <NavLink
               data-tip={label}
-              className={classnames({ active: activeTab === id })}
+              className={classnames('tab-nav-item', { active: activeTab === id, dark: darkMode })}
               onClick={() => toggleTab(id)}
-              style={{
-                ...iconTabStyle(id),
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '8px',
-                gap: '4px',
-                minWidth: '70px',
-              }}
             >
-              <div style={{ width: '24px', height: '24px' }}>
+              <div className="tab-icon">
                 {customIconSrc ? (
-                  <img
-                    src={customIconSrc}
-                    alt={`${label} icon`}
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'contain',
-                    }}
-                  />
+                  <img src={customIconSrc} alt={`${label} icon`} className="tab-icon" />
                 ) : (
                   <FontAwesomeIcon
                     icon={icon}
@@ -290,9 +262,7 @@ function Announcements({ title, email: initialEmail }) {
                   />
                 )}
               </div>
-              <div style={{ fontSize: '0.75rem', lineHeight: '1rem', textAlign: 'center' }}>
-                {label}
-              </div>
+              <div className="tab-label">{label}</div>
             </NavLink>
           </NavItem>
         ))}
