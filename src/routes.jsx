@@ -100,8 +100,7 @@ import AddTool from './components/BMDashboard/Tools/AddTool';
 import AttendanceNoShow from './components/AttendanceSystem/AttendanceNoShowCharts';
 
 //job analytics
-import HoursPledgedChart from './components/JobAnalytics/HoursPledgedChart/HoursPledgedChart'
-
+import HoursPledgedChart from './components/JobAnalytics/HoursPledgedChart/HoursPledgedChart';
 
 import AddTeamMember from './components/BMDashboard/AddTeamMember/AddTeamMember';
 import LessonsLearntChart from './components/BMDashboard/LessonsLearnt/LessonsLearntChart';
@@ -516,7 +515,8 @@ export default (
         />
         <ProtectedRoute
           path="/jobanalytics"
-          exact component={HoursPledgedChart}
+          exact
+          component={HoursPledgedChart}
           allowedRoles={[UserRole.Administrator, UserRole.Owner]}
         />
 
