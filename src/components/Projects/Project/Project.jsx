@@ -4,8 +4,8 @@ import './../projects.css';
 import { Link } from 'react-router-dom';
 import { NavItem } from 'reactstrap';
 import { connect } from 'react-redux';
-import hasPermission from 'utils/permissions';
-import { boxStyle } from 'styles';
+import hasPermission from '~/utils/permissions';
+import { boxStyle } from '~/styles';
 import { toast } from 'react-toastify';
 import { modifyProject, clearError } from '../../../actions/projects';
 import ModalTemplate from './../../common/Modal';
@@ -93,7 +93,7 @@ const Project = props => {
   }, [projectData]);
 
   return (
-    <>
+      <>
         <tr className="projects__tr" id={'tr_' + props.projectId}>
 
           <th className="projects__order--input" scope="row">
@@ -144,7 +144,7 @@ const Project = props => {
             )}
           </td>
           {/* <td className="projects__active--input" data-testid="project-active" onClick={canPutProject ? updateActive : null}>
-        {props.active ? ( */}
+          {props.active ? ( */}
           <td className="projects__active--input" data-testid="project-active" onClick={canEditCategoryAndStatus || canPutProject ? onProjectStatusChange : null}>
             {isActive ? (
               <div className="isActive">
@@ -184,21 +184,34 @@ const Project = props => {
 
           {(canDeleteProject) ? (
 
+            //         <td>
+            //           <button
+            //             data-testid="delete-button"
+            //             type="button"
+            //             className="btn btn-outline-danger"
+            //             onClick={onArchiveProject}
+            //             style={darkMode ? {} : boxStyle}
+            //             disabled={isArchived}
+            //           >
+            //             {ARCHIVE}
+            //           </button>
+            //         </td>
+            //       ) : null}
+            //     </tr>
+            // </>
             <td>
               <button
                 data-testid="delete-button"
                 type="button"
                 className="btn btn-outline-danger"
-                onClick={onArchiveProject}
-                style={darkMode ? {} : boxStyle}
-                disabled={isArchived}
-              >
+                style={darkMode ? {borderColor: '#D2042D'} : boxStyle}
+                onClick={onArchiveProject}>
                 {ARCHIVE}
               </button>
             </td>
           ) : null}
         </tr>
-    </>
+      </>
   );
 };
 const mapStateToProps = state => state;

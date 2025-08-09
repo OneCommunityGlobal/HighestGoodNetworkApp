@@ -1,4 +1,4 @@
-import { QuestionType } from 'utils/enums';
+import { QuestionType } from '~/utils/enums';
 
 export default function OptionViewer({ data, SetFormAnswers, formAnwers }) {
   // console.log(data);

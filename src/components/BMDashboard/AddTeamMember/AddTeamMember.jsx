@@ -3,7 +3,7 @@ import Select from 'react-select';
 import { MdOutlinePersonAddAlt1 } from 'react-icons/md';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-import { ENDPOINTS } from '../../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import styles from './AddTeamMember.module.css';
 
 function AddTeamMember() {
@@ -146,30 +146,34 @@ function AddTeamMember() {
 
       <div className={`${styles.nameContainer}`}>
         <div className={`${styles.inputName}`}>
-          <label htmlFor="firstName">First Name</label>
-          <input
-            id="firstName"
-            name="firstName"
-            type="text"
-            value={formData.firstName}
-            onChange={handleInputChange}
-            className={formData.errors.firstName ? 'error' : ''}
-          />
+          <label htmlFor="firstName">
+            <input
+              id="firstName"
+              name="firstName"
+              type="text"
+              value={formData.firstName}
+              onChange={handleInputChange}
+              className={formData.errors.firstName ? 'error' : ''}
+            />
+            First Name
+          </label>
           {formData.errors.firstName && (
             <span className={`${styles.errorMessage}`}>{formData.errors.firstName}</span>
           )}
         </div>
 
         <div className={`${styles.inputName}`}>
-          <label htmlFor="lastName">Last Name</label>
-          <input
-            id="lastName"
-            name="lastName"
-            type="text"
-            value={formData.lastName}
-            onChange={handleInputChange}
-            className={formData.errors.lastName ? 'error' : ''}
-          />
+          <label htmlFor="lastName">
+            <input
+              id="lastName"
+              name="lastName"
+              type="text"
+              value={formData.lastName}
+              onChange={handleInputChange}
+              className={formData.errors.lastName ? 'error' : ''}
+            />
+            Last Name
+          </label>
           {formData.errors.lastName && (
             <span className={`${styles.errorMessage}`}>{formData.errors.lastName}</span>
           )}
@@ -178,27 +182,37 @@ function AddTeamMember() {
 
       <div className={`${styles.roleContainer}`}>
         <div className={`${styles.roleInput}`}>
-          <label htmlFor="role">Roles</label>
-          <Select
-            id="role"
-            options={optionsRole}
-            value={formData.role}
-            onChange={option => handleSelectChange(option, 'role')}
-            className={formData.errors.role ? 'error' : ''}
-          />
+          {/* Associate the label with the control via htmlFor + id */}
+          <label htmlFor="role-select">
+            {/* react-select component */}
+            <Select
+              inputId="role" // use inputId instead of id for proper label binding in react-select
+              name="role"
+              options={optionsRole}
+              value={formData.role}
+              onChange={option => handleSelectChange(option, 'role')}
+              className={formData.errors.role ? 'error' : ''}
+            />
+            Roles
+          </label>
+
+          {/* Display validation error if present */}
           {formData.errors.role && (
             <span className={`${styles.errorMessage}`}>{formData.errors.role}</span>
           )}
         </div>
         <div className={`${styles.roleInput}`}>
-          <label>Specify Role</label>
-          <input
-            name="roleSpecify"
-            type="text"
-            value={formData.roleSpecify}
-            onChange={handleInputChange}
-            className={formData.errors.roleSpecify ? 'error' : ''}
-          />
+          <label htmlFor="roleSpecifyInput">
+            <input
+              id="roleSpecifyInput"
+              name="roleSpecify"
+              type="text"
+              value={formData.roleSpecify}
+              onChange={handleInputChange}
+              className={formData.errors.roleSpecify ? 'error' : ''}
+            />
+            Specify Role
+          </label>
           {formData.errors.roleSpecify && (
             <span className={`${styles.errorMessage}`}>{formData.errors.roleSpecify}</span>
           )}
@@ -207,27 +221,37 @@ function AddTeamMember() {
 
       <div className={`${styles.teamContainer}`}>
         <div className={`${styles.teamInput}`}>
-          <label htmlFor="team">Teams</label>
-          <Select
-            id="team"
-            options={optionsTeam}
-            value={formData.team}
-            onChange={option => handleSelectChange(option, 'team')}
-            className={formData.errors.team ? 'error' : ''}
-          />
+          {/* Associate the label with the control via htmlFor + id */}
+          <label htmlFor="team-select">
+            {/* react-select component */}
+            <Select
+              inputId="team" // use inputId instead of id for proper label binding in react-select
+              name="team"
+              options={optionsTeam}
+              value={formData.team}
+              onChange={option => handleSelectChange(option, 'team')}
+              className={formData.errors.team ? 'error' : ''}
+            />
+            Teams
+          </label>
+
           {formData.errors.team && (
-            <span className={`${styles.errorMessage}`}>{formData.errors.team}</span>
+            <span className={styles.errorMessage}>{formData.errors.team}</span>
           )}
         </div>
+
         <div className={`${styles.teamInput}`}>
-          <label>Specify Team</label>
-          <input
-            name="teamSpecify"
-            type="text"
-            value={formData.teamSpecify}
-            onChange={handleInputChange}
-            className={formData.errors.teamSpecify ? 'error' : ''}
-          />
+          <label htmlFor="teamSpecifyInput">
+            <input
+              id="teamSpecifyInput"
+              name="teamSpecify"
+              type="text"
+              value={formData.teamSpecify}
+              onChange={handleInputChange}
+              className={formData.errors.teamSpecify ? 'error' : ''}
+            />
+            Specify Team
+          </label>
           {formData.errors.teamSpecify && (
             <span className={`${styles.errorMessage}`}>{formData.errors.teamSpecify}</span>
           )}
@@ -235,15 +259,17 @@ function AddTeamMember() {
       </div>
 
       <div className={`${styles.contactInfo}`}>
-        <label htmlFor="email">Email Address</label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          value={formData.email}
-          onChange={handleInputChange}
-          className={formData.errors.email ? 'error' : ''}
-        />
+        <label htmlFor="email">
+          <input
+            type="email"
+            id="email"
+            name="email"
+            value={formData.email}
+            onChange={handleInputChange}
+            className={formData.errors.email ? 'error' : ''}
+          />
+          Email Address
+        </label>
         {formData.errors.email && (
           <span className={`${styles.errorMessage}`}>{formData.errors.email}</span>
         )}
