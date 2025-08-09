@@ -38,7 +38,10 @@ module.exports = {
   testURL: 'http://localhost',
 
   // An array of regexp pattern strings that are matched against all source file paths, matched files will skip transformation
-  transformIgnorePatterns: ['/node_modules/(?!d3|d3-array|internmap|delaunator|robust-predicates)'],
+  transformIgnorePatterns: [
+    '/node_modules/(?!d3|d3-array|internmap|delaunator|robust-predicates)',
+    '/node_modules/(?!(.*@react-leaflet.*|.*@changey/react-leaflet-markercluster.*)/)',
+  ],
 
   // Indicates whether each individual test should be reported during the run
   verbose: false,
