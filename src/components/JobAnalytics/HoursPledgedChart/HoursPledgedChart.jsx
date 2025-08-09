@@ -70,7 +70,7 @@ function HoursPledgedChart() {
         <>
           <div className="filters">
             <div className="date-filter">
-              <label>Date Range:</label>
+              <label htmlFor="start-date">Date Range:</label>
               <DatePicker
                 selected={startDate}
                 onChange={date => setStartDate(date)}
@@ -90,7 +90,7 @@ function HoursPledgedChart() {
             </div>
 
             <div className="role-filter">
-              <label>Roles:</label>
+              <label htmlFor="role-select">Roles:</label>
               <Select
                 isMulti
                 options={roleOptions}
