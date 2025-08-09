@@ -65,7 +65,7 @@ const UserProfileModal = props => {
     return `${month}/${day}/${shortYear}`;
   }
 
-  function getLastInitial(lastName) { // Returns last initial unless las name is "System"
+  function getLastInitial(lastName) { // Returns last initial unless last name is "System"
     return lastName != "System" ? lastName.charAt(0).toUpperCase() : lastName;
   }
 
@@ -164,11 +164,11 @@ const UserProfileModal = props => {
 
   const [firstName, setFirstName] = useState(blueSquare[0]?.authorFirstName || ""); // Default to the first name of the author of the blue square
   const [lastName, setLastName] = useState(blueSquare[0]?.authorLastName || ""); // Default to the last name of the author of the blue square
-  useEffect(() => {
+  useEffect(() => { // On modal load, request the logged in user's first and last name if adding a new blue square
     if (type === 'addBlueSquare') {
       axios.get(ENDPOINTS.USER_PROFILE(auth.user.userid)).then(response => {
-        setFirstName(response.data.firstName); // Set first name to logged in user's first name if adding a new blue square
-        setLastName(response.data.lastName); // Set last name to logged in user's first name if adding a new blue square
+        setFirstName(response.data.firstName);
+        setLastName(response.data.lastName);
       });
     }
   }, []);
