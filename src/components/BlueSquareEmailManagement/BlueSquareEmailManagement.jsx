@@ -93,8 +93,10 @@ const BlueSquareEmailManagement = ({
             style={darkMode ? { backgroundColor: '#2d2d2d', borderColor: '#444' } : {}}
           >
             <div className="card-body d-flex flex-column">
-              <h5 className="card-title mb-3">Resend Blue Square Emails</h5>
-              <p className="card-text mb-3 flex-grow-1">
+              <h5 className={`card-title mb-3 ${darkMode ? 'text-light' : ''}`}>
+                Resend Blue Square Emails
+              </h5>
+              <p className={`card-text mb-3 flex-grow-1 ${darkMode ? 'text-light' : ''}`}>
                 Triggers resend of Blue Square emails for users with last week&apos;s infringements.
                 Emails will be sent to affected users and BCC list.
               </p>
@@ -123,11 +125,11 @@ const BlueSquareEmailManagement = ({
             style={darkMode ? { backgroundColor: '#2d2d2d', borderColor: '#444' } : {}}
           >
             <div className="card-body d-flex flex-column">
-              <h5 className="card-title mb-3">
+              <h5 className={`card-title mb-3 ${darkMode ? 'text-light' : ''}`}>
                 <i className="fas fa-chart-bar text-info me-2"></i>
                 Resend Weekly Summary Email
               </h5>
-              <p className="card-text mb-3 flex-grow-1">
+              <p className={`card-text mb-3 flex-grow-1 ${darkMode ? 'text-light' : ''}`}>
                 Resends the admin report showing weekly summaries and missed entries. This will be
                 sent to all admin recipients.
               </p>
