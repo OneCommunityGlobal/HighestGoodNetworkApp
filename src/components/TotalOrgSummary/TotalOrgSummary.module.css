@@ -1,4 +1,4 @@
-.container-total-org-wrapper {
+.containerTotalOrgWrapper {
   min-height: 100%;
   background-color: #fff;
   margin: 0;
@@ -6,68 +6,66 @@
   width: 100%;
 }
 
-.container-total-org-wrapper.bg-oxford-blue .component-border {
+.containerTotalOrgWrapper:global(.bg-oxford-blue) .componentBorder {
   background-color: #1c2541 !important;
   border-color: #2f4157 !important;
 }
 
-.container-total-org-wrapper.bg-oxford-blue .recharts-surface {
+.containerTotalOrgWrapper:global(.bg-oxford-blue) :global(.recharts-surface) {
   background-color: #1c2541;
 }
 
-.container-total-org-wrapper.bg-oxford-blue .total-org-chart-title p {
+.containerTotalOrgWrapper:global(.bg-oxford-blue) .totalOrgChartTitle p {
   color: #fff !important;
 }
 
-.container-total-org-wrapper.bg-oxford-blue .component-container .recharts-text,
-.container-total-org-wrapper.bg-oxford-blue .component-container .recharts-label,
-.container-total-org-wrapper.bg-oxford-blue
-  .component-container
-  .recharts-cartesian-axis-tick-value,
-.container-total-org-wrapper.bg-oxford-blue .component-container text,
-.container-total-org-wrapper.bg-oxford-blue .component-container tspan {
+.containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer :global(.recharts-text),
+.containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer :global(.recharts-label),
+.containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer :global(.recharts-cartesian-axis-tick-value),
+.containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer text,
+.containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer tspan {
   fill: #fff !important;
   color: #fff !important;
 }
 
-.container-total-org-wrapper.bg-oxford-blue .recharts-text tspan,
-.container-total-org-wrapper.bg-oxford-blue .recharts-label tspan,
-.container-total-org-wrapper.bg-oxford-blue .recharts-cartesian-axis-tick-value tspan,
-.container-total-org-wrapper.bg-oxford-blue text tspan {
+.containerTotalOrgWrapper:global(.bg-oxford-blue) :global(.recharts-text) tspan,
+.containerTotalOrgWrapper:global(.bg-oxford-blue) :global(.recharts-label) tspan,
+.containerTotalOrgWrapper:global(.bg-oxford-blue) :global(.recharts-cartesian-axis-tick-value) tspan,
+.containerTotalOrgWrapper:global(.bg-oxford-blue) text tspan {
   fill: #fff !important;
 }
 
-.container-total-org-wrapper.bg-oxford-blue > .row > .col h3,
-.container-total-org-wrapper.bg-oxford-blue .Collapsible__trigger {
+.containerTotalOrgWrapper:global(.bg-oxford-blue) :global(.row) > :global(.col) h3,
+.containerTotalOrgWrapper:global(.bg-oxford-blue) :global(.Collapsible__trigger) {
   color: #fff;
 }
 
-.container-total-org-wrapper.bg-oxford-blue .component-container h3,
-.container-total-org-wrapper.bg-oxford-blue .statistics-title,
-.container-total-org-wrapper.bg-oxford-blue .volunteer-status-grid h3,
-.container-total-org-wrapper.bg-oxford-blue .component-container .recharts-text,
-.container-total-org-wrapper.bg-oxford-blue .statistics-value {
+.containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer h3,
+.containerTotalOrgWrapper:global(.bg-oxford-blue) .statistics-title,
+.containerTotalOrgWrapper:global(.bg-oxford-blue) .volunteerStatusGrid h3,
+.containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer :global(.recharts-text),
+.containerTotalOrgWrapper:global(.bg-oxford-blue) .statistics-value {
   color: #000 !important;
   fill: #000 !important;
 }
 
-.container-total-org-wrapper.bg-oxford-blue .recharts-text,
-.container-total-org-wrapper.bg-oxford-blue .recharts-label,
-.container-total-org-wrapper.bg-oxford-blue .recharts-cartesian-axis-tick-value {
+.containerTotalOrgWrapper:global(.bg-oxford-blue) :global(.recharts-text),
+.containerTotalOrgWrapper:global(.bg-oxford-blue) :global(.recharts-label),
+.containerTotalOrgWrapper:global(.bg-oxford-blue) :global(.recharts-cartesian-axis-tick-value) {
   fill: #000 !important;
 }
 
-.container-total-org-wrapper.bg-oxford-blue h3 {
+.containerTotalOrgWrapper.bg-oxford-blue h3 {
   color: #fff;
 }
 
-.container-total-org-wrapper .row {
+.pageRow {
   width: 100% !important;
   margin: 1px 10px 15px 10px;
 }
 
 /* Header section styles */
-.container-total-org-wrapper .header-row {
+.totalOrgReportHeaderRow  {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -78,13 +76,13 @@
   /* Ensure button aligns absolutely inside here */
 }
 
-.container-total-org-wrapper .header-row .left-section {
+.reportHeaderTitle {
   display: flex;
   align-items: center;
   gap: 20px;
 }
 
-.container-total-org-wrapper .header-row h3 {
+.reportHeaderTitle h3 {
   margin: 0;
   font-size: 32px;
   font-weight: 600;
@@ -92,13 +90,13 @@
   color: #000;
 }
 
-.container-total-org-wrapper .header-row .controls {
+.reportHeaderActions {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.container-total-org-wrapper .header-row select {
+.reportHeaderActions select {
   padding: 8px 12px;
   border: 1px solid #e0e0e0;
   border-radius: 4px;
@@ -106,7 +104,7 @@
   font-size: 14px;
 }
 
-.container-total-org-wrapper .header-row button {
+.reportHeaderActions button {
   background-color: #000;
   color: #fff;
   border: none;
@@ -121,18 +119,18 @@
   justify-content: center;
 }
 
-.container-total-org-wrapper .header-row button:hover {
+.reportHeaderActions button:hover {
   background-color: #333;
 }
 
-.container-total-org-wrapper .header-row button:disabled {
+.reportHeaderActions button:disabled {
   background-color: #666;
   cursor: not-allowed;
   opacity: 0.7;
 }
 
 /* PDF button styles */
-.share-pdf-btn {
+.sharePdfBtn {
   padding: 8px 16px !important;
   height: 36px !important;
   display: flex !important;
@@ -145,12 +143,12 @@
 }
 
 /* Hover for PDF button */
-.share-pdf-btn:hover {
+.sharePdfBtn:hover {
   background-color: #333 !important;
 }
 
 /* Component containers */
-.component-container {
+.componentContainer {
   margin: 15px 0;
   padding: 20px;
   background-color: #fff;
@@ -158,7 +156,7 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.component-border {
+.componentBorder {
   border: 1px solid #e0e0e0;
   border-radius: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
@@ -167,7 +165,7 @@
 }
 
 /* Grid layouts */
-.volunteer-status-grid {
+.volunteerStatusGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 1.5rem;
@@ -175,7 +173,7 @@
   margin-top: 15px;
 }
 
-.component-pie-chart-label {
+.componentPieChartLabel {
   font-size: 12px;
   font-weight: 600;
   color: #000;
@@ -183,7 +181,7 @@
   text-overflow: ellipsis;
 }
 
-.total-org-chart-title p {
+.totalOrgChartTitle p {
   font-size: 1.8rem !important;
   font-weight: bold;
   text-align: center;
@@ -193,7 +191,7 @@
 }
 
 /* Report Header Styles */
-.total-org-report-header-row {
+/* .totalOrgReportHeaderRow  {
   display: flex;
   justify-content: space-between;
   gap: 20px;
@@ -201,30 +199,33 @@
   padding: 0px 20px;
 }
 
-.report-header-title h3 {
+.reportHeaderTitle {
   margin: 0;
   font-size: 32px;
   font-weight: 600;
   color: #000;
 }
 
-.report-header-actions {
+.reportHeaderActions {
   display: flex;
   gap: 20px;
   flex-wrap: wrap;
-}
+} */
 
-@media (max-width: 600px) {
-  .container {
+/* @media (max-width: 600px) {
+  .totalOrgReportHeaderRow {
     flex-direction: column;
   }
-}
+} */
 
-.container-total-org-wrapper.bg-oxford-blue .component-container p.m-0,
-.container-total-org-wrapper.bg-oxford-blue .component-container span {
+.containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer p.m-0,
+.containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer span {
   color: #fff !important;
 }
 
-.total-org-chart-title.dark-mode p {
+.totalOrgChartTitleDark p {
   color: white;
+}
+.whiteSmoke {
+  background-color: #f5f5f5;   
 }
