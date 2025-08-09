@@ -182,7 +182,7 @@ summary::-webkit-details-marker {
   justify-content: center;
   text-align: center;
   padding: 12px 10px;
-  min-height: 70px;
+  min-height: 72px;
 }
 
 .tab-nav-item.active {
@@ -219,4 +219,59 @@ summary::-webkit-details-marker {
   background: #14233a;
   color: #fff;
   border-bottom: 1px solid #14233a;
+}
+
+.tab-grid {
+  display: grid !important;
+  gap: 8px;
+}
+
+.tab-grid > .nav-item {
+  width: auto;
+  margin: 0;
+}
+
+.tab-grid .nav-link.tab-nav-item {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ccc;
+  border-radius: 10px 10px 0 0;
+  background: linear-gradient(to bottom, #f3f3f3, #ddd);
+  position: relative;
+  z-index: 1;
+  transition: all 0.2s ease;
+}
+
+.tab-grid .nav-link.tab-nav-item.active {
+  background: white;
+  border-color: #aaa;
+  z-index: 10;
+}
+
+.tab-grid.two-rows > .nav-item:nth-child(n + calc(var(--cols, 12) + 1)) {
+  margin-top: -12px;
+  transform: translateY(8px);
+  z-index: 0;
+}
+
+.tab-grid .nav-link.tab-nav-item:hover {
+  filter: brightness(1.05);
+}
+
+@media (max-width: 1024px) {
+  .tab-grid { grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); }
+}
+
+@media (max-width: 700px) {
+  .tab-grid { grid-template-columns: repeat(auto-fit, minmax(95px, 1fr)); }
+  .tab-grid .nav-link.tab-nav-item { min-height: 64px; }
+}
+
+@media (max-width: 460px) {
+  .tab-label { display: none; }
+  .tab-icon { width: 32px; height: 32px; }
 }
