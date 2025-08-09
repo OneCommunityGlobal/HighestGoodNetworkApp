@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
+import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
 import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
 import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
@@ -259,8 +260,13 @@ function WeeklyProjectSummary() {
         key: 'Tools and Equipment Tracking',
         className: 'half',
         content: (
-          <div className="weekly-project-summary-card normal-card" style={{ minHeight: '300px' }}>
-            <ToolsHorizontalBarChart darkMode={darkMode} />
+          <div className="weekly-project-summary-card normal-card tools-tracking-layout">
+            <div className="tools-donut-wrap">
+              <ToolStatusDonutChart />
+            </div>
+            <div className="weekly-project-summary-card normal-card" style={{ minHeight: '300px' }}>
+              <ToolsHorizontalBarChart darkMode={darkMode} />
+            </div>
           </div>
         ),
       },
