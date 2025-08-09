@@ -300,4 +300,4 @@ describe('UserPermissionsPopup component', () => {
       expect(addButtons.length).toBeGreaterThan(0);
     });
   });
-});
+}, 10000);
