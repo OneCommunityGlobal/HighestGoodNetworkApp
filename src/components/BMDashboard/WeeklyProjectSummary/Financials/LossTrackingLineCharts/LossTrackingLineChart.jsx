@@ -1,5 +1,6 @@
 // LossTrackingLineChart.jsx (uses Recharts, dark mode–friendly, styled via CSS, with reset functionality and no-data handling)
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import {
   LineChart,
   Line,
@@ -58,6 +59,7 @@ const rawData = [
 ];
 
 const LossTrackingLineChart = () => {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [material, setMaterial] = useState('All');
   const [year, setYear] = useState('All');
   const [startDate, setStartDate] = useState('');
@@ -85,8 +87,9 @@ const LossTrackingLineChart = () => {
   const chartData = Object.values(mergedData);
 
   return (
-    <div className="loss-tracking-chart-container">
-      <div className="filters">
+    <div className={`loss-tracking-chart-container ${darkMode ? 'dark-mode' : ''}`}>
+      <h1 className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>Loss Tracking Line Chart</h1>
+      <div className={`filters ${darkMode ? 'dark-mode' : ''}`}>
         <label>
           <span>Material</span>
           <select value={material} onChange={e => setMaterial(e.target.value)}>
@@ -130,19 +133,29 @@ const LossTrackingLineChart = () => {
         </button>
       </div>
 
-      <div className="chart-wrapper">
+      <div className={`chart-wrapper ${darkMode ? 'dark-mode' : ''}`}>
         {chartData.length === 0 ? (
           <div className="no-data-message">No data available for the selected filters.</div>
         ) : (
           <ResponsiveContainer width="100%" height={400}>
             <LineChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" className="grid" />
-              <XAxis dataKey="month" className="axis" />
+              <XAxis
+                dataKey="month"
+                className="axis"
+                label={{
+                  value: 'Time (months)',
+                  position: 'insideBottom',
+                  offset: -5,
+                  style: { fill: darkMode ? 'white' : 'black' },
+                }}
+              />
               <YAxis
                 label={{
                   value: 'Loss (%)',
                   angle: -90,
                   position: 'insideLeft',
+                  style: { fill: darkMode ? 'white' : 'black' },
                 }}
                 className="axis"
               />
