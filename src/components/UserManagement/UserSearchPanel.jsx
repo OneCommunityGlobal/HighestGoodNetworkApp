@@ -97,6 +97,7 @@ function UserSearchPanel({
         <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>{SHOW}</span>
         <select
           id="active-filter-dropdown"
+          style={{marginBottom: "0px"}}
           onChange={e => {
             onActiveFiter(e.target.value);
           }}

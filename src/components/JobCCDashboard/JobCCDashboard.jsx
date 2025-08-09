@@ -3,10 +3,10 @@ import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { Table, Button, FormGroup, Label, Input } from 'reactstrap';
-import './JobCCDashboard.css';
-import { ENDPOINTS } from 'utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import JobCCModal from './JobCCModal'; // Modal for managing CC list
 import JobCategoryCCModal from './JobCategoryCCModal';
+import styles from './JobCCDashboard.module.css';
 
 function JobCCDashboard() {
   const [jobs, setJobs] = useState([]);
@@ -89,10 +89,10 @@ function JobCCDashboard() {
 
   return (
     <div
-      className={`job-cc-dashboard ${darkMode ? 'dark-mode-job-cc-dashboard' : ''}`}
+      className={`${styles.jobCcDashboard} ${darkMode ? styles.darkModeJobCcDashboard : ''}`}
       style={{ height: '100%' }}
     >
-      <h1 className="dashboard-title">Job CC Dashboard</h1>
+      <h1 className={`${styles.dashboardTitle}`}>Job CC Dashboard</h1>
       <div className="filters-container">
         <FormGroup>
           <Label for="filter" className={`${darkMode ? 'text-light' : 'text-dark'}`}>
@@ -144,7 +144,7 @@ function JobCCDashboard() {
         </div>
       </div>
 
-      <Table striped bordered hover className="job-cc-dashboard-table">
+      <Table striped bordered hover className={`${styles.jobCcDashboardTable}`}>
         <thead>
           <tr>
             <th>Job Title</th>
