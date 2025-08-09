@@ -415,22 +415,18 @@ const UserProfileModal = props => {
             <FormGroup>
               <Label className={fontColor} for="date">
                 Date:
-                <span>{blueSquare[0]?.date}</span>
+                <span> {convertDateFormat(blueSquare[0]?.date)}</span>
               </Label>
             </FormGroup>
             <FormGroup>
               <Label className={fontColor} for="createdDate">
                 Created Date:
               </Label>
-                <span>{convertDateFormat(blueSquare[0]?.createdDate)}</span>
+                <span> {convertDateFormat(blueSquare[0]?.createdDate)}</span>
             </FormGroup>
             <FormGroup>
               <Label className={fontColor} for="description">Summary</Label>
-              <Input
-                id="asignment"
-                readOnly
-                value={`Assigned by ${firstName} ${getLastInitial(lastName)} ${convertDateFormat(dateStamp)}:`}
-              />
+              <p>{`Assigned by ${firstName} ${getLastInitial(lastName)} ${convertDateFormat(dateStamp)}:`}</p>
               <p className={fontColor}>{blueSquare[0]?.description}</p>
             </FormGroup>
           </>
