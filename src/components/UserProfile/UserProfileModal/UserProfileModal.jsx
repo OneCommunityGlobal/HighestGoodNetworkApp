@@ -16,6 +16,7 @@ import { boxStyle, boxStyleDark } from '~/styles';
 import '../../Header/DarkMode.css'
 import hasPermission from '~/utils/permissions';
 import { connect, useSelector } from 'react-redux';
+import DOMPurify from 'dompurify';
 
 const UserProfileModal = props => {
   const {
@@ -29,6 +30,26 @@ const UserProfileModal = props => {
     userProfile,
     id,
   } = props;
+  
+  // Sanitize text content to prevent XSS attacks
+  const sanitizeText = (text) => {
+    if (!text || typeof text !== 'string') return '';
+    return DOMPurify.sanitize(text, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
+  };
+
+  // Sanitize URL to prevent malicious links
+  const sanitizeURL = (url) => {
+    if (!url || typeof url !== 'string') return '';
+    
+    // Remove dangerous protocols
+    const cleaned = url.trim();
+    if (cleaned.match(/^(javascript|data|vbscript):/i)) {
+      return '';
+    }
+    
+    return DOMPurify.sanitize(cleaned, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
+  };
+
   let blueSquare = [
   ];
 
@@ -370,7 +391,7 @@ const UserProfileModal = props => {
                 style={{ minHeight: '200px', overflow: 'hidden'}} // 4x taller than usual
                 onInput={e => adjustTextareaHeight(e.target)} // auto-adjust height
               />
-              :<p>{blueSquare[0]?.description}</p>}
+              :<p>{sanitizeText(blueSquare[0]?.description)}</p>}
             </FormGroup>
           </>
         )}
@@ -391,7 +412,7 @@ const UserProfileModal = props => {
             </FormGroup>
             <FormGroup>
               <Label className={fontColor} for="description">Summary</Label>
-              <p className={fontColor}>{blueSquare[0]?.description}</p>
+              <p className={fontColor}>{sanitizeText(blueSquare[0]?.description)}</p>
             </FormGroup>
           </>
         )}

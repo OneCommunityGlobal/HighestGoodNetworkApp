@@ -12,6 +12,7 @@ import {
 import Select from 'react-select'
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
+import DOMPurify from 'dompurify';
 import { getInfoCollections, addInfoCollection, updateInfoCollection, deleteInfoCollectionById } from '../../../actions/information';
 import { boxStyle, boxStyleDark } from '~/styles';
 import RichTextEditor from './RichTextEditor';
@@ -39,6 +40,17 @@ export class EditableInfoModal extends Component {
 
   _isMounted = false;
 
+  // Sanitize HTML content to prevent XSS attacks
+  sanitizeHTML = (htmlContent) => {
+    if (!htmlContent || typeof htmlContent !== 'string') return '';
+    
+    return DOMPurify.sanitize(htmlContent, {
+      ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'a', 'span', 'div'],
+      ALLOWED_ATTR: ['href', 'class', 'style'],
+      ALLOW_DATA_ATTR: false,
+    });
+  };
+
   
   async componentDidMount() {
     this._isMounted = true;
@@ -52,7 +64,7 @@ export class EditableInfoModal extends Component {
     if (Array.isArray(infoCollections)) {
       infoCollections.forEach((info) => {
         if (info.infoName === areaName) {
-          content = info.infoContent;
+          content = this.sanitizeHTML(info.infoContent);
           visible = info.visibility;
         }
       });
@@ -117,7 +129,8 @@ export class EditableInfoModal extends Component {
   }
   handleInputChange = (content, editor) => {
     const infoContent = this.state.infoContent;
-    this.setState({ infoContent: content });
+    const sanitizedContent = this.sanitizeHTML(content);
+    this.setState({ infoContent: sanitizedContent });
   }
 
 
@@ -211,6 +224,9 @@ export class EditableInfoModal extends Component {
     const sanitizedContent = darkMode
       ? infoContent.replace(/color\s*:\s*[^;"']+;?/gi, '')
       : infoContent;
+    
+    // Apply XSS protection to the content
+    const safeContent = this.sanitizeHTML(sanitizedContent);
     return (
       (CanRead) && (
         <div>
@@ -237,7 +253,7 @@ export class EditableInfoModal extends Component {
                   : <div
                     className={darkMode ? 'info-modal-content force-white-text' : ''}
                     style={{ paddingLeft: '20px' }}
-                    dangerouslySetInnerHTML={{ __html: sanitizedContent }}
+                    dangerouslySetInnerHTML={{ __html: safeContent }}
                     onClick={() => this.handleEdit(true)} />
                 }
               </ModalBody>
