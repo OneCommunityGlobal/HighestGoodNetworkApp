@@ -241,10 +241,7 @@ function CustomTooltip({ active, payload, label, currency }) {
 
 function CostPredictionChart({ projectId }) {
   const [data, setData] = useState([]);
-  const [selectedCosts, setSelectedCosts] = useState([
-    { value: 'Labor', label: 'Labor Cost' },
-    { value: 'Materials', label: 'Materials Cost' },
-  ]);
+  const [selectedCosts, setSelectedCosts] = useState(['Labor', 'Materials']);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currency] = useState('$');
@@ -287,7 +284,10 @@ function CostPredictionChart({ projectId }) {
     fetchData();
   }, [selectedProject]);
 
-  const handleCostChange = selected => setSelectedCosts(selected || []);
+  const handleCostChange = selected => {
+    const selectedValues = selected ? selected.map(option => option.value) : [];
+    setSelectedCosts(selectedValues);
+  };
   const handleProjectChange = selected => setSelectedProject(selected);
 
   // Pick the right dot renderer by name
@@ -422,7 +422,7 @@ function CostPredictionChart({ projectId }) {
           isSearchable
           options={costOptions}
           value={costOptions.filter(option => selectedCosts.includes(option.value))}
-          onChange={selectedOptions => setSelectedCosts(selectedOptions.map(({ value }) => value))}
+          onChange={handleCostChange}
           placeholder="All Cost Categories"
           classNamePrefix="custom-select"
           className={`cost-prediction-dropdown-item ${styles.dropdownItem} custom-scrollbar ${styles.multiSelect}`}
@@ -581,7 +581,7 @@ function CostPredictionChart({ projectId }) {
                 />
 
                 {/* Reference Lines for Last Predicted Values */}
-                {['Labor', 'Materials'].map(category =>
+                {(selectedCosts.length > 0 ? selectedCosts : ['Labor', 'Materials']).map(category =>
                   lastPredictedValues[category] ? (
                     <ReferenceLine
                       key={`ref-${category}`}
@@ -592,53 +592,38 @@ function CostPredictionChart({ projectId }) {
                   ) : null,
                 )}
 
-                {/* Only show Labor and Materials cost in card view */}
-                <Line
-                  key="Labor"
-                  type="linear"
-                  dataKey="Labor"
-                  name="Labor Cost"
-                  stroke={costColors.Labor}
-                  strokeWidth={2}
-                  dot={{ r: 3 }}
-                  activeDot={{ r: 4 }}
-                  isAnimationActive={false}
-                />
-                <Line
-                  key="LaborPredicted"
-                  type="linear"
-                  dataKey="LaborPredicted"
-                  name="Labor Cost (Predicted)"
-                  stroke={costColors.Labor}
-                  strokeWidth={2}
-                  strokeDasharray="8 4"
-                  dot={renderLaborDot}
-                  activeDot={{ r: 4 }}
-                  isAnimationActive={false}
-                />
-                <Line
-                  key="Materials"
-                  type="linear"
-                  dataKey="Materials"
-                  name="Materials Cost"
-                  stroke={costColors.Materials}
-                  strokeWidth={2}
-                  dot={{ r: 3 }}
-                  activeDot={{ r: 4 }}
-                  isAnimationActive={false}
-                />
-                <Line
-                  key="MaterialsPredicted"
-                  type="linear"
-                  dataKey="MaterialsPredicted"
-                  name="Materials Cost (Predicted)"
-                  stroke={costColors.Materials}
-                  strokeWidth={2}
-                  strokeDasharray="8 4"
-                  dot={renderMaterialsDot}
-                  activeDot={{ r: 4 }}
-                  isAnimationActive={false}
-                />
+                {/* Dynamically render lines based on selected costs */}
+                {(selectedCosts.length > 0 ? selectedCosts : ['Labor', 'Materials']).map(
+                  category => (
+                    <Fragment key={`${category}-container`}>
+                      {/* Actual cost line */}
+                      <Line
+                        key={category}
+                        type="linear"
+                        dataKey={category}
+                        name={`${category} Cost`}
+                        stroke={costColors[category]}
+                        strokeWidth={2}
+                        dot={{ r: 3 }}
+                        activeDot={{ r: 4 }}
+                        isAnimationActive={false}
+                      />
+                      {/* Predicted cost line */}
+                      <Line
+                        key={`${category}Predicted`}
+                        type="linear"
+                        dataKey={`${category}Predicted`}
+                        name={`${category} Cost (Predicted)`}
+                        stroke={costColors[category]}
+                        strokeWidth={2}
+                        strokeDasharray="8 4"
+                        dot={getDotRenderer(category)}
+                        activeDot={{ r: 4 }}
+                        isAnimationActive={false}
+                      />
+                    </Fragment>
+                  ),
+                )}
               </LineChart>
             </ResponsiveContainer>
           </div>
