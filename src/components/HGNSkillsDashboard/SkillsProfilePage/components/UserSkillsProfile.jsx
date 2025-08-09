@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { useHistory, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { ClipLoader } from 'react-spinners';
 import { useDispatch } from 'react-redux';
@@ -13,6 +14,7 @@ function UserSkillsProfile() {
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const history = useHistory();
 
   // Fetch data from backend on component mount
   useEffect(() => {
@@ -36,6 +38,14 @@ function UserSkillsProfile() {
 
         const { data } = response;
         if (!data) throw new Error('Failed to fetch profile data');
+
+        if (data.isPlaceholder) {
+          toast.warn('Please complete the skills survey to access the HGN Skills dashboard.');
+
+          setTimeout(() => {
+            history.push('/hgnform');
+          }, 2500);
+        }
 
         // Send data to Redux store
         dispatch({ type: 'SET_USER_SKILLS_PROFILE_DATA', payload: data });
