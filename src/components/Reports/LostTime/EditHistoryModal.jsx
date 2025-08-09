@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, FormGroup, Label, Input, Form, Row, Col } from 'reactstrap';
-import { getFontColor, getBoxStyling } from 'styles';
+import { getFontColor, getBoxStyling } from '~/styles';
 import { connect, useDispatch } from 'react-redux';
-import { getUserProfile } from 'actions/userProfile';
+import { getUserProfile } from '~/actions/userProfile';
 import moment from 'moment';
 import { isEmpty } from 'lodash';
-import { deleteTimeEntry, editTimeEntry } from 'actions/timeEntries';
+import { deleteTimeEntry, editTimeEntry } from '~/actions/timeEntries';
 import './EditHistoryModal.css';
 import '../../Header/DarkMode.css'
 
@@ -60,6 +60,7 @@ function EditHistoryModal(props) {
           <Label className={fontColor}>Project Name</Label>
           <Input
             defaultValue={selectedData.projectName}
+            className={darkMode ? "bg-darkmode-liblack text-light border-0" : ''}
             disabled
           />
         </FormGroup>
@@ -70,6 +71,7 @@ function EditHistoryModal(props) {
             <Label className={fontColor}>Name</Label>
             <Input
               defaultValue={searchText}
+              className={darkMode ? "bg-darkmode-liblack text-light border-0" : ''}
               disabled
             />
           </FormGroup>
@@ -80,6 +82,7 @@ function EditHistoryModal(props) {
           <Label className={fontColor}>Team Name</Label>
           <Input
             defaultValue={selectedData.teamName}
+            className={darkMode ? "bg-darkmode-liblack text-light border-0" : ''}
             disabled
           />
         </FormGroup>
@@ -244,6 +247,7 @@ function EditHistoryModal(props) {
                 id="dateOfWork"
                 value={inputs.dateOfWork}
                 onChange={handleInputChange}
+                className={darkMode ? "bg-darkmode-liblack text-light border-0 calendar-icon-dark" : ''}
               />
               {'dateOfWork' in errors && (
                 <div className="text-danger">
@@ -264,6 +268,7 @@ function EditHistoryModal(props) {
                     placeholder="Hours"
                     value={inputs.hours}
                     onChange={handleInputChange}
+                    className={darkMode ? "bg-darkmode-liblack text-light border-0" : ''}
                   />
                 </Col>
                 <Col>
@@ -276,6 +281,7 @@ function EditHistoryModal(props) {
                     placeholder="Minutes"
                     value={inputs.minutes}
                     onChange={handleInputChange}
+                    className={darkMode ? "bg-darkmode-liblack text-light border-0" : ''}
                   />
                 </Col>
               </Row>

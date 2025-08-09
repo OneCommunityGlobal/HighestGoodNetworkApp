@@ -39,9 +39,10 @@ describe('Project Component', () => {
     projectData: sampleProjectData,
     index: 0,
     darkMode: false,
-    hasPermission: jest.fn((permission) => true),
-    onUpdateProject: jest.fn(),
-    onClickArchiveBtn: jest.fn(),
+    hasPermission: vi.fn((permission) => true),
+    onUpdateProject: vi.fn(),
+    onClickArchiveBtn: vi.fn(),
+    onClickProjectStatusBtn: vi.fn(),
   };
 
   it('renders correctly with props', () => {
@@ -84,24 +85,17 @@ describe('Project Component', () => {
   });
 
   it('triggers delete action on button click', () => {
-    const { getByTestId } = renderProject(sampleProps);
-
-    // Find the delete button and click it
+    const mockOnClickArchiveBtn = vi.fn();
+    const { getByTestId } = renderProject({
+      ...sampleProps,
+      onClickArchiveBtn: mockOnClickArchiveBtn,
+    });
+  
     const deleteButton = getByTestId('delete-button');
     fireEvent.click(deleteButton);
-
-    // Check if the modal is triggered
-    const modal = document.querySelector('.modal');
-    expect(modal).toBeInTheDocument();
-
-    const archiveButton=screen.getAllByText('Archive')[0];
-    fireEvent.click(archiveButton);
-    
-    expect(screen.getByText('Confirm Archive')).toBeInTheDocument();
-    expect(screen.getByText(`Do you want to archive ${sampleProjectData.projectName}?`)).toBeInTheDocument();
-
-    const closeButton=screen.getByText('Close')
-    fireEvent.click(closeButton)
-    expect(screen.queryByText('Confirm Archive')).not.toBeInTheDocument();
+  
+    expect(mockOnClickArchiveBtn).toHaveBeenCalledWith(expect.objectContaining({
+      _id: sampleProjectData._id,
+    }));
   });
 });

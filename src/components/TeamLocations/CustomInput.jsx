@@ -10,17 +10,23 @@ const CustomInput = React.forwardRef(
         </label>
         {/* eslint-disable-next-line react/jsx-props-no-spreading */}
         <input {...rest} ref={ref} id={name} name={name} className="form-control" />
+
         {error && <div className="alert alert-danger mt-1">{error}</div>}
       </div>
     );
   },
 );
 
+CustomInput.displayName = 'CustomInput';
+
 CustomInput.propTypes = {
   label: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
-  // eslint-disable-next-line react/require-default-props
   error: PropTypes.string,
+};
+
+CustomInput.defaultProps = {
+  error: '',
 };
 
 export default CustomInput;

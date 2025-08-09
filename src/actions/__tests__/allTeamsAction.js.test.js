@@ -1,22 +1,57 @@
 // Import the necessary action creators and constants from the respective files
-import { teamMembersFectchACtion, userTeamsUpdateAction, addNewTeam, teamsDeleteAction, updateTeamAction, teamUsersFetchAction, teamUsersFetchCompleteAction, teamUsersFetchErrorAction, teamMemberDeleteAction, teamMemberAddAction, updateVisibilityAction, fetchAllTeamCodeSucess, fetchAllTeamCodeFailure, getAllUserTeams, postNewTeam, deleteTeam } from '../allTeamsAction';
-import { RECEIVE_ALL_USER_TEAMS, USER_TEAMS_UPDATE, ADD_NEW_TEAM, TEAMS_DELETE, UPDATE_TEAM, FETCH_TEAM_USERS_START, RECEIVE_TEAM_USERS, FETCH_TEAM_USERS_ERROR, TEAM_MEMBER_DELETE, TEAM_MEMBER_ADD, UPDATE_TEAM_MEMBER_VISIBILITY, FETCH_ALL_TEAM_CODE_SUCCESS, FETCH_ALL_TEAM_CODE_FAILURE } from '../../constants/allTeamsConstants';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { ENDPOINTS } from '../../utils/URL';
+import {
+  RECEIVE_ALL_USER_TEAMS,
+  USER_TEAMS_UPDATE,
+  ADD_NEW_TEAM,
+  TEAMS_DELETE,
+  UPDATE_TEAM,
+  FETCH_TEAM_USERS_START,
+  RECEIVE_TEAM_USERS,
+  FETCH_TEAM_USERS_ERROR,
+  TEAM_MEMBER_DELETE,
+  TEAM_MEMBER_ADD,
+  UPDATE_TEAM_MEMBER_VISIBILITY,
+  FETCH_ALL_TEAM_CODE_SUCCESS,
+} from '../../constants/allTeamsConstants';
+import {
+  teamMembersFectchACtion,
+  userTeamsUpdateAction,
+  addNewTeam,
+  teamsDeleteAction,
+  updateTeamAction,
+  teamUsersFetchAction,
+  teamUsersFetchCompleteAction,
+  teamUsersFetchErrorAction,
+  teamMemberDeleteAction,
+  teamMemberAddAction,
+  updateVisibilityAction,
+  fetchAllTeamCodeSucess,
+  getAllUserTeams,
+  postNewTeam,
+  deleteTeam,
+} from '../allTeamsAction';
+import { ENDPOINTS } from '~/utils/URL';
+
+
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 const mock = new MockAdapter(axios);
+vi.mock('axios');
 
 // Describe block for the teamMembersFectchACtion tests
 describe('teamMembersFectchACtion', () => {
   // Test case for creating an action to set all user teams
   it('should create an action to set all user teams', () => {
     // Define the payload for the action
-    const payload = [{ id: 1, name: 'Team 1' }, { id: 2, name: 'Team 2' }];
+    const payload = [
+      { id: 1, name: 'Team 1' },
+      { id: 2, name: 'Team 2' },
+    ];
     // Define the expected action object
     const expectedAction = {
       type: RECEIVE_ALL_USER_TEAMS,
@@ -109,7 +144,10 @@ describe('teamUsersFetchAction', () => {
 // Describe block for the teamUsersFetchCompleteAction tests
 describe('teamUsersFetchCompleteAction', () => {
   it('should create an action to set team users', () => {
-    const payload = [{ id: 1, name: 'User 1' }, { id: 2, name: 'User 2' }];
+    const payload = [
+      { id: 1, name: 'User 1' },
+      { id: 2, name: 'User 2' },
+    ];
     const expectedAction = {
       type: RECEIVE_TEAM_USERS,
       payload,
@@ -198,21 +236,31 @@ describe('fetchAllTeamCodeSucess', () => {
   });
 });
 
+// Add this before your describe blocks
+beforeEach(() => {
+  vi.clearAllMocks();
+});
 
 // Describe block for the getAllUserTeams tests
 describe('getAllUserTeams', () => {
   // Test case for fetching all user teams
   it('should fetch all user teams and dispatch RECEIVE_ALL_USER_TEAMS action', async () => {
     // Mock the API response
-    const responseData = [{ id: 1, name: 'Team 1' }, { id: 2, name: 'Team 2' }];
-    mock.onGet(ENDPOINTS.TEAM).reply(200, responseData);
-
-    const expectedActions = [
-      { type: RECEIVE_ALL_USER_TEAMS, payload: responseData },
+    const responseData = [
+      { id: 1, name: 'Team 1' },
+      { id: 2, name: 'Team 2' },
     ];
 
+    // Mock axios.get
+    axios.get.mockResolvedValue({ data: responseData });
+
+    const expectedActions = [{ type: RECEIVE_ALL_USER_TEAMS, payload: responseData }];
+
     const store = mockStore({});
+
     await store.dispatch(getAllUserTeams());
+
+    expect(axios.get).toHaveBeenCalledWith(ENDPOINTS.TEAM);
     expect(store.getActions()).toEqual(expectedActions);
   });
 });
@@ -223,14 +271,19 @@ describe('postNewTeam', () => {
   it('should post a new team and dispatch ADD_NEW_TEAM action', async () => {
     // Mock the API response
     const responseData = { id: 3, name: 'New Team' };
-    mock.onPost(ENDPOINTS.TEAM).reply(200, responseData);
+    const teamName = 'New Team';
+    const status = true;
 
-    const expectedActions = [
-      { type: ADD_NEW_TEAM, payload: responseData, status: true },
-    ];
+    // Mock axios.post
+    axios.post.mockResolvedValue({ data: responseData });
+
+    const expectedActions = [{ type: ADD_NEW_TEAM, payload: responseData, status: true }];
 
     const store = mockStore({});
-    await store.dispatch(postNewTeam('New Team', true));
+
+    await store.dispatch(postNewTeam(teamName, status));
+
+    expect(axios.post).toHaveBeenCalledWith(ENDPOINTS.TEAM, { teamName, isActive: status }, {});
     expect(store.getActions()).toEqual(expectedActions);
   });
 });
@@ -243,13 +296,10 @@ describe('deleteTeam', () => {
     const teamId = 1;
     mock.onDelete(ENDPOINTS.TEAM_DATA(teamId)).reply(200);
 
-    const expectedActions = [
-      { type: TEAMS_DELETE, team: teamId },
-    ];
+    const expectedActions = [{ type: TEAMS_DELETE, team: teamId }];
 
     const store = mockStore({});
     await store.dispatch(deleteTeam(teamId));
     expect(store.getActions()).toEqual(expectedActions);
   });
 });
-

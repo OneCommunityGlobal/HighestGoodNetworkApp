@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { useDispatch, useSelector, connect } from 'react-redux';
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader, Col, Row} from 'reactstrap';
 import { updateInfoCollection } from '../../../actions/information'
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import { useEffect } from 'react';
 import { toast } from 'react-toastify';
 import RichTextEditor from './RichTextEditor';
@@ -89,7 +89,7 @@ const RoleInfoModal = ({ info, auth}) => {
             <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>Welcome to Information Page!</ModalHeader>
             <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
               {canEditInfoModal && isEditing ?
-                <RichTextEditor disabled={!isEditing} value={infoContentModal} onEditorChange={handleInputChange} /> :
+                <RichTextEditor disabled={!isEditing} value={infoContentModal} onEditorChange={handleInputChange} darkMode={darkMode}/> :
                 <div
                   style={{ paddingLeft: '20px' }}
                   dangerouslySetInnerHTML={{ __html: infoContentModal }}

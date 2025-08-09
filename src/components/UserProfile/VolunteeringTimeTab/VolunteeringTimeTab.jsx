@@ -2,15 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { Row, Label, Input, Col, Button, FormGroup, FormFeedback } from 'reactstrap';
 import moment from 'moment-timezone';
 import { capitalize } from 'lodash';
-import { ENDPOINTS } from 'utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import axios from 'axios';
 import HistoryModal from './HistoryModal';
 import './timeTab.css';
-import { boxStyle, boxStyleDark } from 'styles';
-import { formatDate, formatDateYYYYMMDD, formatDateMMDDYYYY, CREATED_DATE_CRITERIA } from 'utils/formatDate';
+import { boxStyle, boxStyleDark } from '~/styles';
+import { formatDate, formatDateYYYYMMDD, formatDateMMDDYYYY, CREATED_DATE_CRITERIA } from '~/utils/formatDate';
 
 const MINIMUM_WEEK_HOURS = 0;
 const MAXIMUM_WEEK_HOURS = 168;
+const darkModeClass = "bg-darkmode-liblack text-light border-0";
 
 const startEndDateValidation = props => {
   return (
@@ -20,11 +21,15 @@ const startEndDateValidation = props => {
 
 const StartDate = props => {
   const { darkMode, startDateAlert } = props;
+  //determine which date to display
+  const displayDate = props.userProfile.isStartDateManuallyModified
+    ? props.userProfile.startDate
+    : (props.calculatedStartDate || props.userProfile.startDate);
 
   if (!props.canEdit) {
     return (
       <p className={darkMode ? 'text-azure' : ''}>
-        {!props.userProfile.startDate ? 'N/A' : formatDateYYYYMMDD(props.userProfile.startDate)}
+        {!displayDate ? 'N/A' : formatDate(displayDate)}
       </p>
     );
   }
@@ -34,8 +39,8 @@ const StartDate = props => {
         type="date"
         name="StartDate"
         id="startDate"
-        className={startEndDateValidation(props) ? 'border-error-validation' : null}
-        value={props.userProfile.startDate}
+        className={`${startEndDateValidation(props) ? 'border-error-validation' : ''} ${darkMode ? "bg-darkmode-liblack text-light border-0 calendar-icon-dark" : ''}`}
+        value={displayDate}
         min={props.userProfile.createdDate < CREATED_DATE_CRITERIA ? '' : props.userProfile.createdDate}
         onChange={e => {
           props.setUserProfile({ ...props.userProfile, startDate: e.target.value });
@@ -43,7 +48,7 @@ const StartDate = props => {
         }}
         placeholder="Start Date"
         invalid={!props.canEdit}
-        max={props.userProfile.endDate ? formatDateYYYYMMDD(props.userProfile.endDate) : '9999-12-31'}
+        max={props.userProfile.endDate || '9999-12-31'}
       />
       {startDateAlert && (
         <FormFeedback style={{ display: 'block' }}>{startDateAlert}</FormFeedback>
@@ -58,7 +63,7 @@ const EndDate = props => {
   if (!props.canEdit) {
     return (
       <p className={darkMode ? 'text-azure' : ''}>
-        {props.userProfile.endDate ? formatDateYYYYMMDD(props.userProfile.endDate) : 'N/A'}
+        {props.userProfile.endDate ? formatDate(props.userProfile.endDate) : 'N/A'}
       </p>
     );
   }
@@ -66,7 +71,7 @@ const EndDate = props => {
   return (
     <FormGroup>
       <Input
-        className={startEndDateValidation(props) ? 'border-error-validation' : null}
+        className={`${startEndDateValidation(props) ? 'border-error-validation' : ''} ${darkMode ? "bg-darkmode-liblack text-light border-0 calendar-icon-dark" : ''}`}
         type="date"
         name="EndDate"
         id="endDate"
@@ -133,7 +138,7 @@ const WeeklySummaryOptions = props => {
       <select
         name="WeeklySummaryOptions"
         id="weeklySummaryOptions"
-        className="form-control"
+        className={`form-control ${darkMode ? darkModeClass : ''}`}
         disabled={!props.canEdit}
         value={
           props.userProfile.weeklySummaryOption ??
@@ -189,6 +194,7 @@ const WeeklyCommittedHours = props => {
       value={props.userProfile.weeklycommittedHours}
       onChange={e => handleChange(e)}
       placeholder="Weekly Committed Hours"
+      className={darkMode ? darkModeClass : ''}
     />
   );
 };
@@ -206,6 +212,7 @@ const MissedHours = props => {
       id="missedHours"
       data-testid="missedHours"
       value={props.userProfile.missedHours ?? 0}
+      className={darkMode ? darkModeClass : ''}
       onChange={e => {
         props.setUserProfile({
           ...props.userProfile,
@@ -231,6 +238,7 @@ const TotalIntangibleHours = props => {
       step=".01"
       data-testid="totalIntangibleHours"
       value={props.userProfile.totalIntangibleHrs ?? 0}
+      className={darkMode ? darkModeClass : ''}
       onChange={e => {
         const newValue = Math.max(Number(e.target.value), 0).toFixed(2);
         props.setUserProfile({
@@ -379,7 +387,7 @@ const ViewTab = props => {
           <Label className={`hours-label ${darkMode ? 'text-light' : ''}`}>Account Created Date</Label>
         </Col>
         <Col md="6">
-          <p className={darkMode ? 'text-azure' : ''}>{formatDateMMDDYYYY(userProfile.createdDate)}</p>
+        <p className={darkMode ? 'text-azure' : ''} style={{ textAlign: 'left' }}>{formatDateMMDDYYYY(userProfile.createdDate)}</p>
         </Col>
       </Row>
       <Row className="volunteering-time-row">
@@ -387,15 +395,16 @@ const ViewTab = props => {
           <Label className={`hours-label ${darkMode ? 'text-light' : ''}`}>Start Date</Label>
         </Col>
         <Col md="6">
-          <StartDate
-            role={role}
-            userProfile={userProfile}
-            setUserProfile={setUserProfile}
-            canEdit={canEdit}
-            onStartDateComponent={handleStartDates}
-            darkMode={darkMode}
-            startDateAlert={startDateAlert}
-          />
+         <StartDate
+           role={role}
+           userProfile={userProfile}
+           setUserProfile={setUserProfile}
+           canEdit={canEdit}
+           onStartDateComponent={handleStartDates}
+           darkMode={darkMode}
+           startDateAlert={startDateAlert}
+           calculatedStartDate={props.calculatedStartDate}
+         />
         </Col>
       </Row>
 
@@ -423,7 +432,7 @@ const ViewTab = props => {
           </Label>
         </Col>
         <Col md="6">
-          <p className={`hours-totalTangible-thisWeek ${darkMode ? 'text-azure' : ''}`}>
+          <p className={`hours-totalTangible-thisWeek ${darkMode ? 'text-azure' : ''}`} style={{textAlign: 'left'}}>
             {totalTangibleHoursThisWeek}
           </p>
         </Col>
@@ -545,6 +554,7 @@ const ViewTab = props => {
                     id={`${key}Hours`}
                     step=".01"
                     min="0"
+                    className={darkMode ? darkModeClass : ''}
                     value={roundToTwo(userProfile.hoursByCategory[key])}
                     onChange={e => handleOnChangeHours(e, key)}
                     placeholder={`Total Tangible ${capitalize(key)} Hours`}

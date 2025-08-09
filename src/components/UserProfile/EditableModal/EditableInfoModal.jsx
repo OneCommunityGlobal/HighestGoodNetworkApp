@@ -13,7 +13,7 @@ import Select from 'react-select'
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
 import { getInfoCollections, addInfoCollection, updateInfoCollection, deleteInfoCollectionById } from '../../../actions/information';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import RichTextEditor from './RichTextEditor';
 
 const options = [
@@ -208,6 +208,9 @@ export class EditableInfoModal extends Component {
     } = this.state;
 
     const { darkMode } = this.props;
+    const sanitizedContent = darkMode
+      ? infoContent.replace(/color\s*:\s*[^;"']+;?/gi, '')
+      : infoContent;
     return (
       (CanRead) && (
         <div>
@@ -223,16 +226,18 @@ export class EditableInfoModal extends Component {
           {editableModalOpen && (
             <Modal isOpen={editableModalOpen} toggle={this.toggleEditableModal} size="lg" className={darkMode ? 'text-light' : ''}>
               <ModalHeader className={`d-flex justify-content-center ${darkMode ? 'bg-space-cadet' : ''}`}>Welcome to the {this.props.areaTitle} Information Page!</ModalHeader>
-              <ModalBody className={`${darkMode ? 'bg-yinmn-blue' : ''} text-center`} style={{ padding: '20px 40px' }}>
+              <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''} style={{ padding: '20px 40px' }}>
                 {this.state.editing
                   ? <RichTextEditor
                     disabled={!this.state.editing}
                     value={infoContent}
                     onEditorChange={this.handleInputChange}
+                    darkMode={darkMode}
                   />
                   : <div
+                    className={darkMode ? 'info-modal-content force-white-text' : ''}
                     style={{ paddingLeft: '20px' }}
-                    dangerouslySetInnerHTML={{ __html: infoContent }}
+                    dangerouslySetInnerHTML={{ __html: sanitizedContent }}
                     onClick={() => this.handleEdit(true)} />
                 }
               </ModalBody>

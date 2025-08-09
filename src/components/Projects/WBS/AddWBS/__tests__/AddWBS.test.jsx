@@ -8,8 +8,8 @@ import thunk from 'redux-thunk'
 
 const mockStore = configureMockStore([thunk]);
 
-jest.mock('utils/permissions', () => ({
-  canPostWBS: jest.fn((a) => true),
+vi.mock('utils/permissions', () => ({
+  canPostWBS: vi.fn((a) => true),
 }));
 
 const renderAddWBS = (addWBSProps) => {
@@ -22,6 +22,7 @@ const renderAddWBS = (addWBSProps) => {
         },
       },
     },
+    theme: { darkMode: false },
     ...addWBSProps,
   };
 
@@ -50,7 +51,7 @@ describe("AddWBS component structure", () => {
     const sampleProps = {
       role: 'Owner',
     };
-    const hasPermission = jest.fn((a) => true)
+    const hasPermission = vi.fn((a) => true)
     sampleProps.hasPermission = hasPermission;
     renderAddWBS(sampleProps);
   });
@@ -65,7 +66,7 @@ describe("AddWBS component structure", () => {
   });
 
   test("button should not be in the document when the input field is empty", () => {
-    expect(screen.queryByRole('button')).toBeNull();
+    expect(screen.queryByTestId('add-wbs-button')).toBeNull();
   });
 
   test("user should be able to type in the input field", () => {
@@ -75,14 +76,14 @@ describe("AddWBS component structure", () => {
 
   test("button should appear when user types in the input field", () => {
     typeIntoInput({ input: '123' });
-    expect(screen.queryByRole('button')).not.toBeNull();
+    expect(screen.queryByTestId('add-wbs-button')).not.toBeNull();
   });
 });
 
 describe('AddWBS component state handlers', () => {
 
   // Mock the addNewWBS function
-  const mockAddNewWBS = jest.fn();
+  const mockAddNewWBS = vi.fn();
   const mockProjectId = '123';
 
 
@@ -92,7 +93,7 @@ describe('AddWBS component state handlers', () => {
       addWBS: mockAddNewWBS,
       projectId: mockProjectId,
     };
-    const hasPermission = jest.fn((a) => true)
+    const hasPermission = vi.fn((a) => true)
     sampleProps.hasPermission = hasPermission;
     renderAddWBS(sampleProps);
 

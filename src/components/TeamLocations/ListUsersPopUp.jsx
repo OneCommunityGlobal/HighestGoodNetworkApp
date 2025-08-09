@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalFooter, ModalBody } from 'reactstrap';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import '../Header/DarkMode.css';
 
 function ListUsersPopUp({ open, onClose, userProfiles, removeUser, setEdit }) {
@@ -58,7 +58,7 @@ function ListUsersPopUp({ open, onClose, userProfiles, removeUser, setEdit }) {
         toggle={onClose}
         cssModule={{ 'modal-title': 'w-100 text-center my-auto pl-2' }}
       >
-        Users&apos; Location List
+        Users`&apos;` Location List
       </ModalHeader>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <div style={{ maxHeight: '300px', overflow: 'auto', margin: '4px' }}>
@@ -72,12 +72,12 @@ function ListUsersPopUp({ open, onClose, userProfiles, removeUser, setEdit }) {
                 <tr className={darkMode ? 'bg-space-cadet' : ''}>
                   <th style={{ width: '70px' }}>#</th>
                   <th onClick={() => handleSort('name')} style={{ cursor: 'pointer' }}>
-                    Name{' '}
+                    Name&nbsp;
                     {sortConfig.key === 'name' &&
                       (sortConfig.direction === 'ascending' ? '▲' : '▼')}
                   </th>
                   <th onClick={() => handleSort('location')} style={{ cursor: 'pointer' }}>
-                    Location{' '}
+                    Location&nbsp;
                     {sortConfig.key === 'location' &&
                       (sortConfig.direction === 'ascending' ? '▲' : '▼')}
                   </th>
@@ -96,9 +96,11 @@ function ListUsersPopUp({ open, onClose, userProfiles, removeUser, setEdit }) {
                     <tr key={user._id}>
                       <td>{index + 1}</td>
                       <td>{userName}</td>
-                      <td>{`${user.location.city ? `${user.location.city}, ` : ''} ${
-                        user.location.country
-                      }`}</td>
+                      <td>
+                        {`${user.location.city ? `${user.location.city}, ` : ''} ${
+                          user.location.country
+                        }`}
+                      </td>
                       <td>
                         <div
                           style={{
