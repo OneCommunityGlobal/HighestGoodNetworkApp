@@ -7,6 +7,7 @@ import OneCommunityImage from './One-Community-Horizontal-Homepage-Header-980x14
 import 'leaflet/dist/leaflet.css';
 import { connect } from 'react-redux';
 
+/* eslint-disable */
 class Collaboration extends Component {
   constructor(props) {
     super(props);
@@ -42,9 +43,9 @@ class Collaboration extends Component {
     try {
       const response = await fetch(
         `${ApiEndpoint}/jobs?page=${currentPage}&limit=${adsPerPage}&search=${encodeURIComponent(
-          searchTerm
+          searchTerm,
         )}&category=${encodeURIComponent(selectedCategory)}`,
-        { method: 'GET' }
+        { method: 'GET' },
       );
 
       if (!response.ok) throw new Error(`Failed to fetch jobs: ${response.statusText}`);
@@ -72,28 +73,31 @@ class Collaboration extends Component {
     }
   };
 
-  handleSearch = (event) => this.setState({ searchTerm: event.target.value });
+  handleSearch = event => this.setState({ searchTerm: event.target.value });
 
-  handleSubmit = (event) => {
+  handleSubmit = event => {
     event.preventDefault();
     this.setState({ summaries: null, currentPage: 1 }, this.fetchJobAds);
   };
 
-  handleCategoryChange = (event) => {
+  handleCategoryChange = event => {
     const selectedValue = event.target.value;
     this.setState(
-      { selectedCategory: selectedValue === '' ? '' : selectedValue, currentPage: 1, summaries: null },
-      this.fetchJobAds
+      {
+        selectedCategory: selectedValue === '' ? '' : selectedValue,
+        currentPage: 1,
+        summaries: null,
+      },
+      this.fetchJobAds,
     );
   };
 
   handleResetFilters = async () => {
     try {
       const adsPerPage = this.calculateAdsPerPage();
-      const response = await fetch(
-        `${ApiEndpoint}/jobs/reset-filters?page=1&limit=${adsPerPage}`,
-        { method: 'GET' }
-      );
+      const response = await fetch(`${ApiEndpoint}/jobs/reset-filters?page=1&limit=${adsPerPage}`, {
+        method: 'GET',
+      });
 
       if (!response.ok) throw new Error(`Failed to reset filters: ${response.statusText}`);
 
@@ -114,7 +118,7 @@ class Collaboration extends Component {
     }
   };
 
-  setPage = (pageNumber) => {
+  setPage = pageNumber => {
     this.setState({ currentPage: pageNumber }, this.fetchJobAds);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -123,10 +127,10 @@ class Collaboration extends Component {
     const { searchTerm, selectedCategory, summariesPageSize } = this.state;
     try {
       const response = await fetch(
-        `${ApiEndpoint}/jobs/summaries?search=${encodeURIComponent(searchTerm)}&category=${encodeURIComponent(
-          selectedCategory
-        )}`,
-        { method: 'GET' }
+        `${ApiEndpoint}/jobs/summaries?search=${encodeURIComponent(
+          searchTerm,
+        )}&category=${encodeURIComponent(selectedCategory)}`,
+        { method: 'GET' },
       );
 
       if (!response.ok) throw new Error(`Failed to fetch summaries: ${response.statusText}`);
@@ -146,25 +150,31 @@ class Collaboration extends Component {
     }
   };
 
-  setSummariesPage = (page) => {
+  setSummariesPage = page => {
     this.setState(
-      (prev) => {
+      prev => {
         const next =
           page < 1 ? 1 : page > prev.summariesTotalPages ? prev.summariesTotalPages : page;
         return { summariesPage: next };
       },
-      () => window.scrollTo({ top: 0, behavior: 'smooth' })
+      () => window.scrollTo({ top: 0, behavior: 'smooth' }),
     );
   };
 
   calculateAdsPerPage = () => {
     const width = window.innerWidth;
     const columns =
-      width >= 1600 ? 6 :
-        width >= 1300 ? 5 :
-          width >= 1024 ? 4 :
-            width >= 768 ? 3 :
-              width >= 480 ? 2 : 1;
+      width >= 1600
+        ? 6
+        : width >= 1300
+        ? 5
+        : width >= 1024
+        ? 4
+        : width >= 768
+        ? 3
+        : width >= 480
+        ? 2
+        : 1;
     const rows = 5;
     return columns * rows;
   };
@@ -209,11 +219,17 @@ class Collaboration extends Component {
                     value={searchTerm}
                     onChange={this.handleSearch}
                   />
-                  <button className="search-button" type="submit">Go</button>
+                  <button className="search-button" type="submit">
+                    Go
+                  </button>
                   <button className="reset-button" type="button" onClick={this.handleResetFilters}>
                     Reset
                   </button>
-                  <button className="show-summaries" type="button" onClick={this.handleShowSummaries}>
+                  <button
+                    className="show-summaries"
+                    type="button"
+                    onClick={this.handleShowSummaries}
+                  >
                     Show Summaries
                   </button>
                 </form>
@@ -222,8 +238,10 @@ class Collaboration extends Component {
               <div className="navbar-right">
                 <select value={selectedCategory} onChange={this.handleCategoryChange}>
                   <option value="">Select from Categories</option>
-                  {categories.map((category) => (
-                    <option key={category} value={category}>{category}</option>
+                  {categories.map(category => (
+                    <option key={category} value={category}>
+                      {category}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -232,25 +250,29 @@ class Collaboration extends Component {
             <div className="summaries-list">
               <h1>Summaries</h1>
 
-              {summariesAll.length > 0 ? (() => {
-                const start = (summariesPage - 1) * summariesPageSize;
-                const end = start + summariesPageSize;
-                const pageItems = summariesAll.slice(start, end);
-                return pageItems.map((summary) => (
-                  <div
-                    key={summary._id || summary.jobDetailsLink || summary.title}
-                    className="summaries-item"
-                  >
-                    <h3>
-                      <a href={summary.jobDetailsLink} target="_blank" rel="noreferrer">
-                        {summary.title}
-                      </a>
-                    </h3>
-                    <p>{summary.description}</p>
-                    <p className='date'>Date Posted: {new Date(summary.datePosted).toLocaleDateString()}</p>
-                  </div>
-                ));
-              })() : (
+              {summariesAll.length > 0 ? (
+                (() => {
+                  const start = (summariesPage - 1) * summariesPageSize;
+                  const end = start + summariesPageSize;
+                  const pageItems = summariesAll.slice(start, end);
+                  return pageItems.map(summary => (
+                    <div
+                      key={summary._id || summary.jobDetailsLink || summary.title}
+                      className="summaries-item"
+                    >
+                      <h3>
+                        <a href={summary.jobDetailsLink} target="_blank" rel="noreferrer">
+                          {summary.title}
+                        </a>
+                      </h3>
+                      <p>{summary.description}</p>
+                      <p className="date">
+                        Date Posted: {new Date(summary.datePosted).toLocaleDateString()}
+                      </p>
+                    </div>
+                  ));
+                })()
+              ) : (
                 <p>No summaries found.</p>
               )}
 
@@ -297,7 +319,9 @@ class Collaboration extends Component {
                   value={searchTerm}
                   onChange={this.handleSearch}
                 />
-                <button className="search-button" type="submit">Go</button>
+                <button className="search-button" type="submit">
+                  Go
+                </button>
                 <button className="reset-button" type="button" onClick={this.handleResetFilters}>
                   Reset
                 </button>
@@ -310,8 +334,10 @@ class Collaboration extends Component {
             <div className="navbar-right">
               <select value={selectedCategory} onChange={this.handleCategoryChange}>
                 <option value="">Select from Categories</option>
-                {categories.map((category) => (
-                  <option key={category} value={category}>{category}</option>
+                {categories.map(category => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
                 ))}
               </select>
             </div>
@@ -324,7 +350,7 @@ class Collaboration extends Component {
 
           <div className="job-list">
             {jobAds.length > 0 ? (
-              jobAds.map((ad) => (
+              jobAds.map(ad => (
                 <div key={ad._id} className="job-ad">
                   <img src={ad.imageUrl} alt={`${ad.title}`} />
                   <a
@@ -332,7 +358,9 @@ class Collaboration extends Component {
                     target="_blank"
                     rel="noreferrer"
                   >
-                    <h3>{ad.title} - {ad.category}</h3>
+                    <h3>
+                      {ad.title} - {ad.category}
+                    </h3>
                   </a>
                 </div>
               ))
@@ -360,7 +388,7 @@ class Collaboration extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   darkMode: state.theme.darkMode,
 });
 
