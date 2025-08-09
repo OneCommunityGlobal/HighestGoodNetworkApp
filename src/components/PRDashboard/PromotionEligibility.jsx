@@ -99,13 +99,13 @@ function PromotionEligibility({ currentUser }) {
   };
 
   const renderRow = ({
-  id,
-  reviewerName,
-  weeklyRequirementsMet,
-  requiredPRs,
-  totalReviews,
-  remainingWeeks,
-  promoteEligible,
+    id,
+    reviewerName,
+    weeklyRequirementsMet,
+    requiredPRs,
+    totalReviews,
+    remainingWeeks,
+    promoteEligible,
   }) => (
     <tr key={id}>
       <td data-label="Reviewer Name">{reviewerName}</td>
@@ -139,7 +139,6 @@ function PromotionEligibility({ currentUser }) {
       </td>
     </tr>
   );
-
 
   return (
     <div className={`page-wrapper ${darkMode ? 'dark' : ''}`}>
