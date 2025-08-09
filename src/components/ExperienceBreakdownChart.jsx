@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import DatePicker from 'react-datepicker';
@@ -15,6 +15,58 @@ const ExperienceBreakdownChart = () => {
   const [endDate, setEndDate] = useState(null);
   const [loading, setLoading] = useState(false);
   const [noData, setNoData] = useState(false);
+
+  // measure chart container width so labels can adapt
+  const containerRef = useRef(null);
+  const [containerWidth, setContainerWidth] = useState(0);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const ro = new ResizeObserver(entries => {
+      const w = entries[0]?.contentRect?.width || 0;
+      setContainerWidth(w);
+    });
+    ro.observe(containerRef.current);
+    return () => ro.disconnect();
+  }, []);
+
+  const isNarrow = containerWidth && containerWidth < 520; // tweak threshold as needed
+
+  // dynamic font size based on container width (and a small nudge for tiny slices)
+  const fontSizeFor = percent => {
+    if (containerWidth < 320) return percent < 0.12 ? 9 : 10;
+    if (containerWidth < 400) return percent < 0.12 ? 10 : 11;
+    if (containerWidth < 520) return percent < 0.12 ? 11 : 12;
+    return 13;
+  };
+
+  // inside-slice label renderer for narrow screens
+  const renderInsideLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, payload }) => {
+    const radius = innerRadius + (outerRadius - innerRadius) / 2;
+    const rad = (-midAngle * Math.PI) / 180;
+    const x = cx + radius * Math.cos(rad);
+    const y = cy + radius * Math.sin(rad);
+
+    const txt = `${payload.experience} (${payload.count})`;
+
+    return (
+      <text
+        x={x}
+        y={y}
+        fill="#fff"
+        textAnchor="middle"
+        dominantBaseline="central"
+        fontSize={fontSizeFor(percent)}
+        style={{ pointerEvents: 'none' }}
+      >
+        {txt}
+      </text>
+    );
+  };
+
+  // outside label (used on wide screens)
+  const renderOutsideLabel = ({ experience, count, percentage }) =>
+    `${experience} - ${count} (${percentage}%)`;
 
   const fetchData = async () => {
     setLoading(true);
@@ -57,8 +109,8 @@ const ExperienceBreakdownChart = () => {
   }, []);
 
   return (
-    <div style={{ padding: '20px' }}>
-      {/* Filter Navbar */}
+    <div ref={containerRef} style={{ padding: 20 }}>
+      {/* Filters */}
       <div
         style={{
           background: '#fff',
@@ -67,9 +119,9 @@ const ExperienceBreakdownChart = () => {
           boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
           display: 'flex',
           flexWrap: 'wrap',
-          gap: '20px',
+          gap: 20,
           alignItems: 'flex-end',
-          marginBottom: '30px',
+          marginBottom: 30,
         }}
       >
         <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -144,7 +196,7 @@ const ExperienceBreakdownChart = () => {
       )}
 
       {!loading && !noData && data.length > 0 && (
-        <ResponsiveContainer width="100%" height={300}>
+        <ResponsiveContainer width="100%" height={320}>
           <PieChart>
             <Pie
               data={data}
@@ -152,18 +204,18 @@ const ExperienceBreakdownChart = () => {
               nameKey="experience"
               cx="50%"
               cy="50%"
-              outerRadius={100}
-              label={({ experience, count, percentage }) =>
-                `${experience} - ${count} (${percentage}%)`
-              }
+              innerRadius={isNarrow ? 40 : 0} // give a bit of inner radius to help text sit nicely
+              outerRadius={Math.max(90, Math.min(130, Math.floor(containerWidth / 3)))}
+              labelLine={!isNarrow}
+              label={isNarrow ? renderInsideLabel : renderOutsideLabel}
             >
               {data.map((entry, index) => (
                 <Cell key={entry.experience} fill={COLORS[index % COLORS.length]} />
               ))}
             </Pie>
             <Tooltip
-              formatter={(value, name) => [`${value}`, 'Applicants']}
-              labelFormatter={() => `Experience`}
+              formatter={value => [`${value}`, 'Applicants']}
+              labelFormatter={() => 'Experience'}
             />
           </PieChart>
         </ResponsiveContainer>
