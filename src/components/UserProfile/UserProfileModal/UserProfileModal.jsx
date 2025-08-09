@@ -58,6 +58,17 @@ const UserProfileModal = props => {
     return today.toLocaleDateString('en-CA').split('T')[0];
   };
 
+  function convertDateFormat(dateStr) { // converts from YYYY-MM-DD to MM-DD-YY
+    if (!dateStr) return '';
+    const [year, month, day] = dateStr.split("-");
+    const shortYear = year.slice(-2);
+    return `${month}/${day}/${shortYear}`;
+  }
+
+  function getLastInitial(lastName) { // Returns last initial unless las name is "System"
+    return lastName != "System" ? lastName.charAt(0).toUpperCase() : lastName;
+  }
+
   // Fallback to a meaningful default if no data found
   if (blueSquare.length === 0) {
     blueSquare = [
@@ -352,7 +363,7 @@ const UserProfileModal = props => {
               <Input
                 id="asignment"
                 readOnly
-                value={`Assigned by ${firstName} ${lastName} on ${dateStamp}`}
+                value={`Assigned by ${firstName} ${getLastInitial(lastName)} ${convertDateFormat(dateStamp)}:`}
               />
               <Input
                 type="textarea"
@@ -376,15 +387,15 @@ const UserProfileModal = props => {
             <FormGroup>
               <Label className={fontColor} for="createdDate">
                 Created Date:
-                <span>{blueSquare[0]?.createdDate}</span>
               </Label>
+                <span> {convertDateFormat(blueSquare[0]?.createdDate)}</span>
             </FormGroup>
             <FormGroup>
               <Label className={fontColor} for="report">Summary</Label>
               <Input
                 id="asignment"
                 readOnly
-                value={`Assigned by ${firstName} ${lastName} on ${dateStamp}`}
+                value={`Assigned by ${firstName} ${getLastInitial(lastName)} ${convertDateFormat(dateStamp)}:`}
               />
               {canEditInfringements ? <Input
                 type="textarea"
@@ -410,15 +421,15 @@ const UserProfileModal = props => {
             <FormGroup>
               <Label className={fontColor} for="createdDate">
                 Created Date:
-                <span>{blueSquare[0]?.createdDate}</span>
               </Label>
+                <span>{convertDateFormat(blueSquare[0]?.createdDate)}</span>
             </FormGroup>
             <FormGroup>
               <Label className={fontColor} for="description">Summary</Label>
               <Input
                 id="asignment"
                 readOnly
-                value={`Assigned by ${firstName} ${lastName} on ${dateStamp}`}
+                value={`Assigned by ${firstName} ${getLastInitial(lastName)} ${convertDateFormat(dateStamp)}:`}
               />
               <p className={fontColor}>{blueSquare[0]?.description}</p>
             </FormGroup>
