@@ -9,7 +9,7 @@ function InfoForm() {
   const formData = useSelector(state => state.hgnForm);
   const dispatch = useDispatch();
   const user = useSelector(state => state.auth.user);
-  const isOwner = user.role === 'Owner';
+  const isOwner = user.role === 'Owner' || 'Administrator' || 'Manager' || 'Volunteer';
   const { userProfilesBasicInfo } = useSelector(state => state.allUserProfilesBasicInfo);
   const userProfile = userProfilesBasicInfo.find(profile => profile._id === user.userid);
   const [newVolunteer, setNewVolunteer] = useState({
@@ -41,19 +41,20 @@ function InfoForm() {
   }, [newVolunteer.name, newVolunteer.slack]);
 
   useEffect(() => {
-    if (user && userProfile && formData) {
+    if (user && formData) {
       setNewVolunteer(prevState => ({
         ...formData,
-        ...prevState, // This preserves any user input
-        name: `${userProfile?.firstName} ${userProfile?.lastName}`,
+        ...prevState,
+        name: userProfile
+          ? `${userProfile.firstName || ''} ${userProfile.lastName || ''}`.trim()
+          : prevState.name,
         email: user.email,
-        github: prevState.github || formData.github || '', // Preserve GitHub value
-        slack: prevState.slack || formData.slack || '', // Preserve
+        github: prevState.github || formData.github || '',
+        slack: prevState.slack || formData.slack || '',
       }));
       setLoading(false);
     }
   }, [userProfile, user, formData]);
-
   const handleSlackChange = e => {
     const { checked } = e.target;
     setNewVolunteer({
