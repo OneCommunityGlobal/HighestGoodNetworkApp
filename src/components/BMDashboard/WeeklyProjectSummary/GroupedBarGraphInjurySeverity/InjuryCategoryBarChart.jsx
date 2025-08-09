@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import {
   BarChart,
   Bar,
@@ -18,130 +18,194 @@ import {
   fetchInjuryData,
   fetchSeverities,
   fetchInjuryTypes,
+  fetchInjuryProjects,
 } from '../../../../actions/bmdashboard/injuryActions';
-import { fetchBMProjects } from '../../../../actions/bmdashboard/projectActions';
+
+// YYYY-MM-DD (no tz shift)
+const toYMD = d =>
+  d instanceof Date && !isNaN(d)
+    ? `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(
+        d.getDate(),
+      ).padStart(2, '0')}`
+    : '';
 
 function InjuryCategoryBarChart() {
   const dispatch = useDispatch();
 
-  // Redux selectors
-  const { data = [], loading, error } = useSelector(state => state.bmInjury || {});
-  const severities = useSelector(state => state.bmInjury?.severities || []);
-  const injuryTypes = useSelector(state => state.bmInjury?.injuryTypes || []);
-  const bmProjects = useSelector(state => state.bmProjects);
+  const {
+    data: rawData = [],
+    loading,
+    error,
+    projects: injuryProjects = [],
+    severities = [],
+    injuryTypes = [],
+  } = useSelector(state => state.bmInjury || {});
   const darkMode = useSelector(state => state.theme?.darkMode);
-  // Filter states
-  const [projectFilter, setProjectFilter] = useState([]);
+
+  const [projectNameFilter, setProjectNameFilter] = useState([]);
   const [severityFilter, setSeverityFilter] = useState([]);
   const [injuryTypeFilter, setInjuryTypeFilter] = useState([]);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
 
-  // Initial data fetch
   useEffect(() => {
-    dispatch(fetchBMProjects());
     dispatch(fetchSeverities());
     dispatch(fetchInjuryTypes());
   }, [dispatch]);
 
-  // Dropdown options
-  const projectOptions = Array.isArray(bmProjects)
-    ? bmProjects.map(p => ({ value: p._id, label: p.name }))
-    : [];
-
-  const severityOptions = Array.isArray(severities)
-    ? severities.map(s => ({ value: s, label: s }))
-    : [];
-
-  const typeOptions = Array.isArray(injuryTypes)
-    ? injuryTypes.map(t => ({ value: t, label: t }))
-    : [];
-  // Fetch chart data when filters are changed
   useEffect(() => {
-    if (!bmProjects.length || !severities.length || !injuryTypes.length) return;
-    const filters = {
-      projectIds: projectFilter.map(p => p.value).join(','),
-      startDate: startDate ? startDate.toISOString() : '',
-      endDate: endDate ? endDate.toISOString() : '',
+    const params = {
+      startDate: toYMD(startDate),
+      endDate: toYMD(endDate),
       severities: severityFilter.map(s => s.value).join(','),
       types: injuryTypeFilter.map(t => t.value).join(','),
     };
-    dispatch(fetchInjuryData(filters));
-  }, [
-    projectFilter,
-    severityFilter,
-    injuryTypeFilter,
-    startDate,
-    endDate,
-    dispatch,
-    bmProjects,
-    severities,
-    injuryTypes,
-  ]);
-  // Restructure data for grouped bar chart
-  const chartData = Object.values(
-    data.reduce((acc, curr) => {
-      const key = curr.workerCategory;
-      acc[key] = acc[key] || { workerCategory: key };
-      acc[key][curr.projectName] = curr.totalInjuries;
-      return acc;
-    }, {}),
-  );
+    dispatch(fetchInjuryProjects(params));
+  }, [dispatch, startDate, endDate, severityFilter, injuryTypeFilter]);
 
-  const uniqueProjects = [...new Set(data.map(d => d.projectName))];
+  const data = Array.isArray(rawData) ? rawData : [];
+  const projects = Array.isArray(injuryProjects) ? injuryProjects : [];
+  const sevList = Array.isArray(severities) ? severities : [];
+  const typeList = Array.isArray(injuryTypes) ? injuryTypes : [];
+
+  const projectNameOptions = useMemo(() => {
+    const seen = new Set();
+    const opts = [];
+    for (const p of projects) {
+      const name = p?.name ?? '';
+      if (!name || seen.has(name)) continue;
+      seen.add(name);
+      opts.push({ value: name, label: name });
+    }
+    return opts.sort((a, b) => a.label.localeCompare(b.label));
+  }, [projects]);
+
+  useEffect(() => {
+    if (!projectNameFilter.length) return;
+    const valid = new Set(projectNameOptions.map(o => o.value));
+    const filtered = projectNameFilter.filter(p => valid.has(p.value));
+    if (filtered.length !== projectNameFilter.length) setProjectNameFilter(filtered);
+  }, [projectNameOptions, projectNameFilter]);
+
+  const severityOptions = useMemo(() => sevList.map(s => ({ value: s, label: s })), [sevList]);
+  const typeOptions = useMemo(() => typeList.map(t => ({ value: t, label: t })), [typeList]);
+
+  useEffect(() => {
+    const params = {
+      projectNames: projectNameFilter.length ? projectNameFilter.map(p => p.value).join(',') : '',
+      startDate: toYMD(startDate),
+      endDate: toYMD(endDate),
+      severities: severityFilter.map(s => s.value).join(','),
+      types: injuryTypeFilter.map(t => t.value).join(','),
+    };
+    dispatch(fetchInjuryData(params));
+  }, [dispatch, projectNameFilter, severityFilter, injuryTypeFilter, startDate, endDate]);
+
+  const projectNameById = useMemo(() => {
+    const m = new Map();
+    for (const p of projects) m.set(String(p._id), p.name);
+    for (const r of data) {
+      const pid = String(r?.projectId ?? 'unknown');
+      if (!m.has(pid) && r?.projectName) m.set(pid, r.projectName);
+    }
+    return m;
+  }, [projects, data]);
+
+  const chartData = useMemo(() => {
+    const acc = Object.create(null);
+    for (const r of data) {
+      const workerCategory = r?.workerCategory ?? 'Unknown';
+      const pid = String(r?.projectId ?? 'unknown');
+      const total = Number(r?.totalInjuries) || 0;
+      if (!acc[workerCategory]) acc[workerCategory] = { workerCategory };
+      acc[workerCategory][pid] = (acc[workerCategory][pid] || 0) + total;
+    }
+    return Object.values(acc);
+  }, [data]);
+
+  const seriesProjectIds = useMemo(() => {
+    const set = new Set(data.map(d => String(d?.projectId ?? 'unknown')));
+    return Array.from(set);
+  }, [data]);
+
+  const showLabels = seriesProjectIds.length <= 4;
 
   return (
     <div className={`injury-chart-container ${darkMode ? 'darkMode' : ''}`}>
-      <h3 className="injury-chart-title">Injury Severity by Category of Worker Injured</h3>
+      <div className="injury-chart-header">
+        <h3 className="injury-chart-title">Injury Severity by Category of Worker Injured</h3>
 
-      <div className="injury-chart-filters">
-        <Select
-          classNamePrefix="injury-select"
-          isMulti
-          options={projectOptions}
-          value={projectFilter}
-          onChange={setProjectFilter}
-          placeholder="Select Project(s)"
-        />
-        <Select
-          classNamePrefix="injury-select"
-          isMulti
-          options={severityOptions}
-          value={severityFilter}
-          onChange={setSeverityFilter}
-          placeholder="Select Severity"
-        />
-        <Select
-          classNamePrefix="injury-select"
-          isMulti
-          options={typeOptions}
-          value={injuryTypeFilter}
-          onChange={setInjuryTypeFilter}
-          placeholder="Select Injury Type"
-        />
-        <DatePicker
-          selected={startDate}
-          onChange={setStartDate}
-          selectsStart
-          startDate={startDate}
-          endDate={endDate}
-          placeholderText="Start Date"
-        />
-        <DatePicker
-          selected={endDate}
-          onChange={setEndDate}
-          selectsEnd
-          startDate={startDate}
-          endDate={endDate}
-          placeholderText="End Date"
-        />
+        <div className="injury-chart-filters">
+          <div className="filter">
+            <label>Projects</label>
+            <Select
+              classNamePrefix="injury-select"
+              isMulti
+              options={projectNameOptions}
+              value={projectNameFilter}
+              onChange={setProjectNameFilter}
+              placeholder="All names"
+            />
+          </div>
+
+          <div className="filter">
+            <label>Severities</label>
+            <Select
+              classNamePrefix="injury-select"
+              isMulti
+              options={severityOptions}
+              value={severityFilter}
+              onChange={setSeverityFilter}
+              placeholder="All severities"
+            />
+          </div>
+
+          <div className="filter">
+            <label>Injury types</label>
+            <Select
+              classNamePrefix="injury-select"
+              isMulti
+              options={typeOptions}
+              value={injuryTypeFilter}
+              onChange={setInjuryTypeFilter}
+              placeholder="All types"
+            />
+          </div>
+
+          <div className="filter">
+            <label>Start date</label>
+            <DatePicker
+              selected={startDate}
+              onChange={setStartDate}
+              selectsStart
+              startDate={startDate}
+              endDate={endDate}
+              maxDate={endDate || undefined}
+              placeholderText="Start date"
+            />
+          </div>
+
+          <div className="filter">
+            <label>End date</label>
+            <DatePicker
+              selected={endDate}
+              onChange={setEndDate}
+              selectsEnd
+              startDate={startDate}
+              endDate={endDate}
+              minDate={startDate || undefined}
+              placeholderText="End date"
+            />
+          </div>
+        </div>
       </div>
 
-      {loading && <p>Loading...</p>}
-      {!loading && error && <p>Error: {error}</p>}
+      {loading && <p>Loading…</p>}
+      {!loading && error && <p className="error">Error: {String(error)}</p>}
+
       {!loading && !error && (
-        <ResponsiveContainer width="100%" height={400}>
-          <BarChart data={chartData}>
+        <ResponsiveContainer width="100%" height={420}>
+          <BarChart data={chartData} margin={{ top: 16, right: 24, bottom: 8, left: 8 }}>
             <XAxis
               dataKey="workerCategory"
               interval={0}
@@ -150,16 +214,34 @@ function InjuryCategoryBarChart() {
               height={80}
               tick={{ fill: darkMode ? '#fff' : '#000' }}
             />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            {uniqueProjects.map((project, index) => (
-              <Bar key={project} dataKey={project} fill={index % 2 === 0 ? '#17c9d3' : '#000'}>
-                <LabelList dataKey={project} position="top" />
+            <YAxis allowDecimals={false} />
+            <Tooltip
+              formatter={(value, name) => [
+                value,
+                projectNameById.get(String(name)) || 'Unknown Project',
+              ]}
+            />
+            <Legend
+              wrapperStyle={{ maxHeight: 72, overflowY: 'auto' }}
+              payload={seriesProjectIds.map(pid => ({
+                id: pid,
+                type: 'square',
+                value: projectNameById.get(pid) || 'Unknown Project',
+              }))}
+            />
+            {seriesProjectIds.map((pid, index) => (
+              <Bar key={pid} dataKey={pid} fill={index % 2 === 0 ? '#17c9d3' : '#000'}>
+                {showLabels && (
+                  <LabelList dataKey={pid} position="top" formatter={v => (v > 0 ? v : '')} />
+                )}
               </Bar>
             ))}
           </BarChart>
         </ResponsiveContainer>
+      )}
+
+      {!loading && !error && chartData.length === 0 && (
+        <div className="empty">No data for selected filters.</div>
       )}
     </div>
   );
