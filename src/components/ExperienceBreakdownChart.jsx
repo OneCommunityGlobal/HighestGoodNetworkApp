@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import DatePicker from 'react-datepicker';
@@ -15,8 +16,8 @@ const ExperienceBreakdownChart = () => {
   const [endDate, setEndDate] = useState(null);
   const [loading, setLoading] = useState(false);
   const [noData, setNoData] = useState(false);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
-  // measure chart container width so labels can adapt
   const containerRef = useRef(null);
   const [containerWidth, setContainerWidth] = useState(0);
 
@@ -30,9 +31,8 @@ const ExperienceBreakdownChart = () => {
     return () => ro.disconnect();
   }, []);
 
-  const isNarrow = containerWidth && containerWidth < 520; // tweak threshold as needed
+  const isNarrow = containerWidth && containerWidth < 520;
 
-  // dynamic font size based on container width (and a small nudge for tiny slices)
   const fontSizeFor = percent => {
     if (containerWidth < 320) return percent < 0.12 ? 9 : 10;
     if (containerWidth < 400) return percent < 0.12 ? 10 : 11;
@@ -40,20 +40,17 @@ const ExperienceBreakdownChart = () => {
     return 13;
   };
 
-  // inside-slice label renderer for narrow screens
   const renderInsideLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, payload }) => {
     const radius = innerRadius + (outerRadius - innerRadius) / 2;
     const rad = (-midAngle * Math.PI) / 180;
     const x = cx + radius * Math.cos(rad);
     const y = cy + radius * Math.sin(rad);
-
     const txt = `${payload.experience} (${payload.count})`;
-
     return (
       <text
         x={x}
         y={y}
-        fill="#fff"
+        fill={darkMode ? '#fff' : '#000'}
         textAnchor="middle"
         dominantBaseline="central"
         fontSize={fontSizeFor(percent)}
@@ -64,20 +61,17 @@ const ExperienceBreakdownChart = () => {
     );
   };
 
-  // outside label (used on wide screens)
   const renderOutsideLabel = ({ experience, count, percentage }) =>
     `${experience} - ${count} (${percentage}%)`;
 
   const fetchData = async () => {
     setLoading(true);
     setNoData(false);
-
     try {
       const params = {};
       if (startDate) params.startDate = startDate.toISOString().split('T')[0];
       if (endDate) params.endDate = endDate.toISOString().split('T')[0];
       if (selectedRoles.length > 0) params.roles = selectedRoles.map(r => r.value).join(',');
-
       const res = await axios.get('/api/applicants/experience-breakdown', { params });
       setData(res.data);
       if (res.data.length === 0) setNoData(true);
@@ -109,50 +103,128 @@ const ExperienceBreakdownChart = () => {
   }, []);
 
   return (
-    <div ref={containerRef} style={{ padding: 20 }}>
+    <div
+      ref={containerRef}
+      className={`${darkMode ? 'bg-oxford-blue text-light' : ''}`}
+      style={{
+        padding: '20px',
+        width: '100%',
+        minHeight: '100vh', // full screen height
+      }}
+    >
       {/* Filters */}
       <div
+        className={`mb-6 rounded-lg shadow ${
+          darkMode ? 'bg-space-cadet text-light' : 'bg-white'
+        }`}
         style={{
-          background: '#fff',
           padding: '15px 20px',
-          borderRadius: 8,
-          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
           display: 'flex',
           flexWrap: 'wrap',
-          gap: 20,
+          gap: 30,
           alignItems: 'flex-end',
-          marginBottom: 30,
         }}
       >
         <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <label htmlFor="startDate" style={{ fontSize: 14, fontWeight: 600, marginBottom: 5 }}>
+          <label
+            htmlFor='startDate'
+            style={{
+              fontSize: 14,
+              fontWeight: 600,
+              marginBottom: 5,
+              color: darkMode ? '#fff' : '#000',
+            }}
+          >
             Start Date
           </label>
           <DatePicker
             selected={startDate}
             onChange={setStartDate}
             placeholderText="Select start date"
+            className={darkMode ? 'bg-space-cadet text-light dark-mode-placeholder' : ''}
           />
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <label htmlFor="endDate" style={{ fontSize: 14, fontWeight: 600, marginBottom: 5 }}>
+          <label
+            htmlFor='endDate'
+            style={{
+              fontSize: 14,
+              fontWeight: 600,
+              marginBottom: 5,
+              color: darkMode ? '#fff' : '#000',
+            }}
+          >
             End Date
           </label>
-          <DatePicker selected={endDate} onChange={setEndDate} placeholderText="Select end date" />
+          <DatePicker
+            selected={endDate}
+            onChange={setEndDate}
+            placeholderText="Select end date"
+            className={darkMode ? 'bg-space-cadet text-light dark-mode-placeholder' : ''}
+          />
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', minWidth: 250 }}>
-          <label htmlFor="roles" style={{ fontSize: 14, fontWeight: 600, marginBottom: 5 }}>
+          <label
+            htmlFor='roles'
+            style={{
+              fontSize: 14,
+              fontWeight: 600,
+              marginBottom: 5,
+              color: darkMode ? '#fff' : '#000',
+            }}
+          >
             Roles
           </label>
           <Select
-            isMulti
-            options={roles}
-            value={selectedRoles}
-            onChange={setSelectedRoles}
-            placeholder="Select roles"
-          />
+  isMulti
+  options={roles}
+  value={selectedRoles}
+  onChange={setSelectedRoles}
+  placeholder="Select roles"
+  classNamePrefix={darkMode ? 'react-select-dark' : 'react-select'}
+  styles={{
+    control: (base) => ({
+      ...base,
+      backgroundColor: darkMode ? '#1b1f3b' : '#fff',
+      color: darkMode ? '#fff' : '#000',
+    }),
+    menu: (base) => ({
+      ...base,
+      backgroundColor: darkMode ? '#1b1f3b' : '#fff',
+      color: darkMode ? '#fff' : '#000',
+    }),
+    option: (base, { isFocused, isSelected }) => ({
+      ...base,
+      backgroundColor: isSelected
+        ? darkMode
+          ? '#4a4f74'  // A noticeable light blue in dark mode
+          : '#d1d1d1'  // Grey in light mode for selected
+        : isFocused
+        ? darkMode
+          ? '#2c2f4a'
+          : '#eee'
+        : 'transparent',
+      color: isSelected
+        ? darkMode
+          ? '#fff'  // White text on selected in dark mode
+          : '#000'  // Black text on selected in light mode
+        : darkMode
+        ? '#fff'  // Default text color in dark mode
+        : '#000', // Default text color in light mode
+    }),
+    singleValue: (base) => ({
+      ...base,
+      color: darkMode ? '#fff' : '#000',
+    }),
+    multiValueLabel: (base) => ({
+      ...base,
+      color: darkMode ? 'red' : '#000',
+    }),
+  }}
+/>
+
         </div>
 
         <button
@@ -173,13 +245,13 @@ const ExperienceBreakdownChart = () => {
       </div>
 
       {/* Chart or Message */}
-      {loading && <p style={{ textAlign: 'center', color: '#555' }}>Loading...</p>}
+      {loading && <p style={{ textAlign: 'center' }}>Loading...</p>}
 
       {noData && !loading && (
-        <div style={{ textAlign: 'center', marginTop: 40, color: '#777' }}>
+        <div style={{ textAlign: 'center', marginTop: 40, color: darkMode ? '#ccc' : '#777' }}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            style={{ width: 60, height: 60, marginBottom: 10, color: '#ccc' }}
+            style={{ width: 60, height: 60, marginBottom: 10 }}
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -204,7 +276,7 @@ const ExperienceBreakdownChart = () => {
               nameKey="experience"
               cx="50%"
               cy="50%"
-              innerRadius={isNarrow ? 40 : 0} // give a bit of inner radius to help text sit nicely
+              innerRadius={isNarrow ? 40 : 0}
               outerRadius={Math.max(90, Math.min(130, Math.floor(containerWidth / 3)))}
               labelLine={!isNarrow}
               label={isNarrow ? renderInsideLabel : renderOutsideLabel}
@@ -216,6 +288,10 @@ const ExperienceBreakdownChart = () => {
             <Tooltip
               formatter={value => [`${value}`, 'Applicants']}
               labelFormatter={() => 'Experience'}
+              contentStyle={{
+                backgroundColor: darkMode ? '#1b1f3b' : '#fff',
+                color: darkMode ? '#fff' : '#000',
+              }}
             />
           </PieChart>
         </ResponsiveContainer>
