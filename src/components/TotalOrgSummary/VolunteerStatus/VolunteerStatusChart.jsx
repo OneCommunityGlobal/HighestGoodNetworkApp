@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import Loading from 'components/common/Loading';
+import Loading from '~/components/common/Loading';
 import VolunteerStatusPieChart from './VolunteerStatusPieChart';
 
 function VolunteerStatusChart({ isLoading, volunteerNumberStats, comparisonType }) {

@@ -6,7 +6,13 @@ import SelectItem from '../ItemList/SelectItem';
 import ToolItemsTable from './ToolItemsTable';
 import styles from './ToolItemListView.module.css';
 
-export function ToolItemListView({ itemType, items, errors, UpdateItemModal, dynamicColumns }) {
+export function ToolItemListView({
+  itemType,
+  items,
+  errors = {},
+  UpdateItemModal,
+  dynamicColumns,
+}) {
   const [filteredItems, setFilteredItems] = useState(items);
   const [selectedProject, setSelectedProject] = useState('all');
   const [selectedItem, setSelectedItem] = useState('all');
@@ -93,10 +99,6 @@ ToolItemListView.propTypes = {
   errors: PropTypes.shape({
     message: PropTypes.string,
   }),
-};
-
-ToolItemListView.defaultProps = {
-  errors: {},
 };
 
 ToolItemListView.defaultProps = {
