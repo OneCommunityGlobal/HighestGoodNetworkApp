@@ -3,6 +3,10 @@
   overflow: hidden;
 }
 
+.team-member-task-review-button {
+  margin-top: 15px;
+}
+
 .team-member-tasks h1 {
   color: black;
   font-size: 20px;
@@ -52,6 +56,13 @@
   padding: 0.25rem;
 }
 
+.icon-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
 .team-member-tasks .team-member-tasks-headers {
   justify-content: center;
   margin-left: -10px;
@@ -60,7 +71,7 @@
 }
 
 .team-member-tasks .team-member-tasks-subtable {
-  margin: 0 0 0 15px;
+  margin: 0 0 0 0;
   text-align: left;
   vertical-align: middle;
   justify-content: center; 

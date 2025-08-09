@@ -19,8 +19,8 @@ import ModalDelete from './../../../../../components/common/Modal';
 import * as Message from './../../../../../languages/en/messages';
 import { getPopupById } from './../../../../../actions/popupEditorAction';
 import { TASK_DELETE_POPUP_ID } from './../../../../../constants/popupId';
-import hasPermission from 'utils/permissions';
-import { boxStyle, boxStyleDark } from 'styles';
+import hasPermission from '~/utils/permissions';
+import { boxStyle, boxStyleDark } from '~/styles';
 
 function ControllerRow(props) {
   /*

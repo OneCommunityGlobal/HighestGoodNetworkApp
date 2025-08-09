@@ -1,12 +1,11 @@
 import { useRef, useEffect, useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
-import { ENDPOINTS } from 'utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import { Line } from 'react-chartjs-2';
 import DatePicker from 'react-datepicker';
 import './RentalChart.css';
 import { toast } from 'react-toastify';
-
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -402,7 +401,7 @@ export default function RentalChart() {
               id="chart-type"
               value={chartType}
               onChange={handleTypeChange}
-              className={darkMode ? 'dark-select' : ''}
+              className={darkMode ? 'rental-chart-select dark-select' : 'rental-chart-select'}
             >
               <option value="cost">Total Rental Cost</option>
               <option value="percentage">% of Materials Cost</option>
@@ -417,7 +416,7 @@ export default function RentalChart() {
               id="project-filter"
               value={selectedProject}
               onChange={handleProjectChange}
-              className={darkMode ? 'dark-select' : ''}
+              className={darkMode ? 'rental-chart-select dark-select' : 'rental-chart-select'}
             >
               <option value="All">All Projects</option>
               {availableProjects.map(projectId => (
@@ -437,7 +436,7 @@ export default function RentalChart() {
               value={selectedTool}
               onChange={handleToolChange}
               disabled={groupBy === 'project' && selectedProject !== 'All'}
-              className={darkMode ? 'dark-select' : ''}
+              className={darkMode ? 'rental-chart-select dark-select' : 'rental-chart-select'}
             >
               <option value="All">All Tools</option>
               {availableTools.map(tool => (
