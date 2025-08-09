@@ -97,16 +97,12 @@ import ToolDetailPage from './components/BMDashboard/Tools/ToolDetailPage';
 import CheckTypes from './components/BMDashboard/shared/CheckTypes';
 import Toolslist from './components/BMDashboard/Tools/ToolsList';
 import AddTool from './components/BMDashboard/Tools/AddTool';
-<<<<<<< HEAD:src/routes.js
 import AttendanceNoShow from './components/AttendanceSystem/AttendanceNoShowCharts';
 
 //job analytics
 import HoursPledgedChart from './components/JobAnalytics/HoursPledgedChart/HoursPledgedChart'
 
 
-=======
-import AttendanceNoShow from './components/AttendanceSystem/AttendanceNoShowCharts.jsx';
->>>>>>> origin/development:src/routes.jsx
 import AddTeamMember from './components/BMDashboard/AddTeamMember/AddTeamMember';
 import LessonsLearntChart from './components/BMDashboard/LessonsLearnt/LessonsLearntChart';
 
@@ -647,12 +643,6 @@ export default (
         {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
         <CPProtectedRoute path="/communityportal/reports/participation" component={NoshowViz} />
 
-<<<<<<< HEAD:src/routes.js
-        <CPProtectedRoute path="/communityportal/activities/:activityid/resources" exact component={Resources} />
-        <CPProtectedRoute path="/communityportal/activities/:activityid" exact component={Activity} />
-        <CPProtectedRoute path="/communityportal/reports/participation" exact component={EventParticipation} />
-        <CPProtectedRoute path="/communityportal/reports/event/personalization" exact component={EventStats} />
-=======
         <CPProtectedRoute
           path="/communityportal/activities/:activityid/resources"
           exact
@@ -673,7 +663,6 @@ export default (
           exact
           component={EventStats}
         />
->>>>>>> origin/development:src/routes.jsx
         <CPProtectedRoute path="/communityportal/ActivitiesPage" exact component={ActivitiesPage} />
         <CPProtectedRoute
           path="/communityportal/Activities/Register/:activityId"
