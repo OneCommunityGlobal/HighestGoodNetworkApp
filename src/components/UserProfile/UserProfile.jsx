@@ -23,13 +23,13 @@ import classnames from 'classnames';
 import moment from 'moment';
 import Alert from 'reactstrap/lib/Alert';
 import axios from 'axios';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import hasPermission, {
   cantDeactivateOwner,
   cantUpdateDevAdminDetails,
 } from '../../utils/permissions';
 import ActiveCell from '../UserManagement/ActiveCell';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import SkeletonLoading from '../common/SkeletonLoading';
 import UserProfileModal from './UserProfileModal';
 import './UserProfile.scss';
@@ -56,7 +56,7 @@ import { UserStatus } from '../../utils/enums';
 import BlueSquareLayout from './BlueSquareLayout';
 import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
 import { connect, useDispatch, useSelector } from 'react-redux';
-import { formatDateLocal } from 'utils/formatDate';
+import { formatDateLocal } from '~/utils/formatDate';
 import EditableInfoModal from './EditableModal/EditableInfoModal';
 import { fetchAllProjects } from '../../actions/projects';
 import { getAllUserTeams } from '../../actions/allTeamsAction';
@@ -68,7 +68,7 @@ import {
   DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
   DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
   PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
-} from 'utils/constants';
+} from '~/utils/constants';
 
 import {
   getTimeEndDateEntriesByPeriod,
@@ -76,7 +76,7 @@ import {
   getTimeEntriesForWeek,
 } from '../../actions/timeEntries.js';
 import ConfirmRemoveModal from './UserProfileModal/confirmRemoveModal';
-import { formatDateYYYYMMDD, CREATED_DATE_CRITERIA } from 'utils/formatDate.js';
+import { formatDateYYYYMMDD, CREATED_DATE_CRITERIA } from '~/utils/formatDate.js';
 import AccessManagementModal from './UserProfileModal/AccessManagementModal';
 
 function UserProfile(props) {
@@ -90,6 +90,35 @@ function UserProfile(props) {
   const roles = props?.role.roles;
   const dispatch = useDispatch();
   const history = useHistory();
+
+
+   // TO-DO Performance Optimization: Replace fetchTeamCodeAllUsers with getAllTeamCode(), a leener version API to retrieve all team codes (reduce data payload and response time)
+  //        Also, replace passing inputAutoComplete, inputAutoStatus, and isLoading to the
+  //        child component with access global redux store data (complexity)
+  // Explaination:
+  //        fetchTeamCodeAllUsers get all weekly summaries and filter out the team codes. (~800ms - 1 sec res time)
+  //        getAllTeamCode() will get all team codes from the database directly with distinct teamcode value (~15ms res time cache enabled).
+  const fetchTeamCodeAllUsers = async () => {
+    const url = ENDPOINTS.WEEKLY_SUMMARIES_REPORT();
+    try {
+      setIsLoading(true);
+      const response = await axios.get(url);
+      const stringWithValue = response.data.map(item => item.teamCode).filter(Boolean);
+      const stringNoRepeat = stringWithValue
+        .map(item => item)
+        .filter((item, index, array) => array.indexOf(item) === index);
+      setInputAutoComplete(stringNoRepeat);
+      setInputAutoStatus(response.status);
+      setIsLoading(false);
+      return stringNoRepeat;
+    } catch (error) {
+      console.log(error);
+      setIsLoading(false);
+      toast.error(`It was not possible to retrieve the team codes.
+      Please try again by clicking the icon inside the input auto complete.`);
+    }
+  };
+
 
   /* Hooks */
   const [showLoading, setShowLoading] = useState(true);
@@ -156,8 +185,7 @@ function UserProfile(props) {
 
   const [userStartDate, setUserStartDate] = useState('');
   const [userEndDate, setUserEndDate] = useState('');
-  const [originalStartDate, setOriginalStartDate] = useState('');
-  const [startDateMode, setStartDateMode] = useState('manual'); // 'manual' or 'calculated'
+  const [calculatedStartDate, setCalculatedStartDate] = useState(''); 
 
   const [inputAutoComplete, setInputAutoComplete] = useState([]);
   const [inputAutoStatus, setInputAutoStatus] = useState();
@@ -168,33 +196,7 @@ function UserProfile(props) {
   const canEditTeamCode = props.hasPermission('editTeamCode');
   const [titleOnSet, setTitleOnSet] = useState(false);
 
-  // TO-DO Performance Optimization: Replace fetchTeamCodeAllUsers with getAllTeamCode(), a leener version API to retrieve all team codes (reduce data payload and response time)
-  //        Also, replace passing inputAutoComplete, inputAutoStatus, and isLoading to the
-  //        child component with access global redux store data (complexity)
-  // Explaination:
-  //        fetchTeamCodeAllUsers get all weekly summaries and filter out the team codes. (~800ms - 1 sec res time)
-  //        getAllTeamCode() will get all team codes from the database directly with distinct teamcode value (~15ms res time cache enabled).
-  const fetchTeamCodeAllUsers = async () => {
-    const url = ENDPOINTS.WEEKLY_SUMMARIES_REPORT();
-    try {
-      setIsLoading(true);
-      const response = await axios.get(url);
-      const stringWithValue = response.data.map(item => item.teamCode).filter(Boolean);
-      const stringNoRepeat = stringWithValue
-        .map(item => item)
-        .filter((item, index, array) => array.indexOf(item) === index);
-      setInputAutoComplete(stringNoRepeat);
-      setInputAutoStatus(response.status);
-      setIsLoading(false);
-      return stringNoRepeat;
-    } catch (error) {
-      console.log(error);
-      setIsLoading(false);
-      toast.error(`It was not possible to retrieve the team codes.
-      Please try again by clicking the icon inside the input auto complete.`);
-    }
-  };
-
+ 
   const updateProjetTouserProfile = () => {
     return new Promise(resolve => {
       checkIsProjectsEqual();
@@ -352,6 +354,32 @@ function UserProfile(props) {
     }
   };
 
+  const fetchCalculatedStartDate = async (userId, userProfileData) => {
+    try {
+      const startDate = await dispatch(
+        getTimeStartDateEntriesByPeriod(userId, userProfileData.createdDate, userProfileData.endDate),
+      );
+
+      if (startDate !== 'N/A') {
+        const formattedStartDate = startDate.split('T')[0];
+        setCalculatedStartDate(formattedStartDate);
+      } else {
+        // No time entries yet, use createdDate as fallback
+        const createdDate = userProfile?.createdDate
+          ? userProfile.createdDate.split('T')[0]
+          : '';
+        setCalculatedStartDate(createdDate);
+      }
+    } catch (error) {
+      console.error('Error fetching calculated start date:', error);
+      // Fallback to createdDate on error
+      const createdDate = userProfile?.createdDate
+        ? userProfile.createdDate.split('T')[0]
+        : '';
+      setCalculatedStartDate(createdDate);
+    }
+  };
+
   const getTimeOffStatus = personId => {
     if (!allRequests[personId]) {
       return false;
@@ -411,8 +439,10 @@ function UserProfile(props) {
 
       setUserProfile(profileWithFormattedDates);
       setOriginalUserProfile(profileWithFormattedDates);
-      setOriginalStartDate(profileWithFormattedDates.startDate);
       setIsRehireable(newUserProfile.isRehireable);
+
+      // Fetch calculated start date from first time entry
+      await fetchCalculatedStartDate(userId, newUserProfile);
 
       // run after main profile is loaded
       const teamId = newUserProfile?.teams[0]?._id;
@@ -971,46 +1001,16 @@ function UserProfile(props) {
 
   const handleStartDate = async startDate => {
     setUserStartDate(startDate);
+    // Update userProfile.startDate and set manual modification flag
+    setUserProfile(prev => ({
+      ...prev,
+      startDate: startDate,
+      isStartDateManuallyModified: true
+    }));
   };
 
   const handleEndDate = async endDate => {
     setUserEndDate(endDate);
-  };
-
-  const toggleStartDateMode = async () => {
-    if (startDateMode === 'manual') {
-      // Switch to calculated mode - fetch from time entries
-      setStartDateMode('calculated');
-      const userId = props?.match?.params?.userId;
-      if (userId && userProfile) {
-        try {
-          const startDate = await dispatch(
-            getTimeStartDateEntriesByPeriod(userId, userProfile.createdDate, userProfile.toDate),
-          );
-          if (startDate !== 'N/A') {
-            const formattedStartDate = startDate.split('T')[0];
-            setUserStartDate(formattedStartDate);
-
-            // Update start date if needed
-            const createdDate = userProfile?.createdDate
-              ? userProfile.createdDate.split('T')[0]
-              : null;
-
-            if (createdDate && new Date(startDate) < new Date(createdDate)) {
-              setUserProfile(prev => ({ ...prev, startDate: createdDate }));
-            } else {
-              setUserProfile(prev => ({ ...prev, startDate: formattedStartDate }));
-            }
-          }
-        } catch (error) {
-          console.error('Error fetching calculated start date:', error);
-        }
-      }
-    } else {
-      // Switch to manual mode - restore original database value
-      setStartDateMode('manual');
-      setUserProfile(prev => ({ ...prev, startDate: originalStartDate }));
-    }
   };
 
   return (
@@ -1138,6 +1138,7 @@ function UserProfile(props) {
             titleOnSet={titleOnSet}
             setTitleOnSet={setTitleOnSet}
             updateUserProfile={props.updateUserProfile}
+            fetchTeamCodeAllUsers = {fetchTeamCodeAllUsers}
           />
         </div>
 
@@ -1450,8 +1451,7 @@ function UserProfile(props) {
                   canEdit={canEditUserProfile}
                   canUpdateSummaryRequirements={canUpdateSummaryRequirements}
                   onStartDate={handleStartDate}
-                  startDateMode={startDateMode}
-                  toggleStartDateMode={toggleStartDateMode}
+                  calculatedStartDate={calculatedStartDate}
                   darkMode={darkMode}
                 />
               </TabPane>
@@ -1562,7 +1562,7 @@ function UserProfile(props) {
                       !formValid.email ||
                       !codeValid ||
                       (userStartDate > userEndDate && userEndDate !== '') ||
-                      titleOnSet ||
+                      // titleOnSet ||
                       (isProfileEqual && isTasksEqual && isProjectsEqual)
                     }
                     userProfile={userProfile}
@@ -1694,7 +1694,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
-                              titleOnSet ||
+                              // titleOnSet ||
                               (isProfileEqual && isTasksEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
@@ -1756,8 +1756,7 @@ function UserProfile(props) {
                     canEdit={canEditUserProfile}
                     canUpdateSummaryRequirements={canUpdateSummaryRequirements}
                     onStartDate={handleStartDate}
-                    startDateMode={startDateMode}
-                    toggleStartDateMode={toggleStartDateMode}
+                    calculatedStartDate={calculatedStartDate}
                     darkMode={darkMode}
                   />
                 </ModalBody>
@@ -1774,7 +1773,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
-                              titleOnSet ||
+                              // titleOnSet ||
                               (isProfileEqual && isTasksEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
@@ -1870,7 +1869,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
-                              titleOnSet ||
+                              // titleOnSet ||
                               (isProfileEqual && isTasksEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
@@ -1956,7 +1955,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
-                              titleOnSet ||
+                              // titleOnSet ||
                               (isProfileEqual && isTasksEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
@@ -2029,7 +2028,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
-                              titleOnSet ||
+                              // titleOnSet ||
                               (isProfileEqual && isTasksEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}

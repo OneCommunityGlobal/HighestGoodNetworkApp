@@ -1,7 +1,7 @@
-import Joi from 'joi';
+import Joi from 'joi-browser';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
-import NetlifyPoweredLink from 'components/Footer/NetlifyPoweredLink';
+import NetlifyPoweredLink from '~/components/Footer/NetlifyPoweredLink';
 import Form from '../common/Form/Form';
 import { loginUser } from '../../actions/authActions';
 import { clearErrors } from '../../actions/errorsActions';

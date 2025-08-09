@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import './Collaboration.css';
 import { toast } from 'react-toastify';
-import { ApiEndpoint } from 'utils/URL';
+import { ApiEndpoint } from '~/utils/URL';
 import { useSelector } from 'react-redux';
 import OneCommunityImage from '../../assets/images/logo2.png';
 
