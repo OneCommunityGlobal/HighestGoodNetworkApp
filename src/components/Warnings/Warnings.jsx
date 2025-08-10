@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Button, Alert } from 'react-bootstrap';
-// import hasPermission from 'utils/permissions';
-import hasPermission from '../../utils/permissions';
+import hasPermission from '~/utils/permissions';
 import {
   getWarningsByUserId,
   postWarningByUserId,

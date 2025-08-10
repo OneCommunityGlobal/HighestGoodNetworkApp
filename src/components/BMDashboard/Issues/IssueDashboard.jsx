@@ -15,7 +15,8 @@ import {
   deleteIssue,
   fetchAllIssues,
   renameIssue,
-} from 'actions/bmdashboard/issueActions';
+} from '~/actions/bmdashboard/issueActions';
+import IssueHeader from './IssueHeader';
 
 export default function IssueDashboard() {
   const dispatch = useDispatch();
@@ -100,6 +101,9 @@ export default function IssueDashboard() {
         darkMode ? 'bg-oxford-blue text-light' : ''
       }`}
     >
+      <div>
+        <IssueHeader />
+      </div>
       <Row className="mb-3">
         <Col>
           <h4 className="fw-semibold">Issue Dashboard</h4>
