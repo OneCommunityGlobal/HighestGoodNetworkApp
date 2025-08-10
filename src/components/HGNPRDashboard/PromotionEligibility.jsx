@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { FaCheck } from 'react-icons/fa';
-import { getPromotionEligibility, postPromotionEligibility } from 'actions/promotionActions';
+import { getPromotionEligibility, postPromotionEligibility } from '../../actions/promotionActions';
 import './PromotionEligibility.css';
 import { useSelector } from 'react-redux';
 
