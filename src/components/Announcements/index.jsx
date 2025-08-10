@@ -17,18 +17,6 @@ import ReactTooltip from 'react-tooltip';
 function Announcements({ title, email: initialEmail }) {
   const [activeTab, setActiveTab] = useState('email');
 
-  const iconTabStyle = tabId => ({
-    flex: 1,
-    textAlign: 'center',
-    padding: '10px 16px',
-    cursor: 'pointer',
-    borderBottom: activeTab === tabId ? '2px solid #007bff' : '2px solid transparent',
-    backgroundColor:
-      activeTab === tabId ? (darkMode ? '#1e2d44' : '#eef6ff') : darkMode ? '#14233a' : '#f9f9f9',
-    color: activeTab === tabId ? '#007bff' : darkMode ? '#ddd' : '#444',
-    fontWeight: activeTab === tabId ? 'bold' : 'normal',
-  });
-
   const getIconColor = id => {
     switch (id) {
       case 'facebook':
