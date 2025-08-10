@@ -340,6 +340,7 @@ function ReportDetails({
                 />
               </div>
             </ListGroupItem>
+
             <ListGroupItem darkMode={darkMode}>
               <TotalValidWeeklySummaries
                 summary={summary}
@@ -450,12 +451,12 @@ function TeamCodeRow({
 
   const handleOnChange = async (userProfileSummary, newStatus) => {
     const url = ENDPOINTS.USERS_ALLTEAMCODE_CHANGE;
+
     try {
       await axios.patch(url, { userIds: [userProfileSummary._id], replaceCode: newStatus });
       handleTeamCodeChange(userProfileSummary.teamCode, newStatus, {
         [userProfileSummary._id]: true,
       }); // Update the team code dynamically
-      await dispatch(getWeeklySummariesReport());
     } catch (err) {
       // eslint-disable-next-line no-alert
       alert(
@@ -487,7 +488,7 @@ function TeamCodeRow({
     <>
       <div className={styles.teamcodeWrapper}>
         {canEditTeamCode ? (
-          <div style={{ width: '107px', paddingRight: '5px' }}>
+          <div style={{ width: '107px', paddingRight: '5px', position: 'relative' }}>
             <Input
               id="codeInput"
               value={teamCode}

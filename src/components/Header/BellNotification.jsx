@@ -116,7 +116,7 @@ export default function BellNotification({ userId }) {
     fetchDbNotifications();
   }, [userId]);
 
-  const allNotifications = [...dbNotifications, ...messageNotifications];
+  const allNotifications = [...(dbNotifications || []), ...messageNotifications];
 
   useEffect(() => {
     if (notifications.length > 0) {

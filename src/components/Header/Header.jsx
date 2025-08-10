@@ -74,6 +74,7 @@ export function Header(props) {
   const [displayUserId, setDisplayUserId] = useState(user.userid);
   const [popup, setPopup] = useState(false);
   const [isAuthUser, setIsAuthUser] = useState(true);
+  const [isAckLoading, setIsAckLoading] = useState(false);
 
   const ALLOWED_ROLES_TO_INTERACT = useMemo(() => ['Owner', 'Administrator'], []);
   const canInteractWithViewingUser = useMemo(
@@ -272,7 +273,7 @@ export function Header(props) {
     if (!userId || hasProfileLoaded) return;
     try {
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
-      const newUserProfile = response.data;
+      const newUserProfile = response?.data;
       setUserDashboardProfile(newUserProfile);
       setHasProfileLoaded(true); // Set flag to true after loading the profile
     } catch (err) {
