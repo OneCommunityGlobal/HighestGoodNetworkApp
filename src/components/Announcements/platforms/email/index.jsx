@@ -31,8 +31,7 @@ export default function EmailPanel({ title, initialEmail }) {
     }
   }, [initialEmail]);
 
-  const validateEmail = email =>
-    /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
+  const validateEmail = email => /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
 
   const handleEmailListChange = e => {
     const { value } = e.target;
@@ -92,7 +91,7 @@ export default function EmailPanel({ title, initialEmail }) {
     }
 
     dispatch(
-      sendEmail(emailList.join(','), title ? 'Anniversary congrats' : 'Weekly update', htmlContent)
+      sendEmail(emailList.join(','), title ? 'Anniversary congrats' : 'Weekly update', htmlContent),
     );
   };
 
@@ -132,6 +131,7 @@ export default function EmailPanel({ title, initialEmail }) {
         };
         reader.readAsDataURL(file);
       };
+      // eslint-disable-next-line testing-library/no-node-access
       input.click();
     },
     a11y_advanced_options: true,
