@@ -607,6 +607,12 @@ export const permissionLabels = [
         description:
           'Lets the user see all users in the dashboard as if they were on the same team. Requires "See All Users" to function',
       },
+      {
+        label: 'Access HGN Skills Dashboard',
+        key: 'accessHgnSkillsDashboard',
+        description:
+          'Lets the user access the HGN skills dashboard, which provides insights into user skills and competencies.',
+      },
     ],
   },
   {
