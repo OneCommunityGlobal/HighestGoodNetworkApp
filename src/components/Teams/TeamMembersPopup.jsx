@@ -123,10 +123,10 @@ export const TeamMembersPopup = React.memo(props => {
       sortedList = Object.keys(groupByPermissionList)
         .sort(sortByPermission)
         .map(key => groupByPermissionList[key])
-        .map(list => list.toSorted(sortByAlpha))
+        .map(list => [...list].sort(sortByAlpha))
         .flat();
     } else {
-      const sortByDateList = validation.toSorted((a, b) => {
+      const sortByDateList = [...validation].sort((a, b) => {
         return moment(a.addDateTime).diff(moment(b.addDateTime)) * -sort;
       });
 
@@ -141,7 +141,7 @@ export const TeamMembersPopup = React.memo(props => {
       );
 
       dataList.forEach(item => {
-        sortedList.push(...item.toSorted(sortByAlpha));
+        sortedList.push(...[...item].sort(sortByAlpha));
       });
     }
     setMemberList(sortedList);
@@ -352,7 +352,7 @@ export const TeamMembersPopup = React.memo(props => {
                       !props.members.fetching &&
                       props.members.teamMembers) ||
                     (Array.isArray(props.members) && props.members.length > 0)) &&
-                  memberList.toSorted().map((user, index) => {
+                  [...memberList].sort().map((user, index) => {
                     return (
                       <tr key={`${props.selectedTeamName}-${user._id}`}>
                         <td style={{ verticalAlign: 'middle', textAlign: 'center' }}>
