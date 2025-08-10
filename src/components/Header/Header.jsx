@@ -1,6 +1,6 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 // import { getUserProfile } from '../../actions/userProfile'
-import { ENDPOINTS } from 'utils/URL';
+// import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import { getWeeklySummaries } from '~/actions/weeklySummaries';
 import { Link, useLocation, useHistory } from 'react-router-dom';
@@ -25,10 +25,11 @@ import {
 } from 'reactstrap';
 import DOMPurify from 'dompurify';
 import parse from 'html-react-parser';
-import PopUpBar from 'components/PopUpBar';
-import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
+import PopUpBar from '../PopUpBar/PopUpBar';
+import { fetchTaskEditSuggestions } from '../TaskEditSuggestions/thunks';
+// 'components/TaskEditSuggestions/thunks';
 import { toast } from 'react-toastify';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '../../styles';
 import { getHeaderData } from '../../actions/authActions';
 import { getAllRoles } from '../../actions/role';
 import Timer from '../Timer/Timer';
@@ -82,6 +83,7 @@ export function Header(props) {
   const [displayUserId, setDisplayUserId] = useState(user.userid);
   const [popup, setPopup] = useState(false);
   const [isAuthUser, setIsAuthUser] = useState(true);
+  const [isAckLoading, setisAckLoading] = useState(false);
 
   const ALLOWED_ROLES_TO_INTERACT = useMemo(() => ['Owner', 'Administrator'], []);
   const canInteractWithViewingUser = useMemo(
@@ -168,7 +170,6 @@ export function Header(props) {
   // eslint-disable-next-line no-unused-vars
   const { allUserProfiles, unreadNotifications, unreadMeetingNotifications } = props;
   // get the meeting notifications for the current user
-  console.log(unreadNotifications);
   const userUnreadMeetings = unreadMeetingNotifications?.filter(
     meeting => meeting.recipient === userId,
   );
@@ -232,79 +233,6 @@ export function Header(props) {
     }
   }, [props.notification?.error]);
 
-  // display the notification and enable the bell ring when there are unread meeting notifications
-  useEffect(() => {
-    if (process.env.NODE_ENV === 'test') return;
-
-    const fetchMeetingDetails = async () => {
-      if (unreadMeetingNotifications && unreadMeetingNotifications.length > 0) {
-        const currMeeting = unreadMeetingNotifications[0];
-
-        const currentDate = new Date();
-        const meetingDate = new Date(currMeeting.dateTime);
-        const threeDaysLater = new Date();
-        threeDaysLater.setDate(currentDate.getDate() + 3);
-
-        if (meetingDate <= threeDaysLater) {
-          try {
-            const { data } = await axios.get(
-              `http://localhost:4500/api/meeting/${currMeeting.meetingId}/calendar`,
-            );
-
-            if (!meetingModalOpen) {
-              setMeetingModalOpen(true);
-
-              // Create downloadable ICS file
-              const icsBlob = new Blob([data.icsContent], { type: 'text/calendar' });
-              const icsUrl = URL.createObjectURL(icsBlob);
-
-              setMeetingModalMessage(`
-                <p>Reminder: You have an upcoming meeting! Please check the details and be prepared.</p>
-                <p><strong>Time:</strong> ${meetingDate.toLocaleString()}</p>
-                <p><strong>Organizer:</strong> ${data.organizerFullName}</p>
-                ${currMeeting.notes ? `<p><strong>Notes:</strong> ${currMeeting.notes}</p>` : ''}
-                <p><a href="${
-                  data.googleCalendarLink
-                }" target="_blank">Add to Google Calendar</a></p>
-                <p><button id="downloadButton"><strong>Download Calendar Event (.ics)</strong></button></p>
-              `);
-
-              // Delay to ensure DOM is updated before accessing the element
-              setTimeout(() => {
-                const downloadButton = document.getElementById('downloadButton');
-                if (downloadButton) {
-                  downloadButton.onclick = () => {
-                    const link = document.createElement('a');
-                    link.href = icsUrl;
-                    link.download = 'meeting.ics';
-                    link.click();
-                  };
-                }
-              }, 0);
-            }
-
-            if (MeetingNotificationAudioRef.current) {
-              MeetingNotificationAudioRef.current.play();
-            }
-          } catch (_) {
-            setMeetingModalOpen(false);
-            setMeetingModalMessage('');
-          }
-        }
-      } else {
-        if (meetingModalOpen) {
-          setMeetingModalOpen(false);
-          setMeetingModalMessage('');
-        }
-        if (MeetingNotificationAudioRef.current) {
-          MeetingNotificationAudioRef.current.pause();
-          MeetingNotificationAudioRef.current.currentTime = 0;
-        }
-      }
-    };
-
-    fetchMeetingDetails();
-  }, [unreadMeetingNotifications]);
 
   const handleMeetingRead = () => {
     setMeetingModalOpen(!meetingModalOpen);
@@ -321,23 +249,11 @@ export function Header(props) {
     setLogoutPopup(true);
   };
   const CloseMeetingContentsNotification = async (meetingId, recipient) => {
-    try {
-      const response = await fetch(`/api/meeting/markAsRead/${meetingId}/${recipient}`, {
-        method: 'PATCH',
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        console.log('Success:', data.message);
-        // Close the notification
-      } else {
-        console.error('Failed:', data.error);
-      }
-    } catch (error) {
-      console.error('Error during request:', error);
-    }
+    await dispatch(markMeetingNotificationAsRead({ meetingId, recipient }));
+    dispatch(getUnreadUserNotifications(recipient)); // refresh list
+    await fetchUpcomingMeeting();
   };
+
   const handlePermissionChangeAck = async () => {
     // handle setting the ack true
     try {
@@ -361,7 +277,6 @@ export function Header(props) {
       // console.log('update ack', e);
     }
   };
-
 
   const removeViewingUser = () => {
     setPopup(false);
@@ -441,53 +356,56 @@ export function Header(props) {
       setModalVisible(false);
     }
   }, [lastDismissed, userId, userDashboardProfile]);
-  useEffect(() => {
-    if (process.env.NODE_ENV === 'test') return;
+  const fetchUpcomingMeeting = useCallback(async () => {
+    try {
+      const response = await axios.get(`http://localhost:4500/api/meetings/participant/${userId}`);
+      if (response.status === 200 && Array.isArray(response.data.upComingMeetings)) {
+        const { upComingMeetings } = response.data;
 
-    loadUserDashboardProfile();
-
-    const fetchUpcomingMeeting = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:4500/api/meetings/participant/${userId}`,
-        );
-        if (response.status === 200) {
-          console.log(response.data);
-          const { upComingMeetings } = response.data;
-          const upComingMeetingMsg = upComingMeetings.map(item => {
+        const upComingMeetingMsg = await Promise.all(
+          upComingMeetings.map(async item => {
             const formattedDate = new Date(item.dateTime).toLocaleString();
             const cleanNotes = item.notes
               ?.replace(/<[^>]*>/g, '')
               .replace(/&nbsp;/gi, ' ')
               .replace(/\s+/g, ' ')
               .trim();
-            return `This is your upcoming meeting with ${
-              item.organizerName
-            } on ${formattedDate} regarding: ${cleanNotes}.
-              ${item.locationDetails ? `At Location: ${item.locationDetails}` : ''}`;
-          });
-          setMeetingContents(upComingMeetingMsg);
-          console.log(upComingMeetingMsg);
-          setMeetingContentsNotification(true);
-          // const { lastMeeting, organizerName } = response.data;
-          // const { dateTime, notes, locationDetails } = lastMeeting;
 
-          // setMeetingContents(
-          //   `This is your upcoming meeting with ${organizerName} on ${formattedDate} regarding: ${cleanNotes}.
-          //    ${locationDetails ? `At Location: ${locationDetails}` : ''}`,
-          // );
-          // setMeetingContentsNotification(true);
-        } else {
-          setMeetingContentsNotification(false);
-        }
-      } catch (err) {
+            //meeting download
+            const { data } = await axios.get(
+              `http://localhost:4500/api/meeting/${item._id}/calendar`,
+            );
+            // Create downloadable ICS file
+            const icsBlob = new Blob([data.icsContent], { type: 'text/calendar' });
+            const icsUrl = URL.createObjectURL(icsBlob);
+
+            let message = `Reminder: You have an upcoming meeting!
+            <strong>Time:</strong> ${formattedDate}
+            <strong>Organizer:</strong> ${item.organizerName}
+            ${cleanNotes ? `<strong>Notes:</strong> ${cleanNotes}` : ''}
+            <a href="${data.googleCalendarLink}" target="_blank">Add to Google Calendar</a>
+            <a href="${icsUrl}" download="meeting.ics"><strong>Download .ics</strong></a>`;
+
+            return { msg: message, id: item._id, recipient: item.participant };
+          }),
+        );
+        setMeetingContents(upComingMeetingMsg);
+        setMeetingContentsNotification(true);
+      } else {
+        // No meetings returned
         setMeetingContentsNotification(false);
-        console.error('Error while loading meeting notifications:', err);
       }
-    };
-
-    fetchUpcomingMeeting();
+    } catch (err) {
+      setMeetingContentsNotification(false);
+      console.error('Error while loading meeting notifications:', err);
+    }
   }, [userId]);
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'test') return;
+
+    loadUserDashboardProfile();
+    fetchUpcomingMeeting();
+  }, [fetchUpcomingMeeting]);
 
   const fontColor = darkMode ? 'text-white dropdown-item-hover' : '';
 
@@ -715,11 +633,11 @@ export function Header(props) {
       {meetingContentsNotification &&
         meetingContents.map(item => (
           <PopUpBar
-            key={item._id}
+            key={item.id}
             firstName={viewingUser?.firstName || firstName}
             lastName={viewingUser?.lastName}
-            message={item}
-            onClickClose={CloseMeetingContentsNotification(item._id, item.participant)}
+            message={item.msg}
+            onClickClose={() => CloseMeetingContentsNotification(item.id, item.recipient)}
           />
         ))}
 

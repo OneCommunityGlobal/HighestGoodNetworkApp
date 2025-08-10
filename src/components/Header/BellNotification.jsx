@@ -101,19 +101,19 @@ export default function BellNotification({ userId }) {
   };
 
   useEffect(() => {
-    const fetchDbNotifications = async () => {
-      try {
-        const { data } = await axios.get(`${ENDPOINTS.NOTIFICATIONS}/unread/user/${userId}`);
-        setDbNotifications(data);
-        if (data.length > 0) {
-          setHasMessageNotification(true);
-        }
-      } catch (error) {
-        Error('❌ Error fetching notifications from DB:', error);
-      }
-    };
+    // const fetchDbNotifications = async () => {
+    //   try {
+    //     const { data } = await axios.get(`${ENDPOINTS.NOTIFICATIONS}/unread/user/${userId}`);
+    //     setDbNotifications(data);
+    //     if (data.length > 0) {
+    //       setHasMessageNotification(true);
+    //     }
+    //   } catch (error) {
+    //     Error('❌ Error fetching notifications from DB:', error);
+    //   }
+    // };
 
-    fetchDbNotifications();
+    // fetchDbNotifications();
   }, [userId]);
 
   const allNotifications = [...dbNotifications, ...messageNotifications];

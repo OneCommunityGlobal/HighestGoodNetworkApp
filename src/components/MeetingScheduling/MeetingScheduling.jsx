@@ -16,11 +16,12 @@ import {
 import { Editor } from '@tinymce/tinymce-react';
 import moment from 'moment-timezone';
 // import { toast } from 'react-toastify';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '../../styles';
 import { getAllUserProfile } from '../../actions/userManagement';
 import { postMeeting } from '../../actions/meetings';
 import Participants from './components/Participants';
 import './MeetingScheduling.css';
+import { useHistory } from 'react-router-dom';
 
 const customImageUploadHandler = () =>
   new Promise((_, reject) => {
@@ -79,7 +80,7 @@ function MeetingScheduling(props) {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const [modalTitle, setModalTitle] = useState('');
-
+const history=useHistory();
   useEffect(() => {
     props.getAllUserProfile();
   }, []);
@@ -111,6 +112,46 @@ function MeetingScheduling(props) {
     event.preventDefault();
     setSubmitting(true);
     setErrors({});
+    const validationErrors = {};
+
+    //Manadatory field errors
+
+    if (!formValues.dateOfMeeting) {
+      validationErrors.dateOfMeeting = 'Date is required.';
+    }
+    if (!formValues.startHour || !formValues.startMinute || !formValues.startTimePeriod) {
+      validationErrors.time = 'Start time is required.';
+    }
+
+    if (!formValues.duration) {
+      validationErrors.duration = 'Duration is required.';
+    }
+
+    if (formValues.participantList.length === 0) {
+      validationErrors.participantList = 'At least one participant is required.';
+    }
+
+    if (!formValues.location) {
+      validationErrors.location = 'Location is required.';
+    }
+    if (
+      (formValues.location === 'Zoom' ||
+        formValues.location === 'Phone call' ||
+        formValues.location === 'On-site') &&
+      !formValues.locationDetails
+    ) {
+      validationErrors.locationDetails = 'Location details are required.';
+    }
+
+    if (!formValues.notes || formValues.notes.trim() === '') {
+      validationErrors.notes = 'Notes are required.';
+    }
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      setSubmitting(false);
+      return;
+    }
 
     const meeting = {
       ...formValues,
@@ -166,6 +207,7 @@ function MeetingScheduling(props) {
 
   const toggleModal = () => {
     setModalOpen(!modalOpen);
+    history.push('/dashboard');
   };
 
   return (
@@ -286,6 +328,11 @@ function MeetingScheduling(props) {
                 removeParticipant={removeParticipant}
                 darkMode={darkMode}
               />
+              {'participantList' in errors && (
+                <div className="text-danger">
+                  <small>{errors.participantList}</small>
+                </div>
+              )}
             </FormGroup>
 
             <FormGroup>
@@ -317,11 +364,16 @@ function MeetingScheduling(props) {
                   <Input
                     type="text"
                     name="locationDetails"
-                    id="locationDetails"
+                    id="locationDetailsZoom"
                     value={formValues.locationDetails || ''}
                     onChange={handleInputChange}
                     placeholder="Enter location details"
                   />
+                  {'locationDetails' in errors && (
+                    <div className="text-danger">
+                      <small>{errors.locationDetails}</small>
+                    </div>
+                  )}
                 </div>
               )}
               <div style={{ paddingLeft: '20px' }}>
@@ -349,11 +401,16 @@ function MeetingScheduling(props) {
                   <Input
                     type="text"
                     name="locationDetails"
-                    id="locationDetails"
+                    id="locationDetailsPhone"
                     value={formValues.locationDetails || ''}
                     onChange={handleInputChange}
                     placeholder="Enter location details"
                   />
+                  {'locationDetails' in errors && (
+                    <div className="text-danger">
+                      <small>{errors.locationDetails}</small>
+                    </div>
+                  )}
                 </div>
               )}
               <div style={{ paddingLeft: '20px' }}>
@@ -381,11 +438,16 @@ function MeetingScheduling(props) {
                   <Input
                     type="text"
                     name="locationDetails"
-                    id="locationDetails"
+                    id="locationDetailsOnSite"
                     value={formValues.locationDetails || ''}
                     onChange={handleInputChange}
                     placeholder="Enter location details"
                   />
+                  {'locationDetails' in errors && (
+                    <div className="text-danger">
+                      <small>{errors.locationDetails}</small>
+                    </div>
+                  )}
                 </div>
               )}
               {'location' in errors && (

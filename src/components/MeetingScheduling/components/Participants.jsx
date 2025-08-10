@@ -112,7 +112,7 @@ function Participants({
           <ul key={`${participant.userProfileId}`}>
             <button
               type="button"
-              className="rounded-pill badge bg-primary text-wrap text-white"
+              className="rounded-pill badge bg-primary text-wrap text-white p-2 m-1 fs-5"
               onClick={() => removeParticipant(participant.userProfileId)}
               style={{
                 display: 'flex',
@@ -120,8 +120,8 @@ function Participants({
                 cursor: 'pointer',
               }}
             >
-              <small className="fs-6 mr-1">{`${participant.name}`}</small>
-              <FontAwesomeIcon icon={faTimesCircle} />
+              <span className="fs-6 me-2 fw-semibold">{participant.name}</span>
+              <FontAwesomeIcon icon={faTimesCircle} className='m-1' />
             </button>
           </ul>
         ))}
