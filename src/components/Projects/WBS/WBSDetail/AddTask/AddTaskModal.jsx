@@ -895,7 +895,7 @@ function AddTaskModal(props) {
 }
 
 const mapStateToProps = state => ({
-  // tasks: state.tasks.taskItems,
+  tasks: state.tasks.taskItems,
   copiedTask: state.tasks.copiedTask,
   allMembers: state.projectMembers.members,
   allProjects: state.allProjects,
