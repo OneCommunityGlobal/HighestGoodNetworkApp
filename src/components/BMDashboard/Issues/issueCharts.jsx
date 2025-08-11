@@ -3,8 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Bar } from 'react-chartjs-2';
 import Select from 'react-select';
 import { fetchIssues } from '../../../actions/bmdashboard/issueChartActions';
-import 'chart.js/auto'; // Ensures chart.js globals are set up
-import './issueChart.css';
+import 'chart.js/auto';
+import styles from './issueChart.module.css';
 
 function IssueChart() {
   const dispatch = useDispatch();
@@ -31,7 +31,6 @@ function IssueChart() {
     }
   }, [issues]);
 
-  // Dropdown options
   const extractDropdownOptions = () => {
     const issueTypes = [...new Set(Object.keys(issues || {}))].map(issue => ({
       label: issue,
@@ -56,14 +55,12 @@ function IssueChart() {
   const { issueTypes, years } = extractDropdownOptions();
   const uniqueYears = years.filter(y => y.value !== 'All').map(y => y.value);
 
-  // Color generation (same for both modes)
   const generateColor = idx => `hsl(${(idx * 60) % 360}, 70%, 50%)`;
   const yearColorMap = uniqueYears.reduce((acc, year, idx) => {
     acc[year] = generateColor(idx);
     return acc;
   }, {});
 
-  // Filter change handler
   const handleFilterChange = (selected, field) => {
     if (selected.some(option => option.value === 'All')) {
       setFilters({
@@ -78,14 +75,13 @@ function IssueChart() {
     }
   };
 
-  // Prepare chart data (memoized)
   const chartData = useMemo(() => {
     if (!issues || Object.keys(issues).length === 0) return { labels: [], datasets: [] };
     const filteredIssueTypes = filters.issueTypes.length ? filters.issueTypes : Object.keys(issues);
     const filteredYears = filters.years.length ? filters.years : uniqueYears;
     const labels = filteredIssueTypes;
 
-    const datasets = filteredYears.map((year, idx) => ({
+    const datasets = filteredYears.map(year => ({
       label: year.toString(),
       data: labels.map(issueType => issues[issueType]?.[year] || 0),
       backgroundColor: yearColorMap[year],
@@ -96,7 +92,6 @@ function IssueChart() {
     return { labels, datasets };
   }, [issues, filters, uniqueYears, yearColorMap]);
 
-  // Chart.js options with dark mode colors
   const chartOptions = useMemo(
     () => ({
       responsive: true,
@@ -138,7 +133,6 @@ function IssueChart() {
             color: darkMode ? '#cfd7e3' : '#232323',
           },
           grid: { display: false },
-
           barPercentage: 0.9,
           categoryPercentage: 0.8,
         },
@@ -158,7 +152,6 @@ function IssueChart() {
     [darkMode],
   );
 
-  // React-select style overrides for dark mode
   const selectStyles = useMemo(() => {
     if (!darkMode) return {};
     return {
@@ -207,22 +200,35 @@ function IssueChart() {
       style={{ minHeight: '100vh' }}
     >
       <div
-        className={`issue-chart-event-container${darkMode ? ' dark' : ''}`}
+        className={`${styles.issueChartEventContainer} ${
+          darkMode ? styles.issueChartEventContainerDark : ''
+        }`}
         role="region"
         aria-label="Issues bar chart"
       >
-        <h2 className="issue-chart-event-title">Issues Chart</h2>
+        <h2
+          className={`${styles.issueChartEventTitle} ${
+            darkMode ? styles.issueChartEventTitleDark : ''
+          }`}
+        >
+          Issues Chart
+        </h2>
         <div
-          className="select-container"
+          className={styles.selectContainer}
           style={{ justifyContent: 'center', gap: '20px', flexWrap: 'wrap' }}
         >
           <div style={{ minWidth: 200 }}>
-            <label htmlFor="issue-type-select" className="issue-chart-label">
+            <label
+              htmlFor="issue-type-select"
+              className={`${styles.issueChartLabel} ${darkMode ? styles.issueChartLabelDark : ''}`}
+            >
               Issue Type:
             </label>
             <Select
               inputId="issue-type-select"
-              className="issue-chart-select"
+              className={`${styles.issueChartSelect} ${
+                darkMode ? styles.issueChartSelectDark : ''
+              }`}
               isMulti
               options={issueTypes}
               onChange={selected => handleFilterChange(selected, 'issueTypes')}
@@ -233,12 +239,17 @@ function IssueChart() {
             />
           </div>
           <div style={{ minWidth: 200 }}>
-            <label htmlFor="year-select" className="issue-chart-label">
+            <label
+              htmlFor="year-select"
+              className={`${styles.issueChartLabel} ${darkMode ? styles.issueChartLabelDark : ''}`}
+            >
               Year:
             </label>
             <Select
               inputId="year-select"
-              className="issue-chart-select"
+              className={`${styles.issueChartSelect} ${
+                darkMode ? styles.issueChartSelectDark : ''
+              }`}
               isMulti
               options={years}
               onChange={selected => handleFilterChange(selected, 'years')}
@@ -254,7 +265,10 @@ function IssueChart() {
         {error && <p>Error: {error}</p>}
 
         {!loading && !error && (
-          <div className="chart-container" style={{ minHeight: 400 }}>
+          <div
+            className={`${styles.chartWrapper} ${darkMode ? styles.chartWrapperDark : ''}`}
+            style={{ minHeight: 400 }}
+          >
             <Bar data={chartData} options={chartOptions} aria-labelledby="chart-title" />
           </div>
         )}
