@@ -306,7 +306,7 @@ export default function LBMessaging() {
                     ☰
                   </button>
                   {mobileHamMenu && (
-                    <div className="lb-mobile-ham-menu" ref={menuRef}>
+                    <div className={styles.lbMobileHamMenu} ref={menuRef}>
                       <div className={styles.lbMobileHamMenuHeader}>
                         {showContacts ? (
                           <div className={styles.lbMessagingContactsHeaderMobile}>
