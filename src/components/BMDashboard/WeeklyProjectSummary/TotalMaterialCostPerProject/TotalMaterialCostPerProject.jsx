@@ -165,8 +165,14 @@ function TotalMaterialCostPerProject() {
       }),
       option: (base, state) => ({
         ...base,
-        backgroundColor: state.isFocused ? '#0d55b3' : darkMode ? '#22272e' : '#fff',
-        color: darkMode ? '#fff' : '#232323',
+        backgroundColor: state.isSelected
+          ? '#0d55b3'
+          : state.isFocused
+          ? '#0d55b3'
+          : darkMode
+          ? '#22272e'
+          : '#fff',
+        color: state.isSelected ? '#fff' : darkMode ? '#fff' : '#232323',
         fontSize: 13,
         padding: '10px 16px',
         cursor: 'pointer',
@@ -203,21 +209,39 @@ function TotalMaterialCostPerProject() {
       <div className={styles.totalMaterialCostPerProjectChartTitle}>
         Total Material Cost Per Project
       </div>
-      <div className={styles.selectValueContainer}>
-        <Select
-          isMulti
-          options={allProjects}
-          value={selectedProjects}
-          onChange={setSelectedProjects}
-          classNamePrefix="select"
-          styles={selectStyles}
-          menuPortalTarget={document.body} // ensures dropdown is never clipped
-          menuPosition="fixed"
-        />
-      </div>
-      <div style={{ height: 350 }}>
-        {!dataLoaded ? <Loading /> : <Bar options={options} data={data} />}
-      </div>
+      {dataLoaded ? (
+        <>
+          <div data-testid="select-projects-dropdown">
+            <Select
+              isMulti
+              isSearchable
+              options={allProjects}
+              value={selectedProjects}
+              onChange={setSelectedProjects}
+              classNamePrefix="select"
+              className={styles.selectValueContainer}
+              styles={selectStyles}
+              menuPortalTarget={document.body}
+              menuPosition="fixed"
+              defaultValue={allProjects}
+              placeholder="Select Projects"
+              closeMenuOnSelect={false}
+              hideSelectedOptions={false}
+            />
+          </div>
+          <div style={{ overflowX: 'auto' }}>
+            <div style={{ minWidth: `${selectedProjects.length * 20}px`, minHeight: '300px' }}>
+              <Bar data={data} options={options} />
+            </div>
+          </div>
+        </>
+      ) : (
+        <div className="d-flex justify-content-center align-items-center">
+          <div className="w-100vh">
+            <Loading />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
