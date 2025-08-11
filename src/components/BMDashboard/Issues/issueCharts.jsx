@@ -135,6 +135,7 @@ function IssueChart() {
           grid: { display: false },
           barPercentage: 0.9,
           categoryPercentage: 0.8,
+          ticks: { stepSize: 1, color: darkMode ? '#cfd7e3' : '#232323' },
         },
         y: {
           title: {
