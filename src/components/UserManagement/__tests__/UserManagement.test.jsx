@@ -1,7 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { UnconnectedUserManagement } from '../UserManagement';
-
 // Import the mocked functions directly
 import {
   getAllUserProfile,
@@ -223,7 +222,7 @@ describe('UserManagement Component', () => {
   });
 
   it('should render without errors', () => {
-    render(<UnconnectedUserManagement {...props} />);
+    const { isLoadingUsers } =  render(<UnconnectedUserManagement initialIsLoadingUsers={false}  {...props} />);
 
     // Check if key components are rendered
     expect(screen.getByTestId('user-table-header')).toBeInTheDocument();
@@ -232,7 +231,7 @@ describe('UserManagement Component', () => {
   });
 
   it('should call getAllUserProfile and getAllTimeOffRequests on mount', () => {
-    render(<UnconnectedUserManagement {...props} />);
+    render(<UnconnectedUserManagement initialIsLoadingUsers={false}  {...props} />);
 
     // Verify API calls on mount
     expect(getAllUserProfile).toHaveBeenCalled();
@@ -240,7 +239,7 @@ describe('UserManagement Component', () => {
   });
 
   it('should update state when onFirstNameSearch is called', () => {
-    render(<UnconnectedUserManagement {...props} />);
+    render(<UnconnectedUserManagement initialIsLoadingUsers={false}  {...props} />);
 
     // Find and interact with the search input
     const searchInput = screen.getByTestId('first-name-search');
@@ -253,7 +252,7 @@ describe('UserManagement Component', () => {
   });
 
   it('should call updateUserStatus when onPauseResumeClick is called with status Active', () => {
-    render(<UnconnectedUserManagement {...props} />);
+    render(<UnconnectedUserManagement initialIsLoadingUsers={false}  {...props} />);
 
     // Find and click the pause/resume button for the first user
     const pauseResumeButton = screen.getByTestId('pause-resume-button-0');
@@ -268,7 +267,7 @@ describe('UserManagement Component', () => {
   });
 
   it('should set activationDateOpen to true when onPauseResumeClick is called with status not Active', () => {
-    render(<UnconnectedUserManagement {...props} />);
+    render(<UnconnectedUserManagement initialIsLoadingUsers={false}  {...props} />);
 
     // Find and click the set inactive button for the first user
     const inactiveButton = screen.getByTestId('inactive-button-0');
@@ -279,7 +278,7 @@ describe('UserManagement Component', () => {
   });
 
   it('should update state when onActiveFiter is called with active', () => {
-    render(<UnconnectedUserManagement {...props} />);
+    render(<UnconnectedUserManagement initialIsLoadingUsers={false}  {...props} />);
 
     // Find and click the active filter button
     const activeFilterButton = screen.getByTestId('active-filter-button');
@@ -292,7 +291,7 @@ describe('UserManagement Component', () => {
   });
 
   it('should open new user popup when onNewUserClick is called', () => {
-    render(<UnconnectedUserManagement {...props} />);
+    render(<UnconnectedUserManagement initialIsLoadingUsers={false}  {...props} />);
 
     // Find and click the new user button
     const newUserButton = screen.getByTestId('new-user-button');
@@ -303,7 +302,7 @@ describe('UserManagement Component', () => {
   });
 
   it('should open the activeInactivePopup when onActiveInactiveClick is called', () => {
-    render(<UnconnectedUserManagement {...props} />);
+    render(<UnconnectedUserManagement initialIsLoadingUsers={false}  {...props} />);
 
     // Find and click the active/inactive toggle button for the first user
     const activeInactiveButton = screen.getByTestId('active-inactive-button-0');
@@ -314,7 +313,7 @@ describe('UserManagement Component', () => {
   });
 
   it('should open the final day popup when onFinalDayClick is called with SetFinalDay', () => {
-    render(<UnconnectedUserManagement {...props} />);
+    render(<UnconnectedUserManagement initialIsLoadingUsers={false}  {...props} />);
 
     // Find and click the final day button for the first user
     const finalDayButton = screen.getByTestId('final-day-button-0');
@@ -325,7 +324,7 @@ describe('UserManagement Component', () => {
   });
 
   it('should call updateUserFinalDayStatusIsSet when onFinalDayClick is called with NotSetFinalDay', () => {
-    render(<UnconnectedUserManagement {...props} />);
+    render(<UnconnectedUserManagement initialIsLoadingUsers={false}  {...props} />);
 
     // Find and click the not final day button for the first user
     const notFinalDayButton = screen.getByTestId('not-final-day-button-0');
