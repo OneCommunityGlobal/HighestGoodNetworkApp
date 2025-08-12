@@ -14,7 +14,7 @@ import {
 } from 'recharts';
 import { fetchBMProjects } from '../../../../actions/bmdashboard/projectActions';
 import { ENDPOINTS } from '../../../../utils/URL';
-import './ActualVsPlannedCost.css';
+import styles from './ActualVsPlannedCost.module.css';
 
 function ActualVsPlannedCost() {
   const dispatch = useDispatch();
