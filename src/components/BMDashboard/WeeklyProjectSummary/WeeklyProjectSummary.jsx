@@ -14,6 +14,7 @@ import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
 import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
 import styles from './WeeklyProjectSummary.module.css';
 import IssueCharts from '../Issues/openIssueCharts';
+import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 
 const projectStatusButtons = [
   {
@@ -268,17 +269,12 @@ function WeeklyProjectSummary() {
         title: 'Lessons Learned',
         key: 'Lessons Learned',
         className: 'half',
-        content: [1, 2].map(() => {
-          const uniqueId = uuidv4();
-          return (
-            <div
-              key={uniqueId}
-              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
-            >
-              📊 Card
-            </div>
-          );
-        }),
+        content: [
+          <MostFrequentKeywords key="frequent-tags-card" />,
+          <div key="another-lessons-card" className="weekly-project-summary-card normal-card">
+            📊 Card
+          </div>,
+        ],
       },
       {
         title: 'Financials',
