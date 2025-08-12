@@ -97,7 +97,7 @@ function JobReorderModal({ isOpen, toggle, onJobsReordered, darkMode, checkPermi
 
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="xl" className={darkMode ? 'dark-mode' : ''}>
-      <ModalHeader toggle={toggle}>
+      <ModalHeader className="job-reorder-modal-header" toggle={toggle}>
         <i className="fa fa-sort mr-2" aria-hidden="true" />
         Reorder Job Listings
       </ModalHeader>
@@ -184,7 +184,7 @@ function JobReorderModal({ isOpen, toggle, onJobsReordered, darkMode, checkPermi
           </Droppable>
         </DragDropContext>
       </ModalBody>
-      <ModalFooter>
+      <ModalFooter className="job-reorder-modal-footer">
         <Button color="secondary" onClick={toggle} disabled={loading}>
           <i className="fa fa-times mr-1" aria-hidden="true" />
           Cancel
