@@ -210,7 +210,9 @@ const PermissionsManagement = lazy(() =>
 const UserRoleTab = lazy(() => import('./components/PermissionsManagement/UserRoleTab'));
 const Teams = lazy(() => import('./components/Teams/Teams'));
 const JobFormBuilder = lazy(() => import('./components/Collaboration/JobFormbuilder'));
-const MonthsPledgedChart = lazy(() => import('./components/MonthsPledgedAnalytics/MonthsPledgedChart'));
+const MonthsPledgedChart = lazy(() =>
+  import('./components/MonthsPledgedAnalytics/MonthsPledgedChart'),
+);
 
 export default (
   <Switch>
@@ -511,11 +513,7 @@ export default (
           fallback
           allowedRoles={[UserRole.Owner]}
         />
-         <ProtectedRoute
-          path="/analytics/months-pledged"
-          component={MonthsPledgedChart}
-          fallback
-    />
+        <ProtectedRoute path="/analytics/months-pledged" component={MonthsPledgedChart} fallback />
 
         {/* ----- BEGIN BM Dashboard Routing ----- */}
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />

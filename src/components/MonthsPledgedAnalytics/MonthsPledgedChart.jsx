@@ -45,11 +45,11 @@ const MonthsPledgedChart = () => {
           setAllRoles(roles.map(role => ({ value: role, label: role })));
         }
       } else {
-        console.error('Expected array but got:', result);
+        // console.error('Expected array but got:', result);
         setData([]);
       }
     } catch (error) {
-      console.error('Error fetching data:', error);
+      // console.error('Error fetching data:', error);
       setData([]);
     } finally {
       setLoading(false);
@@ -99,9 +99,12 @@ const MonthsPledgedChart = () => {
         }}
       >
         <div style={{ flex: 1, minWidth: '300px' }}>
-          <label style={{ color: 'black', fontWeight: '500' }}>Date Range</label>
+          <label htmlFor="startDate" style={{ color: 'black', fontWeight: '500' }}>
+            Date Range
+          </label>
           <div style={{ display: 'flex', gap: '10px' }}>
             <DatePicker
+              id="startDate"
               selected={startDate}
               onChange={date => setStartDate(date)}
               selectsStart
@@ -112,7 +115,23 @@ const MonthsPledgedChart = () => {
               isClearable
               className="date-picker"
             />
+            <label
+              htmlFor="endDate"
+              style={{
+                position: 'absolute',
+                width: 1,
+                height: 1,
+                padding: 0,
+                overflow: 'hidden',
+                clip: 'rect(0,0,0,0)',
+                whiteSpace: 'nowrap',
+                border: 0,
+              }}
+            >
+              End Date
+            </label>
             <DatePicker
+              id="endDate"
               selected={endDate}
               onChange={date => setEndDate(date)}
               selectsEnd
@@ -128,8 +147,11 @@ const MonthsPledgedChart = () => {
         </div>
 
         <div style={{ flex: 1, minWidth: '300px' }}>
-          <label style={{ color: 'black', fontWeight: '500' }}>Filter Roles</label>
+          <label htmlFor="filterRoles" style={{ color: 'black', fontWeight: '500' }}>
+            Filter Roles
+          </label>
           <Select
+            inputId="filterRoles"
             isMulti
             options={allRoles}
             value={selectedRoles}
