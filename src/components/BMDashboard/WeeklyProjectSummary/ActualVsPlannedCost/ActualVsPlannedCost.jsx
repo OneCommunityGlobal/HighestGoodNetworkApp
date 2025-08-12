@@ -130,19 +130,19 @@ function ActualVsPlannedCost() {
             </BarChart>
           </ResponsiveContainer>
         </div>
-        <div className="ActualVsPlannedCost-chart-caption">{selectedProjectName}</div>
+        <div className={styles.chartCaption}>{selectedProjectName}</div>
       </>
     );
   }
 
   return (
     <div style={{ padding: 10 }}>
-      <h2 style={{ fontSize: 'large', marginBottom: '3px' }} className="ActualVsPlannedCost-title">
+      <h2 style={{ fontSize: 'large', marginBottom: '3px' }} className={styles.title}>
         Actual vs Planned Costs
       </h2>
 
-      <div className={`ActualVsPlannedCost-selectors-container ${darkMode ? 'dark-mode' : ''}`}>
-        <div className="ActualVsPlannedCost-selector-group">
+      <div className={`${styles.selectorsContainer} ${darkMode ? 'dark-mode' : ''}`}>
+        <div className={styles.selectorGroup}>
           <label htmlFor="ActualVsPlannedCost-project-select">Project:</label>
           <select
             id="ActualVsPlannedCost-project-select"
@@ -162,7 +162,7 @@ function ActualVsPlannedCost() {
           </select>
         </div>
 
-        <div className="ActualVsPlannedCost-selector-group">
+        <div className={styles.selectorGroup}>
           <label htmlFor="ActualVsPlannedCost-category-select">Category:</label>
           <select
             id="ActualVsPlannedCost-category-select"
