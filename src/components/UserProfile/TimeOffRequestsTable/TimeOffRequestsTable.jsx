@@ -1,5 +1,5 @@
 import './TimeOffRequestsTable.css';
-import moment, { duration } from 'moment';
+import moment from 'moment';
 
 const TimeOffRequestsTable = ({requests, openModal, darkMode}) => {
   const sortRequests = (a, b) => {

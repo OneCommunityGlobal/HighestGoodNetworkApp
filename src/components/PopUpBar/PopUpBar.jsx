@@ -1,4 +1,4 @@
-import Loading from 'components/common/Loading';
+import Loading from '~/components/common/Loading';
 import './PopUpBar.css';
 
 function PopUpBar({

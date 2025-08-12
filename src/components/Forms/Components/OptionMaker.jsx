@@ -1,5 +1,5 @@
 import { useDispatch } from 'react-redux';
-import { addOption, deleteOption, updateOption } from 'actions/formActions';
+import { addOption, deleteOption, updateOption } from '~/actions/formActions';
 
 export default function OptionMaker({ data }) {
   const dispatch = useDispatch();
