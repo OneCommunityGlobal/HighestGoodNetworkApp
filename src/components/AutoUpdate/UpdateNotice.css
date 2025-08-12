@@ -1,0 +1,22 @@
+.notice-popup {
+  background: #fff8dc;
+  border: 1px solid #ffa;
+  padding: 15px;
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 300px;
+  z-index: 1000;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  border-radius: 5px;
+}
+
+#info-box {
+  background-color: #f0f0f0;
+  padding: 10px;
+  margin-top: 10px;
+  font-size: 13px;
+  border-radius: 4px;
+}

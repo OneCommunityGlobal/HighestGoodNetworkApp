@@ -26,6 +26,11 @@ jobs:
           cache: 'npm'
       - name: Install Dependencies
         run: npm ci
+
+      - name: Generate version.txt
+        run: |
+          echo "Version: $(git rev-parse --short HEAD)" > public/version.txt
+
       # We don't run tests here since we assume it's already done during PR process.
       # - name: Update Browser List
       #   run: npx browserslist@latest --update-db

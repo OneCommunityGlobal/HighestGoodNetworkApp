@@ -4,6 +4,7 @@ import { Provider, useSelector } from 'react-redux';
 import { BrowserRouter as Router, useLocation } from 'react-router-dom';
 import { PersistGate } from 'redux-persist/integration/react';
 import { ModalProvider } from 'context/ModalContext';
+import UpdateNotice from './AutoUpdate/UpdateNotice';
 import routes from '../routes';
 import logger from '../services/logService';
 
@@ -155,6 +156,7 @@ class App extends Component {
         <PersistGate loading={<Loading />} persistor={persistor}>
           <ModalProvider>
             <Router>
+              <UpdateNotice />
               <UpdateDocumentTitle />
               {routes}
             </Router>
