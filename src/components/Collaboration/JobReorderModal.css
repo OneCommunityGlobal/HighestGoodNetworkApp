@@ -152,17 +152,17 @@
   max-width: 800px;
 }
 
-.modal-footer {
+.job-reorder-modal-footer {
   border-top: 1px solid #e9ecef;
   padding: 15px 20px;
 }
 
-.modal-footer .btn-primary {
+.job-reorder-modal-footer .btn-primary {
   background-color: #9c0;
   border-color: #9c0;
 }
 
-.modal-footer .btn-primary:hover {
+.job-reorder-modal-footer .btn-primary:hover {
   background-color: #8ab000;
   border-color: #8ab000;
 }
@@ -208,22 +208,22 @@
 }
 
 /* Modal dark mode styles */
-.dark-mode .modal-header {
+.dark-mode .job-reorder-modal-header {
   background-color: #1e2b38;
   border-color: #445566;
   color: #f8f9fa;
 }
 
-.dark-mode .modal-header .modal-title {
+.dark-mode .job-reorder-modal-header .modal-title {
   color: #ffffff;
   font-weight: 600;
 }
 
-.dark-mode .modal-header h5 {
+.dark-mode .job-reorder-modal-header h5 {
   color: #ffffff;
 }
 
-.dark-mode .modal-footer {
+.dark-mode .job-reorder-modal-footer {
   background-color: #1e2b38;
   border-color: #445566;
 }
@@ -234,17 +234,17 @@
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
-.dark-mode .modal-header .close {
+.dark-mode .job-reorder-modal-header .close {
   color: #ffffff;
   opacity: 0.8;
   text-shadow: none;
 }
 
-.dark-mode .modal-header .close:hover {
+.dark-mode .job-reorder-modal-header .close:hover {
   opacity: 1;
 }
 
-.dark-mode .modal-header i {
+.dark-mode .job-reorder-modal-header i {
   color: #9c0;
 }
 
