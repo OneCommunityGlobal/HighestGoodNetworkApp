@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
 import axios from 'axios';
-import './ExpenditureChart.css';
+import styles from './ExpenditureChart.module.css';
 
 const COLORS = ['#6777EF', '#A0CD61', '#F5CD4B'];
 const CATEGORIES = ['Labor', 'Equipment', 'Materials'];
@@ -61,8 +61,8 @@ function ExpenditureChart({ projectId }) {
   }, [projectId]);
 
   const renderChart = (data, title) => (
-    <div className="expenditure-chart-card">
-      <h4 className="expenditure-chart-title">{title}</h4>
+    <div className={styles.expenditure - chart - card}>
+      <h4 className={styles.expenditure - chart - title}>{title}</h4>
       <PieChart width={280} height={280}>
         <Pie
           data={data}
@@ -85,11 +85,12 @@ function ExpenditureChart({ projectId }) {
     </div>
   );
 
-  if (loading) return <div className="expenditure-chart-loading">Loading expenditure data...</div>;
-  if (error) return <div className="expenditure-chart-error">{error}</div>;
+  if (loading)
+    return <div className={styles.expenditure - chart - loading}>Loading expenditure data...</div>;
+  if (error) return <div className={styles.expenditure - chart - error}>{error}</div>;
 
   return (
-    <div className="expenditure-chart-wrapper">
+    <div className={styles.expenditure - chart - wrapper}>
       {renderChart(normalizeData(actual), 'Actual Expenditure')}
       {renderChart(normalizeData(planned), 'Planned Expenditure')}
     </div>
