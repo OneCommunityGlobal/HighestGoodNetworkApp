@@ -69,8 +69,6 @@ function Feedbackform() {
   const dispatch = useDispatch();
   const { eventId, email } = useParams();
   const initialFormState = { eventId: eventId, name: '', email: '', rating: 0, comments: '' };
-  // eslint-disable-next-line no-console
-  console.log(`eventId is${eventId}`);
 
   const [formData, setFormData] = useState({
     ...initialFormState,
