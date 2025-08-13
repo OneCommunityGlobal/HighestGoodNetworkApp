@@ -163,7 +163,7 @@
     "eslint-plugin-react-hooks": "^4.6.2",
     "eslint-plugin-testing-library": "^7.6.0",
     "eslint-plugin-vitest": "^0.5.4",
-    "husky": "^7.0.4",
+    "husky": "^8.0.1",
     "joi-browser": "^13.4.0",
     "jsdom": "^26.1.0",
     "msw": "^2.10.4",
