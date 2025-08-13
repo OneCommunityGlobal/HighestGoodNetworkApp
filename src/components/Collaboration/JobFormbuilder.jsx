@@ -337,9 +337,8 @@ function JobFormBuilder() {
           </select>
         </div>
       </div>
-      <h1 className={styles.jobformTitle}>FORM CREATION</h1>
-
-      {role === 'Owner' ? (
+      {console.log(role)}
+      {role === 'Owner' || role === 'Administrator' ? (
         <div className={styles.customForm}>
           <p className={styles.jobformDesc}>
             Fill the form with questions about a specific position you want to create an ad for. The
