@@ -1,0 +1,237 @@
+/* Import Roboto font */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+.helpModal .modalDialog {
+  max-width: 992px;
+  margin: 1.75rem auto;
+  width: 100%;
+  padding: 0 15px;
+}
+
+.helpModal .modalContent {
+  width: 100%;
+  min-height: 416px;
+  background: #FFFFFF;
+  border: 1px solid #000000;
+  border-radius: 4px;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  position: relative;
+  overflow: hidden;
+}
+
+.helpModal .modalHeader {
+  border: none;
+  padding: 48px 80px 24px;
+}
+
+.helpModal .btnClose {
+  position: absolute;
+  right: 28px;
+  top: 27px;
+  width: 42px;
+  height: 42px;
+  opacity: 1;
+  padding: 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.helpModal .btnClose::before,
+.helpModal .btnClose::after {
+  content: '';
+  position: absolute;
+  width: 1.5px;
+  height: 24px;
+  background: #000000;
+  top: 50%;
+  left: 50%;
+  transform-origin: center;
+}
+
+.helpModal .btnClose::before {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.helpModal .btnClose::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.helpModal .btnClose:hover::before,
+.helpModal .btnClose:hover::after {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+/* Remove default Bootstrap X button background */
+.helpModal .btnClose:focus {
+  box-shadow: none;
+  opacity: 1;
+}
+
+.helpModal .modalTitle {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 32px;
+  line-height: 38px;
+  color: #000000;
+  margin: 0;
+}
+
+.helpModal .modalBody {
+  padding: 0 80px;
+  position: relative;
+}
+
+/* Select dropdown */
+.selectContainer {
+  width: 100%;
+  max-width: 832px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.selectButton {
+  box-sizing: border-box;
+  width: 100%;
+  height: 62px;
+  background: #FFFFFF;
+  border: 2px solid rgba(0, 0, 0, 0.8);
+  border-radius: 10px;
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  margin-bottom: 24px;
+}
+
+.selectButtonText {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 32px;
+  line-height: 38px;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.selectButtonText.selected {
+  color: #000000;
+}
+
+.selectButtonArrow {
+  width: 12px;
+  height: 12px;
+  border-style: solid;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+  transition: transform 0.3s ease;
+  border-color: #000000;
+}
+
+.selectButtonArrow.open {
+  transform: rotate(-135deg);
+  margin-top: 6px;
+}
+
+.selectOptions {
+  position: absolute;
+  top: calc(100% - 24px);
+  left: 0;
+  width: 100%;
+  background: #FFFFFF;
+  border: 2px solid rgba(0, 0, 0, 0.8);
+  border-radius: 0 0 10px 10px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1050;
+}
+
+.selectOption {
+  padding: 12px 20px;
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 21px;
+  color: #000000;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.selectOption:hover {
+  background: rgba(86, 54, 213, 0.1);
+}
+
+.helpModal .textMuted {
+  font-family: 'Roboto';
+  font-style: italic;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 23px;
+  text-align: left;
+  color: #666666;
+  margin: 5px 0 48px;
+  padding-left: 5px;
+}
+
+.helpModal .textMuted button {
+  color: #0066CC;
+  text-decoration: none;
+  margin-left: 4px;
+  font-style: italic;
+  border: none;
+  background: none;
+  padding: 0;
+}
+
+.helpModal .textMuted button:hover {
+  text-decoration: underline;
+}
+
+.helpModal .modalFooter {
+  border: none;
+  padding: 0 80px 48px;
+  margin: 0;
+  justify-content: flex-end;
+}
+
+.helpModal .btnPrimary {
+  width: 109px;
+  height: 52px;
+  background: #5636D5;
+  border-radius: 10px;
+  border: none;
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 28px;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+
+.helpModal .btnPrimary:hover:not(:disabled) {
+  background: #4528AC;
+}
+
+.helpModal .btnPrimary:disabled {
+  background: #5636D5;
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .helpModal .modalBody {
+    padding: 0 20px;
+  }
+  
+  .helpModal .textMuted {
+    padding-left: 0;
+  }
+}

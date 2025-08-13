@@ -3,9 +3,9 @@ import { connect, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { NavItem, Button } from 'reactstrap';
 import ReactTooltip from 'react-tooltip';
-import hasPermission from 'utils/permissions';
-import { boxStyle, boxStyleDark } from 'styles';
-import { getProjectDetail } from 'actions/project';
+import hasPermission from '~/utils/permissions';
+import { boxStyle, boxStyleDark } from '~/styles';
+import { getProjectDetail } from '~/actions/project';
 import { fetchAllTasks, emptyTaskItems, updateNumList, deleteTask } from '../../../../actions/task';
 import { fetchAllMembers } from '../../../../actions/projectMembers.js';
 import Task from './Task';
@@ -18,7 +18,7 @@ import { FilterBar } from './FilterBar';
 
 function WBSTasks(props) {
   // const { tasks, fetched, darkMode } = props;
-  const { tasks, fetched, darkMode } = props;
+  const { fetched, darkMode } = props;
 
   const { wbsId } = props.match.params;
   const { projectId } = props.match.params;
@@ -29,7 +29,7 @@ function WBSTasks(props) {
   const [showImport, setShowImport] = useState(false);
   const [filterState, setFilterState] = useState('all');
   const [openAll, setOpenAll] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  // const [isLoading, setIsLoading] = useState(true);
   const [isDeleted, setIsDeleted] = useState(false);
   const [levelOneTasks, setLevelOneTasks] = useState([]);
   const [controllerId, setControllerId] = useState(null);
@@ -37,7 +37,13 @@ function WBSTasks(props) {
   const [copiedTask, setCopiedTask] = useState(null);
   const myRef = useRef(null);
 
-  // const { tasks, isLoading, error, refresh } = useFetchWbsTasks(wbsId);
+  const { tasks, isLoading, error, refresh } = useFetchWbsTasks(wbsId);
+
+  useEffect(() => {
+    if(!isLoading){
+      setPageLoadTime(Date.now());
+    }
+  },[tasks, isLoading]);
 
   useEffect(() => {
     setLevelOneTasks(
@@ -69,21 +75,7 @@ function WBSTasks(props) {
     }
   };
 
-  const load = async () => {
-    setIsLoading(true);
-    const levelList = [0, 1, 2, 3, 4];
-    await Promise.all(levelList.map(level => props.fetchAllTasks(wbsId, level)));
-    setPageLoadTime(Date.now());
-    setIsLoading(false);
-  };
-
-  const refresh = async () => {
-    setIsLoading(true);
-    props.emptyTaskItems();
-    await load();
-    setOpenAll(false);
-    setIsLoading(false);
-  };
+  
 
   const deleteWBSTask = (taskId, mother) => {
     props.deleteTask(taskId, mother);
@@ -91,8 +83,8 @@ function WBSTasks(props) {
   };
 
   /*
-   * -------------------------------- useEffects --------------------------------
-   */
+  * -------------------------------- useEffects -------------------------------- 
+  */
   useEffect(() => {
     const observer = new MutationObserver(ReactTooltip.rebuild);
     const observerOptions = {
@@ -105,31 +97,6 @@ function WBSTasks(props) {
       props.emptyTaskItems();
     };
   }, []);
-
-  useEffect(() => {
-    const initialLoad = async () => {
-      await load();
-      // props.fetchAllMembers(projectId);
-      setShowImport(tasks.length === 0);
-      setIsLoading(false);
-    };
-    initialLoad();
-    props.getProjectDetail(projectId);
-  }, [wbsId, projectId]);
-
-  useEffect(() => {
-    const newLevelOneTasks = tasks.filter(task => task.level === 1);
-    const filteredTasks = filterTasks(newLevelOneTasks, filterState);
-    setShowImport(tasks.length === 0);
-    setLevelOneTasks(filteredTasks);
-  }, [tasks, filterState]);
-
-  useEffect(() => {
-    if (isDeleted) {
-      refresh();
-    }
-    setIsDeleted(false);
-  }, [isDeleted]);
 
   return (
     <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: '100%' }}>
@@ -183,6 +150,7 @@ function WBSTasks(props) {
               load={refresh}
               pageLoadTime={pageLoadTime}
               darkMode={darkMode}
+              tasks={tasks} 
             />
           ) : null}
 
@@ -226,49 +194,49 @@ function WBSTasks(props) {
         >
           <thead>
             <tr className={darkMode ? 'bg-space-cadet' : ''}>
-              <th scope="col" className="tasks-detail-actions" data-tip="Action" colSpan="2">
+              <th scope="col" className="tasks-detail-header tasks-detail-actions" data-tip="Action" colSpan="2">
                 Action
               </th>
-              <th scope="col" data-tip="WBS ID" colSpan="1">
+              <th scope="col" data-tip="WBS ID" colSpan="1" className='tasks-detail-header'>
                 #
               </th>
-              <th scope="col" data-tip="Task Name" className="tasks-detail-task-name task-name">
+              <th scope="col" data-tip="Task Name" className="tasks-detail-header tasks-detail-task-name task-name">
                 Task
               </th>
-              <th scope="col" data-tip="Priority">
+              <th scope="col" data-tip="Priority" className='tasks-detail-header'>
                 <i className="fa fa-star" aria-hidden="true" />
               </th>
-              <th className="desktop-view" scope="col" data-tip="Resources">
+              <th className="tasks-detail-header desktop-view" scope="col" data-tip="Resources">
                 <i className="fa fa-users" aria-hidden="true" />
               </th>
-              <th scope="col" data-tip="Assigned">
+              <th scope="col" data-tip="Assigned" className='tasks-detail-header'>
                 <i className="fa fa-user-circle-o" aria-hidden="true" />
               </th>
-              <th className="desktop-view" scope="col" data-tip="Status">
+              <th className="tasks-detail-header desktop-view" scope="col" data-tip="Status">
                 <i className="fa fa-tasks" aria-hidden="true" />
               </th>
-              <th className="desktop-view" scope="col" data-tip="Hours-Best">
+              <th className="tasks-detail-header desktop-view" scope="col" data-tip="Hours-Best">
                 <i className="fa fa-hourglass-start" aria-hidden="true" />
               </th>
-              <th className="desktop-view" scope="col" data-tip="Hours-Worst">
+              <th className="tasks-detail-header desktop-view" scope="col" data-tip="Hours-Worst">
                 <i className="fa fa-hourglass" aria-hidden="true" />
               </th>
-              <th className="desktop-view" scope="col" data-tip="Hours-Most">
+              <th className="tasks-detail-header desktop-view" scope="col" data-tip="Hours-Most">
                 <i className="fa fa-hourglass-half" aria-hidden="true" />
               </th>
-              <th className="desktop-view" scope="col" data-tip="Estimated Hours">
+              <th className="tasks-detail-header desktop-view" scope="col" data-tip="Estimated Hours">
                 <i className="fa fa-clock-o" aria-hidden="true" />
               </th>
-              <th className="desktop-view" scope="col" data-tip="Start Date">
+              <th className="tasks-detail-header desktop-view" scope="col" data-tip="Start Date">
                 <i className="fa fa-calendar-check-o" aria-hidden="true" /> Start
               </th>
-              <th className="desktop-view" scope="col" data-tip="Due Date">
+              <th className="tasks-detail-header desktop-view" scope="col" data-tip="Due Date">
                 <i className="fa fa-calendar-times-o" aria-hidden="true" /> End
               </th>
-              <th className="desktop-view" scope="col" data-tip="Links">
+              <th className="tasks-detail-header desktop-view" scope="col" data-tip="Links">
                 <i className="fa fa-link" aria-hidden="true" />
               </th>
-              <th className="desktop-view" scope="col" data-tip="Details">
+              <th className="tasks-detail-header desktop-view" scope="col" data-tip="Details">
                 <i className="fa fa-question" aria-hidden="true" />
               </th>
             </tr>

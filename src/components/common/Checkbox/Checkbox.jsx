@@ -11,7 +11,10 @@ export const Checkbox = ({
   textColorCN,
 }) => {
   return (
-    <div className={`checkbox-wrapper ${wrapperClassname} ${backgroundColorCN}`}>
+    <div
+      data-testid="checkbox-wrapper"
+      className={`checkbox-wrapper ${wrapperClassname} ${backgroundColorCN}`}
+    >
       <input
         className="checkbox-input"
         type="checkbox"
