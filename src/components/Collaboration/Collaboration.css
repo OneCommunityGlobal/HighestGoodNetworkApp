@@ -22,7 +22,7 @@
   margin: 0 auto;
   flex-direction: column;
 }
-.navbar {
+.job-navbar {
   width: 100%;
   display: flex;
   justify-content: space-between;
@@ -32,15 +32,15 @@
   padding: 10px;
   flex-flow: row nowrap;
 }
-.navbar-left input,
-.navbar-left select {
+.job-navbar-left input,
+.job-navbar-left select {
   display: flex;
   padding: 8px;
   margin-right: 10px;
   align-items: center;
 }
-.navbar-left,
-.navbar-right,
+.job-navbar-left,
+.job-navbar-right,
 .search-form {
   display: flex;
   align-items: center;
