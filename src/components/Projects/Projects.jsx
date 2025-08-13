@@ -325,58 +325,43 @@ const Projects = function(props) {
 
           <SearchProjectByPerson onSearch={handleSearchName} />
 
-          <table className="table table-bordered table-responsive-sm">
-            <thead>
-              <ProjectTableHeader
-                onChange={onChangeCategory}
-                selectedValue={categorySelectedForSort}
-                showStatus={showStatus}
-                selectStatus={onSelectStatus}
-                sorted={sortedByName}
-                handleSort={handleSort}
-                darkMode={darkMode}
-              />
-            </thead>
-            <tbody className={darkMode ? 'bg-yinmn-blue dark-mode' : ''}>
-              {projectList && allReduxProjects.length > 0 && projectList.length > 0 ? (
-                <table className="table table-bordered table-responsive-sm">
-                  <thead>
-                    <ProjectTableHeader
-                      onChange={onChangeCategory}
-                      selectedValue={categorySelectedForSort}
-                      showStatus={showStatus}
-                      selectStatus={onSelectStatus}
-                      sorted={sortedByName}
-                      handleSort={handleSort}
-                      darkMode={darkMode}
-                    />
-                  </thead>
-                  <tbody className={darkMode ? 'bg-yinmn-blue dark-mode' : ''}>
-                    {projectList.map((project, index) => (
-                      <Project
-                        // key={project._id}
-                        key={`${project._id}-${project.isActive}`}
-                        index={index}
-                        projectData={project}
-                        onUpdateProject={onUpdateProject}
-                        onClickArchiveBtn={onClickArchiveBtn}
-                        onClickProjectStatusBtn={onClickProjectStatusBtn}
-                        darkMode={darkMode}
-                      />
-                    ))}
-                  </tbody>
-                </table>
-              ) : (
-                projectList &&
-                allReduxProjects.length > 0 &&
-                projectList.length === 0 && (
-                  <h3 className={`text-center ${darkMode ? 'text-light' : 'text-dark'}`}>
-                    No projects found
-                  </h3>
-                )
-              )}
-            </tbody>
-          </table>
+          {projectList && allReduxProjects.length > 0 && projectList.length > 0 ? (
+            <table className="table table-bordered table-responsive-sm">
+              <thead>
+                <ProjectTableHeader
+                  onChange={onChangeCategory}
+                  selectedValue={categorySelectedForSort}
+                  showStatus={showStatus}
+                  selectStatus={onSelectStatus}
+                  sorted={sortedByName}
+                  handleSort={handleSort}
+                  darkMode={darkMode}
+                />
+              </thead>
+              <tbody className={darkMode ? 'bg-yinmn-blue dark-mode' : ''}>
+                {projectList.map((project, index) => (
+                  <Project
+                    // key={project._id}
+                    key={`${project._id}-${project.isActive}`}
+                    index={index}
+                    projectData={project}
+                    onUpdateProject={onUpdateProject}
+                    onClickArchiveBtn={onClickArchiveBtn}
+                    onClickProjectStatusBtn={onClickProjectStatusBtn}
+                    darkMode={darkMode}
+                  />
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            projectList &&
+            allReduxProjects.length > 0 &&
+            projectList.length === 0 && (
+              <h3 className={`text-center ${darkMode ? 'text-light' : 'text-dark'}`}>
+                No projects found
+              </h3>
+            )
+          )}
         </div>
 
         <ModalTemplate
