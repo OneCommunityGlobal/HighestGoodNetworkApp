@@ -7,7 +7,7 @@ import { ENDPOINTS } from '../../utils/URL';
 import './QuestionSetManager.css';
 import QuestionEditModal from './QuestionEditModal';
 
-function QuestionSetManager({ formFields, setFormFields, onImportQuestions }) {
+function QuestionSetManager({ formFields, setFormFields, onImportQuestions, darkMode }) {
   const [templates, setTemplates] = useState([]);
   const [templateName, setTemplateName] = useState('');
   const [selectedTemplate, setSelectedTemplate] = useState('');
@@ -339,7 +339,7 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions }) {
   };
 
   return (
-    <div className="question-set-manager">
+    <div className={`question-set-manager ${darkMode ? 'dark-mode' : ''}`}>
       <h3>Question Set Templates</h3>
       {error && <div className="error-message">{error}</div>}
       <div className="template-actions">
@@ -426,6 +426,7 @@ QuestionSetManager.propTypes = {
   ).isRequired,
   setFormFields: PropTypes.func.isRequired,
   onImportQuestions: PropTypes.func.isRequired,
+  darkMode: PropTypes.bool,
 };
 
 export default QuestionSetManager;
