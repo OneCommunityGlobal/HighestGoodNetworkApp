@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import './Leaderboard.css';
 import { isEqual, debounce } from 'lodash';
 import { Link } from 'react-router-dom';
@@ -690,7 +690,6 @@ function LeaderBoard({
                   <th style={darkModeStyle}>
                     <span>{isAbbreviatedView ? 'Prog.' : 'Progress'}</span>
                   </th>
-
                   <th
                     style={
                       darkMode
@@ -702,9 +701,6 @@ function LeaderBoard({
                       <div style={{ textAlign: 'left' }}>
                         <span>{isAbbreviatedView ? 'Tot. Time' : 'Total Time'}</span>
                       </div>
-                      {/*    {isOwner && (
-                        <MouseoverTextTotalTimeEditButton onUpdate={handleMouseoverTextUpdate} />
-                      )} */}
                     </div>
                   </th>
                 </tr>
@@ -777,6 +773,7 @@ function LeaderBoard({
                   </td>
                   <td aria-label="Placeholder" />
                 </tr>
+
                 {filteredUsers.map(item => {
                   const { hasTimeOff, isCurrentlyOff, additionalWeeks } = getTimeOffStatus(
                     item.personId,
@@ -787,264 +784,311 @@ function LeaderBoard({
                   const showTrophy = showTrophyIcon(todaysDate, startDate);
 
                   return (
-                    <tr
-                      key={item.personId}
-                      className={darkMode ? 'dark-leaderboard-row' : 'light-leaderboard-row'}
-                    >
-                      <td className="align-middle">
-                        <div>
-                          <Modal
-                            isOpen={isDashboardOpen === item.personId}
-                            toggle={dashboardToggle}
-                            className={darkMode ? 'text-light dark-mode' : ''}
-                            style={darkMode ? boxStyleDark : {}}
-                          >
-                            <ModalHeader
+                    <React.Fragment key={item.personId}>
+                      {/* First row - Status and Name only */}
+                      <tr
+                        className={`${
+                          darkMode ? 'dark-leaderboard-row' : 'light-leaderboard-row'
+                        } user-row-first`}
+                        data-user-id={item.personId}
+                        onMouseEnter={() => {
+                          document
+                            .querySelectorAll(`[data-user-id="${item.personId}"]`)
+                            .forEach(el => {
+                              el.classList.add('row-hover');
+                            });
+                        }}
+                        onMouseLeave={() => {
+                          document
+                            .querySelectorAll(`[data-user-id="${item.personId}"]`)
+                            .forEach(el => {
+                              el.classList.remove('row-hover');
+                            });
+                        }}
+                      >
+                        <td className="align-middle status-cell">
+                          <div>
+                            <Modal
+                              isOpen={isDashboardOpen === item.personId}
                               toggle={dashboardToggle}
-                              className={darkMode ? 'bg-space-cadet' : ''}
+                              className={darkMode ? 'text-light dark-mode' : ''}
+                              style={darkMode ? boxStyleDark : {}}
                             >
-                              Jump to personal Dashboard
-                            </ModalHeader>
-                            <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
-                              <p className={darkMode ? 'text-light' : ''}>
-                                Are you sure you wish to view this {item.name} dashboard?
-                              </p>
-                            </ModalBody>
-                            <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-                              <Button variant="primary" onClick={() => showDashboard(item)}>
-                                Ok
-                              </Button>{' '}
-                              <Button variant="secondary" onClick={dashboardToggle}>
-                                Cancel
-                              </Button>
-                            </ModalFooter>
-                          </Modal>
-                        </div>
-                        <div
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: hasSummaryIndicatorPermission
-                              ? 'space-between'
-                              : 'center',
-                          }}
-                        >
-                          {/* <Link to={`/dashboard/${item.personId}`}> */}
+                              <ModalHeader
+                                toggle={dashboardToggle}
+                                className={darkMode ? 'bg-space-cadet' : ''}
+                              >
+                                Jump to personal Dashboard
+                              </ModalHeader>
+                              <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+                                <p className={darkMode ? 'text-light' : ''}>
+                                  Are you sure you wish to view this {item.name} dashboard?
+                                </p>
+                              </ModalBody>
+                              <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+                                <Button variant="primary" onClick={() => showDashboard(item)}>
+                                  Ok
+                                </Button>{' '}
+                                <Button variant="secondary" onClick={dashboardToggle}>
+                                  Cancel
+                                </Button>
+                              </ModalFooter>
+                            </Modal>
+                          </div>
                           <div
-                            role="button"
-                            tabIndex={0}
-                            onClick={() => {
-                              dashboardToggle(item);
-                            }}
-                            onKeyDown={e => {
-                              if (e.key === 'Enter') {
-                                dashboardToggle(item);
-                              }
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: hasSummaryIndicatorPermission
+                                ? 'space-between'
+                                : 'center',
                             }}
                           >
-                            {hasLeaderboardPermissions(item.role) &&
-                            showStar(item.tangibletime, item.weeklycommittedHours) ? (
-                              <i
-                                className="fa fa-star"
-                                title={`Weekly Committed: ${item.weeklycommittedHours} hours ${
-                                  item.role === 'Core Team' && item.missedHours > 0
-                                    ? `\n Additional make-up hours this week: ${item.missedHours}`
-                                    : ''
-                                } \n Click to view their Dashboard`}
-                                style={{
-                                  color: assignStarDotColors(
-                                    item.tangibletime,
-                                    item.weeklycommittedHours + item.missedHours,
-                                  ),
-                                  fontSize: '20px',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                }}
-                              />
-                            ) : (
+                            <div
+                              role="button"
+                              tabIndex={0}
+                              onClick={() => {
+                                dashboardToggle(item);
+                              }}
+                              onKeyDown={e => {
+                                if (e.key === 'Enter') {
+                                  dashboardToggle(item);
+                                }
+                              }}
+                            >
+                              {hasLeaderboardPermissions(item.role) &&
+                              showStar(item.tangibletime, item.weeklycommittedHours) ? (
+                                <i
+                                  className="fa fa-star"
+                                  title={`Weekly Committed: ${item.weeklycommittedHours} hours ${
+                                    item.role === 'Core Team' && item.missedHours > 0
+                                      ? `\n Additional make-up hours this week: ${item.missedHours}`
+                                      : ''
+                                  } \n Click to view their Dashboard`}
+                                  style={{
+                                    color: assignStarDotColors(
+                                      item.tangibletime,
+                                      item.weeklycommittedHours + item.missedHours,
+                                    ),
+                                    fontSize: '20px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                  }}
+                                />
+                              ) : (
+                                <div
+                                  title={`Weekly Committed: ${item.weeklycommittedHours} hours ${
+                                    item.role === 'Core Team' && item.missedHours > 0
+                                      ? `\n Additional make-up hours this week: ${item.missedHours}`
+                                      : ''
+                                  } \n Click to view their Dashboard`}
+                                  style={{
+                                    backgroundColor:
+                                      item.tangibletime >=
+                                      item.weeklycommittedHours + item.missedHours
+                                        ? '#32CD32'
+                                        : 'red',
+                                    width: 15,
+                                    height: 15,
+                                    borderRadius: 7.5,
+                                    margin: 'auto',
+                                    verticalAlign: 'middle',
+                                  }}
+                                />
+                              )}
+                            </div>
+                            {hasSummaryIndicatorPermission && item.hasSummary && (
                               <div
-                                title={`Weekly Committed: ${item.weeklycommittedHours} hours ${
-                                  item.role === 'Core Team' && item.missedHours > 0
-                                    ? `\n Additional make-up hours this week: ${item.missedHours}`
-                                    : ''
-                                } \n Click to view their Dashboard`}
+                                title="Weekly Summary Submitted"
                                 style={{
-                                  backgroundColor:
-                                    item.tangibletime >=
-                                    item.weeklycommittedHours + item.missedHours
-                                      ? '#32CD32'
-                                      : 'red',
-                                  width: 15,
-                                  height: 15,
-                                  borderRadius: 7.5,
-                                  margin: 'auto',
-                                  verticalAlign: 'middle',
+                                  color: '#32a518',
+                                  cursor: 'default',
                                 }}
-                              />
+                              >
+                                <strong>✓</strong>
+                              </div>
                             )}
                           </div>
-                          {hasSummaryIndicatorPermission && item.hasSummary && (
-                            <div
-                              title="Weekly Summary Submitted"
-                              style={{
-                                color: '#32a518',
-                                cursor: 'default',
-                              }}
-                            >
-                              <strong>✓</strong>
-                            </div>
+                        </td>
+
+                        {/* Extended Name cell spanning multiple columns - only name and visibility */}
+                        <td className="align-middle extended-name-cell" colSpan="6">
+                          <Link
+                            to={`/userprofile/${item.personId}`}
+                            title="View Profile"
+                            style={{
+                              color:
+                                isCurrentlyOff ||
+                                ((isAllowedOtherThanOwner || isOwner || item.personId === userId) &&
+                                  userOnTimeOff[item.personId]?.isInTimeOff === true)
+                                  ? `${darkMode ? '#9499a4' : 'rgba(128, 128, 128, 0.5)'}`
+                                  : '#007BFF',
+                            }}
+                          >
+                            {item.name}
+                          </Link>
+                          &nbsp;&nbsp;&nbsp;
+                          {hasVisibilityIconPermission && !item.isVisible && (
+                            <i className="fa fa-eye-slash" title="User is invisible" />
                           )}
-                        </div>
-                        {/* </Link> */}
-                      </td>
-                      <td className="align-middle">
-                        <Link
-                          to={`/userprofile/${item.personId}`}
-                          title="View Profile"
-                          style={{
-                            color:
-                              isCurrentlyOff ||
-                              ((isAllowedOtherThanOwner || isOwner || item.personId === userId) &&
-                                userOnTimeOff[item.personId]?.isInTimeOff === true)
-                                ? `${darkMode ? '#9499a4' : 'rgba(128, 128, 128, 0.5)'}` // Gray out the name if on time off
-                                : '#007BFF', // Default color
-                          }}
-                        >
-                          {item.name}
-                        </Link>
-                        {isAllowedOtherThanOwner || isOwner || item.personId === userId
-                          ? timeOffIndicator(item.personId)
-                          : null}
-                        &nbsp;&nbsp;&nbsp;
-                        {hasVisibilityIconPermission && !item.isVisible && (
-                          <i className="fa fa-eye-slash" title="User is invisible" />
-                        )}
-                        &nbsp;&nbsp;&nbsp;
-                        {hasLeaderboardPermissions(loggedInUser.role) && showTrophy && (
-                          <i
-                            role="button"
-                            tabIndex={0}
-                            className="fa fa-trophy"
-                            style={{
-                              fontSize: '18px',
-                              color: item?.trophyFollowedUp === false ? '#FF0800' : '#ffbb00',
-                            }}
-                            onClick={() => trophyIconToggle(item)}
-                            onKeyDown={() => trophyIconToggle(item)}
-                          >
-                            <p style={{ fontSize: '10px', marginLeft: '1px' }}>
-                              <strong>{iconContent}</strong>
-                            </p>
-                          </i>
-                        )}
-                        <div>
-                          <Modal isOpen={modalOpen === item.personId} toggle={trophyIconToggle}>
-                            <ModalHeader toggle={trophyIconToggle}>Followed Up?</ModalHeader>
-                            <ModalBody>
-                              <p>Are you sure you have followed up this icon?</p>
-                            </ModalBody>
-                            <ModalFooter>
-                              <Button variant="secondary" onClick={trophyIconToggle}>
-                                Cancel
-                              </Button>{' '}
-                              <Button
-                                color="primary"
-                                onClick={() => {
-                                  handleChangingTrophyIcon(item, true);
-                                }}
-                              >
-                                Confirm
-                              </Button>
-                            </ModalFooter>
-                          </Modal>
-                        </div>
-                        {hasTimeOffIndicatorPermission && additionalWeeks > 0 && (
-                          <span
-                            style={{
-                              marginLeft: '20px',
-                              color: '#17a2b8',
-                              fontSize: '15px',
-                              justifyItems: 'center',
-                            }}
-                          >
-                            {isCurrentlyOff ? `+${additionalWeeks}` : additionalWeeks}
+                        </td>
+                      </tr>
+
+                      {/* Second row - All other details aligned with columns */}
+                      <tr
+                        className={`${
+                          darkMode ? 'dark-leaderboard-row' : 'light-leaderboard-row'
+                        } user-row-second`}
+                        data-user-id={item.personId}
+                        onMouseEnter={() => {
+                          document
+                            .querySelectorAll(`[data-user-id="${item.personId}"]`)
+                            .forEach(el => {
+                              el.classList.add('row-hover');
+                            });
+                        }}
+                        onMouseLeave={() => {
+                          document
+                            .querySelectorAll(`[data-user-id="${item.personId}"]`)
+                            .forEach(el => {
+                              el.classList.remove('row-hover');
+                            });
+                        }}
+                      >
+                        <td></td> {/* Empty status cell */}
+                        <td className="align-middle name-details-cell">
+                          {/* All the additional elements moved here */}
+                          {isAllowedOtherThanOwner || isOwner || item.personId === userId
+                            ? timeOffIndicator(item.personId)
+                            : null}
+                          &nbsp;&nbsp;&nbsp;
+                          {hasLeaderboardPermissions(loggedInUser.role) && showTrophy && (
                             <i
-                              className="fa fa-info-circle"
-                              style={{ marginLeft: '5px', cursor: 'pointer' }}
-                              data-tip={
-                                isCurrentlyOff
-                                  ? `${additionalWeeks} additional weeks off`
-                                  : `${additionalWeeks} weeks until next time off`
-                              }
-                            />
-                            <ReactTooltip place="top" type="dark" effect="solid" />
-                          </span>
-                        )}
-                      </td>
-                      <td className="align-middle">
-                        <span title={mouseoverTextValue} id="Days left" style={{ color: 'red' }}>
-                          {displayDaysLeft(item.endDate)}
-                        </span>
-                      </td>
-                      <td className="align-middle">
-                        <div
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                          }}
-                        >
-                          {hasTimeOff && (
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const data = {
-                                  requests: [...allRequests[item.personId]],
-                                  name: item.name,
-                                  leaderboard: true,
-                                };
-                                handleTimeOffModalOpen(data);
+                              role="button"
+                              tabIndex={0}
+                              className="fa fa-trophy"
+                              style={{
+                                fontSize: '18px',
+                                color: item?.trophyFollowedUp === false ? '#FF0800' : '#ffbb00',
                               }}
-                              style={{ width: '35px', height: 'auto' }}
-                              aria-label="View Time Off Requests"
+                              onClick={() => trophyIconToggle(item)}
+                              onKeyDown={() => trophyIconToggle(item)}
                             >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="22"
-                                height="19"
-                                viewBox="0 0 448 512"
-                                className="show-time-off-calender-svg"
-                              >
-                                <path d="M128 0c17.7 0 32 14.3 32 32V64H288V32c0-17.7 14.3-32 32-32s32 14.3 32 32V64h48c26.5 0 48 21.5 48 48v48H0V112C0 85.5 21.5 64 48 64H96V32c0-17.7 14.3-32 32-32zM0 192H448V464c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V192zm64 80v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm128 0v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H208c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H336zM64 400v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H208zm112 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H336c-8.8 0-16 7.2-16 16z" />
-                              </svg>
-                            </button>
+                              <p style={{ fontSize: '10px', marginLeft: '1px' }}>
+                                <strong>{iconContent}</strong>
+                              </p>
+                            </i>
                           )}
-                        </div>
-                      </td>
-                      <td className="align-middle" id={`id${item.personId}`}>
-                        <span title="Tangible time">{item.tangibletime}</span>
-                      </td>
-                      <td className="align-middle" aria-label="Description or purpose of the cell">
-                        <Link
-                          to={`/timelog/${item.personId}`}
-                          title={`TangibleEffort: ${item.tangibletime} hours`}
+                          <div>
+                            <Modal isOpen={modalOpen === item.personId} toggle={trophyIconToggle}>
+                              <ModalHeader toggle={trophyIconToggle}>Followed Up?</ModalHeader>
+                              <ModalBody>
+                                <p>Are you sure you have followed up this icon?</p>
+                              </ModalBody>
+                              <ModalFooter>
+                                <Button variant="secondary" onClick={trophyIconToggle}>
+                                  Cancel
+                                </Button>{' '}
+                                <Button
+                                  color="primary"
+                                  onClick={() => {
+                                    handleChangingTrophyIcon(item, true);
+                                  }}
+                                >
+                                  Confirm
+                                </Button>
+                              </ModalFooter>
+                            </Modal>
+                          </div>
+                          {hasTimeOffIndicatorPermission && additionalWeeks > 0 && (
+                            <span
+                              style={{
+                                marginLeft: '20px',
+                                color: '#17a2b8',
+                                fontSize: '15px',
+                                justifyItems: 'center',
+                              }}
+                            >
+                              {isCurrentlyOff ? `+${additionalWeeks}` : additionalWeeks}
+                              <i
+                                className="fa fa-info-circle"
+                                style={{ marginLeft: '5px', cursor: 'pointer' }}
+                                data-tip={
+                                  isCurrentlyOff
+                                    ? `${additionalWeeks} additional weeks off`
+                                    : `${additionalWeeks} weeks until next time off`
+                                }
+                              />
+                              <ReactTooltip place="top" type="dark" effect="solid" />
+                            </span>
+                          )}
+                        </td>
+                        <td className="align-middle">
+                          <span title={mouseoverTextValue} id="Days left" style={{ color: 'red' }}>
+                            {displayDaysLeft(item.endDate)}
+                          </span>
+                        </td>
+                        <td className="align-middle">
+                          <div
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                            }}
+                          >
+                            {hasTimeOff && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const data = {
+                                    requests: [...allRequests[item.personId]],
+                                    name: item.name,
+                                    leaderboard: true,
+                                  };
+                                  handleTimeOffModalOpen(data);
+                                }}
+                                style={{ width: '35px', height: 'auto' }}
+                                aria-label="View Time Off Requests"
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="22"
+                                  height="19"
+                                  viewBox="0 0 448 512"
+                                  className="show-time-off-calender-svg"
+                                ></svg>
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                        <td className="align-middle" id={`id${item.personId}`}>
+                          <span title="Tangible time">{item.tangibletime}</span>
+                        </td>
+                        <td
+                          className="align-middle"
+                          aria-label="Description or purpose of the cell"
                         >
-                          <Progress value={item.barprogress} color={item.barcolor} />
-                        </Link>
-                      </td>
-                      <td className="align-middle">
-                        <span
-                          title={mouseoverTextValue}
-                          id="Total time"
-                          className={
-                            item.totalintangibletime_hrs > 0 ? 'leaderboard-totals-title' : null
-                          }
-                        >
-                          {item.totaltime}
-                        </span>
-                      </td>
-                    </tr>
+                          <Link
+                            to={`/timelog/${item.personId}`}
+                            title={`TangibleEffort: ${item.tangibletime} hours`}
+                          >
+                            <Progress value={item.barprogress} color={item.barcolor} />
+                          </Link>
+                        </td>
+                        <td className="align-middle">
+                          <span
+                            title={mouseoverTextValue}
+                            id="Total time"
+                            className={
+                              item.totalintangibletime_hrs > 0 ? 'leaderboard-totals-title' : null
+                            }
+                          >
+                            {item.totaltime}
+                          </span>
+                        </td>
+                      </tr>
+                    </React.Fragment>
                   );
                 })}
               </tbody>
