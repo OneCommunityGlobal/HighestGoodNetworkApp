@@ -39,6 +39,11 @@ function Announcements({ title, email: initialEmail }) {
   const [selectedPlatform, setSelectedPlatform] = useState('');
   const editorRef = useRef(null);
   const maxLength = 280;
+  const platforms = [
+    { label: 'Facebook', value: 'facebook' },
+    { label: 'Twitter', value: 'twitter' },
+    { label: 'Instagram', value: 'instagram' }, // add more as needed
+  ];
 
   useEffect(() => {
     setShowEditor(false);
@@ -190,10 +195,17 @@ function Announcements({ title, email: initialEmail }) {
     return div.textContent || '';
   };
 
-  const handleEditorChange = content => {
+  const handleEditorChange = (content, editor) => {
     setEmailContent(content);
     const charCounts = stripHtml(content).trim();
     setCharCount(charCounts.length);
+    if (editor) {
+      if (charCounts.length > maxLength) {
+        editor.getBody().style.color = 'red';
+      } else {
+        editor.getBody().style.color = ''; // reset to default
+      }
+    }
   };
 
   const handlePostTweets = () => {
@@ -302,23 +314,17 @@ function Announcements({ title, email: initialEmail }) {
     const scheduleDate = `${dateContent}`;
     const scheduleTime = `${timeContent}`;
 
-    const [hours, minutes] = scheduleTime.split(':');
-    let hour = parseInt(hours, 10);
-    const ampm = hour >= 12 ? 'PM' : 'AM';
-    hour = hour % 12 || 12; // Convert 0 to 12 for 12 AM
-    const formattedTime = `${hour}:${minutes} ${ampm} PST`;
-
     if (!htmlContent) {
       toast.error('Error: Missing Text content');
       return;
     }
     switch (platform) {
       case 'twitter':
-        dispatch(scheduleTweet(scheduleDate, formattedTime, htmlContent));
+        dispatch(scheduleTweet(scheduleDate, scheduleTime, htmlContent));
         break;
 
       case 'facebook':
-        dispatch(scheduleFbPost(scheduleDate, formattedTime, htmlContent));
+        dispatch(scheduleFbPost(scheduleDate, scheduleTime, htmlContent));
         break;
 
       default:
@@ -396,6 +402,15 @@ function Announcements({ title, email: initialEmail }) {
     } else if (platforms === 'twitter') {
       handlePostScheduledTweets(postId, textContent, base64Srcs, platforms);
     }
+  };
+
+  const timeConvert = scheduledTime => {
+    const [hours, minutes] = scheduledTime.split(':');
+    let hour = parseInt(hours, 10);
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    hour = hour % 12 || 12; // Convert 0 to 12 for 12 AM
+    const formattedTime = `${hour}:${minutes} ${ampm} PST`;
+    return formattedTime;
   };
 
   return (
@@ -484,7 +499,8 @@ function Announcements({ title, email: initialEmail }) {
                 toolbar:
                   'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
               }}
-              onEditorChange={handleEditorChange}
+              //onEditorChange={handleEditorChange}
+              onEditorChange={(content, editor) => handleEditorChange(content, editor)}
             />
           )}
           <div style={{ color: charCount > 280 ? 'red' : 'black' }}>{charCount}</div>
@@ -637,8 +653,8 @@ function Announcements({ title, email: initialEmail }) {
             >
               <div>
                 <strong>Platform:</strong> {post.platform} <br />
-                <strong>Scheduled Date & Time:</strong> {post.scheduledDate} at {post.scheduledTime}{' '}
-                <br />
+                <strong>Scheduled Date & Time:</strong> {post.scheduledDate} at{' '}
+                {timeConvert(post.scheduledTime)} <br />
                 <strong>Content: </strong>
                 <Link
                   to={`/socialMediaPosts/${post._id}`}

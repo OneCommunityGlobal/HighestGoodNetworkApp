@@ -160,6 +160,8 @@ export const scheduleTweet = (scheduleDate, scheduleTime, html) => {
 export const scheduleFbPost = (scheduleDate, scheduleTime, html) => {
   const url = ENDPOINTS.SCHEDULE_FBPOSTS;
 
+  console.log(html,"Displayed the content here in action items");
+
   return async () => {
     try {
 
