@@ -206,7 +206,7 @@ function BadgeDevelopmentTable(props) {
     });
   };
 
-  const filteredBadges = sortedBadges;
+  const filteredBadges = sortedBadges.filter(item => item.imageUrl !== null);
 
   const toggleCheckbox = id => {
     // prettier-ignore
