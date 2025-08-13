@@ -70,6 +70,7 @@ import ApplicationAnalyticsContainer from './components/ApplicationAnalytics';
 import UserSkillsProfile from './components/HGNSkillsDashboard/SkillsProfilePage/components/UserSkillsProfile';
 
 import WeeklySummaryPage from './components/VolunteerweeklysummaryBBC/WeeklySummaryPage'; // 测试用 后续要删除
+import EducationExperienceDonutChart from './components/EducationExperienceDonutChart/EducationExperienceDonutChart';
 
 // LB Dashboard
 import LBProtectedRoute from './components/common/LBDashboard/LBProtectedRoute/LBProtectedRoute';
@@ -706,6 +707,8 @@ export default (
         <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
         <Route path="/Logout" component={Logout} />
         <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
+        <Route path="/education-experience-donut-chart" component={EducationExperienceDonutChart} />
+
         {/* ----- HGN Help Community Skills Dashboard Routes ----- */}
         <ProtectedRoute path="/hgnhelp" exact component={LandingPage} />
         <ProtectedRoute path="/hgnhelp/skills-overview" exact component={SkillsOverviewPage} />
