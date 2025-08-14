@@ -6,9 +6,11 @@ import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
 import CostPredictionChart from './CostPredictionChart';
+import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
 import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
 import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
+import InjuryCategoryBarChart from './GroupedBarGraphInjurySeverity/InjuryCategoryBarChart';
 import ToolsHorizontalBarChart from './Tools/ToolsHorizontalBarChart';
 import ExpenseBarChart from './Financials/ExpenseBarChart';
 import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
@@ -260,8 +262,13 @@ function WeeklyProjectSummary() {
         key: 'Tools and Equipment Tracking',
         className: 'half',
         content: (
-          <div className="weekly-project-summary-card normal-card" style={{ minHeight: '300px' }}>
-            <ToolsHorizontalBarChart darkMode={darkMode} />
+          <div className="weekly-project-summary-card normal-card tools-tracking-layout">
+            <div className="tools-donut-wrap">
+              <ToolStatusDonutChart />
+            </div>
+            <div className="weekly-project-summary-card normal-card" style={{ minHeight: '300px' }}>
+              <ToolsHorizontalBarChart darkMode={darkMode} />
+            </div>
           </div>
         ),
       },
@@ -269,17 +276,14 @@ function WeeklyProjectSummary() {
         title: 'Lessons Learned',
         key: 'Lessons Learned',
         className: 'half',
-        content: [1, 2].map(() => {
-          const uniqueId = uuidv4();
-          return (
-            <div
-              key={uniqueId}
-              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
-            >
-              📊 Card
-            </div>
-          );
-        }),
+        content: [
+          <div key="text-card" className="weekly-project-summary-card normal-card">
+            📊 Card
+          </div>,
+          <div key="injury-chart" className="weekly-project-summary-card normal-card">
+            <InjuryCategoryBarChart />
+          </div>,
+        ],
       },
       {
         title: 'Financials',
