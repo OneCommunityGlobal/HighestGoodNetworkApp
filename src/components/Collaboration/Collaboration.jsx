@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import hasPermission from '~/utils/permissions';
 import './Collaboration.css';
 import { toast } from 'react-toastify';
-import { ApiEndpoint } from 'utils/URL';
+import { ApiEndpoint } from '~/utils/URL';
 import WhatWeDoSection from '../WhatWeDo/WhatWeDo';
 import OneCommunityImage from '../../assets/images/logo2.png';
 import JobReorderModal from './JobReorderModal';
