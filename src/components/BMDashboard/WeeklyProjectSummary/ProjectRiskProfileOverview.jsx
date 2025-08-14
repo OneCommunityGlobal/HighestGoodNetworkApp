@@ -109,8 +109,9 @@ export default function ProjectRiskProfileOverview() {
           }}
         >
           <span style={{ fontWeight: 'bold', fontSize: 16, marginBottom: 0 }}>Project</span>
-          <span
+          <button
             ref={allSpanRef}
+            type="button"
             style={{
               fontSize: 14,
               color: '#444',
@@ -121,10 +122,11 @@ export default function ProjectRiskProfileOverview() {
               display: 'inline-block',
               minWidth: 60,
               textAlign: 'center',
+              background: 'none',
+              border: 'none',
+              padding: 0,
             }}
             onClick={() => setShowProjectDropdown(true)}
-            tabIndex={0}
-            role="button"
             aria-label="Show project dropdown"
           >
             {getProjectLabel()}
@@ -143,7 +145,6 @@ export default function ProjectRiskProfileOverview() {
                 }}
               >
                 <Select
-                  autoFocus
                   menuIsOpen
                   isMulti
                   classNamePrefix="custom-select"
@@ -204,7 +205,7 @@ export default function ProjectRiskProfileOverview() {
                 />
               </div>
             )}
-          </span>
+          </button>
         </div>
         {/* Date Dropdown */}
         <div
@@ -216,8 +217,9 @@ export default function ProjectRiskProfileOverview() {
           }}
         >
           <span style={{ fontWeight: 'bold', fontSize: 16, marginBottom: 0 }}>Dates</span>
-          <span
+          <button
             ref={dateSpanRef}
+            type="button"
             style={{
               fontSize: 14,
               color: '#444',
@@ -228,10 +230,11 @@ export default function ProjectRiskProfileOverview() {
               display: 'inline-block',
               minWidth: 60,
               textAlign: 'center',
+              background: 'none',
+              border: 'none',
+              padding: 0,
             }}
             onClick={() => setShowDateDropdown(true)}
-            tabIndex={0}
-            role="button"
             aria-label="Show date dropdown"
           >
             {getDateLabel && getDateLabel()}
@@ -250,7 +253,6 @@ export default function ProjectRiskProfileOverview() {
                 }}
               >
                 <Select
-                  autoFocus
                   menuIsOpen
                   isMulti
                   classNamePrefix="custom-select"
@@ -311,7 +313,7 @@ export default function ProjectRiskProfileOverview() {
                 />
               </div>
             )}
-          </span>
+          </button>
         </div>
       </div>
       <ResponsiveContainer width="100%" height={350}>
