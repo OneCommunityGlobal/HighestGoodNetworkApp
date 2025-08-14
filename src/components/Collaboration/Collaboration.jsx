@@ -345,7 +345,7 @@ function Collaboration() {
         </nav>
 
         {showSearchResults ? (
-          <div className='job-details'>
+          <div className="job-details">
             <div className="job-queries">
               {searchTerm.length !== 0 || selectedCategory.length !== 0 ? (
                 <p className="job-query">
