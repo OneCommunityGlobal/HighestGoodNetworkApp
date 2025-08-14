@@ -211,6 +211,10 @@ const UserRoleTab = lazy(() => import('./components/PermissionsManagement/UserRo
 const Teams = lazy(() => import('./components/Teams/Teams'));
 const JobFormBuilder = lazy(() => import('./components/Collaboration/JobFormbuilder'));
 
+const JobAnalyticsPage = lazy(() =>
+  import('./components/Reports/HitsAndApplicationRatio/JobAnalyticsPage'),
+);
+
 export default (
   <Switch>
     {/* ----- LB Dashboard Routing ----- */}
@@ -334,6 +338,7 @@ export default (
           routePermissions={RoutePermissions.reports}
         />
         <ProtectedRoute path="/teamlocations" exact component={TeamLocations} />
+        <ProtectedRoute path="/job-analytics" component={JobAnalyticsPage} fallback />
         <ProtectedRoute
           path="/projects"
           exact
