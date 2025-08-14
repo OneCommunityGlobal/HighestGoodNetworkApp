@@ -252,6 +252,8 @@ export const ENDPOINTS = {
   BM_INVTYPE_ROOT: `${APIEndpoint}/bm/invtypes`,
   BM_TOOLS: `${APIEndpoint}/bm/tools/`,
   BM_TOOL_BY_ID: singleToolId => `${APIEndpoint}/bm/tools/${singleToolId}`,
+  BM_TOOL_AVAILABILITY: (toolId = '', projectId = '') =>
+  `${APIEndpoint}/tools/availability?toolId=${toolId}&projectId=${projectId}`,
   BM_LOG_TOOLS: `${APIEndpoint}/bm/tools/log`,
   BM_EQUIPMENT_BY_ID: singleEquipmentId => `${APIEndpoint}/bm/equipment/${singleEquipmentId}`,
   BM_EQUIPMENTS: `${APIEndpoint}/bm/equipments`,
@@ -259,9 +261,21 @@ export const ENDPOINTS = {
   BM_ISSUE_CHART: `${APIEndpoint}/bm/issue/issue-chart`,
 
   BM_ISSUE_FORM: `${APIEndpoint}/bm/issue/add`,
+  BM_INJURY_CATEGORY_BREAKDOWN: `${APIEndpoint}/bm/injuries/category-breakdown`,
+  BM_INJURY_SEVERITIES: `${APIEndpoint}/bm/injuries/injury-severities`,
+  BM_INJURY_TYPES: `${APIEndpoint}/bm/injuries/injury-types`,
+  BM_INJURY_PROJECTS: `${APIEndpoint}/bm/injuries/project-injury`,
   BM_INJURY_ISSUE: `${APIEndpoint}/bm/issues`,
   BM_RENTAL_CHART: `${APIEndpoint}/bm/rentalChart`,
-
+  TOOLS_AVAILABILITY_PROJECTS: `${APIEndpoint}/bm/tools-availability/projects`,
+  TOOLS_AVAILABILITY_BY_PROJECT: (projectId, startDate, endDate) => {
+    let url = `${APIEndpoint}/bm/projects/${projectId}/tools-availability`;
+    const params = [];
+    if (startDate) params.push(`startDate=${startDate}`);
+    if (endDate) params.push(`endDate=${endDate}`);
+    if (params.length > 0) url += `?${params.join('&')}`;
+    return url;
+  },
   BM_TAGS: `${APIEndpoint}/bm/tags`,
   BM_TAG_ADD: `${APIEndpoint}/bm/tags`,
   BM_TAGS_DELETE: `${APIEndpoint}/bm/tags`,

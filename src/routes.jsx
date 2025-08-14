@@ -5,6 +5,7 @@ import { lazy } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import SetupProfile from '~/components/SetupProfile/SetupProfile';
 import { ToastContainer } from 'react-toastify';
+import ToolsAvailabilityPage from '~/components/BMDashboard/WeeklyProjectSummary/Tools/ToolsAvailabilityPage';
 import AutoUpdate from '~/components/AutoUpdate';
 import TaskEditSuggestions from '~/components/TaskEditSuggestions/TaskEditSuggestions';
 import RoutePermissions from '~/utils/routePermissions';
@@ -136,6 +137,7 @@ import MostSusceptibleTools from './components/MostSusceptible/toolBreakdownChar
 
 import HelpPage from './components/LandingPage/HelpPage';
 
+import TeamCard from './components/HGNHelpSkillsDashboard/TeamCard/TeamCard';
 import LandingPage from './components/HGNHelpSkillsDashboard/LandingPage';
 import SkillsOverviewPage from './components/HGNHelpSkillsDashboard/SkillsOverviewPage';
 import CommunityMembersPage from './components/HGNHelpSkillsDashboard/CommunityMembersPage';
@@ -556,7 +558,7 @@ export default (
           fallback
           component={PurchaseConsumable}
         />
-        <BMProtectedRoute path="/bmdashboard/issue" fallback component={Issue} />
+
         <BMProtectedRoute path="/bmdashboard/rentalchart" component={RentalChart} />
         <BMProtectedRoute path="/bmdashboard/inventory/types" component={CheckTypes} />
         <BMProtectedRoute path="/bmdashboard/equipment" fallback exact component={EquipmentList} />
@@ -600,8 +602,8 @@ export default (
           exact
           component={WeeklyProjectSummary}
         />
-        <BMProtectedRoute path="/bmdashboard/issues/" component={IssueDashboard} />
 
+        <BMProtectedRoute path="/bmdashboard/issues/add/:projectId" component={Issue} />
         <BMProtectedRoute path="/bmdashboard/issuechart" component={IssueChart} />
 
         <BMProtectedRoute path="/bmdashboard/timelog/" component={BMTimeLogger} />
@@ -611,6 +613,13 @@ export default (
           path="/bmdashboard/timelog/:projectId"
           fallback
           component={BMTimeLogCard}
+        />
+
+        <BMProtectedRoute
+          path="/bmdashboard/tools-availability"
+          fallback
+          exact
+          component={ToolsAvailabilityPage}
         />
 
         {/* Community Portal Routes */}
@@ -686,7 +695,6 @@ export default (
           exact
           component={EventStats}
         />
-
         {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
         <CPProtectedRoute path="/communityportal/ActivityAgenda" exact component={ActivityAgenda} />
 
@@ -708,6 +716,8 @@ export default (
         <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
         {/* ----- HGN Help Community Skills Dashboard Routes ----- */}
         <ProtectedRoute path="/hgnhelp" exact component={LandingPage} />
+        <ProtectedRoute path="/hgnteam" exact component={TeamCard} />
+
         <ProtectedRoute path="/hgnhelp/skills-overview" exact component={SkillsOverviewPage} />
         <ProtectedRoute path="/hgnhelp/community" exact component={CommunityMembersPage} />
         <ProtectedRoute path="/hgnhelp/profile/:userId" exact component={UserProfilePage} />
