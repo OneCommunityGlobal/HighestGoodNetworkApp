@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import Projects from '..';
 import { Provider } from 'react-redux';
@@ -47,23 +47,28 @@ beforeEach(() => {
     theme: theme,
     projectTarget: { projectId: 'project123', projectName: 'project name 1' },
     projectInfoModal: false,
-    allProjects: { projects: [], status: 'Active', fetching: false, fetched: true },
     userProfile: { role: 'Manager' },
     popupEditor: { currPopup: { popupContent: 'project content 1' } },
     infoCollections: infoCollections,
     role: { roles: rolesMock.role.roles },
     projectMembers: { activeMemberCounts: {} },
-    allReduxProjects: [
-      {
-        category: 'Food',
-        inventoryModifiedDatetime: '2025-08-13T16:51:36.975Z',
-        isActive: true,
-        membersModifiedDatetime: '2025-08-13T16:51:36.975Z',
-        modifiedDatetime: '2025-08-13T16:57:40.613Z',
-        projectName: 'Name test ',
-        _id: '689cc4042da8947a0b085tfs',
-      },
-    ],
+    allProjects: {
+      error: null,
+      fetched: true,
+      fetching: false,
+      projects: [
+        {
+          category: 'Food',
+          inventoryModifiedDatetime: '2025-08-13T16:51:36.975Z',
+          isActive: true,
+          membersModifiedDatetime: '2025-08-13T16:51:36.975Z',
+          modifiedDatetime: '2025-08-13T16:57:40.613Z',
+          projectName: 'Name test ',
+          _id: '689cc4042da8947a0b085tfs',
+        },
+      ],
+      status: 200,
+    },
   });
 });
 
@@ -121,11 +126,12 @@ describe('Projects component', () => {
     );
     expect(screen.getAllByText('Projects')[0]).toBeInTheDocument();
   });
-  it('check if Project Name header displays as expected', () => {
+  it('check if Project Name header displays as expected', async () => {
     axios.get.mockResolvedValue({
       status: 200,
       data: [],
     });
+
     render(
       <Provider store={store}>
         <MemoryRouter>
@@ -145,6 +151,7 @@ describe('Projects component', () => {
         </MemoryRouter>
       </Provider>,
     );
+
     expect(screen.getByText('Project Name')).toBeInTheDocument();
   });
   it('check if Category header displays as expected', () => {
@@ -257,7 +264,21 @@ describe('Projects component', () => {
 
     render(
       <Provider store={store}>
-        <Projects />
+        <MemoryRouter>
+          <Projects
+            projectList={[
+              {
+                category: 'Food',
+                inventoryModifiedDatetime: '2025-08-13T16:51:36.975Z',
+                isActive: true,
+                membersModifiedDatetime: '2025-08-13T16:51:36.975Z',
+                modifiedDatetime: '2025-08-13T16:57:40.613Z',
+                projectName: 'Name test ',
+                _id: '689cc4042da8947a0b085tfs',
+              },
+            ]}
+          />
+        </MemoryRouter>
       </Provider>,
     );
     expect(screen.queryByText('Add New Project')).not.toBeInTheDocument();
@@ -292,7 +313,9 @@ describe('Projects component', () => {
 
     render(
       <Provider store={testStore}>
-        <Projects />
+        <MemoryRouter>
+          <Projects />
+        </MemoryRouter>
       </Provider>,
     );
     // expect(screen.queryByText('Add new project')).toBeInTheDocument()
@@ -303,9 +326,34 @@ describe('Projects component', () => {
       status: 200,
       data: [],
     });
+
+    const testAuth = {
+      user: {
+        permissions: {
+          frontPermissions: ['postProject', 'deleteProject', 'putProject', 'deleteProject'],
+          backPermissions: [],
+        },
+        role: 'Owner',
+        userid: 'user123',
+      },
+    };
+    const testStore = mockStore({
+      auth: testAuth,
+      theme: theme,
+      projectTarget: { projectId: 'project123', projectName: 'project name 1' },
+      projectInfoModal: false,
+      allProjects: { projects: [], status: 'Active', fetching: true, fetched: false },
+      userProfile: { role: 'Owner' },
+      popupEditor: { currPopup: { popupContent: 'project content 1' } },
+      infoCollections: infoCollections,
+      role: { roles: rolesMock.role.roles },
+    });
+
     render(
-      <Provider store={store}>
-        <Projects />
+      <Provider store={testStore}>
+        <MemoryRouter>
+          <Projects />
+        </MemoryRouter>
       </Provider>,
     );
     expect(screen.getByText('ERROR')).toBeInTheDocument();

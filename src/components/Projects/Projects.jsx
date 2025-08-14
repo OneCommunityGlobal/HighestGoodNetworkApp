@@ -278,31 +278,10 @@ const Projects = function(props) {
   ]);
   // }, [fetched, categorySelectedForSort, showStatus, sortedByName, props.state.theme.darkMode]);
 
-  // useEffect(() => {
-  //   const fetchProjects = async () => {
-  //     if (debouncedSearchName) {
-  //       const projects = await props.getProjectsByUsersName(debouncedSearchName);
-  //       if (projects && allReduxProjects) {
-  //         const newProjectList = allProjects.filter(project =>
-  //           projects.some(p => p === project._id),
-  //         );
-  //         setProjectList(newProjectList);
-  //       } else {
-  //         setProjectList(allProjects);
-  //       }
-  //     } else {
-  //       setProjectList(allProjects);
-  //     }
-  //   };
-  //   fetchProjects();
-  // }, [debouncedSearchName, allProjects, allReduxProjects]);
-
   const handleSearchName = searchNameInput => {
     setSearchName(searchNameInput);
     generateProjectList(categorySelectedForSort, showStatus, sortedByName, searchNameInput);
   };
-
-  console.log(allReduxProjects);
 
   return (
     <>
@@ -354,9 +333,8 @@ const Projects = function(props) {
               </tbody>
             </table>
           ) : (
-            projectList &&
-            allReduxProjects.length > 0 &&
-            projectList.length === 0 && (
+            //prettier-ignore
+            projectList && allReduxProjects.length > 0 && projectList.length === 0 && (
               <h3 className={`text-center ${darkMode ? 'text-light' : 'text-dark'}`}>
                 No projects found
               </h3>
