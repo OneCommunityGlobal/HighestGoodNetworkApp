@@ -6,9 +6,7 @@ import hasPermission from '~/utils/permissions';
 import './Collaboration.css';
 import { toast } from 'react-toastify';
 import { ApiEndpoint } from 'utils/URL';
-import { useSelector } from 'react-redux';
 import WhatWeDoSection from '../WhatWeDo/WhatWeDo';
-
 import OneCommunityImage from '../../assets/images/logo2.png';
 import JobReorderModal from './JobReorderModal';
 
@@ -169,6 +167,8 @@ function Collaboration() {
       setCurrentPage(1);
     }
     setActiveTab(tab);
+  };
+
   const toggleReorderModal = () => {
     setIsReorderModalOpen(prevState => !prevState);
   };
