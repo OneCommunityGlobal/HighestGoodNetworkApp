@@ -15,7 +15,7 @@ function Collaboration() {
   const [categories, setCategories] = useState([]);
   const [summaries, setSummaries] = useState([]);
   const [showSearchResults, setShowSearchResults] = useState(true);
-  const [showTooltip, setShowTooltip] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(true);
   const [tooltipPosition, setTooltipPosition] = useState(null);
   const [loading, setLoading] = useState();
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -80,7 +80,14 @@ function Collaboration() {
 
   const handleSearch = event => {
     setSearchTerm(event.target.value);
-    if (!selectedCategory && !localStorage.getItem('tooltipDismissed')) {
+    // eslint-disable-next-line no-console
+    console.log(selectedCategory);
+    // eslint-disable-next-line no-console
+    console.log(localStorage.getItem('tooltipDismissed'));
+    // eslint-disable-next-line no-console
+    console.log(!localStorage.getItem('tooltipDismissed'));
+
+    if (!category && !localStorage.getItem('tooltipDismissed')) {
       setTooltipPosition('category');
       setShowTooltip(true);
     }
@@ -219,18 +226,6 @@ function Collaboration() {
                 Go
               </button>
             </form>
-            {showTooltip && tooltipPosition === 'search' && (
-              <div className="job-tooltip">
-                <p>Use the search bar to refine your search further!</p>
-                <button
-                  type="button"
-                  className="job-tooltip-dismiss"
-                  onClick={dismissSearchTooltip}
-                >
-                  Got it
-                </button>
-              </div>
-            )}
           </div>
 
           <div className="job-navbar-right">
@@ -242,34 +237,39 @@ function Collaboration() {
                 </option>
               ))}
             </select>
-            {showTooltip && tooltipPosition === 'category' && (
-              <div className="job-tooltip category-tooltip">
-                <p>Use the categories to refine your search further!</p>
-                <button
-                  type="button"
-                  className="job-tooltip-dismiss"
-                  onClick={dismissCategoryTooltip}
-                >
-                  Got it
-                </button>
-              </div>
-            )}
           </div>
         </nav>
+
+        {showTooltip}
+        {showTooltip && tooltipPosition === 'search' && (
+          <div className="job-tooltip">
+            <p>Use the search bar to refine your search further!</p>
+            <button type="button" className="job-tooltip-dismiss" onClick={dismissSearchTooltip}>
+              Got it
+            </button>
+          </div>
+        )}
+        {showTooltip && tooltipPosition === 'category' && (
+          <div className="job-tooltip category-tooltip">
+            <p>Use the categories to refine your search further!</p>
+            <button type="button" className="job-tooltip-dismiss" onClick={dismissCategoryTooltip}>
+              Got it
+            </button>
+          </div>
+        )}
         <div className="job-queries">
-          {searchTerm.length !== 0 || selectedCategory.length !== 0 ? (
-            <p className="job-query">
+          {searchTerm.length !== 0 || category.length !== 0 ? (
+            <h3 className="job-query">
               Listing results for
-              {searchTerm && !selectedCategory && <strong> &apos;{searchTerm}&apos;</strong>}
-              {selectedCategory && !searchTerm && <strong> &apos;{selectedCategory}&apos;</strong>}
-              {searchTerm && selectedCategory && (
+              {searchTerm && !category && <h3> &apos;{searchTerm}&apos;</h3>}
+              {category && !searchTerm && <strong> &apos;{category}&apos;</strong>}
+              {searchTerm && category && (
                 <strong>
-                  {' '}
-                  &apos;{searchTerm} + {selectedCategory}&apos;
+                  &apos;{searchTerm} + {category}&apos;
                 </strong>
               )}
               .
-            </p>
+            </h3>
           ) : (
             <p className="job-query">Listing all job ads.</p>
           )}
@@ -328,9 +328,9 @@ function Collaboration() {
                 </button>
               </div>
             ))}
-          {selectedCategory && (
+          {category && (
             <div className="btn btn-secondary query-option" type="button">
-              {selectedCategory}
+              {category}
               <button className="cross-button" type="button" onClick={handleRemoveCategory}>
                 <img
                   width="30"
@@ -347,9 +347,7 @@ function Collaboration() {
             {jobAds.map(ad => (
               <div key={ad._id} className="job-ad">
                 <img
-                  src={`/api/placeholder/640/480?text=${encodeURIComponent(
-                    ad.category || 'Job Opening',
-                  )}`}
+                  src={`{ad.imageUrl}`}
                   onError={e => {
                     e.target.onerror = null;
                     if (ad.category === 'Engineering') {
@@ -371,12 +369,10 @@ function Collaboration() {
                   loading="lazy"
                 />
 
-                <a
-                  href={`https://www.onecommunityglobal.org/collaboration/seeking-${ad.category.toLowerCase()}`}
-                >
-                  <h3>
+                <a href={`${ad.jobDetailsLink}`} target="_blank" rel="noreferrer">
+                  <h5>
                     {ad.title} - {ad.category}
-                  </h3>
+                  </h5>
                 </a>
               </div>
             ))}
@@ -390,7 +386,9 @@ function Collaboration() {
           summaries.jobs.map(summary => (
             <div key={summary._id} className="job-summary-item">
               <h3>
-                <a href={summary.jobDetailsLink}>{summary.title}</a>
+                <a href={`${summary.jobDetailsLink}`} target="_blank" rel="noreferrer">
+                  {summary.title}
+                </a>
               </h3>
               <div className="job-summary-content">
                 <p>{summary.description}</p>
