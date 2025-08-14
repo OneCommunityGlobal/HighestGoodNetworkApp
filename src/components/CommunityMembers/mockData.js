@@ -93,7 +93,7 @@ export const mockMembers = [
     },
     lastUpdated: new Date('2023-08-15T12:30:45'),
     isActive: true,
-    profileImage: 'https://via.placeholder.com/150',
+    profileImage: null,
   },
   {
     userId: '765524c257ca141fe8921b42',
@@ -180,7 +180,7 @@ export const mockMembers = [
     },
     lastUpdated: new Date('2023-09-05T10:15:30'),
     isActive: true,
-    profileImage: 'https://via.placeholder.com/150',
+    profileImage: null,
   },
   {
     userId: '865524c257ca141fe8921b43',
@@ -261,7 +261,7 @@ export const mockMembers = [
     },
     lastUpdated: new Date('2023-10-10T14:45:20'),
     isActive: true,
-    profileImage: 'https://via.placeholder.com/150',
+    profileImage: null,
   },
   {
     userId: '965524c257ca141fe8921b44',
@@ -344,7 +344,7 @@ export const mockMembers = [
     },
     lastUpdated: new Date('2023-07-25T09:20:15'),
     isActive: true,
-    profileImage: 'https://via.placeholder.com/150',
+    profileImage: null,
   },
   {
     userId: '165524c257ca141fe8921b45',
@@ -435,7 +435,7 @@ export const mockMembers = [
     },
     lastUpdated: new Date('2023-11-01T16:30:00'),
     isActive: true,
-    profileImage: 'https://via.placeholder.com/150',
+    profileImage: null,
   },
   {
     userId: '265524c257ca141fe8921b46',
@@ -526,7 +526,7 @@ export const mockMembers = [
     },
     lastUpdated: new Date('2023-10-20T11:25:30'),
     isActive: true,
-    profileImage: 'https://via.placeholder.com/150',
+    profileImage: null,
   },
   {
     userId: '365524c257ca141fe8921b47',
@@ -613,7 +613,7 @@ export const mockMembers = [
     },
     lastUpdated: new Date('2023-09-15T13:40:10'),
     isActive: true,
-    profileImage: 'https://via.placeholder.com/150',
+    profileImage: null,
   },
   {
     userId: '465524c257ca141fe8921b48',
@@ -700,7 +700,7 @@ export const mockMembers = [
     },
     lastUpdated: new Date('2023-08-05T10:15:45'),
     isActive: true,
-    profileImage: 'https://via.placeholder.com/150',
+    profileImage: null,
   },
   {
     userId: '565524c257ca141fe8921b49',
@@ -789,7 +789,7 @@ export const mockMembers = [
     },
     lastUpdated: new Date('2023-10-25T14:20:30'),
     isActive: true,
-    profileImage: 'https://via.placeholder.com/150',
+    profileImage: null,
   },
   {
     userId: '665524c257ca141fe8921b50',
@@ -880,6 +880,6 @@ export const mockMembers = [
     },
     lastUpdated: new Date('2023-11-10T09:30:15'),
     isActive: true,
-    profileImage: 'https://via.placeholder.com/150',
+    profileImage: null,
   },
 ];

@@ -75,7 +75,7 @@ const MemberCard = ({
     <div className={`member-card ${darkMode ? 'dark-mode' : ''}`}>
       <div className="member-card__image-container">
         <img
-          src={profileImage || '/default-avatar.png'}
+          src={profileImage || '/avatar.png'}
           alt={`${name}'s profile`}
           className="member-card__image"
         />
