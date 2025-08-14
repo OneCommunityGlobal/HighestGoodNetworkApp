@@ -97,7 +97,7 @@
   border-radius: 5px;
 }
 
-.query-option {
+.job-query-option {
   display: flex !important;
   align-items: center;
   gap: 5px;
@@ -106,9 +106,13 @@
   text-align: center;
 }
 
-.cross-button {
+.job-cross-button {
   cursor: pointer;
   display: flex;
+}
+
+.job-cross-button:hover {
+  background-color: transparent;
 }
 
 .job-navbar-left input,
@@ -120,18 +124,18 @@
 }
 .job-navbar-left,
 .job-navbar-right,
-.search-form {
+.job-search-form {
   display: flex;
   align-items: center;
   padding: 4px;
 }
-.search-form input {
+.job-search-form input {
   margin-right: 10px;
   padding: 5px;
   border: 1px solid #ccc;
   border-radius: 4px;
 }
-.pagination button,
+.job-pagination button,
 .search {
   padding: 5px 10px;
   cursor: pointer;
@@ -199,14 +203,14 @@
   transform: translateY(-5px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
-.pagination {
+.job-pagination {
   display: flex;
   justify-content: center;
   gap: 10px;
   margin-top: 20px;
   margin-bottom: 20px;
 }
-.pagination button:disabled {
+.job-pagination button:disabled {
   background-color: #ccc;
   color: #333;
   cursor: default;
@@ -220,15 +224,23 @@
   border-radius: 5px;
 }
 
-.pagination button:hover {
+.job-pagination button:hover {
   background-color: #4a99ee;
 }
-.search-form button {
+.job-search-form button {
   padding: 10px 15px;
   border: none;
   border-radius: 2px;
   cursor: pointer;
   font-size: 14px;
+}
+
+.job-no-results h2 {
+  color: black;
+}
+
+.dark-mode .job-no-results h2{
+  color: #9c0;
 }
 
 .job-navbar {
@@ -241,19 +253,19 @@
   background-color: #9c0;
 }
 
-.search-form {
+.job-search-form {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.search-form input {
+.job-search-form input {
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 4px;
 }
 
-.search-form button {
+.job-search-form button {
   padding: 6px 10px;
   border: none;
   border-radius: 2px;
@@ -321,7 +333,7 @@
     gap: 10px;
   }
 
-  .search-form {
+  .job-search-form {
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -329,14 +341,14 @@
     gap: 10px;
   }
 
-  .search-form input,
-  .search-form button {
+  .job-search-form input,
+  .job-search-form button {
     width: 90%;
     max-width: 300px;
     margin: 0 auto;
   }
 
-  .search-form button {
+  .job-search-form button {
     padding: 10px;
     font-size: 14px;
   }
@@ -379,25 +391,25 @@
     gap: 10px;
   }
 
-  .search-form {
+  .job-search-form {
     display: flex;
     flex-direction: column;
     width: 100%;
     gap: 10px;
   }
 
-  .search-form input {
+  .job-search-form input {
     width: 90%;
     margin-bottom: 10px;
   }
 
-  .search-form button {
+  .job-search-form button {
     width: 90%;
     padding: 8px;
     font-size: 14px;
   }
 
-  .pagination button {
+  .job-pagination button {
     padding: 8px;
     width: auto;
   }
@@ -457,25 +469,25 @@
   border-color: transparent #225163 transparent transparent;
 }
 
-.dark-mode .pagination button {
+.dark-mode .job-pagination button {
   background-color: #23272a;
   color: #f1f1f1;
   border: 1px solid #444;
 }
 
-.dark-mode .pagination button:disabled {
+.dark-mode .job-pagination button:disabled {
   background-color: #333333;
   color: #888888;
 }
 
-.dark-mode .search-form input,
+.dark-mode .job-search-form input,
 .dark-mode select {
   background-color: #1c1c1c;
   color: #f1f1f1;
   border: 1px solid #444;
 }
 
-.dark-mode .search-form input::placeholder {
+.dark-mode .job-search-form input::placeholder {
   color: #f1f1f1;
 }
 
@@ -490,7 +502,7 @@
   padding-right: 36px;
 }
 
-.dark-mode .search-form button,
+.dark-mode .job-search-form button,
 .dark-mode .btn {
   background-color: #333;
   color: #f1f1f1;

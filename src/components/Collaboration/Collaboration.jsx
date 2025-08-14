@@ -155,7 +155,7 @@ function Collaboration() {
         <div className="job-container">
           <nav className="job-navbar">
             <div className="job-navbar-left">
-              <form className="search-form">
+              <form className="job-search-form">
                 <input
                   type="text"
                   placeholder="Search by title..."
@@ -233,9 +233,9 @@ function Collaboration() {
               Close Summaries
             </button>
             {searchTerm && (
-              <div className="query-option btn btn-secondary " type="button">
+              <div className="job-query-option btn btn-secondary " type="button">
                 <span>{searchTerm}</span>
-                <button className="cross-button" type="button" onClick={handleRemoveQuery}>
+                <button className="job-cross-button" type="button" onClick={handleRemoveQuery}>
                   <img
                     width="30"
                     height="30"
@@ -246,9 +246,9 @@ function Collaboration() {
               </div>
             )}
             {selectedCategory && (
-              <div className="btn btn-secondary query-option" type="button">
+              <div className="btn btn-secondary job-query-option" type="button">
                 {selectedCategory}
-                <button className="cross-button" type="button" onClick={handleRemoveCategory}>
+                <button className="job-cross-button" type="button" onClick={handleRemoveCategory}>
                   <img
                     width="30"
                     height="30"
@@ -295,7 +295,7 @@ function Collaboration() {
       <div className="job-container">
         <nav className="job-navbar">
           <div className="job-navbar-left">
-            <form className="search-form">
+            <form className="job-search-form">
               <input
                 type="text"
                 placeholder="Search by title..."
@@ -369,9 +369,9 @@ function Collaboration() {
                 Show Summaries
               </button>
               {searchTerm && (
-                <div className="query-option btn btn-secondary " type="button">
+                <div className="job-query-option btn btn-secondary " type="button">
                   <span>{searchTerm}</span>
-                  <button className="cross-button" type="button" onClick={handleRemoveQuery}>
+                  <button className="job-cross-button" type="button" onClick={handleRemoveQuery}>
                     <img
                       width="30"
                       height="30"
@@ -382,9 +382,9 @@ function Collaboration() {
                 </div>
               )}
               {selectedCategory && (
-                <div className="btn btn-secondary query-option" type="button">
+                <div className="btn btn-secondary job-query-option" type="button">
                   {selectedCategory}
-                  <button className="cross-button" type="button" onClick={handleRemoveCategory}>
+                  <button className="job-cross-button" type="button" onClick={handleRemoveCategory}>
                     <img
                       width="30"
                       height="30"
@@ -437,12 +437,12 @@ function Collaboration() {
                 ))}
               </div>
             ) : (
-              <div className="no-results">
+              <div className="job-no-results">
                 <h2>No job ads found.</h2>
               </div>
             )}
 
-            <div className="pagination">
+            <div className="job-pagination">
               {Array.from({ length: totalPages }, (_, i) => (
                 <button
                   type="button"
