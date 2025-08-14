@@ -10,6 +10,7 @@ import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
 import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
 import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
+import IssuesBreakdownChart from './IssuesBreakdownChart';
 import InjuryCategoryBarChart from './GroupedBarGraphInjurySeverity/InjuryCategoryBarChart';
 import ToolsHorizontalBarChart from './Tools/ToolsHorizontalBarChart';
 import ExpenseBarChart from './Financials/ExpenseBarChart';
@@ -220,6 +221,17 @@ function WeeklyProjectSummary() {
                 </div>
               );
             })}
+          </div>
+        ),
+      },
+      // New Issues Breakdown card
+      {
+        title: 'Issues Breakdown',
+        key: 'Issues Breakdown',
+        className: 'large',
+        content: (
+          <div className="weekly-project-summary-card normal-card">
+            <IssuesBreakdownChart />
           </div>
         ),
       },
