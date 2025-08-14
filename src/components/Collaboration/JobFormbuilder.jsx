@@ -491,9 +491,6 @@ function JobFormBuilder() {
                 Add Field
               </button>
             </div>
-            <button type="submit" className={styles.jobSubmitButton} onClick={handleSubmit}>
-              Proceed to Submit with Details
-            </button>
             {editModalOpen && editingQuestion && (
               <QuestionEditModal
                 question={editingQuestion}
