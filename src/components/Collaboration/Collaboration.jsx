@@ -30,7 +30,7 @@ function Collaboration() {
   }, []);
 
   const fetchJobAds = async (givenQuery, givenCategory) => {
-    const adsPerPage = 20;
+    const adsPerPage = 18;
 
     try {
       const response = await fetch(
