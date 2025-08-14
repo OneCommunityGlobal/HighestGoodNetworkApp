@@ -43,19 +43,26 @@ const SupplierPerformanceDashboard = function(props) {
 
   // Fetch supplier data when filters change
   useEffect(() => {
-    if (!selectedProject) return;
+    if (!selectedProject || selectedProject === 'all') return;
 
     const fetchSupplierData = async () => {
       setLoading(true);
       setError(null);
 
       try {
+        console.log('Fetching supplier data with:', {
+          projectId: selectedProject,
+          startDate: dateRange.startDate,
+          endDate: dateRange.endDate,
+        });
+
         const data = await props.fetchSupplierPerformance({
           projectId: selectedProject,
           startDate: dateRange.startDate,
           endDate: dateRange.endDate,
         });
 
+        console.log('Received supplier data:', data);
         setSupplierData(data);
 
         if (onDataLoaded && typeof onDataLoaded === 'function') {
@@ -63,7 +70,7 @@ const SupplierPerformanceDashboard = function(props) {
         }
       } catch (err) {
         console.error('Failed to load supplier data:', err.message);
-        setError('Failed to load data');
+        setError(`Failed to load data: ${err.message}`);
       } finally {
         setLoading(false);
       }
@@ -154,7 +161,7 @@ const SupplierPerformanceDashboard = function(props) {
                 Select a Project
               </option>
               <option value="all">All Projects</option>
-              {props.state.allProjects.projects.map(project => (
+              {props.state.allProjects?.projects?.map(project => (
                 <option key={project._id} value={project._id}>
                   {project.projectName}
                 </option>
@@ -182,6 +189,15 @@ const SupplierPerformanceDashboard = function(props) {
             />
           </div>
         )}
+
+        {/* Debug Info */}
+        <div style={{ fontSize: '12px', color: '#666', marginBottom: '10px' }}>
+          <div>Selected Project: {selectedProject || 'None'}</div>
+          <div>
+            Date Range: {dateRange.startDate} to {dateRange.endDate}
+          </div>
+          <div>Available Projects: {props.state.allProjects?.projects?.length || 0}</div>
+        </div>
 
         {/* Error Message */}
         {error && <div style={styles.errorMessage}>{error}</div>}
