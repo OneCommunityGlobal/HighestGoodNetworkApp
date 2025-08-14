@@ -7,7 +7,7 @@ import '../Header/DarkMode.css';
 /**
  * Modal popup to show the user profile in create mode
  */
-const SetUpFinalDayPopUp = React.memo(({ open, onClose, onSave, darkMode }) => {
+const SetUpFinalDayPopUpComponent = ({ open, onClose, onSave, darkMode }) => {
   const [finalDayDate, onDateChange] = useState(Date.now());
   const [dateError, setDateError] = useState(false);
 
@@ -59,6 +59,9 @@ const SetUpFinalDayPopUp = React.memo(({ open, onClose, onSave, darkMode }) => {
       </ModalFooter>
     </Modal>
   );
-});
+};
+
+const SetUpFinalDayPopUp = React.memo(SetUpFinalDayPopUpComponent);
+SetUpFinalDayPopUp.displayName = 'SetUpFinalDayPopUp';
 
 export default SetUpFinalDayPopUp;

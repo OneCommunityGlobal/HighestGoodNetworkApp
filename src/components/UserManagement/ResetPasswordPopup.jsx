@@ -7,7 +7,7 @@ import '../Header/DarkMode.css';
 /**
  * Modal popup to show the reset password action
  */
-const ResetPasswordPopup = React.memo(props => {
+const ResetPasswordPopupComponent = (props) => {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const [newPassword, onNewPasswordChange] = useState({ password: '', isValid: false });
@@ -133,6 +133,9 @@ const ResetPasswordPopup = React.memo(props => {
       </ModalFooter>
     </Modal>
   );
-});
+};
+
+const ResetPasswordPopup = React.memo(ResetPasswordPopupComponent);
+ResetPasswordPopup.displayName = 'ResetPasswordPopup';
 
 export default ResetPasswordPopup;
