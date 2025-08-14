@@ -138,7 +138,7 @@ function Collaboration() {
   useEffect(() => {
     fetchJobAds(query, category);
     fetchCategories();
-  }, [currentPage]); // Re-fetch job ads when page or category changes
+  }, [currentPage]);
 
   if (summaries) {
     return (
@@ -152,7 +152,7 @@ function Collaboration() {
             <img src={OneCommunityImage} alt="One Community Logo" />
           </a>
         </div>
-        <div className="container">
+        <div className="job-container">
           <nav className="job-navbar">
             <div className="job-navbar-left">
               <form className="search-form">
@@ -230,7 +230,7 @@ function Collaboration() {
                 setShowSearchResults(true);
               }}
             >
-              Show Summaries
+              Close Summaries
             </button>
             {searchTerm && (
               <div className="query-option btn btn-secondary " type="button">
@@ -292,7 +292,7 @@ function Collaboration() {
           <img src={OneCommunityImage} alt="One Community Logo" />
         </a>
       </div>
-      <div className="container">
+      <div className="job-container">
         <nav className="job-navbar">
           <div className="job-navbar-left">
             <form className="search-form">
@@ -345,7 +345,7 @@ function Collaboration() {
         </nav>
 
         {showSearchResults ? (
-          <div>
+          <div className='job-details'>
             <div className="job-queries">
               {searchTerm.length !== 0 || selectedCategory.length !== 0 ? (
                 <p className="job-query">
