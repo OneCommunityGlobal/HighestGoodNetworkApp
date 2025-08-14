@@ -1,165 +1,300 @@
-.iconAddPerson {
-    padding: 50px;
+.icon-add-person {
+    padding: 50px 20px;
     justify-content: center;
     text-align: center;
 }
 
-.titleMember {
+.title-member {
     color: #f49441;
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    margin: 10px 0;
 }
 
-.containerAdd {
+.container-add {
     background-color: white;
     border-radius: 10%;
     padding-bottom: 50px;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0 20px 50px;
 }
 
-/* Name Section */
-.nameContainer {
+.name-container {
     display: flex;
-    gap: 40px;
+    gap: 20px;
     justify-content: center;
     margin: 20px auto;
-    width: 500px;
+    width: 100%;
+    max-width: 500px;
 }
 
-.inputName {
+@media (max-width: 768px) {
+    .name-container {
+        flex-direction: column;
+        gap: 15px;
+    }
+}
+
+.input-name {
     display: flex;
     flex-direction: column;
-    width: 230px;
+    flex: 1;
+    min-width: 0;
 }
 
-.inputName input {
+.input-name input {
     width: 100%;
     padding: 10px;
     box-sizing: border-box;
     height: 38px;
 }
 
-.inputName label {
+.input-name label {
     margin-bottom: 5px;
     text-align: left;
 }
 
-/* Role Section */
-.roleContainer {
+.role-container {
     display: flex;
-    gap: 40px;
+    gap: 20px;
     justify-content: center;
-    width: 500px;
+    width: 100%;
+    max-width: 500px;
     margin: 20px auto;
 }
 
-.roleInput {
-    display: flex;
-    flex-direction: column;
-    width: 230px;
+@media (max-width: 768px) {
+    .role-container {
+        flex-direction: column;
+        gap: 15px;
+    }
 }
 
-.roleInput label {
+.role-input {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+}
+
+.role-input label {
     margin-bottom: 5px;
     text-align: left;
 }
 
-.roleInput input,
-.roleInput .cssB62m3tContainer {
+.role-input input,
+.role-input .css-b62m3t-container {
     width: 100%;
     box-sizing: border-box;
 }
 
-/* Team Section */
-.teamContainer {
+.team-container {
     display: flex;
-    gap: 40px;
+    gap: 20px;
     justify-content: center;
-    width: 500px;
+    width: 100%;
+    max-width: 500px;
     margin: 20px auto;
 }
 
-.teamInput {
-    display: flex;
-    flex-direction: column;
-    width: 230px;
+@media (max-width: 768px) {
+    .team-container {
+        flex-direction: column;
+        gap: 15px;
+    }
 }
 
-.teamInput label {
+.team-input {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+}
+
+.team-input label {
     margin-bottom: 5px;
     text-align: left;
 }
 
-.teamInput input,
-.teamInput .cssB62m3tContainer {
+.team-input input,
+.team-input .css-b62m3t-container {
     width: 100%;
     box-sizing: border-box;
 }
 
-/* Contact Info Section */
-.contactInfo {
+.contact-info {
     display: flex;
     flex-direction: column;
     gap: 15px;
     padding-top: 20px;
-    width: 500px;
+    width: 100%;
+    max-width: 500px;
     margin: 0 auto;
 }
 
-.contactInfo label {
+.contact-info label {
     margin-bottom: 5px;
     text-align: left;
 }
 
-.contactInfo input {
+.contact-info input {
     width: 100%;
     padding: 10px;
     box-sizing: border-box;
     height: 38px;
 }
 
-.phoneInputGroup {
+.phone-input-group {
     display: flex;
     gap: 10px;
 }
 
-.countryCodeSelect {
+@media (max-width: 480px) {
+    .phone-input-group {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
+.country-code-select {
     width: 150px;
+    flex-shrink: 0;
 }
 
-/* Button Section */
-.submitCancel {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  padding-top: 60px;
+@media (max-width: 480px) {
+    .country-code-select {
+        width: 100%;
+    }
 }
 
-.submitButton,
-.cancelButton {
-    padding: 15px 40px;
+.phone-input-group input {
+    flex: 1;
+    min-width: 0;
+}
+
+.submit-cancel {
+    display: flex;
+    justify-content: center;
+    padding-top: 60px;
+    margin: 0 auto;
+    gap: 20px;
+    width: 100%;
+    max-width: 500px;
+}
+
+@media (max-width: 480px) {
+    .submit-cancel {
+        flex-direction: column;
+        gap: 15px;
+        padding-top: 40px;
+    }
+}
+
+.submit-button,
+.cancel-button {
+    padding: 15px 30px;
     border-radius: 5px;
     font-size: 16px;
     cursor: pointer;
-    margin: 0px 50px;
+    min-width: 120px;
+    flex: 1;
+    max-width: 200px;
 }
 
-.submitButton {
+@media (max-width: 480px) {
+    .submit-button,
+    .cancel-button {
+        max-width: none;
+        width: 100%;
+    }
+}
+
+.submit-button {
     background-color: #26505e;
     color: white;
     border: none;
 }
 
-.cancelButton {
+.cancel-button {
     background-color: white;
     border: 2px solid #26505e;
     color: black;
 }
 
-/* Error Styles */
 .error {
     border-color: red;
 }
 
-.errorMessage {
+.error-message {
     color: red;
     font-size: 12px;
     margin-top: 5px;
+}
+
+@media (max-width: 480px) {
+    .icon-add-person {
+        padding: 30px 10px;
+    }
+    
+    .container-add {
+        padding: 0 15px 30px;
+        border-radius: 5%;
+    }
+}
+
+.dark {
+  background-color: transparent !important;
+  border-radius: 0 !important;
+}
+
+.dark-background {
+  background-color: #1b2a41;
+  min-height: 100vh;
+  padding: 0;
+}
+
+.dark .icon-add-person,
+.dark .title-member,
+.dark .name-container,
+.dark .role-container,
+.dark .team-container,
+.dark .contact-info,
+.dark .submit-cancel {
+    color: #fff !important;
+}
+
+.dark input,
+.dark select,
+.dark .css-b62m3t-container {
+    background-color: #d1d5db !important;
+    color: #1b2a41 !important;
+    border-color: #4a5568 !important;
+}
+
+.dark input:focus,
+.dark select:focus {
+    border-color: #f49441 !important;
+}
+
+.dark .submit-button {
+    background-color: #f49441 !important;
+    color: #1b2a41 !important;
+}
+
+.dark .cancel-button {
+    background-color: #1b2a41 !important;
+    color: #f49441 !important;
+    border: 2px solid #f49441 !important;
+}
+
+.dark .error {
+    border-color: #ff6b6b !important;
+}
+
+.dark .error-message {
+    color: #ff6b6b !important;
+}
+
+.dark label { 
+    color: #fff !important;
 }
