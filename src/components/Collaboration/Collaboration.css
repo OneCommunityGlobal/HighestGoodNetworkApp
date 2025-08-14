@@ -1,5 +1,9 @@
-.collaboration-container,
-.job-landing .header img {
+.job-header {
+  display:flex;
+  justify-content: center;
+  align-items: center;
+}
+.collaboration-container {
   width: 60%;
   max-width: 1000px;
   display: flex;
@@ -17,17 +21,17 @@
   border: 1px solid #ddd;
   border-radius: 10px;
 }
-.job-landing .header img {
+/*.job-landing .header img {
   height: auto;
   margin: 0 auto;
   flex-direction: column;
-}
+} */
 .job-navbar {
   width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  /* margin-bottom: 20px; */
+  margin-bottom: 20px; 
   background-color: #9c0;
   padding: 10px;
   flex-flow: row nowrap;
@@ -63,10 +67,11 @@ select {
   border-radius: 4px;
 }
 .job-list {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
   gap: 20px;
-  width: 100%;
+ /* align-items:stretch; */
 }
 .job-ad {
   border: 1px solid #ddd;
@@ -75,10 +80,14 @@ select {
   overflow: hidden;
   background: linear-gradient(135deg, #fff, #f9f9f9);
   transition: transform 0.3s, box-shadow 0.3s;
+  width:250px;
+  height:100px;
+  overflow: hidden;
+  
 }
-.job-ad img {
-  max-width: 100%;
-  height: auto;
+.job-list .job-ad img {
+  height:50px;
+  width:50px;
   border-bottom: 1px solid #ddd;
 }
 .job-ad h3 {
@@ -91,6 +100,7 @@ select {
 .job-ad a {
   text-decoration: none;
   color: inherit;
+  display:flex;
 }
 .job-ad a:hover h3 {
   color: #007acc;
