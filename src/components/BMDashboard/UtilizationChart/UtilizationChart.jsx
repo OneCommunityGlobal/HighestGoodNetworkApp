@@ -48,60 +48,57 @@ function UtilizationChart() {
 
   const chartData = {
     labels: toolsData.map(tool => tool.name),
-      datasets: [
-        {
-          label: 'Utilization (%)',
-          data: toolsData.map(tool => tool.utilizationRate),
-          backgroundColor: '#a0e7e5',
-          borderRadius: 6,
-        },
-      ],
-    };
+    datasets: [
+      {
+        label: 'Utilization (%)',
+        data: toolsData.map(tool => tool.utilizationRate),
+        backgroundColor: '#a0e7e5',
+        borderRadius: 6,
+      },
+    ],
+  };
 
-    const options = {
-      indexAxis: 'y',
-      responsive: true,
-      plugins: {
-        datalabels: {
-          color: '#333',
-          anchor: 'end',
-          align: 'end',
-          font: {
-            weight: 'bold',
-            size: 12,
-          },
-          formatter: (_, context) => {
+  const options = {
+    indexAxis: 'y',
+    responsive: true,
+    plugins: {
+      datalabels: {
+        color: '#333',
+        anchor: 'end',
+        align: 'end',
+        font: {
+          weight: 'bold',
+          size: 12,
+        },
+        formatter: (_, context) => {
+          const tool = toolsData[context.dataIndex];
+          return `${tool.downtime} hrs`;
+        },
+      },
+      tooltip: {
+        callbacks: {
+          label: context => {
             const tool = toolsData[context.dataIndex];
-            return `${tool.downtime} hrs`;
-          },
-        },
-        tooltip: {
-          callbacks: {
-            label: (context) => {
-              const tool = toolsData[context.dataIndex];
-              return `Utilization: ${tool.utilizationRate}%, Downtime: ${tool.downtime} hrs`;
-            },
+            return `Utilization: ${tool.utilizationRate}%, Downtime: ${tool.downtime} hrs`;
           },
         },
       },
-      scales: {
-        x: {
-          max: 100,
-          title: {
-            display: true,
-            text: 'Time (%)',
-          },
-        },
-        y: {
-          ticks: {
-            autoSkip: false,
-          },
+    },
+    scales: {
+      x: {
+        max: 100,
+        title: {
+          display: true,
+          text: 'Time (%)',
         },
       },
-    };
-
-  
-
+      y: {
+        ticks: {
+          autoSkip: false,
+        },
+      },
+    },
+  };
 
   return (
     <div className="utilization-chart-container">
@@ -126,7 +123,11 @@ function UtilizationChart() {
         </button>
       </div>
 
-      {error ? <p>{error}</p> : <Bar data={chartData} options={options} />}
+      {error ? (
+        <p className="utilization-chart-error">{error}</p>
+      ) : (
+        <Bar data={chartData} options={options} />
+      )}
     </div>
   );
 }
