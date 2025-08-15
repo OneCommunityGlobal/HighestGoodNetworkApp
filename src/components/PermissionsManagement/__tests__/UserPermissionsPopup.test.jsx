@@ -272,7 +272,8 @@ describe('UserPermissionsPopup component', () => {
     );
 
     // Select user
-    fireEvent.click(screen.getByText('Test2 Manager'));
+    const userToClick = await screen.findByText('Test2 Manager');
+    fireEvent.click(userToClick);
 
     // Wait for initial "Add" buttons to appear
     await waitFor(() => {
@@ -302,26 +303,4 @@ describe('UserPermissionsPopup component', () => {
       expect(addButtons.length).toBeGreaterThan(0);
     });
   });
-});
-
-// Act 1: Click the user to start the async action
-fireEvent.click(screen.getByText('Test2 Manager'));
-
-// Assert 1: WAIT for the result of the first action.
-// This is like waiting for the kettle to whistle.
-await waitFor(() => {
-  expect(screen.getByText('some-permission')).toBeInTheDocument();
-});
-
-// The test is now paused until the user's data is loaded and rendered.
-
-// Act 2: NOW that the component is in the correct state,
-// perform the second action.
-const resetButton = screen.getByRole('button', { name: /reset to default/i });
-fireEvent.click(resetButton);
-
-// Assert 2: WAIT for the result of the second action.
-// This is like waiting for the tea to finish steeping.
-await waitFor(() => {
-  expect(screen.queryByText('some-permission')).not.toBeInTheDocument();
 });
