@@ -30,9 +30,9 @@ function PermissionList(props) {
     <div className="user-role-tab__permissionList" data-testid="permission-list">
       {' '}
       <ul>
-        {permissionsList.map(permission => (
+        {permissionsList.map((permission, index) => (
           <PermissionListItem
-            key={permission.label}
+            key={`${permission.label}-${index}`}
             rolePermissions={rolePermissions}
             immutablePermissions={immutablePermissions}
             removedDefaultPermissions={removedDefaultPermissions}

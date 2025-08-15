@@ -98,7 +98,7 @@
     "react-tooltip": "^4.2.10",
     "react-use-websocket": "^3.0.0",
     "reactjs-popup": "^2.0.5",
-    "reactstrap": "^8.4.1",
+    "reactstrap": "^9.2.2",
     "read-excel-file": "^5.5.3",
     "recharts": "^2.1.9",
     "redux": "^4.0.5",
