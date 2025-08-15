@@ -82,7 +82,7 @@ describe('SetUpFinalDayButton', () => {
       fireEvent.click(cancelFinalDayButton);
 
       // Clicking CANCEL button calls final day deleted toast
-      waitFor(() => {
+      await waitFor(() => {
         expect(mockToastSuccess).toHaveBeenCalledWith(finalDayDeletedMessage);
       });
     });
@@ -130,7 +130,7 @@ describe('SetUpFinalDayButton', () => {
       fireEvent.click(saveFinalDayPopup);
 
       // When final day is set, expect toast to be called with appropriate message
-      waitFor(() => {
+      await waitFor(() => {
         expect(mockToastSuccess).toHaveBeenCalledWith(finalDaySetMessage);
       });
     });

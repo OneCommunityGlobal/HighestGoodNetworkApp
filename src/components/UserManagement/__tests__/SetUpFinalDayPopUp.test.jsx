@@ -82,8 +82,8 @@ describe('SetUpFinalDayPopUp Component', () => {
 
     expect(screen.getByRole('dialog')).toBeInTheDocument();
 
-    const modalHeader = screen.getByText('Set Your Final Day').closest('.modal-header');
-    const modalBody = screen.getByTestId('date-input').closest('.modal-body');
+    const modalHeader = screen.getByRole('heading', { name: 'Set Your Final Day' });
+    const modalBody = screen.getByTestId('modal-body');
 
     expect(modalHeader).toHaveClass('modal-header');
     expect(modalBody).toHaveClass('modal-body');
@@ -105,9 +105,10 @@ describe('SetUpFinalDayPopUp Component', () => {
     });
     renderComponent(store, { open: true, onClose: onCloseMock, onSave: onSaveMock });
 
-    const modalBody = screen.getByTestId('date-input').closest('.modal-body');
+    const dateInput = screen.getByTestId('date-input');
+    expect(dateInput).toBeInTheDocument();
 
-    expect(modalBody).toHaveClass('modal-body');
+    expect(dateInput).toHaveFocus();
   });
 
   it('should not render the modal content when the open prop is false', () => {

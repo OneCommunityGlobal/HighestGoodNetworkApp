@@ -6,18 +6,21 @@ import TextSearchBox from '../TextSearchBox';
 describe('text search box', () => {
   let searchCallback;
   const id = 'test_search';
-  beforeEach(() => {
-    searchCallback = vi.fn();
-    render(<TextSearchBox id={id} searchCallback={searchCallback} />);
-  });
+  const renderBox = (overrides = {}) => {
+    render(<TextSearchBox id={id} {...overrides} />);
+  }
   it('should render a textbox', () => {
+    renderBox();
     expect(screen.getByRole('textbox')).toBeInTheDocument();
   });
   it('should change text while users typing', async () => {
+    renderBox();
     await userEvent.type(screen.getByRole('textbox'), 'test', { allAtOnce: false });
     expect(screen.getByRole('textbox')).toHaveValue('test');
   });
   it('should call searchCallback everytime the user types a letter', async () => {
+    const searchCallback = vi.fn();
+    renderBox({ searchCallback });
     await userEvent.type(screen.getByRole('textbox'), 'test');
     expect(searchCallback).toHaveBeenCalledTimes(4);
   });

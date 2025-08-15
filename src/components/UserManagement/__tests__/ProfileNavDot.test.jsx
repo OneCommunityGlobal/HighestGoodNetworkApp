@@ -52,7 +52,7 @@ describe('ProfileNavDot Component Tests', () => {
     const userId = '123';
     const { container } = render(<ProfileNavDot userId={userId} />);
     
-    const icon = container.querySelector('i.fa-user');
+    const icon = screen.getByTitle("Click here to go to the user's profile.");
     expect(icon).toBeInTheDocument();
   });
   test('clicking on non-interactive parts does not trigger navigation', () => {
