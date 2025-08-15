@@ -2,12 +2,20 @@
 .filter-select .ant-select-selector,
 .filter-select .ant-select-selection-item,
 .filter-select .ant-select-selection-placeholder {
-  color: black !important;
+  color: #333333 !important;
+}
+
+.filter-select .ant-select-selector {
+  background-color: #ffffff !important;
 }
 
 /* RangePicker placeholder */
 .filter-select .ant-picker-input > input::placeholder {
-  color: black !important;
+  color: #666666 !important;
+}
+
+.filter-select .ant-picker {
+  background-color: #ffffff !important;
 }
 
 .filter-select .ant-select-selector {
@@ -32,6 +40,12 @@
 .oxide-dark .filter-select .ant-select-selection-placeholder {
   color: #f5f5f5 !important;
 }
+.oxide-dark .filter-select .ant-select-arrow {
+  color: #f5f5f5 !important;
+}
+.oxide-dark .filter-select .ant-select-clear {
+  color: #f5f5f5 !important;
+}
 .oxide-dark .filter-select .ant-select-dropdown {
   background-color: #1c2541 !important;
 }
@@ -48,7 +62,31 @@
 .oxide-dark .filter-select.ant-picker .ant-picker-input > input::placeholder {
   color: #f5f5f5 !important;
 }
+.oxide-dark .filter-select .ant-picker-suffix {
+  color: #f5f5f5 !important;
+}
+.oxide-dark .filter-select .ant-picker-clear {
+  color: #f5f5f5 !important;
+}
 .oxide-dark .filter-select .ant-picker-dropdown {
   background-color: #1c2541 !important;
   color: #f5f5f5 !important;
+}
+
+/* Chart axis labels and text in dark mode */
+.oxide-dark .recharts-text {
+  fill: #f5f5f5 !important;
+}
+
+.oxide-dark .recharts-cartesian-axis-tick-value {
+  fill: #f5f5f5 !important;
+}
+
+.oxide-dark .recharts-legend-item-text {
+  color: #f5f5f5 !important;
+}
+
+.oxide-dark .recharts-cartesian-grid-horizontal line,
+.oxide-dark .recharts-cartesian-grid-vertical line {
+  stroke: rgba(255, 255, 255, 0.2) !important;
 }
