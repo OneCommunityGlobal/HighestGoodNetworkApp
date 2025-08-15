@@ -257,6 +257,7 @@ const ToggleSwitch = ({
             >
               posted
               <TriStateToggleSwitch pos={state || 'default'} onChange={handleUserProfile} />
+              {/* <TriStateToggleSwitch pos={state ?? 'default'} onChange={handleUserProfile} /> */}
               requested
             </div>
           </div>
