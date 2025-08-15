@@ -231,6 +231,7 @@ summary::-webkit-details-marker {
   margin-top: -15px;       /* controls how much it overlaps */
   z-index: 2;              /* higher than row 1 */
   position: relative;      /* needed for z-index to work */
+  transform: translateX(8px);
 }
 
 .tab-grid > .nav-item:nth-child(-n + 11) {
