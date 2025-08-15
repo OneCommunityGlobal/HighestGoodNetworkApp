@@ -245,6 +245,61 @@ describe('UserPermissionsPopup component', () => {
       );
     });
   });
+  // it('should reset permissions to default when "Reset to Default" is clicked', async () => {
+  //   axios.get.mockResolvedValue({
+  //     status: 200,
+  //     data: {
+  //       _id: 'ghi123',
+  //       role: 'Owner',
+  //       firstName: 'Test3',
+  //       lastName: 'Owner',
+  //       email: 'Test3.Owner@gmail.com',
+  //       permissions: {
+  //         frontPermissions: [],
+  //         backPermissions: [],
+  //       },
+  //     },
+  //   });
+
+  //   render(
+  //     <Provider store={store}>
+  //       <ModalContext.Provider value={mockModalContext}>
+  //         <UserPermissionsPopUp />
+  //       </ModalContext.Provider>
+  //     </Provider>,
+  //   );
+
+  //   // Select user
+  //   fireEvent.click(screen.getByText('Test2 Manager'));
+
+  //   // Wait for initial "Add" buttons to appear
+  //   await waitFor(() => {
+  //     expect(screen.getAllByRole('button', { name: /add/i }).length).toBeGreaterThan(0);
+  //   });
+
+  //   // Save the number of "Add" buttons before clicking
+  //   const addButtons = screen.getAllByRole('button', { name: /add/i });
+  //   const initialCount = addButtons.length;
+
+  //   // Add permission (click one "Add" button)
+  //   fireEvent.click(addButtons[0]);
+
+  //   // Wait for the UI to update (e.g., "Add" should be removed or reduced)
+  //   await waitFor(() => {
+  //     const newAddButtons = screen.queryAllByRole('button', { name: /add/i });
+  //     expect(newAddButtons.length).toBeLessThan(initialCount);
+  //   });
+
+  //   // Click "Reset to Default"
+  //   // Click "Reset to Default"
+  //   fireEvent.click(screen.getByRole('button', { name: /reset to default/i }));
+
+  //   // Wait until at least one "Add" button is visible again (default permissions shown)
+  //   await waitFor(() => {
+  //     const addButtons = screen.queryAllByRole('button', { name: /add/i });
+  //     expect(addButtons.length).toBeGreaterThan(0);
+  //   });
+  // });
   it('should reset permissions to default when "Reset to Default" is clicked', async () => {
     axios.get.mockResolvedValue({
       status: 200,
@@ -270,7 +325,8 @@ describe('UserPermissionsPopup component', () => {
     );
 
     // Select user
-    fireEvent.click(screen.getByText('Test2 Manager'));
+    const userToClick = await screen.findByText('Test2 Manager');
+    fireEvent.click(userToClick);
 
     // Wait for initial "Add" buttons to appear
     await waitFor(() => {
