@@ -203,13 +203,14 @@ export default function IssuesList() {
         <tbody>
           {currentItems.map(issue => (
             <tr key={issue.id}>
-              <td>
+              <td className={editingId === issue.id ? 'rename-active' : ''}>
                 {editingId === issue.id ? (
                   <div className="d-flex gap-2">
                     <Form.Control
                       type="text"
                       value={editedName}
                       onChange={e => setEditedName(e.target.value)}
+                      className="rename-input"
                     />
                     <Button size="sm" variant="success" onClick={() => handleNameSubmit(issue.id)}>
                       Submit

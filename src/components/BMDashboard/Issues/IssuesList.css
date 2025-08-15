@@ -40,7 +40,22 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
+.rename-active {
+  min-width: 300px; /* Grow the cell */
+  width: 40%;
+}
 
+.rename-input {
+  width: 100%;
+  padding: 4px 8px;
+  font-size: 14px;
+}
+
+.rename-input:focus {
+  outline: none;
+  border: 1px solid #007bff;
+  box-shadow: 0 0 3px rgba(0, 123, 255, 0.5);
+}
 
 /* Button for tags (Virtual / In-person) */
 .issue-table .btn-outline-primary {
