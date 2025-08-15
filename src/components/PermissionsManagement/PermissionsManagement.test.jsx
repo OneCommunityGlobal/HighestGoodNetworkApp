@@ -77,17 +77,15 @@ describe('permissions management page structure', () => {
 
   describe('permissions management behavior', () => {
     it('should fire newRole modal with a form to create a new Role', async () => {
-      const addNewRoleButton = screen.queryByRole('button', { name: /add new role/i });
-      if (addNewRoleButton) {
-        await userEvent.click(addNewRoleButton);
-        expect(screen.getByRole('dialog')).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: 'Close' })).toBeInTheDocument();
-        expect(screen.getByRole('textbox')).toBeInTheDocument();
-      } else {
-        expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-        expect(screen.queryByRole('button', { name: 'Close' })).not.toBeInTheDocument();
-        expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
-      }
-    });
+      const addNewRoleButton = await screen.findByRole('button', { name: /add new role/i });
+      expect(addNewRoleButton).toBeInTheDocument();
+
+      await userEvent.click(addNewRoleButton);
+
+      const dialog = await screen.findByRole('dialog');
+      expect(dialog).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Close' })).toBeInTheDocument();
+      expect(screen.getByRole('textbox')).toBeInTheDocument();
+    }, 10000);
   });
 });
