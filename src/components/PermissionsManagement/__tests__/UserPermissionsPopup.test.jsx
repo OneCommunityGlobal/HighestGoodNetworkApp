@@ -7,6 +7,8 @@ vi.mock('react-toastify', () => ({
   ToastContainer: () => null,
 }));
 // eslint-disable-next-line no-unused-vars
+import userEvent from '@testing-library/user-event';
+
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
@@ -300,4 +302,26 @@ describe('UserPermissionsPopup component', () => {
       expect(addButtons.length).toBeGreaterThan(0);
     });
   });
+});
+
+// Act 1: Click the user to start the async action
+fireEvent.click(screen.getByText('Test2 Manager'));
+
+// Assert 1: WAIT for the result of the first action.
+// This is like waiting for the kettle to whistle.
+await waitFor(() => {
+  expect(screen.getByText('some-permission')).toBeInTheDocument();
+});
+
+// The test is now paused until the user's data is loaded and rendered.
+
+// Act 2: NOW that the component is in the correct state,
+// perform the second action.
+const resetButton = screen.getByRole('button', { name: /reset to default/i });
+fireEvent.click(resetButton);
+
+// Assert 2: WAIT for the result of the second action.
+// This is like waiting for the tea to finish steeping.
+await waitFor(() => {
+  expect(screen.queryByText('some-permission')).not.toBeInTheDocument();
 });

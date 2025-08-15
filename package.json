@@ -146,7 +146,7 @@
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^10.4.9",
-    "@testing-library/user-event": "^12.0.14",
+    "@testing-library/user-event": "^14.6.1",
     "@types/html-to-pdfmake": "^2.4.4",
     "@types/pdfmake": "^0.2.11",
     "@types/react-router-dom": "^5.3.3",
