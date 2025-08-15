@@ -734,6 +734,7 @@ function TotalOrgSummary(props) {
                 isLoading={isLoading}
                 blueSquareStats={volunteerStats?.blueSquareStats}
                 comparisonType={selectedComparison}
+                darkMode={darkMode}
               />
             </div>
           </Col>
