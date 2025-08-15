@@ -1,7 +1,8 @@
+/* eslint-disable testing-library/no-node-access */
 import { useState, useEffect } from 'react';
 import { Form, FormControl, Button } from 'react-bootstrap';
 import axios from 'axios';
-import { ENDPOINTS } from 'utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -299,13 +300,14 @@ function LessonForm() {
                 {showDropdown && filteredTags.length > 0 && (
                   <div className={`${styles.tagDropdown}`}>
                     {filteredTags.map(tag => (
-                      <div
+                      <button
                         key={tag}
-                        className={`${styles.tagOption}`}
+                        className={styles.tagOption}
                         onClick={() => handleTagSelection(tag)}
+                        type="button"
                       >
-                        <span>{tag}</span>
-                      </div>
+                        {tag}
+                      </button>
                     ))}
                   </div>
                 )}

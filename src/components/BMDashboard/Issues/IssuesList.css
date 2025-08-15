@@ -1,7 +1,7 @@
 /* Main table layout */
 .issue-table {
   border-collapse: separate;
-  border-spacing: 0 12px; /* vertical spacing between rows */
+  border-spacing: 0 10px; /* vertical spacing between rows */
   width: 100%;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
@@ -13,7 +13,7 @@
 /* Header cells */
 .issue-table thead th {
   font-weight: 600;
-  font-size: 14px;
+  font-size: 12px;
   color: #6c757d;
   text-align: left;
   padding: 12px 16px;
@@ -23,9 +23,9 @@
 
 /* Body cells */
 .issue-table tbody td {
-  font-size: 14px;
+  font-size: 10px;
   color: #212529;
-  padding: 12px 16px;
+  padding: 10px 12px;
   background-color: #ffffff;
   vertical-align: middle;
   white-space: normal;     /* Allows text wrapping */
@@ -44,7 +44,7 @@
 
 /* Button for tags (Virtual / In-person) */
 .issue-table .btn-outline-primary {
-  font-size: 12px;
+  font-size: 10px;
   padding: 4px 10px;
   border-radius: 20px;
   font-weight: 500;
@@ -63,7 +63,7 @@
 }
 
 .dropdown-menu-custom .dropdown-item-custom {
-  font-size: 13px;
+  font-size: 10px;
   border-radius: 6px;
   transition: background-color 0.2s ease-in-out;
   justify-content: center;
@@ -79,7 +79,7 @@
   border: 1px solid #c2b36e !important;
   background-color: #fff !important;
   color: #4b4b4b !important;
-  font-size: 13px !important;
+  font-size: 10px !important;
   font-weight: 500;
   padding: 4px 14px !important;
   border-radius: 6px !important;
@@ -98,6 +98,7 @@
   background-color: #fff;
   color: #000;
   border-color: #ccc;
+  font-size: 10px;
 }
 
 .custom-select__multi-value {
@@ -115,6 +116,12 @@
 .custom-select__multi-value__remove:hover {
   background-color: #ced4da;
   color: #fff;
+}
+
+.date-picker-input {
+  font-size: 10px !important;
+  padding: 6px 8px;
+  border-radius: 4px;
 }
   
   /* Dark theme overrides */
@@ -164,17 +171,40 @@
   border: 1px solid #666 !important;
 }
 
-/* Dark background for react-datepicker input */
-.dark-theme .react-datepicker {
+.dark-theme .date-picker-input {
   background-color: #2b3e59 !important;
   color: #fff !important;
-  border-color: #6b6767 !important;
+  border: 1px solid #666 !important;
+  font-size: 10px !important;
 }
 
-.dark-theme .react-datepicker__header, .dark-theme .form-control {
+/* Dark theme calendar container */
+.dark-theme-calendar {
+  background-color: #2b3e59 !important;
+  color: #fff !important;
+  border: 1px solid #6b6767 !important;
+}
+
+/* Dark theme header */
+.dark-theme-calendar .react-datepicker__header {
   background-color: #1c2541 !important;
   color: #e0e0e0 !important;
-  border: 1px solid #666 !important;
+  border-bottom: 1px solid #666 !important;
+  font-size: 12px !important;
+}
+
+/* Selected day styling in dark theme */
+.dark-theme-calendar .react-datepicker__day--selected {
+  background-color: #4a90e2 !important;
+  color: #fff !important;
+  border-radius: 50%;
+}
+
+/* Hover day styling in dark theme */
+.dark-theme-calendar .react-datepicker__day:hover {
+  background-color: #3b5a81 !important;
+  color: #fff !important;
+  border-radius: 50%;
 }
 
 /* Dark mode for multi select*/
@@ -228,11 +258,11 @@
   }
 
   .custom-select__control {
-    font-size: 14px;
+    font-size: 10px;
   }
 
   .custom-select__multi-value {
-    font-size: 12px;
+    font-size: 10px;
   }
 
   .table-controls {
@@ -256,17 +286,17 @@
 @media (max-width: 576px) {
   .issue-table thead th,
   .issue-table tbody td {
-    font-size: 12px;
+    font-size: 8px;
     padding: 8px 10px;
   }
 
   .dropdown-toggle-custom {
-    font-size: 12px !important;
+    font-size: 8px !important;
     padding: 4px 10px !important;
   }
 
   .btn-outline-primary {
-    font-size: 11px;
+    font-size: 8px;
     padding: 3px 8px;
   }
 

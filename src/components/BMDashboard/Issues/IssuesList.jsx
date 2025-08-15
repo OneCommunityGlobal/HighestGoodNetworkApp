@@ -143,7 +143,7 @@ export default function IssuesList() {
     <div className={`custom-container ${darkMode ? 'dark-theme' : ''}`}>
       <h4 className="mb-4">A List of Issues</h4>
       <Row className="mb-3 align-items-center">
-        <Col xs={12} md={5}>
+        <Col xs={12} md={6}>
           <div className="datepicker-wrapper">
             <DatePicker
               selectsRange
@@ -151,20 +151,14 @@ export default function IssuesList() {
               endDate={endDate}
               onChange={update => {
                 setDateRange(update);
-                // Trigger fetch with updated date range
                 const [newStartDate, newEndDate] = update;
                 fetchIssuesWithFilters(selectedProjects, newStartDate, newEndDate, tagFilter);
               }}
-              placeholderText="Filter by Date Range"
-              className={`form-control ${darkMode ? 'datepicker-dark' : ''}`}
-              value={dateRangeLabel}
+              placeholderText={dateRangeLabel || 'Filter by Date Range'}
+              className={`date-picker-input form-control ${darkMode ? 'dark-theme' : ''}`}
+              calendarClassName={darkMode ? 'dark-theme-calendar' : ''}
             />
-            <Button
-              variant="outline-danger"
-              size="sm"
-              className="ms-2"
-              onClick={() => setDateRange([null, null])}
-            >
+            <Button variant="outline-danger" size="sm" onClick={() => setDateRange([null, null])}>
               ✕
             </Button>
           </div>
@@ -183,6 +177,7 @@ export default function IssuesList() {
         <Col xs={12} md={2}>
           <Button
             variant="danger"
+            size="sm"
             onClick={() => {
               setTagFilter(null);
               setSelectedProjects([]);
@@ -215,7 +210,6 @@ export default function IssuesList() {
                       type="text"
                       value={editedName}
                       onChange={e => setEditedName(e.target.value)}
-                      autoFocus
                     />
                     <Button size="sm" variant="success" onClick={() => handleNameSubmit(issue.id)}>
                       Submit
