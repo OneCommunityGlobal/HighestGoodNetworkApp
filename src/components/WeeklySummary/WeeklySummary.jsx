@@ -9,7 +9,6 @@ import {
   FormGroup,
   Label,
   Input,
-  CustomInput,
   Button,
   TabContent,
   TabPane,
@@ -1054,7 +1053,7 @@ export class WeeklySummary extends Component {
                     <FormGroup
                       style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '12px' }}
                     >
-                      <CustomInput
+                      <Input
                         id="mediaConfirm"
                         data-testid="mediaConfirm"
                         name="mediaConfirm"
@@ -1085,7 +1084,7 @@ export class WeeklySummary extends Component {
                     <FormGroup
                       style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '12px' }}
                     >
-                      <CustomInput
+                      <Input
                         id="editorConfirm"
                         data-testid="editorConfirm"
                         name="editorConfirm"
@@ -1115,7 +1114,7 @@ export class WeeklySummary extends Component {
                     <FormGroup
                       style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '12px' }}
                     >
-                      <CustomInput
+                      <Input
                         id="proofreadConfirm"
                         name="proofreadConfirm"
                         data-testid="proofreadConfirm"

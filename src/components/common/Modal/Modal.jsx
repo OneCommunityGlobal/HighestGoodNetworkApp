@@ -7,7 +7,6 @@ import {
   ModalBody,
   ModalFooter,
   InputGroup,
-  InputGroupAddon,
   InputGroupText,
   Input,
 } from 'reactstrap';
@@ -66,16 +65,16 @@ const ModalExample = props => {
         {type === 'input' ? (
           <>
             <InputGroup>
-              <InputGroupAddon addonType="prepend">
+              <InputGroupText addonType="prepend">
                 <InputGroupText style={{ width: '80px' }}>Name</InputGroupText>
-              </InputGroupAddon>
+              </InputGroupText>
               <Input id="linkName" placeholder="Name of the link" onChange={handleChange} />
             </InputGroup>
             <br />
             <InputGroup>
-              <InputGroupAddon addonType="prepend">
+              <InputGroupText addonType="prepend">
                 <InputGroupText style={{ width: '80px' }}>Link URL</InputGroupText>
-              </InputGroupAddon>
+              </InputGroupText>
               <Input id="linkURL" placeholder="URL of the link" onChange={handleChange} />
             </InputGroup>
           </>

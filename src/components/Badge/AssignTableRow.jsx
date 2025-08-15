@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Card, CardBody, CardImg, CardText, Popover, CustomInput } from 'reactstrap';
+import { Card, CardBody, CardImg, CardText, Popover, Input } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
 import { addSelectBadge, removeSelectBadge } from '../../actions/badgeManagement';
@@ -54,7 +54,7 @@ function AssignTableRow({ badge, index, existBadges: propExistBadges }) {
       </td>
       <td>{badge.badgeName}</td>
       <td>
-        <CustomInput
+        <Input
           type="checkbox"
           id={`assign-badge-${badge._id}`}
           onChange={handleCheckBoxChange}
