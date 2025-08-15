@@ -27,7 +27,7 @@ describe('PauseAndResumeButton', () => {
 
   describe('Behavior', () => {
     it('should render modal after the user clicks the pause button', async () => {
-      userEvent.click(screen.getByRole('button', { name: PAUSE }));
+      await userEvent.click(screen.getByRole('button', { name: PAUSE }));
 
       // Wait for the dialog to appear
       await waitFor(() => {
@@ -40,7 +40,7 @@ describe('PauseAndResumeButton', () => {
       const pauseButton = screen.getAllByRole('button', { name: PAUSE })[0];
 
       // Click on Pause button to open the modal
-      userEvent.click(pauseButton);
+      await userEvent.click(pauseButton);
 
       // Wait for the modal to appear
       await waitFor(() => {
@@ -49,11 +49,11 @@ describe('PauseAndResumeButton', () => {
 
       // Select a future date
       const dateInput = screen.getByTestId('date-input');
-      userEvent.type(dateInput, '2100-05-24');
+      await userEvent.type(dateInput, '2100-05-24');
 
       // Click on 'Pause the User' button to trigger processing
       const confirmButton = screen.getByRole('button', { name: /pause the user/i });
-      userEvent.click(confirmButton);
+      await userEvent.click(confirmButton);
 
       // Expect the button to show PROCESSING and be disabled
       await waitFor(() => {

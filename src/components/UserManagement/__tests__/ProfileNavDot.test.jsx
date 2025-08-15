@@ -20,7 +20,7 @@ describe('ProfileNavDot Component Tests', () => {
       </Router>
     );
 
-    fireEvent.click(getByTitle("Click here to go to the user's profile."));
+    fireEvent.click(screen.getByTitle("Click here to go to the user's profile."));
     expect(history.location.pathname).toBe(`/userprofile/${userId}`);
   });
 
@@ -35,7 +35,7 @@ describe('ProfileNavDot Component Tests', () => {
       </Router>
     );
 
-    fireEvent.click(getByTitle("Click here to go to the user's profile."), { metaKey: true });
+    fireEvent.click(screen.getByTitle("Click here to go to the user's profile."), { metaKey: true });
     expect(openSpy).toHaveBeenCalledWith(`/userprofile/${userId}`, '_blank', 'noopener,noreferrer');
 
     openSpy.mockRestore();
@@ -45,7 +45,7 @@ describe('ProfileNavDot Component Tests', () => {
     const userId = '123';
 
     const { getByTitle } = render(<ProfileNavDot userId={userId} />);
-    expect(getByTitle("Click here to go to the user's profile.")).toBeInTheDocument();
+    expect(screen.getByTitle("Click here to go to the user's profile.")).toBeInTheDocument();
   });
 
   test('renders the correct icon', () => {
@@ -88,11 +88,11 @@ describe('ProfileNavDot Component Tests', () => {
     );
 
     // Left mouse click (button: 0)
-    fireEvent.click(getByTitle("Click here to go to the user's profile."), { button: 0 });
+    fireEvent.click(screen.getByTitle("Click here to go to the user's profile."), { button: 0 });
     expect(history.location.pathname).toBe(`/userprofile/${userId}`);
 
     // Right mouse click (button: 2)
-    fireEvent.click(getByTitle("Click here to go to the user's profile."), { button: 2 });
+    fireEvent.click(screen.getByTitle("Click here to go to the user's profile."), { button: 2 });
     // Check if right-click was correctly handled if applicable
     // This may depend on additional logic if you handle right-clicks differently
 
@@ -109,7 +109,7 @@ describe('ProfileNavDot Component Tests', () => {
       </Router>
     );
   
-    fireEvent.click(getByTitle("Click here to go to the user's profile."));
+    fireEvent.click(screen.getByTitle("Click here to go to the user's profile."));
     
     // Expect navigation to `/userprofile/undefined`
     expect(history.location.pathname).toBe('/userprofile/undefined');
@@ -129,7 +129,7 @@ describe('ProfileNavDot Component Tests', () => {
       </Router>
     );
   
-    fireEvent.click(getByTitle("Click here to go to the user's profile."));
+    fireEvent.click(screen.getByTitle("Click here to go to the user's profile."));
     
     // Expect navigation to `/userprofile/`
     expect(history.location.pathname).toBe('/userprofile/');

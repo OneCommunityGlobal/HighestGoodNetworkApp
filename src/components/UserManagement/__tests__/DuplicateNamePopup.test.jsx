@@ -17,10 +17,10 @@ describe('DuplicateNamePopup', () => {
       />,
     );
 
-    expect(getByText('There is already a user with the same name.')).toBeInTheDocument();
-    expect(getByText('Do you wish to proceed and have duplicate names?')).toBeInTheDocument();
-    expect(getByText('Confirm')).toBeInTheDocument();
-    expect(getByText('Change name')).toBeInTheDocument();
+    expect(screen.getByText('There is already a user with the same name.')).toBeInTheDocument();
+    expect(screen.getByText('Do you wish to proceed and have duplicate names?')).toBeInTheDocument();
+    expect(screen.getByText('Confirm')).toBeInTheDocument();
+    expect(screen.getByText('Change name')).toBeInTheDocument();
   });
 
   it('calls createUserProfile and onClose on confirm click', () => {
@@ -33,7 +33,7 @@ describe('DuplicateNamePopup', () => {
       />,
     );
 
-    fireEvent.click(getByText('Confirm'));
+    fireEvent.click(screen.getByText('Confirm'));
 
     expect(mockCreateUserProfile).toHaveBeenCalledWith(true);
     expect(mockOnClose).toHaveBeenCalledTimes(1);
@@ -49,7 +49,7 @@ describe('DuplicateNamePopup', () => {
       />,
     );
 
-    fireEvent.click(getByText('Change name'));
+    fireEvent.click(screen.getByText('Change name'));
 
     expect(mockPopupClose).toHaveBeenCalledTimes(1);
   });
@@ -64,7 +64,7 @@ describe('DuplicateNamePopup', () => {
       />,
     );
 
-    fireEvent.click(getByLabelText('Close'));
+    fireEvent.click(screen.getByLabelText('Close'));
 
     expect(mockPopupClose).toHaveBeenCalled();
   });

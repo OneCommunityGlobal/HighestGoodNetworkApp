@@ -35,15 +35,15 @@ describe('DropDownSearchBox', () => {
       </Provider>);
 
     // Check for placeholder
-    expect(getByText(mockProps.placeholder)).toBeInTheDocument();
+    expect(screen.getByText(mockProps.placeholder)).toBeInTheDocument();
 
     // Check for options
     mockItems.forEach(item => {
-      expect(getByText(item)).toBeInTheDocument();
+      expect(screen.getByText(item)).toBeInTheDocument();
     });
 
     // Check dropdown role
-    expect(getByRole('combobox')).toBeInTheDocument();
+    expect(screen.getByRole('combobox')).toBeInTheDocument();
   });
 
   it('calls searchCallback with correct value on selection change', () => {
@@ -57,7 +57,7 @@ describe('DropDownSearchBox', () => {
         className={mockProps.className}
     />
     </Provider>);
-    const select = getByRole('combobox');
+    const select = screen.getByRole('combobox');
 
     fireEvent.change(select, { target: { value: mockItems[1] } });
 

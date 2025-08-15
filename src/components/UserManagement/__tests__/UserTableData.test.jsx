@@ -188,20 +188,20 @@ describe('User Table Data: Non-Jae related Account', () => {
       expect(firstNameInput).toHaveAttribute('value', nonJaeAccountMock.firstName);
       expect(lastNameInput).toHaveAttribute('value', nonJaeAccountMock.lastName);
     });
-    it('should fire onDeleteClick() once the user clicks the delete button', () => {
-      userEvent.click(screen.getByRole('button', { name: /delete/i }));
+    it('should fire onDeleteClick() once the user clicks the delete button', async() => {
+      await userEvent.click(screen.getByRole('button', { name: /delete/i }));
       expect(onDeleteClick).toHaveBeenCalledTimes(1);
     });
-    it('should fire onPauseClick() once the user clicks the pause button', () => {
-      userEvent.click(screen.getByRole('button', { name: /pause/i }));
+    it('should fire onPauseClick() once the user clicks the pause button', async() => {
+      await userEvent.click(screen.getByRole('button', { name: /pause/i }));
       expect(onPauseResumeClick).toHaveBeenCalledTimes(1);
     });
-    it('should fire onActiveInactiveClick() once the user clicks the active/inactive button', () => {
-      userEvent.click(screen.getByTitle('Click here to change the user status'));
+    it('should fire onActiveInactiveClick() once the user clicks the active/inactive button', async() => {
+      await userEvent.click(screen.getByTitle('Click here to change the user status'));
       expect(onActiveInactiveClick).toHaveBeenCalledTimes(1);
     });
-    it('should render a modal once the user clicks the `reset password` button', () => {
-      userEvent.click(screen.getByRole('button', { name: /reset password/i }));
+    it('should render a modal once the user clicks the `reset password` button', async() => {
+      await userEvent.click(screen.getByRole('button', { name: /reset password/i }));
       expect(screen.getByRole('dialog')).toBeInTheDocument();
     });
   });

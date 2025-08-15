@@ -45,21 +45,21 @@ describe('UserTableHeader', () => {
     );
 
     // Check if all headers are in the document
-    expect(getByText(ACTIVE)).toBeInTheDocument();
-    expect(getByText(FIRST_NAME)).toBeInTheDocument();
-    expect(getByText(LAST_NAME)).toBeInTheDocument();
-    expect(getByText(ROLE)).toBeInTheDocument();
-    expect(getByText(EMAIL)).toBeInTheDocument();
-    expect(getByText(WKLY_COMMITTED_HRS)).toBeInTheDocument();
-    expect(getByText(PAUSE)).toBeInTheDocument();
-    expect(getByText(MANAGE_FINAL_DAY)).toBeInTheDocument();
-    expect(getByText(USER_RESUME_DATE)).toBeInTheDocument();
-    expect(getByText(USER_START_DATE)).toBeInTheDocument();
-    expect(getByText(USER_END_DATE)).toBeInTheDocument();
+    expect(screen.getByText(ACTIVE)).toBeInTheDocument();
+    expect(screen.getByText(FIRST_NAME)).toBeInTheDocument();
+    expect(screen.getByText(LAST_NAME)).toBeInTheDocument();
+    expect(screen.getByText(ROLE)).toBeInTheDocument();
+    expect(screen.getByText(EMAIL)).toBeInTheDocument();
+    expect(screen.getByText(WKLY_COMMITTED_HRS)).toBeInTheDocument();
+    expect(screen.getByText(PAUSE)).toBeInTheDocument();
+    expect(screen.getByText(MANAGE_FINAL_DAY)).toBeInTheDocument();
+    expect(screen.getByText(USER_RESUME_DATE)).toBeInTheDocument();
+    expect(screen.getByText(USER_START_DATE)).toBeInTheDocument();
+    expect(screen.getByText(USER_END_DATE)).toBeInTheDocument();
 
     // Since you have three headers with the same text, let's make sure all are present
-    const resumeDateHeaders = container.querySelectorAll('#usermanagement_resume_date');
-    expect(resumeDateHeaders.length).toBe(3);
+    const resumeDateHeaders = screen.getAllByText(USER_RESUME_DATE);
+    expect(resumeDateHeaders).toHaveLength(3);
   });
 
   it('renders delete column when permitted', () => {
@@ -75,7 +75,7 @@ describe('UserTableHeader', () => {
     );
 
     // Check if the delete column is present when permissions are met
-    const deleteColumn = container.querySelector('#usermanagement_delete');
+    const deleteColumn = screen.queryByTestId('usermanagement_delete');
     expect(deleteColumn).toBeInTheDocument();
   });
 
@@ -95,7 +95,7 @@ describe('UserTableHeader', () => {
     );
 
     // Since you are querying by test id, make sure your component has 'data-testid' set on elements
-    const deleteColumn = queryByTestId('delete-column'); // Update 'delete-column' to match your 'data-testid' value
+    const deleteColumn = screen.queryByTestId('delete-column'); // Update 'delete-column' to match your 'data-testid' value
     expect(deleteColumn).not.toBeInTheDocument();
   });
 });

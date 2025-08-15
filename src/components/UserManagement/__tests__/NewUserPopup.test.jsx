@@ -85,6 +85,6 @@ describe('new user popup closed', () => {
       <NewUserPopup open={false} onUserPopupClose={onUserPopupClose} />,
       { store },
     );
-    expect(queryByRole('dialog')).toBeNull();
+    expect(screen.queryByRole('dialog')).toBeNull();
   });
 });

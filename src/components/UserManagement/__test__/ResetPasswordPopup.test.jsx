@@ -46,8 +46,8 @@ describe('reset password popup', () => {
       await userEvent.type(screen.getByLabelText(/new password/i), 'test', { allAtOnce: false });
       expect(screen.getByLabelText(/new password/i)).toHaveValue('test');
     });
-    it('should fire onClose() once the user clicks the close buttons', () => {
-      screen.getAllByRole('button', { name: /close/i }).forEach(button => userEvent.click(button));
+    it('should fire onClose() once the user clicks the close buttons', async () => {
+      await screen.getAllByRole('button', { name: /close/i }).forEach(button => userEvent.click(button));
       expect(onClose).toHaveBeenCalledTimes(2);
     });
     it('should popup error when the password length does not meet the requirement', async () => {
@@ -57,7 +57,7 @@ describe('reset password popup', () => {
       await userEvent.type(screen.getByLabelText(/confirm password/i), 'AB@12345!', {
         allAtOnce: false,
       });
-      userEvent.click(screen.getByRole('button', { name: /reset password/i }));
+      await userEvent.click(screen.getByRole('button', { name: /reset password/i }));
       expect(screen.getByText(invalidPasswordError)).toBeInTheDocument();
     });
     it('should popup error when the password contains illegal symbol', async () => {
@@ -67,7 +67,7 @@ describe('reset password popup', () => {
       await userEvent.type(screen.getByLabelText(/confirm password/i), 'AB@12345.', {
         allAtOnce: false,
       });
-      userEvent.click(screen.getByRole('button', { name: /reset password/i }));
+      await userEvent.click(screen.getByRole('button', { name: /reset password/i }));
       expect(screen.getByText(invalidPasswordError)).toBeInTheDocument();
     });
     it('should popup error when the password contains only numbers', async () => {
@@ -87,7 +87,7 @@ describe('reset password popup', () => {
       await userEvent.type(screen.getByLabelText(/confirm password/i), 'qazwsxedc', {
         allAtOnce: false,
       });
-      userEvent.click(screen.getByRole('button', { name: /reset password/i }));
+      await userEvent.click(screen.getByRole('button', { name: /reset password/i }));
       expect(screen.getByText(invalidPasswordError)).toBeInTheDocument();
     });
     it('should popup error when the password is left blank', async () => {

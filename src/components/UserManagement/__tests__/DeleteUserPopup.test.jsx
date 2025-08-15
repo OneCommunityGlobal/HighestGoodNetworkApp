@@ -69,22 +69,22 @@ describe('delete user popup', () => {
   });
 
   describe('behavior', () => {
-    it('should fire onClose() once the user clicks close buttons', () => {
-      screen.getAllByRole('button', { name: /close/i }).forEach(button => {
-        userEvent.click(button);
+    it('should fire onClose() once the user clicks close buttons', async() => {
+      await screen.getAllByRole('button', { name: /close/i }).forEach(button => {
+       userEvent.click(button);
       });
       expect(onClose).toHaveBeenCalledTimes(2);
     });
-    it('should fire onDelete(HardDelete) once the user clicks the `delete` button', () => {
-      userEvent.click(screen.getByRole('button', { name: /.*delete.*/i }));
+    it('should fire onDelete(HardDelete) once the user clicks the `delete` button', async() => {
+      await userEvent.click(screen.getByRole('button', { name: /.*delete.*/i }));
       expect(onDelete).toHaveBeenCalledWith(UserDeleteType.HardDelete);
     });
-    it('should fire onDelete(SoftDelete) once the user clicks the `archive` button', () => {
-      userEvent.click(screen.getByRole('button', { name: /.*archiving.*/i }));
+    it('should fire onDelete(SoftDelete) once the user clicks the `archive` button', async() => {
+      await userEvent.click(screen.getByRole('button', { name: /.*archiving.*/i }));
       expect(onDelete).toHaveBeenCalledWith(UserDeleteType.SoftDelete);
     });
-    it('should fire onDelete(Inactive) once the user clicks the `inactive` button', () => {
-      userEvent.click(screen.getByRole('button', { name: /.*inactive.*/i }));
+    it('should fire onDelete(Inactive) once the user clicks the `inactive` button', async() => {
+      await userEvent.click(screen.getByRole('button', { name: /.*inactive.*/i }));
       expect(onDelete).toHaveBeenCalledWith(UserDeleteType.Inactive);
     });
   });
@@ -128,16 +128,16 @@ describe('delete user popup additional tests', () => {
     it('should not fire when close button is not clicked', () => {
       expect(onClose).toHaveBeenCalledTimes(0);
     });
-    it('should fire onDelete(HardDelete) one time when the user clicks the `delete` button', () => {
-      userEvent.click(screen.getByRole('button', { name: /.*delete.*/i }));
+    it('should fire onDelete(HardDelete) one time when the user clicks the `delete` button', async() => {
+      await userEvent.click(screen.getByRole('button', { name: /.*delete.*/i }));
       expect(onDelete).toHaveBeenCalledTimes(1);
     });
-    it('should fire onDelete(SoftDelete) one time when the user clicks the `archive` button', () => {
-      userEvent.click(screen.getByRole('button', { name: /.*archiving.*/i }));
+    it('should fire onDelete(SoftDelete) one time when the user clicks the `archive` button', async() => {
+      await userEvent.click(screen.getByRole('button', { name: /.*archiving.*/i }));
       expect(onDelete).toHaveBeenCalledTimes(1);
     });
-    it('should fire onDelete(Inactive) one time when the user clicks the `inactive` button', () => {
-      userEvent.click(screen.getByRole('button', { name: /.*inactive.*/i }));
+    it('should fire onDelete(Inactive) one time when the user clicks the `inactive` button', async() => {
+      await userEvent.click(screen.getByRole('button', { name: /.*inactive.*/i }));
       expect(onDelete).toHaveBeenCalledTimes(1);
     });
   });
