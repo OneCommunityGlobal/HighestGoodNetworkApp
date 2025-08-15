@@ -46,6 +46,7 @@ function UserPermissionsPopUp({
   };
 
   useEffect(() => {
+    console.log('PROFILE FOR EFFECT:', actualUserProfile);
     setUserPermissions(actualUserProfile?.permissions?.frontPermissions);
     setUserRemovedDefaultPermissions(
       actualUserProfile?.permissions?.removedDefaultPermissions || [],
@@ -225,14 +226,12 @@ function UserPermissionsPopUp({
                     onClick={() => {
                       onInputChange(`${user.firstName} ${user.lastName}`);
                       setIsOpen(false);
-                      setActualUserProfile(user);
                       getUserData(user._id);
                     }}
                     onKeyDown={e => {
                       if (e.key === 'Enter' || e.key === ' ') {
                         onInputChange(`${user.firstName} ${user.lastName}`);
                         setIsOpen(false);
-                        setActualUserProfile(user);
                         getUserData(user._id);
                       }
                     }}
