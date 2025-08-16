@@ -86,6 +86,8 @@ import LBBidOverview from './components/LBDashboard/BiddingOverview/BiddingOverv
 import BiddingHomepage from './components/LBDashboard/BiddingHomepage/BiddingHomepage';
 import WishList from './components/LBDashboard/WishList/WishList';
 import WishListItem from './components/LBDashboard/WishList/ItemOverview';
+import VillageDropdownFilter from './components/LBDashboard/Map/VillageDetails/VillageDropdownFilter';
+import VillageDetails from './components/LBDashboard/Map/VillageDetails/VillageDetails';
 
 // BM Dashboard
 import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
@@ -673,6 +675,8 @@ export default (
         <LBProtectedRoute path="/lbdashboard/masterplan" exact component={MasterPlan} />
         <Route path="/lbdashboard/login" component={LBLogin} />
         <Route path="/lbdashboard/register" component={LBRegister} />
+        <Route path="/lbdashboard/dropdown" component={VillageDropdownFilter} />
+        <Route path="/lbdashboard/village/:id" component={VillageDetails} />
         <LBProtectedRoute path="/lbdashboard/messaging" component={LBMessaging} />
         <Route // Should be LBProtectedRoute
           path="/lbdashboard/listingshome"
