@@ -154,6 +154,7 @@ import PRReviewTeamAnalytics from './components/HGNPRDashboard/PRReviewTeamAnaly
 import LogTools from './components/BMDashboard/LogTools/LogTools';
 // import IssueDashboard from './components/BMDashboard/Issues/IssueDashboard';
 import EquipmentUpdate from './components/BMDashboard/Tools/EquipmentUpdate';
+import OptStatusPieChart from './components/OptStatusPieChart/OptStatusPieChart';
 // Social Architecture
 const ResourceManagement = lazy(() => import('./components/ResourceManagement/ResourceManagement'));
 const RequestResources = lazy(() => import('./components/SocialArchitecture/RequestResources'));
@@ -751,6 +752,7 @@ export default (
         <ProtectedRoute path="/tsaformpage7" exact component={TSAFormPage7} />
         <ProtectedRoute path="/tsaformpage8" exact component={TSAFormPage8} />
         <ProtectedRoute path="/" exact component={Dashboard} />
+        <ProtectedRoute path="/analytics/opt-status" component={OptStatusPieChart} fallback />
         <Route path="*" component={NotFoundPage} />
       </Switch>
     </>
