@@ -1,4 +1,4 @@
-import './ItemOverview.css';
+import styles from './ItemOverview.module.css';
 import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 
@@ -7,6 +7,7 @@ import { IoMdHeart, IoMdHeartEmpty } from 'react-icons/io';
 import { BsChat } from 'react-icons/bs';
 import ImageCarousel from '../Components/ImageCarousel';
 import Header from '../Header';
+import { Link } from 'react-router-dom';
 
 const item = {
   title: 'Cob Village',
@@ -48,22 +49,25 @@ function WishListItem(props) {
   }, [wishlistItem]);
 
   return (
-    <div className="item">
-      <div className="item__container">
+    <div className={styles.item}>
+      <div className={styles.itemContainer}>
         <Header />
-        <div className="item__overview">
-          <div className="item__details-left">
-            <div className="item__listing-details item__listing-details--mobile">
+
+        <div className={styles.itemOverview}>
+          <div className={styles.itemDetailsLeft}>
+            <div className={styles.itemListingDetailsMobile}>
               <h1>{currWishlistItem.unit}</h1>
               <h1>{currWishlistItem.title}</h1>
             </div>
-            <div className="item__images">
+
+            <div className={styles.itemImages}>
               <ImageCarousel images={currWishlistItem.images} />
             </div>
-            <div className="item__amenities">
+
+            <div className={styles.itemAmenities}>
               <div>
                 <h2>Available amenities in this unit:</h2>
-                <ol className="margin__left">
+                <ol className={styles.marginLeft}>
                   {currWishlistItem.unitAmenities?.map(amenity => (
                     <li key={amenity}>{amenity}</li>
                   ))}
@@ -71,32 +75,34 @@ function WishListItem(props) {
               </div>
               <div>
                 <h2>Village level amenities:</h2>
-                <ol className="margin__left">
+                <ol className={styles.marginLeft}>
                   {currWishlistItem.villageAmenities?.map(amenity => (
                     <li key={amenity}>{amenity}</li>
                   ))}
                 </ol>
               </div>
             </div>
-            <div className="item__location">
-              <FaMapMarkerAlt className="item__icon" />
-              <a href="/">View on Property Map</a>
+
+            <div className={styles.itemLocation}>
+              <FaMapMarkerAlt className={styles.itemIcon} />
+              <Link to="/">View on Property Map</Link>
             </div>
           </div>
-          <div className="item__details-right">
-            <div className="item__listing-details">
-              <h1 className="item__listing-details--desktop">{currWishlistItem.unit}</h1>
-              <h1 className="item__listing-details--desktop">{currWishlistItem.title}</h1>
+
+          <div className={styles.itemDetailsRight}>
+            <div className={styles.itemListingDetails}>
+              <h1 className={styles.itemListingDetailsDesktop}>{currWishlistItem.unit}</h1>
+              <h1 className={styles.itemListingDetailsDesktop}>{currWishlistItem.title}</h1>
               <span>
                 This unit sells for a basic price of <b>{currWishlistItem.price}</b>. If you wish to
-                book it in advance bid your price and leave your details below and we will get back
-                to you if you are our highest bidder. Make sure your starting date is atleast{' '}
-                <b>2 weeks </b>
-                from now.
+                book it in advance, bid your price and leave your details below and we will get back
+                to you if you are our highest bidder. Make sure your starting date is at least{' '}
+                <b>2 weeks</b> from now.
               </span>
             </div>
-            <div className="item__form">
-              <div className="item__rent">
+
+            <div className={styles.itemForm}>
+              <div className={styles.itemRent}>
                 <label htmlFor="from">
                   Renting from
                   <input type="date" name="from" id="from" />
@@ -106,7 +112,8 @@ function WishListItem(props) {
                   <input type="date" name="to" id="to" />
                 </label>
               </div>
-              <div className="item__bidding">
+
+              <div className={styles.itemBidding}>
                 <label htmlFor="name">
                   Name:
                   <input type="text" name="name" id="name" placeholder="Name" />
@@ -116,27 +123,27 @@ function WishListItem(props) {
                   <input type="number" name="bidding" id="bidding" placeholder="Bidding Price" />
                 </label>
               </div>
+
               <button type="button">Proceed to submit with details</button>
             </div>
-            <div className="err-message">
+
+            <div className={styles.errMessage}>
               <h6>The Dates you picked are not available</h6>
-              <a href="/">Click here to see available dates</a>
+              <Link to="/">Click here to see available dates</Link>
             </div>
-            <div className="footer__icons">
-              <div className="save__list">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsWishlist(!isWishlist);
-                  }}
-                >
-                  {isWishlist ? <IoMdHeart className="saved__item" /> : <IoMdHeartEmpty />}
-                  Save
+
+            <div className={styles.footerIcons}>
+              <div className={styles.saveList}>
+                <button type="button" onClick={() => setIsWishlist(prev => !prev)}>
+                  {isWishlist ? <IoMdHeart className={styles.savedItem} /> : <IoMdHeartEmpty />}
+                  &nbsp;Save
                 </button>
               </div>
-              <div className="start__chat">
+
+              <div className={styles.startChat}>
                 <button type="button">
-                  <BsChat /> Chat with the Host
+                  <BsChat />
+                  &nbsp;Chat with the Host
                 </button>
               </div>
             </div>

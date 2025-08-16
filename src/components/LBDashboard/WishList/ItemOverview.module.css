@@ -1,4 +1,4 @@
-.item__navbar{
+.itemNavbar {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -8,14 +8,14 @@
   margin: 0 !important;
 }
 
-.item__navbar-left{
+.itemNavbarLeft {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
 }
 
-.item__selector{
+.itemSelector {
   width: 200px;
   background-color: #fff;
   border-radius: 5px;
@@ -24,7 +24,7 @@
   cursor: pointer;
 }
 
-.item__selector select{
+.itemSelector select{
   width: 100%;
   border: none;
   outline: none;
@@ -32,7 +32,7 @@
   cursor: pointer;
 }
 
-.item__button{
+.itemButton{
   background-color: rgb(190, 190, 190);
   padding: 0.2rem 0.5rem;
   border-radius: 5px;
@@ -40,7 +40,7 @@
   cursor: pointer;
 }
 
-.item__button:hover{
+.itemButton:hover{
   background-color: black;
 
   padding: 0.2rem 0.5rem;
@@ -50,7 +50,7 @@
   transition: all 0.3s ease;
 }
 
-.item__button p{
+.itemButton p{
   font-family: sans-serif;
   color: #fff;
   font-size: 14px;
@@ -58,7 +58,7 @@
   margin: 0;
 }
 
-.item__navbar-right{
+.itemNavbarRight {
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
@@ -66,7 +66,7 @@
   width: 100%;
 }
 
-.item__navbar-right h2{
+.itemNavbarRight h2{
   font-family: sans-serif;
   color: #000000;
   font-size: 14px;
@@ -74,22 +74,22 @@
   margin: 0;
 }
 
-.item__icons{
+.itemIcons {
   padding-left: 0.5rem;
   margin: 0;
 }
 
-.item__nav-icon{
+.itemNavIcon{
   margin-left: 1rem;
   font-size: 19px;
   margin-bottom: 0.2rem;
 }
 
-.item__nav-link{
+.itemNavLink{
   color: rgba(0, 0, 0) !important;
 }
 
-.item__overview {
+.itemOverview {
   background-color: #e0e0e0;
   display: flex;
   justify-content: space-evenly;
@@ -100,7 +100,7 @@
   height: auto;
 }
 
-.item__details-left {
+.itemDetailsLeft {
   width: 50%;
   height: 100%;
   display: flex;
@@ -109,45 +109,45 @@
   padding: 2.5% 2.5% 1.5% 2.5%;
 }
 
-.item__listing-details--mobile {
+.itemListingDetailsMobile {
   display: none;
 }
 
-.item__listing-details h1,
-p {
+.itemListingDetails h1,
+.itemListingDetails p{
   color: #000;
 }
 
-.item__images {
+.itemImages {
   width: 100%;
   margin-bottom: 2.5%;
 }
 
-.item__amenities {
+.itemAmenities {
   display: flex;
   justify-content: center;
   width: 100%;
   gap: 10px;
 }
 
-.item__amenities h2 {
+.itemAmenities h2 {
   font-size: 16px;
   text-align: left;
   color: #060606;
   font-weight: bold;
 }
 
-.item__amenities div {
+.itemAmenities div {
   display: flex;
   flex-direction: column;
   width: 100%;
 }
 
-.margin__left {
+.marginLeft {
   margin-left: -1.3rem;
 }
 
-.err-message{
+.errMessage{
   color: red;
   font-size: 12px;
   margin-top: 5px;
@@ -155,7 +155,7 @@ p {
   width: 50%;
 }
 
-.item__location {
+.itemLocation {
   display: flex;
   width: 100%;
   height: 30px;
@@ -164,33 +164,33 @@ p {
   margin-top: 5%;
 }
 
-.item__location img {
+.itemLocation img {
   width: 30px;
   height: 30px;
 }
 
-.item__location a {
+.itemLocation a {
   text-decoration: underline;
   cursor: pointer;
 }
 
-.item__icon {
+.itemIcon {
   color: red;
   font-size: 1.3rem
 }
 
-.item__details-right {
+.itemDetailsRight {
   width: 50%;
   height: 100%;
   padding: 2.5%;
 }
 
-.item__listing-details h1,
-p {
+.itemListingDetails h1,
+.itemListingDetails p{
   color: #000;
 }
 
-.item__rent {
+.itemRent {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
@@ -198,13 +198,13 @@ p {
   gap: 10px;
 }
 
-.item__rent label {
+.itemRent label {
   display: flex;
   width: 50%;
   flex-direction: column;
 }
 
-.item__form button {
+.itemForm button {
   background: #13ae5c;
   color: white;
   padding: 10px;
@@ -214,46 +214,46 @@ p {
   transition: background 0.3s ease, transform 0.2s ease;
 }
 
-.item__form button:hover {
+.itemForm button:hover {
   background: #0f9a50;
   transform: scale(1.01);
 }
 
-.item__form button:active {
+.itemForm button:active {
   transform: scale(0.99);
 }
-.item__rent input[type='date'] {
+.itemRent input[type='date'] {
   border: 1px solid #ccc;
   margin-top: 2.5%;
   width: 100%;
 }
 
-.item__bidding {
+.itemBidding {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
 }
 
-.item__bidding label {
+.itemBidding label {
   display: flex;
   width: 50%;
   flex-direction: column;
 }
 
-.footer__icons {
+.footerIcons {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
 }
 
-.save__list {
+.saveList {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   margin-top: 2.5%;
 }
 
-.save__list button {
+.saveList button {
   background: #d1d1d1;
   padding: 2.5%;
   border-radius: 998px;
@@ -269,14 +269,14 @@ p {
   transition: background 0.3s ease, transform 0.2s ease;
 }
 
-.start__chat {
+.startChat {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   margin-top: 2.5%;
 }
 
-.start__chat button {
+.startChat button {
   background: #d1d1d1;
   padding: 2.5%;
   border-radius: 998px;
@@ -291,12 +291,12 @@ p {
   transition: background 0.3s ease, transform 0.2s ease;
 }
 
-.saved__item {
+.savedItem {
   color: red;
 }
 
 @media screen and (max-width: 1200px) {
-  .item__navbar{
+  .itemNavbar{
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -304,26 +304,26 @@ p {
     background-color: green;
     padding: 1.1rem 1rem  !important;
   }
-  .item__nav-icon{
+  .itemNavIcon{
     margin-left: 0.5rem;
     font-size: 16px;
     margin-bottom: 0.25rem;
   }
-  .item__navbar-right {
+  .itemNavbarRight {
     justify-content: space-between;
   }
-  .item__navbar-right h2{
+  .itemNavbarRight h2{
     font-family: sans-serif;
     color: #000000;
     font-size: 12px;
     padding: 0;
     margin: 0.3rem 0 0;
   }
-  .item__icons{
+  .itemIcons{
     padding-left: 0.2rem;
     margin: 0 0 0rem;
   }
-  .navbar-nav {
+  .navbarNav {
     display: flex;
     flex-direction: row !important;
     padding-left: 0;
@@ -334,11 +334,11 @@ p {
 
 @media screen and (max-width: 800px) {
 
-  .item__navbar-right {
+  .itemNavbarRight {
     padding: 1rem 0 0;
   }
 
-  .item__navbar{
+  .itemNavbar{
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -346,49 +346,49 @@ p {
     background-color: green;
     padding: 1rem 2rem !important;
   }
-  .item__navbar-right {
+  .itemNavbarRight {
     justify-content: space-between;
   }
-  .item__navbar-right h2{
+  .itemNavbarRight h2{
     font-family: sans-serif;
     color: #000000;
     font-size: 12px;
     padding: 0;
     margin: 0.3rem 0 0;
   }
-  .item__icons{
+  .itemIcons{
     padding-left: 0.2rem;
     margin: 0 0 0rem;
   }
-  .item__nav-icon{
+  .itemNavIcon{
     margin-left: 0.8rem;
     font-size: 16px;
     margin-bottom: 0;
   }
-  .navbar-nav {
+  .navbarNav {
     display: flex;
     flex-direction: row !important;
     padding-left: 0;
     margin-bottom: 0;
     list-style: none;
   }
-  .item__overview {
+  .itemOverview {
     flex-direction: column;
     align-items: center;
   }
-  .item__details-left {
+  .itemDetailsLeft {
     width: 98%;
   }
-  .item__listing-details--mobile {
+  .itemListingDetailsMobile {
     display: block;
   }
-  .item__details-right {
+  .itemDetailsRight {
     width: 98%;
   }
-  .item__listing-details--desktop {
+  .itemListingDetailsDesktop {
     display: none;
   }
-  .start__chat button {
+  .startChat button {
     background: #d1d1d1;
     padding: 2.5%;
     border-radius: 998px;
@@ -397,19 +397,19 @@ p {
     display: flex;
     justify-content: center;
   }
-  .item__rent {
+  .itemRent {
     justify-content: space-between;
   }
 }
 
 @media screen and (max-width: 500px) {
-  .navbar-light .navbar-toggler {
+  .navbarLight .navbarToggler {
     color: rgba(0, 0, 0, 0.5);
     border: 0.5px solid black !important;
     padding: 0.2rem 0.5rem !important;
   }
 
-  .item__navbar{
+  .itemNavbar{
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -419,11 +419,11 @@ p {
     position: relative;
   }
 
-  .item__container{
+  .itemContainer{
     overflow: visible ;
   }
 
-  .menu-button {
+  .menuButton {
     background: none;
     border: none;
     font-size: 24px;
@@ -431,21 +431,21 @@ p {
     position: relative;
   }
 
-  .menu-icon {
+  .menuIcon {
     font-size: 20px;
     position: relative;
   }
 
-  .navbar-toggler-icon {
+  .navbarTogglerIcon {
     height: 25px !important;
     width: 25px !important;
   }
 
-  .item__navbar-right {
+  .itemNavbarRight {
     padding: 1rem 0 0;
   }
 
-  .item__navbar-right h2{
+  .itemNavbarRight h2{
     font-family: sans-serif;
     color: #000000;
     font-size: 12px;
@@ -453,40 +453,40 @@ p {
     margin: 0.5rem 0 0;
   }
 
-  .item__icons{
+  .itemIcons{
     padding-left: 0.2rem;
     margin: 0 0 0rem;
   }
 
-  .item__nav-icon{
+  .itemNavIcon{
     margin-left: 0.5rem;
     margin-top: 0.2rem;
     font-size: 14px;
   }
 
-  .item__overview {
+  .itemOverview {
     padding: 10px;
     margin: 10px;
   }
 
-  .item__amenities {
+  .itemAmenities {
     flex-direction: column;
     align-items: center;
   }
 
-  .item__form label {
+  .itemForm label {
     display: flex;
     width: 150px;
     flex-direction: column;
   }
   
-  .item__form input[type='date'] {
+  .itemForm input[type='date'] {
     border: 1px solid #ccc;
     margin-top: 2.5%;
     width: 90%;
   }
 
-  .start__chat button {
+  .startChat button {
     background: #d1d1d1;
     padding: 2.5%;
     border-radius: 998px;
@@ -500,11 +500,11 @@ p {
 }
 
 @media screen and (max-width: 340px) {
-  .item__selector {
+  .itemSelector {
     width: 150px
 
   }
-  .navbar-toggler-icon{
+  .navbarTogglerIcon{
     width: 20px !important;
     width: 20px !important;
   }
