@@ -31,6 +31,11 @@
   border: none;
 }
 
+.hp-chart-container {
+  display: flex;
+  justify-content: center;
+}
+
 .hp-date-filter,
 .hp-role-filter {
   display: flex;
