@@ -1,12 +1,12 @@
 /* BiddingHomepage.css */
-body, .bidding-bg {
+body, .biddingBg {
   background: var(--bg-color, #e5e5e5) !important;
   min-height: 100vh;
   overflow-x: hidden;
   max-width: 100%;
 }
 
-.logo-container {
+.logoContainer {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -15,19 +15,19 @@ body, .bidding-bg {
   width: 100%;
 }
 
-.main-logo {
+.mainLogo {
   max-width: 600px;
   height: auto;
   display: block;
 }
 
 /* Override reactstrap container-fluid default padding */
-.container-fluid {
+.containerFluid {
   padding-left: 0 !important;
   padding-right: 0 !important;
 }
 
-.bidding-homepage-container {
+.biddingHomepageContainer {
   background: var(--card-bg, #fff);
   border-radius: 0 0 8px 8px;
   box-shadow: var(--card-shadow, none);
@@ -38,7 +38,7 @@ body, .bidding-bg {
   overflow: hidden;
 }
 
-.bidding-header {
+.biddingHeader {
   background: var(--header-bg, #a2d729);
   padding: 15px 20px;
   min-height: 60px;
@@ -49,14 +49,14 @@ body, .bidding-bg {
 }
 
 /* More specific styling for village filter dropdown */
-.bidding-header .village-filter {
+.biddingHeader .villageFilter {
   border: none !important;
   padding: 0 !important;
   width: auto !important;
   background: transparent !important;
 }
 
-.bidding-header .village-filter .dropdown-toggle {
+.biddingHeader .villageFilter .dropdownToggle {
   background: var(--input-bg, #fff) !important;
   color: var(--text-color, #222) !important;
   border: 1px solid var(--border-color, #bbb) !important;
@@ -67,17 +67,17 @@ body, .bidding-bg {
   border-radius: 4px !important;
 }
 
-.bidding-header .village-filter .dropdown-toggle:hover {
+.biddingHeader .villageFilter .dropdownToggle:hover {
   background: var(--input-hover-bg, #f8f9fa) !important;
   border-color: var(--border-hover-color, #aaa) !important;
 }
 
-.bidding-header .village-filter .dropdown-toggle:focus {
+.biddingHeader .villageFilter .dropdownToggle:focus {
   box-shadow: none !important;
   border-color: var(--border-focus-color, #999) !important;
 }
 
-.bidding-header .village-filter .dropdown-menu {
+.biddingHeader .villageFilter .dropdownMenu {
   background: var(--dropdown-bg, #fff) !important;
   border: 1px solid var(--border-color, #bbb) !important;
   border-radius: 4px !important;
@@ -86,7 +86,7 @@ body, .bidding-bg {
   width: 180px !important;
 }
 
-.bidding-header .village-filter .dropdown-item {
+.biddingHeader .villageFilter .dropdownItem {
   color: var(--text-color, #222) !important;
   white-space: normal !important;
   word-wrap: break-word !important;
@@ -95,18 +95,18 @@ body, .bidding-bg {
   line-height: 1.4 !important;
 }
 
-.bidding-header .village-filter .dropdown-item:hover {
+.biddingHeader .villageFilter .dropdownItem:hover {
   background: var(--dropdown-hover-bg, #f8f9fa) !important;
   color: var(--text-color, #222) !important;
 }
 
-.search-bar {
+.searchBar {
   display: flex;
   border-radius: 6px;
   overflow: hidden;
 }
 
-.search-bar input {
+.searchBar input {
   border: 1px solid var(--border-color, #bbb);
   border-radius: 6px 0 0 6px;
   padding: 8px 12px;
@@ -116,11 +116,11 @@ body, .bidding-bg {
   margin-left: 10px;
 }
 
-.search-bar input::placeholder {
+.searchBar input::placeholder {
   color: var(--placeholder-color, #888);
 }
 
-.go-button {
+.goButton {
   background: var(--button-secondary-bg, #dadada);
   color: var(--button-secondary-text, #444);
   border: 1px solid var(--border-color, #bbb);
@@ -130,32 +130,32 @@ body, .bidding-bg {
   padding: 8px 12px;
 }
 
-.go-button:hover {
+.goButton:hover {
   background: var(--button-secondary-hover, #ccc);
   color: var(--button-secondary-text, #444);
 }
 
-.user-welcome {
+.userWelcome {
   font-weight: 600;
   color: var(--text-color, #222);
   font-size: 1rem;
   margin-right: 18px;
 }
 
-.user-controls {
+.userControls {
   display: flex;
   align-items: center;
   gap: 18px;
 }
 
-.messages, .notifications, .user-profile {
+.messages, .notifications, .userProfile {
   font-size: 1.3rem;
   cursor: pointer;
   position: relative;
   color: var(--text-color, #222);
 }
 
-.notification-badge {
+.notificationBadge {
   position: absolute;
   top: -7px;
   right: -7px;
@@ -167,7 +167,7 @@ body, .bidding-bg {
 }
 
 /* Navigation tabs */
-.navigation-tabs {
+.navigationTabs {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -177,7 +177,7 @@ body, .bidding-bg {
   position: relative;
 }
 
-.navigation-tabs::after {
+.navigationTabs::after {
   content: "";
   position: absolute;
   bottom: 0;
@@ -187,7 +187,7 @@ body, .bidding-bg {
   background-color: var(--border-color, #d3d3d3);
 }
 
-.filter-by-date {
+.filterByDate {
   font-weight: 700;
   color: var(--text-color, #222);
   display: flex;
@@ -196,12 +196,12 @@ body, .bidding-bg {
   font-size: 1.1rem;
 }
 
-.filter-icon {
+.filterIcon {
   display: flex;
   margin-right: 8px;
 }
 
-.tabs-container {
+.tabsContainer {
   display: flex;
   gap: 50px;
   margin-left: 25px;
@@ -227,7 +227,7 @@ body, .bidding-bg {
   color: var(--tab-hover-color, #888);
 }
 
-.tab-active {
+.tabActive {
   color: var(--tab-active-color, #111) !important;
   font-weight: 700;
   border-bottom: 3px solid var(--tab-active-border, #111);
@@ -235,26 +235,26 @@ body, .bidding-bg {
   bottom: -1px;
 }
 
-.tab-active:hover {
+.tabActive:hover {
   color: var(--tab-active-color, #111) !important;
 }
 
-.tab-inactive {
+.tabInactive {
   color: var(--tab-inactive-color, #bdbdbd);
   font-weight: 500;
 }
 
-.tab-inactive:hover {
+.tabInactive:hover {
   color: var(--tab-hover-color, #888);
 }
 
-.map-link {
+.mapLink {
   margin-right: 20px;
   position: relative;
   z-index: 1;
 }
 
-.property-map-link {
+.propertyMapLink {
   color: var(--link-color, #1976d2);
   font-weight: 500;
   text-decoration: none;
@@ -265,27 +265,27 @@ body, .bidding-bg {
   padding-bottom: 50%;
 }
 
-.map-icon {
+.mapIcon {
   color: #e53935;
   margin-right: 4px;
 }
 
-.property-map-link:hover {
+.propertyMapLink:hover {
   text-decoration: underline;
 }
 
 /* Property listings */
-.property-listings {
+.propertyListings {
   padding: 20px 20px 0 20px;
 }
 
-.property-card-col {
+.propertyCardCol {
   margin-bottom: 32px;
   display: flex;
   justify-content: center;
 }
 
-.property-card-gray {
+.propertyCardGray {
   background: var(--property-card-bg, #ededed);
   border-radius: 6px;
   border: 1px solid var(--border-color, #d3d3d3);
@@ -299,7 +299,7 @@ body, .bidding-bg {
   align-items: flex-start;
 }
 
-.property-image {
+.propertyImage {
   width: 100%;
   height: 180px;
   background: #ccc;
@@ -308,31 +308,31 @@ body, .bidding-bg {
   margin-bottom: 12px;
 }
 
-.property-image img {
+.propertyImage img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.property-title-bold {
+.propertyTitleBold {
   font-weight: 700;
   font-size: 1.08rem;
   color: var(--text-color, #222);
   margin-bottom: 4px;
 }
 
-.property-bid-info {
+.propertyBidInfo {
   font-size: 0.98rem;
   color: var(--text-secondary, #444);
   margin-bottom: 10px;
 }
 
-.property-bid-amount {
+.propertyBidAmount {
   font-weight: 600;
   color: var(--text-color, #222);
 }
 
-.bid-more-btn {
+.bidMoreBtn {
   background: var(--button-primary-bg, #43a047);
   color: #fff;
   font-size: 0.95rem;
@@ -346,12 +346,12 @@ body, .bidding-bg {
   transition: background 0.2s;
 }
 
-.bid-more-btn:hover {
+.bidMoreBtn:hover {
   background: var(--button-primary-hover, #388e3c);
 }
 
 /* Date filter styling */
-.date-filter .date-dropdown-toggle {
+.dateFilter .dateDropdownToggle {
   background: var(--input-bg, #fff) !important;
   color: var(--text-color, #222) !important;
   border: 1px solid var(--border-color, #bbb) !important;
@@ -364,18 +364,18 @@ body, .bidding-bg {
   gap: 8px;
 }
 
-.date-filter .date-dropdown-toggle:hover {
+.dateFilter .dateDropdownToggle:hover {
   background: var(--input-hover-bg, #f8f9fa) !important;
   border-color: var(--accent-color, #a2d729) !important;
   color: var(--accent-color, #a2d729) !important;
 }
 
-.date-filter .date-dropdown-toggle:focus {
+.dateFilter .dateDropdown-toggle:focus {
   box-shadow: none !important;
   border-color: var(--accent-color, #a2d729) !important;
 }
 
-.date-filter .dropdown-menu {
+.dateFilter .dropdownMenu {
   background: var(--dropdown-bg, #fff) !important;
   border: 1px solid var(--border-color, #bbb) !important;
   border-radius: 4px !important;
@@ -384,11 +384,11 @@ body, .bidding-bg {
   padding: 15px !important;
 }
 
-.date-inputs-container {
+.dateInputsContainer {
   padding: 0;
 }
 
-.date-input-group {
+.dateInputGroup {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -396,14 +396,14 @@ body, .bidding-bg {
   margin-bottom: 15px;
 }
 
-.date-label  {
+.dateLabel  {
   font-size: 0.9rem;
   font-weight: 600;
   color: var(--text-color, #222) !important;
   margin-bottom: 0;
 }
 
-.date-input {
+.dateInput {
   border: 1px solid var(--border-color, #bbb) !important;
   border-radius: 4px !important;
   padding: 6px 10px !important;
@@ -413,18 +413,18 @@ body, .bidding-bg {
   width: 100% !important;
 }
 
-.date-input:focus {
+.dateInput:focus {
   border-color: var(--accent-color, #a2d729) !important;
   box-shadow: 0 0 0 0.2rem rgba(162, 215, 41, 0.25) !important;
 }
 
-.reset-btn-container {
+.resetBtnContainer {
   display: flex;
   justify-content: center;
   margin-top: 5px;
 }
 
-.reset-date-btn {
+.resetDateBtn {
   background: #e53935 !important;
   border: 1px solid #e53935 !important;
   color: #fff !important;
@@ -433,29 +433,29 @@ body, .bidding-bg {
   border-radius: 4px !important;
 }
 
-.reset-date-btn:hover {
+.resetDateBtn:hover {
   background: #d32f2f !important;
   border-color: #d32f2f !important;
 }
 
-.filter-by-date.d-flex {
+.filterByDate.d-flex {
   padding-top: 0;
   align-items: flex-end;
 }
 
-.filter-icon-inline {
+.filterIconInline {
   color: var(--accent-color, #a2d729);
   font-size: 0.9rem;
 }
 
-.filter-active-indicator {
+.filterActiveIndicator {
   color: var(--accent-color, #a2d729);
   margin-left: 5px;
   font-size: 0.8rem;
 }
 
 /* Pagination styling */
-.custom-pagination .page-link {
+.customPagination .pageLink {
   color: var(--text-color, #333);
   border: 1px solid var(--border-color, #ddd);
   background-color: var(--input-bg, #fff);
@@ -463,19 +463,19 @@ body, .bidding-bg {
   border-radius: 4px;
 }
 
-.custom-pagination .page-link:hover {
+.customPagination .pageLink:hover {
   color: var(--text-color, #333);
   background-color: var(--input-hover-bg, #f8f9fa);
   border-color: var(--border-color, #ddd);
 }
 
-.custom-pagination .page-item.active .page-link {
+.customPagination .pageItem.active .pageLink {
   background-color: var(--accent-color, #a2d729);
   border-color: var(--accent-color, #a2d729);
   color: var(--pagination-active-text, #fff);
 }
 
-.custom-pagination .page-item.disabled .page-link {
+.customPagination .pageItem.disabled .pageLink {
   color: var(--text-disabled, #6c757d);
   background-color: var(--input-bg, #fff);
   border-color: var(--border-color, #ddd);
@@ -483,28 +483,28 @@ body, .bidding-bg {
 
 /* Responsive adjustments */
 @media (max-width: 992px) {
-  .bidding-header {
+  .biddingHeader {
     flex-direction: column;
     gap: 10px;
   }
-  .tabs-container, .map-link {
+  .tabsContainer, .mapLink {
     margin: 0;
   }
   
   /* Tablet responsive adjustments for village filter */
-  .bidding-header .village-filter .dropdown-toggle {
+  .biddingHeader .villageFilter .dropdownToggle {
     min-width: 200px !important;
     width: auto !important;
   }
   
-  .bidding-header .village-filter .dropdown-menu {
+  .biddingHeader .villageFilter .dropdownMenu {
     min-width: 200px !important;
     width: 200px !important;
     left: 0 !important;
     right: auto !important;
   }
   
-  .bidding-header .village-filter .dropdown-item {
+  .biddingHeader .villageFilter .dropdownItem {
     white-space: normal !important;
     word-wrap: break-word !important;
     overflow-wrap: break-word !important;
@@ -514,28 +514,28 @@ body, .bidding-bg {
 }
 
 @media (max-width: 768px) {
-  .tabs-container {
+  .tabsContainer {
     margin-left: 0;
     gap: 20px;
   }
-  .map-link {
+  .mapLink {
     margin-right: 0;
   }
-  .property-card-col {
+  .propertyCardCol {
     max-width: 100%;
     min-width: 100%;
   }
-  .property-card-gray {
+  .propertyCardGray {
     min-width: 90%;
     max-width: 95%;
   }
   
   /* Mobile responsive adjustments for village filter */
-  .bidding-header .village-filter {
+  .biddingHeader .villageFilter {
     width: 100% !important;
   }
   
-  .bidding-header .village-filter .dropdown-toggle {
+  .biddingHeader .villageFilter .dropdownToggle {
     min-width: 100% !important;
     width: 100% !important;
     white-space: nowrap !important;
@@ -543,7 +543,7 @@ body, .bidding-bg {
     text-overflow: ellipsis !important;
   }
   
-  .bidding-header .village-filter .dropdown-menu {
+  .biddingHeader .villageFilter .dropdownMenu {
     width: 100% !important;
     min-width: 100% !important;
     max-width: 95vw !important;
@@ -552,7 +552,7 @@ body, .bidding-bg {
     overflow-x: hidden !important;
   }
   
-  .bidding-header .village-filter .dropdown-item {
+  .biddingHeader .villageFilter .dropdownItem {
     white-space: normal !important;
     word-wrap: break-word !important;
     overflow-wrap: break-word !important;
@@ -627,14 +627,14 @@ body, .bidding-bg {
   --pagination-active-text: #000000;
 }
 /* BiddingHomepage.css */
-body, .bidding-bg {
+body, .biddingBg {
   background: #e5e5e5 !important;
   min-height: 100vh;
   overflow-x: hidden;
   max-width: 100%;
 }
 
-.logo-container {
+.logoContainer {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -643,19 +643,19 @@ body, .bidding-bg {
   width: 100%;
 }
 
-.main-logo {
+.mainLogo {
   max-width: 600px;
   height: auto;
   display: block;
 }
 
 /* Override reactstrap container-fluid default padding */
-.container-fluid {
+.containerFluid {
   padding-left: 0 !important;
   padding-right: 0 !important;
 }
 
-.bidding-homepage-container {
+.biddingHomepageContainer {
   background: #fff;
   border-radius: 0 0 8px 8px;
   box-shadow: none;
@@ -666,7 +666,7 @@ body, .bidding-bg {
   overflow: hidden;
 }
 
-.bidding-header {
+.biddingHeader {
   background: #a2d729;
   padding: 15px 20px;
   min-height: 60px;
@@ -677,14 +677,14 @@ body, .bidding-bg {
 }
 
 /* More specific styling for village filter dropdown */
-.bidding-header .village-filter {
+.biddingHeader .villageFilter {
   border: none !important;
   padding: 0 !important;
   width: auto !important;
   background: transparent !important;
 }
 
-.bidding-header .village-filter .dropdown-toggle {
+.biddingHeader .villageFilter .dropdownToggle {
   background: #fff !important;
   color: #222 !important;
   border: 1px solid #bbb !important;
@@ -695,29 +695,29 @@ body, .bidding-bg {
   border-radius: 4px !important;
 }
 
-.bidding-header .village-filter .dropdown-toggle:hover {
+.biddingHeader .villageFilter .dropdownToggle:hover {
   background: #f8f9fa !important;
   border-color: #aaa !important;
 }
 
-.bidding-header .village-filter .dropdown-toggle:focus {
+.biddingHeader .villageFilter .dropdownToggle:focus {
   box-shadow: none !important;
   border-color: #999 !important;
 }
 
-.bidding-header .village-filter .dropdown-menu {
+.biddingHeader .villageFilter .dropdownMenu {
   border: 1px solid #bbb !important;
   border-radius: 4px !important;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important;
 }
 
-.search-bar {
+.searchBar {
   display: flex;
   border-radius: 6px;
   overflow: hidden;
 }
 
-.search-bar input {
+.searchBar input {
   border: 1px solid #bbb;
   border-radius: 6px 0 0 6px;
   padding: 8px 12px;
@@ -726,7 +726,7 @@ body, .bidding-bg {
   margin-left: 10px;
 }
 
-.go-button {
+.goButton {
   background: #dadada;
   color: #444;
   border: 1px solid #bbb;
@@ -736,32 +736,32 @@ body, .bidding-bg {
   padding: 8px 12px;
 }
 
-.go-button:hover {
+.goButton:hover {
   background: #ccc;
   color: #444;
 }
 
-.user-welcome {
+.userWelcome {
   font-weight: 600;
   color: #222;
   font-size: 1rem;
   margin-right: 18px;
 }
 
-.user-controls {
+.userControls {
   display: flex;
   align-items: center;
   gap: 18px;
 }
 
-.messages, .notifications, .user-profile {
+.messages, .notifications, .userProfile {
   font-size: 1.3rem;
   cursor: pointer;
   position: relative;
   color: #222;
 }
 
-.notification-badge {
+.notificationBadge {
   position: absolute;
   top: -7px;
   right: -7px;
@@ -773,7 +773,7 @@ body, .bidding-bg {
 }
 
 /* Navigation tabs */
-.navigation-tabs {
+.navigationTabs {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -783,7 +783,7 @@ body, .bidding-bg {
   position: relative;
 }
 
-.navigation-tabs::after {
+.navigationTabs::after {
   content: "";
   position: absolute;
   bottom: 0;
@@ -793,7 +793,7 @@ body, .bidding-bg {
   background-color: #d3d3d3;
 }
 
-.filter-by-date {
+.filterByDate {
   font-weight: 700;
   color: #222;
   display: flex;
@@ -802,12 +802,12 @@ body, .bidding-bg {
   font-size: 1.1rem;
 }
 
-.filter-icon {
+.filterIcon {
   display: flex;
   margin-right: 8px;
 }
 
-.tabs-container {
+.tabsContainer {
   display: flex;
   gap: 50px;
   margin-left: 25px;
@@ -833,7 +833,7 @@ body, .bidding-bg {
   color: #888;
 }
 
-.tab-active {
+.tabActive {
   color: #111 !important;
   font-weight: 700;
   border-bottom: 3px solid #111;
@@ -841,26 +841,26 @@ body, .bidding-bg {
   bottom: -1px;
 }
 
-.tab-active:hover {
+.tabActive:hover {
   color: #111 !important;
 }
 
-.tab-inactive {
+.tabInactive {
   color: #bdbdbd;
   font-weight: 500;
 }
 
-.tab-inactive:hover {
+.tabInactive:hover {
   color: #888;
 }
 
-.map-link {
+.mapLink {
   margin-right: 20px;
   position: relative;
   z-index: 1;
 }
 
-.property-map-link {
+.propertyMapLink {
   color: #1976d2;
   font-weight: 500;
   text-decoration: none;
@@ -871,27 +871,27 @@ body, .bidding-bg {
   padding-bottom: 50%;
 }
 
-.map-icon {
+.mapIcon {
   color: #e53935;
   margin-right: 4px;
 }
 
-.property-map-link:hover {
+.propertyMapLink:hover {
   text-decoration: underline;
 }
 
 /* Property listings */
-.property-listings {
+.propertyListings {
   padding: 20px 20px 0 20px;
 }
 
-.property-card-col {
+.propertyCardCol {
   margin-bottom: 32px;
   display: flex;
   justify-content: center;
 }
 
-.property-card-gray {
+.propertyCardGray {
   background: #ededed;
   border-radius: 6px;
   border: 1px solid #d3d3d3;
@@ -905,7 +905,7 @@ body, .bidding-bg {
   align-items: flex-start;
 }
 
-.property-image {
+.propertyImage {
   width: 100%;
   height: 180px;
   background: #ccc;
@@ -914,31 +914,31 @@ body, .bidding-bg {
   margin-bottom: 12px;
 }
 
-.property-image img {
+.propertyImage img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.property-title-bold {
+.propertyTitleBold {
   font-weight: 700;
   font-size: 1.08rem;
   color: #222;
   margin-bottom: 4px;
 }
 
-.property-bid-info {
+.propertyBidInfo {
   font-size: 0.98rem;
   color: #444;
   margin-bottom: 10px;
 }
 
-.property-bid-amount {
+.propertyBidAmount {
   font-weight: 600;
   color: #222;
 }
 
-.bid-more-btn {
+.bidMoreBtn {
   background: #43a047;
   color: #fff;
   font-size: 0.95rem;
@@ -952,48 +952,48 @@ body, .bidding-bg {
   transition: background 0.2s;
 }
 
-.bid-more-btn:hover {
+.bidMoreBtn:hover {
   background: #388e3c;
 }
 
 /* Responsive adjustments */
 @media (max-width: 992px) {
-  .bidding-header {
+  .biddingHeader {
     flex-direction: column;
     gap: 10px;
   }
-  .tabs-container, .map-link {
+  .tabsContainer, .mapLink {
     margin: 0;
   }
 }
 
 @media (max-width: 768px) {
-  .tabs-container {
+  .tabsContainer {
     margin-left: 0;
     gap: 20px;
   }
-  .map-link {
+  .mapLink {
     margin-right: 0;
   }
-  .property-card-col {
+  .propertyCardCol {
     max-width: 100%;
     min-width: 100%;
   }
-  .property-card-gray {
+  .propertyCardGray {
     min-width: 90%;
     max-width: 95%;
   }
 } 
 
 /* Date display styling */
-.property-date {
+.propertyDate {
   margin-top: 4px;
   margin-bottom: 8px;
   color: #666;
 }
 
 /* Property stats styling */
-.property-stats {
+.propertyStats {
   margin-top: 6px;
   margin-bottom: 4px;
   color: #555;
@@ -1001,14 +1001,14 @@ body, .bidding-bg {
 }
 
 /* Filter active indicator */
-.filter-active-indicator {
+.filterActiveIndicator {
   color: #a2d729;
   margin-left: 5px;
   font-size: 0.8rem;
 }
 
 /* Pagination styling */
-.custom-pagination .page-link {
+.customPagination .pageLink {
   color: #333;
   border: 1px solid #ddd;
   background-color: #fff;
@@ -1016,26 +1016,26 @@ body, .bidding-bg {
   border-radius: 4px;
 }
 
-.custom-pagination .page-link:hover {
+.customPagination .pageLink:hover {
   color: #333;
   background-color: #f8f9fa;
   border-color: #ddd;
 }
 
-.custom-pagination .page-item.active .page-link {
+.customPagination .pageItem.active .pageLink {
   background-color: #a2d729;
   border-color: #a2d729;
   color: #fff;
 }
 
-.custom-pagination .page-item.disabled .page-link {
+.customPagination .pageItem.disabled .pageLink {
   color: #6c757d;
   background-color: #fff;
   border-color: #ddd;
 }
 
 /* Filter by date styling */
-.filter-by-date {
+.filterByDate {
   display: flex;
   align-items: center;
   padding-top: 1%;
@@ -1044,7 +1044,7 @@ body, .bidding-bg {
   font-size: 1.1rem;
 }
 
-.sort-filter .sort-dropdown-toggle {
+.sortFilter .sortDropdownToggle {
   background: #fff !important;
   color: #222 !important;
   border: 1px solid #bbb !important;
@@ -1057,36 +1057,36 @@ body, .bidding-bg {
   gap: 8px;
 }
 
-.sort-filter .sort-dropdown-toggle:hover {
+.sortFilter .sortDropdownToggle:hover {
   background: #f8f9fa !important;
   border-color: #a2d729 !important;
   color: #a2d729 !important;
 }
 
-.sort-filter .sort-dropdown-toggle:focus {
+.sortFilter .sortDropdownToggle:focus {
   box-shadow: none !important;
   border-color: #a2d729 !important;
 }
 
-.sort-filter .dropdown-menu {
+.sortFilter .dropdownMenu {
   border: 1px solid #bbb !important;
   border-radius: 4px !important;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important;
   min-width: 160px;
 }
 
-.sort-filter .dropdown-item:hover {
+.sortFilter .dropdownItem:hover {
   background-color: #f8f9fa;
   color: #a2d729;
 }
 
-.filter-icon-inline {
+.filterIconInline {
   color: #a2d729;
   font-size: 0.9rem;
 }
 
 /* Date filter styling */
-.date-filter .date-dropdown-toggle {
+.dateFilter .dateDropdownToggle {
   background: #fff !important;
   color: #222 !important;
   border: 1px solid #bbb !important;
@@ -1099,18 +1099,18 @@ body, .bidding-bg {
   gap: 8px;
 }
 
-.date-filter .date-dropdown-toggle:hover {
+.dateFilter .dateDropdownToggle:hover {
   background: #f8f9fa !important;
   border-color: #a2d729 !important;
   color: #a2d729 !important;
 }
 
-.date-filter .date-dropdown-toggle:focus {
+.dateFilter .dateDropdownToggle:focus {
   box-shadow: none !important;
   border-color: #a2d729 !important;
 }
 
-.date-filter .dropdown-menu {
+.dateFilter .dropdownMenu {
   border: 1px solid #bbb !important;
   border-radius: 4px !important;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important;
@@ -1118,17 +1118,17 @@ body, .bidding-bg {
   padding: 15px !important;
 }
 
-.date-filter .dropdown-item:hover {
+.dateFilter .dropdownItem:hover {
   background-color: #f8f9fa;
 }
 
 /* Date inputs container */
-.date-inputs-container {
+.dateInputsContainer {
   padding: 0;
 }
 
 /* Date Range Filter Styles */
-.date-input-group {
+.dateInputGroup {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -1136,14 +1136,14 @@ body, .bidding-bg {
   margin-bottom: 15px;
 }
 
-.date-label {
+.dateLabel {
   font-size: 0.9rem;
   font-weight: 600;
   color: #222;
   margin-bottom: 0;
 }
 
-.date-input {
+.dateInput {
   border: 1px solid #bbb !important;
   border-radius: 4px !important;
   padding: 6px 10px !important;
@@ -1152,18 +1152,18 @@ body, .bidding-bg {
   width: 100% !important;
 }
 
-.date-input:focus {
+.dateInput:focus {
   border-color: #a2d729 !important;
   box-shadow: 0 0 0 0.2rem rgba(162, 215, 41, 0.25) !important;
 }
 
-.reset-btn-container {
+.resetBtnContainer {
   display: flex;
   justify-content: center;
   margin-top: 5px;
 }
 
-.reset-date-btn {
+.resetDateBtn {
   background: #e53935 !important;
   border: 1px solid #e53935 !important;
   color: #fff !important;
@@ -1172,12 +1172,20 @@ body, .bidding-bg {
   border-radius: 4px !important;
 }
 
-.reset-date-btn:hover {
+.resetDateBtn:hover {
   background: #d32f2f !important;
   border-color: #d32f2f !important;
 }
 
-.filter-by-date.d-flex {
+.filterByDate.d-flex {
   padding-top: 0;
   align-items: flex-end;
+}
+
+.colRightAligned {
+  text-align: right;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1rem;
 }
