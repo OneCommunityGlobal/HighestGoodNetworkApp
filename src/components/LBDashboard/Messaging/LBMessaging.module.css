@@ -462,3 +462,7 @@
 .darkModeBorder {
   border-color: black;
 }
+
+.darkModeColor {
+  color: black;
+}

@@ -239,7 +239,11 @@ export default function LBMessaging() {
           }}
         />
         <div className={styles.lbMessagingContactInfo}>
-          <div className={`${styles.lbMessagingContactName} ${mobileView ? styles.black : ''}`}>
+          <div
+            className={`${styles.lbMessagingContactName} ${mobileView ? styles.black : ''} ${
+              darkMode ? 'text-light' : ''
+            }`}
+          >
             {user.firstName} {user.lastName}
           </div>
         </div>
@@ -249,11 +253,19 @@ export default function LBMessaging() {
 
   const renderChatMessages = () => {
     if (messagesLoading) {
-      return <p className={styles.lbNoMsgText}>Loading messages...</p>;
+      return (
+        <p className={`${styles.lbNoMsgText} ${darkMode ? 'text-light' : ''}`}>
+          Loading messages...
+        </p>
+      );
     }
 
     if (messages.length === 0) {
-      return <p className={styles.lbNoMsgText}>No messages to display.</p>;
+      return (
+        <p className={`${styles.lbNoMsgText} ${darkMode ? 'text-light' : ''}`}>
+          No messages to display.
+        </p>
+      );
     }
 
     const filteredMessages = messages.filter(
@@ -263,7 +275,11 @@ export default function LBMessaging() {
     );
 
     if (filteredMessages.length === 0) {
-      return <p className={styles.lbNoMsgText}>No messages to display.</p>;
+      return (
+        <p className={`${styles.lbNoMsgText} ${darkMode ? 'text-light' : ''}`}>
+          No messages to display.
+        </p>
+      );
     }
 
     return (
@@ -276,7 +292,9 @@ export default function LBMessaging() {
               message.sender === auth.userid ? styles.sent : styles.received
             }`}
           >
-            <p className={styles.messageText}>
+            <p
+              className={`${styles.messageText} ${darkMode ? `${styles.bgAzure} text-light` : ''}`}
+            >
               {message.content.split('\n').map(line => (
                 <span key={message._id + line}>
                   {line}
@@ -326,7 +344,7 @@ export default function LBMessaging() {
                               type="text"
                               placeholder={placeholder}
                               className={`${styles.lbSearchInput} ${
-                                darkMode ? styles.bgYinMnBlue : ''
+                                darkMode ? `${styles.bgYinMnBlue} text-light` : ''
                               }`}
                               value={searchQuery}
                               onChange={e => {
@@ -357,7 +375,11 @@ export default function LBMessaging() {
                               darkMode ? styles.bgSpaceCadet : ''
                             }`}
                           >
-                            <h3 className={styles.lbContactMsgs}>Messages</h3>
+                            <h3
+                              className={`${styles.lbContactMsgs} ${darkMode ? 'text-light' : ''}`}
+                            >
+                              Messages
+                            </h3>
                             <div className={styles.lbMessagingSearchIconsMobile}>
                               <FontAwesomeIcon
                                 icon={faSearch}
@@ -397,7 +419,7 @@ export default function LBMessaging() {
                                     <div
                                       className={`${styles.lbMessagingContactName} ${
                                         mobileView ? styles.black : ''
-                                      }`}
+                                      } ${darkMode ? 'text-light' : ''}`}
                                     >
                                       {user.firstName} {user.lastName}
                                     </div>
@@ -426,7 +448,9 @@ export default function LBMessaging() {
                     <input
                       type="text"
                       placeholder={placeholder}
-                      className={`${styles.lbSearchInput} ${darkMode ? styles.bgYinMnBlue : ''}`}
+                      className={`${styles.lbSearchInput} ${
+                        darkMode ? `${styles.bgYinMnBlue} text-light` : ''
+                      }`}
                       value={searchQuery}
                       onChange={e => {
                         const query = e.target.value;
@@ -456,7 +480,9 @@ export default function LBMessaging() {
                       darkMode ? styles.bgSpaceCadet : ''
                     }`}
                   >
-                    <h3 className={styles.lbContactMsgs}>Messages</h3>
+                    <h3 className={`${styles.lbContactMsgs} ${darkMode ? 'text-light' : ''}`}>
+                      Messages
+                    </h3>
                     <div className={styles.lbMessagingSearchIcons}>
                       <FontAwesomeIcon
                         icon={faSearch}
@@ -488,7 +514,11 @@ export default function LBMessaging() {
                             }}
                           />
                           <div className={styles.lbMessagingContactInfo}>
-                            <div className={styles.lbMessagingContactName}>
+                            <div
+                              className={`${styles.lbMessagingContactName} ${
+                                darkMode ? 'text-light' : ''
+                              }`}
+                            >
                               {user.firstName} {user.lastName}
                             </div>
                           </div>
@@ -506,7 +536,7 @@ export default function LBMessaging() {
                   darkMode ? styles.bgOxfordBlue : ''
                 }`}
               >
-                <div>
+                <div className={darkMode ? 'text-light' : ''}>
                   <img
                     src={selectedUser.profilePic || '/pfp-default-header.png'}
                     onError={e => {
@@ -535,7 +565,7 @@ export default function LBMessaging() {
                           bellDropdownActive ? styles.activeInlgMessagingBellSelectDropdown : ''
                         } ${darkMode ? styles.bgYinMnBlue : ''}`}
                       >
-                        <label>
+                        <label className={darkMode ? 'text-light' : ''}>
                           <input
                             type="checkbox"
                             checked={selectedOption.notifyInApp || false}
@@ -549,7 +579,7 @@ export default function LBMessaging() {
                           />
                           In App
                         </label>
-                        <label>
+                        <label className={darkMode ? 'text-light' : ''}>
                           <input
                             type="checkbox"
                             checked={selectedOption.notifyEmail || false}
@@ -602,7 +632,9 @@ export default function LBMessaging() {
                       handleSendMessage();
                     }
                   }}
-                  className={`${styles.lbMessagingTextarea} ${darkMode ? styles.bgYinMnBlue : ''}`}
+                  className={`${styles.lbMessagingTextarea} ${
+                    darkMode ? `${styles.bgYinMnBlue} text-light` : ''
+                  }`}
                   disabled={!selectedUser.userId}
                 />
                 <FontAwesomeIcon
