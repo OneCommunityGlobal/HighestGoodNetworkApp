@@ -114,6 +114,93 @@ const projectStatusButtons = [
   },
 ];
 
+function FinancialCard({ title, value = '-', monthOverMonth = '-', additionalInfo = {} }) {
+  const [showTooltip, setShowTooltip] = useState(false);
+
+  const getColorScheme = percentage => {
+    if (percentage === '-') return 'neutral';
+    if (percentage > 0) return 'positive';
+    if (percentage < 0) return 'negative';
+    return 'neutral';
+  };
+
+  const colorScheme = getColorScheme(monthOverMonth);
+
+  const titleClass = title.replace(/\s+/g, '-').toLowerCase();
+
+  return (
+    <div
+      className={`financial-card ${colorScheme} custom-box-shadow financial-card-background-${titleClass}`}
+      onMouseEnter={() => setShowTooltip(true)}
+      onMouseLeave={() => setShowTooltip(false)}
+    >
+      <div className="financial-card-title">{title}</div>
+      <div className={`financial-card-ellipse financial-card-ellipse-${titleClass}`} />
+      <div className="financial-card-value">{value === '-' ? '-' : value.toLocaleString()}</div>
+      <div className={`financial-card-month-over-month ${colorScheme}`}>
+        {monthOverMonth === '-'
+          ? '-'
+          : `${monthOverMonth > 0 ? '+' : ''}${monthOverMonth}% month over month`}
+      </div>
+
+      {/* Tooltip for Additional Information */}
+      {showTooltip && Object.keys(additionalInfo).length > 0 && (
+        <div className="financial-card-tooltip">
+          {Object.entries(additionalInfo).map(([key]) => (
+            <div key={key} className="financial-card-tooltip-item">
+              <span className="tooltip-key">{key}:</span>
+              <span className="tooltip-value">{value}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+const financialData = [
+  {
+    id: uuidv4(),
+    title: 'Total Project Cost',
+    value: '-',
+    monthOverMonth: '-',
+    additionalInfo: {
+      'Budget Utilization': '-',
+      Forecast: '-',
+    },
+  },
+  {
+    id: uuidv4(),
+    title: 'Total Material Cost',
+    value: '-',
+    monthOverMonth: '-',
+    additionalInfo: {
+      'Inventory Cost': '-',
+      Suppliers: '-',
+    },
+  },
+  {
+    id: uuidv4(),
+    title: 'Total Labor Cost',
+    value: '-',
+    monthOverMonth: '-',
+    additionalInfo: {
+      'Overtime Hours': '-',
+      'Team Efficiency': '-',
+    },
+  },
+  {
+    id: uuidv4(),
+    title: 'Total Equipment Cost',
+    value: '-',
+    monthOverMonth: '-',
+    additionalInfo: {
+      'Equipment Utilization': '-',
+      'Maintenance Cost': '-',
+    },
+  },
+];
+
 export function WeeklyProjectSummaryContent() {
   const dispatch = useDispatch();
   const materials = useSelector(state => state.materials?.materialslist || []);
@@ -285,14 +372,19 @@ function WeeklyProjectSummary() {
         key: 'Financials',
         className: 'large',
         content: (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
-            <div className="weekly-project-summary-card financial-small">📊 Card</div>
+          <div className="financial-cards-container">
+            {financialData.map(card => (
+              <FinancialCard
+                key={card.id}
+                title={card.title}
+                value={card.value}
+                monthOverMonth={card.monthOverMonth}
+                additionalInfo={card.additionalInfo}
+              />
+            ))}
             <div className="weekly-project-summary-card financial-small financial-chart">
               <ExpenseBarChart />
             </div>
-            <div className="weekly-project-summary-card financial-small">📊 Card</div>
-            <div className="weekly-project-summary-card financial-small">📊 Card</div>
-            <div className="weekly-project-summary-card financial-big">📊 Big Card</div>
           </div>
         ),
       },
