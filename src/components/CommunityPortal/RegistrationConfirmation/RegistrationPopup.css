@@ -101,3 +101,7 @@
   display: flex;
   justify-content: space-between;
 }
+.popup-dark .event-details {
+  color: #ffffff; /* White text for maximum contrast on dark background */
+  text-shadow: 0 1px 2px rgba(0,0,0,0.8); /* Optional: add shadow for better visibility */
+}
