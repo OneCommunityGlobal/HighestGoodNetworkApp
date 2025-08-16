@@ -222,7 +222,9 @@ export default function LBMessaging() {
       <button
         key={user.userId}
         type="button"
-        className={`${`${styles.lbMessagingContact} ${darkMode ? styles.bgYinMnBlue : ''}`}`}
+        className={`${`${styles.lbMessagingContact} ${
+          darkMode ? `${styles.bgYinMnBlue} ${styles.darkModeBorder}` : ''
+        }`}`}
         onClick={() => {
           updateSelection(user);
           setMobileHamMenu(false);
@@ -295,7 +297,11 @@ export default function LBMessaging() {
         <div className={`${styles.logoContainer} ${darkMode ? styles.bgOxfordBlue : ''}`}>
           <img src={logo} alt="One Community Logo" />
         </div>
-        <div className={`${styles.contentContainer} ${darkMode ? styles.bgYinMnBlue : ''}`}>
+        <div
+          className={`${styles.contentContainer} ${
+            darkMode ? `${styles.bgYinMnBlue} ${styles.darkModeBorder}` : ''
+          }`}
+        >
           <div className={`${styles.containerTop} ${styles.msg} ${darkMode ? styles.bgAzure : ''}`}>
             {mobileView && (
               <div className={styles.lbMobileMessagingMenu}>
@@ -372,7 +378,7 @@ export default function LBMessaging() {
                                   key={user.userId}
                                   type="button"
                                   className={`${styles.lbMessagingContact} ${
-                                    darkMode ? styles.bgYinMnBlue : ''
+                                    darkMode ? `${styles.bgYinMnBlue} ${styles.darkModeBorder}` : ''
                                   }`}
                                   onClick={() => {
                                     updateSelection(user);
@@ -469,7 +475,7 @@ export default function LBMessaging() {
                           key={user._id}
                           type="button"
                           className={`${styles.lbMessagingContact} ${
-                            darkMode ? styles.bgYinMnBlue : ''
+                            darkMode ? `${styles.bgYinMnBlue} ${styles.darkModeBorder}` : ''
                           }`}
                           onClick={() => updateSelection(user)}
                         >

@@ -458,3 +458,7 @@
 .lbMessagingContact.bgYinMnBlue:hover {
   background-color: #1C2541; /* Space Cadet for hover effect */
 }
+
+.darkModeBorder {
+  border-color: black;
+}
