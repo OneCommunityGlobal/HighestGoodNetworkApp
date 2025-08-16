@@ -210,15 +210,24 @@ summary::-webkit-details-marker {
 }
 
 .tab-nav-item.dark {
-  background: #1e2d44;
+  background: linear-gradient(to bottom, #2b3b50, #1e2d44);
   color: #ddd;
   border-color: #2b3b50;
+}
+
+.tab-nav-item.dark .tab-label {
+  color: #ddd;
 }
 
 .tab-nav-item.active.dark {
   background: #14233a;
   color: #fff;
   border-bottom: 1px solid #14233a;
+  border-color: #4a5568;
+}
+
+.tab-nav-item.active.dark .tab-label {
+  color: #fff;
 }
 
 .tab-grid {
@@ -247,6 +256,23 @@ summary::-webkit-details-marker {
 
 .tab-grid::-webkit-scrollbar-thumb:hover {
   background: #555;
+}
+
+.tab-grid.dark {
+  border-bottom: 1px solid #2b3b50;
+}
+
+.tab-grid.dark > .nav-item .tab-nav-item {
+  box-shadow:
+    -2px 0 6px rgba(0,0,0,0.25),
+     2px 0 6px rgba(0,0,0,0.25);
+}
+
+.tab-grid.dark > .nav-item:nth-child(-n+11) .tab-nav-item {
+  box-shadow:
+    -2px 0 6px rgba(0,0,0,0.25),
+     2px 0 6px rgba(0,0,0,0.25),
+     0 6px 6px rgba(0,0,0,0.35);
 }
 
 .tab-grid.dark::-webkit-scrollbar-track {
@@ -299,6 +325,23 @@ summary::-webkit-details-marker {
   background: white;
   border-color: #aaa;
   z-index: 10;
+}
+
+.tab-grid .nav-link.tab-nav-item.active.dark {
+  background: #14233a;
+  border-color: #4a5568;
+  color: #fff;
+}
+
+.tab-grid .nav-link.tab-nav-item.dark:hover {
+  background: linear-gradient(to bottom, #3a4b60, #2b3b50);
+  filter: brightness(1.1);
+}
+
+.tab-grid .nav-link.tab-nav-item.dark {
+  background: linear-gradient(to bottom, #2b3b50, #1e2d44);
+  border-color: #2b3b50;
+  color: #ddd;
 }
 
 .tab-grid.two-rows > .nav-item:nth-child(n + calc(var(--cols, 12) + 1)) {
