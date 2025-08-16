@@ -508,6 +508,19 @@ export const ENDPOINTS = {
   HELP_CATEGORIES: `${APIEndpoint}/help-categories`,
   APPLICANT_SOURCES: `${APIEndpoint}/applicant-analytics/applicant-sources`,
 
+  OPT_STATUS_BREAKDOWN: (startDate, endDate, role) => {
+  let url = `${APIEndpoint}/analytics/opt-status`;
+  const params = [];
+
+  if (startDate) params.push(`startDate=${startDate}`);
+  if (endDate) params.push(`endDate=${endDate}`);
+  if (role) params.push(`role=${role}`);
+
+  return params.length > 0 ? `${url}?${params.join("&")}` : url;
+},
+
+
+
   // job analytics
   HOURS_PLEDGED: `${APIEndpoint}/analytics/hours-pledged`,
 
