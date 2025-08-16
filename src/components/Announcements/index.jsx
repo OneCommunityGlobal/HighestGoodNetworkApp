@@ -47,10 +47,18 @@ function Announcements({ title, email: initialEmail }) {
     { id: 'medium', icon: faMedium, label: 'Medium' },
     { id: 'plurk', label: 'Plurk', customIconSrc: 'social-media-logos/plurk_icon.png' },
     { id: 'bitily', label: 'Bitily', customIconSrc: 'social-media-logos/bitily_icon.png' },
-    { id: 'livejournal', label: 'LiveJournal', customIconSrc: 'social-media-logos/liveJournal_icon.png' },
+    {
+      id: 'livejournal',
+      label: 'LiveJournal',
+      customIconSrc: 'social-media-logos/liveJournal_icon.png',
+    },
     { id: 'slashdot', label: 'Slashdot', customIconSrc: 'social-media-logos/slashdot_icon.png' },
     { id: 'blogger', label: 'Blogger', customIconSrc: 'social-media-logos/blogger_icon.png' },
-    { id: 'truthsocial', label: 'Truth Social', customIconSrc: 'social-media-logos/truthsocial_icon.png' },
+    {
+      id: 'truthsocial',
+      label: 'Truth Social',
+      customIconSrc: 'social-media-logos/truthsocial_icon.png',
+    },
   ];
 
   const columns = Math.ceil(tabs.length / 2);
@@ -62,7 +70,10 @@ function Announcements({ title, email: initialEmail }) {
 
   return (
     <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: '100%' }}>
-      <Nav className={classnames('tab-grid', { 'two-rows': columns })} style={gridStyle}>
+      <Nav
+        className={classnames('tab-grid', { 'two-rows': columns, dark: darkMode })}
+        style={gridStyle}
+      >
         {tabs.map(({ id, icon, label, customIconSrc }) => (
           <NavItem key={id}>
             <NavLink
@@ -97,9 +108,27 @@ function Announcements({ title, email: initialEmail }) {
 
           {/* Platforms stay the same */}
           {[
-            'x','facebook','linkedin','pinterest','instagram','threads','mastodon','bluesky',
-            'youtube','reddit','tumblr','imgur','diigo','myspace','medium','plurk','bitily',
-            'livejournal','slashdot','blogger','truthsocial',
+            'x',
+            'facebook',
+            'linkedin',
+            'pinterest',
+            'instagram',
+            'threads',
+            'mastodon',
+            'bluesky',
+            'youtube',
+            'reddit',
+            'tumblr',
+            'imgur',
+            'diigo',
+            'myspace',
+            'medium',
+            'plurk',
+            'bitily',
+            'livejournal',
+            'slashdot',
+            'blogger',
+            'truthsocial',
           ].map(platform => (
             <TabPane tabId={platform} key={platform}>
               <SocialMediaComposer platform={platform} />
