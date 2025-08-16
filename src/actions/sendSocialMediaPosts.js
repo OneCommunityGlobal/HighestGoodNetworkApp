@@ -140,7 +140,7 @@ export const deletePost = async (postId) => {
 
 export const scheduleTweet = (scheduleDate, scheduleTime, html) => {
   const url = ENDPOINTS.SCHEDULE_TWEETS;
-
+  console.log(html, "content reached to scheduled tweet");
   return async () => {
     try {
       await axios.post(url, { "ScheduleDate": scheduleDate, "ScheduleTime": scheduleTime, "EmailContent": html });

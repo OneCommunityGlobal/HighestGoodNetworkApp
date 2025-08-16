@@ -4,6 +4,7 @@ import './Announcements.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react';
 import { Label, Input, Button } from 'reactstrap';
+import { Card, CardContent } from '@/components/ui/card';
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
@@ -35,6 +36,7 @@ function Announcements({ title, email: initialEmail }) {
   const [isFileUploaded, setIsFileUploaded] = useState(false);
   const [posts, setPosts] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [showDropdownPost, setShowDropdownPost] = useState(false);
   const [platform, setPlatform] = useState('');
   const [selectedPlatform, setSelectedPlatform] = useState('');
   const editorRef = useRef(null);
@@ -44,6 +46,7 @@ function Announcements({ title, email: initialEmail }) {
     { label: 'Twitter', value: 'twitter' },
     { label: 'Instagram', value: 'instagram' }, // add more as needed
   ];
+  const [selectedPlatforms, setSelectedPlatforms] = useState([]);
 
   useEffect(() => {
     setShowEditor(false);
@@ -301,34 +304,34 @@ function Announcements({ title, email: initialEmail }) {
     setShowDropdown(true);
   };
 
+  const handlePostClick = () => {
+    setShowDropdownPost(true);
+  };
+
   const handleSubmit = async () => {
     if (charCount > maxLength) {
       toast.error('Character limit exceeded. Please shorten your text to 280 characters.');
       return;
     }
-    if (!platform) {
-      alert('Please select a platform.');
-      return;
-    }
     const htmlContent = `${emailContent}`;
     const scheduleDate = `${dateContent}`;
     const scheduleTime = `${timeContent}`;
-
-    if (!htmlContent) {
-      toast.error('Error: Missing Text content');
+    if (!emailContent || emailContent.trim() === '') {
+      toast.error('Please enter content before posting.');
       return;
     }
-    switch (platform) {
-      case 'twitter':
-        dispatch(scheduleTweet(scheduleDate, scheduleTime, htmlContent));
-        break;
 
-      case 'facebook':
-        dispatch(scheduleFbPost(scheduleDate, scheduleTime, htmlContent));
-        break;
+    if (selectedPlatforms.length === 0) {
+      toast.error('Please select at least one platform.');
+      return;
+    }
 
-      default:
-        break;
+    if (selectedPlatforms.includes('facebook')) {
+      await dispatch(scheduleFbPost(scheduleDate, scheduleTime, htmlContent));
+    }
+
+    if (selectedPlatforms.includes('twitter')) {
+      await dispatch(scheduleTweet(scheduleDate, scheduleTime, htmlContent));
     }
 
     setShowDropdown(false);
@@ -413,8 +416,70 @@ function Announcements({ title, email: initialEmail }) {
     return formattedTime;
   };
 
+  const handlePostNow = () => {
+    if (!emailContent || emailContent.trim() === '') {
+      toast.error('Please enter content before posting.');
+      return;
+    }
+
+    if (selectedPlatforms.length === 0) {
+      toast.error('Please select at least one platform.');
+      return;
+    }
+
+    if (selectedPlatforms.includes('twitter')) {
+      dispatch(sendTweet(emailContent));
+    }
+
+    if (selectedPlatforms.includes('facebook')) {
+      window.FB.login(
+        response => {
+          if (response.authResponse) {
+            const accessToken = response.authResponse.accessToken;
+            dispatch(ssendFbPost(emailContent, accessToken))
+              .then(() => toast.success('Posted to Facebook!'))
+              .catch(() => toast.error('Failed to post on Facebook.'));
+          } else {
+            toast.error('Facebook login failed.');
+          }
+        },
+        { scope: 'public_profile,email,pages_show_list,pages_manage_posts' },
+      );
+    }
+  };
+
   return (
     <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: '100%' }}>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Card
+          className={`cursor-pointer rounded-2xl border-2 transition-all ${
+            mode === 'postNow'
+              ? 'border-blue-500 shadow-lg'
+              : 'border-gray-200 hover:border-gray-400'
+          }`}
+          onClick={() => setMode('postNow')}
+        >
+          <CardContent className="p-6 space-y-2">
+            <h3 className="text-xl font-bold">📢 Post Now</h3>
+            <p className="text-gray-600">Instantly publish your content to Facebook/Twitter.</p>
+          </CardContent>
+        </Card>
+
+        <Card
+          className={`cursor-pointer rounded-2xl border-2 transition-all ${
+            mode === 'schedule'
+              ? 'border-blue-500 shadow-lg'
+              : 'border-gray-200 hover:border-gray-400'
+          }`}
+          onClick={() => setMode('schedule')}
+        >
+          <CardContent className="p-6 space-y-2">
+            <h3 className="text-xl font-bold">⏰ Schedule Post</h3>
+            <p className="text-gray-600">Pick a date & time to post automatically later.</p>
+          </CardContent>
+        </Card>
+      </div>
+
       <div className="email-update-container">
         <div className="editor">
           {title ? <h3> {title} </h3> : <h3>Weekly Progress Editor</h3>}
@@ -436,6 +501,7 @@ function Announcements({ title, email: initialEmail }) {
               </div>
             )}
           </div>
+
           <div inline="true" className="mb-2">
             <Label for="timeOfWork">Time</Label>
             <Input
@@ -460,17 +526,85 @@ function Announcements({ title, email: initialEmail }) {
                 Schedule Post
               </button>
             ) : (
+              // <div style={{ marginTop: '15px' }}>
+              //   <label>Select Platform: </label>
+              //   <select
+              //     value={platform}
+              //     onChange={e => setPlatform(e.target.value)}
+              //     style={{ marginLeft: '10px', padding: '5px' }}
+              //   >
+              //     <option value="">-- Choose --</option>
+              //     <option value="facebook">Facebook</option>
+              //     <option value="twitter">Twitter</option>
+              //   </select>
+              // </div>
               <div style={{ marginTop: '15px' }}>
-                <label>Select Platform: </label>
-                <select
-                  value={platform}
-                  onChange={e => setPlatform(e.target.value)}
-                  style={{ marginLeft: '10px', padding: '5px' }}
-                >
-                  <option value="">-- Choose --</option>
-                  <option value="facebook">Facebook</option>
-                  <option value="twitter">Twitter</option>
-                </select>
+                <label>
+                  <strong>Select Multiple Platform(s):</strong>
+                </label>
+                <div>
+                  {platforms.map(({ label, value }) => (
+                    <div key={value} style={{ margin: '5px 0' }}>
+                      <input
+                        type="checkbox"
+                        id={`platform-${value}`}
+                        value={value}
+                        checked={selectedPlatforms.includes(value)}
+                        onChange={e => {
+                          const { value, checked } = e.target;
+                          if (checked) {
+                            setSelectedPlatforms(prev => [...prev, value]);
+                          } else {
+                            setSelectedPlatforms(prev => prev.filter(p => p !== value));
+                          }
+                        }}
+                      />
+                      <label htmlFor={`platform-${value}`} style={{ marginLeft: '8px' }}>
+                        {label}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+          <div style={{ marginBottom: '20px' }}>
+            {!showDropdownPost ? (
+              <button
+                className="send-button mr-1 ml-1"
+                onClick={handlePostClick}
+                style={darkMode ? boxStyleDark : boxStyle}
+              >
+                Select Multiple Platforms
+              </button>
+            ) : (
+              <div style={{ marginTop: '15px' }}>
+                <label>
+                  <strong>Select Multiple Platform(s):</strong>
+                </label>
+                <div>
+                  {platforms.map(({ label, value }) => (
+                    <div key={value} style={{ margin: '5px 0' }}>
+                      <input
+                        type="checkbox"
+                        id={`platform-${value}`}
+                        value={value}
+                        checked={selectedPlatforms.includes(value)}
+                        onChange={e => {
+                          const { value, checked } = e.target;
+                          if (checked) {
+                            setSelectedPlatforms(prev => [...prev, value]);
+                          } else {
+                            setSelectedPlatforms(prev => prev.filter(p => p !== value));
+                          }
+                        }}
+                      />
+                      <label htmlFor={`platform-${value}`} style={{ marginLeft: '8px' }}>
+                        {label}
+                      </label>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>
@@ -602,6 +736,15 @@ function Announcements({ title, email: initialEmail }) {
               Click on below social media to post
             </label>
           )}
+
+          <button
+            type="button"
+            className="send-button"
+            onClick={handlePostNow}
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
+            Post to Selected Platform(s)
+          </button>
 
           {title ? null : (
             <div className="social-buttons-container">
