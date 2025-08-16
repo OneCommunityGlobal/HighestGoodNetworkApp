@@ -437,3 +437,24 @@
 .lbMsgIcon {
   cursor: pointer;
 }
+
+/* Dark Mode Styles */
+.bgOxfordBlue {
+  background-color: #1b2a41;
+}
+
+.bgSpaceCadet {
+  background-color: #1C2541;
+}
+
+.bgYinMnBlue {
+  background-color: #3A506B;
+}
+
+.bgAzure {
+  background-color: #007FFF;
+}
+
+.lbMessagingContact.bgYinMnBlue:hover {
+  background-color: #1C2541; /* Space Cadet for hover effect */
+}
