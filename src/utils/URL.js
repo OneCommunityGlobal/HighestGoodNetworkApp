@@ -358,6 +358,8 @@ export const ENDPOINTS = {
   SLACK_ADD: `${APIEndpoint}/slack/invite`,
   DROPBOX_CREATE_ADD: `${APIEndpoint}/dropbox/create-folder-and-invite`,
   ACCESS_MANAGEMENT: `${APIEndpoint}/accessManagement`,
+  DROPDOWN_FILTER: `${APIEndpoint}/villages`,
+  VILLAGE_DETAILS: villageId => `${APIEndpoint}/villages/${villageId}`,
 
   // community portal
   CP_NOSHOW_VIZ_LOCATION: `${APIEndpoint}/communityportal/reports/participation/location`,
