@@ -14,7 +14,7 @@ function HoursPledgedChart() {
   const dispatch = useDispatch();
 
   const { loading, data: rawData, error } = useSelector(state => state.hoursPledged);
-  const darkMode = useSelector(state => state.theme.darkMode);
+  const darkMode = useSelector((state) => state.theme.darkMode);
   const token = localStorage.getItem('token');
 
   const roleOptions = [
@@ -26,18 +26,16 @@ function HoursPledgedChart() {
 
   const [chartData, setChartData] = useState([]);
 
-  // Handle start date change
-  const handleStartDateChange = date => {
+  const handleStartDateChange = (date) => {
     if (endDate && date > endDate) {
-      setEndDate(date); // If start date is after end date, set end date to start date
+      setEndDate(date);
     }
     setStartDate(date);
   };
 
-  // Handle end date change
-  const handleEndDateChange = date => {
+  const handleEndDateChange = (date) => {
     if (startDate && date < startDate) {
-      setStartDate(date); // If end date is before start date, set start date to end date
+      setStartDate(date); 
     }
     setEndDate(date);
   };
@@ -47,7 +45,7 @@ function HoursPledgedChart() {
     if (startDate) queryParams.append('startDate', startDate.toISOString());
     if (endDate) queryParams.append('endDate', endDate.toISOString());
     if (selectedRoles.length > 0) {
-      const roles = selectedRoles.map(role => role.value).join(',');
+      const roles = selectedRoles.map((role) => role.value).join(',');
       queryParams.append('roles', roles);
     }
     dispatch(fetchHoursPledged(queryParams.toString(), token));
@@ -61,19 +59,23 @@ function HoursPledgedChart() {
 
     let filteredData = rawData;
     if (startDate) {
-      filteredData = filteredData.filter(item => new Date(item.pledge_date) >= new Date(startDate));
+      filteredData = filteredData.filter(
+        (item) => new Date(item.pledge_date) >= new Date(startDate)
+      );
     }
     if (endDate) {
-      filteredData = filteredData.filter(item => new Date(item.pledge_date) <= new Date(endDate));
+      filteredData = filteredData.filter(
+        (item) => new Date(item.pledge_date) <= new Date(endDate)
+      );
     }
 
     if (selectedRoles.length > 0) {
-      const selectedRoleValues = selectedRoles.map(role => role.value);
-      filteredData = filteredData.filter(item => selectedRoleValues.includes(item.role));
+      const selectedRoleValues = selectedRoles.map((role) => role.value);
+      filteredData = filteredData.filter((item) => selectedRoleValues.includes(item.role));
     }
 
     const roleMap = {};
-    filteredData.forEach(item => {
+    filteredData.forEach((item) => {
       if (!roleMap[item.role]) {
         roleMap[item.role] = { role: item.role, totalHours: 0, count: 0 };
       }
@@ -81,7 +83,7 @@ function HoursPledgedChart() {
       roleMap[item.role].count += 1;
     });
 
-    const processedData = Object.values(roleMap).map(roleData => ({
+    const processedData = Object.values(roleMap).map((roleData) => ({
       role: roleData.role,
       avgHours: roleData.totalHours / roleData.count,
     }));
