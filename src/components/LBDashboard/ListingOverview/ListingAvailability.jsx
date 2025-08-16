@@ -152,17 +152,30 @@ export default function ListingAvailability({ listingId, availability, loading, 
             </tbody>
           </table>
           <div className={`${styles.calendarLegend}`} style={{ marginTop: 16 }}>
-            <span style={{ background: AVAILABILITY_COLORS.available }} className={`${styles.legendDot}`} />{' '}
+            <span
+              style={{ background: AVAILABILITY_COLORS.available }}
+              className={`${styles.legendDot}`}
+            />{' '}
             Available
-            <span style={{ background: AVAILABILITY_COLORS.booked }} className={`${styles.legendDot}`} />{' '}
+            <span
+              style={{ background: AVAILABILITY_COLORS.booked }}
+              className={`${styles.legendDot}`}
+            />{' '}
             Booked
-            <span style={{ background: AVAILABILITY_COLORS.blocked }} className={`${styles.legendDot}`} />{' '}
+            <span
+              style={{ background: AVAILABILITY_COLORS.blocked }}
+              className={`${styles.legendDot}`}
+            />{' '}
             Blocked
           </div>
         </>
       )}
       <div className={`${styles.contactHostSection}`}>
-        <button type="button" onClick={() => setContactOpen(true)} className={`${styles.contactHostBtn}`}>
+        <button
+          type="button"
+          onClick={() => setContactOpen(true)}
+          className={`${styles.contactHostBtn}`}
+        >
           Contact Host
         </button>
         {contactOpen && (
@@ -187,8 +200,14 @@ export default function ListingAvailability({ listingId, availability, loading, 
               onChange={e => setContactForm({ ...contactForm, message: e.target.value })}
               required
             />
-            <button type="submit" className={`${styles.sendInfoBtn} ${styles.contactHostBtn}`}>Send</button>
-            <button type="button" className={`${styles.cancelInfoBtn} ${styles.contactHostBtn}`} onClick={() => setContactOpen(false)}>
+            <button type="submit" className={`${styles.sendInfoBtn} ${styles.contactHostBtn}`}>
+              Send
+            </button>
+            <button
+              type="button"
+              className={`${styles.cancelInfoBtn} ${styles.contactHostBtn}`}
+              onClick={() => setContactOpen(false)}
+            >
               Cancel
             </button>
           </form>

@@ -75,7 +75,6 @@ function ListOverview() {
 
   const handleConfirmBooking = () => {
     if (bookingState.success) return;
-    console.log(currentUserProfile)
     dispatch(
       bookListing({
         listingId: listing._id,
