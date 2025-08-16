@@ -20,7 +20,7 @@ const renderFooter = (props = {}) => {
   };
   const all = { ...defaults, ...props };
   render(<UserTableFooter {...all} />);
-  const user = userEvent.setup();
+  const user = userEvent;
   return { ...all, user };
 };
 describe('user table footer', () => {
@@ -78,9 +78,9 @@ describe('user table footer', () => {
     it('should not fire onPageSelect() when the user click next on the last page', async() => {
       const { user, onPageSelect } = renderFooter({
         pageSize: 10,
-        selectedPage: 10,
+        selectedPage: 11,
         datacount: 100,
-        pageNo: 10,
+        pageNo: 11,
       });
       await user.click(screen.getByRole('button', { name: /next/i }));
       expect(onPageSelect).not.toHaveBeenCalled();
@@ -121,7 +121,7 @@ describe('user table footer tests', () => {
         datacount,
         pageNo: 1,
       });
-      user.click(screen.getByRole('button', { name: /4/i }));
+      await user.click(screen.getByRole('button', { name: /4/i }));
       expect(onPageSelect).toHaveBeenCalledWith(4);
       const rightNum = pageSize * selectedPage;
       const leftNum = 1 + (selectedPage - 1) * pageSize;

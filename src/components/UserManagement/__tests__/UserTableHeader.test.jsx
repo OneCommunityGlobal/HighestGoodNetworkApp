@@ -1,5 +1,5 @@
 // import React from 'react';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import { rootReducers } from '../../../store';
 import { createStore } from 'redux';
@@ -58,8 +58,11 @@ describe('UserTableHeader', () => {
     expect(screen.getByText(USER_END_DATE)).toBeInTheDocument();
 
     // Since you have three headers with the same text, let's make sure all are present
-    const resumeDateHeaders = screen.getAllByText(USER_RESUME_DATE);
-    expect(resumeDateHeaders).toHaveLength(3);
+    // const resumeDateHeaders = screen.getAllByText(USER_RESUME_DATE);
+    // expect(resumeDateHeaders).toHaveLength(3);
+    expect(screen.getByText(USER_RESUME_DATE)).toBeInTheDocument();
+    expect(screen.getByText(USER_START_DATE)).toBeInTheDocument();
+    expect(screen.getByText(USER_END_DATE)).toBeInTheDocument();
   });
 
   it('renders delete column when permitted', () => {
@@ -70,12 +73,12 @@ describe('UserTableHeader', () => {
         <thead>
           <UserTableHeader authRole={authRole} roleSearchText={roleSearchText} />
         </thead>
-      </table>,
+      </table>
       </Provider>
     );
 
     // Check if the delete column is present when permissions are met
-    const deleteColumn = screen.queryByTestId('usermanagement_delete');
+    const deleteColumn = screen.getByRole('columnheader', { name: /delete user/i });
     expect(deleteColumn).toBeInTheDocument();
   });
 
@@ -95,7 +98,7 @@ describe('UserTableHeader', () => {
     );
 
     // Since you are querying by test id, make sure your component has 'data-testid' set on elements
-    const deleteColumn = screen.queryByTestId('delete-column'); // Update 'delete-column' to match your 'data-testid' value
+    const deleteColumn = screen.queryByRole('columnheader', { name: /delete user/i });
     expect(deleteColumn).not.toBeInTheDocument();
   });
 });

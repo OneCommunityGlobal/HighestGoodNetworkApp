@@ -1,5 +1,5 @@
 import moment from 'moment';
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 // import { useSelector } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
 import { boxStyleDark, boxStyle } from '../../styles';
@@ -22,12 +22,19 @@ const SetUpFinalDayPopUpComponent = ({ open, onClose, onSave, darkMode }) => {
       setDateError(true);
     }
   };
+  const inputRef = useRef(null);
+
+useEffect(() => {
+  if (open && inputRef.current) {
+    inputRef.current.focus();
+  }
+}, [open]);
 
   return (
     <Modal
       isOpen={open}
       toggle={closePopup}
-      autoFocus={false}
+      // autoFocus={false}
       className={darkMode ? 'text-light dark-mode' : ''}
     >
       <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closePopup}>
@@ -35,7 +42,8 @@ const SetUpFinalDayPopUpComponent = ({ open, onClose, onSave, darkMode }) => {
       </ModalHeader>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <Input
-          autoFocus
+          // autoFocus
+          innerRef={inputRef}
           type="date"
           name="inactiveDate"
           id="inactiveDate"

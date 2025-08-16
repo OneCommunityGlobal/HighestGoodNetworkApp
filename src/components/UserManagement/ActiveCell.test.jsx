@@ -1,22 +1,9 @@
 // import React from 'react';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 // import { unmountComponentAtNode } from 'react-dom';
 import userEvent from '@testing-library/user-event';
 import ActiveCell from './ActiveCell';
 
-// let container = null;
-// beforeEach(() => {
-//   // setup a DOM element as a render target
-//   container = document.createElement('div');
-//   document.body.appendChild(container);
-// });
-
-// afterEach(() => {
-//   // cleanup on exiting
-//   unmountComponentAtNode(container);
-//   container.remove();
-//   container = null;
-// });
 
 describe('active cell status check', () => {
   let isActive = true;
@@ -24,7 +11,7 @@ describe('active cell status check', () => {
   const onClick = vi.fn();
   const canChange = true;
   it('displays the activeUser correctly', () => {
-    const rendered = render(
+    render(
       <ActiveCell isActive={isActive} index={index} onClick={onClick} canChange={canChange} />,
       // container,
     );
@@ -33,7 +20,7 @@ describe('active cell status check', () => {
   });
   it('displays the not activeUser correctly', () => {
     isActive = false;
-    const rendered = render(
+    render(
       <ActiveCell isActive={isActive} index={index} onClick={onClick} canChange={canChange} />,
       // container,
     );
@@ -50,7 +37,7 @@ describe('activate cell hover Test', () => {
   const onClick = vi.fn();
   let canChange = true;
   it('displays the hover info correctly when active and can change', async() => {
-    const rendered = render(
+    render(
       <ActiveCell isActive={isActive} index={index} onClick={onClick} canChange={canChange} />,
       // container,
     );
@@ -62,7 +49,7 @@ describe('activate cell hover Test', () => {
   it('displays the not activeUser correctly when active and cant change', async() => {
     isActive = true;
     canChange = false;
-    const rendered = render(
+    render(
       <ActiveCell isActive={isActive} index={index} onClick={onClick} canChange={canChange} />,
       // container,
     );
@@ -73,7 +60,7 @@ describe('activate cell hover Test', () => {
   it('displays the not activeUser correctly when inactive and cant change', async() => {
     isActive = false;
     canChange = false;
-    const rendered = render(
+    render(
       <ActiveCell isActive={isActive} index={index} onClick={onClick} canChange={canChange} />,
       // container,
     );

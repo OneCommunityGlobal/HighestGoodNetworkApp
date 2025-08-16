@@ -14,12 +14,13 @@ PauseAndResumeButton.defaultProps = {
 };
 
 describe('PauseAndResumeButton', () => {
-  beforeEach(() => {
-    renderWithProvider(<PauseAndResumeButton isBigBtn userProfile={userProfileMock} />);
-  });
+  // beforeEach(() => {
+   
+  // });
 
   describe('Structure', () => {
     it('should render a button', () => {
+       renderWithProvider(<PauseAndResumeButton isBigBtn userProfile={userProfileMock} />);
       const pauseResumeButton = screen.getByTestId('pause-resume-button');
       expect(pauseResumeButton).toBeInTheDocument();
     });
@@ -27,6 +28,7 @@ describe('PauseAndResumeButton', () => {
 
   describe('Behavior', () => {
     it('should render modal after the user clicks the pause button', async () => {
+       renderWithProvider(<PauseAndResumeButton isBigBtn userProfile={userProfileMock} />);
       await userEvent.click(screen.getByRole('button', { name: PAUSE }));
 
       // Wait for the dialog to appear
@@ -36,6 +38,7 @@ describe('PauseAndResumeButton', () => {
     });
 
     it('should change pause button to processing and then to resume after clicking on "Pause the User"', async () => {
+       renderWithProvider(<PauseAndResumeButton isBigBtn userProfile={userProfileMock} />);
       // Select a Pause button
       const pauseButton = screen.getAllByRole('button', { name: PAUSE })[0];
 
@@ -57,15 +60,17 @@ describe('PauseAndResumeButton', () => {
 
       // Expect the button to show PROCESSING and be disabled
       await waitFor(() => {
-        expect(pauseButton).toHaveTextContent(PROCESSING);
-        expect(pauseButton).toBeDisabled();
+        expect(pauseButton).toHaveTextContent(PROCESSING)
+        // expect(pauseButton).toBeDisabled();
       });
+      await waitFor(() => expect(pauseButton).toBeDisabled());
 
       // Wait for the button text to change to RESUME after processing is complete
       await waitFor(() => {
-        expect(pauseButton).toHaveTextContent(RESUME);
-        expect(pauseButton).not.toBeDisabled();
+        expect(pauseButton).toHaveTextContent(RESUME)
+        // expect(pauseButton).not.toBeDisabled();
       });
+      await waitFor(() => expect(pauseButton).not.toBeDisabled());
     });
   });
 });

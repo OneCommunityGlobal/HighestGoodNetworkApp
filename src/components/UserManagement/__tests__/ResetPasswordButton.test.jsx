@@ -14,20 +14,26 @@ const store = mockStore({ theme: themeMock });
 vi.mock('react-toastify');
 
 describe('reset password button ', () => {
-  beforeEach(() => {
-    render(
-      <Provider store={store}>
-        <ResetPasswordButton isSmallButton user={userProfileMock} canUpdatePassword />
-      </Provider>,
-    );
-  });
+  // beforeEach(() => {
+
+  // });
   describe('Structure', () => {
     it('should render a button', () => {
+      render(
+        <Provider store={store}>
+          <ResetPasswordButton isSmallButton user={userProfileMock} canUpdatePassword />
+        </Provider>,
+      );
       expect(screen.getByRole('button', { name: /reset password/i })).toBeInTheDocument();
     });
   });
   describe('Behavior', () => {
-    it('should render modal after the user clicks the button', async() => {
+    it('should render modal after the user clicks the button', async () => {
+      render(
+        <Provider store={store}>
+          <ResetPasswordButton isSmallButton user={userProfileMock} canUpdatePassword />
+        </Provider>,
+      );
       if (userProfileMock.email !== 'devadmin@hgn.net') {
         await userEvent.click(screen.getByRole('button', { name: /reset password/i }));
         expect(screen.getByRole('dialog')).toBeInTheDocument();
@@ -38,6 +44,11 @@ describe('reset password button ', () => {
       }
     });
     it('should call resetPassword after the user click confirm on the modal', async () => {
+      render(
+        <Provider store={store}>
+          <ResetPasswordButton isSmallButton user={userProfileMock} canUpdatePassword />
+        </Provider>,
+      );
       if (userProfileMock.email !== 'devadmin@hgn.net') {
         const spy = jest
           .spyOn(services, 'resetPassword')
@@ -60,6 +71,11 @@ describe('reset password button ', () => {
       }
     });
     it('should pop a alert after the reset is done', async () => {
+      render(
+        <Provider store={store}>
+          <ResetPasswordButton isSmallButton user={userProfileMock} canUpdatePassword />
+        </Provider>,
+      );
       if (userProfileMock.email !== 'devadmin@hgn.net') {
         vi.spyOn(services, 'resetPassword').mockImplementation(() => Promise.resolve());
 
@@ -82,6 +98,11 @@ describe('reset password button ', () => {
       }
     });
     it('should pop a alert when empty password input', async () => {
+      render(
+        <Provider store={store}>
+          <ResetPasswordButton isSmallButton user={userProfileMock} canUpdatePassword />
+        </Provider>,
+      );
       if (userProfileMock.email !== 'devadmin@hgn.net') {
         const alertMock = vi.spyOn(window, 'alert').mockImplementation();
         await userEvent.click(screen.getByRole('button', { name: /reset password/i }));
@@ -102,6 +123,11 @@ describe('reset password button ', () => {
       }
     });
     it('should pop a alert when new password is less than 8 characters', async () => {
+      render(
+        <Provider store={store}>
+          <ResetPasswordButton isSmallButton user={userProfileMock} canUpdatePassword />
+        </Provider>,
+      );
       if (userProfileMock.email !== 'devadmin@hgn.net') {
         const alertMock = vi.spyOn(window, 'alert').mockImplementation();
         await userEvent.click(screen.getByRole('button', { name: /reset password/i }));
@@ -122,6 +148,11 @@ describe('reset password button ', () => {
       }
     });
     it('should pop a alert when new password pair does not match', async () => {
+      render(
+        <Provider store={store}>
+          <ResetPasswordButton isSmallButton user={userProfileMock} canUpdatePassword />
+        </Provider>,
+      );
       if (userProfileMock.email !== 'devadmin@hgn.net') {
         const alertMock = vi.spyOn(window, 'alert').mockImplementation();
         await userEvent.click(screen.getByRole('button', { name: /reset password/i }));

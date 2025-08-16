@@ -35,6 +35,14 @@ const ResetPasswordPopupComponent = (props) => {
   //   }));
   // };
 
+  const firstInputRef = React.useRef(null);
+
+  useEffect(() => {
+    if (props.open && firstInputRef.current) {
+      firstInputRef.current.focus();
+    }
+  }, [props.open]);
+
   const resetPassword = () => {
     if (!newPassword.isValid) {
       setError(
@@ -56,7 +64,6 @@ const ResetPasswordPopupComponent = (props) => {
     <Modal
       isOpen={props.open}
       toggle={closePopup}
-      autoFocus={false}
       className={darkMode ? 'text-light dark-mode' : ''}
     >
       <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closePopup}>
@@ -73,7 +80,7 @@ const ResetPasswordPopupComponent = (props) => {
             darkMode={darkMode}
             label="New Password"
             textColor={darkMode ? 'text-light' : ''}
-            autoFocus
+            ref={firstInputRef}
             type={showPassword.newPassword ? 'text' : 'password'}
             name="newpassword"
             id="newpassword"
