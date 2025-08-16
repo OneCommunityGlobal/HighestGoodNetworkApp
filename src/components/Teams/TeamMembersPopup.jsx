@@ -23,7 +23,7 @@ import InfoModal from './InfoModal';
 // COMMENTED OUT BECAUSE OF ESLINT ERROR
 // import styles from './ToggleSwitch/ToggleSwitch.module.scss';
 
-export const TeamMembersPopup = React.memo(props => {
+export const TeamMembersPopup = React.memo(function TeamMembersPopup(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon');
   const [isChecked, setIsChecked] = useState(1); // 0 = false, 1 = true, 2 = all
@@ -215,7 +215,6 @@ export const TeamMembersPopup = React.memo(props => {
       <Modal
         isOpen={props.open}
         toggle={closePopup}
-        autoFocus={false}
         size="lg"
         className={`${darkMode ? 'dark-mode text-light' : ''} ${
           props.open ? ' open-team-members-popup-modal' : ''
@@ -299,9 +298,9 @@ export const TeamMembersPopup = React.memo(props => {
                     {checkedStatus}
                   </button>
                 </th>
-                <th class="def-width">#</th>
-                <th class="def-width">User Name</th>
-                <th style={{ cursor: 'pointer' }} onClick={toggleOrder}>
+                <th className="def-width">#</th>
+                <th className="def-width">User Name</th>
+                <th className="def-width" style={{ cursor: 'pointer' }} onClick={toggleOrder}>
                   Date Added{' '}
                   <FontAwesomeIcon
                     icon={icons[sortOrder].icon}
