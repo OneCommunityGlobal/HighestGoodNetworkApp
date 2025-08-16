@@ -1,0 +1,134 @@
+/* Global dark mode styles */
+body.dark-mode {
+  background-color: #1b2a41;
+  color: #ffffff;
+  transition: background-color 0.3s ease;
+}
+
+/* Main container styles */
+.expenditure-chart-container {
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+  min-height: 100vh;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Dark mode container */
+.expenditure-chart-container.dark-mode {
+  background-color: transparent;
+  color: #ffffff;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+/* Inner chart container */
+.chart-inner-container {
+  background-color: #ffffff;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: none;
+  padding: 20px;
+  max-width: 800px;
+  width: 100%;
+  height: 400px;
+  position: relative;
+  margin: 0 auto;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.expenditure-chart-container.dark-mode .chart-inner-container {
+  background-color: #16213e;
+  border: 1px solid #233554;
+}
+
+/* Chart canvas */
+.expenditure-chart-container.dark-mode canvas {
+  background-color: #16213e;
+  border-radius: 8px;
+}
+
+/* Error styling */
+.error {
+  color: #d32f2f;
+  background-color: rgba(211, 47, 47, 0.05);
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid #d32f2f;
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto 20px auto;
+}
+
+.expenditure-chart-container.dark-mode .error {
+  background-color: #2a3a5a;
+  color: #ff6b6b;
+  border: 1px solid #ff6b6b;
+}
+
+/* Heading styles */
+.expenditure-chart-container h1 {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Filter controls */
+.filter-controls {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  padding: 0 20px;
+  margin-bottom: 20px;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.project-filter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.date-filters {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Form elements */
+label {
+  color: inherit;
+}
+
+select, input[type="date"] {
+  padding: 6px 10px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  color: #333;
+  font-size: 14px;
+}
+
+.expenditure-chart-container.dark-mode select,
+.expenditure-chart-container.dark-mode input[type="date"] {
+  background-color: #253342;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Loading message */
+.loading-message {
+  text-align: center;
+  color: inherit;
+  margin: 20px 0;
+}
