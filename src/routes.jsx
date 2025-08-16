@@ -101,6 +101,7 @@ import AddTool from './components/BMDashboard/Tools/AddTool';
 import AttendanceNoShow from './components/AttendanceSystem/AttendanceNoShowCharts.jsx';
 import AddTeamMember from './components/BMDashboard/AddTeamMember/AddTeamMember';
 import LessonsLearntChart from './components/BMDashboard/LessonsLearnt/LessonsLearntChart';
+import InteractiveMap from './components/BMDashboard/InteractiveMap/InteractiveMap';
 
 // eslint-disable-next-line import/order
 import IssueChart from './components/BMDashboard/Issues/issueCharts';
@@ -521,6 +522,7 @@ export default (
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
         <Route path="/bmdashboard/login" component={BMLogin} />
         <Route path="/LessonsLearntChart" component={LessonsLearntChart} />
+        <BMProtectedRoute path="/bmdashboard/InteractiveMap" component={InteractiveMap} />
 
         <Route path="/UtilizationChart" component={UtilizationChart} />
 
