@@ -75,6 +75,7 @@ function ListOverview() {
 
   const handleConfirmBooking = () => {
     if (bookingState.success) return;
+    console.log(currentUserProfile)
     dispatch(
       bookListing({
         listingId: listing._id,
@@ -203,10 +204,10 @@ function ListOverview() {
               </div>
             )}
             {showBookingConfirm && (
-              <div className="booking-confirm">
+              <div className={`${styles.bookingConfirm}`}>
                 <button
                   type="button"
-                  className="close-btn"
+                  className={`${styles.closeBtn}`}
                   onClick={() => {
                     setShowBookingConfirm(false);
                     dispatch(resetBooking());
@@ -235,6 +236,7 @@ function ListOverview() {
                     type="button"
                     onClick={handleConfirmBooking}
                     disabled={bookingState.loading || bookingState.success}
+                    className={`${styles.confirmBookingBtn}`}
                   >
                     {bookingState.loading ? 'Booking...' : 'Confirm Booking'}
                   </button>

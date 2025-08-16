@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import './Listoverview.module.css';
 import { useDispatch } from 'react-redux';
 import { fetchListingAvailability } from '../../../actions/lbDashboard/listOverviewAction';
+import styles from './Listoverview.module.css';
 
 const AVAILABILITY_COLORS = {
   available: '#4caf50', // green
@@ -92,16 +92,16 @@ export default function ListingAvailability({ listingId, availability, loading, 
   });
 
   return (
-    <div className="availability-modal">
-      <button type="button" className="close-btn" onClick={onClose}>
+    <div className={`${styles.availabilityModal}`}>
+      <button type="button" className={`${styles.closeBtn}`} onClick={onClose}>
         ×
       </button>
-      <h2 className="heading-calendar">Availability Calendar</h2>
+      <h2 className={`${styles.headingCalendar}`}>Availability Calendar</h2>
       {loading && <div>Loading...</div>}
       {!loading && error && <div className="error-message">{error}</div>}
       {!loading && !error && availability && (
         <>
-          <div className="calendar-nav">
+          <div className={`${styles.calendarNav}`}>
             <button type="button" onClick={handlePrevMonth}>
               &lt;
             </button>
@@ -115,7 +115,7 @@ export default function ListingAvailability({ listingId, availability, loading, 
               &gt;
             </button>
           </div>
-          <table className="simple-calendar">
+          <table className={`${styles.simpleCalendar}`}>
             <thead>
               <tr>
                 {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(d => (
@@ -132,7 +132,7 @@ export default function ListingAvailability({ listingId, availability, loading, 
                     return (
                       <td
                         key={date.toISOString()}
-                        className={status ? `calendar-${status}` : ''}
+                        className={status ? `${styles[`calendar-${status}`]}` : ''}
                         style={{
                           background: status ? AVAILABILITY_COLORS[status] : undefined,
                           color: status ? '#fff' : undefined,
@@ -143,7 +143,7 @@ export default function ListingAvailability({ listingId, availability, loading, 
                         title={status ? status.charAt(0).toUpperCase() + status.slice(1) : ''}
                       >
                         {date.getDate()}
-                        {status && <span className="calendar-tooltip" />}
+                        {status && <span className={`${styles.calendarTooltip}`} />}
                       </td>
                     );
                   })}
@@ -151,22 +151,22 @@ export default function ListingAvailability({ listingId, availability, loading, 
               ))}
             </tbody>
           </table>
-          <div className="calendar-legend" style={{ marginTop: 16 }}>
-            <span style={{ background: AVAILABILITY_COLORS.available }} className="legend-dot" />{' '}
+          <div className={`${styles.calendarLegend}`} style={{ marginTop: 16 }}>
+            <span style={{ background: AVAILABILITY_COLORS.available }} className={`${styles.legendDot}`} />{' '}
             Available
-            <span style={{ background: AVAILABILITY_COLORS.booked }} className="legend-dot" />{' '}
+            <span style={{ background: AVAILABILITY_COLORS.booked }} className={`${styles.legendDot}`} />{' '}
             Booked
-            <span style={{ background: AVAILABILITY_COLORS.blocked }} className="legend-dot" />{' '}
+            <span style={{ background: AVAILABILITY_COLORS.blocked }} className={`${styles.legendDot}`} />{' '}
             Blocked
           </div>
         </>
       )}
-      <div className="contact-host-section">
-        <button type="button" onClick={() => setContactOpen(true)} className="contact-host-btn">
+      <div className={`${styles.contactHostSection}`}>
+        <button type="button" onClick={() => setContactOpen(true)} className={`${styles.contactHostBtn}`}>
           Contact Host
         </button>
         {contactOpen && (
-          <form className="contact-form" onSubmit={handleContactSubmit}>
+          <form className={`${styles.contactForm}`} onSubmit={handleContactSubmit}>
             <input
               type="text"
               placeholder="Your Name"
@@ -187,8 +187,8 @@ export default function ListingAvailability({ listingId, availability, loading, 
               onChange={e => setContactForm({ ...contactForm, message: e.target.value })}
               required
             />
-            <button type="submit">Send</button>
-            <button type="button" onClick={() => setContactOpen(false)}>
+            <button type="submit" className={`${styles.sendInfoBtn} ${styles.contactHostBtn}`}>Send</button>
+            <button type="button" className={`${styles.cancelInfoBtn} ${styles.contactHostBtn}`} onClick={() => setContactOpen(false)}>
               Cancel
             </button>
           </form>
