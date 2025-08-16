@@ -24,11 +24,9 @@ function Announcements({ title, email: initialEmail }) {
   const dispatch = useDispatch();
   const [emailTo, setEmailTo] = useState('');
   const [emailList, setEmailList] = useState([]);
-  // const [accessToken, setAccessToken] = useState('');
   const [emailContent, setEmailContent] = useState('');
   const [dateContent, setDateContent] = useState('');
   const [timeContent, setTimeContent] = useState('');
-  //const [errors, setErrors] = useState({});
   const errors = {};
   const [headerContent, setHeaderContent] = useState('');
   const [showEditor, setShowEditor] = useState(true);
@@ -45,7 +43,21 @@ function Announcements({ title, email: initialEmail }) {
     { label: 'Twitter', value: 'twitter' },
     { label: 'Instagram', value: 'instagram' }, // add more as needed
   ];
+
   const [selectedPlatforms, setSelectedPlatforms] = useState([]);
+  const [scheduleSelectedPlatforms, setscheduleSelectedPlatforms] = useState([]);
+  const [hintIndex, setHintIndex] = useState(0);
+  const [currentHint, setCurrentHint] = useState('');
+  const twitterHints = [
+    'Twitter Tip: Keep tweets concise and impactful.',
+    'Twitter Tip: Keep under 280 characters for maximum clarity.',
+  ];
+
+  const facebookHints = [
+    'Facebook Tip: Use the first 80 characters as a strong hook.',
+    'Facebook Tip: Break long posts into short paragraphs.',
+    'Facebook Tip: Add images/videos for higher engagement.',
+  ];
 
   useEffect(() => {
     setShowEditor(false);
@@ -101,6 +113,27 @@ function Announcements({ title, email: initialEmail }) {
       setEmailList(trimmedEmail.split(','));
     }
   }, [initialEmail]);
+
+  useEffect(() => {
+    const hints =
+      selectedPlatforms.includes('twitter') && !selectedPlatforms.includes('facebook')
+        ? twitterHints
+        : selectedPlatforms.includes('facebook') && !selectedPlatforms.includes('twitter')
+        ? facebookHints
+        : [...twitterHints, ...facebookHints];
+
+    if (hints.length > 0) {
+      setCurrentHint(hints[0]);
+      const interval = setInterval(() => {
+        setHintIndex(prev => {
+          const next = (prev + 1) % hints.length;
+          setCurrentHint(hints[next]);
+          return next;
+        });
+      }, 5000);
+      return () => clearInterval(interval);
+    }
+  }, [selectedPlatforms]);
 
   const getAllPosts = async () => {
     const data = await fetchPosts();
@@ -300,11 +333,13 @@ function Announcements({ title, email: initialEmail }) {
   };
 
   const handleScheduleClick = () => {
-    setShowDropdown(true);
+    setShowDropdown(prev => !prev);
+    setShowDropdownPost(false);
   };
 
   const handlePostClick = () => {
-    setShowDropdownPost(true);
+    setShowDropdownPost(prev => !prev);
+    setShowDropdown(false);
   };
 
   const handleSubmit = async () => {
@@ -320,16 +355,16 @@ function Announcements({ title, email: initialEmail }) {
       return;
     }
 
-    if (selectedPlatforms.length === 0) {
+    if (scheduleSelectedPlatforms.length === 0) {
       toast.error('Please select at least one platform.');
       return;
     }
 
-    if (selectedPlatforms.includes('facebook')) {
+    if (scheduleSelectedPlatforms.includes('facebook')) {
       await dispatch(scheduleFbPost(scheduleDate, scheduleTime, htmlContent));
     }
 
-    if (selectedPlatforms.includes('twitter')) {
+    if (scheduleSelectedPlatforms.includes('twitter')) {
       await dispatch(scheduleTweet(scheduleDate, scheduleTime, htmlContent));
     }
 
@@ -508,6 +543,7 @@ function Announcements({ title, email: initialEmail }) {
               // </div>
               <div style={{ marginTop: '15px' }}>
                 <label>
+                  <strong>Schedule Post</strong>
                   <strong>Select Multiple Platform(s):</strong>
                 </label>
                 <div>
@@ -517,13 +553,13 @@ function Announcements({ title, email: initialEmail }) {
                         type="checkbox"
                         id={`platform-${value}`}
                         value={value}
-                        checked={selectedPlatforms.includes(value)}
+                        checked={scheduleSelectedPlatforms.includes(value)}
                         onChange={e => {
                           const { value, checked } = e.target;
                           if (checked) {
-                            setSelectedPlatforms(prev => [...prev, value]);
+                            setscheduleSelectedPlatforms(prev => [...prev, value]);
                           } else {
-                            setSelectedPlatforms(prev => prev.filter(p => p !== value));
+                            setscheduleSelectedPlatforms(prev => prev.filter(p => p !== value));
                           }
                         }}
                       />
@@ -543,11 +579,12 @@ function Announcements({ title, email: initialEmail }) {
                 onClick={handlePostClick}
                 style={darkMode ? boxStyleDark : boxStyle}
               >
-                Select Multiple Platforms
+                Post on Multiple Platforms
               </button>
             ) : (
               <div style={{ marginTop: '15px' }}>
                 <label>
+                  <strong>Post on Multiple Platforms</strong>
                   <strong>Select Multiple Platform(s):</strong>
                 </label>
                 <div>
@@ -582,7 +619,7 @@ function Announcements({ title, email: initialEmail }) {
               tinymceScriptSrc="/tinymce/tinymce.min.js"
               id="email-editor"
               initialValue={`<div style="background-color: #f0f0f0; color: #555; padding: 6px; border-radius: 4px; font-size: 14px;">
-              Post limited to 280 characters
+              ${currentHint || 'Social Media Tip will appear here...'}
             </div>`}
               init={{
                 height: 500,
