@@ -151,8 +151,8 @@ const AddProject = (props) => {
         className="btn btn-outline-success"
         onClick={toggleModal}
         style={{
-          borderColor: 'green',
-          color: 'green',
+          borderColor: '#8ec233',
+          color: '#8ec233',
           borderWidth: '1px',
         }}
       >

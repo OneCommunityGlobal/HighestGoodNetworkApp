@@ -30,18 +30,25 @@ export default function ImageCarousel({ images }) {
           ))}
         </div>
       </div>
-      <button type="button" className="arrow left" onClick={handlePrev}>
+      <button type="button" className="img-arrow left" onClick={handlePrev}>
         ❮
       </button>
-      <button type="button" className="arrow right" onClick={handleNext}>
+      <button type="button" className="img-arrow right" onClick={handleNext}>
         ❯
       </button>
       <div className="carousel-indicators">
         {images.map((image, index) => (
           <span
             key={image}
+            role="button"
+            tabIndex={0}
             className={`indicator ${index === currentIndex ? 'active' : ''}`}
             onClick={() => handleIndicatorClick(index)}
+            onKeyDown={e => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                handleIndicatorClick(index);
+              }
+            }}
           />
         ))}
       </div>

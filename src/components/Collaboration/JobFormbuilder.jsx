@@ -1,9 +1,16 @@
-import { useState } from 'react';
+/* eslint-disable no-alert */
+/* eslint-disable no-console */
+// eslint-disable-next-line no-alert
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
+import { v4 as uuidv4 } from 'uuid';
 import styles from './JobFormBuilder.module.css';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import OneCommunityImage from './One-Community-Horizontal-Homepage-Header-980x140px-2.png';
+import QuestionSetManager from './QuestionSetManager';
+import QuestionFieldActions from './QuestionFieldActions';
+import QuestionEditModal from './QuestionEditModal';
 
 function JobFormBuilder() {
   const { role } = useSelector(state => state.auth.user);
@@ -15,7 +22,9 @@ function JobFormBuilder() {
     visible: true,
   });
 
-  // 67515a08aa726cdb94898c40
+  // Dynamic Form ID Management
+  const [currentFormId, setCurrentFormId] = useState(null);
+
   const [jobTitle, setJobTitle] = useState('Please Choose an option');
   const jobPositions = [
     'APPLIED THROUGH SITE - SEEKING SOFTWARE POSITION',
@@ -61,10 +70,169 @@ function JobFormBuilder() {
   ];
 
   const [newOption, setNewOption] = useState('');
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editingQuestion, setEditingQuestion] = useState(null);
+  const [editingIndex, setEditingIndex] = useState(null);
+
+  // Auto-load existing form on component mount
+  useEffect(() => {
+    const loadFirstAvailableForm = async () => {
+      try {
+        const response = await axios.get(ENDPOINTS.GET_ALL_JOB_FORMS);
+
+        if (response.data && response.data.length > 0) {
+          const firstForm = response.data[0];
+          const formId = firstForm._id || firstForm.id;
+
+          setCurrentFormId(formId);
+          setFormFields(firstForm.questions || []);
+          setJobTitle(firstForm.title || 'Please Choose an option');
+
+          console.log('Auto-loaded form:', formId);
+        }
+      } catch (error) {
+        console.error('Error auto-loading form:', error);
+      }
+    };
+
+    loadFirstAvailableForm();
+  }, []);
+
+  // const ensureFormExists = async () => {
+  //   if (!currentFormId) {
+  //     console.warn('No form ID available for this operation');
+  //     return false;
+  //   }
+  //   return true;
+  // };
+
+  // CRUD Functions with Dynamic Form ID
+  const cloneField = async (field, index) => {
+    const clonedField = JSON.parse(JSON.stringify(field));
+
+    // Update local state immediately
+    const newFields = [
+      ...formFields.slice(0, index + 1),
+      clonedField,
+      ...formFields.slice(index + 1),
+    ];
+    setFormFields(newFields);
+
+    // Sync with backend if form exists
+    if (currentFormId) {
+      try {
+        await axios.post(ENDPOINTS.ADD_QUESTION(currentFormId), {
+          question: clonedField,
+          position: index + 1,
+        });
+      } catch (error) {
+        console.error('Error cloning question on server:', error);
+      }
+    }
+  };
+
+  const moveField = async (index, direction) => {
+    const newIndex = direction === 'up' ? index - 1 : index + 1;
+
+    if (
+      (direction === 'up' && index > 0) ||
+      (direction === 'down' && index < formFields.length - 1)
+    ) {
+      // Update local state immediately
+      const newFields = [...formFields];
+      [newFields[index], newFields[newIndex]] = [newFields[newIndex], newFields[index]];
+      setFormFields(newFields);
+
+      // Sync with backend if form exists
+      if (currentFormId) {
+        try {
+          await axios.put(ENDPOINTS.REORDER_QUESTIONS(currentFormId), {
+            fromIndex: index,
+            toIndex: newIndex,
+          });
+        } catch (error) {
+          console.error('Error reordering questions on server:', error);
+        }
+      }
+    }
+  };
+
+  const deleteField = async index => {
+    // Update local state immediately
+    const newFields = [...formFields];
+    newFields.splice(index, 1);
+    setFormFields(newFields);
+
+    // Sync with backend if form exists
+    if (currentFormId) {
+      try {
+        await axios.delete(ENDPOINTS.DELETE_QUESTION(currentFormId, index));
+        console.log('Question deleted successfully');
+      } catch (error) {
+        console.error('Error deleting question on server:', error);
+      }
+    }
+  };
+
+  const editField = (field, index) => {
+    // Transform the field structure to match what QuestionEditModal expects
+    const questionForEdit = {
+      label: field.questionText,
+      type: field.questionType,
+      options: field.options,
+      required: field.required || false,
+      placeholder: field.placeholder || '',
+    };
+
+    setEditingQuestion(questionForEdit);
+    setEditingIndex(index);
+    setEditModalOpen(true);
+  };
+
+  const handleSaveEditedQuestion = async editedQuestion => {
+    const updatedField = {
+      ...formFields[editingIndex],
+      questionText: editedQuestion.label,
+      questionType: editedQuestion.type,
+      options: editedQuestion.options || [],
+      required: editedQuestion.required,
+      placeholder: editedQuestion.placeholder,
+    };
+
+    // Update local state immediately
+    const updatedFields = [...formFields];
+    updatedFields[editingIndex] = updatedField;
+    setFormFields(updatedFields);
+
+    // Sync with backend if form exists
+    if (currentFormId) {
+      try {
+        await axios.put(ENDPOINTS.UPDATE_QUESTION(currentFormId, editingIndex), updatedField);
+        console.log('Question updated successfully');
+      } catch (error) {
+        console.error('Error updating question on server:', error);
+      }
+    }
+
+    // Close the modal
+    setEditModalOpen(false);
+    setEditingQuestion(null);
+    setEditingIndex(null);
+  };
+
+  const handleCancelEdit = () => {
+    setEditModalOpen(false);
+    setEditingQuestion(null);
+    setEditingIndex(null);
+  };
+
+  // Import questions from template
+  const importQuestions = questions => {
+    setFormFields(questions);
+  };
 
   const handleAddOption = () => {
     if (newOption.trim() === '') {
-      // eslint-disable-next-line no-alert
       alert('Option cannot be empty!');
       return;
     }
@@ -75,9 +243,8 @@ function JobFormBuilder() {
     setNewOption('');
   };
 
-  const handleAddField = () => {
+  const handleAddField = async () => {
     if (newField.questionText.trim() === '') {
-      // eslint-disable-next-line no-alert
       alert('Field label is required!');
       return;
     }
@@ -86,12 +253,26 @@ function JobFormBuilder() {
       ['checkbox', 'radio', 'dropdown'].includes(newField.questionType) &&
       newField.options.length === 0
     ) {
-      // eslint-disable-next-line no-alert
       alert('You must add at least one option for this field!');
       return;
     }
 
-    setFormFields([...formFields, newField]);
+    // Update local state immediately
+    const updatedFields = [...formFields, newField];
+    setFormFields(updatedFields);
+
+    // Sync with backend if form exists
+    if (currentFormId) {
+      try {
+        await axios.post(ENDPOINTS.ADD_QUESTION(currentFormId), {
+          question: newField,
+          position: formFields.length,
+        });
+      } catch (error) {
+        console.error('Error adding question to server:', error);
+      }
+    }
+
     setNewField({ questionText: '', questionType: 'textbox', options: [], visible: true });
   };
 
@@ -105,39 +286,25 @@ function JobFormBuilder() {
     setFormFields(updatedFields);
   };
 
-  const handleSubmit = e => {
+  const handleSubmit = async e => {
     e.preventDefault();
-    // Test function to create a form
-    // axios.post(ENDPOINTS.CREATE_JOB_FORM,{title:jobTitle,questions:formFields,description:''}).then((resolve,reject)=>{
-    //   console.log(resolve.data)
-    // })
 
-    // Test Funcition to read a specific form format
-    // axios.get(ENDPOINTS.GET_JOB_FORM(formId)).then((resolve,reject)=>{
-    //   console.log(resolve.data);
-    // })
+    const formIdToUse = currentFormId || '6753982566fcf3275f129eb4';
 
-    // Test function to read all form formats
-    // axios.get(ENDPOINTS.GET_ALL_JOB_FORMS).then((resolve,reject)=>{
-    //   console.log(resolve.data)
-    // })
-
-    // Test function to update job forms
-    axios
-      .put(ENDPOINTS.UPDATE_JOB_FORM, {
-        formId: '6753982566fcf3275f129eb4',
+    try {
+      await axios.put(ENDPOINTS.UPDATE_JOB_FORM, {
+        formId: formIdToUse,
         title: jobTitle,
         questions: formFields,
         description: '',
-      })
-      .then(resolve => {
-        // eslint-disable-next-line no-console
-        console.log(resolve.data);
-      })
-      .catch(error => {
-        // eslint-disable-next-line no-console
-        console.log(error);
       });
+
+      console.log('Form updated successfully');
+      alert('Form saved successfully!');
+    } catch (error) {
+      console.error('Error updating form:', error);
+      alert('Failed to save form. Please try again.');
+    }
   };
 
   return (
@@ -162,12 +329,8 @@ function JobFormBuilder() {
             className={styles.jobformSelect}
           >
             <option value="Please Choose an option">Please Choose an Option</option>
-            {jobPositions.map((e, i) => (
-              <option
-                /* eslint-disable-next-line react/no-array-index-key */
-                key={i + 1}
-                value={e}
-              >
+            {jobPositions.map(e => (
+              <option key={uuidv4()} value={e}>
                 {e}
               </option>
             ))}
@@ -183,25 +346,27 @@ function JobFormBuilder() {
             default questions will automatically appear and are alredy selected. You can pick and
             choose them with the checkbox.
           </p>
+          <QuestionSetManager
+            formFields={formFields}
+            setFormFields={setFormFields}
+            onImportQuestions={importQuestions}
+          />
           <form>
             {formFields.map((field, index) => (
-              <div
-                className={styles.formDiv}
-                /* eslint-disable-next-line react/no-array-index-key */
-                key={index + 1}
-              >
-                <input
-                  type="checkbox"
-                  id="form-div-checkbox"
+              <div className={styles.formDiv} key={uuidv4()}>
+                <QuestionFieldActions
+                  field={field}
+                  index={index}
                   className={styles.formDivCheckbox}
-                  checked={field.visible}
-                  onChange={event => changeVisiblity(event, field)}
+                  totalFields={formFields.length}
+                  onClone={cloneField}
+                  onMove={moveField}
+                  onDelete={deleteField}
+                  onEdit={editField}
+                  visible={field.visible}
+                  onVisibilityChange={event => changeVisiblity(event, field)}
                 />
-                <div
-                  /* eslint-disable-next-line react/no-array-index-key */
-                  key={index + 1}
-                  className={styles.formField}
-                >
+                <div key={uuidv4()} className={styles.formField}>
                   <label className={`${styles.fieldLabel} ${styles.jbformLabel}`}>
                     {field.questionText}
                   </label>
@@ -220,12 +385,8 @@ function JobFormBuilder() {
                       <textarea className={styles.jobformTextarea} />
                     )}
                     {['checkbox', 'radio'].includes(field.questionType) &&
-                      field.options.map((option, idx) => (
-                        <div
-                          /* eslint-disable-next-line react/no-array-index-key */
-                          key={idx + 1}
-                          className={styles.optionItem}
-                        >
+                      field.options.map(option => (
+                        <div key={uuidv4()} className={styles.optionItem}>
                           <input
                             type={field.questionType}
                             name={`field-${index}`}
@@ -236,12 +397,8 @@ function JobFormBuilder() {
                       ))}
                     {field.questionType === 'dropdown' && (
                       <select className={styles.jobformSelect}>
-                        {field.options.map((option, idx) => (
-                          <option
-                            /* eslint-disable-next-line react/no-array-index-key */
-                            key={idx + 1}
-                            value={option}
-                          >
+                        {field.options.map(option => (
+                          <option key={uuidv4()} value={option}>
                             {option}
                           </option>
                         ))}
@@ -311,12 +468,8 @@ function JobFormBuilder() {
                 </button>
                 <div className={styles.optionsList}>
                   <h4>Options:</h4>
-                  {newField.options.map((option, index) => (
-                    <div
-                      /* eslint-disable-next-line react/no-array-index-key */
-                      key={index + 1}
-                      className={styles.optionItem}
-                    >
+                  {newField.options.map(option => (
+                    <div key={uuidv4()} className={styles.optionItem}>
                       {option}
                     </div>
                   ))}
@@ -331,6 +484,13 @@ function JobFormBuilder() {
           <button type="submit" className={styles.jobSubmitButton} onClick={handleSubmit}>
             Proceed to Submit with Details
           </button>
+          {editModalOpen && editingQuestion && (
+            <QuestionEditModal
+              question={editingQuestion}
+              onSave={handleSaveEditedQuestion}
+              onCancel={handleCancelEdit}
+            />
+          )}
         </div>
       ) : null}
     </div>
