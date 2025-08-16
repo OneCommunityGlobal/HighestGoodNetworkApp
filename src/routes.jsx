@@ -683,12 +683,8 @@ export default (
             </>
           )}
         />
-<<<<<<< HEAD:src/routes.js
-        <Route path="/lbdashboard/bidoverview/:id" exact component={LBBidOverview} />
-=======
         <Route path="/lbdashboard/bidoverview" exact component={LBBidOverview} />
         <LBProtectedRoute path="/lbdashboard/bidding" exact component={BiddingHomepage} />
->>>>>>> origin/development:src/routes.jsx
 
         <CPProtectedRoute
           path="/communityportal/reports/participation"
