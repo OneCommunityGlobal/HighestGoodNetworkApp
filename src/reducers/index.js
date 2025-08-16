@@ -83,7 +83,6 @@ import {
   listingBookingReducer,
 } from './listBidDashboard/listOverviewReducer';
 
-
 const localReducers = {
   auth: authReducer,
   allUserProfiles: allUserProfilesReducer,
