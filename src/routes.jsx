@@ -212,6 +212,9 @@ const UserRoleTab = lazy(() => import('./components/PermissionsManagement/UserRo
 const Teams = lazy(() => import('./components/Teams/Teams'));
 const JobFormBuilder = lazy(() => import('./components/Collaboration/JobFormbuilder'));
 
+// PR Analytics Dashboard
+import ReviewsInsight from './components/PRAnalyticsDashboard/ReviewsInsight/ReviewsInsight';
+
 export default (
   <Switch>
     {/* ----- LB Dashboard Routing ----- */}
@@ -301,7 +304,6 @@ export default (
         <ProtectedRoute path="/projectreport/:projectId" component={ProjectReport} fallback />
         <ProtectedRoute path="/teamreport/:teamId" component={TeamReport} fallback />
         <ProtectedRoute path="/taskeditsuggestions" component={TaskEditSuggestions} />
-
         <ProtectedRoute
           path="/inventory/:projectId"
           component={Inventory}
@@ -312,7 +314,6 @@ export default (
           component={Inventory}
           routePermissions={RoutePermissions.inventoryProjectWbs}
         />
-
         <ProtectedRoute
           path="/weeklysummariesreport"
           exact
@@ -380,7 +381,6 @@ export default (
           fallback
           routePermissions={RoutePermissions.workBreakdownStructure}
         />
-
         <ProtectedRoute
           path="/communityportal/activity/:activityId/resources"
           exact
@@ -435,7 +435,6 @@ export default (
           allowedRoles={[UserRole.Administrator, UserRole.Owner]}
           routePermissions={RoutePermissions.teams}
         />
-
         <ProtectedRoute path="/applicants-chart" exact component={ApplicantsAgeChart} fallback />
         <ProtectedRoute
           path="/applicant-volunteer-ratio"
@@ -449,14 +448,12 @@ export default (
           component={ApplicationTimeChartPage}
           fallback
         />
-
         <ProtectedRoute
           path="/application-analytics"
           exact
           component={ApplicationAnalyticsContainer}
           fallback
         />
-
         <ProtectedRoute
           path="/announcements"
           exact
@@ -470,30 +467,25 @@ export default (
           allowedRoles={[UserRole.Administrator, UserRole.Owner]}
           routePermissions={RoutePermissions.projects}
         />
-
         <ProtectedRoute path="/faq" exact component={FaqSearch} />
-
         <ProtectedRoute
           path="/faq-management"
           exact
           component={FaqManagement}
           routePermissions={RoutePermissions.faqManagement}
         />
-
         <ProtectedRoute
           path="/faqs/:id/history"
           exact
           component={FaqHistory}
           routePermissions={RoutePermissions.faqManagement}
         />
-
         <ProtectedRoute
           path="/unanswered-faqs"
           exact
           component={UnansweredFaqs}
           routePermissions={RoutePermissions.faqManagement}
         />
-
         <ProtectedRoute
           path="/totalorgsummary"
           exact
@@ -516,7 +508,6 @@ export default (
           fallback
           allowedRoles={[UserRole.Owner]}
         />
-
         {/* ----- BEGIN BM Dashboard Routing ----- */}
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
         <Route path="/bmdashboard/login" component={BMLogin} />
@@ -611,10 +602,8 @@ export default (
 
         <BMProtectedRoute path="/bmdashboard/issues/add/:projectId" component={Issue} />
         <BMProtectedRoute path="/bmdashboard/issuechart" component={IssueChart} />
-
         <BMProtectedRoute path="/bmdashboard/timelog/" component={BMTimeLogger} />
         <BMProtectedRoute path="/bmdashboard/issues/" component={IssueDashboard} />
-
         <BMProtectedRoute
           path="/bmdashboard/timelog/:projectId"
           fallback
@@ -639,7 +628,6 @@ export default (
         />
         {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
         <CPProtectedRoute path="/communityportal/reports/participation" component={NoshowViz} />
-
         <CPProtectedRoute
           path="/communityportal/activities/:activityid/resources"
           exact
@@ -666,7 +654,6 @@ export default (
           exact
           component={Register}
         />
-
         {/* Listing and Bidding Routes */}
         <LBProtectedRoute path="/lbdashboard" exact component={LBDashboard} />
         <LBProtectedRoute path="/lbdashboard/listOverview" exact component={ListOveriew} />
@@ -685,17 +672,16 @@ export default (
         />
         <Route path="/lbdashboard/bidoverview" exact component={LBBidOverview} />
         <LBProtectedRoute path="/lbdashboard/bidding" exact component={BiddingHomepage} />
-
         <CPProtectedRoute
           path="/communityportal/reports/participation"
           exact
           component={EventParticipation}
         />
-
         {/* Good Education  Portal Routes */}
         <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />
         <Route path="/educationportal/login" component={EPLogin} />
-
+        {/* PR Analytics Dashboard */}
+        <Route path="/pull-request-analytics/reviews-insight" component={ReviewsInsight} />
         <CPProtectedRoute
           path="/communityportal/reports/event/personalization"
           exact
@@ -703,7 +689,6 @@ export default (
         />
         {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
         <CPProtectedRoute path="/communityportal/ActivityAgenda" exact component={ActivityAgenda} />
-
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
         {/* <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} /> */}
         {/* ----- END BM Dashboard Routing ----- */}

@@ -75,6 +75,9 @@ import { noShowVizReducer } from './communityPortal/noShowVizReducer';
 // lbdashboard
 import wishListReducer from './lbdashboard/wishListItemReducer';
 
+// pr analytics
+import reviewsInsightReducer from './prAnalytics/reviewsInsightReducer';
+
 const localReducers = {
   auth: authReducer,
   allUserProfiles: allUserProfilesReducer,
@@ -141,6 +144,7 @@ const localReducers = {
   // lbdashboard
   lbmessaging: messageReducer,
   lbuserpreferences: userPreferencesReducer,
+  reviewsInsights: reviewsInsightReducer,
 };
 
 const sessionReducers = {
