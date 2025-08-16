@@ -75,6 +75,8 @@ import { noShowVizReducer } from './communityPortal/noShowVizReducer';
 // lbdashboard
 import wishListReducer from './lbdashboard/wishListItemReducer';
 
+import { optStatusBreakdownReducer } from './optStatusBreakdownReducer';
+
 const localReducers = {
   auth: authReducer,
   allUserProfiles: allUserProfilesReducer,
@@ -141,6 +143,8 @@ const localReducers = {
   // lbdashboard
   lbmessaging: messageReducer,
   lbuserpreferences: userPreferencesReducer,
+
+  optStatusBreakdown: optStatusBreakdownReducer,
 };
 
 const sessionReducers = {

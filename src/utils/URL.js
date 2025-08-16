@@ -366,6 +366,19 @@ export const ENDPOINTS = {
   LB_LISTINGS: `${APIEndpoint}/lb/getListings`,
   LB_LISTINGS_BASE: `${APIEndpoint}/lb`,
   HELP_CATEGORIES: `${APIEndpoint}/help-categories`,
+
+  OPT_STATUS_BREAKDOWN: (startDate, endDate, role) => {
+  let url = `${APIEndpoint}/analytics/opt-status`;
+  const params = [];
+
+  if (startDate) params.push(`startDate=${startDate}`);
+  if (endDate) params.push(`endDate=${endDate}`);
+  if (role) params.push(`role=${role}`);
+
+  return params.length > 0 ? `${url}?${params.join("&")}` : url;
+},
+
+
 };
 
 export const ApiEndpoint = APIEndpoint;
