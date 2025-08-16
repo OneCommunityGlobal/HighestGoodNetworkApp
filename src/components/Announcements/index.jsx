@@ -4,7 +4,6 @@ import './Announcements.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react';
 import { Label, Input, Button } from 'reactstrap';
-import { Card, CardContent } from '@/components/ui/card';
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
@@ -450,40 +449,9 @@ function Announcements({ title, email: initialEmail }) {
 
   return (
     <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: '100%' }}>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Card
-          className={`cursor-pointer rounded-2xl border-2 transition-all ${
-            mode === 'postNow'
-              ? 'border-blue-500 shadow-lg'
-              : 'border-gray-200 hover:border-gray-400'
-          }`}
-          onClick={() => setMode('postNow')}
-        >
-          <CardContent className="p-6 space-y-2">
-            <h3 className="text-xl font-bold">📢 Post Now</h3>
-            <p className="text-gray-600">Instantly publish your content to Facebook/Twitter.</p>
-          </CardContent>
-        </Card>
-
-        <Card
-          className={`cursor-pointer rounded-2xl border-2 transition-all ${
-            mode === 'schedule'
-              ? 'border-blue-500 shadow-lg'
-              : 'border-gray-200 hover:border-gray-400'
-          }`}
-          onClick={() => setMode('schedule')}
-        >
-          <CardContent className="p-6 space-y-2">
-            <h3 className="text-xl font-bold">⏰ Schedule Post</h3>
-            <p className="text-gray-600">Pick a date & time to post automatically later.</p>
-          </CardContent>
-        </Card>
-      </div>
-
       <div className="email-update-container">
         <div className="editor">
           {title ? <h3> {title} </h3> : <h3>Weekly Progress Editor</h3>}
-
           <br />
           <div inline="true" className="mb-2">
             <Label for="dateOfWork">Date</Label>
