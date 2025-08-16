@@ -66,14 +66,22 @@ import { allUsersTimeEntriesReducer } from './allUsersTimeEntriesReducer';
 import issueReducer from './bmdashboard/issueReducer';
 import HGNFormReducer from './hgnFormReducers';
 import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
-import messageReducer from './lbdashboard/messagingReducer';
-import { userPreferencesReducer } from './lbdashboard/userPreferencesReducer';
+import messageReducer from './listBidDashboard/messagingReducer';
+import { userPreferencesReducer } from './listBidDashboard/userPreferencesReducer';
 
 // community portal
 import { noShowVizReducer } from './communityPortal/noShowVizReducer';
 
 // lbdashboard
-import wishListReducer from './lbdashboard/wishListItemReducer';
+import wishListReducer from './listBidDashboard/wishListItemReducer';
+
+// listing and biddding dashboard
+
+import {
+  listOverviewReducer,
+  listingAvailabilityReducer,
+  listingBookingReducer,
+} from './listBidDashboard/listOverviewReducer';
 
 const localReducers = {
   auth: authReducer,
@@ -141,6 +149,12 @@ const localReducers = {
   // lbdashboard
   lbmessaging: messageReducer,
   lbuserpreferences: userPreferencesReducer,
+
+  WishListItem: wishListReducer,
+
+  listOverview: listOverviewReducer,
+  listingAvailability: listingAvailabilityReducer,
+  listingBooking: listingBookingReducer,
 };
 
 const sessionReducers = {

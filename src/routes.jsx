@@ -669,7 +669,7 @@ export default (
 
         {/* Listing and Bidding Routes */}
         <LBProtectedRoute path="/lbdashboard" exact component={LBDashboard} />
-        <LBProtectedRoute path="/lbdashboard/listOverview" exact component={ListOveriew} />
+        <LBProtectedRoute path="/lbdashboard/listOverview/:id" exact component={ListOveriew} />
         <LBProtectedRoute path="/lbdashboard/masterplan" exact component={MasterPlan} />
         <Route path="/lbdashboard/login" component={LBLogin} />
         <Route path="/lbdashboard/register" component={LBRegister} />
