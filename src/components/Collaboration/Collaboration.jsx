@@ -1,25 +1,23 @@
-import { Component } from 'react';
+import { useEffect, useState } from 'react';
 import styles from './Collaboration.module.css';
 import { toast } from 'react-toastify';
 import { ApiEndpoint } from '~/utils/URL';
 import OneCommunityImage from '../../assets/images/logo2.png';
 
 function Collaboration() {
-  // const [query, setQuery] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
   const [category, setCategory] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [jobAds, setJobAds] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
   const [categories, setCategories] = useState([]);
   const [summaries, setSummaries] = useState([]);
-  const [showSearchResults, setShowSearchResults] = useState(true);
+  //  const [showSearchResults, setShowSearchResults] = useState(true);
   const [showTooltip, setShowTooltip] = useState(true);
   const [tooltipPosition, setTooltipPosition] = useState(null);
   const [loading, setLoading] = useState();
   const darkMode = useSelector(state => state.theme.darkMode);
-
+  const [hideSummaries, setHideSummaries] = useState(true);
   useEffect(() => {
     const tooltipDismissed = localStorage.getItem('tooltipDismissed');
     if (!tooltipDismissed) {
@@ -28,6 +26,37 @@ function Collaboration() {
     }
   }, []);
 
+  const fetchSummaries = async (givenSearchTerm, givenCategory) => {
+    // eslint-disable-next-line no-console
+    console.log(givenSearchTerm);
+    // eslint-disable-next-line no-console
+    console.log(givenCategory);
+    setLoading(true);
+
+    try {
+      const response = await fetch(
+        `${ApiEndpoint}/jobs/summaries?search=${givenSearchTerm}&category=${givenCategory}`,
+        {
+          method: 'GET',
+        },
+      );
+      // eslint-disable-next-line no-console
+      console.log(response);
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch summaries: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      // eslint-disable-next-line no-console
+      console.log(data);
+
+      setSummaries(data);
+      setLoading(false);
+    } catch (error) {
+      toast.error('Error fetching summaries');
+    }
+  };
   const fetchJobAds = async (givenSearchTerm, givenCategory) => {
     // eslint-disable-next-line no-console
     console.log(givenSearchTerm);
@@ -81,8 +110,6 @@ function Collaboration() {
   const handleSearch = event => {
     setSearchTerm(event.target.value);
     // eslint-disable-next-line no-console
-    console.log(selectedCategory);
-    // eslint-disable-next-line no-console
     console.log(localStorage.getItem('tooltipDismissed'));
     // eslint-disable-next-line no-console
     console.log(!localStorage.getItem('tooltipDismissed'));
@@ -102,10 +129,13 @@ function Collaboration() {
     event.preventDefault();
     // setSearchTerm(query);
     // setSelectedCategory(category);
-    setShowSearchResults(true);
+    // setShowSearchResults(true);
     setSummaries(null);
     setCurrentPage(1);
     // fetchJobAds(query, category);
+    //if (hideSummaries)
+    fetchSummaries(searchTerm, category);
+    //else
     fetchJobAds(searchTerm, category);
   };
 
@@ -125,33 +155,54 @@ function Collaboration() {
       setTooltipPosition('search');
       setShowTooltip(true);
     }
+    //if (hideSummaries)
+    fetchSummaries(searchTerm, selectedValue);
+    //else
     fetchJobAds(searchTerm, selectedValue);
+    // fetchJobAds(searchTerm, category);
   };
 
-  const handleRemoveQuery = () => {
+  const handleRemoveSearchTerm = () => {
+    // eslint-disable-next-line no-alert
+    alert('handleRemoveSearchTerm');
     // setQuery('');
     setSearchTerm('');
+    //if (hideSummaries)
+    fetchSummaries('', category);
+    // else
     fetchJobAds('', category);
   };
 
   const handleRemoveCategory = () => {
     setCategory('');
-    setSelectedCategory('');
+    // setSelectedCategory('');
+    //if (hideSummaries)
+    fetchSummaries(searchTerm, '');
+    //else
     fetchJobAds(searchTerm, '');
   };
 
   const handleShowSummaries = async () => {
     // eslint-disable-next-line no-console
     console.log('handleShowSummaries');
-
     // eslint-disable-next-line no-console
     console.log(searchTerm);
     // eslint-disable-next-line no-console
-    console.log(selectedCategory);
+    console.log(category);
 
     // eslint-disable-next-line no-console
     console.log(summaries);
-    {
+    // eslint-disable-next-line no-console
+    console.log('hideSummaries');
+    // eslint-disable-next-line no-console
+    console.log(hideSummaries);
+
+    //if (hideSummaries)
+    fetchJobAds(searchTerm, category);
+    // else
+    fetchSummaries(searchTerm, category);
+    setHideSummaries(!hideSummaries);
+    /* {
       try {
         const response = await fetch(
           `${ApiEndpoint}/jobs/summaries?search=${searchTerm}&category=${category}`,
@@ -171,6 +222,7 @@ function Collaboration() {
         console.log(data);
 
         setSummaries(data);
+        setShowSummaries(!showSummaries);
       } catch (error) {
         toast.error('Error fetching summaries');
       }
@@ -202,8 +254,12 @@ function Collaboration() {
   }, [currentPage]); // Re-fetch job ads when page or category changes
 
   return (
-    <div className={`job-landing ${darkMode ? 'user-collaboration-dark-mode' : ''}`}>
-      <div className="job-header">
+    <div
+      className={`${styles['job-landing']} {${
+        darkMode ? styles['user-collaboration-dark-mode'] : ''
+      }`}
+    >
+      <div className={styles['job-header']}>
         <a
           href="https://www.onecommunityglobal.org/collaboration/"
           target="_blank"
@@ -212,24 +268,32 @@ function Collaboration() {
           <img src={OneCommunityImage} alt="One Community Logo" />
         </a>
       </div>
-      <div className="user-collaboration-container">
-        <nav className="job-navbar">
-          <div className="job-navbar-left">
-            <form className="search-form">
+      <div className={styles['user-collaboration-container']}>
+        <nav className={styles['job-navbar']}>
+          <div className={styles['job-navbar-left']}>
+            <form className={styles['search-form']}>
               <input
                 type="text"
                 placeholder="Search by title..."
                 value={searchTerm}
                 onChange={handleSearch}
               />
-              <button className="btn btn-secondary" type="submit" onClick={handleSubmit}>
+              <button
+                className={`${styles.btn} btn-secondary`}
+                type="submit"
+                onClick={handleSubmit}
+              >
                 Go
               </button>
             </form>
           </div>
 
-          <div className="job-navbar-right">
-            <select className="job-select" value={category} onChange={handleCategoryChange}>
+          <div className={styles['job-navbar-right']}>
+            <select
+              className={styles['job-select']}
+              value={category}
+              onChange={handleCategoryChange}
+            >
               <option value="">Select from Categories</option>
               {categories.map(specificCategory => (
                 <option key={specificCategory} value={specificCategory}>
@@ -239,10 +303,9 @@ function Collaboration() {
             </select>
           </div>
         </nav>
-
         {showTooltip}
         {showTooltip && tooltipPosition === 'search' && (
-          <div className="job-tooltip">
+          <div className={styles['job-tooltip']}>
             <p>Use the search bar to refine your search further!</p>
             <button type="button" className="job-tooltip-dismiss" onClick={dismissSearchTooltip}>
               Got it
@@ -250,37 +313,50 @@ function Collaboration() {
           </div>
         )}
         {showTooltip && tooltipPosition === 'category' && (
-          <div className="job-tooltip category-tooltip">
+          <div className={`${styles['job-tooltip']} ${styles['category-tooltip']}`}>
             <p>Use the categories to refine your search further!</p>
-            <button type="button" className="job-tooltip-dismiss" onClick={dismissCategoryTooltip}>
+            <button
+              type="button"
+              className={styles['job-tooltip-dismiss']}
+              onClick={dismissCategoryTooltip}
+            >
               Got it
             </button>
           </div>
         )}
-        <div className="job-queries">
-          {searchTerm.length !== 0 || category.length !== 0 ? (
-            <h3 className="job-query">
-              Listing results for
-              {searchTerm && !category && <h3> &apos;{searchTerm}&apos;</h3>}
-              {category && !searchTerm && <strong> &apos;{category}&apos;</strong>}
-              {searchTerm && category && (
-                <strong>
-                  &apos;{searchTerm} + {category}&apos;
-                </strong>
-              )}
-              .
-            </h3>
+        <div className={styles['job-queries']}>
+          {!searchTerm && !category ? (
+            <h3 className={styles['job-query']}>Listing all job ads.</h3>
+          ) : !searchTerm || !category ? (
+            <div className={styles['job-query']}>
+              {searchTerm && !category && <h3> Listing results for &apos;{searchTerm}&apos;</h3>}
+              {category && !searchTerm && <h3> Listing results for &apos;{category} &apos; </h3>}.
+            </div>
           ) : (
-            <p className="job-query">Listing all job ads.</p>
+            <h3>
+              Listing Results for &apos; {searchTerm} &apos; + &apos; {category} &apos;
+            </h3>
           )}
-          <button className="btn btn-secondary active" type="button" onClick={handleShowSummaries}>
+
+          <button
+            className={`${styles.btn} btn-secondary active`}
+            type="button"
+            onClick={handleShowSummaries}
+          >
             Show Summaries
           </button>
           {(searchTerm && category && (
             <>
-              <div className="btn btn-secondary query-option" type="button">
+              <div
+                className={`${styles.btn} btn-secondary ${styles['query-option']}`}
+                type="button"
+              >
                 {searchTerm}
-                <button className="cross-button" type="button" onClick={handleRemoveCategory}>
+                <button
+                  className={styles['cross-button']}
+                  type="button"
+                  onClick={handleRemoveSearchTerm}
+                >
                   <img
                     width="30"
                     height="30"
@@ -289,9 +365,16 @@ function Collaboration() {
                   />
                 </button>
               </div>
-              <div className="btn btn-secondary query-option" type="button">
+              <div
+                className={`${styles.btn} btn-secondary ${styles['query-option']}`}
+                type="button"
+              >
                 {category}
-                <button className="cross-button" type="button" onClick={handleRemoveCategory}>
+                <button
+                  className={styles['cross-button']}
+                  type="button"
+                  onClick={handleRemoveCategory}
+                >
                   <img
                     width="30"
                     height="30"
@@ -303,9 +386,16 @@ function Collaboration() {
             </>
           )) ||
             (searchTerm && (
-              <div className="query-option btn btn-secondary " type="button">
+              <div
+                className={`${styles['query-option']} ${styles.btn} btn-secondary`}
+                type="button"
+              >
                 <span>{searchTerm}</span>
-                <button className="cross-button" type="button" onClick={handleRemoveQuery}>
+                <button
+                  className={styles['cross-button']}
+                  type="button"
+                  onClick={handleRemoveSearchTerm}
+                >
                   <img
                     width="30"
                     height="30"
@@ -316,9 +406,16 @@ function Collaboration() {
               </div>
             )) ||
             (category && (
-              <div className="btn btn-secondary query-option" type="button">
+              <div
+                className={`${styles.btn} ${styles['btn-secondary']} ${styles['query-option']}`}
+                type="button"
+              >
                 {category}
-                <button className="cross-button" type="button" onClick={handleRemoveCategory}>
+                <button
+                  className={styles['cross-button']}
+                  type="button"
+                  onClick={handleRemoveCategory}
+                >
                   <img
                     width="30"
                     height="30"
@@ -328,69 +425,72 @@ function Collaboration() {
                 </button>
               </div>
             ))}
-          {category && (
-            <div className="btn btn-secondary query-option" type="button">
-              {category}
-              <button className="cross-button" type="button" onClick={handleRemoveCategory}>
-                <img
-                  width="30"
-                  height="30"
-                  src="https://img.icons8.com/ios-glyphs/30/delete-sign.png"
-                  alt="delete-sign"
-                />
-              </button>
-            </div>
-          )}
         </div>
-        {!loading && jobAds.length !== 0 ? (
-          <div className="job-list">
-            {jobAds.map(ad => (
-              <div key={ad._id} className="job-ad">
-                <img
-                  src={`{ad.imageUrl}`}
-                  onError={e => {
-                    e.target.onerror = null;
-                    if (ad.category === 'Engineering') {
-                      e.target.src =
-                        'https://img.icons8.com/external-prettycons-flat-prettycons/47/external-job-social-media-prettycons-flat-prettycons.png';
-                    } else if (ad.category === 'Marketing') {
-                      e.target.src =
-                        'https://img.icons8.com/external-justicon-lineal-color-justicon/64/external-marketing-marketing-and-growth-justicon-lineal-color-justicon-1.png';
-                    } else if (ad.category === 'Design') {
-                      e.target.src = 'https://img.icons8.com/arcade/64/design.png';
-                    } else if (ad.category === 'Finance') {
-                      e.target.src = 'https://img.icons8.com/cotton/64/merchant-account--v2.png';
-                    } else {
-                      e.target.src =
-                        'https://img.icons8.com/cotton/64/working-with-a-laptop--v1.png';
-                    }
-                  }}
-                  alt={ad.title || 'Job Position'}
-                  loading="lazy"
-                />
+        {hideSummaries ? (
+          !loading && jobAds.length !== 0 ? (
+            <div className={styles['job-list-pagination']}>
+              <div className={styles['job-list']}>
+                {jobAds.map(ad => (
+                  <div key={ad._id} className={styles['job-ad']}>
+                    <img
+                      src={`{ad.imageUrl}`}
+                      onError={e => {
+                        e.target.onerror = null;
+                        if (ad.category === 'Engineering') {
+                          e.target.src =
+                            'https://img.icons8.com/external-prettycons-flat-prettycons/47/external-job-social-media-prettycons-flat-prettycons.png';
+                        } else if (ad.category === 'Marketing') {
+                          e.target.src =
+                            'https://img.icons8.com/external-justicon-lineal-color-justicon/64/external-marketing-marketing-and-growth-justicon-lineal-color-justicon-1.png';
+                        } else if (ad.category === 'Design') {
+                          e.target.src = 'https://img.icons8.com/arcade/64/design.png';
+                        } else if (ad.category === 'Finance') {
+                          e.target.src =
+                            'https://img.icons8.com/cotton/64/merchant-account--v2.png';
+                        } else {
+                          e.target.src =
+                            'https://img.icons8.com/cotton/64/working-with-a-laptop--v1.png';
+                        }
+                      }}
+                      alt={ad.title || 'Job Position'}
+                      loading="lazy"
+                    />
 
-                <a href={`${ad.jobDetailsLink}`} target="_blank" rel="noreferrer">
-                  <h5>
-                    {ad.title} - {ad.category}
-                  </h5>
-                </a>
+                    <a href={`${ad.jobDetailsLink}`} target="_blank" rel="noreferrer">
+                      <h5>
+                        {ad.title} - {ad.category}
+                      </h5>
+                    </a>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        ) : (
-          <div className="no-results">
-            <h2>No job ads found.</h2>
-          </div>
-        )}
-        {summaries && summaries.jobs && summaries.jobs.length > 0 ? (
+              <div className={styles['pagination']}>
+                {Array.from({ length: totalPages }, (_, i) => (
+                  <button
+                    type="button"
+                    key={i}
+                    onClick={() => setCurrentPage(i + 1)}
+                    disabled={currentPage === i + 1}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className={styles['no-results']}>
+              <h2>No job ads found.</h2>
+            </div>
+          )
+        ) : summaries && summaries.jobs && summaries.jobs.length > 0 ? (
           summaries.jobs.map(summary => (
-            <div key={summary._id} className="job-summary-item">
+            <div key={summary._id} className={styles['job-summary-item']}>
               <h3>
                 <a href={`${summary.jobDetailsLink}`} target="_blank" rel="noreferrer">
                   {summary.title}
                 </a>
               </h3>
-              <div className="job-summary-content">
+              <div className={styles['job-summary-content']}>
                 <p>{summary.description}</p>
                 <p>Date Posted: {new Date(summary.datePosted).toLocaleDateString()}</p>
               </div>
@@ -399,18 +499,6 @@ function Collaboration() {
         ) : (
           <p>No summaries found.</p>
         )}
-        <div className="pagination">
-          {Array.from({ length: totalPages }, (_, i) => (
-            <button
-              type="button"
-              key={i}
-              onClick={() => setCurrentPage(i + 1)}
-              disabled={currentPage === i + 1}
-            >
-              {i + 1}
-            </button>
-          ))}
-        </div>
       </div>
     </div>
   );
