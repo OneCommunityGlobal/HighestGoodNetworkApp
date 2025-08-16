@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
-function TimeFilter({ onFilterChange }) {
+function TimeFilter({ onFilterChange, darkMode }) {
   const [selectedOption, setSelectedOption] = useState('weekly');
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
@@ -22,7 +22,14 @@ function TimeFilter({ onFilterChange }) {
         flexWrap: 'wrap',
       }}
     >
-      <label htmlFor="timeFilterSelect" style={{ fontWeight: 500 }}>
+      <label
+        htmlFor="timeFilterSelect"
+        style={{
+          fontWeight: 500,
+          color: darkMode ? '#ffffff' : '#222e3c',
+          fontSize: '18px',
+        }}
+      >
         Time Filter:
       </label>
       <select
