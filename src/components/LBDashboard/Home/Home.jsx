@@ -18,12 +18,10 @@ import {
   FaTimes,
   FaChevronLeft,
   FaChevronRight,
-  FaSearch,
 } from 'react-icons/fa';
 import { BsSliders } from 'react-icons/bs';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import './Home.css';
 import { useHistory } from 'react-router-dom';
 import L from 'leaflet';
 import logo from '../../../assets/images/logo2.png';

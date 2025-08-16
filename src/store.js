@@ -3,8 +3,8 @@ import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage'; // defaults to localStorage for web
 
 import thunk from 'redux-thunk';
-import { userPreferencesReducer } from '~/reducers/lbdashboard/userPreferencesReducer';
-import { messagingReducer } from '~/reducers/lbdashboard/messagingReducer';
+import { userPreferencesReducer } from './reducers/listBidDashboard/userPreferencesReducer';
+import { messagingReducer } from './reducers/listBidDashboard/messagingReducer';
 import { weeklyProjectSummaryReducer } from '~/reducers/bmdashboard/weeklyProjectSummaryReducer';
 import { localReducers, sessionReducers } from './reducers';
 

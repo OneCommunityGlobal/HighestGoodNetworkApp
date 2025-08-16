@@ -66,8 +66,8 @@ import { allUsersTimeEntriesReducer } from './allUsersTimeEntriesReducer';
 import issueReducer from './bmdashboard/issueReducer';
 import HGNFormReducer from './hgnFormReducers';
 import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
-import messageReducer from './lbdashboard/messagingReducer';
-import { userPreferencesReducer } from './lbdashboard/userPreferencesReducer';
+import messageReducer from './listBidDashboard/messagingReducer';
+import { userPreferencesReducer } from './listBidDashboard/userPreferencesReducer';
 
 // community portal
 import { noShowVizReducer } from './communityPortal/noShowVizReducer';

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import './Listoverview.css';
+import './Listoverview.module.css';
 import { useDispatch } from 'react-redux';
-import { fetchListingAvailability } from 'actions/lbDashboard/listOverviewAction';
+import { fetchListingAvailability } from '../../../actions/lbDashboard/listOverviewAction';
 
 const AVAILABILITY_COLORS = {
   available: '#4caf50', // green

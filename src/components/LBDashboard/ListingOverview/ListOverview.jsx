@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import './Listoverview.css';
 import Carousel from 'react-bootstrap/Carousel';
 import { useDispatch, useSelector } from 'react-redux';
-import { getUserProfileBasicInfo } from 'actions/userManagement';
+import { getUserProfileBasicInfo } from '../../../actions/userManagement';
 import ListingAvailability from './ListingAvailability';
 import {
   bookListing,

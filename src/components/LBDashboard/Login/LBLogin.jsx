@@ -15,7 +15,6 @@ function LBLogin(props) {
   const [enterPassword, setEnteredPassword] = useState('');
   const [validationError, setValidationError] = useState(null);
   const [hasAccess, setHasAccess] = useState(false);
-  const history = useHistory();
 
   const prevLocation = location?.state?.from || { pathname: '/lbdashboard' };
 
