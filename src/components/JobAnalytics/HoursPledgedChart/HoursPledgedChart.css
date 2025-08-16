@@ -11,30 +11,42 @@
   color: #f1f1f1;
 }
 
-.filters {
+.hp-filters {
   display: flex;
   gap: 20px;
   margin-bottom: 20px;
+  justify-content: center;
 }
 
-.dark-mode .filters {
+.dark-mode .hp-filters {
   background-color: #1c2541;
   color: #f1f1f1;
   box-shadow: 2px 2px 4px 1px black;
 }
 
-.dark-mode .chart-container {
+.dark-mode .hp-chart-container {
   background-color: #1c2541;
   color: #f1f1f1;
   box-shadow: 2px 2px 4px 1px black;
-  border: none
+  border: none;
 }
 
-.date-filter,
-.role-filter {
+.hp-date-filter,
+.hp-role-filter {
   display: flex;
   flex-direction: column;
+  padding: 1% 10%;
+  align-items: center;
+  gap: 10px;
 }
+
+.hp-date-filter input {
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+}
+
 
 label {
   font-weight: bold;
@@ -45,23 +57,23 @@ label {
   color: #f1f1f1 !important;
 }
 
-.dark-mode .css-b62m3t-container{
+.dark-mode .css-b62m3t-container {
   color: black !important;
 }
 
-.spinner {
+.hp-spinner {
   text-align: center;
   font-size: 18px;
   color: #888;
 }
 
-.error-message {
+.hp-error-message {
   text-align: center;
   color: #dc3545;
   font-weight: bold;
 }
 
-.empty-message {
+.hp-empty-message {
   text-align: center;
   color: #888;
   font-style: italic;

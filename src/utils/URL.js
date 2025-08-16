@@ -366,6 +366,9 @@ export const ENDPOINTS = {
   LB_LISTINGS: `${APIEndpoint}/lb/getListings`,
   LB_LISTINGS_BASE: `${APIEndpoint}/lb`,
   HELP_CATEGORIES: `${APIEndpoint}/help-categories`,
+
+  // job analytics
+  HOURS_PLEDGED: `${APIEndpoint}/analytics/hours-pledged`,
 };
 
 export const ApiEndpoint = APIEndpoint;
