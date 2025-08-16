@@ -1,15 +1,18 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import styles from './BiddingOverview.module.css';
-
+import { useSelector, useDispatch } from 'react-redux';
 import logo from '../../../assets/images/logo2.png';
 
-function BiddingOverview() {
+function BiddingOverview(props) {
   const [rentingFrom, setRentingFrom] = useState('');
   const [rentingTo, setRentingTo] = useState('');
   const [name, setName] = useState('');
   const [biddingPrice, setBiddingPrice] = useState('');
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [zoom, setZoom] = useState(1);
+  const darkMode = useSelector(state => state.theme.darkMode);
+  const auth = useSelector(state => state.auth);
 
   const unitDetails = {
     unitNumber: '405',
@@ -22,7 +25,6 @@ function BiddingOverview() {
       { id: 'ua2', text: 'Artistic Interiors' },
       { id: 'ua3', text: 'Artistic Interiors' },
     ],
-
     villageAmenities: [
       'Central Tropical',
       'Eco-Conscious Water System',
@@ -38,6 +40,8 @@ function BiddingOverview() {
     ],
   };
 
+  const userName = auth.firstName || auth.user?.firstName || auth.user?.username || 'User';
+
   const navigateImages = direction => {
     if (direction === 'next') {
       setCurrentImageIndex(prevIndex =>
@@ -51,7 +55,6 @@ function BiddingOverview() {
   };
 
   const handleBiddingPriceChange = ({ target: { value } }) => {
-    // Allow only empty string or digits
     if (value === '' || /^\d+$/.test(value)) {
       setBiddingPrice(value);
     }
@@ -62,21 +65,28 @@ function BiddingOverview() {
       try {
         // Placeholder for API call
       } catch (error) {
-        // Handle error fetching unit details if needed (e.g., send to a logging service)
+        // Handle error fetching unit details if needed
       }
     };
-
     fetchUnitDetails();
   }, []);
 
   const handleSubmit = e => {
     e.preventDefault();
     // Handle form submission logic here
-    // Example: Send data to backend API
+  };
+
+  const zoomIn = () => setZoom(prev => Math.min(prev + 0.2, 3));
+  const zoomOut = () => setZoom(prev => Math.max(prev - 0.2, 1));
+  const resetZoom = () => setZoom(1);
+  const handleWheel = e => {
+    e.preventDefault();
+    if (e.deltaY > 0) zoomIn();
+    else zoomOut();
   };
 
   return (
-    <div className={`${styles.biddingPage}`}>
+    <div className={`${styles.biddingPage} ${darkMode ? styles.darkMode : ''}`}>
       <div className={`${styles.topLogoContainer}`}>
         <img src={logo} alt="One Community Logo" className={`${styles.topLogo}`} />
       </div>
@@ -101,8 +111,7 @@ function BiddingOverview() {
           </div>
 
           <div className={`${styles.headerRight}`}>
-            <span className={`${styles.welcomeText}`}>WELCOME USER_NAME</span>
-            {/* Replace USER_NAME */}
+            <span className={`${styles.welcomeText}`}>WELCOME {userName}</span>
             <div className={`${styles.iconContainer}`}>
               <div className={`${styles.iconBadge}`}>
                 <i className={`fa fa-comment ${styles.messageIcon}`} />
@@ -123,11 +132,16 @@ function BiddingOverview() {
               <div className={`${styles.currentBid}`}>
                 Current bid: {unitDetails.currentBid} /night
               </div>
+
               <div className={`${styles.biddingImage}`}>
-                <img
-                  src={unitDetails.images[currentImageIndex]}
-                  alt={`Unit ${unitDetails.unitNumber} ${unitDetails.villageName}`}
-                />
+                <div className={styles.zoomWrapper} onWheel={handleWheel}>
+                  <img
+                    src={unitDetails.images[currentImageIndex]}
+                    alt={`Unit ${unitDetails.unitNumber} ${unitDetails.villageName}`}
+                    className={styles.zoomImage}
+                    style={{ transform: `scale(${zoom})` }}
+                  />
+                </div>
                 <button
                   type="button"
                   className={`${styles.imageNavButton} ${styles.leftNav}`}
@@ -144,20 +158,32 @@ function BiddingOverview() {
                 >
                   <i className="fa fa-chevron-right" />
                 </button>
+
+                <div className={styles.zoomButtons}>
+                  <button type="button" onClick={zoomIn}>
+                    +
+                  </button>
+                  <button type="button" onClick={zoomOut}>
+                    -
+                  </button>
+                  <button type="button" onClick={resetZoom}>
+                    Reset
+                  </button>
+                </div>
+
                 <div className={`${styles.imageDots}`}>
                   {unitDetails.images.map((image, index) => (
                     <span
-                      key={image} // Using unique image URL as key is correct here
+                      key={image}
                       className={`image-dot ${index === currentImageIndex ? 'active' : ''}`}
                       onClick={() => setCurrentImageIndex(index)}
                       onKeyDown={e => {
-                        // Added for accessibility
                         if (e.key === 'Enter' || e.key === ' ') {
                           setCurrentImageIndex(index);
                         }
                       }}
-                      role="button" // Added for accessibility
-                      tabIndex={0} // Added for accessibility
+                      role="button"
+                      tabIndex={0}
                       aria-label={`Go to image ${index + 1}`}
                     />
                   ))}
@@ -168,7 +194,6 @@ function BiddingOverview() {
                 <div className={`${styles.amenitiesSection}`}>
                   <h4>Available amenities in this Unit:</h4>
                   <ol>
-                    {/* FIXED: Use the unique 'id' property as the key */}
                     {unitDetails.unitAmenities.map(amenity => (
                       <li key={amenity.id}>{amenity.text}</li>
                     ))}
@@ -179,7 +204,6 @@ function BiddingOverview() {
                   <h4>Village level amenities:</h4>
                   <ol>
                     {unitDetails.villageAmenities.map(amenity => (
-                      // Using unique amenity string as key is correct here
                       <li key={amenity}>{amenity}</li>
                     ))}
                   </ol>
@@ -212,7 +236,7 @@ function BiddingOverview() {
                         id="rentingFrom"
                         value={rentingFrom}
                         onChange={e => setRentingFrom(e.target.value)}
-                        required // Added basic validation
+                        required
                       />
                     </div>
                   </div>
@@ -225,7 +249,7 @@ function BiddingOverview() {
                         id="rentingTo"
                         value={rentingTo}
                         onChange={e => setRentingTo(e.target.value)}
-                        required // Added basic validation
+                        required
                       />
                     </div>
                   </div>
@@ -241,7 +265,7 @@ function BiddingOverview() {
                     placeholder="Your Name"
                     value={name}
                     onChange={e => setName(e.target.value)}
-                    required // Added basic validation
+                    required
                   />
                 </div>
 
@@ -250,20 +274,20 @@ function BiddingOverview() {
                 >
                   <label htmlFor="biddingPrice">Bidding Price ($/night)</label>
                   <input
-                    type="text" // Keep as text to allow custom validation logic
+                    type="text"
                     id="biddingPrice"
                     placeholder="Enter your bid amount"
                     value={biddingPrice}
                     onChange={handleBiddingPriceChange}
                     pattern="\d+"
                     title="Please enter numbers only."
-                    required // Added basic validation
+                    required
                   />
                 </div>
 
                 <div className="submit-button-container">
                   <button type="submit" className={`${styles.submitButton1}`}>
-                    Proceed to submit with details{' '}
+                    Proceed to submit with details
                   </button>
                 </div>
               </form>
