@@ -226,11 +226,10 @@ summary::-webkit-details-marker {
   gap: 8px;
 }
 
-/* Affects spacing between the two rows */
 .tab-grid > .nav-item:nth-child(n + 12) {
-  margin-top: -15px;       /* controls how much it overlaps */
-  z-index: 2;              /* higher than row 1 */
-  position: relative;      /* needed for z-index to work */
+  margin-top: -15px;
+  z-index: 2;
+  position: relative;
   transform: translateX(8px);
 }
 
@@ -289,15 +288,13 @@ summary::-webkit-details-marker {
   .tab-icon { width: 32px; height: 32px; }
 }
 
-/* --- In-row overlap: leftmost behind, rightmost in front --- */
 .tab-grid > .nav-item { position: relative; }
 
 .tab-grid > .nav-item:nth-child(n+2):nth-child(-n+11),
 .tab-grid > .nav-item:nth-child(n+12):not(:nth-child(12)) {
-  margin-left: -20px; /* adjust overlap width */
+  margin-left: -20px;
 }
 
-/* Row 1 (items 1–11): leftmost highest z-index, going down as we move right */
 .tab-grid > .nav-item:nth-child(1)  { z-index: 11; }
 .tab-grid > .nav-item:nth-child(2)  { z-index: 10; }
 .tab-grid > .nav-item:nth-child(3)  { z-index: 9; }
@@ -309,8 +306,6 @@ summary::-webkit-details-marker {
 .tab-grid > .nav-item:nth-child(9)  { z-index: 3; }
 .tab-grid > .nav-item:nth-child(10) { z-index: 2; }
 .tab-grid > .nav-item:nth-child(11) { z-index: 1; }
-
-/* Row 2 (items 12–22): already above row 1, but still leftmost on top */
 .tab-grid > .nav-item:nth-child(12) { z-index: 22; }
 .tab-grid > .nav-item:nth-child(13) { z-index: 21; }
 .tab-grid > .nav-item:nth-child(14) { z-index: 20; }
@@ -323,9 +318,22 @@ summary::-webkit-details-marker {
 .tab-grid > .nav-item:nth-child(21) { z-index: 13; }
 .tab-grid > .nav-item:nth-child(22) { z-index: 12; }
 
-/* Ensure hovered/active always comes to front */
 .tab-grid .tab-nav-item:hover,
 .tab-grid .tab-nav-item.active {
   z-index: 100;
   position: relative;
+}
+
+.tab-grid > .nav-item .tab-nav-item {
+  /* left + right only */
+  box-shadow:
+    -2px 0 6px rgba(0,0,0,0.12),
+     2px 0 6px rgba(0,0,0,0.12);
+}
+
+.tab-grid > .nav-item:nth-child(-n+11) .tab-nav-item {
+  box-shadow:
+    -2px 0 6px rgba(0,0,0,0.12),
+     2px 0 6px rgba(0,0,0,0.12),
+     0 6px 6px rgba(0,0,0,0.20);
 }
