@@ -212,12 +212,11 @@ if (role === 'Volunteer' && userHaveTask.length > 0) {
     return tab;
   };
 
-useEffect(() => {
-  const tab = tabMapping[location.hash];
-  if (tab !== undefined) {
-    changeTab(tab);
-  }
-}, [location.hash]);  // This effect will run whenever the hash changes
+  useEffect(() => {
+    if (initialTab != null && !location.hash) {
+      changeTab(initialTab);
+    }
+  }, [initialTab, location.hash]); // This effect will run whenever the hash changes
 
 /* ---------------- methods -------------- */
 const updateTimeEntryItems = () => {
@@ -233,7 +232,7 @@ const generateAllTimeEntryItems = () => {
   const lastWeekEntries = generateTimeEntries(timeEntries.weeks[1], 1);
   const beforeLastEntries = generateTimeEntries(timeEntries.weeks[2], 2);
   const periodEntries = generateTimeEntries(timeEntries.period, 3);
-  return [currentWeekEntries, beforeLastEntries, beforeLastEntries, periodEntries];
+  return [currentWeekEntries, lastWeekEntries, beforeLastEntries, periodEntries];
 };
 
 
@@ -286,9 +285,21 @@ const generateAllTimeEntryItems = () => {
       const res = await axios.get(url);
 
       const data = res.data.length > 0 ? res.data : [];
-      const defaultTabValue = defaultTab(data);
-      setTimeLogState({ ...timeLogState, isTimeEntriesLoading: false });
-      setInitialTab(defaultTabValue);
+      const mappedHash = tabMapping[location.hash];
+
+      if (mappedHash !== undefined) {
+        // If the URL has a known hash, open that tab immediately
+        setTimeLogState(s => ({
+          ...s,
+          isTimeEntriesLoading: false,
+          activeTab: mappedHash,
+        }));
+        setInitialTab(null); // so the initialTab effect won’t override
+      } else {
+        // No hash → fall back to your existing default logic
+        setTimeLogState(s => ({ ...s, isTimeEntriesLoading: false }));
+        setInitialTab(defaultTab(data));
+      }
     } catch (e) {
       console.log(e);
     }
@@ -345,22 +356,15 @@ const generateAllTimeEntryItems = () => {
     }
 
     // Clear the hash to trigger the useEffect on hash change
-    if (location.hash) {
-      window.location.hash = '';
-    }
+    // if (location.hash) {
+    //   window.location.hash = '';
+    // }
 
     setTimeLogState({
       ...timeLogState,
       activeTab: tab,
     });
   };
-
-  useEffect(() => {
-    const tab = tabMapping[location.hash];
-    if (tab !== undefined) {
-      changeTab(tab);
-    }
-  }, [location.hash]); // This effect will run whenever the hash changes
 
   const handleInputChange = e => {
     setTimeLogState({ ...timeLogState, [e.target.name]: e.target.value });
@@ -392,17 +396,19 @@ const generateAllTimeEntryItems = () => {
     }
     if (timeLogState.activeTab === 4) {
       return (
-        <p className={`ml-1 responsive-font-size ${darkMode ? 'text-light' : ''}`} style={{textAlign: 'left'}} >
-          Viewing time Entries from <b>{formatDate(timeLogState.fromDate)}</b> to{' '}
-          <b>{formatDate(timeLogState.toDate)}</b>
-        </p>
+        <p className="ml-1 responsive-font-size text-dark" style={{ textAlign: 'left' }}>
+  Viewing time Entries from <b>{formatDate(timeLogState.fromDate)}</b> to{' '}
+  <b>{formatDate(timeLogState.toDate)}</b>
+</p>
+
       );
     }
     return (
-      <p className={`ml-1 responsive-font-size ${darkMode ? 'text-light' : ''}`} style={{textAlign: 'left'}}>
-        Viewing time Entries from <b>{formatDate(startOfWeek(timeLogState.activeTab - 1))}</b> to{' '}
-        <b>{formatDate(endOfWeek(timeLogState.activeTab - 1))}</b>
-      </p>
+      <p className="ml-1 responsive-font-size text-dark" style={{ textAlign: 'left' }}>
+  Viewing time Entries from <b>{formatDate(startOfWeek(timeLogState.activeTab - 1))}</b> to{' '}
+  <b>{formatDate(endOfWeek(timeLogState.activeTab - 1))}</b>
+</p>
+
     );
   };
 
@@ -516,6 +522,13 @@ const generateAllTimeEntryItems = () => {
 
   /* ---------------- useEffects -------------- */
 
+  useEffect(() => {
+    const mapped = tabMapping[location.hash];
+    if (mapped !== undefined) {
+      setTimeLogState(s => ({ ...s, activeTab: mapped }));
+    }
+  }, [location.hash]);
+
   // Update user ID if it changes in the URL
   useEffect(() => {
     if (urlId) {
@@ -541,9 +554,6 @@ const generateAllTimeEntryItems = () => {
     props.getBadgeCount(displayUserId);
   }, [displayUserId, props]);
 
-  useEffect(() => {
-    changeTab(initialTab);
-  }, [initialTab]);
 
   useEffect(() => {
     // Build the time log after new data is loaded
