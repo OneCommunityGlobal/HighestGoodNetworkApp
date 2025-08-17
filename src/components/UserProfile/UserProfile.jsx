@@ -47,11 +47,8 @@ import Badges from './Badges';
 import { getAllTeamCode } from '../../actions/allTeamsAction';
 import TimeEntryEditHistory from './TimeEntryEditHistory';
 import ActiveInactiveConfirmationPopup from '../UserManagement/ActiveInactiveConfirmationPopup';
-import {
-  updateUserStatus,
-  updateRehireableStatus,
-  toggleVisibility,
-} from '../../actions/userManagement';
+import { updateUserStatus, updateRehireableStatus, toggleVisibility } from '../../actions/userManagement';
+import { updateUserProfile } from "../../actions/userProfile";
 import { UserStatus } from '../../utils/enums';
 import BlueSquareLayout from './BlueSquareLayout';
 import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
@@ -79,7 +76,7 @@ import ConfirmRemoveModal from './UserProfileModal/confirmRemoveModal';
 import { formatDateYYYYMMDD, CREATED_DATE_CRITERIA } from '~/utils/formatDate.js';
 import AccessManagementModal from './UserProfileModal/AccessManagementModal';
 
-function UserProfile(props) {
+function UserProfile(props) { 
   const darkMode = useSelector(state => state.theme.darkMode);
   /* Constant values */
   const initialFormValid = {
@@ -197,7 +194,7 @@ function UserProfile(props) {
   const [titleOnSet, setTitleOnSet] = useState(false);
 
  
-  const updateProjetTouserProfile = () => {
+  const updateProjectTouserProfile = () => {
     return new Promise(resolve => {
       checkIsProjectsEqual();
 
@@ -418,12 +415,44 @@ function UserProfile(props) {
       // sanitize data first
       newUserProfile.teams = (newUserProfile.teams || []).filter(team => team !== null);
       newUserProfile.projects = (newUserProfile.projects || []).filter(project => project !== null);
+      try {
+        // Prefer a typed helper like ENDPOINTS.USER_PROJECTS(userId) if you have it.
+        const { data } = await axios.get(
+          ENDPOINTS.USER_PROJECTS
+            ? ENDPOINTS.USER_PROJECTS(userId)
+            : `${ENDPOINTS.PROJECTS}/user/${userId}`
+        );
+        const normalized = (data || []).map((row) => {
+          // common shapes: {project: {...}}, {projectId: {...}}, or already {...}
+          if (row?.project?.projectName) return row.project;
+          if (row?.projectId?.projectName) return row.projectId;
+          return row; // fallback if API already returns the project document
+        });
+        setProjects(normalized);
+        setOriginalProjects(normalized);
+        setResetProjects(normalized);
+        // keep profile copy in sync so Save/Cancel logic works
+        newUserProfile.projects = normalized;
+      } catch {
+        // fallback to whatever came on the profile (might be empty on your env)
+        const fallback = newUserProfile.projects || [];
+        setProjects(fallback);
+        setOriginalProjects(fallback);
+        setResetProjects(fallback);
+      }
 
-      // set values first so UI can start rendering
-      setTeams(newUserProfile.teams);
-      setProjects(newUserProfile.projects);
-      setOriginalProjects(newUserProfile.projects);
-      setResetProjects(newUserProfile.projects);
+      // keep userProfile in sync for Save/Cancel logic
+      // membershipProjects is not defined, so this line should be removed or replaced if needed
+      // newUserProfile.projects = membershipProjects || [];
+      // If you need to assign something, ensure membershipProjects is defined above
+      // Otherwise, remove this line
+      // Removed as it causes a reference error
+      // } catch (e) {
+      //   // fallback to whatever the profile returned (may be empty)
+      //   setProjects(newUserProfile.projects || []);
+      //   setOriginalProjects(newUserProfile.projects || []);
+      //   setResetProjects(newUserProfile.projects || []);
+      // }
 
       const profileWithFormattedDates = {
         ...newUserProfile,
@@ -507,10 +536,27 @@ function UserProfile(props) {
     setTeams(prevState => [...prevState, assignedTeam]);
   };
 
-  const onAssignProject = assignedProject => {
-    setProjects(prevProjects => [...prevProjects, assignedProject]);
-  };
-
+const onAssignProject = assignedProject => {
+  console.log("Adding project to state:", assignedProject);
+  
+  // Always create a new array to trigger React re-render
+  setProjects(prevProjects => {
+    // Ensure prevProjects is an array
+    const currentProjects = Array.isArray(prevProjects) ? prevProjects : [];
+    
+    // Check if project already exists
+    if (currentProjects.some(proj => proj._id === assignedProject._id)) {
+      console.log("Project already exists, not adding duplicate");
+      return currentProjects; // Return the current array without changes
+    }
+    
+    // Add project and log the new state
+    console.log("Adding new project:", assignedProject.projectName);
+    const newProjects = [...currentProjects, assignedProject];
+    console.log("Updated projects state:", newProjects);
+    return newProjects; // Return the new array with the project added
+  });
+};
   const onUpdateTask = (taskId, updatedTask) => {
     const newTask = {
       updatedTask,
@@ -696,7 +742,11 @@ function UserProfile(props) {
       axios.put(url, updatedTask.updatedTask).catch(err => console.log(err));
     }
     try {
-      const userProfileToUpdate = updatedUserProfile || userProfileRef.current;
+       const userProfileToUpdate = {
+        ...(updatedUserProfile || userProfileRef.current),
+        projects, // Ensure projects are included in the payload
+        };
+        console.log('Submitting UserProfile:', userProfileToUpdate); // Debugging log
       const result = await props.updateUserProfile(userProfileToUpdate);
       if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
         await props.refreshToken(userProfile._id);
@@ -743,7 +793,7 @@ function UserProfile(props) {
   useEffect(() => {
     const helper = async () => {
       try {
-        await updateProjetTouserProfile();
+        await updateProjectTouserProfile();
       } catch (error) {}
     };
     helper();
@@ -940,7 +990,7 @@ function UserProfile(props) {
   };
 
   if ((showLoading && !props.isAddNewUser) || userProfile === undefined) {
-    return (
+    return ( 
       <Container fluid className={darkMode ? 'bg-oxford-blue' : ''}>
         <Row className="text-center" data-test="loading">
           <SkeletonLoading template="UserProfile" />
@@ -1468,12 +1518,7 @@ function UserProfile(props) {
                   isVisible={userProfile.isVisible}
                   canEditVisibility={canEditVisibility}
                   handleSubmit={handleSubmit}
-                  disabled={
-                    !formValid.firstName ||
-                    !formValid.lastName ||
-                    !formValid.email ||
-                    !(isProfileEqual && isTasksEqual && isProjectsEqual)
-                  }
+                  disabled={!formValid.firstName || !formValid.lastName || !formValid.email || !codeValid}
                   canEditTeamCode={canEditTeamCode}
                   setUserProfile={setUserProfile}
                   userProfile={userProfile}
@@ -1489,23 +1534,23 @@ function UserProfile(props) {
               </TabPane>
               <TabPane tabId="4">
                 <ProjectsTab
-                  userProjects={userProfile.projects || []}
-                  userTasks={tasks}
-                  projectsData={props?.allProjects?.projects || []}
-                  onAssignProject={onAssignProject}
-                  onDeleteProject={onDeleteProject}
-                  edit={canEdit}
-                  role={requestorRole}
-                  userId={props.match.params.userId}
-                  updateTask={onUpdateTask}
-                  handleSubmit={handleSubmit}
-                  disabled={
-                    !formValid.firstName ||
-                    !formValid.lastName ||
-                    !formValid.email ||
-                    !(isProfileEqual && isTasksEqual && isProjectsEqual)
-                  }
-                  darkMode={darkMode}
+                userProjects={projects || []}
+                userTasks={tasks}
+                projectsData={props?.allProjects?.projects || []}
+                onAssignProject={onAssignProject}
+                onDeleteProject={onDeleteProject}
+                edit={canPutUserProfile}
+                role={requestorRole}
+                userId={props.match.params.userId}
+                updateTask={onUpdateTask}
+                handleSubmit={handleSubmit}
+                disabled={
+                  !formValid.firstName ||
+                  !formValid.lastName ||
+                  !formValid.email ||
+                  !(isProfileEqual && isTasksEqual && isProjectsEqual)
+                }
+                darkMode={darkMode}
                 />
               </TabPane>
               <TabPane tabId="5">
@@ -2100,6 +2145,15 @@ function UserProfile(props) {
   );
 }
 
-export default connect(null, { hasPermission, updateUserStatus, getTimeEntriesForWeek })(
-  UserProfile,
-);
+ const mapStateToProps = state => ({
+   allProjects: state.allProjects || state.projects || {},   // <- gives you .projects array
+   allTeams: state.allTeams || {},
+   auth: state.auth,
+   role: state.role || {},
+ });
+
+export default connect(
+  mapStateToProps,
+  { hasPermission, updateUserStatus, updateUserProfile, getTimeEntriesForWeek }
+)(UserProfile);
+
