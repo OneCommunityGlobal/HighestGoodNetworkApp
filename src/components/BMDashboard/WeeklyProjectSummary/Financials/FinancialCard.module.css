@@ -1,0 +1,109 @@
+.financial-cards-container {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 20px; 
+  justify-content: flex-start; 
+  overflow: visible;
+}
+
+.financial-card {
+  box-sizing: border-box;
+  width: 285.33px;
+  height: 231px;
+  border: 1px solid #E0E0E0;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.04);
+  border-radius: 25px;
+  position: relative;
+  flex: none;
+  margin: 5px;
+  transition: all 0.3s ease;
+  cursor: help;
+}
+
+.financial-card-title {
+  position: absolute;
+  width: 221.33px;
+  height: 36px;
+  left: 24px;
+  top: 24px;
+  font-family: 'Inter', sans-serif;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 21px;
+  line-height: 150%;
+  text-align: center;
+  color: #000000;
+}
+
+.financial-card-ellipse {
+  position: absolute;
+  width: 162px;
+  height: 82px;
+  left: 56px;
+  top: 57px;
+  border-radius: 50% / 50%;
+}
+
+.financial-card-value {
+  position: absolute;
+  width: 221.33px;
+  height: 44px;
+  left: 24px;
+  top: 76px;
+  font-family: 'Inter', sans-serif;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 40px;
+  line-height: 110%;
+  text-align: center;
+  letter-spacing: -0.02em;
+  color: #000000;
+}
+
+.financial-card-month-over-month {
+  position: absolute;
+  width: 234px;
+  height: 30px;
+  left: 20px;
+  top: 146px;
+  font-family: 'Inter', sans-serif;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 150%;
+  text-align: center;
+}
+
+.financial-card-month-over-month.positive { color: #2E7D32; }
+.financial-card-month-over-month.negative { color: #ce352a; }
+.financial-card-month-over-month.neutral { color: #757575; }
+
+.financial-card-background-total-project-cost {
+  background-color: #ECF3FF;
+}
+.financial-card-ellipse-total-project-cost {
+  background-color: #CBCBFE;
+}
+
+.financial-card-background-total-material-cost {
+  background-color: #E0F7FA;
+}
+.financial-card-ellipse-total-material-cost {
+  background-color: #C1EFFB;
+}
+
+.financial-card-background-total-labor-cost {
+  background-color: #FEE5F0;
+}
+.financial-card-ellipse-total-labor-cost {
+  background-color: #FECFF3;
+}
+
+.financial-card-background-total-equipment-cost {
+  background-color: #E6F5E9;
+}
+.financial-card-ellipse-total-equipment-cost {
+  background-color: #BAF0B6;
+}
