@@ -6936,7 +6936,7 @@ react-router@^5.3.4, react-router@5.3.4:
     tiny-invariant "^1.0.2"
     tiny-warning "^1.0.0"
 
-react-select@^5.7.2:
+react-select@^5.10.1:
   version "5.10.2"
   resolved "https://registry.npmjs.org/react-select/-/react-select-5.10.2.tgz"
   integrity sha512-Z33nHdEFWq9tfnfVXaiM12rbJmk+QjFEztWLtmXqQhz6Al4UZZ9xc0wiatmGtUOCCnHN0WizL3tCMYRENX4rVQ==
