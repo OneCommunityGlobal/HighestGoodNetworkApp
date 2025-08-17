@@ -690,7 +690,7 @@ const BasicInformationTab = props => {
       <Col md={desktopDisplay ? '6' : ''}>
         {canEditRole ? (
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-            <FormGroup style={{ flex: 1, marginBottom: 0 }}>
+            {/* <FormGroup style={{ flex: 1, marginBottom: 0 }}>
               <select
                 value={userProfile.role}
                 onChange={e => {
@@ -718,7 +718,7 @@ const BasicInformationTab = props => {
                   </option>
                 )}
               </select>
-            </FormGroup>
+            </FormGroup> */}
             <Button
               color="primary"
               style={darkMode ? boxStyleDark : boxStyle}
