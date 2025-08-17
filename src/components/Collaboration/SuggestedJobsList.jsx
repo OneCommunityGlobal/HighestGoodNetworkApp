@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { ApiEndpoint } from 'utils/URL';
+import { ApiEndpoint } from '../../utils/URL';
 import { toast } from 'react-toastify';
 import OneCommunityImage from '../../assets/images/logo2.png';
 import './SuggestedJobsList.css';
