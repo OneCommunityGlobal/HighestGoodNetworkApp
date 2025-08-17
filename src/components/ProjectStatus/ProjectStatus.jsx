@@ -4,12 +4,14 @@ import { Doughnut } from 'react-chartjs-2';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
-import './ProjectStatus.css';
+import { useSelector } from 'react-redux';
 
 ChartJS.register(ArcElement, Tooltip, Legend, ChartDataLabels);
 
 function DonutChart() {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [chartData, setChartData] = useState(null);
@@ -44,8 +46,7 @@ function DonutChart() {
     setError(null);
 
     const requestData = { startDate, endDate };
-    // eslint-disable-next-line no-console
-    console.log('Data sent to backend:', requestData);
+    // console.log('Data sent to backend:', requestData);
     try {
       const response = await axios.post('/your-backend-endpoint', requestData);
       if (response.data) {
@@ -68,6 +69,7 @@ function DonutChart() {
     if (startDate && endDate && endDate <= startDate) {
       setDateError(true);
       setTimeout(() => {
+        // TODO: use react-toastify
         // eslint-disable-next-line no-alert
         alert('End date must be later than start date');
       }, 0);
@@ -85,8 +87,11 @@ function DonutChart() {
 
   if (isSubmitting) {
     return (
-      <div className="spinner-container">
-        <div className="spinner" />
+      <div
+        className="d-flex justify-content-center align-items-center"
+        style={{ minHeight: '200px' }}
+      >
+        <div className="spinner-border text-primary" role="status" />
       </div>
     );
   }
@@ -101,12 +106,14 @@ function DonutChart() {
         data: [chartData?.activeProjects, chartData?.completedProjects, chartData?.delayedProjects],
         backgroundColor: ['#c59cff', '#a0e7e5', '#ffadad'],
         hoverOffset: 5,
+        borderWidth: 0,
       },
     ],
   };
 
   const options = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         position: 'bottom',
@@ -114,11 +121,18 @@ function DonutChart() {
         labels: {
           boxWidth: 20,
           padding: 15,
+          color: darkMode ? '#fff' : '#666',
+          font: {
+            size: 14,
+          },
         },
       },
       datalabels: {
-        color: '#000',
-        font: { size: 14 },
+        color: darkMode ? '#fff' : '#000',
+        font: {
+          size: 16,
+          weight: 'bold',
+        },
         formatter: (value, context) => {
           const label = context.chart.data.labels[context.dataIndex];
           const percentage = chartData?.percentages[label.toLowerCase().split(' ')[0]] || 0;
@@ -131,83 +145,144 @@ function DonutChart() {
     },
     layout: {
       padding: {
-        top: 120,
-        bottom: 120,
-        left: 150,
-        right: 150,
+        top: 20,
+        bottom: 20,
+        left: 20,
+        right: 20,
       },
     },
-    cutout: '75%',
+    cutout: '70%',
   };
 
   return (
-    <div className="donut-chart-container">
-      <div className="header">
-        <h2>PROJECT STATUS</h2>
-        <div className="date-picker-container">
-          <DatePicker
-            selected={startDate}
-            onChange={setStartDate}
-            placeholderText="From Date"
-            className="date-picker"
-            popperPlacement="bottom-start"
-            popperModifiers={{
-              preventOverflow: {
-                enabled: true,
-                boundariesElement: 'viewport',
-              },
-            }}
-          />
-          <DatePicker
-            selected={endDate}
-            onChange={setEndDate}
-            placeholderText="To Date"
-            className="date-picker"
-            popperPlacement="bottom-start"
-            popperModifiers={{
-              preventOverflow: {
-                enabled: true,
-                boundariesElement: 'viewport',
-              },
-            }}
-          />
-          <button type="button" className="apply-button" onClick={handleApplyClick}>
-            Apply
-          </button>
+    <div className={`container py-4 ${darkMode ? 'bg-dark text-light' : ''}`}>
+      <div className="row mb-4 align-items-center">
+        <div className="col-md-6">
+          <h2 className="mb-3">PROJECT STATUS</h2>
+        </div>
+        <div className="col-md-6">
+          <div className="d-flex gap-2 align-items-center justify-content-md-end">
+            <DatePicker
+              selected={startDate}
+              onChange={setStartDate}
+              placeholderText="From Date"
+              className={`form-control ${darkMode ? 'bg-secondary text-light border-dark' : ''}`}
+              popperPlacement="bottom-start"
+              wrapperClassName={darkMode ? 'dark-datepicker' : ''}
+            />
+            <DatePicker
+              selected={endDate}
+              onChange={setEndDate}
+              placeholderText="To Date"
+              className={`form-control ${darkMode ? 'bg-secondary text-light border-dark' : ''}`}
+              popperPlacement="bottom-start"
+              wrapperClassName={darkMode ? 'dark-datepicker' : ''}
+            />
+            <button type="button" className="btn btn-primary" onClick={handleApplyClick}>
+              Apply
+            </button>
+          </div>
         </div>
       </div>
 
-      <div className="content">
-        <div className="donut-chart-section">
-          <Doughnut data={data} options={options} />
-          <div className="total-projects">
-            <p>Total Projects</p>
-            <p>{chartData?.totalProjects}</p>
+      <div className="row g-4">
+        <div className="col-lg-6 d-flex flex-column align-items-center">
+          <div
+            style={{
+              width: '500px',
+              height: '500px',
+              position: 'relative',
+            }}
+          >
+            <Doughnut
+              data={data}
+              options={options}
+              style={{
+                width: '100%',
+                height: '100%',
+              }}
+            />
+            <div
+              className="position-absolute top-50 start-50 translate-middle text-center"
+              style={{ pointerEvents: 'none' }}
+            >
+              <p
+                className={`mb-1 fw-bold ${darkMode ? 'text-light' : ''}`}
+                style={{ fontSize: '1.5rem' }}
+              >
+                Total Projects
+              </p>
+              <p
+                className={`mb-0 fw-bold ${darkMode ? 'text-light' : ''}`}
+                style={{ fontSize: '3rem' }}
+              >
+                {chartData?.totalProjects}
+              </p>
+            </div>
           </div>
         </div>
 
-        <div className="project-counts">
-          <p>{formattedDate}</p>
-          <div className="project-details">
+        <div className="col-lg-6">
+          <div className="mb-3 text-end text-md-start">
+            <span className={darkMode ? 'text-light' : 'text-muted'}>{formattedDate}</span>
+          </div>
+          <div className="row">
             {[
               { label: 'ACTIVE PROJECTS', value: chartData?.activeProjects },
               { label: 'COMPLETED PROJECTS', value: chartData?.completedProjects },
               { label: 'DELAYED PROJECTS', value: chartData?.delayedProjects },
             ].map(item => (
-              <div key={item.label} className="project-item">
-                <div>
-                  {item.label.split(' ').map(word => (
-                    <p key={word} className="project-label">
-                      {word}
-                    </p>
-                  ))}
+              <div key={item.label} className="col-12 mb-3">
+                <div
+                  className={`card shadow-sm ${
+                    darkMode ? 'bg-dark text-light border-secondary' : ''
+                  }`}
+                >
+                  <div className="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                      {item.label.split(' ').map(word => (
+                        <span
+                          key={word}
+                          className={`d-block text-uppercase small ${
+                            darkMode ? 'text-light' : 'text-secondary'
+                          }`}
+                        >
+                          {word}
+                        </span>
+                      ))}
+                    </div>
+                    <span className={`fs-4 fw-bold ${darkMode ? 'text-light' : ''}`}>
+                      {item.value}
+                    </span>
+                  </div>
                 </div>
-                <p className="project-value">{item.value}</p>
               </div>
             ))}
           </div>
         </div>
       </div>
+
+      <style>{`
+        .dark-datepicker .react-datepicker {
+          background-color: #343a40;
+          border-color: #6c757d;
+        }
+        .dark-datepicker .react-datepicker__header {
+          background-color: #454d55;
+          border-bottom-color: #6c757d;
+        }
+        .dark-datepicker .react-datepicker__current-month,
+        .dark-datepicker .react-datepicker__day-name,
+        .dark-datepicker .react-datepicker__day {
+          color: #fff;
+        }
+        .dark-datepicker .react-datepicker__day:hover {
+          background-color: #495057;
+        }
+        .dark-datepicker .react-datepicker__day--selected {
+          background-color: #007bff;
+        }
+      `}</style>
     </div>
   );
 }
