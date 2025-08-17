@@ -9,6 +9,7 @@ import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
 import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
 import ToolsHorizontalBarChart from './Tools/ToolsHorizontalBarChart';
+import FinancialCard from './Financials/FinancialCard';
 import ExpenseBarChart from './Financials/ExpenseBarChart';
 import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
 import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
@@ -114,50 +115,6 @@ const projectStatusButtons = [
   },
 ];
 
-function FinancialCard({ title, value = '-', monthOverMonth = '-', additionalInfo = {} }) {
-  const [showTooltip, setShowTooltip] = useState(false);
-
-  const getColorScheme = percentage => {
-    if (percentage === '-') return 'neutral';
-    if (percentage > 0) return 'positive';
-    if (percentage < 0) return 'negative';
-    return 'neutral';
-  };
-
-  const colorScheme = getColorScheme(monthOverMonth);
-
-  const titleClass = title.replace(/\s+/g, '-').toLowerCase();
-
-  return (
-    <div
-      className={`financial-card ${colorScheme} custom-box-shadow financial-card-background-${titleClass}`}
-      onMouseEnter={() => setShowTooltip(true)}
-      onMouseLeave={() => setShowTooltip(false)}
-    >
-      <div className="financial-card-title">{title}</div>
-      <div className={`financial-card-ellipse financial-card-ellipse-${titleClass}`} />
-      <div className="financial-card-value">{value === '-' ? '-' : value.toLocaleString()}</div>
-      <div className={`financial-card-month-over-month ${colorScheme}`}>
-        {monthOverMonth === '-'
-          ? '-'
-          : `${monthOverMonth > 0 ? '+' : ''}${monthOverMonth}% month over month`}
-      </div>
-
-      {/* Tooltip for Additional Information */}
-      {showTooltip && Object.keys(additionalInfo).length > 0 && (
-        <div className="financial-card-tooltip">
-          {Object.entries(additionalInfo).map(([key]) => (
-            <div key={key} className="financial-card-tooltip-item">
-              <span className="tooltip-key">{key}:</span>
-              <span className="tooltip-value">{value}</span>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
 const financialData = [
   {
     id: uuidv4(),
@@ -205,46 +162,6 @@ export function WeeklyProjectSummaryContent() {
   const dispatch = useDispatch();
   const materials = useSelector(state => state.materials?.materialslist || []);
   const [openSections, setOpenSections] = useState({});
-
-  const getColorScheme = percentage => {
-    if (percentage === '-') return 'neutral';
-    if (percentage > 0) return 'positive';
-    if (percentage < 0) return 'negative';
-    return 'neutral';
-  };
-
-  const colorScheme = getColorScheme(monthOverMonth);
-
-  const titleClass = title.replace(/\s+/g, '-').toLowerCase();
-
-  return (
-    <div
-      className={`financial-card ${colorScheme} custom-box-shadow financial-card-background-${titleClass}`}
-      onMouseEnter={() => setShowTooltip(true)}
-      onMouseLeave={() => setShowTooltip(false)}
-    >
-      <div className="financial-card-title">{title}</div>
-      <div className={`financial-card-ellipse financial-card-ellipse-${titleClass}`} />
-      <div className="financial-card-value">{value === '-' ? '-' : value.toLocaleString()}</div>
-      <div className={`financial-card-month-over-month ${colorScheme}`}>
-        {monthOverMonth === '-'
-          ? '-'
-          : `${monthOverMonth > 0 ? '+' : ''}${monthOverMonth}% month over month`}
-      </div>
-
-      {/* Tooltip for Additional Info */}
-      {showTooltip && Object.keys(additionalInfo).length > 0 && (
-        <div className="financial-card-tooltip">
-          {Object.entries(additionalInfo).map(([key]) => (
-            <div key={key} className="financial-card-tooltip-item">
-              <span className="tooltip-key">{key}:</span>
-              <span className="tooltip-value">{value}</span>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
 }
 
 function WeeklyProjectSummary() {
