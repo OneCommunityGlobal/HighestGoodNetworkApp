@@ -5,6 +5,7 @@ import { lazy } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import SetupProfile from '~/components/SetupProfile/SetupProfile';
 import { ToastContainer } from 'react-toastify';
+import ToolsAvailabilityPage from '~/components/BMDashboard/WeeklyProjectSummary/Tools/ToolsAvailabilityPage';
 import AutoUpdate from '~/components/AutoUpdate';
 import TaskEditSuggestions from '~/components/TaskEditSuggestions/TaskEditSuggestions';
 import RoutePermissions from '~/utils/routePermissions';
@@ -68,6 +69,7 @@ import ApplicantsAgeChart from './components/ApplicantsChart';
 import ApplicationTimeChartPage from './components/ApplicationTimeChart';
 import ApplicationAnalyticsContainer from './components/ApplicationAnalytics';
 import UserSkillsProfile from './components/HGNSkillsDashboard/SkillsProfilePage/components/UserSkillsProfile';
+import ApplicantVolunteerRatio from './components/ApplicantVolunteerRatio/ApplicantVolunteerRatio';
 
 import WeeklySummaryPage from './components/VolunteerweeklysummaryBBC/WeeklySummaryPage'; // 测试用 后续要删除
 
@@ -136,6 +138,7 @@ import MostSusceptibleTools from './components/MostSusceptible/toolBreakdownChar
 
 import HelpPage from './components/LandingPage/HelpPage';
 
+import TeamCard from './components/HGNHelpSkillsDashboard/TeamCard/TeamCard';
 import LandingPage from './components/HGNHelpSkillsDashboard/LandingPage';
 import SkillsOverviewPage from './components/HGNHelpSkillsDashboard/SkillsOverviewPage';
 import CommunityMembersPage from './components/HGNHelpSkillsDashboard/CommunityMembersPage';
@@ -146,6 +149,7 @@ import FeedbackModal from './components/HGNHelpSkillsDashboard/FeedbackModal';
 import ActivityAgenda from './components/CommunityPortal/Activities/ActivityAgenda';
 // HGN PR Dashboard
 import PRReviewTeamAnalytics from './components/HGNPRDashboard/PRReviewTeamAnalytics';
+import PromotionEligibility from './components/HGNPRDashboard/PromotionEligibility';
 
 // eslint-disable-next-line import/order, import/no-unresolved
 import LogTools from './components/BMDashboard/LogTools/LogTools';
@@ -434,6 +438,11 @@ export default (
         />
 
         <ProtectedRoute path="/applicants-chart" exact component={ApplicantsAgeChart} fallback />
+        <ProtectedRoute
+          path="/applicant-volunteer-ratio"
+          exact
+          component={ApplicantVolunteerRatio}
+        />
 
         <ProtectedRoute
           path="/application-time-chart"
@@ -613,6 +622,13 @@ export default (
           component={BMTimeLogCard}
         />
 
+        <BMProtectedRoute
+          path="/bmdashboard/tools-availability"
+          fallback
+          exact
+          component={ToolsAvailabilityPage}
+        />
+
         {/* Community Portal Routes */}
         <CPProtectedRoute path="/communityportal" exact component={CPDashboard} />
         <Route path="/communityportal/login" component={CPLogin} />
@@ -686,7 +702,6 @@ export default (
           exact
           component={EventStats}
         />
-
         {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
         <CPProtectedRoute path="/communityportal/ActivityAgenda" exact component={ActivityAgenda} />
 
@@ -708,6 +723,8 @@ export default (
         <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
         {/* ----- HGN Help Community Skills Dashboard Routes ----- */}
         <ProtectedRoute path="/hgnhelp" exact component={LandingPage} />
+        <ProtectedRoute path="/hgnteam" exact component={TeamCard} />
+
         <ProtectedRoute path="/hgnhelp/skills-overview" exact component={SkillsOverviewPage} />
         <ProtectedRoute path="/hgnhelp/community" exact component={CommunityMembersPage} />
         <ProtectedRoute path="/hgnhelp/profile/:userId" exact component={UserProfilePage} />
@@ -735,6 +752,14 @@ export default (
         <ProtectedRoute path="/tsaformpage7" exact component={TSAFormPage7} />
         <ProtectedRoute path="/tsaformpage8" exact component={TSAFormPage8} />
         <ProtectedRoute path="/" exact component={Dashboard} />
+
+        {/* ----- PR Dashboard  ----- */}
+        <ProtectedRoute
+          path="/pr-dashboard/promotion-eligibility"
+          exact
+          component={PromotionEligibility}
+        />
+
         <Route path="*" component={NotFoundPage} />
       </Switch>
     </>

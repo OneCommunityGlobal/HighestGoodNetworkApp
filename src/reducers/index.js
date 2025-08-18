@@ -53,9 +53,11 @@ import { bmProjectByIdReducer } from './bmdashboard/projectByIdReducer';
 import { bmInvUnitReducer } from './bmdashboard/inventoryUnitReducer';
 import { consumablesReducer } from './bmdashboard/consumablesReducer';
 import { toolReducer } from './bmdashboard/toolReducer';
+import toolAvailabilityReducer from './bmdashboard/toolAvailabilityReducer';
 import { equipmentReducer } from './bmdashboard/equipmentReducer';
 import { bmProjectMemberReducer } from './bmdashboard/projectMemberReducer';
 import { bmTimeLoggerReducer } from './bmdashboard/timeLoggerReducer';
+import bmInjuryReducer from './bmdashboard/injuryReducer';
 
 import dashboardReducer from './dashboardReducer';
 import { timeOffRequestsReducer } from './timeOffRequestReducer';
@@ -111,6 +113,7 @@ const localReducers = {
   // bmdashboard
   materials: materialsReducer,
   tools: toolReducer,
+  toolAvailability: toolAvailabilityReducer,
   bmProjects: bmProjectReducer,
   bmInvTypes: bmInvTypeReducer,
   timeOffRequests: timeOffRequestsReducer,
@@ -133,6 +136,8 @@ const localReducers = {
 
   bmProjectMembers: bmProjectMemberReducer,
   bmTimeLogger: bmTimeLoggerReducer,
+  bmInjury: bmInjuryReducer,
+  weeklyProjectSummary: weeklyProjectSummaryReducer,
   // lbdashboard
   lbmessaging: messageReducer,
   lbuserpreferences: userPreferencesReducer,

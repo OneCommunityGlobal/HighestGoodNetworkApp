@@ -3,21 +3,13 @@
 
 import { useState, useEffect } from 'react';
 import { Bar } from 'react-chartjs-2';
-import {
-  Chart as ChartJS,
-  BarElement,
-  CategoryScale,
-  LinearScale,
-  Tooltip,
-  Title
-} from 'chart.js';
+import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Title } from 'chart.js';
 import axios from 'axios';
 import Select from 'react-select';
 import DatePicker from 'react-datepicker';
 
 import 'react-datepicker/dist/react-datepicker.css';
 import './LessonsLearntChart.css';
-
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Title);
 
@@ -62,7 +54,7 @@ const useLessonsData = (selectedProjects, startDate, endDate) => {
 
 function ChartTitle({ title }) {
   return <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>{title}</h2>;
-};
+}
 
 function Filters({
   allProjects,
@@ -113,7 +105,7 @@ function Filters({
 const PercentageLabels = ({ data }) => {
   return (
     <div className="percentage-labels">
-      {data?.map((item) => (
+      {data?.map(item => (
         <div
           key={item.id || item.name} // use a stable, unique identifier
           className="percentage-label"
@@ -175,7 +167,7 @@ const LessonsLearntChart = () => {
   const { allProjects, lessonsData, isLoading } = useLessonsData(
     selectedProjects,
     startDate,
-    endDate
+    endDate,
   );
 
   return (
