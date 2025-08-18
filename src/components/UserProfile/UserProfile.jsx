@@ -1487,25 +1487,29 @@ function UserProfile(props) {
                 />
               </TabPane>
               <TabPane tabId="4">
-                <ProjectsTab
-                  userProjects={userProfile.projects || []}
-                  userTasks={tasks}
-                  projectsData={props?.allProjects?.projects || []}
-                  onAssignProject={onAssignProject}
-                  onDeleteProject={onDeleteProject}
-                  edit={canEdit}
-                  role={requestorRole}
-                  userId={props.match.params.userId}
-                  updateTask={onUpdateTask}
-                  handleSubmit={handleSubmit}
-                  disabled={
-                    !formValid.firstName ||
-                    !formValid.lastName ||
-                    !formValid.email ||
-                    !(isProfileEqual && isTasksEqual && isProjectsEqual)
-                  }
-                  darkMode={darkMode}
-                />
+                {
+                  activeTab === '4' && (
+                    <ProjectsTab
+                      userProjects={userProfile.projects || []}
+                      userTasks={tasks}
+                      projectsData={props?.allProjects?.projects || []}
+                      onAssignProject={onAssignProject}
+                      onDeleteProject={onDeleteProject}
+                      edit={canEdit}
+                      role={requestorRole}
+                      userId={props.match.params.userId}
+                      updateTask={onUpdateTask}
+                      handleSubmit={handleSubmit}
+                      disabled={
+                        !formValid.firstName ||
+                        !formValid.lastName ||
+                        !formValid.email ||
+                        !(isProfileEqual && isTasksEqual && isProjectsEqual)
+                      }
+                      darkMode={darkMode}
+                    />
+                  )
+                }
               </TabPane>
               <TabPane tabId="5">
                 <TimeEntryEditHistory
