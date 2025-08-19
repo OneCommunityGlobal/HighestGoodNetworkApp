@@ -324,7 +324,6 @@ function CostPredictionChart({ projectId }) {
   const [selectedProject, setSelectedProject] = useState(null);
   const [lastPredictedValues, setLastPredictedValues] = useState({});
   const darkMode = useSelector(state => state.theme.darkMode);
-  const selectedOrg = useSelector(state => state.weeklyProjectSummary.projectFilter);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -380,8 +379,6 @@ function CostPredictionChart({ projectId }) {
         return laborUtils;
     }
   };
-
-  const orgOptions = [{ value: selectedOrg, label: selectedOrg }];
 
   // Apply dark mode styles to document body when in dark mode
   useEffect(() => {
@@ -454,7 +451,6 @@ function CostPredictionChart({ projectId }) {
             The dropdown filters allow you to:
             <ul style={{ paddingLeft: '16px' }}>
               <li>Select specific cost categories (multi-select).</li>
-              <li>Choose organization (defaulted).</li>
               <li>Pick a specific project.</li>
             </ul>
           </li>
@@ -541,39 +537,6 @@ function CostPredictionChart({ projectId }) {
                   }
                 : {}
             }
-          />
-
-          <Select
-            options={orgOptions}
-            value={orgOptions.find(option => option.value === selectedOrg)}
-            placeholder="Organization"
-            classNamePrefix="custom-select"
-            className={`cost-prediction-dropdown-item ${styles.dropdownItem}`}
-            styles={
-              darkMode
-                ? {
-                    control: baseStyles => ({
-                      ...baseStyles,
-                      backgroundColor: '#2c3344',
-                      borderColor: '#364156',
-                    }),
-                    menu: baseStyles => ({
-                      ...baseStyles,
-                      backgroundColor: '#2c3344',
-                    }),
-                    option: (baseStyles, state) => ({
-                      ...baseStyles,
-                      backgroundColor: state.isFocused ? '#364156' : '#2c3344',
-                      color: '#e0e0e0',
-                    }),
-                    singleValue: baseStyles => ({
-                      ...baseStyles,
-                      color: '#e0e0e0',
-                    }),
-                  }
-                : {}
-            }
-            // isDisabled
           />
 
           <Select
