@@ -231,12 +231,12 @@ const UserTableData = React.memo(props => {
               }
 
               if (e.metaKey || e.ctrlKey || e.button === 1) {
-                window.open(`/timelog/${props.user._id}`, '_blank');
+                window.open(`/timelog/${props.user._id}#currentWeek`);
                 return;
               }
 
               e.preventDefault(); // prevent full reload
-              history.push(`/timelog/${props.user._id}`);
+              history.push(`/timelog/${props.user._id}#currentWeek`);
             }}
           />
         </span>
