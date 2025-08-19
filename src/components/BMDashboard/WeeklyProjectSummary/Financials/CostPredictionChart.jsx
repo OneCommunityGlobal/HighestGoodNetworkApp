@@ -580,13 +580,13 @@ function CostPredictionChart({ projectId }) {
           {!loading && !error && data.length > 0 && (
             <div
               style={{
-                height: 'calc(100% - 40px)',
+                height: 'calc(100% - 20px)',
                 width: '100%',
                 position: 'relative',
               }}
             >
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={data} margin={{ top: 5, right: 10, left: 10, bottom: 18 }}>
+                <LineChart data={data} margin={{ top: 25, right: 10, left: 45, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#364156' : '#ccc'} />
                   <XAxis
                     dataKey="date"
@@ -603,7 +603,7 @@ function CostPredictionChart({ projectId }) {
                       fontSize: 10,
                     }}
                     tickFormatter={value => `${currency}${value}`}
-                    width={35}
+                    width={50}
                   />
                   <Tooltip content={<CustomTooltip currency={currency} />} />
                   <Legend
@@ -749,7 +749,7 @@ function CostPredictionChart({ projectId }) {
             width: '100%',
             textAlign: 'center',
             fontSize: '12px',
-            marginTop: '5px',
+            marginTop: '2px',
             color: 'var(--text-color)',
             display: 'flex',
             justifyContent: 'center',
