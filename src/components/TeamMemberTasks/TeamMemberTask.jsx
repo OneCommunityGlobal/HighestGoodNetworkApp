@@ -77,7 +77,7 @@ const TeamMemberTask = React.memo(
       ) {
         toast.error("Oops! You don't have the permission to access this user's dashboard!");
       } else {
-        openDashboardModal(); // the modal you already implemented
+        openDashboardModal();
       }
     };
 
@@ -599,7 +599,7 @@ const TeamMemberTask = React.memo(
                           <button className="btn btn-primary" onClick={showDashboard}>
                             Ok
                           </button>
-                          <button className="btn btn-secondary" onClick={closeDashboardModal}>
+                          <button className="btn btn-danger" onClick={closeDashboardModal}>
                             Cancel
                           </button>
                         </ModalFooter>

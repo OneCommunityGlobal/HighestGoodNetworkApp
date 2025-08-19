@@ -842,10 +842,10 @@ function LeaderBoard({
                               </p>
                             </ModalBody>
                             <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-                              <Button variant="primary" onClick={() => showDashboard(item)}>
+                              <Button color="primary" onClick={() => showDashboard(item)}>
                                 Ok
-                              </Button>{' '}
-                              <Button variant="secondary" onClick={dashboardToggle}>
+                              </Button>
+                              <Button color="danger" onClick={dashboardToggle}>
                                 Cancel
                               </Button>
                             </ModalFooter>
