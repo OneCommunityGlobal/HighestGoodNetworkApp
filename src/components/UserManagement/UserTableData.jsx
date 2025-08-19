@@ -230,12 +230,13 @@ const UserTableData = React.memo(props => {
                 return;
               }
 
+              const url = `${window.location.origin}/timelog/${props.user._id}#currentWeek`;
+
               if (e.metaKey || e.ctrlKey || e.button === 1) {
-                window.open(`/timelog/${props.user._id}#currentWeek`);
+                window.open(url, '_blank', 'noopener');
                 return;
               }
-
-              e.preventDefault(); // prevent full reload
+              e.preventDefault();
               history.push(`/timelog/${props.user._id}#currentWeek`);
             }}
           />
