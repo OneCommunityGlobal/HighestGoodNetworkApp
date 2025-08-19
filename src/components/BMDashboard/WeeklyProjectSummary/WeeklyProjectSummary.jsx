@@ -19,6 +19,8 @@ import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
 import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
 import styles from './WeeklyProjectSummary.module.css';
 import IssueCharts from '../Issues/openIssueCharts';
+import ToolsRentalCostLineChart from '../Tools/ToolsRentals/ToolsRentalCostLineChart';
+import ToolsRentalCostStackedBarChart from '../Tools/ToolsRentals/ToolsRentalCostStackedBarChart';
 
 const projectStatusButtons = [
   {
@@ -326,6 +328,21 @@ function WeeklyProjectSummary() {
         className: 'small',
         content: (
           <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>📊 Card</div>
+        ),
+      },
+      {
+        title: 'Tools Rental Cost Charts',
+        key: 'Tools Rental Cost Charts',
+        className: 'full',
+        content: (
+          <>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.wideCard}`}>
+              <ToolsRentalCostStackedBarChart />
+            </div>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.wideCard}`}>
+              <ToolsRentalCostLineChart />
+            </div>
+          </>
         ),
       },
       {
