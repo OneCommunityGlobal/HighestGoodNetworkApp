@@ -2,18 +2,22 @@
   padding: 20px;
   font-family: sans-serif;
   height: auto;
-  width: 80%;
+  width: 100%;
   padding: 20px;
   justify-self: center;
 }
-
-.reviewersChartContainer.darkMode {
+.darkMode {
+  background-color: #1b2a41;
+  color: #f8fafc;
+}
+.darkMode .reviewersChartContainer {
   background-color: #1b2a41;
   color: #fff;
 }
 
 .darkMode .reviewersLabel {
-  color: #fdfdfd; /* Always use the light mode color */
+  color: #fff;
+  /* Always use the light mode color */
 }
 
 .reviewersFiltersBar {
@@ -23,7 +27,7 @@
   font-size: 14px;
 }
 
-.reviewersFiltersBar label {
+.reviewersFiltersBar .label {
   margin-right: 5px;
   font-weight: 600;
 }
@@ -93,6 +97,11 @@
   width: 180px;
 }
 
+.darkMode .reviewersSelectContainer {
+  width: 180px;
+  color: black;
+}
+
 .reviewersSelect__control {
   background-color: white;
   color: black;
@@ -126,7 +135,7 @@
 
 /* Dark mode option hover and focus */
 .darkMode .reviewersSelect__option--is-focused,
-.dark-mode .reviewersSelect__option:hover {
+.darkMode .reviewersSelect__option:hover {
   background-color: #2f4a73;
   color: #fff;
 }
@@ -137,12 +146,12 @@
   color: #000;
 }
 
-.dark-mode .reviewersSelect__option--isSelected {
+.darkMode .reviewersSelect__option--isSelected {
   background-color: #3a5a84;
   color: #fff;
 }
 
-.dark-mode .rechartsLegendItemText {
+.darkMode .rechartsLegendItemText {
   color: black !important;
 }
 

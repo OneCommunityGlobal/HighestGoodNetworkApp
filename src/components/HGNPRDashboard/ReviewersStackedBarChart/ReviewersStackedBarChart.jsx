@@ -225,7 +225,7 @@ function ReviewersStackedBarChart() {
             options={teams.map(team => ({ label: team, value: team }))}
             value={{ label: teamFilter, value: teamFilter }}
             onChange={selected => setTeamFilter(selected.value)}
-            className={`${styles.reviewersSelectContainer}`}
+            className={`${styles.reviewersSelectContainer} ${darkMode ? styles.darkMode : ''}`}
             classNamePrefix="reviewersSelect"
           />
         </div>
@@ -244,7 +244,7 @@ function ReviewersStackedBarChart() {
             ]}
             value={{ label: sortFilter, value: sortFilter }}
             onChange={selected => setSortFilter(selected.value)}
-            className={`${styles.reviewersSelectContainer}`}
+            className={`${styles.reviewersSelectContainer} ${darkMode ? styles.darkMode : ''}`}
             classNamePrefix="reviewersSelect"
           />
         </div>
@@ -265,7 +265,7 @@ function ReviewersStackedBarChart() {
             ]}
             value={{ label: durationFilter.label, value: durationFilter.value }}
             onChange={selected => setDurationFilter(selected)}
-            className={`${styles.reviewersSelectContainer}`}
+            className={`${styles.reviewersSelectContainer} ${darkMode ? styles.darkMode : ''}`}
             classNamePrefix="reviewersSelect"
           />
         </div>
@@ -273,11 +273,11 @@ function ReviewersStackedBarChart() {
 
       {loading ? (
         <div
-          className={`${styles.reviewerStackbarLoading}`}
-          style={{ color: darkMode ? textDark : undefined, justifyItems: 'center' }}
+          className={`${styles.reviewerStackbarLoading} ${darkMode ? styles.darkMode : ''}`}
+          style={{ color: darkMode ? textDark : '#000', justifyItems: 'center' }}
         >
           <div
-            className={`${styles.loadingSpinner}`}
+            className={`${styles.loadingSpinner} ${darkMode ? styles.darkMode : ''}`}
             style={darkMode ? { borderTop: '4px solid #f8fafc' } : {}}
           />
           <p style={{ color: darkMode ? textDark : undefined, justifyItems: 'center' }}>
@@ -286,7 +286,7 @@ function ReviewersStackedBarChart() {
         </div>
       ) : error ? (
         <div
-          className={`${styles.reviewersStackbarError}`}
+          className={`${styles.reviewersStackbarError} ${darkMode ? styles.darkMode : ''}`}
           style={{ color: darkMode ? textDark : undefined, justifyItems: 'center' }}
         >
           <div className={`${styles.errorIcon}`}>⚠️</div>
