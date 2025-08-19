@@ -73,7 +73,6 @@ import PRGradingScreen from './components/PRGradingScreen';
 import PRGradingTest from './components/PRGradingScreen/PRGradingTest'; //temporary route for testing - delete after testing
 import ApplicantVolunteerRatio from './components/ApplicantVolunteerRatio/ApplicantVolunteerRatio';
 
-
 import WeeklySummaryPage from './components/VolunteerweeklysummaryBBC/WeeklySummaryPage'; // 测试用 后续要删除
 
 // LB Dashboard
@@ -443,7 +442,6 @@ export default (
           exact
           component={ApplicantVolunteerRatio}
         />
-
 
         <ProtectedRoute
           path="/application-time-chart"
